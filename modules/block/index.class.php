@@ -39,12 +39,17 @@ class block extends blockLibrary
         foreach ($arrTemplates as &$template) { 
             // Set blocks [[BLOCK_<ID>]]
             if (preg_match_all('/{'.$objBlock->blockNamePrefix.'([0-9]+)}/', $template, $arrMatches)) {
-                $objBlock->setBlock($arrMatches[1], $template);
+                $objBlock->setBlock($arrMatches[1], $template, $page->getId());
             }
 
             // Set global block [[BLOCK_GLOBAL]]
             if (preg_match('/{'.$objBlock->blockNamePrefix.'GLOBAL}/', $template)) {
                 $objBlock->setBlockGlobal($template, $page->getId());
+            }
+
+            // Set category blocks [[BLOCK_CAT_<ID>]]
+            if (preg_match_all('/{'.$objBlock->blockNamePrefix.'CAT_([0-9]+)}/', $template, $arrMatches)) {
+                $objBlock->setCategoryBlock($arrMatches[1], $template, $page->getId());
             }
 
             /* Set random blocks [[BLOCK_RANDOMIZER]], [[BLOCK_RANDOMIZER_2]],
@@ -53,9 +58,8 @@ class block extends blockLibrary
                 $placeholderSuffix = '';
 
                 $randomBlockIdx = 1;
+
                 while ($randomBlockIdx <= 4) {
-                    $blockPlaceholderRegexp = '/{'.$objBlock->blockNamePrefix.'RANDOMIZER'.$placeholderSuffix.'}/';
-                 
                     if (preg_match('/{'.$objBlock->blockNamePrefix.'RANDOMIZER'.$placeholderSuffix.'}/', $template)) {
                         $objBlock->setBlockRandom($template, $randomBlockIdx);
                     }
@@ -76,12 +80,32 @@ class block extends blockLibrary
     * @access public
     * @param array $arrBlocks
     * @param string &$code
+    * @param int $pageId
     * @see blockLibrary::_setBlock()
     */
-    function setBlock($arrBlocks, &$code)
+    function setBlock($arrBlocks, &$code, $pageId)
     {
         foreach ($arrBlocks as $blockId) {
-            $this->_setBlock(intval($blockId), $code);
+            $this->_setBlock(intval($blockId), $code, $pageId);
+        }
+    }
+
+
+    /**
+    * Set category block
+    *
+    * Parse a category block
+    *
+    * @access public
+    * @param array $arrCategoryBlocks
+    * @param string &$code
+    * @param int $pageId
+    * @see blockLibrary::_setBlock()
+    */
+    function setCategoryBlock($arrCategoryBlocks, &$code, $pageId)
+    {
+        foreach ($arrCategoryBlocks as $blockId) {
+            $this->_setCategoryBlock(intval($blockId), $code, $pageId);
         }
     }
 

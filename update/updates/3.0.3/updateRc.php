@@ -28,6 +28,8 @@ if ($objResultRc1->fields['target'] != '_blank') {
     $version = 'hotfix';
 } elseif ($_CONFIG['coreCmsVersion'] == '3.0.1') {
     $version = 'sp1';
+} elseif ($_CONFIG['coreCmsVersion'] == '3.0.2') {
+    $version = 'sp2';
 } else {
     // nothing to do
     return true;
@@ -482,10 +484,52 @@ $updatesSp1ToSp2 = array(
     'UPDATE `'.DBPREFIX.'settings` SET `setvalue` = \'3.0.2\' WHERE `setname` = \'coreCmsVersion\'',
 );
 
-$updatesRc1ToSp2    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2);
-$updatesRc2ToSp2    = array_merge($updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2);
-$updatesStableToSp2 = array_merge($updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2);
-$updatesHotfixToSp2 = array_merge($updatesHotfixToSp1, $updatesSp1ToSp2);
+$updatesSp2ToSp3 = array(
+    array (
+        'table' => DBPREFIX.'module_block_categories',
+        'structure' => array(
+            'id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'parent'         => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0', 'after' => 'id'),
+            'name'           => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'parent'),
+            'seperator'      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'name'),
+            'order'          => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0', 'after' => 'seperator'),
+            'status'         => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'order')
+        ),
+    ),
+    array (
+        'table' => DBPREFIX.'module_block_blocks',
+        'structure' => array(
+            'id'                 => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'start'              => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0', 'after' => 'id'),
+            'end'                => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0', 'after' => 'start'),
+            'name'               => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'end'),
+            'random'             => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'name'),
+            'random_2'           => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'random'),
+            'random_3'           => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'random_2'),
+            'random_4'           => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'random_3'),
+            'global'             => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'random_4'),
+            'category'           => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'global'),
+            'direct'             => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'category'),
+            'active'             => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'direct'),
+            'order'              => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'active'),
+            'cat'                => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0', 'after' => 'order'),
+            'wysiwyg_editor'     => array('type' => 'INT(1)', 'notnull' => true, 'default' => '1', 'after' => 'cat')
+        ),
+    ),
+    array (
+        'table' => DBPREFIX.'module_block_rel_pages',
+        'structure' => array(
+            'block_id'       => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0'),
+            'page_id'        => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0', 'after' => 'block_id'),
+            'placeholder'    => array('type' => 'ENUM(\'global\',\'direct\',\'category\')', 'notnull' => true, 'default' => 'global', 'after' => 'page_id')
+        ),
+    ),
+);
+
+$updatesRc1ToSp2    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3);
+$updatesRc2ToSp2    = array_merge($updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3);
+$updatesStableToSp2 = array_merge($updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3);
+$updatesHotfixToSp2 = array_merge($updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3);
 
 if ($version == 'rc1') {
     $updates = $updatesRc1ToSp2;
@@ -495,8 +539,10 @@ if ($version == 'rc1') {
     $updates = $updatesStableToSp2;
 } elseif ($version == 'hotfix') {
     $updates = $updatesHotfixToSp2;
-} else {
+} elseif ($version == 'sp1') {
     $updates = $updatesSp1ToSp2;
+} else {
+    $updates = $updatesSp2ToSp3;
 }
 
 foreach ($updates as $update) {
