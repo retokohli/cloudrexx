@@ -521,6 +521,8 @@ CREATE TABLE `contrexx_module_block_blocks` (
   `random_3` int(1) NOT NULL default '0',
   `random_4` int(1) NOT NULL default '0',
   `global` int(1) NOT NULL default '0',
+  `category` int(1) NOT NULL default '0',
+  `direct` int(1) NOT NULL default '0',
   `active` int(1) NOT NULL default '0',
   `order` int(1) NOT NULL default '0',
   `cat` int(10) NOT NULL default '0',
@@ -534,6 +536,7 @@ CREATE TABLE `contrexx_module_block_categories` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `parent` int(10) NOT NULL default '0',
   `name` varchar(255) NOT NULL default '',
+  `seperator` varchar(255) NOT NULL default '',
   `order` int(10) NOT NULL default '0',
   `status` tinyint(1) NOT NULL default '1',
   PRIMARY KEY  (`id`)
@@ -554,6 +557,7 @@ SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_block_rel_pages` (
   `block_id` int(7) NOT NULL default '0',
   `page_id` int(7) NOT NULL default '0',
+  `placeholder` enum('global','direct','category') NOT NULL default 'global',
   PRIMARY KEY  (`block_id`,`page_id`)
 ) ENGINE=MyISAM;
 SET character_set_client = @saved_cs_client;
