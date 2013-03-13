@@ -558,7 +558,7 @@ CREATE TABLE `contrexx_module_block_rel_pages` (
   `block_id` int(7) NOT NULL default '0',
   `page_id` int(7) NOT NULL default '0',
   `placeholder` enum('global','direct','category') NOT NULL default 'global',
-  PRIMARY KEY  (`block_id`,`page_id`)
+  PRIMARY KEY  (`block_id`,`page_id`,`placeholder`)
 ) ENGINE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
