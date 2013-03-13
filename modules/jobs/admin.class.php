@@ -418,7 +418,7 @@ class jobsManager extends jobsLibrary
                     'JOBS_STORED_ID'    => '',
                     'JOBS_TITLE'        => stripslashes(htmlspecialchars($objResult->fields['title'], ENT_QUOTES, CONTREXX_CHARSET)),
                     'JOBS_AUTHOR'        => stripslashes(htmlspecialchars($objResult->fields['author'], ENT_QUOTES, CONTREXX_CHARSET)),
-                    'JOBS_TEXT'        => new \Cx\Core\Wysiwyg\Wysiwyg('jobsText', $jobsText),
+                    'JOBS_TEXT'        => new \Cx\Core\Wysiwyg\Wysiwyg('jobsText', contrexx_raw2xhtml($jobsText)),
                     'JOBS_WORKLOC'        => $objResult->fields['workloc'],
                     'JOBS_WORKLOAD'        => $objResult->fields['workload'],
                     'JOBS_WORK_START'        => $work_start,
@@ -537,7 +537,7 @@ class jobsManager extends jobsLibrary
         JS::activate('jqueryui');
 
         if (empty($id)) {
-            $id = intval($_GET['id']);
+            $id = intval($_REQUEST['id']);
         }
         $status = "";
         $startDate = "";
@@ -599,7 +599,7 @@ class jobsManager extends jobsLibrary
                 'JOBS_STORED_ID'    => $id,
                 'JOBS_TITLE'        => stripslashes(htmlspecialchars($objResult->fields['title'], ENT_QUOTES, CONTREXX_CHARSET)),
                 'JOBS_AUTHOR'        => stripslashes(htmlspecialchars($objResult->fields['author'], ENT_QUOTES, CONTREXX_CHARSET)),
-                'JOBS_TEXT'        => new \Cx\Core\Wysiwyg\Wysiwyg('jobsText', $jobsText),
+                'JOBS_TEXT'        => new \Cx\Core\Wysiwyg\Wysiwyg('jobsText', contrexx_raw2xhtml($jobsText)),
                 'JOBS_WORKLOC'        => $objResult->fields['workloc'],
                 'JOBS_WORKLOAD'        => $objResult->fields['workload'],
                 'JOBS_WORK_START'        => $work_start,
