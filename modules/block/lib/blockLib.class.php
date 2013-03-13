@@ -146,17 +146,22 @@ class blockLibrary
     }
 
     /**
-    * add block
-    *
-    * add the new content of a block
-    *
-    * @access private
-    * @param integer $id
-    * @param string $content
-    * @global ADONewConnection
-    * @return boolean true on success, false on failure
-    */
-    public function _addBlock($cat, $arrContent, $name, $start, $end, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockWysiwygEditor, $blockAssociatedPageIds, $arrLangActive)
+     * Add a new block to database
+     *
+     * @param int $cat
+     * @param array $arrContent
+     * @param string $name
+     * @param int $start
+     * @param int $end
+     * @param int $blockRandom
+     * @param int $blockRandom2
+     * @param int $blockRandom3
+     * @param int $blockRandom4
+     * @param int $blockWysiwygEditor
+     * @param array $arrLangActive
+     * @return bool|int the block's id
+     */
+    public function _addBlock($cat, $arrContent, $name, $start, $end, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockWysiwygEditor, $arrLangActive)
     {
         global $objDatabase;
 
@@ -170,7 +175,6 @@ class blockLibrary
                     `random_2`,
                     `random_3`,
                     `random_4`,
-                    `global`,
                     `wysiwyg_editor`,
                     `active`
                   ) SELECT MAX(`order`) + 1,
@@ -182,7 +186,6 @@ class blockLibrary
                       ".intval($blockRandom2).",
                       ".intval($blockRandom3).",
                       ".intval($blockRandom4).",
-                      ".intval($blockGlobal).",
                       ".intval($blockWysiwygEditor).",
                        1
                   FROM `".DBPREFIX."module_block_blocks`";
@@ -192,24 +195,29 @@ class blockLibrary
         $id = $objDatabase->Insert_ID();
 
         $this->storeBlockContent($id, $arrContent, $arrLangActive);
-        $this->storePageAssociations($id, $blockAssociatedPageIds, $blockGlobal);
 
-        return true;
+        return $id;
     }
 
 
     /**
-    * update block
-    *
-    * Update the content of a block
-    *
-    * @access private
-    * @param integer $id
-    * @param string $content
-    * @global ADONewConnection
-    * @return boolean true on success, false on failure
-    */
-    public function _updateBlock($id, $cat, $arrContent, $name, $start, $end, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockWysiwygEditor, $blockAssociatedPageIds, $arrLangActive)
+     * Update an existing block
+     *
+     * @param int $id
+     * @param int $cat
+     * @param array $arrContent
+     * @param string $name
+     * @param int $start
+     * @param int $end
+     * @param int $blockRandom
+     * @param int $blockRandom2
+     * @param int $blockRandom3
+     * @param int $blockRandom4
+     * @param int $blockWysiwygEditor
+     * @param array $arrLangActive
+     * @return bool|int the id of the block
+     */
+    public function _updateBlock($id, $cat, $arrContent, $name, $start, $end, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockWysiwygEditor, $arrLangActive)
     {
         global $objDatabase;
 
@@ -221,8 +229,7 @@ class blockLibrary
                         `random`            = ".intval($blockRandom).",
                         `random_2`          = ".intval($blockRandom2).",
                         `random_3`          = ".intval($blockRandom3).", 
-                        `random_4`          = ".intval($blockRandom4).", 
-                        `global`            = ".intval($blockGlobal).",
+                        `random_4`          = ".intval($blockRandom4).",
                         `wysiwyg_editor`    = ".intval($blockWysiwygEditor)." 
                   WHERE `id` = ".intval($id);
         if ($objDatabase->Execute($query) === false) {
@@ -230,32 +237,56 @@ class blockLibrary
         }
 
         $this->storeBlockContent($id, $arrContent, $arrLangActive);
-        $this->storePageAssociations($id, $blockAssociatedPageIds, $blockGlobal);
 
+        return $id;
+    }
+
+    /**
+     * Store the placeholder settings for a block
+     *
+     * @param int $blockId
+     * @param int $global
+     * @param int $direct
+     * @param int $category
+     * @param array $globalAssociatedPages
+     * @param array $directAssociatedPages
+     * @param array $categoryAssociatedPages
+     * @return bool it was successfully saved
+     */
+    protected function storePlaceholderSettings($blockId, $global, $direct, $category, $globalAssociatedPages, $directAssociatedPages, $categoryAssociatedPages) {
+        global $objDatabase;
+        $objDatabase->Execute("UPDATE `" . DBPREFIX . "module_block_blocks`
+                                SET `global` = ?,
+                                    `direct` = ?,
+                                    `category` = ?
+                                WHERE `id` = ?", array($global, $direct, $category, $blockId));
+
+        $objDatabase->Execute("DELETE FROM `" . DBPREFIX . "module_block_rel_pages` WHERE `block_id` = ?", array($blockId));
+        if ($global == 2) {
+            $this->storePageAssociations($blockId, $globalAssociatedPages, 'global');
+        }
+        if ($direct == 1) {
+            $this->storePageAssociations($blockId, $directAssociatedPages, 'direct');
+        }
+        if ($category == 1) {
+            $this->storePageAssociations($blockId, $categoryAssociatedPages, 'category');
+        }
         return true;
     }
 
-
-    private function storePageAssociations($blockId, $blockAssociatedPageIds, $blockGlobal)
+    /**
+     * Store the page associations
+     *
+     * @param int $blockId the block id
+     * @param array $blockAssociatedPageIds the page ids
+     * @param string $placeholder the placeholder
+     */
+    private function storePageAssociations($blockId, $blockAssociatedPageIds, $placeholder)
     {
         global $objDatabase;
-
-        switch ($blockGlobal) {
-            case 2:
-                foreach ($blockAssociatedPageIds as $pageId) {
-                    $objDatabase->Execute('INSERT IGNORE INTO '.DBPREFIX.'module_block_rel_pages SET  block_id='.intval($blockId).', page_id='.intval($pageId).'');
-                }
-                if (count($blockAssociatedPageIds)) {
-                    $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_rel_pages WHERE block_id=".$blockId." AND page_id NOT IN (".join(',', array_map('intval', $blockAssociatedPageIds)).")");
-                    break;
-                }
-                // the missing break is intentionally, so that the system deletes all entries in case no pages had been selected
-
-            case 0:
-            case 1:
-            default:
-                $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_rel_pages WHERE block_id=".$blockId);
-                break;
+        foreach ($blockAssociatedPageIds as $pageId) {
+            $objDatabase->Execute("INSERT INTO `" . DBPREFIX . "module_block_rel_pages` (`block_id`, `page_id`, `placeholder`)
+                                    VALUES (?, ?, ?)", array($blockId, $pageId, $placeholder));
         }
     }
 
@@ -305,7 +336,7 @@ class blockLibrary
     {
         global $objDatabase;
 
-        $objBlock = $objDatabase->SelectLimit("SELECT name, cat, start, end, random, random_2, random_3, random_4, global, active, wysiwyg_editor FROM ".DBPREFIX."module_block_blocks WHERE id=".$id, 1);
+        $objBlock = $objDatabase->SelectLimit("SELECT name, cat, start, end, random, random_2, random_3, random_4, global, direct, category, active, wysiwyg_editor FROM ".DBPREFIX."module_block_blocks WHERE id=".$id, 1);
 
 
         if ($objBlock !== false && $objBlock->RecordCount() == 1) {
@@ -330,6 +361,8 @@ class blockLibrary
                 'random3'           => $objBlock->fields['random_3'],
                 'random4'           => $objBlock->fields['random_4'],
                 'global'            => $objBlock->fields['global'],
+                'direct'            => $objBlock->fields['direct'],
+                'category'          => $objBlock->fields['category'],
                 'active'            => $objBlock->fields['active'],
                 'name'              => $objBlock->fields['name'],
                 'wysiwyg_editor'    => $objBlock->fields['wysiwyg_editor'],
@@ -341,15 +374,19 @@ class blockLibrary
         return false;
     }
 
-
-
-
-    function _getAssociatedPageIds($blockId)
+    /**
+     * Get the associated pages for a placeholder
+     *
+     * @param int $blockId block id
+     * @param string $placeholder
+     * @return array
+     */
+    function _getAssociatedPageIds($blockId, $placeholder)
     {
         global $objDatabase;
 
         $arrPageIds = array();
-        $objResult = $objDatabase->Execute("SELECT page_id FROM ".DBPREFIX."module_block_rel_pages WHERE block_id=".$blockId);
+        $objResult = $objDatabase->Execute("SELECT page_id FROM ".DBPREFIX."module_block_rel_pages WHERE block_id=? AND placeholder=?", array($blockId, $placeholder));
         if ($objResult !== false) {
             while (!$objResult->EOF) {
                 array_push($arrPageIds, $objResult->fields['page_id']);
@@ -377,6 +414,8 @@ class blockLibrary
                 `b`.`random_3`,
                 `b`.`random_4`,
                 `b`.`global`,
+                `b`.`direct`,
+                `b`.`category`,
                 `b`.`active`
             FROM
                 `'.DBPREFIX.'module_block_blocks` AS `b`,
@@ -384,6 +423,7 @@ class blockLibrary
             WHERE
                 `b`.`id` = `p`.`block_id`
                 AND `p`.`page_id` = \'' . $pageId . '\'
+                AND `p`.`placeholder` = \'global\'
             GROUP BY
                 `b`.`id`
         ');
@@ -399,6 +439,8 @@ class blockLibrary
                     'random3'   => $objResult->fields['random_3'],
                     'random4'   => $objResult->fields['random_4'],
                     'global'    => $objResult->fields['global'],
+                    'direct'    => $objResult->fields['direct'],
+                    'category'  => $objResult->fields['category'],
                     'active'    => $objResult->fields['active'],
                     'name'      => $objResult->fields['name'],
                 );
@@ -411,24 +453,33 @@ class blockLibrary
     function _setBlocksForPageId($pageId, $blockIds) {
         global $objDatabase;
 
-        if (!count($blockIds)) {
-            $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_rel_pages WHERE page_id=".$pageId);
-            return;
-        }
+        $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_rel_pages WHERE page_id = ? AND placeholder = ?", array($pageId, 'global'));
+
         $query = '
-            INSERT IGNORE INTO
+            INSERT INTO
                 `' . DBPREFIX . 'module_block_rel_pages`
                 (
                     `block_id`,
-                    `page_id`
+                    `page_id`,
+                    `placeholder`
                 )
             VALUES';
         $values = array();
         foreach ($blockIds as $blockId) {
+            $block = $this->_getBlock($blockIds);
+            // block is global and will be shown on all pages, don't need to save the relation
+            if ($block['global'] == 1) {
+                continue;
+            }
+            // if the block was not global till now, make it global
+            if ($block['global'] == 0) {
+                $objDatabase->Execute("UPDATE `" . DBPREFIX . "module_block_blocks` SET `global` = 2 WHERE `id` = ?", array($blockId));
+            }
             $values[] = '
                 (
                     \'' . intval($blockId) . '\',
-                    \'' . intval($pageId) . '\'
+                    \'' . intval($pageId) . '\',
+                    \'global\'
                 )';
         }
         $query .= join(', ', $values);
@@ -441,7 +492,8 @@ class blockLibrary
                 `block_id` NOT IN
                     (
                         \'' . join('\',\'', array_map('intval', $blockIds)).'\'
-                    )
+                    ) AND
+                `placeholder` = \'global\'
         ');
     }
 
@@ -453,10 +505,11 @@ class blockLibrary
     * @access private
     * @param integer $id
     * @param string &$code
+    * @param int $pageId
     * @global ADONewConnection
     * @global integer
     */
-    function _setBlock($id, &$code)
+    function _setBlock($id, &$code, $pageId)
     {
         global $objDatabase;
 
@@ -468,6 +521,10 @@ class blockLibrary
                         ".DBPREFIX."module_block_rel_lang_content AS tblContent
                     WHERE
                         tblBlock.id = ".intval($id)."
+                    AND (tblBlock.`direct` = 0 OR
+                        (SELECT count(1) FROM `" . DBPREFIX . "module_block_rel_pages` AS tblRel
+                            WHERE tblRel.`page_id` = " . intval($pageId) . " AND tblRel.`block_id` = tblBlock.`id`
+                                AND tblRel.`placeholder` = 'direct') > 0)
                     AND
                         tblContent.block_id = tblBlock.id
                     AND
@@ -486,6 +543,53 @@ class blockLibrary
                 $code = str_replace("{".$this->blockNamePrefix.$id."}", $content, $code);
             }
         }
+    }
+
+    /**
+    * Set category block
+    *
+    * Parse the category block with the id $id
+    *
+    * @access private
+    * @param integer $id
+    * @param string &$code
+    * @param int $pageId
+    * @global ADONewConnection
+    * @global integer
+    */
+    function _setCategoryBlock($id, &$code, $pageId)
+    {
+        global $objDatabase;
+
+        $category = $this->_getCategory($id);
+        $seperator = $category['seperator'];
+
+        $now = time();
+        $objResult = $objDatabase->Execute("SELECT tblContent.content FROM
+                                                `" . DBPREFIX . "module_block_blocks` AS tblBlock
+                                            INNER JOIN `" . DBPREFIX . "module_block_rel_lang_content` AS tblContent
+                                                ON tblBlock.id = tblContent.block_id
+                                            WHERE tblBlock.`cat` = ?
+                                                AND (tblBlock.`category` = 0 OR
+                                                        (SELECT count(1) FROM `" . DBPREFIX . "module_block_rel_pages` AS tblRel
+                                                            WHERE tblRel.`page_id` = " . intval($pageId) . " AND tblRel.`block_id` = tblBlock.`id`
+                                                                AND tblRel.`placeholder` = 'category') > 0)
+                                                AND tblBlock.`active` = 1
+                                                AND (tblBlock.`start` <= $now OR tblBlock.`start` = 0)
+                                                AND (tblBlock.`end` >= $now OR tblBlock.`end` = 0)
+                                                AND (tblContent.lang_id = " . FRONTEND_LANG_ID . " AND tblContent.active = 1)
+                                            ORDER BY tblBlock.`order`", array($id));
+
+        $content = array();
+        if ($objResult !== false && $objResult->RecordCount() > 0) {
+            while(!$objResult->EOF) {
+                $content[] = $objResult->fields['content'];
+                $objResult->MoveNext();
+            }
+        }
+        $content = implode($seperator, $content);
+        LinkGenerator::parseTemplate($content);
+        $code = str_replace("{".$this->blockNamePrefix."CAT_".$id."}", $content, $code);
     }
 
 
@@ -528,6 +632,7 @@ class blockLibrary
                    AND tblContent.`lang_id` = ".FRONTEND_LANG_ID."
                    AND tblContent.`active` = 1
                    AND tblBlock.active=1
+                   AND tblPage.placeholder = 'global'
                    AND (tblBlock.`start` <= $now OR tblBlock.`start` = 0)
                    AND (tblBlock.`end` >= $now OR tblBlock.end = 0)
         UNION DISTINCT
@@ -711,11 +816,12 @@ class blockLibrary
      * @param integer $id
      * @param integer $parent
      * @param string $name
+     * @param string $seperator
      * @param integer $order
      * @param integer $status
      * @return integer inserted ID or false on failure
      */
-    function _saveCategory($id = 0, $parent = 0, $name, $order = 1, $status = 1)
+    function _saveCategory($id = 0, $parent = 0, $name, $seperator, $order = 1, $status = 1)
     {
         global $objDatabase;
 
@@ -733,6 +839,7 @@ class blockLibrary
             }
         }
         $name = contrexx_addslashes($name);
+        $seperator = contrexx_addslashes($seperator);
         if($objDatabase->Execute('
             INSERT INTO `'.DBPREFIX."module_block_categories`
             (`id`, `parent`, `name`, `order`, `status`)
@@ -742,6 +849,7 @@ class blockLibrary
             `id`       = $id,
             `parent`   = $parent,
             `name`     = '$name',
+            `seperator`= '$seperator',
             `order`    = $order,
             `status`   = $status"))
         {
@@ -851,7 +959,7 @@ class blockLibrary
         }
 
         $objRS = $objDatabase->Execute('
-           SELECT `id`,`parent`,`name`,`order`,`status`
+           SELECT `id`,`parent`,`name`,`seperator`,`order`,`status`
            FROM `'.DBPREFIX.'module_block_categories`
            WHERE `id`= '.$id
         );

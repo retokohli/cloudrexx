@@ -161,7 +161,9 @@
             $J('#blockFormText_'+activeLangId).val($J('#ckeditor').val());
         }
         // update hidden list of active pages
-        changePageTitlesByLang($J('input[name*=pagesLang]:checked').val());
+        changePageTitlesByLang($J('input[name*=pagesLang]:checked').val(), 'global');
+        changePageTitlesByLang($J('input[name*=pagesLang]:checked').val(), 'direct');
+        changePageTitlesByLang($J('input[name*=pagesLang]:checked').val(), 'category');
         return true;
     }
     function disableButtons(from,dest,add,remove)
@@ -294,8 +296,14 @@
         $J('input[name*=blockFormLanguages]').click(function() {
             refreshRadioButtons();
         });
-        $J('input[name*=pagesLang]').click(function() {
-            changePageTitlesByLang($J(this).val());
+        $J('input[name*=pagesLangGlobal]').click(function() {
+            changePageTitlesByLang($J(this).val(), 'global');
+        });
+        $J('input[name*=pagesLangDirect]').click(function() {
+            changePageTitlesByLang($J(this).val(), 'direct');
+        });
+        $J('input[name*=pagesLangCategory]').click(function() {
+            changePageTitlesByLang($J(this).val(), 'category');
         });
     });
     
@@ -306,66 +314,82 @@
         $J('input[name*=blockFormLanguages]:not(:checked)').each(function() {
             $J('#changePageTitlesTo_' + $J(this).attr('id').match(/\d$/)).hide();
         });
-        if ($J('input[name*=pagesLang]:checked').parent().is(function() {return $J(this).css('display') == 'none';}) || $J('input[name*=pagesLang]:checked').length == 0) {
-            $J('input[name*=pagesLang]:checked').prop('checked', false);
-            var element = $J('span[id*=changePageTitlesTo_]').not(function() {$J(this).css('display') == 'none'}).first().children('input');
-            element.prop('checked', true);
-            changePageTitlesByLang(element.val());
-        } else {
-            changePageTitlesByLang($J('input[name*=pagesLang]:checked').val());
-        }
+
+        refreshPageTree();
+    }
+
+    var refreshPageTree = function(langCode) {
+        $J.each(['global', 'direct', 'category'], function(index, value) {
+            if (!langCode) {
+                if ($J('input[name*=' + value + 'PagesLang]:checked').parent().is(function() {return $J(this).css('display') == 'none';}) || $J('input[name*=' + value + 'PagesLang]:checked').length == 0) {
+                    $J('input[name*=' + value + 'PagesLang]:checked').prop('checked', false);
+                    var element = $J('span[id*=' + value + 'ChangePageTitlesTo_]').not(function() {$J(this).css('display') == 'none'}).first().children('input');
+                    element.prop('checked', true);
+                    langCode = element.val();
+                } else {
+                    langCode = $J('input[name*=' + value + 'PagesLang]:checked').val();
+                }
+            }
+            changePageTitlesByLang(langCode, value);
+        });
     }
     
     /**
      * Called on click of language switch radio buttons
      * also on startup and before sending the form
      */
-    var changePageTitlesByLang = function(langCode) {
-        var cachedLang = jQuery("input#cachedLang").val();
+    var changePageTitlesByLang = function(langCode, placeholder) {
+        var cachedLang = jQuery("input#" + placeholder + "CachedLang").val();
         var selectedOps, unselectedOps;
         // do not overwrite data on first call, but parse it into json object
         if (cachedLang == "") {
-            selectedOps = jQuery.parseJSON(cx.variables.get("relBlockPagesSelectedOptions", "block"));
-            unselectedOps = jQuery.parseJSON(cx.variables.get("relBlockPagesUnselectedOptions", "block"));
+            selectedOps = jQuery.parseJSON(cx.variables.get(placeholder + "PagesSelectedOptions", "block"));
+            unselectedOps = jQuery.parseJSON(cx.variables.get(placeholder + "PagesUnselectedOptions", "block"));
         } else {
-            selectedOps = cx.variables.get("relBlockPagesSelectedOptions", "block");
-            unselectedOps = cx.variables.get("relBlockPagesUnselectedOptions", "block");
+            selectedOps = cx.variables.get(placeholder + "PagesSelectedOptions", "block");
+            unselectedOps = cx.variables.get(placeholder + "PagesUnselectedOptions", "block");
             if (selectedOps === "") {
                 selectedOps = new Object();
             }
             if (unselectedOps === "") {
                 unselectedOps = new Object();
             }
-            selectedOps[cachedLang] = jQuery.trim(jQuery('select[name="selectedPages[]"]').html());
-            unselectedOps[cachedLang] = jQuery.trim(jQuery('select[name="notSelectedPages[]"]').html());
+            selectedOps[cachedLang] = jQuery.trim(jQuery('select[name="' + placeholder + 'SelectedPages[]"]').html());
+            unselectedOps[cachedLang] = jQuery.trim(jQuery('select[name="' + placeholder + 'NotSelectedPages[]"]').html());
             var activeIds = new Array();
             jQuery.each(selectedOps, function(lang, data) {
                 jQuery.each(jQuery(data), function(index, el) {
                     activeIds[activeIds.length] = jQuery(el).attr("value");
                 });
             });
-            jQuery("input#selectedPagesList").val(activeIds.join(","));
+            jQuery("input#" + placeholder + "SelectedPagesList").val(activeIds.join(","));
         }
+
         if (selectedOps[langCode] == undefined) {
             selectedOps[langCode] = "";
         }
         if (unselectedOps[langCode] == undefined) {
             unselectedOps[langCode] = "";
         }
-        cx.variables.set("relBlockPagesSelectedOptions", selectedOps, "block");
-        cx.variables.set("relBlockPagesUnselectedOptions", unselectedOps, "block");
-        jQuery('select[name="selectedPages[]"]').html(selectedOps[langCode]);
-        jQuery('select[name="notSelectedPages[]"]').html(unselectedOps[langCode]);
-        jQuery("input#cachedLang").val(langCode);
+
+        jQuery('select[name="' + placeholder + 'SelectedPages[]"]').html(selectedOps[langCode]);
+        jQuery('select[name="' + placeholder + 'NotSelectedPages[]"]').html(unselectedOps[langCode]);
+        cx.variables.set(placeholder + "PagesSelectedOptions", selectedOps, "block");
+        cx.variables.set(placeholder + "PagesUnselectedOptions", unselectedOps, "block");
+        jQuery("input#" + placeholder + "CachedLang").val(langCode);
     }
     // ]]>
 </script>
 
-<form name="blockFormModifyBlock" action="index.php?cmd=block&amp;act=modify" method="post" onsubmit="onSubmit();selectAll(document.getElementById('SelectedPages'));">
+<form name="blockFormModifyBlock" action="index.php?cmd=block&amp;act=modify" method="post" onsubmit="onSubmit();">
     <input type="hidden" name="blockId" value="{BLOCK_ID}" size="50" />
-    <input type="hidden" id="cachedLang" name="cachedLang" value="" />
-    <input type="hidden" id="selectedPagesList" name="selectedPagesList" value="" />
-           
+    <input type="hidden" id="globalCachedLang" name="globalCachedLang" value="" />
+    <input type="hidden" id="directCachedLang" name="directCachedLang" value="" />
+    <input type="hidden" id="categoryCachedLang" name="categoryCachedLang" value="" />
+    <input type="hidden" id="globalSelectedPagesList" name="globalSelectedPagesList" value="" />
+    <input type="hidden" id="directSelectedPagesList" name="directSelectedPagesList" value="" />
+    <input type="hidden" id="categorySelectedPagesList" name="categorySelectedPagesList" value="" />
+
     <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist block_lang">
         <tr>
             <th colspan="4">{TXT_BLOCK_LANGUAGE}</th>
@@ -466,51 +490,141 @@
                 <tr class="row1">
                     <td width="250px" valign="top">{TXT_BLOCK_GLOBAL_PLACEHOLDERS}:</td>
                     <td nowrap="nowrap">
-                        <input onclick="showOrHide('pageSelector', '0');" type="radio" name="blockGlobal" id="blockGlobal0" value="0" {BLOCK_GLOBAL_0} />
+                        <input onclick="showOrHide('globalPageSelector', '0');" type="radio" name="blockGlobal" id="blockGlobal0" value="0" {BLOCK_GLOBAL_0} />
                                <label for="blockGlobal0">{TXT_DONT_SHOW_ON_PAGES}</label><br />
-                        <input onclick="showOrHide('pageSelector', '0');" type="radio" name="blockGlobal" id="blockGlobal1" value="1" {BLOCK_GLOBAL_1} />
+                        <input onclick="showOrHide('globalPageSelector', '0');" type="radio" name="blockGlobal" id="blockGlobal1" value="1" {BLOCK_GLOBAL_1} />
                                <label for="blockGlobal1">{TXT_SHOW_ON_ALL_PAGES}</label><br />
-                        <input onclick="showOrHide('pageSelector', '1');" type="radio" name="blockGlobal" id="blockGlobal2" value="2" {BLOCK_GLOBAL_2} />
+                        <input onclick="showOrHide('globalPageSelector', '1');" type="radio" name="blockGlobal" id="blockGlobal2" value="2" {BLOCK_GLOBAL_2} />
                                <label for="blockGlobal2">{TXT_SHOW_ON_SELECTED_PAGES}</label><br />
-                        <div id="pageSelector" class="blockLangTab"  style="display:{BLOCK_SHOW_PAGE_SELECTOR};">
+                        <div id="globalPageSelector" class="blockLangTab"  style="display:{BLOCK_GLOBAL_SHOW_PAGE_SELECTOR};">
                             <div style="float: left; width: auto;">
                                 <label name="{TXT_BLOCK_AVAILABLE_PAGES}">{TXT_BLOCK_AVAILABLE_PAGES}</label><br/>
-                                <select id="notSelectedPages" name="notSelectedPages[]" size="12" style="margin-top: 5px;width:100%;" multiple="multiple">
-                                    {BLOCK_RELATION_PAGES_UNSELECTED}
+                                <select id="globalNotSelectedPages" name="globalNotSelectedPages[]" size="12" style="margin-top: 5px;width:100%;" multiple="multiple">
+                                    {BLOCK_GLOBAL_RELATION_PAGES_UNSELECTED}
                                 </select>
                                 <br />
-                                <a href="javascript:selectAll(document.blockFormModifyBlock.elements['notSelectedPages[]']);" title="{TXT_BLOCK_SELECT_ALL}">{TXT_BLOCK_SELECT_ALL}</a><br />
-                                <a href="javascript:deselectAll(document.blockFormModifyBlock.elements['notSelectedPages[]']);" title="{TXT_BLOCK_UNSELECT_ALL}">{TXT_BLOCK_UNSELECT_ALL}</a>
+                                <a href="javascript:selectAll(document.blockFormModifyBlock.elements['globalNotSelectedPages[]']);" title="{TXT_BLOCK_SELECT_ALL}">{TXT_BLOCK_SELECT_ALL}</a><br />
+                                <a href="javascript:deselectAll(document.blockFormModifyBlock.elements['globalNotSelectedPages[]']);" title="{TXT_BLOCK_UNSELECT_ALL}">{TXT_BLOCK_UNSELECT_ALL}</a>
                             </div>
                             <div style="margin: 100px 10px 0; float: left; width: auto;">
-                                <input type="button" value=" &gt;&gt; " name="addpages" onclick="moveSelectedPages(document.getElementById('notSelectedPages'),document.getElementById('SelectedPages'),document.getElementsByName('addpages')[0],document.getElementsByName('removepages')[0]);" style="float: left; clear: both;" />
-                                <input type="button" value=" &lt;&lt; " name="removepages" onclick="moveSelectedPages(document.getElementById('SelectedPages'),document.getElementById('notSelectedPages'),document.getElementsByName('removepages')[0],document.getElementsByName('addpages')[0]);" style="float: left; clear: both;" />
+                                <input type="button" value=" &gt;&gt; " name="addpages" onclick="moveSelectedPages(document.getElementById('globalNotSelectedPages'),document.getElementById('globalSelectedPages'),document.getElementsByName('addpages')[0],document.getElementsByName('removepages')[0]);" style="float: left; clear: both;" />
+                                <input type="button" value=" &lt;&lt; " name="removepages" onclick="moveSelectedPages(document.getElementById('globalSelectedPages'),document.getElementById('globalNotSelectedPages'),document.getElementsByName('removepages')[0],document.getElementsByName('addpages')[0]);" style="float: left; clear: both;" />
                             </div>
                             <div style="float: left; width: auto;">
                                 <label name="{TXT_BLOCK_SELECTED_PAGES}">{TXT_BLOCK_SELECTED_PAGES}</label><br />
                                 <div align="left">
-                                    <select id="SelectedPages" name="selectedPages[]" size="12" style="margin-top: 5px;width:100%;" multiple="multiple">
-                                        {BLOCK_RELATION_PAGES_SELECTED}
+                                    <select id="globalSelectedPages" name="globalSelectedPages[]" size="12" style="margin-top: 5px;width:100%;" multiple="multiple">
+                                        {BLOCK_GLOBAL_RELATION_PAGES_SELECTED}
                                     </select>
                                     <br />
-                                    <a href="javascript:selectAll(document.blockFormModifyBlock.elements['selectedPages[]']);" title="{TXT_BLOCK_SELECT_ALL}">{TXT_BLOCK_SELECT_ALL}</a><br />
-                                    <a href="javascript:deselectAll(document.blockFormModifyBlock.elements['selectedPages[]']);" title="{TXT_BLOCK_UNSELECT_ALL}">{TXT_BLOCK_UNSELECT_ALL}</a>
+                                    <a href="javascript:selectAll(document.blockFormModifyBlock.elements['globalSelectedPages[]']);" title="{TXT_BLOCK_SELECT_ALL}">{TXT_BLOCK_SELECT_ALL}</a><br />
+                                    <a href="javascript:deselectAll(document.blockFormModifyBlock.elements['globalSelectedPages[]']);" title="{TXT_BLOCK_UNSELECT_ALL}">{TXT_BLOCK_UNSELECT_ALL}</a>
                                 </div>
                             </div>
                             <div style="float: left; padding: 0 0 0 20px;">
                                 <label>{TXT_BLOCK_LANGUAGE}</label>
                                 <br />
-                                <!-- BEGIN pages_languages -->
-                                <span id="changePageTitlesTo_{BLOCK_PAGES_LANGUAGE_ID}">
-                                    <input type="radio" name="pagesLang[]" value="{BLOCK_PAGES_LANGUAGE_CODE}" id="radio_{BLOCK_PAGES_LANGUAGE_CODE}" {BLOCK_PAGES_LANGUAGE_CHECKED} />
-                                    <label for="radio_{BLOCK_PAGES_LANGUAGE_CODE}">{BLOCK_PAGES_LANGUAGE_NAME}</label><br />
+                                <!-- BEGIN pages_languages_global -->
+                                <span id="globalChangePageTitlesTo_{BLOCK_PAGES_LANGUAGE_ID}">
+                                    <input type="radio" name="pagesLangGlobal[]" value="{BLOCK_PAGES_LANGUAGE_CODE}" id="globalRadio_{BLOCK_PAGES_LANGUAGE_CODE}" {BLOCK_PAGES_LANGUAGE_CHECKED} />
+                                    <label for="globalRadio_{BLOCK_PAGES_LANGUAGE_CODE}">{BLOCK_PAGES_LANGUAGE_NAME}</label><br />
                                 </span>
-                                <!-- END pages_languages -->
+                                <!-- END pages_languages_global -->
                             </div>
                         </div>
                     </td>
                 </tr>
                 <tr class="row2">
+                    <td width="250px" valign="top">{TXT_BLOCK_DIRECT_PLACEHOLDERS}:</td>
+                    <td nowrap="nowrap">
+                        <input onclick="showOrHide('directPageSelector', '0');" type="radio" name="blockDirect" id="blockDirect1" value="0" {BLOCK_DIRECT_0} />
+                               <label for="blockDirect1">{TXT_SHOW_ON_ALL_PAGES}</label><br />
+                        <input onclick="showOrHide('directPageSelector', '1');" type="radio" name="blockDirect" id="blockDirect2" value="1" {BLOCK_DIRECT_1} />
+                               <label for="blockDirect2">{TXT_SHOW_ON_SELECTED_PAGES}</label><br />
+                        <div id="directPageSelector" class="blockLangTab"  style="display:{BLOCK_DIRECT_SHOW_PAGE_SELECTOR};">
+                            <div style="float: left; width: auto;">
+                                <label name="{TXT_BLOCK_AVAILABLE_PAGES}">{TXT_BLOCK_AVAILABLE_PAGES}</label><br/>
+                                <select id="directNotSelectedPages" name="directNotSelectedPages[]" size="12" style="margin-top: 5px;width:100%;" multiple="multiple">
+                                    {BLOCK_GLOBAL_RELATION_PAGES_UNSELECTED}
+                                </select>
+                                <br />
+                                <a href="javascript:selectAll(document.blockFormModifyBlock.elements['directNotSelectedPages[]']);" title="{TXT_BLOCK_SELECT_ALL}">{TXT_BLOCK_SELECT_ALL}</a><br />
+                                <a href="javascript:deselectAll(document.blockFormModifyBlock.elements['directNotSelectedPages[]']);" title="{TXT_BLOCK_UNSELECT_ALL}">{TXT_BLOCK_UNSELECT_ALL}</a>
+                            </div>
+                            <div style="margin: 100px 10px 0; float: left; width: auto;">
+                                <input type="button" value=" &gt;&gt; " name="addpages" onclick="moveSelectedPages(document.getElementById('directNotSelectedPages'),document.getElementById('directSelectedPages'),document.getElementsByName('addpages')[0],document.getElementsByName('removepages')[0]);" style="float: left; clear: both;" />
+                                <input type="button" value=" &lt;&lt; " name="removepages" onclick="moveSelectedPages(document.getElementById('directSelectedPages'),document.getElementById('directNotSelectedPages'),document.getElementsByName('removepages')[0],document.getElementsByName('addpages')[0]);" style="float: left; clear: both;" />
+                            </div>
+                            <div style="float: left; width: auto;">
+                                <label name="{TXT_BLOCK_SELECTED_PAGES}">{TXT_BLOCK_SELECTED_PAGES}</label><br />
+                                <div align="left">
+                                    <select id="directSelectedPages" name="directSelectedPages[]" size="12" style="margin-top: 5px;width:100%;" multiple="multiple">
+                                        {BLOCK_GLOBAL_RELATION_PAGES_SELECTED}
+                                    </select>
+                                    <br />
+                                    <a href="javascript:selectAll(document.blockFormModifyBlock.elements['directSelectedPages[]']);" title="{TXT_BLOCK_SELECT_ALL}">{TXT_BLOCK_SELECT_ALL}</a><br />
+                                    <a href="javascript:deselectAll(document.blockFormModifyBlock.elements['directSelectedPages[]']);" title="{TXT_BLOCK_UNSELECT_ALL}">{TXT_BLOCK_UNSELECT_ALL}</a>
+                                </div>
+                            </div>
+                            <div style="float: left; padding: 0 0 0 20px;">
+                                <label>{TXT_BLOCK_LANGUAGE}</label>
+                                <br />
+                                <!-- BEGIN pages_languages_direct -->
+                                <span id="directChangePageTitlesTo_{BLOCK_PAGES_LANGUAGE_ID}">
+                                    <input type="radio" name="pagesLangDirect[]" value="{BLOCK_PAGES_LANGUAGE_CODE}" id="directRadio_{BLOCK_PAGES_LANGUAGE_CODE}" {BLOCK_PAGES_LANGUAGE_CHECKED} />
+                                    <label for="directRadio_{BLOCK_PAGES_LANGUAGE_CODE}">{BLOCK_PAGES_LANGUAGE_NAME}</label><br />
+                                </span>
+                                <!-- END pages_languages_direct -->
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="row1">
+                    <td width="250px" valign="top">{TXT_BLOCK_CATEGORY_PLACEHOLDERS}:</td>
+                    <td nowrap="nowrap">
+                        <input onclick="showOrHide('categoryPageSelector', '0');" type="radio" name="blockCategory" id="blockCategory1" value="0" {BLOCK_CATEGORY_0} />
+                               <label for="blockCategory1">{TXT_SHOW_ON_ALL_PAGES}</label><br />
+                        <input onclick="showOrHide('categoryPageSelector', '1');" type="radio" name="blockCategory" id="blockCategory2" value="1" {BLOCK_CATEGORY_1} />
+                               <label for="blockCategory2">{TXT_SHOW_ON_SELECTED_PAGES}</label><br />
+                        <div id="categoryPageSelector" class="blockLangTab"  style="display:{BLOCK_CATEGORY_SHOW_PAGE_SELECTOR};">
+                            <div style="float: left; width: auto;">
+                                <label name="{TXT_BLOCK_AVAILABLE_PAGES}">{TXT_BLOCK_AVAILABLE_PAGES}</label><br/>
+                                <select id="categoryNotSelectedPages" name="categoryNotSelectedPages[]" size="12" style="margin-top: 5px;width:100%;" multiple="multiple">
+                                    {BLOCK_GLOBAL_RELATION_PAGES_UNSELECTED}
+                                </select>
+                                <br />
+                                <a href="javascript:selectAll(document.blockFormModifyBlock.elements['categoryNotSelectedPages[]']);" title="{TXT_BLOCK_SELECT_ALL}">{TXT_BLOCK_SELECT_ALL}</a><br />
+                                <a href="javascript:deselectAll(document.blockFormModifyBlock.elements['categoryNotSelectedPages[]']);" title="{TXT_BLOCK_UNSELECT_ALL}">{TXT_BLOCK_UNSELECT_ALL}</a>
+                            </div>
+                            <div style="margin: 100px 10px 0; float: left; width: auto;">
+                                <input type="button" value=" &gt;&gt; " name="addpages" onclick="moveSelectedPages(document.getElementById('categoryNotSelectedPages'),document.getElementById('categorySelectedPages'),document.getElementsByName('addpages')[0],document.getElementsByName('removepages')[0]);" style="float: left; clear: both;" />
+                                <input type="button" value=" &lt;&lt; " name="removepages" onclick="moveSelectedPages(document.getElementById('categorySelectedPages'),document.getElementById('categoryNotSelectedPages'),document.getElementsByName('removepages')[0],document.getElementsByName('addpages')[0]);" style="float: left; clear: both;" />
+                            </div>
+                            <div style="float: left; width: auto;">
+                                <label name="{TXT_BLOCK_SELECTED_PAGES}">{TXT_BLOCK_SELECTED_PAGES}</label><br />
+                                <div align="left">
+                                    <select id="categorySelectedPages" name="categorySelectedPages[]" size="12" style="margin-top: 5px;width:100%;" multiple="multiple">
+                                        {BLOCK_GLOBAL_RELATION_PAGES_SELECTED}
+                                    </select>
+                                    <br />
+                                    <a href="javascript:selectAll(document.blockFormModifyBlock.elements['categorySelectedPages[]']);" title="{TXT_BLOCK_SELECT_ALL}">{TXT_BLOCK_SELECT_ALL}</a><br />
+                                    <a href="javascript:deselectAll(document.blockFormModifyBlock.elements['categorySelectedPages[]']);" title="{TXT_BLOCK_UNSELECT_ALL}">{TXT_BLOCK_UNSELECT_ALL}</a>
+                                </div>
+                            </div>
+                            <div style="float: left; padding: 0 0 0 20px;">
+                                <label>{TXT_BLOCK_LANGUAGE}</label>
+                                <br />
+                                <!-- BEGIN pages_languages_category -->
+                                <span id="categoryChangePageTitlesTo_{BLOCK_PAGES_LANGUAGE_ID}">
+                                    <input type="radio" name="pagesLangCategory[]" value="{BLOCK_PAGES_LANGUAGE_CODE}" id="categoryRadio_{BLOCK_PAGES_LANGUAGE_CODE}" {BLOCK_PAGES_LANGUAGE_CHECKED} />
+                                    <label for="categoryRadio_{BLOCK_PAGES_LANGUAGE_CODE}">{BLOCK_PAGES_LANGUAGE_NAME}</label><br />
+                                </span>
+                                <!-- END pages_languages_category -->
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                <tr class="row1">
                     <td>{TXT_BLOCK_USE_WYSIWYG_EDITOR}</td>
                     <td>
                         <input type="checkbox" name="wysiwyg_editor" id="wysiwyg_editor" value="1" {BLOCK_WYSIWYG_EDITOR} />

@@ -61,7 +61,7 @@ function executeContrexxUpdate() {
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
         DBG::msg('Installed version: '.$_CONFIG['coreCmsVersion']);
         Env::get('ClassLoader')->loadFile(dirname(__FILE__) . '/ContentMigration.class.php');
-        $contentMigration = new \Cx\Update\Cx_3_0_2\ContentMigration();
+        $contentMigration = new \Cx\Update\Cx_3_0_3\ContentMigration();
 
         // Migrate statistics - this must be done before migrating to the new content architecture
         if (empty($_SESSION['contrexx_update']['content_stats'])) {

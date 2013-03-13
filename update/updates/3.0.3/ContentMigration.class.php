@@ -1,5 +1,5 @@
 <?php
-namespace Cx\Update\Cx_3_0_2;
+namespace Cx\Update\Cx_3_0_3;
 
 set_time_limit(0);
 
@@ -655,14 +655,16 @@ class ContentMigration
             }
 
             if (empty($_SESSION['contrexx_update']['blocks_part_1_migrated'])) {
+                // 3.0.3 : add new column `seperator`
                 \Cx\Lib\UpdateUtil::table(
-                    DBPREFIX . 'module_block_categories',
+                    DBPREFIX.'module_block_categories',
                     array(
-                        'id'         => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                        'parent'     => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0', 'after' => 'id'),
-                        'name'       => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'parent'),
-                        'order'      => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0', 'after' => 'name'),
-                        'status'     => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'order')
+                        'id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                        'parent'         => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0', 'after' => 'id'),
+                        'name'           => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'parent'),
+                        'seperator'      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'name'),
+                        'order'          => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0', 'after' => 'seperator'),
+                        'status'         => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'order')
                     )
                 );
 
@@ -744,6 +746,30 @@ class ContentMigration
                     WHERE lang_id IN (' . $activeLangIds . ')
                 ');
 
+                // 1. drop old locale column `content`
+                // 2. add several new columns
+                // 3. add columns `direct`, `category`
+                \Cx\Lib\UpdateUtil::table(
+                    DBPREFIX.'module_block_blocks',
+                    array(
+                        'id'                 => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                        'start'              => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0', 'after' => 'id'),
+                        'end'                => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0', 'after' => 'start'),
+                        'name'               => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'end'),
+                        'random'             => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'name'),
+                        'random_2'           => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'random'),
+                        'random_3'           => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'random_2'),
+                        'random_4'           => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'random_3'),
+                        'global'             => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'random_4'),
+                        'category'           => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'global'),
+                        'direct'             => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'category'),
+                        'active'             => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'direct'),
+                        'order'              => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'active'),
+                        'cat'                => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0', 'after' => 'order'),
+                        'wysiwyg_editor'     => array('type' => 'INT(1)', 'notnull' => true, 'default' => '1', 'after' => 'cat')
+                    )
+                );
+
                 if ($objResult->RecordCount()) {
                     $arrGlobalDefinitions = array();
                     while (!$objResult->EOF) {
@@ -774,29 +800,19 @@ class ContentMigration
                             SET `global` = ' . $global . '
                             WHERE `id` = ' . $blockId . '
                         ');
+
+                        // only for contrexx 2.x
+                        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')
+                            && !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.0.0')) {
+                            // use direct placeholder to set the pages where to show
+                            \Cx\Lib\UpdateUtil::sql('
+                                UPDATE `' . DBPREFIX . 'module_block_blocks`
+                                SET `global` = ' . $global . ', `direct` = 1
+                                WHERE `id` = ' . $blockId . '
+                            ');
+                        }
                     }
                 }
-
-                // 1. drop old locale column `content`
-                // 2. add several new columns
-                \Cx\Lib\UpdateUtil::table(
-                    DBPREFIX.'module_block_blocks',
-                    array(
-                        'id'                 => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                        'start'              => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0', 'after' => 'id'),
-                        'end'                => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0', 'after' => 'start'),
-                        'name'               => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'end'),
-                        'random'             => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'name'),
-                        'random_2'           => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'random'),
-                        'random_3'           => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'random_2'),
-                        'random_4'           => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'random_3'),
-                        'global'             => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'random_4'),
-                        'active'             => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'global'),
-                        'order'              => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'active'),
-                        'cat'                => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0', 'after' => 'order'),
-                        'wysiwyg_editor'     => array('type' => 'INT(1)', 'notnull' => true, 'default' => '1', 'after' => 'cat')
-                    )
-                );
 
                 $_SESSION['contrexx_update']['blocks_part_1_migrated'] = true;
                 if (!checkMemoryLimit() || !checkTimeoutLimit()) {
@@ -806,17 +822,20 @@ class ContentMigration
 
             if (empty($_SESSION['contrexx_update']['blocks_part_2_migrated'])) {
                 $activeLangIds = implode(',', \FWLanguage::getIdArray());
+
                 if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX . 'module_block_rel_pages', 'lang_id')) {
                     \Cx\Lib\UpdateUtil::sql('
                         DELETE FROM `' . DBPREFIX . 'module_block_rel_pages`
                         WHERE `lang_id` NOT IN (' . $activeLangIds . ')
                     ');
 
+                    // 3.0.3 : add new column `placeholder`
                     \Cx\Lib\UpdateUtil::table(
                         DBPREFIX.'module_block_rel_pages',
                         array(
                             'block_id'       => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0', 'primary' => true),
-                            'page_id'        => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0', 'primary' => true, 'after' => 'block_id')
+                            'page_id'        => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0', 'after' => 'block_id', 'primary' => true),
+                            'placeholder'    => array('type' => 'ENUM(\'global\',\'direct\',\'category\')', 'notnull' => true, 'default' => 'global', 'after' => 'page_id', 'primary' => true)
                         )
                     );
 
@@ -844,7 +863,19 @@ class ContentMigration
                                     $entriesToKeep[] = array(
                                         'blockId' => $blockId,
                                         'pageId'  => $page->getId(),
+                                        'placeholder' => 'global',
                                     );
+
+                                    // only for contrexx 2.x
+                                    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')
+                                        && !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.0.0')) {
+                                        // do page association for direct placeholder
+                                        $entriesToKeep[] = array(
+                                            'blockId' => $blockId,
+                                            'pageId'  => $page->getId(),
+                                            'placeholder' => 'direct',
+                                        );
+                                    }
                                 }
                             }
 
@@ -855,11 +886,21 @@ class ContentMigration
 
                         foreach ($entriesToKeep as $arrEntry) {
                             \Cx\Lib\UpdateUtil::sql('
-                                INSERT INTO `' . DBPREFIX . 'module_block_rel_pages` (`block_id`, `page_id`)
-                                VALUES (' . $arrEntry['blockId'] . ', ' . $arrEntry['pageId'] . ')
+                                INSERT INTO `' . DBPREFIX . 'module_block_rel_pages` (`block_id`, `page_id`, `placeholder`)
+                                VALUES (' . $arrEntry['blockId'] . ', ' . $arrEntry['pageId'] . ', \'' . $arrEntry['placeholder'] . '\')
                             ');
                         }
                     }
+                } else {
+                    // 3.0.3 : add new column `placeholder`
+                    \Cx\Lib\UpdateUtil::table(
+                        DBPREFIX.'module_block_rel_pages',
+                        array(
+                            'block_id'       => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0'),
+                            'page_id'        => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0', 'after' => 'block_id'),
+                            'placeholder'    => array('type' => 'ENUM(\'global\',\'direct\',\'category\')', 'notnull' => true, 'default' => 'global', 'after' => 'page_id')
+                        )
+                    );
                 }
 
                 $_SESSION['contrexx_update']['blocks_part_2_migrated'] = true;

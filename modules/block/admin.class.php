@@ -74,7 +74,7 @@ class blockManager extends blockLibrary
     */
     function __construct()
     {
-        global $objTemplate, $_ARRAYLANG, $_CONFIG;
+        global $_ARRAYLANG;
 
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/block/template');
         CSRF::add_placeholder($this->_objTpl);
@@ -326,7 +326,7 @@ class blockManager extends blockLibrary
                     case '2':
                         $checkImage = "images/icons/check.gif";
                         
-                        $blockAssociatedPageIds = $this->_getAssociatedPageIds($blockId);
+                        $blockAssociatedPageIds = $this->_getAssociatedPageIds($blockId, 'global');
                         $selectedPages    = array();
                         $strSelectedPages = '';
                         
@@ -389,6 +389,7 @@ class blockManager extends blockLibrary
             'TXT_BLOCK_CATEGORIES_ADD'              => $_ARRAYLANG['TXT_BLOCK_CATEGORIES_ADD'],
             'TXT_BLOCK_FUNCTIONS'                   => $_ARRAYLANG['TXT_BLOCK_FUNCTIONS'],
             'TXT_BLOCK_NAME'                        => $_ARRAYLANG['TXT_BLOCK_NAME'],
+            'TXT_BLOCK_PLACEHOLDER'                 => $_ARRAYLANG['TXT_BLOCK_PLACEHOLDER'],
             'TXT_BLOCK_NONE'                        => $_ARRAYLANG['TXT_BLOCK_NONE'],
             'TXT_BLOCK_PARENT'                      => $_ARRAYLANG['TXT_BLOCK_PARENT'],
             'TXT_BLOCK_SELECT_ALL'                  => $_ARRAYLANG['TXT_BLOCK_SELECT_ALL'],
@@ -433,11 +434,12 @@ class blockManager extends blockLibrary
      */
     function _parseCategories($arrCategories, $level = 0)
     {
-        foreach ($arrCategories as $parentId => $arrCategory) {
+        foreach ($arrCategories as $arrCategory) {
             $this->_objTpl->setVariable(array(
                 'BLOCK_CATEGORY_ROWCLASS'   => $this->_index++ % 2 == 0 ? 'row1' : 'row2',
                 'BLOCK_CATEGORY_ID'         => $arrCategory['id'],
                 'BLOCK_CATEGORY_NAME'       => str_repeat('&nbsp;', $level*4).$arrCategory['name'],
+                'BLOCK_CATEGORY_PLACEHOLDER'=> 'BLOCK_CAT_' . $arrCategory['id'],
             ));
 
             if(empty($this->_categories[$arrCategory['id']])){
@@ -475,9 +477,11 @@ class blockManager extends blockLibrary
             'TXT_BLOCK_NONE'                        => $_ARRAYLANG['TXT_BLOCK_NONE'],
             'TXT_BLOCK_CATEGORIES_EDIT'             => $_ARRAYLANG['TXT_BLOCK_CATEGORIES_EDIT'],
             'TXT_BLOCK_BACK'                        => $_CORELANG['TXT_BACK'],
+            'TXT_BLOCK_CATEGORY_SEPERATOR'          => $_ARRAYLANG['TXT_BLOCK_CATEGORY_SEPERATOR'],
             'BLOCK_CATEGORY_ID'                     => $catId,
             'BLOCK_CATEGORIES_PARENT_DROPDOWN'      => $this->_getCategoriesDropdown($arrCategory['parent'], $catId),
             'BLOCK_CATEGORY_NAME'                   => $arrCategory['name'],
+            'BLOCK_CATEGORY_SEPERATOR'              => $arrCategory['seperator'],
             'DIRECTORY_INDEX'                       => CONTREXX_DIRECTORY_INDEX,
             'CSRF_PARAM'                            => CSRF::param(),
         ));
@@ -521,13 +525,14 @@ class blockManager extends blockLibrary
     {
         global $_ARRAYLANG;
 
-        $id     = !empty($_POST['frmCategoryId'    ])    ? $_POST['frmCategoryId'    ]    : 0;
-        $parent = !empty($_POST['frmCategoryParent'])    ? $_POST['frmCategoryParent']    : 0;
-        $name   = !empty($_POST['frmCategoryName'  ])    ? $_POST['frmCategoryName'  ]    : '-';
-        $order  = !empty($_POST['frmCategoryOrder' ])    ? $_POST['frmCategoryOrder' ]    : 1;
-        $status = !empty($_POST['frmCategoryStatus'])    ? $_POST['frmCategoryStatus']    : 1;
+        $id         = !empty($_POST['frmCategoryId'    ])    ? $_POST['frmCategoryId'    ]    : 0;
+        $parent     = !empty($_POST['frmCategoryParent'])    ? $_POST['frmCategoryParent']    : 0;
+        $name       = !empty($_POST['frmCategoryName'  ])    ? $_POST['frmCategoryName'  ]    : '-';
+        $seperator  = !empty($_POST['frmCategorySeperator']) ? $_POST['frmCategorySeperator'] : '';
+        $order      = !empty($_POST['frmCategoryOrder' ])    ? $_POST['frmCategoryOrder' ]    : 1;
+        $status     = !empty($_POST['frmCategoryStatus'])    ? $_POST['frmCategoryStatus']    : 1;
 
-        if($this->_saveCategory($id, $parent, $name, $order, $status)){
+        if($this->_saveCategory($id, $parent, $name, $seperator, $order, $status)){
             $this->_strOkMessage  = $_ARRAYLANG['TXT_BLOCK_CATEGORIES_ADD_OK'];
         } else {
             $this->_strErrMessage = $_ARRAYLANG['TXT_BLOCK_CATEGORIES_ADD_ERROR'];
@@ -623,6 +628,8 @@ class blockManager extends blockLibrary
         $blockRandom3           = 0;
         $blockRandom4           = 0;
         $blockGlobal            = 0;
+        $blockDirect            = 0;
+        $blockCategory          = 0;
         $blockWysiwygEditor     = 1;
         $blockContent           = array();
         $blockAssociatedPageIds = array();
@@ -655,6 +662,8 @@ class blockManager extends blockLibrary
             'TXT_BLOCK_SELECT_ALL'              => $_ARRAYLANG['TXT_BLOCK_SELECT_ALL'],
             'TXT_BLOCK_UNSELECT_ALL'            => $_ARRAYLANG['TXT_BLOCK_UNSELECT_ALL'], 
             'TXT_BLOCK_GLOBAL_PLACEHOLDERS'     => $_ARRAYLANG['TXT_BLOCK_GLOBAL_PLACEHOLDERS'],
+            'TXT_BLOCK_DIRECT_PLACEHOLDERS'     => $_ARRAYLANG['TXT_BLOCK_DIRECT_PLACEHOLDERS'],
+            'TXT_BLOCK_CATEGORY_PLACEHOLDERS'   => $_ARRAYLANG['TXT_BLOCK_CATEGORY_PLACEHOLDERS'],
             'TXT_BLOCK_DISPLAY_TIME'            => $_ARRAYLANG['TXT_BLOCK_DISPLAY_TIME'],
             'TXT_BLOCK_FORM_DESC'               => $_ARRAYLANG['TXT_BLOCK_CONTENT'],
             'TXT_BLOCK_USE_WYSIWYG_EDITOR'      => $_ARRAYLANG['TXT_BLOCK_USE_WYSIWYG_EDITOR'],
@@ -670,27 +679,40 @@ class blockManager extends blockLibrary
             $blockRandom2           = !empty($_POST['blockRandom2']) ? intval($_POST['blockRandom2']) : 0;
             $blockRandom3           = !empty($_POST['blockRandom3']) ? intval($_POST['blockRandom3']) : 0;
             $blockRandom4           = !empty($_POST['blockRandom4']) ? intval($_POST['blockRandom4']) : 0;
-            $blockGlobal            = !empty($_POST['blockGlobal']) ? intval($_POST['blockGlobal']) : 0;
             $blockWysiwygEditor     = isset($_POST['wysiwyg_editor']) ? 1 : 0;
-            $blockAssociatedPageIds = isset($_POST['selectedPagesList']) ? array_map('intval', explode(",", $_POST['selectedPagesList'])) : array();
             $blockLangActive        = isset($_POST['blockFormLanguages']) ? array_map('intval', $_POST['blockFormLanguages']) : array();
 
+            // placeholder configurations
+            // global block
+            // 0 = not activated , 1 = on all pages , 2 = selected pages
+            $blockGlobal            = !empty($_POST['blockGlobal']) ? intval($_POST['blockGlobal']) : 0;
+            // direct block and category block placeholders
+            // 0 = on all pages , 1 = selected pages
+            $blockDirect            = !empty($_POST['blockDirect']) ? intval($_POST['blockDirect']) : 0;
+            $blockCategory          = !empty($_POST['blockCategory']) ? intval($_POST['blockCategory']) : 0;
+            // block on page relations for each placeholder
+            $blockGlobalAssociatedPageIds = isset($_POST['globalSelectedPagesList']) ? array_map('intval', explode(",", $_POST['globalSelectedPagesList'])) : array();
+            $blockDirectAssociatedPageIds = isset($_POST['directSelectedPagesList']) ? array_map('intval', explode(",", $_POST['directSelectedPagesList'])) : array();
+            $blockCategoryAssociatedPageIds = isset($_POST['categorySelectedPagesList']) ? array_map('intval', explode(",", $_POST['categorySelectedPagesList'])) : array();
+
             if ($blockId) {
-                if ($this->_updateBlock($blockId, $blockCat, $blockContent, $blockName, $blockStart, $blockEnd, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockWysiwygEditor, $blockAssociatedPageIds, $blockLangActive)) {
-                    CSRF::header('location: index.php?cmd=block&modified=true&blockname='.$blockName);
-                    exit();
-                } else {
-                    $this->_strErrMessage = $_ARRAYLANG['TXT_BLOCK_BLOCK_COULD_NOT_BE_UPDATED'];
+                if ($this->_updateBlock($blockId, $blockCat, $blockContent, $blockName, $blockStart, $blockEnd, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockWysiwygEditor, $blockLangActive)) {
+                    if ($this->storePlaceholderSettings($blockId, $blockGlobal, $blockDirect, $blockCategory, $blockGlobalAssociatedPageIds, $blockDirectAssociatedPageIds, $blockCategoryAssociatedPageIds)) {
+                        CSRF::header('location: index.php?cmd=block&modified=true&blockname='.$blockName);
+                        exit;
+                    }
                 }
+                $this->_strErrMessage = $_ARRAYLANG['TXT_BLOCK_BLOCK_COULD_NOT_BE_UPDATED'];
             } else { 
-                if ($this->_addBlock($blockCat, $blockContent, $blockName, $blockStart, $blockEnd, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockGlobal, $blockWysiwygEditor, $blockAssociatedPageIds, $blockLangActive)) {
-                    CSRF::header('location: index.php?cmd=block&added=true&blockname='.$blockName);
-                    exit();
-                } else {
-                    $this->_strErrMessage = $_ARRAYLANG['TXT_BLOCK_BLOCK_COULD_NOT_BE_ADDED'];
+                if ($blockId = $this->_addBlock($blockCat, $blockContent, $blockName, $blockStart, $blockEnd, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockWysiwygEditor, $blockLangActive)) {
+                    if ($this->storePlaceholderSettings($blockId, $blockGlobal, $blockDirect, $blockCategory, $blockGlobalAssociatedPageIds, $blockDirectAssociatedPageIds, $blockCategoryAssociatedPageIds)) {
+                        CSRF::header('location: index.php?cmd=block&added=true&blockname='.$blockName);
+                        exit;
+                    }
                 }
+                $this->_strErrMessage = $_ARRAYLANG['TXT_BLOCK_BLOCK_COULD_NOT_BE_ADDED'];
             }
-        } elseif (($arrBlock = $this->_getBlock($blockId)) !== false) {            
+        } elseif (($arrBlock = $this->_getBlock($blockId)) !== false) {
             $blockStart         = $arrBlock['start'];
             $blockEnd           = $arrBlock['end'];
             $blockCat           = $arrBlock['cat'];
@@ -698,13 +720,18 @@ class blockManager extends blockLibrary
             $blockRandom2       = $arrBlock['random2'];
             $blockRandom3       = $arrBlock['random3'];
             $blockRandom4       = $arrBlock['random4'];
-            $blockGlobal        = $arrBlock['global'];
             $blockWysiwygEditor = $arrBlock['wysiwyg_editor'];
-            $blockActive        = $arrBlock['active'];
             $blockContent       = $arrBlock['content'];
             $blockLangActive    = $arrBlock['lang_active'];
             $blockName          = $arrBlock['name'];
-            $blockAssociatedPageIds = $this->_getAssociatedPageIds($blockId);
+
+            $blockGlobal        = $arrBlock['global'];
+            $blockDirect        = $arrBlock['direct'];
+            $blockCategory      = $arrBlock['category'];
+
+            $blockGlobalAssociatedPageIds   = $this->_getAssociatedPageIds($blockId, 'global');
+            $blockDirectAssociatedPageIds   = $this->_getAssociatedPageIds($blockId, 'direct');
+            $blockCategoryAssociatedPageIds = $this->_getAssociatedPageIds($blockId, 'category');
         }
 
         $pageTitle = $blockId != 0 ? sprintf(($copy ? $_ARRAYLANG['TXT_BLOCK_COPY_BLOCK'] : $_ARRAYLANG['TXT_BLOCK_MODIFY_BLOCK']), contrexx_raw2xhtml($blockName)) : $_ARRAYLANG['TXT_BLOCK_ADD_BLOCK'];
@@ -721,73 +748,59 @@ class blockManager extends blockLibrary
             'BLOCK_CATEGORIES_PARENT_DROPDOWN'  => $this->_getCategoriesDropdown($blockCat),
             'BLOCK_START'                       => !empty($blockStart) ? strftime('%Y-%m-%d %H:%M', $blockStart) : $blockStart,
             'BLOCK_END'                         => !empty($blockEnd) ? strftime('%Y-%m-%d %H:%M', $blockEnd) : $blockEnd,
+            'BLOCK_WYSIWYG_EDITOR'              => $blockWysiwygEditor == 1 ? 'checked="checked"' : '',
+
+            // random placeholders
             'BLOCK_RANDOM'                      => $blockRandom == '1' ? 'checked="checked"' : '',
             'BLOCK_RANDOM_2'                    => $blockRandom2 == '1' ? 'checked="checked"' : '',
             'BLOCK_RANDOM_3'                    => $blockRandom3 == '1' ? 'checked="checked"' : '',
             'BLOCK_RANDOM_4'                    => $blockRandom4 == '1' ? 'checked="checked"' : '',
+
+            // global block
             'BLOCK_GLOBAL_0'                    => $blockGlobal == '0' ? 'checked="checked"' : '',
             'BLOCK_GLOBAL_1'                    => $blockGlobal == '1' ? 'checked="checked"' : '',
             'BLOCK_GLOBAL_2'                    => $blockGlobal == '2' ? 'checked="checked"' : '',
-            'BLOCK_SHOW_PAGE_SELECTOR'          => $blockGlobal == '2' ? 'block' : 'none',
-            'BLOCK_WYSIWYG_EDITOR'              => $blockWysiwygEditor == 1 ? 'checked="checked"' : '',
+            'BLOCK_GLOBAL_SHOW_PAGE_SELECTOR'   => $blockGlobal == '2' ? 'block' : 'none',
+
+            // direct block
+            'BLOCK_DIRECT_0'                    => $blockDirect == '0' ? 'checked="checked"' : '',
+            'BLOCK_DIRECT_1'                    => $blockDirect == '1' ? 'checked="checked"' : '',
+            'BLOCK_DIRECT_SHOW_PAGE_SELECTOR'   => $blockDirect == '1' ? 'block' : 'none',
+
+            // category block
+            'BLOCK_CATEGORY_0'                  => $blockCategory == '0' ? 'checked="checked"' : '',
+            'BLOCK_CATEGORY_1'                  => $blockCategory == '1' ? 'checked="checked"' : '',
+            'BLOCK_CATEGORY_SHOW_PAGE_SELECTOR' => $blockCategory == '1' ? 'block' : 'none',
         ));
         
         $jsonData =  new \Cx\Core\Json\JsonData();
         $pageTitlesTree = $jsonData->data('node', 'getPageTitlesTree');
         $pageTitlesTree = $pageTitlesTree['data'];
-        
-        $strSelectedPages   = '';
-        $strUnselectedPages = '';
-        
-        foreach ($pageTitlesTree as $nodeId => $languages) {
-            foreach ($languages as $langCode => $pageData) {
-                if (!isset($pageData['id'])) {
-                    unset($pageTitlesTree[$nodeId][$langCode]);
-                    continue;
-                }
-                $spacer = '';
-                for ($i = 1; $i < $pageData['level']; $i++) {
-                    $spacer .= '&nbsp;&nbsp;';
-                }
-                
-                if (in_array($pageData['id'], $blockAssociatedPageIds)) {
-                    if (!isset($strSelectedPages[$langCode])) {
-                        $strSelectedPages[$langCode] = '';
-                    }
-                    $strSelectedPages[$langCode]   .= '<option value="'.$pageData['id'].'">'.$spacer.contrexx_raw2xhtml($pageData['title']).' ('.$pageData['id'].') </option>';
-                } else {
-                    if (!isset($strUnselectedPages[$langCode])) {
-                        $strUnselectedPages[$langCode] = '';
-                    }
-                    $strUnselectedPages[$langCode] .= '<option value="'.$pageData['id'].'">'.$spacer.contrexx_raw2xhtml($pageData['title']).' ('.$pageData['id'].') </option>';
-                }
-            }
-        }
-        
+
         $objJs = \ContrexxJavascript::getInstance();
-        $objJs->setVariable('relBlockPagesUnselectedOptions', $jsonData->json($strUnselectedPages), 'block');
-        $objJs->setVariable('relBlockPagesSelectedOptions', $jsonData->json($strSelectedPages), 'block');
-        $objJs->setVariable('ckeditorconfigpath', substr(\Env::get('ClassLoader')->getFilePath(ASCMS_CORE_PATH.'/Wysiwyg/ckeditor.config.js.php'), strlen(ASCMS_DOCUMENT_ROOT)+1), 'block');
         
-        foreach (FWLanguage::getActiveFrontendLanguages() as $langId => $arrLanguage) {
-            $checked = '';
-            if ($langId == FRONTEND_LANG_ID) {
-                $checked = 'checked="checked"';
-            }
-            
-            $this->_objTpl->setVariable(array(
-                'BLOCK_PAGES_LANGUAGE_ID'      => $langId,
-                'BLOCK_PAGES_LANGUAGE_CODE'    => $arrLanguage['lang'],
-                'BLOCK_PAGES_LANGUAGE_NAME'    => $arrLanguage['name'],
-                'BLOCK_PAGES_LANGUAGE_CHECKED' => $checked,
-            ));
-            $this->_objTpl->parse('pages_languages');
-        }
+        $blockGlobalPageSelects   = $this->getPageSelections($pageTitlesTree, $blockGlobalAssociatedPageIds);
+        $blockDirectPageSelects   = $this->getPageSelections($pageTitlesTree, $blockDirectAssociatedPageIds);
+        $blockCategoryPageSelects = $this->getPageSelections($pageTitlesTree, $blockCategoryAssociatedPageIds);
+
+        $objJs->setVariable('globalPagesUnselectedOptions', $jsonData->json($blockGlobalPageSelects[1]), 'block');
+        $objJs->setVariable('globalPagesSelectedOptions', $jsonData->json($blockGlobalPageSelects[0]), 'block');
+
+        $objJs->setVariable('directPagesUnselectedOptions', $jsonData->json($blockDirectPageSelects[1]), 'block');
+        $objJs->setVariable('directPagesSelectedOptions', $jsonData->json($blockDirectPageSelects[0]), 'block');
+
+        $objJs->setVariable('categoryPagesUnselectedOptions', $jsonData->json($blockCategoryPageSelects[1]), 'block');
+        $objJs->setVariable('categoryPagesSelectedOptions', $jsonData->json($blockCategoryPageSelects[0]), 'block');
+
+        $objJs->setVariable('ckeditorconfigpath', substr(\Env::get('ClassLoader')->getFilePath(ASCMS_CORE_PATH.'/Wysiwyg/ckeditor.config.js.php'), strlen(ASCMS_DOCUMENT_ROOT)+1), 'block');
 
         $arrActiveSystemFrontendLanguages = FWLanguage::getActiveFrontendLanguages();
+        $this->parseLanguageOptionsByPlaceholder($arrActiveSystemFrontendLanguages, 'global');
+        $this->parseLanguageOptionsByPlaceholder($arrActiveSystemFrontendLanguages, 'direct');
+        $this->parseLanguageOptionsByPlaceholder($arrActiveSystemFrontendLanguages, 'category');
+
         if (count($arrActiveSystemFrontendLanguages) > 0) {
             $intLanguageCounter = 0;
-            $boolFirstLanguage  = true;
             $arrLanguages       = array(0 => '', 1 => '', 2 => '');
             $strJsTabToDiv      = '';
 
@@ -847,6 +860,66 @@ class blockManager extends blockLibrary
             $activeClass = '';
             $i++;
         }
+    }
+
+    /**
+     * Parse the language options for the placeholder settings
+     *
+     * @param array $arrActiveSystemFrontendLanguages
+     * @param string $placeholder the placeholder
+     */
+    private function parseLanguageOptionsByPlaceholder($arrActiveSystemFrontendLanguages, $placeholder) {
+        foreach ($arrActiveSystemFrontendLanguages as $langId => $arrLanguage) {
+            $checked = '';
+            if ($langId == FRONTEND_LANG_ID) {
+                $checked = 'checked="checked"';
+            }
+            $this->_objTpl->setVariable(array(
+                'BLOCK_PAGES_LANGUAGE_ID'      => $langId,
+                'BLOCK_PAGES_LANGUAGE_CODE'    => $arrLanguage['lang'],
+                'BLOCK_PAGES_LANGUAGE_NAME'    => $arrLanguage['name'],
+                'BLOCK_PAGES_LANGUAGE_CHECKED' => $checked,
+            ));
+            $this->_objTpl->parse('pages_languages_' . $placeholder);
+        }
+    }
+
+    /**
+     * Get content of select for page selections
+     *
+     * @param array $pageTitlesTree all nodes
+     * @param array $blockAssociatedPageIds the associated page ids
+     * @return array the content for the html select
+     */
+    private function getPageSelections($pageTitlesTree, $blockAssociatedPageIds) {
+        $strSelectedPages   = '';
+        $strUnselectedPages = '';
+
+        foreach ($pageTitlesTree as $nodeId => $languages) {
+            foreach ($languages as $langCode => $pageData) {
+                if (!isset($pageData['id'])) {
+                    unset($pageTitlesTree[$nodeId][$langCode]);
+                    continue;
+                }
+                $spacer = '';
+                for ($i = 1; $i < $pageData['level']; $i++) {
+                    $spacer .= '&nbsp;&nbsp;';
+                }
+
+                if (in_array($pageData['id'], $blockAssociatedPageIds)) {
+                    if (!isset($strSelectedPages[$langCode])) {
+                        $strSelectedPages[$langCode] = '';
+                    }
+                    $strSelectedPages[$langCode]   .= '<option value="'.$pageData['id'].'">'.$spacer.contrexx_raw2xhtml($pageData['title']).' ('.$pageData['id'].') </option>';
+                } else {
+                    if (!isset($strUnselectedPages[$langCode])) {
+                        $strUnselectedPages[$langCode] = '';
+                    }
+                    $strUnselectedPages[$langCode] .= '<option value="'.$pageData['id'].'">'.$spacer.contrexx_raw2xhtml($pageData['title']).' ('.$pageData['id'].') </option>';
+                }
+            }
+        }
+        return array($strSelectedPages, $strUnselectedPages);
     }
 
     /**
@@ -944,7 +1017,7 @@ class blockManager extends blockLibrary
     */
     function _deactivateBlock()
     {
-        global $_ARRAYLANG, $objDatabase;
+        global $objDatabase;
 
         $arrStatusBlocks = isset($_POST['selectedBlockId']) ? $_POST['selectedBlockId'] : null;
         if($arrStatusBlocks != null){
@@ -974,7 +1047,7 @@ class blockManager extends blockLibrary
     */
     function _globalBlock()
     {
-        global $_ARRAYLANG, $objDatabase;
+        global $objDatabase;
 
         $arrStatusBlocks = isset($_POST['selectedBlockId']) ? $_POST['selectedBlockId'] : null;
         if($arrStatusBlocks != null){
