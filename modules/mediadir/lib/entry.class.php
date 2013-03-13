@@ -770,6 +770,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
         $pages = $pageRepo->findBy(array(
             'cmd' => contrexx_addslashes($strPageCmd),
             'lang' => $_LANGID,
+            'type' => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION,
             'module' => $this->moduleName,
         ));
         return count($pages) > 0;

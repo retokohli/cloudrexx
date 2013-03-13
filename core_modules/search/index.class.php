@@ -388,7 +388,8 @@ function search_getResultArray($query,$section,$command,$pagevar,$term)
     $crit = array(
          'module' => $section,
          'lang'   => FRONTEND_LANG_ID,
-         'cmd'    => $command
+         'type' => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION,
+         'cmd'    => $command,
     );
 
     $page = $pageRepo->findOneBy($crit);

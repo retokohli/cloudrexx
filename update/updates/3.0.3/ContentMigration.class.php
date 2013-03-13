@@ -1,6 +1,8 @@
 <?php
 namespace Cx\Update\Cx_3_0_3;
 
+use Cx\Core\ContentManager\Model\Doctrine\Entity\Page;
+
 set_time_limit(0);
 
 class ContentMigration
@@ -505,7 +507,7 @@ class ContentMigration
                 while (!$objResult->EOF) {
                     $catId = $objResult->fields['catid'];
                     $aliasPage = $pageRepo->findOneBy(array(
-                        'type' => \Cx\Model\ContentManager\Page::TYPE_ALIAS,
+                        'type' => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_ALIAS,
                         'slug' => 'legacy_page_' . $catId,
                     ), true);
                     if ($aliasPage) {
@@ -624,7 +626,7 @@ class ContentMigration
 
                 if ($type === 'local') {
                     $aliasPage = $pageRepo->findOneBy(array(
-                        'type' => \Cx\Model\ContentManager\Page::TYPE_ALIAS,
+                        'type' => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_ALIAS,
                         'slug' => 'legacy_page_' . $target,
                     ), true);
 
@@ -852,7 +854,7 @@ class ContentMigration
 
                             $pageRepo  = self::$em->getRepository('Cx\Model\ContentManager\Page');
                             $aliasPage = $pageRepo->findOneBy(array(
-                                'type' => \Cx\Model\ContentManager\Page::TYPE_ALIAS,
+                                'type' => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_ALIAS,
                                 'slug' => 'legacy_page_' . $oldPageId,
                             ), true);
 

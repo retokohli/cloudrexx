@@ -335,6 +335,7 @@ class frontendEditing extends frontendEditingLib {
         $crit = array(
              'module'   => 'login',
              'lang'     => FRONTEND_LANG_ID,
+             'type' => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION,
              'cmd'      => 'lostpw',
         );
         $page = $this->pageRepo->findOneBy($crit);
