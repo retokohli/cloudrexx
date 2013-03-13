@@ -207,8 +207,8 @@ function executeContrexxUpdate() {
         }
     } else {
         // we are updating from 3.0.0 rc1, rc2, stable or 3.0.0.1
-        if (!include_once(dirname(__FILE__) . '/updateRc.php')) {
-            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/updateRc.php'));
+        if (!include_once(dirname(__FILE__) . '/update3.php')) {
+            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/update3.php'));
             return false;
         }
 
