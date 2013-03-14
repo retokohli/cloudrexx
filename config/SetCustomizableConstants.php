@@ -11,22 +11,8 @@ global $_PATHCONFIG, $_DBCONFIG, $_CONFIG;
 static $match = null;
 
 /**
- * Define constants
+ * Define customizable constants
  */
-//define('ASCMS_PATH',                      dirname(dirname(dirname(realpath(__FILE__)))));
-define('ASCMS_PATH',                        $_PATHCONFIG['ascms_root']);
-define('ASCMS_PATH_OFFSET',                 $_PATHCONFIG['ascms_root_offset']); // example '/cms'
-define('ASCMS_BACKEND_PATH',                '/cadmin');
-define('ASCMS_PROTOCOL',                    empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == 'off' ? 'http' : 'https');
-define('ASCMS_WEBSERVER_SOFTWARE',          !empty($_SERVER['SERVER_SOFTWARE']) && stristr($_SERVER['SERVER_SOFTWARE'], 'apache') ? 'apache' : (stristr($_SERVER['SERVER_SOFTWARE'], 'iis') ? 'iis' : ''));
-
-define('CONTREXX_ESCAPE_GPC',               get_magic_quotes_gpc());
-define('CONTREXX_CHARSET',                  $_CONFIG['coreCharacterEncoding']);
-define('CONTREXX_PHP5',                     version_compare(PHP_VERSION, '5', '>='));
-define('CONTREXX_DIRECTORY_INDEX',          'index.php');
-
-define('DBPREFIX',                          $_DBCONFIG['tablePrefix']);
-define('ASCMS_DOCUMENT_ROOT',               ASCMS_PATH.ASCMS_PATH_OFFSET);
 define('ASCMS_ADMIN_PATH',                  ASCMS_DOCUMENT_ROOT. ASCMS_BACKEND_PATH);
 define('ASCMS_ADMIN_WEB_PATH',              ASCMS_PATH_OFFSET. ASCMS_BACKEND_PATH);
 define('ASCMS_ADMIN_TEMPLATE_PATH',         ASCMS_DOCUMENT_ROOT. ASCMS_BACKEND_PATH.'/template/ascms');
@@ -123,8 +109,6 @@ define('ASCMS_PARTNERS_IMAGES_WEB_PATH',    ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDE
 define('ASCMS_MODEL_FOLDER',                '/model');
 define('ASCMS_MODEL_PATH',                  ASCMS_DOCUMENT_ROOT.ASCMS_MODEL_FOLDER);
 define('ASCMS_MODEL_PROXIES_PATH',          ASCMS_MODEL_PATH.'/proxies');
-define('ASCMS_CUSTOMIZING_PATH',            ASCMS_DOCUMENT_ROOT.'/customizing');
-define('ASCMS_CUSTOMIZING_WEB_PATH',        ASCMS_PATH_OFFSET.'/customizing');
 
 // This is like the usual *_WEB_PATH, relative to ASCMS_PATH.
 // Like this, only one path needs to be defined for each purpose,
