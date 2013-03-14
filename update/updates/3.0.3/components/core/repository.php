@@ -51,6 +51,7 @@ function _updateModulePages() {
         $pageRepo = $em->getRepository('\Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
         $pages = $pageRepo->findBy(array(
             'module' => $module,
+            'type'   => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION,
         ));
         $objResult = $objDatabase->Execute('
             SELECT
