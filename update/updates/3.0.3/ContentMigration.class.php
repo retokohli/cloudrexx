@@ -1,8 +1,6 @@
 <?php
 namespace Cx\Update\Cx_3_0_3;
 
-use Cx\Core\ContentManager\Model\Doctrine\Entity\Page;
-
 set_time_limit(0);
 
 class ContentMigration
@@ -63,7 +61,7 @@ class ContentMigration
 
             // Skip existing nodes
             if(!isset($this->nodeArr[$catId])) {
-                $this->nodeArr[$catId] = new \Cx\Model\ContentManager\Node();
+                $this->nodeArr[$catId] = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Node();
             }
             $arrSortedNodes[] = $this->nodeArr[$catId];
 
@@ -203,7 +201,7 @@ class ContentMigration
 
         if (empty($_SESSION['contrexx_update']['root_node_added'])) {
             // This will be the root of the site-tree
-            $root = new \Cx\Model\ContentManager\Node();
+            $root = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Node();
             self::$em->persist($root);
             self::$em->flush();
             $_SESSION['contrexx_update']['root_node_added'] = true;
@@ -357,7 +355,7 @@ class ContentMigration
                         case 'new':
                         case 'update':
                             if (empty($page)) {
-                                $page = new \Cx\Model\ContentManager\Page();
+                                $page = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Page();
                             }
 
                             $this->_setPageRecords($objResult, $this->nodeArr[$catId], $page);
@@ -461,7 +459,7 @@ class ContentMigration
                         $pageId = $_SESSION['contrexx_update']['pages'][$catId];
                         $page   = $pageRepo->find($pageId);
                     } else {
-                        $page = new \Cx\Model\ContentManager\Page();
+                        $page = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Page();
                     }
 
                     $this->_setPageRecords($objRecords, $this->nodeArr[$catId], $page);
@@ -582,13 +580,13 @@ class ContentMigration
         $page->setLinkTarget($linkTarget);
 
         if ($objResult->fields['module'] && isset($this->moduleNames[$objResult->fields['module']])) {
-            $page->setType(\Cx\Model\ContentManager\Page::TYPE_APPLICATION);
+            $page->setType(\Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION);
             $page->setModule($this->moduleNames[$objResult->fields['module']]);
         }
         $page->setCmd($objResult->fields['cmd']);
 
         if ($page->getTarget()) {
-            $page->setType(\Cx\Model\ContentManager\Page::TYPE_REDIRECT);
+            $page->setType(\Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_REDIRECT);
         }
 
         $page->validate();
