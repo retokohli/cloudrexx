@@ -848,7 +848,7 @@ class skins
      */
     function examples()
     {
-        global $_CORELANG, $objTemplate, $_CONFIG;
+        global $_CORELANG, $objTemplate, $_CONFIG, $objDatabase;
 
         Permission::checkAccess(47, 'static');
 
@@ -866,6 +866,7 @@ class skins
             'TXT_PLACEHOLDER_DIRECTORY'             => $_CORELANG['TXT_DESIGN_REPLACEMENTS_DIR'],
             'TXT_PLACEHOLDER_DIRECTORY_DESCRIPTION' => $_CORELANG['TXT_PLACEHOLDER_DIRECTORY_DESCRIPTION'],
             'TXT_CHANNELS'                          => $_CORELANG['TXT_CHANNELS'],
+            'TXT_MODULE_URLS'               => $_CORELANG['TXT_MODULE_URLS'],
             'TXT_CONTACT'                           => $_CORELANG['TXT_CONTACT'],
             'CONTREXX_BASE_URL'                     => ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET . '/',
         ));
