@@ -1095,7 +1095,7 @@ table.adminlist td.nowrap {
     display: inline-block;
     width: 13px;
     height: 12px;
-    background: url(../images/content_manager_info.png) no-repeat left center;
+    background: url(../../../../core/ContentManager/View/Media/Info.png) no-repeat left center;
 }
 
 .icon-warning {
