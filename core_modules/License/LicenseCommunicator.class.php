@@ -290,6 +290,8 @@ class LicenseCommunicator {
             self::$javascriptRegistered = true;
             
             \JS::activate('jquery');
+            $objJs = \ContrexxJavascript::getInstance();
+            $objJs->setVariable("statusmessage_success", $_CORELANG['TXT_LICENSE_UPDATED'], "core_module/license");
             $jsCode = '
                 jQuery(document).ready(function() {
                     var licenseMessage      = jQuery("#license_message");
@@ -345,8 +347,13 @@ class LicenseCommunicator {
                         }
                         console.log(reloadManager);
                         revertMessage(data[\'class\'], data.link, data.target, data.text);
+                        jQuery("#jsstatemessage").html(cx.variables.get("statusmessage_success", "core_module/license"));
+                        jQuery("#jsstatemessage").addClass("okbox");
+                        jQuery("#jsstatemessage").show();
                         if (reloadManager && ' . ($sm->isWritable() ? 'true' : 'false') . ') {
-                            document.location.reload(true);
+                            setTimeout(function() {
+                                document.location.reload(true);
+                            }, 1500);
                         }
                     }
                     

@@ -160,7 +160,10 @@ class LicenseManager {
         $today = time();
         $difference = $cdate - $today;
         if ($difference < 0) { $difference = 0; }
-        $validDayCount = ceil($difference/60/60/24);
+        $validDayCount = ceil($difference/60/60/24) - 1;
+        if ($validDayCount < 0) {
+            $validDayCount = 0;
+        }
         $template->setVariable(array(
             'LICENSE_STATE' => $this->lang['TXT_LICENSE_STATE_' . $this->license->getState()],
             'LICENSE_EDITION' => contrexx_raw2xhtml($this->license->getEditionName()),
