@@ -1220,7 +1220,7 @@ class newsletter extends NewsletterLib
             tblMail.`count`,
             tblMail.date_sent
             FROM ".DBPREFIX."module_newsletter AS tblMail
-            ORDER BY status, id DESC", $_CONFIG['corePagingLimit'], $pos);
+            ORDER BY date_create DESC, status, id DESC", $_CONFIG['corePagingLimit'], $pos);
         if ($objResult !== false) {
             $arrMailRecipientCount = $this->_getMailRecipientCount(NULL, $_CONFIG['corePagingLimit'], $pos);
             while (!$objResult->EOF) {
