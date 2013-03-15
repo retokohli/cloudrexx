@@ -63,6 +63,7 @@ $_ARRAYLANG['TXT_ACTIVE'] = "Active";
 $_ARRAYLANG['TXT_APP'] = "App";
 $_ARRAYLANG['TXT_APP_VIEW'] = "App-View";
 $_ARRAYLANG['TXT_CHANNELS'] = "Channels";
+$_ARRAYLANG['TXT_MODULE_URLS'] = "Links to core modules";
 $_ARRAYLANG['TXT_ALL_FIELDS_REQUIRED'] = "These fields are required.";
 $_ARRAYLANG['TXT_PASSWORD_NOT_USERNAME_TEXT'] = "The password and the login name cannot be identical";
 $_ARRAYLANG['TXT_CORE_ACTIVE_FROM_TO'] = "Date based publication";

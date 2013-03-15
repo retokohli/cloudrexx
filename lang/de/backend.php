@@ -64,6 +64,7 @@ $_ARRAYLANG['TXT_ACTIVE'] = "Aktiv";
 $_ARRAYLANG['TXT_APP'] = "App";
 $_ARRAYLANG['TXT_APP_VIEW'] = "App-Ansicht";
 $_ARRAYLANG['TXT_CHANNELS'] = "Ansichten";
+$_ARRAYLANG['TXT_MODULE_URLS'] = "Verlinkungen Grundanwendungen";
 $_ARRAYLANG['TXT_ALL_FIELDS_REQUIRED'] = "Diese Felder sind erforderlich.";
 $_ARRAYLANG['TXT_PASSWORD_NOT_USERNAME_TEXT'] = "Das Passwort und der Benutzername können nicht identisch sein! ";
 $_ARRAYLANG['TXT_CORE_ACTIVE_FROM_TO'] = "Datumsgesteuerte Veröffentlichung";
