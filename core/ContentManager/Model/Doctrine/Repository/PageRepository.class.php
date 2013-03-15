@@ -11,7 +11,6 @@
 
 namespace Cx\Core\ContentManager\Model\Doctrine\Repository;
 
-use Cx\Core\ContentManager\Model\Doctrine\Entity\Page;
 use Doctrine\Common\Util\Debug as DoctrineDebug;
 use Doctrine\ORM\EntityRepository,
     Doctrine\ORM\EntityManager,

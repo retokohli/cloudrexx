@@ -931,7 +931,7 @@ class blockLibrary
 
         $this->_categoryNames[0] = $_ARRAYLANG['TXT_BLOCK_NONE'];
         $objRS = $objDatabase->Execute('
-           SELECT `id`,`parent`,`name`,`order`,`status`
+           SELECT `id`,`parent`,`name`,`order`,`status`,`seperator`
            FROM `'.DBPREFIX.'module_block_categories`
            ORDER BY `order` ASC, `id` ASC
         ');

@@ -390,6 +390,7 @@ class blockManager extends blockLibrary
             'TXT_BLOCK_FUNCTIONS'                   => $_ARRAYLANG['TXT_BLOCK_FUNCTIONS'],
             'TXT_BLOCK_NAME'                        => $_ARRAYLANG['TXT_BLOCK_NAME'],
             'TXT_BLOCK_PLACEHOLDER'                 => $_ARRAYLANG['TXT_BLOCK_PLACEHOLDER'],
+            'TXT_BLOCK_SEPERATOR'                   => $_ARRAYLANG['TXT_BLOCK_SEPERATOR'],
             'TXT_BLOCK_NONE'                        => $_ARRAYLANG['TXT_BLOCK_NONE'],
             'TXT_BLOCK_PARENT'                      => $_ARRAYLANG['TXT_BLOCK_PARENT'],
             'TXT_BLOCK_SELECT_ALL'                  => $_ARRAYLANG['TXT_BLOCK_SELECT_ALL'],
@@ -440,6 +441,7 @@ class blockManager extends blockLibrary
                 'BLOCK_CATEGORY_ID'         => $arrCategory['id'],
                 'BLOCK_CATEGORY_NAME'       => str_repeat('&nbsp;', $level*4).$arrCategory['name'],
                 'BLOCK_CATEGORY_PLACEHOLDER'=> 'BLOCK_CAT_' . $arrCategory['id'],
+                'BLOCK_CATEGORY_SEPERATOR'  => contrexx_raw2xhtml($arrCategory['seperator']),
             ));
 
             if(empty($this->_categories[$arrCategory['id']])){
@@ -662,8 +664,11 @@ class blockManager extends blockLibrary
             'TXT_BLOCK_SELECT_ALL'              => $_ARRAYLANG['TXT_BLOCK_SELECT_ALL'],
             'TXT_BLOCK_UNSELECT_ALL'            => $_ARRAYLANG['TXT_BLOCK_UNSELECT_ALL'], 
             'TXT_BLOCK_GLOBAL_PLACEHOLDERS'     => $_ARRAYLANG['TXT_BLOCK_GLOBAL_PLACEHOLDERS'],
+            'TXT_BLOCK_GLOBAL_PLACEHOLDERS_INFO'=> $_ARRAYLANG['TXT_BLOCK_GLOBAL_PLACEHOLDERS_INFO'],
             'TXT_BLOCK_DIRECT_PLACEHOLDERS'     => $_ARRAYLANG['TXT_BLOCK_DIRECT_PLACEHOLDERS'],
+            'TXT_BLOCK_DIRECT_PLACEHOLDERS_INFO'=> $_ARRAYLANG['TXT_BLOCK_DIRECT_PLACEHOLDERS_INFO'],
             'TXT_BLOCK_CATEGORY_PLACEHOLDERS'   => $_ARRAYLANG['TXT_BLOCK_CATEGORY_PLACEHOLDERS'],
+            'TXT_BLOCK_CATEGORY_PLACEHOLDERS_INFO'=> $_ARRAYLANG['TXT_BLOCK_CATEGORY_PLACEHOLDERS_INFO'],
             'TXT_BLOCK_DISPLAY_TIME'            => $_ARRAYLANG['TXT_BLOCK_DISPLAY_TIME'],
             'TXT_BLOCK_FORM_DESC'               => $_ARRAYLANG['TXT_BLOCK_CONTENT'],
             'TXT_BLOCK_USE_WYSIWYG_EDITOR'      => $_ARRAYLANG['TXT_BLOCK_USE_WYSIWYG_EDITOR'],

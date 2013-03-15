@@ -48,12 +48,13 @@ function selectMultiAction() {
   <form name="frmShowCategories" method="post" action="">
     <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
       <tr>
-        <th colspan="4">{TXT_BLOCK_CATEGORIES}</th>
+        <th colspan="5">{TXT_BLOCK_CATEGORIES}</th>
       </tr>
       <tr class="row3">
         <td nowrap="nowrap" width="2%"><span style="font-weight:bold;">&nbsp;&nbsp;#</span></td>
         <td nowrap="nowrap" width="30%"><span style="font-weight:bold;">{TXT_BLOCK_NAME}</span></td>
-        <td nowrap="nowrap" width="67%">{TXT_BLOCK_PLACEHOLDER}</td>
+        <td nowrap="nowrap" width="20%">{TXT_BLOCK_PLACEHOLDER}</td>
+        <td nowrap="nowrap" width="47%">{TXT_BLOCK_SEPERATOR}</td>
         <td nowrap="nowrap" width="1%"><div align="right"><span style="font-weight:bold;">{TXT_BLOCK_FUNCTIONS}</span></div></td>
       </tr>
       <!-- BEGIN showCategories -->
@@ -65,6 +66,7 @@ function selectMultiAction() {
         </td>
         <td><a href="{DIRECTORY_INDEX}?cmd=block&amp;act=editCategory&amp;id={BLOCK_CATEGORY_ID}" target="_self" title="{TXT_BLOCK_OVERVIEW_IMGALT_EDIT}">{BLOCK_CATEGORY_NAME}</a></td>
         <td>[[{BLOCK_CATEGORY_PLACEHOLDER}]]</td>
+        <td>{BLOCK_CATEGORY_SEPERATOR}</td>
         <td nowrap="nowrap">
           <div align="right">
             <a href="{DIRECTORY_INDEX}?cmd=block&amp;act=editCategory&amp;id={BLOCK_CATEGORY_ID}" target="_self"
