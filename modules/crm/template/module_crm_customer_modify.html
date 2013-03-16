@@ -57,7 +57,7 @@
 <div id="subnavbar_level2">
     <ul id="creation">
         <li>
-            <a title="{TXT_OVERVIEW}"  href="index.php?cmd={MODULE_NAME}&amp;act=customers" title="{TXT_OVERVIEW}" class="navBar">{TXT_OVERVIEW}</a>
+            <a title="{TXT_CRM_OVERVIEW}"  href="index.php?cmd={MODULE_NAME}&amp;act=customers" title="{TXT_CRM_OVERVIEW}" class="navBar">{TXT_CRM_OVERVIEW}</a>
         </li>
         <li><a class="{COMPANY_MENU_ACTIVE}" title="{TXT_CRM_ADD_NEW_CUSTOMER}"  href="index.php?cmd={MODULE_NAME}&act=customers&tpl=managecontact" title="{TXT_CRM_ADD_NEW_CUSTOMER}" class="navBar">
                 {TXT_CRM_ADD_NEW_CUSTOMER}</a></li>
@@ -75,7 +75,7 @@
                 <!-- BEGIN contactBlock -->
                 <table class="adminlist" id="profile-info" cellspacing="0" cellpadding="3" width="100%" border="0">
                     <thead>
-                        <tr><th colspan="4">{TXT_EDITCUSTOMERCONTACT_TITLE}</th></tr>
+                        <tr><th colspan="4">{TXT_CRM_EDITCUSTOMERCONTACT_TITLE}</th></tr>
                         <tr class="row3"><td colspan="4"><strong>{TXT_CRM_PROFILE_INFORMATION}</strong></td></tr>
                     </thead>
                     <tbody>
@@ -88,18 +88,18 @@
                                     <option value="2" {CRM_GENDER_MALE_SELECTED}>{TXT_CRM_GENDER_MALE}</option>
                                 </select>
                             </td>
-                            <td style="width:127px;">{TXT_ROLE}</td>
+                            <td style="width:127px;">{TXT_CRM_ROLE}</td>
                             <td><input type="text" id="contact_role" name="contact_role" value="{TXT_CON_ROLE}" style="width: 254px;"  /></td>
                         </tr>
                         <tr class="row1">
-                            <td>{TXT_NAME}&nbsp;<font color="red">*</font></td>
+                            <td>{TXT_CRM_NAME}&nbsp;<font color="red">*</font></td>
                             <td>
                                 <input type="text" id="companyName" name="companyName" style="width: 254px;"  value="{CRM_COMPANY_NAME}"  />
                             </td>
-                            <td>{TXT_TITLE_LANGUAGE}&nbsp;<font color="red">*</font></td>
+                            <td>{TXT_CRM_TITLE_LANGUAGE}&nbsp;<font color="red">*</font></td>
                             <td>
                                 <select id="language" name="contact_language" style="width: 262px !important;">
-                                    <option value="">--{TXT_TITLE_SELECT_LANGUAGE}--</option>
+                                    <option value="">--{TXT_CRM_TITLE_SELECT_LANGUAGE}--</option>
                                     <!-- BEGIN showAddtionalContactLanguages -->
                                     <option {TXT_LANG_SELECT} value="{TXT_LANG_ID}">{TXT_LANG_NAME}</option>
                                     <!-- END showAddtionalContactLanguages -->
@@ -107,7 +107,7 @@
                             </td>
                         </tr>                      
                         <tr class="row2">
-                            <td>{TXT_FAMILY_NAME}&nbsp;<font color="red">*</font></td>
+                            <td>{TXT_CRM_FAMILY_NAME}&nbsp;<font color="red">*</font></td>
                             <td> <input type="text" id="family_name" name="family_name" value="{TXT_CON_FAMILY}" style="width: 254px;"  /></td>
                             <td><span class="customerTypeRow">{TXT_CRM_CUSTOMERTYPE}&nbsp;<font color="red">*</font></span></td>
                             <td>
@@ -121,9 +121,9 @@
                         </tr>                        
                         <tr class="row2 contact_user_container">
                             <!-- BEGIN contactUserName -->
-                            <td>{TXT_CRM_ACCOUNT_EMAIL}&nbsp;<font color="red">*</font></td>
+                            <td>{TXT_CRM_ACCOUNT_EMAIL}&nbsp;{CRM_ACCOUNT_MANTORY}</td>
                             <td>
-                                <input type="text" name="contact_email" autocomplete="off" id="contact_email" style="width: 254px;" value="{CRM_CONTACT_USERNAME}" onKeyUp="typewatch(function(){checkUserNameAvailablity('{CRM_CONTACT_ID}')}, 1000 );" />
+                                <input type="text" name="contact_email" autocomplete="off" id="contact_email" style="width: 254px;" value="{CRM_CONTACT_USERNAME}" class="{CRM_ACCOUNT_MANTORY_CLASS}" onKeyUp="typewatch(function(){checkUserNameAvailablity('{CRM_CONTACT_ID}')}, 1000 );" />
                             </td>
                             <!-- END contactUserName -->
                             <!-- BEGIN emptyContactUserName -->
@@ -140,9 +140,9 @@
                         </tr>
                         <tr class="row1">
                             <!-- BEGIN contactPassword -->
-                            <td>{TXT_CRM_ACCOUNT_PASSWORD}&nbsp;<font color="red">*</font></td>
+                            <td>{TXT_CRM_ACCOUNT_PASSWORD}&nbsp;{CRM_ACCOUNT_MANTORY}</td>
                             <td>
-                                <input type="password" name="contact_password" autocomplete="off" id="contact_password" style="width: 254px;" value="" />
+                                <input type="password" name="contact_password" autocomplete="off" id="contact_password" class="{CRM_ACCOUNT_MANTORY_CLASS}" style="width: 254px;" value="" />
                                 <!-- BEGIN contactSendNotification -->
                                 <br><input type="checkbox" checked name="send_account_notification" value="1" />&nbsp;{TXT_CRM_SEND_LOGIN_DETAILS}
                                 <!-- END contactSendNotification -->
@@ -174,7 +174,7 @@
                         </tr>
                         <tr>
                             <td>
-                                {TXT_EMAIL}
+                                {TXT_CRM_EMAIL}
                             </td>
                             <td colspan="3">
                                 <div class="multiple_input" id="emailContainer">
@@ -223,13 +223,14 @@
                                     <!-- BEGIN contactwebsiteContainer -->
                                     <div class="website_list_container">
                                         <div class="website_list">
-                                            <input class="mInput" type="text" name="{CRM_CONTACT_WEBSITE_NAME}" value="{CRM_CONTACT_WEBSITE}" />
+                                            <input class="mInput" type="text" name="{CRM_CONTACT_WEBSITE_NAME}" value="{CRM_CONTACT_WEBSITE}" />                                            
                                             <a onclick="showwebsiteProfilesPanel(this);" class="category">{CRM_WEBSITE_PROFILE}</a>
                                         </div>
                                         <div class="actions_for_item">
                                             <a name="website" title="Delete" class="crm-deleteLink"></a>
                                             <a name="website" title="Mark as primary" class="is_primary {CRM_CONTACT_WEBSITE_PRIMARY}"></a>
                                             <a title="Add website" name="website" class="crm-addNewLink"></a>
+                                            <input type="hidden" name="{CRM_CONTACT_WEB_ID_NAME}" value="{CRM_CONTACT_WEB_ID}" />
                                         </div>
                                     </div>
                                     <!-- END contactwebsiteContainer -->
@@ -269,7 +270,7 @@
                         </tr>
                         <tr>
                             <td>
-                                {TXT_PHONE}
+                                {TXT_CRM_PHONE}
                             </td>
                             <td colspan="3">
                                 <div class="multiple_input" id="phoneContainer">
@@ -307,7 +308,7 @@
                 <table class="adminlist" id="profile-info" cellspacing="0" cellpadding="3" width="100%">
                     <thead>
                         <tr>
-                            <th colspan="4">{TXT_EDITCUSTOMERCONTACT_TITLE}</th>
+                            <th colspan="4">{TXT_CRM_EDITCUSTOMERCONTACT_TITLE}</th>
                         </tr>
                         <tr class="row3"><td colspan="4"><strong>{TXT_CRM_PROFILE_INFORMATION}</strong></td></tr>
                     </thead>
@@ -319,7 +320,7 @@
                     </tr>                    
                     <tr class="row2">
                         <td>
-                            {TXT_EMAIL}&nbsp;<font color="red">*</font>
+                            {TXT_CRM_EMAIL}&nbsp;<font color="red">*</font>
                         </td>
                         <td>
                             <div class="multiple_input" id="emailContainer">
@@ -379,13 +380,14 @@
                                 <!-- BEGIN customerwebsiteContainer -->
                                 <div class="website_list_container">
                                     <div class="website_list">
-                                        <input class="mInput" type="text" name="{CRM_CONTACT_WEBSITE_NAME}" value="{CRM_CONTACT_WEBSITE}" />
+                                        <input class="mInput" type="text" name="{CRM_CONTACT_WEBSITE_NAME}" value="{CRM_CONTACT_WEBSITE}" />                                        
                                         <a onclick="showwebsiteProfilesPanel(this);" class="category">{CRM_WEBSITE_PROFILE}</a>                                        
                                     </div>
                                     <div class="actions_for_item">
                                         <a name="website" title="Delete" class="crm-deleteLink"></a>
                                         <a name="website" title="Mark as primary" class="is_primary {CRM_CONTACT_WEBSITE_PRIMARY}"></a>
                                         <a title="Add website" name="website" class="crm-addNewLink"></a>
+                                        <input type="hidden" name="{CRM_CONTACT_WEB_ID_NAME}" value="{CRM_CONTACT_WEB_ID}" />
                                     </div>
                                 </div>
                                 <!-- END customerwebsiteContainer -->
@@ -440,7 +442,7 @@
                     </tr>
                     <tr class="row1">
                         <td>
-                            {TXT_PHONE}
+                            {TXT_CRM_PHONE}
                         </td>
                         <td>
                             <div class="multiple_input" id="phoneContainer">

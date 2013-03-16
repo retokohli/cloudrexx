@@ -31,10 +31,10 @@ class Javascript {
 
         $TXT_ENTER_CURRENCY_FIELD = $_ARRAYLANG['TXT_ENTER_CURRENCY_FIELD'];
         $TXT_NAME_FIELD_SHOULD_HAVE_ALPHA = $_ARRAYLANG['TXT_NAME_FIELD_SHOULD_HAVE_ALPHA'];
-        $TXT_ARE_YOU_SURE_TO_DELETE_THE_ENTRY =$_ARRAYLANG['TXT_ARE_YOU_SURE_TO_DELETE_THE_ENTRY'];
-        $TXT_SURE_TO_DELETE_SELECTED_ENTRIES = $_ARRAYLANG['TXT_SURE_TO_DELETE_SELECTED_ENTRIES'];
-        $TXT_NOTHING_SELECTED                = $_ARRAYLANG['TXT_NOTHING_SELECTED'];
-        $TXT_SAME_SORTVALUE                  = $_ARRAYLANG['TXT_SAME_SORTVALUE'];
+        $TXT_CRM_ARE_YOU_SURE_TO_DELETE_THE_ENTRY =$_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_TO_DELETE_THE_ENTRY'];
+        $TXT_CRM_SURE_TO_DELETE_SELECTED_ENTRIES = $_ARRAYLANG['TXT_CRM_SURE_TO_DELETE_SELECTED_ENTRIES'];
+        $TXT_CRM_NOTHING_SELECTED                = $_ARRAYLANG['TXT_CRM_NOTHING_SELECTED'];
+        $TXT_CRM_SAME_SORTVALUE                  = $_ARRAYLANG['TXT_CRM_SAME_SORTVALUE'];
         $TXT_ENTER_SORTING                  = $_ARRAYLANG['TXT_ENTER_SORTING'];
         $TXT_SORTING_NUMERIC                  = $_ARRAYLANG['TXT_SORTING_NUMERIC'];
         $MODULE_NAME                          = $this->moduleName;
@@ -206,7 +206,7 @@ function selectMultiAction() {
                                 }
                              }
                                if (!hasChecked) {
-                                      alert("$TXT_NOTHING_SELECTED");
+                                      alert("$TXT_CRM_NOTHING_SELECTED");
                                       document.frmShowCurrencyEntries.frmShowEntries_MultiAction.value=0;
                                       document.frmShowCurrencyEntries.frmShowEntries_MultiAction.focus();
                                       return false;
@@ -214,7 +214,7 @@ function selectMultiAction() {
 		switch (frmShowEntries_MultiAction.value) {
 
 			case 'delete':
-                if (confirm("$TXT_SURE_TO_DELETE_SELECTED_ENTRIES")) {
+                if (confirm("$TXT_CRM_SURE_TO_DELETE_SELECTED_ENTRIES")) {
 					action='index.php?cmd=$MODULE_NAME&act=deleteCurrency&$CSRFPARAM';
 					submit();
 				}
@@ -251,7 +251,7 @@ function selectMultiAction() {
 //                                  for (var j = i+1; j < sortText.length; j++){
 //
 //					if(sortText[i].value==sortText[j].value){
-//                                            alert("$TXT_SAME_SORTVALUE");
+//                                            alert("$TXT_CRM_SAME_SORTVALUE");
 //                                      document.frmShowCurrencyEntries.frmShowEntries_MultiAction.value=0;
 //                                      document.frmShowCurrencyEntries.frmShowEntries_MultiAction.focus();
 //                                            cond=1;
@@ -285,7 +285,7 @@ function showList(id) {
 }
 
 function deleteEntry(entryId){
-            if(confirm("$TXT_ARE_YOU_SURE_TO_DELETE_THE_ENTRY"))
+            if(confirm("$TXT_CRM_ARE_YOU_SURE_TO_DELETE_THE_ENTRY"))
                  window.location.replace("index.php?cmd=$MODULE_NAME&act=deleteCurrency&$CSRFPARAM&id="+entryId);
         }
 //]]>
@@ -300,10 +300,10 @@ END;
 
         $TXT_ENTER_CURRENCY_FIELD = $_ARRAYLANG['TXT_ENTER_CURRENCY_FIELD'];
         $TXT_NAME_FIELD_SHOULD_HAVE_ALPHA = $_ARRAYLANG['TXT_NAME_FIELD_SHOULD_HAVE_ALPHA'];
-        $TXT_ARE_YOU_SURE_TO_DELETE_THE_ENTRY =$_ARRAYLANG['TXT_ARE_YOU_SURE_TO_DELETE_THE_ENTRY'];
-        $TXT_SURE_TO_DELETE_SELECTED_ENTRIES = $_ARRAYLANG['TXT_SURE_TO_DELETE_SELECTED_ENTRIES'];
-        $TXT_NOTHING_SELECTED                = $_ARRAYLANG['TXT_NOTHING_SELECTED'];
-        $TXT_SAME_SORTVALUE                  = $_ARRAYLANG['TXT_SAME_SORTVALUE'];
+        $TXT_CRM_ARE_YOU_SURE_TO_DELETE_THE_ENTRY =$_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_TO_DELETE_THE_ENTRY'];
+        $TXT_CRM_SURE_TO_DELETE_SELECTED_ENTRIES = $_ARRAYLANG['TXT_CRM_SURE_TO_DELETE_SELECTED_ENTRIES'];
+        $TXT_CRM_NOTHING_SELECTED                = $_ARRAYLANG['TXT_CRM_NOTHING_SELECTED'];
+        $TXT_CRM_SAME_SORTVALUE                  = $_ARRAYLANG['TXT_CRM_SAME_SORTVALUE'];
         $TXT_ENTER_SORTING                  = $_ARRAYLANG['TXT_ENTER_SORTING'];
         $TXT_SORTING_NUMERIC                  = $_ARRAYLANG['TXT_SORTING_NUMERIC'];
         $MODULE_NAME                          = $this->moduleName;
@@ -468,7 +468,7 @@ function showList(id) {
 }
 
 function deleteEntry(entryId){
-            if(confirm("$TXT_ARE_YOU_SURE_TO_DELETE_THE_ENTRY"))
+            if(confirm("$TXT_CRM_ARE_YOU_SURE_TO_DELETE_THE_ENTRY"))
                  window.location.replace("index.php?cmd=$MODULE_NAME&act=deleteCurrency&id="+entryId);
         }
 //]]>
@@ -485,10 +485,10 @@ END;
 
     function getServiceTypeJavascript() {
         global $_ARRAYLANG;
-        $TXT_ENTER_NAME                               =  $_ARRAYLANG['TXT_ENTER_NAME'];
+        $TXT_CRM_ENTER_NAME                               =  $_ARRAYLANG['TXT_CRM_ENTER_NAME'];
         $TXT_ENTER_SUPPORTCASES                       =  $_ARRAYLANG['TXT_ENTER_SUPPORTCASES'];
         $TXT_ENTER_PRICE                              =  $_ARRAYLANG['TXT_ENTER_PRICE'];
-        $TXT_ARE_YOU_SURE_TO_DELETE_THE_ENTRY         = $_ARRAYLANG['TXT_ARE_YOU_SURE_TO_DELETE_THE_ENTRY'];
+        $TXT_CRM_ARE_YOU_SURE_TO_DELETE_THE_ENTRY         = $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_TO_DELETE_THE_ENTRY'];
         $MODULE_NAME                          = $this->moduleName;
         $javascript = <<<END
 
@@ -590,7 +590,7 @@ var iChars = "_!@#$%^&*()+=-[]\\\';,./{}|\":<>?";
     }
 
 function deleteEntry(entryId){
-            if(confirm("$TXT_ARE_YOU_SURE_TO_DELETE_THE_ENTRY"))
+            if(confirm("$TXT_CRM_ARE_YOU_SURE_TO_DELETE_THE_ENTRY"))
                  window.location.replace("index.php?cmd=$MODULE_NAME&act=deleteServiceType&delId="+entryId);
         }
 
@@ -641,9 +641,9 @@ END;
 
     function getHostingTypeJavascript() {
         global $_ARRAYLANG;
-        $TXT_ENTER_NAME                         =  $_ARRAYLANG['TXT_ENTER_NAME'];
+        $TXT_CRM_ENTER_NAME                         =  $_ARRAYLANG['TXT_CRM_ENTER_NAME'];
         $TXT_ENTER_PRICE                              =  $_ARRAYLANG['TXT_ENTER_PRICE'];
-        $TXT_ARE_YOU_SURE_TO_DELETE_THE_ENTRY         = $_ARRAYLANG['TXT_ARE_YOU_SURE_TO_DELETE_THE_ENTRY'];
+        $TXT_CRM_ARE_YOU_SURE_TO_DELETE_THE_ENTRY         = $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_TO_DELETE_THE_ENTRY'];
         $MODULE_NAME                          = $this->moduleName;
         $javascript = <<<END
   
@@ -743,7 +743,7 @@ END;
     }
 
 function deleteEntry(entryId){
-            if(confirm("$TXT_ARE_YOU_SURE_TO_DELETE_THE_ENTRY"))
+            if(confirm("$TXT_CRM_ARE_YOU_SURE_TO_DELETE_THE_ENTRY"))
                  window.location.replace("index.php?cmd=$MODULE_NAME&act=deleteHostingType&delId="+entryId);
         }
 
@@ -788,7 +788,7 @@ END;
 
     function getShowCustomerdetailsJavascript() {
         global $_ARRAYLANG;
-        $TXT_ARE_YOU_SURE_DELETE_ENTRIES = $_ARRAYLANG['TXT_ARE_YOU_SURE_DELETE_ENTRIES'];
+        $TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES = $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES'];
         $TXT_ARE_YOU_SURE_DELETE_SELECTED_ENTRIES = $_ARRAYLANG['TXT_ARE_YOU_SURE_DELETE_SELECTED_ENTRIES'];
         $TXT_ENTER_CUSTOMERNAME                   = $_ARRAYLANG['TXT_ENTER_CUSTOMERNAME'];
         $TXT_ENTER_DOMAINNAME                         =  $_ARRAYLANG['TXT_ENTER_DOMAINNAME'];
@@ -829,20 +829,20 @@ END;
 
 
 function deleteSupportCase(entryId,customId){
-            if(confirm("$TXT_ARE_YOU_SURE_DELETE_ENTRIES"))
+            if(confirm("$TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES"))
        
        window.location.replace("index.php?cmd=$MODULE_NAME&act=showcustdetail&act=deleteCustomerSupportcase&id="+entryId+"&customId="+customId);
      
         }
         
   function deleteHosting(entryId,customId){
-            if(confirm("$TXT_ARE_YOU_SURE_DELETE_ENTRIES"))
+            if(confirm("$TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES"))
        
        window.location.replace("index.php?cmd=crm&act=showcustdetail&action=addHosting&act=deleteCustomerHosting&id="+entryId+"&customId="+customId);
      
         }
          function deleteServicePlan(entryId,customerId){
-            if(confirm("$TXT_ARE_YOU_SURE_DELETE_ENTRIES"))
+            if(confirm("$TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES"))
   window.location.replace("index.php?cmd=$MODULE_NAME&act=showcustdetail&act=deleteCustomerServiceplan&seriveId="+entryId+"&customerId="+customerId);
    
         }
@@ -1036,14 +1036,14 @@ END;
     function getCustomerTypeJavascript() {
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
 
-        $TXT_SURE_TO_DELETE_SELECTED_ENTRIES  = $_ARRAYLANG['TXT_SURE_TO_DELETE_SELECTED_ENTRIES'];
-        $TXT_ENTER_LABEL_FIELD                = $_ARRAYLANG['TXT_ENTER_LABEL_FIELD'];
-        $TXT_ENTER_LABEL_FIELD_WITHOUT_SPECIAL_CHARACTERS = $_ARRAYLANG['TXT_ENTER_LABEL_FIELD_WITHOUT_SPECIAL_CHARACTERS'];
-        $TXT_ENTER_DISCOUNT_PERCENT           = $_ARRAYLANG['TXT_ENTER_DISCOUNT_PERCENT'];
-        $TXT_PLEASE_ENTER_DISCOUNT_PERCENT_IN_NUMBER = $_ARRAYLANG['TXT_PLEASE_ENTER_DISCOUNT_PERCENT_IN_NUMBER'];
-        $TXT_ARE_YOU_SURE_TO_DELETE_THE_ENTRY = $_ARRAYLANG['TXT_ARE_YOU_SURE_TO_DELETE_THE_ENTRY'];
-        $TXT_NOTHING_SELECTED                 = $_ARRAYLANG['TXT_NOTHING_SELECTED'];
-        $TXT_SAME_SORTVALUE                   = $_ARRAYLANG['TXT_SAME_SORTVALUE'];
+        $TXT_CRM_SURE_TO_DELETE_SELECTED_ENTRIES  = $_ARRAYLANG['TXT_CRM_SURE_TO_DELETE_SELECTED_ENTRIES'];
+        $TXT_CRM_ENTER_LABEL_FIELD                = $_ARRAYLANG['TXT_CRM_ENTER_LABEL_FIELD'];
+        $TXT_CRM_ENTER_LABEL_FIELD_WITHOUT_SPECIAL_CHARACTERS = $_ARRAYLANG['TXT_CRM_ENTER_LABEL_FIELD_WITHOUT_SPECIAL_CHARACTERS'];
+        $TXT_CRM_ENTER_DISCOUNT_PERCENT           = $_ARRAYLANG['TXT_CRM_ENTER_DISCOUNT_PERCENT'];
+        $TXT_CRM_PLEASE_ENTER_DISCOUNT_PERCENT_IN_NUMBER = $_ARRAYLANG['TXT_CRM_PLEASE_ENTER_DISCOUNT_PERCENT_IN_NUMBER'];
+        $TXT_CRM_ARE_YOU_SURE_TO_DELETE_THE_ENTRY = $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_TO_DELETE_THE_ENTRY'];
+        $TXT_CRM_NOTHING_SELECTED                 = $_ARRAYLANG['TXT_CRM_NOTHING_SELECTED'];
+        $TXT_CRM_SAME_SORTVALUE                   = $_ARRAYLANG['TXT_CRM_SAME_SORTVALUE'];
         $TXT_ENTER_SORTING                    = $_ARRAYLANG['TXT_ENTER_SORTING'];
         $TXT_SORTING_NUMERIC                  = $_ARRAYLANG['TXT_SORTING_NUMERIC'];
         $MODULE_NAME                          = $this->moduleName;
@@ -1129,14 +1129,14 @@ function selectMultiAction() {
                                 }
                              }
                                if (!hasChecked) {
-                                      alert("$TXT_NOTHING_SELECTED");
+                                      alert("$TXT_CRM_NOTHING_SELECTED");
                                       document.frmShowCustomerEntries.frmShowEntries_MultiAction.value=0;
                                       document.frmShowCustomerEntries.frmShowEntries_MultiAction.focus();
                                       return false;
                                }
 		switch (frmShowEntries_MultiAction.value) {
 			case 'delete':
-                if (confirm("$TXT_SURE_TO_DELETE_SELECTED_ENTRIES")) {
+                if (confirm("$TXT_CRM_SURE_TO_DELETE_SELECTED_ENTRIES")) {
 					action='index.php?cmd=$MODULE_NAME&act=deleteCustomerTypes&$CSRFPARAM';
 					submit();
 				}
@@ -1194,7 +1194,7 @@ function showList(id) {
 }
 
 function deleteEntry(entryId){
-            if(confirm("$TXT_ARE_YOU_SURE_TO_DELETE_THE_ENTRY"))
+            if(confirm("$TXT_CRM_ARE_YOU_SURE_TO_DELETE_THE_ENTRY"))
         //alert("index.php?cmd=$MODULE_NAME&act=deleteCustomerTypes&$CSRFPARAM&id="+entryId);
                  window.location.replace("index.php?cmd=$MODULE_NAME&act=deleteCustomerTypes&$CSRFPARAM&id="+entryId);
         }
@@ -1224,7 +1224,7 @@ function checkValidations() {
 		document.getElementById("discount").value="";
 
     } else if(discountPercent.search(/^[0-9.]+$/)) {
-        errors.push("$TXT_PLEASE_ENTER_DISCOUNT_PERCENT_IN_NUMBER");
+        errors.push("$TXT_CRM_PLEASE_ENTER_DISCOUNT_PERCENT_IN_NUMBER");
 		document.getElementById("discount").style.border = "1px solid red";
 		document.getElementById("discount").value="";
     }*/
@@ -1262,18 +1262,18 @@ END;
 
     function editCustomerTypeJavascript() {
         global $_ARRAYLANG;
-        $TXT_ENTER_LABEL_FIELD   = $_ARRAYLANG['TXT_ENTER_LABEL_FIELD'];
-        $TXT_ENTER_LABEL_FIELD_WITHOUT_SPECIAL_CHARACTERS = $_ARRAYLANG['TXT_ENTER_LABEL_FIELD_WITHOUT_SPECIAL_CHARACTERS'];
-        $TXT_ENTER_DISCOUNT_PERCENT = $_ARRAYLANG['TXT_ENTER_DISCOUNT_PERCENT'];
-        $TXT_PLEASE_ENTER_DISCOUNT_PERCENT_IN_NUMBER = $_ARRAYLANG['TXT_PLEASE_ENTER_DISCOUNT_PERCENT_IN_NUMBER'];
+        $TXT_CRM_ENTER_LABEL_FIELD   = $_ARRAYLANG['TXT_CRM_ENTER_LABEL_FIELD'];
+        $TXT_CRM_ENTER_LABEL_FIELD_WITHOUT_SPECIAL_CHARACTERS = $_ARRAYLANG['TXT_CRM_ENTER_LABEL_FIELD_WITHOUT_SPECIAL_CHARACTERS'];
+        $TXT_CRM_ENTER_DISCOUNT_PERCENT = $_ARRAYLANG['TXT_CRM_ENTER_DISCOUNT_PERCENT'];
+        $TXT_CRM_PLEASE_ENTER_DISCOUNT_PERCENT_IN_NUMBER = $_ARRAYLANG['TXT_CRM_PLEASE_ENTER_DISCOUNT_PERCENT_IN_NUMBER'];
 
-        $TXT_NOTHING_SELECTED                 =$_ARRAYLANG['TXT_NOTHING_SELECTED'];
-        $TXT_SAME_SORTVALUE                   = $_ARRAYLANG['TXT_SAME_SORTVALUE'];
+        $TXT_CRM_NOTHING_SELECTED                 =$_ARRAYLANG['TXT_CRM_NOTHING_SELECTED'];
+        $TXT_CRM_SAME_SORTVALUE                   = $_ARRAYLANG['TXT_CRM_SAME_SORTVALUE'];
         $TXT_ENTER_SORTING                   = $_ARRAYLANG['TXT_ENTER_SORTING'];
         $TXT_SORTING_NUMERIC                 = $_ARRAYLANG['TXT_SORTING_NUMERIC'];
 
-        $TXT_SURE_TO_DELETE_SELECTED_ENTRIES = $_ARRAYLANG['TXT_SURE_TO_DELETE_SELECTED_ENTRIES'];
-        $TXT_ARE_YOU_SURE_TO_DELETE_THE_ENTRY =$_ARRAYLANG['TXT_ARE_YOU_SURE_TO_DELETE_THE_ENTRY'];
+        $TXT_CRM_SURE_TO_DELETE_SELECTED_ENTRIES = $_ARRAYLANG['TXT_CRM_SURE_TO_DELETE_SELECTED_ENTRIES'];
+        $TXT_CRM_ARE_YOU_SURE_TO_DELETE_THE_ENTRY =$_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_TO_DELETE_THE_ENTRY'];
         $MODULE_NAME                          = $this->moduleName;
         $javascript = <<<END
 <script type="text/javascript" src="../lib/javascript/jquery.js"></script>          
@@ -1330,14 +1330,14 @@ function selectMultiAction() {
                                 }
                              }
                                if (!hasChecked) {
-                                      alert("$TXT_NOTHING_SELECTED");
+                                      alert("$TXT_CRM_NOTHING_SELECTED");
                                       document.frmShowCustomerEntries.frmShowEntries_MultiAction.value=0;
                                       document.frmShowCustomerEntries.frmShowEntries_MultiAction.focus();
                                       return false;
                                }
 		switch (frmShowEntries_MultiAction.value) {
 			case 'delete':
-                if (confirm("$TXT_SURE_TO_DELETE_SELECTED_ENTRIES")) {
+                if (confirm("$TXT_CRM_SURE_TO_DELETE_SELECTED_ENTRIES")) {
 					action='index.php?cmd=$MODULE_NAME&act=deleteCustomerTypes';
 					submit();
 				}
@@ -1397,7 +1397,7 @@ function showList(id) {
 }
 
 function deleteEntry(entryId){
-            if(confirm("$TXT_ARE_YOU_SURE_TO_DELETE_THE_ENTRY"))
+            if(confirm("$TXT_CRM_ARE_YOU_SURE_TO_DELETE_THE_ENTRY"))
                  window.location.replace("index.php?cmd=$MODULE_NAME&act=deleteCustomerTypes&id="+entryId);
         }
 
@@ -1420,7 +1420,7 @@ function checkValidations() {
         document.customerTypes.discount_percent.style.border = "1px solid red";     
 		document.customerTypes.discount_percent.value="";
     } else if(discountPercent.search(/^[0-9.]+$/)) {
-        errors.push("$TXT_PLEASE_ENTER_DISCOUNT_PERCENT_IN_NUMBER");
+        errors.push("$TXT_CRM_PLEASE_ENTER_DISCOUNT_PERCENT_IN_NUMBER");
 		document.customerTypes.discount_percent.style.border = "1px solid red";     
 		document.customerTypes.discount_percent.value="";
     }*/
@@ -1516,7 +1516,7 @@ END;
 
     function crmAjaxformSubmitForShadowbox() {
         global $_ARRAYLANG;
-        $CRM_COMPANY_NAME_ALREADY_PRESENT   = $_ARRAYLANG['TXT_COMPANYNAME_ALREADY_EXISTS'];
+        $CRM_COMPANY_NAME_ALREADY_PRESENT   = $_ARRAYLANG['TXT_CRM_COMPANYNAME_ALREADY_EXISTS'];
         $javascript = <<<END
 <!--  Script refered from
         http://jquery.malsup.com/form/ 
@@ -1560,7 +1560,7 @@ END;
 
     function pmAjaxformSubmitForShadowbox($tpl) {
         global $_ARRAYLANG;
-        $CRM_COMPANY_NAME_ALREADY_PRESENT   = $_ARRAYLANG['TXT_COMPANYNAME_ALREADY_EXISTS'];
+        $CRM_COMPANY_NAME_ALREADY_PRESENT   = $_ARRAYLANG['TXT_CRM_COMPANYNAME_ALREADY_EXISTS'];
         $javascript = <<<END
 <!--  Script refered from
         http://jquery.malsup.com/form/
@@ -1613,7 +1613,7 @@ END;
 
     function pmAjaxformContactFormSubmit() {
         global $_ARRAYLANG;
-        $CRM_COMPANY_NAME_ALREADY_PRESENT   = $_ARRAYLANG['TXT_COMPANYNAME_ALREADY_EXISTS'];
+        $CRM_COMPANY_NAME_ALREADY_PRESENT   = $_ARRAYLANG['TXT_CRM_COMPANYNAME_ALREADY_EXISTS'];
         $javascript = <<<END
 <!--  Script refered from
         http://jquery.malsup.com/form/

@@ -1,8 +1,8 @@
 {IMPORT_FINAL_JAVASCRIPT}
 
 <ul id="tabmenu">
-	<li><a id="Entries_Import" class="active" href="javascript:{}" onclick="selectTab('Import')" title="{TXT_IMPORT_NAME}">{TXT_IMPORT_NAME}</a></li>
-	<li><a id="Entries_Export" class="" href="javascript:{}" onclick="selectTab('Export')" title="{TXT_EXPORT_NAME}">{TXT_EXPORT_NAME}</a></li>
+	<li><a id="Entries_Import" class="active" href="javascript:{}" onclick="selectTab('Import')" title="{TXT_CRM_IMPORT_NAME}">{TXT_CRM_IMPORT_NAME}</a></li>
+	<li><a id="Entries_Export" class="" href="javascript:{}" onclick="selectTab('Export')" title="{TXT_CRM_EXPORT_NAME}">{TXT_CRM_EXPORT_NAME}</a></li>
 </ul>
 
 <form name="frmSelectFields" action="index.php?cmd={MODULE_NAME}&act=InsertCSV" method="post"><input name="csrf" value="LTU3ODc3OTQ4NQ__" type="hidden">
@@ -20,36 +20,36 @@
 
 <table class="adminlist" width="100%" cellspacing="0" cellpadding="3" border="0">
     <tr>
-        <th colspan="4">{TXT_IMPORT_ANALYSIS}</th>
+        <th colspan="4">{TXT_CRM_IMPORT_ANALYSIS}</th>
     </tr>
 
     <tr class="row3">
-        <td colspan="4"><b>{TXT_CUSTOMER_TYPE}</b></td>
+        <td colspan="4"><b>{TXT_CRM_CUSTOMER_TYPE}</b></td>
     </tr>
 
     <tr class="row2">
         <td valign="top">
-            <b>{TXT_CSV_TXTFILE}:</b><br>
+            <b>{TXT_CRM_CSV_TXTFILE}:</b><br>
             <select name="FileFields" id="file_field" style="width: 200px;" size="5">
 		{TXT_FILECUSTOMER_TYPE}
             </select>
         </td>
 	<td>&nbsp;&nbsp;</td>
         <td valign="top">
-            <b>{TXT_CSV_DATABASE}:</b><br>
+            <b>{TXT_CRM_CSV_DATABASE}:</b><br>
             <select name="DbFields" id="given_field" style="width: 200px;" size="5">
 		{TXT_DBCUSTOMERS_TYPE}
             </select>
         </td>
         <td width="50%">
-  	    <!--div class="infobox_head">{TXT_CSV_NOTE}</div>
-  	    <div class="infobox_body">{TXT_CSV_NOTE_TXT}<br><br>
+  	    <!--div class="infobox_head">{TXT_CRM_CSV_NOTE}</div>
+  	    <div class="infobox_body">{TXT_CRM_CSV_NOTE_TXT}<br><br>
 	    </div-->
         </td>
     </tr>
     <tr class="row1">
         <td colspan="4">
-            <input value="{TXT_CSV_ADDPAIR}" onclick="javascript:addPair();" type="button" title="{TXT_CSV_NOTE_TXT}">
+            <input value="{TXT_CRM_CSV_ADDPAIR}" onclick="javascript:addPair();" type="button" title="{TXT_CRM_CSV_NOTE_TXT}">
         </td>
     </tr>
     <tr class="row2">
@@ -62,43 +62,43 @@
         </td>
 
         <td>
-            <!--div class="infobox_head">{TXT_CSV_NOTE}</div>
-                <div class="infobox_body">{TXT_CSV_REMOVE_PAIR}
+            <!--div class="infobox_head">{TXT_CRM_CSV_NOTE}</div>
+                <div class="infobox_body">{TXT_CRM_CSV_REMOVE_PAIR}
 	        </div-->
         </td>
     </tr>
     <tr class="row1">
         <td colspan="4">
-            <input value="{TXT_CSV_REMOVEPAIR}" onclick="removePair();" type="button" title="{TXT_CSV_REMOVE_PAIR}">
+            <input value="{TXT_CRM_CSV_REMOVEPAIR}" onclick="removePair();" type="button" title="{TXT_CRM_CSV_REMOVE_PAIR}">
         </td>
     </tr>
 
     <tr class="row3">
-        <td colspan="4"><b>{TXT_CSV_PARENTID}</b></td>
+        <td colspan="4"><b>{TXT_CRM_CSV_PARENTID}</b></td>
     </tr>
     <tr class="row2">
         <td valign="top">
-            <b>{TXT_CSV_TXTFILE}:</b><br>
+            <b>{TXT_CRM_CSV_TXTFILE}:</b><br>
             <select name="FileFields" id="file_field2" style="width: 200px;" size="5">
 	         {TXT_FILEPARENT_ID}
             </select>
         </td>
 	<td>&nbsp;&nbsp;</td>
         <td valign="top">
-            <b>{TXT_CSV_DATABASE}:</b><br>
+            <b>{TXT_CRM_CSV_DATABASE}:</b><br>
             <select name="DbFields" id="given_field2" style="width: 200px;" size="5">
                  {TXT_DBCUSTOMERS_NAME}
             </select>
         </td>
         <td width="35%">
-  	    <!--div class="infobox_head">{TXT_CSV_NOTE}</div>
-  	    <div class="infobox_body">{TXT_CSV_NOTE_TXT}<br><br>
+  	    <!--div class="infobox_head">{TXT_CRM_CSV_NOTE}</div>
+  	    <div class="infobox_body">{TXT_CRM_CSV_NOTE_TXT}<br><br>
 	    </div-->
         </td>
     </tr>
     <tr class="row1">
         <td colspan="4">
-            <input value="{TXT_CSV_ADDPAIR}" onclick="javascript:addPair2();" type="button" title="{TXT_CSV_NOTE_TXT}">
+            <input value="{TXT_CRM_CSV_ADDPAIR}" onclick="javascript:addPair2();" type="button" title="{TXT_CRM_CSV_NOTE_TXT}">
         </td>
     </tr>
     <tr class="row2">
@@ -111,43 +111,43 @@
         </td>
 
         <td>
-            <!--div class="infobox_head">{TXT_CSV_NOTE}</div>
-                <div class="infobox_body">{TXT_CSV_REMOVE_PAIR}
+            <!--div class="infobox_head">{TXT_CRM_CSV_NOTE}</div>
+                <div class="infobox_body">{TXT_CRM_CSV_REMOVE_PAIR}
 	        </div-->
         </td>
     </tr>
     <tr class="row1">
         <td colspan="4">
-            <input value="{TXT_CSV_REMOVEPAIR}" onclick="removePair2();" type="button" title="{TXT_CSV_REMOVE_PAIR}">
+            <input value="{TXT_CRM_CSV_REMOVEPAIR}" onclick="removePair2();" type="button" title="{TXT_CRM_CSV_REMOVE_PAIR}">
         </td>
     </tr>
 
     <tr  class="row3">
-        <td colspan="4"><b>{TXT_CSV_LANGUAGE}</b></td>
+        <td colspan="4"><b>{TXT_CRM_CSV_LANGUAGE}</b></td>
     </tr>
     <tr class="row2">
         <td valign="top">
-            <b>{TXT_CSV_TXTFILE}:</b><br>
+            <b>{TXT_CRM_CSV_TXTFILE}:</b><br>
             <select name="FileFields" id="file_field3" style="width: 200px;" size="5">
 	         {TXT_FILELANG_NAME}
             </select>
         </td>
 	<td>&nbsp;&nbsp;</td>
         <td valign="top">
-            <b>{TXT_CSV_DATABASE}:</b><br>
+            <b>{TXT_CRM_CSV_DATABASE}:</b><br>
             <select name="DbFields" id="given_field3" style="width: 200px;" size="5">
                  {TXT_DBLANG_NAME}
             </select>
         </td>
         <td width="35%">
-  	    <!--div class="infobox_head">{TXT_CSV_NOTE}</div>
-  	    <div class="infobox_body">{TXT_CSV_NOTE_TXT}<br><br>
+  	    <!--div class="infobox_head">{TXT_CRM_CSV_NOTE}</div>
+  	    <div class="infobox_body">{TXT_CRM_CSV_NOTE_TXT}<br><br>
 	    </div-->
         </td>
     </tr>
     <tr class="row1">
         <td colspan="4">
-            <input value="{TXT_CSV_ADDPAIR}" onclick="javascript:addPair3();" type="button" title="{TXT_CSV_NOTE_TXT}">
+            <input value="{TXT_CRM_CSV_ADDPAIR}" onclick="javascript:addPair3();" type="button" title="{TXT_CRM_CSV_NOTE_TXT}">
         </td>
     </tr>
     <tr class="row2">
@@ -160,43 +160,43 @@
         </td>
 
         <td>
-            <!--div class="infobox_head">{TXT_CSV_NOTE}</div>
-                <div class="infobox_body">{TXT_CSV_REMOVE_PAIR}
+            <!--div class="infobox_head">{TXT_CRM_CSV_NOTE}</div>
+                <div class="infobox_body">{TXT_CRM_CSV_REMOVE_PAIR}
 	        </div-->
         </td>
     </tr>
     <tr class="row1">
         <td colspan="4">
-            <input value="{TXT_CSV_REMOVEPAIR}" onclick="removePair3();" type="button" title="{TXT_CSV_REMOVE_PAIR}">
+            <input value="{TXT_CRM_CSV_REMOVEPAIR}" onclick="removePair3();" type="button" title="{TXT_CRM_CSV_REMOVE_PAIR}">
         </td>
     </tr>
 
     <tr class="row3">
-        <td colspan="4"><b>{TXT_CSV_CURRENCY}</b></td>
+        <td colspan="4"><b>{TXT_CRM_CSV_CURRENCY}</b></td>
     </tr>
     <tr class="row2">
         <td valign="top">
-            <b>{TXT_CSV_TXTFILE}:</b><br>
+            <b>{TXT_CRM_CSV_TXTFILE}:</b><br>
             <select name="FileFields" id="file_field4" style="width: 200px;" size="5">
 		 {TXT_FILECURRENCY_NAME}
             </select>
         </td>
 	<td>&nbsp;&nbsp;</td>
         <td valign="top">
-            <b>{TXT_CSV_DATABASE}:</b><br>
+            <b>{TXT_CRM_CSV_DATABASE}:</b><br>
             <select name="DbFields" id="given_field4" style="width: 200px;" size="5">
                  {TXT_DBCURRENCY_NAME}
             </select>
         </td>
         <td width="35%">
-  	    <!--div class="infobox_head">{TXT_CSV_NOTE}</div>
-  	    <div class="infobox_body">{TXT_CSV_NOTE_TXT}<br><br>
+  	    <!--div class="infobox_head">{TXT_CRM_CSV_NOTE}</div>
+  	    <div class="infobox_body">{TXT_CRM_CSV_NOTE_TXT}<br><br>
 	    </div-- >
         </td>
     </tr>
     <tr class="row1">
         <td colspan="4">
-            <input value="{TXT_CSV_ADDPAIR}" onclick="javascript:addPair4();" type="button" title="{TXT_CSV_NOTE_TXT}">
+            <input value="{TXT_CRM_CSV_ADDPAIR}" onclick="javascript:addPair4();" type="button" title="{TXT_CRM_CSV_NOTE_TXT}">
         </td>
     </tr>
     <tr class="row2">
@@ -209,19 +209,19 @@
         </td>
 
         <td>
-            <!--div class="infobox_head">{TXT_CSV_NOTE}</div>
-                <div class="infobox_body">{TXT_CSV_REMOVE_PAIR}
+            <!--div class="infobox_head">{TXT_CRM_CSV_NOTE}</div>
+                <div class="infobox_body">{TXT_CRM_CSV_REMOVE_PAIR}
 	        </div-->
         </td>
     </tr>
     <tr class="row1">
         <td colspan="4">
-            <input value="{TXT_CSV_REMOVEPAIR}" onclick="removePair4();" type="button" title="{TXT_CSV_REMOVE_PAIR}">
+            <input value="{TXT_CRM_CSV_REMOVEPAIR}" onclick="removePair4();" type="button" title="{TXT_CRM_CSV_REMOVE_PAIR}">
         </td>
     </tr>	
 </table>
 
 <br>
-  <input value="{TXT_SAVE}" onclick="" title="{TXT_SAVE}" type="submit">
+  <input value="{TXT_CRM_SAVE}" onclick="" title="{TXT_CRM_SAVE}" type="submit">
 </div>
 </form>

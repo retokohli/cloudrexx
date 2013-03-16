@@ -15,7 +15,7 @@
             <th width="10%" style="font-weight:bold;">{TXT_CRM_PROJECT_STATUS}</td>
             <th width="10%" style="font-weight:bold;">{TXT_CRM_PROJECT_RESPONSIBLE}</td>
             <th width="8%" style="font-weight:bold;">{TXT_CRM_PROJECT_TARGET_DATE}</td>
-            <th width="8%" style="text-align: right;font-weight:bold;padding-right: 2px;">{TXT_TITLE_FUNCTIONS}</td>
+            <th width="8%" style="text-align: right;font-weight:bold;padding-right: 2px;">{TXT_CRM_TITLE_FUNCTIONS}</td>
         </tr>
     </thead>
     <tbody>
@@ -37,11 +37,11 @@
             <td>{CRM_PROJECT_TARGET_DATE}</td>
             <td>
                 <div align="right">
-                    <a title="{TXT_IMAGE_EDIT}" target="_self" href="index.php?cmd={PM_MODULE_NAME}&amp;act=editproject&amp;redirect=custdetails&amp;id={CRM_PROJECT_ID}&{CSRF_PARAM}">
-                        <img border="0" title="{TXT_IMAGE_EDIT}" alt="{TXT_IMAGE_EDIT}" src="images/icons/edit.gif" />
+                    <a title="{TXT_CRM_IMAGE_EDIT}" target="_self" href="index.php?cmd={PM_MODULE_NAME}&amp;act=editproject&amp;redirect=custdetails&amp;id={CRM_PROJECT_ID}&{CSRF_PARAM}">
+                        <img border="0" title="{TXT_CRM_IMAGE_EDIT}" alt="{TXT_CRM_IMAGE_EDIT}" src="images/icons/edit.gif" />
                     </a>
-                    <a title="{TXT_IMAGE_DELETE}" target="_self" href="javascript:deleteProjectEntry({CRM_PROJECT_ID});">
-                        <img border="0" title="{TXT_IMAGE_DELETE}" alt="{TXT_IMAGE_DELETE}" src="images/icons/delete.gif" />
+                    <a title="{TXT_CRM_IMAGE_DELETE}" target="_self" href="javascript:deleteProjectEntry({CRM_PROJECT_ID});">
+                        <img border="0" title="{TXT_CRM_IMAGE_DELETE}" alt="{TXT_CRM_IMAGE_DELETE}" src="images/icons/delete.gif" />
                     </a>
                 </div>
             </td>
@@ -51,5 +51,5 @@
     </tbody>
 </table>
 <br>
-<a href="./index.php?cmd=pm&act=addnewproject&{CSRF_PARAM}&customer={CRM_CUSTOMER_ID}{CRM_REDIRECT_LINK}" title="{TXT_ADD_PROJECT}"><input type="button" name="{TXT_ADD_PROJECT}" value="{TXT_ADD_PROJECT}" /></a>
+<a href="./index.php?cmd=pm&act=addnewproject&{CSRF_PARAM}&customer={CRM_CUSTOMER_ID}{CRM_REDIRECT_LINK}" title="{TXT_CRM_ADD_PROJECT}"><input type="button" name="{TXT_CRM_ADD_PROJECT}" value="{TXT_CRM_ADD_PROJECT}" /></a>
 <!-- END skipAjaxBlock1 -->

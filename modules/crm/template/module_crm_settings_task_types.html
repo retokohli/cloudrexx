@@ -7,7 +7,7 @@
             $J.get(url, function(data) {
                 image = $elm.find('img').attr('src').split('/')[2] == 'led_green.gif' ? 'led_red.gif' : 'led_green.gif';
                 $elm.find('img').attr('src', 'images/icons/'+image);
-                fadeOkbox('{TXT_STATUS_SUCCESSFULLY_CHANGED}');
+                fadeOkbox('{TXT_CRM_STATUS_SUCCESSFULLY_CHANGED}');
             });
             e.preventDefault();
         });
@@ -66,21 +66,21 @@
             <tr>
                 <td>
                     <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_ENTRIES_MARKED}:" />
-                    <a href="#" onclick="changeCheckboxes('taskTypeOverview','taskTypeId[]',true); return false;">{TXT_SELECT_ALL}</a> /
-                    <a href="#" onclick="changeCheckboxes('taskTypeOverview','taskTypeId[]',false); return false;">{TXT_DESELECT_ALL}</a>
+                    <a href="#" onclick="changeCheckboxes('taskTypeOverview','taskTypeId[]',true); return false;">{TXT_CRM_SELECT_ALL}</a> /
+                    <a href="#" onclick="changeCheckboxes('taskTypeOverview','taskTypeId[]',false); return false;">{TXT_CRM_DESELECT_ALL}</a>
                     <img src="images/icons/strike.gif" alt="" />
                     <select name="actionType" id="multiAction">
-                        <option value="0">{TXT_SELECT_ACTION}</option>
-                        <option value="activate">{TXT_ACTIVATE_SELECTED}</option>
-                        <option value="deactivate">{TXT_DEACTIVATE_SELECTED}</option>
-                        <option value="savesorting">{TXT_SAVE_SORTING}</option>
-                        <option value="delete">{TXT_DELETE_SELECTED}</option>
+                        <option value="0">{TXT_CRM_SELECT_ACTION}</option>
+                        <option value="activate">{TXT_CRM_ACTIVATE_SELECTED}</option>
+                        <option value="deactivate">{TXT_CRM_DEACTIVATE_SELECTED}</option>
+                        <option value="savesorting">{TXT_CRM_SAVE_SORTING}</option>
+                        <option value="delete">{TXT_CRM_DELETE_SELECTED}</option>
                     </select>
                 </td>
             </tr>
         </table>
         <br>
-        <input style="margin-left:3px;" type="submit" name="actionType" value="{TXT_SAVE}" />
+        <input style="margin-left:3px;" type="submit" name="actionType" value="{TXT_CRM_SAVE}" />
     </form>
 </div>
 <div id="AddTaskTypes" class="Entries" style="display: none;">

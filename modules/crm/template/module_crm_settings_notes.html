@@ -30,7 +30,7 @@
             }
             if(document.notes.form_select_todo.value == "delete")
             {
-                if(confirm('{TXT_DELETE_CONFIRM}'))
+                if(confirm('{TXT_CRM_DELETE_CONFIRM}'))
                 {
                     document.notes.form_delete.value = "1";
                     document.notes.submit();
@@ -39,7 +39,7 @@
         }
         else
         {
-            alert("{TXT_NO_OPERATION}");
+            alert("{TXT_CRM_NO_OPERATION}");
         }
         document.notes.form_select_todo.value = "0";
     }
@@ -86,23 +86,23 @@
 <div id="formerr"></div>
 <br />
 <ul id="tabmenu">
-    <li><a id="Entries_ShowNotesTypesEntries" class="active" href="javascript:{}" onclick="selectTab('ShowNotesTypesEntries')" title="{TXT_NOTES}">{TXT_NOTES}</a></li>
-    <li><a id="Entries_AddNotesTypes" class="inactive" href="javascript:{}" onclick="selectTab('AddNotesTypes')" title="{TXT_ADD_NOTES_TYPES}">{TXT_ADD_NOTES_TYPES}</a></li>
+    <li><a id="Entries_ShowNotesTypesEntries" class="active" href="javascript:{}" onclick="selectTab('ShowNotesTypesEntries')" title="{TXT_CRM_NOTES}">{TXT_CRM_NOTES}</a></li>
+    <li><a id="Entries_AddNotesTypes" class="inactive" href="javascript:{}" onclick="selectTab('AddNotesTypes')" title="{TXT_CRM_ADD_NOTES_TYPES}">{TXT_CRM_ADD_NOTES_TYPES}</a></li>
 </ul>
 <form action="index.php?cmd=crm&act=settings&tpl=notes&chg=1" method="post" name="notes">
     <div id="ShowNotesTypesEntries" class="Entries" style="display: block">
         <input type="hidden" name="ischecked" value="0" />
         <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
             <tr>
-                <th colspan="15">{TXT_NOTES}</th>
+                <th colspan="15">{TXT_CRM_NOTES}</th>
             </tr>
 
             <tr class="row3">
                 <td style="text-align:center;width: 50px;"><span style="font-weight:bold;">&nbsp;&nbsp;#</span></td>
-                <td style="text-align:center;width: 7%;"><span style="font-weight:bold;">{TXT_TITLE_STATUS}</span></td>
-                <td width="26%"><span style="font-weight:bold;"><a href="index.php?cmd={MODULE_NAME}&act=settings&tpl=notes&sortf=1&sorto={TXT_ORDER}">{TXT_SORTING}</a></span></td>
-                <td width="26%"><span style="font-weight:bold;"><a href="index.php?cmd={MODULE_NAME}&act=settings&tpl=notes&sortf=0&sorto={TXT_ORDER}">{TXT_NAME}</a></span></td>
-                <td  width="38%" colspan="2" align='right'><div style='text-align:right;font-weight:bold;'>{TXT_FUNCTIONS}</span></td>
+                <td style="text-align:center;width: 7%;"><span style="font-weight:bold;">{TXT_CRM_TITLE_STATUS}</span></td>
+                <td width="26%"><span style="font-weight:bold;"><a href="index.php?cmd={MODULE_NAME}&act=settings&tpl=notes&sortf=1&sorto={TXT_ORDER}">{TXT_CRM_SORTING}</a></span></td>
+                <td width="26%"><span style="font-weight:bold;"><a href="index.php?cmd={MODULE_NAME}&act=settings&tpl=notes&sortf=0&sorto={TXT_ORDER}">{TXT_CRM_NAME}</a></span></td>
+                <td  width="38%" colspan="2" align='right'><div style='text-align:right;font-weight:bold;'>{TXT_CRM_FUNCTIONS}</span></td>
             </tr>
             <!-- BEGIN users -->
             <tr class="{TXT_ROW}">
@@ -127,15 +127,15 @@
             <tr>
                 <td>
                     <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_ENTRIES_MARKED}:" />
-                    <a href="javascript:{void(0)}" onclick="setCheckboxes(true); return false;">{TXT_SELECT_ALL}</a> /
-                    <a href="javascript:{void(0)}" onclick="setCheckboxes(false); return false;">{TXT_DESELECT_ALL}</a>
+                    <a href="javascript:{void(0)}" onclick="setCheckboxes(true); return false;">{TXT_CRM_SELECT_ALL}</a> /
+                    <a href="javascript:{void(0)}" onclick="setCheckboxes(false); return false;">{TXT_CRM_DESELECT_ALL}</a>
                     <img src="images/icons/strike.gif" alt="" />
                     <select name="form_select_todo" onchange="selectTodoCategory();">
-                        <option value="0" selected="selected">{TXT_SELECT_ACTION}:</option>
-                        <option value="activate">{TXT_ACTIVATESELECTED}</option>
-                        <option value="deactivate">{TXT_DEACTIVATESELECTED}</option>
-                        <option value="sort">{TXT_PROJECTSTATUS_SAVE_SORTING}</option>
-                        <option value="delete">{TXT_DELETE_SELECTED}</option>
+                        <option value="0" selected="selected">{TXT_CRM_SELECT_ACTION}:</option>
+                        <option value="activate">{TXT_CRM_ACTIVATESELECTED}</option>
+                        <option value="deactivate">{TXT_CRM_DEACTIVATESELECTED}</option>
+                        <option value="sort">{TXT_CRM_PROJECTSTATUS_SAVE_SORTING}</option>
+                        <option value="delete">{TXT_CRM_DELETE_SELECTED}</option>
                     </select>
                     <input type="hidden" name="form_sort" value="" />
                     <input type="hidden" name="form_activate" value="" />
@@ -144,26 +144,26 @@
                 </td>
             </tr>
         </table><br>
-        <input type="submit" name="notes_save" value="{TXT_SAVE}" />
+        <input type="submit" name="notes_save" value="{TXT_CRM_SAVE}" />
     </div>
     <div id="AddNotesTypes" class="Entries" style="display: none;">
         <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
             <tr>
-                <th colspan="15">{TXT_ADD_NOTES_TYPES}</th>
+                <th colspan="15">{TXT_CRM_ADD_NOTES_TYPES}</th>
             </tr>
 
             <tr class="row1">
-                <td width="13%" nowrap>{TXT_NAME}&nbsp;<font color="red">*</font></td>
+                <td width="13%" nowrap>{TXT_CRM_NAME}&nbsp;<font color="red">*</font></td>
                 <td width="10%"><input type="text" name="name" id="name" style="width: 300px;" value="{TXT_STATUSNAME}"></td>
-                <td><input type="checkbox" name="status" value="1" checked>{TXT_TITLEACTIVE}</td>
+                <td><input type="checkbox" name="status" value="1" checked>{TXT_CRM_TITLEACTIVE}</td>
             </tr>
             <tr class="row2">
-                <td width="13%" nowrap>{TXT_SORTING_NUMBER}</td>
+                <td width="13%" nowrap>{TXT_CRM_SORTING_NUMBER}</td>
                 <td width="10%"><input type="text" name="sorting" id="sortingNumber" style="width: 300px;" value=""></td>
                 <td></td>
             </tr>
         </table><br>
-        <input type="submit" name="save" value="{TXT_SAVE}" onClick="return checkValidations();" />
+        <input type="submit" name="save" value="{TXT_CRM_SAVE}" onClick="return checkValidations();" />
     </div>
 </form>
 

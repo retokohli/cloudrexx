@@ -121,9 +121,9 @@ class crmInterface extends CrmLibrary
             'TXT_CRM_SKIP'                          => $_ARRAYLANG['TXT_CRM_SKIP'],
             'TXT_CRM_OVERWRITE'                     => $_ARRAYLANG['TXT_CRM_OVERWRITE'],
             'TXT_CRM_DUPLICATE'                     => $_ARRAYLANG['TXT_CRM_DUPLICATE'],
-            'TXT_CHOOSE_FILE'                       => $_ARRAYLANG['TXT_CHOOSE_FILE'],
-            'TXT_CSV_SEPARATOR'                     => $_ARRAYLANG['TXT_CSV_SEPARATOR'],
-            'TXT_CSV_ENCLOSURE'                     => $_ARRAYLANG['TXT_CSV_ENCLOSURE'],
+            'TXT_CRM_CHOOSE_FILE'                       => $_ARRAYLANG['TXT_CRM_CHOOSE_FILE'],
+            'TXT_CRM_CSV_SEPARATOR'                     => $_ARRAYLANG['TXT_CRM_CSV_SEPARATOR'],
+            'TXT_CRM_CSV_ENCLOSURE'                     => $_ARRAYLANG['TXT_CRM_CSV_ENCLOSURE'],
             'TXT_CRM_ON_DUPLICATES'                 => $_ARRAYLANG['TXT_CRM_ON_DUPLICATES'],
             'TXT_CRM_CHOOSE_CSV'                    => $_ARRAYLANG['TXT_CRM_CHOOSE_CSV'],
             'TXT_CRM_ON_DUPLICATES_INFO'            => $_ARRAYLANG['TXT_CRM_ON_DUPLICATES_INFO'],
@@ -139,8 +139,8 @@ class crmInterface extends CrmLibrary
             'TXT_CRM_CORRESPONDING_FIELD'           => $_ARRAYLANG['TXT_CRM_CORRESPONDING_FIELD'],
             'TXT_CRM_CSV_VALUE'                     => $_ARRAYLANG['TXT_CRM_CSV_VALUE'],
 
-            'TXT_IMPORT_NAME'                       => $_ARRAYLANG['TXT_IMPORT_NAME'],
-            'TXT_EXPORT_NAME'                       => $_ARRAYLANG['TXT_EXPORT_NAME']
+            'TXT_CRM_IMPORT_NAME'                       => $_ARRAYLANG['TXT_CRM_IMPORT_NAME'],
+            'TXT_CRM_EXPORT_NAME'                       => $_ARRAYLANG['TXT_CRM_EXPORT_NAME']
         ));
         
     }
@@ -249,15 +249,15 @@ class crmInterface extends CrmLibrary
         $objTpl->setGlobalVariable(array('MODULE_NAME' => $this->moduleName));
 
         $objTpl->setVariable(array(
-            'TXT_EXPORT_INFO'         => $_ARRAYLANG['TXT_EXPORT_INFO'],
-            'TXT_FUNCTIONS'           => $_ARRAYLANG['TXT_FUNCTIONS'],
-            'TXT_EXPORT_CUSTOMER_CSV' => $_ARRAYLANG['TXT_EXPORT_CUSTOMER_CSV'],
+            'TXT_CRM_EXPORT_INFO'         => $_ARRAYLANG['TXT_CRM_EXPORT_INFO'],
+            'TXT_CRM_FUNCTIONS'           => $_ARRAYLANG['TXT_CRM_FUNCTIONS'],
+            'TXT_CRM_EXPORT_CUSTOMER_CSV' => $_ARRAYLANG['TXT_CRM_EXPORT_CUSTOMER_CSV'],
             'TXT_CRM_EXPORT_COMPANY'  => $_ARRAYLANG['TXT_CRM_EXPORT_COMPANY'],
             'TXT_CRM_EXPORT_PERSON'   => $_ARRAYLANG['TXT_CRM_EXPORT_PERSON'],
             'TXT_CRM_EXPORT_ACTIVE_CUSTOMER' => $_ARRAYLANG['TXT_CRM_EXPORT_ACTIVE_CUSTOMER'],
 
-            'TXT_IMPORT_NAME'         => $_ARRAYLANG['TXT_IMPORT_NAME'],
-            'TXT_EXPORT_NAME'         => $_ARRAYLANG['TXT_EXPORT_NAME']
+            'TXT_CRM_IMPORT_NAME'         => $_ARRAYLANG['TXT_CRM_IMPORT_NAME'],
+            'TXT_CRM_EXPORT_NAME'         => $_ARRAYLANG['TXT_CRM_EXPORT_NAME']
         ));
     }
 
@@ -333,11 +333,11 @@ class crmInterface extends CrmLibrary
                 $headerCsv = array(
                     $_ARRAYLANG['TXT_CRM_CONTACT_TYPE'],
                     $_ARRAYLANG['TXT_COMPANY_NAME'],
-                    $_ARRAYLANG['TXT_TITLE_CUSTOMERID'],
-                    $_ARRAYLANG['TXT_TITLE_CUSTOMERTYPE'],
+                    $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERID'],
+                    $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERTYPE'],
                     $_ARRAYLANG['TXT_CRM_INDUSTRY_TYPE'],
                     $_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP'],
-                    $_ARRAYLANG['TXT_TITLE_CURRENCY'],
+                    $_ARRAYLANG['TXT_CRM_TITLE_CURRENCY'],
                     $_ARRAYLANG['TXT_TITLE_CUSTOMER_ADDEDBY']
                 );
                 break;
@@ -345,15 +345,15 @@ class crmInterface extends CrmLibrary
                 $headerCsv = array(
                     $_ARRAYLANG['TXT_CRM_CONTACT_TYPE'],
                     $_ARRAYLANG['TXT_CRM_CONTACT_NAME'],
-                    $_ARRAYLANG['TXT_FAMILY_NAME'],
+                    $_ARRAYLANG['TXT_CRM_FAMILY_NAME'],
                     $_ARRAYLANG['TXT_CRM_GENDER'],
-                    $_ARRAYLANG['TXT_ROLE'],
+                    $_ARRAYLANG['TXT_CRM_ROLE'],
                     $_ARRAYLANG['TXT_COMPANY_NAME'],
-                    $_ARRAYLANG['TXT_TITLE_CUSTOMERID'],
-                    $_ARRAYLANG['TXT_TITLE_CUSTOMERTYPE'],
+                    $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERID'],
+                    $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERTYPE'],
                     $_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP'],
-                    $_ARRAYLANG['TXT_TITLE_CURRENCY'],
-                    $_ARRAYLANG['TXT_TITLE_LANGUAGE'],
+                    $_ARRAYLANG['TXT_CRM_TITLE_CURRENCY'],
+                    $_ARRAYLANG['TXT_CRM_TITLE_LANGUAGE'],
                     $_ARRAYLANG['TXT_CRM_ACCOUNT_EMAIL'],
                     $_ARRAYLANG['TXT_TITLE_CUSTOMER_ADDEDBY']
                 );
@@ -362,16 +362,16 @@ class crmInterface extends CrmLibrary
                 $headerCsv = array(
                     $_ARRAYLANG['TXT_CRM_CONTACT_TYPE'],
                     $_ARRAYLANG['TXT_CRM_CONTACT_NAME'],
-                    $_ARRAYLANG['TXT_FAMILY_NAME'],
+                    $_ARRAYLANG['TXT_CRM_FAMILY_NAME'],
                     $_ARRAYLANG['TXT_CRM_GENDER'],
-                    $_ARRAYLANG['TXT_ROLE'],
+                    $_ARRAYLANG['TXT_CRM_ROLE'],
                     $_ARRAYLANG['TXT_COMPANY_NAME'],
-                    $_ARRAYLANG['TXT_TITLE_CUSTOMERID'],
-                    $_ARRAYLANG['TXT_TITLE_CUSTOMERTYPE'],
+                    $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERID'],
+                    $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERTYPE'],
                     $_ARRAYLANG['TXT_CRM_INDUSTRY_TYPE'],
                     $_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP'],
-                    $_ARRAYLANG['TXT_TITLE_CURRENCY'],
-                    $_ARRAYLANG['TXT_TITLE_LANGUAGE'],
+                    $_ARRAYLANG['TXT_CRM_TITLE_CURRENCY'],
+                    $_ARRAYLANG['TXT_CRM_TITLE_LANGUAGE'],
                     $_ARRAYLANG['TXT_CRM_ACCOUNT_EMAIL'],
                     $_ARRAYLANG['TXT_TITLE_CUSTOMER_ADDEDBY']
                 );
@@ -379,10 +379,10 @@ class crmInterface extends CrmLibrary
         }
 
         foreach ($this->emailOptions as $emailValue) {
-            array_push($headerCsv, "{$_ARRAYLANG['TXT_EMAIL']} ({$_ARRAYLANG[$emailValue]})");
+            array_push($headerCsv, "{$_ARRAYLANG['TXT_CRM_EMAIL']} ({$_ARRAYLANG[$emailValue]})");
         }
         foreach ($this->phoneOptions as $phoneValue) {
-            array_push($headerCsv, "{$_ARRAYLANG['TXT_PHONE']} ({$_ARRAYLANG[$phoneValue]})");
+            array_push($headerCsv, "{$_ARRAYLANG['TXT_CRM_PHONE']} ({$_ARRAYLANG[$phoneValue]})");
         }
         foreach ($this->websiteProfileOptions as $webValue) {
             array_push($headerCsv, "{$_ARRAYLANG['TXT_CRM_WEBSITE']} ({$_ARRAYLANG[$webValue]})");
@@ -399,7 +399,7 @@ class crmInterface extends CrmLibrary
                 }
             }
         }        
-        $headerCsv[] = $_ARRAYLANG['TXT_DESCRIPTION'];
+        $headerCsv[] = $_ARRAYLANG['TXT_CRM_DESCRIPTION'];
 
         $currDate = date('d_m_Y');
         header("Content-Type: text/comma-separated-values; charset:".CONTREXX_CHARSET, true);
@@ -558,23 +558,23 @@ class crmInterface extends CrmLibrary
             array("name"   => "-1", "title"  => $_ARRAYLANG['TXT_CRM_DONT_IMPORT_FIELD'], "Header" => false),
             array("name"     => "", "title"    => $_ARRAYLANG['TXT_CRM_GENERAL_INFORMATION'], "Header" => true),
             array('name' => 'firstname', 'title' => $_ARRAYLANG['TXT_CRM_CONTACT_NAME'], 'Header' => false),
-            array('name' => 'lastname', 'title' => $_ARRAYLANG['TXT_FAMILY_NAME'], 'Header' => false),
+            array('name' => 'lastname', 'title' => $_ARRAYLANG['TXT_CRM_FAMILY_NAME'], 'Header' => false),
             array('name' => 'company', 'title' => $_ARRAYLANG['TXT_COMPANY_NAME'], 'Header' => false),
             array('name' => 'website', 'title' => $_ARRAYLANG['TXT_CRM_WEBSITE'], 'Header' => false),
-            array('name' => 'role', 'title' => $_ARRAYLANG['TXT_ROLE'], 'Header' => false),
-            array('name' => 'customertype', 'title' => $_ARRAYLANG['TXT_TITLE_CUSTOMERTYPE'], 'Header' => false),
+            array('name' => 'role', 'title' => $_ARRAYLANG['TXT_CRM_ROLE'], 'Header' => false),
+            array('name' => 'customertype', 'title' => $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERTYPE'], 'Header' => false),
             array('name' => 'industrytype', 'title' => $_ARRAYLANG['TXT_CRM_INDUSTRY_TYPE'], 'Header' => false),
-            array('name' => 'currency', 'title' => $_ARRAYLANG['TXT_TITLE_CURRENCY'], 'Header' => false),            
-            array('name' => 'customerId', 'title' => $_ARRAYLANG['TXT_TITLE_CUSTOMERID'], 'Header' => false),
-            array('name' => 'language', 'title' => $_ARRAYLANG['TXT_TITLE_LANGUAGE'], 'Header' => false),
+            array('name' => 'currency', 'title' => $_ARRAYLANG['TXT_CRM_TITLE_CURRENCY'], 'Header' => false),            
+            array('name' => 'customerId', 'title' => $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERID'], 'Header' => false),
+            array('name' => 'language', 'title' => $_ARRAYLANG['TXT_CRM_TITLE_LANGUAGE'], 'Header' => false),
             array('name' => 'addedby', 'title' => $_ARRAYLANG['TXT_TITLE_CUSTOMER_ADDEDBY'], 'Header' => false),
             );
 
         foreach ($this->emailOptions as $key => $emailValue) {
-            array_push($headerCsv, array('name' => "customer_email_$key", 'title' => "{$_ARRAYLANG['TXT_EMAIL']} ({$_ARRAYLANG[$emailValue]})", 'Header' => false));
+            array_push($headerCsv, array('name' => "customer_email_$key", 'title' => "{$_ARRAYLANG['TXT_CRM_EMAIL']} ({$_ARRAYLANG[$emailValue]})", 'Header' => false));
         }
         foreach ($this->phoneOptions as $key => $phoneValue) {
-            array_push($headerCsv, array('name' => "customer_phone_$key", 'title' => "{$_ARRAYLANG['TXT_PHONE']} ({$_ARRAYLANG[$phoneValue]})", 'Header' => false));
+            array_push($headerCsv, array('name' => "customer_phone_$key", 'title' => "{$_ARRAYLANG['TXT_CRM_PHONE']} ({$_ARRAYLANG[$phoneValue]})", 'Header' => false));
         }
         foreach ($this->websiteProfileOptions as $websiteKey => $webValues) {
             if (!empty($webValues)) {

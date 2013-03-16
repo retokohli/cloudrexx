@@ -124,7 +124,7 @@
     }</script>
 <div id="subnavbar_level2">
     <ul>
-        <li><a href="index.php?cmd={MODULE_NAME}&act=task" title="{TXT_OVERVIEW}">{TXT_OVERVIEW}</a></li>
+        <li><a href="index.php?cmd={MODULE_NAME}&act=task" title="{TXT_CRM_OVERVIEW}">{TXT_CRM_OVERVIEW}</a></li>
     </ul>
 </div>
 <div id="formerr"></div>
@@ -135,13 +135,13 @@
             <th colspan="3">{TXT_CRM_ADD_TASK}</th>
         </tr>
         <tr class="row1">
-            <td width="10%">{TXT_TASK_TITLE}&nbsp;<font color="red">*</font></td>
+            <td width="10%">{TXT_CRM_TASK_TITLE}&nbsp;<font color="red">*</font></td>
             <td width="90%" style="padding-left: 28px;"><input type="text" value="{CRM_TASKTITLE}" style="width: 255px;margin-top: 2px;" name="taskTitle" id="taskTitle"/></td>
         </tr>
         <tr class="row2">
-            <td width="10%">{TXT_TASK_TYPE}&nbsp;<font color="red">*</font></td>
+            <td width="10%">{TXT_CRM_TASK_TYPE}&nbsp;<font color="red">*</font></td>
             <td width="90%" style="padding-left: 28px;"><select name="taskType" id="taskType" style="width: 263px;">
-                    <option value="">-- {TXT_SELECT_TASK_TYPE} --</option>
+                    <option value="">-- {TXT_CRM_SELECT_TASK_TYPE} --</option>
                     <!-- BEGIN Tasktype -->
                     <option value="{TXT_TASKTYPE_ID}" {TXT_TASKTYPE_SELECTED}>{TXT_TASKTYPE_NAME}</option>
                     <!-- END Tasktype -->
@@ -149,7 +149,7 @@
             </td>
         </tr>
         <tr class="row1">
-            <td width="10%">{TXT_CUSTOMER_NAME}&nbsp;<font color="red">*</font></td>
+            <td width="10%">{TXT_CRM_CUSTOMER_NAME}&nbsp;<font color="red">*</font></td>
             <td width="90%" style="padding-left: 28px;">
                 <!-- cutomer name fetched from AJAX request -->
                 <input type="hidden" name="customerId" id="customerId" value="{CRM_CUSTOMER_ID}" />
@@ -158,14 +158,14 @@
         </tr>
 
         <tr class="row2">
-            <td width="10%">{TXT_TASK_DUE_DATE}</td>
+            <td width="10%">{TXT_CRM_TASK_DUE_DATE}</td>
             <td width="90%" style="padding-left: 28px;"><input type="text" name="date" id="mydate" size="30" readonly="readonly" value="{CRM_DUE_DATE}" style="width: 255px;"/></td
         </tr>
         <tr class="row1">
-            <td width="10%">{TXT_ASSIGNEDTO}</td>
+            <td width="10%">{TXT_CRM_ASSIGNEDTO}</td>
             <td width="90%" style="padding-left: 28px;">
                 <select name="assignedto" id="assigned_to" style="width: 263px;" disabled>
-                    <option value="">--{TXT_SELECT_MEMBER_NAME}--</option>
+                    <option value="">--{TXT_CRM_SELECT_MEMBER_NAME}--</option>
                     <!-- BEGIN Members -->
                     <option value="{TXT_ADDPROJECT_MEMBERID}" {TXT_MEMBERSELECTED}>{TXT_ADDPROJECT_MEMBERNAME}</option>
                     <!-- END Members -->
@@ -173,10 +173,10 @@
             </td>
         </tr>
         <tr class="row2">
-                    <td width="10%" colspan="2" style="padding-top: 6px;">{TXT_TASK_DESCRIPTION}<br />{CRM_TASK_DESC}</td>
+                    <td width="10%" colspan="2" style="padding-top: 6px;">{TXT_CRM_TASK_DESCRIPTION}<br />{CRM_TASK_DESC}</td>
                 </tr>
 
     </table>
     <br>
-    <input style="margin-top: 7px;" type="submit" name="addtask" value="Save" onClick="return checkValidations();"/>
+    <input style="margin-top: 7px;" type="submit" name="addtask" value="{TXT_CRM_SAVE}" onClick="return checkValidations();"/>
 </form>
