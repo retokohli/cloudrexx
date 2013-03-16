@@ -111,7 +111,7 @@ class Settings extends CrmLibrary
 
             $objDatabase->Execute($query);
 
-            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CHANGES_UPDATED_SUCCESSFULLY'];
+            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CHANGES_UPDATED_SUCCESSFULLY'];
         }
 
         if (isset($_GET['chg']) && $_GET['chg'] == 1) {
@@ -121,7 +121,7 @@ class Settings extends CrmLibrary
                           WHERE    id = '".intval($_POST['form_id'][$x])."'";
                 $objDatabase->Execute($query);
             }
-            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_PROJECTSTATUS_SORTING_COMPLETE'];
+            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_PROJECTSTATUS_SORTING_COMPLETE'];
         }
 
         $sortField            = isset($_GET['sortf']) ? intval($_GET['sortf']) : 0;
@@ -139,7 +139,7 @@ class Settings extends CrmLibrary
 
         if ($objResult->fields['id'] === null) {
             $this->_objTpl->setVariable(array(
-                    'TXT_CONTAINS_NO_RECORDS'    =>    $_ARRAYLANG['TXT_CONTAINS_NO_RECORDS'],
+                    'TXT_CRM_CONTAINS_NO_RECORDS'    =>    $_ARRAYLANG['TXT_CRM_CONTAINS_NO_RECORDS'],
                     'TXT_DISPLAY_SELECT_ACTION'  =>    "none"
             ));
             $this->_objTpl->parse('showEntries');
@@ -147,7 +147,7 @@ class Settings extends CrmLibrary
             $row = 0;
             while (!$objResult->EOF) {
                 $activeImage = ($objResult->fields['active']) ? "images/icons/led_green.gif" : "images/icons/led_red.gif";
-                $activeTitle = ($objResult->fields['active']) ? $_ARRAYLANG['TXT_ACTIVE'] : $_ARRAYLANG['TXT_INACTIVE'];
+                $activeTitle = ($objResult->fields['active']) ? $_ARRAYLANG['TXT_CRM_ACTIVE'] : $_ARRAYLANG['TXT_CRM_INACTIVE'];
                 
                 $customerTypeOverview[$row] = array(
                         'pos'            => $objResult->fields['pos'],
@@ -178,9 +178,9 @@ class Settings extends CrmLibrary
                         'TXT_CUSTOMER_ACTIVE'		=>  $customerTypeValues['active'],
                         'TXT_CUSTOMER_POS_SORT'		=>  $customerTypeValues['pos'],
                         'ENTRY_ROWCLASS'                =>  ($row % 2 == 0) ? 'row1' : 'row2',
-                        'TXT_IMAGE_DELETE'              =>  $_ARRAYLANG['TXT_IMAGE_DELETE'],
-                        'TXT_IMAGE_EDIT'                =>  $_ARRAYLANG['TXT_IMAGE_EDIT'],
-                        'TXT_CUSTOMER_TYPE'             =>  $_ARRAYLANG['TXT_CUSTOMER_TYPE'],
+                        'TXT_CRM_IMAGE_DELETE'              =>  $_ARRAYLANG['TXT_CRM_IMAGE_DELETE'],
+                        'TXT_CRM_IMAGE_EDIT'                =>  $_ARRAYLANG['TXT_CRM_IMAGE_EDIT'],
+                        'TXT_CRM_CUSTOMER_TYPE'             =>  $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPE'],
                         'TXT_DEFAULT_STATUS_CHECKED'    =>  ($customerTypeValues['default'] == 1) ? 'checked="checked"' : '',
                 ));
                 $row++;
@@ -196,29 +196,29 @@ class Settings extends CrmLibrary
                 'CRM_SORTING_NUMBER'             => (int) $customerSorting,
                 'CRM_CUSTOMER_TYPE_CHECKED'      => $customerStatus ? 'checked' : '',
 
-                'TXT_CUSTOMERS'                  => $_ARRAYLANG['TXT_CUSTOMERS'],
-                'TXT_CUSTOMER_TYPES'             => $_ARRAYLANG['TXT_CUSTOMER_TYPES'],
-                'TXT_LABEL'                      => $_ARRAYLANG['TXT_LABEL'],
-                'TXT_TITLE_STATUS'               => $_ARRAYLANG['TXT_TITLE_STATUS'],
-                'TXT_FUNCTIONS'                  => $_ARRAYLANG['TXT_FUNCTIONS'],
-                'TXT_SORTING'                    => $_ARRAYLANG['TXT_SORTING'],
-                'TXT_TITLEACTIVE'                => $_ARRAYLANG['TXT_TITLEACTIVE'],
-                'TXT_PROJECTSTATUS_SAVE_SORTING' => $_ARRAYLANG['TXT_PROJECTSTATUS_SAVE_SORTING'],
-                'TXT_SORTING_NUMBER'             => $_ARRAYLANG['TXT_SORTING_NUMBER'],
-                'TXT_ACTIVATESELECTED'           => $_ARRAYLANG['TXT_ACTIVATESELECTED'],
-                'TXT_DEACTIVATESELECTED'         => $_ARRAYLANG['TXT_DEACTIVATESELECTED'],
-                'TXT_SELECT_ACTION'              => $_ARRAYLANG['TXT_SELECT_ACTION'],
-                'TXT_DELETE_SELECTED'            => $_ARRAYLANG['TXT_DELETE_SELECTED'],
-                'TXT_ADD_CUSTOMER_TYPES'         => $_ARRAYLANG['TXT_ADD_CUSTOMER_TYPES'],
-                'TXT_ENTER_LABEL_FIELD'          => $_ARRAYLANG['TXT_ENTER_LABEL_FIELD'],
-                'TXT_ENTER_LABEL_FIELD_WITHOUT_SPECIAL_CHARACTERS' => $_ARRAYLANG['TXT_ENTER_LABEL_FIELD_WITHOUT_SPECIAL_CHARACTERS'],
-                'TXT_SELECT_ALL'                 => $_ARRAYLANG['TXT_SELECT_ALL'],
-                'TXT_DESELECT_ALL'               => $_ARRAYLANG['TXT_REMOVE_SELECTION'],
-                'TXT_CURRENCY_RATES'             => $_ARRAYLANG['TXT_CURRENCY_RATES'],
-                'TXT_DEFAULT'                    => $_ARRAYLANG['TXT_DEFAULT'],
-                'TXT_GENERAL'                    => $_ARRAYLANG['TXT_GENERAL'],
-                'TXT_NOTES'                      => $_ARRAYLANG['TXT_NOTES'],
-                'TXT_SAVE'                       => $_ARRAYLANG['TXT_SAVE']
+                'TXT_CRM_CUSTOMERS'                  => $_ARRAYLANG['TXT_CRM_CUSTOMERS'],
+                'TXT_CRM_CUSTOMER_TYPES'             => $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPES'],
+                'TXT_CRM_LABEL'                      => $_ARRAYLANG['TXT_CRM_LABEL'],
+                'TXT_CRM_TITLE_STATUS'               => $_ARRAYLANG['TXT_CRM_TITLE_STATUS'],
+                'TXT_CRM_FUNCTIONS'                  => $_ARRAYLANG['TXT_CRM_FUNCTIONS'],
+                'TXT_CRM_SORTING'                    => $_ARRAYLANG['TXT_CRM_SORTING'],
+                'TXT_CRM_TITLEACTIVE'                => $_ARRAYLANG['TXT_CRM_TITLEACTIVE'],
+                'TXT_CRM_PROJECTSTATUS_SAVE_SORTING' => $_ARRAYLANG['TXT_CRM_PROJECTSTATUS_SAVE_SORTING'],
+                'TXT_CRM_SORTING_NUMBER'             => $_ARRAYLANG['TXT_CRM_SORTING_NUMBER'],
+                'TXT_CRM_ACTIVATESELECTED'           => $_ARRAYLANG['TXT_CRM_ACTIVATESELECTED'],
+                'TXT_CRM_DEACTIVATESELECTED'         => $_ARRAYLANG['TXT_CRM_DEACTIVATESELECTED'],
+                'TXT_CRM_SELECT_ACTION'              => $_ARRAYLANG['TXT_CRM_SELECT_ACTION'],
+                'TXT_CRM_DELETE_SELECTED'            => $_ARRAYLANG['TXT_CRM_DELETE_SELECTED'],
+                'TXT_CRM_ADD_CUSTOMER_TYPES'         => $_ARRAYLANG['TXT_CRM_ADD_CUSTOMER_TYPES'],
+                'TXT_CRM_ENTER_LABEL_FIELD'          => $_ARRAYLANG['TXT_CRM_ENTER_LABEL_FIELD'],
+                'TXT_CRM_ENTER_LABEL_FIELD_WITHOUT_SPECIAL_CHARACTERS' => $_ARRAYLANG['TXT_CRM_ENTER_LABEL_FIELD_WITHOUT_SPECIAL_CHARACTERS'],
+                'TXT_CRM_SELECT_ALL'                 => $_ARRAYLANG['TXT_CRM_SELECT_ALL'],
+                'TXT_CRM_DESELECT_ALL'               => $_ARRAYLANG['TXT_CRM_REMOVE_SELECTION'],
+                'TXT_CRM_CURRENCY_RATES'             => $_ARRAYLANG['TXT_CRM_CURRENCY_RATES'],
+                'TXT_CRM_DEFAULT'                    => $_ARRAYLANG['TXT_CRM_DEFAULT'],
+                'TXT_CRM_GENERAL'                    => $_ARRAYLANG['TXT_CRM_GENERAL'],
+                'TXT_CRM_NOTES'                      => $_ARRAYLANG['TXT_CRM_NOTES'],
+                'TXT_CRM_SAVE'                       => $_ARRAYLANG['TXT_CRM_SAVE']
         ));
     }
 
@@ -233,7 +233,7 @@ class Settings extends CrmLibrary
     public function saveCustomerTypes()
     {
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
-        $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
+        $this->_pageTitle = $_ARRAYLANG['TXT_CRM_SETTINGS'];
 
         $success = true;
 
@@ -246,7 +246,7 @@ class Settings extends CrmLibrary
         $objResult = $objDatabase->Execute($searchingQuery);
 
         if (!$objResult->EOF) {
-            $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CUSTOMER_TYPE_ALREADY_EXIST'];
+            $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPE_ALREADY_EXIST'];
             $success = false;
         } else {
             $insertCustomerTypes = "INSERT INTO `".DBPREFIX."module_".$this->moduleName."_customer_types`
@@ -256,7 +256,7 @@ class Settings extends CrmLibrary
                                                ";
             $db = $objDatabase->Execute($insertCustomerTypes);
             if ($db)
-                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CUSTOMER_TYPES_ADDED_SUCCESSFULLY'];
+                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPES_ADDED_SUCCESSFULLY'];
             else
                 $success = false;
         }
@@ -281,7 +281,7 @@ class Settings extends CrmLibrary
     {
         global $_CORELANG, $_ARRAYLANG, $objDatabase, $objJs;
         $this->_objTpl->addBlockfile('CRM_SETTINGS_FILE', 'settings_block', 'module_'.$this->moduleName.'_settings_currency.html');
-        $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
+        $this->_pageTitle = $_ARRAYLANG['TXT_CRM_SETTINGS'];
 
         if (isset ($_POST['currency_submit'])) {
             $this->addCurrency();
@@ -295,10 +295,10 @@ class Settings extends CrmLibrary
         }
         switch ($_GET['mes']) {
         case 'updatecurrency' :
-            $this->_strOkMessage = $_ARRAYLANG['TXT_CURRENCY_UPDATED_SUCCESSFULLY'];
+            $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_CURRENCY_UPDATED_SUCCESSFULLY'];
             break;
         case 'changesupdate' :
-            $this->_strOkMessage = $_ARRAYLANG['TXT_CHANGES_UPDATED_SUCCESSFULLY'];
+            $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_CHANGES_UPDATED_SUCCESSFULLY'];
             break;
         }
 
@@ -323,7 +323,7 @@ class Settings extends CrmLibrary
                              WHERE id = '".intval($_POST['form_id'][$x])."'";
                 $objDatabase->Execute($query);
             }
-            $this->_strOkMessage = $_ARRAYLANG['TXT_PROJECTSTATUS_SORTING_COMPLETE'];
+            $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_PROJECTSTATUS_SORTING_COMPLETE'];
         }
 
         if (isset($_POST['currencyfield_submit'])) {
@@ -333,7 +333,7 @@ class Settings extends CrmLibrary
                               SET pos = '".intval($_POST['form_pos'][$x])."'
                              WHERE id = '".intval($_POST['form_id'][$x])."'";
                 $objDatabase->Execute($query);
-                $this->_strOkMessage = $_ARRAYLANG['TXT_PROJECTSTATUS_SORTING_COMPLETE'];
+                $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_PROJECTSTATUS_SORTING_COMPLETE'];
             }
         }
 
@@ -349,7 +349,7 @@ class Settings extends CrmLibrary
         $row = "row2";
         if ($objData->fields['id'] == null) {
             $this->_objTpl->setVariable(array(
-                    'TXT_CONTAINS_NO_RECORDS'    =>    $_ARRAYLANG['TXT_CONTAINS_NO_RECORDS'],
+                    'TXT_CRM_CONTAINS_NO_RECORDS'    =>    $_ARRAYLANG['TXT_CRM_CONTAINS_NO_RECORDS'],
                     'TXT_DISPLAY_SELECT_ACTION'  =>    "none"
             ));
             $this->_objTpl->parse('showNoEntries');
@@ -373,7 +373,7 @@ class Settings extends CrmLibrary
 
             foreach ($currencyeOverview as $key => $currency) {
                 $activeImage = $currencyeOverview[$key]['active'] ? "images/icons/led_green.gif" : "images/icons/led_red.gif";
-                $activeTitle = $currencyeOverview[$key]['active'] ? $_ARRAYLANG['TXT_ACTIVE']    : $_ARRAYLANG['TXT_INACTIVE'];
+                $activeTitle = $currencyeOverview[$key]['active'] ? $_ARRAYLANG['TXT_CRM_ACTIVE']    : $_ARRAYLANG['TXT_CRM_INACTIVE'];
                 
                 $this->_objTpl->setVariable(array(
                         'TXT_CURRENCY_NAME'            => contrexx_raw2xhtml($currency['name']),
@@ -382,8 +382,8 @@ class Settings extends CrmLibrary
                         'TXT_CURRENCY_ACTIVE_TITLE'    => $activeTitle,
                         'TXT_CURRENCY_POS'             => $currency['pos'],
                         'TXT_CURRENCY_ACTIVE'          => $currency['active'],
-                        'TXT_IMAGE_EDIT'               => $_ARRAYLANG['TXT_EDIT'],
-                        'TXT_IMAGE_DELETE'             => $_ARRAYLANG['TXT_DELETE'],
+                        'TXT_CRM_IMAGE_EDIT'               => $_ARRAYLANG['TXT_EDIT'],
+                        'TXT_CRM_IMAGE_DELETE'             => $_ARRAYLANG['TXT_DELETE'],
                         'ENTRY_ROWCLASS'               => $row = ($row == "row1") ? "row2" : "row1"
 
                 ));
@@ -408,27 +408,27 @@ class Settings extends CrmLibrary
         $this->_objTpl->setVariable(array(
                 'PM_CURRENCY_ORDER_SORT'         => '&sortf=0&sorto='.($sortOrder?0:1),
                 'PM_CURRENCY_NAME_SORT'          => '&sortf=1&sorto='.($sortOrder?0:1),
-                'TXT_CURRENCY'                   => $_ARRAYLANG['TXT_CURRENCY'],
-                'TXT_ADD_CURRENCY'               => $_ARRAYLANG['TXT_ADD_CURRENCY'],
-                'TXT_TITLE_STATUS'               => $_ARRAYLANG['TXT_TITLE_STATUS'],
-                'TXT_NAME'                       => $_ARRAYLANG['TXT_NAME'],
-                'TXT_SAVE'                       => $_ARRAYLANG['TXT_SAVE'],
-                'TXT_NOTES'                     => $_ARRAYLANG['TXT_NOTES'],
-                'TXT_SORTING'                    => $_ARRAYLANG['TXT_SORTING'],
-                'TXT_SORTING_NUMBER'             => $_ARRAYLANG['TXT_SORTING_NUMBER'],
-                'TXT_ACTIVATESELECTED'           => $_ARRAYLANG['TXT_ACTIVATESELECTED'],
-                'TXT_DEACTIVATESELECTED'         => $_ARRAYLANG['TXT_DEACTIVATESELECTED'],
-                'TXT_TITLEACTIVE'                => $_ARRAYLANG['TXT_TITLEACTIVE'],
-                'TXT_FUNCTIONS'                  => $_ARRAYLANG['TXT_FUNCTIONS'],
-                'TXT_SELECT_ALL'                 => $_ARRAYLANG['TXT_SELECT_ALL'],
-                'TXT_PROJECTSTATUS_SAVE_SORTING' => $_ARRAYLANG['TXT_PROJECTSTATUS_SAVE_SORTING'],
-                'TXT_DESELECT_ALL'               => $_ARRAYLANG['TXT_REMOVE_SELECTION'],
-                'TXT_SELECT_ACTION'              => $_ARRAYLANG['TXT_SELECT_ACTION'],
-                'TXT_DELETE_SELECTED'            => $_ARRAYLANG['TXT_DELETE_SELECTED'],
-                'TXT_CUSTOMER_TYPES'            => $_ARRAYLANG['TXT_CUSTOMER_TYPES'],
-                'TXT_GENERAL'                    => $_ARRAYLANG['TXT_GENERAL'],
-                'TXT_CURRENCY_RATES'              => $_ARRAYLANG['TXT_CURRENCY_RATES'],
-                'TXT_HOURLY_RATE'                 => $_ARRAYLANG['TXT_HOURLY_RATE'],
+                'TXT_CRM_CURRENCY'                   => $_ARRAYLANG['TXT_CRM_CURRENCY'],
+                'TXT_CRM_ADD_CURRENCY'               => $_ARRAYLANG['TXT_CRM_ADD_CURRENCY'],
+                'TXT_CRM_TITLE_STATUS'               => $_ARRAYLANG['TXT_CRM_TITLE_STATUS'],
+                'TXT_CRM_NAME'                       => $_ARRAYLANG['TXT_CRM_NAME'],
+                'TXT_CRM_SAVE'                       => $_ARRAYLANG['TXT_CRM_SAVE'],
+                'TXT_CRM_NOTES'                     => $_ARRAYLANG['TXT_CRM_NOTES'],
+                'TXT_CRM_SORTING'                    => $_ARRAYLANG['TXT_CRM_SORTING'],
+                'TXT_CRM_SORTING_NUMBER'             => $_ARRAYLANG['TXT_CRM_SORTING_NUMBER'],
+                'TXT_CRM_ACTIVATESELECTED'           => $_ARRAYLANG['TXT_CRM_ACTIVATESELECTED'],
+                'TXT_CRM_DEACTIVATESELECTED'         => $_ARRAYLANG['TXT_CRM_DEACTIVATESELECTED'],
+                'TXT_CRM_TITLEACTIVE'                => $_ARRAYLANG['TXT_CRM_TITLEACTIVE'],
+                'TXT_CRM_FUNCTIONS'                  => $_ARRAYLANG['TXT_CRM_FUNCTIONS'],
+                'TXT_CRM_SELECT_ALL'                 => $_ARRAYLANG['TXT_CRM_SELECT_ALL'],
+                'TXT_CRM_PROJECTSTATUS_SAVE_SORTING' => $_ARRAYLANG['TXT_CRM_PROJECTSTATUS_SAVE_SORTING'],
+                'TXT_CRM_DESELECT_ALL'               => $_ARRAYLANG['TXT_CRM_REMOVE_SELECTION'],
+                'TXT_CRM_SELECT_ACTION'              => $_ARRAYLANG['TXT_CRM_SELECT_ACTION'],
+                'TXT_CRM_DELETE_SELECTED'            => $_ARRAYLANG['TXT_CRM_DELETE_SELECTED'],
+                'TXT_CRM_CUSTOMER_TYPES'            => $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPES'],
+                'TXT_CRM_GENERAL'                    => $_ARRAYLANG['TXT_CRM_GENERAL'],
+                'TXT_CRM_CURRENCY_RATES'              => $_ARRAYLANG['TXT_CRM_CURRENCY_RATES'],
+                'TXT_CRM_HOURLY_RATE'                 => $_ARRAYLANG['TXT_CRM_HOURLY_RATE'],
                 'PM_SETTINGS_CURRENCY_JAVASCRIPT' => $objJs->getAddCurrencyJavascript(),
         ));
     }
@@ -446,7 +446,7 @@ class Settings extends CrmLibrary
     {
         global $_CORELANG, $_ARRAYLANG, $objDatabase,$objJs;
 
-        $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
+        $this->_pageTitle = $_ARRAYLANG['TXT_CRM_SETTINGS'];
 
         if ($_POST['currency_submit']) {
 
@@ -465,7 +465,7 @@ class Settings extends CrmLibrary
             }
         
             if (!$objResult->EOF) {
-                $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CURRENCY_ALREADY_EXISTS'];
+                $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_CURRENCY_ALREADY_EXISTS'];
                 return;
             } else {
                 $activeValue = isset($_POST['activeStatus']) ? 1 : 0;
@@ -477,19 +477,19 @@ class Settings extends CrmLibrary
                                         `hourly_rate`       = '".json_encode($hrlyRate)."'";
 
                 $objDatabase->Execute($insertQuery);
-                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CURRENCY_ADDED_SUCCESSFULLY'];
+                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CURRENCY_ADDED_SUCCESSFULLY'];
             }
         }
         $this->_objTpl->setVariable(array(
-                'TXT_CURRENCY'                    => $_ARRAYLANG['TXT_CURRENCY'],
-                'TXT_ADD_CURRENCY'                => $_ARRAYLANG['TXT_ADD_CURRENCY'],
-                'TXT_NAME'                        => $_ARRAYLANG['TXT_NAME'],
-                'TXT_SORTING_NUMBER'              => $_ARRAYLANG['TXT_SORTING_NUMBER'],
-                'TXT_FUNCTIONS'                   => $_ARRAYLANG['TXT_FUNCTIONS'],
-                'TXT_SELECT_ALL'                  => $_ARRAYLANG['TXT_SELECT_ALL'],
-                'TXT_DESELECT_ALL'                => $_ARRAYLANG['TXT_REMOVE_SELECTION'],
-                'TXT_SELECT_ACTION'               => $_ARRAYLANG['TXT_SELECT_ACTION'],
-                'TXT_DELETE_SELECTED'             => $_ARRAYLANG['TXT_DELETE_SELECTED'],
+                'TXT_CRM_CURRENCY'                    => $_ARRAYLANG['TXT_CRM_CURRENCY'],
+                'TXT_CRM_ADD_CURRENCY'                => $_ARRAYLANG['TXT_CRM_ADD_CURRENCY'],
+                'TXT_CRM_NAME'                        => $_ARRAYLANG['TXT_CRM_NAME'],
+                'TXT_CRM_SORTING_NUMBER'              => $_ARRAYLANG['TXT_CRM_SORTING_NUMBER'],
+                'TXT_CRM_FUNCTIONS'                   => $_ARRAYLANG['TXT_CRM_FUNCTIONS'],
+                'TXT_CRM_SELECT_ALL'                  => $_ARRAYLANG['TXT_CRM_SELECT_ALL'],
+                'TXT_CRM_DESELECT_ALL'                => $_ARRAYLANG['TXT_CRM_REMOVE_SELECTION'],
+                'TXT_CRM_SELECT_ACTION'               => $_ARRAYLANG['TXT_CRM_SELECT_ACTION'],
+                'TXT_CRM_DELETE_SELECTED'             => $_ARRAYLANG['TXT_CRM_DELETE_SELECTED'],
                 'PM_SETTINGS_CURRENCY_JAVASCRIPT' => $objJs->getAddCurrencyJavascript(),
         ));
         CSRF::header('location:./index.php?cmd=crm&act=settings&tpl=currency');
@@ -509,11 +509,11 @@ class Settings extends CrmLibrary
 
         $objTpl = $this->_objTpl;
         $objTpl->addBlockfile('CRM_SETTINGS_FILE', 'settings_block', 'module_'.$this->moduleName.'_settings_task_types.html');
-        $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
+        $this->_pageTitle = $_ARRAYLANG['TXT_CRM_SETTINGS'];
         $objTpl->setGlobalVariable(array(
                 'MODULE_NAME' => $this->moduleName,
-                'TXT_IMAGE_EDIT' => $_ARRAYLANG['TXT_IMAGE_EDIT'],
-                'TXT_IMAGE_DELETE' => $_ARRAYLANG['TXT_IMAGE_DELETE'],
+                'TXT_CRM_IMAGE_EDIT' => $_ARRAYLANG['TXT_CRM_IMAGE_EDIT'],
+                'TXT_CRM_IMAGE_DELETE' => $_ARRAYLANG['TXT_CRM_IMAGE_DELETE'],
         ));
         JS::activate("jquery");
 
@@ -561,7 +561,7 @@ class Settings extends CrmLibrary
         if (!empty ($action)) {
             $this->saveSortingTaskType($tasktypeSorting);
             if ($action == 'savesorting' || $action == 'Save')
-                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_PROJECTSTATUS_SORTING_COMPLETE'];
+                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_PROJECTSTATUS_SORTING_COMPLETE'];
         }
 
         if ($_POST['saveTaskType']) {
@@ -577,18 +577,18 @@ class Settings extends CrmLibrary
                 'TXT_CRM_TASK_TYPES'        => $_ARRAYLANG['TXT_CRM_TASK_TYPES'],
                 'TXT_CRM_ADD_TASK_TYPE'     => $_ARRAYLANG['TXT_CRM_ADD_TASK_TYPE'],
                 'TXT_CRM_TASK_TYPE_STATUS'  => $_ARRAYLANG['TXT_CRM_TASK_TYPE_STATUS'],
-                'TXT_CRM_FUNCTIONS'         => $_ARRAYLANG['TXT_FUNCTIONS'],
+                'TXT_CRM_FUNCTIONS'         => $_ARRAYLANG['TXT_CRM_FUNCTIONS'],
                 'TXT_CRM_NO_TASKTYPES'      => $_ARRAYLANG['TXT_CRM_NO_TASKTYPES'],
-                'TXT_SAVE'                  => $_ARRAYLANG['TXT_SAVE'],
-                'TXT_SELECT_ALL'           => $_ARRAYLANG['TXT_SELECT_ALL'],
-                'TXT_DESELECT_ALL'         => $_ARRAYLANG['TXT_REMOVE_SELECTION'],
-                'TXT_SELECT_ACTION'        => $_ARRAYLANG['TXT_SELECT_ACTION'],
-                'TXT_DELETE_SELECTED'      => $_ARRAYLANG['TXT_DELETE_SELECTED'],
-                'TXT_ACTIVATE_SELECTED'    => $_ARRAYLANG['TXT_ACTIVATE_SELECTED'],
-                'TXT_DEACTIVATE_SELECTED'  => $_ARRAYLANG['TXT_DEACTIVATE_SELECTED'],
-                'TXT_SAVE_SORTING'         => $_ARRAYLANG['TXT_SAVE_SORTING'],
-                'TXT_SELECT_ENTRIES'       => $_ARRAYLANG['TXT_NO_OPERATION'],
-                'TXT_STATUS_SUCCESSFULLY_CHANGED' => $_ARRAYLANG['TXT_TASK_TYPE_STATUS_CHANGED_SUCCESSFULLY'],
+                'TXT_CRM_SAVE'                  => $_ARRAYLANG['TXT_CRM_SAVE'],
+                'TXT_CRM_SELECT_ALL'           => $_ARRAYLANG['TXT_CRM_SELECT_ALL'],
+                'TXT_CRM_DESELECT_ALL'         => $_ARRAYLANG['TXT_CRM_REMOVE_SELECTION'],
+                'TXT_CRM_SELECT_ACTION'        => $_ARRAYLANG['TXT_CRM_SELECT_ACTION'],
+                'TXT_CRM_DELETE_SELECTED'      => $_ARRAYLANG['TXT_CRM_DELETE_SELECTED'],
+                'TXT_CRM_ACTIVATE_SELECTED'    => $_ARRAYLANG['TXT_CRM_ACTIVATE_SELECTED'],
+                'TXT_CRM_DEACTIVATE_SELECTED'  => $_ARRAYLANG['TXT_CRM_DEACTIVATE_SELECTED'],
+                'TXT_CRM_SAVE_SORTING'         => $_ARRAYLANG['TXT_CRM_SAVE_SORTING'],
+                'TXT_SELECT_ENTRIES'       => $_ARRAYLANG['TXT_CRM_NO_OPERATION'],
+                'TXT_CRM_STATUS_SUCCESSFULLY_CHANGED' => $_ARRAYLANG['TXT_CRM_TASK_TYPE_STATUS_CHANGED_SUCCESSFULLY'],
         ));
     }
 
@@ -617,7 +617,7 @@ class Settings extends CrmLibrary
             $query .= "END WHERE id IN ($ids)";
             $objResult = $objDatabase->Execute($query);
 
-            $this->_strOkMessage = $_ARRAYLANG['TXT_TASK_TYPE_STATUS_CHANGED_SUCCESSFULLY'];
+            $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_TASK_TYPE_STATUS_CHANGED_SUCCESSFULLY'];
 
         }
     }
@@ -687,7 +687,7 @@ class Settings extends CrmLibrary
             $query = "DELETE FROM `".DBPREFIX."module_".$this->moduleName."_task_types` WHERE id IN ($ids)";
             $objResult = $objDatabase->Execute($query);
 
-            $this->_strOkMessage = $_ARRAYLANG['TXT_TASK_TYPE_DELETED_SUCCESSFULLY'];
+            $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_TASK_TYPE_DELETED_SUCCESSFULLY'];
         }
     }
 
@@ -707,7 +707,7 @@ class Settings extends CrmLibrary
 
         $query = "DELETE FROM `".DBPREFIX."module_".$this->moduleName."_task_types` WHERE id = $tasktypeId";
         $objResult = $objDatabase->Execute($query);
-        echo $_ARRAYLANG['TXT_TASK_TYPE_DELETED_SUCCESSFULLY'];
+        echo $_ARRAYLANG['TXT_CRM_TASK_TYPE_DELETED_SUCCESSFULLY'];
     }
 
     /**
@@ -721,7 +721,7 @@ class Settings extends CrmLibrary
     {
         global $objDatabase,$_ARRAYLANG;
         $this->_objTpl->addBlockfile('CRM_SETTINGS_FILE', 'settings_block', 'module_'.$this->moduleName.'_settings_general.html');
-        $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
+        $this->_pageTitle = $_ARRAYLANG['TXT_CRM_SETTINGS'];
         $objTpl = $this->_objTpl;
         
         if (isset($_POST['save'])) {
@@ -733,6 +733,7 @@ class Settings extends CrmLibrary
                     'customer_default_language_frontend' => isset($_POST['default_language_frontend']) ? (int) $_POST['default_language_frontend'] : 0,
                     'default_user_group'                 => isset($_POST['default_user_group']) ? (int) $_POST['default_user_group'] : 0,
                     'emp_default_user_group'             => isset($_POST['emp_default_user_group']) ? (int) $_POST['emp_default_user_group'] : 0,
+                    'user_account_mantatory'             => isset($_POST['user_account_mantatory']) ? 1 : 0,
             );
 
             foreach ($settings as $settings_var => $settings_val) {
@@ -742,7 +743,7 @@ class Settings extends CrmLibrary
                 $objDatabase->Execute($updateAllowPm);
             }
 
-            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CHANGES_UPDATED_SUCCESSFULLY'];
+            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CHANGES_UPDATED_SUCCESSFULLY'];
         }
 
         $settings = $this->getSettings();
@@ -808,28 +809,30 @@ class Settings extends CrmLibrary
         $objTpl->setVariable(array(
             'CRM_ALLOW_PM'                   => ($settings['allow_pm']) ? "checked='checked'" : '',
             'CRM_CREATE_ACCOUNT_USER'        => ($settings['create_user_account']) ? "checked='checked'" : '',
+            'CRM_ACCOUNT_MANTATORY'          => ($settings['user_account_mantatory']) ? "checked='checked'" : '',
         ));
         
         $objTpl->setVariable(array(                
                 'TXT_CRM_ALLOW_PM'               => $_ARRAYLANG["TXT_CRM_ALLOW_PM"],
-                'TXT_CRM_CUSTOMERS'              => $_ARRAYLANG['TXT_CUSTOMERS'],
-                'TXT_CRM_LANGUAGE'               => $_ARRAYLANG['TXT_TITLE_LANGUAGE'],
+                'TXT_CRM_CUSTOMERS'              => $_ARRAYLANG['TXT_CRM_CUSTOMERS'],
+                'TXT_CRM_LANGUAGE'               => $_ARRAYLANG['TXT_CRM_TITLE_LANGUAGE'],
                 'TXT_CRM_BACKEND'                => $_ARRAYLANG['TXT_CRM_BACKEND'],
                 'TXT_CRM_FRONTEND'               => $_ARRAYLANG['TXT_CRM_FRONTEND'],
                 'TXT_CRM_ALLOW_PM_EXPLANATION'   => $_ARRAYLANG["TXT_CRM_ALLOW_PM_EXPLANATION"],
-                'TXT_SAVE'                       => $_ARRAYLANG['TXT_SAVE'],
+                'TXT_CRM_SAVE'                       => $_ARRAYLANG['TXT_CRM_SAVE'],
                 'TXT_CRM_DEFAULT_LANGUAGE'       => $_ARRAYLANG['TXT_CRM_DEFAULT_LANGUAGE'],
                 'TXT_CRM_DEFAULT_USER_GROUP'     => $_ARRAYLANG['TXT_CRM_DEFAULT_USER_GROUP'],
                 'TXT_CRM_CREATE_ACCOUNT_USER'    => $_ARRAYLANG['TXT_CRM_CREATE_ACCOUNT_USER'],
                 'TXT_CRM_CREATE_ACCOUNT_USER_TIP'=> $_ARRAYLANG['TXT_CRM_CREATE_ACCOUNT_USER_TIP'],
 
                 'MODULE_NAME'                    => $this->moduleName,
-                'TXT_NOTES'                      => $_ARRAYLANG['TXT_NOTES'],
-                'TXT_GENERAL'                    => $_ARRAYLANG['TXT_GENERAL'],
-                'TXT_CURRENCY'                   => $_ARRAYLANG['TXT_CURRENCY'],
-                'TXT_CUSTOMER_TYPES'             => $_ARRAYLANG['TXT_CUSTOMER_TYPES'],
+                'TXT_CRM_NOTES'                      => $_ARRAYLANG['TXT_CRM_NOTES'],
+                'TXT_CRM_GENERAL'                    => $_ARRAYLANG['TXT_CRM_GENERAL'],
+                'TXT_CRM_CURRENCY'                   => $_ARRAYLANG['TXT_CRM_CURRENCY'],
+                'TXT_CRM_CUSTOMER_TYPES'             => $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPES'],
                 'TXT_CRM_EMPLOYEE'               => $_ARRAYLANG['TXT_CRM_EMPLOYEE'],
-                'TXT_CRM_EMP_DEFAULT_USER_GROUP' => $_ARRAYLANG['TXT_CRM_EMP_DEFAULT_USER_GROUP']
+                'TXT_CRM_EMP_DEFAULT_USER_GROUP' => $_ARRAYLANG['TXT_CRM_EMP_DEFAULT_USER_GROUP'],
+                'TXT_CRM_ACCOUNT_ARE_MANTATORY'  => $_ARRAYLANG['TXT_CRM_ACCOUNT_ARE_MANTATORY']
         ));
         
         if (!$this->isPmInstalled)

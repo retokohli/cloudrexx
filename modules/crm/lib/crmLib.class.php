@@ -263,7 +263,7 @@ class CrmLibrary {
                 'TXT_CRM_TASK_TYPE_DESCRIPTION' => $_ARRAYLANG['TXT_CRM_TASK_TYPE_DESCRIPTION'],
                 'TXT_CRM_TASK_TYPE_SORTING1'     => $_ARRAYLANG['TXT_CRM_TASK_TYPE_SORTING1'],
                 'TXT_CRM_TASK_TYPE_ACTIVE'      => $_ARRAYLANG['TXT_CRM_TASK_TYPE_ACTIVE'],
-                'TXT_SAVE'                      => $_ARRAYLANG['TXT_SAVE'],
+                'TXT_CRM_SAVE'                      => $_ARRAYLANG['TXT_CRM_SAVE'],
         ));
     }
 
@@ -675,7 +675,7 @@ class CrmLibrary {
             if ($_GET['ajax']) {
                 exit();
             } else {                
-                $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_INDUSTRY_UPDATED_SUCCESSFULLY'], ($deactivate) ? $_ARRAYLANG['TXT_DEACTIVATED'] : $_ARRAYLANG['TXT_ACTIVATED']);
+                $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_CRM_INDUSTRY_UPDATED_SUCCESSFULLY'], ($deactivate) ? $_ARRAYLANG['TXT_DEACTIVATED'] : $_ARRAYLANG['TXT_ACTIVATED']);
             }
         } else {
             $objDatabase->Execute("UPDATE `".DBPREFIX."module_".$this->moduleName."_industry_types` SET `status` = IF(status = 1, 0, 1) WHERE id = $industryEntrys");
@@ -740,7 +740,7 @@ class CrmLibrary {
             if ($_GET['ajax']) {
                 exit();
             } else {                
-                $_SESSION['strOkMessage'] = sprintf($_ARRAYLANG['TXT_MEMBERSHIP_UPDATED_SUCCESSFULLY'], ($deactivate) ? $_ARRAYLANG['TXT_DEACTIVATED'] : $_ARRAYLANG['TXT_ACTIVATED']);
+                $_SESSION['strOkMessage'] = sprintf($_ARRAYLANG['TXT_CRM_MEMBERSHIP_UPDATED_SUCCESSFULLY'], ($deactivate) ? $_ARRAYLANG['TXT_DEACTIVATED'] : $_ARRAYLANG['TXT_ACTIVATED']);
             }
         } else {
             $objDatabase->Execute("UPDATE `".DBPREFIX."module_".$this->moduleName."_memberships` SET `status` = IF(status = 1, 0, 1) WHERE id = $entries");
@@ -763,7 +763,7 @@ class CrmLibrary {
 
         }
         if (isset($_POST['save_entries'])) {
-            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_SORTING_COMPLETE'];
+            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_SORTING_COMPLETE'];
         }
     }
 
@@ -784,7 +784,7 @@ class CrmLibrary {
         if ($_GET['ajax']) {
             exit();
         } else {
-            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_MEMBERSHIP_DELETED_SUCCESSFULLY'];
+            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_MEMBERSHIP_DELETED_SUCCESSFULLY'];
         }
         
     }
@@ -1219,8 +1219,8 @@ class CrmLibrary {
             $this->contact->account_id = $objUser->getId();
             
             return true;
-        } else {            
-            $objUser->reset();
+        } else {
+            $objUser->reset();            
             $this->_strErrMessage = implode("<br />", $objUser->error_msg);
             return  false;
         }
@@ -1444,6 +1444,7 @@ class CrmLibrary {
      */
     public function _initCrmModule()
     {
+        JS::activate('jqueryui');
         JS::registerJS("lib/javascript/crm/main.js");        
         JS::registerCSS("lib/javascript/crm/css/main.css");
     }

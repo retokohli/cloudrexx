@@ -164,6 +164,14 @@
             $J( "#domainName" ).autocomplete('option', optionsDomain);
         });
         $J( "#domainName" ).autocomplete({minLength: 0});
+
+        var edit = {IS_EDIT_TRUE};
+        if (!edit) {
+            if ($J("#customer").val() != 0) {
+                $J('#customer').trigger('change');
+            }
+        }
+                    
     });
 </script>
 <div id="dealsModify">
@@ -197,7 +205,7 @@
                     <td>{TXT_CRM_DEALS_CUSTOMER_NAME}&nbsp;<font color="red">*</font></td>
                     <td  >
                         <input type="hidden" name="customer" id="customer" value="{CRM_DEALS_CUSTOMER}" />
-                        <input type="text" name="customer_name" id="customer_name" value="{CRM_DEALS_CUSTOMER_NAME}" class="selectCustomer" placeholder="Find a customer by name" style="width: 239px;" /><span class="delete-customer"></span>&nbsp;
+                        <input type="text" name="customer_name" id="customer_name" value="{CRM_DEALS_CUSTOMER_NAME}" class="selectCustomer" placeholder="{TXT_CRM_FIND_COMPANY_BY_NAME}" style="width: 239px;" /><span class="delete-customer"></span>&nbsp;
                     </td>
                 </tr>
                 <tr class="row2">
@@ -226,7 +234,7 @@
                     <td>{TXT_CRM_DEALS_RESPONSIBLE}&nbsp;<font color="red">*</font></td>
                     <td>
                         <select name="assigned_to" id="assigned_to" style="width: 262px;" >
-                            <option value="">--{TXT_SELECT_MEMBER_NAME}--</option>
+                            <option value="">--{TXT_CRM_SELECT_MEMBER_NAME}--</option>
                             <!-- BEGIN Members -->
                             <option value="{TXT_USER_MEMBERID}" {TXT_SELECTED}>{TXT_USER_MEMBERNAME}</option>
                             <!-- END Members -->
@@ -246,31 +254,31 @@
                 <!-- BEGIN projectEntryBlock -->
                 <tr><td>&nbsp;</td></tr>
                 <tr>
-                    <th colspan="3">{TXT_ADDITIONAL_INFO}</th>
+                    <th colspan="3">{TXT_CRM_ADDITIONAL_INFO}</th>
                 </tr>
                 <tr class="row1">
-                    <td>{TXT_PM_INVOICE_TYPE}</td>
+                    <td>{TXT_CRM_INVOICE_TYPE}</td>
                     <td colspan="2">
                         <input type="radio" name="invoiceType" id="invoiceProject" value="3" {PROJECT_INVOICETYPE_PROJECT} />
-                               <label for="invoiceProject">{TXT_PROJECT_INVOICETYPE_PROJECT}</label>
+                               <label for="invoiceProject">{TXT_CRM_PROJECT_INVOICETYPE_PROJECT}</label>
                         <input type="radio" name="invoiceType" id="invoiceCollective" value="2" {PROJECT_INVOICETYPE_COLLECTIVE} />
-                               <label for="invoiceCollective">{TXT_PROJECT_INVOICETYPE_COLLECTIVE}</label>
+                               <label for="invoiceCollective">{TXT_CRM_PROJECT_INVOICETYPE_COLLECTIVE}</label>
                         <input type="radio" name="invoiceType" id="invoiceInternal" value="1" {PROJECT_INVOICETYPE_INTERNAL} />
-                               <label for="invoiceInternal">{TXT_PROJECT_INVOICETYPE_INTERNAL}</label>
+                               <label for="invoiceInternal">{TXT_CRM_PROJECT_INVOICETYPE_INTERNAL}</label>
                     </td>
                 </tr>
                 <tr class="row2">
                     <td>Website&nbsp;<font color="red">*</font></td>
-                    <td>
+                    <td colspan="2">
                         <input type="hidden" name="domain" id="domain"  value="{PM_PROJECT_DOMAIN_ID}" />
                         <input type="text" name="domainName" id="domainName" value="{PM_PROJECT_DOMAIN_NAME}" />
                     </td>
                 </tr>
                 <tr class="row2">
-                    <td>{TXT_PROJECT_TYPE}&nbsp;<font color="red">*</font></td>
+                    <td>{TXT_CRM_PROJECT_TYPE}&nbsp;<font color="red">*</font></td>
                     <td colspan="2">
                         <select name="project_type" id="project_type" style="width: 265px;">
-                            <option value="">--{TXT_SELECT_PROJECT_TYPE}--</option>
+                            <option value="">--{TXT_CRM_SELECT_PROJECT_TYPE}--</option>
                             <!-- BEGIN projectTypes -->
                             <option value="{TXT_PROJECT_PROJECTTYPEID}" {TXT_SELECTEDTYPE}>{TXT_PROJECT_PROJECTTYPE}</option>
                             <!-- END projectTypes -->
@@ -278,7 +286,7 @@
                     </td>
                 </tr>
                 <tr class="row1">
-                    <td>{TXT_PROJECT_STATUS}&nbsp;<font color="red">*</font></td>
+                    <td>{TXT_CRM_PROJECT_STATUS}&nbsp;<font color="red">*</font></td>
                     <td colspan="2"> <select name="status" id="status" style="width: 265px;">
                             <!-- BEGIN ProjStatus -->
                             <option value="{TXT_PROJECT_PROJECTSTATUSID}" {TXT_STATUSSELECTEDPLANNED}>{TXT_PROJECT_PROJECTSTATUS}</option>
@@ -287,10 +295,10 @@
                     </td>
                 </tr>
                 <tr class="row2">
-                    <td>{TXT_PRIORITY}&nbsp;</td>
+                    <td>{TXT_CRM_PRIORITY}&nbsp;</td>
                     <td colspan="2">
                         <select name="priority" id="priority" style="width: 265px;">
-                            <option value="">--{TXT_SELECT_PRIORITY}--</option>
+                            <option value="">--{TXT_CRM_SELECT_PRIORITY}--</option>
                             <!-- BEGIN priority -->
                             <option value="{TXT_PM_PRIORITY_VALUE}" {PRIORITY_SELECTED}>{TXT_PM_PRIORITY_VALUE}</option>
                             <!-- END priority -->
@@ -298,28 +306,28 @@
                     </td>
                 </tr>
                 <tr class="row1">
-                    <td>{TXT_PM_SEND_PARTIAL_INVOICE}</td>
+                    <td>{TXT_CRM_SEND_PARTIAL_INVOICE}</td>
                     <td colspan="2"><input type="checkbox" id="invoice" name="send-partial-invoice" {PM_SEND_PARTIAL_INVOICE_CHECKED} /></td>
                 </tr>
                 <tr class="row2 with-quote">
-                    <td>{TXT_PM_PROJECT_DURATION}&nbsp;</td>
+                    <td>{TXT_CRM_PROJECT_DURATION}&nbsp;</td>
                     <td colspan="2">
                         <input type="text" name="projectDuration" id="projectDuration" style="width: 39px;float:left;" value="{PROJECT_DURATION}" />
                     </td>
                 </tr>
                 <tr class="row1">
-                    <td>{TXT_QUOTE_NUMBER}</td>
+                    <td>{TXT_CRM_QUOTE_NUMBER}</td>
                     <td colspan="2"><input type="text" name="quoteNumber" id="quoteNumber" style="width: 265px;" value="{CRM_QUOTATION_NUMBER}" />
                 </tr>
                 <!-- BEGIN projectDocUpload -->
                 <tr class="row2">
-                    <td>{TXT_PM_DOCUMENT_UPLOAD}</td>
+                    <td>{TXT_CRM_DOCUMENT_UPLOAD}</td>
                     <td colspan="2"><input type="file" name="documentUpload" id="documentUpload" style="width: 265px;" value="" readonly />
                 </tr>
                 <!-- END projectDocUpload -->
                 <tr class="row1">
                     <td colspan="3">
-                        <div style="padding: 3px 0;">{TXT_BILLING_INFORMATION}</div>
+                        <div style="padding: 3px 0;">{TXT_CRM_BILLING_INFORMATION}</div>
                         {PROJECT_BILLING_INFO}
                     </td>
                 </tr>
@@ -328,6 +336,6 @@
         </table>
         <br>
         <input type="hidden" name="redirect" value="{CRM_REDIRECT_LINK}" />
-        <input type="submit" name="save_deal" value="{TXT_SAVE}" />
+        <input type="submit" name="save_deal" value="{TXT_CRM_SAVE}" />
     </form>
 </div>

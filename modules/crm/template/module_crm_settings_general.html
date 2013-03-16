@@ -24,7 +24,7 @@
         <table cellspacing="0" class="adminlist" cellpadding="5" width="100%" border="0">
             <!-- BEGIN allowPmModule -->
             <tr>
-                <th colspan="2">{TXT_GENERAL}</th>
+                <th colspan="2">{TXT_CRM_GENERAL}</th>
             </tr>
             <tr>
                 <td width="20%">
@@ -44,6 +44,10 @@
                     <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_CRM_CREATE_ACCOUNT_USER_TIP}</span>
                 </td>
                 <td><input type="checkbox" id="create_user_account" name="create_user_account" value="1" {CRM_CREATE_ACCOUNT_USER} /></td>
+            </tr>
+            <tr class="row1 user_account">
+                <td valign="top" >{TXT_CRM_ACCOUNT_ARE_MANTATORY}</td>
+                <td><input type="checkbox" id="user_account_mantatory" name="user_account_mantatory" value="1" {CRM_ACCOUNT_MANTATORY} /></td>
             </tr>
             <tr class="row1 user_account">
                 <td valign="top" >{TXT_CRM_DEFAULT_USER_GROUP}</td>
@@ -98,7 +102,7 @@
             </tr>
         </table>
         <br />
-        <input type="submit" value="{TXT_SAVE}" name="save" />
+        <input type="submit" value="{TXT_CRM_SAVE}" name="save" />
 
     </form>
 </div>

@@ -71,7 +71,7 @@
                     <th colspan="5">{TXT_TITLE_MODIFY_INDUSTRY}</th>
                 </tr>
                 <tr class="row1">
-                    <td>{TXT_PARENT_INDUSTRY_TYPE}</td>
+                    <td>{TXT_CRM_PARENT_INDUSTRY_TYPE}</td>
                     <td>
                         <select name='parentId' style='width:300px'>
                         <option value='0' > -- {TXT_CRM_NEW_INDUSTRY_TYPE} -- </option>
@@ -80,7 +80,7 @@
                     </td>
                 </tr>
                 <tr class="row2">
-                    <td valign="top" width="13%">{TXT_NAME}&nbsp;<font color="red">*</font></td>
+                    <td valign="top" width="13%">{TXT_CRM_NAME}&nbsp;<font color="red">*</font></td>
                     <td width="87%">
                         <div id="Inputfield_0_Minimized" style="display: block; ">
                             <input type="text" name="Inputfield[0]" id="Inputfield_0_0" value="{CRM_INDUSTRY_NAME_DEFAULT_VALUE}" style="width: 300px" onfocus="this.select();">&nbsp;<a href="javascript:ExpandMinimize('0');">{TXT_CRM_MORE}&nbsp;»</a>
@@ -97,17 +97,17 @@
                     </td>
                 </tr>
                 <tr class="row1">
-                    <td >{TXT_SORTING_NUMBER}&nbsp;</td>
+                    <td >{TXT_CRM_SORTING_NUMBER}&nbsp;</td>
                     <td ><input type="text" name="sortingNumber" style="width: 300px;" id="sortingNumber" value="{CRM_SORTINGNUMBER}"></td>
                 </tr>
                 <tr class="row2">
-                    <td>{TXT_TITLEACTIVE}</td>
+                    <td>{TXT_CRM_TITLEACTIVE}</td>
                     <td><input type="checkbox" name="activeStatus" value="active" {CRM_ACTIVATED_VALUE}></td>
                 </tr>
             </tbody>
         </table>
         <br>
-        <input type="button" name="back_button" value="{TXT_BACK}" onClick="window.location.replace('index.php?cmd={MODULE_NAME}&act=settings&tpl=industry&{CSRF_PARAM}');" />
-        &nbsp;&nbsp;<input type="submit" name="save_entry" value="{TXT_SAVE}" />
+        <input type="button" name="back_button" value="{TXT_CRM_BACK}" onClick="window.location.replace('index.php?cmd={MODULE_NAME}&act=settings&tpl=industry&{CSRF_PARAM}');" />
+        &nbsp;&nbsp;<input type="submit" name="save_entry" value="{TXT_CRM_SAVE}" />
     </form>
 </div>
