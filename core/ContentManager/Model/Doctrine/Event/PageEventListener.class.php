@@ -37,6 +37,7 @@ class PageEventListenerException extends \Exception {}
 class PageEventListener {
     public function prePersist($eventArgs) {
         $this->setUpdatedByCurrentlyLoggedInUser($eventArgs);
+        $this->fixAutoIncrement();
     }
     
     /**
@@ -165,6 +166,26 @@ class PageEventListener {
                     throw new PageEventListenerException('Tried to persist Page "'.$page->getTitle().'" with id "'.$page->getId().'". Only one page with module "home" and no cmd is allowed.');
                 }
             }
+        }
+    }
+
+    /**
+     * Fix the auto increment for the content_page table
+     * Ticket #1070 in bug tracker
+     *
+     * The last content page have been deleted and the website was moved to another server, in this case
+     * the auto increment does not match the log's last object_id. This will cause a duplicate primary key.
+     */
+    private function fixAutoIncrement() {
+        $database = \Env::get('db');
+        $result = $database->Execute("SELECT MAX(CONVERT(`object_id`, UNSIGNED)) AS `oldAutoIncrement`
+                                        FROM `" . DBPREFIX . "log_entry`
+                                        WHERE `object_class` = 'Cx\\\\Core\\\\ContentManager\\\\Model\\\\Doctrine\\\\Entity\\\\Page'");
+        if ($result === false) return;
+        $oldAutoIncrement = $result->fields['oldAutoIncrement'] + 1;
+        $result = $database->Execute("SHOW TABLE STATUS LIKE '" . DBPREFIX . "content_page'");
+        if ($result !== false && $result->fields['Auto_increment'] < $oldAutoIncrement) {
+            $database->Execute("ALTER TABLE `" . DBPREFIX . "content_page` AUTO_INCREMENT = ?", array($oldAutoIncrement));
         }
     }
 }
