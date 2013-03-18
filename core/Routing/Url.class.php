@@ -454,15 +454,17 @@ class Url {
         unset($get['__cap']);
 
         // workaround for legacy ?page=123 requests by routing to an alias like /legacy_page_123
+        $additionalParams = '';
         if (isset($get['page']) && preg_match('/^\d+$/', $get['page'])) {
             $request = 'legacy_page_'.$get['page'];
+            $additionalParams = 'external=permanent';
             unset($get['page']);
         }
 
         if (($params = self::array2params($get)) && (strlen($params) > 0)) {
-            $params = '?'.$params;
+            $params = '?'.$params . ($additionalParams != '' ? '&' . $additionalParams : '');
         } else {
-            $params = '';
+            $params = ($additionalParams != '' ? '?' . $additionalParams : '');
         }
         $request = preg_replace('/index.php/', '', $request);
 
