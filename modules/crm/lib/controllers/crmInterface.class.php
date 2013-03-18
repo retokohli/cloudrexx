@@ -332,13 +332,13 @@ class crmInterface extends CrmLibrary
             case '1':
                 $headerCsv = array(
                     $_ARRAYLANG['TXT_CRM_CONTACT_TYPE'],
-                    $_ARRAYLANG['TXT_COMPANY_NAME'],
+                    $_ARRAYLANG['TXT_CRM_TITLE_COMPANY_NAME'],
                     $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERID'],
                     $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERTYPE'],
                     $_ARRAYLANG['TXT_CRM_INDUSTRY_TYPE'],
                     $_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP'],
                     $_ARRAYLANG['TXT_CRM_TITLE_CURRENCY'],
-                    $_ARRAYLANG['TXT_TITLE_CUSTOMER_ADDEDBY']
+                    $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMER_ADDEDBY']
                 );
                 break;
             case '2':
@@ -348,14 +348,14 @@ class crmInterface extends CrmLibrary
                     $_ARRAYLANG['TXT_CRM_FAMILY_NAME'],
                     $_ARRAYLANG['TXT_CRM_GENDER'],
                     $_ARRAYLANG['TXT_CRM_ROLE'],
-                    $_ARRAYLANG['TXT_COMPANY_NAME'],
+                    $_ARRAYLANG['TXT_CRM_TITLE_COMPANY_NAME'],
                     $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERID'],
                     $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERTYPE'],
                     $_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP'],
                     $_ARRAYLANG['TXT_CRM_TITLE_CURRENCY'],
                     $_ARRAYLANG['TXT_CRM_TITLE_LANGUAGE'],
                     $_ARRAYLANG['TXT_CRM_ACCOUNT_EMAIL'],
-                    $_ARRAYLANG['TXT_TITLE_CUSTOMER_ADDEDBY']
+                    $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMER_ADDEDBY']
                 );
                 break;
             default:
@@ -365,7 +365,7 @@ class crmInterface extends CrmLibrary
                     $_ARRAYLANG['TXT_CRM_FAMILY_NAME'],
                     $_ARRAYLANG['TXT_CRM_GENDER'],
                     $_ARRAYLANG['TXT_CRM_ROLE'],
-                    $_ARRAYLANG['TXT_COMPANY_NAME'],
+                    $_ARRAYLANG['TXT_CRM_TITLE_COMPANY_NAME'],
                     $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERID'],
                     $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERTYPE'],
                     $_ARRAYLANG['TXT_CRM_INDUSTRY_TYPE'],
@@ -373,7 +373,7 @@ class crmInterface extends CrmLibrary
                     $_ARRAYLANG['TXT_CRM_TITLE_CURRENCY'],
                     $_ARRAYLANG['TXT_CRM_TITLE_LANGUAGE'],
                     $_ARRAYLANG['TXT_CRM_ACCOUNT_EMAIL'],
-                    $_ARRAYLANG['TXT_TITLE_CUSTOMER_ADDEDBY']
+                    $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMER_ADDEDBY']
                 );
                 break;
         }
@@ -559,7 +559,7 @@ class crmInterface extends CrmLibrary
             array("name"     => "", "title"    => $_ARRAYLANG['TXT_CRM_GENERAL_INFORMATION'], "Header" => true),
             array('name' => 'firstname', 'title' => $_ARRAYLANG['TXT_CRM_CONTACT_NAME'], 'Header' => false),
             array('name' => 'lastname', 'title' => $_ARRAYLANG['TXT_CRM_FAMILY_NAME'], 'Header' => false),
-            array('name' => 'company', 'title' => $_ARRAYLANG['TXT_COMPANY_NAME'], 'Header' => false),
+            array('name' => 'company', 'title' => $_ARRAYLANG['TXT_CRM_TITLE_COMPANY_NAME'], 'Header' => false),
             array('name' => 'website', 'title' => $_ARRAYLANG['TXT_CRM_WEBSITE'], 'Header' => false),
             array('name' => 'role', 'title' => $_ARRAYLANG['TXT_CRM_ROLE'], 'Header' => false),
             array('name' => 'customertype', 'title' => $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERTYPE'], 'Header' => false),
@@ -567,7 +567,7 @@ class crmInterface extends CrmLibrary
             array('name' => 'currency', 'title' => $_ARRAYLANG['TXT_CRM_TITLE_CURRENCY'], 'Header' => false),            
             array('name' => 'customerId', 'title' => $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERID'], 'Header' => false),
             array('name' => 'language', 'title' => $_ARRAYLANG['TXT_CRM_TITLE_LANGUAGE'], 'Header' => false),
-            array('name' => 'addedby', 'title' => $_ARRAYLANG['TXT_TITLE_CUSTOMER_ADDEDBY'], 'Header' => false),
+            array('name' => 'addedby', 'title' => $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMER_ADDEDBY'], 'Header' => false),
             );
 
         foreach ($this->emailOptions as $key => $emailValue) {
