@@ -309,6 +309,10 @@ cx.ready(function() {
                             multipleActionAjaxRequest(json.offset);
                             return;
                         }
+                        if (json.message) {
+                            $J('<div>'+json.message+'</div>').cxNotice();
+                            jQuery.fn.cxDestroyDialogs(10000);
+                        }
                         jQuery('#multiple-actions-select').val(0);
                         cx.cm.createJsTree(jQuery("#site-tree"), json.data.tree, json.data.nodeLevels, false);
                         if (json.data.action == 'delete') {
