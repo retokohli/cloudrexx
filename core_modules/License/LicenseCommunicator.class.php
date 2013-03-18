@@ -70,13 +70,13 @@ class LicenseCommunicator {
         if (!$forceUpdate && !$this->isTimeToUpdate($_CONFIG) && empty($response)) {
             return;
         }
+        $sm = new \settingsManager();
+        if (!$sm->isWritable()) {
+            throw new \Exception($_CORELANG['TXT_SETTINGS_ERROR_NO_WRITE_ACCESS']);
+        }
         if ($response) {
             $response = json_decode($response);
         } else {
-            $sm = new \settingsManager();
-            if (!$sm->isWritable()) {
-                throw new \Exception($_CORELANG['TXT_SETTINGS_ERROR_NO_WRITE_ACCESS']);
-            }
             $v = preg_split('#\.#', $_CONFIG['coreCmsVersion']);
             $e = $_CONFIG['coreCmsEdition'];
 
@@ -350,7 +350,7 @@ class LicenseCommunicator {
                         jQuery("#jsstatemessage").html(cx.variables.get("statusmessage_success", "core_module/license"));
                         jQuery("#jsstatemessage").addClass("okbox");
                         jQuery("#jsstatemessage").show();
-                        if (reloadManager && ' . ($sm->isWritable() ? 'true' : 'false') . ') {
+                        if (reloadManager && ' . ($sm->isWritable() ? 'true' : 'false') . ' && data.status != "ERROR") {
                             setTimeout(function() {
                                 document.location.reload(true);
                             }, 1500);
