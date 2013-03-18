@@ -2641,8 +2641,9 @@ cx.cm.initHistory = function() {
 
 cx.cm.updateHistoryTableHighlighting = function() {
     var version = jQuery("#historyId").val();
-    if (version == "") {
+    if (version == "" || version == "new") {
         jQuery('.historyLoad, .historyPreview').first().hide();
+        return;
     }
     jQuery('.historyLoad, .historyPreview').each(function () {
         if ((jQuery(this).attr('id') == 'load_' + version) || (jQuery(this).attr('id') == 'preview_' + version)) {
