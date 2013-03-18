@@ -495,3 +495,4 @@ $_ARRAYLANG['TXT_CRM_FILTER_TASK_TYPE']             = "Filter Aufgaben";
 $_ARRAYLANG['TXT_CRM_MAIL_TEMPLATE']                = "E-Mail Vorlagen";
 $_ARRAYLANG['TXT_CRM_STAGES_SAVED']                 = "Verkaufschancen Hinzufügen erfolgreich hinzugefügen";
 $_ARRAYLANG['TXT_CRM_ACCOUNT_ARE_MANTATORY']        = "Accounts are mandatory";
+$_ARRAYLANG ['TXT_CRM_TITLE_CUSTOMER_ADDEDBY'] = "Hinzugefügt von";

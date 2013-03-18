@@ -490,3 +490,4 @@ $_ARRAYLANG['TXT_CRM_FILTER_TASK_TYPE']             = "Filter Task type";
 $_ARRAYLANG['TXT_CRM_MAIL_TEMPLATE']                = "E-mail Templates";
 $_ARRAYLANG['TXT_CRM_STAGES_SAVED']                 = "Opportunity stage added successfully";
 $_ARRAYLANG['TXT_CRM_ACCOUNT_ARE_MANTATORY']        = "Accounts are mandatory";
+$_ARRAYLANG['TXT_CRM_TITLE_CUSTOMER_ADDEDBY']       = "Added by";

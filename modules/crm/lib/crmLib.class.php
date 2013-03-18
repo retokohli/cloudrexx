@@ -72,7 +72,7 @@ class CrmLibrary {
     function  __construct() {
         $this->load          = new loader();
         $this->_arrLanguages = $this->createLanguageArray();
-        $this->isPmInstalled = contrexx_isModuleActive($this->pm_moduleName);        
+        $this->isPmInstalled = contrexx_isModuleActive($this->pm_moduleName);
     }
 
     function getSettings() {
@@ -186,7 +186,7 @@ class CrmLibrary {
                 $where";
         $objDatabase->Execute($query);
     }
-    
+
     function showTaskTypes() {
         global $_ARRAYLANG, $objDatabase;
 
@@ -444,8 +444,8 @@ class CrmLibrary {
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_".$this->moduleName."_contacts SET contact_customer = $customerId
                                                                        WHERE  id = '".intval($value)."'");
         }
-    }    
-   
+    }
+
     function updateCustomerMemberships($memberShips, $customerId) {
         global $objDatabase;
 
@@ -674,7 +674,7 @@ class CrmLibrary {
 
             if ($_GET['ajax']) {
                 exit();
-            } else {                
+            } else {
                 $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_CRM_INDUSTRY_UPDATED_SUCCESSFULLY'], ($deactivate) ? $_ARRAYLANG['TXT_DEACTIVATED'] : $_ARRAYLANG['TXT_ACTIVATED']);
             }
         } else {
@@ -739,7 +739,7 @@ class CrmLibrary {
 
             if ($_GET['ajax']) {
                 exit();
-            } else {                
+            } else {
                 $_SESSION['strOkMessage'] = sprintf($_ARRAYLANG['TXT_CRM_MEMBERSHIP_UPDATED_SUCCESSFULLY'], ($deactivate) ? $_ARRAYLANG['TXT_DEACTIVATED'] : $_ARRAYLANG['TXT_ACTIVATED']);
             }
         } else {
@@ -786,7 +786,7 @@ class CrmLibrary {
         } else {
             $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_MEMBERSHIP_DELETED_SUCCESSFULLY'];
         }
-        
+
     }
 
     function deleteMembership() {
@@ -985,9 +985,9 @@ class CrmLibrary {
                 'CRM_DATASOURCE_SELECTED' => $selected
             ));
             $objTpl->parse($block);
-        }        
+        }
     }
-    
+
     function getCrmDatasource() {
         global $objDatabase;
 
@@ -996,7 +996,7 @@ class CrmLibrary {
         if (!empty($datasource)) {
             return $datasource;
         }
-        
+
         $objResult = $objDatabase->Execute("SELECT `id`, `datasource`, `status`  FROM `". DBPREFIX ."module_{$this->moduleName}_datasources`");
 
         if ($objResult) {
@@ -1008,7 +1008,7 @@ class CrmLibrary {
 
         return $datasource;
     }
-    
+
     function  getMemberships($active = true) {
         global $objDatabase, $_LANGID;
 
@@ -1072,9 +1072,9 @@ class CrmLibrary {
                     $objTpl->parse('industryEntries');
 
                     $arrParentIds[] = $arrIndustry['id'];
-                    
+
                     //get children
-                    if(!empty($arrIndustry['children'])){                        
+                    if(!empty($arrIndustry['children'])){
                         $this->listIndustryTypes($objTpl, 1, $intIndustryId, $arrParentIds);
                     }
 
@@ -1126,7 +1126,7 @@ class CrmLibrary {
 
         foreach ($memberShips as $id) {
             $selectedVal = in_array($id, $selected) ? 'selected' : '';
-            
+
             $objTpl->setVariable(array(
                     "CRM_MEMBERSHIP_ID"         => (int) $id,
                     "CRM_MEMBERSHIP_VALUE"      => contrexx_raw2xhtml($this->_memberShips[$id]),
@@ -1154,7 +1154,7 @@ class CrmLibrary {
 
     function addUser($email, $password, $sendLoginDetails = false) {
         global $objDatabase, $_CORELANG;
-        
+
         $settings = $this->getSettings();
 
         if (!isset($this->contact))
@@ -1181,7 +1181,7 @@ class CrmLibrary {
             }
         } else {
             if (empty($accountId)){
-                $objUser = new User();                                
+                $objUser = new User();
             } else {
                 $userExists = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE user_account = {$accountId}", 1);
                 if ($userExists && $userExists->RecordCount() == 0) {
@@ -1189,7 +1189,7 @@ class CrmLibrary {
                 } else {
                     $this->_strErrMessage = $_CORELANG['TXT_ACCESS_EMAIL_ALREADY_USED'];
                     return  false;
-                }                
+                }
             }
         }
 
@@ -1204,27 +1204,27 @@ class CrmLibrary {
             'firstname'    => array(0 => $this->contact->customerName),
             'lastname'     => array(0 => $this->contact->family_name),
         ));
-        
-        if ($objUser->store()) {            
+
+        if ($objUser->store()) {
             if (empty($this->contact->account_id) && $sendLoginDetails) {
                 $info['substitution'] = array(
                         'CRM_CUSTOMER_COMPANY'           => $this->contact->customerName." ".$this->contact->family_name,
-                        'CRM_CUSTOMER_CONTACT_EMAIL'     => $defaultEmail,
-                        'CRM_CUSTOMER_CONTACT_USER_NAME' => $this->contact->user_name,
-                        'CRM_CUSTOMER_CONTACT_PASSWORD'  => $passWord,
+                        'CRM_CUSTOMER_CONTACT_EMAIL'     => $email,
+                        'CRM_CUSTOMER_CONTACT_USER_NAME' => $email,
+                        'CRM_CUSTOMER_CONTACT_PASSWORD'  => $password,
                 );
                 $dispatcher = EventDispatcher::getInstance();
                 $dispatcher->triggerEvent(CRM_EVENT_ON_USER_ACCOUNT_CREATED, null, $info);
             }
             $this->contact->account_id = $objUser->getId();
-            
+
             return true;
         } else {
-            $objUser->reset();            
+            $objUser->reset();
             $this->_strErrMessage = implode("<br />", $objUser->error_msg);
             return  false;
         }
-        
+
         $this->_strErrMessage = 'Some thing went wrong';
         return false;
     }
@@ -1251,21 +1251,21 @@ class CrmLibrary {
             $this->contact->customerName   = !empty ($fieldValues['access_firstname']) ? contrexx_input2raw($fieldValues['access_firstname']) : '';
             $this->contact->family_name    = !empty ($fieldValues['access_lastname']) ? contrexx_input2raw($fieldValues['access_lastname']) : '';
             $this->contact->contact_gender = (!empty ($fieldValues['access_gender']) && $fieldValues['access_gender'] == 'female') ? 1 : (!empty ($fieldValues['access_gender']) && $fieldValues['access_gender'] == 'male') ? 2 : '';
-            
+
             $this->contact->contactType    = 2;
             $this->contact->datasource     = 2;
 
             if ($objEmail && $objEmail->RecordCount()) {
                 $accountId = $objEmail->fields['id'];
                 $userExists = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE user_account = {$accountId}", 1);
-                
+
                 if ($userExists && $userExists->RecordCount() == 0) {
-                    $this->contact->account_id     = $accountId;            
+                    $this->contact->account_id     = $accountId;
                 }
             }
-            
+
             if ($this->contact->save()) {
-                
+
                 //insert email
                 $query = "INSERT INTO `".DBPREFIX."module_{$this->moduleName}_customer_contact_emails` SET
                                 email      = '". contrexx_input2db($fieldValues['access_email']) ."',
@@ -1275,7 +1275,7 @@ class CrmLibrary {
                 $objDatabase->Execute($query);
                 // insert website
                 if (!empty ($fieldValues['access_website'])) {
-                    $fields = array(                        
+                    $fields = array(
                         'url'           => $fieldValues['access_website'],
                         'url_profile'   => 1,
                         'is_primary'    => 1,
@@ -1287,7 +1287,7 @@ class CrmLibrary {
 
                 //insert address
                 if (!empty ($fieldValues['access_address']) || !empty ($fieldValues['access_city']) || !empty ($fieldValues['access_zip']) || !empty ($fieldValues['access_country'])) {
-                    
+
                     $query = "INSERT INTO `".DBPREFIX."module_{$this->moduleName}_customer_contact_address` SET
                                     address      = '". contrexx_input2db($fieldValues['access_address']) ."',
                                     city         = '". contrexx_input2db($fieldValues['access_city']) ."',
@@ -1343,7 +1343,7 @@ class CrmLibrary {
                 }
                 // notify the staff's
                 $this->notifyStaffOnContactAccModification($this->contact->id, $this->contact->customerName.' '.$this->contact->family_name);
-            }            
+            }
         }
     }
 
@@ -1374,7 +1374,7 @@ class CrmLibrary {
 
             $dispatcher = EventDispatcher::getInstance();
             $dispatcher->triggerEvent(CRM_EVENT_ON_ACCOUNT_UPDATED, null, $info);
-        }        
+        }
     }
 
      /**
@@ -1395,7 +1395,7 @@ class CrmLibrary {
         }
         return $value;
     }
-    
+
     /**
      * Returns true if the given $username is valid
      * @param   string    $username
@@ -1429,7 +1429,7 @@ class CrmLibrary {
     protected function isUniqueUsername($email, $id=0)
     {
         global $objDatabase;
-        
+
         $objResult = $objDatabase->SelectLimit("
                                             SELECT id
                                               FROM ".DBPREFIX."access_users
@@ -1440,12 +1440,12 @@ class CrmLibrary {
 
     /**
      * Registers all css and js to be loaded for crm module
-     *              
+     *
      */
     public function _initCrmModule()
     {
         JS::activate('jqueryui');
-        JS::registerJS("lib/javascript/crm/main.js");        
+        JS::registerJS("lib/javascript/crm/main.js");
         JS::registerCSS("lib/javascript/crm/css/main.css");
     }
 
