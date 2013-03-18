@@ -440,6 +440,17 @@ function executeContrexxUpdate() {
         }
     }
 
+    if (!in_array('moduleTemplates', $_SESSION['contrexx_update']['update']['done'])) {
+        if (_updateModulePages() === false) {
+            if (empty($objUpdate->arrStatusMsg['title'])) {
+                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_TEMPLATES']), 'title');
+            }
+            return false;
+        } else {
+            $_SESSION['contrexx_update']['update']['done'][] = 'moduleTemplates';
+        }
+    }
+
     $arrUpdate = $objUpdate->getLoadedVersionInfo();
     $_CONFIG['coreCmsVersion'] = $arrUpdate['cmsVersion'];
 
@@ -455,17 +466,6 @@ function executeContrexxUpdate() {
         } else {*/
         $_SESSION['contrexx_update']['update']['done'][] = 'coreLicense';
         //}
-    }
-
-    if (!in_array('moduleTemplates', $_SESSION['contrexx_update']['update']['done'])) {
-        if (_updateModulePages === false) {
-            if (empty($objUpdate->arrStatusMsg['title'])) {
-                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_TEMPLATES']), 'title');
-            }
-            return false;
-        } else {
-            $_SESSION['contrexx_update']['update']['done'][] = 'moduleTemplates';
-        }
     }
 
     if (!createHtAccess()) {
@@ -828,6 +828,67 @@ function _updateModuleRepository() {
 
     closedir($dh);
 
+    return true;
+}
+
+function _updateModulePages() {
+    global $objUpdate, $_CONFIG, $objDatabase;
+    
+    $updateTable = array(
+        'newsletter'    => '3.0.1.0', // E-Mail Marketing
+        'shop'          => '3.0.0.0', // Online Shop
+        'voting'        => '2.1.0.0', // Umfragen
+        'access'        => '2.0.0.0', // Benutzerverwaltung
+        'podcast'       => '2.0.0.0', // Podcast
+        'login'         => '3.0.2.0', // Login
+        'gallery'       => '3.0.2.0', // Bildgalerie
+    );
+    
+    foreach ($updateTable as $module=>$version) {
+        // only update templates if the installed version is older than $version
+        if (!$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], $version)) {
+            continue;
+        }
+        $em = \Env::get('em');
+        $pageRepo = $em->getRepository('\Cx\Model\ContentManager\Page');
+        $pages = $pageRepo->findBy(array(
+            'module' => $module,
+            'type'   => \Cx\Model\ContentManager\Page::TYPE_APPLICATION,
+        ));
+        $objResult = $objDatabase->Execute('
+            SELECT
+                `id`
+            FROM
+                ' . DBPREFIX . 'modules
+            WHERE
+                `name` LIKE \'' . $module . '\'
+        ');
+        if ($objResult) {
+            if (!$objResult->EOF) {
+                $moduleId = $objResult->fields['id'];
+            }
+        } else {
+            return false;
+        }
+        foreach ($pages as $page) {
+            $query = '
+                SELECT
+                    `content`
+                FROM
+                    ' . DBPREFIX . 'module_repository
+                WHERE
+                    `moduleid` = ' . $moduleId . ' AND
+                    `cmd` LIKE \'' . $page->getCmd() . '\'
+            ';
+            $objResult = $objDatabase->Execute($query);
+            if (!$objResult || $objResult->EOF) {
+                return false;
+            }
+            $page->setContent($objResult->fields['content']);
+            $em->persist($page);
+            $em->flush();
+        }
+    }
     return true;
 }
 
