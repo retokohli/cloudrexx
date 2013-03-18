@@ -1441,7 +1441,7 @@ class ContentMigration
 
                 while (!$objResult->EOF) {
                     $inactiveContentLanguages .= '
-                        <input type="checkbox" name="migrateLangIds" id="migrate-lang-' . $objResult->fields['lang'] . '" value="' . $objResult->fields['lang'] . '" />
+                        <input style="clear:left;float:left;margin-top:3px;" type="checkbox" name="migrateLangIds" id="migrate-lang-' . $objResult->fields['lang'] . '" value="' . $objResult->fields['lang'] . '" />
                         <label for="migrate-lang-' . $objResult->fields['lang'] . '">' . $arrLanguages[$objResult->fields['lang']]['name'] . '</label><br />
                     ';
                     $objResult->MoveNext();
