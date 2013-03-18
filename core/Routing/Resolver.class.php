@@ -174,6 +174,26 @@ class Resolver {
         }
 
         $this->page = $page;
+        
+        $params = $this->url->getParamArray();
+        if (
+            (isset($params['external']) && $params['external'] == 'permanent') ||
+            ($this->page->isTargetInternal() && preg_match('/[?&]external=permanent/', $this->page->getTarget()))
+        ) {
+            if ($this->page->isTargetInternal()) {
+                $params = array();
+                if (trim($this->page->getTargetQueryString()) != '') {
+                    $params = explode('&', $this->page->getTargetQueryString());
+                }
+                $target = \Cx\Core\Routing\Url::fromNodeId($this->page->getTargetNodeId(), $this->page->getTargetLangId(), $params);
+            } else {
+                $target = $this->page->getTarget();
+            }
+            header('HTTP/1.1 301 Moved Permanently');
+            header('Location: ' . $target);
+            header('Connection: close');
+            exit;
+        }
 
         return $this->page;
     }
