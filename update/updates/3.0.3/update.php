@@ -211,6 +211,14 @@ function executeContrexxUpdate() {
             setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/update3.php'));
             return false;
         }
+        
+        if (!createHtAccess()) {
+            $webServerSoftware = !empty($_SERVER['SERVER_SOFTWARE']) && stristr($_SERVER['SERVER_SOFTWARE'], 'apache') ? 'apache' : (stristr($_SERVER['SERVER_SOFTWARE'], 'iis') ? 'iis' : '');
+            $file = $webServerSoftware == 'iis' ? 'web.config' : '.htaccess';
+
+            setUpdateMsg('Die Datei \'' . $file . '\' konnte nicht erstellt/aktualisiert werden.');
+            return false;
+        }
 
         $arrUpdate = $objUpdate->getLoadedVersionInfo();
         $_CONFIG['coreCmsVersion'] = $arrUpdate['cmsVersion'];
@@ -220,14 +228,6 @@ function executeContrexxUpdate() {
             $response = $request->send();
         } catch (\HTTP_Request2_Exception $e) {
             \DBG::log($e->getMessage());
-        }
-
-        if (!createHtAccess()) {
-            $webServerSoftware = !empty($_SERVER['SERVER_SOFTWARE']) && stristr($_SERVER['SERVER_SOFTWARE'], 'apache') ? 'apache' : (stristr($_SERVER['SERVER_SOFTWARE'], 'iis') ? 'iis' : '');
-            $file = $webServerSoftware == 'iis' ? 'web.config' : '.htaccess';
-
-            setUpdateMsg('Die Datei \'' . $file . '\' konnte nicht erstellt/aktualisiert werden.');
-            return false;
         }
 
         return true;
@@ -450,6 +450,14 @@ function executeContrexxUpdate() {
             $_SESSION['contrexx_update']['update']['done'][] = 'moduleTemplates';
         }
     }
+    
+    if (!createHtAccess()) {
+        $webServerSoftware = !empty($_SERVER['SERVER_SOFTWARE']) && stristr($_SERVER['SERVER_SOFTWARE'], 'apache') ? 'apache' : (stristr($_SERVER['SERVER_SOFTWARE'], 'iis') ? 'iis' : '');
+        $file = $webServerSoftware == 'iis' ? 'web.config' : '.htaccess';
+
+        setUpdateMsg('Die Datei \'' . $file . '\' konnte nicht erstellt/aktualisiert werden.');
+        return false;
+    }
 
     $arrUpdate = $objUpdate->getLoadedVersionInfo();
     $_CONFIG['coreCmsVersion'] = $arrUpdate['cmsVersion'];
@@ -466,14 +474,6 @@ function executeContrexxUpdate() {
         } else {*/
         $_SESSION['contrexx_update']['update']['done'][] = 'coreLicense';
         //}
-    }
-
-    if (!createHtAccess()) {
-        $webServerSoftware = !empty($_SERVER['SERVER_SOFTWARE']) && stristr($_SERVER['SERVER_SOFTWARE'], 'apache') ? 'apache' : (stristr($_SERVER['SERVER_SOFTWARE'], 'iis') ? 'iis' : '');
-        $file = $webServerSoftware == 'iis' ? 'web.config' : '.htaccess';
-
-        setUpdateMsg('Die Datei \'' . $file . '\' konnte nicht erstellt/aktualisiert werden.');
-        return false;
     }
 
     return true;
@@ -1025,7 +1025,7 @@ class License {
     }
 
     public function update() {
-        global $documentRoot, $sessionObj, $_CONFIG;
+        global $documentRoot, $sessionObj, $_CONFIG, $arrUpdate;
 
         if (!@include_once(ASCMS_DOCUMENT_ROOT.'/lib/PEAR/HTTP/Request2.php')) {
             return false;
@@ -1048,7 +1048,7 @@ class License {
 
         // we force a version number update. if the license update failed
         // version number will not be upgraded yet:
-        \Cx\Lib\UpdateUtil::sql('UPDATE `' . DBPREFIX . 'settings` SET `setvalue` = \'3.0.2\' WHERE `setid` = 97');
+        \Cx\Lib\UpdateUtil::sql('UPDATE `' . DBPREFIX . 'settings` SET `setvalue` = \'' . $arrUpdate['cmsVersion'] . '\' WHERE `setid` = 97');
         $settingsManager = new \settingsManager();
         $settingsManager->writeSettingsFile();
 
