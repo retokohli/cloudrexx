@@ -76,7 +76,7 @@ try {
         (isset($_GET['force']) && $_GET['force'] == 'true'),
         false,
         $_CORELANG,
-        (isset($_POST['response']) && $objUser->getAdminStatus() ? $_POST['response'] : '')
+        (isset($_POST['response']) && $objUser->getAdminStatus() ? contrexx_input2raw($_POST['response']) : '')
     );
 } catch (\Exception $e) {
     $license->check();
