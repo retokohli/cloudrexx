@@ -1022,6 +1022,7 @@ class CommonFunctions
                         $sqlQuery .= $buffer;
                         if (preg_match("/;[ \t\r\n]*$/", $buffer)) {
                             $sqlQuery = preg_replace($dbPrefixRegexp, '`'.$_SESSION['installer']['config']['dbTablePrefix'].'$1`', $sqlQuery);
+                            $sqlQuery = preg_replace('#CONSTRAINT(\s)*`([0-9a-z_]*)`(\s)*FOREIGN KEY#', 'CONSTRAINT FOREIGN KEY', $sqlQuery);
                             $result = @$objDb->Execute($sqlQuery);
                             if ($result === false) {
                                 $statusMsg .= "<br />".htmlentities($sqlQuery, ENT_QUOTES, ($useUtf8 ? 'UTF-8' : 'ISO-8859-1'))."<br /> (".$objDb->ErrorMsg().")<br />";
