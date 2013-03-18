@@ -403,11 +403,11 @@ if (!$limit) {
                     : $objOrder->billing_lastname().' '.
                       $objOrder->billing_firstname());
             $tipNote = $objOrder->note();
-            $tipLink = (empty($tipNote) 
+            $tipLink = (empty($tipNote)
                 ? ''
                 : '<span class="tooltip-trigger icon-comment"></span>'.
                   '<span class="tooltip-message">'.
-                  preg_replace('/[\n\r]+/', '<br />', 
+                  preg_replace('/[\n\r]+/', '<br />',
                       nl2br(contrexx_raw2xhtml($tipNote))).
                   '</span>');
             $order_id = $order_id;
@@ -1196,54 +1196,24 @@ if (!$limit) {
         // in this method, but only if $create_accounts is true.
         $coupon_code = NULL;
 //        $discount_amount = 0;
-        $discount_rate = 0;
-        $objCouponOrder = Coupon::getByOrderId($order_id);
-        if ($objCouponOrder) {
-            $coupon_code = $objCouponOrder->code();
-            $objCouponOrder = Coupon::available(
-                $objCouponOrder->code(), $arrSubstitution['ORDER_SUM'],
-                $customer_id, 0, $payment_id);
-//DBG::log("Orders::getSubstitutionArray(): Found global Coupon: ".var_export($objCouponOrder, true));
-            if ($objCouponOrder) {
-                // Valid global Coupon
-                if ($objCouponOrder->discount_rate())
-                    $discount_rate = $objCouponOrder->discount_rate();
-//            if ($objCoupon->discount_amount())
-//                $discount_amount = $objCoupon->discount_amount();
-//DBG::log("Orders::getSubstitutionArray(): Coupon rate $discount_rate, amount $discount_amount");
-            }
+        $coupon_rate = $coupon_amount = 0;
+        $objCoupon = Coupon::getByOrderId($order_id);
+        if ($objCoupon) {
+            $coupon_code = $objCoupon->code();
+            $coupon_amount = $objCoupon->getUsedAmount(
+                $customer_id, $order_id);
+            $coupon_rate = $objCoupon->discount_rate();
+//DBG::log("Orders::getSubstitutionArray(): Coupon $coupon_code, rate $coupon_rate, amount $coupon_amount");
         }
         $orderItemCount = 0;
         $total_item_price = 0;
-        $total_discount = 0;
+//        $total_discount = 0;
         while (!$objResultItem->EOF) {
             $orderItemId = $objResultItem->fields['id'];
             $product_id = $objResultItem->fields['product_id'];
-//DBG::log("getSubstitutionArray(): Item: Product ID $product_id");
+//DBG::log("Orders::getSubstitutionArray(): Item: Product ID $product_id");
             $product_name = substr($objResultItem->fields['product_name'], 0, 40);
             $item_price = $objResultItem->fields['price'];
-
-            if ($objCouponOrder) {
-                $objCoupon = Coupon::available(
-                    $objCouponOrder->code(), $arrSubstitution['ORDER_SUM'],
-                    $customer_id, $product_id, $payment_id);
-                if ($objCoupon) {
-                    // Deduct the discount for this *product* Coupon from
-                    // this Product price
-                    if ($objCoupon->discount_rate()) {
-                        $total_discount =
-                            $objCoupon->getDiscountAmount($item_price);
-                    }
-//DBG::log("Orders::getSubstitutionArray(): Found Coupon; rate $discount_rate, amount $discount_amount");
-                } else {
-                    // Deduct global discount, by rate in percent *only*
-                    if ($discount_rate) {
-                        $total_discount =
-                            $objCouponOrder->getDiscountAmount($item_price);
-//DBG::log("Orders::getSubstitutionArray(): Discount rate $discount_rate%: $total_discount");
-                    }
-                }
-            }
             $item_price = Currency::getCurrencyPrice($item_price);
             $quantity = $objResultItem->fields['quantity'];
 // TODO: Add individual VAT rates for Products
@@ -1382,8 +1352,8 @@ if (!$limit) {
                     }
                 }
                 // Redeem the *product* Coupon, if possible for the Product
-                if ($objCouponOrder) {
-                    $objCoupon = Coupon::available($objCouponOrder->code(),
+                if ($coupon_code) {
+                    $objCoupon = Coupon::available($coupon_code,
                         $item_price*$quantity, $customer_id, $product_id,
                         $payment_id);
                     if ($objCoupon) {
@@ -1401,22 +1371,19 @@ if (!$limit) {
             sprintf('% 9.2f', $total_item_price);
         $arrSubstitution['ORDER_ITEM_COUNT'] = sprintf('% 4u', $orderItemCount);
         // Redeem the *global* Coupon, if possible for the Order
-        if ($objCouponOrder && $create_accounts) {
-            $objCoupon = Coupon::available($objCouponOrder->code(),
+        if ($coupon_code && $create_accounts) {
+            $objCoupon = Coupon::available($coupon_code,
                 $total_item_price, $customer_id, null, $payment_id);
             if ($objCoupon) {
-                $objCoupon->redeem($order_id, $customer_id,
-                    $total_item_price);
+                $objCoupon->redeem($order_id, $customer_id, $total_item_price);
             }
         }
         // Fill in the Coupon block with proper discount and amount
-        if ($objCouponOrder) {
+        if ($coupon_amount) {
 //DBG::log("getSubstitutionArray(): Got Order Coupon ".$objCouponOrder->code());
             $arrSubstitution['DISCOUNT_COUPON'][] = array(
-                'DISCOUNT_COUPON_CODE' => sprintf('%-40s',
-                    $objCouponOrder->code()),
-                'DISCOUNT_COUPON_AMOUNT' => sprintf('% 9.2f',
-                    -$objCoupon->getDiscountAmount($total_item_price)),
+                'DISCOUNT_COUPON_CODE' => sprintf('%-40s', $coupon_code),
+                'DISCOUNT_COUPON_AMOUNT' => sprintf('% 9.2f', -$coupon_amount),
             );
         } else {
 //DBG::log("getSubstitutionArray(): No Coupon for Order ID $order_id");

@@ -1653,7 +1653,7 @@ class Order
         global $objDatabase, $_ARRAYLANG;
 
         // The order total -- in the currency chosen by the customer
-//        $order_sum = 0;
+        $order_sum = 0;
         // recalculated VAT total
         $total_vat_amount = 0;
         $order_id = intval($_REQUEST['order_id']);
@@ -1736,7 +1736,6 @@ class Order
                 ? ($objOrder->status() != Order::STATUS_CONFIRMED
                     ? Html::ATTRIBUTE_CHECKED : '')
                 : ''),
-            'SHOP_ORDER_SUM' => Currency::formatPrice($objOrder->sum()),
             'SHOP_DEFAULT_CURRENCY' => Currency::getDefaultCurrencySymbol(),
             'SHOP_GENDER' => ($edit
                 ? Customer::getGenderMenu(
@@ -1807,6 +1806,13 @@ class Order
             'SHOP_PAYMENT_HANDLER' => $ppName,
             'SHOP_LAST_MODIFIED_DATE' => $objOrder->modified_on(),
         ));
+        $order_sum +=
+              $objOrder->shipment_amount()
+            + $objOrder->payment_amount();
+        $total_vat_amount +=
+              Vat::amount(Vat::getOtherRate(), $objOrder->payment_amount)
+            + Vat::amount(Vat::getOtherRate(), $objOrder->shipment_amount);
+//\DBG::log("VAT for handling: $total_vat_amount");
         if ($edit) {
             // edit order
             $strJsArrShipment = Shipment::getJSArrays();
@@ -1840,14 +1846,16 @@ class Order
         $arrProductOptions = $objOrder->getOptionArray();
         $i = 0;
         $total_weight = 0;
-        $total_vat_amount = 0;
         $total_net_price = 0;
         // Orders with Attributes cannot currently be edited
         // (this would spoil all the options!)
         $have_option = false;
+        $discount_amount = 0;
+        $objCoupon = Coupon::getByOrderId($order_id);
         while (!$objResult->EOF) {
             $item_id = $objResult->fields['id'];
             $name = $objResult->fields['product_name'];
+            // Includes options
             $price = $objResult->fields['price'];
             $quantity = $objResult->fields['quantity'];
             $vat_rate = $objResult->fields['vat_rate'];
@@ -1882,8 +1890,25 @@ class Order
                 }
             }
             $row_net_price = $price * $quantity;
-            $row_price = $row_net_price; // VAT added later, if applicable
             $total_net_price += $row_net_price;
+            $discount_product = 0;
+            if ($objCoupon
+                && (   $objCoupon->product_id() == $product_id
+                    || $objCoupon->product_id() == 0)) {
+                $discount_product = $objCoupon->getDiscountAmount(
+                    $row_net_price);
+                if (   $objCoupon->discount_amount()
+                    && $discount_amount + $discount_product
+                        > $objCoupon->discount_amount()) {
+                    $discount_product =
+                        $discount_amount + $discount_product
+                        - $objCoupon->discount_amount();
+                }
+                $discount_amount += $discount_product;
+            }
+            // VAT added later, if applicable
+            $row_price = $row_net_price - $discount_product;
+            $order_sum += $row_price;
             // Here, the VAT has to be recalculated before setting up the
             // fields.  If the VAT is excluded, it must be added here.
             // Note: the old Order.vat_amount field is no longer valid,
@@ -1895,6 +1920,7 @@ class Order
             // accordingly.
             // Calculate the VAT amount per row, included or excluded
             $row_vat_amount = Vat::amount($vat_rate, $row_net_price);
+//\DBG::log("$row_vat_amount = Vat::amount($vat_rate, $row_net_price)");
             // and add it to the total VAT amount
             $total_vat_amount += $row_vat_amount;
             if (!Vat::isIncluded()) {
@@ -1968,23 +1994,25 @@ class Order
             //$objTemplate->hideBlock('taxprice');
             //$tax_part_percentaged = $_ARRAYLANG['TXT_NO_TAX'];
         //}
-// TODO: Parse Coupon if applicable to this product
+        if (!Vat::isIncluded()) {
+            $order_sum += $total_vat_amount;
+        }
         // Coupon
-        $objCoupon = Coupon::getByOrderId($order_id);
         if ($objCoupon) {
             $objTemplate->setVariable(array(
                 'SHOP_COUPON_NAME' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_CODE'],
                 'SHOP_COUPON_CODE' => $objCoupon->code(),
                 'SHOP_COUPON_AMOUNT' => Currency::formatPrice(
-                    -$objCoupon->discount_amount()),
+                    -$discount_amount),
             ));
-            $total_net_price -= $objCoupon->discount_amount();
+            $total_net_price -= $discount_amount;
 //DBG::log("Order::view_detail(): Coupon: ".var_export($objCoupon, true));
         }
         $objTemplate->setVariable(array(
             'SHOP_ROWCLASS_NEW' => 'row'.(++$i % 2 + 1),
             'SHOP_TOTAL_WEIGHT' => Weight::getWeightString($total_weight),
             'SHOP_NET_PRICE' => Currency::formatPrice($total_net_price),
+            'SHOP_ORDER_SUM' => Currency::formatPrice($order_sum),
 // See above
 //            'SHOP_ORDER_SUM' => Currency::formatPrice($order_sum),
         ));

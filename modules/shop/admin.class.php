@@ -89,7 +89,6 @@ class Shopmanager extends ShopLibrary
         global $objTemplate, $_ARRAYLANG;
 
 //DBG::activate(DBG_ERROR_FIREPHP);
-
         if (!isset($_GET['act'])) {
             $_GET['act'] = '';
         }

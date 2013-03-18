@@ -121,9 +121,8 @@ if (SettingDb::getValue('use_js_cart') === NULL) {
      */
     static function getPage($template)
     {
-//DBG::deactivate(DBG_LOG_FIREPHP);
+//DBG::activate(DBG_LOG_FIREPHP);
 //DBG::activate(DBG_LOG_FILE);
-//DBG::activate(DBG_ERROR_FIREPHP|DBG_LOG);
         self::init();
         self::$defaultImage = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.ShopLibrary::noPictureName;
         // PEAR Sigma template
@@ -237,11 +236,11 @@ die("Failed to get Customer for ID $customer_id");
 //                        SettingDb::getValue('email_confirmation'),
                     'do_not_strip_empty_placeholders' => true,
                 );
-                DBG::deactivate(DBG_LOG_FIREPHP);
-                DBG::activate(DBG_LOG_FILE);
+//                DBG::deactivate(DBG_LOG_FIREPHP);
+//                DBG::activate(DBG_LOG_FILE);
                 DBG::log(var_export($arrMailTemplate, true));
                 DBG::log(MailTemplate::send($arrMailTemplate) ? "Sent successfully" : "Sending FAILED!");
-                DBG::deactivate(DBG_LOG_FILE);
+//                DBG::deactivate(DBG_LOG_FILE);
                 break;
             case 'pricelist':
                 self::send_pricelist();
@@ -2433,10 +2432,16 @@ die("Shop::processRedirect(): This method is obsolete!");
         }
 //DBG::log("Shop::view_account(): block_password ".var_export($block_password, true));
         self::$objTemplate->setGlobalVariable(array(
+            // Compatibility.  See new form below.
             'SHOP_ACCOUNT_PASSWORD_DISPLAY' => ($block_password
               ? Html::CSS_DISPLAY_BLOCK : Html::CSS_DISPLAY_NONE),
             'SHOP_DONT_REGISTER_CHECKED' => $dontRegisterChecked ? Html::ATTRIBUTE_CHECKED : '',
         ));
+        // New form.  Avoids posting an empty password
+        if (   $block_password
+            && self::$objTemplate->blockExists('account_password')) {
+            self::$objTemplate->touchBlock('account_password');
+        }
         if (!Cart::needs_shipment()) {
 //            self::$objTemplate->hideBlock('shipping_address');
             return;

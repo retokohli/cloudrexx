@@ -527,7 +527,7 @@ class Cart
 //DBG::log("Cart::update(): Loop 2: Product: ".var_export($product, true));
                     $discount_amount = $objCoupon->getDiscountAmount(
                         $product['price']);
-                    if (   $objCoupon->discount_amount()
+                    if (   $objCoupon->discount_amount() > 0
                         && ($total_discount_amount + $discount_amount)
                             > $objCoupon->discount_amount()) {
 //DBG::log("Cart::update(): COUPON prelimit: PRODUCT: price ".$product['price'].", coupon discount amount ".$objCoupon->discount_amount().", discount_amount $discount_amount, total discount amount $total_discount_amount");
@@ -550,7 +550,8 @@ class Cart
             // - If it's included, we don't care.
             // - If it's disabled, it's set to zero.
             $vat_amount = Vat::amount($product['vat_rate'],
-                $product['price'] - $discount_amount);
+                $product['price'] // - $discount_amount
+            );
             $total_vat_amount += $vat_amount;
             self::$products[$cart_id]['vat_amount'] =
                 Currency::formatPrice($vat_amount);
