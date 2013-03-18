@@ -220,7 +220,7 @@ class JsonNode implements JsonAdapter {
      * Deletes a node
      * @param array $arguments Arguments passed from JsonData
      */
-    public function delete($arguments) {
+    public function delete($arguments, $flush = true) {
         global $_CORELANG;
         
         // Global access check
@@ -235,7 +235,10 @@ class JsonNode implements JsonAdapter {
         $node = $this->nodeRepo->find($arguments['post']['id']);
         
         $this->em->remove($node);
-        $this->em->flush();
+        if ($flush) {
+            $this->em->flush();
+            $this->em->clear();
+        }
         return array(
             'action'                => 'delete',
             'deletedCurrentPage'    => ($arguments['post']['currentNodeId'] == $arguments['post']['id']),
@@ -253,11 +256,13 @@ class JsonNode implements JsonAdapter {
         
         foreach ($post['nodes'] as $nodeId) {
             $data['post']['id'] = $nodeId;
-            $this->delete($data);
+            $this->delete($data, false);
             if ($nodeId == $post['currentNodeId']) {
                 $return['deletedCurrentPage'] = true;
             }
         }
+        $this->em->flush();
+        $this->em->clear();
         
         return $return;
     }
