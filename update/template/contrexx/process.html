@@ -50,11 +50,11 @@
  
     <!-- BEGIN finish -->
     <h1>{TXT_UPDATE_UPDATE_FINISHED}</h1>
-    Gratulation, Sie haben Contrexx WMS Version 3.0 Service Pack 2 erfolgreich installiert!<br /><br />
+    Gratulation, Sie haben Contrexx WMS Version {UPDATE_VERSION_INSTALLED} erfolgreich installiert!<br /><br />
     <h2 class="no-space-bottom">Nächste Schritte</h2>
     <h3>Anpassungen an Anwendungsseiten und dem Design</h3>
     Das Contrexx Update System kann benutzerspezifische Anpassungen nur bedingt automatisch migrieren. Daher ist es notwendig, dass nach dem Update einzelne Anpassungen noch manuell getätigt werden müssen.
-    Eine Aufstellung, inkl. Anleitung der durchzuführenden Anpassungen finden Sie im Artikel <a href="http://www.contrexx.com/wiki/de/index.php?title=Version_3.0.2" target="_blank">Contrexx 3 Update</a> des Contrexx Wikis.
+    Eine Aufstellung, inkl. Anleitung der durchzuführenden Anpassungen finden Sie im Artikel <a href="http://www.contrexx.com/wiki/de/index.php?title=Version_{UPDATE_VERSION_NUMBER}" target="_blank">Contrexx 3 Update</a> des Contrexx Wikis.
 
     <h3>Lizenz erwerben</h3>
     Weitere Informationen zu den Contrexx 3 Lizenzen entnehmen Sie bitte direkt von der Website des Herstellers der Contrexx Software: <a href="http://www.contrexx.com/de/kaufen" target="_blank">http://www.contrexx.com/de/kaufen</a>.
@@ -65,6 +65,24 @@
         <li><a href="{URL_FRONTEND}" target="_blank">Website (Frontend)</a></li>
         <li><a href="{URL_BACKEND}" target="_blank">Administrationskonsole (Backend)</a></li>
     </ul>
+
+        <!-- BEGIN backed_files -->
+        <div class="message-alert">
+        <h3 style="padding-top:0px;">Modifizierte Dateien</h3>
+        Während dem Updatevorgang hat das System festgestellt, das Ihre Website Erweiterungen zum Standardfunktionsumfang (Modifikationen am Quellcode) enthält.<br />
+        Damit Ihre individuellen Erweiterungen nicht verloren gehen, wurde von allen modifizierten Dateien eine Sicherungskopie im Verzeichnis <strong>/customizing</strong> angelegt.<br />
+        Ihre individuellen Erweiterungen müssen nun auf die neue Architektur dieser Contrexx Version portiert werden, damit diese nun nach dem Update wieder funktionieren und Einsatzbereit sind. Der folende Wiki-Artikel unterstützt Sie bei der portierung Ihrer Erweiterungen auf die neue Version: <a href="http://www.contrexx.com/wiki/index.php/Migration_Guide" title="Migration Guide">Migration Guide</a><br />
+        Liste der modifizierten Dateien:
+        <ul style="padding-top:10px;">
+        <!-- BEGIN backed_file -->
+            <li style="padding-top:7px;">
+                <strong>Datei:</strong> {BACKUP_FILE_SRC}<br />
+                <strong>Sicherung:</strong> {BACKUP_FILE_DST}
+            </li>
+        <!-- END backed_file -->
+        </ul>
+        </div>
+        <!-- END backed_files -->
     <!-- END finish -->
 
  </div>

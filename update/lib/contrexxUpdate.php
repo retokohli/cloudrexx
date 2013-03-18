@@ -18,6 +18,7 @@ function doUpdate(goBack, viaPost, debug, timeout)
 {
     getDebugInfo = debug;
     type = viaPost ? 'POST' : 'GET';
+    var inputTimeout = $J("input#checkTimeout").length;
 
     if (useAjax) {
         if (request_active) {
@@ -28,7 +29,7 @@ function doUpdate(goBack, viaPost, debug, timeout)
 
         formData = getFormData(goBack);
 
-        if ($J("#processUpdate").length || $J("#doGroup").length || timeout) {
+        if ($J("#processUpdate").length || $J("#doGroup").length || inputTimeout || timeout) {
             if (!getDebugInfo) {
                 setContent('<div style="margin: 180px 0 0 155px;">Bitte haben Sie einen Moment Geduld.<br /><?php $txt = 'Das Update wird durchgeführt...';print UPDATE_UTF8 ? $txt : utf8_decode($txt);?><br /><br /><img src="template/contrexx/images/content/loading_animation.gif" width="208" height="13" alt="" /></div>');
                 setNavigation('');
@@ -43,6 +44,11 @@ function doUpdate(goBack, viaPost, debug, timeout)
         }
 
         $J("#wrapper-bottom-left").empty();
+
+        if (inputTimeout) {
+            checkTimeout();
+        }
+
         jQuery.ajax({
             url: 'index.php',
             type: type,
@@ -392,4 +398,26 @@ var executeGrouping = function() {
     $J('#similarPages').val(JSON.stringify(similarPages));
     $J('#removePages').val(JSON.stringify(removePages));
     doUpdate(false, true);
+}
+
+var checkTimeout = function() {
+    var startTime = new Date();
+    $J.ajax({
+        url: 'index.php',
+        type: 'GET',
+        async: false,
+        data: {'check_timeout': 'true'},
+        statusCode: {
+            500: function() {
+                var endTime = new Date();
+                var executionTime = parseInt((endTime - startTime) / 1000);
+                $J.ajax({
+                    url: 'index.php',
+                    type: 'POST',
+                    async: false,
+                    data: {'execution_time': executionTime - 5}
+                });
+            }
+        }
+    });
 }

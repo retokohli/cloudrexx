@@ -19,6 +19,13 @@ if ($php < '5.3') {
 require_once dirname(__FILE__).'/lib/FRAMEWORK/DBG/DBG.php';
 DBG::deactivate();
 
+// Check effective maximum execution time
+if (!empty($_GET['check_timeout'])) {
+    $timeout = time() + 55;
+    while ($timeout > time()) {}
+    die('1');
+}
+
 // Try to enable APC
 $apcEnabled = false;
 if (extension_loaded('apc')) {
@@ -107,6 +114,11 @@ Env::set('db', $objDatabase);
 // Start session
 $sessionObj = new cmsSession();
 $sessionObj->cmsSessionStatusUpdate('backend');
+
+if (!empty($_POST['execution_time'])) {
+    $_SESSION['contrexx_update']['max_execution_time'] = intval($_POST['execution_time']);
+    die('time '.$_SESSION['contrexx_update']['max_execution_time']);
+}
 
 // Initialize base system
 $objInit = new InitCMS('update', Env::em());

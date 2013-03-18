@@ -7,13 +7,21 @@ require_once UPDATE_PATH . '/lib/FRAMEWORK/FileSystem/FileSystemFile.class.php';
 require_once UPDATE_PATH . '/lib/FRAMEWORK/FileSystem/FTPFile.class.php';
 
 function executeContrexxUpdate() {
-    global $_ARRAYLANG, $_CORELANG, $_CONFIG, $objDatabase, $objUpdate;
+    global $_CORELANG, $_CONFIG, $objDatabase, $objUpdate;
 
     $_SESSION['contrexx_update']['copyFilesFinished'] = !empty($_SESSION['contrexx_update']['copyFilesFinished']) ? $_SESSION['contrexx_update']['copyFilesFinished'] : false;
 
     // Copy cx files to the root directory
     if (!$_SESSION['contrexx_update']['copyFilesFinished']) {
-        if (!copyCxFilesToRoot(dirname(__FILE__) . '/cx_files', ASCMS_PATH . ASCMS_PATH_OFFSET)) {
+        if (!loadMd5SumOfOriginalCxFiles()) {
+            return false;
+        }
+
+        $copyFilesStatus = copyCxFilesToRoot(dirname(__FILE__) . '/cx_files', ASCMS_PATH . ASCMS_PATH_OFFSET);
+        if ($copyFilesStatus !== true) {
+            if ($copyFilesStatus === 'timeout') {
+                setUpdateMsg(1, 'timeout');
+            }
             return false;
         }
         if (extension_loaded('apc') && ini_get('apc.enabled')) {
@@ -92,8 +100,10 @@ function executeContrexxUpdate() {
                         ' . $result . '<br />
                         Wählen Sie die inaktiven Sprachen, dessen Inhaltseiten Sie migrieren möchten.<br />
                         Klicken Sie anschliessend auf <b>Update fortsetzen...</b>.<br /><br />
+                        <div class="message-alert">
                         <b>Achtung:</b><br />
                         Die Inhaltsseiten der inaktive Sprache(n), welche Sie nicht ausgewählt haben, werden gelöscht.
+                        </div>
                     ', 'msg');
                     setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_CONTINUE_UPDATE'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" /><input type="hidden" name="skipMigrateLangIds" id="skipMigrateLangIds" />', 'button');
                     return false;
@@ -892,13 +902,131 @@ function _updateModulePages() {
     return true;
 }
 
+function loadMd5SumOfOriginalCxFiles()
+{
+    global $_CORELANG, $_CONFIG, $arrMd5SumsOfCxFiles, $objUpdate;
+
+    if (!isset($_SESSION['contrexx_update']['skipIntegrityCheck'])) {
+        $_SESSION['contrexx_update']['skipIntegrityCheck'] = false;
+    }
+
+    // skip integrity check for version 3 or newer
+    if (!$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+        $_SESSION['contrexx_update']['skipIntegrityCheck'] = true;
+        return true;
+    }
+
+    $md5File = UPDATE_PATH . '/md5sums/'.$_CONFIG['coreCmsVersion'].'.md5';
+    if (!file_exists($md5File)) {
+        if (!empty($_POST['skipIntegrityCheck'])) {
+            $_SESSION['contrexx_update']['skipIntegrityCheck'] = true;
+        }
+        if ($_SESSION['contrexx_update']['skipIntegrityCheck']) {
+            return true;
+        }
+
+        setUpdateMsg('Integritätsprüfung fehlgeschlagen', 'title');
+        setUpdateMsg('Die Integritätsprüfung konnte nicht durchgeführt werden, da die installierte Version ('.$_CONFIG['coreCmsVersion'].') unbekannt ist.', 'error');
+        setUpdateMsg('Ohne Integritätsprüfung kann das Update System nicht feststellen, ob Ihre Website Erweiterungen zum Standardfunktionsumfang enthält (modifizierte Dateien).', 'msg');
+        setUpdateMsg('Es wird empfohlen sich an den <a href="http://www.contrexx.com/support" title="Herstellersupport" target="_blank">Herstellersupport</a> oder Ihrem <i>Contrexx Solution Partner</i> zu wenden, um die Integritätsprüfung von einem Spezialisten vornehmen zu lassen.<br />', 'msg');
+        setUpdateMsg('Der Updatevorgang kann ohne Integritätsprüfung fortgesetzt werden, dadurch gehen aber allfällige Erweiterungen zum Standardfunktionsumfang unwiderruflich verloren!', 'msg');
+        setUpdateMsg('<strong>Es wird nicht empfohlen den Updatevorgang ohne Integritätsprüfung fortzufahren!</strong><br />', 'msg');
+        setUpdateMsg('<input type="checkbox" name="skipIntegrityCheck" id="skipIntegrityCheck" value="1" style="float:left;margin-top:3px;" /><label for="skipIntegrityCheck" style="float:left;width:490px;">Ich bin mir den Konsequenzen bewusst und möchte das Update trotzdem ohne Integritätsprüfung fortfahren.</label><br />', 'msg');
+
+        setUpdateMsg('<input type="submit" value="' . $_CORELANG['TXT_CONTINUE_UPDATE'] . '" name="updateNext" />', 'button');
+
+        return false;
+    }
+
+    $arrMd5SumsOfCxFiles = array();
+    $list = file($md5File);
+    foreach ($list as $entry) {
+        list($file, $md5sum) = explode('|', trim($entry));
+        if (!isset($arrMd5SumsOfCxFiles[$file])) {
+            $arrMd5SumsOfCxFiles[$file] = array();
+        }
+        $arrMd5SumsOfCxFiles[$file][] = $md5sum;
+    }
+
+    return true;
+}
+
+function backupModifiedFile($file)
+{
+    $cxFilePath = dirname(substr($file, strlen(ASCMS_DOCUMENT_ROOT)));
+    $customizingPath = ASCMS_DOCUMENT_ROOT.'/customizing'.$cxFilePath;
+    \Cx\Lib\FileSystem\FileSystem::make_folder($customizingPath);
+    $customizingFile = $customizingPath . '/'. basename($file);
+
+    if (file_exists($customizingFile)) {
+        $customizingFile .= '_backup_'.date('d.m.Y');
+        $suffix = '';
+        $idx = 0;
+        while (file_exists($customizingFile.$suffix)) {
+            $idx++;
+            $suffix = '_'.$idx;
+        }
+    
+        $customizingFile .= $suffix;
+    }
+
+    try {
+        $objFile = new \Cx\Lib\FileSystem\File($file);
+        $objFile->copy($customizingFile);
+        $_SESSION['contrexx_update']['modified_files'][] = array(
+            'src'   => $cxFilePath . '/' . basename($file),
+            'dst'   => substr($customizingFile, strlen(ASCMS_DOCUMENT_ROOT)),
+        );
+    } catch (\Exception $e) {
+        setUpdateMsg('Folgende Datei konnte nicht installiert werden:<br />' . $dstPath);
+        setUpdateMsg('Fehler: ' . $e->getMessage());
+        setUpdateMsg('<br />Häufigste Ursache dieses Problems ist, dass zur Ausführung dieses Vorgangs die benötigten Schreibrechte nicht vorhanden sind. Prüfen Sie daher, ob die FTP-Konfiguration in der Datei <strong>config/configuration.php</strong> korrekt eingerichtet ist.');
+        return false;
+    }
+
+    return true;
+}
+
+
+function verifyMd5SumOfFile($file, $newFile)
+{
+    global $arrMd5SumsOfCxFiles;
+
+    // user wants to skip integrity check
+    if ($_SESSION['contrexx_update']['skipIntegrityCheck']) {
+        return true;
+    }
+
+    if (!file_exists($file)) {
+        return true;
+    }
+
+    $md5 = md5_file($file);
+    $cxFilePath = substr($file, strlen(ASCMS_DOCUMENT_ROOT.'/'));
+
+    // file did not exist in old version,
+    // therefore, a check would be non-sense
+    if (!isset($arrMd5SumsOfCxFiles[$cxFilePath])) {
+        return true;
+    }
+
+    foreach ($arrMd5SumsOfCxFiles[$cxFilePath] as $validMd5Sum) {
+        if ($md5 == $validMd5Sum) {
+            return true;
+        }
+    }
+
+    $md5SumOfNewFile = md5_file($newFile);
+    if ($md5 == $md5SumOfNewFile) {
+        return true;
+    }
+
+    return false;
+}
+
 function copyCxFilesToRoot($src, $dst)
 {
-    global $_CORELANG;
-
     static $copiedCxFilesIndex = 0;
-
-    $approxFileCount2copy = 3809;
 
     $src = str_replace('\\', '/', $src);
     $dst = str_replace('\\', '/', $dst);
@@ -919,8 +1047,7 @@ function copyCxFilesToRoot($src, $dst)
     foreach ($arrCurrentFolderStructure as $file) {
         if (!checkMemoryLimit() || !checkTimeoutLimit()) {
             $_SESSION['contrexx_update']['copiedCxFilesIndex'] = $copiedCxFilesIndex;
-            setUpdateMsg('Vorgang wurde beim Installieren der neuen Dateien unterbrochen.<br />Fortschritt: '. floor(80/$approxFileCount2copy*$_SESSION['contrexx_update']['copiedCxFilesTotal']) .'%<br /><br />', 'msg');
-            return false;
+            return 'timeout';
         }
 
         $srcPath = $src . '/' . $file;
@@ -941,6 +1068,12 @@ function copyCxFilesToRoot($src, $dst)
             $_SESSION['contrexx_update']['copiedCxFilesTotal']++;
 
             try {
+                if (!verifyMd5SumOfFile($dstPath, $srcPath)) {
+                    if (!backupModifiedFile($dstPath)) {
+                        return false;
+                    }
+                }
+
                 $objFile = new \Cx\Lib\FileSystem\File($srcPath);
                 $objFile->copy($dstPath, true);
             } catch (\Exception $e) {
@@ -949,6 +1082,7 @@ function copyCxFilesToRoot($src, $dst)
                 $_SESSION['contrexx_update']['copiedCxFilesTotal']--;
                 setUpdateMsg('Folgende Datei konnte nicht installiert werden:<br />' . $dstPath);
                 setUpdateMsg('Fehler: ' . $e->getMessage());
+                setUpdateMsg('<br />Häufigste Ursache dieses Problems ist, dass zur Ausführung dieses Vorgangs die benötigten Schreibrechte nicht vorhanden sind. Prüfen Sie daher, ob die FTP-Konfiguration in der Datei <strong>config/configuration.php</strong> korrekt eingerichtet ist.');
                 return false;
             }
         }

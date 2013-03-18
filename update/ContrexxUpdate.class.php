@@ -223,7 +223,7 @@ class ContrexxUpdate
             ));
             foreach ($arrVersions as $versionPath => $arrVersion) {
                 $this->objTemplate->setVariable(array(
-                    'UPDATE_VERSION'         => str_replace(' Service Pack 0', '', preg_replace('#^(\d+\.\d+)\.(\d+)$#', '$1 Service Pack $2', $arrVersion['cmsVersion'])),
+                    'UPDATE_VERSION'         => $this->getLiteralRepresentationOfVersion($arrVersion['cmsVersion']),
                     'UPDATE_VERSION_PATH'    => $versionPath,
                     'UPDATE_VERSION_NAME'    => $arrVersion['cmsName'],
                     'UPDATE_VERSION_EDITION' => $arrVersion['cmsEdition'],
@@ -265,7 +265,7 @@ class ContrexxUpdate
             if (isset($_POST['skipRequirements']) && !$arrRequirements['incompatible']) {
                 $this->setNextStep();
                 $this->showStep();
-            } else if (!$this->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.2')) {
+            } else if (!$this->_isNewerVersion($_CONFIG['coreCmsVersion'], $_SESSION['contrexx_update']['version'])) {
                 $_SESSION['contrexx_update']['step'] = 5;
                 $this->showStep();
             } else {
@@ -428,7 +428,7 @@ class ContrexxUpdate
             'UPDATE_LICENSE_INFO_CHECKED'   => !empty($_SESSION['contrexx_update']['license_info']) ? 'checked="checked"' : '',
             'TXT_UPDATE_ACCEPT_LICENSE_CHANGE'  => $_CORELANG['TXT_UPDATE_ACCEPT_LICENSE_CHANGE'],
             'UPDATE_EDITION'                    => $_CONFIG['coreCmsEdition'],
-            'UPDATE_VERSION'                    => str_replace(' Service Pack 0', '', preg_replace('#^(\d+\.\d+)\.(\d+)$#', '$1 Service Pack $2', $_CONFIG['coreCmsVersion'])),
+            'UPDATE_VERSION'                    => $this->getLiteralRepresentationOfVersion($_CONFIG['coreCmsVersion']),
         ));
 
         if ($_CONFIG['coreCmsEdition'] == 'OpenSource') {
@@ -462,7 +462,7 @@ class ContrexxUpdate
         $this->objTemplate->addBlockfile('CONTENT', 'start', 'start.html');
         
         $arrVersion    = $this->getLoadedVersionInfo();
-        $updateVersion = $version = str_replace(' Service Pack 0', '', preg_replace('#^(\d+\.\d+)\.(\d+)$#', '$1 Service Pack $2', $arrVersion['cmsVersion']));
+        $updateVersion = $version = $this->getLiteralRepresentationOfVersion($arrVersion['cmsVersion']);
         
         $this->objTemplate->setVariable(array(
             'TXT_UPDATE_UPDATE_IS_READY' => $_CORELANG['TXT_UPDATE_UPDATE_IS_READY'],
@@ -474,7 +474,7 @@ class ContrexxUpdate
             $this->html['content'] = $this->objTemplate->get('start');
         }
         
-        $this->setNavigation('<input type="submit" value="'.$_CORELANG['TXT_UPDATE_BACK'].'" name="updateBack" onclick="try{doUpdate(true)} catch(e){return true;}" /> <input type="submit" value="'.$_CORELANG['TXT_UPDATE_START_UPDATE'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />');
+        $this->setNavigation('<input type="submit" value="'.$_CORELANG['TXT_UPDATE_BACK'].'" name="updateBack" onclick="try{doUpdate(true)} catch(e){return true;}" /> <input type="submit" value="'.$_CORELANG['TXT_UPDATE_START_UPDATE'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" /><input type="hidden" id="checkTimeout" />');
     }
     
     private function processUpdate()
@@ -490,7 +490,7 @@ class ContrexxUpdate
             $this->objTemplate->setVariable('UPDATE_ERROR_MSG', $_CORELANG['TXT_UPDATE_UNABLE_TO_START']);
             $this->objTemplate->parse('updateProcessError');
         } else {
-            if (!$this->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.2')) {
+            if (!$this->_isNewerVersion($_CONFIG['coreCmsVersion'], $_SESSION['contrexx_update']['version'])) {
                 $result = true;
             } else {
                 $result = executeContrexxUpdate();
@@ -542,10 +542,27 @@ class ContrexxUpdate
                 $this->objTemplate->hideBlock('ajaxDialogContent');
                 $this->objTemplate->hideBlock('processStatus');
                 $urlFrontend = (ASCMS_PATH_OFFSET !== '')  ? ASCMS_PATH_OFFSET : '/';
+
+                if (   !empty($_SESSION['contrexx_update']['modified_files'])
+                    && count($_SESSION['contrexx_update']['modified_files'])) {
+                    foreach ($_SESSION['contrexx_update']['modified_files'] as $arrFile) {
+                        $this->objTemplate->setVariable(array(
+                            'BACKUP_FILE_SRC'   => $arrFile['src'],
+                            'BACKUP_FILE_DST'   => $arrFile['dst'],
+                        ));
+                        $this->objTemplate->parse('backed_file');
+                    }
+                    $this->objTemplate->parse('backed_files');
+                } else {
+                    $this->objTemplate->hideblock('backed_files');
+                }
+
                 $this->objTemplate->setVariable(array(
                     'TXT_UPDATE_UPDATE_FINISHED'    => $_CORELANG['TXT_UPDATE_UPDATE_FINISHED'],
                     'URL_FRONTEND'                  => $urlFrontend,
                     'URL_BACKEND'                   => ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH,
+                    'UPDATE_VERSION_INSTALLED'      => $this->getLiteralRepresentationOfVersion($_SESSION['contrexx_update']['version']),
+                    'UPDATE_VERSION_NUMBER'         => $_SESSION['contrexx_update']['version'],
                 ));
                 $this->objTemplate->parse('finish');
                 $_SESSION['contrexx_update']['step'] = 0;
@@ -961,6 +978,7 @@ class ContrexxUpdate
         $_SESSION['contrexx_update']['lang'] = $this->lang;
         $this->isAuth = false;
         header('location: index.php');
+        exit;
     }
 
     function login()
@@ -1146,6 +1164,11 @@ class ContrexxUpdate
         arsort($arrAcceptedLanguages, SORT_NUMERIC);
         return $arrAcceptedLanguages;
     }
+
+    public function getLiteralRepresentationOfVersion($version)
+    {
+        return str_replace(' Service Pack 0', '', preg_replace('#^(\d+\.\d+)\.(\d+)$#', '$1 Service Pack $2', $version));
+    }
 }
 
 function _databaseError($query, $errorMsg)
@@ -1154,7 +1177,7 @@ function _databaseError($query, $errorMsg)
 
     $msg = sprintf($_CORELANG['TXT_UPDATE_DB_ERROR'], htmlspecialchars($query), htmlspecialchars($errorMsg));
     $objUpdate->arrStatusMsg['error'][] = $msg;
-    $objUpdate->arrStatusMsg['msg'][] = sprintf($_CORELANG['TXT_UPDATE_DB_ERROR_HELP_MSG'], UPDATE_SUPPORT_FORUM_URI, $_CONFIG['coreCmsVersion'], str_replace(' Service Pack 0', '', preg_replace('#^(\d+\.\d+)\.(\d+)$#', '$1 Service Pack $2', $arrVersions['compatible'][$_SESSION['contrexx_update']['version']]['cmsVersion'])), $msg);
+    $objUpdate->arrStatusMsg['msg'][] = sprintf($_CORELANG['TXT_UPDATE_DB_ERROR_HELP_MSG'], UPDATE_SUPPORT_FORUM_URI, $_CONFIG['coreCmsVersion'], $objUpdate->getLiteralRepresentationOfVersion($arrVersions['compatible'][$_SESSION['contrexx_update']['version']]['cmsVersion']), $msg);
     return false;
 }
 
@@ -1211,7 +1234,12 @@ function checkTimeoutLimit()
 {
     global $_CORELANG;
 
-    if (UPDATE_TIMEOUT_TIME > time()) {
+    $timeoutTime = UPDATE_TIMEOUT_TIME;
+    if (!empty($_SESSION['contrexx_update']['max_execution_time'])) {
+        $timeoutTime = UPDATE_TIME + $_SESSION['contrexx_update']['max_execution_time'];
+    }
+
+    if ($timeoutTime > time()) {
         return true;
     }
 
