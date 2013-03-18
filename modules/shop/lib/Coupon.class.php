@@ -498,8 +498,8 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
     {
         global $objDatabase;
 
-        // Discount the lower of the discount available and the amount
-        $amount = floatval(min($this->discount_amount(), $amount));
+        // Applicable discount amount
+        $amount = $this->getDiscountAmount($amount);
         $uses = intval((boolean)$uses);
         // Insert that use
         $query = "
@@ -551,19 +551,18 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
 
 
     /**
-     * CURRENTLY UNUSED
      * Returns the discount amount used with this Coupon
      *
-     * The optional $customer_id limits the result to the uses of that
-     * Customer.
-     * Returns 0 (zero) for Coupons that have not been used yet, and thus
-     * are not present in the relation.
+     * The optional $customer_id and $order_id limit the result to the uses
+     * of that Customer and Order.
+     * Returns 0 (zero) for Coupons that have not been used with the given
+     * parameters, and thus are not present in the relation.
      * @param   integer   $customer_id    The optional Customer ID
+     * @param   integer   $order_id       The optional Order ID
      * @return  mixed                     The amount used with this Coupon
      *                                    on success, false otherwise
-     * @internal    Currently unused
      */
-    private function getUsedAmount($customer_id=0)
+    public function getUsedAmount($customer_id=NULL, $order_id=NULL)
     {
         global $objDatabase;
 
@@ -571,8 +570,9 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
             SELECT SUM(`amount`) AS `amount`
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_customer_coupon`
              WHERE `code`='".addslashes($this->code)."'
-               AND `count`!=0
-            ".($customer_id ? " AND `customer_id`=$customer_id" : '');
+               AND `count`!=0".
+            ($customer_id ? " AND `customer_id`=$customer_id" : '').
+            ($order_id ? " AND `order_id`=$order_id" : '');
         $objResult = $objDatabase->Execute($query);
         // Failure or none found
         if (!$objResult) return self::errorHandler();
