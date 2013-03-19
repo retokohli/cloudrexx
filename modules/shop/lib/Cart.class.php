@@ -550,7 +550,7 @@ class Cart
             // - If it's included, we don't care.
             // - If it's disabled, it's set to zero.
             $vat_amount = Vat::amount($product['vat_rate'],
-                $product['price'] // - $discount_amount
+                $product['price']
             );
             $total_vat_amount += $vat_amount;
             self::$products[$cart_id]['vat_amount'] =
@@ -581,6 +581,7 @@ class Cart
             Currency::formatPrice($total_price);
         $_SESSION['shop']['cart']['total_vat_amount'] =
             Currency::formatPrice($total_vat_amount);
+//DBG::log("Cart::update(): Updated Cart (session): VAT amount: ".$_SESSION['shop']['cart']['total_vat_amount']);
         $_SESSION['shop']['cart']['total_items'] = $items;
         $_SESSION['shop']['cart']['total_weight'] = $total_weight; // In grams!
 //DBG::log("Cart::update(): Updated Cart (session): ".var_export($_SESSION['shop']['cart'], true));
