@@ -15,11 +15,12 @@ class DefaultEventHandler implements EventHandler
                 'key'     => $event->getName(),
                 'substitution' => $substitutions,
         ));
-        if (false === Communications::send($arrMailTemplate)) {
+
+        if (false === MailTemplate::send($arrMailTemplate)) {
             $event->cancel();
             return false;
         };
         return true;
     }
 }
- 
+
