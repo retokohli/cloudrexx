@@ -234,12 +234,12 @@ die("Failed to get Customer for ID $customer_id");
                     'to' => 'reto.kohli@comvation.com',
 //                        $arrSubstitution['CUSTOMER_EMAIL'].','.
 //                        SettingDb::getValue('email_confirmation'),
-                    'do_not_strip_empty_placeholders' => true,
+//                    'do_not_strip_empty_placeholders' => true,
                 );
-//                DBG::deactivate(DBG_LOG_FIREPHP);
+                DBG::activate(DBG_LOG_FIREPHP);
 //                DBG::activate(DBG_LOG_FILE);
-                DBG::log(var_export($arrMailTemplate, true));
-                DBG::log(MailTemplate::send($arrMailTemplate) ? "Sent successfully" : "Sending FAILED!");
+                die(nl2br(contrexx_raw2xhtml(var_export($arrMailTemplate, true))));
+//                DBG::log(MailTemplate::send($arrMailTemplate) ? "Sent successfully" : "Sending FAILED!");
 //                DBG::deactivate(DBG_LOG_FILE);
                 break;
             case 'pricelist':
@@ -689,6 +689,7 @@ die("Failed to update the Cart!");
                 + $_SESSION['shop']['payment_price']
                 + $_SESSION['shop']['shipment_price']);
         }
+//DBG::log("Shop::update_session(): VAT: ".$_SESSION['shop']['vat_price']);
     }
 
 
@@ -3313,7 +3314,7 @@ if (empty($_SESSION['shop']['shipperId'])) {
 //DBG::log("Shop::process(): New User username ".$_SESSION['shop']['username'].", email ".$_SESSION['shop']['email']);
                 self::$objCustomer->username($_SESSION['shop']['username']);
                 self::$objCustomer->email($_SESSION['shop']['email']);
-                // Note that the passwort is unset when the Customer chooses
+                // Note that the password is unset when the Customer chooses
                 // to order without registration.  The generated one
                 // defaults to length 8, fulfilling the requirements for
                 // complex passwords.  And it's kept absolutely secret.

@@ -1196,13 +1196,14 @@ if (!$limit) {
         // in this method, but only if $create_accounts is true.
         $coupon_code = NULL;
 //        $discount_amount = 0;
-        $coupon_rate = $coupon_amount = 0;
+//        $coupon_rate =
+        $coupon_amount = 0;
         $objCoupon = Coupon::getByOrderId($order_id);
         if ($objCoupon) {
             $coupon_code = $objCoupon->code();
             $coupon_amount = $objCoupon->getUsedAmount(
                 $customer_id, $order_id);
-            $coupon_rate = $objCoupon->discount_rate();
+//            $coupon_rate = $objCoupon->discount_rate();
 //DBG::log("Orders::getSubstitutionArray(): Coupon $coupon_code, rate $coupon_rate, amount $coupon_amount");
         }
         $orderItemCount = 0;
@@ -1244,8 +1245,9 @@ if (!$limit) {
                 while (!$objResultAttribute->EOF) {
                     $attribute_name = $objResultAttribute->fields['attribute_name'];
                     $option_name = $objResultAttribute->fields['option_name'];
-// NTH: But still unused
-//                    $optionPrice = $objResultAttribute->fields['price'];
+// NOTE: The option price is optional and may be left out
+                    $optionPrice = $objResultAttribute->fields['price'];
+                    $item_price += $optionPrice;
                     // Recognize the names of uploaded files,
                     // verify their presence and use the original name
                     $option_name_stripped = ShopLibrary::stripUniqidFromFilename($option_name);
@@ -1263,6 +1265,15 @@ if (!$limit) {
                     } else {
                         $str_options .= ', '.$option_name;
                     }
+// TODO: Add proper formatting with sprintf() and language entries
+                    if ($optionPrice != 0) {
+                        $str_options .=
+                            ' './/' ('.
+                            Currency::formatPrice($optionPrice).
+                            ' '.Currency::getActiveCurrencyCode()
+//                            .')'
+                            ;
+                    }
                     $objResultAttribute->MoveNext();
                 }
 //                $str_options .= ']';
@@ -1277,7 +1288,7 @@ if (!$limit) {
                 'PRODUCT_ITEM_PRICE' => sprintf('% 9.2f', $item_price),
                 'PRODUCT_TOTAL_PRICE' => sprintf('% 9.2f', $item_price*$quantity),
             );
-//DBG::log("getSubstitutionArray($order_id, $create_accounts): Adding article: ".var_export($arrProduct, true));
+//DBG::log("Orders::getSubstitutionArray($order_id, $create_accounts): Adding article: ".var_export($arrProduct, true));
             $orderItemCount += $quantity;
             $total_item_price += $item_price*$quantity;
             if ($create_accounts) {
@@ -1342,9 +1353,9 @@ if (!$limit) {
                     if ($objProduct->distribution() == 'coupon') {
                         if (empty($arrProduct['COUPON_DATA']))
                             $arrProduct['COUPON_DATA'] = array();
-//DBG::log("getSubstitutionArray(): Getting code");
+//DBG::log("Orders::getSubstitutionArray(): Getting code");
                         $code = Coupon::getNewCode();
-//DBG::log("getSubstitutionArray(): Got code: $code, calling Coupon::addCode($code, 0, 0, 0, $item_price)");
+//DBG::log("Orders::getSubstitutionArray(): Got code: $code, calling Coupon::addCode($code, 0, 0, 0, $item_price)");
                         Coupon::addCode($code, 0, 0, 0, $item_price, 0, 0, 1e10);
                         $arrProduct['COUPON_DATA'][] = array(
                             'COUPON_CODE' => $code
@@ -1380,16 +1391,17 @@ if (!$limit) {
         }
         // Fill in the Coupon block with proper discount and amount
         if ($coupon_amount) {
-//DBG::log("getSubstitutionArray(): Got Order Coupon ".$objCouponOrder->code());
+//DBG::log("Orders::getSubstitutionArray(): Got Order Coupon ".$objCouponOrder->code());
             $arrSubstitution['DISCOUNT_COUPON'][] = array(
                 'DISCOUNT_COUPON_CODE' => sprintf('%-40s', $coupon_code),
                 'DISCOUNT_COUPON_AMOUNT' => sprintf('% 9.2f', -$coupon_amount),
             );
         } else {
-//DBG::log("getSubstitutionArray(): No Coupon for Order ID $order_id");
+//DBG::log("Orders::getSubstitutionArray(): No Coupon for Order ID $order_id");
         }
         Products::deactivate_soldout();
         if (Vat::isEnabled()) {
+//DBG::log("Orders::getSubstitutionArray(): VAT amount: ".$objOrder->vat_amount());
 // TODO: Update mail template!
             $arrSubstitution['VAT'] = array(0 => array(
                 'VAT_TEXT' => sprintf('%-40s',
