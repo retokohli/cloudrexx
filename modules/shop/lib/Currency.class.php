@@ -360,17 +360,21 @@ class Currency
      */
     static function formatPrice($price, $length='', $padding='', $increment=null)
     {
+//\DBG::log("formatPrice($price, $length, $padding, $increment): Entered");
         $decimals = 2;
         if (empty ($increment)) {
             if (!is_array(self::$arrCurrency)) self::init();
             $increment =
                 self::$arrCurrency[self::$activeCurrencyId]['increment'];
         }
-        $increment = max(0, floatval($increment));
-        if ($increment) {
+        $increment = floatval($increment);
+        if ($increment > 0) {
             $decimals = max(0, -floor(log10($increment)));
+            $price = round($price/$increment)*$increment;
         }
-        return sprintf('%'.$padding.$length.'.'.$decimals.'f', $price);
+        $price = sprintf('%'.$padding.$length.'.'.$decimals.'f', $price);
+//\DBG::log("formatPrice($price, $length, $padding, $increment): Decimals: $decimals");
+        return $price;
     }
 
 

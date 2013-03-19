@@ -3178,8 +3178,9 @@ die("Shop::processRedirect(): This method is obsolete!");
         self::$objTemplate->setVariable(array(
             'SHOP_UNIT' => Currency::getActiveCurrencySymbol(),
             'SHOP_TOTALITEM' => Cart::get_item_count(),
-            'SHOP_PAYMENT_PRICE' => $_SESSION['shop']['payment_price'],
-            'SHOP_TOTALPRICE' => Cart::get_price(),
+            'SHOP_PAYMENT_PRICE' => Currency::formatPrice(
+                $_SESSION['shop']['payment_price']),
+            'SHOP_TOTALPRICE' => Currency::formatPrice(Cart::get_price()),
             'SHOP_PAYMENT' =>
                 Payment::getProperty($_SESSION['shop']['paymentId'], 'name'),
             'SHOP_GRAND_TOTAL' => Currency::formatPrice(
@@ -3221,7 +3222,8 @@ die("Shop::processRedirect(): This method is obsolete!");
         if (Vat::isEnabled()) {
             self::$objTemplate->setVariable(array(
                 'TXT_TAX_RATE' => $_ARRAYLANG['TXT_SHOP_VAT_RATE'],
-                'SHOP_TAX_PRICE' => $_SESSION['shop']['vat_price'],
+                'SHOP_TAX_PRICE' => Currency::formatPrice(
+                    $_SESSION['shop']['vat_price']),
                 'SHOP_TAX_PRODUCTS_TXT' => $_SESSION['shop']['vat_products_txt'],
                 'SHOP_TAX_GRAND_TXT' => $_SESSION['shop']['vat_grand_txt'],
                 'TXT_TAX_PREFIX' =>
@@ -3234,7 +3236,8 @@ die("Shop::processRedirect(): This method is obsolete!");
                 self::$objTemplate->setVariable(array(
                     'SHOP_GRAND_TOTAL_EXCL_TAX' =>
                         Currency::formatPrice(
-                        $_SESSION['shop']['grand_total_price'] - $_SESSION['shop']['vat_price']
+                            $_SESSION['shop']['grand_total_price']
+                            - $_SESSION['shop']['vat_price']
                     ),
                 ));
             }
@@ -3251,7 +3254,8 @@ if (empty($_SESSION['shop']['shipperId'])) {
     die("Trouble! No Shipper ID defined");
 }
             self::$objTemplate->setVariable(array(
-                'SHOP_SHIPMENT_PRICE' => $_SESSION['shop']['shipment_price'],
+                'SHOP_SHIPMENT_PRICE' => Currency::formatPrice(
+                    $_SESSION['shop']['shipment_price']),
                 'SHOP_SHIPMENT' =>
                     Shipment::getShipperName($_SESSION['shop']['shipperId']),
 //                    'TXT_SHIPPING_METHOD' => $_ARRAYLANG['TXT_SHIPPING_METHOD'],
