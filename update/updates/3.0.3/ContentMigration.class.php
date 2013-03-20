@@ -194,8 +194,8 @@ class ContentMigration
             return false;
         }
 
-        $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
-        $nodeRepo = self::$em->getRepository('Cx\Model\ContentManager\Node');
+        $pageRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
+        $nodeRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Node');
 
         $this->nodeArr = array();
 
@@ -620,7 +620,7 @@ class ContentMigration
 
         foreach ($arrAliases as $target => $arrSlugs) {
             foreach ($arrSlugs as $slug => $type) {
-                $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
+                $pageRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
 
                 if ($type === 'local') {
                     $aliasPage = $pageRepo->findOneBy(array(
@@ -805,9 +805,12 @@ class ContentMigration
                         if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')
                             && !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.0.0')) {
                             // use direct placeholder to set the pages where to show
+                            // only do this if the global was set to 2 (show on each selected page)
+                            $direct = ($global == 2 ? 1 : 0);
                             \Cx\Lib\UpdateUtil::sql('
                                 UPDATE `' . DBPREFIX . 'module_block_blocks`
-                                SET `global` = ' . $global . ', `direct` = 1
+                                SET `global` = ' . $global . ',
+                                    `direct` = ' . $direct . '
                                 WHERE `id` = ' . $blockId . '
                             ');
                         }
@@ -823,21 +826,25 @@ class ContentMigration
             if (empty($_SESSION['contrexx_update']['blocks_part_2_migrated'])) {
                 $activeLangIds = implode(',', \FWLanguage::getIdArray());
 
-                if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX . 'module_block_rel_pages', 'lang_id')) {
-                    \Cx\Lib\UpdateUtil::sql('
-                        DELETE FROM `' . DBPREFIX . 'module_block_rel_pages`
-                        WHERE `lang_id` NOT IN (' . $activeLangIds . ')
-                    ');
+                if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX . 'module_block_rel_pages', 'lang_id')
+                    || !empty($_SESSION['contrexx_update']['blocks_part_2_migrated_timeout'])) {
 
-                    // 3.0.3 : add new column `placeholder`
-                    \Cx\Lib\UpdateUtil::table(
-                        DBPREFIX.'module_block_rel_pages',
-                        array(
-                            'block_id'       => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0', 'primary' => true),
-                            'page_id'        => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0', 'after' => 'block_id', 'primary' => true),
-                            'placeholder'    => array('type' => 'ENUM(\'global\',\'direct\',\'category\')', 'notnull' => true, 'default' => 'global', 'after' => 'page_id', 'primary' => true)
-                        )
-                    );
+                    if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX . 'module_block_rel_pages', 'lang_id')) {
+                        \Cx\Lib\UpdateUtil::sql('
+                            DELETE FROM `' . DBPREFIX . 'module_block_rel_pages`
+                            WHERE `lang_id` NOT IN (' . $activeLangIds . ')
+                        ');
+
+                        // 3.0.3 : add new column `placeholder`
+                        \Cx\Lib\UpdateUtil::table(
+                            DBPREFIX.'module_block_rel_pages',
+                            array(
+                                'block_id'       => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0', 'primary' => true),
+                                'page_id'        => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0', 'after' => 'block_id', 'primary' => true),
+                                'placeholder'    => array('type' => 'ENUM(\'global\',\'direct\',\'category\')', 'notnull' => true, 'default' => 'global', 'after' => 'page_id', 'primary' => true)
+                            )
+                        );
+                    }
 
                     $objResult = \Cx\Lib\UpdateUtil::sql('
                         SELECT `block_id`, `page_id`
@@ -845,12 +852,11 @@ class ContentMigration
                     ');
 
                     if ($objResult->RecordCount()) {
-                        $entriesToKeep = array();
                         while (!$objResult->EOF) {
                             $blockId   = $objResult->fields['block_id'];
                             $oldPageId = $objResult->fields['page_id'];
 
-                            $pageRepo  = self::$em->getRepository('Cx\Model\ContentManager\Page');
+                            $pageRepo  = self::$em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
                             $aliasPage = $pageRepo->findOneBy(array(
                                 'type' => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_ALIAS,
                                 'slug' => 'legacy_page_' . $oldPageId,
@@ -859,36 +865,29 @@ class ContentMigration
                             if ($aliasPage) {
                                 $page = $pageRepo->getTargetPage($aliasPage);
                                 if ($page) {
-                                    // Keep entry with the correct page id
-                                    $entriesToKeep[] = array(
-                                        'blockId' => $blockId,
-                                        'pageId'  => $page->getId(),
-                                        'placeholder' => 'global',
-                                    );
+                                    \Cx\Lib\UpdateUtil::sql('
+                                        UPDATE `' . DBPREFIX . 'module_block_rel_pages` SET `page_id` = ?
+                                        WHERE `page_id` = ?
+                                    ', array($page->getId(), $oldPageId));
 
                                     // only for contrexx 2.x
                                     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')
                                         && !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.0.0')) {
                                         // do page association for direct placeholder
-                                        $entriesToKeep[] = array(
-                                            'blockId' => $blockId,
-                                            'pageId'  => $page->getId(),
-                                            'placeholder' => 'direct',
-                                        );
+                                        \Cx\Lib\UpdateUtil::sql('
+                                            INSERT IGNORE INTO `' . DBPREFIX . 'module_block_rel_pages` (`page_id`, `block_id`, `placeholder`)
+                                            VALUES (?, ?, ?)
+                                        ', array($page->getId(), $blockId, 'direct'));
                                     }
                                 }
                             }
 
+                            if (!checkMemoryLimit() || !checkTimeoutLimit()) {
+                                $_SESSION['contrexx_update']['blocks_part_2_migrated_timeout'] = true;
+                                return 'timeout';
+                            }
+
                             $objResult->MoveNext();
-                        }
-
-                        \Cx\Lib\UpdateUtil::sql('TRUNCATE `' . DBPREFIX . 'module_block_rel_pages`');
-
-                        foreach ($entriesToKeep as $arrEntry) {
-                            \Cx\Lib\UpdateUtil::sql('
-                                INSERT INTO `' . DBPREFIX . 'module_block_rel_pages` (`block_id`, `page_id`, `placeholder`)
-                                VALUES (' . $arrEntry['blockId'] . ', ' . $arrEntry['pageId'] . ', \'' . $arrEntry['placeholder'] . '\')
-                            ');
                         }
                     }
                 } else {
@@ -929,7 +928,7 @@ class ContentMigration
 
                     $uniqueLangIds = array_unique($langIds);
                     foreach ($uniqueLangIds as $langId) {
-                        $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
+                        $pageRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
                         $pages = $pageRepo->findBy(array(
                             'lang' => $langId,
                         ), true);
@@ -992,8 +991,8 @@ class ContentMigration
 
         $arrSimilarPages = $_SESSION['contrexx_update']['similar_pages'];
 
-        $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
-        $nodeRepo = self::$em->getRepository('Cx\Model\ContentManager\Node');
+        $pageRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
+        $nodeRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Node');
 
         $nodeToRemove = array();
         if (empty($_SESSION['contrexx_update']['node_to_remove'])) $_SESSION['contrexx_update']['node_to_remove'] = array();
@@ -1092,7 +1091,7 @@ class ContentMigration
     {
         $qb = self::$em->createQueryBuilder();
         $qb ->select('p')
-            ->from('Cx\Model\ContentManager\Page', 'p')
+            ->from('Cx\Core\ContentManager\Model\Doctrine\Entity\Page', 'p')
             ->innerJoin('p.node', 'n')
             ->where($qb->expr()->in('p.lang', $this->migrateLangIds))
             ->andWhere($qb->expr()->neq('p.module', ':empty'))
@@ -1185,8 +1184,8 @@ class ContentMigration
         $cl->loadFile(ASCMS_CORE_PATH . '/Tree.class.php');
         $cl->loadFile(UPDATE_CORE . '/UpdateTree.class.php');
 
-        $pageRepo = self::$em->getRepository('Cx\Model\ContentManager\Page');
-        $nodeRepo = self::$em->getRepository('Cx\Model\ContentManager\Node');
+        $pageRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
+        $nodeRepo = self::$em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Node');
 
         foreach ($this->arrMigrateLangIds as $lang) {
             $objContentTree  = new \UpdateContentTree($lang);

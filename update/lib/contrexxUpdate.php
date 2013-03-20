@@ -401,11 +401,17 @@ var executeGrouping = function() {
 }
 
 var checkTimeout = function() {
+    if (request_active) {
+        checkTimeout();
+        return false;
+    } else {
+        request_active = true;
+    }
     var startTime = new Date();
     $J.ajax({
         url: 'index.php',
         type: 'GET',
-        async: false,
+        async: true,
         data: {'check_timeout': 'true'},
         statusCode: {
             500: function() {
@@ -418,6 +424,9 @@ var checkTimeout = function() {
                     data: {'execution_time': executionTime - 5}
                 });
             }
+        },
+        complete: function(jqXHR, textStatus) {
+            request_active = false;
         }
     });
 }
