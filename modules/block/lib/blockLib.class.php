@@ -842,9 +842,9 @@ class blockLibrary
         $seperator = contrexx_addslashes($seperator);
         if($objDatabase->Execute('
             INSERT INTO `'.DBPREFIX."module_block_categories`
-            (`id`, `parent`, `name`, `order`, `status`)
+            (`id`, `parent`, `name`, `seperator`, `order`, `status`)
             VALUES
-            ($id, $parent, '$name', $order, $status )
+            ($id, $parent, '$name', '$seperator', $order, $status )
             ON DUPLICATE KEY UPDATE
             `id`       = $id,
             `parent`   = $parent,

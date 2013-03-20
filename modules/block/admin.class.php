@@ -389,6 +389,7 @@ class blockManager extends blockLibrary
             'TXT_BLOCK_CATEGORIES_ADD'              => $_ARRAYLANG['TXT_BLOCK_CATEGORIES_ADD'],
             'TXT_BLOCK_FUNCTIONS'                   => $_ARRAYLANG['TXT_BLOCK_FUNCTIONS'],
             'TXT_BLOCK_NAME'                        => $_ARRAYLANG['TXT_BLOCK_NAME'],
+            'TXT_BLOCK_CATEGORY_SEPERATOR'          => $_ARRAYLANG['TXT_BLOCK_CATEGORY_SEPERATOR'],
             'TXT_BLOCK_PLACEHOLDER'                 => $_ARRAYLANG['TXT_BLOCK_PLACEHOLDER'],
             'TXT_BLOCK_SEPERATOR'                   => $_ARRAYLANG['TXT_BLOCK_SEPERATOR'],
             'TXT_BLOCK_NONE'                        => $_ARRAYLANG['TXT_BLOCK_NONE'],
