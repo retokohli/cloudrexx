@@ -318,17 +318,15 @@
         refreshPageTree();
     }
 
-    var refreshPageTree = function(langCode) {
+    var refreshPageTree = function() {
         $J.each(['global', 'direct', 'category'], function(index, value) {
-            if (!langCode) {
-                if ($J('input[name*=' + value + 'PagesLang]:checked').parent().is(function() {return $J(this).css('display') == 'none';}) || $J('input[name*=' + value + 'PagesLang]:checked').length == 0) {
-                    $J('input[name*=' + value + 'PagesLang]:checked').prop('checked', false);
-                    var element = $J('span[id*=' + value + 'ChangePageTitlesTo_]').not(function() {$J(this).css('display') == 'none'}).first().children('input');
-                    element.prop('checked', true);
-                    langCode = element.val();
-                } else {
-                    langCode = $J('input[name*=' + value + 'PagesLang]:checked').val();
-                }
+            if ($J('input[name*=' + value + 'PagesLang]:checked').parent().is(function() {return $J(this).css('display') == 'none';}) || $J('input[name*=' + value + 'PagesLang]:checked').length == 0) {
+                $J('input[name*=' + value + 'PagesLang]:checked').prop('checked', false);
+                var element = $J('span[id*=' + value + 'ChangePageTitlesTo_]').not(function() {$J(this).css('display') == 'none'}).first().children('input');
+                element.prop('checked', true);
+                langCode = element.val();
+            } else {
+                langCode = $J('input[name*=' + value + 'PagesLang]:checked').val();
             }
             changePageTitlesByLang(langCode, value);
         });
