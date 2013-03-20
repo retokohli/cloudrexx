@@ -106,16 +106,15 @@
     <thead>
     <tr><th>{TXT_CRM_FILTERS}</th></tr>
     </thead>
-</table>
-<table class="adminlist" width="100%" cellspacing="0" cellpadding="3">
     <tbody>
-        <tr class="row2">
-            <td><input type="text" placeholder="{TXT_CRM_ENTER_SEARCH_TERM}" name="searchTitle" id="searchTitle" size="30" value="{TXT_SEARCH_VALUE}" style="float: left;width: 300px;"/>&nbsp;
+        <tr>
+            <td>
+                <input type="text" placeholder="{TXT_CRM_ENTER_SEARCH_TERM}" name="searchTitle" id="searchTitle" size="30" value="{TXT_SEARCH_VALUE}" style="float: left;width: 300px;"/>&nbsp;
                 <input type="submit" value="{TXT_CRM_SEARCH}" title="{TXT_CRM_SEARCH}" />&nbsp;
                 <select class="searchForm" name="searchType" id="task_type" style="float: right;width: 257px;margin-right: 15px;" >
                     <option value="">{TXT_CRM_FILTER_TASK_TYPE}</option>
                     <!-- BEGIN tastType -->
-                    <option value="{TXT_CRM_TASK_ID}" {TXT_TASK_SELECTED}>{TXT_TASK_NAME}</option>
+                    <option value="{CRM_TASK_ID}" {TXT_TASK_SELECTED}>{TXT_TASK_NAME}</option>
                     <!-- END tastType -->
                 </select>
             </td>
@@ -139,10 +138,10 @@
         <tr class="row3">
             <td>&nbsp;&nbsp;<strong>#</strong></td>
             <td><strong>{TXT_CRM_TASK_STATUS}</strong></td>
-            <td><a href="index.php?cmd={MODULE_NAME}&act=task&sortf=0&sorto={TXT_ORDER}"><strong>{TXT_CRM_TASK_TITLE}</strong></a></td>
-            <td><a href="index.php?cmd={MODULE_NAME}&act=task&sortf=1&sorto={TXT_ORDER}"><strong>{TXT_CRM_TASK_TYPE}</strong></a></td>
-            <td><a href="index.php?cmd={MODULE_NAME}&act=task&sortf=2&sorto={TXT_ORDER}"><strong>{TXT_CRM_CUSTOMER_NAME}</strong></a></td>
-            <td><a href="index.php?cmd={MODULE_NAME}&act=task&sortf=3&sorto={TXT_ORDER}"><strong>{TXT_CRM_TASK_DUE_DATE}</strong></a></td>
+            <td><a href="index.php?cmd={MODULE_NAME}&act=task&sortf=0&sorto={TXT_ORDER}{TXT_LINK}"><strong>{TXT_CRM_TASK_TITLE}</strong></a></td>
+            <td><a href="index.php?cmd={MODULE_NAME}&act=task&sortf=1&sorto={TXT_ORDER}{TXT_LINK}"><strong>{TXT_CRM_TASK_TYPE}</strong></a></td>
+            <td><a href="index.php?cmd={MODULE_NAME}&act=task&sortf=2&sorto={TXT_ORDER}{TXT_LINK}"><strong>{TXT_CRM_CUSTOMER_NAME}</strong></a></td>
+            <td><a href="index.php?cmd={MODULE_NAME}&act=task&sortf=3&sorto={TXT_ORDER}{TXT_LINK}"><strong>{TXT_CRM_TASK_DUE_DATE}</strong></a></td>
             <td><strong>{TXT_CRM_ASSIGNEDTO}</strong></td>
             <td style="text-align:right;padding: 4px"><strong>{TXT_CRM_FUNCTIONS}</strong></td>
         </tr>
