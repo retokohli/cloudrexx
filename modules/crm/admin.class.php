@@ -3609,7 +3609,7 @@ END;
         $this->_pageTitle = $_ARRAYLANG['TXT_CRM_TASK_OVERVIEW'];
         $objtpl->loadTemplateFile("module_{$this->moduleName}_tasks_overview.html");
         $objtpl->setGlobalVariable("MODULE_NAME", $this->moduleName);
-        $taskId = isset($_REQUEST['searchType'])? intval($_REQUEST['searchType']) : 0 ;
+        $taskId    = isset($_REQUEST['searchType'])? intval($_REQUEST['searchType']) : 0 ;
         $taskTitle = isset($_REQUEST['searchTitle'])? contrexx_input2raw($_REQUEST['searchTitle']) : '';
 
         $mes = base64_decode($_REQUEST['mes']);
@@ -3632,9 +3632,9 @@ END;
             while (!$objType->EOF) {
                 $selected = ($objType->fields['id'] == $taskId) ? 'selected="selected"' : '';
                 $objtpl->setVariable(array(
-                        'TXT_CRM_TASK_ID'      => $objType->fields['id'],
-                        'TXT_TASK_NAME'    => $objType->fields['name'],
-                        'TXT_TASK_SELECTED'=> $selected,
+                        'CRM_TASK_ID'       => (int) $objType->fields['id'],
+                        'TXT_TASK_NAME'     => contrexx_raw2xhtml($objType->fields['name']),
+                        'TXT_TASK_SELECTED' => $selected,
                 ));
                 $objtpl->parse('tastType');
                 $objType->MoveNext();
@@ -3669,8 +3669,8 @@ END;
         $status = ($_GET['status'] == 0) ? 1 : 0;
         $id     = intval($_GET['status_id']);
 
-        $typefilter = !empty($taskId)? "&searchType=$taskId":'';
-        $titlefilter= !empty($taskTitle)? "&searchTitle=$taskTitle&searchCustomer=$taskTitle":'';
+        $typefilter = !empty($taskId) ? "&searchType=$taskId" : '';
+        $titlefilter= !empty($taskTitle) ? "&searchTitle=$taskTitle" : '';
 
         if (!empty($id)) {
             $query = 'UPDATE '.DBPREFIX.'module_'.$this->moduleName.'_task SET task_status='.$status.' WHERE id = '.$id;
@@ -3680,7 +3680,7 @@ END;
         }
 
 
-        if (!empty($taskTitle) || !empty($taskId)) {
+        if (!empty($typefilter) || !empty($titlefilter)) {
             $totalfilter = $typefilter.$titlefilter;
         }
 
@@ -3746,15 +3746,15 @@ END;
 
         if (empty($objResult->fields['id'])) {
             $objtpl->setVariable(array(
-                    'TXT_NO_RECORDS_FOUND'  => 'No records found ...'
+                    'TXT_NO_RECORDS_FOUND'  => $_ARRAYLANG['CRM_NO_RECORDS_FOUND']
             ));
             $objtpl->parse('noRecords');
             $objtpl->setVariable(array(
-                    'TXT_NO_RECORDS_FOUND'  => 'No Records Found'
+                    'TXT_NO_RECORDS_FOUND'  => $_ARRAYLANG['CRM_NO_RECORDS_FOUND']
             ));
             $objtpl->parse('noRecords1');
         } else {
-            if ($objResult) {
+            if ($objResult) {                
                 while (!$objResult->EOF) {
                     $objtpl->setVariable(array(
                             'CRM_TASK_ID'          => (int) $objResult->fields['id'],
@@ -3765,14 +3765,11 @@ END;
                             'TXT_DUEDATE'          => contrexx_raw2xhtml($objResult->fields['due_date']),
                             'TXT_POSEDITLINK'      => $position,
                             'TXT_STATUS'           => (int) $objResult->fields['task_status'],
-                            'TXT_CRM_DESCRIPTION'      => html_entity_decode($objResult->fields['description'], ENT_QUOTES, CONTREXX_CHARSET),
                             'CRM_TASK_TYPE_ACTIVE' => $objResult->fields['task_status'] == 1 ? 'led_green.gif':'led_red.gif',
                             'TXT_ROW'              => $row = ($row == 'row2')? 'row1':'row2',
                             'TXT_ADDEDBY'          => contrexx_raw2xhtml($objResult->fields['username']),
-                            'TXT_CRM_IMAGE_EDIT'       => $_ARRAYLANG['TXT_CRM_IMAGE_EDIT'],
-                            'TXT_CRM_IMAGE_DELETE'     => $_ARRAYLANG['TXT_CRM_IMAGE_DELETE'],
-                            'TXT_LINK'             => $totalfilter,
-                            'TXT_ORDER'            => $sorto,
+                            'TXT_CRM_IMAGE_EDIT'   => $_ARRAYLANG['TXT_CRM_IMAGE_EDIT'],
+                            'TXT_CRM_IMAGE_DELETE' => $_ARRAYLANG['TXT_CRM_IMAGE_DELETE'],                            
                             'CRM_REDIRECT_LINK'    => '&redirect='.base64_encode("&act=task$typefilter$titlefilter$position"),
                     ));
                     $objtpl->parse('showTask');
@@ -3782,30 +3779,33 @@ END;
         }
 
         $objtpl->setVariable(array(
-                'TXT_CRM_OVERVIEW'                  => $_ARRAYLANG['TXT_CRM_OVERVIEW'],
+                'TXT_LINK'                      => $totalfilter,
+                'TXT_ORDER'                     => $sorto,
+                'TXT_SEARCH_VALUE'              => contrexx_raw2xhtml($taskTitle),
+                'TXT_CRM_OVERVIEW'              => $_ARRAYLANG['TXT_CRM_OVERVIEW'],
                 'TXT_CRM_ADD_TASK'              => $_ARRAYLANG['TXT_CRM_ADD_TASK'],
                 'TXT_CRM_ADD_IMPORT'            => $_ARRAYLANG['TXT_CRM_ADD_IMPORT'],
                 'TXT_CRM_ADD_EXPORT'            => $_ARRAYLANG['TXT_CRM_ADD_EXPORT'],
                 "TXT_CRM_FUNCTIONS"             => $_ARRAYLANG['TXT_CRM_FUNCTIONS'],
                 'TXT_CRM_TASK_TYPE_DESCRIPTION' => $_ARRAYLANG['TXT_CRM_TASK_TYPE_DESCRIPTION'],
-                'TXT_CRM_ASSIGNEDTO'                => $_ARRAYLANG['TXT_CRM_ASSIGNEDTO'],
-                'TXT_CRM_TASK_DUE_DATE'             => $_ARRAYLANG['TXT_CRM_TASK_DUE_DATE'],
+                'TXT_CRM_ASSIGNEDTO'            => $_ARRAYLANG['TXT_CRM_ASSIGNEDTO'],
+                'TXT_CRM_TASK_DUE_DATE'         => $_ARRAYLANG['TXT_CRM_TASK_DUE_DATE'],
                 'TXT_CRM_CUSTOMER_NAME'         => $_ARRAYLANG['TXT_CRM_CUSTOMER_NAME'],
                 'TXT_CRM_TASK_TYPE'             => $_ARRAYLANG['TXT_CRM_TASK_TYPE'],
                 'TXT_CRM_TASK_TITLE'            => $_ARRAYLANG['TXT_CRM_TASK_TITLE'],
                 'TXT_CRM_TASK_ID'               => $_ARRAYLANG['TXT_CRM_TASK_ID'],
                 'TXT_CRM_TASK_STATUS'           => $_ARRAYLANG['TXT_CRM_TASK_STATUS'],
-                'TXT_CRM_TASK'                      => $_ARRAYLANG['TXT_CRM_TASK'],
+                'TXT_CRM_TASK'                  => $_ARRAYLANG['TXT_CRM_TASK'],
                 'TXT_ENTRIES_MARKED'            => $_ARRAYLANG['TXT_ENTRIES_MARKED'],
-                'TXT_CRM_SELECT_ALL'                => $_ARRAYLANG['TXT_CRM_SELECT_ALL'],
-                'TXT_CRM_DESELECT_ALL'              => $_ARRAYLANG['TXT_CRM_REMOVE_SELECTION'],
-                'TXT_CRM_SELECT_ACTION'             => $_ARRAYLANG['TXT_CRM_SELECT_ACTION'],
-                'TXT_CRM_NO_OPERATION'              => $_ARRAYLANG['TXT_CRM_NO_OPERATION'],
-                'TXT_CRM_ACTIVATESELECTED'          => $_ARRAYLANG['TXT_CRM_ACTIVATESELECTED'],
-                'TXT_CRM_DEACTIVATESELECTED'        => $_ARRAYLANG['TXT_CRM_DEACTIVATESELECTED'],
-                'TXT_CRM_DELETE_SELECTED'           => $_ARRAYLANG['TXT_CRM_DELETE_SELECTED'],
-                'TXT_CRM_DELETE_CONFIRM'            => $_ARRAYLANG['TXT_CRM_DELETE_CONFIRM'],
-                'TXT_CRM_FILTERS'                   => $_ARRAYLANG['TXT_CRM_FILTERS'],
+                'TXT_CRM_SELECT_ALL'            => $_ARRAYLANG['TXT_CRM_SELECT_ALL'],
+                'TXT_CRM_DESELECT_ALL'          => $_ARRAYLANG['TXT_CRM_REMOVE_SELECTION'],
+                'TXT_CRM_SELECT_ACTION'         => $_ARRAYLANG['TXT_CRM_SELECT_ACTION'],
+                'TXT_CRM_NO_OPERATION'          => $_ARRAYLANG['TXT_CRM_NO_OPERATION'],
+                'TXT_CRM_ACTIVATESELECTED'      => $_ARRAYLANG['TXT_CRM_ACTIVATESELECTED'],
+                'TXT_CRM_DEACTIVATESELECTED'    => $_ARRAYLANG['TXT_CRM_DEACTIVATESELECTED'],
+                'TXT_CRM_DELETE_SELECTED'       => $_ARRAYLANG['TXT_CRM_DELETE_SELECTED'],
+                'TXT_CRM_DELETE_CONFIRM'        => $_ARRAYLANG['TXT_CRM_DELETE_CONFIRM'],
+                'TXT_CRM_FILTERS'               => $_ARRAYLANG['TXT_CRM_FILTERS'],
                 'TXT_CRM_SEARCH'                => $_ARRAYLANG['TXT_CRM_SEARCH'],
                 'TXT_CRM_ENTER_SEARCH_TERM'     => $_ARRAYLANG['TXT_CRM_ENTER_SEARCH_TERM'],
                 'TXT_CRM_FILTER_TASK_TYPE'      => $_ARRAYLANG['TXT_CRM_FILTER_TASK_TYPE']
@@ -4337,7 +4337,7 @@ END;
                 'TXT_CRM_PROJECT_ID'                => $_ARRAYLANG['CRM_PROJECT_ID'],
                 'TXT_CRM_PROJECT_NAME'              => $_ARRAYLANG['CRM_PROJECT_NAME'],
                 'TXT_CRM_PROJECT_QUOTED_PRICE'      => $_ARRAYLANG['CRM_PROJECT_QUOTED_PRICE'],
-                'TXT_TITLE_COMPANY_NAME'            => $_ARRAYLANG['TXT_COMPANY_NAME'],
+                'TXT_CRM_CUSTOMER_NAME'            => $_ARRAYLANG['TXT_CRM_CUSTOMER_NAME'],
                 'TXT_CRM_PROJECT_STATUS'            => $_ARRAYLANG['CRM_PROJECT_STATUS'],
                 'TXT_CRM_PROJECT_RESPONSIBLE'       => $_ARRAYLANG['CRM_PROJECT_RESPONSIBLE'],
                 'TXT_CRM_PROJECT_TARGET_DATE'       => $_ARRAYLANG['CRM_PROJECT_TARGET_DATE'],
@@ -4426,12 +4426,12 @@ END;
 
         $row = 'row2';
         while (!$objDealsResult->EOF) {
-            $title = $allowPm ? "<a href='./index.php?cmd={$this->pm_moduleName}&act=projectdetails&projectid={$objDealsResult->fields['project_id']}'>".contrexx_raw2xhtml($objDealsResult->fields['title'])."</a>" : contrexx_raw2xhtml($objDealsResult->fields['title']);
-            $userName = $allowPm ? "<a href='./index.php?cmd={$this->pm_moduleName}&act=resourcedetails&id={$objDealsResult->fields['assigned_to']}'>".contrexx_raw2xhtml($objDealsResult->fields['username'])."</a>" : contrexx_raw2xhtml($objDealsResult->fields['username']);
+            $title = $allowPm ? "<a href='./index.php?cmd={$this->pm_moduleName}&act=projectdetails&projectid={$objDealsResult->fields['project_id']}&".CSRF::param()."'>".contrexx_raw2xhtml($objDealsResult->fields['title'])."</a>" : contrexx_raw2xhtml($objDealsResult->fields['title']);
+            $userName = $allowPm ? "<a href='./index.php?cmd={$this->pm_moduleName}&act=resourcedetails&id={$objDealsResult->fields['assigned_to']}&".CSRF::param()."'>".contrexx_raw2xhtml($objDealsResult->fields['username'])."</a>" : contrexx_raw2xhtml($objDealsResult->fields['username']);
             $this->_objTpl->setVariable(array(
                     'ENTRY_ID'              => (int) $objDealsResult->fields['id'],
                     'CRM_DEALS_TITLE'       => $title,
-                    'CRM_CONTACT_NAME'      => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objDealsResult->fields['customer']}' title='details'>".contrexx_raw2xhtml($objDealsResult->fields['customer_name']." ".$objDealsResult->fields['contact_familyname']).'</a>',
+                    'CRM_CONTACT_NAME'      => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objDealsResult->fields['customer']}&".CSRF::param()."' title='details'>".contrexx_raw2xhtml($objDealsResult->fields['customer_name']." ".$objDealsResult->fields['contact_familyname']).'</a>',
                     'CRM_DEALS_CONTACT_NAME'=> $userName,
                     'CRM_DEALS_DUE_DATE'    => contrexx_raw2xhtml($objDealsResult->fields['due_date']),
                     'ROW_CLASS'             => $row = ($row == "row2") ? "row1" : 'row2',
@@ -4447,7 +4447,7 @@ END;
                 'TXT_CRM_DEALS_DUE_DATE'        => $_ARRAYLANG['TXT_CRM_DUE_DATE'],
                 'TXT_CRM_DEALS_RESPONSIBLE'     => $_ARRAYLANG['CRM_PROJECT_RESPONSIBLE'],
                 'TXT_CRM_OF_CONTACTS'           => $_ARRAYLANG['TXT_CRM_OF_CONTACTS'],
-                'TXT_CRM_FUNCTIONS'                 => $_ARRAYLANG['TXT_CRM_FUNCTIONS'],
+                'TXT_CRM_FUNCTIONS'             => $_ARRAYLANG['TXT_CRM_FUNCTIONS'],
                 'CRM_NO_RECORDS_FOUND'          => $_ARRAYLANG['CRM_NO_RECORDS_FOUND'],
                 'CRM_CUSTOMER_ID'               => $custId,
                 'TXT_CRM_ADD_OPPURTUNITY'       => $_ARRAYLANG['CRM_ADD_DEAL_TITLE'],

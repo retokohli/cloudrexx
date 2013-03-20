@@ -106,3 +106,15 @@ table#general-info tr td:first-child {
     line-height: 14px;
     padding: 5px;
 }
+#content table.adminlist a,
+#content table.adminlist a:link,
+#content table.adminlist a:visited {
+    color: #1a74bd;
+    text-decoration: none;
+}
+#content table.adminlist a:hover,
+#content table.adminlist a:focus,
+#content table.adminlist a:active {
+    color: #0b4c7a;
+    cursor: pointer;
+}
