@@ -1118,6 +1118,8 @@ function createHtAccess()
             if (empty($pathOffset)) $pathOffset = '/';
             $htAccessTemplate = str_replace('%PATH_ROOT_OFFSET%', $pathOffset, $htAccessTemplate);
             $objFWHtAccess->setSection('core_routing', explode("\n", $htAccessTemplate));
+            $objFWHtAccess->removeSection('core_modules__alias');
+            $objFWHtAccess->removeSection('core__language');
             $result = $objFWHtAccess->write();
             if ($result !== true) {
                 return false;
