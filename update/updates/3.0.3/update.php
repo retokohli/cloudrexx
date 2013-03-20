@@ -1161,30 +1161,28 @@ class License {
     }
 
     public function update() {
-        global $documentRoot, $sessionObj, $_CONFIG, $arrUpdate;
+        global $documentRoot, $sessionObj, $_CONFIG;
 
-        if (!@include_once(ASCMS_DOCUMENT_ROOT.'/lib/PEAR/HTTP/Request2.php')) {
-            return false;
+        if (@include_once(ASCMS_DOCUMENT_ROOT.'/lib/PEAR/HTTP/Request2.php')) {
+            $_GET['force'] = 'true';
+            $_GET['silent'] = 'true';
+            $documentRoot = ASCMS_DOCUMENT_ROOT;
+
+            $userId = 1;
+            $sessionObj->cmsSessionUserUpdate($userId);
+
+            $_CONFIG['licenseUpdateInterval'] = 0;
+            $_CONFIG['licenseSuccessfulUpdate'] = 0;
+            $_CONFIG['installationId'] = '';
+            $_CONFIG['licenseKey'] = '';
+            $_CONFIG['licenseState'] = '';
+
+            $return = @include_once(ASCMS_DOCUMENT_ROOT.'/core_modules/License/versioncheck.php');
         }
-
-        $_GET['force'] = 'true';
-        $_GET['silent'] = 'true';
-        $documentRoot = ASCMS_DOCUMENT_ROOT;
-
-        $userId = 1;
-        $sessionObj->cmsSessionUserUpdate($userId);
-
-        $_CONFIG['licenseUpdateInterval'] = 0;
-        $_CONFIG['licenseSuccessfulUpdate'] = 0;
-        $_CONFIG['installationId'] = '';
-        $_CONFIG['licenseKey'] = '';
-        $_CONFIG['licenseState'] = '';
-
-        $return = @include_once(ASCMS_DOCUMENT_ROOT.'/core_modules/License/versioncheck.php');
 
         // we force a version number update. if the license update failed
         // version number will not be upgraded yet:
-        \Cx\Lib\UpdateUtil::sql('UPDATE `' . DBPREFIX . 'settings` SET `setvalue` = \'' . $arrUpdate['cmsVersion'] . '\' WHERE `setid` = 97');
+        \Cx\Lib\UpdateUtil::sql('UPDATE `' . DBPREFIX . 'settings` SET `setvalue` = \'' . $_CONFIG['coreCmsVersion'] . '\' WHERE `setid` = 97');
         $settingsManager = new \settingsManager();
         $settingsManager->writeSettingsFile();
 
