@@ -47,6 +47,7 @@ function doUpdate(goBack, viaPost, debug, timeout)
 
         if (inputTimeout) {
             checkTimeout();
+            return false;
         }
 
         jQuery.ajax({
@@ -401,12 +402,6 @@ var executeGrouping = function() {
 }
 
 var checkTimeout = function() {
-    if (request_active) {
-        checkTimeout();
-        return false;
-    } else {
-        request_active = true;
-    }
     var startTime = new Date();
     $J.ajax({
         url: 'index.php',
@@ -427,6 +422,14 @@ var checkTimeout = function() {
         },
         complete: function(jqXHR, textStatus) {
             request_active = false;
+            // I have to do the request here, otherwise the update will loop and only check the timeout
+            $J.ajax({
+                url: 'index.php',
+                type: type,
+                data: {'ajax': formData, 'debug_update': getDebugInfo},
+                success: parseResponse,
+                error: cxUpdateErrorHandler,
+            });
         }
     });
 }

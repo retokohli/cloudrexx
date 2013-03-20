@@ -493,7 +493,18 @@ class ContrexxUpdate
             if (!$this->_isNewerVersion($_CONFIG['coreCmsVersion'], $_SESSION['contrexx_update']['version'])) {
                 $result = true;
             } else {
-                $result = executeContrexxUpdate();
+                try {
+                    $File = new \Cx\Lib\FileSystem\File(ASCMS_DOCUMENT_ROOT . '/update/dbg.log');
+                    $File->touch();
+                    $File->makeWritable();
+                    \DBG::activate(DBG_LOG_FILE | DBG_PHP | DBG_DB_ERROR);
+
+                    $result = executeContrexxUpdate();
+                } catch (\Exception $e) {
+                    $this->objTemplate->setVariable('UPDATE_ERROR_MSG', $_CORELANG['TXT_UPDATE_DBG_FILE']);
+                    $this->objTemplate->parse('updateProcessError');
+                    $result = false;
+                }
             }
             if ($result !== true) {
                 if (!empty($this->arrStatusMsg['error'])) {
