@@ -4,8 +4,20 @@
  * Search script
  *
  * This script is standalone because otherwise it would be too slow.
- * @author Stefan Heinemann <sh@comvation.com>
- * @copyright Comvation AG <info@comvation.com>
+ * @author      Stefan Heinemann <info@comvation.com>
+ * @copyright   COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_knowledge
+ */
+
+/**
+ * Search script
+ *
+ * This script is standalone because otherwise it would be too slow.
+ * @author      Stefan Heinemann <info@comvation.com>
+ * @copyright   COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_knowledge
  */
 
 require_once(dirname(__FILE__).'/../../config/settings.php');
