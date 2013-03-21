@@ -1086,7 +1086,13 @@ EOF;
                 if ($mediumId > 0 && $_REQUEST['section'] != 'podcast') {
                     if ($this->_updateMedium($mediumId, $mediumTitle, $mediumYoutubeID, $mediumAuthor, $mediumDescription, $mediumThumbnail, $mediumTemplate, $mediumWidth, $mediumHeight, $mediumPlaylength, $mediumSize, $mediumCategories, $mediumStatus)) {
                         $this->_strOkMessage = $_ARRAYLANG['TXT_PODCAST_MEDIUM_ADDED_SUCCESSFULL'];
-                        $objCache = new Cache();
+                        // Class in /core_modules/index.class.php is named Cache
+                        // Class in /core_modules/admin.class.php is named CacheManager
+                        if (class_exists('Cache')) {
+                            $objCache = new Cache();
+                        } else {
+                            $objCache = new CacheManager();
+                        }
                         $objCache->deleteAllFiles();
                         $this->_createRSS();
                         return $this->_media();
@@ -1095,7 +1101,13 @@ EOF;
                     }
                 } else {
                     if ($this->_addMedium($mediumTitle, $mediumYoutubeID, $mediumAuthor, $mediumDescription, $mediumSource, $mediumThumbnail, $mediumTemplate, $mediumWidth, $mediumHeight, $mediumPlaylength, $mediumSize, $mediumCategories, $mediumStatus)) {
-                        $objCache = new Cache();
+                        // Class in /core_modules/index.class.php is named Cache
+                        // Class in /core_modules/admin.class.php is named CacheManager
+                        if (class_exists('Cache')) {
+                            $objCache = new Cache();
+                        } else {
+                            $objCache = new CacheManager();
+                        }
                         $objCache->deleteAllFiles();
                         $this->_createRSS();
 
