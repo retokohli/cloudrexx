@@ -68,6 +68,9 @@ function getDatabaseObject(&$errorMsg, $newInstance = false)
                 $objDb->Execute('SET TIME_ZONE="'.$offsetString.'"');
             }
         }
+        
+        // Disable STRICT_TRANS_TABLES mode:
+        $objDb->Execute('SET sql_mode = \'\'');
 
         if (empty($_DBCONFIG['charset']) || $objDb->Execute('SET CHARACTER SET '.$_DBCONFIG['charset']) && $objDb) {
             if ($newInstance) {
