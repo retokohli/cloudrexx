@@ -443,7 +443,7 @@ die("Failed to get Customer for ID $customer_id");
         foreach ($themesPages as $index => $content) {
 //DBG::log("Shop::setJsCart(): Section $index");
             $objTemplate->setTemplate($content, false, false);
-            if (!$objTemplate->blockExists('shopJsCart')) {
+            if (!SettingDb::getValue('use_js_cart') || !$objTemplate->blockExists('shopJsCart')) {
                 continue;
             }
 //DBG::log("Shop::setJsCart(): In themespage $index: {$themesPages[$index]}");
