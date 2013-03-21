@@ -1198,6 +1198,7 @@ EOF
 
 function _shopInstall()
 {
+    global $_CONFIGURATION;
     try {
 
         /**************************************************************************
@@ -1504,6 +1505,25 @@ function _shopInstall()
             'MyISAM',
             'cx3upgrade'
         );
+        
+        // Find existing option for js cart
+        $result = \Cx\Lib\UpdateUtil::sql('
+            SELECT
+                `value`
+            FROM
+                `' . DBPREFIX . 'core_setting`
+            WHERE
+                `section` = \'shop\' AND
+                `name` = \'use_js_cart\' AND
+                `group` = \'config\'
+        ');
+        $useJsCart = '1';
+        if (
+            (!$result->EOF && $result->fields['value'] == '0') ||
+            ($result->EOF && $_CONFIGURATION['custom']['shopJsCart'] != 'true')
+        ) {
+            $useJsCart = '0';
+        }
         \Cx\Lib\UpdateUtil::sql("
             INSERT INTO `".DBPREFIX."core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`)
             VALUES  ('core', 'numof_countries_per_page_backend', 'country', 'text', '30', '', 101),
@@ -1573,7 +1593,7 @@ function _shopInstall()
                     ('egov', 'postfinance_hash_signature_in', 'config', 'text', 'Mindestens 16 Buchstaben, Ziffern und Zeichen', '', 5),
                     ('egov', 'postfinance_hash_signature_out', 'config', 'text', 'Mindestens 16 Buchstaben, Ziffern und Zeichen', '', 6),
                     ('egov', 'postfinance_use_testserver', 'config', 'checkbox', '1', '1', 7),
-                    ('shop', 'use_js_cart', 'config', 'checkbox', '1', '1', 47),
+                    ('shop', 'use_js_cart', 'config', 'checkbox', '" . $useJsCart . "', '1', 47),
                     ('shop', 'shopnavbar_on_all_pages', 'config', 'checkbox', '1', '1', 48),
                     ('filesharing', 'permission', 'config', 'text', 'off', '', 0)
             ON DUPLICATE KEY UPDATE `section` = `section`
