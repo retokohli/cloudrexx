@@ -2,6 +2,7 @@
 
 function _contactUpdate()
 {
+    global $objUpdate, $_CONFIG;
     try {
 
         \Cx\Lib\UpdateUtil::table(
@@ -408,6 +409,31 @@ function _contactUpdate()
 
         if ($htmlMailIsNew) {
             \Cx\Lib\UpdateUtil::sql('UPDATE '.DBPREFIX.'module_contact_form SET html_mail = 0');
+        }
+
+        /**
+         * Update the content pages
+         */
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+            $em = \Env::em();
+            $cl = \Env::get('ClassLoader');
+            $cl->loadFile(ASCMS_CORE_MODULE_PATH . '/contact/admin.class.php');
+            $pageRepo = $em->getRepository('Cx\Model\ContentManager\Page');
+            $Contact = new \ContactManager();
+            $Contact->initContactForms();
+
+            foreach ($Contact->arrForms as $id => $form) {
+                foreach ($form['lang'] as $langId => $lang) {
+                    if ($lang['is_active'] == true) {
+                        $page = $pageRepo->findOneByModuleCmdLang('contact', $id, $langId);
+                        if ($page) {
+                            $page->setContent($Contact->_getSourceCode($id, $langId));
+                            $em->persist($page);
+                        }
+                    }
+                }
+            }
+            $em->flush();
         }
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
