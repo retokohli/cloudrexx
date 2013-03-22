@@ -295,6 +295,10 @@ input[type=time] {
     font-size: 14px;
 }
 
+.ui-icon-delete {
+    display: none !important;
+}
+
 #search div.ui-input-search a.ui-input-clear{
     visibility: visible;
     position: absolute;
