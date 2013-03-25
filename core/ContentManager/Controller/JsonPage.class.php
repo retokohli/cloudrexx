@@ -807,7 +807,7 @@ class JsonPage implements JsonAdapter {
     }
 
     public function getHistoryTable($params) {
-        global $_CORELANG;
+        global $_CORELANG, $_CONFIG;
         
         if (empty($params['get']['page'])) {
             throw new \Exception('please provide a pageId');
@@ -839,7 +839,16 @@ class JsonPage implements JsonAdapter {
         //(V) add the history entries
         $row = 0;
         $logCount = count($logs);
+        // Paging:
+        $offset = !empty($params['get']['pos']) ? $params['get']['pos'] : 0;
+        $numberOfEntries = $_CONFIG['corePagingLimit'];
         for ($i = 0; $i < $logCount; $i++) {
+            if ($offset > $i) {
+                continue;
+            }
+            if ($i >= ($numberOfEntries + $offset)) {
+                continue;
+            }
             if (isset($logs[$i + 1])) {
                 $data = $logs[$i]->getData();
                 $nextData = $logs[$i + 1]->getData();
@@ -863,9 +872,11 @@ class JsonPage implements JsonAdapter {
                 
             }
         }
+        // Add paging widget:
+        $paging = '<div id="history_paging">' . getPaging($i, $offset, '?cmd=content&page=16&tab=history', 'Einträge', true) . '</div>';
 
         //(VI) render
-        die($table->toHtml());
+        die($table->toHtml() . $paging);
     }
 
     private function addHistoryEntries($page, $username, $table, $row, $version = '', $path = '', $pageHasDraft = true) {
@@ -989,7 +1000,7 @@ class JsonPage implements JsonAdapter {
         } catch (\Cx\Core\ContentManager\Model\Doctrine\Entity\PageException $e) {
             $parentPath = '';
         }
-
+        
         $pageArray = array(
             // Editor Meta
             'id' => $page->getId(),
@@ -1029,6 +1040,7 @@ class JsonPage implements JsonAdapter {
             'editingStatus' => $page->getEditingStatus(),
             'parentPath' => $parentPath,
             'assignedBlocks' => $this->getBlocks($page),
+            'historyId' => $page->getVersion()->getVersion(),
                 /* 'display'       =>  $page->getDisplay(),
                   'active'        =>  $page->getActive(),
                   'updatedAt'     =>  $page->getUpdatedAt(), */

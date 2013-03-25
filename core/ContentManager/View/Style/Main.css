@@ -600,6 +600,17 @@ h1{ font-size: 20px }
     width: 100%;
 }
 
+#content-manager.edit_view .historyInit {
+    width: 100%;
+    text-align: center;
+    padding-top: 20px;
+}
+
+#history_paging {
+    padding: 1px;
+    padding-top: 15px;
+}
+
 #edit_mode {
     position: relative;
     float: left;
