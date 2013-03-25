@@ -202,6 +202,12 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
         if ($this->intOffset > 0) {
             $strOffset = 'OFFSET ' . $this->intOffset;
         }
+        
+        if($objInit->mode == 'frontend') {
+            $strWhereDuration = "AND (`duration_type` = 1 OR (`duration_type` = 2 AND (`duration_start` < '$intToday' AND `duration_end` > '$intToday'))) ";
+        } else {
+            $strWhereDuration = null;
+        }
 
         $query = "
             SELECT
@@ -244,6 +250,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                 ".$strWhereLangId."
                 ".$strWhereFormId."
                 ".$strWhereReadyToConfirm."
+                ".$strWhereDuration."
             GROUP BY
                 entry.`id`
             ORDER BY
@@ -1238,7 +1245,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 
     function countEntries($intCategoryId, $intLevelId, $formId = null, $searchTerm = '', $countAllEntries = false)
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG, $objInit;
 
         $strWhereLevel      = '';
         $strFromLevel       = '';
@@ -1273,6 +1280,12 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
         if (!$countAllEntries) {
             $strWhereActive = 'AND (entry.`active` = 1 AND entry.`confirmed` = 1)';
         }
+        
+        if($objInit->mode == 'frontend') {
+            $strWhereDuration = "AND (`duration_type` = 1 OR (`duration_type` = 2 AND (`duration_start` < '$intToday' AND `duration_end` > '$intToday'))) ";
+        } else {
+            $strWhereDuration = null;
+        }
 
         $query = "SELECT
                     entry.`id` AS `id`
@@ -1288,6 +1301,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                     ".$strWhereLevel."
                     ".$strWhereForm."
                     ".$strWhereSearchTerm."
+                    ".$strWhereDuration."
                   GROUP BY
                     entry.`id`";
 
