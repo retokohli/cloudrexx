@@ -196,7 +196,7 @@ EOF;
 
     function searchEntries($arrData)
     {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID;
+        global $_ARRAYLANG, $_CORELANG, $objDatabase, $_LANGID, $objInit;
 
         $arrSelect = array();
         $arrFrom = array();
@@ -303,6 +303,11 @@ EOF;
         
         if ($intCmdFormId != 0) {
             $arrWhere[] = "rel_inputfield.`form_id` = '".$intCmdFormId."'";
+        }
+        
+        if($objInit->mode == 'frontend') {
+            $intToday = mktime();
+            $arrWhere[] = "(`duration_type` = 1 OR (`duration_type` = 2 AND (`duration_start` < '$intToday' AND `duration_end` > '$intToday')))";
         }
 
         if (!empty($arrSelect) && !empty($arrFrom) && !empty($arrWhere) && !empty($arrOrder)) {
