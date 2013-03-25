@@ -242,35 +242,24 @@ class CxLogEntryRepository extends LogEntryRepository
      * 
      * @return  array  $result
      */
-    public function getLatestLogsOfAllPages($fields = null) {
+    public function getLatestLog(\Cx\Core\ContentManager\Model\Doctrine\Entity\Page $page) {
         $result = array();
 
         $qb = $this->em->createQueryBuilder();
-        $sqb = $this->em->createQueryBuilder();
         
-        if (is_array($fields)) {
-            foreach ($fields as $i=>$field) {
-                $fields[$i] = 'l.' . $field;
-            }
-            $select = implode(', ', $fields);
-        } else {
-            $select = 'l';
-        }
+        $objectId = $page->getId();
         
-        $qb->select($select)
+        $qb->select('l')
+                ->setMaxResults(1)
                 ->from('Gedmo\Loggable\Entity\LogEntry', 'l')
-                ->where($qb->expr()->in('l.id', '' .
-                                $sqb->select('sl.id')
-                                ->from('Gedmo\Loggable\Entity\LogEntry', 'sl')
-                                ->where('sl.objectClass = :objectClass')
-                                ->addGroupBy('sl.objectId')
-                                ->orderBy('sl.version', 'DESC')
-                                ->getDQL() . '')
-                )
-                ->setParameter('objectClass', 'Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
+                ->where('l.objectClass = :objectClass')
+                ->andWhere('l.objectId LIKE :objectId')
+                ->orderBy('l.version', 'DESC')
+                ->setParameter('objectClass', 'Cx\Core\ContentManager\Model\Doctrine\Entity\Page')
+                ->setParameter('objectId', $objectId);
 
         $logs = $qb->getQuery()->getResult();
-       
+        
         if (is_array($logs)) {
             foreach ($logs as $log) {
                 if (!is_array($log)) {
@@ -281,7 +270,7 @@ class CxLogEntryRepository extends LogEntryRepository
             }
         }
 
-        return $result;
+        return current($result);
     }
 
     /**

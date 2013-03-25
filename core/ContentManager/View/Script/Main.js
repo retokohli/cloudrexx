@@ -670,6 +670,9 @@ cx.cm = function(target) {
     });
 
     jQuery('#preview').click(function(event) {
+        if (!cx.cm.validateFields()) {
+            return false;
+        }
         jQuery.ajax({
             type: 'post',
             url:  'index.php?cmd=jsondata&object=page&act=setPagePreview',
@@ -2286,13 +2289,30 @@ cx.cm.hideEditModeWindow = function() {
     dialog.close();
 }
 
-cx.cm.loadHistory = function(id) {
+cx.cm.loadHistory = function(id, pos) {
+    if (!pos) {
+        pos = 0;
+    }
+    
+    jQuery("#page_history").html("<div class=\"historyInit\"><img src=\"../lib/javascript/jquery/jstree/themes/default/throbber.gif\" alt=\"Loading...\" /></div>");
     pageId = (id != undefined) ? parseInt(id) : parseInt(jQuery('#pageId').val());
     if (isNaN(pageId) || (pageId == 0)) {
         return;
     }
     
-    jQuery('#page_history').load('index.php?cmd=jsondata&object=page&act=getHistoryTable&page='+pageId, function() {
+    jQuery('#page_history').load('index.php?cmd=jsondata&object=page&act=getHistoryTable&page='+pageId+'&pos='+pos, function() {
+        jQuery("#history_paging").find("a").each(function(index, el) {
+            el = jQuery(el);
+            var pos;
+            if (el.attr("class") == "pagingFirst") {
+                pos = 0;
+            } else {
+                pos = el.attr("href").match(/pos=(\d*)/)[1];
+            }
+            el.data("pos", pos);
+        }).attr("href", "#").click(function() {
+            cx.cm.loadHistory(id, jQuery(this).data("pos"));
+        });
         cx.cm.updateHistoryTableHighlighting();
     });
 };
@@ -2373,7 +2393,7 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
 
     // tab content
     jQuery('#page input[name="page[id]"]').val(page.id);
-    jQuery('#page input[name="page[historyId]"]').val(historyId);
+    jQuery('#page input[name="page[historyId]"]').val(page.historyId);
     jQuery('#page input[name="page[lang]"]').val(page.lang);
     jQuery('#page input[name="page[node]"]').val(page.node);
     jQuery('#page input[name="page[name]"]').val(page.name);

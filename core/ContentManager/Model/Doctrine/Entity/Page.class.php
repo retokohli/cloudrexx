@@ -1826,4 +1826,13 @@ class Page extends \Cx\Model\Base\EntityBase
         $blockLib = new \blockLibrary();
         $blockLib->_setBlocksForPageId($this->getId(), $relatedBlocks);
     }
+    
+    /**
+     * Returns the current log for this page
+     * @return \Gedmo\Loggable\Entity\LogEntry Current page log
+     */
+    public function getVersion() {
+        $logRepo = \Env::get('em')->getRepository('Gedmo\Loggable\Entity\LogEntry');
+        return $logRepo->getLatestLog($this);
+    }
 }
