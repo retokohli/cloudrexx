@@ -70,7 +70,17 @@ function getDatabaseObject(&$errorMsg, $newInstance = false)
         }
         
         // Disable STRICT_TRANS_TABLES mode:
-        $objDb->Execute('SET sql_mode = \'\'');
+        $res = $objDb->Execute('SELECT @@sql_mode');
+        if ($res->EOF) {
+            $errorMsg = 'Database mode error';
+            return;
+        }
+        $sqlModes = explode(',', $res->fields['@@sql_mode']);
+        array_walk($sqlModes, 'trim');
+        if (($index = array_search('STRICT_TRANS_TABLES', $sqlModes)) !== false) {
+            unset($sqlModes[$index]);
+        }
+        $objDb->Execute('SET sql_mode = \'' . implode(', ', $sqlModes) . '\'');
 
         if (empty($_DBCONFIG['charset']) || $objDb->Execute('SET CHARACTER SET '.$_DBCONFIG['charset']) && $objDb) {
             if ($newInstance) {
