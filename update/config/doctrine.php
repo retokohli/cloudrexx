@@ -28,6 +28,9 @@ $classLoader->register();
 $classLoader = new ClassLoader('DoctrineExtension', ASCMS_MODEL_PATH.'/extensions');
 $classLoader->register();
 
+$classLoader = new ClassLoader('Gedmo', UPDATE_CORE);
+$classLoader->register();
+
 $classLoader = new ClassLoader('Gedmo\Loggable\Entity', ASCMS_MODEL_PATH.'/entities');
 $classLoader->register();
 
@@ -64,12 +67,13 @@ $driverImpl = new \Doctrine\ORM\Mapping\Driver\YamlDriver(ASCMS_MODEL_PATH.'/yml
 $chainDriverImpl->addDriver($driverImpl, 'Cx\Model');
 
 //loggable stuff
-$loggableDriverImpl = $config->newDefaultAnnotationDriver(
-    $doctrineDir.'Gedmo/Loggable/Entity' // Document for ODM
-);
+$loggableDriverImpl = $config->newDefaultAnnotationDriver(array(
+    UPDATE_CORE,
+    $doctrineDir.'Gedmo/Loggable/Entity', // Document for ODM
+));
 $chainDriverImpl->addDriver($loggableDriverImpl, 'Gedmo\Loggable');
 
-$loggableListener = new \Gedmo\Loggable\LoggableListener();
+$loggableListener = new \Cx\Update\core\LoggableListener();
 $evm->addEventSubscriber($loggableListener);
 \Env::set('loggableListener', $loggableListener);
 
