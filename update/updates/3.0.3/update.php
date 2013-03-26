@@ -8,6 +8,20 @@ require_once UPDATE_PATH . '/lib/FRAMEWORK/FileSystem/FTPFile.class.php';
 
 function executeContrexxUpdate() {
     global $_CORELANG, $_CONFIG, $objDatabase, $objUpdate;
+    
+    /**
+     * These are the modules which MUST have new template in order for Contrexx
+     * to work correctly. CSS definitions for these modules will get updated too.
+     */
+    $viewUpdateTable = array(
+        'newsletter'    => '3.0.1.0', // E-Mail Marketing
+        'shop'          => '3.0.0.0', // Online Shop
+        'voting'        => '2.1.0.0', // Umfragen
+        'access'        => '2.0.0.0', // Benutzerverwaltung
+        'podcast'       => '2.0.0.0', // Podcast
+        'login'         => '3.0.2.0', // Login
+        'gallery'       => '3.0.2.0', // Bildgalerie
+    );
 
     $_SESSION['contrexx_update']['copyFilesFinished'] = !empty($_SESSION['contrexx_update']['copyFilesFinished']) ? $_SESSION['contrexx_update']['copyFilesFinished'] : false;
 
@@ -451,7 +465,7 @@ function executeContrexxUpdate() {
     }
 
     if (!in_array('moduleTemplates', $_SESSION['contrexx_update']['update']['done'])) {
-        if (_updateModulePages() === false) {
+        if (_updateModulePages($viewUpdateTable) === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
                 setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_TEMPLATES']), 'title');
             }
@@ -460,6 +474,17 @@ function executeContrexxUpdate() {
             $_SESSION['contrexx_update']['update']['done'][] = 'moduleTemplates';
         }
     }
+
+    /*if (!in_array('moduleStyles', $_SESSION['contrexx_update']['update']['done'])) {
+        if (_updateCssDefinitions($viewUpdateTable) === false) {
+            if (empty($objUpdate->arrStatusMsg['title'])) {
+                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_TEMPLATES']), 'title');
+            }
+            return false;
+        } else {
+            $_SESSION['contrexx_update']['update']['done'][] = 'moduleStyles';
+        }
+    }*/
     
     if (!createHtAccess()) {
         $webServerSoftware = !empty($_SERVER['SERVER_SOFTWARE']) && stristr($_SERVER['SERVER_SOFTWARE'], 'apache') ? 'apache' : (stristr($_SERVER['SERVER_SOFTWARE'], 'iis') ? 'iis' : '');
@@ -841,20 +866,10 @@ function _updateModuleRepository() {
     return true;
 }
 
-function _updateModulePages() {
+function _updateModulePages(&$viewUpdateTable) {
     global $objUpdate, $_CONFIG, $objDatabase;
     
-    $updateTable = array(
-        'newsletter'    => '3.0.1.0', // E-Mail Marketing
-        'shop'          => '3.0.0.0', // Online Shop
-        'voting'        => '2.1.0.0', // Umfragen
-        'access'        => '2.0.0.0', // Benutzerverwaltung
-        'podcast'       => '2.0.0.0', // Podcast
-        'login'         => '3.0.2.0', // Login
-        'gallery'       => '3.0.2.0', // Bildgalerie
-    );
-    
-    foreach ($updateTable as $module=>$version) {
+    foreach ($viewUpdateTable as $module=>$version) {
         // only update templates if the installed version is older than $version
         if (!$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], $version)) {
             continue;
@@ -899,6 +914,167 @@ function _updateModulePages() {
             $em->flush();
         }
     }
+    return true;
+}
+
+function _updateCssDefinitions(&$viewUpdateTable) {
+    global $objDatabase;
+    
+    // Find all themes
+    $result = $objDatabase->Execute('SELECT `themesname`, `foldername` FROM `' . DBPREFIX . 'skins`');
+    if ($result->EOF) {
+        \DBG::msg('No themes, really?');
+        return false;
+    }
+    
+    // Find type for theme and update its CSS definitions
+    while (!$result->EOF) {
+        if (preg_match('/print/', $result->fields['themesname'])) {
+            $type = 'print';
+        } else if (preg_match('/pdf/', $result->fields['themesname'])) {
+            $type = 'pdf';
+        } else if (preg_match('/mobile/', $result->fields['themesname'])) {
+            $type = 'mobile';
+        } else if (preg_match('/app/', $result->fields['themesname'])) {
+            $type = 'app';
+        } else {
+            $type = 'standard';
+        }
+        \DBG::msg('Updating CSS definitions for theme "' . $result->fields['themesname'] . '" (' . $type . ')');
+        if (!_updateCssDefinitionsForTemplate($result->fields['foldername'], $type, $viewUpdateTable)) {
+            \DBG::msg('CSS update for theme "' . $result->fields['themesname'] . '" failed');
+            return false;
+        }
+        $result->moveNext();
+    }
+    return true;
+}
+
+function _updateCssDefinitionsForTemplate($templatePath, $templateType, &$viewUpdateTable) {
+    global $arrUpdate;
+    
+    \DBG::msg('Loading new module style definitions');
+    $moduleStyles = _readNewCssDefinitions($templateType, $arrUpdate);
+    
+    if ($moduleStyles === false) {
+        return false;
+    }
+    
+    \DBG::msg('Calculating new module style definitions');
+    $additionalCss = _calculateNewCss($viewUpdateTable, $moduleStyles);
+    
+    if ($additionalCss === false) {
+        return false;
+    }
+    
+    \DBG::msg('Writing new module style definitions');
+    return _writeNewCss($templatePath, $additionalCss, $arrUpdate);
+}
+
+/**
+ * This reads /updates/{version}/data/modules.css and parses its contents
+ * @return mixed Module styles as array({module_name}=>{css}) or false on error
+ */
+function _readNewCssDefinitions($templateType, &$arrUpdate) {
+    
+    // Read and parse new modules.css
+    try {
+        $modulesCss = new \Cx\Lib\FileSystem\File(UPDATE_PATH.'/updates/' . $arrUpdate['cmsVersion'] . '/data/' . $templateType . '.css');
+        $styleDefinitions = $modulesCss->getData();
+    } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+        \DBG::msg($e->getMessage());
+        return false;
+    }
+    // split css by module header comment
+    $styleDefinitions = preg_split('#(?:[\s]*)/[\*]*/\n(?:[\s]*)/\*\sCSS DEFINITIONS FOR#', $styleDefinitions);
+    $moduleStyles = array();
+    $matches = array();
+    $moduleRegex = '#^ ([A-Z]*) MODULE(?:[\s]*)\*/\n(?:[\s]*)/[\*]*/#';
+    foreach ($styleDefinitions as $key=>$value) {
+        // get module name from header
+        if (!preg_match($moduleRegex, $value, $matches)) {
+            // not a module
+            continue;
+        }
+        // reconstruct header (this could be done more nicely)
+        $moduleStyles[strtolower($matches[1])] = '/***************************************************/
+/* CSS DEFINITIONS FOR' . $value;
+    }
+    return $moduleStyles;
+}
+
+/**
+ * Merges CSS definitions of modules with updated template
+ * @return mixed Additional CSS definitions as string or false on error
+ */
+function _calculateNewCss(&$viewUpdateTable, &$moduleStyles) {
+    global $_CONFIG;
+    
+    // Calculate new CSS definitions
+    $additionalCss = '';
+    foreach ($viewUpdateTable as $module=>$version) {
+        // only add css if the installed version is older than $version
+        if (!$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], $version)) {
+            continue;
+        }
+        if (!isset($moduleStyles[$module])) {
+            \DBG::msg('No style definitions for module "' . $module . '" in this theme type');
+            continue;
+        }
+        $additionalCss .= $moduleStyles[$module];
+    }
+    return $additionalCss;
+}
+
+/**
+ * Writes the new additional CSS definitions to FS and adds style definition
+ * to theme
+ * @return boolean True on success, false otherwise
+ */
+function _writeNewCss($templatePath, $newCss, &$arrUpdate) {
+    
+    // Write the CSS first
+    $filename = 'modules_' . preg_replace('/\./', '_', $arrUpdate['cmsVersion']) . '.css';
+    try {
+        $objFile = new \Cx\Lib\FileSystem\File(ASCMS_THEMES_PATH . '/' . $templatePath . '/' . $filename);
+        $objFile->write($newCss);
+    } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+        \DBG::msg($e->getMessage());
+        return false;
+    }
+    
+    // Read index.html
+    try {
+        $objFile = new \Cx\Lib\FileSystem\File(ASCMS_THEMES_PATH . '/' . $templatePath . '/index.html');
+        $indexHtml = $objFile->getData();
+    } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+        \DBG::msg($e->getMessage());
+        return false;
+    }
+    
+    // Search write position
+    // Search for style placeholder ({STYLE_FILE})
+    if (($pos = strpos($indexHtml, '{STYLE_FILE}')) === false) {
+        $matches = array();
+        
+        // Search for head end tag
+        if (!preg_match('#</head>#', $indexHtml, $matches, PREG_OFFSET_CAPTURE)) {
+            \DBG::msg('No style tag or </head> found, skip template');
+            return true;
+        }
+        $pos = $matches[0][1];
+    }
+    
+    // Finally add the include statement before $pos and write out
+    $indexHtml = substr_replace($indexHtml, $newCss, $pos, 0);
+    try {
+        $objFile = new \Cx\Lib\FileSystem\File(ASCMS_THEMES_PATH . '/' . $templatePath . '/index.html');
+        $objFile->write($indexHtml);
+    } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+        \DBG::msg($e->getMessage());
+        return false;
+    }
+    
     return true;
 }
 
