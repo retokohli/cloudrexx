@@ -17,7 +17,7 @@ if ($php < '5.3') {
 
 // Debugging
 require_once dirname(__FILE__).'/lib/FRAMEWORK/DBG/DBG.php';
-DBG::deactivate();
+DBG::activate(DBG_LOG_FILE | DBG_DB | DBG_LOG);
 
 // Check effective maximum execution time
 if (!empty($_GET['check_timeout'])) {
