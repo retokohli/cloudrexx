@@ -623,7 +623,15 @@ class Url {
         return new Url($protocol.'://'.$host.$offset.'/'.$langDir.$path.$getParams);
     }
 
-    public function toString() {
+    /**
+     * Returns an absolute link
+     * @param boolean $absolute (optional) set to false to return a relative URL
+     * @return type 
+     */
+    public function toString($absolute = true) {
+        if (!$absolute) {
+            return $this . '';
+        }
         return $this->domain . substr($this, 1);
     }
 

@@ -38,10 +38,11 @@ class LinkGenerator {
      * @var boolean whether fetch() ran.
      */
     protected $fetchingDone = false;
+    protected $absoluteUris = false;
 
-    public static function parseTemplate(&$content)
+    public static function parseTemplate(&$content, $absoluteUris = false)
     {
-        $lg = new LinkGenerator();
+        $lg = new LinkGenerator($absoluteUris);
 
         if (!is_array($content)) {
             $arrTemplates = array(&$content);
@@ -58,6 +59,10 @@ class LinkGenerator {
         foreach ($arrTemplates as &$template) {
             $lg->replaceIn($template);
         }
+    }
+    
+    public function __construct($absoluteUris = false) {
+        $this->absoluteUris = $absoluteUris;
     }
 
     /**
@@ -200,19 +205,21 @@ class LinkGenerator {
             if (!$data instanceof \Cx\Core\Routing\Url) {
                 if (!empty($data['module'])) {
                     try {
-                        $this->placeholders[$placeholder] = \Cx\Core\Routing\Url::fromModuleAndCmd($data['module'], $data['cmd'], $data['lang'], array(), '', false);
+                        $this->placeholders[$placeholder] = \Cx\Core\Routing\Url::fromModuleAndCmd($data['module'], $data['cmd'], $data['lang'], array(), '', false)->toString($this->absoluteUris);
                     } catch (\Cx\Core\Routing\UrlException $e) {
                         if ($data['lang'] && $data['cmd']) {
-                            $this->placeholders[$placeholder] = \Cx\Core\Routing\Url::fromModuleAndCmd($data['module'], $data['cmd'].'_'.$data['lang'], FRONTEND_LANG_ID);
+                            $this->placeholders[$placeholder] = \Cx\Core\Routing\Url::fromModuleAndCmd($data['module'], $data['cmd'].'_'.$data['lang'], FRONTEND_LANG_ID)->toString($this->absoluteUris);
                         } else if ($data['lang'] && empty($data['cmd'])) {
-                            $this->placeholders[$placeholder] = \Cx\Core\Routing\Url::fromModuleAndCmd($data['module'], $data['lang'], FRONTEND_LANG_ID);
+                            $this->placeholders[$placeholder] = \Cx\Core\Routing\Url::fromModuleAndCmd($data['module'], $data['lang'], FRONTEND_LANG_ID)->toString($this->absoluteUris);
                         } else {
-                            $this->placeholders[$placeholder] = \Cx\Core\Routing\Url::fromModuleAndCmd('error', '', $data['lang']);
+                            $this->placeholders[$placeholder] = \Cx\Core\Routing\Url::fromModuleAndCmd('error', '', $data['lang'])->toString($this->absoluteUris);
                         }
                     }
                 } else {
-                    $this->placeholders[$placeholder] = \Cx\Core\Routing\Url::fromModuleAndCmd('error', '', $data['lang']);
+                    $this->placeholders[$placeholder] = \Cx\Core\Routing\Url::fromModuleAndCmd('error', '', $data['lang'])->toString($this->absoluteUris);
                 }
+            } else {
+                $this->placeholders[$placeholder] = $data->toString($this->absoluteUris);
             }
         }
 
