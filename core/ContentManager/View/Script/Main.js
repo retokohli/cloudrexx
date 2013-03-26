@@ -2392,8 +2392,11 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
     }
 
     // tab content
+    if (!historyId) {
+        historyId = page.historyId;
+    }
     jQuery('#page input[name="page[id]"]').val(page.id);
-    jQuery('#page input[name="page[historyId]"]').val(page.historyId);
+    jQuery('#page input[name="page[historyId]"]').val(historyId);
     jQuery('#page input[name="page[lang]"]').val(page.lang);
     jQuery('#page input[name="page[node]"]').val(page.node);
     jQuery('#page input[name="page[name]"]').val(page.name);
