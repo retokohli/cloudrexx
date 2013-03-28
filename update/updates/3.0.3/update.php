@@ -957,6 +957,9 @@ function _updateCssDefinitionsForTemplate($templatePath, $templateType, &$viewUp
     
     if ($moduleStyles === false) {
         return false;
+    } else if ($moduleStyles === true) {
+        // Skip if no source CSS file was found
+        return true;
     }
     
     \DBG::msg('Calculating new module style definitions');
@@ -972,7 +975,7 @@ function _updateCssDefinitionsForTemplate($templatePath, $templateType, &$viewUp
 
 /**
  * This reads /updates/{version}/data/modules.css and parses its contents
- * @return mixed Module styles as array({module_name}=>{css}) or false on error
+ * @return mixed Module styles as array({module_name}=>{css}), true if source file was not found or false on error
  */
 function _readNewCssDefinitions($templateType, &$arrUpdate) {
     
@@ -982,7 +985,7 @@ function _readNewCssDefinitions($templateType, &$arrUpdate) {
         $styleDefinitions = $modulesCss->getData();
     } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
         \DBG::msg($e->getMessage());
-        return false;
+        return true;
     }
     // split css by module header comment
     $styleDefinitions = preg_split('#(?:[\s]*)/[\*]*/\n(?:[\s]*)/\*\sCSS DEFINITIONS FOR#', $styleDefinitions);
