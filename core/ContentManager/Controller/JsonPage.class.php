@@ -873,7 +873,7 @@ class JsonPage implements JsonAdapter {
             }
         }
         // Add paging widget:
-        $paging = '<div id="history_paging">' . getPaging($i, $offset, '?cmd=content&page=16&tab=history', 'Einträge', true) . '</div>';
+        $paging = '<div id="history_paging">' . getPaging($row, $offset, '?cmd=content&page=16&tab=history', 'Einträge', true) . '</div>';
 
         //(VI) render
         die($table->toHtml() . $paging);
@@ -897,7 +897,7 @@ class JsonPage implements JsonAdapter {
         $functions .= '<a id="load_'.$version.'" class="historyLoad" href="javascript:loadHistoryVersion('.$version.')" '.$tableStyle.'>' . $_ARRAYLANG['TXT_CORE_LOAD'] . '</a>';
         
         $table->setCellContents($row, 0, $dateString);
-        $table->setCellContents($row, 1, $page->getTitle());
+        $table->setCellContents($row, 1, $page->getTitle() . '(' . $version . ')');
         $table->setCellContents($row, 2, $username);
         $table->setCellContents($row, 3, $functions);
     }

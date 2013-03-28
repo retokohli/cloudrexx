@@ -2669,16 +2669,21 @@ cx.cm.initHistory = function() {
 cx.cm.updateHistoryTableHighlighting = function() {
     var version = jQuery("#historyId").val();
     if (version == "" || version == "new") {
-        jQuery('.historyLoad, .historyPreview').first().hide();
+        jQuery('.historyLoad, .historyPreview').first().parent().children().hide();
         return;
     }
+    var hasHidden = false;
     jQuery('.historyLoad, .historyPreview').each(function () {
         if ((jQuery(this).attr('id') == 'load_' + version) || (jQuery(this).attr('id') == 'preview_' + version)) {
             jQuery(this).css('display', 'none');
+            hasHidden = true;
         } else {
             jQuery(this).css('display', 'block');
         }
     });
+    if (!hasHidden) {
+        jQuery('.historyLoad, .historyPreview').first().parent().children().hide();
+    }
 }
 
 cx.cm.slugify = function(string) {
