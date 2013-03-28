@@ -475,8 +475,8 @@ function executeContrexxUpdate() {
         }
     }
 
-    /*if (!in_array('moduleStyles', $_SESSION['contrexx_update']['update']['done'])) {
-        if (_updateCssDefinitions($viewUpdateTable) === false) {
+    if (!in_array('moduleStyles', $_SESSION['contrexx_update']['update']['done'])) {
+        if (_updateCssDefinitions($viewUpdateTable, $objUpdate) === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
                 setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_TEMPLATES']), 'title');
             }
@@ -484,7 +484,7 @@ function executeContrexxUpdate() {
         } else {
             $_SESSION['contrexx_update']['update']['done'][] = 'moduleStyles';
         }
-    }*/
+    }
     
     if (!createHtAccess()) {
         $webServerSoftware = !empty($_SERVER['SERVER_SOFTWARE']) && stristr($_SERVER['SERVER_SOFTWARE'], 'apache') ? 'apache' : (stristr($_SERVER['SERVER_SOFTWARE'], 'iis') ? 'iis' : '');
@@ -917,7 +917,7 @@ function _updateModulePages(&$viewUpdateTable) {
     return true;
 }
 
-function _updateCssDefinitions(&$viewUpdateTable) {
+function _updateCssDefinitions(&$viewUpdateTable, $objUpdate) {
     global $objDatabase;
     
     // Find all themes
@@ -941,7 +941,7 @@ function _updateCssDefinitions(&$viewUpdateTable) {
             $type = 'standard';
         }
         \DBG::msg('Updating CSS definitions for theme "' . $result->fields['themesname'] . '" (' . $type . ')');
-        if (!_updateCssDefinitionsForTemplate($result->fields['foldername'], $type, $viewUpdateTable)) {
+        if (!_updateCssDefinitionsForTemplate($result->fields['foldername'], $type, $viewUpdateTable, $objUpdate)) {
             \DBG::msg('CSS update for theme "' . $result->fields['themesname'] . '" failed');
             return false;
         }
@@ -950,25 +950,24 @@ function _updateCssDefinitions(&$viewUpdateTable) {
     return true;
 }
 
-function _updateCssDefinitionsForTemplate($templatePath, $templateType, &$viewUpdateTable) {
-    global $arrUpdate;
+function _updateCssDefinitionsForTemplate($templatePath, $templateType, &$viewUpdateTable, $objUpdate) {
     
     \DBG::msg('Loading new module style definitions');
-    $moduleStyles = _readNewCssDefinitions($templateType, $arrUpdate);
+    $moduleStyles = _readNewCssDefinitions($templateType, $objUpdate->getLoadedVersionInfo());
     
     if ($moduleStyles === false) {
         return false;
     }
     
     \DBG::msg('Calculating new module style definitions');
-    $additionalCss = _calculateNewCss($viewUpdateTable, $moduleStyles);
+    $additionalCss = _calculateNewCss($viewUpdateTable, $moduleStyles, $objUpdate);
     
     if ($additionalCss === false) {
         return false;
     }
     
     \DBG::msg('Writing new module style definitions');
-    return _writeNewCss($templatePath, $additionalCss, $arrUpdate);
+    return _writeNewCss($templatePath, $additionalCss, $objUpdate->getLoadedVersionInfo());
 }
 
 /**
@@ -1007,7 +1006,7 @@ function _readNewCssDefinitions($templateType, &$arrUpdate) {
  * Merges CSS definitions of modules with updated template
  * @return mixed Additional CSS definitions as string or false on error
  */
-function _calculateNewCss(&$viewUpdateTable, &$moduleStyles) {
+function _calculateNewCss(&$viewUpdateTable, &$moduleStyles, $objUpdate) {
     global $_CONFIG;
     
     // Calculate new CSS definitions
@@ -1021,8 +1020,13 @@ function _calculateNewCss(&$viewUpdateTable, &$moduleStyles) {
             \DBG::msg('No style definitions for module "' . $module . '" in this theme type');
             continue;
         }
-        $additionalCss .= $moduleStyles[$module];
+        $additionalCss .= "\r\n\r\n" . $moduleStyles[$module];
     }
+    $version = $objUpdate->getLoadedVersionInfo();
+    $version = $version['cmsVersion'];
+    $additionalCss = '/***************************************************/
+/* THESE ARE THE CSS MODULE STYLES FOR ' . $version .  '       */
+/***************************************************/' . $additionalCss;
     return $additionalCss;
 }
 
@@ -1043,6 +1047,9 @@ function _writeNewCss($templatePath, $newCss, &$arrUpdate) {
         return false;
     }
     
+    // Generate include tag
+    $cssInclusion = '<link rel="stylesheet" type="text/css" href="' . ASCMS_THEMES_WEB_PATH . '/' . $templatePath . '/' . $filename . '" />'."\r\n";
+    
     // Read index.html
     try {
         $objFile = new \Cx\Lib\FileSystem\File(ASCMS_THEMES_PATH . '/' . $templatePath . '/index.html');
@@ -1052,7 +1059,9 @@ function _writeNewCss($templatePath, $newCss, &$arrUpdate) {
         return false;
     }
     
-    // Search write position
+    // Search write position. CSS inclusion tag is added before
+    // style placeholder. If the placeholder is not present in
+    // index.html the CSS inclusion tag is inserted before </head>
     // Search for style placeholder ({STYLE_FILE})
     if (($pos = strpos($indexHtml, '{STYLE_FILE}')) === false) {
         $matches = array();
@@ -1066,7 +1075,7 @@ function _writeNewCss($templatePath, $newCss, &$arrUpdate) {
     }
     
     // Finally add the include statement before $pos and write out
-    $indexHtml = substr_replace($indexHtml, $newCss, $pos, 0);
+    $indexHtml = substr_replace($indexHtml, $cssInclusion, $pos, 0);
     try {
         $objFile = new \Cx\Lib\FileSystem\File(ASCMS_THEMES_PATH . '/' . $templatePath . '/index.html');
         $objFile->write($indexHtml);
