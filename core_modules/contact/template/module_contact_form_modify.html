@@ -407,6 +407,8 @@
 
             case 'checkbox':
             case 'checkboxGroup':
+            case 'access_gender':
+            case 'access_title':
             case 'access_country':
             case 'country':
             case 'date':
@@ -420,7 +422,8 @@
                 ($J('#contactFormFieldCheckType_'+elId).length > 0) ? $J('#contactFormFieldCheckType_'+elId).remove() : '';
             break;
             /*
-             *Default applies for textbox, password, multiline text and all user profile fields except access_country field
+             *Default applies for textbox, password, multiline text and all user profile fields except access_country, country,
+             * access_title and access_gender field
              */
             default:
                  if($J('#contactFormFieldRequired_'+elId).length == 0){

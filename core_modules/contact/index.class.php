@@ -244,6 +244,7 @@ class Contact extends ContactLib
                  * Generate values for dropdown checkbox and radio fields
                  */
                 $userProfileRegExp = '/\{([A-Z_]+)\}/';
+                $accessAttributeId = null;
                 $fieldType = ($arrField['type'] != 'special') ? $arrField['type'] : $arrField['special_type'];
                 switch ($fieldType) {
                     case 'checkbox':
@@ -276,6 +277,31 @@ class Contact extends ContactLib
                         }
                         break;
 
+                    case 'access_title':
+                    case 'access_gender':
+                        // collect user attribute options
+                        $arrOptions = array();
+                        $accessAttributeId = str_replace('access_', '', $fieldType);
+                        $objAttribute = FWUser::getFWUserObject()->objUser->objAttribute->getById($accessAttributeId);
+
+                        // get options
+                        $arrAttribute = $objAttribute->getChildren();
+                        foreach ($arrAttribute as $attributeId) {
+                            // in case the selection of the field is mandatory, we shall skip the unknown option of the user profile attribute
+                            if (   $arrField['is_required']
+                                && strpos($attributeId, '_undefined')
+                            ) {
+                                continue;
+                            }
+                            $objAttribute = FWUser::getFWUserObject()->objUser->objAttribute->getById($attributeId);
+                            $arrOptions[] = $objAttribute->getName(FRONTEND_LANG_ID);
+                        }
+
+                        // options will be used for select input generation
+                        $arrField['lang'][FRONTEND_LANG_ID]['value'] = implode(',', $arrOptions);
+
+                        // intentionally no break here!!
+
                     case 'select':
                         $options = explode(',', $arrField['lang'][$_LANGID]['value']);
                         if ($arrField['is_required']) {
@@ -288,14 +314,22 @@ class Contact extends ContactLib
                             } else {
                                 $this->objTemplate->setVariable($fieldId.'_VALUE', contrexx_raw2xhtml($option));
                             }
+
+                            // pre-selection, based on $_POST value
                             if (!empty($_POST['contactFormField_'.$fieldId])) {
                                 if ($index == array_search($_POST['contactFormField_'.$fieldId], explode(',', $arrField['lang'][$_LANGID]['value']))) {
                                     $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'selected = "selected"');
                                 }
+                            // pre-selection, based on $_GET value
                             } elseif (!empty($_GET[$fieldId])) {
                                 if ($index == array_search(contrexx_input2raw($_GET[$fieldId]), explode(',' ,$arrField['lang'][$_LANGID]['value']))) {
                                     $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'selected = "selected"');
                                 }
+                            // pre-selection, based on profile data of currently signed in user
+                            } elseif (   isset($this->objTemplate->_globalVariables['ACCESS_PROFILE_ATTRIBUTE_'.strtoupper($accessAttributeId)])
+                                      && $option == $this->objTemplate->_globalVariables['ACCESS_PROFILE_ATTRIBUTE_'.strtoupper($accessAttributeId)]
+                            ) {
+                                $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'selected = "selected"');
                             }
 
                             $this->objTemplate->parse('field_'.$fieldId);
@@ -335,7 +369,7 @@ class Contact extends ContactLib
                     case 'country':
                         $objResult = $objDatabase->Execute("SELECT * FROM " . DBPREFIX . "lib_country");
                         if (preg_match($userProfileRegExp, $arrField['lang'][$_LANGID]['value'])) {
-                            $arrField['lang'][$_LANGID]['value'] = $this->objTemplate->_variables[trim($arrField['lang'][$_LANGID]['value'],'{}')];
+                            $arrField['lang'][$_LANGID]['value'] = $this->objTemplate->_globalVariables[trim($arrField['lang'][$_LANGID]['value'],'{}')];
                         }
 
                         while (!$objResult->EOF) {
