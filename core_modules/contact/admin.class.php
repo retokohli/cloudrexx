@@ -1611,6 +1611,8 @@ class ContactManager extends ContactLib
         global $_ARRAYLANG;
 
         switch ($type) {
+        case 'access_title':
+        case 'access_gender':
         case 'access_country':
         case 'checkbox':
         case 'checkboxGroup':
@@ -1742,15 +1744,13 @@ class ContactManager extends ContactLib
         $sourcecode = array();
         $this->initContactForms();
 
-        $sourcecode[] = '
-            <div id="contactFeedback">{CONTACT_FEEDBACK_TEXT}</div>
-            <div id="contactDescription"><!-- BEGIN formText -->'.($preview ? $this->arrForms[$id]['lang'][$lang]['text'] : '{'.$id.'_FORM_TEXT}').'<!-- END formText --></div>
-            <div id="contactFormError">'.($preview ? $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'] : '{TXT_NEW_ENTRY_ERORR}').'</div>
-            <!-- BEGIN contact_form -->
-            <form id="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'" class="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'" action="'.($preview ? '../' : '').'index.php?section=contact&amp;cmd='.$id.'" method="post" enctype="multipart/form-data" onsubmit="return checkAllFields();">
-                <fieldset id="contactFrame">
-                <legend>'.($preview ? $this->arrForms[$id]['lang'][$lang]['name'] : '{'.$id.'_FORM_NAME}').'</legend>
-        ';
+        $sourcecode[] = '<div id="contactFeedback">{CONTACT_FEEDBACK_TEXT}</div>
+<div id="contactDescription"><!-- BEGIN formText -->'.($preview ? $this->arrForms[$id]['lang'][$lang]['text'] : '{'.$id.'_FORM_TEXT}').'<!-- END formText --></div>
+<div id="contactFormError">'.($preview ? $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'] : '{TXT_NEW_ENTRY_ERORR}').'</div>
+<!-- BEGIN contact_form -->
+<form id="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'" class="contactForm'.(($this->arrForms[$id]['useCustomStyle'] > 0) ? '_'.$id : '').'" action="'.($preview ? '../' : '').'index.php?section=contact&amp;cmd='.$id.'" method="post" enctype="multipart/form-data" onsubmit="return checkAllFields();">
+    <fieldset id="contactFrame">
+    <legend>'.($preview ? $this->arrForms[$id]['lang'][$lang]['name'] : '{'.$id.'_FORM_NAME}').'</legend>';
 
         foreach ($arrFields as $fieldId => $arrField) {
             if ($arrField['is_required']) {
@@ -1869,11 +1869,27 @@ class ContactManager extends ContactLib
                     $sourcecode[] = '</div>';
                     break;
 
+                case 'access_title':
+                case 'access_gender':
+                    // collect user attribute options
+                    $arrOptions = array();
+                    $accessAttributeId = str_replace('access_', '', $fieldType);
+                    $objAttribute = FWUser::getFWUserObject()->objUser->objAttribute->getById($accessAttributeId);
+
+                    // get options
+                    $arrAttribute = $objAttribute->getChildren();
+                    foreach ($arrAttribute as $attributeId) {
+                        $objAttribute = FWUser::getFWUserObject()->objUser->objAttribute->getById($attributeId);
+                        $arrOptions[] = $objAttribute->getName(FRONTEND_LANG_ID);
+                    }
+
+                    // options will be used for select input generation
+                    $arrField['lang'][FRONTEND_LANG_ID]['value'] = implode(',', $arrOptions);
+
                 case 'select':
-                    $selectedLang = $preview ? FRONTEND_LANG_ID : $lang;
                     $sourcecode[] = '<select class="contactFormClass_'.$arrField['type'].'" name="contactFormField_'.$fieldId.'" id="contactFormFieldId_'.$fieldId.'">';
                     if ($preview) {
-                        $options = explode(',', $arrField['lang'][$selectedLang]['value']);
+                        $options = explode(',', $arrField['lang'][FRONTEND_LANG_ID]['value']);
                         foreach ($options as $index => $option) {
                             $sourcecode[] = "<option value='".contrexx_raw2xhtml($option)."'>". contrexx_raw2xhtml($option) ."</option>";
                         }

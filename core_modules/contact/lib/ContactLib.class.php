@@ -1334,7 +1334,7 @@ function checkAllFields() {
     for (var field in fields) {
         var type = fields[field][3];
         if (type != null && type != undefined) {
-        if ((type == 'text') || (type == 'password') || (type == 'textarea') || (type == 'date') || ((type.match(/access_/) != null) && (type != 'access_country'))) {
+        if ((type == 'text') || (type == 'password') || (type == 'textarea') || (type == 'date') || ((type.match(/access_/) != null) && (type != 'access_country') && (type != 'access_title') && (type != 'access_gender'))) {
             value = document.getElementsByName('contactFormField_' + field)[0].value;
             if ((\$J.trim(value) == '') && isRequiredNorm(fields[field][1], value)) {
                 isOk = false;
@@ -1375,7 +1375,7 @@ function checkAllFields() {
             } else {
                 \$J([name=contactFormField_upload]).attr('style', '');
             }
-        } else if (type == 'select' || type == 'country' || type == 'access_country') {
+        } else if (type == 'select' || type == 'country' || type == 'access_country' || type == 'access_title' || type == 'access_gender') {
             if (!isRequiredSelect(fields[field][1], field)) {
                 isOk = false;
             }
