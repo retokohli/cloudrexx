@@ -690,7 +690,17 @@ class skins
             $this->strErrMessage = $_CORELANG['TXT_THEME_FOLDER_DOES_NOT_EXISTS'];
             return false;
         }
-        if (file_exists($this->path.$theme)){
+
+        //get the folder name from theme name
+        $objResult = \Env::get('db')->Execute("SELECT id, themesname, foldername from `".DBPREFIX."skins` WHERE themesname = ?", array($theme));
+        if ($objResult !== false && $objResult->RecordCount() > 0) {
+            $theme = $objResult->fields['foldername'];
+        } else {
+            $this->strErrMessage = $_CORELANG['TXT_THEME_FOLDER_DOES_NOT_EXISTS'];
+            return false;
+        }
+
+        if (is_dir($this->path.$theme)){
             $archive = new PclZip($this->_archiveTempPath.$theme.'.zip');
             \Cx\Lib\FileSystem\FileSystem::makeWritable($this->_archiveTempPath);
             $files = $archive->create($this->path.$theme, PCLZIP_OPT_REMOVE_PATH, $this->path);
@@ -707,11 +717,9 @@ class skins
                 \Cx\Lib\FileSystem\FileSystem::makeWritable($this->_archiveTempPath.$theme.'.zip');
                 return $this->_archiveTempWebPath.$theme.'.zip';
             }
-// TODO: Seems that the else block is useless; should set the error message
-// anyway and return false!
-        } else {
-            $this->strErrMessage = $_CORELANG['TXT_THEME_FOLDER_DOES_NOT_EXISTS'];
         }
+        $this->strErrMessage = $_CORELANG['TXT_THEME_FOLDER_DOES_NOT_EXISTS'];
+        return false;
     }
 
 
