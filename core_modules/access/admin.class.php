@@ -587,7 +587,7 @@ class AccessManager extends AccessLib
         $this->_objTpl->addBlockfile('ACCESS_GROUP_TEMPLATE', 'module_access_group_modify', 'module_access_group_modify.html');
         $this->_pageTitle = $objGroup->getId() ? $_ARRAYLANG['TXT_ACCESS_MODIFY_GROUP'] : $_ARRAYLANG['TXT_ACCESS_CREATE_NEW_USER_GROUP'];
 
-        $objUser = $objFWUser->objUser->getUsers(null, null, array('username' => 'asc'), array('id', 'username', 'firstname', 'lastname'));
+        $objUser = $objFWUser->objUser->getUsers(null, null, array('username' => 'asc', 'email' => 'asc'), array('id', 'username', 'email', 'firstname', 'lastname'));
         if ($objUser) {
             $arrGroupUsers = $objGroup->getAssociatedUserIds();
             while (!$objUser->EOF) {
