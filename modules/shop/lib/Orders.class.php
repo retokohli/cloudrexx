@@ -1127,6 +1127,16 @@ if (!$limit) {
         $arrSubstitution = array (
             // Must be present in the Order, so the Customer can be found
             'CUSTOMER_ID' => $customer_id,
+            // Added the following customer parameters because they are necessary to create a user account
+            'CUSTOMER_FIRSTNAME' => $objOrder->billing_firstname(),
+            'CUSTOMER_LASTNAME' => $objOrder->billing_lastname(),
+            'CUSTOMER_COMPANY' => $objOrder->billing_company(),
+            'CUSTOMER_ADDRESS' => $objOrder->billing_address(),
+            'CUSTOMER_ZIP' => $objOrder->billing_zip(),
+            'CUSTOMER_CITY' => $objOrder->billing_city(),
+            'CUSTOMER_COUNTRY_ID' => $objOrder->billing_country_id(),
+            'CUSTOMER_PHONE' => $objOrder->billing_phone(),
+            'CUSTOMER_FAX' => $objOrder->billing_fax(),
             'LANG_ID' => $lang_id,
             'NOW' => date(ASCMS_DATE_FORMAT),
             'TODAY' => date(ASCMS_DATE_FORMAT_DATE),
@@ -1314,7 +1324,7 @@ if (!$limit) {
                             self::usernamePrefix.
                             "_${order_id}_${product_id}_${instance}";
                         $userEmail =
-                            $username.'-'.$arrSubstitution['CUSTOMER_EMAIL'];
+                            $username.'-'.$_SESSION['shop']['email'];
                         $userpass = User::make_password();
                         $objUser = new User();
                         $objUser->setUsername($username);
@@ -1338,7 +1348,7 @@ if (!$limit) {
                             'phone_fax' => array(0 => $arrSubstitution['CUSTOMER_FAX']),
                         ));
                         if (!$objUser->store()) {
-                            Shop::addMessage(implode(
+                            \Message::error(implode(
                                 '<br />', $objUser->getErrorMsg()));
                             return false;
                         }
