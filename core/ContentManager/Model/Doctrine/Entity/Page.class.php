@@ -1170,6 +1170,8 @@ class Page extends \Cx\Model\Base\EntityBase
      * @param boolean $enabled
      */
     public function setFrontendProtection($enabled) {
+        if (!\Permission::checkAccess(36, 'static', true))
+            return;
         if($enabled) {
             //do nothing if we're already safe.
             if($this->isFrontendProtected())
@@ -1194,6 +1196,8 @@ class Page extends \Cx\Model\Base\EntityBase
      * @param boolean $enabled
      */
     public function setBackendProtection($enabled) {
+        if (!\Permission::checkAccess(36, 'static', true))
+            return;
         if($enabled) {
             //do nothing if we're already safe.
             if($this->isBackendProtected())
