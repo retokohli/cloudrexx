@@ -2,7 +2,7 @@
 
 function _newsletterUpdate()
 {
-    global $objDatabase;
+    global $objDatabase, $objUpdate, $_CONFIG;
     try{
         \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_newsletter_category',
@@ -374,6 +374,25 @@ function _newsletterUpdate()
     }
     catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
+
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.3') && empty($_SESSION['contrexx_update']['newsletter_links_decoded'])) {
+        try {
+            $objResult = \Cx\Lib\UpdateUtil::sql('SELECT `id`, `url` FROM `'.DBPREFIX.'module_newsletter_email_link`');
+            if ($objResult !== false && $objResult->RecordCount() > 0) {
+                while (!$objResult->EOF) {
+                    \Cx\Lib\UpdateUtil::sql(
+                        'UPDATE `'.DBPREFIX.'module_newsletter_email_link` SET `url` = ? WHERE `id` = ?',
+                        array(html_entity_decode($objResult->fields['url'], ENT_QUOTES, CONTREXX_CHARSET), $objResult->fields['id'])
+                    );
+                    $objResult->MoveNext();
+                }
+            }
+            $_SESSION['contrexx_update']['newsletter_links_decoded'] = true;
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
     }
 
     return true;

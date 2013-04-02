@@ -5498,7 +5498,7 @@ function MultiAction() {
                         $rel = $rmatches[1];
                     }
                     if (preg_match("/href\s*=\s*['\"]([^'\"]+)['\"]/i", $matches[$attrKey][$i], $rmatches)) {
-                        $href = $rmatches[1];
+                        $href = html_entity_decode($rmatches[1], ENT_QUOTES, CONTREXX_CHARSET);
                     }
                     if ($rel) {
                         if (preg_match("/newsletter_link_([0-9]+)/i", $rel, $rmatches)) {

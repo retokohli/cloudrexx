@@ -1209,9 +1209,9 @@ class newsletter extends NewsletterLib
         $objLink = $objDatabase->SelectLimit("SELECT `url` FROM ".DBPREFIX."module_newsletter_email_link WHERE id=".contrexx_raw2db($linkId)." AND email_id=".contrexx_raw2db($emailId), 1);
         if ($objLink === false || $objLink->RecordCount() != 1) {
             return false;
-        }     
-// TODO: why do we need a html_entity_decode() here?
-        $url = html_entity_decode($objLink->fields['url'], ENT_QUOTES, CONTREXX_CHARSET);
+        }
+
+        $url = $objLink->fields['url'];
         
         \LinkGenerator::parseTemplate($url);
         
@@ -1223,7 +1223,6 @@ class newsletter extends NewsletterLib
             ";
             $objDatabase->Execute($query);
         }
-        
         CSRF::header('Location: '.$url);
         exit;
     }
