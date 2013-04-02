@@ -437,11 +437,12 @@ function search_getResultArray($query,$section,$command,$pagevar,$term)
                 break;
         }
 
-        $searchcontent = trim(stripslashes(strip_tags(isset($objResult->fields['content']) ? $objResult->fields['content'] : '')));
+        $searchcontent = trim(stripslashes(strip_tags(isset($objResult->fields['content']) ? $objResult->fields['content'] : '', 'script')));
         $searchcontent = preg_replace(
             array(
                 '/\{[a-z0-9_]+\}/',
                 '/\[\[[a-z0-9_]+\]\]/',
+                '/\<script\>.?\<\/script\>/',
                 '/<!--\s+(BEGIN|END)\s+[a-z0-9_]+\s+-->/'
             ),
             '',

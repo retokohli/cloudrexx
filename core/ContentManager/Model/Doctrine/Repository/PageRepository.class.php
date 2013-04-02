@@ -856,11 +856,22 @@ class PageRepository extends EntityRepository {
             if (!$page->isActive() || $isNotVisible || !$hasPageAccess) {
                 continue;
             }
+
+            $searchcontent = trim(stripslashes(strip_tags($page->getContent(), '<script>')));
+            $searchcontent = preg_replace(
+                array(
+                    '/\{[a-z0-9_]+\}/',
+                    '/\[\[[a-z0-9_]+\]\]/',
+                    '/\<script\>.?\<\/script\>/',
+                    '/<!--\s+(BEGIN|END)\s+[a-z0-9_]+\s+-->/'
+                ),
+                '',
+                $searchcontent);
             
             $results[] = array(
                 'Score' => 100,
                 'Title' => $page->getTitle(),
-                'Content' => substr(contrexx_strip_tags($page->getContent()),0, $config['searchDescriptionLength']),
+                'Content' => substr($searchcontent,0, $config['searchDescriptionLength']),
                 'Link' => $this->getPath($page)
             );
         }
