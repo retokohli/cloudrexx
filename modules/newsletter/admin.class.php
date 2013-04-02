@@ -5476,7 +5476,7 @@ function MultiAction() {
     function _prepareNewsletterLinksForStore($MailId)
     {
         global $objDatabase;
-        
+
         $objMail = $objDatabase->SelectLimit("SELECT `content` FROM ".DBPREFIX."module_newsletter WHERE id=".$MailId, 1);
         if ($objMail !== false && $objMail->RecordCount() == 1) {
             $htmlContent = $objMail->fields['content'];
@@ -5502,22 +5502,30 @@ function MultiAction() {
                     }
                     if ($rel) {
                         if (preg_match("/newsletter_link_([0-9]+)/i", $rel, $rmatches)) {
-                            // update existed link
-                            $query = "UPDATE ".DBPREFIX."module_newsletter_email_link 
-                                SET title = '".contrexx_raw2db($matches[$textKey][$i])."',
-                                    url = '".contrexx_raw2db($href)."'
-                                WHERE id = ".intval($rmatches[1]);
-                            $objDatabase->Execute($query);
-                            $linkIds[] = $rmatches[1];
+                            if (in_array($rmatches[1], $linkIds)) {
+                                $query = "INSERT INTO ".DBPREFIX."module_newsletter_email_link (email_id, title, url) VALUES
+                                    (".intval($MailId).", '".contrexx_raw2db($matches[$textKey][$i])."', '".contrexx_raw2db($href)."')";
+                                if ($objDatabase->Execute($query)) {
+                                    $linkId = $objDatabase->Insert_ID();
+                                    $matches[$attrKey][$i] = str_replace('newsletter_link_' . $rmatches[1], 'newsletter_link_'.$linkId, $matches[$attrKey][$i]);
+                                }
+                            } else {
+                                // update existed link
+                                $query = "UPDATE ".DBPREFIX."module_newsletter_email_link
+                                    SET title = '".contrexx_raw2db($matches[$textKey][$i])."',
+                                        url = '".contrexx_raw2db($href)."'
+                                    WHERE id = ".intval($rmatches[1]);
+                                $objDatabase->Execute($query);
+                                $linkId = $rmatches[1];
+                            }
                         } else {
-                            // insert new link into database and update rel attribute 
-                            $query = "INSERT INTO ".DBPREFIX."module_newsletter_email_link (email_id, title, url) VALUES 
+                            // insert new link into database and update rel attribute
+                            $query = "INSERT INTO ".DBPREFIX."module_newsletter_email_link (email_id, title, url) VALUES
                                 (".intval($MailId).", '".contrexx_raw2db($matches[$textKey][$i])."', '".contrexx_raw2db($href)."')";
                             if ($objDatabase->Execute($query)) {
                                 $linkId = $objDatabase->Insert_ID();
-                                $linkIds[] = $linkId;
                                 $matches[$attrKey][$i] = preg_replace("/rel\s*=\s*['\"]([^'\"]+)['\"]/i", "rel=\"\\1 newsletter_link_".$linkId."\"", $matches[$attrKey][$i]);
-                            } 
+                            }
                         }
                     } else {
                         // insert new link into database and create rel attribute
@@ -5525,10 +5533,10 @@ function MultiAction() {
                             (".intval($MailId).", '".contrexx_raw2db($matches[$textKey][$i])."', '".contrexx_raw2db($href)."')";
                         if ($objDatabase->Execute($query)) {
                             $linkId = $objDatabase->Insert_ID();
-                            $linkIds[] = $linkId;
                             $matches[$attrKey][$i] .= ' rel="newsletter_link_'.$linkId.'"';
                         }
                     }
+                    $linkIds[] = $linkId;
                     $htmlContent = preg_replace("/".self::prepareForRegExp($matches[$fullKey][$i])."/i", "<a ".$matches[$attrKey][$i].">".$matches[$textKey][$i]."</a>", $htmlContent, 1);
                 }
                 // update mail content
