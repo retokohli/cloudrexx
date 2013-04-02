@@ -53,19 +53,7 @@ class Crm
 	*/
 	function getPage() 
 	{
-	    if(isset($_GET['cmd'])) {
-            $action=$_GET['cmd'];
-        } elseif(isset($_GET['act'])) {
-            $action=$_GET['act'];
-        } else {
-            $action='';
-        }
-         switch ($action) {
-            default:
-                $this->userAuthendicate();
-                $this->showOverview();
-                break;
-        }
+
  		return $this->_objTpl->get();
 	}
 }

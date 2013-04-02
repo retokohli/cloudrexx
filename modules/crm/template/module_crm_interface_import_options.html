@@ -130,55 +130,57 @@
         </form>
     </div>
     <div id="step2" style="display: none;">
-        <table width="100%" cellspacing="0" cellpadding="3" border="0" id="mapCSVColumn" class="adminlist">
-            <thead>
-                <tr>
-                    <th colspan="3">{TXT_CRM_TITLE_IMPORT_CONTACTS}</th>
-                </tr>
-                <tr class="row3">
-                    <td  colspan="3">
-                        <div  class="csvImprtSteps" style="width:5%;height: 100%;float: left;">2</div>
-                        <span class="text_header">{TXT_CRM_VERIFY_FIELDS}</span>
-                        <br>
-                        <br>
-                        <span class="text_description">{TXT_CRM_VERIFY_INFO}</span>
-                    </td>
-                </tr>
-                <tr><td colspan="3"></td></tr>
-                <tr class="row3">
-                    <td width="25%">{TXT_CRM_FILE_COLUMN}</td>
-                    <td width="25%">{TXT_CRM_CORRESPONDING_FIELD}</td>
-                    <td width="50%">
-                        <div class="crmLeft">
-                            {TXT_CRM_CSV_VALUE}
-                        </div>
-                        <div class="crmRight">
-                            <span class="rePrevious"><a href="javascript:void(0);">Previous record</a></span>&nbsp;&nbsp;
-                            <span class="reNext"><a href="javascript:void(0);">Next record</a></span>
-                        </div>
-                    </td>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td colspan="3"></td>
-                </tr>
-            </tbody>
-            <tfoot>
-                <tr>
-                    <td class="import_step2" colspan="2">
-                        <div class="actions">
-                            <input type="submit" id="start_upload" class="disabled" value="{TXT_CRM_CONTINUE}" title="{TXT_CRM_CONTINUE}" name="imported" />&nbsp;&nbsp;
-                            <input type="button" id="cancel_upload" value="{TXT_CRM_CANCEL}" title="{TXT_CRM_CANCEL}" onClick="window.location.replace('./index.php?cmd=crm&act=overview&{CSRF_PARAM}')" />
-                        </div>
-                        <div class="ajax_loading">
-                            <img src="images/icons/icon-loading.gif" />Loading..
-                        </div>
-                    </td>
-                </tr>
-            </tfoot>
-        </table>
-        <select name="crm_contact_option_base" id="crm_contact_option_base" style="display: none;" ></select>
+        <form name="frmImport2" id="frmImport2" method="post" action="index.php?cmd={MODULE_NAME}&act=interface&tpl=save">
+            <table width="100%" cellspacing="0" cellpadding="3" border="0" id="mapCSVColumn" class="adminlist">
+                <thead>
+                    <tr>
+                        <th colspan="3">{TXT_CRM_TITLE_IMPORT_CONTACTS}</th>
+                    </tr>
+                    <tr class="row3">
+                        <td  colspan="3">
+                            <div  class="csvImprtSteps" style="width:5%;height: 100%;float: left;">2</div>
+                            <span class="text_header">{TXT_CRM_VERIFY_FIELDS}</span>
+                            <br>
+                            <br>
+                            <span class="text_description">{TXT_CRM_VERIFY_INFO}</span>
+                        </td>
+                    </tr>
+                    <tr><td colspan="3"></td></tr>
+                    <tr class="row3">
+                        <td width="25%">{TXT_CRM_FILE_COLUMN}</td>
+                        <td width="25%">{TXT_CRM_CORRESPONDING_FIELD}</td>
+                        <td width="50%">
+                            <div class="crmLeft">
+                                {TXT_CRM_CSV_VALUE}
+                            </div>
+                            <div class="crmRight">
+                                <span class="rePrevious"><a href="javascript:void(0);">{TXT_CRM_PREVIOUS_RECORD}Previous record</a></span>&nbsp;&nbsp;
+                                <span class="reNext"><a href="javascript:void(0);">{TXT_CRM_NEXT_RECORD}Next record</a></span>
+                            </div>
+                        </td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td colspan="3"></td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr>
+                        <td class="import_step2" colspan="2">
+                            <div class="actions">
+                                <input type="submit" id="start_upload" class="disabled" value="{TXT_CRM_CONTINUE}" title="{TXT_CRM_CONTINUE}" name="imported" />&nbsp;&nbsp;
+                                <input type="button" id="cancel_upload" value="{TXT_CRM_CANCEL}" title="{TXT_CRM_CANCEL}" onClick="window.location.replace('./index.php?cmd=crm&act=overview&{CSRF_PARAM}')" />
+                            </div>
+                            <div class="ajax_loading">
+                                <img src="images/icons/icon-loading.gif" />Loading..
+                            </div>
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </form>
+        <select name="crm_contact_option_base[]" id="crm_contact_option_base" style="display: none;" ></select>
         <script id="columnSelectorTemplate" type="text/x-jquery-tmpl">
                 {{if Header}}
                 <option name="header">{{= title }}</option>

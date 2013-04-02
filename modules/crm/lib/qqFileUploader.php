@@ -301,4 +301,65 @@ class qqFileUploader {
             );
         
     }
+
+    function download($file_directory, $file_name = '') {
+        
+        $file_path = $file_directory.$file_name;
+        
+        if (is_file($file_path)) {
+            if (!preg_match('/\.(gif|jpe?g|png)$/i', $file_name)) {
+                $this->header('Content-Description: File Transfer');
+                $this->header('Content-Type: application/octet-stream');
+                $this->header('Content-Disposition: attachment; filename="'.$file_name.'"');
+                $this->header('Content-Transfer-Encoding: binary');
+            } else {
+                // Prevent Internet Explorer from MIME-sniffing the content-type:
+                $this->header('X-Content-Type-Options: nosniff');
+                $this->header('Content-Type: '.$this->get_file_type($file_path));
+                $this->header('Content-Disposition: inline; filename="'.$file_name.'"');
+            }
+            $this->header('Content-Length: '.$this->get_file_size($file_path));
+            $this->header('Last-Modified: '.gmdate('D, d M Y H:i:s T', filemtime($file_path)));
+            $this->readfile($file_path);
+        }
+    }
+
+    protected function get_file_type($file_path) {
+        switch (strtolower(pathinfo($file_path, PATHINFO_EXTENSION))) {
+            case 'jpeg':
+            case 'jpg':
+                return 'image/jpeg';
+            case 'png':
+                return 'image/png';
+            case 'gif':
+                return 'image/gif';
+            default:
+                return '';
+        }
+    }
+
+    protected function get_file_size($file_path, $clear_stat_cache = false) {
+        if ($clear_stat_cache) {
+            clearstatcache(true, $file_path);
+        }
+        return $this->fix_integer_overflow(filesize($file_path));
+
+    }
+
+    // Fix for overflowing signed 32 bit integers,
+    // works for sizes up to 2^32-1 bytes (4 GiB - 1):
+    protected function fix_integer_overflow($size) {
+        if ($size < 0) {
+            $size += 2.0 * (PHP_INT_MAX + 1);
+        }
+        return $size;
+    }
+    
+    protected function header($str) {
+        header($str);
+    }
+
+    protected function readfile($file_path) {
+        return readfile($file_path);
+    }
 }

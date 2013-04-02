@@ -213,11 +213,17 @@ class CrmLibrary {
             $row = "row2";
             while(!$objResult->EOF) {
                 $status = ($objResult->fields['status']) ? "led_green.gif" : "led_red.gif";
+                
+                if ($objResult->fields['system_defined']) {
+                    $objTpl->hideBlock('delete_icon_block');
+                } else {
+                    $objTpl->touchBlock('delete_icon_block');
+                }
+                
                 $objTpl->setVariable(array(
                         'CRM_TASK_TYPE_ID'          => (int) $objResult->fields['id'],
                         'CRM_TASK_TYPE_NAME'        => contrexx_raw2xhtml($objResult->fields['name']),
-                        'CRM_TASK_TYPE_SORTING'     => (int) $objResult->fields['sorting'],
-                        //        'CRM_TASK_TYPE_DESCRIPTION' => contrexx_raw2xhtml($objResult->fields['description']),
+                        'CRM_TASK_TYPE_SORTING'     => (int) $objResult->fields['sorting'],                        
                         'CRM_TASK_TYPE_ACTIVE'      => $status,
                         'ROW_CLASS'                 => $row = ($row == "row2") ? "row1" : "row2",
                         'TXT_ORDER'         => $sorto
@@ -271,9 +277,16 @@ class CrmLibrary {
         global $objDatabase, $_ARRAYLANG;
 
         $objResult = $objDatabase->Execute("SELECT id,name FROM ".DBPREFIX."module_{$this->moduleName}_task_types WHERE status=1 ORDER BY sorting");
+        $first     = true;
         while(!$objResult->EOF) {
             $selected = $selectedType == $objResult->fields['id'] ? "selected" : '';
-
+            if ($first || $selectedType == $objResult->fields['id']) {
+                $objTpl->setVariable(array(
+                    'DEFAULT_CRM_NOTES_TYPE_ID' => (int) $objResult->fields['id'],
+                    'DEFAULT_CRM_NOTES_TYPE'    => contrexx_input2xhtml($objResult->fields['name'])
+                ));
+                $first = false;
+            }
             $objTpl->setVariable(array(
                     'TXT_TASKTYPE_ID'       => (int) $objResult->fields['id'],
                     'TXT_TASKTYPE_NAME'     => contrexx_input2xhtml($objResult->fields['name']),
@@ -609,10 +622,10 @@ class CrmLibrary {
             $objResult = $objDatabase->Execute($query);
 
             if ($_GET['ajax']) {
-                echo $_ARRAYLANG['TXT_CATALOGS_UPDATED_SUCCESSFULLY'];
+                echo $_ARRAYLANG['TXT_CRM_CATALOGS_UPDATED_SUCCESSFULLY'];
                 exit();
             } else {
-                $this->strOkMessage = sprintf($_ARRAYLANG['TXT_CATALOGS_UPDATED_SUCCESSFULLY'], ($deactivate) ? $_ARRAYLANG['TXT_DEACTIVATED'] : $_ARRAYLANG['TXT_ACTIVATED']);
+                $this->strOkMessage = sprintf($_ARRAYLANG['TXT_CRM_CATALOGS_UPDATED_SUCCESSFULLY'], ($deactivate) ? $_ARRAYLANG['TXT_CRM_DEACTIVATED'] : $_ARRAYLANG['TXT_CRM_ACTIVATED']);
             }
         }
     }
@@ -675,7 +688,7 @@ class CrmLibrary {
             if ($_GET['ajax']) {
                 exit();
             } else {
-                $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_CRM_INDUSTRY_UPDATED_SUCCESSFULLY'], ($deactivate) ? $_ARRAYLANG['TXT_DEACTIVATED'] : $_ARRAYLANG['TXT_ACTIVATED']);
+                $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_CRM_INDUSTRY_UPDATED_SUCCESSFULLY'], ($deactivate) ? $_ARRAYLANG['TXT_CRM_DEACTIVATED'] : $_ARRAYLANG['TXT_CRM_ACTIVATED']);
             }
         } else {
             $objDatabase->Execute("UPDATE `".DBPREFIX."module_".$this->moduleName."_industry_types` SET `status` = IF(status = 1, 0, 1) WHERE id = $industryEntrys");
@@ -695,12 +708,12 @@ class CrmLibrary {
             }
             $query .= "END WHERE id IN ($ids)";
             $objResult = $objDatabase->Execute($query);
-
+            $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_PROJECTSTATUS_SORTING_COMPLETE'];
         }
     }
 
     function deleteIndustryTypes($indusEntries) {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
 
         if (!empty($indusEntries) && is_array($indusEntries)) {
 
@@ -708,7 +721,7 @@ class CrmLibrary {
 
             $query = "DELETE FROM `".DBPREFIX."module_".$this->moduleName."_industry_types` WHERE id IN ($ids)";
             $objResult = $objDatabase->Execute($query);
-
+            $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_ENTRY_DELETED_SUCCESS'];
         }
     }
 
@@ -740,7 +753,7 @@ class CrmLibrary {
             if ($_GET['ajax']) {
                 exit();
             } else {
-                $_SESSION['strOkMessage'] = sprintf($_ARRAYLANG['TXT_CRM_MEMBERSHIP_UPDATED_SUCCESSFULLY'], ($deactivate) ? $_ARRAYLANG['TXT_DEACTIVATED'] : $_ARRAYLANG['TXT_ACTIVATED']);
+                $_SESSION['strOkMessage'] = sprintf($_ARRAYLANG['TXT_CRM_MEMBERSHIP_UPDATED_SUCCESSFULLY'], ($deactivate) ? $_ARRAYLANG['TXT_CRM_DEACTIVATED'] : $_ARRAYLANG['TXT_CRM_ACTIVATED']);
             }
         } else {
             $objDatabase->Execute("UPDATE `".DBPREFIX."module_".$this->moduleName."_memberships` SET `status` = IF(status = 1, 0, 1) WHERE id = $entries");
@@ -817,16 +830,16 @@ class CrmLibrary {
             $objResult = $objDatabase->Execute($query);
 
             if ($_GET['ajax']) {
-                echo $_ARRAYLANG['TXT_CATALOGS_UPDATED_SUCCESSFULLY'];
+                echo $_ARRAYLANG['TXT_CRM_CATALOGS_UPDATED_SUCCESSFULLY'];
                 exit();
             } else {
-                $this->strOkMessage = sprintf($_ARRAYLANG['TXT_CATALOGS_UPDATED_SUCCESSFULLY'], ($deactivate) ? $_ARRAYLANG['TXT_DEACTIVATED'] : $_ARRAYLANG['TXT_ACTIVATED']);
+                $this->_strOkMessage = sprintf($_ARRAYLANG['TXT_CRM_CATALOGS_UPDATED_SUCCESSFULLY'], ($deactivate) ? $_ARRAYLANG['TXT_CRM_DEACTIVATED'] : $_ARRAYLANG['TXT_CRM_ACTIVATED']);
             }
         }
     }
 
     function saveStageSorting($successEntrySorting) {
-        global $objDatabase,$_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG;
 
         if (!empty($successEntrySorting) && is_array($successEntrySorting)) {
 
@@ -838,12 +851,13 @@ class CrmLibrary {
             }
             $query .= "END WHERE id IN ($ids)";
             $objResult = $objDatabase->Execute($query);
+            $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_PROJECTSTATUS_SORTING_COMPLETE'];
 
         }
     }
 
     function deleteStages($successEntries) {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
 
         if (!empty($successEntries) && is_array($successEntries)) {
 
@@ -851,7 +865,7 @@ class CrmLibrary {
 
             $query = "DELETE FROM `".DBPREFIX."module_".$this->moduleName."_stages` WHERE id IN ($ids)";
             $objResult = $objDatabase->Execute($query);
-
+            $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_ENTRY_DELETED_SUCCESS'];
         }
     }
 
@@ -1205,7 +1219,7 @@ class CrmLibrary {
             'lastname'     => array(0 => $this->contact->family_name),
         ));
 
-        if ($objUser->store()) {
+        if (empty($objUser->error_msg) && $objUser->store()) {
             if (empty($this->contact->account_id) && $sendLoginDetails) {
                 $info['substitution'] = array(
                         'CRM_CUSTOMER_COMPANY'           => $this->contact->customerName." ".$this->contact->family_name,
@@ -1439,11 +1453,156 @@ class CrmLibrary {
     }
 
     /**
+     * Returns true or false for task edit and delete permission
+     *
+     * Returns true or false for task edit and delete permission.
+     *           
+     * @param   integer   $added_user The addeduser of the task
+     * @return  boolean               True if the user has the access,
+     *                                false otherwise
+     */
+    protected function getTaskPermission($added_user, $assigned_user)
+    {
+        
+        $task_edit_permission          = false;
+        $task_delete_permission        = false;
+        $task_status_update_permission = false;
+        
+        $objFWUser              = FWUser::getFWUserObject();
+        if ($objFWUser->objUser->login() &&
+            (
+                $objFWUser->objUser->getAdminStatus() ||
+                $objFWUser->objUser->getId() == $added_user ||
+                $objFWUser->objUser->getId() == $assigned_user
+            )
+        ) {
+            $task_edit_permission          = true;
+            $task_status_update_permission = true;
+        }
+        
+        if ($objFWUser->objUser->login() &&
+            (
+                $objFWUser->objUser->getAdminStatus() ||
+                $objFWUser->objUser->getId() == $added_user
+            )
+        ) {
+            $task_delete_permission = true;
+        }
+
+        return array($task_edit_permission, $task_delete_permission, $task_status_update_permission);
+    }
+
+    /**
+     * get the count of entries
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function countRecordEntries($query)
+    {
+        global $objDatabase;
+
+        $objEntryResult = $objDatabase->Execute('SELECT  COUNT(*) AS numberOfEntries
+                                                    FROM    ('.$query.') AS num');
+
+        return intval($objEntryResult->fields['numberOfEntries']);
+    }
+
+    /**
+     * Counts all existing entries in the database.
+     *
+     * @global  ADONewConnection
+     * @return  integer     number of entries in the database
+     */
+    function countEntries($table, $where=null)
+    {
+
+        global $objDatabase;
+        $objEntryResult = $objDatabase->Execute('SELECT  COUNT(*) AS numberOfEntries FROM '.DBPREFIX.'module_'.
+                $table.$where);
+
+        return intval($objEntryResult->fields['numberOfEntries']);
+    }
+
+    /**
+     * Counts all existing entries in the database.
+     *
+     * @global  ADONewConnection
+     * @return  integer     number of entries in the database
+     */
+    function countEntriesOfJoin($table)
+    {
+        global $objDatabase;
+
+        $objEntryResult = $objDatabase->Execute('SELECT  COUNT(*) AS numberOfEntries
+                                                    FROM    ('.$table.') AS num');
+
+        return intval($objEntryResult->fields['numberOfEntries']);
+    }
+
+    /**
+     * Default PM Calendar Month Page
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function parseLetterIndexList($URI, $paramName, $selectedLetter)
+    {
+        global $_CORELANG;
+
+        if ($this->_objTpl->blockExists('module_'.$this->moduleName.'_letter_index_list')) {
+            $arrLetters[]   = 48;
+            $arrLetters     = array_merge($arrLetters, range(65, 90)); // ascii codes of characters "A" to "Z"
+            $arrLetters[]   = '';
+
+            foreach ($arrLetters as $letter) {
+                switch ($letter) {
+                    case 48:
+                        $parsedLetter = '#';
+                        break;
+                    case '':
+                        $parsedLetter = $_CORELANG['TXT_ACCESS_ALL'];
+                        break;
+                    default:
+                        $parsedLetter = chr($letter);
+                        break;
+                }
+
+                if ($letter == '' && $selectedLetter == '' || chr($letter) == $selectedLetter) {
+                    $parsedLetter = '<strong>'.$parsedLetter.'</strong>';
+                }
+
+                $this->_objTpl->setVariable(array(
+                        'ACCESS_USER_LETTER_INDEX_URI'      => $URI.(!empty($letter) ? '&amp;'.$paramName.'='.chr($letter) : null),
+                        'ACCESS_USER_LETTER_INDEX_LETTER'   => $parsedLetter
+                ));
+
+                $this->_objTpl->parse('module_'.$this->moduleName.'_letter_index_list');
+            }
+        }
+    }
+    
+    /**
+     * Returns the allowed maximum element per page. Can be used for paging.
+     *
+     * @global  array
+     * @return  integer     allowed maximum of elements per page.
+     */
+    function getPagingLimit()
+    {
+        global $_CONFIG;
+        return intval($_CONFIG['corePagingLimit']);
+    }
+    
+    /**
      * Registers all css and js to be loaded for crm module
      *
      */
     public function _initCrmModule()
     {
+        JS::activate('cx');
         JS::activate('jqueryui');
         JS::registerJS("lib/javascript/crm/main.js");
         JS::registerCSS("lib/javascript/crm/css/main.css");

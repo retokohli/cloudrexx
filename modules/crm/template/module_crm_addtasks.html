@@ -1,13 +1,11 @@
 <style type="text/css">@import url(../lib/jscalendar/skins/cupertino/theme.css);</style>
-<script type="text/javascript" src="../lib/javascript/shadowbox/shadowbox-prototype.js"></script>
-<script type="text/javascript" src="../lib/javascript/shadowbox/shadowbox.js"></script>
 <script language="JavaScript" type="text/javascript">
     /* <![CDATA[ */
     var $J = jQuery.noConflict();
     $J(document).ready(function () {
         $J(".delete-customer").click(function(){
             $J(".selectCustomer").val('');
-            $J("#customerId").val('');
+            $J("#customerId").val('0');
         });
         $J("input").keyup(function () {
             $J(this).css("border","1px solid #0A50A1");
@@ -45,14 +43,11 @@
 
        // trigger the change event to update the customer contact option
        $J('#customer_name').trigger('change');
-   }
-    var tmpOnLoad = window.onload; window.onload = function() { if(tmpOnLoad){tmpOnLoad();} Shadowbox.init(); }
-    Shadowbox.loadPlayer(['img', 'swf', 'flv', 'qt', 'wmp', 'iframe', 'html'],'../lib/javascript/shadowbox/player/');
-    Shadowbox.loadLanguage('en', '../lib/javascript/shadowbox/lang');
-    Shadowbox.loadSkin('standard', '../lib/javascript/shadowbox/skin');
+   }    
     /* ]]> */
 </script>
 <script language="JavaScript" type="text/javascript">
+    var logged_in_user = {CRM_LOGGED_USER_ID};
     cx.ready(function() {
         var dpOptions = {
             dateFormat: 'yy-mm-dd',
@@ -70,34 +65,37 @@
         $J('input[name=date]').datetimepicker(dpOptions);
 
     }, true);
-    $J(function(){
-        $J('#addTask').submit(function(){
-            $J('#assigned_to').removeAttr('disabled');
+    $J(function(){     
+        if ($J('#assigned_to').val() == 0 || $J('#assigned_to').val() == logged_in_user) {
+            $J('#notify').attr('disabled', 'disabled');
+        }
+        $J('#assigned_to').change(function(){
+            if ($J(this).val() == 0 || $J(this).val() == logged_in_user) {
+                $J('#notify').removeAttr('checked');
+                $J('#notify').attr('disabled', 'disabled');
+            } else {
+                $J('#notify').removeAttr('disabled');
+            }
         });
     });
 
     function checkValidations() {
         $J("input, select").css("border","1px solid #0A50A1"); 
         var errors =new  Array();
-        var errChk;
+        var errChk;        
         if(document.getElementById("taskTitle").value.trim() == "") {
             errChk = 1;
-            document.getElementById("taskTitle").style.border = "1px solid red";
-            //		return false;
-        }
+            document.getElementById("taskTitle").style.border = "1px solid red";            
+        }        
         if(document.getElementById("taskType").value.trim() == "") {
             errChk = 1;
-            document.getElementById("taskType").style.border = "1px solid red";
-            //		return false;
-        }
-        if(document.getElementById("customer_name").value.trim() == "") {
+            document.getElementById("taskType").style.border = "1px solid red";            
+        }        
+        if(document.getElementById("customerId").value == "0") {
             errChk = 1;
-            document.getElementById("customer_name").style.border = "1px solid red";
-            //		return false;
+            document.getElementById("customer_name").style.border = "1px solid red";         
         }
-        return showErrors(errors, errChk);
-       // return false;
-    
+        return showErrors(errors, errChk);       
     }
     
     function showErrors(errors,  errChk) {
@@ -121,13 +119,37 @@
             $J('#formerr').css('display', 'none');
             return true;
         }
-    }</script>
+    }
+    $J.dropdownToggle({
+        dropdownID: 'taskTypePanel',
+        switcherSelector: '#taskTypesLink',
+        addTop: 0,
+        addLeft: 0
+    });
+    function showTaskTypePanel(switcherUI) {
+        $J("#taskTypePanel a.dropDownItem").unbind('click').click(function() {
+            _changeTaskType(switcherUI, $J(this).text(), $J(this).attr("task_type"));
+        });
+    }
+    var _changeTaskType = function(Obj, text, notes_type) {
+        $J(Obj).text(text);
+        $J('#taskType').val(notes_type);
+        $J("#taskTypePanel").hide();
+    };
+</script>
 <div id="subnavbar_level2">
     <ul>
         <li><a href="index.php?cmd={MODULE_NAME}&act=task" title="{TXT_CRM_OVERVIEW}">{TXT_CRM_OVERVIEW}</a></li>
     </ul>
 </div>
 <div id="formerr"></div>
+<div class="CategoriesDropDownPanel" id="taskTypePanel" style="display: none;position: absolute;">
+    <div class="dropDownContent">
+        <!-- BEGIN Tasktype -->
+        <a class="taskTypeItem_{TXT_TASKTYPE_ID} taskTypeItem dropDownItem" task_type="{TXT_TASKTYPE_ID}"><span>{TXT_TASKTYPE_NAME}</span></a>
+        <!-- END Tasktype -->        
+    </div>
+</div>
 <br>
 <form action="" method="post" id="addTask" name="form1">
     <table cellspacing="0" class="adminlist" cellpadding="3" width="100%" border="0">
@@ -140,12 +162,11 @@
         </tr>
         <tr class="row2">
             <td width="10%">{TXT_CRM_TASK_TYPE}&nbsp;<font color="red">*</font></td>
-            <td width="90%" style="padding-left: 28px;"><select name="taskType" id="taskType" style="width: 263px;">
-                    <option value="">-- {TXT_CRM_SELECT_TASK_TYPE} --</option>
-                    <!-- BEGIN Tasktype -->
-                    <option value="{TXT_TASKTYPE_ID}" {TXT_TASKTYPE_SELECTED}>{TXT_TASKTYPE_NAME}</option>
-                    <!-- END Tasktype -->
-                </select>
+            <td width="90%" style="padding-left: 28px;">
+                <input type="hidden" name="taskType" id="taskType" value="{DEFAULT_CRM_NOTES_TYPE_ID}" />
+                <div id="taskTypesLink" class="crmLeft CategoriesDropDownLink" onclick="showTaskTypePanel(this);">
+                    {DEFAULT_CRM_NOTES_TYPE}
+                </div>
             </td>
         </tr>
         <tr class="row1">
@@ -162,14 +183,15 @@
             <td width="90%" style="padding-left: 28px;"><input type="text" name="date" id="mydate" size="30" readonly="readonly" value="{CRM_DUE_DATE}" style="width: 255px;"/></td
         </tr>
         <tr class="row1">
-            <td width="10%">{TXT_CRM_ASSIGNEDTO}</td>
+            <td width="10%">{TXT_CRM_TASK_RESPONSIBLE}</td>
             <td width="90%" style="padding-left: 28px;">
-                <select name="assignedto" id="assigned_to" style="width: 263px;" disabled>
-                    <option value="">--{TXT_CRM_SELECT_MEMBER_NAME}--</option>
-                    <!-- BEGIN Members -->
-                    <option value="{TXT_ADDPROJECT_MEMBERID}" {TXT_MEMBERSELECTED}>{TXT_ADDPROJECT_MEMBERNAME}</option>
+                <select name="assignedto" id="assigned_to" style="width: 263px;">
+                    <option value="0">--{TXT_CRM_SELECT_MEMBER_NAME}--</option>
+                     <!-- BEGIN Members -->
+                    <option value="{TXT_USER_MEMBERID}" {TXT_SELECTED}>{TXT_USER_MEMBERNAME}</option>
                     <!-- END Members -->
-                </select>
+                </select>&nbsp;
+                <input type="checkbox" name="notify" id="notify" value="1" />&nbsp;{TXT_CRM_NOTIFY}
             </td>
         </tr>
         <tr class="row2">

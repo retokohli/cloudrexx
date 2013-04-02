@@ -40,22 +40,29 @@
         });        
     }
     function deleteEntry(entryId){
-        if(confirm('Are you sure you want to detele this entry'))
+        if(confirm('{TXT_CRM_CONFIRM_DELETE_ENTRY}'))
             window.location.replace("?cmd={MODULE_NAME}&{CSRF_PARAM}&act=deleteCustomers&id="+entryId);
     }
     function deleteProjectEntry(entryId) {
-        if(confirm('Are you Sure Want to delete the Entry'))
+        if(confirm('{TXT_CRM_CONFIRM_DELETE_ENTRY}'))
             window.location.replace("?cmd={PM_MODULE_NAME}&{CSRF_PARAM}&act=projects&delId=1&mes=Delete&custdetails=1&customerId={ENTRY_ID}&id="+entryId);
     }
     function deleteCommentEntry(entryId,CustId){
-        if(confirm('Are you Sure Want to delete the Entry'))
+        if(confirm('{TXT_CRM_CONFIRM_DELETE_ENTRY}'))
             window.location.replace("?cmd={MODULE_NAME}&{CSRF_PARAM}&act=showcustdetail&deleteComment=1&commentid="+entryId+"&id="+CustId);
     }
+    function confirmTaskDelete() {
+        if(confirm('{TXT_CRM_CONFIRM_DELETE_ENTRY}')) {
+            return true;
+        }
+        return false;
+    }
     var tabLinks = {
-        "notes"   : {"link" : "./index.php?cmd={MODULE_NAME}&{CSRF_PARAM}&act=notesdetail&id={ENTRY_ID}", "page": 0, "new_req" : true},
-        "tasks"   : {"link" : "./index.php?cmd={MODULE_NAME}&{CSRF_PARAM}&act=getcontacttasks&id={ENTRY_ID}", "page": 0, "new_req" : true},
-        "projects": {"link" : "./index.php?cmd={MODULE_NAME}&{CSRF_PARAM}&act=getcontactprojects&id={ENTRY_ID}", "page": 0, "new_req" : true},
-        "deals"   : {"link" : "./index.php?cmd={MODULE_NAME}&{CSRF_PARAM}&act=getcontactdeals&id={ENTRY_ID}", "page": 0, "new_req" : true}
+        "notes"    : {"link" : "./index.php?cmd={MODULE_NAME}&{CSRF_PARAM}&act=notesdetail&id={ENTRY_ID}", "page": 0, "new_req" : true},
+        "tasks"    : {"link" : "./index.php?cmd={MODULE_NAME}&{CSRF_PARAM}&act=getcontacttasks&id={ENTRY_ID}", "page": 0, "new_req" : true},
+        "projects" : {"link" : "./index.php?cmd={MODULE_NAME}&{CSRF_PARAM}&act=getcontactprojects&id={ENTRY_ID}", "page": 0, "new_req" : true},
+        "deals"    : {"link" : "./index.php?cmd={MODULE_NAME}&{CSRF_PARAM}&act=getcontactdeals&id={ENTRY_ID}", "page": 0, "new_req" : true},
+        "document" : {"link" : "./index.php?cmd={MODULE_NAME}&act=getcontactdocuments&id={ENTRY_ID}", "page": 0, "new_req" : true}
     };
     function getLink(obj, link) {
         returnLink = '';
@@ -96,7 +103,7 @@
         $J(".deleteEntry").live("click", function(){
             $elm  = $J(this);
             en_id = $J(this).attr('rel').split('_')[1]
-            if (confirm ("Are you sure want to delete the entry!")) {
+            if (confirm ("{TXT_CRM_CONFIRM_DELETE_ENTRY}")) {
                 $J.ajax({
                     url     : './index.php?cmd={MODULE_NAME}&{CSRF_PARAM}&act=deals&actionType=deletedeals&ajax=1&id='+en_id,
                     type    : 'POST',
@@ -114,7 +121,7 @@
         });
         setTableRow('general-info');
         $J(".contactDelete").click(function(){
-            if (confirm('Are you Sure Want to delete the Entry')) {
+            if (confirm('{TXT_CRM_CONFIRM_DELETE_ENTRY}')) {
                 elm = $J(this);
                 contactId = elm.attr('rel').split("_")[1];
                 $J.get("./index.php?cmd={MODULE_NAME}&{CSRF_PARAM}&act=deleteCustomers&ajax=1&id="+contactId, function(){
@@ -167,6 +174,14 @@
                             {
                                 setReq(tabLinks, tabType);
                             }
+                            //TO-DO : Not need twice
+                            // Drop down functionality for the task tab
+                            $J.dropdownToggle({
+                                dropdownID: 'taskStatusPanel',
+                                switcherSelector: '.taskStatusLink',
+                                addTop: 0,
+                                addLeft: 0
+                            });
                             $J('#favloader').hide();
                             $this.removeData('executing');
                         }
@@ -181,6 +196,14 @@
             //fx: { opacity: 'toggle' },
             load: function(event, ui){
                 //$J('table.sortedTable').tablesorter();
+                //TO-DO : Not need twice
+                // Drop down functionality for the task tab
+                $J.dropdownToggle({
+                    dropdownID: 'taskStatusPanel',
+                    switcherSelector: '.taskStatusLink',
+                    addTop: 0,
+                    addLeft: 0
+                });
             },
             ajaxOptions: {
                 error: function( xhr, status, index, anchor ) {
@@ -196,11 +219,88 @@
           height  : 280,
           modal   : true
         });
+        $J( "#file-upload" ).dialog({
+          autoOpen: false,
+          width   : 450,
+          height  : 280,
+          modal   : true,
+          close: function(event, ui) {              
+              tabIndex = $J( "#tabs" ).tabs('option', 'selected');
+              $J("#tabs").tabs('load', tabIndex);
+              tabLinks['document'].page = 0;
+              $J(".qq-upload-list").html('');
+          }
+        });
 
         $J( ".change-photo" ).click(function() {
           $J( "#profile-photo" ).dialog( "open" );
         });
+        
+        $J('#jquery-wrapped-fine-uploader').fineUploader({
+          request: {
+            endpoint: './index.php?cmd={MODULE_NAME}&act=fileupload&id={ENTRY_ID}'
+          },          
+          text: {
+            uploadButton: '<div class="button blue">upload a file</div>'
+          },
+          validation: {
+            allowedExtensions: ["jpeg", "png", "gif", "jpg", "bmp", "doc", "docx", "pdf", "txt", "csv", "xls"],
+            sizeLimit: 2097152
+         }
+        });
     });
+    $J(".add-document").live('click', function(){
+      $J( "#file-upload" ).dialog( "open" );
+    });
+    $J(".delete_document").live('click', function(){
+        if(confirm('{TXT_CRM_CONFIRM_DELETE_ENTRY}')) {
+                elm = $J(this);
+                url = elm.attr('href');
+                $J.getJSON(url, function(json){
+                    if (json['error']) {
+                        $J("#alertbox")
+                            .html(json['error'])
+                            .show()
+                            .delay(3000)
+                            .fadeOut('slow');
+                    } else if (json['success']) {
+                        $J(elm).closest("tr").fadeOut('slow', function(){
+                            $J(elm).closest("tr").remove();
+                            $J("#okbox")
+                            .html(json['success'])
+                            .show()
+                            .delay(3000)
+                            .fadeOut('slow');
+                        });
+                    }                    
+                });
+        }
+        return false;
+    });
+    function showTaskStatusPanel(switcherUI) {
+        $J("#taskStatusPanel a.dropDownItem").unbind('click').click(function() {
+            _changeTaskStatus(switcherUI, $J(this).attr("task_status"));
+        });
+    }
+    var _changeTaskStatus = function(Obj, task_status) {
+        var taskId = $J(Obj).attr('rel').split('_')[1];
+        $J.ajax({
+            url: './index.php?cmd={MODULE_NAME}&act=task&tpl=cstatus',
+            type: "POST",
+            dataType: "json",
+            data: {id: taskId,status: task_status},
+            success: function(json) {
+                if (json['error']) {
+                    alert(json['error']);
+                } else if (json['success']) {
+                    $J(Obj).find("a img").attr('src', json['status_img']);
+                    alert(json['status_msg']);
+                }
+            }
+        });
+
+        $J("#taskStatusPanel").hide();
+    };
 </script>
 <style type="text/css">
     body table.adminlist thead tr.row3 th {
@@ -267,8 +367,15 @@
 </div>
 <div id="loading" style="display:none;" ><img width="20" height="20" src="images/ajaxBusy.gif" />&nbsp;<span>LOADING...</span></div>
 <div style="display: none;overflow:auto;margin-bottom: 5px;" id="okbox"></div>
+<div style="display: none;overflow:auto;margin-bottom: 5px;" id="alertbox"></div>
 <h1 class="containerHeader">{CRM_CONTACT_NAME}</h1>
 <br>
+<div id="taskStatusPanel" style="display: none;position: absolute;">
+    <div class="dropDownContent">
+        <a class="dropDownItem" task_status="0"><span><img src="./images/icons/led_red.gif" alt="status" />&nbsp;{TXT_CRM_TASK_OPEN}</span></a>
+        <a class="dropDownItem" task_status="1"><span><img src="./images/icons/led_green.gif" alt="status" />&nbsp;{TXT_CRM_TASK_COMPLETED}</span></a>
+    </div>
+</div>
 <ul id="tabmenu">
     <li><a id="contact_profile" class="active" href="javascript:{}" onclick="selectTab('profile')">{TXT_CRM_PROFILE}</a></li>
     <!-- BEGIN contactSwitchTab -->
@@ -521,7 +628,10 @@
         <li rel="deals_{ENTRY_ID}">
             <a href="./index.php?cmd={MODULE_NAME}&act=getcontactdeals&id={ENTRY_ID}">{TXT_CRM_DEALS}</a>
         </li>
-    </ul>    
+        <li rel="document_{ENTRY_ID}">
+            <a href="./index.php?cmd={MODULE_NAME}&act=getcontactdocuments&id={ENTRY_ID}">{TXT_CRM_DOCUMENTS}</a>
+        </li>
+    </ul>
 </div>
 <div id="favloader" style="display:none;"> <img src="./images/icons/icon-loading.gif" />LOADING ...</div>
 
@@ -550,4 +660,11 @@
         </div>
         <div class="action-progress-2" style="display:none;"><img src="../images/crm/loader.gif" width="121" style="padding-top: 5px;" alt="Uploading...."/>Uploading....</div>
     </div>
+</div>
+<div id="file-upload" title="{TXT_CRM_DOCUMENT_UPLOAD}">
+    <h4>{TXT_CRM_UPLOAD_FILES}</h4>
+    <p>
+        {TXT_CRM_UPLOAD_FILES_DES}
+    </p>
+    <div id="jquery-wrapped-fine-uploader"></div>
 </div>
