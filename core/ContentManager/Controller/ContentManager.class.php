@@ -268,6 +268,14 @@ class ContentManager extends \Module
             $modules->MoveNext();
         }
 
+        if (\Permission::checkAccess(36, 'static', true)) {
+            $this->template->touchBlock('page_permissions_tab');
+            $this->template->touchBlock('page_permissions');
+        } else {
+            $this->template->hideBlock('page_permissions_tab');
+            $this->template->hideBlock('page_permissions');
+        }
+
         if (\Permission::checkAccess(78, 'static', true)) {
             $this->template->hideBlock('release_button');
         } else {

@@ -4,7 +4,9 @@
     <li><a href="#page_meta" class="tab page_meta type_hidable type_content type_application type_fallback">{TXT_CORE_CM_META}</a></li>
     <li><a href="#page_navigation" class="tab page_navigation">{TXT_CORE_CM_NAVIGATION}</a></li>
     <li><a href="#page_blocks" class="tab page_blocks">{TXT_CORE_CM_BLOCKS}</a></li>
+    <!-- BEGIN page_permissions_tab -->
     <li><a href="#page_permissions" class="tab page_permissions">{TXT_CORE_CM_PERMISSIONS}</a></li>
+    <!-- END page_permissions_tab -->
     <li><a href="#page_history" class="tab page_history">{TXT_CORE_CM_HISTORY}</a></li>
     <li><a href="#page_more" class="tab page_more">{TXT_CORE_CM_MORE}</a></li>
 </ul>
@@ -176,6 +178,7 @@
             <select id="pageBlocks" class="multiselect" multiple="multiple" name="pageBlocks[]"></select>
         </div>
     </div>
+    <!-- BEGIN page_permissions -->
     <div id="page_permissions" style="display: none;">
         <div id="protection_frontend_checkbox" class="checkbox no_toggle">
             <input type="hidden" name="page[protection_frontend]" value="off" />
@@ -207,6 +210,7 @@
             </div>
         </div>
     </div>
+    <!-- END page_permissions -->
     <div id="page_history"></div>
     <div id="page_more" style="display: none;">
         <div id="scheduled_publishing_checkbox" class="checkbox">

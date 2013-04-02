@@ -329,8 +329,6 @@ class JsonPage implements JsonAdapter {
                             }
                         }
                     }
-                } else  {
-                    $this->messages[] = $_CORELANG['TXT_CORE_CM_ACCESS_CHANGE_DENIED'];
                 }
             }
         }
