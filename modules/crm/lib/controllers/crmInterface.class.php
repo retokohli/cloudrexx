@@ -121,9 +121,9 @@ class crmInterface extends CrmLibrary
             'TXT_CRM_SKIP'                          => $_ARRAYLANG['TXT_CRM_SKIP'],
             'TXT_CRM_OVERWRITE'                     => $_ARRAYLANG['TXT_CRM_OVERWRITE'],
             'TXT_CRM_DUPLICATE'                     => $_ARRAYLANG['TXT_CRM_DUPLICATE'],
-            'TXT_CRM_CHOOSE_FILE'                       => $_ARRAYLANG['TXT_CRM_CHOOSE_FILE'],
-            'TXT_CRM_CSV_SEPARATOR'                     => $_ARRAYLANG['TXT_CRM_CSV_SEPARATOR'],
-            'TXT_CRM_CSV_ENCLOSURE'                     => $_ARRAYLANG['TXT_CRM_CSV_ENCLOSURE'],
+            'TXT_CRM_CHOOSE_FILE'                   => $_ARRAYLANG['TXT_CRM_CHOOSE_FILE'],
+            'TXT_CRM_CSV_SEPARATOR'                 => $_ARRAYLANG['TXT_CRM_CSV_SEPARATOR'],
+            'TXT_CRM_CSV_ENCLOSURE'                 => $_ARRAYLANG['TXT_CRM_CSV_ENCLOSURE'],
             'TXT_CRM_ON_DUPLICATES'                 => $_ARRAYLANG['TXT_CRM_ON_DUPLICATES'],
             'TXT_CRM_CHOOSE_CSV'                    => $_ARRAYLANG['TXT_CRM_CHOOSE_CSV'],
             'TXT_CRM_ON_DUPLICATES_INFO'            => $_ARRAYLANG['TXT_CRM_ON_DUPLICATES_INFO'],
@@ -139,8 +139,8 @@ class crmInterface extends CrmLibrary
             'TXT_CRM_CORRESPONDING_FIELD'           => $_ARRAYLANG['TXT_CRM_CORRESPONDING_FIELD'],
             'TXT_CRM_CSV_VALUE'                     => $_ARRAYLANG['TXT_CRM_CSV_VALUE'],
 
-            'TXT_CRM_IMPORT_NAME'                       => $_ARRAYLANG['TXT_CRM_IMPORT_NAME'],
-            'TXT_CRM_EXPORT_NAME'                       => $_ARRAYLANG['TXT_CRM_EXPORT_NAME']
+            'TXT_CRM_IMPORT_NAME'                   => $_ARRAYLANG['TXT_CRM_IMPORT_NAME'],
+            'TXT_CRM_EXPORT_NAME'                   => $_ARRAYLANG['TXT_CRM_EXPORT_NAME']
         ));
         
     }
@@ -175,18 +175,18 @@ class crmInterface extends CrmLibrary
         }
 
         $rowIndex = 1;
-        
-        $objCsv = new Csv_bv($this->_mediaPath.'/'.$fileName, $csvSeprator, $csvDelimiter);
+
+        $objCsv        = new Csv_bv($this->_mediaPath.'/'.$fileName, $csvSeprator, $csvDelimiter);
         $importedLines = 0;
         $first         = true;
-        $line = $objCsv->NextLine();
+        $line          = $objCsv->NextLine();
         while ($line) {
             if ($first) {
-                $json['data']['contactHeader'] = $line;                
+                $json['data']['contactHeader'] = $line;
                 $first = false;
             }
             if ($importedLines == $rowIndex) {
-                $json['data']['contactFields'] = $line;                
+                $json['data']['contactFields'] = $line;
             }
             $json['contactData'][$importedLines] = $line;
             
@@ -195,7 +195,7 @@ class crmInterface extends CrmLibrary
         }
         $json['data']       = base64_encode(json_encode($json['data']));
         $json['contactData']= base64_encode(json_encode($json['contactData']));
-        $json['totalRows']  = $importedLines;
+        $json['totalRows']  = $importedLines - 1;
         
         echo json_encode($json);
         exit();
@@ -221,7 +221,8 @@ class crmInterface extends CrmLibrary
                 $fileName = time() . $exte;
                 
                 //upload file
-                if (@move_uploaded_file($tmpFile, $path.$fileName)) {                    
+                if (@move_uploaded_file($tmpFile, $path.$fileName)) {
+                    @chmod($path.$fileName, '0777');
                     $status = $fileName;
                 } else {
                     $status = "error";

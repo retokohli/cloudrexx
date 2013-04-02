@@ -517,17 +517,10 @@ class Settings extends CrmLibrary
         ));
         JS::activate("jquery");
 
-        // Activate validation scripts
-        JS::registerCSS("lib/javascript/validationEngine/css/validationEngine.jquery.css");
-        JS::registerJS("lib/javascript/validationEngine/js/languages/jquery.validationEngine-en.js");
-        JS::registerJS("lib/javascript/validationEngine/js/jquery.validationEngine.js");
-        JS::registerCSS("lib/javascript/chosen/chosen.css");
-        JS::registerJS("lib/javascript/chosen/chosen.jquery.js");
-
         $msg = base64_decode($_REQUEST['msg']);
         switch ($msg) {
         case 'taskUpdated':
-            $_SESSION['strOkMessage'] = $_ARRAYLANG['CRM_TASK_TYPE_UPDATED_SUCCESSFULLY'];
+            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_TASK_TYPE_UPDATED_SUCCESSFULLY'];
             break;
         default:
             break;
@@ -566,7 +559,7 @@ class Settings extends CrmLibrary
 
         if ($_POST['saveTaskType']) {
             $this->saveTaskTypes();
-            $_SESSION['strOkMessage'] = $_ARRAYLANG['CRM_TASK_TYPE_ADDED_SUCCESSFULLY'];
+            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_TASK_TYPE_ADDED_SUCCESSFULLY'];
         }
 
         $this->getModifyTaskTypes();
@@ -684,7 +677,7 @@ class Settings extends CrmLibrary
 
             $ids = implode(',', $tasktypeIds);
 
-            $query = "DELETE FROM `".DBPREFIX."module_".$this->moduleName."_task_types` WHERE id IN ($ids)";
+            $query = "DELETE FROM `".DBPREFIX."module_".$this->moduleName."_task_types` WHERE id IN ($ids) AND system_defined != 1";
             $objResult = $objDatabase->Execute($query);
 
             $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_TASK_TYPE_DELETED_SUCCESSFULLY'];
@@ -705,7 +698,7 @@ class Settings extends CrmLibrary
     {
         global $objDatabase,$_ARRAYLANG;
 
-        $query = "DELETE FROM `".DBPREFIX."module_".$this->moduleName."_task_types` WHERE id = $tasktypeId";
+        $query = "DELETE FROM `".DBPREFIX."module_".$this->moduleName."_task_types` WHERE id = $tasktypeId AND system_defined != 1";
         $objResult = $objDatabase->Execute($query);
         echo $_ARRAYLANG['TXT_CRM_TASK_TYPE_DELETED_SUCCESSFULLY'];
     }

@@ -8,6 +8,14 @@
     #ajaxMessageDiv:hover{
         background-color: #D0D0A8;
     }    
+    .okBox-new {
+        border: #029202 1px solid;
+        color: #006900;
+        background: #B8FD9F;
+        padding: 4px;
+        margin-bottom: 5px;
+        clear: left;
+    }
 </style>
 <script type="text/javascript">
     function htmlEncode(value){
@@ -42,7 +50,7 @@
             $J.get(url, function(data) {
                 image = $elm.find('img').attr('src').split('/')[2] == 'led_green.gif' ? 'led_red.gif' : 'led_green.gif';
                 $elm.find('img').attr('src', 'images/icons/'+image);
-                //fadeOkbox('{TXT_CRM_STATUS_SUCCESSFULLY_CHANGED}');
+                fadeOkbox('{TXT_CRM_STATUS_SUCCESSFULLY_CHANGED}');
             });
             e.preventDefault();
         });
@@ -72,6 +80,7 @@
                     success : function(msg){
                         $elm.closest("tr").remove();
                         setTableRow("entryList");
+                        fadeOkbox('{TXT_CRM_DELETE_MESSAGE}');
                     }
                 });
             }
@@ -104,6 +113,7 @@
 
                     $elm.hide();
                     $J(".entry_"+en_id+"_edit").show();
+                    fadeOkbox('{TXT_CRM_EDIT_MESSAGE}');
                 }
             });
         });
@@ -115,6 +125,13 @@
     });
     function getMessageDiv(mes) {
         return '<div id="ajaxMessageDiv">'+mes+'..</div>';
+    }
+    function fadeOkbox(msg) {
+            $J('.okBox-new').html(msg);
+            $J('.okBox-new').fadeIn('slow');
+            setTimeout(function () {
+                    $J('.okBox-new').fadeOut('slow');
+            }, 6000);
     }
     function checkValidations() {
         var errChk;
@@ -138,6 +155,7 @@
 </script>
 
 <div id="stage_page">
+    <div class="okBox-new" style="display:none;"></div>
     <br>
     <div id="formerr"></div>
     <ul id="tabmenu">

@@ -14,6 +14,9 @@
         background: #B8FD9F;
         padding: 4px;
         margin-top: 5px;
+        margin-bottom: 5px;
+        float: left;
+        width: 99%;
     }
 </style>
 <script type="text/javascript">
@@ -89,12 +92,12 @@
     }
     $J(function(){
         setTableRow("entryList");
-        $J('.changestatus').click(function(e){
+        $J('.changestatus').click(function(e){ 
             var $elm = $J(this);
             url = $elm.attr("href");
             $J.get(url, function(data) {
                 image = $elm.find('img').attr('src').split('/')[2] == 'led_green.gif' ? 'led_red.gif' : 'led_green.gif';
-                $elm.find('img').attr('src', 'images/icons/'+image);
+                $elm.find('img').attr('src', 'images/icons/'+image); 
                 fadeOkbox('{TXT_CRM_CHANGE_STATUS}');
             });
             e.preventDefault();
@@ -143,9 +146,9 @@
     function getOkBox(mes) {
         return '<div class="okBox-new">' + mes + '</div>';
     }
-    function fadeOkbox(msg) {
+    function fadeOkbox(msg) { 
         $J('.okBox-new').remove();
-        $J('table.subnavbar_level1').after(getOkBox(msg));        
+        $J('table#subnavbar_level1').after(getOkBox(msg));
         setTimeout(function () {
             $J('.okBox-new').fadeOut('slow');
         }, 6000);

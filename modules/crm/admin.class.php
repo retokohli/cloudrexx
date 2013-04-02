@@ -16,7 +16,6 @@ require_once ASCMS_MODULE_PATH   . '/crm/lib/crmLib.class.php';
 
 require_once CRM_MODULE_LIB_PATH . '/javascript.class.php';
 require_once CRM_MODULE_LIB_PATH . '/sort.class.php';
-require_once CRM_MODULE_LIB_PATH . '/CSVimport.class.php';
 require_once CRM_MODULE_LIB_PATH . '/Csv_bv.class.php';
 
 class CRM extends CrmLibrary {
@@ -143,6 +142,12 @@ class CRM extends CrmLibrary {
             case 'updateProfileImage':
                 $this->updateProfilePhoto();
                 break;
+            case 'fileupload':
+                $this->uploadFiles();
+                break;
+            case 'getcontactdocuments':
+                $this->getContactDocuments();
+                break;
             case 'addcontact':
                 $this->addContact();
                 break;
@@ -240,44 +245,21 @@ class CRM extends CrmLibrary {
                 break;
             case 'editCustomerTypes':
                 $this->editCustomerTypes();
-                break;            
-            case 'deleteCustomerServiceplan':
-                $this->deleteCustomerServiceplan();
-                break;
-            case  'deleteCustomerSupportcase':
-                $this->deleteCustomerSupportcase();
-                break;
-            case 'deleteCustomerHosting':
-                $this->deleteCustomerHosting();
-                break;
+                break;                        
             case 'interface' :
                 Permission::checkAccess($this->staffAccessId, 'static');
                 $this->showInterface();
                 break;
             case 'export':
                 $this->csvExport();
-                break;
-            case 'importcsv' :
-                $this->ImportCSV();
-                break;
-            case 'finalImport' :
-                $this->finalImport();
-                break;
+                break;                        
             case 'InsertCSV' :
                 $this->InsertCSV();
                 break;
             case 'task':
                 Permission::checkAccess($this->staffAccessId, 'static');
                 $this->showTasks();
-                break;
-            case 'addTask':
-                Permission::checkAccess($this->staffAccessId, 'static');
-                $this->_modifyTask();
-                break;
-            case 'deleteTask':
-                Permission::checkAccess($this->staffAccessId, 'static');
-                $this->deleteTask();
-                break;            
+                break;                        
             case 'customers':
             default:
                 if (Permission::checkAccess($this->staffAccessId, 'static', true)) {
@@ -458,7 +440,7 @@ class CRM extends CrmLibrary {
         $this->_objTpl->setGlobalVariable(array(
                 'CRM_CUST_ID'              => $custId,
                 'CSRF_PARAM'               => CSRF::param(),
-                'CRM_NO_RECORDS_FOUND'     => $_ARRAYLANG['CRM_NO_RECORDS_FOUND'],
+                'TXT_CRM_NO_RECORDS_FOUND'     => $_ARRAYLANG['TXT_CRM_NO_RECORDS_FOUND'],
                 'TXT_CRM_NOTES_TYPE'       => $_ARRAYLANG['TXT_CRM_NOTE_TYPE'],
                 'TXT_CRM_SHOW_COMMENT_HISTORY' => $_ARRAYLANG['TXT_CRM_SHOW_COMMENT_HISTORY'],
                 'TXT_CRM_COMMENT_TITLE'        => $_ARRAYLANG['TXT_CRM_COMMENT_TITLE'],
@@ -691,7 +673,7 @@ class CRM extends CrmLibrary {
                 'TXT_DISPLAY_ENTRIES'           => 'none',
                 'TXT_CRM_FILTERS'               =>  $_ARRAYLANG['TXT_CRM_FILTERS'],
                 'TXT_DELETE_ENTRIES'            =>  $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES'],
-                'TXT_DELETE_SELECTED_ENTRIES'   =>  $_ARRAYLANG['TXT_ARE_YOU_SURE_DELETE_SELECTED_ENTRIES'],
+                'TXT_DELETE_SELECTED_ENTRIES'   =>  $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_DELETE_SELECTED_ENTRIES'],
                 'TXT_CRM_TITLE_COMPANY_NAME'        =>  $_ARRAYLANG['TXT_CRM_TITLE_COMPANY_NAME'],
                 'TXT_CRM_TITLE_NAME'                =>  $_ARRAYLANG['TXT_CRM_TITLE_NAME'],                
                 'TXT_CRM_TITLE_CUSTOMERTYPE'        =>  $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERTYPE']  ,
@@ -887,6 +869,8 @@ class CRM extends CrmLibrary {
         JS::registerJS("lib/javascript/jquery.form.js");
         JS::registerCSS("lib/javascript/crm/css/main.css");        
         JS::registerCSS("lib/javascript/crm/css/customerTooltip.css");
+        JS::registerCSS("lib/javascript/crm/fineuploader/fineuploader-3.3.1.css");
+        JS::registerJS("lib/javascript/crm/fineuploader/jquery.fineuploader-3.3.1.min.js");
         
         $objTpl = $this->_objTpl;
         $objTpl->loadTemplateFile('module_'.$this->moduleName.'_customer_details.html');
@@ -923,13 +907,13 @@ class CRM extends CrmLibrary {
                     $this->_strOkMessage  = $_ARRAYLANG['TXT_CRM_CUSTOMER_DETAILS_DELETED_SUCCESSFULLY'];
                     break;
                 case "projectUpdated":
-                    $this->_strOkMessage = $_ARRAYLANG['CRM_PROJECT_UPDATED_STATUS_MESSAGE'];
+                    $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_PROJECT_UPDATED_STATUS_MESSAGE'];
                     break;
                 case "projectAdded":
                     $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_PROJECTS_SUCESSMESSAGE'];
                     break;
                 case "projectDelete":
-                    $this->_strOkMessage = $_ARRAYLANG['CRM_PROJECT_DELETED_STATUS_MESSAGE'];
+                    $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_PROJECT_DELETED_STATUS_MESSAGE'];
                     break;
                 case "commentAdded":
                     $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_COMMENT_SUCESSMESSAGE'];
@@ -1115,7 +1099,7 @@ class CRM extends CrmLibrary {
                         'TXT_CRM_NAME'              => $_ARRAYLANG['TXT_CRM_CONTACT_NAME'],
                         'TXT_CRM_FAMILY_NAME'       => $_ARRAYLANG['TXT_CRM_FAMILY_NAME'],
                         'TXT_CRM_CONTACT_ROLE'      => $_ARRAYLANG['TXT_CRM_ROLE'],
-                        'TXT_CRM_COMPNAY_NAME'      => $_ARRAYLANG['TXT_COMPANY_NAME'],
+                        'TXT_CRM_COMPNAY_NAME'      => $_ARRAYLANG['TXT_CRM_TITLE_COMPANY_NAME'],
                         'TXT_CRM_CUSTOMERTYPE'      => $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERTYPE'],
                         'TXT_CRM_CUSTOMER_CURRENCY' => $_ARRAYLANG['TXT_CRM_TITLE_CURRENCY'],
                         'TXT_CRM_CONTACT_LANGUAGE'  => $_ARRAYLANG['TXT_CRM_TITLE_LANGUAGE'],
@@ -1157,25 +1141,27 @@ class CRM extends CrmLibrary {
         }
 
         $objTpl->setGlobalVariable(array(
-                'TXT_CRM_CUSTOMER_OVERVIEW'     => $_ARRAYLANG['TXT_CRM_OVERVIEW'],
-                'TXT_CRM_NOTES_ADD'             => $_ARRAYLANG['TXT_CRM_NOTES_ADD'],
-                'TXT_CRM_HISTROY'           => $_ARRAYLANG['TXT_CRM_HISTROY'],
-                'TXT_CRM_PROFILE'           => $_ARRAYLANG['TXT_CRM_PROFILE'],
-                'TXT_CRM_CONTACTS'          => $_ARRAYLANG['TXT_CRM_CONTACTS'],
-                'TXT_CRM_PROFILE_INFO'      => $_ARRAYLANG['TXT_CRM_PROFILE_INFORMATION'],
-                'TXT_CRM_GENERAL_INFO'      => $_ARRAYLANG['TXT_CRM_GENERAL_INFORMATION'],
-                'TXT_CRM_CONTACT_EMAIL'     => $_ARRAYLANG['TXT_CRM_TITLE_EMAIL'],
-                'TXT_CRM_CONTACT_PHONE'     => $_ARRAYLANG['TXT_CRM_PHONE'],
-                'TXT_CRM_CONTACT_WEBSITE'   => $_ARRAYLANG['TXT_CRM_WEBSITE'],
-                'TXT_CRM_SOCIAL_NETWORK'      =>    $_ARRAYLANG['TXT_CRM_SOCIAL_NETWORK'],
-                'TXT_CRM_CONTACT_ADDRESSES' => $_ARRAYLANG['TXT_CRM_TITLE_ADDRESS'],
+                'TXT_CRM_TASK_OPEN'           => $_ARRAYLANG['TXT_CRM_TASK_OPEN'],
+                'TXT_CRM_TASK_COMPLETED'      => $_ARRAYLANG['TXT_CRM_TASK_COMPLETED'],
+                'TXT_CRM_CUSTOMER_OVERVIEW'   => $_ARRAYLANG['TXT_CRM_OVERVIEW'],
+                'TXT_CRM_NOTES_ADD'           => $_ARRAYLANG['TXT_CRM_NOTES_ADD'],
+                'TXT_CRM_HISTROY'             => $_ARRAYLANG['TXT_CRM_HISTROY'],
+                'TXT_CRM_PROFILE'             => $_ARRAYLANG['TXT_CRM_PROFILE'],
+                'TXT_CRM_CONTACTS'            => $_ARRAYLANG['TXT_CRM_CONTACTS'],
+                'TXT_CRM_PROFILE_INFO'        => $_ARRAYLANG['TXT_CRM_PROFILE_INFORMATION'],
+                'TXT_CRM_GENERAL_INFO'        => $_ARRAYLANG['TXT_CRM_GENERAL_INFORMATION'],
+                'TXT_CRM_CONTACT_EMAIL'       => $_ARRAYLANG['TXT_CRM_TITLE_EMAIL'],
+                'TXT_CRM_CONTACT_PHONE'       => $_ARRAYLANG['TXT_CRM_PHONE'],
+                'TXT_CRM_CONTACT_WEBSITE'     => $_ARRAYLANG['TXT_CRM_WEBSITE'],
+                'TXT_CRM_SOCIAL_NETWORK'      => $_ARRAYLANG['TXT_CRM_SOCIAL_NETWORK'],
+                'TXT_CRM_CONTACT_ADDRESSES'   => $_ARRAYLANG['TXT_CRM_TITLE_ADDRESS'],
                 'TXT_CRM_CONTACT_DESCRIPTION' => $_ARRAYLANG['TXT_CRM_DESCRIPTION'],
-                'TXT_CRM_IMAGE_DELETE'            =>  $_ARRAYLANG['TXT_CRM_IMAGE_DELETE'],
-                'TXT_CRM_IMAGE_EDIT'              =>  $_ARRAYLANG['TXT_CRM_IMAGE_EDIT'],
+                'TXT_CRM_IMAGE_DELETE'        => $_ARRAYLANG['TXT_CRM_IMAGE_DELETE'],
+                'TXT_CRM_IMAGE_EDIT'          => $_ARRAYLANG['TXT_CRM_IMAGE_EDIT'],
                 'TXT_CRM_TASKS'               => $_ARRAYLANG['TXT_CRM_TASKS'],
                 'TXT_CRM_PROJECTS'            => $_ARRAYLANG['TXT_CRM_PROJECTS'],
                 'TXT_CRM_DEALS'               => $_ARRAYLANG['TXT_CRM_OPPORTUNITY'],
-                'TXT_CRM_CUSTOMER_CONTACT'        => $_ARRAYLANG['TXT_CRM_CUSTOMER_CONTACT'],
+                'TXT_CRM_CUSTOMER_CONTACT'    => $_ARRAYLANG['TXT_CRM_CUSTOMER_CONTACT'],
                 'TXT_CRM_INDUSTRY_TYPE'       => $_ARRAYLANG['TXT_CRM_INDUSTRY_TYPE'],
                 'TXT_CRM_MEMBERSHIP'          => $_ARRAYLANG['TXT_CRM_MEMBERSHIP'],
                 'TXT_CRM_WEBSITE'             => $_ARRAYLANG['TXT_CRM_WEBSITE'],
@@ -1184,6 +1170,11 @@ class CRM extends CrmLibrary {
                 'TXT_CRM_PROFILE_PHOTO_TITLE2'=> $_ARRAYLANG['TXT_CRM_PROFILE_PHOTO_TITLE2'],
                 'TXT_CRM_PROFILE_PHOTO_DES'   => $_ARRAYLANG['TXT_CRM_PROFILE_PHOTO_DES'],
                 'TXT_CRM_CHANGE_PHOTO'        => $_ARRAYLANG['TXT_CRM_CHANGE_PHOTO'],
+                'TXT_CRM_DOCUMENTS'           => $_ARRAYLANG['TXT_CRM_DOCUMENTS'],
+                'TXT_CRM_DOCUMENT_UPLOAD'     => $_ARRAYLANG['TXT_CRM_DOCUMENT_UPLOAD'],
+                'TXT_CRM_UPLOAD_FILES'        => $_ARRAYLANG['TXT_CRM_UPLOAD_FILES'],
+                'TXT_CRM_UPLOAD_FILES_DES'    => $_ARRAYLANG['TXT_CRM_UPLOAD_FILES_DES'],
+                'TXT_CRM_CONFIRM_DELETE_ENTRY'=> $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES'],
                 'CRM_ACCESS_PROFILE_IMG_WEB_PATH'   => CRM_ACCESS_PROFILE_IMG_WEB_PATH,
                 'CRM_CUSTOMER_MEMBERSHIP'     => implode(' , ', $membershipLink),
                 'TXT_CRM_CUSTOMER_DETAILS'    =>  ($custDetails['contact_type'] == 1) ? $_ARRAYLANG['TXT_CRM_CUSTOMER_DETAILS'] : $_ARRAYLANG['TXT_CRM_CONTACT_DETAILS'],
@@ -1396,7 +1387,7 @@ END;
         $this->_pageTitle = $_ARRAYLANG['TXT_CRM_SETTINGS'];
 
         $tpl = isset($_GET['tpl']) ? $_GET['tpl'] : '';
-        $this->settingsController = $this->load->controller('settings', __CLASS__, & $this->_objTpl);
+        $this->settingsController = $this->load->controller('settings', __CLASS__, $this->_objTpl);
 
         switch ($tpl) {
             case 'customertypes':
@@ -1654,7 +1645,8 @@ END;
             default:
                 break;
         }
-        if (!empty ($action) || isset($_POST['save_entries'])) {
+//        if (!empty ($action) || isset($_POST['save_entries'])) {
+        if (isset($_POST['save_entries'])) {
             $this->saveStageSorting($stageEntriesorting);
         }
 
@@ -1706,26 +1698,28 @@ END;
         ));
 
         $objTpl->setVariable(array(
-                'TXT_STATUS'             => $_ARRAYLANG['TXT_STATUS'],
-                'TXT_CRM_LABEL'          => $_ARRAYLANG['TXT_CRM_LABEL'],
-                'TXT_CRM_ADD_STAGE'      => $_ARRAYLANG['TXT_CRM_ADD_STAGE'],
-                'TXT_CRM_VALUE'          => $_ARRAYLANG['TXT_CRM_VALUE'],
-                'TXT_CRM_SAVE'               => $_ARRAYLANG['TXT_CRM_SAVE'],
-                'TXT_CRM_DEALS_STAGES'   => $_ARRAYLANG['TXT_CRM_DEALS_STAGES'],
-                'TXT_CRM_DEALS_STAGE'    => $_ARRAYLANG['TXT_CRM_DEALS_STAGE'],
-                'TXT_CRM_SORTING'            => $_ARRAYLANG['TXT_CRM_SORTING'],
-                'TXT_CRM_FUNCTIONS'          => $_ARRAYLANG['TXT_CRM_FUNCTIONS'],
-                'TXT_CRM_SELECT_ALL'         => $_ARRAYLANG['TXT_CRM_SELECT_ALL'],
-                'TXT_CRM_REMOVE_SELECTION'   => $_ARRAYLANG['TXT_CRM_REMOVE_SELECTION'],
-                'TXT_CRM_SELECT_ACTION'      => $_ARRAYLANG['TXT_CRM_SELECT_ACTION'],
-                'TXT_CRM_ACTIVATESELECTED'   => $_ARRAYLANG['TXT_CRM_ACTIVATESELECTED'],
-                'TXT_CRM_DEACTIVATESELECTED' => $_ARRAYLANG['TXT_CRM_DEACTIVATESELECTED'],
-                'TXT_CRM_DELETE_SELECTED'    => $_ARRAYLANG['TXT_CRM_DELETE_SELECTED'],
-                'CRM_STAGE_LABEL'        => contrexx_raw2xhtml($label),
-                'CRM_STAGE_VALUE'        => contrexx_raw2xhtml($stage),
-                'CRM_STAGE_CHECKED'      => ($status) ? 'checked' : '',
-                'TXT_PRODUCTS_SELECT_ENTRIES' => $_ARRAYLANG['TXT_CRM_NOTHING_SELECTED'],
-
+                'TXT_STATUS'                        => $_ARRAYLANG['TXT_STATUS'],
+                'TXT_CRM_LABEL'                     => $_ARRAYLANG['TXT_CRM_LABEL'],
+                'TXT_CRM_ADD_STAGE'                 => $_ARRAYLANG['TXT_CRM_ADD_STAGE'],
+                'TXT_CRM_VALUE'                     => $_ARRAYLANG['TXT_CRM_VALUE'],
+                'TXT_CRM_SAVE'                      => $_ARRAYLANG['TXT_CRM_SAVE'],
+                'TXT_CRM_DEALS_STAGES'              => $_ARRAYLANG['TXT_CRM_DEALS_STAGES'],
+                'TXT_CRM_DEALS_STAGE'               => $_ARRAYLANG['TXT_CRM_DEALS_STAGE'],
+                'TXT_CRM_SORTING'                   => $_ARRAYLANG['TXT_CRM_SORTING'],
+                'TXT_CRM_FUNCTIONS'                 => $_ARRAYLANG['TXT_CRM_FUNCTIONS'],
+                'TXT_CRM_SELECT_ALL'                => $_ARRAYLANG['TXT_CRM_SELECT_ALL'],
+                'TXT_CRM_REMOVE_SELECTION'          => $_ARRAYLANG['TXT_CRM_REMOVE_SELECTION'],
+                'TXT_CRM_SELECT_ACTION'             => $_ARRAYLANG['TXT_CRM_SELECT_ACTION'],
+                'TXT_CRM_ACTIVATESELECTED'          => $_ARRAYLANG['TXT_CRM_ACTIVATESELECTED'],
+                'TXT_CRM_DEACTIVATESELECTED'        => $_ARRAYLANG['TXT_CRM_DEACTIVATESELECTED'],
+                'TXT_CRM_DELETE_SELECTED'           => $_ARRAYLANG['TXT_CRM_DELETE_SELECTED'],
+                'CRM_STAGE_LABEL'                   => contrexx_raw2xhtml($label),
+                'CRM_STAGE_VALUE'                   => contrexx_raw2xhtml($stage),
+                'CRM_STAGE_CHECKED'                 => ($status) ? 'checked' : '',
+                'TXT_PRODUCTS_SELECT_ENTRIES'       => $_ARRAYLANG['TXT_CRM_NOTHING_SELECTED'],
+                'TXT_CRM_STATUS_SUCCESSFULLY_CHANGED' => $_ARRAYLANG['TXT_CRM_CHANGE_STATUS'],
+                'TXT_CRM_EDIT_MESSAGE'              => $_ARRAYLANG['TXT_CRM_CHANGES_UPDATED_SUCCESSFULLY'],
+                'TXT_CRM_DELETE_MESSAGE'            => $_ARRAYLANG['TXT_CRM_ENTRY_DELETED_SUCCESS'],
         ));
 
     }
@@ -1918,32 +1912,6 @@ END;
     }
 
     /**
-     * delete customer service plan
-     *
-     * @global array $_ARRAYLANG
-     * @global object $objDatabase
-     * @return true
-     */
-    function deleteCustomerServiceplan()
-    {
-        global $_CORELANG, $_ARRAYLANG, $objDatabase;
-
-        $serviceId       = isset($_GET['seriveId']) ? intval($_GET['seriveId']) : 0;
-        $customerId        = isset($_GET['customerId']) ? intval($_GET['customerId']) : 0;
-
-
-
-        if($serviceId!==0) {
-            $deleteQuery    = 'DELETE  FROM `'.DBPREFIX.'module_'.$this->moduleName.'_customer_serviceplan`
-                               WHERE         id ='.$serviceId;
-            $objDatabase->Execute($deleteQuery);
-
-        }
-        csrf::header('location:./index.php?cmd=crm&act=showcustdetail&action=addServicePlan&mes=serviceplanmessage&id='.$customerId);
-
-    }
-
-    /**
      * add or edit contact
      *
      * @global array $_ARRAYLANG
@@ -1966,6 +1934,23 @@ END;
         JS::registerCSS("lib/javascript/chosen/chosen.css");
         JS::registerJS("lib/javascript/chosen/chosen.jquery.js");
 
+        $mes = isset($_REQUEST['mes']) ? base64_decode($_REQUEST['mes']) : '';
+        if (!empty ($mes)) {
+           switch ($mes) {
+                case "customerupdated":
+                    $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_CUSTOMER_DETAILS_UPDATED_SUCCESSFULLY'];
+                    break;
+                case "customeradded":
+                    $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_CUSTOMER_ADDED_SUCCESSFULLY'];
+                    break;
+                case "contactupdated":
+                    $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_CUSTOMER_CONTACT_UPDATED_SUCCESSFULLY'];
+                    break;
+                case "contactadded":
+                    $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_CUSTOMER_CONTACT_ADDED_SUCCESSFULLY'];
+                    break;
+           }
+        }
         $settings  = $this->getSettings();
         
         $objFWUser = FWUser::getFWUserObject();
@@ -2174,14 +2159,14 @@ END;
                 }
 
                 if (isset($_POST['save_add_new_contact'])) {
-                    $contactTypeUrl = $contactType == 2 ? '&type=contact' : '';
-                    CSRF::header("Location:./index.php?cmd={$this->moduleName}&act=customers&tpl=managecontact$contactTypeUrl");
+                    $contactTypeUrl = $contactType == 2 ? '&type=contact' : ''; 
+                    CSRF::header("Location:./index.php?cmd={$this->moduleName}&act=customers&tpl=managecontact&mes=".base64_encode($msg).$contactTypeUrl);
                     exit();
                 }                
                 //print base64_decode($redirect);
                 CSRF::header("Location:./index.php?cmd={$this->moduleName}&act=overview&mes=".base64_encode($msg).base64_decode($redirect));
                 exit();
-            } else {
+            } elseif (empty($accountUserEmail)) {
                 $this->_strErrMessage = $_ARRAYLANG['TXT_CRM_EMAIL_EMPTY'];
             }
         } elseif($this->contact->load($id)) {
@@ -2475,7 +2460,7 @@ END;
                 'TXT_CRM_SELECT_COUNTRY'    => $_ARRAYLANG['TXT_CRM_SELECT_COUNTRY'],
                 'TXT_CRM_OVERVIEW'              => $_ARRAYLANG['TXT_CRM_OVERVIEW'],
                 'TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES' => $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES'],
-                'TXT_ARE_YOU_SURE_DELETE_SELECTED_ENTRIES' => $_ARRAYLANG['TXT_ARE_YOU_SURE_DELETE_SELECTED_ENTRIES'],                
+                'TXT_CRM_ARE_YOU_SURE_DELETE_SELECTED_ENTRIES' => $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_DELETE_SELECTED_ENTRIES'],                
                 'TXT_CRM_ACCOUNT_EMAIL'       => $_ARRAYLANG['TXT_CRM_ACCOUNT_EMAIL'],
                 'TXT_CRM_ACCOUNT_PASSWORD'    => $_ARRAYLANG['TXT_CRM_ACCOUNT_PASSWORD'],
                 'TXT_CRM_SEND_LOGIN_DETAILS'  => $_ARRAYLANG['TXT_CRM_SEND_LOGIN_DETAILS'],
@@ -2551,94 +2536,7 @@ END;
             $this->_objTpl->hideBlock("contactWebsiteOptions");
         }
     }
-
-    /**
-     * Returns the allowed maximum element per page. Can be used for paging.
-     *
-     * @global  array
-     * @return  integer     allowed maximum of elements per page.
-     */
-    function getPagingLimit()
-    {
-        global $_CONFIG;
-        return intval($_CONFIG['corePagingLimit']);
-    }
     
-    /**
-     * Counts all existing entries in the database.
-     *
-     * @global  ADONewConnection
-     * @return  integer     number of entries in the database
-     */
-    function countEntries($table, $where=null)
-    {
-
-        global $objDatabase;
-        $objEntryResult = $objDatabase->Execute('SELECT  COUNT(*) AS numberOfEntries FROM '.DBPREFIX.'module_'.
-                $table.$where);
-
-        return intval($objEntryResult->fields['numberOfEntries']);
-    }
-   
-    /**
-     * Counts all existing entries in the database.
-     *
-     * @global  ADONewConnection
-     * @return  integer     number of entries in the database
-     */
-    function countEntriesOfJoin($table)
-    {
-        global $objDatabase;
-
-        $objEntryResult = $objDatabase->Execute('SELECT  COUNT(*) AS numberOfEntries
-                                                    FROM    ('.$table.') AS num');
-
-        return intval($objEntryResult->fields['numberOfEntries']);
-    }
-
-    /**
-     * Default PM Calendar Month Page
-     *
-     * @global array $_ARRAYLANG
-     * @global object $objDatabase
-     * @return true
-     */    
-    function parseLetterIndexList($URI, $paramName, $selectedLetter)
-    {
-        global $_CORELANG;
-
-        if ($this->_objTpl->blockExists('module_'.$this->moduleName.'_letter_index_list')) {
-            $arrLetters[]   = 48;
-            $arrLetters     = array_merge($arrLetters, range(65, 90)); // ascii codes of characters "A" to "Z"
-            $arrLetters[]   = '';
-
-            foreach ($arrLetters as $letter) {
-                switch ($letter) {
-                    case 48:
-                        $parsedLetter = '#';
-                        break;
-                    case '':
-                        $parsedLetter = $_CORELANG['TXT_ACCESS_ALL'];
-                        break;
-                    default:
-                        $parsedLetter = chr($letter);
-                        break;
-                }
-
-                if ($letter == '' && $selectedLetter == '' || chr($letter) == $selectedLetter) {
-                    $parsedLetter = '<strong>'.$parsedLetter.'</strong>';
-                }
-
-                $this->_objTpl->setVariable(array(
-                        'ACCESS_USER_LETTER_INDEX_URI'      => $URI.(!empty($letter) ? '&amp;'.$paramName.'='.chr($letter) : null),
-                        'ACCESS_USER_LETTER_INDEX_LETTER'   => $parsedLetter
-                ));
-
-                $this->_objTpl->parse('module_'.$this->moduleName.'_letter_index_list');
-            }
-        }
-    }
-
     /**
      * change the status
      *
@@ -2805,7 +2703,7 @@ END;
         $tpl = isset($_GET['tpl']) ? $_GET['tpl'] : '';        
         $_SESSION['pageTitle'] = $_ARRAYLANG['TXT_CRM_INTERFACE'];
         
-        $this->crmInterfaceController = $this->load->controller('crmInterface', __CLASS__, & $this->_objTpl);
+        $this->crmInterfaceController = $this->load->controller('crmInterface', __CLASS__, $this->_objTpl);
 
         switch ($tpl) {
             case 'export':
@@ -3361,8 +3259,8 @@ END;
                         WHERE c.`id` = $id";
 
         $mailQry  = "SELECT email, email_type FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_emails` WHERE contact_id = $id AND email_type IN (0,1) ORDER BY id DESC";
-        $phoneQry = "SELECT phone, phone_type FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_phone` WHERE contact_id = $id AND phone_type IN (0,1,2, 3) ORDER BY id DESC";
-        $webQry   = "SELECT url, url_type     FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_websites` WHERE contact_id = $id AND url_profile = 1 AND url_type IN (0,1) ORDER BY id DESC";
+        $phoneQry = "SELECT phone, phone_type FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_phone` WHERE contact_id = $id AND phone_type IN (0,1,3,4) ORDER BY id DESC";
+        $webQry   = "SELECT url, url_type     FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_websites` WHERE contact_id = $id AND `is_primary` = '1' ORDER BY id DESC";
         $addrQry  = "SELECT *                 FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_address` WHERE contact_id = $id AND Address_Type IN (0,5) ORDER BY id DESC";
 
         if (false != ($objRS = $objDatabase->Execute($query))  && false != ($objMail = $objDatabase->Execute($mailQry)) && false != ($objPhone = $objDatabase->Execute($phoneQry)) && false != ($objWeb = $objDatabase->Execute($webQry)) && false != ($objAddr = $objDatabase->Execute($addrQry))) {
@@ -3392,10 +3290,10 @@ END;
                         $isWorkPhone    = true;
                         $wrkTelephone   = utf8_decode($objPhone->fields['phone']);
                         break;
-                    case ($objPhone->fields['phone_type'] == 2):
+                    case ($objPhone->fields['phone_type'] == 3):
                         $celephone      = utf8_decode($objPhone->fields['phone']);
                         break;
-                    case ($objPhone->fields['phone_type'] == 3):
+                    case ($objPhone->fields['phone_type'] == 4):
                         $fax            = utf8_decode($objPhone->fields['phone']);
                         break;
                     default:
@@ -3404,16 +3302,8 @@ END;
                 $objPhone->MoveNext();
             }
             while (!$objWeb->EOF) {
-                switch (true) {
-                    case ($objWeb->fields['url_type'] == 0):
-                        $homeWebsite      = utf8_decode($objWeb->fields['url']);
-                        break;
-                    case ($objWeb->fields['url_type'] == 1):
-                        $workWebsite      = utf8_decode($objWeb->fields['url']);
-                        break;
-                    default:
-                        break;
-                }
+                $homeWebsite      = utf8_decode($objWeb->fields['url']);
+                $workWebsite      = utf8_decode($objWeb->fields['url']);                
                 $objWeb->MoveNext();
             }
             $workAddr = false;
@@ -3602,428 +3492,26 @@ END;
     {
         global $_ARRAYLANG, $objDatabase;
 
-        JS::activate("jquery");
-        JS::activate("jquery-ui");
-
-        $objtpl = $this->_objTpl;
-        $this->_pageTitle = $_ARRAYLANG['TXT_CRM_TASK_OVERVIEW'];
-        $objtpl->loadTemplateFile("module_{$this->moduleName}_tasks_overview.html");
-        $objtpl->setGlobalVariable("MODULE_NAME", $this->moduleName);
-        $taskId    = isset($_REQUEST['searchType'])? intval($_REQUEST['searchType']) : 0 ;
-        $taskTitle = isset($_REQUEST['searchTitle'])? contrexx_input2raw($_REQUEST['searchTitle']) : '';
-
-        $mes = base64_decode($_REQUEST['mes']);
-        switch($mes) {
-            case 'Inserted':
-                $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_TASK_OK_MESSAGE'];
+        $this->crmTaskController = $this->load->controller('crmTask', __CLASS__, $this->_objTpl);
+        $tpl = isset($_GET['tpl']) ? $_GET['tpl'] : '';
+        
+        switch ($tpl) {
+            case 'modify':
+                $this->crmTaskController->_modifyTask();
                 break;
-            case 'Updated':
-                $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_TASK_UPDATE_MESSAGE'];
-                break;
-            case 'Deleted':
-                $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_TASK_DELETE_MESSAGE'];
-                break;
-            case 'Changed':
-                $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_TASK_STATUS_MESSAGE'];
-                break;
-        }
-        $objType = $objDatabase->Execute("SELECT id,name FROM ".DBPREFIX."module_{$this->moduleName}_task_types ORDER BY sorting");
-        if ($objType) {
-            while (!$objType->EOF) {
-                $selected = ($objType->fields['id'] == $taskId) ? 'selected="selected"' : '';
-                $objtpl->setVariable(array(
-                        'CRM_TASK_ID'       => (int) $objType->fields['id'],
-                        'TXT_TASK_NAME'     => contrexx_raw2xhtml($objType->fields['name']),
-                        'TXT_TASK_SELECTED' => $selected,
-                ));
-                $objtpl->parse('tastType');
-                $objType->MoveNext();
-            }
-        }
-
-        if (isset($_GET['chg']) and $_GET['chg'] == 1 and isset($_POST['selected']) and is_array($_POST['selected'])) {
-            if ($_POST['form_activate'] != '' or $_POST['form_deactivate'] != '') {
-                $ids = $_POST['selected'];
-                $to  = $_POST['form_activate'] ? 1 : 0;
-                foreach ($ids as $id) {
-                    $query = "UPDATE ".DBPREFIX."module_".$this->moduleName."_task
-                                                                   SET   task_status  = '".$to."'
-                                                                   WHERE id      = '".intval($id)."'";
-                    $objDatabase->SelectLimit($query, 1);
-                }
-                $this->_strOkMessage = ($to == 1) ? $_ARRAYLANG['TXT_CRM_ACTIVATED_SUCCESSFULLY'] : $_ARRAYLANG['TXT_CRM_DEACTIVATED_SUCCESSFULLY'];
-            }
-            if ($_POST['form_delete'] != '') {
-                $ids = $_POST['selected'];
-                $x   = 0;
-                foreach ($ids as $id) {
-                    $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleName."_task
-                                                                       WHERE id = '".intval($id)."'";
-                    $objDatabase->SelectLimit($query, 1);
-                }
-                $this->_strOkMessage = ($_POST['form_delete'] == 1) ? $_ARRAYLANG['TXT_CRM_TASK_DELETED'] : '';
-            }
-        }
-
-        $message = base64_encode('Changed');
-        $status = ($_GET['status'] == 0) ? 1 : 0;
-        $id     = intval($_GET['status_id']);
-
-        $typefilter = !empty($taskId) ? "&searchType=$taskId" : '';
-        $titlefilter= !empty($taskTitle) ? "&searchTitle=$taskTitle" : '';
-
-        if (!empty($id)) {
-            $query = 'UPDATE '.DBPREFIX.'module_'.$this->moduleName.'_task SET task_status='.$status.' WHERE id = '.$id;
-            $objDatabase->Execute($query);
-            CSRF::header("location:index.php?cmd=crm&act=task$typefilter$titlefilter&mes='$message'");
-            exit();
-        }
-
-
-        if (!empty($typefilter) || !empty($titlefilter)) {
-            $totalfilter = $typefilter.$titlefilter;
-        }
-
-        if ($taskId != 0) {
-            $filterAdd   = ($filterTyp == 0) ? " WHERE" : " AND";
-            $filterType .= $filterAdd."  t.task_type_id = '$taskId'";
-            $filterTyp   = 1;
-        }
-
-        if ($taskTitle != '') {
-            $filterAdd   = ($filterTyp == 0) ? " WHERE" : " AND";
-            $filterType .= $filterAdd."  t.task_title LIKE '%$taskTitle%' OR c.customer_name LIKE '%$taskTitle%'";
-            $filterTyp   = 1;
-        }
-
-        $query = "SELECT tt.name,
-                               t.task_status,
-                               t.id,
-                               t.task_id,
-                               t.task_title,
-                               t.task_type_id,
-                               t.customer_id,
-                               c.customer_name,
-                               c.contact_familyname,
-                               t.due_date,
-                               contrexxuser.username,
-                               t.description
-                            FROM ".DBPREFIX."module_{$this->moduleName}_task as t
-                            LEFT JOIN ".DBPREFIX."module_{$this->moduleName}_task_types as tt
-                            ON (t.task_type_id=tt.id)
-                            LEFT JOIN ".DBPREFIX."access_users AS contrexxuser
-                            ON contrexxuser.id = t.assigned_to
-                            LEFT JOIN ".DBPREFIX."module_{$this->moduleName}_contacts as c
-                            ON (t.customer_id = c.id) $filterType";
-        /* Start Paging ------------------------------------ */
-        $intPos             = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
-        // TODO: Never used
-        $intPerPage         = $this->getPagingLimit();
-        $strPagingSource    = getPaging($this->countRecordEntries($query), $intPos, "&amp;cmd=$this->moduleName&amp;act=task$totalfilter", false, '', $intPerPage);
-        $this->_objTpl->setVariable('ENTRIES_PAGING', $strPagingSource);
-        /* End Paging -------------------------------------- */
-        $start      = $intPos ?: 0;
-        $sorting = array('task_title','task_type_id','customer_name','due_date');
-
-        if (isset($_GET['sortf']) && isset($_GET['sorto'])) {
-            $sortf = in_array($sorting[$_GET['sortf']], $sorting)? contrexx_input2raw($sorting[$_GET['sortf']]):'';
-            $sorto = ($_GET['sorto'] == 'ASC')? 'DESC' : 'ASC';
-            $order = " ORDER BY";
-            $order .= " $sortf $sorto LIMIT $start, $intPerPage";
-        }
-
-        $idorder    = " ORDER BY";
-        $idorder   .= " t.`id` DESC LIMIT $start, $intPerPage";
-        if (isset($_GET['sortf']) && isset($_GET['sorto'])) {
-            $query .= $order;
-        } else {
-            $query     .= $idorder;
-        }
-        $objResult  = $objDatabase->Execute($query);
-
-        $objtpl->setVariable(array( 'TXT_SEARCH_VALUE' => contrexx_input2raw($_POST['search'])));
-        $row = 'row2';
-
-        if (empty($objResult->fields['id'])) {
-            $objtpl->setVariable(array(
-                    'TXT_NO_RECORDS_FOUND'  => $_ARRAYLANG['CRM_NO_RECORDS_FOUND']
-            ));
-            $objtpl->parse('noRecords');
-            $objtpl->setVariable(array(
-                    'TXT_NO_RECORDS_FOUND'  => $_ARRAYLANG['CRM_NO_RECORDS_FOUND']
-            ));
-            $objtpl->parse('noRecords1');
-        } else {
-            if ($objResult) {                
-                while (!$objResult->EOF) {
-                    $objtpl->setVariable(array(
-                            'CRM_TASK_ID'          => (int) $objResult->fields['id'],
-                            'TXT_CRM_TASKID'       => contrexx_raw2xhtml($objResult->fields['task_id']),
-                            'TXT_CRM_TASKTITLE'    => contrexx_raw2xhtml($objResult->fields['task_title']),
-                            'TXT_CRM_TASKTYPE'     => contrexx_raw2xhtml($objResult->fields['name']),
-                            'TXT_CRM_CUSTOMERNAME' => contrexx_raw2xhtml($objResult->fields['customer_name']." ".$objResult->fields['contact_familyname']),
-                            'TXT_DUEDATE'          => contrexx_raw2xhtml($objResult->fields['due_date']),
-                            'TXT_POSEDITLINK'      => $position,
-                            'TXT_STATUS'           => (int) $objResult->fields['task_status'],
-                            'CRM_TASK_TYPE_ACTIVE' => $objResult->fields['task_status'] == 1 ? 'led_green.gif':'led_red.gif',
-                            'TXT_ROW'              => $row = ($row == 'row2')? 'row1':'row2',
-                            'TXT_ADDEDBY'          => contrexx_raw2xhtml($objResult->fields['username']),
-                            'TXT_CRM_IMAGE_EDIT'   => $_ARRAYLANG['TXT_CRM_IMAGE_EDIT'],
-                            'TXT_CRM_IMAGE_DELETE' => $_ARRAYLANG['TXT_CRM_IMAGE_DELETE'],                            
-                            'CRM_REDIRECT_LINK'    => '&redirect='.base64_encode("&act=task$typefilter$titlefilter$position"),
-                    ));
-                    $objtpl->parse('showTask');
-                    $objResult->MoveNext();
-                }
-            }
-        }
-
-        $objtpl->setVariable(array(
-                'TXT_LINK'                      => $totalfilter,
-                'TXT_ORDER'                     => $sorto,
-                'TXT_SEARCH_VALUE'              => contrexx_raw2xhtml($taskTitle),
-                'TXT_CRM_OVERVIEW'              => $_ARRAYLANG['TXT_CRM_OVERVIEW'],
-                'TXT_CRM_ADD_TASK'              => $_ARRAYLANG['TXT_CRM_ADD_TASK'],
-                'TXT_CRM_ADD_IMPORT'            => $_ARRAYLANG['TXT_CRM_ADD_IMPORT'],
-                'TXT_CRM_ADD_EXPORT'            => $_ARRAYLANG['TXT_CRM_ADD_EXPORT'],
-                "TXT_CRM_FUNCTIONS"             => $_ARRAYLANG['TXT_CRM_FUNCTIONS'],
-                'TXT_CRM_TASK_TYPE_DESCRIPTION' => $_ARRAYLANG['TXT_CRM_TASK_TYPE_DESCRIPTION'],
-                'TXT_CRM_ASSIGNEDTO'            => $_ARRAYLANG['TXT_CRM_ASSIGNEDTO'],
-                'TXT_CRM_TASK_DUE_DATE'         => $_ARRAYLANG['TXT_CRM_TASK_DUE_DATE'],
-                'TXT_CRM_CUSTOMER_NAME'         => $_ARRAYLANG['TXT_CRM_CUSTOMER_NAME'],
-                'TXT_CRM_TASK_TYPE'             => $_ARRAYLANG['TXT_CRM_TASK_TYPE'],
-                'TXT_CRM_TASK_TITLE'            => $_ARRAYLANG['TXT_CRM_TASK_TITLE'],
-                'TXT_CRM_TASK_ID'               => $_ARRAYLANG['TXT_CRM_TASK_ID'],
-                'TXT_CRM_TASK_STATUS'           => $_ARRAYLANG['TXT_CRM_TASK_STATUS'],
-                'TXT_CRM_TASK'                  => $_ARRAYLANG['TXT_CRM_TASK'],
-                'TXT_ENTRIES_MARKED'            => $_ARRAYLANG['TXT_ENTRIES_MARKED'],
-                'TXT_CRM_SELECT_ALL'            => $_ARRAYLANG['TXT_CRM_SELECT_ALL'],
-                'TXT_CRM_DESELECT_ALL'          => $_ARRAYLANG['TXT_CRM_REMOVE_SELECTION'],
-                'TXT_CRM_SELECT_ACTION'         => $_ARRAYLANG['TXT_CRM_SELECT_ACTION'],
-                'TXT_CRM_NO_OPERATION'          => $_ARRAYLANG['TXT_CRM_NO_OPERATION'],
-                'TXT_CRM_ACTIVATESELECTED'      => $_ARRAYLANG['TXT_CRM_ACTIVATESELECTED'],
-                'TXT_CRM_DEACTIVATESELECTED'    => $_ARRAYLANG['TXT_CRM_DEACTIVATESELECTED'],
-                'TXT_CRM_DELETE_SELECTED'       => $_ARRAYLANG['TXT_CRM_DELETE_SELECTED'],
-                'TXT_CRM_DELETE_CONFIRM'        => $_ARRAYLANG['TXT_CRM_DELETE_CONFIRM'],
-                'TXT_CRM_FILTERS'               => $_ARRAYLANG['TXT_CRM_FILTERS'],
-                'TXT_CRM_SEARCH'                => $_ARRAYLANG['TXT_CRM_SEARCH'],
-                'TXT_CRM_ENTER_SEARCH_TERM'     => $_ARRAYLANG['TXT_CRM_ENTER_SEARCH_TERM'],
-                'TXT_CRM_FILTER_TASK_TYPE'      => $_ARRAYLANG['TXT_CRM_FILTER_TASK_TYPE']
-        ));
-    }
-
-    /**
-     * add /edit task
-     *
-     * @global array $_ARRAYLANG
-     * @global object $objDatabase
-     * @return true
-     */
-    function _modifyTask()
-    {
-        global $_ARRAYLANG,$objDatabase,$objJs,$objFWUser;
-        JS::activate('cx');
-        JS::activate("jquery");
-        JS::activate("jqueryui");
-        JS::activate("shadowbox");
-        JS::registerCSS("lib/javascript/crm/css/contact.css");
-
-        $objtpl = $this->_objTpl;
-        $this->_pageTitle = empty($_GET['id']) ? $_ARRAYLANG['TXT_CRM_ADDTASK'] : $_ARRAYLANG['TXT_CRM_EDITTASK'];
-
-        $objtpl->setGlobalVariable("MODULE_NAME", $this->moduleName);
-        $this->_objTpl->loadTemplateFile('module_'.$this->moduleName.'_addtasks.html');
-
-        $date = date('Y-m-d H:i:s');
-        $title       = isset($_POST['taskTitle']) ? contrexx_input2raw($_POST['taskTitle']) : '';
-        $type        = isset($_POST['taskType']) ? (int) $_POST['taskType'] : 0;
-        $customer    = isset($_REQUEST['customerId']) ? (int) $_REQUEST['customerId'] : '';
-        $duedate     = isset($_POST['date']) ? $_POST['date'] : $date;
-        $assignedto  = isset($_POST['assignedto']) ? intval($_POST['assignedto']) : $objFWUser->objUser->getId();
-        $description = isset($_POST['description']) ? contrexx_input2raw($_POST['description']) : '';
-        $taskAutoId  = isset($_POST['taskAutoId']) ? contrexx_input2raw($_POST['taskAutoId']) : "";
-        $id          = isset($_REQUEST['id'])? (int) $_REQUEST['id']:'';
-
-        $taskId      = isset($_REQUEST['searchType'])? intval($_REQUEST['searchType']) : 0 ;
-        $taskTitle   = isset($_REQUEST['searchTitle'])? contrexx_input2raw($_REQUEST['searchTitle']) : '';
-
-        $redirect     = isset($_REQUEST['redirect']) ? $_REQUEST['redirect'] : base64_encode('&act=task');
-        if (empty($taskAutoId)) {
-            $i = 0;
-            $codeNumb = "";
-            $possible = '1234567890';
-            while ($i < 3) {
-                $codeNumb .= substr($possible, mt_rand(0, strlen($possible)-1), 1);
-                $i++;
-            }
-            $taskAutoId = "TC".$codeNumb;
-        }
-
-        if (isset($_POST['addtask'])) {
-            if (!empty($id)) {
-                $query = "UPDATE ".DBPREFIX."module_{$this->moduleName}_task
-                               SET `task_title`    = '$title',
-                                   `task_type_id`  = '$type',
-                                   `customer_id` = '$customer',
-                                   `due_date`      = '$duedate',
-                                   `assigned_to`   = '$assignedto',
-                                   `description`   = '".contrexx_raw2db($description)."'
-                                    WHERE id= '$id'";
-                $message = 'Updated';
-                $typefilter = !empty($taskId)? "&searchType=$taskId":'';
-                $titlefilter= !empty($taskTitle)? "&searchTitle=$taskTitle&searchCustomer=$taskTitle":'';                
-            } else {
-                $query = "INSERT INTO ".DBPREFIX."module_{$this->moduleName}_task
-                                   SET `task_id`       = '$taskAutoId',
-                                       `task_title`    = '$title',
-                                       `task_type_id`  = '$type',
-                                       `customer_id` = '$customer',
-                                       `due_date`      = '$duedate',
-                                       `assigned_to`   = '$assignedto',
-                                       `description`   = '".contrexx_raw2db($description)."'
-                                       ";
-                $message = 'Inserted';
-            }
-            $db = $objDatabase->Execute($query);
-            if ($db) {
-                if ($assignedto != $objFWUser->objUser->getId()) {
-                    $id = (!empty($id)) ? $objDatabase->INSERT_ID() : $id;
-                    $info['substitution'] = array(
-                            'CRM_ASSIGNED_USER_EMAIL'           => $objFWUser->objUser->getUser($assignedto)->getEmail(),
-                            'CRM_TASK_NAME'                     => $title,
-                            'CRM_TASK_LINK'                     => "<a href='". ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}". ASCMS_ADMIN_WEB_PATH ."/index.php?cmd={$this->moduleName}&act=task&id=$id'>$title</a>",
-                            'CRM_TASK_DUE_DATE'                 => $duedate,
-                            'CRM_TASK_CREATED_USER'             => $objFWUser->objUser->getUsername(),
-                            'CRM_TASK_DESCRIPTION_TEXT_VERSION' => strip_tags($description),
-                            'CRM_TASK_DESCRIPTION_HTML_VERSION' => $description
-                    );
-
-                    $dispatcher = EventDispatcher::getInstance();
-                    $dispatcher->triggerEvent(CRM_EVENT_ON_TASK_CREATED, null, $info);
-                }
-
-                CSRF::header("Location:./index.php?cmd={$this->moduleName}&mes=".base64_encode($message).base64_decode($redirect));
+            case 'cstatus':
+                $this->crmTaskController->changeTaskStatus();
                 exit();
-            }
-            return;
-        } elseif (!empty($id)) {
-            $objValue       = $objDatabase->Execute("SELECT task_id,
-                                                            task_title,
-                                                            task_type_id,
-                                                            due_date,
-                                                            assigned_to,
-                                                            description,
-                                                            t.customer_id,
-                                                            c.customer_name,
-                                                            c.contact_familyname
-                                                       FROM `".DBPREFIX."module_{$this->moduleName}_task` AS t
-                                                       LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_contacts` AS c
-                                                            ON t.customer_id = c.id
-                                                       WHERE t.id='$id'");
-
-            $title      = $objValue->fields['task_title'];
-            $type       = $objValue->fields['task_type_id'];
-            $customer   = $objValue->fields['customer_id'];
-            $customerName = $objValue->fields['customer_name']." ".$objValue->fields['contact_familyname'];
-            $duedate    = $objValue->fields['due_date'];
-            $assignedto = $objValue->fields['assigned_to'];
-            $description= $objValue->fields['description'];
-            $taskAutoId = $objValue->fields['task_id'];
+                break;
+            case 'deleteTask':            
+                $this->crmTaskController->deleteTask();
+                break;
+            default:
+                $this->crmTaskController->overview();
+                break;
         }
 
-        $objResultMember = $objDatabase->Execute('SELECT contrexxuser.id as userid,
-                                                         contrexxuser.is_admin,
-                                                         contrexxuser.active,
-                                                         contrexxuser.username
-                                                   FROM '.DBPREFIX.'access_users AS contrexxuser
-                                                      WHERE contrexxuser.active != 0
-                                                   ORDER BY contrexxuser.username');
-        while (!$objResultMember->EOF) {
-            $selectedMember = ($assignedto ==  $objResultMember->fields['userid']) ? "selected" : '';
-
-            $objtpl->setVariable(array(
-                    'TXT_ADDPROJECT_MEMBERID'	 => (int) $objResultMember->fields['userid'],
-                    'TXT_ADDPROJECT_MEMBERNAME'      => contrexx_raw2xhtml($objResultMember->fields['username']),
-                    'TXT_MEMBERSELECTED'             => $selectedMember
-            ));
-            $objtpl->parse('Members');
-            $objResultMember->MoveNext();
-        }
-
-        $this->taskTypeDropDown($objtpl, $type);
-
-        if (!empty($customer)) {
-            // Get customer Name
-            $objCustomer = $objDatabase->Execute("SELECT customer_name, contact_familyname  FROM `".DBPREFIX."module_crm_contacts` WHERE id = {$customer}");
-            $customerName = $objCustomer->fields['customer_name']." ".$objCustomer->fields['contact_familyname'];
-        }
-
-        $objtpl->setVariable(array(
-                'CRM_TASK_AUTOID'       => contrexx_raw2xhtml($taskAutoId),
-                'CRM_TASK_ID'           => (int) $id,
-                'CRM_TASKTITLE'         => contrexx_raw2xhtml($title),
-                'CRM_DUE_DATE'          => contrexx_raw2xhtml($duedate),
-                'CRM_CUSTOMER_ID'       => intval($customer),
-                'CRM_CUSTOMER_NAME'     => contrexx_raw2xhtml($customerName),                
-                'CRM_TASK_DESC'         => new \Cx\Core\Wysiwyg\Wysiwyg('description', contrexx_raw2xhtml($description), 'pm_small'),
-
-                'TXT_CRM_ADD_TASK'        => empty($id)? $_ARRAYLANG['TXT_CRM_ADD_TASK'] : $_ARRAYLANG['TXT_CRM_EDITTASK'],
-                'TXT_CRM_TASK_ID'             => $_ARRAYLANG['TXT_CRM_TASK_ID'],
-                'TXT_CRM_TASK_TITLE'          => $_ARRAYLANG['TXT_CRM_TASK_TITLE'],
-                'TXT_CRM_TASK_TYPE'           => $_ARRAYLANG['TXT_CRM_TASK_TYPE'],
-                'TXT_CRM_SELECT_TASK_TYPE'    => $_ARRAYLANG['TXT_CRM_SELECT_TASK_TYPE'],
-                'TXT_CRM_CUSTOMER_NAME'       => $_ARRAYLANG['TXT_CRM_CUSTOMER_NAME'],
-                'TXT_CRM_TASK_DUE_DATE'       => $_ARRAYLANG['TXT_CRM_TASK_DUE_DATE'],
-                'TXT_CRM_ASSIGNEDTO'          => $_ARRAYLANG['TXT_CRM_ASSIGNEDTO'],
-                'TXT_CRM_SELECT_MEMBER_NAME'  => $_ARRAYLANG['TXT_CRM_SELECT_MEMBER_NAME'],
-                'TXT_CRM_OVERVIEW'            => $_ARRAYLANG['TXT_CRM_OVERVIEW'],
-                'TXT_CRM_TASK_DESCRIPTION'  => $_ARRAYLANG['TXT_CRM_TASK_DESCRIPTION'],
-                'TXT_CRM_FIND_COMPANY_BY_NAME'=>    $_ARRAYLANG['TXT_CRM_FIND_COMPANY_BY_NAME'],
-                'TXT_CRM_SAVE'            => $_ARRAYLANG['TXT_CRM_SAVE']
-        ));
-    }
-
-    /**
-     * delete the task
-     *
-     * @global array $_ARRAYLANG
-     * @global object $objDatabase
-     * @return true
-     */
-    function deleteTask()
-    {
-        global $_ARRAYLANG,$objDatabase;
-
-        $objtpl  = $this->_objTpl;
-        $objtpl->setGlobalVariable("MODULE_NAME", $this->moduleName);
-        $id      = isset($_GET['id'])? (int) $_GET['id']:0;
-        $taskId     = isset($_REQUEST['searchType'])? intval($_REQUEST['searchType']) : 0 ;
-        $taskTitle  = isset($_REQUEST['searchTitle'])? contrexx_input2raw($_REQUEST['searchTitle']) : '';
-        $message = base64_encode('Deleted');
-
-        if (!empty($id)) {
-            $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_{$this->moduleName}_task WHERE id = '$id'");
-            $typefilter = !empty($taskId)? "&searchType=$taskId":'';
-            $titlefilter= !empty($taskTitle)? "&searchTitle=$taskTitle&searchCustomer=$taskTitle":'';
-            csrf::header("location:index.php?cmd=crm&act=task$typefilter$titlefilter&mes='$message'");
-        }
-    }
-
-    /**
-     * get the count of entries
-     *
-     * @global array $_ARRAYLANG
-     * @global object $objDatabase
-     * @return true
-     */
-    function countRecordEntries($query)
-    {
-        global $objDatabase;
-
-        $objEntryResult = $objDatabase->Execute('SELECT  COUNT(*) AS numberOfEntries
-                                                    FROM    ('.$query.') AS num');
-
-        return intval($objEntryResult->fields['numberOfEntries']);
+        return;
     }
 
     /**
@@ -4184,16 +3672,25 @@ END;
         $intPerpage = 50;
         $intPage    = (isset($_GET['page']) ? (int) $_GET['page'] : 0) * $intPerpage;
         $objTpl->loadTemplateFile("module_{$this->moduleName}_contact_tasks.html");
-
+        $objTpl->setGlobalVariable(array(
+                'MODULE_NAME'        => $this->moduleName,
+                'PM_MODULE_NAME'    => $this->pm_moduleName,
+                'CSRF_PARAM'            => CSRF::param(),
+        ));
         $query = "SELECT tt.name,
-                         t.id AS taskid,
-                         t.task_title,                         
-                         c.customer_name,
-                         c.contact_familyname,
-                         t.due_date,
-                         contrexxuser.username,
-                         t.description,
-                         t.task_status
+                         t.task_status,
+                         t.id,
+                           t.task_id,
+                           t.task_title,
+                           t.task_type_id,
+                           t.added_by,
+                           t.assigned_to,
+                           c.customer_name,
+                           c.contact_familyname,
+                           t.due_date,
+                           contrexxuser.username,
+                           t.description,
+                           c.id AS customer_id
                     FROM ".DBPREFIX."module_{$this->moduleName}_task as t
                     LEFT JOIN ".DBPREFIX."module_{$this->moduleName}_task_types as tt
                         ON (t.task_type_id=tt.id)
@@ -4208,43 +3705,64 @@ END;
             exit();
         }
         ($objResult->RecordCount() > 0) ? $objTpl->hideBlock("noRecords") : $objTpl->touchBlock("noRecords");
+        
+        $row = 'row2';
+        $now = strtotime('now');
         if ($objResult) {
-            while (!$objResult->EOF) {
+            if ($objResult->RecordCount() == 0) {
                 $objTpl->setVariable(array(
-                        'CRM_TASK_ID'          => (int) $objResult->fields['id'],
-                        'TXT_CRM_TASKID'       => contrexx_raw2xhtml($objResult->fields['task_id']),
-                        'TXT_CRM_TASKTITLE'    => contrexx_raw2xhtml($objResult->fields['task_title']),
-                        'TXT_CRM_TASKTYPE'     => contrexx_raw2xhtml($objResult->fields['name']),
-                        'TXT_CRM_CUSTOMERNAME' => contrexx_raw2xhtml($objResult->fields['customer_name']." ".$objResult->fields['contact_familyname']),
-                        'TXT_DUEDATE'          => contrexx_raw2xhtml($objResult->fields['due_date']),
-                        'TXT_POSEDITLINK'      => $position,
-                        'TXT_STATUS'           => (int) $objResult->fields['task_status'],
-                        'TXT_CRM_DESCRIPTION'      => html_entity_decode($objResult->fields['description'], ENT_QUOTES, CONTREXX_CHARSET),
-                        'CRM_TASK_TYPE_ACTIVE' => $objResult->fields['task_status'] == 1 ? 'led_green.gif':'led_red.gif',
-                        'TXT_ROW'              => $row = ($row == 'row2')? 'row1':'row2',
-                        'TXT_ADDEDBY'          => contrexx_raw2xhtml($objResult->fields['username']),
-                        'TXT_CRM_IMAGE_EDIT'       => $_ARRAYLANG['TXT_CRM_IMAGE_EDIT'],
-                        'TXT_CRM_IMAGE_DELETE'     => $_ARRAYLANG['TXT_CRM_IMAGE_DELETE'],
+                        'TXT_NO_RECORDS_FOUND'  => $_ARRAYLANG['TXT_CRM_NO_RECORDS_FOUND']
                 ));
-                $objTpl->parse('showTask');
-                $objResult->MoveNext();
-            }
+                $objTpl->touchblock('noRecords');
+            } else {
+                $objTpl->hideblock('noRecords');
+                while (!$objResult->EOF) {
+                    list($task_edit_permission, $task_delete_permission) = $this->getTaskPermission((int) $objResult->fields['added_by'], (int) $objResult->fields['assigned_to']);
+                    if (!$task_edit_permission) {
+                        $objTpl->hideblock('task_edit_block');
+                    }
+                    if (!$task_delete_permission) {
+                        $objTpl->hideblock('task_delete_block');
+                    }
+                    $objTpl->setVariable(array(
+                            'CRM_TASK_ID'           => (int) $objResult->fields['id'],
+                            'CRM_TASKTITLE'         => contrexx_raw2xhtml($objResult->fields['task_title']),
+                            'CRM_TASKTYPE'          => contrexx_raw2xhtml($objResult->fields['task_type_id']),
+                            'CRM_CUSTOMERNAME'      => contrexx_raw2xhtml($objResult->fields['customer_name']." ".$objResult->fields['contact_familyname']),
+                            'CRM_DUEDATE'           => contrexx_raw2xhtml(date('h:i A Y-m-d', strtotime($objResult->fields['due_date']))),
+                            'TXT_STATUS'            => (int) $objResult->fields['task_status'],
+                            'CRM_TASK_TYPE_ACTIVE'  => $objResult->fields['task_status'] == 1 ? 'led_green.gif':'led_red.gif',
+                            'TXT_ROW'               => $row = ($row == 'row2')? 'row1':'row2',
+                            'CRM_ADDEDBY'           => contrexx_raw2xhtml($objResult->fields['username']),
+                            'CRM_TASK_CUSTOMER_ID'  => (int) $objResult->fields['customer_id'],
+                            'TXT_CRM_IMAGE_EDIT'    => $_ARRAYLANG['TXT_CRM_IMAGE_EDIT'],
+                            'TXT_CRM_IMAGE_DELETE'  => $_ARRAYLANG['TXT_CRM_IMAGE_DELETE'],
+                            'CRM_TASK_EXPIRED_CLASS'=> $objResult->fields['task_status'] == 1 || strtotime($objResult->fields['due_date']) > $now ? '' : 'task_expired',
+                            'CRM_REDIRECT_LINK'     => '&redirect='.base64_encode("&act=showcustdetail&id=$contactId"),
+                    ));
+                    $objTpl->parse('showTask');
+                    $objResult->MoveNext();
+                }
 
-            $objTpl->setVariable(array(
-                    'TXT_CRM_TASK_STATUS'   => $_ARRAYLANG['TXT_CRM_TASK_STATUS'],
-                    'TXT_CRM_TASK_TITLE'    => $_ARRAYLANG['TXT_CRM_TASK_TITLE'],
-                    'TXT_CRM_TASK_TYPE'     => $_ARRAYLANG['TXT_CRM_TASK_TYPE'],
-                    'TXT_CRM_CUSTOMER_NAME' => $_ARRAYLANG['TXT_CRM_CUSTOMER_NAME'],
-                    'TXT_CRM_TASK_DUE_DATE'     => $_ARRAYLANG['TXT_CRM_TASK_DUE_DATE'],
-                    'TXT_CRM_ASSIGNEDTO'        => $_ARRAYLANG['TXT_CRM_ASSIGNEDTO'],
-                    'TXT_CRM_TASK'              => $_ARRAYLANG['TXT_CRM_TASK'],
-                    'TXT_NO_RECORDS_FOUND'  => $_ARRAYLANG['CRM_NO_RECORDS_FOUND'],
-                    'TXT_CRM_ADD_TASK'      => $_ARRAYLANG['TXT_CRM_ADD_TASK'],
-                    'CSRF_PARAM'            => CSRF::param(),
-                    'CRM_CUSTOMER_ID'       => $contactId,
-            ));
+ 
+            }
         }
+        $objTpl->setVariable(array(
+                'TXT_CRM_TASK_STATUS'   => $_ARRAYLANG['TXT_CRM_TASK_STATUS'],
+                'TXT_CRM_TASK_TITLE'    => $_ARRAYLANG['TXT_CRM_TASK_TITLE'],
+                'TXT_CRM_TASK_TYPE'     => $_ARRAYLANG['TXT_CRM_TASK_TYPE'],
+                'TXT_CRM_CUSTOMER_NAME' => $_ARRAYLANG['TXT_CRM_CUSTOMER_NAME'],
+                'TXT_CRM_TASK_DUE_DATE' => $_ARRAYLANG['TXT_CRM_TASK_DUE_DATE'],
+                'TXT_CRM_ASSIGNEDTO'    => $_ARRAYLANG['TXT_CRM_ASSIGNEDTO'],
+                'TXT_CRM_TASK'          => $_ARRAYLANG['TXT_CRM_TASK'],
+                'TXT_NO_RECORDS_FOUND'  => $_ARRAYLANG['TXT_CRM_NO_RECORDS_FOUND'],
+                'TXT_CRM_ADD_TASK'      => $_ARRAYLANG['TXT_CRM_ADD_TASK'],
+                'TXT_CRM_TASK_RESPONSIBLE' => $_ARRAYLANG['TXT_CRM_TASK_RESPONSIBLE'],
+                'TXT_CRM_FUNCTIONS'        => $_ARRAYLANG['TXT_CRM_FUNCTIONS'],
+                'CRM_CUSTOMER_ID'       => $contactId,
+        ));
         $this->_objTpl->setGlobalVariable('CRM_REDIRECT_LINK' , '&redirect='.base64_encode("&act=showcustdetail&id={$contactId}"));
+        
         if (isset($_GET['ajax'])) {
             $this->_objTpl->hideBlock("skipAjaxBlock");
             $this->_objTpl->hideBlock("skipAjaxBlock1");
@@ -4268,11 +3786,33 @@ END;
         $objTpl->loadTemplateFile("module_{$this->moduleName}_contacts_projects.html");
         $objTpl->setGlobalVariable(array(
                 'MODULE_NAME'        => $this->moduleName,
-                'PM_MODULE_NAME'    => $this->pm_moduleName
+                'PM_MODULE_NAME'     => $this->pm_moduleName
         ));
-        $custId = (int) $_GET['id'];
+        $custId     = (int) $_GET['id'];
         $intPerpage = 50;
         $intPage    = (isset($_GET['page']) ? (int) $_GET['page'] : 0) * $intPerpage;
+
+        $dbCustomerId[] = $custId;
+        
+        $contactType = $objDatabase->getOne("SELECT `contact_type` FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE `id` = '$custId'");
+
+        if ($contactType == 2) {
+            $query = "SELECT `contact_customer` AS customerId FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE `id` = '$custId'";
+        } elseif ($contactType == 1) {
+            $query = "SELECT `id` AS customerId FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE `contact_customer` = '$custId'";
+        }
+        $objContacts = $objDatabase->Execute($query);
+
+        if ($objContacts) {
+            foreach ($objContacts->GetArray() as $contact) {
+                $dbCustomerId[] = (int) $contact['customerId'];
+            }
+        }
+
+        $whereCustomer = '';
+        if (!empty($dbCustomerId)) {
+            $whereCustomer = " pro.`customer_id` IN (". implode(',', $dbCustomerId).")";
+        }
         $projectsResult = 'SELECT pro.`id`,
                                          pro.`name`,
                                          pro.`domain`,
@@ -4296,7 +3836,7 @@ END;
                                       ON pro.`assigned_to` = users.`id`
                                   LEFT JOIN `'.DBPREFIX.'module_'.$this->moduleName.'_customer_contact_websites` AS cusWeb
                                       ON pro.`domain` = cusWeb.`id`
-                                  WHERE pro.`customer_id` = '.(int) $custId .' ORDER BY pro.`id` DESC LIMIT '.$intPage.','. $intPerpage;
+                                  WHERE '. $whereCustomer .' ORDER BY pro.`id` DESC LIMIT '.$intPage.','. $intPerpage;
 
         $objProjectResult = $objDatabase->Execute($projectsResult);
         if ($objProjectResult->RecordCount() == 0 && $_GET['ajax'] == true) {
@@ -4333,23 +3873,23 @@ END;
         }
 
         $this->_objTpl->setGlobalVariable(array (
-                'TXT_CRM_ACTIVE'                    => $_ARRAYLANG['TXT_CRM_ACTIVE'],
-                'TXT_CRM_PROJECT_ID'                => $_ARRAYLANG['CRM_PROJECT_ID'],
-                'TXT_CRM_PROJECT_NAME'              => $_ARRAYLANG['CRM_PROJECT_NAME'],
-                'TXT_CRM_PROJECT_QUOTED_PRICE'      => $_ARRAYLANG['CRM_PROJECT_QUOTED_PRICE'],
-                'TXT_CRM_CUSTOMER_NAME'            => $_ARRAYLANG['TXT_CRM_CUSTOMER_NAME'],
-                'TXT_CRM_PROJECT_STATUS'            => $_ARRAYLANG['CRM_PROJECT_STATUS'],
-                'TXT_CRM_PROJECT_RESPONSIBLE'       => $_ARRAYLANG['CRM_PROJECT_RESPONSIBLE'],
-                'TXT_CRM_PROJECT_TARGET_DATE'       => $_ARRAYLANG['CRM_PROJECT_TARGET_DATE'],
-                'CRM_NO_RECORDS_FOUND'              => $_ARRAYLANG['CRM_NO_RECORDS_FOUND'],
-                'TXT_CRM_PROJECT_CUSTOMER'          => $contactType == 1 ? $_ARRAYLANG['TXT_CRM_PROJECT_CUSTOMER'] : $_ARRAYLANG['TXT_CRM_PROJECT_CONTACT'],
-                'TXT_CRM_STATUS_SUCCESSFULLY_CHANGED'   => $_ARRAYLANG['TXT_CRM_STATUS_SUCCESSFULLY_CHANGED'],
-                'TXT_CRM_NOTE_TYPE'                     => $_ARRAYLANG['TXT_CRM_NOTE_TYPE'],
-                'TXT_CRM_TITLE_FUNCTIONS'               => $_ARRAYLANG['TXT_CRM_TITLE_FUNCTIONS'],
-                'TXT_CRM_ADD_PROJECT'                   => $_ARRAYLANG['TXT_CRM_ADD_PROJECT'],
-                'TXT_COMPANY_NAME'                  => $company,
-                'CSRF_PARAM'                        => CSRF::param(),
-                'CRM_CUSTOMER_ID'                   => $custId,
+                'TXT_CRM_ACTIVE'                      => $_ARRAYLANG['TXT_CRM_ACTIVE'],
+                'TXT_CRM_PROJECT_ID'                  => $_ARRAYLANG['TXT_CRM_PROJECT_ID'],
+                'TXT_TXT_CRM_PROJECT_NAME'                => $_ARRAYLANG['TXT_CRM_PROJECT_NAME'],
+                'TXT_CRM_PROJECT_QUOTED_PRICE'        => $_ARRAYLANG['TXT_CRM_PROJECT_QUOTED_PRICE'],
+                'TXT_CRM_CUSTOMER_NAME'               => $_ARRAYLANG['TXT_CRM_CUSTOMER_NAME'],
+                'TXT_CRM_PROJECT_STATUS'              => $_ARRAYLANG['TXT_CRM_PROJECT_STATUS'],
+                'TXT_CRM_PROJECT_RESPONSIBLE'         => $_ARRAYLANG['TXT_CRM_PROJECT_RESPONSIBLE'],
+                'TXT_CRM_PROJECT_TARGET_DATE'         => $_ARRAYLANG['TXT_CRM_PROJECT_TARGET_DATE'],
+                'TXT_CRM_NO_RECORDS_FOUND'                => $_ARRAYLANG['TXT_CRM_NO_RECORDS_FOUND'],
+                'TXT_CRM_PROJECTS'                    => $_ARRAYLANG['TXT_CRM_PROJECTS'],
+                'TXT_CRM_STATUS_SUCCESSFULLY_CHANGED' => $_ARRAYLANG['TXT_CRM_STATUS_SUCCESSFULLY_CHANGED'],
+                'TXT_CRM_NOTE_TYPE'                   => $_ARRAYLANG['TXT_CRM_NOTE_TYPE'],
+                'TXT_CRM_TITLE_FUNCTIONS'             => $_ARRAYLANG['TXT_CRM_TITLE_FUNCTIONS'],
+                'TXT_CRM_ADD_PROJECT'                 => $_ARRAYLANG['TXT_CRM_ADD_PROJECT'],
+                'TXT_COMPANY_NAME'                    => $company,
+                'CSRF_PARAM'                          => CSRF::param(),
+                'CRM_CUSTOMER_ID'                     => $custId,
 
         ));
         $this->_objTpl->setGlobalVariable('CRM_REDIRECT_LINK', "&redirect=".base64_encode("&cmd={$this->moduleName}&act=showcustdetail&id={$custId}"));
@@ -4445,12 +3985,12 @@ END;
                 'TXT_CRM_DEALS_TITLE'           => $_ARRAYLANG['TXT_CRM_DEALS_TITLE'],
                 'TXT_CRM_DEALS_CUSTOMER_NAME'   => $_ARRAYLANG['TXT_CRM_CUSTOMER_NAME'],
                 'TXT_CRM_DEALS_DUE_DATE'        => $_ARRAYLANG['TXT_CRM_DUE_DATE'],
-                'TXT_CRM_DEALS_RESPONSIBLE'     => $_ARRAYLANG['CRM_PROJECT_RESPONSIBLE'],
+                'TXT_CRM_DEALS_RESPONSIBLE'     => $_ARRAYLANG['TXT_CRM_PROJECT_RESPONSIBLE'],
                 'TXT_CRM_OF_CONTACTS'           => $_ARRAYLANG['TXT_CRM_OF_CONTACTS'],
                 'TXT_CRM_FUNCTIONS'             => $_ARRAYLANG['TXT_CRM_FUNCTIONS'],
-                'CRM_NO_RECORDS_FOUND'          => $_ARRAYLANG['CRM_NO_RECORDS_FOUND'],
+                'TXT_CRM_NO_RECORDS_FOUND'          => $_ARRAYLANG['TXT_CRM_NO_RECORDS_FOUND'],
                 'CRM_CUSTOMER_ID'               => $custId,
-                'TXT_CRM_ADD_OPPURTUNITY'       => $_ARRAYLANG['CRM_ADD_DEAL_TITLE'],
+                'TXT_CRM_ADD_OPPURTUNITY'       => $_ARRAYLANG['TXT_CRM_ADD_DEAL_TITLE'],
                 'CSRF_PARAM'                    => CSRF::param(),
         ));
         $this->_objTpl->setGlobalVariable('CRM_REDIRECT_LINK', '&redirect='.base64_encode("&act=showcustdetail&id={$custId}"));
@@ -4463,6 +4003,170 @@ END;
         }
         echo $objTpl->get();
         exit();
+    }
+
+    /**
+     * get contact documents
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function getContactDocuments()
+    {
+        global $objDatabase, $_ARRAYLANG;
+
+        $objTpl = $this->_objTpl;
+
+        $tpl = isset($_GET['tpl']) ? $_GET['tpl'] : '';
+        if (!empty($tpl)) {
+            switch ($tpl) {
+                case 'delete':
+                    $this->deleteContactDocument();
+                    break;
+                case 'download':
+                    include_once CRM_MODULE_LIB_PATH.'/qqFileUploader.php';
+                    $fileName    = $this->getContactFileNameById((int) $_GET['id'], (int) $_GET['customer']);
+                    $objUploader = new qqFileUploader();
+                    $objUploader->download(CRM_MEDIA_PATH, $fileName);
+                    break;
+            }
+            exit();
+        }
+
+        $contactId = (int) $_GET['id'];
+        $intPerpage = 50;
+        $intPage    = (isset($_GET['page']) ? (int) $_GET['page'] : 0) * $intPerpage;
+        $objTpl->loadTemplateFile("module_{$this->moduleName}_contact_documents.html");
+        $objTpl->setGlobalVariable(array(
+                'MODULE_NAME'        => $this->moduleName,
+                'PM_MODULE_NAME'    => $this->pm_moduleName,
+                'CSRF_PARAM'            => CSRF::param(),
+        ));
+        $query = "SELECT doc.id,
+                         doc.document_name,
+                         doc.uploaded_date,
+                         contrexxuser.username                         
+                    FROM ".DBPREFIX."module_{$this->moduleName}_customer_documents as doc
+                    LEFT JOIN ".DBPREFIX."access_users AS contrexxuser
+                            ON contrexxuser.id = doc.added_by
+                    WHERE doc.contact_id = $contactId ORDER BY doc.id DESC LIMIT $intPage, $intPerpage ";
+
+        $objResult = $objDatabase->Execute($query);
+                
+        if ($objResult) {
+            if ($objResult->RecordCount() == 0 && $_GET['ajax'] == true) {
+                echo '0';
+                exit();
+            }
+            $objTpl->setVariable(array(
+                    'TXT_NO_RECORDS_FOUND'  => $_ARRAYLANG['TXT_CRM_NO_RECORDS_FOUND']
+            ));
+            
+            $objResult->RecordCount() > 0 ? $objTpl->hideBlock("noRecords") : $objTpl->touchBlock("noRecords");
+            
+            while (!$objResult->EOF) {
+                $ext = pathinfo(CRM_MEDIA_PATH.$objResult->fields['document_name'], PATHINFO_EXTENSION);
+                $fileTypeClass = '';
+                switch ($ext) {
+                    case 'jpg':case 'jpeg':case 'png':case 'gif':case 'bmp':
+                        $fileTypeClass = 'document-img';
+                        break;
+                    case 'csv':
+                        $fileTypeClass = 'document-csv';
+                        break;
+                    case 'doc':
+                        $fileTypeClass = 'document-doc';
+                        break;
+                    case 'pdf':
+                        $fileTypeClass = 'document-pdf';
+                        break;
+                    case 'xls':
+                        $fileTypeClass = 'document-xls';
+                        break;
+                    case 'docx':
+                        $fileTypeClass = 'document-docx';
+                        break;
+                }
+                $objTpl->setVariable(array(
+                    'CRM_DOCUMENT_ID'   => (int) $objResult->fields['id'],
+                    'CRM_DOCUMENT_NAME' => contrexx_raw2xhtml($objResult->fields['document_name']),
+                    'CRM_ADDED_BY'      => contrexx_raw2xhtml($objResult->fields['username']),
+                    'CRM_ADDED_DATE'    => contrexx_raw2xhtml(date('Y-m-d h:i A', strtotime($objResult->fields['uploaded_date']))),
+                    'CRM_FILE_TYPE'     => $fileTypeClass
+                ));
+                $objTpl->parse('contact_documents');
+                $objResult->MoveNext();
+            }            
+        }
+        
+        $objTpl->setVariable(array(
+            'TXT_CRM_DOCUMENTS'     => $_ARRAYLANG['TXT_CRM_DOCUMENTS'],
+            'TXT_CRM_DOCUMENT_NAME' => $_ARRAYLANG['TXT_CRM_DOCUMENT_NAME'],
+            'TXT_CRM_ADDED_BY'      => $_ARRAYLANG['TXT_CRM_ADDED_BY'],
+            'TXT_CRM_ADDED_DATE'    => $_ARRAYLANG['TXT_CRM_ADDED_DATE'],
+            'TXT_CRM_FUNCTIONS'     => $_ARRAYLANG['TXT_CRM_FUNCTIONS'],
+            'TXT_CRM_ADD_DOCUMENTS' => $_ARRAYLANG['TXT_CRM_ADD_DOCUMENTS']
+        ));
+        $objTpl->setGlobalVariable(array(
+            'CRM_CUSTOMER_ID'        => $contactId,
+            'TXT_CRM_IMAGE_DELETE'   => $_ARRAYLANG['TXT_CRM_IMAGE_DELETE'],
+            'TXT_CRM_IMAGE_DOWNLOAD' => $_ARRAYLANG['TXT_CRM_IMAGE_DOWNLOAD']
+        ));
+
+        if (isset($_GET['ajax'])) {
+            $this->_objTpl->hideBlock("skipAjaxBlock");
+            $this->_objTpl->hideBlock("skipAjaxBlock1");
+        }
+        echo $objTpl->get();
+        exit();
+    }
+
+    /**
+     * Delete the requested document
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function deleteContactDocument()
+    {
+        global $objDatabase, $_ARRAYLANG;
+
+        $documentId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+        $customerId = isset($_GET['customer']) ? (int) $_GET['customer'] : 0;
+        $json = array();
+        if (!empty($customerId) && !empty($documentId)) {
+            $fileName = $this->getContactFileNameById($documentId, $customerId);            
+            unlink(CRM_MEDIA_PATH.$fileName);
+            $objDatabase->Execute("DELETE FROM `".DBPREFIX."module_{$this->moduleName}_customer_documents` WHERE `id` = $documentId");
+            $json['success'] = $_ARRAYLANG['TXT_CRM_DOCUMNET_DELETE_SUCCESS'];
+        } else {
+            $json['error'] = $_ARRAYLANG['TXT_CRM_ERROR_IN_DELETE_DOCUMENT'];
+        }
+        echo json_encode($json);
+        exit();
+    }
+
+    /**
+     * return name of the file name
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return file name
+     */
+    function getContactFileNameById($fileId = 0, $customerId = 0)
+    {
+        global $objDatabase;
+
+        if (empty($fileId) || empty($customerId))
+            return false;
+
+        $fileName = $objDatabase->getOne("SELECT
+                                                    `document_name`
+                                                FROM `".DBPREFIX."module_{$this->moduleName}_customer_documents`
+                                                  WHERE `id` = $fileId AND `contact_id` = $customerId");
+        return $fileName;
     }
 
     /**
@@ -4544,7 +4248,7 @@ END;
 
         $sortingFields = array("d.id", "d.title", "d.quoted_price",  "c.customer_name", "u.username", "d.due_date");
         $sorto = (isset ($_GET['sorto'])) ? (((int) $_GET['sorto'] == 0) ? 'DESC' : 'ASC') : 'DESC';
-        $sortf = (isset ($_GET['sortf']) && in_array($sortingFields[$_GET['sortf']], $sortingFields)) ? $sortingFields[$_GET['sortf']] : 'c.id';
+        $sortf = (isset ($_GET['sortf']) && in_array($sortingFields[$_GET['sortf']], $sortingFields)) ? $sortingFields[$_GET['sortf']] : $sortingFields[0];
         $sortLink = "&sorto={$_GET['sorto']}&sortf={$_GET['sortf']}";
 
         $query = "SELECT
@@ -4619,9 +4323,9 @@ END;
                 'CRM_DUE_DATE_SORT'             => "&sortf=5&sorto=$sortOrder",
                 'CRM_SEARCH_LINK'               => $searchLink,
                 'TXT_CRM_SEARCH'                => $_ARRAYLANG['TXT_CRM_SEARCH'],
-                'CRM_DEALS_CREATE'              => $_ARRAYLANG['CRM_DEALS_CREATE'],
-                'TXT_CRM_DEALS_QUOTED_PRICE'    => $_ARRAYLANG['CRM_PROJECT_QUOTED_PRICE'],
-                'CRM_DEALS_OVERVIEW'            => $_ARRAYLANG['CRM_DEALS_OVERVIEW'],
+                'TXT_CRM_DEALS_CREATE'              => $_ARRAYLANG['TXT_CRM_DEALS_CREATE'],
+                'TXT_CRM_DEALS_QUOTED_PRICE'    => $_ARRAYLANG['TXT_CRM_PROJECT_QUOTED_PRICE'],
+                'TXT_CRM_DEALS_OVERVIEW'            => $_ARRAYLANG['TXT_CRM_DEALS_OVERVIEW'],
                 'TXT_CRM_DEALS_OVERVIEW'        => $_ARRAYLANG['TXT_CRM_DEALS_OVERVIEW'],
                 'TXT_CRM_DEALS_TITLE'           => $_ARRAYLANG['TXT_CRM_DEALS_TITLE'],
                 'TXT_CRM_DEALS_CUSTOMER_NAME'   => $_ARRAYLANG['TXT_CRM_CUSTOMER_NAME'],
@@ -4632,13 +4336,14 @@ END;
                 'TXT_CRM_DELETE_SELECTED'           =>  $_ARRAYLANG['TXT_CRM_DELETE_SELECTED'],
                 'TXT_CRM_SELECT_ALL'                =>  $_ARRAYLANG['TXT_CRM_SELECT_ALL'],
                 'TXT_CRM_REMOVE_SELECTION'          =>  $_ARRAYLANG['TXT_CRM_REMOVE_SELECTION'],
-                'TXT_NO_RECORDS_FOUND'          =>  $_ARRAYLANG['CRM_NO_RECORDS_FOUND'],
+                'TXT_NO_RECORDS_FOUND'          =>  $_ARRAYLANG['TXT_CRM_NO_RECORDS_FOUND'],
                 'TXT_SELECT_ENTRIES'            => $_ARRAYLANG['TXT_CRM_NO_OPERATION'],
                 'TXT_CRM_FILTERS'               =>  $_ARRAYLANG['TXT_CRM_FILTERS'],
-                'TXT_CRM_DEALS_RESPONSIBLE'     =>  $_ARRAYLANG['CRM_PROJECT_RESPONSIBLE'],
+                'TXT_CRM_DEALS_RESPONSIBLE'     =>  $_ARRAYLANG['TXT_CRM_PROJECT_RESPONSIBLE'],
                 'CRM_DEALS_SEARCH_TERM'         =>  contrexx_input2xhtml($_GET['term']),
                 'TXT_CRM_ENTER_SEARCH_TERM'     => $_ARRAYLANG['TXT_CRM_ENTER_SEARCH_TERM'],
-                'TXT_CRM_CONFIRM_DELETE_ENTRY'  => $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES']
+                'TXT_CRM_CONFIRM_DELETE_ENTRY'  => $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES'],
+                'TXT_CRM_ENTRY_DELETED_SUCCESS' => $_ARRAYLANG['TXT_CRM_ENTRY_DELETED_SUCCESS']
         ));
     }
 
@@ -4885,7 +4590,7 @@ END;
                     'TXT_CRM_PROJECT_INVOICETYPE_INTERNAL'  => $_ARRAYLANG['TXT_CRM_PROJECT_INVOICETYPE_INTERNAL'],
                     'TXT_CRM_PROJECT_TYPE'                  => $_ARRAYLANG['TXT_CRM_PROJECT_TYPE'],
                     'TXT_CRM_SELECT_PROJECT_TYPE'           => $_ARRAYLANG['TXT_CRM_SELECT_PROJECT_TYPE'],
-                    'TXT_CRM_PROJECT_STATUS'                => $_ARRAYLANG['TXT_CRM_PROJECT_STATUS'],
+                    'TXT_TXT_CRM_PROJECT_STATUS'                => $_ARRAYLANG['TXT_TXT_CRM_PROJECT_STATUS'],
                     'TXT_CRM_PRIORITY'                      => $_ARRAYLANG['TXT_CRM_PRIORITY'],
                     'TXT_CRM_SELECT_PRIORITY'               => $_ARRAYLANG['TXT_CRM_SELECT_PRIORITY'],
                     'TXT_CRM_LOW'                           => $_ARRAYLANG['TXT_CRM_LOW'],
@@ -4905,18 +4610,18 @@ END;
             $objTpl->hideBlock("projectEntryBlock");
 
         $objTpl->setVariable(array(
-                'CRM_DEALS_OVERVIEW'            => $_ARRAYLANG['CRM_DEALS_OVERVIEW'],
+                'TXT_CRM_DEALS_OVERVIEW'            => $_ARRAYLANG['TXT_CRM_DEALS_OVERVIEW'],
                 'TXT_CRM_DEALS_CUSTOMER_NAME'   => $_ARRAYLANG['TXT_CRM_CUSTOMER_NAME'],
                 'TXT_CRM_DEALS_CONTACT_PERSON'  => $_ARRAYLANG['TXT_CRM_CONTACT_PERSON'],
-                'TXT_CRM_DEALS_QUOTED_PRICE'    => $_ARRAYLANG['CRM_PROJECT_QUOTED_PRICE'],
+                'TXT_CRM_DEALS_QUOTED_PRICE'    => $_ARRAYLANG['TXT_CRM_PROJECT_QUOTED_PRICE'],
                 'TXT_CRM_DEALS_ESTIMATED_HOURS' => $_ARRAYLANG['TXT_CRM_DEALS_ESTIMATED_HOURS'],
                 'TXT_CRM_DEALS_QUOTE_NUMBER'    => $_ARRAYLANG['TXT_CRM_DEALS_QUOTE_NUMBER'],
-                'TXT_CRM_DEALS_RESPONSIBLE'     => $_ARRAYLANG['CRM_PROJECT_RESPONSIBLE'],
+                'TXT_CRM_DEALS_RESPONSIBLE'     => $_ARRAYLANG['TXT_CRM_PROJECT_RESPONSIBLE'],
                 'TXT_CRM_DEALS_DUE_DATE'        => $_ARRAYLANG['TXT_CRM_DUE_DATE'],
                 'TXT_CRM_DEALS_STAGES'          => $_ARRAYLANG['TXT_CRM_DEALS_STAGES'],
                 'TXT_CRM_DEALS_SUCC_RATE'       => $_ARRAYLANG['TXT_CRM_DEALS_SUCC_RATE'],
                 'TXT_CRM_SAVE'                      => $_ARRAYLANG['TXT_CRM_SAVE'],
-                'CRM_MODIFY_DEAL_TITLE'         => empty($id) ? $_ARRAYLANG['CRM_ADD_DEAL_TITLE'] : $_ARRAYLANG['CRM_EDIT_DEAL_TITLE'],
+                'CRM_MODIFY_DEAL_TITLE'         => empty($id) ? $_ARRAYLANG['TXT_CRM_ADD_DEAL_TITLE'] : $_ARRAYLANG['TXT_CRM_EDIT_DEAL_TITLE'],
 
                 'CRM_DEALS_TITLE'               => contrexx_raw2xhtml($fields['title']),
                 'PM_PROJECT_DOMAIN_ID'          => (int) $fields['website'],
@@ -4934,7 +4639,7 @@ END;
                 'TXT_CRM_FIND_COMPANY_BY_NAME'  => $_ARRAYLANG['TXT_CRM_FIND_COMPANY_BY_NAME'],
         ));
 
-        $this->_pageTitle = empty($id) ? $_ARRAYLANG['CRM_ADD_DEAL_TITLE'] : $_ARRAYLANG['CRM_EDIT_DEAL_TITLE'];
+        $this->_pageTitle = empty($id) ? $_ARRAYLANG['TXT_CRM_ADD_DEAL_TITLE'] : $_ARRAYLANG['TXT_CRM_EDIT_DEAL_TITLE'];
     }
 
     /**
@@ -4992,7 +4697,8 @@ END;
         default:
             break;
         }
-        if (!empty ($action) || isset($_POST['save_entries'])) {
+//        if (!empty ($action) || isset($_POST['save_entries'])) {
+        if (isset($_POST['save_entries'])) {
             $this->saveSortingIndustryType($indusEntriesorting);
         }
 
@@ -5338,7 +5044,7 @@ END;
 
         if ($objResult && $objResult->RecordCount() == 0) {
             $objTpl->setVariable(array(
-                    'TXT_NO_RECORDS_FOUND'  =>  $_ARRAYLANG['CRM_NO_RECORDS_FOUND']
+                    'TXT_NO_RECORDS_FOUND'  =>  $_ARRAYLANG['TXT_CRM_NO_RECORDS_FOUND']
             ));
         }
         while (!$objResult->EOF) {
@@ -5640,9 +5346,9 @@ END;
             if ($accountId) {
                 $objCount = $objDatabase->Execute("SELECT `user_account` FROM `". DBPREFIX ."module_{$this->moduleName}_contacts` WHERE `user_account` = $accountId");
                 if ($objCount->RecordCount() && $userId != $objCount->fields['user_account']) {
-                    $json['error'] = $_ARRAYLANG['CRM_ERROR_EMAIL_USED_BY_OTHER_PERSON'];
+                    $json['error'] = $_ARRAYLANG['TXT_CRM_ERROR_EMAIL_USED_BY_OTHER_PERSON'];
                 } else {
-                    $json['error'] = $_ARRAYLANG['CRM_USER_EMAIL_ALERT'];
+                    $json['error'] = $_ARRAYLANG['TXT_CRM_USER_EMAIL_ALERT'];
                 }
             } else {
                 $json['success'] = 'Available';
@@ -5880,6 +5586,60 @@ END;
             $json['error'] = "Customer Id empty!";
         }
         
+        echo json_encode($json);
+        exit();
+    }
+
+     /**
+     * upload customer files
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function uploadFiles()
+    {
+        global $objDatabase, $_ARRAYLANG, $objFWUser;
+
+        $customerId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+
+        $json = array();
+        if ($customerId) {
+            include_once CRM_MODULE_LIB_PATH.'/qqFileUploader.php';
+
+            $uploader = new qqFileUploader();
+            // Specify the list of valid extensions, ex. array("jpeg", "xml", "bmp")
+            //Taken from http://en.wikipedia.org/wiki/Image_file_formats
+            $uploader->allowedExtensions = array("jpeg", "png", "gif", "jpg", "bmp", "doc", "docx", "pdf", "txt", "csv", "xls");
+
+            // Specify max file size in bytes.
+            $uploader->sizeLimit = 2 * 1024 * 1024;
+
+            // Specify the input name set in the javascript.
+            $uploader->inputName = 'qqfile';
+
+            // Call handleUpload() with the name of the folder, relative to PHP's getcwd()
+            $result = $uploader->handleUpload(CRM_MEDIA_PATH);
+
+            // To return a name used for uploaded file you can use the following line.
+            $result['uploadName'] = $uploader->getUploadName();
+
+            $fields = array(
+                'document_name' => $result['uploadName'],
+                'added_by'      => $objFWUser->objUser->getId(),
+                'uploaded_date' => date('Y-m-d H:i:s'),
+                'contact_id'    => $customerId
+            );
+            $sql = SQL::insert("module_{$this->moduleName}_customer_documents", $fields);
+            $objDatabase->Execute($sql);
+            
+            header("Content-Type: text/plain");
+            echo json_encode($result);
+            exit();
+        } else {
+            $json['error'] = "Customer Id empty!";
+        }
+
         echo json_encode($json);
         exit();
     }
