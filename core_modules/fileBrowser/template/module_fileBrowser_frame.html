@@ -38,7 +38,7 @@
 
             #navigation select[name="fileBrowserType"] {
                 width: 200px;
-                margin: 11px 0 11px 0;
+                margin: 5px 0 14px 0;
             }
 
             #navigation #fileBrowserPreview {
@@ -70,7 +70,7 @@
             }
             
             #buttons {
-                padding: 25px 10px 40px 10px;
+                padding: 15px 10px 15px 10px;
             }
 
             #buttons input {
@@ -111,10 +111,10 @@
                 <!-- END errormsg -->
                 <tr>
                     <td id="navigation" rowspan="2" width="200">{FILEBROWSER_NAVIGATION}</td>
-                    <td id="content_list">{FILEBROWSER_CONTENT}</td>
+                    <td id="buttons">{FILEBROWSER_UPLOAD}<input type="button" onclick="window.close();" value="{TXT_CLOSE}" /></td>
                 </tr>
                 <tr>
-                    <td id="buttons">{FILEBROWSER_UPLOAD}<input type="button" onclick="window.close();" value="{TXT_CLOSE}" /></td>
+                    <td id="content_list">{FILEBROWSER_CONTENT}</td>
                 </tr>
             </table>
         </div>
