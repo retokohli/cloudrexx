@@ -450,9 +450,11 @@ class JsonPage implements JsonAdapter {
                     array_push($pageStack, $child);
                 }
                 if (isset($dataPost['inheritFrontendAccess']) && $dataPost['inheritFrontendAccess'] == 'on'/*frontendprotection*/) {
+                    $reload = true;
                     $page->copyProtection($currentPage, true);
                 }
                 if (isset($dataPost['inheritBackendAccess']) && $dataPost['inheritBackendAccess'] == 'on'/*backendprotection*/) {
+                    $reload = true;
                     $page->copyProtection($currentPage, false);
                 }
                 if (isset($dataPost['inheritSkin']) && $dataPost['inheritSkin'] == 'on'/*theme*/) {
