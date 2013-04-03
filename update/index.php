@@ -15,9 +15,8 @@ if ($php < '5.3') {
     die('Das Contrexx CMS ben&ouml;tigt mindestens PHP in der Version 5.3.<br />Auf Ihrem System l&auml;uft PHP '.$php);
 }
 
-// Debugging
+// Debugging include
 require_once dirname(__FILE__).'/lib/FRAMEWORK/DBG/DBG.php';
-DBG::activate(DBG_LOG_FILE | DBG_DB | DBG_LOG);
 
 // Check effective maximum execution time
 if (!empty($_GET['check_timeout'])) {
@@ -132,6 +131,19 @@ JS::registerJS('lib/javascript/html2dom.js');
 // Update files
 require_once(UPDATE_PATH . '/ContrexxUpdate.class.php');
 require_once(UPDATE_LIB . '/FRAMEWORK/UpdateUtil.class.php');
+
+// Debugging
+try {
+    // load file classes
+    require_once dirname(__FILE__).'/lib/FRAMEWORK/FileSystem/FileInterface.interface.php';
+    require_once dirname(__FILE__).'/lib/FRAMEWORK/FileSystem/FileSystem.class.php';
+    require_once dirname(__FILE__).'/lib/FRAMEWORK/FileSystem/FileSystemFile.class.php';
+    require_once dirname(__FILE__).'/lib/FRAMEWORK/FileSystem/FTPFile.class.php';
+    require_once dirname(__FILE__).'/lib/FRAMEWORK/FileSystem/File.class.php';
+    activateDebugging();
+} catch (\Exception $e) {
+    // don't handle this exception here because we can't print a nice error message
+}
 
 // Start update
 $objUpdate = new ContrexxUpdate();

@@ -494,11 +494,9 @@ class ContrexxUpdate
                 $result = true;
             } else {
                 try {
-                    $File = new \Cx\Lib\FileSystem\File(ASCMS_DOCUMENT_ROOT . '/update/dbg.log');
-                    $File->touch();
-                    $File->makeWritable();
-                    \DBG::activate(DBG_LOG_FILE | DBG_PHP | DBG_DB_ERROR);
-
+                    if (!activateDebugging()) {
+                        throw new \Exception("The debugging file couldn't be created.");
+                    }
                     $result = executeContrexxUpdate();
                 } catch (\Exception $e) {
                     $this->objTemplate->setVariable('UPDATE_ERROR_MSG', $_CORELANG['TXT_UPDATE_DBG_FILE']);
@@ -1257,6 +1255,17 @@ function checkTimeoutLimit()
     setUpdateMsg($_CORELANG['TXT_UPDATE_PROCESS_HALTED'], 'title');
     setUpdateMsg($_CORELANG['TXT_UPDATE_PROCESS_HALTED_TIME_MSG'].'<br /><br />', 'msg');
     setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_CONTINUE_UPDATE'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
+    return false;
+}
+
+function activateDebugging()
+{
+    $File = new \Cx\Lib\FileSystem\File(ASCMS_DOCUMENT_ROOT . '/update/dbg.log');
+    $File->touch();
+    if ($File->makeWritable()) {
+        \DBG::activate(DBG_LOG_FILE | DBG_PHP | DBG_DB_ERROR);
+        return true;
+    }
     return false;
 }
 
