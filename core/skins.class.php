@@ -336,7 +336,7 @@ class skins
             foreach ($this->getThemes() as $theme) {
                 $this->_getXML($theme['foldername']);
 
-                $htmlDeleteLink = '<a onclick="showInfo(this.parentNode.parentNode); return confirmDelete(\''.htmlspecialchars($theme['themesname'], ENT_QUOTES, CONTREXX_CHARSET).'\');" href="?cmd=skins&amp;act=manage&amp;delete='.urlencode($theme['themesname']).'" title="'.$_CORELANG['TXT_DELETE'].'"> <img border="0" src="images/icons/delete.gif" alt="" /> </a>';
+                $htmlDeleteLink = '<a onclick="showInfo(this.parentNode.parentNode); return confirmDelete(\''.htmlspecialchars($theme['themesname'], ENT_QUOTES, CONTREXX_CHARSET).'\');" href="?cmd=skins&amp;act=manage&amp;delete='.urlencode($theme['foldername']).'" title="'.$_CORELANG['TXT_DELETE'].'"> <img border="0" src="images/icons/delete.gif" alt="" /> </a>';
                 $htmlActivateLink = '<a onclick="showInfo(this.parentNode.parentNode);" href="?cmd=skins&amp;act=manage&amp;activate='.$theme['id'].'" title="'.$_CORELANG['TXT_CORE_CM_ACTION_PUBLISH'].'"> <img border="0" src="images/icons/check.gif" alt="" /> </a>';
 
                 $objTemplate->setVariable(array('THEME_NAME'            => $theme['themesname'],
@@ -1256,68 +1256,58 @@ class skins
 
         Permission::checkAccess(47, 'static');
 
-        $themes = isset($_POST['themesDelName']) ? $_POST['themesDelName'] : '';
+        $themes = isset($_POST['themesDelName']) ? contrexx_input2raw($_POST['themesDelName']) : '';
         if ($themes == '' && !empty($_GET['delete'])){
-            $themes = addslashes($_GET['delete']);
+            $themes = contrexx_input2raw($_GET['delete']);
         }
 
         $themes = str_replace(array('..','/'), '', $themes);
-        if ($themes!="") {
-            $_POST['themes'] = (!empty($_POST['themes'])) ? contrexx_addslashes($_POST['themes']) : '';
-            if ($_POST['themes'] != $themes || $nocheck) {
-                $dir = ($this->path.$themes);
-                if (file_exists($dir)) {
-                    //delete whole folder with subfolders
-                    if (\Cx\Lib\FileSystem\FileSystem::delete_folder($this->path.$themes, true)) {
-                        $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."skins WHERE foldername = '".$themes."'");
-                        if ($objResult !== false) {
-                            while (!$objResult->EOF) {
-                                $themesId = $objResult->fields['id'];
-                                $objResult->MoveNext();
-                            }
-                        }
-                        
-                        $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
-                        $pages = $pageRepo->findBy(array(
-                            'skin' => intval($themesId),
-                        ));
-                        foreach ($pages as $page) {
-                            $page->setSkin(0);
-                            $page->persist();
-                        }
-                        \Env::get('em')->flush();
-
-                        $objDatabase->Execute("DELETE FROM ".DBPREFIX."skins WHERE foldername = '".$themes."'");
-                        $this->strOkMessage = $themes.": ".$_CORELANG['TXT_STATUS_SUCCESSFULLY_DELETE'];
-                    } else {
-                        $this->strErrMessage = $themes.": ".$_CORELANG['TXT_STATUS_CANNOT_DELETE'];
-                    }
-                } else {
-                    $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."skins WHERE foldername = '".$themes."'");
-                    if ($objResult !== false) {
-                        while (!$objResult->EOF) {
-                            $themesId = $objResult->fields['id'];
-                            $objResult->MoveNext();
-                        }
-                    }
-                    
-                    $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
-                    $pages = $pageRepo->findBy(array(
-                        'skin' => intval($themesId),
-                    ));
-                    foreach ($pages as $page) {
-                        $page->setSkin(0);
-                        $page->persist();
-                    }
-                    \Env::get('em')->flush();
-                    
-                    $objDatabase->Execute("DELETE FROM ".DBPREFIX."skins WHERE foldername = '".$themes."'");
-                    $this->strOkMessage = $themes.": ".$_CORELANG['TXT_STATUS_SUCCESSFULLY_DELETE'];
-                }
-             } else {
-                $this->strErrMessage = $_CORELANG['TXT_STATUS_FILE_CURRENTLY_OPEN'];
-             }
+        if ($themes == '') {
+            return;
         }
+
+        $_POST['themes'] = !empty($_POST['themes']) ? contrexx_input2raw($_POST['themes']) : '';
+        if ($nocheck && $_POST['themes'] == $themes) {
+            $this->strErrMessage = $_CORELANG['TXT_STATUS_FILE_CURRENTLY_OPEN'];
+            return false;
+        }
+
+        $dir = ($this->path.$themes);
+        // delete whole folder with subfolders in case it exists
+        if (   file_exists($dir)
+            && !\Cx\Lib\FileSystem\FileSystem::delete_folder($this->path.$themes, true)
+        ) {
+            $this->strErrMessage = $themes.": ".$_CORELANG['TXT_STATUS_CANNOT_DELETE'];
+            return false;
+        }
+
+        $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."skins WHERE foldername = '".contrexx_raw2db($themes)."'");
+        if ($objResult == false) {
+            $this->strErrMessage = $themes.": ".$_CORELANG['TXT_STATUS_CANNOT_DELETE'];
+            return false;
+        }
+
+        if (!$objResult->EOF) {
+            $themesId = $objResult->fields['id'];
+
+            $pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
+            $pages = $pageRepo->findBy(array(
+                'skin' => intval($themesId),
+            ));
+            foreach ($pages as $page) {
+                $page->setSkin(0);
+                \Env::get('em')->persist($page);
+            }
+            \Env::get('em')->flush();
+        }
+        
+        if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."skins WHERE foldername = '".contrexx_raw2db($themes)."'") !== false) {
+            $this->strOkMessage = $themes.": ".$_CORELANG['TXT_STATUS_SUCCESSFULLY_DELETE'];
+            return true;
+        }
+
+        $this->strErrMessage = $themes.": ".$_CORELANG['TXT_STATUS_CANNOT_DELETE'];
+        return false;
     }
 
     /**
