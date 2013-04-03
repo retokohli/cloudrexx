@@ -239,7 +239,6 @@ $_ARRAYLANG['TXT_CRM_TASK_TYPE_UPDATED_SUCCESSFULLY'] = "Task type updated succe
 $_ARRAYLANG['TXT_CRM_NO_TASKTYPES'] = "Contains No Records";
 $_ARRAYLANG['TXT_CRM_SELECT_ALL'] = "Select All";
 $_ARRAYLANG['TXT_CRM_DESELECT_ALL'] = "Deselect All";
-$_ARRAYLANG['TXT_CRM_SELECT_ACTION'] = "Select action";
 $_ARRAYLANG['TXT_CRM_DELETE_SELECTED'] = "Delete selected";
 $_ARRAYLANG['TXT_CRM_ACTIVATE_SELECTED'] = "Activate selected";
 $_ARRAYLANG['TXT_CRM_DEACTIVATE_SELECTED'] = "Deactivate selected";
@@ -316,6 +315,8 @@ $_ARRAYLANG['TXT_CRM_DELIVERY'] = "Delivery";
 $_ARRAYLANG['TXT_CRM_OFFICE']   = "Office";
 $_ARRAYLANG['TXT_CRM_BILLING']  = "Billing";
 $_ARRAYLANG['TXT_CRM_WEBSITE_NAME']  = "Website name";
+$_ARRAYLANG['TXT_CRM_CONTACT_ADDED_STATUS_MESSAGE'] = "Contact successfully added";
+$_ARRAYLANG['TXT_CRM_CONTACT_UPDATED_STATUS_MESSAGE'] = "Contact updated successfully";
 $_ARRAYLANG['TXT_CRM_SAVING_CUSTOMER_ERROR'] = "Error in saving customer. company name or customer id already exists.";
 $_ARRAYLANG['TXT_CRM_SELECT_COUNTRY']    = "Please select a country...";
 $_ARRAYLANG['TXT_CRM_SELECT_FROM_CONTACTS'] = "Select from the existing contact";
@@ -472,8 +473,8 @@ $_ARRAYLANG['TXT_CRM_EXPORT_COMPANY']               = "Export Company Details as
 $_ARRAYLANG['TXT_CRM_EXPORT_PERSON']                = "Export Person Details as CSV File";
 $_ARRAYLANG['TXT_CRM_EXPORT_ACTIVE_CUSTOMER']       = "Export Active Customer Details as CSV File";
 $_ARRAYLANG['TXT_CRM_CONTACT_TYPE']                 = "Contact Type";
-
 $_ARRAYLANG['TXT_CRM_EMPLOYEE']                     = "Employees";
+
 $_ARRAYLANG['TXT_CRM_CONTACT']                      = "Contact";
 $_ARRAYLANG['TXT_CRM_TASK_DUE_DATE']                    = "Due Date and Time";
 $_ARRAYLANG['TXT_CRM_EMP_DEFAULT_USER_GROUP']       = "Employee's Default user group";
