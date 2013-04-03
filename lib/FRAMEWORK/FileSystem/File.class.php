@@ -50,6 +50,7 @@ class File implements FileInterface
         try {
             $fsFile = new FileSystemFile($this->file);
             $fileOwnerUserId = $fsFile->getFileOwner();
+            \DBG::msg('File (FileSystem): '.$this->file.' is owned by '.$fileOwnerUserId);
         } catch (FileSystemFileException $e) {
             \DBG::msg('FileSystemFile: '.$e->getMessage());
             \DBG::msg('File: CAUTION: '.$this->file.' is owned by an unknown user!');
@@ -60,8 +61,9 @@ class File implements FileInterface
         if (function_exists('posix_getuid')) {
             $phpUserId = posix_getuid();
         } else {
-            $phpUserId = null;
+            $phpUserId = getmyuid();
         }
+        \DBG::msg('File (PHP): Script user is '.$phpUserId);
 
         // check if the file we're going to work with is owned by the PHP user
         if ($fileOwnerUserId == $phpUserId) {
@@ -76,6 +78,7 @@ class File implements FileInterface
         if (function_exists('posix_getpwnam')) {
             $ftpUserInfo = posix_getpwnam($ftpUsername);
             $ftpUserId = $ftpUserInfo['uid'];
+            \DBG::msg('File (FTP): '.$this->file.' is owned by '.$ftpUserId);
         } else {
             $ftpUserId = null;
         }
