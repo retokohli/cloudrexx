@@ -507,12 +507,43 @@ class MediaLibrary
     {
         if (is_dir($file)) return false;
 
-        $img  = @getimagesize($file);
-        if ($img === false) {
+// TODO: merge this function with isImage of lib/FRAMEWORK/Image.class.php
+        if (class_exists('finfo', false)) {
+            $finfo = new finfo(FILEINFO_MIME_TYPE);
+            $mimeType = $finfo->file($file);
+
+            if (strpos($mimeType, 'image') !== 0) {
+                return false;
+            }
+
+            $type = substr($mimeType, strpos($mimeType, '/') + 1);
+            switch ($type) {
+                case 'gif':
+                    return 1;
+                    break;
+
+                case 'jpeg':
+                    return 2;
+                    break;
+
+                case 'png':
+                    return 3;
+                    break;
+            }
+        }
+
+        if (function_exists('exif_imagetype')) {
+            $type = exif_imagetype($file);
+        } elseif (function_exists('getimagesize')) {
+            $img  = @getimagesize($file);
+            if ($img === false) {
+                return false;
+            }
+            $type = $img[2];
+        } else {
             return false;
         }
 
-        $type = $img[2];
         if ($type >= 1 && $type <= 3) {
             // 1 = gif, 2 = jpg, 3 = png
             return $type;
