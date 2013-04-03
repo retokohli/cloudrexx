@@ -69,7 +69,7 @@ class ContactLib
     function initContactForms()
     {
         global $objDatabase;
-
+        
         $this->arrForms = array();
 
         // load form meta information
@@ -388,7 +388,7 @@ class ContactLib
                     contrexx_stripslashes($recipient['name']);
             }
         }
-
+        
         return $recipients;
     }
 
@@ -504,7 +504,7 @@ class ContactLib
         global $objDatabase;
 
         $arrFieldNames = array();
-
+        
         if (isset($this->arrForms[$id])) {
             $objFields = $objDatabase->Execute("SELECT `f`.`id`, `l`.`name`
                                                  FROM `".DBPREFIX."module_contact_form_field` as `f`
@@ -1154,11 +1154,11 @@ class ContactLib
                 $arrTmp = explode(',', $keyValue);
                 $arrData[base64_decode($arrTmp[0])] = base64_decode($arrTmp[1]);
             }
-
+          
             //load contact form fields - we need to know which ones have the type 'file'
             $this->initContactForms();
             $arrFormFields = $this->getFormFields($formId);
-
+            
             foreach($arrFormFields as $arrField) {
                 //see if it's a file field...
                 if($arrField['type'] == 'file') {
@@ -1173,7 +1173,7 @@ class ContactLib
                         //old style entry, single file
                         $arrFiles = array($val);
                     }
-
+                  
                     //nice, we have all the files. delete them.
                     foreach($arrFiles as $file) {
                         @unlink(ASCMS_DOCUMENT_ROOT.$file);
@@ -1235,7 +1235,7 @@ class ContactLib
                 $objEntry->MoveNext();
             }
         }
-
+        
         return $arrEntries;
     }
 

@@ -435,7 +435,7 @@ cx.ready(function() {
         if (fallbacks[str]) {
             jQuery('.hidable_nofallback').show();
             jQuery('#fallback').text(language_labels[fallbacks[str]]);
-        }else {
+        } else {
             jQuery('.hidable_nofallback').hide();
         }
         if (pageId && pageId != "new") {
@@ -1162,7 +1162,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                     if (mouseIsUp) {
                         jQuery(this).siblings('.jstree-wrapper').removeClass('hover');
                         jQuery(this).siblings('.jstree-move').css('display', 'none');
-                    }else {
+                    } else {
                         jQuery(document).bind('mouseup.ins', function() {
                             jQuery(e.currentTarget).siblings('.jstree-wrapper').removeClass('hover');
                             jQuery(e.currentTarget).siblings('.jstree-move').css('display', 'none');
@@ -1227,7 +1227,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                 if (mouseIsUp) {
                     jQuery(this).removeClass('hover');
                     jQuery(this).siblings('.jstree-move').css('display', 'none');
-                }else {
+                } else {
                     jQuery(document).bind('mouseup.jstree-wrapper', function() {
                         jQuery(e.currentTarget).removeClass('hover');
                         jQuery(e.currentTarget).siblings('.jstree-move').css('display', 'none');
@@ -1370,7 +1370,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                     }
                     if (objTrigger.hasClass('invisible')) {
                         arrStatuses.push(cx.variables.get('TXT_CORE_CM_PAGE_STATUS_INVISIBLE', 'contentmanager/lang/tooltip'));
-                    }else {
+                    } else {
                         arrStatuses.push(cx.variables.get('TXT_CORE_CM_PAGE_STATUS_VISIBLE', 'contentmanager/lang/tooltip'));
                     }
                     if (objTrigger.hasClass('protected')) {
@@ -2584,7 +2584,7 @@ cx.cm.pushHistory = function(source) {
     var oldTabName = undefined;
     try {
         oldTabName = /[?&]tab=([^&]*)/.exec(window.location)[1];
-    }catch (e) {}
+    } catch (e) {}
     
     // prevent state from being written twice
     if (activeTabName == oldTabName && oldPageId == activePageId) {

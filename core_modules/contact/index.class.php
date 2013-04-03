@@ -133,7 +133,7 @@ class Contact extends ContactLib
         $isLoggedin = $this->setProfileData();
         $useCaptcha = !$isLoggedin && $this->getContactFormCaptchaStatus($formId);
         $this->handleUniqueId();
-
+        
         $this->objTemplate->setVariable(array(
             'TXT_NEW_ENTRY_ERORR'   => $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'],
             'TXT_CONTACT_SUBMIT'    => $_ARRAYLANG['TXT_CONTACT_SUBMIT'],
@@ -230,7 +230,7 @@ class Contact extends ContactLib
                             break;
                     }
                 }
-
+                
                 $arrField['lang'][$_LANGID]['value'] = preg_replace('/\[\[([A-Z0-9_]+)\]\]/', '{$1}', $arrField['lang'][$_LANGID]['value']);
 
                 $this->objTemplate->setVariable(array(
@@ -371,11 +371,11 @@ class Contact extends ContactLib
                         if (preg_match($userProfileRegExp, $arrField['lang'][$_LANGID]['value'])) {
                             $arrField['lang'][$_LANGID]['value'] = $this->objTemplate->_globalVariables[trim($arrField['lang'][$_LANGID]['value'],'{}')];
                         }
-
+                        
                         while (!$objResult->EOF) {
 // TODO: where is this 'name' field comming from? do we have to escape it?
                             $this->objTemplate->setVariable($fieldId.'_VALUE', $objResult->fields['name']);
-
+                            
                             if ((!empty($_POST['contactFormField_'.$fieldId]))) {
                               if (strcasecmp($objResult->fields['name'], $_POST['contactFormField_'.$fieldId]) == 0) {
                                   $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'selected = "selected"');
@@ -470,7 +470,7 @@ class Contact extends ContactLib
                 $this->initUploader();
             }
         }
-
+        
         return $this->objTemplate->get();
     }
 
@@ -481,7 +481,7 @@ class Contact extends ContactLib
     protected function handleUniqueId() {
         global $sessionObj;
         if (!isset($sessionObj)) $sessionObj = new cmsSession();
-
+        
         $id = 0;
         if(isset($_REQUEST['unique_id'])) { //an id is specified - we're handling a page reload
             $id = intval($_REQUEST['unique_id']);
@@ -503,7 +503,7 @@ class Contact extends ContactLib
             //init the uploader
             JS::activate('cx'); //the uploader needs the framework
             $f = UploadFactory::getInstance();
-
+            
             /**
             * Name of the upload instance
             */
@@ -537,8 +537,8 @@ class Contact extends ContactLib
             }
             //initialize the widget displaying the folder contents
             $folderWidget = $f->newFolderWidget($tup[0].'/'.$tup[2]);
-
-
+            
+            
             $uploader = $f->newUploader('exposedCombo');
             $uploader->setJsInstanceName($uploaderInstanceName);
             $uploader->setFinishedCallback(array(ASCMS_CORE_MODULE_PATH.'/contact/index.class.php','Contact','uploadFinished'));
@@ -592,7 +592,7 @@ class Contact extends ContactLib
                     $value = $objUser->getProfileAttribute($objAttribute->getId());
                 break;
             }
-
+            
             $this->objTemplate->setGlobalVariable('ACCESS_PROFILE_ATTRIBUTE_'.strtoupper($objAttribute->getId()), htmlentities($value, ENT_QUOTES, CONTREXX_CHARSET));
             $objUser->objAttribute->next();
         }
@@ -651,7 +651,7 @@ class Contact extends ContactLib
             }
 // TODO: check if _uploadFiles does something dangerous with $arrFormData['fields'] (this is raw data!)
             $arrFormData['uploadedFiles'] = $this->_uploadFiles($arrFormData['fields']);
-
+            
             foreach ($_POST as $key => $value) {
 				if ((($value == 0) || !empty($value)) && !in_array($key, array('Submit', 'submitContactForm', 'contactFormCaptcha'))) {
                     $id = intval(substr($key, 17));
@@ -678,7 +678,7 @@ class Contact extends ContactLib
             $arrFormData['meta']['host'] = contrexx_input2raw(@gethostbyaddr($arrFormData['meta']['ipaddress']));
             $arrFormData['meta']['lang'] = contrexx_input2raw($_SERVER["HTTP_ACCEPT_LANGUAGE"]);
             $arrFormData['meta']['browser'] = contrexx_input2raw($_SERVER["HTTP_USER_AGENT"]);
-
+            
             return $arrFormData;
         }
         return false;
@@ -691,7 +691,7 @@ class Contact extends ContactLib
     protected function checkLegacyMode() {
         $this->legacyMode = !isset($_REQUEST['unique_id']);
     }
-
+    
     /**
      * Handle uploads
      * @see Contact::_uploadFilesLegacy()
@@ -714,7 +714,7 @@ class Contact extends ContactLib
             //new uploader used
             if(!$this->hasFileField) //nothing to do for us, no files
                 return array();
-
+                
             $id = intval($_REQUEST['unique_id']);
             $tup = self::getTemporaryUploadPath($id);
             $tmpUploadDir = $tup[1].'/'.$tup[2].'/'; //all the files uploaded are in here
@@ -750,7 +750,7 @@ class Contact extends ContactLib
                     $suffix = '-'.$suffix;
                 }
                 $folderName .= $suffix;
-
+                
                 //try to make the folder and change target accordingly on success
                 if(\Cx\Lib\FileSystem\FileSystem::make_folder(ASCMS_PATH_OFFSET.'/'.$depositionTarget.$folderName)) {
                     \Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_PATH_OFFSET.'/'.$depositionTarget.$folderName);
@@ -778,7 +778,7 @@ class Contact extends ContactLib
                         }
                         $prefix ++;
                     }
-
+                    
                     if($move)
                         File::move($tmpUploadDir.$f,ASCMS_PATH_OFFSET.'/'.$depositionTarget.$prefix.$f, false);
                     $arrFiles[] = array(
@@ -808,7 +808,7 @@ class Contact extends ContactLib
     function _uploadFilesLegacy($arrFields)
     {
         global $_ARRAYLANG;
-
+        
         $arrSettings = $this->getSettings();
 
         $arrFiles = array();
@@ -848,7 +848,7 @@ class Contact extends ContactLib
                                 $suffix = '-'.++$i;
                                 $filePath = $arrSettings['fileUploadDepositionPath'].'/'.$arrFile['filename'].$suffix.'.'.$arrFile['extension'];
                             }
-
+                            
                             $arrMatch = array();
                             if (FWValidator::is_file_ending_harmless($fileName)) {
                                 if (@move_uploaded_file($fileTmpName, ASCMS_DOCUMENT_ROOT.$filePath)) {
@@ -868,7 +868,7 @@ class Contact extends ContactLib
                 }
             }
         }
-
+        
         return $arrFiles;
     }
 
@@ -912,7 +912,7 @@ class Contact extends ContactLib
 
         $keys = array();
         $values = array();
-
+        
         //let php put all the symbols into an array based on the current charset
         //(which is utf8)
         preg_match_all('/./u', $from, $keys);
@@ -1065,13 +1065,13 @@ class Contact extends ContactLib
 
         if (!empty($this->errorMsg))
             return false;
-
+        
         //handle files and collect the filenames
         //for legacy mode this has already been done in the first
         //_uploadFiles() call in getContactPage().
         if(!$this->legacyMode)
             $arrFormData['uploadedFiles'] = $this->_uploadFiles($arrFormData['fields'], true);
-
+        
         $objResult = $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_contact_form_data
                                         (`id_form`, `id_lang`, `time`, `host`, `lang`, `browser`, `ipaddress`)
                                         VALUES
@@ -1168,7 +1168,7 @@ class Contact extends ContactLib
     private function sendMail($arrFormData)
     {
         global $_ARRAYLANG, $_CONFIG;
-
+        
         $plaintextBody = '';
         $replyAddress = '';
         $firstname = '';
@@ -1200,7 +1200,7 @@ class Contact extends ContactLib
 
 // TODO: check if we have to excape $arrRecipients later in the code
         $arrRecipients = $this->getRecipients(intval($_GET['cmd']));
-
+        
         // calculate the longest field label.
         // this will be used to correctly align all user submitted data in the plaintext e-mail
 // TODO: check if the label of upload-fields are taken into account as well
@@ -1349,9 +1349,9 @@ class Contact extends ContactLib
             }
 
         }
-
+        
         $arrSettings = $this->getSettings();
-
+        
 // TODO: this is some fixed plaintext message data -> must be ported to html body
         $message  = $_ARRAYLANG['TXT_CONTACT_TRANSFERED_DATA_FROM']." ".$_CONFIG['domainUrl']."\n\n";
         if ($arrSettings['fieldMetaDate']) {
@@ -1502,17 +1502,17 @@ class Contact extends ContactLib
             foreach ($arrFormData['fields'] as $id => $field) {
                 if (in_array($field['lang'][FRONTEND_LANG_ID]['name'], $arrMatch[1])) {
                     switch ($field['type']) {
-                    case 'checkbox':
+                        case 'checkbox':
                             $value = isset($arrFormData['data'][$id]) ? $_ARRAYLANG['TXT_CONTACT_YES'] : $_ARRAYLANG['TXT_CONTACT_NO'];
-                        break;
+                            break;
 
-                    case 'textarea':
+                        case 'textarea':
                             $value = isset($arrFormData['data'][$id]) ? nl2br(contrexx_raw2xhtml($arrFormData['data'][$id])) : '';
-                        break;
+                            break;
 
-                    default:
+                        default:
                             $value = isset($arrFormData['data'][$id]) ? contrexx_raw2xhtml($arrFormData['data'][$id]) : '';
-                        break;
+                            break;
                     }
                     $feedback = str_replace('[['.contrexx_raw2xhtml($field['lang'][FRONTEND_LANG_ID]['name']).']]', $value, $feedback);
                 }
@@ -1564,7 +1564,7 @@ class Contact extends ContactLib
         global $sessionObj;
 
         if (!isset($sessionObj)) $sessionObj = new cmsSession();
-
+        
         $tempPath = $sessionObj->getTempPath();
         $tempWebPath = $sessionObj->getWebTempPath();
         if($tempPath === false || $tempWebPath === false)

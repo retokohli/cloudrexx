@@ -28,24 +28,24 @@ class aliasLib
     public $langId;
 
     public $_arrConfig = null;
-
+    
     protected $em = null;
-
+    
     protected $nodeRepository = null;
-
+    
     protected $pageRepository = null;
-
+    
 
     function __construct($langId = 0)
     {
         $this->langId = intval($langId) > 0 ? $langId : FRONTEND_LANG_ID;
-
+        
         $this->em = Env::em();
         $this->nodeRepository = $this->em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Node');
         $this->pageRepository = $this->em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
     }
 
-
+    
     function _getAliases($limit = null, $all = false)
     {
         $pos = !$all && isset($_GET['pos']) ? intval($_GET['pos']) : 0;
@@ -53,7 +53,7 @@ class aliasLib
         $aliases = $this->pageRepository->findBy(array(
             'type' => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_ALIAS,
         ), true);
-
+        
         $i = 0;
         $pages = array();
         foreach ($aliases as $page) {
@@ -66,7 +66,7 @@ class aliasLib
                 break;
             }
         }
-
+        
         return $pages;
     }
 
@@ -75,7 +75,7 @@ class aliasLib
     {
         return count($this->_getAliases(null, true));
     }
-
+    
 
     function _getAlias($aliasId)
     {
@@ -84,26 +84,26 @@ class aliasLib
         );
         return current($this->pageRepository->findBy($crit, true));
     }
-
-
+    
+    
     function _fetchTarget($page)
     {
         return $this->pageRepository->getTargetPage($page);
     }
-
-
+    
+    
     function _isLocalAliasTarget($page)
     {
         return $page->isTargetInternal();
     }
-
-
+    
+    
     function _getURL($page)
     {
         $lang = FWLanguage::getLanguageCodeById($page->getLang());
         return $page->getUrl('/' . $lang, '');
     }
-
+    
     function _getAliasesWithSameTarget($aliasPage)
     {
         $aliases = array();
@@ -119,7 +119,7 @@ class aliasLib
 
         return $aliases;
     }
-
+    
 
     function _setAliasTarget(&$arrAlias)
     {
@@ -143,12 +143,12 @@ class aliasLib
             $arrAlias['title'] = $targetPage->getContentTitle();
         }
     }
-
-
+    
+    
     function _createTemporaryAlias()
     {
         global $objFWUser;
-
+        
         $page = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Page();
         $page->setLang(0);
         $page->setType(\Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_ALIAS);
@@ -157,21 +157,21 @@ class aliasLib
         //$page->setUsername($objFWUser->objUser->getUsername());
         return $page;
     }
-
+    
 
     function _saveAlias($slug, $target, $is_local, $id = '')
     {
         if ($slug == '') {
             return false;
         }
-
+        
         // is internal target
         if ($is_local) {
             // get target page
             $temp_page = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Page();
             $temp_page->setTarget($target);
             $existing_aliases = $this->_getAliasesWithSameTarget($temp_page);
-
+            
             // if alias already exists -> fail
             foreach ($existing_aliases as $existing_alias) {
                 if (($id == '' || $existing_alias->getNode()->getId() != $id) &&
@@ -205,24 +205,24 @@ class aliasLib
                 return false;
             }
         }
-
+        
         // set page attributes
         $page->setSlug($slug);
         $page->setTarget($target);
         $page->setTitle($page->getSlug());
-
+        
         // sanitize slug
         while (file_exists(ASCMS_PATH . '/' . $page->getSlug())) {
             $page->nextSlug();
         }
-
+        
         // save
 	$page->validate();
         $this->em->persist($page);
         $this->em->flush();
         $this->em->refresh($node);
         $this->em->refresh($page);
-
+        
         return true;
     }
 

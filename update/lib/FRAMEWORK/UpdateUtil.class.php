@@ -221,7 +221,7 @@ class UpdateUtil
      * @global  ADOConnection   $objDatabase
      * @param   string          $statement      The query string
      * @param   array           $inputarray     The optional query parameters
-     * @return  ADORecordset
+     * @return  \ADORecordset
      */
     public static function sql($statement, $inputarray=null)
     {
