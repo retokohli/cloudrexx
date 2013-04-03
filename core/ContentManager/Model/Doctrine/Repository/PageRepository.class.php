@@ -832,6 +832,7 @@ class PageRepository extends EntityRepository {
                      $qb->expr()->eq('p.lang', FRONTEND_LANG_ID),
                      $qb->expr()->orx(
                          $qb->expr()->like('p.content', ':searchString'),
+                         $qb->expr()->like('p.content', ':searchStringEscaped'),
                          $qb->expr()->like('p.title', ':searchString')
                      ),
                      $qb->expr()->orX(
@@ -841,7 +842,8 @@ class PageRepository extends EntityRepository {
                      )
                  )
            )
-           ->setParameter('searchString', '%'.$string.'%');
+           ->setParameter('searchString', '%'.$string.'%')
+           ->setParameter('searchStringEscaped', '%'.contrexx_raw2xhtml($string).'%');
         $pages   = $qb->getQuery()->getResult();
         $config  = \Env::get('config');
         $results = array();
