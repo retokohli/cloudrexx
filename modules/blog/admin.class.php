@@ -580,12 +580,7 @@ class BlogAdmin extends BlogLibrary {
         $objFWUser = FWUser::getFWUserObject();
         $this->_intCurrentUserId = $objFWUser->objUser->getId();
 
-        if(!in_array(120, $objFWUser->objUser->getStaticPermissionIds())) {
-
-        	$arrEntries = $this->createEntryArray(0, $intPagingPosition, $this->getPagingLimit(), $this->_intCurrentUserId);
-        } else {
-        	$arrEntries = $this->createEntryArray(0, $intPagingPosition, $this->getPagingLimit());
-        }
+        $arrEntries = $this->createEntryArray(0, $intPagingPosition, $this->getPagingLimit());
 
 
 
@@ -836,17 +831,11 @@ class BlogAdmin extends BlogLibrary {
     function editEntry($intEntryId)
     {
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
-
-        $objFWUser = FWUser::getFWUserObject();
-        if(!in_array(120, $objFWUser->objUser->getStaticPermissionIds()) && in_array(121, $objFWUser->objUser->getStaticPermissionIds())) {
-        	$count = $objDatabase->Execute('SELECT message_id
-			        						FROM '.DBPREFIX.'module_blog_messages
-			        						WHERE user_id = "'.$this->_intCurrentUserId.'"
-			        						 AND message_id = "'.$intEntryId.'"');
-        	if($count->RecordCount() != 1) {
-
-        		Permission::noAccess();
-        	}
+        $count = $objDatabase->Execute('SELECT message_id
+                                        FROM '.DBPREFIX.'module_blog_messages
+                                        WHERE message_id = "'.$intEntryId.'"');
+        if($count->RecordCount() != 1) {
+            Permission::noAccess();
         }
 
 
