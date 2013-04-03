@@ -914,9 +914,6 @@ class User extends User_Profile
             $limit = 1;
         }
 
-        // expiration check
-        $sqlCondition['conditions'][] = '(tblU.`expiration` > ' . time() . ' OR tblU.`expiration` = 0)';
-
         // set sort order
         if (isset($filter['group_id']) && $filter['group_id'] == 'groupless') {
             $groupless = true;
