@@ -272,7 +272,10 @@ function _shopUpdate()
         // price_prefix is removed for version 3.  See Attribute::errorHandler()
         $table_name = DBPREFIX.'module_shop_products_attributes_value';
         if (   Cx\Lib\UpdateUtil::table_exist($table_name)
-            && Cx\Lib\UpdateUtil::column_exist($table_name, 'price_prefix')) {
+            && Cx\Lib\UpdateUtil::column_exist($table_name, 'price_prefix')
+            && Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'module_shop_order_items_attributes')
+            && Cx\Lib\UpdateUtil::column_exist(DBPREFIX.'module_shop_order_items_attributes', 'price_prefix')
+        ) {
             $query = "
                 UPDATE `$table_name`
                    SET `price`=-`price`,
