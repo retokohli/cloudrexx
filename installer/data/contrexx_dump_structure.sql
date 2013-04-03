@@ -1085,6 +1085,18 @@ CREATE TABLE `contrexx_module_crm_customer_contact_websites` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_crm_customer_documents` (
+  `id` int(11) NOT NULL auto_increment,
+  `document_name` varchar(256) NOT NULL,
+  `added_by` int(11) NOT NULL,
+  `uploaded_date` datetime NOT NULL,
+  `contact_id` int(11) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `contact_id` (`contact_id`)
+) ENGINE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_crm_customer_membership` (
   `contact_id` int(11) NOT NULL,
   `membership_id` int(11) NOT NULL
