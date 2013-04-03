@@ -917,4 +917,3 @@ function _accessUpdate()
 
     return true;
 }
-?>

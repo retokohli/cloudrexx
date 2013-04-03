@@ -121,5 +121,3 @@ function _u2uUpdate()
 
     return true;
 }
-
-?>

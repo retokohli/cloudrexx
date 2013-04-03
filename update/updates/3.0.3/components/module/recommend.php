@@ -41,4 +41,3 @@ function _recommendUpdate()
 
     return true;
 }
-
