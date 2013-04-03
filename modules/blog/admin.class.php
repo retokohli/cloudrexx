@@ -39,7 +39,7 @@ class BlogAdmin extends BlogLibrary {
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
-        $this->_intLanguageId = $objInit->userFrontendLangId;
+        $this->_intLanguageId = FRONTEND_LANG_ID;
 
         $objFWUser = FWUser::getFWUserObject();
         $this->_intCurrentUserId = $objFWUser->objUser->getId();

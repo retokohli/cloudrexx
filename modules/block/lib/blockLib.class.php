@@ -935,10 +935,12 @@ class blockLibrary
            FROM `'.DBPREFIX.'module_block_categories`
            ORDER BY `order` ASC, `id` ASC
         ');
-        while(!$objRS->EOF){
-            $this->_categories[$objRS->fields['parent']][] = $objRS->fields;
-            $this->_categoryNames[$objRS->fields['id']] = $objRS->fields['name'];
-            $objRS->MoveNext();
+        if ($objRS !== false && $objRS->RecordCount() > 0) {
+            while(!$objRS->EOF){
+                $this->_categories[$objRS->fields['parent']][] = $objRS->fields;
+                $this->_categoryNames[$objRS->fields['id']] = $objRS->fields['name'];
+                $objRS->MoveNext();
+            }
         }
         return $this->_categories;
     }

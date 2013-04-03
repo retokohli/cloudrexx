@@ -206,10 +206,11 @@ class BlogLibrary {
      * @param   integer     $intLimitIndex: can be used for paging. The value defines, how many entries will be returned (starting from $intStartingIndex). If the value is zero, all entries will be returned.
      * @return  array       $arrReturn
      */
-    function createEntryArray($intLanguageId=0, $intStartingIndex=0, $intLimitIndex=0, $intUserId=0) {
+    function createEntryArray($intLanguageId=0, $intStartingIndex=0, $intLimitIndex=0) {
         global $objDatabase, $_ARRAYLANG;
 
         $arrReturn = array();
+		$intLanguageIdLoad = $intLanguageId;
 
         if (intval($intLanguageId) > 0) {
             $strLanguageJoin  = '   INNER JOIN  '.DBPREFIX.'module_blog_messages_lang   AS blogMessagesLanguage
@@ -229,11 +230,6 @@ class BlogLibrary {
         }
 
         $strQueryWhere = '';
-        if($intUserId != 0) {
-        	$strQueryWhere = "WHERE user_id = '".$intUserId."'";
-        }
-
-
 
         $objResultMain = $objDatabase->Execute('SELECT      blogMessages.message_id,
                                                         blogMessages.user_id,
@@ -299,6 +295,10 @@ class BlogLibrary {
 
                     $objCategoryResult->MoveNext();
                 }
+				
+				if ($intLanguageIdLoad) {
+					$where = 'AND lang_id = '.$intLanguageIdLoad;
+				}
 
                 //Get existing translations for the current entry
                 $objLangResult = $objDatabase->Execute('SELECT  lang_id,
@@ -308,7 +308,7 @@ class BlogLibrary {
                                                                     tags,
                                                                     image
                                                             FROM    '.DBPREFIX.'module_blog_messages_lang
-                                                            WHERE   message_id='.$intMessageId.'
+                                                            WHERE   message_id='.$intMessageId.' '.$where.'
                                                         ');
 
                 while (!$objLangResult->EOF) {
@@ -457,15 +457,12 @@ class BlogLibrary {
             $intNumberOfAssignedMessages = 0;
 
             $arrEntries = $this->createEntryArray($this->_intLanguageId);
-            foreach ($arrEntries as $arrEntryValues) {
-                if ($arrEntryValues['translation'][$this->_intLanguageId]['is_active']) {
-                    if (array_key_exists($intCategoryId, $arrEntryValues['categories'][$this->_intLanguageId])) {
-                        ++$intNumberOfAssignedMessages;
+            foreach ($arrEntries as $index => $arrEntryValues) {
+                    if (!array_key_exists($intCategoryId, $arrEntryValues['categories'][$this->_intLanguageId])) {
+                        unset($arrEntries[$index]);
                     }
-
-                }
             }
-            return $intNumberOfAssignedMessages;
+            return count($arrEntries);
         }
         return 0;
     }
