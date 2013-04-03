@@ -856,7 +856,7 @@ class skins
      */
     function examples()
     {
-        global $_CORELANG, $objTemplate, $_CONFIG, $objDatabase;
+        global $_CORELANG, $objTemplate, $_CONFIG;
 
         Permission::checkAccess(47, 'static');
 
@@ -991,12 +991,16 @@ class skins
             } elseif (!empty($copyFromTheme) && empty($createFromDatabase)) {
                 // Create new theme based on existing theme
                 if (\Cx\Lib\FileSystem\FileSystem::copy_folder($this->path.$copyFromTheme, $this->path.$dirName)) {
-                    $this->replaceThemeName(\Cx\Lib\FileSystem\FileSystem::replaceCharacters($copyFromTheme), $dirName, $this->path.$dirName);
+                    $this->replaceThemeName($copyFromTheme, $dirName, $this->path.$dirName);
                     $this->insertSkinIntoDb($themeName, $dirName);
+                    $this->strOkMessage  = $themeName." ". $_CORELANG['TXT_STATUS_SUCCESSFULLY_CREATE'];
+                    $_POST['themes'] = $dirName;
+                    $this->overview();
+                } else {
+// TODO: add proper error message
+                    $this->strErrMessage = $_CORELANG['TXT_MSG_ERROR_NEW_DIR'];
+                    $this->newdir();
                 }
-                $this->strOkMessage  = $themeName." ". $_CORELANG['TXT_STATUS_SUCCESSFULLY_CREATE'];
-                $_POST['themes'] = $dirName;
-                $this->overview();
             } elseif (empty($copyFromTheme) && !empty($createFromDatabase)) {
 // TODO: remove this function -> migrate all pending themes in the update process
                 // Create new theme from database (migrate existing theme from database to filesystem)
