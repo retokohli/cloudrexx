@@ -557,7 +557,11 @@ class ContactManager extends ContactLib
 
                 $pages = $this->em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page')->getFromModuleCmdByLang('contact', $formId);
                 $lang = array();
+                $activeLanguages = \FWLanguage::getActiveFrontendLanguages();
                 foreach ($arrForm['lang'] as $langId => $value) {
+                    if (!array_key_exists($langId, $activeLanguages)) {
+                        continue;
+                    }
                     $links = '';
                     if (isset($pages[$langId])) {
                         $previewURL = '../'.\FWLanguage::getLanguageCodeById($langId).$pages[$langId]->getPath();
