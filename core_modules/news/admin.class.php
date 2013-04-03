@@ -932,56 +932,59 @@ class newsManager extends newsLibrary {
 
         $objFWUser->objUser->getDynamicPermissionIds(true);
 
-        if (!empty($locales['active']) && $this->validateNews($locales)) {
-            
-            // Set start and date as NULL if newsScheduled checkbox is not checked
-            if ($newsScheduledActive == 0) {
-                $startDate = NULL;
-                $endDate   = NULL;
-            }
-            
-            $objResult = $objDatabase->Execute('INSERT
-                                        INTO '.DBPREFIX.'module_news
-                                        SET date='.$date.',
-                                            redirect="'.$newsredirect.'",
-                                            source="'.$newssource.'",
-                                            url1="'.$newsurl1.'",
-                                            url2="'.$newsurl2.'",
-                                            catid='.$newscat.',
-                                            typeid="'.$newstype.'",
-                                            publisher="'.contrexx_raw2db($newsPublisherName).'",
-                                            publisher_id='.intval($newsPublisherId).',
-                                            author="'.contrexx_raw2db($newsAuthorName).'",
-                                            author_id='.intval($newsAuthorId).',
-                                            startdate='.$this->dbFromDate($startDate).',
-                                            enddate='.$this->dbFromDate($endDate).',
-                                            status='.$status.',
-                                            validated="1",
-                                            frontend_access_id="'.$newsFrontendAccessId.'",
-                                            backend_access_id="'.$newsBackendAccessId.'",
-                                            teaser_only="'.$newsTeaserOnly.'",
-                                            teaser_frames="'.$newsTeaserFrames.'",
-                                            teaser_show_link="'.$newsTeaserShowLink.'",
-                                            teaser_image_path="'.$newsTeaserImagePath.'",
-                                            teaser_image_thumbnail_path="'.$newsTeaserImageThumbnailPath.'",
-                                            userid='.$userid.',
-                                            changelog='.$date.',
-                                            allow_comments='.$newsCommentActive
-                                    );
-
-            if ($objResult !== false) {
-                $ins_id = $objDatabase->Insert_ID();
-                // store locales
-                if (!$this->insertLocales($ins_id, $locales)) {
-                    $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
-                } else {
-                    $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'];
+        if (!empty($locales['active'])) {
+            if ($this->validateNews($locales)) {
+                // Set start and date as NULL if newsScheduled checkbox is not checked
+                if ($newsScheduledActive == 0) {
+                    $startDate = NULL;
+                    $endDate   = NULL;
                 }
-                $this->createRSS();
-                unset($_POST);
-                return $this->overview();
+
+                $objResult = $objDatabase->Execute('INSERT
+                                            INTO '.DBPREFIX.'module_news
+                                            SET date='.$date.',
+                                                redirect="'.$newsredirect.'",
+                                                source="'.$newssource.'",
+                                                url1="'.$newsurl1.'",
+                                                url2="'.$newsurl2.'",
+                                                catid='.$newscat.',
+                                                typeid="'.$newstype.'",
+                                                publisher="'.contrexx_raw2db($newsPublisherName).'",
+                                                publisher_id='.intval($newsPublisherId).',
+                                                author="'.contrexx_raw2db($newsAuthorName).'",
+                                                author_id='.intval($newsAuthorId).',
+                                                startdate='.$this->dbFromDate($startDate).',
+                                                enddate='.$this->dbFromDate($endDate).',
+                                                status='.$status.',
+                                                validated="1",
+                                                frontend_access_id="'.$newsFrontendAccessId.'",
+                                                backend_access_id="'.$newsBackendAccessId.'",
+                                                teaser_only="'.$newsTeaserOnly.'",
+                                                teaser_frames="'.$newsTeaserFrames.'",
+                                                teaser_show_link="'.$newsTeaserShowLink.'",
+                                                teaser_image_path="'.$newsTeaserImagePath.'",
+                                                teaser_image_thumbnail_path="'.$newsTeaserImageThumbnailPath.'",
+                                                userid='.$userid.',
+                                                changelog='.$date.',
+                                                allow_comments='.$newsCommentActive
+                                        );
+
+                if ($objResult !== false) {
+                    $ins_id = $objDatabase->Insert_ID();
+                    // store locales
+                    if (!$this->insertLocales($ins_id, $locales)) {
+                        $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
+                    } else {
+                        $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'];
+                    }
+                    $this->createRSS();
+                    unset($_POST);
+                    return $this->overview();
+                } else {
+                    $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
+                }
             } else {
-                $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
+                $this->strErrMessage = $_ARRAYLANG['TXT_NEWS_NO_TITLE_ENTERED'];
             }
         }
         
@@ -1014,7 +1017,7 @@ class newsManager extends newsLibrary {
                     $intLanguageId = $arrLanguage['id'];
                     $boolLanguageIsActive = ($intLanguageId == $objInit->userFrontendLangId) ? true : false;
 
-                    $arrActiveLang[$intLanguageCounter%3] .= '<input id="languagebar_'.$intLanguageId.'" class="langCheckboxes" '.(($arrLanguage['is_default'] == 'true') ? 'checked="checked"' : '').' type="checkbox" name="newsManagerLanguages['.$intLanguageId.']" value="1" onclick="switchBoxAndTab(this, \'news_lang_tab_'.$intLanguageId.'\');" /><label for="languagebar_'.$intLanguageId.'">'.$arrLanguage['name'].' ['.$arrLanguage['lang'].']</label><br />';                    
+                    $arrActiveLang[$intLanguageCounter%3] .= '<input id="languagebar_'.$intLanguageId.'" class="langCheckboxes" '.(($arrLanguage['is_default'] == 'true' || isset($_POST['newsManagerLanguages'][$intLanguageId])) ? 'checked="checked"' : '').' type="checkbox" name="newsManagerLanguages['.$intLanguageId.']" value="1" onclick="switchBoxAndTab(this, \'news_lang_tab_'.$intLanguageId.'\');" /><label for="languagebar_'.$intLanguageId.'">'.$arrLanguage['name'].' ['.$arrLanguage['lang'].']</label><br />';
                     ++$intLanguageCounter;
                 }
             }
@@ -1026,17 +1029,19 @@ class newsManager extends newsLibrary {
                 'EDIT_LANGUAGES_3'          => $arrActiveLang[2]                
             ));
         }
-        
+
+        $first = true;
         foreach ($arrLanguages as $langId => $arrLanguage) {
             if ($arrLanguage['frontend'] == 1) {
                 // parse tabs
                 $this->_objTpl->setVariable(array(
                     'NEWS_LANG_ID'              => $langId,
-                    'NEWS_LANG_DISPLAY_STATUS'  => $arrLanguage['is_default'] == 'true' ? 'active' : 'inactive',
-                    'NEWS_LANG_DISPLAY_STYLE'   => $arrLanguage['is_default'] == 'true' ? 'inline' : 'none',
+                    'NEWS_LANG_DISPLAY_STATUS'  => $arrLanguage['is_default'] == 'true' && $first == true ? 'active' : 'inactive',
+                    'NEWS_LANG_DISPLAY_STYLE'   => $arrLanguage['is_default'] == 'true' || isset($_POST['newsManagerLanguages'][$intLanguageId]) ? 'inline' : 'none',
                     'NEWS_LANG_NAME'            => contrexx_raw2xhtml($arrLanguage['name'])
                 ));
                 $this->_objTpl->parse('news_lang_list');
+                $first = false;
 
                 // parse title
                 $this->_objTpl->setVariable(array(
@@ -1465,32 +1470,44 @@ class newsManager extends newsLibrary {
                     $this->_objTpl->parse('news_lang_list');
 
                     // parse title
+                    $title = isset($_POST['newsTitle'][$langId]) ? contrexx_input2raw($_POST['newsTitle'][$langId]) : '';
+                    if (empty($title)) {
+                        $title = isset($langData[$langId]['title']) ? $langData[$langId]['title'] : '';
+                    }
                     $this->_objTpl->setVariable(array(
                         'NEWS_LANG_ID'              => $langId,
-                        'NEWS_TITLE'                => !empty($langData[$langId]['title']) ? contrexx_raw2xhtml($langData[$langId]['title']) : '',
-                        'NEWS_TITLE_DISPLAY'        => $display ? 'block' : 'none'
+                        'NEWS_TITLE'                => contrexx_raw2xhtml($title),
+                        'NEWS_TITLE_DISPLAY'        => $display ? 'block' : 'none',
                     ));
                     $this->_objTpl->parse('news_title_list');
 
                     // parse teaser text
+                    $teaserText = isset($_POST['newsTeaserText'][$langId]) ? contrexx_input2raw($_POST['newsTeaserText'][$langId]) : null;
+                    if (!isset($teaserText)) {
+                        $teaserText = isset($langData[$langId]['teaser_text']) ? $langData[$langId]['teaser_text'] : '';
+                    }
                     $this->_objTpl->setVariable(array(
                         'NEWS_LANG_ID'              => $langId,
-                        'NEWS_TEASER_TEXT'          => !empty($langData[$langId]['teaser_text']) ? contrexx_raw2xhtml($langData[$langId]['teaser_text']) : '',
-                        'NEWS_TEASER_TEXT_LENGTH'   => !empty($langData[$langId]['teaser_text']) ? strlen($langData[$langId]['teaser_text']) : 0,
-                        'NEWS_TITLE_DISPLAY'        => $display ? 'block' : 'none'
+                        'NEWS_TEASER_TEXT'          => contrexx_raw2xhtml($teaserText),
+                        'NEWS_TEASER_TEXT_LENGTH'   => !empty($teaserText) ? strlen($teaserText) : 0,
+                        'NEWS_TITLE_DISPLAY'        => $display ? 'block' : 'none',
                     ));
                     $this->_objTpl->parse('news_teaser_text_list');
 
                     // parse text
+                    $text = isset($_POST['news_text'][$langId]) ? $_POST['news_text'][$langId] : null;
+                    if (!isset($text)) {
+                        $text = isset($langData[$langId]['text']) ? $langData[$langId]['text'] : '';
+                    }
                     $this->_objTpl->setVariable(array(
                         'NEWS_LANG_ID'              => $langId,
-                        'NEWS_TEXT'                 => !empty($langData[$langId]['text']) ? contrexx_raw2xhtml($langData[$langId]['text']) : ''
+                        'NEWS_TEXT'                 => contrexx_raw2xhtml($text),
                     ));
                     $this->_objTpl->parse('news_text_list');
                     
                     if ($display) {
                         $selectedLangId = $langId;                        
-                        $newsText       = contrexx_raw2xhtml($langData[$langId]['text']);
+                        $newsText       = contrexx_raw2xhtml($text);
                         $first          = false;
                     }                    
                 }
@@ -2192,13 +2209,14 @@ class newsManager extends newsLibrary {
                 'teaser_text'   => $_POST['newsTeaserText']
             );
             
-            if (!$this->validateNews($locales)) {            
-                return $this->edit();            
+            if (!$this->validateNews($locales)) {
+                $this->strErrMessage = $_ARRAYLANG['TXT_NEWS_NO_TITLE_ENTERED'];
+                return $this->edit();
             }
-            
+
             // store locales
             $localesSaving = $this->storeLocales($id, $locales);
-            
+
             // Set start and end dates as NULL if newsScheduled checkbox is not checked
             if ($newsScheduledActive == 0) {
                 $startDate = NULL;
