@@ -507,7 +507,7 @@ class FWUser extends User_Setting
         global $_CORELANG;
 
         $userFilter = array(
-            'username'         => $username,
+            'email'         => $username,
             'restore_key'      => $restoreKey,
             'restore_key_time' => array(
                 array (
