@@ -583,6 +583,14 @@ function _updateSettings()
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.3')) {
+        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."settings_image` (`name`, `value`) VALUES (?, ?)", array('image_cut_width', '500'));
+        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."settings_image` (`name`, `value`) VALUES (?, ?)", array('image_cut_height', '500'));
+        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."settings_image` (`name`, `value`) VALUES (?, ?)", array('image_scale_width', '800'));
+        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."settings_image` (`name`, `value`) VALUES (?, ?)", array('image_scale_height', '800'));
+        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."settings_image` (`name`, `value`) VALUES (?, ?)", array('image_compression', '100'));
+    }
+
 
     return true;
 }
