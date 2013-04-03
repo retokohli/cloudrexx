@@ -245,4 +245,3 @@ function _statsUpdate()
 
     return true;
 }
-?>
