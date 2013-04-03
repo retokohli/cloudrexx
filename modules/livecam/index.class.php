@@ -117,7 +117,7 @@ class Livecam extends LivecamLibrary
      */
     function _getAction()
     {
-        if (isset($_GET['cmd'])) {
+        if (!empty($_GET['cmd'])) {
             $this->cam = intval($_GET['cmd']);
         } else {
             $this->cam = 1;
