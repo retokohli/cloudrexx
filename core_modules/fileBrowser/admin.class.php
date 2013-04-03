@@ -40,17 +40,64 @@ class FileBrowser {
         'media2'    => 'TXT_FILEBROWSER_MEDIA_2',
         'media3'    => 'TXT_FILEBROWSER_MEDIA_3',
         'media4'    => 'TXT_FILEBROWSER_MEDIA_4',
+        'attach'    => 'TXT_FILE_UPLOADS',
         'shop'      => 'TXT_FILEBROWSER_SHOP',
-        'blog'      => 'TXT_FILEBROWSER_BLOG',
+        'gallery'   => 'TXT_THUMBNAIL_GALLERY',
+        'access'    => 'TXT_USER_ADMINISTRATION',
+        'mediadir'  => 'TXT_MEDIADIR_MODULE',
+        'downloads' => 'TXT_DOWNLOADS',
+        'calendar'  => 'TXT_CALENDAR',
         'podcast'   => 'TXT_FILEBROWSER_PODCAST',
-        'downloads' => 'TXT_FILEBROWSER_DOWNLOADS',
-        'mediadir'  => 'TXT_FILEBROWSER_MEDIADIR',
+        'blog'      => 'TXT_FILEBROWSER_BLOG',
+        'partners'  => 'TXT_PARTNERS_MODULE',
     );
-    public $_shopEnabled;
-    public $_blogEnabled;
-    public $_podcastEnabled;
-    public $_downloadsEnabled;
-    public $_mediadirEnabled;
+    private $mediaTypePaths = array(
+        'files' => array(
+            ASCMS_CONTENT_IMAGE_PATH, ASCMS_CONTENT_IMAGE_WEB_PATH,
+        ),
+        'media1' => array(
+            ASCMS_MEDIA1_PATH, ASCMS_MEDIA1_WEB_PATH,
+        ),
+        'media2' => array(
+            ASCMS_MEDIA2_PATH, ASCMS_MEDIA2_WEB_PATH,
+        ),
+        'media3' => array(
+            ASCMS_MEDIA3_PATH, ASCMS_MEDIA3_WEB_PATH,
+        ),
+        'media4' => array(
+            ASCMS_MEDIA4_PATH, ASCMS_MEDIA4_WEB_PATH,
+        ),
+        'attach' => array(
+            ASCMS_ATTACH_PATH, ASCMS_ATTACH_WEB_PATH,
+        ),
+        'shop' => array(
+            ASCMS_SHOP_IMAGES_PATH, ASCMS_SHOP_IMAGES_WEB_PATH,
+        ),
+        'gallery' => array(
+            ASCMS_GALLERY_PATH, ASCMS_GALLERY_WEB_PATH,
+        ),
+        'access' => array(
+            ASCMS_ACCESS_PATH, ASCMS_ACCESS_WEB_PATH,
+        ),
+        'mediadir' => array(
+            ASCMS_MEDIADIR_IMAGES_PATH, ASCMS_MEDIADIR_IMAGES_WEB_PATH,
+        ),
+        'downloads' => array(
+            ASCMS_DOWNLOADS_IMAGES_PATH, ASCMS_DOWNLOADS_IMAGES_WEB_PATH,
+        ),
+        'calendar' => array(
+            ASCMS_CALENDAR_IMAGE_PATH, ASCMS_CALENDAR_IMAGE_WEB_PATH,
+        ),
+        'podcast' => array(
+            ASCMS_PODCAST_IMAGES_PATH, ASCMS_PODCAST_IMAGES_WEB_PATH,
+        ),
+        'blog' => array(
+            ASCMS_BLOG_IMAGES_PATH, ASCMS_BLOG_IMAGES_WEB_PATH,
+        ),
+        'partners' => array(
+            ASCMS_PARTNERS_IMAGES_PATH, ASCMS_PARTNERS_IMAGES_WEB_PATH,
+        ),
+    );
     public $highlightedFiles     = array(); // added files
     public $highlightColor    = '#D8FFCA'; // highlight added files [#d8ffca]
 
@@ -70,12 +117,6 @@ class FileBrowser {
         $this->_mediaType = $this->_getMediaType();
         $this->_mediaMode = $this->_getMediaMode();
 
-        $this->_shopEnabled = $this->_checkForModule('shop');
-        $this->_blogEnabled = $this->_checkForModule('blog');
-        $this->_podcastEnabled = $this->_checkForModule('podcast');
-        $this->_downloadsEnabled = $this->_checkForModule('downloads');
-        $this->_mediadirEnabled = $this->_checkForModule('mediadir');
-
         $this->checkMakeDir();
         $this->_initFiles();
     }
@@ -87,12 +128,15 @@ class FileBrowser {
      */
     function _checkForModule($strModuleName) {
         global $objDatabase;
-        if (($objRS = $objDatabase->SelectLimit("SELECT `id` FROM ".DBPREFIX."modules WHERE name = '".$strModuleName."' AND status = 'y'", 1)) != false) {
+        if (($objRS = $objDatabase->SelectLimit("SELECT `status` FROM ".DBPREFIX."modules WHERE name = '".$strModuleName."'", 1)) != false) {
             if ($objRS->RecordCount() > 0) {
+                if ($objRS->fields['status'] == 'n') {
+                    return false;
+                }
                 return true;
             }
         }
-        return false;
+        return true;
     }
 
     function _getMediaType() {
@@ -146,38 +190,15 @@ class FileBrowser {
         $this->_objTpl->loadTemplateFile('module_fileBrowser_frame.html');
 
         switch($this->_mediaType) {
-            case 'media1':
-                $strWebPath = ASCMS_MEDIA1_WEB_PATH.$this->_path;
-                break;
-            case 'media2':
-                $strWebPath = ASCMS_MEDIA2_WEB_PATH.$this->_path;
-                break;
-            case 'media3':
-                $strWebPath = ASCMS_MEDIA3_WEB_PATH.$this->_path;
-                break;
-            case 'media4':
-                $strWebPath = ASCMS_MEDIA4_WEB_PATH.$this->_path;
-                break;
             case 'webpages':
                 $strWebPath = 'Webpages (DB)';
                 break;
-            case 'shop':
-                $strWebPath = ASCMS_SHOP_IMAGES_WEB_PATH.$this->_path;
-                break;
-            case 'blog':
-                $strWebPath = ASCMS_BLOG_IMAGES_WEB_PATH.$this->_path;
-                break;
-            case 'podcast':
-                $strWebPath = ASCMS_PODCAST_IMAGES_WEB_PATH.$this->_path;
-                break;
-            case 'downloads':
-                $strWebPath = ASCMS_DOWNLOADS_IMAGES_WEB_PATH.$this->_path;
-                break;
-            case 'mediadir':
-                $strWebPath = ASCMS_MEDIADIR_IMAGES_WEB_PATH.$this->_path;
-                break;
             default:
-                $strWebPath = ASCMS_CONTENT_IMAGE_WEB_PATH.$this->_path;
+                if (array_key_exists($this->_mediaType, $this->mediaTypePaths)) {
+                    $strWebPath = $this->mediaTypePaths[$this->_mediaType][1].$this->_path;
+                } else {
+                    $strWebPath = ASCMS_CONTENT_IMAGE_WEB_PATH.$this->_path;
+                }
         }
 
         $this->_objTpl->setVariable(array(
@@ -245,46 +266,12 @@ class FileBrowser {
     private function makeDir($dir) {
         global $_ARRAYLANG;
 
-        switch($this->_mediaType) {
-            case 'media1':
-                $strPath    = ASCMS_MEDIA1_PATH.$this->_path;
-                $strWebPath = ASCMS_MEDIA1_WEB_PATH.$this->_path;
-            break;
-            case 'media2':
-                $strPath    = ASCMS_MEDIA2_PATH.$this->_path;
-                $strWebPath = ASCMS_MEDIA2_WEB_PATH.$this->_path;
-            break;
-            case 'media3':
-                $strPath    = ASCMS_MEDIA3_PATH.$this->_path;
-                $strWebPath = ASCMS_MEDIA3_WEB_PATH.$this->_path;
-            break;
-            case 'media4':
-                $strPath    = ASCMS_MEDIA4_PATH.$this->_path;
-                $strWebPath = ASCMS_MEDIA4_WEB_PATH.$this->_path;
-            break;
-            case 'shop':
-                $strPath    = ASCMS_SHOP_IMAGES_PATH.$this->_path;
-                $strWebPath = ASCMS_SHOP_IMAGES_WEB_PATH.$this->_path;
-            break;
-            case 'blog':
-                $strPath    = ASCMS_BLOG_IMAGES_PATH.$this->_path;
-                $strWebPath = ASCMS_BLOG_IMAGES_WEB_PATH.$this->_path;
-            break;
-            case 'podcast':
-                $strPath    = ASCMS_PODCAST_IMAGES_PATH.$this->_path;
-                $strWebPath = ASCMS_PODCAST_IMAGES_WEB_PATH.$this->_path;
-            break;
-            case 'downloads':
-                $strPath    = ASCMS_DOWNLOADS_IMAGES_PATH.$this->_path;
-                $strWebPath = ASCMS_DOWNLOADS_IMAGES_WEB_PATH.$this->_path;
-            break;
-            case 'mediadir':
-                $strPath = ASCMS_MEDIADIR_IMAGES_PATH.$this->_path;
-                $strWebPath = ASCMS_MEDIADIR_IMAGES_WEB_PATH.$this->_path;
-            break;
-            default:
-                $strPath    = ASCMS_CONTENT_IMAGE_PATH.$this->_path;
-                $strWebPath = ASCMS_CONTENT_IMAGE_WEB_PATH.$this->_path;
+        if (array_key_exists($this->_mediaType, $this->mediaTypePaths)) {
+            $strPath    = $this->mediaTypePaths[$this->_mediaType][0].$this->_path;
+            $strWebPath = $this->mediaTypePaths[$this->_mediaType][1].$this->_path;
+        } else {
+            $strPath    = ASCMS_CONTENT_IMAGE_PATH.$this->_path;
+            $strWebPath = ASCMS_CONTENT_IMAGE_WEB_PATH.$this->_path;
         }
 
         if (preg_match('#^[0-9a-zA-Z_\-]+$#', $dir)) {
@@ -339,7 +326,7 @@ class FileBrowser {
      */
     function _setContent()
     {
-        global $objDatabase, $_CONFIG, $_FRONTEND_LANGID;
+        global $_FRONTEND_LANGID;
 
         $this->_objTpl->addBlockfile('FILEBROWSER_CONTENT', 'fileBrowser_content', 'module_fileBrowser_content.html');
 
@@ -482,37 +469,10 @@ class FileBrowser {
     
                     $this->_objTpl->setVariable('FILEBROWSER_FILES_JS', "'".implode("','",$arrEscapedPaths)."'");
                 }
-    
-                switch ($this->_mediaType) {
-                    case 'media1':
-                        $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_MEDIA1_WEB_PATH);
-                        break;
-                    case 'media2':
-                        $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_MEDIA2_WEB_PATH);
-                        break;
-                    case 'media3':
-                        $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_MEDIA3_WEB_PATH);
-                        break;
-                    case 'media4':
-                        $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_MEDIA4_WEB_PATH);
-                        break;
-                    case 'shop':
-                        $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_SHOP_IMAGES_WEB_PATH);
-                        break;
-                    case 'blog':
-                        $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_BLOG_IMAGES_WEB_PATH);
-                        break;
-                    case 'podcast':
-                        $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_PODCAST_IMAGES_WEB_PATH);
-                        break;
-                    case 'downloads':
-                        $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_DOWNLOADS_IMAGES_WEB_PATH);
-                        break;
-                    case 'mediadir':
-                        $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_MEDIADIR_IMAGES_WEB_PATH);
-                        break;
-                    default:
-                        $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_CONTENT_IMAGE_WEB_PATH);
+                if (array_key_exists($this->_mediaType, $this->mediaTypePaths)) {
+                    $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', $this->mediaTypePaths[$this->_mediaType][1]);
+                } else {
+                    $this->_objTpl->setVariable('FILEBROWSER_IMAGE_PATH', ASCMS_CONTENT_IMAGE_WEB_PATH);
                 }
             break;
         }
@@ -530,46 +490,12 @@ class FileBrowser {
 
         //data we want to remember for handling the uploaded files
 		$data = array();
-		switch($this->_mediaType) {
-            case 'media1':
-                $data['path']    = ASCMS_MEDIA1_PATH.$this->_path;
-                $data['webPath'] = ASCMS_MEDIA1_WEB_PATH.$this->_path;
-            break;
-            case 'media2':
-                $data['path']    = ASCMS_MEDIA2_PATH.$this->_path;
-                $data['webPath'] = ASCMS_MEDIA2_WEB_PATH.$this->_path;
-            break;
-            case 'media3':
-                $data['path']    = ASCMS_MEDIA3_PATH.$this->_path;
-                $data['webPath'] = ASCMS_MEDIA3_WEB_PATH.$this->_path;
-            break;
-            case 'media4':
-                $data['path']    = ASCMS_MEDIA4_PATH.$this->_path;
-                $data['webPath'] = ASCMS_MEDIA4_WEB_PATH.$this->_path;
-            break;
-            case 'shop':
-                $data['path']    = ASCMS_SHOP_IMAGES_PATH.$this->_path;
-                $data['webPath'] = ASCMS_SHOP_IMAGES_WEB_PATH.$this->_path;
-            break;
-            case 'blog':
-                $data['path']    = ASCMS_BLOG_IMAGES_PATH.$this->_path;
-                $data['webPath'] = ASCMS_BLOG_IMAGES_WEB_PATH.$this->_path;
-            break;
-            case 'podcast':
-                $data['path']    = ASCMS_PODCAST_IMAGES_PATH.$this->_path;
-                $data['webPath'] = ASCMS_PODCAST_IMAGES_WEB_PATH.$this->_path;
-            break;
-            case 'downloads':
-                $data['path']    = ASCMS_DOWNLOADS_IMAGES_PATH.$this->_path;
-                $data['webPath'] = ASCMS_DOWNLOADS_IMAGES_WEB_PATH.$this->_path;
-            break;
-            case 'mediadir':
-                $data['path']    = ASCMS_MEDIADIR_IMAGES_PATH.$this->_path;
-                $data['webPath'] = ASCMS_MEDIADIR_IMAGES_WEB_PATH.$this->_path;
-            break;
-            default:
-                $data['path']    = ASCMS_CONTENT_IMAGE_PATH.$this->_path;
-                $data['webPath'] = ASCMS_CONTENT_IMAGE_WEB_PATH.$this->_path;
+        if (array_key_exists($this->_mediaType, $this->mediaTypePaths)) {
+            $data['path']    = $this->mediaTypePaths[$this->_mediaType][0].$this->_path;
+            $data['webPath'] = $this->mediaTypePaths[$this->_mediaType][1].$this->_path;
+        } else {
+            $data['path']    = ASCMS_CONTENT_IMAGE_PATH.$this->_path;
+            $data['webPath'] = ASCMS_CONTENT_IMAGE_WEB_PATH.$this->_path;
         }
 
         $comboUp = UploadFactory::getInstance()->newUploader('exposedCombo');
@@ -726,36 +652,10 @@ class FileBrowser {
      */
     function _initFiles()
     {
-        switch($this->_mediaType) {
-            case 'media1':
-                $strPath = ASCMS_MEDIA1_PATH.$this->_path;
-            break;
-            case 'media2':
-                $strPath = ASCMS_MEDIA2_PATH.$this->_path;
-            break;
-            case 'media3':
-                $strPath = ASCMS_MEDIA3_PATH.$this->_path;
-            break;
-            case 'media4':
-                $strPath = ASCMS_MEDIA4_PATH.$this->_path;
-            break;
-            case 'shop':
-                $strPath = ASCMS_SHOP_IMAGES_PATH.$this->_path;
-            break;
-            case 'blog':
-                $strPath = ASCMS_BLOG_IMAGES_PATH.$this->_path;
-            break;
-            case 'podcast':
-                $strPath = ASCMS_PODCAST_IMAGES_PATH.$this->_path;
-            break;
-            case 'downloads':
-                $strPath = ASCMS_DOWNLOADS_IMAGES_PATH.$this->_path;
-            break;
-            case 'mediadir':
-                $strPath = ASCMS_MEDIADIR_IMAGES_PATH.$this->_path;
-            break;
-            default:
-                $strPath = ASCMS_CONTENT_IMAGE_PATH.$this->_path;
+        if (array_key_exists($this->_mediaType, $this->mediaTypePaths)) {
+            $strPath = $this->mediaTypePaths[$this->_mediaType][0].$this->_path;
+        } else {
+            $strPath = ASCMS_CONTENT_IMAGE_PATH.$this->_path;
         }
 
         $objDir = @opendir($strPath);
@@ -833,15 +733,18 @@ class FileBrowser {
      */
     function _getMediaTypeMenu($name, $selectedType, $attrs)
     {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG, $_CORELANG;
 
         $menu = "<select name=\"".$name."\" ".$attrs.">";
         foreach ($this->_arrMediaTypes as $type => $text) {
-            if ($type == 'shop' && !$this->_shopEnabled) { continue; }
-            if ($type == 'blog' && !$this->_blogEnabled) { continue; }
-            if ($type == 'podcast' && !$this->_podcastEnabled) { continue; }
-            if ($type == 'downloads' && !$this->_downloadsEnabled) { continue; }
-            $menu .= "<option value=\"".$type."\"".($selectedType == $type ? " selected=\"selected\"" : "").">".$_ARRAYLANG[$text]."</option>\n";
+            if (!$this->_checkForModule($text)) {
+                continue;
+            }
+            $text = $_ARRAYLANG[$text];
+            if (empty($text)) {
+                $text = $_CORELANG[$text];
+            }
+            $menu .= "<option value=\"".$type."\"".($selectedType == $type ? " selected=\"selected\"" : "").">".$text."</option>\n";
         }
         $menu .= "</select>";
         return $menu;
