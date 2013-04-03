@@ -68,7 +68,7 @@ class MediaManager extends MediaLibrary
      * @access public
      */
     function __construct(){
-        global  $_ARRAYLANG, $_FTPCONFIG, $objTemplate;
+        global  $_ARRAYLANG, $_FTPCONFIG, $objTemplate, $objDatabase;
 
         // sigma template
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/media/template');
@@ -114,6 +114,27 @@ class MediaManager extends MediaLibrary
                                     'mediadir'     => ASCMS_MEDIADIR_IMAGES_WEB_PATH . '/',
                                     'partners'     => ASCMS_PARTNERS_IMAGES_WEB_PATH . '/',
                                     'podcast'      => ASCMS_PODCAST_IMAGES_WEB_PATH . '/');
+        $moduleMatchTable = array(
+                                    'archive1'     => 'media1',
+                                    'archive2'     => 'media2',
+                                    'archive3'     => 'media3',
+                                    'archive4'     => 'media4',
+                                    'content'      => 'core',
+                                    'themes'       => 'core',
+                                    'attach'       => 'core',
+        );
+        $license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $objDatabase);
+        $license->check();
+        foreach ($this->arrWebPaths as $module=>$path) {
+            $moduleName = $module;
+            if (isset($moduleMatchTable[$module])) {
+                $moduleName = $moduleMatchTable[$module];
+            }
+            if (!$license->isInLegalComponents($moduleName)) {
+                \DBG::msg('Module "' . $module . '" is deactivated');
+                unset($this->arrWebPaths[$module]);
+            }
+        }
 
         if (isset($_REQUEST['archive']) && array_key_exists($_REQUEST['archive'], $this->arrWebPaths)) {
             $this->archive = $_REQUEST['archive'];
@@ -322,7 +343,7 @@ class MediaManager extends MediaLibrary
     * @return    string    parsed content
     */
     function _overviewMedia(){
-        global $_ARRAYLANG, $_CONFIG, $_CORELANG;
+        global $_ARRAYLANG, $_CONFIG, $_CORELANG, $objDatabase;
 
         $this->_objTpl->loadTemplateFile('module_media.html', true, true);
 
@@ -346,33 +367,44 @@ class MediaManager extends MediaLibrary
             case 'partners':
             case 'podcast':
             case 'shop':
-                $classAttach    = ($this->archive == 'attach')    ? 'active' : '';
-                $classAccess    = ($this->archive == 'access')    ? 'active' : '';
-                $classBlog      = ($this->archive == 'blog')      ? 'active' : '';
-                $classCalendar  = ($this->archive == 'calendar')  ? 'active' : '';
-                $classDownloads = ($this->archive == 'downloads') ? 'active' : '';
-                $classGallery   = ($this->archive == 'gallery')   ? 'active' : '';
-                $classMediadir  = ($this->archive == 'mediadir')  ? 'active' : '';
-                $classPartners  = ($this->archive == 'partners')  ? 'active' : '';
-                $classPodcast   = ($this->archive == 'podcast')   ? 'active' : '';
-                $classShop      = ($this->archive == 'shop')      ? 'active' : '';
                 
-                $this->_objTpl->setVariable('CONTENT_SUBNAVIGATION', '
+                $archives = array(
+                    'attach' => 'TXT_FILE_UPLOADS',
+                    'shop' => 'TXT_IMAGE_SHOP',
+                    'gallery' => 'TXT_GALLERY_TITLE',
+                    'access' => 'TXT_USER_ADMINISTRATION',
+                    'mediadir' => 'TXT_MEDIADIR_MODULE',
+                    'downloads' => 'TXT_DOWNLOADS',
+                    'calendar' => 'TXT_CALENDAR',
+                    'podcast' => 'TXT_PODCAST',
+                    'blog' => 'TXT_BLOG_MODULE',
+                    'partners' => 'TXT_PARTNERS_MODULE',
+                );
+                $moduleMatchTable = array(
+                    'attach' => 'core',
+                );
+                
+                $subnavigation = '
                     <div id="subnavbar_level2">
-                        <ul>
-                            <li><a href="index.php?cmd=media&amp;archive=attach" class="'.$classAttach.'">'.$_ARRAYLANG['TXT_FILE_UPLOADS'].'</a></li>
-                            <li><a href="index.php?cmd=media&amp;archive=shop" class="'.$classShop.'">'.$_ARRAYLANG['TXT_IMAGE_SHOP'].'</a></li>
-                            <li><a href="index.php?cmd=media&amp;archive=gallery" class="'.$classGallery.'">'.$_ARRAYLANG['TXT_GALLERY_TITLE'].'</a></li>
-                            <li><a href="index.php?cmd=media&amp;archive=access" class="'.$classAccess.'">'.$_ARRAYLANG['TXT_USER_ADMINISTRATION'].'</a></li>
-                            <li><a href="index.php?cmd=media&amp;archive=mediadir" class="'.$classMediadir.'">'.$_ARRAYLANG['TXT_MEDIADIR_MODULE'].'</a></li>
-                            <li><a href="index.php?cmd=media&amp;archive=downloads" class="'.$classDownloads.'">'.$_ARRAYLANG['TXT_DOWNLOADS'].'</a></li>
-                            <li><a href="index.php?cmd=media&amp;archive=calendar" class="'.$classCalendar.'">'.$_ARRAYLANG['TXT_CALENDAR'].'</a></li>
-                            <li><a href="index.php?cmd=media&amp;archive=podcast" class="'.$classPodcast.'">'.$_ARRAYLANG['TXT_PODCAST'].'</a></li>
-                            <li><a href="index.php?cmd=media&amp;archive=blog" class="'.$classBlog.'">'.$_ARRAYLANG['TXT_BLOG_MODULE'].'</a></li>
-                            <li><a href="index.php?cmd=media&amp;archive=partners" class="'.$classPartners.'">'.$_ARRAYLANG['TXT_PARTNERS_MODULE'].'</a></li>
+                        <ul>';
+                $license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $objDatabase);
+                $license->check();
+                foreach ($archives as $archive=>$txtKey) {
+                    $moduleName = $archive;
+                    if (isset($moduleMatchTable[$archive])) {
+                        $moduleName = $moduleMatchTable[$archive];
+                    }
+                    if (!$license->isInLegalComponents($moduleName)) {
+                        \DBG::msg('Module "' . $archive . '" is deactivated');
+                        continue;
+                    }
+                    $subnavigation .= '
+                            <li><a href="index.php?cmd=media&amp;archive=' . $archive . '" class="'.($this->archive == $archive ? 'active' : '').'">'.$_ARRAYLANG[$txtKey].'</a></li>';
+                }
+                $subnavigation .= '
                         </ul>
-                    </div>
-                ');
+                    </div>';
+                $this->_objTpl->setVariable('CONTENT_SUBNAVIGATION', $subnavigation);
             default:
                 $this->pageTitle = $_ARRAYLANG['TXT_MEDIA_OVERVIEW'];
                 if ($this->archive == "filesharing") {
