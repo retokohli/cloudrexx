@@ -1957,7 +1957,7 @@ END;
         $_GET['type'] = isset($_GET['type']) ? $_GET['type'] : 'customer';
         $redirect     = isset($_REQUEST['redirect']) ? $_REQUEST['redirect'] : base64_decode('&act=customers');
 
-        $this->_pageTitle = (isset($_REQUEST['id'])) ? $_ARRAYLANG["TXT_EDIT_".strtoupper($_GET['type'])] : $_ARRAYLANG["TXT_ADD_".strtoupper($_GET['type'])] ;
+        $this->_pageTitle = (isset($_REQUEST['id'])) ? $_ARRAYLANG["TXT_CRM_EDIT_".strtoupper($_GET['type'])] : $_ARRAYLANG["TXT_CRM_ADD_".strtoupper($_GET['type'])] ;
         $this->_objTpl->loadTemplateFile('module_'.$this->moduleName.'_customer_modify.html');
         $this->_objTpl->setGlobalVariable("MODULE_NAME", $this->moduleName);
 
