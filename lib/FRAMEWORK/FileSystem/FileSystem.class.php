@@ -787,7 +787,7 @@ class FileSystem
         if (!$resource) return false;
         $file = @readdir($resource);
         while ($file !== false) {
-            if (preg_match('/^\.\.?/', $file)) {
+            if (preg_match('/^\.\.?$/', $file)) {
                 $file = @readdir($resource);
                 continue;
             }
