@@ -171,7 +171,7 @@ class JsonPage implements JsonAdapter {
         $nodeId = !empty($pageArray['node'])  ? intval($pageArray['node']) : (!empty($dataPost['nodeId']) ? intval($dataPost['nodeId']) : 0);
         $lang   = !empty($pageArray['lang'])  ? contrexx_input2raw($pageArray['lang'])  : (!empty($dataPost['lang']) ? contrexx_input2raw($dataPost['lang']) : '');
         $action = !empty($dataPost['action']) ? contrexx_input2raw($dataPost['action']) : '';
-
+        
         if (!empty($pageArray)) {
             if (!empty($pageArray['target']) && !empty($pageArray['target_protocol'])) {
                 $pageArray['target'] = $pageArray['target_protocol'] . $pageArray['target'];
@@ -180,7 +180,7 @@ class JsonPage implements JsonAdapter {
             }
             $validatedPageArray = $this->validatePageArray($pageArray);
         }
-        
+
         // UPDATE
         if (!empty($pageId)) {
             // If we got a page id, the page already exists and can be updated.
@@ -897,7 +897,7 @@ class JsonPage implements JsonAdapter {
         $functions .= '<a id="load_'.$version.'" class="historyLoad" href="javascript:loadHistoryVersion('.$version.')" '.$tableStyle.'>' . $_ARRAYLANG['TXT_CORE_LOAD'] . '</a>';
         
         $table->setCellContents($row, 0, $dateString);
-        $table->setCellContents($row, 1, $page->getTitle() . '(' . $version . ')');
+        $table->setCellContents($row, 1, $page->getTitle());
         $table->setCellContents($row, 2, $username);
         $table->setCellContents($row, 3, $functions);
     }

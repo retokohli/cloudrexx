@@ -39,7 +39,7 @@ class ContrexxJavascript {
     static private $instance = null;
     //singleton functionality: instance getter
     /**
-     * @return ContrexxJavascript Singleton instance
+     * @return \ContrexxJavascript Singleton instance
      */
     static public function getInstance()
     {
