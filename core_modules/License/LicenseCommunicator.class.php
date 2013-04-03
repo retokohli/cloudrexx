@@ -101,7 +101,7 @@ class LicenseCommunicator {
             );
             $a = $_SERVER['REMOTE_ADDR'];
             $r = 'http://';
-            if ($_SERVER['HTTPS'] && $_SERVER['HTTPS'] != 'off') {
+            if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
                 $r = 'https://';
             }
             $r .= $_SERVER['SERVER_NAME'] . ASCMS_PATH_OFFSET;
@@ -345,7 +345,6 @@ class LicenseCommunicator {
                             revertMessage();
                             return;
                         }
-                        console.log(reloadManager);
                         revertMessage(data[\'class\'], data.link, data.target, data.text);
                         jQuery("#jsstatemessage").html(cx.variables.get("statusmessage_success", "core_module/license"));
                         jQuery("#jsstatemessage").addClass("okbox");

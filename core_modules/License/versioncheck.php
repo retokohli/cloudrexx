@@ -5,12 +5,6 @@ echo '<pre>';//*/
 
 global $_CONFIG, $_FTPCONFIG, $_DBCONFIG, $sessionObj, $objInit, $objDatabase, $documentRoot;
 
-function loadFile($cl, $file, $class) {
-    if (!class_exists($class)) {
-        return $cl->loadFile($file);
-    }
-}
-
 // when included in installer, this is set
 if (!isset($documentRoot)) {
     $documentRoot = dirname(dirname(dirname(__FILE__)));
@@ -30,26 +24,14 @@ if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
 }
 
 require_once($documentRoot.'/core/ClassLoader/ClassLoader.class.php');
-$cl = new \Cx\Core\ClassLoader\ClassLoader($documentRoot, false, $customizing);
+$cl = new \Cx\Core\ClassLoader\ClassLoader($documentRoot, true, $customizing);
 
-loadFile($cl, $documentRoot.'/core/Env.class.php', 'Env');               // needed for FileSystem
 Env::set('ClassLoader', $cl);
 Env::set('config', $_CONFIG);
 Env::set('ftpConfig', $_FTPCONFIG);
 
-loadFile($cl, $documentRoot.'/core/API.php',                                         'HTML_Template_Sigma'); // needed for getDatabaseObject()
-loadFile($cl, $documentRoot.'/lib/FRAMEWORK/User/User_Setting_Mail.class.php',       'User_Setting_Mail');
-loadFile($cl, $documentRoot.'/lib/FRAMEWORK/User/User_Setting.class.php',            'User_Setting');
-loadFile($cl, $documentRoot.'/lib/FRAMEWORK/User/User_Profile_Attribute.class.php',  'User_Profile_Attribute');
-loadFile($cl, $documentRoot.'/lib/FRAMEWORK/User/User_Profile.class.php',            'User_Profile');
-loadFile($cl, $documentRoot.'/lib/FRAMEWORK/User/UserGroup.class.php',               'UserGroup');
-loadFile($cl, $documentRoot.'/lib/FRAMEWORK/User/User.class.php',                    'User');
-loadFile($cl, $documentRoot.'/lib/FRAMEWORK/Language.class.php',                     'FWLanguage');
-loadFile($cl, $documentRoot.'/lib/FRAMEWORK/FWUser.class.php',                       'FWUser');
-loadFile($cl, $documentRoot.'/lib/PEAR/HTTP/Request2.php',                           'HTTP_Request2');
-loadFile($cl, $documentRoot.'/core/Init.class.php',                                  'InitCMS');
-loadFile($cl, $documentRoot.'/core/settings.class.php',                              'settingsManager');
-loadFile($cl, $documentRoot.'/core/session.class.php',                               'cmsSession');
+// core/API.php is not available in tmp/legacyClassClache.tmp, therefore we have to load it manually
+$cl->loadFile($documentRoot.'/core/API.php'); // needed for getDatabaseObject()
 
 $objDatabase = getDatabaseObject($strErrMessage, true);
 $objInit = new InitCMS('backend', null);
