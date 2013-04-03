@@ -115,7 +115,7 @@ class PageEventListener {
 
         $entity = $eventArgs->getEntity();
         if (($entity instanceof \Cx\Core\ContentManager\Model\Doctrine\Entity\Page)
-            && ($entity->getType() != 'alias')
+            && ($entity->getType() != \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_ALIAS)
             && ($_CONFIG['xmlSitemapStatus'] == 'on')
         ) {
             \Cx\Core\PageTree\XmlSitemapPageTree::write();
