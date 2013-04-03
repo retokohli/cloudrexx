@@ -181,7 +181,7 @@ class myAdminManager {
             $objTemplate->hideBlock('stats_javascript');
         }
 
-        $objRss = new XML_RSS('http://www.contrexx.com/feed/news_headlines_de.xml');
+        $objRss = new XML_RSS('http://www.contrexx.com/feed/news_headlines_de.xml?version=' . $_CONFIG['coreCmsVersion']);
         $objRss->parse();
         $arrItems = $objRss->getItems();
         if (!empty($arrItems) && ($_CONFIG['dashboardNews'] == 'on')) {
