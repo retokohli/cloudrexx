@@ -309,4 +309,5 @@ $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_CONTACT_FORM_CAPTCHA'] = "Block für den Cap
 $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_CONTACT_FORM_CAPTCHA_TITLE'] = "Titel für das Eingabefeld Captcha.";
 $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_CONTACT_FORM_CAPTCHA_CODE'] = "HTML-Code für das Eingabefeld Captcha.";
 $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_TITLE_BUTTON'] = "Titel für den Button Kommentar hinzufügen.";
+$_ARRAYLANG['TXT_NEWS_NO_TITLE_ENTERED'] = "Fehler beim Speichern der Newsmeldung. Es muss ein Titel angegeben werden.";
 ?>
