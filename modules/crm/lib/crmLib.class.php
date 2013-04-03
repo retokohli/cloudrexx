@@ -1255,16 +1255,32 @@ class CrmLibrary {
             $fieldValue = $arrFormData['data'][$key];
             $fieldValues[$fieldName] = $fieldValue;
         }
-
+        
         if (!empty ($fieldValues['access_email'])) {
             $objEmail = $objDatabase->Execute("
                                         SELECT `id`
                                           FROM ".DBPREFIX."access_users
-                                         WHERE email='".addslashes($fieldValues['access_email'])."'");
+                                         WHERE email='".contrexx_input2db($fieldValues['access_email'])."'");
 
+            if (!empty ($fieldValues['access_gender'])) {
+                $gender            = '';
+                $accessAttributeId = 'gender';
+                $objAttribute = FWUser::getFWUserObject()->objUser->objAttribute->getById($accessAttributeId);
+
+                // get options
+                $arrAttribute = $objAttribute->getChildren();
+
+                foreach ($arrAttribute as $attributeId) {
+                    $objAttribute = FWUser::getFWUserObject()->objUser->objAttribute->getById($attributeId);
+                    if ($objAttribute->getName(FRONTEND_LANG_ID) == $fieldValues['access_gender']) {
+                        $gender = $attributeId;
+                    }
+                }                
+            }
+            
             $this->contact->customerName   = !empty ($fieldValues['access_firstname']) ? contrexx_input2raw($fieldValues['access_firstname']) : '';
             $this->contact->family_name    = !empty ($fieldValues['access_lastname']) ? contrexx_input2raw($fieldValues['access_lastname']) : '';
-            $this->contact->contact_gender = (!empty ($fieldValues['access_gender']) && $fieldValues['access_gender'] == 'female') ? 1 : (!empty ($fieldValues['access_gender']) && $fieldValues['access_gender'] == 'male') ? 2 : '';
+            $this->contact->contact_gender = !empty ($fieldValues['access_gender']) ? ($gender == 'gender_female' ? 1 : ($gender == 'gender_male' ? 2 : '')) : '';
 
             $this->contact->contactType    = 2;
             $this->contact->datasource     = 2;
@@ -1307,7 +1323,7 @@ class CrmLibrary {
                                     city         = '". contrexx_input2db($fieldValues['access_city']) ."',
                                     state        = '". contrexx_input2db($fieldValues['access_state']) ."',
                                     zip          = '". contrexx_input2db($fieldValues['access_zip']) ."',
-                                    country      = '". contrexx_input2db($fieldValues['access_country']) ."',,
+                                    country      = '". contrexx_input2db($fieldValues['access_country']) ."',
                                     Address_Type = '2',
                                     is_primary   = '1',
                                     contact_id   = '{$this->contact->id}'";
@@ -1320,36 +1336,35 @@ class CrmLibrary {
                 if (!empty($fieldValues['access_phone_office'])) {
                     $contactPhone[] = array(
                         'value'   => $fieldValues['access_phone_office'],
-                        'type'    => 1,
-                        'primary' => 1
+                        'type'    => 1
                     );
                 }
                 if (!empty($fieldValues['access_phone_private'])) {
                     $contactPhone[] = array(
                         'value'   => $fieldValues['access_phone_private'],
-                        'type'    => 4,
-                        'primary' => 1
+                        'type'    => 0                        
                     );
                 }
                 if (!empty($fieldValues['access_phone_mobile'])) {
                     $contactPhone[] = array(
                         'value'   => $fieldValues['access_phone_mobile'],
-                        'type'    => 2,
-                        'primary' => 1
+                        'type'    => 3
                     );
                 }
                 if (!empty($fieldValues['access_phone_fax'])) {
                     $contactPhone[] = array(
                         'value'   => $fieldValues['access_phone_fax'],
-                        'type'    => 3,
-                        'primary' => 1
+                        'type'    => 4
                     );
                 }
                 if (!empty($contactPhone)) {
                     $query = "INSERT INTO `".DBPREFIX."module_{$this->moduleName}_customer_contact_phone` (phone, phone_type, is_primary, contact_id) VALUES ";
 
+                    $first = true;
                     foreach ($contactPhone as $value) {
-                        $values[] = "('".contrexx_input2db($value['value'])."', '".(int) $value['type']."', '".(int) $value['primary']."', '".$this->contact->id."')";
+                        $primary = $first ? 1 : 0;                        
+                        $values[] = "('".contrexx_input2db($value['value'])."', '".(int) $value['type']."', '".$primary."', '".$this->contact->id."')";
+                        $first = false;
                     }
 
                     $query .= implode(",", $values);
