@@ -325,6 +325,7 @@ $J(document).ready(function() {
         var width        = (borderWidth - 10) / countLangs;
         var nodeId       = 0;
         var nodeSort     = 0;
+        var nextPagesToSelect = new Array();
 
         for (var i = 0; i < countLangs; i++) {
             var lang = $J(".page-grouping-language").slice(i, i + 1).data("lang");
@@ -349,6 +350,17 @@ $J(document).ready(function() {
                     nodeCreated  = true;
                 }
                 groupedPages += "<div class=\"page-grouping-grouped-page\" data-id=\"" + page.data("id") + "\" data-lang=\"" + page.data("lang") + "\" style=\"width: " + pageWidth + "px;\">" + $J.trim(page.text()) + " (" + page.data("lang") + ")</div>";
+
+                nextPagesInLine = $J(".page-grouping-language").slice(i, i + 1).find(".page-grouping-page.active").nextUntil(':not(.grouped)', '.page-grouping-page');
+                if (nextPagesInLine.length) {
+                    nextPageInLine = nextPagesInLine.next('.page-grouping-page:not(.grouped)');
+                } else {
+                    nextPageInLine = $J(".page-grouping-language").slice(i, i + 1).find(".page-grouping-page.active").next('.page-grouping-page:not(.grouped)');
+                }
+
+                if (nextPageInLine.length) {
+                    nextPagesToSelect.push(nextPageInLine);
+                }
             } else {
                 groupedPages += "<div class=\"page-grouping-grouped-page no-page\" style=\"width: " + pageWidth + "px;\">Keine Seite (" + lang + ")</div>";
             }
@@ -379,6 +391,14 @@ $J(document).ready(function() {
             var prevElementSort    = arrSort[indexOfPrevElement];
             var objPrevElement     = $J(".page-grouping-grouped-node[data-sort=" + prevElementSort + "]");
             objPrevElement.after(groupedNode);
+        }
+
+        $J(nextPagesToSelect).each(function() {
+            $J(this).addClass("active");
+        });
+
+        if ($J(".page-grouping-page.active").length) {
+            $J(".page-grouping-buttons > .page-grouping-button").removeClass("disabled");
         }
 
         var objInsertedNode = $J(".page-grouping-grouped-node[data-sort=" + nodeSort + "]");
