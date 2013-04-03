@@ -282,7 +282,12 @@ class calendarLibrary
         $query = "
             SELECT `id`, `catid`, `startdate`, `enddate`, `priority`,
                    `name`, `comment`, `placeName`, `link`
-              FROM `".DBPREFIX."module_calendar".$this->mandateLink."`";
+              FROM `".DBPREFIX."module_calendar".$this->mandateLink."`
+              WHERE `active` = 1";
+        $objUser = \FWUser::getFWUserObject()->objUser;
+        if (!$objUser->login(true)) {
+            $query .= ' AND `public` = 1';
+        }
         $objRS = $objDatabase->Execute($query);
         if ($objRS) {
             if ($objRS->RecordCount() < 1) {
