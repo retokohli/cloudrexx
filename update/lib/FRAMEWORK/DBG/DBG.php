@@ -641,9 +641,15 @@ class DBG
             && method_exists(self::$firephp, $firephp_action)) {
             self::$firephp->$firephp_action($additional_args, $text);
         } elseif (self::$log_file) {
+            // this constant might not exist when updating from older versions
+            if (defined('ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME')) {
+                $dateFormat = ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME;	
+            } else {
+                $dateFormat = 'Y-m-d H:i:s';
+            }
             fputs(self::$dbg_fh,
 // TODO: Add some flag to enable/disable timestamps
-                date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME).' '.
+                date($dateFormat).' '.
                 $text."\n");
         } else {
             echo $text.'<br />'."\r\n";
