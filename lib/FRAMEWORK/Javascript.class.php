@@ -427,17 +427,16 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
 
 
     /**
-     * Register a custom js file
+     * Register a custom JavaScript file
      *
-     * Adds a new, individual JS file to the list.
-     * The filename has to be relative to the document root.
-     * If a file is registered that already exists as a available
-     * JS lib, then this one will be activated instead of
-     * added.
-     * @param mixed $file
-     * @access public
-     * @return bool Return true if successful
-     * @static
+     * Loads a new, individual JavaScript file that will be included in the page response.
+     * If a file is registered that already exists as an available JavaScript library,
+     * then this one will be loaded instead.
+     * @param string $file The path of $file must be specified relative to the document root of the website.
+     *     I.e. modules/foo/bar.js
+     *
+     * External files are also suppored by providing a valid HTTP(S) URI as $file.
+     * @return bool Returns TRUE if the file will be loaded, otherwiese FALSE.
      */
     public static function registerJS($file)
     {
