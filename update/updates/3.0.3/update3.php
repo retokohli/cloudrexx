@@ -538,6 +538,88 @@ $updatesSp2ToSp3 = array(
     "INSERT IGNORE INTO `".DBPREFIX."settings_image` (`name`, `value`) VALUES ('image_scale_width', '800')",
     "INSERT IGNORE INTO `".DBPREFIX."settings_image` (`name`, `value`) VALUES ('image_scale_height', '800')",
     "INSERT IGNORE INTO `".DBPREFIX."settings_image` (`name`, `value`) VALUES ('image_compression', '100')",
+    array (
+        'table' => DBPREFIX.'module_egov_product_calendar',
+        'structure' => array(
+            'calendar_id'            => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'calendar_product'       => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'calendar_id'),
+            'calendar_order'         => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'calendar_product'),
+            'calendar_day'           => array('type' => 'INT(2)', 'notnull' => true, 'default' => '0', 'after' => 'calendar_order'),
+            'calendar_month'         => array('type' => 'INT(2)', 'zerofill' => true, 'default' => '00', 'after' => 'calendar_day'),
+            'calendar_year'          => array('type' => 'INT(4)', 'notnull' => true, 'default' => '0', 'after' => 'calendar_month'),
+            'calendar_act'           => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'calendar_year')
+        ),
+        'keys' => array(
+            'calendar_product'       => array('fields' => array('calendar_product'))
+        ),
+    ),
+    array (
+        'table' => DBPREFIX.'voting_results',
+        'structure' => array(
+            'id'                     => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'voting_system_id'       => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'id'),
+            'question'               => array('type' => 'CHAR(200)', 'notnull' => false, 'after' => 'voting_system_id'),
+            'votes'                  => array('type' => 'INT(11)', 'notnull' => false, 'default' => '0', 'after' => 'question')
+        ),
+    ),
+    array (
+        'table' => DBPREFIX.'voting_system',
+        'structure' => array(
+            'id'                     => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'date'                   => array('type' => 'timestamp', 'notnull' => true, 'after' => 'id'),
+            'title'                  => array('type' => 'VARCHAR(60)', 'notnull' => true, 'default' => '', 'after' => 'date'),
+            'question'               => array('type' => 'text', 'after' => 'title', 'notnull' => false),
+            'status'                 => array('type' => 'TINYINT(1)', 'default' => '1', 'notnull' => false, 'after' => 'question'),
+            'submit_check'           => array('type' => 'ENUM(\'cookie\',\'email\')', 'notnull' => true, 'default' => 'cookie', 'after' => 'status'),
+            'votes'                  => array('type' => 'INT(11)', 'notnull' => false, 'default' => '0', 'after' => 'submit_check'),
+            'additional_nickname'    => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'votes'),
+            'additional_forename'    => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'additional_nickname'),
+            'additional_surname'     => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'additional_forename'),
+            'additional_phone'       => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'additional_surname'),
+            'additional_street'      => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'additional_phone'),
+            'additional_zip'         => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'additional_street'),
+            'additional_email'       => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'additional_zip'),
+            'additional_city'        => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'additional_email'),
+            'additional_comment'     => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'additional_city')
+        ),
+    ),
+    array (
+        'table' => DBPREFIX.'module_shop_currencies',
+        'structure' => array(
+            'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'code' => array('type' => 'CHAR(3)', 'notnull' => true, 'default' => '', 'after' => 'id'),
+            'symbol' => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'code'),
+            'rate' => array('type' => 'DECIMAL(10,4)', 'unsigned' => true, 'notnull' => true, 'default' => '1.0000', 'after' => 'symbol'),
+            'ord' => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'rate'),
+            'active' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'after' => 'ord'),
+            'default' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'active'),
+            'increment' => array('type' => 'DECIMAL(6,5)', 'unsigned' => true, 'notnull' => true, 'default' => '0.01', 'after' => 'default'),
+        ),
+    ),
+    array (
+        'table' => DBPREFIX.'module_shop_payment_processors',
+        'structure' => array(
+            'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'type' => array('type' => 'ENUM(\'internal\',\'external\')', 'notnull' => true, 'default' => 'internal'),
+            'name' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+            'description' => array('type' => 'TEXT'),
+            'company_url' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+            'status' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => false, 'default' => '1'),
+            'picture' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+        ),
+    ),
+    array (
+        'table' => DBPREFIX.'module_knowledge_tags_articles',
+        'structure' => array(
+            'article'    => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+            'tag'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'article')
+        ),
+        'keys' => array(
+            'article'    => array('fields' => array('article', 'tag'), 'type' => 'UNIQUE', 'force' => true)
+        ),
+    ),
+    "INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('sociallogin_activation_timeout', '10', '0') ON DUPLICATE KEY UPDATE `key` = `key`",
+
 );
 
 $updatesRc1ToSp2    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3);
@@ -623,6 +705,90 @@ if ($version == 'rc1') {
         $em->persist($page);
     }
     $em->flush();
+}
+
+// update for sp3
+if ($version == 'rc1' || $version == 'rc2'
+    || $version == '3.0.0' || $version == '3.0.0.1'
+    || $version == '3.0.1' || $version == '3.0.2') {
+
+    // newsletter module
+    // decode the urls of newsletter module
+    try {
+        $objResult = \Cx\Lib\UpdateUtil::sql('SELECT `id`, `url` FROM `'.DBPREFIX.'module_newsletter_email_link`');
+        if ($objResult !== false && $objResult->RecordCount() > 0) {
+            while (!$objResult->EOF) {
+                \Cx\Lib\UpdateUtil::sql(
+                    'UPDATE `'.DBPREFIX.'module_newsletter_email_link` SET `url` = ? WHERE `id` = ?',
+                        array(html_entity_decode($objResult->fields['url'], ENT_QUOTES, CONTREXX_CHARSET), $objResult->fields['id'])
+                );
+                $objResult->MoveNext();
+            }
+        }
+        $_SESSION['contrexx_update']['newsletter_links_decoded'] = true;
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
+    // shop
+    $table_name = DBPREFIX.'module_shop_currencies';
+    if (   \Cx\Lib\UpdateUtil::table_exist($table_name)
+        && \Cx\Lib\UpdateUtil::column_exist($table_name, 'name')) {
+        $query = "
+            UPDATE `$table_name`
+            SET sort_order = 0 WHERE sort_order IS NULL";
+        \Cx\Lib\UpdateUtil::sql($query);
+        // Currencies table fields
+        \Cx\Lib\UpdateUtil::table($table_name,
+            array(
+                'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'code' => array('type' => 'CHAR(3)', 'notnull' => true, 'default' => ''),
+                'symbol' => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => ''),
+                'name' => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => ''),
+                'rate' => array('type' => 'DECIMAL(10,4)', 'unsigned' => true, 'notnull' => true, 'default' => '1.0000'),
+                'sort_order' => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'status' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
+                'is_default' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+            )
+        );
+    }
+    $table_name = DBPREFIX.'module_shop_payment_processors';
+    if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
+        Cx\Lib\UpdateUtil::table($table_name,
+            array(
+                'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'type' => array('type' => 'ENUM(\'internal\',\'external\')', 'notnull' => true, 'default' => 'internal'),
+                'name' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+                'description' => array('type' => 'TEXT'),
+                'company_url' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'status' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => false, 'default' => '1'),
+                'picture' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+            )
+        );
+    }
+
+    // contact core_module
+    // update the content pages
+    $em = \Env::em();
+    $cl = \Env::get('ClassLoader');
+    $cl->loadFile(ASCMS_CORE_MODULE_PATH . '/contact/admin.class.php');
+    $pageRepo = $em->getRepository('Cx\Model\ContentManager\Page');
+    $Contact = new \ContactManager();
+    $Contact->initContactForms();
+
+    foreach ($Contact->arrForms as $id => $form) {
+        foreach ($form['lang'] as $langId => $lang) {
+            if ($lang['is_active'] == true) {
+                $page = $pageRepo->findOneByModuleCmdLang('contact', $id, $langId);
+                if ($page) {
+                    $page->setContent($Contact->_getSourceCode($id, $langId));
+                    $em->persist($page);
+                }
+            }
+        }
+    }
+    $em->flush();
+
 }
 
 $objSettings = new \settingsManager();
