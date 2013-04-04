@@ -1098,13 +1098,13 @@ class newsletter extends NewsletterLib
         // prepare links in content for tracking
         if (is_object($objUser) && $objUser->getId()) {
             $userId = $objUser->getId();
-            $type = 'access';
+            $realUser = true;
         } else {
             $userId = $userId ? $userId : 0;
-            $type = null;
+            $realUser = false;
         }
 
-        $content = self::prepareNewsletterLinksForSend($id, $content, $userId, $type);
+        $content = self::prepareNewsletterLinksForSend($id, $content, $userId, $realUser);
 		
         // Finally replace content placeholder in the template.
 		$html = str_replace('[[content]]', $content, $html);
@@ -1151,6 +1151,8 @@ class newsletter extends NewsletterLib
             return false;
         }
         return true;
+
+// TODO: what is this?
                         $newUrl->setParam('n', $MailId);
                         $newUrl->setParam('l', $linkId);
                         if ($realUser) {

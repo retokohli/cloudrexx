@@ -226,11 +226,12 @@ class newsletter extends NewsletterLib
                     $this->_showEmailFeedbackAnalysis();
                     break;
                 } elseif (isset($_GET['link_id'])) {
-                    if (isset($_GET['recipient_id']) && isset($_GET['recipient_type'])) {
+// TODO: refactor and reactivate these extended statistics
+                    /*if (isset($_GET['recipient_id']) && isset($_GET['recipient_type'])) {
                         $this->_showRecipientEmailFeedbackAnalysis();
                     } else {
                         $this->_showLinkFeedbackAnalysis();
-                    }
+                    }*/
                     break;
                 }
             default:
@@ -1089,6 +1090,8 @@ class newsletter extends NewsletterLib
 
     function _update()
     {
+        die('Feature not available!');
+
         global $objDatabase;
 
         $objColumns = $objDatabase->MetaColumns(DBPREFIX."module_newsletter");
@@ -5673,6 +5676,9 @@ function MultiAction() {
     
     function _showLinkFeedbackAnalysis() 
     {
+// TODO: refactor method
+        die('Feature unavailable');
+
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
         if (empty($_GET['link_id'])) return $this->_mails();
@@ -5825,6 +5831,8 @@ function MultiAction() {
     
     function _showRecipientEmailFeedbackAnalysis()
     {
+// TODO: refactor method
+        die('Feature unavailable');
     
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
