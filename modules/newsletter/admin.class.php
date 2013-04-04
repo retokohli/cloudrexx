@@ -5647,7 +5647,7 @@ function MultiAction() {
         $email = '';
         $objMail = $objDatabase->SelectLimit("SELECT `subject` FROM ".DBPREFIX."module_newsletter WHERE id=".$mailId, 1);
         if ($objMail !== false && $objMail->RecordCount() == 1) {
-            $email = htmlentities($objMail->fields['subject'], ENT_QUOTES, CONTREXX_CHARSET);
+            $email = contrexx_raw2xhtml($objMail->fields['subject']);
         }
 
         $this->_objTpl->setVariable(array(
@@ -5656,7 +5656,7 @@ function MultiAction() {
             'TXT_NEWSLETTER_LINK_SOURCE' => $_ARRAYLANG['TXT_NEWSLETTER_LINK_SOURCE'],
             'TXT_NEWSLETTER_FUNCTIONS' => $_ARRAYLANG['TXT_NEWSLETTER_FUNCTIONS'],
             'TXT_NEWSLETTER_BACK' => $_ARRAYLANG['TXT_NEWSLETTER_BACK'],
-            'TXT_NEWSLETTER_EMAIL_FEEDBACK' => sprintf($_ARRAYLANG['TXT_NEWSLETTER_SELECTED_EMAIL_FEEDBACK'], htmlentities($email, ENT_QUOTES, CONTREXX_CHARSET))
+            'TXT_NEWSLETTER_EMAIL_FEEDBACK' => sprintf($_ARRAYLANG['TXT_NEWSLETTER_SELECTED_EMAIL_FEEDBACK'], $email)
         ));
 
         $this->_objTpl->setGlobalVariable(array(
