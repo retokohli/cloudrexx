@@ -940,6 +940,7 @@ class newsletter extends NewsletterLib
             $this->_objTpl->setVariable(array(
                 'TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS_SEND' => $_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS_SEND'],
             ));
+
             $this->_objTpl->hideBlock('associatedListToolTip');
             $this->_objTpl->hideBlock('associatedGroupToolTipAfterSent');
             $this->_objTpl->touchBlock('associatedGroupToolTipBeforeSend');
@@ -2947,6 +2948,8 @@ class newsletter extends NewsletterLib
         $HTML_TemplateSource = $this->GetTemplateSource($template, 'html');
         $TEXT_TemplateSource = $this->GetTemplateSource($template, 'text');
         $newsletterUserData = $this->getNewsletterUserData($UserID, $type);
+
+        $testDelivery = !$TmpEntry;
         
         $NewsletterBody_HTML = $this->ParseNewsletter(
             $subject,
@@ -2955,7 +2958,8 @@ class newsletter extends NewsletterLib
             '',
             $TargetEmail,
             $newsletterUserData,
-            $NewsletterID
+            $NewsletterID,
+            $testDelivery
         );
         LinkGenerator::parseTemplate($NewsletterBody_HTML, true);
 
@@ -2966,7 +2970,8 @@ class newsletter extends NewsletterLib
             'text',
             '',
             $newsletterUserData,
-            $NewsletterID
+            $NewsletterID,
+            $testDelivery
         );
         LinkGenerator::parseTemplate($NewsletterBody_TEXT, true);
 
@@ -3225,7 +3230,8 @@ class newsletter extends NewsletterLib
      */
     function ParseNewsletter(
         $subject, $content_text, $TemplateSource,
-        $format, $TargetEmail, $userData, $NewsletterID
+        $format, $TargetEmail, $userData, $NewsletterID,
+        $testDelivery = false
     ) {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
@@ -3295,7 +3301,6 @@ class newsletter extends NewsletterLib
             '[[fax]]',
             '[[birthday]]',
             '[[website]]',
-            '[[display_in_browser_url]]'
         );
         $replace = array(
             $userData['email'],
@@ -3317,15 +3322,23 @@ class newsletter extends NewsletterLib
             $userData['fax'],
             $userData['birthday'],
             $userData['website'],
-            $browserViewUrl
         );
 
+        if ($testDelivery) {
+            $replace = $search;
+        }
         // do the replacement
         $content_text       = str_replace($search, $replace, $content_text);
         $TemplateSource     = str_replace($search, $replace, $TemplateSource);
 
-        $search         = array('[[profile_setup]]', '[[unsubscribe]]', '[[date]]');
-        $replace        = array(
+        $search = array(
+            '[[display_in_browser_url]]',
+            '[[profile_setup]]',
+            '[[unsubscribe]]',
+            '[[date]]'
+        );
+        $replace = array(
+            $browserViewUrl,
             $this->GetProfileURL($userData['code'], $TargetEmail, $userData['type']),
             $this->GetUnsubscribeURL($userData['code'], $TargetEmail, $userData['type']),
             date(ASCMS_DATE_FORMAT_DATE)
@@ -3450,15 +3463,15 @@ class newsletter extends NewsletterLib
 
             case self::USER_TYPE_NEWSLETTER:
             default:
-            $query = "
-                SELECT code, sex, email, uri,
-                       salutation, title, lastname, firstname,
-                       position, address, zip, city, country_id,
-                       phone_office, company, industry_sector, birthday,
+                $query = "
+                    SELECT code, sex, email, uri,
+                           salutation, title, lastname, firstname,
+                           position, address, zip, city, country_id,
+                           phone_office, company, industry_sector, birthday,
                            phone_private, phone_mobile, fax
-                  FROM ".DBPREFIX."module_newsletter_user
-                 WHERE id=$id";
-            $result = $objDatabase->Execute($query);
+                      FROM ".DBPREFIX."module_newsletter_user
+                     WHERE id=$id";
+                $result = $objDatabase->Execute($query);
                 if (!$result || $result->EOF) {
                     break;
                 }
@@ -3506,7 +3519,7 @@ class newsletter extends NewsletterLib
 
         switch ($type) {
             case self::USER_TYPE_ACCESS:
-            $profileURI = '?section=newsletter&cmd=profile&code='.$code.'&mail='.urlencode($email);
+                $profileURI = '?section=newsletter&cmd=profile&code='.$code.'&mail='.urlencode($email);
                 break;
 
             case self::USER_TYPE_NEWSLETTER:
@@ -4024,6 +4037,7 @@ $WhereStatement = '';
         $newsletterUserEmails = array();
         $accessUserIds        = array();
         $accessUserEmails     = array();
+
         // ATTENTION: this very use of $user['type'] is not related to self::USER_TYPE_ACCESS, self::USER_TYPE_CORE or self::USER_TYPE_NEWSLETTER!
         foreach ($users as $user) {
             if ($user['type'] == 'newsletter_user') {
@@ -5933,6 +5947,7 @@ function MultiAction() {
                     }
                 }
             }
+
             foreach ($users as $user) {
                 // stats for users of type self::USER_TYPE_CORE are made using type self::USER_TYPE_ACCESS
                 if ($user['type'] == self::USER_TYPE_CORE) {
@@ -5948,6 +5963,7 @@ function MultiAction() {
                     'NEWSLETTER_RECIPIENT_FEEDBACK' => $linkCount > 0 ? round(100 /  $linkCount * $feedback) : 0,
                     'NEWSLETTER_RECIPIENT_CLICKS' => $feedback
                 ));
+
                 if ($user['type'] == self::USER_TYPE_ACCESS) {
                     $this->_objTpl->touchBlock('access_user_type');
                     $this->_objTpl->hideBlock('newsletter_user_type');
@@ -5972,7 +5988,7 @@ function MultiAction() {
     {
 // TODO: refactor method
         die('Feature unavailable');
-    
+
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
         $linkId = isset($_GET['link_id']) ? intval($_GET['link_id']) : 0;
