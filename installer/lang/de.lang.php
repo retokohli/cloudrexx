@@ -100,7 +100,7 @@ $_ARRLANG['TXT_FTP_HOSTNAME_NEEDED'] = "Sie müssen den Rechnernamen Ihres FTP-S
 $_ARRLANG['TXT_FTP_USERNAME_NEEDED'] = "Sie müssen einen gültigen Usernamen angeben, mit dem auf den FTP-Server zugegriffen werden soll!";
 $_ARRLANG['TXT_USE_FTP'] = "FTP verwenden";
 $_ARRLANG['TXT_PATH_DOES_NOT_EXIST'] = "Der Pfad \"[PATH]\" existiert nicht!";
-$_ARRLANG['TXT_CANNOT_FIND_FIlE'] = "Kann die Datei \"[FILE]\" im CMS-Verzeichniss nicht finden!";
+$_ARRLANG['TXT_CANNOT_FIND_FIlE'] = "Kann die Datei \"[FILE]\" im CMS-Verzeichnis nicht finden!";
 $_ARRLANG['TXT_DIRECTORY_ON_FTP_DOES_NOT_EXIST'] = "Das Verzeichnis \"[DIRECTORY]\" existiert auf dem FTP-Server nicht!";
 $_ARRLANG['TXT_FILE_ON_FTP_DOES_NOT_EXIST'] = "Die Datei \"[FILE]\" existiert auf dem FTP-Server nicht!";
 $_ARRLANG['TXT_USE_PASSIVE_FTP'] = "Passiver Modus";
@@ -154,6 +154,7 @@ $_ARRLANG['TXT_CONFIG_DATABASE'] = "Datenbank Konfigurieren";
 $_ARRLANG['TXT_CORE_HTACCESS_FILE_NOT_WRITABLE'] = "Die Datei %s ist nicht beschreibbar und kann daher nicht aktualisiert werden! Setzen Sie auf diese Datei Schreibzugriff, damit das System korrekt funktioniert!";
 $_ARRLANG['TXT_CORE_INVALID_HTACCESS_FORMAT'] = "Die HtAccess Datei %s konnte nicht ausgelesen werden, da die darin enthaltenen Contrexx spezifischen Anweisungen ungültig sind!";
 $_ARRLANG['TXT_NO_WRITE_PERMISSION'] = "Die Datei \"%s\" konnte nicht erstellt werden oder hat keine Schreibrechte.<br />Bitte erstellen Sie die Datei von Hand auf dem Webserver im Root-Verzeichnis Ihrer Webseite und geben Sie der Datei Schreibrechte oder kontaktieren Sie Ihren Server-Administrator.";
+$_ARRLANG['TXT_DATABASE_CREATION_COMPLETE'] = "Die Datenbank-Struktur wurde erstellt. Nun folgt das Einfügen der Dummy Daten. Bitte klicken Sie auf weiter.";
 
 // system configuration
 $_ARRLANG['TXT_ADMIN_EMAIL'] = "E-Mail Adresse des Administrators";
