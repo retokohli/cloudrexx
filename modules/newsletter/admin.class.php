@@ -28,9 +28,6 @@
  */
 class newsletter extends NewsletterLib
 {
-    const USER_TYPE_NEWSLETTER = 'newsletter';
-    const USER_TYPE_ACCESS = 'access';
-
     public $_objTpl;
     public $_pageTitle;
     public static $strErrMessage = '';
@@ -2456,7 +2453,7 @@ class newsletter extends NewsletterLib
         $objValidator = new FWValidator();
 
         if (!empty($_POST['newsletter_test_mail']) && $objValidator->isEmail($_POST['newsletter_test_mail'])) {
-            if ($this->SendEmail(0, $mailId, $_POST['newsletter_test_mail'], 0) !== false) {
+            if ($this->SendEmail(0, $mailId, $_POST['newsletter_test_mail'], 0, self::USER_TYPE_ACCESS) !== false) {
                 self::$strOkMessage = str_replace("%s", $_POST["newsletter_test_mail"], $_ARRAYLANG['TXT_TESTMAIL_SEND_SUCCESSFUL']);
                 return true;
             } else {
@@ -2727,24 +2724,25 @@ class newsletter extends NewsletterLib
         global $objDatabase;
 
         $query = "
-            SELECT (CASE WHEN `s`.`type` = 'newsletter'
+            SELECT (CASE WHEN `s`.`type` = '".self::USER_TYPE_NEWSLETTER."'
                          THEN `nu`.`id`
                          ELSE `au`.`id`
                                         END) AS `id`,
                     `s`.email,
                     `s`.type,
+                    # this code is used for newsletter browser view
                     `s`.`code`
 
               FROM `".DBPREFIX."module_newsletter_tmp_sending` AS `s`
 
          LEFT JOIN `".DBPREFIX."module_newsletter_user` AS `nu`
                 ON `nu`.`email` = `s`.`email`
-               AND `s`.`type` = 'newsletter'
+               AND `s`.`type` = '".self::USER_TYPE_NEWSLETTER."'
 
 
          LEFT JOIN `".DBPREFIX."access_users` AS `au`
                 ON `au`.`email` = `s`.`email`
-               AND `s`.`type` = 'access'
+               AND (`s`.`type` = '".self::USER_TYPE_ACCESS."' OR `s`.`type` = '".self::USER_TYPE_CORE."')
 
              WHERE `s`.`newsletter` = ".intval($id)."
                AND `s`.`sendt` = 0
@@ -2876,10 +2874,21 @@ class newsletter extends NewsletterLib
         global $objDatabase;
 
         $mailID = intval($mailID);
-// TODO: might we set TYPE for core access_users (case 2) to something like 'core' which would define that there won't be any profile and unsubscribe link??
-// TODO: might we switch the case2 and case3 of the UNION SELECT so that access_users with a real subscribtion get preferred bevor those without a subscribtion
+        // this query selects the recipients in the following order
+        // 1. access users that have subscribed to one of the selected recipient-lists
+        // 2. newsletter recipients of one of the selected recipient-lists
+        // 3. access users of one of the selected user groups
         $query = sprintf('
-            SELECT `email`, "newsletter" AS `type`
+            SELECT `email`, "'.self::USER_TYPE_ACCESS.'" AS `type`
+              FROM `%1$saccess_users` AS `cu`
+        INNER JOIN `%1$smodule_newsletter_access_user` AS `cnu`
+                ON `cnu`.`accessUserID`=`cu`.`id`
+        INNER JOIN `%1$smodule_newsletter_rel_cat_news` AS `crn`
+                ON `cnu`.`newsletterCategoryID`=`crn`.`category`
+             WHERE `crn`.`newsletter`=%2$s
+               AND `cu`.`active` = 1
+    UNION DISTINCT
+            SELECT `email`, "'.self::USER_TYPE_NEWSLETTER.'" AS `type`
               FROM `%1$smodule_newsletter_user` AS `nu`
         INNER JOIN `%1$smodule_newsletter_rel_user_cat` AS `rc`
                 ON `rc`.`user`=`nu`.`id`
@@ -2888,23 +2897,14 @@ class newsletter extends NewsletterLib
              WHERE `nrn`.`newsletter`=%2$s
                AND `nu`.`status` = 1
     UNION DISTINCT
-            SELECT `email`, "access" AS `type`
+            SELECT `email`, "'.self::USER_TYPE_CORE.'" AS `type`
               FROM `%1$saccess_users` AS `au`
         INNER JOIN `%1$saccess_rel_user_group` AS `rg`
                 ON `rg`.`user_id`=`au`.`id`
         INNER JOIN `%1$smodule_newsletter_rel_usergroup_newsletter` AS `arn`
                 ON `arn`.`userGroup`=`rg`.`group_id`
              WHERE `arn`.`newsletter`=%2$s
-               AND `au`.`active` = 1
-    UNION DISTINCT
-            SELECT `email`, "access" AS `type`
-              FROM `%1$saccess_users` AS `cu`
-        INNER JOIN `%1$smodule_newsletter_access_user` AS `cnu`
-                ON `cnu`.`accessUserID`=`cu`.`id`
-        INNER JOIN `%1$smodule_newsletter_rel_cat_news` AS `crn`
-                ON `cnu`.`newsletterCategoryID`=`crn`.`category`
-             WHERE `crn`.`newsletter`=%2$s
-               AND `cu`.`active` = 1',
+               AND `au`.`active` = 1',
             DBPREFIX, $mailID);
         return new DBIterator($objDatabase->Execute($query));
     }
@@ -3058,24 +3058,39 @@ class newsletter extends NewsletterLib
                         case 'deactivate':
                             // Remove temporary data from the module
                             if ($objDatabase->Execute("DELETE FROM `".DBPREFIX."module_newsletter_tmp_sending` WHERE `email` ='".addslashes($TargetEmail)."'") !== false) {
-                                if ($type == 'newsletter')  {
-                                    // Remove user data from the module
-                                    $objDatabase->Execute("UPDATE `".DBPREFIX."module_newsletter_user` SET `status` = 0 WHERE `id` = ".$UserID);
-                                } else {
-// TODO
-                                    // Remove User from the list
+                                switch ($type) {
+                                    case self::USER_TYPE_CORE:
+                                        // do nothing with system users
+                                        break;
 
+                                    case self::USER_TYPE_ACCESS:
+// TODO: Remove newsletter subscription for access_user
+                                        break;
+
+                                    case self::USER_TYPE_NEWSLETTER:
+                                    default:
+                                        // Deactivate user
+                                        $objDatabase->Execute("UPDATE `".DBPREFIX."module_newsletter_user` SET `status` = 0 WHERE `id` = ".$UserID);
+                                        break;
                                 }
                             }
                             break;
 
                         case 'delete':
-                            if ($type == 'newsletter') {
-                                $this->_deleteRecipient(UserID);
-                            } else {
-// TODO
-                                // Remove User from the list
+                            switch ($type) {
+                                case self::USER_TYPE_CORE:
+                                    // do nothing with system users
+                                    break;
 
+                                case self::USER_TYPE_ACCESS:
+// TODO: Remove newsletter subscription for access_user
+                                    break;
+
+                                case self::USER_TYPE_NEWSLETTER:
+                                default:
+                                    // Remove user data from the module
+                                    $this->_deleteRecipient(UserID);
+                                    break;
                             }
                             break;
 
@@ -3164,15 +3179,23 @@ class newsletter extends NewsletterLib
      */
     protected function getInformMailBody($userID, $mail, $type)
     {
-        global $_ARRAYLANG, $_CONFIG;
+        global $_CONFIG;
 
         $body = $this->getSetting('reject_info_mail_text');
-        if ($type == self::USER_TYPE_ACCESS) {
-            $link = '/cadmin/index.php?cmd=access&act=user&tpl=modify&id='.$userID;
-        } else {
-            $link = '/cadmin/index.php?cmd=newsletter&act=users&tpl=edit&id='.$userID;
+        $link = 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET;
+
+        switch ($type) {
+            case self::USER_TYPE_CORE:
+            case self::USER_TYPE_ACCESS:
+                $link .= '/cadmin/index.php?cmd=access&act=user&tpl=modify&id='.$userID;
+                break;
+
+            case self::USER_TYPE_NEWSLETTER:
+            default:
+                $link .= '/cadmin/index.php?cmd=newsletter&act=users&tpl=edit&id='.$userID;
+                break;
         }
-        $link = 'http://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$link;
+
         $body = str_replace(array('[[EMAIL]]', '[[LINK]]'), array($mail, $link), $body);
         return $body;
     }
@@ -3231,9 +3254,21 @@ class newsletter extends NewsletterLib
                 break;
         }
 
+        switch ($userData['type']) {
+            case self::USER_TYPE_ACCESS:
+            case self::USER_TYPE_CORE:
+                $realUser = true;
+                break;
+
+            case self::USER_TYPE_NEWSLETTER:
+            default:
+                $realUser = false;
+                break;
+        }
+
         // lets prepare all links for tracker before we replace placeholders
 // TODO: migrate tracker to new URL-format
-        $content_text = self::prepareNewsletterLinksForSend($NewsletterID, $content_text, $userData['id'], ($userData['type'] == 'access'));
+        $content_text = self::prepareNewsletterLinksForSend($NewsletterID, $content_text, $userData['id'], $realUser);
 
         $search = array(
             '[[email]]',
@@ -3360,10 +3395,8 @@ class newsletter extends NewsletterLib
 
         if (!$id) return $arrUserData;
  
-        if ($type == 'access') {
-            $objUser = FWUser::getFWUserObject()->objUser->getUser($id);
-
-            if ($objUser) {
+        switch ($type) {
+            case self::USER_TYPE_ACCESS:
                 $query = "
                     SELECT code
                       FROM ".DBPREFIX."module_newsletter_access_user
@@ -3371,6 +3404,17 @@ class newsletter extends NewsletterLib
                 $result = $objDatabase->SelectLimit($query, 1);
                 if ($result && !$result->EOF) {
                     $arrUserData['code'] = $result->fields['code'];
+                }
+
+                // intentionally no break here!!
+
+            case self::USER_TYPE_CORE:
+                $objUser = FWUser::getFWUserObject()->objUser->getUser($id);
+
+                if (!$objUser) {
+                    // in case no user account exists by the supplied ID, then reset the code and abort operation
+                    $arrUserData['code'] = '';
+                    break;
                 }
 
                 switch ($objUser->getProfileAttribute('gender')) {
@@ -3397,20 +3441,24 @@ class newsletter extends NewsletterLib
                 $arrUserData['phone_mobile']    = $objUser->getProfileAttribute('phone_mobile');
                 $arrUserData['fax']             = $objUser->getProfileAttribute('phone_fax');
                 $arrUserData['birthday']        = $objUser->getProfileAttribute('birthday');
-            }
-        } else {
+                break;
+
+            case self::USER_TYPE_NEWSLETTER:
+            default:
             $query = "
                 SELECT code, sex, email, uri,
                        salutation, title, lastname, firstname,
                        position, address, zip, city, country_id,
                        phone_office, company, industry_sector, birthday,
-                       phone_private, phone_mobile, fax,
-                       'newsletter' AS  `type`
+                           phone_private, phone_mobile, fax
                   FROM ".DBPREFIX."module_newsletter_user
                  WHERE id=$id";
             $result = $objDatabase->Execute($query);
-            if ($result && !$result->EOF) {
-// TODO: use FWUSER
+                if (!$result || $result->EOF) {
+                    break;
+                }
+
+// TODO: use FWUser instead of _getRecipientTitles()
                 $arrRecipientTitles = $this->_getRecipientTitles();
                 $arrUserData['code']            = $result->fields['code'];
                 $arrUserData['sex']             = $result->fields['sex'];
@@ -3432,7 +3480,7 @@ class newsletter extends NewsletterLib
                 $arrUserData['fax']             = $result->fields['fax'];
                 $arrUserData['birthday']        = $result->fields['birthday'];
                 $arrUserData['website']         = $result->fields['uri'];
-            }
+                break;
         }
 
         return $arrUserData;
@@ -3442,21 +3490,33 @@ class newsletter extends NewsletterLib
     /**
      * Get the URL to the page to unsubscribe
      */
-    function GetUnsubscribeURL($code, $email, $type='newsletter')
+    function GetUnsubscribeURL($code, $email, $type = self::USER_TYPE_NEWSLETTER)
     {
         global $_ARRAYLANG, $_CONFIG;
 
-        $profileURI = '?section=newsletter&cmd=unsubscribe&code='.$code.'&mail='.urlencode($email);
-        if ($type == 'access') {
-            $profileURI = '?section=newsletter&cmd=profile&code='.$code.'&mail='.urlencode($email);
-            //$profileURI  = '?section=access&cmd=settings_newsletter';
+        if ($type == self::USER_TYPE_CORE) {
+            // recipients that will receive the newsletter through the selection of their user group don't have a profile
+            return '';
         }
+
+        switch ($type) {
+            case self::USER_TYPE_ACCESS:
+            $profileURI = '?section=newsletter&cmd=profile&code='.$code.'&mail='.urlencode($email);
+                break;
+
+            case self::USER_TYPE_NEWSLETTER:
+            default:
+                $profileURI = '?section=newsletter&cmd=unsubscribe&code='.$code.'&mail='.urlencode($email);
+                break;
+        }
+
         $uri =
             ASCMS_PROTOCOL.'://'.
             $_CONFIG['domainUrl'].
             ($_SERVER['SERVER_PORT'] == 80
               ? '' : ':'.intval($_SERVER['SERVER_PORT'])).
             ASCMS_PATH_OFFSET.
+// TODO: use the recipient's language instead of the default language
             '/'.FWLanguage::getLanguageParameter(FWLanguage::getDefaultLangId(), 'lang').
             '/'.CONTREXX_DIRECTORY_INDEX.$profileURI;
 
@@ -3467,15 +3527,16 @@ class newsletter extends NewsletterLib
     /**
      * Return link to the profile of a user
      */
-    function GetProfileURL($code, $email, $type = 'newsletter')
+    function GetProfileURL($code, $email, $type = self::USER_TYPE_NEWSLETTER)
     {
         global $_ARRAYLANG, $_CONFIG;
 
+        if ($type == self::USER_TYPE_CORE) {
+            // recipients that will receive the newsletter through the selection of their user group don't have a profile
+            return '';
+        }
+
         $profileURI = '?section=newsletter&cmd=profile&code='.$code.'&mail='.urlencode($email);
-        /*if ($type == 'access') {
-// TODO: the acces profile URI is dynamic. Therefore we shall check for a CMD like 'settings_newsletter'. In case that there is no such CMD, we shall fetch the first CMD that starts with 'settings'.
-            $profileURI = '?section=access&cmd=settings_accountdata';
-        }*/
         $uri =
             ASCMS_PROTOCOL.'://'.
             $_CONFIG['domainUrl'].
@@ -3484,7 +3545,6 @@ class newsletter extends NewsletterLib
             ASCMS_PATH_OFFSET.
 // TODO: use the recipient's language instead of the default language
             '/'.FWLanguage::getLanguageParameter(FWLanguage::getDefaultLangId(), 'lang').
-// TODO: if useVirtualLanguagePath is not turned on, we shall add the url modificator langId to the profile URI
             '/'.CONTREXX_DIRECTORY_INDEX.$profileURI;
         return '<a href="'.$uri.'">'.$_ARRAYLANG['TXT_EDIT_PROFILE'].'</a>';
     }
@@ -3949,6 +4009,7 @@ $WhereStatement = '';
 
 
 // TODO: Refactor this method
+// TODO: $emailCount never used!!
     function feedback(&$users, &$linkCount, &$feedbackCount, &$emailCount)
     {
         global $objDatabase;
@@ -3958,6 +4019,7 @@ $WhereStatement = '';
         $newsletterUserEmails = array();
         $accessUserIds        = array();
         $accessUserEmails     = array();
+        // ATTENTION: this very use of $user['type'] is not related to self::USER_TYPE_ACCESS, self::USER_TYPE_CORE or self::USER_TYPE_NEWSLETTER!
         foreach ($users as $user) {
             if ($user['type'] == 'newsletter_user') {
                 $newsletterUserIds[] = $user['id'];
@@ -3968,6 +4030,7 @@ $WhereStatement = '';
             }
         }
         
+        // select stats of native newsletter recipients
         if (count($newsletterUserIds) > 0) {
             $objLinks = $objDatabase->Execute("SELECT
                     tlbUser.id,
@@ -3976,12 +4039,12 @@ $WhereStatement = '';
                 FROM ".DBPREFIX."module_newsletter_tmp_sending AS tblSent
                     INNER JOIN ".DBPREFIX."module_newsletter_user AS tlbUser ON tlbUser.email = tblSent.email
                     LEFT JOIN ".DBPREFIX."module_newsletter_email_link AS tlbLink ON tlbLink.email_id = tblSent.newsletter
-                WHERE tblSent.email IN ('".implode("', '", $newsletterUserEmails)."') AND tblSent.sendt > 0 AND tblSent.type = 'newsletter'
+                WHERE tblSent.email IN ('".implode("', '", $newsletterUserEmails)."') AND tblSent.sendt > 0 AND tblSent.type = '".self::USER_TYPE_NEWSLETTER."'
                 GROUP BY tblSent.email");
             if ($objLinks !== false) {
                 while (!$objLinks->EOF) {
-                    $linkCount[$objLinks->fields['id']]['newsletter'] = $objLinks->fields['link_count'];
-                    $emailCount[$objLinks->fields['id']]['newsletter'] = $objLinks->fields['email_count'];
+                    $linkCount[$objLinks->fields['id']][self::USER_TYPE_NEWSLETTER] = $objLinks->fields['link_count'];
+                    $emailCount[$objLinks->fields['id']][self::USER_TYPE_NEWSLETTER] = $objLinks->fields['email_count'];
                     $objLinks->MoveNext();
                 }
             }
@@ -3990,16 +4053,17 @@ $WhereStatement = '';
                     tblLink.recipient_id,
                     COUNT(tblLink.id) AS feedback_count
                 FROM ".DBPREFIX."module_newsletter_email_link_feedback AS tblLink
-                WHERE tblLink.recipient_id IN (".implode(", ", $newsletterUserIds).") AND tblLink.recipient_type = 'newsletter'
+                WHERE tblLink.recipient_id IN (".implode(", ", $newsletterUserIds).") AND tblLink.recipient_type = '".self::USER_TYPE_NEWSLETTER."'
                 GROUP BY tblLink.recipient_id");
             if ($objLinks !== false) {
                 while (!$objLinks->EOF) {
-                    $feedbackCount[$objLinks->fields['recipient_id']]['newsletter'] = $objLinks->fields['feedback_count'];
+                    $feedbackCount[$objLinks->fields['recipient_id']][self::USER_TYPE_NEWSLETTER] = $objLinks->fields['feedback_count'];
                     $objLinks->MoveNext();
                 }
             }
         }
 
+        // select stats of access users
         if (count($accessUserIds) > 0) {
             $objLinks = $objDatabase->Execute("SELECT
                     tlbUser.id,
@@ -4008,12 +4072,12 @@ $WhereStatement = '';
                 FROM ".DBPREFIX."module_newsletter_tmp_sending AS tblSent
                     INNER JOIN ".DBPREFIX."access_users AS tlbUser ON tlbUser.email = tblSent.email
                     LEFT JOIN ".DBPREFIX."module_newsletter_email_link AS tlbLink ON tlbLink.email_id = tblSent.newsletter
-                WHERE tblSent.email IN ('".implode("', '", $accessUserEmails)."') AND tblSent.sendt > 0 AND tblSent.type = 'access'
+                WHERE tblSent.email IN ('".implode("', '", $accessUserEmails)."') AND tblSent.sendt > 0 AND (tblSent.type = '".self::USER_TYPE_ACCESS."' OR tblSent.type = '".self::USER_TYPE_CORE."')
                 GROUP BY tblSent.email");
             if ($objLinks !== false) {
                 while (!$objLinks->EOF) {
-                    $linkCount[$objLinks->fields['id']]['access'] = $objLinks->fields['link_count'];
-                    $emailCount[$objLinks->fields['id']]['access'] = $objLinks->fields['email_count'];
+                    $linkCount[$objLinks->fields['id']][self::USER_TYPE_ACCESS] = $objLinks->fields['link_count'];
+                    $emailCount[$objLinks->fields['id']][self::USER_TYPE_ACCESS] = $objLinks->fields['email_count'];
                     $objLinks->MoveNext();
                 }
             }
@@ -4021,11 +4085,11 @@ $WhereStatement = '';
                     tblLink.recipient_id,
                     COUNT(tblLink.id) AS feedback_count
                 FROM ".DBPREFIX."module_newsletter_email_link_feedback AS tblLink
-                WHERE tblLink.recipient_id IN (".implode(", ", $accessUserIds).") AND tblLink.recipient_type = 'access'
+                WHERE tblLink.recipient_id IN (".implode(", ", $accessUserIds).") AND tblLink.recipient_type = '".self::USER_TYPE_ACCESS."'
                 GROUP BY tblLink.recipient_id");
             if ($objLinks !== false) {
                 while (!$objLinks->EOF) {
-                    $feedbackCount[$objLinks->fields['recipient_id']]['access'] = $objLinks->fields['feedback_count'];
+                    $feedbackCount[$objLinks->fields['recipient_id']][self::USER_TYPE_ACCESS] = $objLinks->fields['feedback_count'];
                     $objLinks->MoveNext();
                 }
             }
@@ -4165,9 +4229,9 @@ $WhereStatement = '';
                                 $objRecipient = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_newsletter_user WHERE email='".contrexx_input2db($recipientEmail)."'", 1);
                                 $recipientId  = $objRecipient->fields['id'];
                                 
-                                $this->insertTmpEmail($recipientSendEmailId, $arrRecipient['email'], 'newsletter');
+                                $this->insertTmpEmail($recipientSendEmailId, $arrRecipient['email'], self::USER_TYPE_NEWSLETTER);
 // setting TmpEntry=1 will set the newsletter status=1, this will force an imediate stop in the newsletter send procedere.
-                                if ($this->SendEmail($recipientId, $recipientSendEmailId, $arrRecipient['email'], 1) == false) {
+                                if ($this->SendEmail($recipientId, $recipientSendEmailId, $arrRecipient['email'], 1, self::USER_TYPE_NEWSLETTER) == false) {
                                     self::$strErrMessage .= $_ARRAYLANG['TXT_SENDING_MESSAGE_ERROR'];
                                 } else {
                                     $objUpdateCount    = $objDatabase->execute('UPDATE '.DBPREFIX.'module_newsletter 
@@ -4586,6 +4650,7 @@ $WhereStatement = '';
         $recipientStatus = (isset($_POST['newsletter_recipient_status'])) ? 1 : (empty($_POST) ? 1 : 0);
         $arrAssociatedLists = array();
         $recipientSendEmailId = isset($_POST['sendEmail']) ? intval($_POST['sendEmail']) : 0;
+        $recipientSendMailDisplay = false;
 
         if (isset($_POST['newsletter_recipient_email'])) {
             $recipientEmail = $_POST['newsletter_recipient_email'];
@@ -4685,9 +4750,9 @@ $WhereStatement = '';
                                     $objRecipient = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_newsletter_user WHERE email='".contrexx_input2db($recipientEmail)."'", 1);
                                     $recipientId  = $objRecipient->fields['id'];
 
-                                    $this->insertTmpEmail($recipientSendEmailId, $recipientEmail, 'newsletter');
+                                    $this->insertTmpEmail($recipientSendEmailId, $recipientEmail, self::USER_TYPE_NEWSLETTER);
 // setting TmpEntry=1 will set the newsletter status=1, this will force an imediate stop in the newsletter send procedere.
-                                    if ($this->SendEmail($recipientId, $recipientSendEmailId, $recipientEmail, 1) == false) {
+                                    if ($this->SendEmail($recipientId, $recipientSendEmailId, $recipientEmail, 1, self::USER_TYPE_NEWSLETTER) == false) {
                                         self::$strErrMessage .= $_ARRAYLANG['TXT_SENDING_MESSAGE_ERROR'];
                                     } else {
                                         $objRecipientCount = $objDatabase->execute('SELECT subject FROM '.DBPREFIX.'module_newsletter WHERE id='.intval($recipientSendEmailId));                                    
@@ -5780,21 +5845,21 @@ function MultiAction() {
         $feedbackCount = array();
         
         $query = "SELECT                   
-                CASE WHEN `s`.`type` = 'newsletter'
+                CASE WHEN `s`.`type` = '".self::USER_TYPE_NEWSLETTER."'
                     THEN `nu`.`id`
                     ELSE `au`.`id` END AS `id`,
-                CASE WHEN `s`.`type` = 'newsletter'
+                CASE WHEN `s`.`type` = '".self::USER_TYPE_NEWSLETTER."'
                     THEN `nu`.`firstname`
                     ELSE `aup`.`firstname` END AS `firstname`,
-                CASE WHEN `s`.`type` = 'newsletter'
+                CASE WHEN `s`.`type` = '".self::USER_TYPE_NEWSLETTER."'
                     THEN `nu`.`lastname`
                     ELSE `aup`.`lastname` END AS `lastname`,
                 `s`.email,
                 `s`.type,
                 `s`.`sendt`
             FROM `".DBPREFIX."module_newsletter_tmp_sending` AS `s`
-                LEFT JOIN `".DBPREFIX."module_newsletter_user` AS `nu` ON `nu`.`email` = `s`.`email` AND `s`.`type` = 'newsletter'
-                LEFT JOIN `".DBPREFIX."access_users` AS `au` ON `au`.`email` = `s`.`email` AND `s`.`type` = 'access'
+                LEFT JOIN `".DBPREFIX."module_newsletter_user` AS `nu` ON `nu`.`email` = `s`.`email` AND `s`.`type` = '".self::USER_TYPE_NEWSLETTER."'
+                LEFT JOIN `".DBPREFIX."access_users` AS `au` ON `au`.`email` = `s`.`email` AND (`s`.`type` = '".self::USER_TYPE_ACCESS."' OR `s`.`type` = '".self::USER_TYPE_CORE."')
                 LEFT JOIN `".DBPREFIX."access_user_profile` AS `aup` ON `aup`.`user_id` = `au`.`id`
             WHERE `s`.`newsletter` = ".$arrLinkData['email_id']." AND `s`.`sendt` > 0 AND (`au`.`email` IS NOT NULL OR `nu`.`email` IS NOT NULL)
             ORDER BY `lastname` ASC, `firstname` ASC";
@@ -5809,13 +5874,23 @@ function MultiAction() {
                     'lastname'  => $objResult->fields['lastname'],
                     'type'      => $objResult->fields['type']
                 );
-                if ($objResult->fields['type'] == 'newsletter') {
-                    $newsletterUserIds[] = $objResult->fields['id'];
-                } elseif ($objResult->fields['type'] == 'access') {
-                    $accessUserIds[] = $objResult->fields['id'];
+
+                switch ($objResult->fields['type']) {
+                    case self::USER_TYPE_ACCESS:
+                    case self::USER_TYPE_CORE:
+                        $accessUserIds[] = $objResult->fields['id'];
+                        break;
+
+                    case self::USER_TYPE_NEWSLETTER:
+                    default:
+                        $newsletterUserIds[] = $objResult->fields['id'];
+                        break;
                 }
+
                 $objResult->MoveNext();
             }
+
+            // select stats of native newsletter recipients
             if (count($newsletterUserIds) > 0) {
                 $objLinks = $objDatabase->Execute("SELECT
                         tblLink.recipient_id,
@@ -5824,15 +5899,17 @@ function MultiAction() {
                     WHERE 
                         tblLink.email_id = ".$arrLinkData['email_id']." 
                         AND tblLink.recipient_id IN (".implode(", ", $newsletterUserIds).") 
-                        AND tblLink.recipient_type = 'newsletter'
+                        AND tblLink.recipient_type = '".self::USER_TYPE_NEWSLETTER."'
                     GROUP BY tblLink.recipient_id");
                 if ($objLinks !== false) {
                     while (!$objLinks->EOF) {
-                        $feedbackCount[$objLinks->fields['recipient_id']]['newsletter'] = $objLinks->fields['link_count'];
+                        $feedbackCount[$objLinks->fields['recipient_id']][self::USER_TYPE_NEWSLETTER] = $objLinks->fields['link_count'];
                         $objLinks->MoveNext();
                     }
                 }
             }
+
+            // select stats of access users
             if (count($accessUserIds) > 0) {
                 $objLinks = $objDatabase->Execute("SELECT
                         tblLink.recipient_id,
@@ -5841,16 +5918,21 @@ function MultiAction() {
                     WHERE 
                         tblLink.email_id = ".$arrLinkData['email_id']." 
                         AND tblLink.recipient_id IN (".implode(", ", $accessUserIds).") 
-                        AND tblLink.recipient_type = 'access'
+                        # we only need to select by self::USER_TYPE_ACCESS here. stats of users with self::USER_TYPE_CORE are also created using self::USER_TYPE_ACCESS
+                        AND tblLink.recipient_type = '".self::USER_TYPE_ACCESS."'
                     GROUP BY tblLink.recipient_id");
                 if ($objLinks !== false) {
                     while (!$objLinks->EOF) {
-                        $feedbackCount[$objLinks->fields['recipient_id']]['access'] = $objLinks->fields['link_count'];
+                        $feedbackCount[$objLinks->fields['recipient_id']][self::USER_TYPE_ACCESS] = $objLinks->fields['link_count'];
                         $objLinks->MoveNext();
                     }
                 }
             }
             foreach ($users as $user) {
+                // stats for users of type self::USER_TYPE_CORE are made using type self::USER_TYPE_ACCESS
+                if ($user['type'] == self::USER_TYPE_CORE) {
+                    $user['type'] = self::USER_TYPE_ACCESS;
+                }
                 // The amount of valid requests from that certain recipient of the selected e-mail 
                 $feedback = isset($feedbackCount[$user['id']][$user['type']]) ? $feedbackCount[$user['id']][$user['type']] : 0;
                 $this->_objTpl->setVariable(array(
@@ -5861,7 +5943,7 @@ function MultiAction() {
                     'NEWSLETTER_RECIPIENT_FEEDBACK' => $linkCount > 0 ? round(100 /  $linkCount * $feedback) : 0,
                     'NEWSLETTER_RECIPIENT_CLICKS' => $feedback
                 ));
-                if ($user['type'] == 'access') {
+                if ($user['type'] == self::USER_TYPE_ACCESS) {
                     $this->_objTpl->touchBlock('access_user_type');
                     $this->_objTpl->hideBlock('newsletter_user_type');
                 } else {

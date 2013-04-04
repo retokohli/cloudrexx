@@ -66,7 +66,7 @@ class newsletter extends NewsletterLib
             case 'confirm':
                 $this->_confirm();
                 break;
-			case 'displayInBrowser':
+            case 'displayInBrowser':
                 $this->displayInBrowser();
                 break;
             default:
@@ -887,19 +887,19 @@ class newsletter extends NewsletterLib
      * displays newsletter contentn in browser
      *
      */
-	public static function displayInBrowser()
+    public static function displayInBrowser()
     {
-    	global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
        
         $id    = !empty($_GET['id'])    ? contrexx_input2raw($_GET['id'])    : '';
-    	$email = !empty($_GET['email']) ? contrexx_input2raw($_GET['email']) : '';
-    	$code  = !empty($_GET['code'])  ? contrexx_input2raw($_GET['code'])  : '';
+        $email = !empty($_GET['email']) ? contrexx_input2raw($_GET['email']) : '';
+        $code  = !empty($_GET['code'])  ? contrexx_input2raw($_GET['code'])  : '';
 
         $unsubscribe = '';
         $profile     = '';
         $date        = '';
-    	
+        
         $sex         = '';
         $salutation  = '';
         $title       = '';
@@ -919,41 +919,41 @@ class newsletter extends NewsletterLib
         $birthday    = '';
         $website     = '';
 
-    	if (!self::checkCode($id, $email, $code)) {
+        if (!self::checkCode($id, $email, $code)) {
             // unable to verify user, therefore we will not load any user data to prevent leaking any privacy data
             $email = '';
             $code = '';
-    	}
-    	
-    	// Get newsletter content and template.
-    	$query = '
-    	        SELECT `n`.`content`, `t`.`html`, `n`.`date_sent`
-    	          FROM `'.DBPREFIX.'module_newsletter` as `n`
-    	    INNER JOIN `'.DBPREFIX.'module_newsletter_template` as `t`
-    	            ON `n`.`template` = `t`.`id`
-    	         WHERE `n`.`id` = "'.contrexx_raw2db($id).'"
-    	';
+        }
+        
+        // Get newsletter content and template.
+        $query = '
+                SELECT `n`.`content`, `t`.`html`, `n`.`date_sent`
+                  FROM `'.DBPREFIX.'module_newsletter` as `n`
+            INNER JOIN `'.DBPREFIX.'module_newsletter_template` as `t`
+                    ON `n`.`template` = `t`.`id`
+                 WHERE `n`.`id` = "'.contrexx_raw2db($id).'"
+        ';
         $objResult = $objDatabase->Execute($query);
-		
+        
         if ($objResult->RecordCount()) {
-        	$html 	 = $objResult->fields['html'];
-			$content = $objResult->fields['content'];
+            $html    = $objResult->fields['html'];
+            $content = $objResult->fields['content'];
             $date    = date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['date_sent']);
-		} else {
+        } else {
             // newsletter not found > redirect to homepage
-    	    CSRF::header('Location: '.\Cx\Core\Routing\Url::fromDocumentRoot());
-			exit();
-		}
-		
-		// Get user details.
-		$query = '
-		    SELECT `id`, `email`, `uri`, `salutation`, `title`, `position`, `company`, `industry_sector`, `sex`,
+            CSRF::header('Location: '.\Cx\Core\Routing\Url::fromDocumentRoot());
+            exit();
+        }
+        
+        // Get user details.
+        $query = '
+            SELECT `id`, `email`, `uri`, `salutation`, `title`, `position`, `company`, `industry_sector`, `sex`,
                    `lastname`, `firstname`, `address`, `zip`, `city`, `country_id`, 
                    `phone_office`, `phone_mobile`, `phone_private`, `fax`, `birthday`
-		    FROM `'.DBPREFIX.'module_newsletter_user`
-		    WHERE `email` = "'.contrexx_raw2db($email).'"
-		';
-		$objResult  = $objDatabase->Execute($query);
+            FROM `'.DBPREFIX.'module_newsletter_user`
+            WHERE `email` = "'.contrexx_raw2db($email).'"
+        ';
+        $objResult  = $objDatabase->Execute($query);
         
         if ($objResult->RecordCount()) {
             // set recipient sex
@@ -1105,15 +1105,15 @@ class newsletter extends NewsletterLib
         }
 
         $content = self::prepareNewsletterLinksForSend($id, $content, $userId, $realUser);
-		
+        
         // Finally replace content placeholder in the template.
-		$html = str_replace('[[content]]', $content, $html);
+        $html = str_replace('[[content]]', $content, $html);
 
         // parse node-url placeholders
         \LinkGenerator::parseTemplate($html);
-		
-		// Output
-		die($html);
+        
+        // Output
+        die($html);
     }
     
     
@@ -1126,18 +1126,18 @@ class newsletter extends NewsletterLib
      * @return  boolean
      */
     private static function checkCode($id, $email, $code){
-    	global $objDatabase;
+        global $objDatabase;
         
         $query = 'SELECT `code` FROM `'.DBPREFIX.'module_newsletter_tmp_sending` WHERE `newsletter` = '.$id.' AND `email` = "'.$email.'";';
         $objResult = $objDatabase->Execute($query);
         
         if ($objResult !== false) {
-			if($objResult->fields['code'] == $code) {
-				return true;
-			}
-		}
-		
-		return false;
+            if($objResult->fields['code'] == $code) {
+                return true;
+            }
+        }
+        
+        return false;
     }
     
     public static function isTrackLink() {
@@ -1192,14 +1192,14 @@ class newsletter extends NewsletterLib
                     return false;
                 }
                 $recipientId = $objUser->getId();
-                $recipientType = 'access';
+                $recipientType = self::USER_TYPE_ACCESS;
             } else {
                 $objUser = $objDatabase->SelectLimit("SELECT `id` FROM ".DBPREFIX."module_newsletter_user WHERE id='".contrexx_raw2db($recipientId)."'", 1);
                 if ($objUser === false || $objUser->RecordCount() != 1) {
                     return false;
                 }
                 $recipientId = $objUser->fields['id'];
-                $recipientType = 'newsletter';
+                $recipientType = self::USER_TYPE_NEWSLETTER;
             }
         }
         

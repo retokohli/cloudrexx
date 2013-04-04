@@ -29,6 +29,10 @@
  */
 class NewsletterLib
 {
+    const USER_TYPE_NEWSLETTER = 'newsletter';
+    const USER_TYPE_ACCESS = 'access';
+    const USER_TYPE_CORE = 'core';
+
     public $_arrRecipientTitles = null;
    
     /**
