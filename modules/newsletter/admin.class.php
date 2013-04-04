@@ -2626,6 +2626,7 @@ class newsletter extends NewsletterLib
         // the newsletter was not sent
         if ($newsletterData['status'] == 0) {
             if (!empty($_POST['send'])) {
+                // request was sent through ajax
 				$arrJsonData = array(
 					'sentComplete' 		=> false,
 					'count' 		    => $newsletterData['count'],
@@ -2640,10 +2641,11 @@ class newsletter extends NewsletterLib
                     $arrSettings = $this->_getSettings();
                     $mails_per_run = $arrSettings['mails_per_run']['setvalue'];
                     $timeout = time() + (ini_get('max_execution_time') ? ini_get('max_execution_time') : 300 /* Default Apache and IIS Timeout */);
-
                     $tmpSending = $this->getTmpSending($mailId, $mails_per_run);
 
-                    if (count($tmpSending)) {
+                    // attention: in case there happens a database error, $tmpSending->valid() will return false.
+                    //            this will cause to stop the send process even if the newsletter send process wasn't complete yet!!
+                    if ($tmpSending->valid()) {
                         foreach ($tmpSending as $send) {
                             $beforeSend = time();
                             $this->SendEmail($send['id'], $mailId, $send['email'], 1, $send['type']);
@@ -2654,23 +2656,62 @@ class newsletter extends NewsletterLib
                             }
                         }
                     } else {
-                        $arrJsonData['sentComplete'] = true;
+                        // basically the send process is done.
+                        // the delivery of the last e-mail failed. because of that, the $newsletterData['status'] was not set to 1
+                        // we shall set it to 1 one, so that the next ajax request will abbort regularly
+                        $objDatabase->Execute("
+                            UPDATE ".DBPREFIX."module_newsletter
+                               SET status=1
+                             WHERE id=$mailId");
                     }
                 }
 
 				die(json_encode($arrJsonData));
+            } else {
+                // request was sent through regular POST
+                $this->_objTpl->setVariable(array(
+                    'NEWSLETTER_MAIL_SEND_INFO_DISPLAY'   => '',
+                    'NEWSLETTER_MAIL_SEND_BUTTON_DISPLAY' => '',
+                    'NEWSLETTER_MAIL_SENT_STATUS_DISPLAY' => 'none',
+                ));
             }
         } else {
             $recipientCount = $this->_getMailRecipientCount($mailId);
-            if ($newsletterData['count'] >= $recipientCount) {
-				if (!empty($_POST['send'])) {
-					$arrJsonData = array(
-						'sentComplete' 		=> true,
-						'count' 		    => $newsletterData['count'],
-						'progressbarStatus' => $progressbarStatus
-					);
-					die(json_encode($arrJsonData));
-				}
+
+            $message = $_ARRAYLANG['TXT_NEWSLETTER_MAIL_SENT_STATUS'];
+            $message .= '<br />'.sprintf($_ARRAYLANG['TXT_NEWSLETTER_MAIL_SENT_TO_RECIPIENTS'], $newsletterData['count']);
+
+            // in case the e-mail was not sent to all recipients, output a according message
+            if ($newsletterData['count'] < $recipientCount) {
+// TODO: check if there are any recipients left that were missed out in the send process (sendt=1).
+//       if there are any, provide an option to continue sending the newsletter.
+//       additionally, the status of the newsletter must be set back to '0'
+
+// TODO: check if the delivery to any recipients failed (sendt=2).
+//       if there are any, provide an option to resend the e-mail to those recipients.
+//       the sendt flag must be set back to sendt=1 to be able to resend the e-mail to those recipients where the send process has failed
+//       additionally, the status of the newsletter must be set back to '0' (see also option above, where we shall allow to resend the e-mail to those who were left out in the send process (sendt=1)
+
+                $message .= '<br />'.sprintf($_ARRAYLANG['TXT_NEWSLETTER_MAIL_NOT_SENT_TO_RECIPIENTS'], $recipientCount - $newsletterData['count']);
+            }
+
+            if (!empty($_POST['send'])) {
+                // request was sent through ajax
+                $arrJsonData = array(
+                    'sentComplete' 		=> true,
+                    'count' 		    => $newsletterData['count'],
+                    'progressbarStatus' => $progressbarStatus,
+                    'message'           => $message,
+                );
+                die(json_encode($arrJsonData));
+            } else {
+                // request was sent through regular POST
+                $this->_objTpl->setVariable('NEWSLETTER_MAIL_SENT_STATUS', $message);
+                $this->_objTpl->setVariable(array(
+                    'NEWSLETTER_MAIL_SEND_INFO_DISPLAY'   => 'none',
+                    'NEWSLETTER_MAIL_SEND_BUTTON_DISPLAY' => 'none',
+                    'NEWSLETTER_MAIL_SENT_STATUS_DISPLAY' => '',
+                ));
             }
         }
     }
