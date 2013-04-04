@@ -86,7 +86,7 @@ function _statsUpdate()
             if (in_array($table, $_SESSION['contrexx_update']['update']['update_stats'])) {
                 break;
             } elseif (!checkTimeoutLimit()) {
-                return false;
+                return 'timeout';
             }
 
             if (isset($arrUnique['change'])) {
@@ -120,7 +120,7 @@ function _statsUpdate()
                 if ($objEntry !== false) {
                     while (!$objEntry->EOF) {
                         if (!checkTimeoutLimit()) {
-                            return false;
+                            return 'timeout';
                         }
                         $lastRedundancyCount = $objEntry->fields['redundancy'];
                         if ($objEntry->fields['redundancy'] > 1) {

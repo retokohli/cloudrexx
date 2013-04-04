@@ -43,6 +43,10 @@ function executeContrexxUpdate() {
         }
         $_SESSION['contrexx_update']['copyFilesFinished'] = true;
 
+        // log modified files
+        DBG::msg('MODIFIED FILES:');
+        DBG::dump($_SESSION['contrexx_update']['modified_files']);
+
         // we need to stop the script here to force a reinitialization of the update system
         // this is required so that the new constants from config/set_constants.php are loaded
         setUpdateMsg($_CORELANG['TXT_UPDATE_PROCESS_HALTED'], 'title');
@@ -154,6 +158,17 @@ function executeContrexxUpdate() {
 
             if ($status === true) {
                 $_SESSION['contrexx_update']['content_migrated'] = true;
+
+                // log migrated nodes
+                DBG::msg('NODES: catId -> nodeId');
+                DBG::dump($_SESSION['contrexx_update']['nodes']);
+                unset($_SESSION['contrexx_update']['nodes']);
+
+                // log migrated pages
+                DBG::msg('PAGES: catId -> pageId');
+                DBG::dump($_SESSION['contrexx_update']['pages']);
+                unset($_SESSION['contrexx_update']['pages']);
+
                 if (!checkMemoryLimit() || !checkTimeoutLimit()) {
                     return false;
                 }
@@ -364,6 +379,9 @@ function executeContrexxUpdate() {
                                         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $file), 'title');
                                     }
                                     return false;
+                                } elseif ($result == 'timeout') {
+                                    setUpdateMsg(1, 'timeout');
+                                    return false;
                                 }
                             } else {
                                 setUpdateMsg($_CORELANG['TXT_UPDATE_ERROR'], 'title');
@@ -378,6 +396,9 @@ function executeContrexxUpdate() {
                                     if (empty($objUpdate->arrStatusMsg['title'])) {
                                         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $file), 'title');
                                     }
+                                    return false;
+                                } elseif ($result == 'timeout') {
+                                    setUpdateMsg(1, 'timeout');
                                     return false;
                                 } else {
                                     // fetch module info from components/core/module.php
@@ -1150,6 +1171,10 @@ function loadMd5SumOfOriginalCxFiles()
 function backupModifiedFile($file)
 {
     $cxFilePath = dirname(substr($file, strlen(ASCMS_DOCUMENT_ROOT)));
+    if ($cxFilePath == '/') {
+        $cxFilePath = '';
+    }
+
     $customizingPath = ASCMS_DOCUMENT_ROOT.'/customizing'.$cxFilePath;
     \Cx\Lib\FileSystem\FileSystem::make_folder($customizingPath);
     $customizingFile = $customizingPath . '/'. basename($file);
