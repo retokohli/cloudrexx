@@ -539,6 +539,7 @@ class NewsletterLib
     {
         global $objDatabase;
 
+// TODO: refactor to use a proper single SQL DELETE statement
         $objUser = $objDatabase->SelectLimit('SELECT `email` FROM `'.DBPREFIX.'module_newsletter_user` WHERE id='.$id, 1);
         if ($objUser !== false && $objUser->RecordCount() == 1) {
             if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_user WHERE id=".$id) !== false) {
