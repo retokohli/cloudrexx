@@ -497,6 +497,13 @@ class ContrexxUpdate
                     if (!activateDebugging()) {
                         throw new \Exception("The debugging file couldn't be created.");
                     }
+                    DBG::msg('-------------------------------------------------------------');
+                    DBG::msg('CONTREXX UPDATE - NEW REQUEST');
+                    DBG::msg('Date: ' . date('d.m.Y H:i:s'));
+                    DBG::msg('Get-Params:');
+                    DBG::dump($_GET);
+                    DBG::msg('User: ' . $_SESSION['contrexx_update']['username']);
+                    DBG::msg('-------------------------------------------------------------');
                     $result = executeContrexxUpdate();
                 } catch (\Exception $e) {
                     $this->objTemplate->setVariable('UPDATE_ERROR_MSG', $_CORELANG['TXT_UPDATE_DBG_FILE']);
