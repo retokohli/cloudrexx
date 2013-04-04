@@ -929,15 +929,20 @@ class newsletter extends NewsletterLib
 
         if (!$copy && $mailId > 0 && $mailSendDate > 0) {
             $this->_objTpl->touchBlock('associatedListToolTip');
-            $this->_objTpl->touchBlock('associatedGroupToolTip');
+            $this->_objTpl->touchBlock('associatedGroupToolTipAfterSent');
+            $this->_objTpl->hideBlock('associatedGroupToolTipBeforeSend');
             
             $this->_objTpl->setVariable(array(
                 'TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS' => $_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS'],
                 'NEWSLETTER_LIST_DISABLED'                   => 'disabled="disabled"'
             ));
         } else {
+            $this->_objTpl->setVariable(array(
+                'TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS_SEND' => $_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS_SEND'],
+            ));
             $this->_objTpl->hideBlock('associatedListToolTip');
-            $this->_objTpl->hideBlock('associatedGroupToolTip');
+            $this->_objTpl->hideBlock('associatedGroupToolTipAfterSent');
+            $this->_objTpl->touchBlock('associatedGroupToolTipBeforeSend');
         }
         
         $this->_objTpl->setVariable(array(
