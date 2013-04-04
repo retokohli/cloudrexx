@@ -260,8 +260,11 @@ function _newsletterUpdate()
         );
 
         // migrate country field
-        newsletter_migrate_country_field();
+        if (newsletter_migrate_country_field() == 'timeout') {
+            return 'timeout';
+        }
 
+        // IMPORTANT: the table definition statement of module_newsletter_user must be AFTER newsletter_migrate_country_field() has been called!
         // fix missing columns & rename old columns if required
         \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'module_newsletter_user',
@@ -271,7 +274,7 @@ function _newsletterUpdate()
                 'email'              => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'code'),
                 'uri'                => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'email'),
                 'sex'                => array('type' => 'ENUM(\'m\',\'f\')', 'notnull' => false, 'after' => 'uri'),
-                'salutation'         => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'sex'),
+                'salutation'         => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'sex', 'renamefrom' => 'title'),
                 'title'              => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'salutation'),
                 'lastname'           => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'title'),
                 'firstname'          => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'lastname'),
@@ -439,7 +442,7 @@ return;
                 }
                 \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_newsletter_user` SET `country_id` = \''.contrexx_raw2db($countryId).'\' WHERE `id` = '.$objResult->fields['id']);
                 if (!checkTimeoutLimit()) {
-                    throw new \Cx\Lib\UpdateException();
+                    return 'timeout';
                 }
                 $objResult->MoveNext();
             }
