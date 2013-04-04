@@ -805,7 +805,7 @@ class CRM extends CrmLibrary {
                             'CRM_CONTACT_NOTES_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}#ui-tabs-1' title=''>{$_ARRAYLANG['TXT_CRM_COMMENT_TITLE']} ({$notesCount})</a>",
                             'CRM_CONTACT_TASK_COUNT'    => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}#ui-tabs-2' title=''>{$_ARRAYLANG['TXT_CRM_TASKS']} ({$tasksCount})</a>",
                             'CRM_CONTACT_DEALS_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}#ui-tabs-$opLinkId' title=''>{$_ARRAYLANG['TXT_CRM_OPPORTUNITY']} ({$dealsCount})</a>",
-                            'CRM_CONTACT_ADDED_NEW'     => strtotime($today) == strtotime($objResult->fields['added_date']) ? '<img src="../images/crm/icons/new.png" alt="new" />' : '',
+                            'CRM_CONTACT_ADDED_NEW'     => strtotime($today) == strtotime($objResult->fields['added_date']) ? '<img src="../images/modules/crm/new.png" alt="new" />' : '',
                             'CRM_ROW_CLASS'             => $row = ($row == "row2") ? "row1" : "row2",
                             'CRM_CONTACT_PROFILE_IMAGE' => !empty($objResult->fields['profile_picture']) ? contrexx_raw2xhtml($objResult->fields['profile_picture'])."_40X40.thumb" : '0_no_company_picture.gif',                            
                     ));
@@ -836,7 +836,7 @@ class CRM extends CrmLibrary {
                             'CRM_CONTACT_NOTES_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}#ui-tabs-1' title=''>{$_ARRAYLANG['TXT_CRM_COMMENT_TITLE']} ({$notesCount})</a>",
                             'CRM_CONTACT_TASK_COUNT'    => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}#ui-tabs-2' title=''>{$_ARRAYLANG['TXT_CRM_TASKS']} ({$tasksCount})</a>",
                             'CRM_CONTACT_DEALS_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=showcustdetail&id={$objResult->fields['id']}#ui-tabs-$opLinkId' title=''>{$_ARRAYLANG['TXT_CRM_OPPORTUNITY']} ({$dealsCount})</a>",
-                            'CRM_CONTACT_ADDED_NEW'     => strtotime($today) == strtotime($objResult->fields['added_date']) ? '<img src="../images/crm/icons/new.png" alt="new" />' : '',
+                            'CRM_CONTACT_ADDED_NEW'     => strtotime($today) == strtotime($objResult->fields['added_date']) ? '<img src="../images/modules/crm/new.png" alt="new" />' : '',
                             'CRM_ROW_CLASS'             => $row = ($row == "row2") ? "row1" : "row2",
                             'CRM_CONTACT_PROFILE_IMAGE' => !empty($objResult->fields['profile_picture']) ? contrexx_raw2xhtml($objResult->fields['profile_picture'])."_40X40.thumb" : '0_noavatar.gif',                            
                     ));                
@@ -1382,7 +1382,7 @@ END;
      */
     function settingsSubmenu()
     {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG;        
         $this->_objTpl->loadTemplateFile('module_'.$this->moduleName.'_settings_submenu.html',true,true);
         $this->_pageTitle = $_ARRAYLANG['TXT_CRM_SETTINGS'];
 
@@ -1956,7 +1956,7 @@ END;
         $objFWUser = FWUser::getFWUserObject();
         $_GET['type'] = isset($_GET['type']) ? $_GET['type'] : 'customer';
         $redirect     = isset($_REQUEST['redirect']) ? $_REQUEST['redirect'] : base64_decode('&act=customers');
-
+        
         $this->_pageTitle = (isset($_REQUEST['id'])) ? $_ARRAYLANG["TXT_CRM_EDIT_".strtoupper($_GET['type'])] : $_ARRAYLANG["TXT_CRM_ADD_".strtoupper($_GET['type'])] ;
         $this->_objTpl->loadTemplateFile('module_'.$this->moduleName.'_customer_modify.html');
         $this->_objTpl->setGlobalVariable("MODULE_NAME", $this->moduleName);
