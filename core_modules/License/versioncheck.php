@@ -31,7 +31,10 @@ Env::set('config', $_CONFIG);
 Env::set('ftpConfig', $_FTPCONFIG);
 
 // core/API.php is not available in tmp/legacyClassClache.tmp, therefore we have to load it manually
-$cl->loadFile($documentRoot.'/core/API.php'); // needed for getDatabaseObject()
+// if the class_exists check is not here, the update will fail because the api.php file loads the validator script
+if (!class_exists('HTML_Template_Sigma', false)) {
+    $cl->loadFile($documentRoot.'/core/API.php'); // needed for getDatabaseObject()
+}
 
 $objDatabase = getDatabaseObject($strErrMessage, true);
 $objInit = new InitCMS('backend', null);

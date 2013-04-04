@@ -455,6 +455,7 @@ function executeContrexxUpdate() {
     if (!in_array('coreModuleRepository', $_SESSION['contrexx_update']['update']['done'])) {
         $result = _updateModuleRepository();
         if ($result === false) {
+            DBG::msg('unable to update module repository');
             if (empty($objUpdate->arrStatusMsg['title'])) {
                 setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_REPOSITORY']), 'title');
             }
@@ -467,6 +468,7 @@ function executeContrexxUpdate() {
     if (!in_array('moduleTemplates', $_SESSION['contrexx_update']['update']['done'])) {
         if (_updateModulePages($viewUpdateTable) === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
+                DBG::msg('unable to update module templates');
                 setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_TEMPLATES']), 'title');
             }
             return false;
@@ -835,12 +837,14 @@ function _updateModuleRepository() {
                         DBG::msg("---------------------- update: calling $function() ---------");
                         $result = $function();
                         if ($result === false) {
+                            DBG::msg('---------------------- update: calling $function() failed ---------');
                             if (empty($objUpdate->arrStatusMsg['title'])) {
                                 setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $file), 'title');
                             }
                             return false;
                         }
                     } else {
+                        DBG::msg('---------------------- update: calling $function() failed, function does not exist ---------');
                         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UPDATE_COMPONENT_CORRUPT'], $_CORELANG['TXT_UPDATE_MODULE_REPOSITORY'], $arrFunction[1]));
                         return false;
                     }
@@ -906,8 +910,12 @@ function _updateModulePages(&$viewUpdateTable) {
                     `cmd` LIKE \'' . $page->getCmd() . '\'
             ';
             $objResult = $objDatabase->Execute($query);
-            if (!$objResult || $objResult->EOF) {
+            if (!$objResult) {
                 return false;
+            }
+            if ($objResult->EOF) {
+                DBG::msg('unable to load module repository of page with section ' . $module . ' and cmd ' . $page->getCmd());
+                continue;
             }
             $page->setContent($objResult->fields['content']);
             $em->persist($page);
