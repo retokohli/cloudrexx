@@ -1577,7 +1577,18 @@ class newsletter extends NewsletterLib
                 $delString,
                 $mailID
             );
-
+            $objDatabase->Execute($query);
+        } else {
+            // no groups were selected -> remove all group associations
+            $query = sprintf('
+                DELETE FROM
+                    `%smodule_newsletter_rel_usergroup_newsletter`
+                WHERE
+                    `newsletter` = %s
+                ',
+                DBPREFIX,
+                $mailID
+            );
             $objDatabase->Execute($query);
         }
     }
