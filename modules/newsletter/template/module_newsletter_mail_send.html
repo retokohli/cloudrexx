@@ -43,7 +43,7 @@
 		<td width="15%">{TXT_NEWSLETTER_SUBJECT}</td>
 		<td width="85%">{NEWSLETTER_MAIL_SUBJECT}</td>
 	</tr>
-	<tr class="row2">
+	<tr class="row2" id="newsletter_send_info" style="display:{NEWSLETTER_MAIL_SEND_INFO_DISPLAY}">
 		<td width="15%" style="vertical-align:top;">
 			{TXT_NEWSLETTER_MAILS_SENT}
 		</td>
@@ -59,7 +59,14 @@
 	</tr>
 </table>
 <br />
-<input type="button" value="E-Mail versenden" id="newsletter_send_button" onclick="newsletterToggleSend()" />
+<!-- BEGIN newsletter_mail_send_button -->
+<input type="button" value="E-Mail versenden" id="newsletter_send_button" onclick="newsletterToggleSend()" style="display:{NEWSLETTER_MAIL_SEND_BUTTON_DISPLAY}" />
+<!-- END newsletter_mail_send_button -->
+<!-- BEGIN newsletter_mail_sent_status -->
+<div id="newsletter_sent_status" class="infobox" style="display:{NEWSLETTER_MAIL_SENT_STATUS_DISPLAY}">
+{NEWSLETTER_MAIL_SENT_STATUS}
+</div>
+<!-- END newsletter_mail_sent_status -->
 
 
 <!-- END newsletter_mail_send_status -->
@@ -124,6 +131,15 @@
 					newsletterSend();
 				} else {
 					newsletterSendRunning = false;
+
+                    // show sent complete info
+                    if (data.sentComplete) {
+                        $J('#newsletter_send_button').hide();
+                        $J('#newsletter_send_info').hide();
+                        $J('#newsletter_sent_status').html(data.message);
+                        $J('#newsletter_sent_status').show();
+                    }
+
 					$J('#newsletter_statusbar .ui-progressbar-value').css({'background-image': ''});
 					$J('#newsletter_send_button').attr('value', 'E-Mail versenden');
 					$J('#newsletter_send_button').removeAttr('disabled');

@@ -461,4 +461,7 @@ $_ARRAYLANG['TXT_NEWSLETTER_CREATE_NEW_EMAIL_WITH_NEWS'] = "Create New E-Mail fr
 $_ARRAYLANG['TXT_NEWSLETTER_NAME_OF_EMAIL_CAMPAIGN'] = "Name of E-Mail-Campaign";
 $_ARRAYLANG['TXT_NEWSLETTER_STATS'] = "Statistics";
 $_ARRAYLANG['TXT_NEWSLETTER_NO_LISTS'] = "No lists available.";
+$_ARRAYLANG['TXT_NEWSLETTER_MAIL_SENT_STATUS'] = 'Der Versand der E-Mail-Kampagne ist abgeschlossen';
+$_ARRAYLANG['TXT_NEWSLETTER_MAIL_SENT_TO_RECIPIENTS'] = 'Die E-Mail-Kampagne wurde an <strong>%s Teilnehmer</strong> gesendet.';
+$_ARRAYLANG['TXT_NEWSLETTER_MAIL_NOT_SENT_TO_RECIPIENTS'] = 'An <strong>%s Teilnehmer</strong> konnte die E-Mail-Kampagne nicht zugestellt werden.';
 ?>
