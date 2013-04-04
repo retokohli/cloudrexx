@@ -92,7 +92,6 @@ $arrLanguages = array(
 );
 
 $arrFiles = array(
-    '/cache' => array(),
     '/config' => array(),
     '/feed' => array(
         'sub_dirs'  => true,
