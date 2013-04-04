@@ -685,7 +685,7 @@ class ContentMigration
                 // Only from version 2
                 if (!$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.0.0')) {
                     $subQuery = '
-                        IFNULL (
+                        IFNULL(
                             (
                                 SELECT 1
                                 FROM `' . DBPREFIX . 'module_block_rel_lang` as `rl`

@@ -858,14 +858,14 @@ function _updateModuleRepository() {
                         DBG::msg("---------------------- update: calling $function() ---------");
                         $result = $function();
                         if ($result === false) {
-                            DBG::msg('---------------------- update: calling $function() failed ---------');
+                            DBG::msg("---------------------- update: calling $function() failed ---------");
                             if (empty($objUpdate->arrStatusMsg['title'])) {
                                 setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $file), 'title');
                             }
                             return false;
                         }
                     } else {
-                        DBG::msg('---------------------- update: calling $function() failed, function does not exist ---------');
+                        DBG::msg("---------------------- update: calling $function() failed, function does not exist ---------");
                         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UPDATE_COMPONENT_CORRUPT'], $_CORELANG['TXT_UPDATE_MODULE_REPOSITORY'], $arrFunction[1]));
                         return false;
                     }
