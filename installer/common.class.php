@@ -996,13 +996,14 @@ class CommonFunctions
 
     function executeSQLQueries($type)
     {
-        global $_ARRLANG, $sqlDumpFile, $dbType, $dbPrefix, $arrDatabaseTables, $useUtf8;
+        global $_ARRLANG, $sqlDumpFile, $dbPrefix, $arrDatabaseTables, $useUtf8;
 
         $sqlQuery = "";
-        $buffer = "";
-        $result = "";
         $statusMsg = "";
         $dbPrefixRegexp = '#`'.$dbPrefix.'('.implode('|', $arrDatabaseTables).')`#';
+        if (empty($_SESSION['installer']['sqlqueries'][$type])) {
+            $_SESSION['installer']['sqlqueries'][$type] = 0;
+        }
 
         $objDb = $this->_getDbObject($statusMsg);
         if ($objDb === false) {
@@ -1016,7 +1017,12 @@ class CommonFunctions
                 $currentTimezone = ($objResult = $objDb->Execute('SELECT @@session.time_zone as `current_timezone`')) && $objResult && ($objResult->RecordCount() > 0) ? $objResult->fields['current_timezone'] : '';
                 $this->setTimezone($this->_getDbObject($msg), 'UTC');
 
+                $line = 1;
                 while (!feof($fp)) {
+                    if ($_SESSION['installer']['sqlqueries'][$type] >= $line) {
+                        $line++;
+                        continue;
+                    }
                     $buffer = fgets($fp);
                     if ((substr($buffer,0,1) != "#") && (substr($buffer,0,2) != "--")) {
                         $sqlQuery .= $buffer;
@@ -1030,7 +1036,10 @@ class CommonFunctions
                             $sqlQuery = "";
                         }
                     }
+                    $_SESSION['installer']['sqlqueries'][$type] = $line;
+                    $line++;
                 }
+                unset($_SESSION['installer']['sqlqueries'][$type]);
 
                 $this->setTimezone($this->_getDbObject($msg), $currentTimezone);
             } else {

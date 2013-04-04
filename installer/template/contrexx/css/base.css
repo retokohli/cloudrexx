@@ -279,6 +279,13 @@ table.adminlist td {
     color: #b94a48;
 }
 
+.message-info {
+    margin: 10px 0 10px 0;
+    background: #d9edf7;
+    padding: 8px;
+    color: #3a87ad;
+}
+
 .successful {
     color: #008000;
     font-weight: bold;

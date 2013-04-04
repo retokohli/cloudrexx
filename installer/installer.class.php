@@ -1291,6 +1291,8 @@ class Installer
             $this->_setInstallationStatus($result, $_ARRLANG['TXT_CONFIG_DATABASE']);
         }
 
+        $databaseAlreadyCreated = isset($_SESSION['installer']['checkDatabaseTables']) && $_SESSION['installer']['checkDatabaseTables'];
+
         // create database tables
         if ($result === true) {
             $result = $this->_createDatabaseTables();
@@ -1301,6 +1303,13 @@ class Installer
         if ($result === true) {
             $result = $this->_checkDatabaseTables();
             $this->_setInstallationStatus($result, $_ARRLANG['TXT_CHECK_DATABASE_TABLES']);
+        }
+
+        if (!$databaseAlreadyCreated && $result === true) {
+            // make a break after the database has been created and show an alert box message
+            $objTpl->setVariable('MESSAGE', $_ARRLANG['TXT_DATABASE_CREATION_COMPLETE']);
+            $objTpl->parse('installer_alert_box');
+            return;
         }
 
         // insert database data
