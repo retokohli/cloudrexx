@@ -210,7 +210,7 @@ function _newsletterUpdate()
                 'newsletter'     => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'id'),
                 'email'          => array('type' => 'VARCHAR(255)', 'after' => 'newsletter', 'notnull' => true, 'default' => ''),
                 'sendt'          => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'email'),
-                'type'           => array('type' => 'ENUM(\'access\',\'newsletter\',\'core\')', 'notnull' => true, 'default' => 'newsletter', 'after' => 'sendt'),
+                'type'           => array('type' => 'ENUM(\'access\',\'newsletter\')', 'notnull' => true, 'default' => 'newsletter', 'after' => 'sendt'),
                 'code'           => array('type' => 'VARCHAR(10)', 'after' => 'type')
             ),
             array(
