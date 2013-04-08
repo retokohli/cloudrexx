@@ -522,7 +522,12 @@ function executeContrexxUpdate() {
 
     if (!in_array('coreLicense', $_SESSION['contrexx_update']['update']['done'])) {
         $lupd = new License();
-        $result = $lupd->update();
+        try {
+            $result = $lupd->update();
+        } catch (\Cx\Lib\UpdateException $e) {
+            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_LICENSE_DATA']), 'title');
+            return false;
+        }
         // ignore error to allow offline installations
         /*if ($result === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
