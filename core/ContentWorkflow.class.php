@@ -217,7 +217,7 @@ class ContentWorkflow extends Module {
 
                         break;
                     default: // new
-                        $strIcon  = '<a href="../'.\FWLanguage::getLanguageCodeById($page->getLang()).$page->getPath().'" target="_blank"><img src="template/ascms/images/content_manager_preview.png" alt="'.$_CORELANG['TXT_WORKFLOW_PAGE_PREVIEW'].'" title="'.$_CORELANG['TXT_WORKFLOW_PAGE_PREVIEW'].'" border="0" /></a>&nbsp;';
+                        $strIcon  = '<a href="../'.\FWLanguage::getLanguageCodeById($page->getLang()).$page->getPath().'" target="_blank"><img src="../core/ContentManager/View/Media/Preview.png" alt="'.$_CORELANG['TXT_WORKFLOW_PAGE_PREVIEW'].'" title="'.$_CORELANG['TXT_WORKFLOW_PAGE_PREVIEW'].'" border="0" /></a>&nbsp;';
                         $strIcon .= '<a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=content&amp;page='.$pageId.'&amp;tab=content" target="_blank"><img src="images/icons/edit.gif" alt="'.$_CORELANG['TXT_EDIT_PAGE'].'" title="'.$_CORELANG['TXT_EDIT_PAGE'].'" border="0" /></a>';
                 }
                 
