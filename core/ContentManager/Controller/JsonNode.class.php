@@ -57,6 +57,12 @@ class JsonNode implements JsonAdapter {
      * @var Array 
      */
     private $messages;
+    
+    /**
+     * List of IDs of deleted nodes
+     * @var Array 
+     */
+    protected $deleteBuffer = array();
 
     /**
      * Constructor
@@ -234,7 +240,20 @@ class JsonNode implements JsonAdapter {
         
         $node = $this->nodeRepo->find($arguments['post']['id']);
         
-        $this->em->remove($node);
+        // explicit recursive delete in order to ensure logs get written
+        $toDelete = array($node);
+        while (count($toDelete)) {
+            $currentNode = array_pop($toDelete);
+            // if we removed this node already, all subnodes are removed too, so skip
+            if (in_array($currentNode->getId(), $this->deleteBuffer)) {
+                break;
+            }
+            foreach ($currentNode->getChildren() as $child) {
+                array_push($toDelete, $child);
+            }
+            $this->deleteBuffer[] = $currentNode->getId();
+            $this->em->remove($currentNode);
+        }
         if ($flush) {
             $this->em->flush();
             $this->em->clear();
