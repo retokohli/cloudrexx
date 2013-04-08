@@ -5770,6 +5770,10 @@ function MultiAction() {
             ORDER BY tblLink.title ASC", $_CONFIG['corePagingLimit'], $pos);
         if ($objResult !== false) {
             while (!$objResult->EOF) {
+
+                // parse NODE-Url placeholders in link
+                \LinkGenerator::parseTemplate($objResult->fields['url'], true);
+
                 $this->_objTpl->setVariable(array(
                     'NEWSLETTER_LINK_ROW_CLASS' => $rowNr % 2 == 1 ? 'row1' : 'row2',
                     'NEWSLETTER_LINK_TITLE'     => $objResult->fields['title'],
