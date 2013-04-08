@@ -379,7 +379,7 @@ function executeContrexxUpdate() {
                                         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $file), 'title');
                                     }
                                     return false;
-                                } elseif ($result == 'timeout') {
+                                } elseif ($result === 'timeout') {
                                     setUpdateMsg(1, 'timeout');
                                     return false;
                                 }
@@ -397,7 +397,7 @@ function executeContrexxUpdate() {
                                         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $file), 'title');
                                     }
                                     return false;
-                                } elseif ($result == 'timeout') {
+                                } elseif ($result === 'timeout') {
                                     setUpdateMsg(1, 'timeout');
                                     return false;
                                 } else {

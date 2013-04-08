@@ -14,4 +14,3 @@ function _auctionUpdate()
 
     return true;
 }
-?>

@@ -235,5 +235,3 @@ INSERT INTO `".DBPREFIX."module_data_settings` (`name`, `value`) VALUES
 
     return true;
 }
-
-?>
