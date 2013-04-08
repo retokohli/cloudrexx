@@ -308,8 +308,10 @@ class Resolver {
                     // in case $langId is really the requested CMD then we will have to set the
                     // resolved language back to our original language $this->lang.
                     if (!$targetPage) {
-                        $targetPage = $this->pageRepo->findoneBymoduleCmdLang($module, $cmd.'_'.$langId, $this->lang);
-                        $langId = $this->lang;
+                        $targetPage = $this->pageRepo->findOneBymoduleCmdLang($module, $cmd.'_'.$langId, $this->lang);
+                        if ($targetPage) {
+                            $langId = $this->lang;
+                        }
                     }
 
                     // try to retrieve a module page that uses only an ID as CMD.
