@@ -261,6 +261,11 @@ class JsonPage implements JsonAdapter {
         
         if (!empty($pageArray)) {
             $page->updateFromArray($validatedPageArray);
+            if ($newPage) {
+                // Make sure page has an ID
+                $this->em->persist($page);
+                $this->em->flush();
+            }
         }
         
         if (!empty($action)) {
