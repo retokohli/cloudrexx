@@ -422,6 +422,45 @@ $updatesHotfixToSp1 = array(
 );
 
 $updatesSp1ToSp2 = array(
+    array (
+        'table' => DBPREFIX.'module_block_categories',
+        'structure' => array(
+            'id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'parent'         => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0', 'after' => 'id'),
+            'name'           => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'parent'),
+            'seperator'      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'name'),
+            'order'          => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0', 'after' => 'seperator'),
+            'status'         => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'order')
+        ),
+    ),
+    array (
+        'table' => DBPREFIX.'module_block_blocks',
+        'structure' => array(
+            'id'                 => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'start'              => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0', 'after' => 'id'),
+            'end'                => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0', 'after' => 'start'),
+            'name'               => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'end'),
+            'random'             => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'name'),
+            'random_2'           => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'random'),
+            'random_3'           => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'random_2'),
+            'random_4'           => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'random_3'),
+            'global'             => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'random_4'),
+            'category'           => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'global'),
+            'direct'             => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'category'),
+            'active'             => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'direct'),
+            'order'              => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'active'),
+            'cat'                => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0', 'after' => 'order'),
+            'wysiwyg_editor'     => array('type' => 'INT(1)', 'notnull' => true, 'default' => '1', 'after' => 'cat')
+        ),
+    ),
+    array (
+        'table' => DBPREFIX.'module_block_rel_pages',
+        'structure' => array(
+            'block_id'       => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0'),
+            'page_id'        => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0', 'after' => 'block_id'),
+            'placeholder'    => array('type' => 'ENUM(\'global\',\'direct\',\'category\')', 'notnull' => true, 'default' => 'global', 'after' => 'page_id')
+        ),
+    ),
     '
         INSERT INTO `'.DBPREFIX.'access_settings` (`key`, `value`, `status`) VALUES
         (\'sociallogin\', \'\', 0),
@@ -481,7 +520,6 @@ $updatesSp1ToSp2 = array(
             'article'    => array('fields' => array('article','tag'), 'type' => 'UNIQUE'),
         )
     ),
-    'UPDATE `'.DBPREFIX.'settings` SET `setvalue` = \'3.0.2\' WHERE `setname` = \'coreCmsVersion\'',
 );
 
 $updatesSp2ToSp3 = array(
@@ -601,11 +639,11 @@ $updatesSp2ToSp3 = array(
         'structure' => array(
             'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
             'type' => array('type' => 'ENUM(\'internal\',\'external\')', 'notnull' => true, 'default' => 'internal'),
-            'name' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+            'name' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
             'description' => array('type' => 'TEXT'),
             'company_url' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-            'status' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => false, 'default' => '1'),
-            'picture' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+            'status' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
+            'picture' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
         ),
     ),
     array (
@@ -619,7 +657,60 @@ $updatesSp2ToSp3 = array(
         ),
     ),
     "INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('sociallogin_activation_timeout', '10', '0') ON DUPLICATE KEY UPDATE `key` = `key`",
-
+    array(
+        'table' => DBPREFIX.'access_user_profile',
+        'structure' => array(
+            'user_id'            => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
+            'gender'             => array('type' => 'ENUM(\'gender_undefined\',\'gender_female\',\'gender_male\')', 'notnull' => true, 'default' => 'gender_undefined', 'after' => 'user_id'),
+            'title'              => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'gender'),
+            'firstname'          => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'title'),
+            'lastname'           => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'firstname'),
+            'company'            => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'lastname'),
+            'address'            => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'company'),
+            'city'               => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => '', 'after' => 'address'),
+            'zip'                => array('type' => 'VARCHAR(10)', 'notnull' => true, 'default' => '', 'after' => 'city'),
+            'country'            => array('type' => 'SMALLINT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'zip'),
+            'phone_office'       => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'country'),
+            'phone_private'      => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'phone_office'),
+            'phone_mobile'       => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'phone_private'),
+            'phone_fax'          => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'phone_mobile'),
+            'birthday'           => array('type' => 'VARCHAR(11)', 'notnull' => false, 'after' => 'phone_fax'),
+            'website'            => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'birthday'),
+            'profession'         => array('type' => 'VARCHAR(150)', 'notnull' => true, 'default' => '', 'after' => 'website'),
+            'interests'          => array('type' => 'text', 'notnull' => true, 'after' => 'profession'),
+            'signature'          => array('type' => 'text', 'notnull' => true, 'after' => 'interests'),
+            'picture'            => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'signature'),
+        ),
+        'keys' => array(
+            'profile'        => array('fields' => array('firstname' => 100, 'lastname' => 100, 'company' => 50))
+        ),
+        'engine' => 'InnoDB',
+    ),
+    array (
+        'table' => DBPREFIX.'core_setting',
+        'structure' => array(
+            'section' => array('type' => 'VARCHAR(32)', 'default' => '', 'primary' => true),
+            'name' => array('type' => 'VARCHAR(255)', 'default' => '', 'primary' => true),
+            'group' => array('type' => 'VARCHAR(32)', 'default' => '', 'primary' => true),
+            'type' => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => 'text', 'after' => 'group'),
+            'value' => array('type' => 'text', 'notnull' => true, 'after' => 'type'),
+            'values' => array('type' => 'text', 'notnull' => true, 'after' => 'value'),
+            'ord' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'values'),
+        ),
+    ),
+    array (
+        'table' => DBPREFIX.'core_text',
+        'structure' => array(
+            'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
+            'lang_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'primary' => true, 'after' => 'id'),
+            'section' => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => '', 'primary' => true, 'after' => 'lang_id'),
+            'key' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'primary' => true, 'after' => 'section'),
+            'text' => array('type' => 'text', 'after' => 'key'),
+        ),
+        'keys' => array(
+            'text' => array('fields' => array('text'), 'type' => 'FULLTEXT'),
+        ),
+    ),
 );
 
 $updatesRc1ToSp2    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3);
@@ -790,6 +881,9 @@ if ($version == 'rc1' || $version == 'rc2'
     $em->flush();
 
 }
+
+require(dirname(__FILE__).'/config.inc.php');
+\Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'settings` SET `setvalue` = \'' . $arrUpdate['cmsVersion'] . '\' WHERE `setname` = \'coreCmsVersion\'');
 
 $objSettings = new \settingsManager();
 $objSettings->writeSettingsFile();
