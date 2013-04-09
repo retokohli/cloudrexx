@@ -1268,12 +1268,15 @@ class Contact extends ContactLib
 
                 case 'file':
                     //if (isset($arrFormData['uploadedFiles'][$fieldId])) {
+                    $htmlValue = "<ul>";
+                    $plaintextValue = "";
                     if (isset($arrFormData['uploadedFiles'])) {
                         foreach ($arrFormData['uploadedFiles'] as $file) {
-                            $htmlValue = "<a href='".ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.contrexx_raw2xhtml($file['path'])."' >".contrexx_raw2xhtml($file['name'])."</a>";
-                            $plaintextValue  = ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$file['path'];
+                            $htmlValue .= "<li><a href='".ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.contrexx_raw2xhtml($file['path'])."' >".contrexx_raw2xhtml($file['name'])."</a></li>";
+                            $plaintextValue  .= ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$file['path']."\r\n";
                         }
                     }
+                    $htmlValue .= "</ul>";
                     break;
 
                 case 'checkbox':
