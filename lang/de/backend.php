@@ -1661,7 +1661,7 @@ $_ARRAYLANG['TXT_CORE_CM_VALIDATION_FAIL'] = 'Bitte füllen Sie alle erforderlic
 
 // core login
 $_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Sicherheitscode";
-$_ARRAYLANG['TXT_CORE_CAPTCHA_ENTER_THE_LETTERS_BELOW'] = "Geben Sie die Buchstaben aus dem unten angezeigten Bild ein.";
+$_ARRAYLANG['TXT_CORE_CAPTCHA_ENTER_THE_LETTERS_BELOW'] = "Geben Sie die Zahlen und Buchstaben aus dem unten angezeigten Bild ein.";
 $_ARRAYLANG['TXT_CORE_REMEMBER_ME'] = "Angemeldet bleiben";
 
 // upload
