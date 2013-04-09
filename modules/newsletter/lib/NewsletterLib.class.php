@@ -702,7 +702,7 @@ class NewsletterLib
         global $objDatabase, $_CONFIG;
 
         $result = $MailHtmlContent;
-        if (preg_match_all("/<a([^>]+)>([^<]*)<\/a>/i", $result, $matches)) {
+        if (preg_match_all("/<a([^>]+)>(.*)<\/a>/iU", $result, $matches)) {
             // get all links info
             $arrLinks = array();
             $objLinks = $objDatabase->Execute("SELECT `id`, `title`, `url` FROM ".DBPREFIX."module_newsletter_email_link WHERE `email_id` = ".$MailId);

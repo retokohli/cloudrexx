@@ -5620,8 +5620,8 @@ function MultiAction() {
         if ($objMail !== false && $objMail->RecordCount() == 1) {
             $htmlContent = $objMail->fields['content'];
             $linkIds = array();
-                        
-            if (preg_match_all("/<a([^>]+)>([^<]*)<\/a>/i", $htmlContent, $matches)) {
+
+            if (preg_match_all("/<a([^>]+)>(.*)<\/a>/iU", $htmlContent, $matches)) {
                 $tagCount = count($matches[0]);
                 $fullKey = 0;
                 $attrKey = 1;
