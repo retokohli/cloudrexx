@@ -152,7 +152,7 @@ class modulemanager
         $arrayInstalledModules = $this->getModules();
         $query = "
             SELECT id, name, description_variable,
-                   is_core, is_required
+                   is_core, is_required, is_active
               FROM ".DBPREFIX."modules
              WHERE status='y'
              ORDER BY is_required DESC, name ASC
@@ -167,11 +167,11 @@ class modulemanager
                     $objTemplate->setVariable(array(
                         'MODULE_REMOVE'  => "<input type='checkbox' name='removeModule[".$objResult->fields['id']."]' value='0' />",
                         'MODULE_INSTALL' => "&nbsp;",
-                        'MODULE_STATUS'  => "<img src='images/icons/led_green.gif' alt='' />"
+                        'MODULE_STATUS'  => ($objResult->fields['is_active'] ? "<img src='images/icons/led_green.gif' alt='' />" : "<img src='images/icons/led_orange.gif' alt='' />")
                     ));
                 } else  {
                     $objTemplate->setVariable(array(
-                        'MODULE_INSTALL' => "<input type='checkbox' name='installModule[".$objResult->fields['id']."]' value='1' />",
+                        'MODULE_INSTALL' => ($objResult->fields['is_active'] ? "<input type='checkbox' name='installModule[".$objResult->fields['id']."]' value='1' />" : ''),
                         'MODULE_REMOVE'  => "&nbsp;",
                         'MODULE_STATUS'  => "<img src='images/icons/led_red.gif' alt='' />"
                     ));
@@ -200,7 +200,7 @@ class modulemanager
                 }
 
                 $objTemplate->setVariable(array(
-                    'MODULE_ROWCLASS'   => $class,
+                    'MODULE_ROWCLASS'   => $class . (!$objResult->fields['is_active'] ? ' rowInactive' : ''),
                     'MODULE_DESCRIPTON' => $_CORELANG[$objResult->fields['description_variable']],
                     'MODULE_ID'         => $objResult->fields['id']
                 ));
