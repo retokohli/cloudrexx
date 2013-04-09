@@ -104,7 +104,7 @@ class ClassLoader {
         $path = '';
         foreach ($parts as $part) {
             $part = '/' . $part;
-            if (!is_dir($this->basePath . $path . $part)) {
+            if (!is_dir($this->basePath . $path . $part) && (!$this->customizingPath || !is_dir($this->customizingPath . $path . $part))) {
                 break;
             }
             $path .= $part;
