@@ -573,8 +573,7 @@ class newsletter extends NewsletterLib
 			$importTemplate = intval($_POST['newsletter_import_template']);
 
         if (isset($_POST['newsletter_mail_html_content'])) {
-            $mailHtmlContent = preg_replace('/\[\[([A-Z0-9_]*?)\]\]/', '{\\1}' , contrexx_stripslashes($_POST['newsletter_mail_html_content']));
-            $mailHtmlContent = $this->_getBodyContent($mailHtmlContent);
+            $mailHtmlContent = $this->_getBodyContent($_POST['newsletter_mail_html_content']);
         } elseif (isset($_POST['selected'])) {
 			$selectedNews = contrexx_input2db($_POST['selected']);
 			$HTML_TemplateSource_Import = $this->_getBodyContent($this->_prepareNewsPreview($this->GetTemplateSource($importTemplate, 'html')));
@@ -632,7 +631,7 @@ class newsletter extends NewsletterLib
 						$newstext = substr(ltrim(strip_tags($objNews->fields['newscontent'])), 0, 800);
 						$newstext .= "[....]";
 						$newsteasertext = substr(ltrim(strip_tags($objNews->fields['teaser_text'])), 0, 100);
-						$newslink = \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'detals', '', array('newsid' => $objNews->fields['newsid']));;
+						$newslink = "[[" . \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::PLACEHOLDER_PREFIX . "NEWS_DETAILS]]?newsid=" . $newsid;
 						if ($objNews->fields['newsuid'] && ($objUser = $objFWUser->objUser->getUser($objNews->fields['newsuid']))) {
 							$author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
 						} else {
@@ -685,7 +684,7 @@ class newsletter extends NewsletterLib
 						$newstext = substr(ltrim(strip_tags($objNews->fields['newscontent'])), 0, 800);
 						$newstext .= "[....]";
 						$newsteasertext = substr(ltrim(strip_tags($objNews->fields['teaser_text'])), 0, 100);
-						$newslink = \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'detals', '', array('newsid' => $objNews->fields['newsid']));;
+						$newslink = \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'details', '', array('newsid' => $objNews->fields['newsid']));;
 						if ($objNews->fields['newsuid'] && ($objUser = $objFWUser->objUser->getUser($objNews->fields['newsuid']))) {
 							$author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
 						} else {
@@ -789,10 +788,13 @@ class newsletter extends NewsletterLib
                 $arrRemovedAttachments = array_diff($arrCurrentAttachments, $arrAttachment);
             }
 
+            $mailHtmlContentReplaced = preg_replace('/\[\[([A-Z0-9_]*?)\]\]/', '{\\1}' , $mailHtmlContent);
+            $mailHtmlContentReplaced = $this->_getBodyContent($mailHtmlContentReplaced);
+
             if ($mailId > 0) {
-                $status = $this->_updateMail($mailId, $mailSubject, $mailTemplate, $mailSenderMail, $mailSenderName, $mailReply, $mailSmtpServer, $mailPriority, $arrAttachment, $mailHtmlContent);
+                $status = $this->_updateMail($mailId, $mailSubject, $mailTemplate, $mailSenderMail, $mailSenderName, $mailReply, $mailSmtpServer, $mailPriority, $arrAttachment, $mailHtmlContentReplaced);
             } else {
-                $mailId = $this->_addMail($mailSubject, $mailTemplate, $mailSenderMail, $mailSenderName, $mailReply, $mailSmtpServer, $mailPriority, $arrAttachment, $mailHtmlContent);
+                $mailId = $this->_addMail($mailSubject, $mailTemplate, $mailSenderMail, $mailSenderName, $mailReply, $mailSmtpServer, $mailPriority, $arrAttachment, $mailHtmlContentReplaced);
                 if ($mailId === false) {
                     $status = false;
                 }
@@ -3729,7 +3731,7 @@ class newsletter extends NewsletterLib
 						$newstext = substr(ltrim(strip_tags($objNews->fields['newscontent'])), 0, 800);
 						$newstext .= "[....]";
 						$newsteasertext = substr(ltrim(strip_tags($objNews->fields['teaser_text'])), 0, 100);
-						$newslink = \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'detals', '', array('newsid' => $objNews->fields['newsid']));;
+						$newslink = \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'details', '', array('newsid' => $objNews->fields['newsid']));
 						if ($objNews->fields['newsuid'] && ($objUser = $objFWUser->objUser->getUser($objNews->fields['newsuid']))) {
 							$author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
 						} else {
