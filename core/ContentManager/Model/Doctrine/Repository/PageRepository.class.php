@@ -630,12 +630,22 @@ class PageRepository extends EntityRepository {
             ), true);
             if (count($pages) == 1) {
                 $page = $pages[0];
-                return array(
-                    'matchedPath'   => substr($page->getPath(), 1) . '/',
-                    'unmatchedPath' => implode('/', $parts),
-                    'treePointer'   => array('__data'=>array('lang'=>array($lang), 'page'=>$page, 'node'=>$page->getNode())),
-                );
+            } else if (count($pages) != 0) {
+                foreach ($pages as $currentPage) {
+                    if ($currentPage->getSlug() == $parts[0]) {
+                        $page = $currentPage;
+                        break;
+                    }
+                }
             }
+            if (!$page) {
+                return false;
+            }
+            return array(
+                'matchedPath'   => substr($page->getPath(), 1) . '/',
+                'unmatchedPath' => implode('/', $parts),
+                'treePointer'   => array('__data'=>array('lang'=>array($lang), 'page'=>$page, 'node'=>$page->getNode())),
+            );
             return false;
         }
         
