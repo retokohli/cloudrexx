@@ -220,16 +220,14 @@ class jobsManager extends jobsLibrary
                          n.title, n.status, n.author,
                          l.name,
                          nc.name AS catname,
-                         u.username
+                         n.userid
                     FROM ".DBPREFIX."module_jobs_categories AS nc,
                          ".DBPREFIX."module_jobs AS n,
-                         ".DBPREFIX."languages AS l,
-                         ".DBPREFIX."access_users AS u
+                         ".DBPREFIX."languages AS l
                          $locationFilter
                          n.lang=l.id
                      AND n.lang=$this->langId
                      AND $docFilter nc.catid=n.catid
-                     AND u.id=n.userid
                    ORDER BY n.id DESC";
         $objResult = $objDatabase->Execute($query);
         $count = $objResult->RecordCount();
@@ -242,12 +240,17 @@ class jobsManager extends jobsLibrary
         }
         while ($objResult !== false && !$objResult->EOF) {
             $statusPicture = ($objResult->fields['status']==1) ? "status_green.gif" : "status_red.gif";
+            $jobUser = \FWUser::getFWUserObject()->objUser->getUser($objResult->fields['userid']);
+            $username = $_ARRAYLANG['TXT_ACCESS_UNKNOWN'];
+            if ($jobUser) {
+                $username = $jobUser->getUsername();
+            }
             $this->_objTpl->setVariable(array(
                 'JOBS_ID'         => $objResult->fields['jobsId'],
                 'JOBS_DATE'       => date(ASCMS_DATE_FORMAT, $objResult->fields['date']),
                 'JOBS_TITLE'      => stripslashes($objResult->fields['title']),
                 'JOBS_AUTHOR'      => stripslashes($objResult->fields['author']),
-                'JOBS_USER'       => $objResult->fields['username'],
+                'JOBS_USER'       => $username,
                 'JOBS_CHANGELOG'  => date(ASCMS_DATE_FORMAT, $objResult->fields['changelog']),
                 'JOBS_PAGING'     => $paging,
                 'JOBS_CLASS'      => (++$i % 2 ? "row2" : "row1"),

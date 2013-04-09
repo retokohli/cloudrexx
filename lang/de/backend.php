@@ -991,6 +991,7 @@ $_ARRAYLANG['TXT_ACCESS_RESET_PASSWORD'] = "Kennwort zurücksetzen";
 $_ARRAYLANG['TXT_ACCESS_RESET_PW_URL_DESC'] = "Link um das Kennwort zurückzusetzen";
 $_ARRAYLANG['TXT_ACCESS_SENDER_DESC'] = "Name des Absenders";
 $_ARRAYLANG['TXT_ACCESS_SET_SENDER_NAME'] = "Sie müssen einen Namen auswählen, der als Absender angegeben werden soll!";
+$_ARRAYLANG['TXT_ACCESS_UNKNOWN'] = "unbekannt";
 $_ARRAYLANG['TXT_ACCESS_UNKNOWN_TYPE_SPECIFIED'] = "Der gewählte E-Mail Typ ist unbekannt!";
 $_ARRAYLANG['TXT_ACCESS_UNKOWN_FORMAT_SPECIFIED'] = "Das gewählte E-Mail Format ist unbekannt!";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_ACTIVATED'] = "Benutzerkonto aktiviert";

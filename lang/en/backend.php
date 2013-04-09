@@ -987,6 +987,7 @@ $_ARRAYLANG['TXT_ACCESS_RESET_PASSWORD'] = "Reset password";
 $_ARRAYLANG['TXT_ACCESS_RESET_PW_URL_DESC'] = "Link to reset the password";
 $_ARRAYLANG['TXT_ACCESS_SENDER_DESC'] = "Name of the sender";
 $_ARRAYLANG['TXT_ACCESS_SET_SENDER_NAME'] = "You need to enter a name to be used as sender!";
+$_ARRAYLANG['TXT_ACCESS_UNKNOWN'] = "unknown";
 $_ARRAYLANG['TXT_ACCESS_UNKNOWN_TYPE_SPECIFIED'] = "The selected e-mail type is not known";
 $_ARRAYLANG['TXT_ACCESS_UNKOWN_FORMAT_SPECIFIED'] = "The selected e-mail format is not known.";
 $_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT_ACTIVATED'] = "Account activated";
