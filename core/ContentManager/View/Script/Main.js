@@ -572,7 +572,7 @@ cx.cm = function(target) {
                 }
                 var newName = jQuery('#page_name').val();
                 if (jQuery('#pageId').val() == 'new' || jQuery('#pageId').val() == 0) {
-                    cx.cm.loadPage(response.data.id);
+                    cx.cm.loadPage(response.data.id, null, response.data.version);
                     if (jQuery('a[href="#page_history"]').parent().hasClass('ui-state-active')) {
                         cx.cm.loadHistory(response.data.id);
                     }
@@ -612,6 +612,7 @@ cx.cm = function(target) {
                 //page.publishing.locked = jQuery("#page_protection_backend").is(":checked");
                 page.visibility.protected = jQuery("#page_protection_frontend").is(":checked");
                 page.name = newName;
+                page.version = response.data.version;
                 if (response.data.reload) {
                     cx.cm.createJsTree();
                 } else {
@@ -633,7 +634,7 @@ cx.cm = function(target) {
                 }
                 var newName = jQuery('#page_name').val();
                 if (jQuery('#pageId').val() == 'new' || jQuery('#pageId').val() == 0) {
-                    cx.cm.loadPage(response.data.id);
+                    cx.cm.loadPage(response.data.id, null, response.data.version);
                     if (jQuery('a[href="#page_history"]').parent().hasClass('ui-state-active')) {
                         cx.cm.loadHistory(response.data.id);
                     }
@@ -668,6 +669,7 @@ cx.cm = function(target) {
                 page.publishing.locked = jQuery("#page_protection_backend").is(":checked");
                 page.visibility.protected = jQuery("#page_protection_frontend").is(":checked");
                 page.name = newName;
+                page.version = response.data.version;
                 if (response.data.reload) {
                     cx.cm.createJsTree();
                 } else {
@@ -1679,7 +1681,7 @@ cx.cm.updatePageIcons = function(args) {
     
     // reload the editor values
     if (args.page.id == jQuery('input#pageId').val()) {
-        cx.cm.loadPage(args.page.id, undefined, undefined, undefined, false);
+        cx.cm.loadPage(args.page.id, undefined, args.page.version, undefined, false);
     }
 }
 
@@ -2463,6 +2465,7 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
 
     if (reloadHistory) {
         jQuery('#page_history').empty();
+        cx.cm.loadHistory(page.id);
     }
     
     if (page.editingStatus == 'hasDraftWaiting') {
@@ -2517,7 +2520,7 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
         cx.cm.selectTab(selectTab);
     } else {
         // will be done by selectTab too
-        cx.cm.pushHistory('leaf');
+        cx.cm.pushHistory('tab');
     }
     jQuery("#node_" + page.node).children(".jstree-wrapper").addClass("active");
     jQuery('html, body').animate({scrollTop:0}, 'slow');
@@ -2577,6 +2580,7 @@ cx.cm.pushHistory = function(source) {
     activeTabName = activeTabName.split("_")[1];
     var activePageId = jQuery('#pageId').val();
     var activeLanguageId = jQuery("#site-tree").jstree("get_lang");
+    var activeVersion = jQuery("#historyId").val();
     var oldPageId = undefined;
     try {
         oldPageId = /[?&]page=(\d+)/.exec(window.location)[1];
@@ -2585,9 +2589,13 @@ cx.cm.pushHistory = function(source) {
     try {
         oldTabName = /[?&]tab=([^&]*)/.exec(window.location)[1];
     } catch (e) {}
+    var oldVersion = undefined;
+    try {
+        oldVersion = /[?&]version=(\d+)/.exec(window.location)[1];
+    } catch (e) {}
     
     // prevent state from being written twice
-    if (activeTabName == oldTabName && oldPageId == activePageId) {
+    if (activeTabName == oldTabName && oldPageId == activePageId && oldVersion == activeVersion) {
         cx.cm.historyAdjusting = false;
         return;
     }
@@ -2636,7 +2644,7 @@ cx.cm.hashChangeEvent = function(pageId, nodeId, lang, version, activeTab) {
     
     // load leaf if necessary
     if (pageId != undefined) {
-        if (pageId != jQuery("#pageId").val()) {
+        if (pageId != jQuery("#pageId").val() || version != jQuery("#historyId").val()) {
             cx.cm.loadPage(pageId, undefined, version, activeTab);
         }
     } else if (nodeId != undefined && pageId != undefined && lang != undefined) {
