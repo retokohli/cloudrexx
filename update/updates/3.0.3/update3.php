@@ -522,6 +522,10 @@ $updatesSp1ToSp2 = array(
     ),
 );
 
+$userData = json_encode(array(
+    'id'   => $_SESSION['contrexx_update']['user_id'],
+    'name' => $_SESSION['contrexx_update']['username'],
+));
 $updatesSp2ToSp3 = array(
     array (
         'table' => DBPREFIX.'module_block_categories',
@@ -711,6 +715,7 @@ $updatesSp2ToSp3 = array(
             'text' => array('fields' => array('text'), 'type' => 'FULLTEXT'),
         ),
     ),
+    'UPDATE `' . DBPREFIX . 'log_entry` SET `username` = \'' . $userData . '\' WHERE `username` = \'currently_loggedin_user\'',
 );
 
 $updatesRc1ToSp2    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3);
@@ -781,6 +786,71 @@ if ($fp !== false) {
 } else {
     die('Could not read data dump file!');
 }
+
+// add missing "remove page" log entries
+$sqlQuery = '
+    SELECT
+        MAX(l1.version),
+        l1.object_id
+    FROM
+        `' . DBPREFIX . 'log_entry` AS l1
+    WHERE
+        l1.object_id NOT IN (
+            SELECT
+                id
+            FROM
+                `' . DBPREFIX . 'content_page`
+        )
+        AND l1.object_id NOT IN (
+            SELECT
+                l3.object_id
+            FROM
+                `' . DBPREFIX . 'log_entry` AS l3
+            WHERE
+                l3.action LIKE \'remove\'
+        )
+    GROUP BY
+        l1.object_id
+';
+$result = \Cx\Lib\UpdateUtil::sql($sqlQuery);
+if ($result === false) {
+    // error, abort
+    setUpdateMsg('Update failed: ' . contrexx_raw2xhtml($sqlQuery));
+    return false;
+}
+while (!$result->EOF) {
+    $sqlQuery = '
+        INSERT INTO
+            `' . DBPREFIX . 'log_entry`
+            (
+                `action`,
+                `logged_at`,
+                `version`,
+                `object_id`,
+                `object_class`,
+                `data`,
+                `username`
+            )
+        VALUES
+            (
+                \'remove\',
+                NOW(),
+                ' . ($result->fields['version'] + 1) . ',
+                ' . $result->fields['object_id'] . ',
+                \'Cx\\\\Core\\\\ContentManager\\\\Model\\\\Doctrine\\\\Entity\\\\Page\',
+                \'N;\',
+                \'' . $userData . '\'
+            )
+    ';
+    $result2 = \Cx\Lib\UpdateUtil::sql($sqlQuery);
+    if ($result2 === false) {
+        // error, abort
+        setUpdateMsg('Update failed: ' . contrexx_raw2xhtml($sqlQuery));
+        return false;
+    }
+    $result->MoveNext();
+}
+
 
 if ($version == 'rc1') {
     $em = \Env::em();
