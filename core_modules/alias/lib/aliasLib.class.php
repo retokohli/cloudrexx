@@ -46,7 +46,7 @@ class aliasLib
     }
 
     
-    function _getAliases($limit = null, $all = false)
+    function _getAliases($limit = null, $all = false, $legacyPages = false)
     {
         $pos = !$all && isset($_GET['pos']) ? intval($_GET['pos']) : 0;
 
@@ -57,6 +57,10 @@ class aliasLib
         $i = 0;
         $pages = array();
         foreach ($aliases as $page) {
+            // skip legacy page aliases if legacy page is disabled
+            if (preg_match('/^legacy_page_/', $page->getSlug()) && !$legacyPages) {
+                continue;
+            }
             $i++;
             if ($i < $pos) {
                 continue;
