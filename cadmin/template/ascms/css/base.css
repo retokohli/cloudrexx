@@ -776,6 +776,10 @@ table.adminlist tr.rowWarn,
 table.adminlist tr.rowwarn {
     background: #ffe7e7 !important;
 }
+table.adminlist tr.rowInactive,
+table.adminlist tr.rowinactive {
+    background: #edefef !important;
+}
 table.adminlist tr.active {
     background: #FFFFD6;
 }
