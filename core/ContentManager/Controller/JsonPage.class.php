@@ -359,10 +359,6 @@ class JsonPage implements JsonAdapter {
             //       Make adjustments, if necessary.
         } else {
             // User clicked save [as draft], so let's do that.
-            if ($newPage) {
-                $this->em->persist($page);
-                $this->em->flush();
-            }
             $updatingDraft = $page->getEditingStatus() != '' ? true : false;
 
             if ($action == 'publish') {
@@ -582,6 +578,7 @@ class JsonPage implements JsonAdapter {
         return array(
             'reload' => $reload,
             'id'     => $page->getId(),
+            'version'=> $page->getVersion()->getVersion(),
             'node'   => $page->getNode()->getId(),
             'lang'   => \FWLanguage::getLanguageCodeById($page->getLang()),
         );
