@@ -141,12 +141,26 @@ class SearchManager extends \Module
                 ));
                 
                 foreach ($pages as $page) {
+                    // used for alias pages, because they have no language
+                    if ($page->getLang() == "") {
+                        $languages = "";
+                        foreach (\FWLanguage::getIdArray('frontend') as $langId) {
+                            $languages[] = \FWLanguage::getLanguageCodeById($langId);
+                        }
+                    } else {
+                        $languages = array(
+                            \FWLanguage::getLanguageCodeById($page->getLang())
+                        );
+                    }
+
+                    $aliasLanguages = implode(', ', $languages);
+
                     $this->template->setVariable(array(
                         'SEARCH_RESULT_ID'            => $page->getId(),
                         'SEARCH_RESULT_TITLE'         => $page->getTitle(),
                         'SEARCH_RESULT_CONTENT_TITLE' => $page->getContentTitle(),
                         'SEARCH_RESULT_SLUG'          => substr($page->getPath(), 1),
-                        'SEARCH_RESULT_LANG'          => \FWLanguage::getLanguageCodeById($page->getLang()),
+                        'SEARCH_RESULT_LANG'          => $aliasLanguages,
                         'SEARCH_RESULT_FRONTEND_LINK' => \Cx\Core\Routing\Url::fromPage($page),
                     ));
                     
@@ -190,9 +204,13 @@ class SearchManager extends \Module
                             $this->license->getLegalComponentsList()
                         )
                     ),
-                    $qb->expr()->in(
-                        'p.lang',
-                        \FWLanguage::getIdArray('frontend')
+                    $qb->expr()->orX(
+                        $qb->expr()->in(
+                            'p.lang',
+                            \FWLanguage::getIdArray('frontend')
+                        ),
+                        // aliases are not specific per language, so we have to search for aliases with this case
+                        $qb->expr()->eq('p.lang', "''")
                     )
                 )
             )

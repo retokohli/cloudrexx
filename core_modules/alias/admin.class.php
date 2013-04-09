@@ -117,9 +117,15 @@ class AliasAdmin extends aliasLib
     {
         global $_ARRAYLANG, $_CONFIG;
 
+        $showLegacyPagealiases = isset($_POST['legacyPages']) && $_POST['legacyPages'];
+
         $this->_objTpl->loadTemplateFile('module_alias_list.html');
         $this->_pageTitle = $_ARRAYLANG['TXT_ALIAS_ALIAS_ES'];
-        $this->_objTpl->setGlobalVariable('TXT_ALIAS_ALIASES', $_ARRAYLANG['TXT_ALIAS_ALIASES']);
+        $this->_objTpl->setGlobalVariable(array(
+            'TXT_ALIAS_ALIASES' => $_ARRAYLANG['TXT_ALIAS_ALIASES'],
+            'TXT_ALIAS_SHOW_LEGACY_PAGE_ALIASES' => $_ARRAYLANG['TXT_ALIAS_SHOW_LEGACY_PAGE_ALIASES'],
+            'ALIAS_SHOW_LEGACY_PAGE_ALIASES_CHECKED' => $showLegacyPagealiases ? 'checked="checked"' : '',
+        ));
 
         // show warning message if contrexx is running on an IIS webserver and the web.config seems not be be registred in the server configuration
         if (ASCMS_WEBSERVER_SOFTWARE == 'iis') {
@@ -138,7 +144,7 @@ class AliasAdmin extends aliasLib
             }
         }
 
-        $arrAliases = $this->_getAliases($_CONFIG['corePagingLimit']);
+        $arrAliases = $this->_getAliases($_CONFIG['corePagingLimit'], false, $showLegacyPagealiases);
         $nr = 1;
         if (count($arrAliases)) {
             $this->_objTpl->setVariable(array(
