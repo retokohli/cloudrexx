@@ -69,6 +69,29 @@ var switchState = function(id, obj, action, type)
         jQuery(obj).attr('onclick', 'switchState('+id+', this, '+action+', \''+type+'\')');
     });
 }
+
+jQuery(document).ready(function(){
+	jQuery('#submit-search').click(function(e){
+	searchEntries(e);
+	});
+});
+
+var searchEntries = function (event) {
+	event.preventDefault();
+	formId = '';
+	levelId = '';
+	catId = '';
+	if(jQuery('select[name="form_id"]').length>0){
+		formId = '&form_id='+jQuery('select[name="form_id"]').val();
+	}
+	if(jQuery('select[name="level_id"]').length>0){
+		levelId = '&level_id='+jQuery('select[name="level_id"]').val();
+	}
+	if(jQuery('select[name="cat_id"]').length>0){
+		catId = '&cat_id='+jQuery('select[name="cat_id"]').val();
+	}
+	jQuery('#search_mediadir').attr('action', jQuery('#search_mediadir').attr('action') + catId+formId+levelId).submit();
+}
 // ]]>
 </script>
 
@@ -89,7 +112,7 @@ var switchState = function(id, obj, action, type)
                 <input type="text" name="term" value="{MEDIADIR_SEARCH_TERM}" onfocus="if(this.value=='{TXT_MEDIADIR_ID_OR_SEARCH_TERM}'){this.value=''}" onblur="if(this.value==''){this.value='{TXT_MEDIADIR_ID_OR_SEARCH_TERM}'}" class="search" style="width: 240px;" />
                 <!-- BEGIN mediadirFormDropdown --><select name="form_id" style="width: 172px;"><option value="0">{TXT_MEDIADIR_ALL_FORMS}</option>{MEDIADIR_FORMS_DROPDOWN_OPTIONS}</select><!-- END mediadirFormDropdown -->
                 <!-- BEGIN mediadirLevelDropdown --><select name="level_id" style="width: 172px;"><option value="0">{TXT_MEDIADIR_ALL_LEVELS}</option>{MEDIADIR_LEVELS_DROPDOWN_OPTIONS}</select><!-- END mediadirLevelDropdown -->
-                <select name="cat_id" style="width: 172px;"><option value="0">{TXT_MEDIADIR_ALL_CATEGORIES}</option>{MEDIADIR_CATEGORIES_DROPDOWN_OPTIONS}</select>&nbsp;<input type="submit" name="Submit" value="{TXT_SEARCH}" />
+                <select name="cat_id" style="width: 172px;"><option value="0">{TXT_MEDIADIR_ALL_CATEGORIES}</option>{MEDIADIR_CATEGORIES_DROPDOWN_OPTIONS}</select>&nbsp;<input type="submit" name="Submit" id="submit-search" value="{TXT_SEARCH}" />
             </form>
         </td>
     </tr>
