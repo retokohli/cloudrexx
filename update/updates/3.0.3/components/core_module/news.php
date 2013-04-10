@@ -600,6 +600,8 @@ NEWS;
 
 
         \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'news', 'cmd' => 'submit'), $search, $callback, array('content'), '3.0.1');
+        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegex(array('module' => 'news'), '/(\{NEWS_COUNT_COMMENTS\})/', '<!-- BEGIN news_comments_count -->$1<!-- END news_comments_count -->', array('content'), '3.0.3');
+        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegex(array('module' => 'news', 'cmd' => 'details'), '/(\{NEWS_COUNT_COMMENTS\})/', '<!-- BEGIN news_comments_count -->$1<!-- END news_comments_count -->', array('content'), '3.0.3');
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }

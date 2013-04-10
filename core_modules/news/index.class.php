@@ -222,6 +222,12 @@ class news extends newsLibrary {
            //'NEWS_TYPE_NAME' => ($this->arrSettings['news_use_types'] == 1 ? htmlentities($objResult->fields['typename'], ENT_QUOTES, CONTREXX_CHARSET) : '')
         ));
 
+        if (!$newsCommentActive || !$this->arrSettings['news_comments_activated']) {
+            if ($this->_objTpl->blockExists('news_comments_count')) {
+                $this->_objTpl->hideBlock('news_comments_count');
+            }
+        }
+
         // parse author
         $this->parseUserAccountData($objResult->fields['authorid'], $objResult->fields['author'], 'news_author');
         // parse publisher
@@ -891,6 +897,7 @@ class news extends newsLibrary {
                                 n.publisher_id,
                                 n.author,
                                 n.author_id,
+                                n.allow_comments AS commentactive,
                                 nl.title            AS newstitle,
                                 nl.text NOT REGEXP \'^(<br type="_moz" />)?$\' AS newscontent,
                                 nl.teaser_text,
@@ -943,6 +950,7 @@ class news extends newsLibrary {
             while (!$objResult->EOF) {
                 $newsid         = $objResult->fields['newsid'];
                 $newstitle      = $objResult->fields['newstitle'];
+                $newsCommentActive = $objResult->fields['commentactive'];
                 $newsUrl        = empty($objResult->fields['redirect'])
                                     ? (empty($objResult->fields['newscontent'])
                                         ? ''
@@ -983,6 +991,12 @@ class news extends newsLibrary {
                    'NEWS_AUTHOR'         => contrexx_raw2xhtml($author),
                    'NEWS_COUNT_COMMENTS' => contrexx_raw2xhtml($objSubResult->fields['countComments'].' '.$_ARRAYLANG['TXT_NEWS_COMMENTS']),
                 ));
+
+                if (!$newsCommentActive || !$this->arrSettings['news_comments_activated']) {
+                    if ($this->_objTpl->blockExists('news_comments_count')) {
+                        $this->_objTpl->hideBlock('news_comments_count');
+                    }
+                }
 
                 if (!empty($image)) {
                     $this->_objTpl->setVariable(array(
