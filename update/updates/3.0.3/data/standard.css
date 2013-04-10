@@ -665,6 +665,28 @@ div.row2 {
     background-position:left center;
     background-repeat:no-repeat;
 }
+.loginbutton,
+.loginbutton:hover {
+    display: block;
+    float: left;
+    color: transparent;
+    height: 26px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    width: 189px;
+}
+.loginbutton:hover {
+    text-decoration: underline;
+}
+.loginbutton.facebook {
+    background: url("images/facebook_login.png") no-repeat;
+}
+.loginbutton.google {
+    background: url("images/google_login.png") no-repeat;;
+}
+.loginbutton.twitter {
+    background: url("images/twitter_login.png") no-repeat;
+}
 /***************************************************/
 /* CSS DEFINITIONS FOR FORUM MODULE                */
 /***************************************************/
