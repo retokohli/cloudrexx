@@ -952,16 +952,20 @@ if ($version == 'rc1' || $version == 'rc2'
 
 }
 
-// replace sigma template block in discounts page
 if (   !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')
     && $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.3')
 ) {
     try {
+        // replace sigma template block in discounts page
         \Cx\Lib\UpdateUtil::migrateContentPageUsingRegex(
             array('module'=>'shop', 'cmd' => 'discounts'),
             '/<!--\s+(BEGIN|END)\s+shopProductRow1\s+-->/', '<!-- $1 shopProductRow -->',
             array('content'), '3.0.3'
         );
+
+        // replace comments placeholder with a sigma block , news module
+        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegex(array('module' => 'news'), '/(\{NEWS_COUNT_COMMENTS\})/', '<!-- BEGIN news_comments_count -->$1<!-- END news_comments_count -->', array('content'), '3.0.3');
+        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegex(array('module' => 'news', 'cmd' => 'details'), '/(\{NEWS_COUNT_COMMENTS\})/', '<!-- BEGIN news_comments_count -->$1<!-- END news_comments_count -->', array('content'), '3.0.3');
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
