@@ -196,7 +196,7 @@ class modulemanager
                         'MODULE_REMOVE'   => '&nbsp;'
                     ));
                 } else {
-                    $objTemplate->setVariable('MODULE_REQUIRED', $_CORELANG['TXT_OPTIONAL']);
+                    $objTemplate->setVariable('MODULE_REQUIRED', $objResult->fields['is_active'] ? $_CORELANG['TXT_OPTIONAL'] : $_CORELANG['TXT_LICENSE_NOT_LICENSED']);
                 }
 
                 $objTemplate->setVariable(array(
