@@ -14,13 +14,58 @@ function executeContrexxUpdate() {
      * to work correctly. CSS definitions for these modules will get updated too.
      */
     $viewUpdateTable = array(
-        'newsletter'    => '3.0.1.0', // E-Mail Marketing
-        'shop'          => '3.0.0.0', // Online Shop
-        'voting'        => '2.1.0.0', // Umfragen
-        'access'        => '2.0.0.0', // Benutzerverwaltung
-        'podcast'       => '2.0.0.0', // Podcast
-        'login'         => '3.0.2.0', // Login
-        'gallery'       => '3.0.2.0', // Bildgalerie
+        // E-Mail Marketing
+        'newsletter'    => array (
+            'version'       => '3.0.1.0',
+            'dependencies'    => array (
+                'forms',
+            ),
+        ),
+
+        // Online Shop
+        'shop'          => array (
+            'version'       => '3.0.0.0',
+            'dependencies'  => array (
+                'forms',
+            ),
+        ),
+
+        // Umfragen
+        'voting'        => array (
+            'version'       => '2.1.0.0',
+            'dependencies'  => array (),
+        ),
+
+        // Benutzerverwaltung
+        'access'        => array (
+            'version'       => '2.0.0.0',
+            'dependencies'  => array (
+                'forms',
+                'captcha',
+                'uploader',
+            ),
+        ),
+
+        // Podcast
+        'podcast'       => array (
+            'version'       => '2.0.0.0',
+            'dependencies'  => array (),
+        ),
+
+        // Login
+        'login'         => array (
+            'version'       => '3.0.2.0',
+            'dependencies'  => array (
+                'forms',
+                'captcha',
+            ),
+        ),
+
+        // Bildergalerie
+        'gallery'       => array (
+            'version'       => '3.0.2.0',
+            'dependencies'  => array (),
+        ),
     );
 
     $_SESSION['contrexx_update']['copyFilesFinished'] = !empty($_SESSION['contrexx_update']['copyFilesFinished']) ? $_SESSION['contrexx_update']['copyFilesFinished'] : false;
@@ -899,7 +944,8 @@ function _updateModuleRepository() {
 function _updateModulePages(&$viewUpdateTable) {
     global $objUpdate, $_CONFIG, $objDatabase;
     
-    foreach ($viewUpdateTable as $module=>$version) {
+    foreach ($viewUpdateTable as $module=>$data) {
+        $version = $data['version'];
         // only update templates if the installed version is older than $version
         if (!$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], $version)) {
             continue;
@@ -1022,10 +1068,10 @@ function _readNewCssDefinitions($templateType, &$arrUpdate) {
         return true;
     }
     // split css by module header comment
-    $styleDefinitions = preg_split('#(?:[\s]*)/[\*]*/\n(?:[\s]*)/\*\sCSS DEFINITIONS FOR#', $styleDefinitions);
+    $styleDefinitions = preg_split('#(?:[\s]*)/[\*]*/\n(?:[\s]*)/\*\sCSS (GLOBAL\s)?DEFINITIONS FOR#', $styleDefinitions);
     $moduleStyles = array();
     $matches = array();
-    $moduleRegex = '#^ ([A-Z]*) MODULE(?:[\s]*)\*/\n(?:[\s]*)/[\*]*/#';
+    $moduleRegex = '#^ ([A-Z]*)\s?(MODULE|)(?:[\s]*)\*/\n(?:[\s]*)/[\*]*/#';
     foreach ($styleDefinitions as $key=>$value) {
         // get module name from header
         if (!preg_match($moduleRegex, $value, $matches)) {
@@ -1036,6 +1082,8 @@ function _readNewCssDefinitions($templateType, &$arrUpdate) {
         $moduleStyles[strtolower($matches[1])] = '/***************************************************/
 /* CSS DEFINITIONS FOR' . $value;
     }
+    \DBG::msg('--- loaded modules css definitions for modules: ---');
+    \DBG::dump(array_keys($moduleStyles));
     return $moduleStyles;
 }
 
@@ -1047,8 +1095,10 @@ function _calculateNewCss(&$viewUpdateTable, &$moduleStyles, $objUpdate) {
     global $_CONFIG;
     
     // Calculate new CSS definitions
-    $additionalCss = '';
-    foreach ($viewUpdateTable as $module=>$version) {
+    $additionalCss = array ();
+    foreach ($viewUpdateTable as $module=>$data) {
+        $version = $data['version'];
+        $dependencies = $data['dependencies'];
         // only add css if the installed version is older than $version
         if (!$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], $version)) {
             continue;
@@ -1057,8 +1107,18 @@ function _calculateNewCss(&$viewUpdateTable, &$moduleStyles, $objUpdate) {
             \DBG::msg('No style definitions for module "' . $module . '" in this theme type');
             continue;
         }
-        $additionalCss .= "\r\n\r\n" . $moduleStyles[$module];
+        if (!isset($additionalCss[$module])) {
+            $additionalCss[$module] = $moduleStyles[$module];
+        }
+        foreach ($dependencies as $module) {
+            if (!isset($additionalCss[$module])) {
+                $additionalCss[$module] = $moduleStyles[$module];
+            }
+        }
     }
+    \DBG::msg('--- added modules css definitions for modules: ---');
+    \DBG::dump(array_keys($additionalCss));
+    $additionalCss = implode("\r\n\r\n", $additionalCss);
     $version = $objUpdate->getLoadedVersionInfo();
     $version = $version['cmsVersion'];
     $additionalCss = '/***************************************************/
