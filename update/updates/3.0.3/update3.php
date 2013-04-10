@@ -952,6 +952,21 @@ if ($version == 'rc1' || $version == 'rc2'
 
 }
 
+// replace sigma template block in discounts page
+if (   !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')
+    && $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.3')
+) {
+    try {
+        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegex(
+            array('module'=>'shop', 'cmd' => 'discounts'),
+            '/<!--\s+(BEGIN|END)\s+shopProductRow1\s+-->/', '<!-- $1 shopProductRow -->',
+            array('content'), '3.0.3'
+        );
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+}
+
 require(dirname(__FILE__).'/config.inc.php');
 \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'settings` SET `setvalue` = \'' . $arrUpdate['cmsVersion'] . '\' WHERE `setname` = \'coreCmsVersion\'');
 
