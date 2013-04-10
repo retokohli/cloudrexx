@@ -152,7 +152,7 @@ class RSSWriter {
         try {
             $objFile = new \Cx\Lib\FileSystem\File($this->xmlDocumentPath);
             $objFile->write($this->xmlDocument);
-        } catch (\Cx\Lib\FileSystem\FileException $e) {
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             if (file_exists($this->xmlDocumentPath)) {
                 array_push($this->arrErrorMsg, sprintf($_CORELANG['TXT_UNABLE_TO_WRITE_TO_FILE'], $this->xmlDocumentPath));
             } else {
