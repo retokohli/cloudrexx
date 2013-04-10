@@ -1120,7 +1120,23 @@ function _writeNewCss($templatePath, $newCss, &$arrUpdate) {
         \DBG::msg($e->getMessage());
         return false;
     }
-    
+
+    // Copy files for frontend login page to theme's directory
+    $imagesToCopy = array('facebook_login.png', 'google_login.png', 'twitter_login.png');
+    try {
+        foreach ($imagesToCopy as $imageToCopy) {
+            $src = str_replace('\\', '/', UPDATE_PATH.'/updates/' . $arrUpdate['cmsVersion'] . '/data/images/' . $imageToCopy);
+            $dst = str_replace('\\', '/', ASCMS_THEMES_PATH . '/' . $templatePath . '/images/' . $imageToCopy);
+            if (file_exists($src)) {
+                $File = new \Cx\Lib\FileSystem\File($src);
+                $File->copy($dst);
+            }
+        }
+    } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+        \DBG::msg($e->getMessage());
+        return false;
+    }
+
     return true;
 }
 
