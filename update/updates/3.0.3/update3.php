@@ -966,6 +966,9 @@ if (   !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')
         // replace comments placeholder with a sigma block , news module
         \Cx\Lib\UpdateUtil::migrateContentPageUsingRegex(array('module' => 'news'), '/(\{NEWS_COUNT_COMMENTS\})/', '<!-- BEGIN news_comments_count -->$1<!-- END news_comments_count -->', array('content'), '3.0.3');
         \Cx\Lib\UpdateUtil::migrateContentPageUsingRegex(array('module' => 'news', 'cmd' => 'details'), '/(\{NEWS_COUNT_COMMENTS\})/', '<!-- BEGIN news_comments_count -->$1<!-- END news_comments_count -->', array('content'), '3.0.3');
+
+        // remove the script tag at the beginning of the gallery page
+        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegex(array('module' => 'gallery'), '/^(<script[^>]+>.+?Shadowbox.+?<\/script>)+/sm', '', array('content'), '3.0.3');
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
