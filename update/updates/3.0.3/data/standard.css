@@ -2629,9 +2629,9 @@ dl.data_module img {
     width: auto;
 }
 
-/***************************/
-/* HIDE UPLOADER EMBED TAG */
-/***************************/
+/***************************************************/
+/* CSS DEFINITIONS FOR UPLOADER                    */
+/***************************************************/
 #deployJavaPlugin {
     display: none;
 }
