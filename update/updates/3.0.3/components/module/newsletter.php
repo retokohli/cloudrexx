@@ -210,7 +210,7 @@ function _newsletterUpdate()
                 'newsletter'     => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'id'),
                 'email'          => array('type' => 'VARCHAR(255)', 'after' => 'newsletter', 'notnull' => true, 'default' => ''),
                 'sendt'          => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'email'),
-                'type'           => array('type' => 'ENUM(\'access\',\'newsletter\')', 'notnull' => true, 'default' => 'newsletter', 'after' => 'sendt'),
+                'type'           => array('type' => 'ENUM(\'access\',\'newsletter\',\'core\')', 'notnull' => true, 'default' => 'newsletter', 'after' => 'sendt'),
                 'code'           => array('type' => 'VARCHAR(10)', 'after' => 'type')
             ),
             array(
@@ -300,6 +300,18 @@ function _newsletterUpdate()
                 'status'             => array('fields' => array('status'))
             )
         );
+
+
+        // fix user's SALUTATION of previews updates
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.3')) {
+            // set user's SALUTATION based of previews updates
+            \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."module_newsletter_user` SET `salutation` = `title`, `title` = '' WHERE `salutation` = '0' AND `title` REGEXP '^[0-9]+$'");
+            
+            // clear all user's TITLE attribute that consist only of a number (it is most likely not the case that a user's TITLE is a number,
+            // so we assume that it is a left over of the preview update bug, which did not migrate the user's TITLE attribute to the user's SALUTATION attribute
+            \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."module_newsletter_user` SET `title` = '' WHERE `title` REGEXP '^[0-9]+$'");
+        }
+
 
         // switch to source mode for all newsletter content pages
         \Cx\Lib\UpdateUtil::setSourceModeOnContentPage(array('module' => 'newsletter'), '3.0.1');
