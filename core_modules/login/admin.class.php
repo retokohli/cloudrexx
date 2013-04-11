@@ -145,11 +145,6 @@ class LoginManager {
                     'username'         => $username,
                     'active'           => 1,
                 );
-                $objUser = FWUser::getFWUserObject()->objUser->getUsers($userFilter, null, null, null, 1);
-                if ($objUser) {
-                    // deletes all sessions which are using this user (except the session resetting the password)
-                    $sessionObj->cmsSessionDestroyByUserId($objUser->getId());
-                }
 
                 $objFWUser = FWUser::getFWUserObject();
                 $objFWUser->checkAuth();

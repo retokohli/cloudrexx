@@ -1410,7 +1410,7 @@ class User extends User_Profile
      */
     public function store()
     {
-        global $objDatabase, $_CORELANG;
+        global $objDatabase, $_CORELANG, $sessionObj;
 
         if (!$this->validateUsername()) {
             return false;
@@ -1443,6 +1443,10 @@ class User extends User_Profile
             ) === false) {
                 $this->error_msg[] = $_CORELANG['TXT_ACCESS_FAILED_TO_UPDATE_USER_ACCOUNT'];
                 return false;
+            }
+            if (!empty($this->password)) {
+                // deletes all sessions which are using this user (except the session changing the password)
+                $sessionObj->cmsSessionDestroyByUserId($this->id);
             }
         } else {
             if ($objDatabase->Execute("

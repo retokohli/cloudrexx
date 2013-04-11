@@ -1230,9 +1230,6 @@ class AccessManager extends AccessLib
                 // process module specific extensions
                 $this->processModuleSpecificExtensions($objUser);
 
-                // deletes all sessions which are using this user (except the session changing the password)
-                $sessionObj->cmsSessionDestroyByUserId($objUser->getId());
-
                 if (Permission::checkAccess(18, 'static', true)) {
                     return $this->userList();
                 }
