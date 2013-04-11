@@ -58,7 +58,7 @@ class PageEventListener {
                 \FWUser::getFWUserObject()->objUser->getUsername()
             );
 
-            $uow->computeChangeSet(
+            $uow->recomputeSingleEntityChangeSet(
                 $em->getClassMetadata('Cx\Core\ContentManager\Model\Doctrine\Entity\Page'),
                 $entity
             );
