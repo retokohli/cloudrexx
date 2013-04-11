@@ -1002,6 +1002,28 @@ HTML;
         \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'shop', 'cmd' => 'discounts'), $search, $callback, array('content'), '3.0.3');
 
 
+        // add needed placeholders
+        // this adds the missing placeholders [[SHOP_AGB]], [[SHOP_CANCELLATION_TERMS_CHECKED]]
+        $search = array(
+        '/(<input[^>]+name=")(agb|cancellation_terms)(")([^>]*>)/ms',
+        );
+        $callback = function($matches) {
+            switch ($matches[2]) {
+                case 'agb':
+                    $placeholder = "{SHOP_AGB}";
+                    break;
+                case 'cancellation_terms':
+                    $placeholder = "{SHOP_CANCELLATION_TERMS_CHECKED}";
+                    break;
+            }
+            if (strpos($matches[1].$matches[4], $placeholder) === false) {
+                return $matches[1].$matches[2].$matches[3].' '.$placeholder.' '.$matches[4];
+            } else {
+                return $matches[0];
+            }
+        };
+        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'shop', 'cmd' => 'payment'), $search, $callback, array('content'), '3.0.3');
+
         // replace comments placeholder with a sigma block , news module
         $search = array(
             '/.*\{NEWS_COUNT_COMMENTS\}.*/ms',
