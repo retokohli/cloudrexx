@@ -114,11 +114,6 @@ Env::set('db', $objDatabase);
 $sessionObj = new cmsSession();
 $sessionObj->cmsSessionStatusUpdate('backend');
 
-if (!empty($_POST['execution_time'])) {
-    $_SESSION['contrexx_update']['max_execution_time'] = intval($_POST['execution_time']);
-    die('time '.$_SESSION['contrexx_update']['max_execution_time']);
-}
-
 // Initialize base system
 $objInit = new InitCMS('update', Env::em());
 Env::set('init', $objInit);

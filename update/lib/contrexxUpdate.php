@@ -432,24 +432,37 @@ var checkTimeout = function() {
             500: function() {
                 var endTime = new Date();
                 var executionTime = parseInt((endTime - startTime) / 1000);
+                var ajax = '{execution_time: "' + parseInt(executionTime - 5) + '"}';
                 $J.ajax({
                     url: 'index.php',
                     type: 'POST',
                     async: false,
-                    data: {'execution_time': executionTime - 5}
+                    data: {'ajax': ajax},
+                    success: parseResponse,
                 });
+                if (executionTime >= 20) {
+                    $J.ajax({
+                        url: 'index.php',
+                        type: type,
+                        data: {'ajax': formData, 'debug_update': getDebugInfo},
+                        success: parseResponse,
+                        error: cxUpdateErrorHandler,
+                    });
+                }
             }
         },
         complete: function(jqXHR, textStatus) {
             request_active = false;
-            // I have to do the request here, otherwise the update will loop and only check the timeout
-            $J.ajax({
-                url: 'index.php',
-                type: type,
-                data: {'ajax': formData, 'debug_update': getDebugInfo},
-                success: parseResponse,
-                error: cxUpdateErrorHandler,
-            });
+            if (textStatus != 'timeout' && textStatus != 'error') {
+                // I have to do the request here, otherwise the update will loop and only check the timeout
+                $J.ajax({
+                    url: 'index.php',
+                    type: type,
+                    data: {'ajax': formData, 'debug_update': getDebugInfo},
+                    success: parseResponse,
+                    error: cxUpdateErrorHandler,
+                });
+            }
         }
     });
 }
