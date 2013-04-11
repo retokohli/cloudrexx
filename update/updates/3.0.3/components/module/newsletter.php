@@ -303,7 +303,9 @@ function _newsletterUpdate()
 
 
         // fix user's SALUTATION of previews updates
-        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.3')) {
+        if (   !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')
+            && $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.3'
+        )) {
             // set user's SALUTATION based of previews updates
             \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."module_newsletter_user` SET `salutation` = `title`, `title` = '' WHERE `salutation` = '0' AND `title` REGEXP '^[0-9]+$'");
             
