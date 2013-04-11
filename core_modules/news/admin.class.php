@@ -1434,7 +1434,11 @@ class newsManager extends newsLibrary {
                     $active_lang[] = $activeLangResult->fields['lang_id'];
                     $activeLangResult->MoveNext();
                 }
-                
+
+                if (isset($_POST['newsManagerLanguages'])) {
+                    $active_lang = array_keys($_POST['newsManagerLanguages']);
+                }
+
                 foreach($arrLanguages as $intId => $arrLanguage) {
                     if ($arrLanguage['frontend'] == 1) {
                         $intLanguageId = $arrLanguage['id'];
