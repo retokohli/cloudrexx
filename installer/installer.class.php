@@ -936,7 +936,7 @@ class Installer
 
                 $objTpl->setVariable(array(
                     'FTP_DIRECTORY_ROW_CLASS'   => $this->directoryTreeRowClassNr % 2 ? "row2" : "row1",
-                    'FTP_DIRECTORY'             => "<a class=\"".($selected ? "text-selected" : "text")."\" href=\"index.php?ftpPath=".urlencode($arrDirectory['path'].$arrDirectory['name'])."\"><input type=\"radio\" name=\"ftpPath[".$id."]\" id=\"".urlencode($inputId.$id)."\" value=\"".urlencode($arrDirectory['path'].$arrDirectory['name'])."\" ".($selected ? "checked=\"checked\"" : "")." /><label for=\"".urlencode($inputId.$id)."\"><img src=\"".$templatePath."images/icons/".($selected ? "folder_closed.gif" : "folder_closed.gif")."\" width=\"16\" height=\"16\" border=\"0\" />&nbsp;".$arrDirectory['name']."</label></a>",
+                    'FTP_DIRECTORY'             => "<a class=\"".($selected ? "text-selected" : "text")."\" href=\"index.php?ftpPath=".urlencode($arrDirectory['path'].$arrDirectory['name'])."\"><input onclick=\"javascript:location.href='index.php?ftpPath=".urlencode($arrDirectory['path'].$arrDirectory['name'])."'\" type=\"radio\" name=\"ftpPath[".$id."]\" id=\"".urlencode($inputId.$id)."\" value=\"".urlencode($arrDirectory['path'].$arrDirectory['name'])."\" ".($selected ? "checked=\"checked\"" : "")." /><label for=\"".urlencode($inputId.$id)."\"><img src=\"".$templatePath."images/icons/".($selected ? "folder_closed.gif" : "folder_closed.gif")."\" width=\"16\" height=\"16\" border=\"0\" />&nbsp;".$arrDirectory['name']."</label></a>",
                     'FTP_DIRECTORY_STYLE'       => $arrDirectory['style']
                 ));
                 $objTpl->parse('ftpDirectory');
