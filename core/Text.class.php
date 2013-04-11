@@ -905,7 +905,7 @@ die("Obsolete method Text::getIdArrayBySearch() called");
                   `section` VARCHAR(32) NULL DEFAULT NULL,
                   `key` VARCHAR(255) NOT NULL,
                   `text` TEXT NOT NULL,
-                  PRIMARY KEY `id` (`id`, `lang_id`, `section`, `key`),
+                  PRIMARY KEY `id` (`id`, `lang_id`, `section`, `key`(32)),
                   FULLTEXT `text` (`text`)
                 ) ENGINE=MyISAM";
             $objResult = Cx\Lib\UpdateUtil::sql($query);
