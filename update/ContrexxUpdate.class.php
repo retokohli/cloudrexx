@@ -451,7 +451,11 @@ class ContrexxUpdate
             $this->setNextStep();
             $this->showStep();
         } else {
-            $this->showUpdatePage();
+            if (!empty($_POST['execution_time'])) {
+                $this->processUpdate();
+            } else {
+                $this->showUpdatePage();
+            }
         }
     }
     
@@ -482,7 +486,7 @@ class ContrexxUpdate
         global $_CORELANG, $_CONFIG, $_ARRAYLANG;
 
         $this->objTemplate->addBlockfile('CONTENT', 'process', 'process.html');
-        
+
         if (($return = $this->_loadUpdateLanguage()) !== true) {
             $this->objTemplate->setVariable('UPDATE_ERROR_MSG', $return);
             $this->objTemplate->parse('updateProcessError');
@@ -493,22 +497,34 @@ class ContrexxUpdate
             if (!$this->_isNewerVersion($_CONFIG['coreCmsVersion'], $_SESSION['contrexx_update']['version'])) {
                 $result = true;
             } else {
-                try {
-                    if (!activateDebugging()) {
-                        throw new \Exception("The debugging file couldn't be created.");
+                if (!empty($_POST['execution_time'])) {
+                    $_SESSION['contrexx_update']['max_execution_time'] = intval($_POST['execution_time']);
+                    if (intval($_POST['execution_time']) < 20) {
+                        setUpdateMsg('<div class="message-warning">' . $_CORELANG['TXT_UPDATE_EXECUTION_TIME'] . '</div>', 'msg');
+                        setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_CONTINUE_UPDATE'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
+                        $result = false;
+                    } else {
+                        die('time: ' . $_POST['execution_time']);
                     }
-                    DBG::msg('-------------------------------------------------------------');
-                    DBG::msg('CONTREXX UPDATE - NEW REQUEST');
-                    DBG::msg('Date: ' . date('d.m.Y H:i:s'));
-                    DBG::msg('Get-Params:');
-                    DBG::dump($_GET);
-                    DBG::msg('User: ' . $_SESSION['contrexx_update']['username']);
-                    DBG::msg('-------------------------------------------------------------');
-                    $result = executeContrexxUpdate();
-                } catch (\Exception $e) {
-                    $this->objTemplate->setVariable('UPDATE_ERROR_MSG', $_CORELANG['TXT_UPDATE_DBG_FILE']);
-                    $this->objTemplate->parse('updateProcessError');
-                    $result = false;
+                } else {
+                    try {
+                        if (!activateDebugging()) {
+                            throw new \Exception("The debugging file couldn't be created.");
+                        }
+                    } catch (\Exception $e) {
+                        setUpdateMsg($_CORELANG['TXT_UPDATE_DBG_FILE']);
+                        $result = false;
+                    }
+                    if ($result !== false) {
+                        DBG::msg('-------------------------------------------------------------');
+                        DBG::msg('CONTREXX UPDATE - NEW REQUEST');
+                        DBG::msg('Date: ' . date('d.m.Y H:i:s'));
+                        DBG::msg('Get-Params:');
+                        DBG::dump($_GET);
+                        DBG::msg('User: ' . $_SESSION['contrexx_update']['username']);
+                        DBG::msg('-------------------------------------------------------------');
+                        $result = executeContrexxUpdate();
+                    }
                 }
             }
             if ($result !== true) {
