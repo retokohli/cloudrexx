@@ -488,7 +488,7 @@ class CommonFunctions
     * @return   boolean
     */
     function checkInstallationStatus() {
-        global $configFile;
+        global $configFile, $_PATHCONFIG;
 
         $result = @include_once'..'.$configFile;
         if ($result === false) {
