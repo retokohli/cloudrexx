@@ -224,7 +224,7 @@ class cmsSession
         return true;
     }
 
-    function cmsSessionDestroy( $aKey )
+    function cmsSessionDestroy( $aKey , $destroyCookie = true)
     {
         $query = "DELETE FROM ".DBPREFIX."sessions WHERE sessionid = '".$aKey."'";
         $this->_objDb->Execute($query);
@@ -233,7 +233,9 @@ class cmsSession
             \Cx\Lib\FileSystem\FileSystem::delete_folder($this->sessionPath, true);
         }
 
-        setcookie("PHPSESSID", '', time()-3600, '/');
+        if ($destroyCookie) {
+            setcookie("PHPSESSID", '', time()-3600, '/');
+        }
 
         return true;
     }
@@ -244,7 +246,7 @@ class cmsSession
         if ($objResult) {
             while (!$objResult->EOF) {
                 if ($objResult->fields['sessionid'] != $this->sessionid) {
-                    $this->cmsSessionDestroy($objResult->fields['sessionid']);
+                    $this->cmsSessionDestroy($objResult->fields['sessionid'], false);
                 }
                 $objResult->MoveNext();
             }
