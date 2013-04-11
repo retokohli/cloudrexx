@@ -428,6 +428,7 @@ function _contactUpdate()
                         $page = $pageRepo->findOneByModuleCmdLang('contact', $id, $langId);
                         if ($page) {
                             $page->setContent($Contact->_getSourceCode($id, $langId));
+                            $page->setUpdatedAtToNow();
                             $em->persist($page);
                         }
                     }

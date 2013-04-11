@@ -985,6 +985,7 @@ function _updateModulePages(&$viewUpdateTable) {
             }
             $page->setContent($objResult->fields['content']);
             $page->setSourceMode(true);
+            $page->setUpdatedAtToNow();
             $em->persist($page);
             $em->flush();
         }
