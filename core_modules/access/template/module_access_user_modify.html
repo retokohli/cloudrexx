@@ -125,7 +125,7 @@ $J(document).ready(function() {
 <!-- BEGIN access_newsletter_tab --><li><a id="userTab_modifyUser5" href="javascript: void(0);" onclick="selectTab('modifyUser5')" title="{TXT_ACCESS_NEWSLETTER_LISTS}">{TXT_ACCESS_NEWSLETTER_LISTS}</a></li><!-- END access_newsletter_tab -->
 </ul>
 
-<form action="index.php?cmd=access&amp;act=user&amp;tpl=modify&amp;id={ACCESS_USER_ID}" onsubmit="accessAssociatedGroups=document.getElementById('access_user_associated_groups');if(accessAssociatedGroups !== null){accessSelectAllGroups(accessAssociatedGroups);}" method="post" enctype="multipart/form-data" id="access">
+<form autocomplete="off" action="index.php?cmd=access&amp;act=user&amp;tpl=modify&amp;id={ACCESS_USER_ID}" onsubmit="accessAssociatedGroups=document.getElementById('access_user_associated_groups');if(accessAssociatedGroups !== null){accessSelectAllGroups(accessAssociatedGroups);}" method="post" enctype="multipart/form-data" id="access">
 <!-- start modifyUser1 div -->
 <div id="modifyUser1" class="userTab" style="display:block">
 	<table cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist" summary="user account informations">
@@ -176,10 +176,10 @@ $J(document).ready(function() {
 			</tr>
 			<!-- BEGIN access_user_privacy -->
 			<tr class="row2">
-				<td>{TXT_ACCESS_PRIVACY}</td>
+				<td rowspan="2">{TXT_ACCESS_PRIVACY}</td>
 				<td>
-					<!-- BEGIN access_user_email_access --><div style="width:80px; height:29px; line-height:26px; float:left;">{ACCESS_USER_EMAIL_ACCESS_DESC} </div> <div style="height:29px;">{ACCESS_USER_EMAIL_ACCESS}</div><!-- END access_user_email_access -->
-					<!-- BEGIN access_user_profile_access --><div style="width:80px; height:26px; line-height:26px; clear:left; float:left;">{ACCESS_USER_PROFILE_ACCESS_DESC} </div> <div style="height:26px;">{ACCESS_USER_PROFILE_ACCESS}</div><!-- END access_user_profile_access -->
+					<!-- BEGIN access_user_email_access --><div>{ACCESS_USER_EMAIL_ACCESS}</div><!-- END access_user_email_access -->
+                    <!-- BEGIN access_user_profile_access --><div>{ACCESS_USER_PROFILE_ACCESS}</div><!-- END access_user_profile_access -->
 				</td>
 			</tr>
 			<!-- END access_user_privacy -->
