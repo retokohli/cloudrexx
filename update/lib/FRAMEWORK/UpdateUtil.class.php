@@ -554,6 +554,7 @@ class UpdateUtil
                 foreach ($pages as $page) {
                     if ($page) {
                         $page->setContent(str_replace($search, $replace, $page->getContent()));
+                        $page->setUpdatedAtToNow();
                         $em->persist($page);
                     }
                 }
@@ -609,6 +610,7 @@ class UpdateUtil
                                 && $pageAttributeValueChanged != $pageAttributeValue
                             ) {
                                 call_user_func(array($page, "set".ucfirst($pageAttribute)), $pageAttributeValueChanged);
+                                $page->setUpdatedAtToNow();
                                 $em->persist($page);
                             }
                         }
@@ -655,6 +657,7 @@ class UpdateUtil
                                 && $pageAttributeValueChanged != $pageAttributeValue
                             ) {
                                 call_user_func(array($page, "set".ucfirst($pageAttribute)), $pageAttributeValueChanged);
+                                $page->setUpdatedAtToNow();
                                 $em->persist($page);
                             }
                         }
@@ -684,6 +687,7 @@ class UpdateUtil
                     try {
                         // set source mode to content page
                         $page->setSourceMode(true);
+                        $page->setUpdatedAtToNow();
                         $em->persist($page);
                     }
                     catch (\Exception $e) {

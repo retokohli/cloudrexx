@@ -863,6 +863,7 @@ if ($version == 'rc1') {
     foreach ($fallbackPages as $page) {
         $page->setModule($page->getModule());
         $page->setCmd($page->getCmd());
+        $page->setUpdatedAtToNow();
         $em->persist($page);
     }
     $em->flush();
@@ -943,6 +944,7 @@ if ($version == 'rc1' || $version == 'rc2'
                 $page = $pageRepo->findOneByModuleCmdLang('contact', $id, $langId);
                 if ($page) {
                     $page->setContent($Contact->_getSourceCode($id, $langId));
+                    $page->setUpdatedAtToNow();
                     $em->persist($page);
                 }
             }
