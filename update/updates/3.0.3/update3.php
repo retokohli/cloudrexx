@@ -963,12 +963,63 @@ if (   !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')
             array('content'), '3.0.3'
         );
 
+
+        // add product options to product-listing and discounts page
+        $search = array(
+            '/.*\{SHOP_PRODUCT_DESCRIPTION\}.*/ms',
+        );
+        $callback = function($matches) {
+            $htmlProductOptions = <<<HTML
+
+                    <!-- BEGIN shopProductOptionsRow -->
+                    <div class="shop_options">
+                        {SHOP_PRODUCT_OPTIONS_TITLE}<br />
+                        <div id="product_options_layer{SHOP_PRODUCT_ID}" style="display: none;">
+                            <div class="shop_options_click">
+                                <!-- BEGIN shopProductOptionsValuesRow -->
+                                <strong>
+                                    {SHOP_PRODUCT_OPTIONS_NAME}
+                                    <!-- BEGIN product_attribute_mandatory -->
+                                    <span class="mandatory">&nbsp;*</span>
+                                    <!-- END product_attribute_mandatory -->
+                                </strong><br />
+                                {SHOP_PRODCUT_OPTION}
+                                <!-- END shopProductOptionsValuesRow -->
+                            </div>
+                        </div>
+                    </div>
+                    <!-- END shopProductOptionsRow -->
+
+HTML;
+            if (!preg_match('/<!--\s+BEGIN\s+shopProductOptionsRow\s+-->.*<!--\s+END\s+shopProductOptionsRow\s+-->/ms', $matches[0])) {
+                $placeholder = '{SHOP_PRODUCT_DESCRIPTION}';
+                return str_replace($placeholder, $placeholder.$htmlProductOptions, $matches[0]);
+            } else {
+                return $matches[0];
+            }
+        };
+        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'shop', 'cmd' => ''), $search, $callback, array('content'), '3.0.3');
+        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'shop', 'cmd' => 'discounts'), $search, $callback, array('content'), '3.0.3');
+
+
         // replace comments placeholder with a sigma block , news module
-        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegex(array('module' => 'news'), '/(\{NEWS_COUNT_COMMENTS\})/', '<!-- BEGIN news_comments_count -->$1<!-- END news_comments_count -->', array('content'), '3.0.3');
-        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegex(array('module' => 'news', 'cmd' => 'details'), '/(\{NEWS_COUNT_COMMENTS\})/', '<!-- BEGIN news_comments_count -->$1<!-- END news_comments_count -->', array('content'), '3.0.3');
+        $search = array(
+            '/.*\{NEWS_COUNT_COMMENTS\}.*/ms',
+        );
+        $callback = function($matches) {
+            $placeholder = '{NEWS_COUNT_COMMENTS}';
+            $htmlCode = '<!-- BEGIN news_comments_count -->'.$placeholder.'<!-- END news_comments_count -->';
+            if (!preg_match('/<!--\s+BEGIN\s+news_comments_count\s+-->.*<!--\s+END\s+news_comments_count\s+-->/ms', $matches[0])) {
+                return str_replace($placeholder, $htmlCode, $matches[0]);
+            } else {
+                return $matches[0];
+            }
+        };
+        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'news', 'cmd' => ''), $search, $callback, array('content'), '3.0.3');
+        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'news', 'cmd' => 'details'), $search, $callback, array('content'), '3.0.3');
 
         // remove the script tag at the beginning of the gallery page
-        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegex(array('module' => 'gallery'), '/^(<script[^>]+>.+?Shadowbox.+?<\/script>)+/sm', '', array('content'), '3.0.3');
+        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegex(array('module' => 'gallery'), '/^\s*(<script[^>]+>.+?Shadowbox.+?<\/script>)+/sm', '', array('content'), '3.0.3');
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
