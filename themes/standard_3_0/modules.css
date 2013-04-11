@@ -1380,6 +1380,9 @@ div.row2 {
     background-color: red;
     background-image: url("images/logo.png");
 }
+#shop label.error {
+    float: none;
+}
 #shop div.order table {
     float: left;
     width: 100%;
@@ -2613,3 +2616,4 @@ dl.data_module img {
 #deployJavaPlugin {
     display: none;
 }
+
