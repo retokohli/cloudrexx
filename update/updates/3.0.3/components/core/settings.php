@@ -289,7 +289,7 @@ function _updateSettings()
 		),
 		92	=> array(
 			'setname'	=> 'coreCmsEdition',
-			'setvalue'	=> 'Release Candidate',
+			'setvalue'	=> 'Trial',
 			'setmodule'	=> 66
 		),
 		93	=> array(
@@ -314,22 +314,22 @@ function _updateSettings()
 		),
 		97	=> array(
 			'setname'	=> 'coreCmsVersion',
-			'setvalue'	=> '3.0.0',
+			'setvalue'	=> '3.0.3',
 			'setmodule'	=> 66
 		),
 		98	=> array(
 			'setname'	=> 'coreCmsCodeName',
-			'setvalue'	=> 'This is not the end',
+			'setvalue'	=> 'Nikola Tesla',
 			'setmodule'	=> 66
 		),
 		99	=> array(
 			'setname'	=> 'coreCmsStatus',
-			'setvalue'	=> 'stable',
+			'setvalue'	=> 'Stable',
 			'setmodule'	=> 66
 		),
 		100	=> array(
 			'setname'	=> 'coreCmsReleaseDate',
-			'setvalue'	=> '1358377200',
+			'setvalue'	=> '12.04.2013',
 			'setmodule'	=> 66
 		),
 		101	=> array(
@@ -584,11 +584,15 @@ function _updateSettings()
     }
 
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.3')) {
-        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."settings_image` (`name`, `value`) VALUES (?, ?)", array('image_cut_width', '500'));
-        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."settings_image` (`name`, `value`) VALUES (?, ?)", array('image_cut_height', '500'));
-        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."settings_image` (`name`, `value`) VALUES (?, ?)", array('image_scale_width', '800'));
-        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."settings_image` (`name`, `value`) VALUES (?, ?)", array('image_scale_height', '800'));
-        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."settings_image` (`name`, `value`) VALUES (?, ?)", array('image_compression', '100'));
+        try {
+            \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."settings_image` (`name`, `value`) VALUES (?, ?)", array('image_cut_width', '500'));
+            \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."settings_image` (`name`, `value`) VALUES (?, ?)", array('image_cut_height', '500'));
+            \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."settings_image` (`name`, `value`) VALUES (?, ?)", array('image_scale_width', '800'));
+            \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."settings_image` (`name`, `value`) VALUES (?, ?)", array('image_scale_height', '800'));
+            \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `".DBPREFIX."settings_image` (`name`, `value`) VALUES (?, ?)", array('image_compression', '100'));
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
     }
 
 
@@ -597,7 +601,7 @@ function _updateSettings()
 
 function _updateSettingsTable($setId, $arrSetting)
 {
-    global $objDatabase, $arrSettings, $arrSettingsByName, $arrCurrentSettingsTable;
+    global $objDatabase, $arrSettings, $arrSettingsByName, $arrCurrentSettingsTable, $_CONFIG;
 
     if (!isset($arrCurrentSettingsTable)) {
         $arrCurrentSettingsTable = array();
@@ -612,7 +616,16 @@ function _updateSettingsTable($setId, $arrSetting)
             if (($objSettings = $objDatabase->SelectLimit($query, 1)) !== false) {
                 if ($objSettings->RecordCount() == 0) {
                     // option ID isn't already in use => ok, add it
-                    $query = "INSERT INTO `".DBPREFIX."settings` ( `setid` , `setname` , `setvalue` , `setmodule` ) VALUES (".intval($setId).", '".$arrSetting['setname']."', '".$arrSetting['setvalue']."', '".intval($arrSetting['setmodule'])."')";
+                    $value = $arrSetting['setvalue'];
+
+                    // we must set coreCmsVersion to the currently installed version,
+                    // otherwise if we would set it to the new version,
+                    // the update will be stopped before getting everything done
+                    if ($value == 'coreCmsVersion') {
+                        $value = $_CONFIG['coreCmsVersion'];
+                    }
+
+                    $query = "INSERT INTO `".DBPREFIX."settings` ( `setid` , `setname` , `setvalue` , `setmodule` ) VALUES (".intval($setId).", '".$arrSetting['setname']."', '".$value."', '".intval($arrSetting['setmodule'])."')";
                     if ($objDatabase->Execute($query) !== false) {
                         return true;
                     } else {

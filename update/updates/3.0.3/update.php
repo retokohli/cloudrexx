@@ -284,7 +284,7 @@ function executeContrexxUpdate() {
             }
         }
     } else {
-        // we are updating from 3.0.0 rc1, rc2, stable or 3.0.0.1
+        // we are updating from 3.0.0 rc1, rc2, stable ,3.0.0.1 or newer
         if (!include_once(dirname(__FILE__) . '/update3.php')) {
             setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/update3.php'));
             return false;
@@ -511,6 +511,13 @@ function executeContrexxUpdate() {
                 return false;
             }
             $_SESSION['contrexx_update']['update']['done'][] = 'coreSettings';
+
+            // till this point the file config/version.php was still loaded upon a request,
+            // therefore we must force a new page request here, to ensure that the file config/version.php
+            // will not be loaded anylonger. This is essential here, otherwise the old values of config/version.php
+            // would screw up the update process
+            setUpdateMsg(1, 'timeout');
+            return false;
         }
     }
 
