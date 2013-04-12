@@ -133,6 +133,9 @@ function parseResponse(response)
     if (response.length > 0) {
       try {
         eval('oResponse='+response);
+        if (oResponse.time) {
+            return true;
+        }
         if (oResponse.dialog) {
             similarPages = oResponse.dialog.similarPages;
             
@@ -438,7 +441,7 @@ var checkTimeout = function() {
                     type: 'POST',
                     async: false,
                     data: {'ajax': ajax},
-                    success: parseResponse,
+                    success: parseResponse
                 });
                 if (executionTime >= 20) {
                     $J.ajax({
