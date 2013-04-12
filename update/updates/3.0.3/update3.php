@@ -716,6 +716,21 @@ $updatesSp2ToSp3 = array(
         ),
     ),
     'UPDATE `' . DBPREFIX . 'log_entry` SET `username` = \'' . $userData . '\' WHERE `username` = \'currently_loggedin_user\'',
+    array (
+        'table' => DBPREFIX.'module_newsletter_tmp_sending',
+        'structure' => array(
+            'id'             => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'newsletter'     => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'id'),
+            'email'          => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'newsletter'),
+            'sendt'          => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'email'),
+            'type'           => array('type' => 'ENUM(\'access\',\'newsletter\',\'core\')', 'notnull' => true, 'default' => 'newsletter', 'after' => 'sendt'),
+            'code'           => array('type' => 'VARCHAR(10)', 'after' => 'type'),
+        ),
+        'keys' => array(
+            'unique_email'   => array('fields' => array('newsletter','email'), 'type' => 'UNIQUE'),
+            'email'          => array('fields' => array('email')),
+        ),
+    ),
 );
 
 $updatesRc1ToSp2    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3);
