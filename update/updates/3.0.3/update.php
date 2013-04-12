@@ -286,12 +286,6 @@ function executeContrexxUpdate() {
             }
         }
     } else {
-        // we are updating from 3.0.0 rc1, rc2, stable ,3.0.0.1 or newer
-        if (!include_once(dirname(__FILE__) . '/update3.php')) {
-            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/update3.php'));
-            return false;
-        }
-
         $result = _updateModuleRepository();
         if ($result === false) {
             DBG::msg('unable to update module repository');
@@ -317,7 +311,13 @@ function executeContrexxUpdate() {
                 }
             }
         }
-        
+
+        // we are updating from 3.0.0 rc1, rc2, stable or 3.0.0.1
+        if (!include_once(dirname(__FILE__) . '/update3.php')) {
+            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/update3.php'));
+            return false;
+        }
+
         if (!createHtAccess()) {
             $webServerSoftware = !empty($_SERVER['SERVER_SOFTWARE']) && stristr($_SERVER['SERVER_SOFTWARE'], 'apache') ? 'apache' : (stristr($_SERVER['SERVER_SOFTWARE'], 'iis') ? 'iis' : '');
             $file = $webServerSoftware == 'iis' ? 'web.config' : '.htaccess';
@@ -1074,7 +1074,8 @@ function _updateCssDefinitions(&$viewUpdateTable, $objUpdate) {
 }
 
 function _updateCssDefinitionsForTemplate($templatePath, $templateType, &$viewUpdateTable, $objUpdate) {
-    
+    global $objUpdate;
+
     \DBG::msg('Loading new module style definitions');
     $moduleStyles = _readNewCssDefinitions($templateType, $objUpdate->getLoadedVersionInfo());
     
@@ -1091,7 +1092,14 @@ function _updateCssDefinitionsForTemplate($templatePath, $templateType, &$viewUp
     if ($additionalCss === false) {
         return false;
     }
-    
+    if (empty($additionalCss)) {
+        return true;
+    }
+    $version = $objUpdate->getLoadedVersionInfo();
+    $version = $version['cmsVersion'];
+    $additionalCss = '/***************************************************/
+/* THESE ARE THE CSS MODULE STYLES FOR ' . $version .  '       */
+/***************************************************/' . "\r\n\r\n" . $additionalCss;
     \DBG::msg('Writing new module style definitions');
     return _writeNewCss($templatePath, $additionalCss, $objUpdate->getLoadedVersionInfo());
 }
@@ -1162,11 +1170,6 @@ function _calculateNewCss(&$viewUpdateTable, &$moduleStyles, $objUpdate) {
     \DBG::msg('--- added modules css definitions for modules: ---');
     \DBG::dump(array_keys($additionalCss));
     $additionalCss = implode("\r\n\r\n", $additionalCss);
-    $version = $objUpdate->getLoadedVersionInfo();
-    $version = $version['cmsVersion'];
-    $additionalCss = '/***************************************************/
-/* THESE ARE THE CSS MODULE STYLES FOR ' . $version .  '       */
-/***************************************************/' . "\r\n\r\n" . $additionalCss;
     return $additionalCss;
 }
 
