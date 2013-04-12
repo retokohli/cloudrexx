@@ -1018,6 +1018,8 @@ HTML;
         };
         \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'shop', 'cmd' => ''), $search, $callback, array('content'), '3.0.3');
         \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'shop', 'cmd' => 'discounts'), $search, $callback, array('content'), '3.0.3');
+        \Cx\Lib\UpdateUtil::setSourceModeOnContentPage(array('module' => 'shop', 'cmd' => ''), '3.0.3');
+        \Cx\Lib\UpdateUtil::setSourceModeOnContentPage(array('module' => 'shop', 'cmd' => 'discounts'), '3.0.3');
 
 
         // add needed placeholders

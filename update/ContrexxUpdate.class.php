@@ -504,7 +504,7 @@ class ContrexxUpdate
                         setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_CONTINUE_UPDATE'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
                         $result = false;
                     } else {
-                        die('time: ' . $_POST['execution_time']);
+                        die('{"time": ' . intval($_POST['execution_time']) . '}');
                     }
                 } else {
                     try {
