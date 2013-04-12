@@ -84,7 +84,9 @@ function executeContrexxUpdate() {
 
         // log modified files
         DBG::msg('MODIFIED FILES:');
-        DBG::dump($_SESSION['contrexx_update']['modified_files']);
+        if (isset($_SESSION['contrexx_update']['modified_files'])) {
+            DBG::dump($_SESSION['contrexx_update']['modified_files']);
+        }
 
         // we need to stop the script here to force a reinitialization of the update system
         // this is required so that the new constants from config/set_constants.php are loaded
