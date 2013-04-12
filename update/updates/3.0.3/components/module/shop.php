@@ -1566,7 +1566,7 @@ function _shopInstall()
                     ('egov', 'postfinance_hash_signature_in', 'config', 'text', 'Mindestens 16 Buchstaben, Ziffern und Zeichen', '', 5),
                     ('egov', 'postfinance_hash_signature_out', 'config', 'text', 'Mindestens 16 Buchstaben, Ziffern und Zeichen', '', 6),
                     ('egov', 'postfinance_use_testserver', 'config', 'checkbox', '1', '1', 7),
-                    ('shop', 'use_js_cart', 'config', 'checkbox', '" . $useJsCart . "', '1', 47),
+                    ('shop', 'use_js_cart', 'config', 'checkbox', '0', '1', 47),
                     ('shop', 'shopnavbar_on_all_pages', 'config', 'checkbox', '1', '1', 48),
                     ('filesharing', 'permission', 'config', 'text', 'off', '', 0)
             ON DUPLICATE KEY UPDATE `section` = `section`

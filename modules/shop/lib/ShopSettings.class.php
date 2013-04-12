@@ -529,6 +529,7 @@ class ShopSettings
      */
     static function errorHandler()
     {
+        global $_CONFIGURATION;
 // ShopSettings
         SettingDb::errorHandler();
         SettingDb::init('shop', 'config');
@@ -770,7 +771,15 @@ class ShopSettings
             SettingDb::TYPE_TEXT, null, 'config');
         // New for V3.0
 //  use_js_cart (true)
-        SettingDb::add('use_js_cart', '1', ++$i,
+
+        // disable jsCart by default
+        // activate in case it was activated in config/configuration.php
+        $useJsCart = '0';
+        if (   isset($_CONFIGURATION['custom']['shopJsCart'])
+            && $_CONFIGURATION['custom']['shopJsCart'] == 'true') {
+            $useJsCart = '1';
+        }
+        SettingDb::add('use_js_cart', $useJsCart, ++$i,
             SettingDb::TYPE_CHECKBOX, '1');
 //  shopnavbar_on_all_pages (false)
         SettingDb::add('shopnavbar_on_all_pages', '0', ++$i,
