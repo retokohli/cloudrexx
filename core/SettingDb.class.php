@@ -1078,7 +1078,7 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
             'group' => array('type' => 'VARCHAR(32)', 'default' => '', 'primary' => true),
             'type' => array('type' => 'VARCHAR(32)', 'default' => 'text'),
             'value' => array('type' => 'TEXT', 'default' => ''),
-            'values' => array('type' => 'TEXT', 'notnull' => false, 'default' => null),
+            'values' => array('type' => 'TEXT', 'notnull' => true, 'default' => null),
             'ord' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0'),
         );
 // TODO: The index array structure is wrong here!

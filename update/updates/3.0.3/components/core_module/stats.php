@@ -191,42 +191,39 @@ function _statsUpdate()
         return false;
     }
 
-    // only execute this part for versions < 2.1.5
-    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.1.5')) {
-        try {
-            \Cx\Lib\UpdateUtil::table(
-                DBPREFIX.'stats_search',
-                array(
-                    'id'         => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                    'name'       => array('type' => 'VARCHAR(100)', 'binary' => true, 'default' => ''),
-                    'count'      => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                    'sid'        => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => ''),
-                    'external'   => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '0')
-                ),
-                array(
-                    'unique'     => array('fields' => array('name','external'), 'type' => 'UNIQUE')
-                )
-            );
+    try {
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'stats_search',
+            array(
+                'id'         => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'name'       => array('type' => 'VARCHAR(100)', 'binary' => true, 'default' => ''),
+                'count'      => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'sid'        => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => ''),
+                'external'   => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '0')
+            ),
+            array(
+                'unique'     => array('fields' => array('name','external'), 'type' => 'UNIQUE')
+            )
+        );
 
-            \Cx\Lib\UpdateUtil::table(
-                DBPREFIX.'stats_requests',
-                array(
-                      'id'             => array('type' => 'INT(9)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                      'timestamp'      => array('type' => 'INT(11)', 'default' => '0', 'notnull' => false, 'after' => 'id'),
-                      'pageId'         => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'timestamp'),
-                      'page'           => array('type' => 'VARCHAR(255)', 'after' => 'pageId', 'default' => '', 'binary' => true),
-                      'visits'         => array('type' => 'INT(9)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'page'),
-                      'sid'            => array('type' => 'VARCHAR(32)', 'after' => 'visits', 'default' => ''),
-                      'pageTitle'      => array('type' => 'VARCHAR(250)', 'after' => 'sid') //this field is added
-                      ),
-                array(
-                      'unique'         => array('fields' => array('page'), 'type' => 'UNIQUE')
-                      )
-            );
-        }
-        catch (\Cx\Lib\UpdateException $e) {
-            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-        }
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'stats_requests',
+            array(
+                  'id'             => array('type' => 'INT(9)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                  'timestamp'      => array('type' => 'INT(11)', 'default' => '0', 'notnull' => false, 'after' => 'id'),
+                  'pageId'         => array('type' => 'INT(6)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'timestamp'),
+                  'page'           => array('type' => 'VARCHAR(255)', 'after' => 'pageId', 'default' => '', 'binary' => true),
+                  'visits'         => array('type' => 'INT(9)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'page'),
+                  'sid'            => array('type' => 'VARCHAR(32)', 'after' => 'visits', 'default' => ''),
+                  'pageTitle'      => array('type' => 'VARCHAR(250)', 'after' => 'sid') //this field is added
+                  ),
+            array(
+                  'unique'         => array('fields' => array('page'), 'type' => 'UNIQUE')
+                  )
+        );
+    }
+    catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
         
     try {
