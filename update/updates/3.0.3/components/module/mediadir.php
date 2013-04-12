@@ -272,10 +272,20 @@ function _mediadirUpdate()
           TRUNCATE `'.DBPREFIX.'module_mediadir_rel_entry_inputfields`
       ');
 
-      \Cx\Lib\UpdateUtil::sql('
-          ALTER TABLE `'.DBPREFIX.'module_mediadir_rel_entry_inputfields`
-          ADD UNIQUE (`entry_id`, `lang_id`, `form_id`, `field_id`)
-      ');
+      \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_mediadir_rel_entry_inputfields',
+            array(
+                'entry_id'       => array('type' => 'INT(7)'),
+                'lang_id'        => array('type' => 'INT(7)', 'after' => 'entry_id'),
+                'form_id'        => array('type' => 'INT(7)', 'after' => 'lang_id'),
+                'field_id'       => array('type' => 'INT(7)', 'after' => 'form_id'),
+                'value'          => array('type' => 'longtext', 'after' => 'field_id')
+            ),
+            array(
+                'entry_id'       => array('fields' => array('entry_id','lang_id','form_id','field_id'), 'type' => 'UNIQUE'),
+                'value'          => array('fields' => array('value'), 'type' => 'FULLTEXT')
+            )
+      );
 
       \Cx\Lib\UpdateUtil::sql('
           INSERT IGNORE INTO `'.DBPREFIX.'module_mediadir_rel_entry_inputfields`
