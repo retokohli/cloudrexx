@@ -329,23 +329,11 @@ function executeContrexxUpdate() {
         $arrUpdate = $objUpdate->getLoadedVersionInfo();
         $_CONFIG['coreCmsVersion'] = $arrUpdate['cmsVersion'];
 
-        if (!in_array('coreLicense', $_SESSION['contrexx_update']['update']['done'])) {
-            $lupd = new License();
-            try {
-                $result = $lupd->update();
-            } catch (\Cx\Lib\UpdateException $e) {
-                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_LICENSE_DATA']), 'title');
-                return false;
-            }
-            // ignore error to allow offline installations
-            /*if ($result === false) {
-                if (empty($objUpdate->arrStatusMsg['title'])) {
-                    setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_LICENSE_DATA']), 'title');
-                }
-                return false;
-            } else {*/
-            $_SESSION['contrexx_update']['update']['done'][] = 'coreLicense';
-            //}
+        try {
+            $request = new \HTTP_Request2(ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/core_modules/License/versioncheck.php?force=true&silent=true', \HTTP_Request2::METHOD_POST);
+            $response = $request->send();
+        } catch (\HTTP_Request2_Exception $e) {
+            \DBG::log($e->getMessage());
         }
 
         return true;
