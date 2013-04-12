@@ -456,9 +456,9 @@ $updatesSp1ToSp2 = array(
     array (
         'table' => DBPREFIX.'module_block_rel_pages',
         'structure' => array(
-            'block_id'       => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0'),
-            'page_id'        => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0', 'after' => 'block_id'),
-            'placeholder'    => array('type' => 'ENUM(\'global\',\'direct\',\'category\')', 'notnull' => true, 'default' => 'global', 'after' => 'page_id')
+            'block_id'       => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0', 'primary' => true),
+            'page_id'        => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0', 'after' => 'block_id', 'primary' => true),
+            'placeholder'    => array('type' => 'ENUM(\'global\',\'direct\',\'category\')', 'notnull' => true, 'default' => 'global', 'after' => 'page_id', 'primary' => true)
         ),
     ),
     '
@@ -561,9 +561,9 @@ $updatesSp2ToSp3 = array(
     array (
         'table' => DBPREFIX.'module_block_rel_pages',
         'structure' => array(
-            'block_id'       => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0'),
-            'page_id'        => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0', 'after' => 'block_id'),
-            'placeholder'    => array('type' => 'ENUM(\'global\',\'direct\',\'category\')', 'notnull' => true, 'default' => 'global', 'after' => 'page_id')
+            'block_id'       => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0', 'primary' => true),
+            'page_id'        => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0', 'after' => 'block_id', 'primary' => true),
+            'placeholder'    => array('type' => 'ENUM(\'global\',\'direct\',\'category\')', 'notnull' => true, 'default' => 'global', 'after' => 'page_id', 'primary' => true)
         ),
     ),
     "INSERT INTO `".DBPREFIX."access_settings` (`key`, `value`, `status`) VALUES ('use_usernames', '0', '1') ON DUPLICATE KEY UPDATE `key` = `key`",
@@ -916,15 +916,15 @@ if ($version == 'rc1' || $version == 'rc2'
     }
     $table_name = DBPREFIX.'module_shop_payment_processors';
     if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
-        Cx\Lib\UpdateUtil::table($table_name,
+        \Cx\Lib\UpdateUtil::table($table_name,
             array(
                 'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                 'type' => array('type' => 'ENUM(\'internal\',\'external\')', 'notnull' => true, 'default' => 'internal'),
-                'name' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+                'name' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
                 'description' => array('type' => 'TEXT'),
                 'company_url' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'status' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => false, 'default' => '1'),
-                'picture' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+                'status' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1'),
+                'picture' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
             )
         );
     }
