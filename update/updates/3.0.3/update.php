@@ -1067,7 +1067,7 @@ function _readNewCssDefinitions($templateType, &$arrUpdate) {
     $styleDefinitions = preg_split('#(?:[\s]*)/[\*]*/\n(?:[\s]*)/\*\sCSS (GLOBAL\s)?DEFINITIONS FOR#', $styleDefinitions);
     $moduleStyles = array();
     $matches = array();
-    $moduleRegex = '#^ ([A-Z]*)\s?(MODULE|)(?:[\s]*)\*/\n(?:[\s]*)/[\*]*/#';
+    $moduleRegex = '#^ ([A-Z]*)\s?(?:[A-Z ]*)(?:[\s]*)\*/\n(?:[\s]*)/[\*]*/#';
     foreach ($styleDefinitions as $key=>$value) {
         // get module name from header
         if (!preg_match($moduleRegex, $value, $matches)) {
@@ -1119,7 +1119,7 @@ function _calculateNewCss(&$viewUpdateTable, &$moduleStyles, $objUpdate) {
     $version = $version['cmsVersion'];
     $additionalCss = '/***************************************************/
 /* THESE ARE THE CSS MODULE STYLES FOR ' . $version .  '       */
-/***************************************************/' . $additionalCss;
+/***************************************************/' . "\r\n\r\n" . $additionalCss;
     return $additionalCss;
 }
 
