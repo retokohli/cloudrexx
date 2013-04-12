@@ -1275,6 +1275,7 @@ function checkTimeoutLimit()
         return true;
     }
 
+    \DBG::msg('Timeout of ' . $timeoutTime . 's reached!');
     setUpdateMsg($_CORELANG['TXT_UPDATE_PROCESS_HALTED'], 'title');
     setUpdateMsg($_CORELANG['TXT_UPDATE_PROCESS_HALTED_TIME_MSG'].'<br /><br />', 'msg');
     setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_CONTINUE_UPDATE'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
