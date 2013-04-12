@@ -1066,6 +1066,10 @@ HTML;
 
 require(dirname(__FILE__).'/config.inc.php');
 \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'settings` SET `setvalue` = \'' . $arrUpdate['cmsVersion'] . '\' WHERE `setname` = \'coreCmsVersion\'');
+\Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'settings` SET `setvalue` = \'' . $arrUpdate['cmsCodeName'] . '\' WHERE `setname` = \'coreCmsCodeName\'');
+\Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'settings` SET `setvalue` = \'' . $arrUpdate['cmsReleaseDate'] . '\' WHERE `setname` = \'coreCmsReleaseDate\'');
+\Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'settings` SET `setvalue` = \'' . $arrUpdate['cmsName'] . '\' WHERE `setname` = \'coreCmsName\'');
+\Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'settings` SET `setvalue` = \'' . $arrUpdate['cmsStatus'] . '\' WHERE `setname` = \'coreCmsStatus\'');
 
 $objSettings = new \settingsManager();
 $objSettings->writeSettingsFile();
