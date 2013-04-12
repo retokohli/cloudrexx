@@ -733,21 +733,22 @@ $updatesSp2ToSp3 = array(
     ),
 );
 
-$updatesRc1ToSp2    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3);
-$updatesRc2ToSp2    = array_merge($updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3);
-$updatesStableToSp2 = array_merge($updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3);
-$updatesHotfixToSp2 = array_merge($updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3);
+$updatesRc1ToSp3    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3);
+$updatesRc2ToSp3    = array_merge($updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3);
+$updatesStableToSp3 = array_merge($updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3);
+$updatesHotfixToSp3 = array_merge($updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3);
+$updatesSp1ToSp3    = array_merge($updatesSp1ToSp2, $updatesSp2ToSp3);
 
 if ($version == 'rc1') {
-    $updates = $updatesRc1ToSp2;
+    $updates = $updatesRc1ToSp3;
 } elseif ($version == 'rc2') {
-    $updates = $updatesRc2ToSp2;
+    $updates = $updatesRc2ToSp3;
 } elseif ($version == 'stable') {
-    $updates = $updatesStableToSp2;
+    $updates = $updatesStableToSp3;
 } elseif ($version == 'hotfix') {
-    $updates = $updatesHotfixToSp2;
+    $updates = $updatesHotfixToSp3;
 } elseif ($version == 'sp1') {
-    $updates = $updatesSp1ToSp2;
+    $updates = $updatesSp1ToSp3;
 } else {
     $updates = $updatesSp2ToSp3;
 }
