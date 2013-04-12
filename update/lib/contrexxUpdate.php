@@ -451,12 +451,12 @@ var checkTimeout = function() {
                         success: parseResponse,
                         error: cxUpdateErrorHandler,
                     });
+                    request_active = false;
                 }
             }
         },
         complete: function(jqXHR, textStatus) {
-            request_active = false;
-            if (textStatus != 'timeout' && textStatus != 'error') {
+            if (request_active) {
                 // I have to do the request here, otherwise the update will loop and only check the timeout
                 $J.ajax({
                     url: 'index.php',
@@ -466,6 +466,7 @@ var checkTimeout = function() {
                     error: cxUpdateErrorHandler,
                 });
             }
+            request_active = false;
         }
     });
 }
