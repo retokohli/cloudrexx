@@ -1141,7 +1141,7 @@ function _writeNewCss($templatePath, $newCss, &$arrUpdate) {
     }
     
     // Generate include tag
-    $cssInclusion = '<link rel="stylesheet" type="text/css" href="' . ASCMS_THEMES_WEB_PATH . '/' . $templatePath . '/' . $filename . '" />'."\r\n";
+    $cssInclusion = '<link rel="stylesheet" type="text/css" href="themes/' . $templatePath . '/' . $filename . '" />'."\r\n";
     
     // Read index.html
     try {
