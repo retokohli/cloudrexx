@@ -83,7 +83,7 @@ class blockLibrary
         global $objDatabase;
 
         $catId = intval($catId);
-        $where = array();
+        $where = '';
 
         if ($catId > 0) {
             $where = 'WHERE `cat` = '.$catId;
