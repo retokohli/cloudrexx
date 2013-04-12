@@ -806,7 +806,7 @@ if ($fp !== false) {
 // add missing "remove page" log entries
 $sqlQuery = '
     SELECT
-        MAX(l1.version),
+        MAX(l1.version) as `version`,
         l1.object_id
     FROM
         `' . DBPREFIX . 'log_entry` AS l1
