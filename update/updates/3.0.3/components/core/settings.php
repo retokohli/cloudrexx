@@ -619,7 +619,7 @@ function _updateSettingsTable($setId, $arrSetting)
                     // we must set coreCmsVersion to the currently installed version,
                     // otherwise if we would set it to the new version,
                     // the update will be stopped before getting everything done
-                    if ($value == 'coreCmsVersion') {
+                    if ($arrSetting['setname'] == 'coreCmsVersion') {
                         $value = $_CONFIG['coreCmsVersion'];
                     }
 
