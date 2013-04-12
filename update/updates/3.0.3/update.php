@@ -289,6 +289,32 @@ function executeContrexxUpdate() {
             setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/update3.php'));
             return false;
         }
+
+        $result = _updateModuleRepository();
+        if ($result === false) {
+            DBG::msg('unable to update module repository');
+            if (empty($objUpdate->arrStatusMsg['title'])) {
+                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_REPOSITORY']), 'title');
+            }
+            return false;
+        } else {
+            if (_updateModulePages($viewUpdateTable) === false) {
+                if (empty($objUpdate->arrStatusMsg['title'])) {
+                    DBG::msg('unable to update module templates');
+                    setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_TEMPLATES']), 'title');
+                }
+                return false;
+            } else {
+                if (!in_array('moduleStyles', $_SESSION['contrexx_update']['update']['done'])) {
+                    if (_updateCssDefinitions($viewUpdateTable, $objUpdate) === false) {
+                        if (empty($objUpdate->arrStatusMsg['title'])) {
+                            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_TEMPLATES']), 'title');
+                        }
+                        return false;
+                    }
+                }
+            }
+        }
         
         if (!createHtAccess()) {
             $webServerSoftware = !empty($_SERVER['SERVER_SOFTWARE']) && stristr($_SERVER['SERVER_SOFTWARE'], 'apache') ? 'apache' : (stristr($_SERVER['SERVER_SOFTWARE'], 'iis') ? 'iis' : '');
