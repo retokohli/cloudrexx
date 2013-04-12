@@ -1094,7 +1094,7 @@ class JsonPage implements JsonAdapter {
                 $target = str_replace(array('[[', ']]'), array('{', '}'), $target);
                 \LinkGenerator::parseTemplate($target);
             } elseif (strpos($target, ASCMS_PATH_OFFSET) === false) {
-                if ($target[0] !== '/') {
+                if (!isset($target[0]) || $target[0] !== '/') {
                     $target = '/' . $target;
                 }
                 $target = ASCMS_PATH_OFFSET . $target;
