@@ -909,6 +909,7 @@ table tr.reset td {
     float: left;
     width: auto;
     list-style-type: none;
+    height: 24px;
 }
 
 #tabmenu li a,
@@ -922,7 +923,6 @@ table tr.reset td {
     padding: 0 9px;
     border-top: 1px solid #e5e5e5;
     border-right: 1px solid #e5e5e5;
-    border-bottom: 1px solid #0a85c8;
     border-left: 1px solid #e5e5e5;
     margin: 0 10px 0 0;
     font-weight: normal;
@@ -938,7 +938,6 @@ table tr.reset td {
     background: #0a85c8;
     border-top: 1px solid #0a85c8;
     border-right: 1px solid #0a85c8;
-    border-bottom: 1px solid #0a85c8;
     border-left: 1px solid #0a85c8;
     color: #ffffff;
 }

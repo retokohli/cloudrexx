@@ -305,6 +305,7 @@
     //
 </script>
 <form name="news" method="post" action="index.php?cmd=news&amp;act={NEWS_FORM_ACTION}" onSubmit="newsSwitchLang();SelectAllList(document.news.elements['newsTeaserFramesAsso[]']);SelectAllList(document.news.elements['news_read_access_associated_groups[]']);SelectAllList(document.news.elements['news_modify_access_associated_groups[]']);">
+    <!-- BEGIN news_language_checkboxes -->
     <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
         <tr>
             <th colspan="4">{TXT_LANGUAGE}</th>
@@ -317,6 +318,7 @@
         </tr>
     </table>
     <br />
+    <!-- END news_language_checkboxes -->
     <ul id="tabmenu">
         <li><a id="messageTab_news1" class="active" href="javascript:{}" onclick="selectTab('news1')" title="{TXT_NEWS_BASIC_DATA}">{TXT_NEWS_BASIC_DATA}</a></li>
         <li><a id="messageTab_news2" href="javascript:{}" onclick="selectTab('news2')" title="{TXT_NEWS_MORE_OPTIONS}">{TXT_NEWS_MORE_OPTIONS}</a></li>
@@ -328,7 +330,7 @@
         <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
             <tr>
                 <th valign="top" colspan="2">
-                    <div align="left">{TXT_NEWS_MESSAGE}
+                    <div align="left">{TXT_NEWS_BASIC_DATA}
                         <input type="hidden" name="newsFormAction" value="{NEWS_STORED_FORM_ACTION}" />
                         <input type="hidden" name="newsId" value="{NEWS_STORED_ID}" />
                         <input type="hidden" name="newsTopTitle" value="{NEWS_TOP_TITLE}" />
@@ -336,67 +338,37 @@
                 </th>
             </tr>
             <tr class="row1">
-                <td>{TXT_ACTIVE}</td>
-                <td>
-                    <input type="checkbox" name="status" value="1" {NEWS_STATUS} />
+                <td width="12%"><label for="news_status">{TXT_ACTIVE}</label></td>
+                <td width="88%">
+                    <input id="news_status" type="checkbox" name="status" value="1" {NEWS_STATUS} />
                 </td>
             </tr>
             <tr class="{NEWS_FORM_CAT_ROW}">
-                <td nowrap="nowrap">{TXT_CATEGORY}</td>
+                <td nowrap="nowrap"><label for="news_category">{TXT_CATEGORY}</label></td>
                 <td>
-                    <select name="newsCat">
+                    <select id="news_category" name="newsCat">
                         {NEWS_CAT_MENU}
                     </select>
                 </td>
             </tr>
             {NEWS_TYPE_MENU}
             <tr class="row1">
-                <td nowrap="nowrap">{TXT_NEWS_PUBLISHER}</td>
-                <td nowrap="nowrap">
-                    <input class="live-search-user-id" id="newsPublisherId" type="hidden" name="newsPublisherId" value="{NEWS_PUBLISHER_ID}" />
-                    <input class="live-search-user-name" id="newsPublisherName" type="hidden" name="newsPublisherName" value="{NEWS_PUBLISHER_NAME}" placeholder="{TXT_CORE_SEARCH_USER}..." style="width: 277px;" />
-                </td>
-            </tr>
-            <tr class="row2">
-                <td nowrap="nowrap">{TXT_NEWS_AUTHOR}</td>
-                <td nowrap="nowrap">
-                    <input class="live-search-user-id" id="newsAuthorId" type="hidden" name="newsAuthorId" value="{NEWS_AUTHOR_ID}" />
-                    <input class="live-search-user-name" id="newsAuthorName" type="hidden" name="newsAuthorName" value="{NEWS_AUTHOR_NAME}" placeholder="{TXT_CORE_SEARCH_USER}..." style="width: 277px;" />
-                </td>
-            </tr>            
-            <tr class="row1">
-                <td nowrap="nowrap">{TXT_DATE}</td>
-                <td><input type="text" name="newsDate" value="{NEWS_CREATE_DATE}" style="width:300px;" /></td>
-            </tr>
-            <tr class="row2">
-                <td nowrap="nowrap" valign="top" style="padding-top: 6px;" width="12%">{TXT_SCHEDULED_PUBLICATION}</td>
-                <td nowrap="nowrap" width="88%">                    
-                    <input type="checkbox" name="newsScheduled" value="1" {NEWS_SCHEDULED} onClick="disableDate()" />
-                    <div id="newsDate" style="{NEWS_SCHEDULED_DISPLAY}">
-                        {TXT_STARTDATE}:
-                        <input type="text" name="startDate" size="16" maxlength="19" value="{NEWS_STARTDATE}" />
-                        &nbsp;&nbsp; {TXT_ENDDATE}:
-                        <input type="text" name="endDate" size="16" maxlength="19" value="{NEWS_ENDDATE}" />                        
-                    </div>
-                </td>
-            </tr>
-            <tr class="row1">
                 <td nowrap="nowrap">{TXT_NEWS_MESSAGE_TYPE}</td>
                 <td>
-                    <input type="radio" name="newsTypeRadio" value="content" onclick="modusSelection('news_type_content');" {NEWS_TYPE_CHECKED_CONTENT} /><label for="newsTypeRadio">{TXT_NEWS_TYPE_DEFAULT}</label>
-                    <input type="radio" name="newsTypeRadio" value="redirect" onclick="modusSelection('news_type_redirect');" {NEWS_TYPE_CHECKED_REDIRECT} /><label for="newsTypeRadio">{TXT_NEWS_TYPE_REDIRECT}</label>
+                    <input type="radio" name="newsTypeRadio" id="news_type_radio_content" value="content" onclick="modusSelection('news_type_content');" {NEWS_TYPE_CHECKED_CONTENT} /><label for="news_type_radio_content">{TXT_NEWS_TYPE_DEFAULT}</label>
+                    <input type="radio" name="newsTypeRadio" id="news_type_radio_redirect" value="redirect" onclick="modusSelection('news_type_redirect');" {NEWS_TYPE_CHECKED_REDIRECT} /><label for="news_type_radio_redirect">{TXT_NEWS_TYPE_REDIRECT}</label>
                 </td>
             </tr>
         </table>
         <br />
-        <ul class="tabmenu langtabs">
+        <ul class="tabmenu langtabs" style="display:{NEWS_LANG_TAB_DISPLAY_STYLE};">
             <!-- BEGIN news_lang_list -->
             <li style="display:{NEWS_LANG_DISPLAY_STYLE};"><a href="javascript:void(0);" class="langtab {NEWS_LANG_DISPLAY_STATUS}" onclick="newsSwitchLang({NEWS_LANG_ID})" title="{NEWS_LANG_NAME}" id="news_lang_tab_{NEWS_LANG_ID}">{NEWS_LANG_NAME}</a>
-                <!-- END news_lang_list -->
+            <!-- END news_lang_list -->
         </ul>
         <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
             <tr>
-                <th class="sectionTitle" colspan="2">{TXT_TITLE} (<span>{NEWS_DEFAULT_LANG}</span>)</th>
+                <th class="sectionTitle" colspan="2">{TXT_NEWS_MESSAGE}</th>
             </tr>
             <tr class="row1">
                 <td width="12%" nowrap="nowrap">{TXT_TITLE}</td>
@@ -406,20 +378,14 @@
                     <!-- END news_title_list -->
                 </td>
             </tr>
-        </table>
-        <br />
-        <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
-            <tr>
-                <th class="sectionTitle">{TXT_NEWS_TEASER_TEXT} (<span>{NEWS_DEFAULT_LANG}</span>)</th>
-            </tr>
-            <tr class="row1">
+            <tr class="row2">
+                <td class="sectionTitle">{TXT_NEWS_TEASER_TEXT}</td>
                 <td>
                     <!-- BEGIN news_teaser_text_list -->
                     <div style="display:{NEWS_TITLE_DISPLAY}">
                         <textarea name="newsTeaserText[{NEWS_LANG_ID}]" id="newsTeaserText[{NEWS_LANG_ID}]" onkeyup="document.getElementById('newsTeaserTextCharCount_{NEWS_LANG_ID}').childNodes[0].nodeValue=this.value.length" style="width:100%; height:100px; vertical-align:top; float:left;">{NEWS_TEASER_TEXT}</textarea><br />
                         <div style="padding-right:50px; float:left;">&nbsp;{TXT_NUMBER_OF_CHARS}:&nbsp;<div id="newsTeaserTextCharCount_{NEWS_LANG_ID}" style="display:inline;">{NEWS_TEASER_TEXT_LENGTH}</div></div>
                         <div>&nbsp;<a href="javascript:{}" onclick="newsGetFileBrowser('newsTeaserText[{NEWS_LANG_ID}]', 'link')">{TXT_NEWS_INSERT_LINK}</a></div>
-                    </div>
                     </div>
                     <!-- END news_teaser_text_list -->
                 </td>
@@ -429,8 +395,8 @@
         <div id="news_type_content" {NEWS_TYPE_SELECTION_CONTENT}>
              <div id="news_content" style="{NEWS_TYPE_MSG_STYLE}">
                 <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
-                    <tr>
-                        <th class="sectionTitle">{TXT_NEWS_NEWS_CONTENT} (<span>{NEWS_DEFAULT_LANG}</span>)</th>
+                    <tr class="row3">
+                        <td class="sectionTitle">{TXT_NEWS_NEWS_CONTENT}</td>
                     </tr>
                     <tr class="row1 reset">
                         <td valign="top">
@@ -449,8 +415,8 @@
                     <th valign="top" colspan="2">{TXT_NEWS_TYPE_REDIRECT}</th>
                 </tr>
                 <tr class="row1">
-                    <td width="12%" nowrap="nowrap">{TXT_LINK}</td>
-                    <td width="88%"><input type="text" name="newsRedirect" id="newsRedirectLink" value="{NEWS_REDIRECT}" style="width:400px;" />&nbsp;<input type="button" value="{TXT_BROWSE}" onClick="newsGetFileBrowser('newsRedirectLink', 'webpages')" />&nbsp;<span class="tooltip-trigger icon-warning"></span><span class="tooltip-message">{TXT_NEWS_TYPE_REDIRECT_HELP}</span></td>
+                    <td width="12%" nowrap="nowrap"><label for="news_redirect">{TXT_LINK}</label></td>
+                    <td width="88%"><input type="text" name="newsRedirect" id="news_redirect" value="{NEWS_REDIRECT}" style="width:400px;" />&nbsp;<input type="button" value="{TXT_BROWSE}" onClick="newsGetFileBrowser('news_redirect', 'webpages')" />&nbsp;<span class="tooltip-trigger icon-warning"></span><span class="tooltip-message">{TXT_NEWS_TYPE_REDIRECT_HELP}</span></td>
                 </tr>
             </table>
         </div>
@@ -463,26 +429,65 @@
             <tr>
                 <th colspan="2">{TXT_NEWS_MORE_OPTIONS}</th>
             </tr>
-            <tr class="row1">
-                <td width="12%" height="20" nowrap="nowrap">{TXT_EXTERNAL_SOURCE}</td>
-                <td><input type="text" name="newsSource" style="width: 400px;" value="{NEWS_SOURCE}" maxlength="250" /></td>
-            </tr>
-            <tr class="row2">
-                <td width="12%" height="20" nowrap="nowrap">{TXT_LINK} #1</td>
-                <td><input type="text" name="newsUrl1" style="width: 400px;" value="{NEWS_URL1}" maxlength="250" /></td>
+            <tr class="row3">
+                <td colspan="2">{TXT_PUBLISHING}</td>
             </tr>
             <tr class="row1">
-                <td width="12%" height="20" nowrap="nowrap">{TXT_LINK} #2</td>
-                <td><input type="text" name="newsUrl2" style="width: 400px;" value="{NEWS_URL2}" maxlength="250" /></td>
-            </tr>            
-            <!-- BEGIN news_allow_comments_option -->
-            <tr class="row2">
-                <td nowrap="nowrap">{TXT_NEWS_ALLOW_COMMENTS}</td>
-                <td>
-                    <input type='checkbox' name='allowComment' value='1' {NEWS_COMMENT_CHECKED} />
+                <td nowrap="nowrap">{TXT_NEWS_PUBLISHER}</td>
+                <td nowrap="nowrap">
+                    <input class="live-search-user-id" id="newsPublisherId" type="hidden" name="newsPublisherId" value="{NEWS_PUBLISHER_ID}" />
+                    <input class="live-search-user-name" id="newsPublisherName" type="hidden" name="newsPublisherName" value="{NEWS_PUBLISHER_NAME}" placeholder="{TXT_CORE_SEARCH_USER}..." style="width: 277px;" />
                 </td>
             </tr>
-            <!-- END news_allow_comments_option -->            
+            <tr class="row2">
+                <td nowrap="nowrap">{TXT_NEWS_AUTHOR}</td>
+                <td nowrap="nowrap">
+                    <input class="live-search-user-id" id="newsAuthorId" type="hidden" name="newsAuthorId" value="{NEWS_AUTHOR_ID}" />
+                    <input class="live-search-user-name" id="newsAuthorName" type="hidden" name="newsAuthorName" value="{NEWS_AUTHOR_NAME}" placeholder="{TXT_CORE_SEARCH_USER}..." style="width: 277px;" />
+                </td>
+            </tr>
+            <tr class="row1">
+                <td nowrap="nowrap"><label for="news_date">{TXT_DATE}</label></td>
+                <td><input type="text" name="newsDate" id="news_date" value="{NEWS_CREATE_DATE}" style="width:300px;" /></td>
+            </tr>
+            <tr class="row2">
+                <td nowrap="nowrap" valign="top" width="12%"><label for="news_scheduled">{TXT_SCHEDULED_PUBLICATION}</label></td>
+                <td nowrap="nowrap" width="88%">
+                    <input type="checkbox" name="newsScheduled" id="news_scheduled" value="1" {NEWS_SCHEDULED} onClick="disableDate()" />
+                    <div id="newsDate" style="{NEWS_SCHEDULED_DISPLAY}">
+                        {TXT_STARTDATE}:
+                        <input type="text" name="startDate" size="16" maxlength="19" value="{NEWS_STARTDATE}" />
+                        &nbsp;&nbsp; {TXT_ENDDATE}:
+                        <input type="text" name="endDate" size="16" maxlength="19" value="{NEWS_ENDDATE}" />
+                    </div>
+                </td>
+            </tr>
+            <!-- BEGIN news_allow_comments_option -->
+            <tr class="row1">
+                <td nowrap="nowrap"><label for="news_comments">{TXT_NEWS_ALLOW_COMMENTS}</label></td>
+                <td>
+                    <input type='checkbox' id="news_comments" name='allowComment' value='1' {NEWS_COMMENT_CHECKED} />
+                </td>
+            </tr>
+            <!-- END news_allow_comments_option -->
+        </table>
+        <br />
+        <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+            <tr class="row3">
+                <td colspan="2">{TXT_EXTERNAL_SOURCE}</td>
+            </tr>
+            <tr class="row1">
+                <td width="12%" height="20" nowrap="nowrap"><label for="news_external_source">{TXT_EXTERNAL_SOURCE}</label></td>
+                <td><input type="text" name="newsSource" id="news_external_source" style="width: 400px;" value="{NEWS_SOURCE}" maxlength="250" /></td>
+            </tr>
+            <tr class="row2">
+                <td width="12%" height="20" nowrap="nowrap"><label for="news_link_1">{TXT_LINK} #1</label></td>
+                <td><input type="text" name="newsUrl1" id="news_link_1" style="width: 400px;" value="{NEWS_URL1}" maxlength="250" /></td>
+            </tr>
+            <tr class="row1">
+                <td width="12%" height="20" nowrap="nowrap"><label for="news_link_2">{TXT_LINK} #2</label></td>
+                <td><input type="text" name="newsUrl2" id="news_link_2" style="width: 400px;" value="{NEWS_URL2}" maxlength="250" /></td>
+            </tr>
         </table>
         <br />
     </div>
@@ -526,16 +531,16 @@
             </tr>
             <!-- END newsTeaserOptions -->
             <tr class="row1">
-                <td width="12%" nowrap="nowrap">{TXT_TEASER_SHOW_NEWS_LINK}</td>
-                <td colspan="3"><input type="checkbox" name="newsTeaserShowLink" value="1" {NEWS_TEASER_SHOW_LINK_CHECKED} /></td>
+                <td width="12%" nowrap="nowrap"><label for="news_teaser_show_link">{TXT_TEASER_SHOW_NEWS_LINK}</label></td>
+                <td colspan="3"><input type="checkbox" name="newsTeaserShowLink" id="news_teaser_show_link" value="1" {NEWS_TEASER_SHOW_LINK_CHECKED} /></td>
             </tr>
             <tr class="row2">
-                <td width="12%" nowrap="nowrap">{TXT_IMAGE}</td>
-                <td colspan="3"><input type="text" name="newsTeaserImagePath" id="newsTeaserImagePath" style="width: 400px;" value="{NEWS_TEASER_IMAGE_PATH}" />&nbsp;<input type="button" value="{TXT_BROWSE}" onClick="newsGetFileBrowser('newsTeaserImagePath', 'image')" /></td>
+                <td width="12%" nowrap="nowrap"><label for="news_image">{TXT_IMAGE}</label></td>
+                <td colspan="3"><input type="text" name="newsTeaserImagePath" id="news_image" style="width: 400px;" value="{NEWS_TEASER_IMAGE_PATH}" />&nbsp;<input type="button" value="{TXT_BROWSE}" onClick="newsGetFileBrowser('news_image', 'image')" /></td>
             </tr>
             <tr class="row1">
-                <td width="12%" nowrap="nowrap">{TXT_NEWS_THUMBNAIL}</td>
-                <td colspan="3"><input type="text" name="newsTeaserImageThumbnailPath" id="newsTeaserImageThumbnailPath" style="width: 400px;" value="{NEWS_TEASER_IMAGE_THUMBNAIL_PATH}" />&nbsp;<input type="button" value="{TXT_BROWSE}" onClick="newsGetFileBrowser('newsTeaserImageThumbnailPath', 'image')" /></td>
+                <td width="12%" nowrap="nowrap"><label for="news_thumbnail">{TXT_NEWS_THUMBNAIL}</label></td>
+                <td colspan="3"><input type="text" name="newsTeaserImageThumbnailPath" id="news_thumbnail" style="width: 400px;" value="{NEWS_TEASER_IMAGE_THUMBNAIL_PATH}" />&nbsp;<input type="button" value="{TXT_BROWSE}" onClick="newsGetFileBrowser('news_thumbnail', 'image')" /></td>
             </tr>
         </table>
         <br />

@@ -79,7 +79,7 @@ $J(function(){
       <td valign="top" nowrap="nowrap" width="5%"> <b>{TXT_NEWS_COMMENTS}</b></td>
         <!-- END news_comments_label -->
       <td valign="top" nowrap="nowrap" width="5%"> <b>{TXT_LAST_EDIT}</b></td>
-      <td valign="top" nowrap="nowrap" width="2%"><div align="right"><b>{TXT_ACTION}</b></div></td>
+      <td valign="top" nowrap="nowrap" width="4%"><div align="right"><b>{TXT_ACTION}</b></div></td>
     </tr>
     <!-- BEGIN newsrow -->
       <tr class="{NEWS_CLASS}">
@@ -106,6 +106,9 @@ $J(function(){
         <td nowrap="nowrap">{NEWS_CHANGELOG}&nbsp;</td>
         <td nowrap="nowrap">
           <div align="right">
+            <!-- BEGIN news_preview -->
+            <a href="{NEWS_PREVIEW_LINK_HREF}" target="_blank" title="{TXT_NEWS_PREVIEW}"><img src="images/icons/preview.png" border="0" alt="{TXT_NEWS_PREVIEW}"></a>
+            <!-- END news_preview -->
             <a href="?cmd=news&amp;act=edit&amp;newsId={NEWS_ID}" title="{TXT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{TXT_EDIT}" /></a>
             <a href="?cmd=news&amp;act=copy&amp;newsId={NEWS_ID}" title="{TXT_COPY}"><img src="images/icons/copy.gif" border="0" width="16" height="16" alt="{TXT_COPY}" /></a>
             <a href="javascript:deletePage({NEWS_ID})" title="{TXT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_DELETE}" /></a>
