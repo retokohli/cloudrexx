@@ -1014,6 +1014,8 @@ CREATE TABLE `contrexx_module_crm_customer_comment` (
   `date` date NOT NULL,
   `comment` text,
   `added_date` datetime default NULL,
+  `updated_by` int(11) NOT NULL,
+  `updated_on` datetime NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `customer_id` (`customer_id`)
 ) ENGINE=MyISAM ;
@@ -1131,7 +1133,7 @@ CREATE TABLE `contrexx_module_crm_deals` (
   `website` int(11) NOT NULL,
   `customer` int(11) NOT NULL,
   `customer_contact` int(11) NOT NULL,
-  `quoted_price` varchar(100) NOT NULL default '0.00',
+  `quoted_price` decimal(10,2) NOT NULL default '0.00',
   `quote_number` varchar(256) NOT NULL,
   `assigned_to` int(11) NOT NULL,
   `due_date` date default NULL,
