@@ -9,10 +9,10 @@
     RewriteBase   /trunk
         
     # Remove trailing slash for old Apaches (newer ones stop rewriting when result matches request)
-    #RewriteRule ^(\w\w\/)?(_meta|admin|cache|cadmin|changelog|config|core|core_modules|customizing|feed|images|installer|lang|lib|media|model|modules|testing|themes|tmp|update|webcam|favicon.ico)\/$ $2 [L,QSA]
+    #RewriteRule ^(\w\w\/)?(_meta|admin|cache|changelog|config|core|core_modules|customizing|feed|images|installer|lang|lib|media|model|modules|testing|themes|tmp|update|webcam|favicon.ico)\/$ $2 [L,QSA]
 
     # Folders that may be accessed by page requests are NO ALIASES by design
-    RewriteRule ^(\w\w\/)?(_meta|admin|cache|cadmin|changelog|config|core|core_modules|customizing|feed|images|installer|lang|lib|media|model|modules|testing|themes|tmp|update|webcam|favicon.ico)(\/|$)(.*) $2$3$4 [L,QSA]
+    RewriteRule ^(\w\w\/)?(_meta|admin|cache|changelog|config|core|core_modules|customizing|feed|images|installer|lang|lib|media|model|modules|testing|themes|tmp|update|webcam|favicon.ico)(\/|$)(.*) $2$3$4 [L,QSA]
 
     # Resolve language specific sitemap.xml
     RewriteRule ^(\w+)\/sitemap.xml sitemap_$1.xml [L,NC]

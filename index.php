@@ -72,7 +72,7 @@ if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
 /**
  * This is the old fashion way, requiring two separate files for front- and backend
  */
-///*
+/*
 if ($customizing && file_exists(ASCMS_CUSTOMIZING_PATH.'/core/initFrontend.php')) {
     require_once(ASCMS_CUSTOMIZING_PATH.'/core/initFrontend.php');
 } else {
@@ -85,7 +85,7 @@ if ($customizing && file_exists(ASCMS_CUSTOMIZING_PATH.'/core/initFrontend.php')
  * 2. Uncomment the code below (add // on line 88)
  * 3. Remove cadmin from whitelist in .htaccess
  */
-/*
+///*
 // Load the Contrexx class (from customizing if enabled)
 if ($customizing && file_exists(ASCMS_CUSTOMIZING_PATH.'/core/Cx.class.php')) {
     require_once(ASCMS_CUSTOMIZING_PATH.'/core/Cx.class.php');
@@ -93,6 +93,7 @@ if ($customizing && file_exists(ASCMS_CUSTOMIZING_PATH.'/core/Cx.class.php')) {
     require_once(ASCMS_CORE_PATH.'/Cx.class.php');
 }
 // load in frontend mode as long as anything else than /cadmin is requested:
+// @todo improve this rule, use constants and move to Cx class:
 $frontend = $_GET['__cap'] != ASCMS_PATH_OFFSET.'/cadmin/index.php';
 
 // Initialize the Contrexx class (we don't use the constructor in order to avoid namespaces:
