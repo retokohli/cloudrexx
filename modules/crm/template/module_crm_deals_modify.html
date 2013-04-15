@@ -27,8 +27,8 @@
                 $J("#title").css("border","1px solid red");
                 $J("#title").val("");                
             }            
-            if ($J('#domainName').length && $J.trim($J('#domainName')) == "") {
-                errChk = 1;
+            if ($J('#domainName').length && $J.trim($J('#domainName').val()) == "") {
+                errChk = 1;                
                 document.getElementById("domainName").style.border = "1px solid red";
                 document.getElementById("domainName").value = "";
             }
@@ -40,8 +40,7 @@
                 document.getElementById("customer_name").value = "";
             }
             var project_volume = $J('#quotedPrice').val();
-            //if (project_volume == "" || /^\d{1,8}(\.\d{1,2})?$/.test(project_volume) == false) {
-            if (project_volume == "") {
+            if (project_volume == "" || /^[0-9']+(\.\d{1,2})?$/.test(project_volume) == false) {
                 errChk = 1;
                 $J('#quotedPrice').css("border", "1px solid red");
             }
@@ -286,7 +285,7 @@
                     </td>
                 </tr>
                 <tr class="row1">
-                    <td>{TXT_TXT_CRM_PROJECT_STATUS}&nbsp;<font color="red">*</font></td>
+                    <td>{TXT_CRM_PROJECT_STATUS}&nbsp;<font color="red">*</font></td>
                     <td colspan="2"> <select name="status" id="status" style="width: 265px;">
                             <!-- BEGIN ProjStatus -->
                             <option value="{TXT_PROJECT_PROJECTSTATUSID}" {TXT_STATUSSELECTEDPLANNED}>{TXT_PROJECT_PROJECTSTATUS}</option>
@@ -336,6 +335,7 @@
         </table>
         <br>
         <input type="hidden" name="redirect" value="{CRM_REDIRECT_LINK}" />
+        <input type="button" value="{TXT_CRM_BACK}" onclick="window.location='./index.php?cmd={MODULE_NAME}{CRM_BACK_LINK}&csrf='+cx.variables.get('csrf', 'contrexx')" />
         <input type="submit" name="save_deal" value="{TXT_CRM_SAVE}" />
     </form>
 </div>

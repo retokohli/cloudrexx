@@ -1,3 +1,9 @@
+.arrow-down {
+    background: url("../../../../cadmin/images/icons/advancedsearch-down.png") no-repeat scroll right 3px #FFFFFF;
+}
+.arrow-up {
+    background: url("../../../../cadmin/images/icons/advancedsearch-up.png") no-repeat scroll right 3px #FFFFFF;
+}
 .crm-watermark {
     color: #AAAAAA;
 }
@@ -113,16 +119,16 @@ table#mapCSVColumn tbody tr td.not_match {background-color: whiteSmoke;}
     min-height: 40px;
 }
 .notesItem {
-    background: url('../../../../cadmin/images/icons/crm_panel_note.png') no-repeat 2px 3px  #fff;
+    background: url('../../../../cadmin/images/icons/crm_panel_note.png') no-repeat 2px 3px  transparent;
 }
 .notesItem_73 {
-    background: url('../../../../cadmin/images/icons/crm_panel_email.png') no-repeat 2px 3px  #fff;
+    background: url('../../../../cadmin/images/icons/crm_panel_email.png') no-repeat 2px 3px  transparent;
 }
 .notesItem_74 {
-    background: url('../../../../cadmin/images/icons/crm_panel_call.png') no-repeat 2px 3px  #fff;
+    background: url('../../../../cadmin/images/icons/crm_panel_call.png') no-repeat 2px 3px  transparent;
 }
 .notesItem_75 {
-    background: url('../../../../cadmin/images/icons/crm_panel_meeting.png') no-repeat 2px 3px  #fff;
+    background: url('../../../../cadmin/images/icons/crm_panel_meeting.png') no-repeat 2px 3px  transparent;
 }
 .taskTypeItem {
     background-image: url('../../../../images/modules/crm/task_default.png');

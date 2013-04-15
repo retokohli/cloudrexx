@@ -41,5 +41,5 @@
     </tbody>
 </table>
 <br>
-<a href="./index.php?cmd=crm&act=deals&tpl=manage&{CSRF_PARAM}&customer={CRM_CUSTOMER_ID}{CRM_REDIRECT_LINK}" title="{TXT_CRM_ADD_OPPURTUNITY}"><input type="button" name="{TXT_CRM_ADD_OPPURTUNITY}" value="{TXT_CRM_ADD_OPPURTUNITY}" /></a>
+<input type="button" name="{TXT_CRM_ADD_OPPURTUNITY}" value="{TXT_CRM_ADD_OPPURTUNITY}" onclick="window.location='./index.php?cmd=crm&act=deals&tpl=manage&{CSRF_PARAM}&customer={CRM_CUSTOMER_ID}{CRM_REDIRECT_LINK}&csrf='+cx.variables.get('csrf', 'contrexx')" />
 <!-- END skipAjaxBlock1 -->
