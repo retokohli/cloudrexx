@@ -18,7 +18,7 @@ require_once CRM_MODULE_LIB_PATH . '/javascript.class.php';
 require_once CRM_MODULE_LIB_PATH . '/sort.class.php';
 require_once CRM_MODULE_LIB_PATH . '/Csv_bv.class.php';
 
-class CRM extends CrmLibrary {
+class CrmManager extends CrmLibrary {
     /**
      * Template object
      *
@@ -52,7 +52,7 @@ class CRM extends CrmLibrary {
     /**
      * Constructor
      */
-    function Crm()
+    function CrmManager()
     {
         $this->__construct();
     }
@@ -65,10 +65,9 @@ class CRM extends CrmLibrary {
      */
     function __construct()
     {
-        die('asdasdasd');
-
         global $objTemplate, $_ARRAYLANG, $objJs;
         parent::__construct();
+        
         $objJs = new Javascript();       
         $this->objCSVimport = new CSVimport();        
         // $objJs = new Javascript();
@@ -125,7 +124,7 @@ class CRM extends CrmLibrary {
     {
 
         global $objTemplate, $_ARRAYLANG;
-die('caught');
+
         if (!isset($_GET['act'])) {
             $_GET['act']='';
         }
