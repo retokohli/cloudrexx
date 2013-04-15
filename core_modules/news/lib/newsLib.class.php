@@ -317,7 +317,7 @@ class newsLibrary
         $arrNewLocales = array_diff(array_keys($newLangData['title']), array_keys($oldLangData));
         $arrRemovedLocales = array_diff(array_keys($oldLangData), array_keys($newLangData['title']));
         $arrUpdatedLocales = array_intersect(array_keys($newLangData['title']), array_keys($oldLangData));
-        
+
         foreach ($arrNewLocales as $langId) {
             if ($objDatabase->Execute("INSERT INTO `".DBPREFIX."module_news_locale` (`lang_id`, `news_id`, `is_active`,  `title`, `text`, `teaser_text`)
                     VALUES ("   . intval($langId) . ", "
@@ -335,7 +335,7 @@ class newsLibrary
             }
         }
         foreach ($arrUpdatedLocales as $langId) {
-            $newLangData['active'][$langId] = isset($newLangData['active'][$langId]) ? $newLangData['active'][$langId] : '0';
+            $newLangData['active'][$langId] = isset($newLangData['active'][$langId]) ? 1 : 0;
             if ($newLangData['active'][$langId] != $oldLangData[$langId]['active']
             || $newLangData['title'][$langId] != $oldLangData[$langId]['title']
             || $newLangData['text'][$langId] != $oldLangData[$langId]['text']
@@ -515,7 +515,7 @@ class newsLibrary
                 if ($objDatabase->Execute("INSERT INTO `".DBPREFIX."module_news_locale` (`lang_id`, `news_id`, `is_active`, `title`, `text`, `teaser_text`)
                         VALUES ("   . intval($langId) . ", "
                                     . $newsId . ", '"
-                                    . (isset($newLangData['active'][$langId]) ? contrexx_input2db($newLangData['active'][$langId]) : "0") . "', '"
+                                    . (isset($newLangData['active'][$langId]) ? 1 : 0) . "', '"
                                     . (isset($newLangData['title'][$langId]) ? contrexx_input2db($newLangData['title'][$langId]) : "") . "', '"
                                     . (isset($newLangData['text'][$langId]) ? $this->filterBodyTag(contrexx_input2db($newLangData['text'][$langId])) : "") . "', '"
                                     . (isset($newLangData['teaser_text'][$langId]) ? contrexx_input2db($newLangData['teaser_text'][$langId]) : "") . "')") === false) {

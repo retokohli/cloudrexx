@@ -470,6 +470,8 @@ class newsManager extends newsLibrary {
             }
         }
 
+        $activeFrontendLangIds = array_keys(\FWLanguage::getActiveFrontendLanguages());
+
         // set archive list
         $query = "SELECT n.id AS id,
                          n.date AS date,
@@ -504,15 +506,6 @@ class newsManager extends newsLibrary {
             $arrNews = array();
             
             while (!$objResult->EOF) {
-                $arrNews[$objResult->fields['id']] = array(
-                  'date'               => $objResult->fields['date'],
-                  'changelog'          => $objResult->fields['changelog'],
-                  'status'             => $objResult->fields['status'],
-                  'validated'          => $objResult->fields['validated'],
-                  'frontend_access_id' => $objResult->fields['frontend_access_id'],
-                  'userid'             => $objResult->fields['userid']
-                );
-
                 $objLangResult = $objDatabase->Execute('SELECT nl.title as title,
                          nl.lang_id as langid,
                          ncl.name AS catname,
@@ -520,19 +513,29 @@ class newsManager extends newsLibrary {
                          FROM '.DBPREFIX.'module_news_locale AS nl
                          LEFT JOIN '.DBPREFIX.'module_news_categories_locale AS ncl ON ncl.category_id='.$objResult->fields['catid'].'
                          LEFT JOIN '.DBPREFIX.'module_news_types_locale AS ntl ON ntl.type_id='.$objResult->fields['typeid'].'
-                         WHERE nl.news_id='.$objResult->fields['id'].' AND nl.is_active=1 ORDER BY nl.lang_id ASC');
-                
-                while (!$objLangResult->EOF) {
-                    $arrNews[$objResult->fields['id']]['lang'][$objLangResult->fields['langid']] = array(
-                        'title' => $objLangResult->fields['title'],
-                        'catname' => $objLangResult->fields['catname'],
-                        'typename' => $objLangResult->fields['typename']                        
+                         WHERE nl.news_id='.$objResult->fields['id'].' AND nl.is_active=1 AND nl.lang_id IN (\'' . implode('\',\'', $activeFrontendLangIds) . '\') ORDER BY nl.lang_id ASC');
+
+                if ($objLangResult->RecordCount() > 0) {
+                    $arrNews[$objResult->fields['id']] = array(
+                      'date'               => $objResult->fields['date'],
+                      'changelog'          => $objResult->fields['changelog'],
+                      'status'             => $objResult->fields['status'],
+                      'validated'          => $objResult->fields['validated'],
+                      'frontend_access_id' => $objResult->fields['frontend_access_id'],
+                      'userid'             => $objResult->fields['userid']
                     );
-                    $objLangResult->MoveNext();
+                    while (!$objLangResult->EOF) {
+                        $arrNews[$objResult->fields['id']]['lang'][$objLangResult->fields['langid']] = array(
+                            'title' => $objLangResult->fields['title'],
+                            'catname' => $objLangResult->fields['catname'],
+                            'typename' => $objLangResult->fields['typename']
+                        );
+                        $objLangResult->MoveNext();
+                    }
                 }
-                
+
                 $objResult->MoveNext();
-            }            
+            }
         }
 
         $count = count($arrNews);
@@ -591,10 +594,24 @@ class newsManager extends newsLibrary {
                 }
 
                 $lang = array();
-                foreach ($news['lang'] as $langId => $langValues) {
-                    $lang[] = FWLanguage::getLanguageCodeById($langId);
+                $langIds = array();
+                foreach ($activeFrontendLangIds as $langId) {
+                    if (isset($news['lang'][$langId])) {
+                        $lang[] = \FWLanguage::getLanguageCodeById($langId);
+                        $langIds[] = $langId;
+                    }
                 }
                 $langString = implode(', ',$lang);
+
+                if ($news['status'] == true) {
+                    $this->_objTpl->setVariable(array (
+                        'TXT_NEWS_PREVIEW' => $_ARRAYLANG['TXT_NEWS_PREVIEW'],
+                        'NEWS_PREVIEW_LINK_HREF' => \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'details', reset($langIds), array('newsid' => $newsId)),
+                    ));
+                    $this->_objTpl->touchBlock('news_preview');
+                } else {
+                    $this->_objTpl->hideBlock('news_preview');
+                }
 
                 $this->_objTpl->setVariable(array(
                     'NEWS_ID'               => $newsId,
@@ -858,7 +875,13 @@ class newsManager extends newsLibrary {
             'teaser_text'   => !empty($_POST['newsTeaserText']) ? $_POST['newsTeaserText'] : array()
         );
 
-        $date = $this->dateFromInput($_POST['newsDate']);
+        if (count(\FWLanguage::getActiveFrontendLanguages()) == 1) {
+            $locales['active'] = \FWLanguage::getActiveFrontendLanguages();
+        }
+
+        if (isset($_POST['newsDate'])) {
+            $date = $this->dateFromInput($_POST['newsDate']);
+        }
         
         $newsredirect           = !empty($_POST['newsRedirect']) ? contrexx_input2raw($_POST['newsRedirect']) : '';
         $newssource             = !empty($_POST['newsSource']) ? FWValidator::getUrl(contrexx_input2raw($_POST['newsSource'])) : '';
@@ -871,8 +894,10 @@ class newsManager extends newsLibrary {
         $newsPublisherId        = !empty($_POST['newsPublisherId']) ? contrexx_input2raw($_POST['newsPublisherId']) : '0';
         $newsAuthorId           = !empty($_POST['newsAuthorId']) ? contrexx_input2raw($_POST['newsAuthorId']) : '0';
         $userid                 = $objFWUser->objUser->getId();
-        $startDate              = $this->dateFromInput($_POST['startDate']);
-        $endDate                = $this->dateFromInput($_POST['endDate']);
+        if (isset($_POST['startDate']) && isset($_POST['endDate'])) {
+            $startDate          = $this->dateFromInput($_POST['startDate']);
+            $endDate            = $this->dateFromInput($_POST['endDate']);
+        }
         $status                 = !empty($_POST['status']) ? intval($_POST['status']) : 0;
         $newsTeaserOnly         = !empty($_POST['newsUseOnlyTeaser']) ? intval($_POST['newsUseOnlyTeaser']) : 0;
         $newsTeaserImagePath    = !empty($_POST['newsTeaserImagePath']) ? contrexx_input2raw($_POST['newsTeaserImagePath']) : '';
@@ -931,8 +956,7 @@ class newsManager extends newsLibrary {
         }
 
         $objFWUser->objUser->getDynamicPermissionIds(true);
-
-        if (!empty($locales['active'])) {
+        if (!empty($_POST) && !empty($locales['active'])) {
             if ($this->validateNews($locales)) {
                 // Set start and date as NULL if newsScheduled checkbox is not checked
                 if ($newsScheduledActive == 0) {
@@ -1030,18 +1054,16 @@ class newsManager extends newsLibrary {
             ));
         }
 
-        $first = true;
         foreach ($arrLanguages as $langId => $arrLanguage) {
             if ($arrLanguage['frontend'] == 1) {
                 // parse tabs
                 $this->_objTpl->setVariable(array(
                     'NEWS_LANG_ID'              => $langId,
-                    'NEWS_LANG_DISPLAY_STATUS'  => $arrLanguage['is_default'] == 'true' && $first == true ? 'active' : 'inactive',
-                    'NEWS_LANG_DISPLAY_STYLE'   => $arrLanguage['is_default'] == 'true' || isset($_POST['newsManagerLanguages'][$intLanguageId]) ? 'inline' : 'none',
+                    'NEWS_LANG_DISPLAY_STATUS'  => $arrLanguage['is_default'] == 'true' ? 'active' : 'inactive',
+                    'NEWS_LANG_DISPLAY_STYLE'   => $arrLanguage['is_default'] == 'true' || isset($_POST['newsManagerLanguages'][$langId]) ? 'inline' : 'none',
                     'NEWS_LANG_NAME'            => contrexx_raw2xhtml($arrLanguage['name'])
                 ));
                 $this->_objTpl->parse('news_lang_list');
-                $first = false;
 
                 // parse title
                 $this->_objTpl->setVariable(array(
@@ -1067,6 +1089,11 @@ class newsManager extends newsLibrary {
                 ));
                 $this->_objTpl->parse('news_text_list');
             }
+        }
+
+        if ($intLanguageCounter == 1) {
+            $this->_objTpl->setVariable('NEWS_LANG_TAB_DISPLAY_STYLE', 'none');
+            $this->_objTpl->hideBlock('news_language_checkboxes');
         }
 
         $catrow = 'row2';
@@ -1149,8 +1176,8 @@ class newsManager extends newsLibrary {
             'NEWS_AUTHOR_ID'                => '0',
             'NEWS_TOP_TITLE'                => $_ARRAYLANG['TXT_CREATE_NEWS'],
             'NEWS_CAT_MENU'                 => $this->getCategoryMenu($newscat),
-            'NEWS_STARTDATE'                => $this->valueFromDate($startDate),
-            'NEWS_ENDDATE'                  => $this->valueFromDate($endDate),
+            'NEWS_STARTDATE'                => isset($startDate) ? $this->valueFromDate($startDate) : '',
+            'NEWS_ENDDATE'                  => isset($endDate) ? $this->valueFromDate($endDate): '',
             'NEWS_DATE'                     => date('Y-m-d H:i:s'),
             'NEWS_CREATE_DATE'              => $this->valueFromDate(),
             'NEWS_SOURCE'                   => contrexx_raw2xhtml($newssource),
@@ -1515,6 +1542,11 @@ class newsManager extends newsLibrary {
                         $first          = false;
                     }                    
                 }
+            }
+
+            if ($intLanguageCounter == 1) {
+                $this->_objTpl->setVariable('NEWS_LANG_TAB_DISPLAY_STYLE', 'none');
+                $this->_objTpl->hideBlock('news_language_checkboxes');
             }
             
             $this->_objTpl->setVariable('NEWS_DEFAULT_LANG', contrexx_raw2xhtml(FWLanguage::getLanguageParameter($selectedLangId, 'name')));            
@@ -2206,8 +2238,12 @@ class newsManager extends newsLibrary {
             $set_userid = $orig_userid ? $orig_userid : $userId;
 
             // $finishednewstext = $newstext.'<br>'.$_ARRAYLANG['TXT_LAST_EDIT'].': '.$date;
+            $activeLanguages = isset($_POST['newsManagerLanguages']) ? $_POST['newsManagerLanguages'] : array();
+            if (count(\FWLanguage::getActiveFrontendLanguages()) == 1) {
+                $activeLanguages = \FWLanguage::getActiveFrontendLanguages();
+            }
             $locales = array(
-                'active'        => $_POST['newsManagerLanguages'],
+                'active'        => $activeLanguages,
                 'title'         => $_POST['newsTitle'],
                 'text'          => $_POST['news_text'],
                 'teaser_text'   => $_POST['newsTeaserText']
@@ -2462,7 +2498,7 @@ class newsManager extends newsLibrary {
                   GROUP BY category_id
                   ORDER BY category_id asc");
 
-        $arrLanguages = FWLanguage::getLanguageArray();
+        $arrLanguages = \FWLanguage::getActiveFrontendLanguages();
         $catLangData = $this->getCategoriesLangData();
 
         $i=0;
