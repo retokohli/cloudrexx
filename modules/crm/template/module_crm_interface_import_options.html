@@ -167,9 +167,9 @@
                 </tbody>
                 <tfoot>
                     <tr>
-                        <td class="import_step2" colspan="2">
+                        <td class="import_step2" colspan="3">
                             <div class="actions">
-                                <input type="submit" id="start_upload" class="disabled" value="{TXT_CRM_CONTINUE}" title="{TXT_CRM_CONTINUE}" name="imported" />&nbsp;&nbsp;
+                                <input type="submit" id="import_data" class="disabled" value="{TXT_CRM_CONTINUE}" title="{TXT_CRM_CONTINUE}" name="imported" />&nbsp;&nbsp;
                                 <input type="button" id="cancel_upload" value="{TXT_CRM_CANCEL}" title="{TXT_CRM_CANCEL}" onClick="window.location.replace('./index.php?cmd=crm&act=overview&{CSRF_PARAM}')" />
                             </div>
                             <div class="ajax_loading">
@@ -180,31 +180,63 @@
                 </tfoot>
             </table>
         </form>
-        <select name="crm_contact_option_base[]" id="crm_contact_option_base" style="display: none;" ></select>
-        <script id="columnSelectorTemplate" type="text/x-jquery-tmpl">
-                {{if Header}}
-                <option name="header">{{= title }}</option>
-                {{else !Header}}
-                <option name="{{= name }}" >{{= title }}</option>
-                {{/if}}
-        </script>
-
-        <script id="csvColumnTemplate" type="text/x-jquery-tmpl">            
-            {{each contactFields}}
-                <tr class="row1">
-                <td>
-                ${contactHeader[$index]}
-                </td>
-                <td >
-                {{html $item.renderSelectBox($index)}}
-                </td>
-                <td >
-                ${$value}
-                </td>
-                </tr>
-             {{/each}}
-        </script>
-
+        <br />
     </div>
+    <div id="step3" style="display: none;">
+        <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+            <thead>
+                <tr>
+                    <th>Saving contacts</th>
+                </tr>
+                <tr class="row3">
+                    <td>
+                        <div  class="csvImprtSteps" style="width:5%;height: 100%;float: left;">3</div>
+                        Please wait.. the contacts are saving.
+                        <br>
+                        <br>
+                    </td>
+                </tr>                
+            </thead>
+            <tbody>
+                <tr>
+                    <td> </td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td class="import_step3">
+                        <div class="actions">
+                            <input type="button" id="" value="{TXT_CRM_CONTINUE}" title="{TXT_CRM_CONTINUE}" name="imported" />&nbsp;&nbsp;
+                            <input type="button" id="cancel_upload" value="{TXT_CRM_CANCEL}" title="{TXT_CRM_CANCEL}" onClick="window.location.replace('./index.php?cmd=crm&act=overview&{CSRF_PARAM}')" />
+                        </div>                        
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+    <select name="crm_contact_option_base[]" id="crm_contact_option_base" style="display: none;" ></select>
+    <script id="columnSelectorTemplate" type="text/x-jquery-tmpl">
+        {{if Header}}
+            <option name="header">{{= title }}</option>
+            {{else !Header}}
+            <option name="{{= name }}" >{{= title }}</option>
+            {{/if}}
+    </script>
+
+    <script id="csvColumnTemplate" type="text/x-jquery-tmpl">
+        {{each contactFields}}
+            <tr class="row1">
+            <td>
+            ${contactHeader[$index]}
+            </td>
+            <td >
+            {{html $item.renderSelectBox($index)}}
+            </td>
+            <td >
+            ${$value}
+            </td>
+            </tr>
+            {{/each}}
+    </script>
 </div>
 <!-- END module_crm_interface.html -->

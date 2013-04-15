@@ -5,7 +5,7 @@
 
     function deleteEntry(entryId){
         if(confirm('Are you sure you want to detele this entry'))
-            window.location.replace("?cmd={MODULE_NAME}&{CSRF_PARAM}&act=deleteCustomers&id="+entryId+'{CRM_SEARCH_LINK}{CRM_REDIRECT_LINK}');
+            window.location.replace("?cmd={MODULE_NAME}&{CSRF_PARAM}&act=deleteCustomers&id="+entryId+'{CRM_REDIRECT_LINK}');
     }
  
     function selectMultiAction() {
@@ -28,7 +28,7 @@
             switch (frmShowEntries_MultiAction.value) {
                 case 'delete':
                     if (confirm('Are you sure you want to detele this entry')) {
-                        action='?cmd={MODULE_NAME}&act=deleteCustomers{CRM_SEARCH_LINK}';
+                        action='?cmd={MODULE_NAME}&act=deleteCustomers{CRM_REDIRECT_LINK}';
                         submit();
                     }
                     else{
@@ -103,12 +103,6 @@
     .crm-watermark {
         color: #AAAAAA;
     }    
-    .arrow-down {
-        background: url("./images/icons/advancedsearch-down.png") no-repeat scroll right 3px #FFFFFF;        
-    }
-    .arrow-up {
-        background: url("./images/icons/advancedsearch-up.png") no-repeat scroll right 3px #FFFFFF;
-    }
     .advanced-search {
         padding: 0 13px 0 0;
     }

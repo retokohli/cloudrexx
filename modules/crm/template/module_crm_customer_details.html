@@ -4,7 +4,7 @@
         $J("#add-new-photo").ajaxSubmit({
             dataType: 'json',
             beforeSend : function(){
-              $J(".action-progress-1").show();
+                $J(".action-progress-1").show();
             },
             success:  function(json) {
                 if (json['success']) {
@@ -26,16 +26,16 @@
             data        : 'img_name='+img_name+'&customer_id='+customer_id,
             dataType    : 'json',
             beforeSend  : function(){
-              $J(".action-progress-2").show();
+                $J(".action-progress-2").show();
             },
             success     :  function(json) {
-                            if (json['success']) {
-                                $J('#profile-image').html('<img src="{CRM_ACCESS_PROFILE_IMG_WEB_PATH}/'+json['img_name']+'" alt="image" />');
-                            } else {
-                                alert(json['error']);                                
-                            }
-                            $J(".action-progress-2").hide();                            
-                            $J( "#profile-photo" ).dialog( "close" );
+                if (json['success']) {
+                    $J('#profile-image').html('<img src="{CRM_ACCESS_PROFILE_IMG_WEB_PATH}/'+json['img_name']+'" alt="image" />');
+                } else {
+                    alert(json['error']);
+                }
+                $J(".action-progress-2").hide();
+                $J( "#profile-photo" ).dialog( "close" );
             }
         });        
     }
@@ -100,6 +100,36 @@
     }
     var page = 0;
     $J(function() {
+        $J('.primary_profile .viewAll').click(function(){
+            $elm     = $J(this);
+            $closest = $elm.closest('td');
+            $J('.primary_profile').show();
+            $J('.profile_expanded').hide();
+            $elm.closest('.primary_profile').fadeOut('slow', function(){
+                $closest.find('.profile_expanded').show();
+                $closest.find('.fixed-scroll').scrollToFixed({
+                    limit: function() {
+                        
+                        if ($closest.closest('tr').next().length) {
+                            elm = $closest.closest('tr').next();
+                        } else {
+                            elm = $J("#tabs");
+                        }
+                        
+                        return elm.offset().top
+                    }
+                });
+            });
+        });        
+
+        $J('.profile_expanded .hide').click(function(){
+            $elm     = $J(this);
+            $closest = $elm.closest('td');
+            $elm.closest('.profile_expanded').fadeOut('slow', function(){
+                $closest.find('.primary_profile').show();
+            });            
+        });
+        
         $J(".deleteEntry").live("click", function(){
             $elm  = $J(this);
             en_id = $J(this).attr('rel').split('_')[1]
@@ -214,66 +244,66 @@
             }
         });
         $J( "#profile-photo" ).dialog({
-          autoOpen: false,
-          width   : 450,
-          height  : 280,
-          modal   : true
+            autoOpen: false,
+            width   : 450,
+            height  : 280,
+            modal   : true
         });
         $J( "#file-upload" ).dialog({
-          autoOpen: false,
-          width   : 450,
-          height  : 280,
-          modal   : true,
-          close: function(event, ui) {              
-              tabIndex = $J( "#tabs" ).tabs('option', 'selected');
-              $J("#tabs").tabs('load', tabIndex);
-              tabLinks['document'].page = 0;
-              $J(".qq-upload-list").html('');
-          }
+            autoOpen: false,
+            width   : 450,
+            height  : 280,
+            modal   : true,
+            close: function(event, ui) {
+                tabIndex = $J( "#tabs" ).tabs('option', 'selected');
+                $J("#tabs").tabs('load', tabIndex);
+                tabLinks['document'].page = 0;
+                $J(".qq-upload-list").html('');
+            }
         });
 
         $J( ".change-photo" ).click(function() {
-          $J( "#profile-photo" ).dialog( "open" );
+            $J( "#profile-photo" ).dialog( "open" );
         });
         
         $J('#jquery-wrapped-fine-uploader').fineUploader({
-          request: {
-            endpoint: './index.php?cmd={MODULE_NAME}&act=fileupload&id={ENTRY_ID}'
-          },          
-          text: {
-            uploadButton: '<div class="button blue">upload a file</div>'
-          },
-          validation: {
-            allowedExtensions: ["jpeg", "png", "gif", "jpg", "bmp", "doc", "docx", "pdf", "txt", "csv", "xls"],
-            sizeLimit: 2097152
-         }
+            request: {
+                endpoint: './index.php?cmd={MODULE_NAME}&act=fileupload&id={ENTRY_ID}'
+            },
+            text: {
+                uploadButton: '<div class="button blue">upload a file</div>'
+            },
+            validation: {
+                allowedExtensions: ["jpeg", "png", "gif", "jpg", "bmp", "doc", "docx", "pdf", "txt", "csv", "xls"],
+                sizeLimit: 2097152
+            }
         });
     });
     $J(".add-document").live('click', function(){
-      $J( "#file-upload" ).dialog( "open" );
+        $J( "#file-upload" ).dialog( "open" );
     });
     $J(".delete_document").live('click', function(){
         if(confirm('{TXT_CRM_CONFIRM_DELETE_ENTRY}')) {
-                elm = $J(this);
-                url = elm.attr('href');
-                $J.getJSON(url, function(json){
-                    if (json['error']) {
-                        $J("#alertbox")
-                            .html(json['error'])
-                            .show()
-                            .delay(3000)
-                            .fadeOut('slow');
-                    } else if (json['success']) {
-                        $J(elm).closest("tr").fadeOut('slow', function(){
-                            $J(elm).closest("tr").remove();
-                            $J("#okbox")
-                            .html(json['success'])
-                            .show()
-                            .delay(3000)
-                            .fadeOut('slow');
-                        });
-                    }                    
-                });
+            elm = $J(this);
+            url = elm.attr('href');
+            $J.getJSON(url, function(json){
+                if (json['error']) {
+                    $J("#alertbox")
+                    .html(json['error'])
+                    .show()
+                    .delay(3000)
+                    .fadeOut('slow');
+                } else if (json['success']) {
+                    $J(elm).closest("tr").fadeOut('slow', function(){
+                        $J(elm).closest("tr").remove();
+                        $J("#okbox")
+                        .html(json['success'])
+                        .show()
+                        .delay(3000)
+                        .fadeOut('slow');
+                    });
+                }
+            });
         }
         return false;
     });
@@ -357,6 +387,11 @@
     table.sortedTable tr.row3 th.header {
         cursor: pointer;
         color: #1a74bd;
+    }
+    .primary_profile {position: relative;}
+    .fixed-scroll {margin-left: 5px;}
+    .viewAll,.hide {
+        padding: 0 13px 0 0;
     }
 </style>
 <div id="subnavbar_level2">
@@ -442,7 +477,7 @@
                         <td colspan="3">
                             {CRM_CUSTOMER_CURRENCY}
                         </td>
-                        
+
                     </tr>                    
                 </table>
                 <!-- END customerGeneral -->
@@ -501,7 +536,16 @@
                         <tr class="row1">
                             <td class="td-subject" valign="top"><strong>{TXT_CRM_CONTACT_EMAIL}</strong></td>
                             <td>
-                                <div class="detailsList">{CRM_CONTACT_EMAIL}</div>
+                                <div class="primary_profile"><div class="detailsList">{CRM_CONTACT_EMAIL_PRIMARY}&nbsp;&nbsp;<a style="display: {CRM_EMAIL_SHOW_ALL}" class="viewAll arrow-down" href="javascript:void(0);"></a></div></div>
+                                <div class="profile_expanded" style="display:none;">
+                                    <div class="detailsList crmLeft">
+                                        <!-- BEGIN contact_email_list -->
+                                        {CRM_CONTACT_EMAIL}<br>
+                                        <!-- END contact_email_list -->
+                                    </div>
+                                    <span class="crmLeft" style="position:relative;left:0;"><a class="fixed-scroll hide arrow-up">&nbsp;</a></span>
+                                </div>
+
                             </td>
                         </tr>
                         <!-- END contactEmails -->
@@ -509,7 +553,15 @@
                         <tr class="row2">
                             <td valign="top" class="td-subject"><strong>{TXT_CRM_WEBSITE}</strong></td>
                             <td>
-                                <div class="detailsList">{CRM_WEBSITE_URL} {CRM_WEBSITE_TYPE}</div>
+                                <div class="primary_profile"><div class="detailsList">{CRM_WEBSITE_URL_PRIMARY} {CRM_WEBSITE_TYPE_PRIMARY}&nbsp;&nbsp;<a style="display: {CRM_WEBSITE_SHOW_ALL}" class="viewAll arrow-down" href="javascript:void(0);"></a></div></div>
+                                <div class="profile_expanded" style="display:none;">
+                                    <div class="detailsList crmLeft">
+                                        <!-- BEGIN contact_website_list -->
+                                        {CRM_WEBSITE_URL} {CRM_WEBSITE_TYPE}<br />
+                                        <!-- END contact_website_list -->
+                                    </div>
+                                    <span class="crmLeft" style="position:relative;left:0;"><a class="fixed-scroll hide arrow-up">&nbsp;</a></span>
+                                </div>                                
                             </td>
                         </tr>
                         <!-- END contactWebsite -->
@@ -517,7 +569,15 @@
                         <tr class="row2">
                             <td valign="top" class="td-subject"><strong>{TXT_CRM_SOCIAL_NETWORK}</strong></td>
                             <td>
-                                <div class="detailsList">{CRM_SOCIAL_URL} {CRM_SOCIAL_TYPE}</div>
+                                <div class="primary_profile"><div class="detailsList">{CRM_SOCIAL_URL_PRIMARY} {CRM_SOCIAL_TYPE_PRIMARY}&nbsp;&nbsp;<a style="display: {CRM_SOCIAL_SHOW_ALL}" class="viewAll arrow-down" href="javascript:void(0);"></a></div></div>
+                                <div class="profile_expanded" style="display:none;">
+                                    <div class="detailsList crmLeft">
+                                        <!-- BEGIN contact_social_list -->
+                                        {CRM_SOCIAL_URL} {CRM_SOCIAL_TYPE}<br/>
+                                        <!-- END contact_social_list -->
+                                    </div>
+                                    <span class="crmLeft" style="position:relative;left:0;"><a class="fixed-scroll hide arrow-up">&nbsp;</a></span>
+                                </div>                                
                             </td>
                         </tr>
                         <!-- END contactSocial -->
@@ -525,7 +585,15 @@
                         <tr class="row2">
                             <td valign="top" class="td-subject"><strong>{TXT_CRM_CONTACT_PHONE}</strong></td>
                             <td>
-                                <div class="detailsList">{CRM_CONTACT_PHONE}</div>
+                                <div class="primary_profile"><div class="detailsList">{CRM_CONTACT_PHONE_PRIMARY}&nbsp;&nbsp;<a style="display: {CRM_PHONE_SHOW_ALL}" class="viewAll arrow-down" href="javascript:void(0);"></a></div></div>
+                                <div class="profile_expanded" style="display:none;">
+                                    <div class="detailsList crmLeft">
+                                        <!-- BEGIN contact_phones_list -->
+                                        {CRM_CONTACT_PHONE}<br/>
+                                        <!-- END contact_phones_list -->
+                                    </div>
+                                    <span class="crmLeft" style="position:relative;left:0;"><a class="fixed-scroll hide arrow-up">&nbsp;</a></span>
+                                </div>
                             </td>
                         </tr>
                         <!-- END contactPhones -->
@@ -533,7 +601,15 @@
                         <tr class="row2">
                             <td valign="top" class="td-subject"><strong>{TXT_CRM_CONTACT_ADDRESSES}</strong></td>
                             <td >
-                                <div class="detailsList">{CRM_CONTACT_ADDRESS}</div>
+                                <div class="primary_profile"><div class="detailsList">{CRM_CONTACT_ADDRESS_PRIMARY}&nbsp;&nbsp;<a style="display: {CRM_ADDRESS_SHOW_ALL}" class="viewAll arrow-down" href="javascript:void(0);"></a></div></div>
+                                <div class="profile_expanded" style="display:none;">
+                                    <div class="detailsList crmLeft">
+                                        <!-- BEGIN contact_address_list -->
+                                        {CRM_CONTACT_ADDRESS}<br/>
+                                        <!-- END contact_address_list -->
+                                    </div>
+                                    <span class="crmLeft" style="position:relative;left:0;"><a class="fixed-scroll hide arrow-up">&nbsp;</a></span>
+                                </div>
                             </td>
                         </tr>
                         <!-- END contactAddresses -->
