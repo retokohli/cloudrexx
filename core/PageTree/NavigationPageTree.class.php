@@ -68,7 +68,7 @@ class NavigationPageTree extends SigmaPageTree {
         // get the parent path
         try {
             $parentPath = $page->getParent()->getPath();
-        } catch (\Cx\Core\ContentManager\Model\Doctrine\Entity\PageException $e) {
+        } catch (\Cx\Core\ContentManager\Model\Entity\PageException $e) {
             $parentPath = '/';
         }
         

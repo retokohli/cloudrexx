@@ -747,7 +747,7 @@ class skins
             
             $objDatabase->Execute('UPDATE `'.DBPREFIX.'languages` SET `themesid` = "'.$newThemeId.'" WHERE `id` = '.$langId);
 
-            $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
+            $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
             $pages = $pageRepo->findBy(array(
                 'skin' => intval($oldThemeId),
             ));
@@ -1152,7 +1152,7 @@ class skins
         $themeId = $this->insertSkinIntoDb($themesName, $themesFolder);
 
         if ($themeIdFromDatabaseBasedTheme) {
-            $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
+            $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
             $pages = $pageRepo->findBy(array(
                 'skin' => intval($themeIdFromDatabaseBasedTheme),
             ));

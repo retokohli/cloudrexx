@@ -37,9 +37,9 @@ abstract class PageTree {
      * @param $entityManager the doctrine em
      * @param \Cx\Core_Modules\License\License $license License used to check if a module is allowed in frontend
      * @param int $maxDepth maximum depth to fetch, 0 means everything
-     * @param \Cx\Core\ContentManager\Model\Doctrine\Entity\Node $rootNode node to use as root
+     * @param \Cx\Core\ContentManager\Model\Entity\Node $rootNode node to use as root
      * @param int $lang the language
-     * @param \Cx\Core\ContentManager\Model\Doctrine\Entity\Page $currentPage if set, renderElement() will receive a correctly set $current flag.
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $currentPage if set, renderElement() will receive a correctly set $current flag.
      */
     public function __construct($entityManager, $license, $maxDepth = 0, $rootNode = null, $lang = null, $currentPage = null, $skipInvisible = true) {
         $this->lang = $lang;
@@ -54,14 +54,14 @@ abstract class PageTree {
             $this->pageIdsAtCurrentPath[] = $pageI->getId();
             try {
                 $pageI = $pageI->getParent();
-            } catch (\Cx\Core\ContentManager\Model\Doctrine\Entity\PageException $e) {
+            } catch (\Cx\Core\ContentManager\Model\Entity\PageException $e) {
                 $pageI = null;
             }
         }
         $this->startLevel = 1;
         $this->startPath = '';
-        $this->pageRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
-        $this->nodeRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Node');
+        $this->pageRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+        $this->nodeRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
         if (!$this->rootNode) {
             $this->rootNode = $this->nodeRepo->getRoot();
         }
@@ -162,7 +162,7 @@ $this->bytes = memory_get_peak_usage();
                     ) {
                     continue;
                 }
-            } catch (\Cx\Core\ContentManager\Model\Doctrine\Entity\PageException $e) {
+            } catch (\Cx\Core\ContentManager\Model\Entity\PageException $e) {
                 // if parent page does not exist, parent is root
             }
             // if page is protected, user has not sufficent permissions and protected pages are hidden

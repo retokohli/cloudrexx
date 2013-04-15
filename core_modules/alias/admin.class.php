@@ -240,7 +240,7 @@ class AliasAdmin extends aliasLib
             }
 
             // set target and -type
-            $newtype   = preg_match('/\[\['.\Cx\Core\ContentManager\Model\Doctrine\Entity\Page::NODE_URL_PCRE.'\]\](\S*)?/ix', $array['alias_target']) ? 'local' : 'url';
+            $newtype   = preg_match('/\[\['.\Cx\Core\ContentManager\Model\Entity\Page::NODE_URL_PCRE.'\]\](\S*)?/ix', $array['alias_target']) ? 'local' : 'url';
             $newtarget = !empty($array['alias_target']) ? trim(contrexx_stripslashes($array['alias_target'])) : '';
 
             // handle existing slugs pointing to the target
@@ -347,7 +347,7 @@ class AliasAdmin extends aliasLib
             // alias points to a local webpage
             $targetPage = $this->_fetchTarget($alias);
             if ($targetPage) {
-                preg_match('/\[\['.\Cx\Core\ContentManager\Model\Doctrine\Entity\Page::NODE_URL_PCRE.'\]\](\S*)?/ix', $target, $matches);
+                preg_match('/\[\['.\Cx\Core\ContentManager\Model\Entity\Page::NODE_URL_PCRE.'\]\](\S*)?/ix', $target, $matches);
                 $targetURL = ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET . $this->_getURL($targetPage) . $matches[6];
             }
         }

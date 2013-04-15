@@ -205,7 +205,7 @@ class LoggableListener extends \Gedmo\Loggable\LoggableListener
             $logEntry->setAction($action);
             $logEntry->setUsername($this->username);
             $logEntry->setObjectClass($meta->name);
-            if ($object instanceof \Cx\Core\ContentManager\Model\Doctrine\Entity\Page) {
+            if ($object instanceof \Cx\Core\ContentManager\Model\Entity\Page) {
                 $logEntry->setLoggedAt($object->getUpdatedAt());
             } else {
                 $logEntry->setLoggedAt();

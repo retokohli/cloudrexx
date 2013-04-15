@@ -115,7 +115,7 @@ class modulemanager
         $qb = \Env::em()->createQueryBuilder();
 
         $qb->addSelect('p')
-                ->from('Cx\Core\ContentManager\Model\Doctrine\Entity\Page', 'p')
+                ->from('Cx\Core\ContentManager\Model\Entity\Page', 'p')
                 ->where('p.module IS NOT NULL');
 //                ->andWhere($qb->expr()->eq('p.lang', $this->langId));
         $pages   = $qb->getQuery()->getResult();
@@ -237,7 +237,7 @@ class modulemanager
     {
         global $objDatabase, $_CORELANG, $objInit;
         $em = \Env::get('em');
-        $nodeRepo = $em->getRepository('\Cx\Core\ContentManager\Model\Doctrine\Entity\Node');
+        $nodeRepo = $em->getRepository('\Cx\Core\ContentManager\Model\Entity\Node');
 
         //$i = 1;
         if (empty($_POST['installModule']) || !is_array($_POST['installModule'])) {
@@ -282,7 +282,7 @@ class modulemanager
                     $this->arrayInstalledModules[$module_name] = true;
                     
                     // create node
-                    $newnode = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Node();
+                    $newnode = new \Cx\Core\ContentManager\Model\Entity\Node();
                     $newnode->setParent($parcat); // replace root node by parent!
                     $em->persist($newnode);
                     $em->flush();
@@ -298,7 +298,7 @@ class modulemanager
                                 $newnode,
                                 $lang['id'],
                                 $objResult->fields['title'],
-                                \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION,
+                                \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
                                 $module_name,
                                 $objResult->fields['cmd'],
                                 !$root && $objResult->fields['displaystatus'],
@@ -309,7 +309,7 @@ class modulemanager
                                 $newnode,
                                 $lang['id'],
                                 $objResult->fields['title'],
-                                \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_FALLBACK,
+                                \Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK,
                                 $module_name,
                                 $objResult->fields['cmd'],
                                 !$root && $objResult->fields['displaystatus'],
@@ -331,7 +331,7 @@ class modulemanager
     }
 
     private function createPage($parentNode, $lang, $title, $type, $module, $cmd, $display, $content) {
-        $page = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Page();
+        $page = new \Cx\Core\ContentManager\Model\Entity\Page();
         $page->setNode($parentNode);
         $page->setNodeIdShadowed($parentNode->getId());
         $page->setLang($lang);
@@ -374,7 +374,7 @@ return false;
                 }
 
                 $em = \Env::get('em');
-                $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
+                $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
                 $pages = $pageRepo->findBy(array(
                     'module' => $moduleName,
                     'lang' => $this->langId,

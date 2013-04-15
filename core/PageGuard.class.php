@@ -37,7 +37,7 @@ class PageGuard {
     
     /**
      * Returns the group ids with access to front- or backend of a page
-     * @param \Cx\Core\ContentManager\Model\Doctrine\Entity\Page $page Page to get the group ids of
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page Page to get the group ids of
      * @param boolean $frontend True for frontend access groups, false for backend
      * @return mixed Array of group ids or false on error
      * @throws PageGuardException 

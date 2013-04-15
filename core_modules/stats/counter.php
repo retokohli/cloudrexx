@@ -649,7 +649,7 @@ class counter
     {
         global $objDb;
 
-        $page = \Env::get('em')->getRepository('\Cx\Core\ContentManager\Model\Doctrine\Entity\Page')->findOneBy(array('id' => $this->pageId));
+        $page = \Env::get('em')->getRepository('\Cx\Core\ContentManager\Model\Entity\Page')->findOneBy(array('id' => $this->pageId));
         $url = \Cx\Core\Routing\Url::fromPage($page);
         if ($page) {
             $objDb->Execute('

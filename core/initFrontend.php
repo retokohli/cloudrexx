@@ -337,7 +337,7 @@ if ($isRegularPageRequest) {
     try {
         $resolver->resolve();
         $page = $resolver->getPage();
-// TODO: should this check (for type 'application') moved to \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::getCmd()|getModule() ?
+// TODO: should this check (for type 'application') moved to \Cx\Core\ContentManager\Model\Entity\Page::getCmd()|getModule() ?
         // only set $section and $command if the requested page is an application
         $command = $resolver->getCmd();
         $section = $resolver->getSection();
