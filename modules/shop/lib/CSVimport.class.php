@@ -152,7 +152,7 @@ class CSVimport
 
     function GetFileContent()
     {
-        $csv_source = new csv_bv(
+        $csv_source = new Csv_bv(
             $_FILES['importfile']['tmp_name'],
             CSVimport::$separator, CSVimport::$delimiter, CSVimport::$escapor
         );
