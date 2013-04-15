@@ -111,7 +111,7 @@ class JsonContentManager implements JsonAdapter {
             throw new \Cx\Core\ContentManager\ContentManagerException('Illegal parameter list');
         }
         $em = \Env::get('em');
-        $nodeRepo = $em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Node');
+        $nodeRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
         $targetLang = contrexx_input2raw($params['get']['to']);
         $fromLang = \FWLanguage::getFallbackLanguageIdById($targetLang);
         if ($fromLang === false) {

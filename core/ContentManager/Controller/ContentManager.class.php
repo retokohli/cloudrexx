@@ -68,8 +68,8 @@ class ContentManager extends \Module
         $this->em             = \Env::em();
         $this->db             = $db;
         $this->init           = $init;
-        $this->pageRepository = $this->em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
-        $this->nodeRepository = $this->em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Node');
+        $this->pageRepository = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+        $this->nodeRepository = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
         $this->defaultAct     = 'actRenderCM';
     }
 

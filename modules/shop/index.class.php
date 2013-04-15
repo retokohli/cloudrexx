@@ -2612,7 +2612,7 @@ die("Shop::processRedirect(): This method is obsolete!");
         if (!isset($_SESSION['shop']['cancellation_terms'])) {
             $_SESSION['shop']['cancellation_terms'] = '';
         }
-        $page_repository = Env::em()->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
+        $page_repository = Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
         if ($page_repository->existsModuleCmd(
             FRONTEND_LANG_ID, 'shop', 'payment')) {
 // TODO: Use the alias, if any

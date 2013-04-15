@@ -293,11 +293,11 @@ class DataAdmin extends DataLibrary {
      */
     function getFrontendPages()
     {
-        $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
+        $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
         $pages = $pageRepo->findBy(array(
             'module' => 'data',
             'lang' => $this->_intLanguageId,
-            'type' => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION,
+            'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
         ));
         $pages = array();
         foreach ($pages as $page) {

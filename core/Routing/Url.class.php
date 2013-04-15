@@ -487,7 +487,7 @@ class Url {
         if ($lang == '') {
             $lang = FRONTEND_LANG_ID;
         }
-        $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
+        $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
         $page = $pageRepo->findOneByModuleCmdLang($module, $cmd, $lang);
 
         // In case we were unable to locate the requested page, we shall
@@ -555,7 +555,7 @@ class Url {
         if ($lang == '') {
             $lang = FRONTEND_LANG_ID;
         }
-        $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
+        $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
         $page = $pageRepo->findOneBy(array(
             'node' => $nodeId,
             'lang' => $lang,
@@ -565,7 +565,7 @@ class Url {
 
     /**
      * Returns an Url object for node and language
-     * @param \Cx\Core\ContentManager\Model\Doctrine\Entity\Node $node Node to get the Url of
+     * @param \Cx\Core\ContentManager\Model\Entity\Node $node Node to get the Url of
      * @param int $lang (optional) Language to use, default is FRONTENT_LANG_ID
      * @param array $parameters (optional) HTTP GET parameters to append
      * @param string $protocol (optional) The protocol to use
@@ -587,7 +587,7 @@ class Url {
      * @return \Cx\Core\Routing\Url Url object for the supplied page id
      */
     public static function fromPageId($pageId, $parameters = array(), $protocol = '') {
-        $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
+        $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
         $page = $pageRepo->findOneBy(array(
             'id' => $pageId,
         ));
@@ -597,7 +597,7 @@ class Url {
     /**
      * Returns the URL object for a page
      * @global type $_CONFIG
-     * @param \Cx\Core\ContentManager\Model\Doctrine\Entity\Page $page Page to get the URL to
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page Page to get the URL to
      * @param array $parameters (optional) HTTP GET parameters to append
      * @param string $protocol (optional) The protocol to use
      * @return \Cx\Core\Routing\Url Url object for the supplied page

@@ -108,7 +108,7 @@ class frontendEditing extends frontendEditingLib {
      */
     public function __construct($entityManager) {
         $this->em = $entityManager;
-        $this->pageRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
+        $this->pageRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
 
         $this->intPageLangId = FRONTEND_LANG_ID;
 
@@ -335,7 +335,7 @@ class frontendEditing extends frontendEditingLib {
         $crit = array(
              'module'   => 'login',
              'lang'     => FRONTEND_LANG_ID,
-             'type' => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION,
+             'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
              'cmd'      => 'lostpw',
         );
         $page = $this->pageRepo->findOneBy($crit);

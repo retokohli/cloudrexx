@@ -72,7 +72,7 @@ class LinkGenerator {
     public function scan(&$content) {
         $this->fetchingDone = false;
 
-        $regex = '/\{'.\Cx\Core\ContentManager\Model\Doctrine\Entity\Page::NODE_URL_PCRE.'\}/xi';
+        $regex = '/\{'.\Cx\Core\ContentManager\Model\Entity\Page::NODE_URL_PCRE.'\}/xi';
 
         $matches = array();
         if (!preg_match_all($regex, $content, $matches)) {
@@ -80,14 +80,14 @@ class LinkGenerator {
         }
 
         for($i = 0; $i < count($matches[0]); $i++) {           
-            $nodeId = isset($matches[\Cx\Core\ContentManager\Model\Doctrine\Entity\Page::NODE_URL_NODE_ID][$i]) ?$matches[\Cx\Core\ContentManager\Model\Doctrine\Entity\Page::NODE_URL_NODE_ID][$i] : 0;
-            $module = isset($matches[\Cx\Core\ContentManager\Model\Doctrine\Entity\Page::NODE_URL_MODULE][$i]) ? strtolower($matches[\Cx\Core\ContentManager\Model\Doctrine\Entity\Page::NODE_URL_MODULE][$i]) : '';
-            $cmd = isset($matches[\Cx\Core\ContentManager\Model\Doctrine\Entity\Page::NODE_URL_CMD][$i]) ? strtolower($matches[\Cx\Core\ContentManager\Model\Doctrine\Entity\Page::NODE_URL_CMD][$i]) : '';
+            $nodeId = isset($matches[\Cx\Core\ContentManager\Model\Entity\Page::NODE_URL_NODE_ID][$i]) ?$matches[\Cx\Core\ContentManager\Model\Entity\Page::NODE_URL_NODE_ID][$i] : 0;
+            $module = isset($matches[\Cx\Core\ContentManager\Model\Entity\Page::NODE_URL_MODULE][$i]) ? strtolower($matches[\Cx\Core\ContentManager\Model\Entity\Page::NODE_URL_MODULE][$i]) : '';
+            $cmd = isset($matches[\Cx\Core\ContentManager\Model\Entity\Page::NODE_URL_CMD][$i]) ? strtolower($matches[\Cx\Core\ContentManager\Model\Entity\Page::NODE_URL_CMD][$i]) : '';
 
-            if (empty($matches[\Cx\Core\ContentManager\Model\Doctrine\Entity\Page::NODE_URL_LANG_ID][$i])) {
+            if (empty($matches[\Cx\Core\ContentManager\Model\Entity\Page::NODE_URL_LANG_ID][$i])) {
                 $langId = FRONTEND_LANG_ID;
             } else {
-                $langId = $matches[\Cx\Core\ContentManager\Model\Doctrine\Entity\Page::NODE_URL_LANG_ID][$i];
+                $langId = $matches[\Cx\Core\ContentManager\Model\Entity\Page::NODE_URL_LANG_ID][$i];
             }
 
             if ($nodeId) {
@@ -98,7 +98,7 @@ class LinkGenerator {
                 $type = 'module';
             }
 
-            $this->placeholders[$matches[\Cx\Core\ContentManager\Model\Doctrine\Entity\Page::NODE_URL_PLACEHOLDER][$i]] = array(
+            $this->placeholders[$matches[\Cx\Core\ContentManager\Model\Entity\Page::NODE_URL_PLACEHOLDER][$i]] = array(
                 'type'      => $type,
                 'nodeid'    => $nodeId,
                 'module'    => $module,
@@ -122,7 +122,7 @@ class LinkGenerator {
 
         $qb = $em->createQueryBuilder();
         $qb->add('select', new Doctrine\ORM\Query\Expr\Select(array('p')));
-        $qb->add('from', new Doctrine\ORM\Query\Expr\From('Cx\Core\ContentManager\Model\Doctrine\Entity\Page', 'p'));
+        $qb->add('from', new Doctrine\ORM\Query\Expr\From('Cx\Core\ContentManager\Model\Entity\Page', 'p'));
        
         //build a big or with all the node ids and pages 
         $arrExprs = null;
@@ -157,7 +157,7 @@ class LinkGenerator {
                 );
                 $qb->setParameter('module_'.$pIdx, $data['module']);
                 $qb->setParameter('cmd_'.$pIdx, empty($data['cmd']) ? null : $data['cmd']);
-                $qb->setParameter('type', \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION);
+                $qb->setParameter('type', \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
 
                 $fetchedPages[$data['module']][$data['cmd']][$data['lang']] = true;
 
@@ -177,13 +177,13 @@ class LinkGenerator {
                 $url = \Cx\Core\Routing\Url::fromPage($page);
 
                 $placeholderByApp = '';
-                $placeholderById = \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::PLACEHOLDER_PREFIX.$page->getNode()->getId();
+                $placeholderById = \Cx\Core\ContentManager\Model\Entity\Page::PLACEHOLDER_PREFIX.$page->getNode()->getId();
                 $this->placeholders[$placeholderById.'_'.$page->getLang()] = $url;
 
-                if ($page->getType() == \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION) {
+                if ($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION) {
                     $module = $page->getModule();
                     $cmd = $page->getCmd();
-                    $placeholderByApp = \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::PLACEHOLDER_PREFIX;
+                    $placeholderByApp = \Cx\Core\ContentManager\Model\Entity\Page::PLACEHOLDER_PREFIX;
                     $placeholderByApp .= strtoupper($module.(empty($cmd) ? '' : '_'.$cmd));
                     $this->placeholders[$placeholderByApp.'_'.$page->getLang()] = $url;
                 }

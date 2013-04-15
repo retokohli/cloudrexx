@@ -631,7 +631,7 @@ class newsletter extends NewsletterLib
 						$newstext = substr(ltrim(strip_tags($objNews->fields['newscontent'])), 0, 800);
 						$newstext .= "[....]";
 						$newsteasertext = substr(ltrim(strip_tags($objNews->fields['teaser_text'])), 0, 100);
-						$newslink = "[[" . \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::PLACEHOLDER_PREFIX . "NEWS_DETAILS]]?newsid=" . $newsid;
+						$newslink = "[[" . \Cx\Core\ContentManager\Model\Entity\Page::PLACEHOLDER_PREFIX . "NEWS_DETAILS]]?newsid=" . $newsid;
 						if ($objNews->fields['newsuid'] && ($objUser = $objFWUser->objUser->getUser($objNews->fields['newsuid']))) {
 							$author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
 						} else {

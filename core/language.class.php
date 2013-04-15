@@ -165,7 +165,7 @@ class LanguageManager
         global $_CORELANG, $objDatabase;
         if (!empty($_REQUEST['id'])) {
             
-            $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
+            $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
             $pages = $pageRepo->findBy(array(
                 'lang' => intval($_REQUEST['id']),
             ));

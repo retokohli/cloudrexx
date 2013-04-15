@@ -52,7 +52,7 @@ class NestedNavigationPageTree extends SigmaPageTree {
         parent::__construct($entityManager, $license, $maxDepth, $activeNode, $lang, $currentPage, false);
         $this->activeNode = $activeNode;
         if (!$this->activeNode) {
-            $this->activeNode = \Env::get('em')->getRepository('\Cx\Core\ContentManager\Model\Doctrine\Entity\Node')->getRoot();
+            $this->activeNode = \Env::get('em')->getRepository('\Cx\Core\ContentManager\Model\Entity\Node')->getRoot();
         }
         
         //go up the branch and collect all node ids. used later in renderElement().

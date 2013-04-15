@@ -41,8 +41,8 @@ class aliasLib
         $this->langId = intval($langId) > 0 ? $langId : FRONTEND_LANG_ID;
         
         $this->em = Env::em();
-        $this->nodeRepository = $this->em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Node');
-        $this->pageRepository = $this->em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
+        $this->nodeRepository = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
+        $this->pageRepository = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
     }
 
     
@@ -51,7 +51,7 @@ class aliasLib
         $pos = !$all && isset($_GET['pos']) ? intval($_GET['pos']) : 0;
 
         $aliases = $this->pageRepository->findBy(array(
-            'type' => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_ALIAS,
+            'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS,
         ), true);
         
         $i = 0;
@@ -115,7 +115,7 @@ class aliasLib
 
         if (!empty($target)) {
             $crit = array(
-                'type'   => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_ALIAS,
+                'type'   => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS,
                 'target' => $target,
             );
             $aliases = $this->pageRepository->findBy($crit, true);
@@ -128,7 +128,7 @@ class aliasLib
     function _setAliasTarget(&$arrAlias)
     {
         if ($arrAlias['type'] == 'local') {
-            $page = new Cx\Core\ContentManager\Model\Doctrine\Entity\Page();
+            $page = new Cx\Core\ContentManager\Model\Entity\Page();
             $page->setTarget($arrAlias['url']);
             $target_node_id = $page->getTargetNodeId();
             $target_lang_id = $page->getTargetLangId();
@@ -139,7 +139,7 @@ class aliasLib
                 'node' => $target_node_id,
                 'lang' => $target_lang_id,
             );
-            $page_repo = Env::em()->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
+            $page_repo = Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
             $targetPage = $page_repo->findBy($crit, true);
             $targetPage = $targetPage[0];
             $targetPath = $page_repo->getPath($targetPage);
@@ -153,9 +153,9 @@ class aliasLib
     {
         global $objFWUser;
         
-        $page = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Page();
+        $page = new \Cx\Core\ContentManager\Model\Entity\Page();
         $page->setLang(0);
-        $page->setType(\Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_ALIAS);
+        $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS);
         $page->setCmd('');
         $page->setActive(true);
         //$page->setUsername($objFWUser->objUser->getUsername());
@@ -172,7 +172,7 @@ class aliasLib
         // is internal target
         if ($is_local) {
             // get target page
-            $temp_page = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Page();
+            $temp_page = new \Cx\Core\ContentManager\Model\Entity\Page();
             $temp_page->setTarget($target);
             $existing_aliases = $this->_getAliasesWithSameTarget($temp_page);
             
@@ -187,7 +187,7 @@ class aliasLib
 
         if ($id == '') {
             // create new node
-            $node = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Node();
+            $node = new \Cx\Core\ContentManager\Model\Entity\Node();
             $node->setParent($this->nodeRepository->getRoot());
             $this->em->persist($node);
 
@@ -205,7 +205,7 @@ class aliasLib
             }
             $page = $pages->first();
             // we won't change anything on non aliases
-            if ($page->getType() != \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_ALIAS) {
+            if ($page->getType() != \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS) {
                 return false;
             }
         }

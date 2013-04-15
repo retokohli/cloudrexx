@@ -93,8 +93,8 @@ class SearchManager extends \Module
         $this->init     = $init;
         $this->license  = $license;
         
-        $this->pageRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
-        $this->nodeRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Node');
+        $this->pageRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+        $this->nodeRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
         $this->logRepo  = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
         
         $this->term     = !empty($_GET['term']) ? contrexx_input2raw($_GET['term']) : '';
@@ -188,7 +188,7 @@ class SearchManager extends \Module
     {
         $qb = $this->em->createQueryBuilder();
         $qb->select('p')
-            ->from('Cx\Core\ContentManager\Model\Doctrine\Entity\Page', 'p')
+            ->from('Cx\Core\ContentManager\Model\Entity\Page', 'p')
             ->where(
                 $qb->expr()->andX(
                     $qb->expr()->orX(
@@ -222,7 +222,7 @@ class SearchManager extends \Module
     /**
      * Gets the searched pages as array.
      * 
-     * @return  array  $pages  \Cx\Core\ContentManager\Model\Doctrine\Entity\Page
+     * @return  array  $pages  \Cx\Core\ContentManager\Model\Entity\Page
      */
     private function getSearchedPages()
     {

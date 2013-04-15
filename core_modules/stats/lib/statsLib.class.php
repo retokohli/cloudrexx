@@ -562,7 +562,7 @@ class statsLibrary
                 $crit = array(
                     'id' => $objResult->fields['pageId'],
                 );
-                $page = current(Env::em()->getRepository('\Cx\Core\ContentManager\Model\Doctrine\Entity\Page')->findBy($crit));
+                $page = current(Env::em()->getRepository('\Cx\Core\ContentManager\Model\Entity\Page')->findBy($crit));
                 if ($page) {
                     $objResult->fields['title'] = $page->getTitle();
                     $arrIndexedPage = array(

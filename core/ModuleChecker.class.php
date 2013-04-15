@@ -101,7 +101,7 @@ namespace Cx\Core
             $arrCmInstalledModules = array();
             $qb = $this->em->createQueryBuilder();
             $qb->add('select', 'p')
-                ->add('from', 'Cx\Core\ContentManager\Model\Doctrine\Entity\Page p')
+                ->add('from', 'Cx\Core\ContentManager\Model\Entity\Page p')
                 ->add('where',
                     $qb->expr()->andx(
                         $qb->expr()->eq('p.lang', FRONTEND_LANG_ID),

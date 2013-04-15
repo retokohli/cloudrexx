@@ -536,11 +536,11 @@ class ContactManager extends ContactLib
                 $formName = '';
                 $entryCount = '-';
 
-                $pageRepo = $this->em->getRepository('\Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
+                $pageRepo = $this->em->getRepository('\Cx\Core\ContentManager\Model\Entity\Page');
                 $page = $pageRepo->findOneBy(array(
                     'module' => 'contact',
                     'cmd' => $formId,
-                    'type' => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION,
+                    'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
                 ));
 
                 $pageExists = $page !== null;
@@ -555,7 +555,7 @@ class ContactManager extends ContactLib
                     $selectedInterfaceLanguage = key($arrForm['lang']);
                 }
                 
-                $pages = $this->em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page')->getFromModuleCmdByLang('contact', $formId);
+                $pages = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->getFromModuleCmdByLang('contact', $formId);
                 $lang = array();
                 $activeLanguages = \FWLanguage::getActiveFrontendLanguages();
                 foreach ($arrForm['lang'] as $langId => $value) {
@@ -1418,8 +1418,8 @@ class ContactManager extends ContactLib
 
         $formId = intval($_REQUEST['formId']);
         try {
-            $pageRepo = $this->em->getRepository('\Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
-            $pages = $pageRepo->findBy(array('module' => 'contact', 'cmd' => $formId, 'type' => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION));
+            $pageRepo = $this->em->getRepository('\Cx\Core\ContentManager\Model\Entity\Page');
+            $pages = $pageRepo->findBy(array('module' => 'contact', 'cmd' => $formId, 'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION));
 
             $nodes = array();
             foreach($pages as $page) {
@@ -1708,11 +1708,11 @@ class ContactManager extends ContactLib
                 'TXT_CONTACT_BACK'                  => $_ARRAYLANG['TXT_CONTACT_BACK']
             ));
 
-            $pageRepo = $this->em->getRepository('\Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
+            $pageRepo = $this->em->getRepository('\Cx\Core\ContentManager\Model\Entity\Page');
             $page = $pageRepo->findOneBy(array(
                 'module' => 'contact',
                 'cmd' => $formId,
-                'type' => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION,
+                'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
                 'lang' => $selectedInterfaceLanguage,
             ));
             $contentSiteExists = $page !== null;
@@ -2278,7 +2278,7 @@ class ContactManager extends ContactLib
         $objDatabase = Env::get('db');
         $objFWUser   = FWUser::getFWUserObject();
 
-        $pages = $this->em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page')
+        $pages = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Page')
                           ->getFromModuleCmdByLang('contact', $formId);
 
         $frontendLangIds = array_keys(FWLanguage::getActiveFrontendLanguages());
@@ -2358,23 +2358,23 @@ class ContactManager extends ContactLib
 
                 if ($node === null) {
                     DBG::msg("No node found -> Create()");
-                    $root = $this->em->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Node')->getRoot();
+                    $root = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Node')->getRoot();
 
                     // Create a new node
-                    $node = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Node();
+                    $node = new \Cx\Core\ContentManager\Model\Entity\Node();
                     $node->setParent($root);
                     $this->em->persist($node);
                 }
 
                 // Create a new Page
-                $page = new \Cx\Core\ContentManager\Model\Doctrine\Entity\Page();
+                $page = new \Cx\Core\ContentManager\Model\Entity\Page();
                 $page->setNode($node);
 
                 // Set the following attributes only on new pages
                 $page->setTitle($this->arrForms[$formId]['lang'][$langId]['name']);
                 $page->setCmd($formId);
                 $page->setModule('contact');
-                $page->setType(\Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION);
+                $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
                 $page->setDisplay(false);
                 $page->setActive(true);
                 $page->setLang($langId);

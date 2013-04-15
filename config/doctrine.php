@@ -62,7 +62,7 @@ $chainDriverImpl = new \Doctrine\ORM\Mapping\Driver\DriverChain();
 $driverImpl = new \Doctrine\ORM\Mapping\Driver\YamlDriver(array(
     ASCMS_MODEL_PATH.'/yml',
     ASCMS_CORE_PATH.'/Component'.'/Model/Doctrine/Yaml',
-    ASCMS_CORE_PATH.'/ContentManager'.'/Model/Doctrine/Yaml',
+    ASCMS_CORE_PATH.'/ContentManager'.'/Model/Yaml',
 ));
 $chainDriverImpl->addDriver($driverImpl, 'Cx');
 

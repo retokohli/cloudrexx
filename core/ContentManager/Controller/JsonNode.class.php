@@ -1,6 +1,6 @@
 <?php
 /**
- * JSON Adapter for Cx\Core\ContentManager\Model\Doctrine\Entity\Node
+ * JSON Adapter for Cx\Core\ContentManager\Model\Entity\Node
  * @copyright   Comvation AG
  * @author      Florian Schuetz <florian.schuetz@comvation.com>
  * @author      Michael Ritter <michael.ritter@comvation.com>
@@ -13,7 +13,7 @@ use \Cx\Core\Json\JsonAdapter;
 use \Cx\Core\ContentManager\Controller\ContentManagerException;
 
 /**
- * JSON Adapter for Cx\Core\ContentManager\Model\Doctrine\Entity\Node
+ * JSON Adapter for Cx\Core\ContentManager\Model\Entity\Node
  * @copyright   Comvation AG
  * @author      Florian Schuetz <florian.schuetz@comvation.com>
  * @author      Michael Ritter <michael.ritter@comvation.com>
@@ -30,13 +30,13 @@ class JsonNode implements JsonAdapter {
     
     /**
      * Reference to the Doctrine NodeRepo
-     * @var \Cx\Core\ContentManager\Model\Doctrine\Repository\NodeRepository
+     * @var \Cx\Core\ContentManager\Model\Repository\NodeRepository
      */
     private $nodeRepo = null;
     
     /**
      * Reference to the Doctrine PageRepo
-     * @var \Cx\Core\ContentManager\Model\Doctrine\Repository\PageRepository
+     * @var \Cx\Core\ContentManager\Model\Repository\PageRepository
      */
     private $pageRepo = null;
     
@@ -70,8 +70,8 @@ class JsonNode implements JsonAdapter {
     public function __construct() {
         $this->em = \Env::em();
         if ($this->em) {
-            $this->nodeRepo = $this->em->getRepository('\Cx\Core\ContentManager\Model\Doctrine\Entity\Node');
-            $this->pageRepo = $this->em->getRepository('\Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
+            $this->nodeRepo = $this->em->getRepository('\Cx\Core\ContentManager\Model\Entity\Node');
+            $this->pageRepo = $this->em->getRepository('\Cx\Core\ContentManager\Model\Entity\Page');
             $this->logRepo  = $this->em->getRepository('\Gedmo\Loggable\Entity\LogEntry');
         }
         $this->messages = array();
@@ -307,7 +307,7 @@ class JsonNode implements JsonAdapter {
 
     /**
      * Converts a tree level to JSON
-     * @param Cx\Core\ContentManager\Model\Doctrine\Entity\Node $root Root node of the current level
+     * @param Cx\Core\ContentManager\Model\Entity\Node $root Root node of the current level
      * @param Array $logs List of all logs (used to get the username)
      * @return String JSON data
      */
@@ -348,7 +348,7 @@ class JsonNode implements JsonAdapter {
 
             foreach ($node->getPages(false, true) as $page) {
                 // don't display aliases in cm's tree
-                if ($page->getType() == \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_ALIAS) {
+                if ($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS) {
                     continue 2;
                 }
 

@@ -773,11 +773,11 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
     {
         global $_LANGID;
 
-        $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
+        $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
         $pages = $pageRepo->findBy(array(
             'cmd' => contrexx_addslashes($strPageCmd),
             'lang' => $_LANGID,
-            'type' => \Cx\Core\ContentManager\Model\Doctrine\Entity\Page::TYPE_APPLICATION,
+            'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
             'module' => $this->moduleName,
         ));
         return count($pages) > 0;
@@ -1423,7 +1423,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
             $paramName = 'lid';
         }
 
-        $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Doctrine\Entity\Page');
+        $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
         $page = $pageRepo->findOneByModuleCmdLang($this->moduleName, $cmdName, FRONTEND_LANG_ID);
 
         if ($objEntryCategoriesLevels !== false) {
