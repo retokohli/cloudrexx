@@ -51,7 +51,7 @@ class crmInterface extends CrmLibrary
                             array(
                                 'title'=>'Single quote',
                                 'value' => "'",
-                                'placeholder' => 'TXT_CRM_DOUBLE_QUOTE'
+                                'placeholder' => 'TXT_CRM_SINGLE_QUOTE'
                             ),
                           );
     private $_mediaPath = '';
@@ -551,6 +551,13 @@ class crmInterface extends CrmLibrary
         exit();
     }
 
+    /**
+     * Export all fields can be imported
+     *
+     * @global array $_ARRAYLANG     
+     *
+     * @return all fields can be imported
+     */
     function getImportOptions() {
         global $_ARRAYLANG;
         
@@ -593,6 +600,23 @@ class crmInterface extends CrmLibrary
         }
         
         echo json_encode($headerCsv);
+        exit();
+    }
+
+    /**
+     * Save the data into crm
+     *
+     * @global array $_ARRAYLANG     
+     *
+     * @return Save the data into crm
+     */
+    function saveCsvData()
+    {
+        global $objDatabase;
+
+        $json = array();
+
+        echo json_encode($json);
         exit();
     }
 }

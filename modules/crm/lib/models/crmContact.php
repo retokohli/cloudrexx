@@ -129,9 +129,9 @@ class crmContact {
         if (!isset($this->id)) {                   
             $fields['datasource'] = isset ($this->datasource) ? $this->datasource : '';
             $fields['added_date'] = date('Y-m-d H:i:s');
-            $query = SQL::insert("module_{$this->moduleName}_contacts", $fields);                        
+            $query = SQL::insert("module_{$this->moduleName}_contacts", $fields, array('escape' => true));
         } else {
-            $query = SQL::update("module_{$this->moduleName}_contacts", $fields)." WHERE `id` = {$this->id}";            
+            $query = SQL::update("module_{$this->moduleName}_contacts", $fields, array('escape' => true))." WHERE `id` = {$this->id}";
         }
         //echo $query; exit();
         if ($objDatabase->execute($query)) {
