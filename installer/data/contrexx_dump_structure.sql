@@ -1014,8 +1014,8 @@ CREATE TABLE `contrexx_module_crm_customer_comment` (
   `date` date NOT NULL,
   `comment` text,
   `added_date` datetime default NULL,
-  `updated_by` int(11) NOT NULL,
-  `updated_on` datetime NOT NULL,
+  `updated_by` int(11) default NULL,
+  `updated_on` datetime default NULL,
   PRIMARY KEY  (`id`),
   KEY `customer_id` (`customer_id`)
 ) ENGINE=MyISAM ;
