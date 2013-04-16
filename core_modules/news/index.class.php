@@ -1409,6 +1409,31 @@ class news extends newsLibrary {
             }
         }
 
+        // register code for redirect type
+        \JS::activate('cx');
+        $jsCode = <<<JSCODE
+cx.ready(function () {
+    if (\$J('.newsTypeRedirect').length > 0) {
+        \$J('.newsTypeRedirect').change(function () {
+            if (\$J(this).val() == 1) {
+                \$J('.newsRedirect').show();
+                \$J('.newsContent').hide();
+            } else {
+                \$J('.newsContent').show();
+                \$J('.newsRedirect').hide();
+            }
+        });
+        if (\$J('input[type=reset]').length > 0) {
+            \$J('input[type=reset]').click(function () {
+                \$J('.newsContent').show();
+                \$J('.newsRedirect').hide();
+            });
+        }
+    }
+});
+JSCODE;
+        \JS::registerCode($jsCode);
+
         // set $display to false in case we just added a newly submitted message.
         // setting $display to false will hide the submit form.
         $this->showSubmitForm($data, $display = !$newsId);
@@ -1429,6 +1454,7 @@ class news extends newsLibrary {
         $data['newsUrl2'] = 'http://';
         $data['newsCat'] = '';
         $data['newsType'] = '';
+        $data['newsTypeRedirect'] = 0;
 
         if (!isset($_POST['submitNews'])) {
             return array(false, $data);
@@ -1446,6 +1472,7 @@ class news extends newsLibrary {
         $data['newsUrl2'] = $objValidator->getUrl(contrexx_input2raw(html_entity_decode($_POST['newsUrl2'], ENT_QUOTES, CONTREXX_CHARSET)));
         $data['newsCat'] = !empty($_POST['newsCat']) ? intval($_POST['newsCat']) : 0;
         $data['newsType'] = !empty($_POST['newsType']) ? intval($_POST['newsType']) : 0;
+        $data['newsTypeRedirect'] = !empty($_POST['newsTypeRedirect']) ? true : false;
 
         return array(true, $data);
     }
@@ -1469,12 +1496,14 @@ class news extends newsLibrary {
             'TXT_HYPERLINKS'            => $_ARRAYLANG['TXT_HYPERLINKS'],
             'TXT_EXTERNAL_SOURCE'       => $_ARRAYLANG['TXT_EXTERNAL_SOURCE'],
             'TXT_LINK'                  => $_ARRAYLANG['TXT_LINK'],
+            'TXT_NEWS_REDIRECT_LABEL'   => $_ARRAYLANG['TXT_NEWS_REDIRECT_LABEL'],
             'TXT_NEWS_NEWS_CONTENT'     => $_ARRAYLANG['TXT_NEWS_NEWS_CONTENT'],
             'TXT_NEWS_TEASER_TEXT'      => $_ARRAYLANG['TXT_NEWS_TEASER_TEXT'],
             'TXT_SUBMIT_NEWS'           => $_ARRAYLANG['TXT_SUBMIT_NEWS'],
             'TXT_NEWS_REDIRECT'         => $_ARRAYLANG['TXT_NEWS_REDIRECT'],
             'TXT_NEWS_NEWS_URL'         => $_ARRAYLANG['TXT_NEWS_NEWS_URL'],
             'TXT_CAPTCHA'               => $_ARRAYLANG['TXT_CAPTCHA'],
+            'TXT_TYPE'                  => $_ARRAYLANG['TXT_TYPE'],
             'NEWS_TEXT'                 => new \Cx\Core\Wysiwyg\Wysiwyg('newsText', $data['newsText'], 'news'),
             'NEWS_CAT_MENU'             => $this->getCategoryMenu($data['newsCat']),
             'NEWS_TYPE_MENU'            => ($this->arrSettings['news_use_types'] == 1 ? $this->getTypeMenu($data['newsType']) : ''),
@@ -1581,7 +1610,9 @@ class news extends newsLibrary {
             $error = $_ARRAYLANG['TXT_CAPTCHA_ERROR'] . '<br />';
         }
 
-        if ($data['newsRedirect'] == 'http://') {
+        if ((isset($data['newsTypeRedirect'])
+            && !$data['newsTypeRedirect'])
+            || $data['newsRedirect'] == 'http://') {
             $data['newsRedirect'] = '';
         }
 
