@@ -1029,7 +1029,7 @@ function _updateModulePages(&$viewUpdateTable) {
 }
 
 function _updateCssDefinitions(&$viewUpdateTable, $objUpdate) {
-    global $objDatabase;
+    global $objDatabase, $_CORELANG;
     
     // Find all themes
     $result = $objDatabase->Execute('SELECT `themesname`, `foldername` FROM `' . DBPREFIX . 'skins`');
@@ -1040,6 +1040,13 @@ function _updateCssDefinitions(&$viewUpdateTable, $objUpdate) {
     
     // Find type for theme and update its CSS definitions
     while (!$result->EOF) {
+        if (!is_dir(ASCMS_THEMES_PATH . '/' . $result->fields['foldername'])) {
+            \DBG::msg('Skipping theme "' . $result->fields['themesname'] . '"; No such folder!');
+            setUpdateMsg('<div class="message-warning">' . sprintf($_CORELANG['TXT_CSS_UPDATE_MISSING_FOLDER'], $result->fields['themesname']) . '</div>', 'msg');
+            setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_CONTINUE_UPDATE'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
+            $result->moveNext();
+            continue;
+        }
         if (preg_match('/print/', $result->fields['themesname'])) {
             $type = 'print';
         } else if (preg_match('/pdf/', $result->fields['themesname'])) {
