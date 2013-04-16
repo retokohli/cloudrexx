@@ -50,7 +50,7 @@ $config->setProxyNamespace('Cx\Model\Proxies');
 $config->setAutoGenerateProxyClasses(false);
 
 $connection = new \PDO(
-    'mysql:dbname=' . $_DBCONFIG['database'] . ';host='.$_DBCONFIG['host'],
+    'mysql:dbname=' . $_DBCONFIG['database'] . ';' . (isset($_DBCONFIG['charset']) ? 'charset=' . $_DBCONFIG['charset'] . ';' : '') . 'host='.$_DBCONFIG['host'],
     $_DBCONFIG['user'],
     $_DBCONFIG['password']
 );
