@@ -41,6 +41,14 @@ namespace Cx\Core
          * @var     ADONewConnection
          */
         private $db = null;
+        
+        /**
+         * ClassLoader
+         * 
+         * @access  private
+         * @var     \Cx\Core\ClassLoader\ClassLoader
+         */
+        private $cl = null;
 
         /**
          * Names of all core modules
@@ -79,12 +87,14 @@ namespace Cx\Core
          * Constructor
          *
          * @access  public
-         * @param   EntityManager       $em
-         * @param   ADONewConnection    $db
+         * @param   EntityManager                     $em
+         * @param   ADONewConnection                  $db
+         * @param   \Cx\Core\ClassLoader\ClassLoader  $cl
          */
-        public function __construct($em, $db){
+        public function __construct($em, $db, $cl){
             $this->em = $em;
             $this->db = $db;
+            $this->cl = $cl;
 
             $this->init();
         }
@@ -141,13 +151,13 @@ namespace Cx\Core
                         }
 
                         if ((in_array($moduleName, $arrCmInstalledModules)) &&
-                            ($isCore || (!$isCore && is_dir(ASCMS_MODULE_PATH.'/'.$moduleName)))
+                            ($isCore || (!$isCore && is_dir($this->cl->getFilePath(ASCMS_MODULE_PATH.'/'.$moduleName))))
                         ) {
                             $this->arrInstalledModules[] = $moduleName;
                         }
 
                         if ((in_array($moduleName, $arrCmActiveModules)) &&
-                            ($isCore || (!$isCore && is_dir(ASCMS_MODULE_PATH.'/'.$moduleName)))
+                            ($isCore || (!$isCore && is_dir($this->cl->getFilePath(ASCMS_MODULE_PATH.'/'.$moduleName))))
                         ) {
                             $this->arrActiveModules[] = $moduleName;
                         }

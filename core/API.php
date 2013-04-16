@@ -86,7 +86,7 @@ function contrexx_isCoreModule($moduleName)
     static $objModuleChecker = NULL;
 
     if (!isset($objModuleChecker)) {
-        $objModuleChecker = new \Cx\Core\ModuleChecker(\Env::get('em'), \Env::get('db'));
+        $objModuleChecker = new \Cx\Core\ModuleChecker(\Env::get('em'), \Env::get('db'), \Env::get('ClassLoader'));
     }
 
     return $objModuleChecker->isCoreModule($moduleName);
@@ -103,7 +103,7 @@ function contrexx_isModuleActive($moduleName)
     static $objModuleChecker = NULL;
 
     if (!isset($objModuleChecker)) {
-        $objModuleChecker = new \Cx\Core\ModuleChecker(\Env::get('em'), \Env::get('db'));
+        $objModuleChecker = new \Cx\Core\ModuleChecker(\Env::get('em'), \Env::get('db'), \Env::get('ClassLoader'));
     }
 
     return $objModuleChecker->isModuleActive($moduleName);
@@ -120,7 +120,7 @@ function contrexx_isModuleInstalled($moduleName)
     static $objModuleChecker = NULL;
 
     if (!isset($objModuleChecker)) {
-        $objModuleChecker = new \Cx\Core\ModuleChecker(\Env::get('em'), \Env::get('db'));
+        $objModuleChecker = new \Cx\Core\ModuleChecker(\Env::get('em'), \Env::get('db'), \Env::get('ClassLoader'));
     }
 
     return $objModuleChecker->isModuleInstalled($moduleName);
