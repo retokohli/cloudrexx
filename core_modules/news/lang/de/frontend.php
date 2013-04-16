@@ -67,6 +67,7 @@ $_ARRAYLANG['TXT_NEWS_RELATED_MESSAGES_OF_TYPE'] = "Weitere Meldungen desselben 
 $_ARRAYLANG['TXT_NEWS_PUBLISHER'] = "Herausgeber";
 $_ARRAYLANG['TXT_NEWS_AUTHOR'] = "Autor";
 $_ARRAYLANG['TXT_NEWS_REDIRECT_INSTRUCTION'] = "Über folgenden Link gelangen Sie zur Meldung:";
+$_ARRAYLANG['TXT_NEWS_REDIRECT_LABEL'] = "Weiterleitung";
 
 // TODO: News Archive - what is it good for?
 $_ARRAYLANG['TXT_NEWS_NOT_FOUND'] = "News not found";
