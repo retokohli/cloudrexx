@@ -1311,7 +1311,7 @@ class CrmLibrary {
                         'is_primary'    => 1,
                         'contact_id'    => $this->contact->id
                     );
-                    $query  = SQL::insert("module_{$this->moduleName}_customer_contact_websites", $fields);
+                    $query  = SQL::insert("module_{$this->moduleName}_customer_contact_websites", $fields, array('escape' => true));
                     $db = $objDatabase->Execute($query);
                 }
 

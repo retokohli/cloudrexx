@@ -52,7 +52,7 @@
     width: 16px;
 }
 .crm-addNewLink, .crm_addNewLink_address {
-    background: url("../../../../cadmin/images/icons/add-crm.gif") no-repeat scroll left center transparent;
+    background: url("../../../../cadmin/images/icons/add-crm.png") no-repeat scroll left center transparent;
     cursor: pointer;
     display: inline-block;
     height: 16px;

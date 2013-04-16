@@ -52,7 +52,7 @@ class CrmManager extends CrmLibrary {
     /**
      * Constructor
      */
-    function CrmManager()
+    function Crm()
     {
         $this->__construct();
     }
@@ -65,9 +65,9 @@ class CrmManager extends CrmLibrary {
      */
     function __construct()
     {
+
         global $objTemplate, $_ARRAYLANG, $objJs;
         parent::__construct();
-        
         $objJs = new Javascript();       
         $this->objCSVimport = new CSVimport();        
         // $objJs = new Javascript();
@@ -423,7 +423,7 @@ class CrmManager extends CrmLibrary {
                         'TXT_COMMENT_ID'              => (int) $objComment->fields['id'],
                         'TXT_COMMENT_CUSTOMER_ID'     => (int) $objComment->fields['customer_id'],
                         'CRM_COMMENT_ADDEDDATETIME'   => date('Y-m-d h:i A', strtotime($objComment->fields['added_date'])),
-                        'CRM_COMMENT_UPDATEDDATETIME' => date('Y-m-d h:i A', strtotime($objComment->fields['updated_on'])),
+                        'CRM_COMMENT_UPDATEDDATETIME' => !empty($objComment->fields['updated_on']) ? date('Y-m-d h:i A', strtotime($objComment->fields['updated_on'])) : '-',
                         'CRM_COMMENT_DATE'            => contrexx_raw2xhtml($objComment->fields['date']),
                         'CRM_NOTES_TYPE'              => contrexx_raw2xhtml($objComment->fields['notes']),
                         'CRM_NOTES_TYPE_ID'           => intval($objComment->fields['notes_type_id']),
@@ -2166,10 +2166,10 @@ END;
                                   );
                         if (!empty($value['id'])) {
                             array_push($assignedWebsites, $value['id']);
-                            $query  = SQL::update("module_{$this->moduleName}_customer_contact_websites", $fields)." WHERE `id` = {$value['id']} AND `contact_id` = {$this->contact->id}";
+                            $query  = SQL::update("module_{$this->moduleName}_customer_contact_websites", $fields, array('escape' => true))." WHERE `id` = {$value['id']} AND `contact_id` = {$this->contact->id}";
                             $objDatabase->Execute($query);
                         } else {
-                            $query  = SQL::insert("module_{$this->moduleName}_customer_contact_websites", $fields);
+                            $query  = SQL::insert("module_{$this->moduleName}_customer_contact_websites", $fields, array('escape' => true));
                             $db = $objDatabase->Execute($query);
                             if ($db)
                                 array_push($assignedWebsites, $objDatabase->INSERT_ID());
@@ -2193,10 +2193,10 @@ END;
                                   );
                         if (!empty($value['id'])) {
                             array_push($assignedSocialNetwork, $value['id']);
-                            $query  = SQL::update("module_{$this->moduleName}_customer_contact_social_network", $fields)." WHERE `id` = {$value['id']} AND `contact_id` = {$this->contact->id}";
+                            $query  = SQL::update("module_{$this->moduleName}_customer_contact_social_network", $fields, array('escape' => true))." WHERE `id` = {$value['id']} AND `contact_id` = {$this->contact->id}";
                             $objDatabase->Execute($query);
                         } else {
-                            $query  = SQL::insert("module_{$this->moduleName}_customer_contact_social_network", $fields);
+                            $query  = SQL::insert("module_{$this->moduleName}_customer_contact_social_network", $fields, array('escape' => true));
                             $db = $objDatabase->Execute($query);
                             if ($db)
                                 array_push($assignedSocialNetwork, $objDatabase->INSERT_ID());
@@ -2686,16 +2686,16 @@ END;
                         'customer_id'   => (int) $customerId,
                         'notes_type_id' => (int) $noteTypeId,
                         'comment'       => $description,                        
-                        'date'          => $noteDate,
-                        'updated_on'    => date('Y-m-d H:i:s'),
-                        'updated_by'    => (int) $userid
+                        'date'          => $noteDate                        
                     );
                     if ($id) {
-                        $sql = SQL::update("module_{$this->moduleName}_customer_comment", $fields, array('escape' => false))." WHERE id = $id";
+                        $fields['updated_on'] = date('Y-m-d H:i:s');
+                        $fields['updated_by'] = (int) $userid;
+                        $sql = SQL::update("module_{$this->moduleName}_customer_comment", $fields, array('escape' => true))." WHERE id = $id";
                     } else {
                         $fields['added_date'] = date('Y-m-d H:i:s');
                         $fields['user_id']    = (int) $userid;
-                        $sql = SQL::insert("module_{$this->moduleName}_customer_comment", $fields, array('escape' => false));
+                        $sql = SQL::insert("module_{$this->moduleName}_customer_comment", $fields, array('escape' => true));
                     }
 
                     $db = $objDatabase->Execute($sql);
@@ -3971,7 +3971,7 @@ END;
         $this->_objTpl->setGlobalVariable(array (
                 'TXT_CRM_ACTIVE'                      => $_ARRAYLANG['TXT_CRM_ACTIVE'],
                 'TXT_CRM_PROJECT_ID'                  => $_ARRAYLANG['TXT_CRM_PROJECT_ID'],
-                'TXT_TXT_CRM_PROJECT_NAME'                => $_ARRAYLANG['TXT_CRM_PROJECT_NAME'],
+                'TXT_CRM_PROJECT_NAME'                => $_ARRAYLANG['TXT_CRM_PROJECT_NAME'],
                 'TXT_CRM_PROJECT_QUOTED_PRICE'        => $_ARRAYLANG['TXT_CRM_PROJECT_QUOTED_PRICE'],
                 'TXT_CRM_CUSTOMER_NAME'               => $_ARRAYLANG['TXT_CRM_CUSTOMER_NAME'],
                 'TXT_CRM_PROJECT_STATUS'              => $_ARRAYLANG['TXT_CRM_PROJECT_STATUS'],
@@ -5728,7 +5728,7 @@ END;
                 'uploaded_date' => date('Y-m-d H:i:s'),
                 'contact_id'    => $customerId
             );
-            $sql = SQL::insert("module_{$this->moduleName}_customer_documents", $fields);
+            $sql = SQL::insert("module_{$this->moduleName}_customer_documents", $fields, array('escape' => true));
             $objDatabase->Execute($sql);
             
             header("Content-Type: text/plain");
