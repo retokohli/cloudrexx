@@ -1680,3 +1680,8 @@ $_ARRAYLANG['TXT_CRM_TASKS']                   = "Aufgaben";
 $_ARRAYLANG['TXT_CRM_OPPORTUNITY']              = "Verkaufschancen";
 $_ARRAYLANG['TXT_CRM_INTERFACE']               = "Interface";
 $_ARRAYLANG['TXT_CRM_SETTINGS']            = "Einstellungen";
+
+$_ARRAYLANG['TXT_TOOLS'] = 'Werkzeuge';
+$_ARRAYLANG['TXT_MODULE_WORKBENCH'] = 'Entwicklertools';
+$_ARRAYLANG['TXT_MODULE_WORKBENCH_SANDBOX'] = 'Sandkasten';
+$_ARRAYLANG['TXT_WORKBENCH_MODULE_DESCRIPTION'] = 'Entwicklertools';
