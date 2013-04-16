@@ -44,12 +44,13 @@ class Workbench {
      */
     public function getPage($objTemplate, $post) {
         // this is the code for the DQL SANDBOX. This should be moved to a new SanboxController or something similiar
-        $dql = '';
+        $objTemplate->setVariable('CONTENT_NAVIGATION', '<a href="index.php?cmd=workbench" class="active">DQL</a>');
+        $dql = 'SELECT p FROM Cx\Core\ContentManager\Model\Doctrine\Entity\Page p WHERE p.id < 10';
         $output = '';
         if (!empty($post['dql'])) {
             $dql = $post['dql'];
         }
-        if (trim($dql) != '') {
+        if (isset($post['dql']) && trim($dql) != '') {
             $strQuery = trim($post['dql']);
             $lister = new \Cx\Core_Modules\Listing\Controller\ListingController(
                 function(&$offset, &$count, &$criteria, &$order) use ($strQuery) {
@@ -68,7 +69,7 @@ class Workbench {
                 $output = 'Could not execute query (' . $e->getMessage() . ')!';
             }
         }
-        $objTemplate->setVariable('ADMIN_CONTENT', $output.'<form method="post"><textarea name="dql">' . $dql . '</textarea><input type="submit" /></form>');//*/
+        $objTemplate->setVariable('ADMIN_CONTENT', '<form method="post"><textarea name="dql" rows="10" cols="70">' . $dql . '</textarea><br /><input type="submit" /></form><hr />'.$output);
     }
     
     public function getConfigEntry($identifier) {
