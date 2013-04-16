@@ -462,11 +462,13 @@ return false;
      * @throws ModuleManagerException 
      */
     public function loadModule(&$module, $classLoader, $objDatabase, &$coreLang, &$subMenuTitle, $objTemplate, $objFWUser, &$act, $objInit) {
+        \DBG::msg('Component load: Trying to load "' . $module . '"');
         // exceptions which need to be load the legacy way:
         if (in_array($module, array(
             'forum', // because of /modules/example_module_template/admin.class.php
             'calendar', // because const CALENDAR_MANDATE needs to be set
         )) || $objInit->mode != 'backend') {
+            \DBG::msg('Component load: Forcing legacy load');
             throw new ModuleManagerException('Forcing legacy load');
         }
     	$result = $objDatabase->query('
@@ -480,21 +482,26 @@ return false;
     			`m`.`name` = \'' . $module . '\'
     	');
         if (!$result) {
+            \DBG::msg('Component load: Could not load access');
             throw new ModuleManagerException('Could not load access for module "' . $module . '"');
         }
     	$accessId = $result->fields['access_id'] + 0;
     	if (!\Permission::checkAccess($accessId, 'static', true)) {
             // This should never happen, page should have been resolved to 'login' before
-            die("KLJ");\CSRF::header('Location: ?cmd=login');
+            \DBG::msg('Component load: Redirecting to login. This should never happen, page should have been resolved to "login" before');
+            \CSRF::header('Location: ?cmd=login');
         }
-    	if (!$classLoader->loadFile(ASCMS_MODULE_PATH.'/' . $module . '/admin.class.php')) {
+        $backendClassName = '\\Cx\\Core_Modules\\' . ucfirst($module) . '\\Controller\\' . ucfirst($module);
+    	if (!class_exists($backendClassName) && !$classLoader->loadFile(ASCMS_MODULE_PATH.'/' . $module . '/admin.class.php')) {
+            \DBG::msg('Component load: Component does not exist');
             throw new ModuleManagerException($coreLang['TXT_THIS_MODULE_DOESNT_EXISTS']);
         }
+        // TODO: check module title too
         if (!isset($coreLang['TXT_' . strtoupper($module) . '_MODULE_DESCRIPTION'])) {
-            throw new ModuleManagerException('No title for module "' . $module . '"');
+            \DBG::msg('Component load: No description for module');
+            throw new ModuleManagerException('No description for module "' . $module . '"');
         }
         $subMenuTitle = $coreLang['TXT_' . strtoupper($module) . '_MODULE_DESCRIPTION'];
-        $backendClassName = '\\Cx\\Module\\' . ucfirst($module) . '\\' . ucfirst($module) . 'Backend';
         if (!class_exists($backendClassName)) {
             // try legacy class names:
             $origBackendClassName = $backendClassName;
@@ -504,17 +511,19 @@ return false;
                 if (!class_exists($backendClassName)) {
                     $backendClassName = ucfirst($module) . 'Manager';
                     if (!class_exists($backendClassName)) {
+                        \DBG::msg('Component load: Could not find class for component');
                         throw new ModuleManagerException('Class "' . $origBackendClassName . '" for module "' . $module . '" not found');
                     }
                 }
             }
         }
         if (!method_exists($backendClassName, 'getPage')) {
+            \DBG::msg('Component load: Found class for component has not getPage() method');
             throw new ModuleManagerException('Class "' . $backendClassName . '" for module "' . $module . '" has no method getPage($template)');
         }
         $backendClass = new $backendClassName($objInit->loadLanguageData($module));
-        $backendClass->getPage($objTemplate);
-        echo 'Could load nice';
+        $backendClass->getPage($objTemplate, $_POST);
+        \DBG::msg('Component load: Could load nice. This is nice component!');
     }
 
     /**
