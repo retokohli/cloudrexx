@@ -2750,11 +2750,17 @@ class newsManager extends newsLibrary {
                                 if (empty($objRSSWriter->channelLastBuildDate)) {
                                     $objRSSWriter->channelLastBuildDate = date('r', $objResult->fields['date']);
                                 }
+                                $teaserText = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $objResult->fields['teaser_text']);
+                                $text = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $objResult->fields['text']);
+                                $redirect = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $objResult->fields['redirect']);
+                                \LinkGenerator::parseTemplate($teaserText, true);
+                                \LinkGenerator::parseTemplate($text, true);
+                                \LinkGenerator::parseTemplate($redirect, true);
                                 $arrNews[$objResult->fields['id']] = array(
                                     'date'          => $objResult->fields['date'],
                                     'title'         => $objResult->fields['title'],
-                                    'text'          => empty($objResult->fields['redirect']) ? (!empty($objResult->fields['teaser_text']) ? nl2br($objResult->fields['teaser_text']).'<br /><br />' : '').$objResult->fields['text'] : (!empty($objResult->fields['teaser_text']) ? nl2br($objResult->fields['teaser_text']) : ''),
-                                    'redirect'      => $objResult->fields['redirect'],
+                                    'text'          => empty($redirect) ? (!empty($teaserText) ? nl2br($teaserText).'<br /><br />' : '').$text : (!empty($teaserText) ? nl2br($teaserText) : ''),
+                                    'redirect'      => $redirect,
                                     'source'        => $objResult->fields['source'],
                                     'category'      => $objResult->fields['category'],                                    
                                     'teaser_frames' => explode(';', $objResult->fields['teaser_frames']),
