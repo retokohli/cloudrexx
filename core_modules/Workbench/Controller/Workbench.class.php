@@ -31,6 +31,46 @@ class Workbench {
         );
     }
     
+    /**
+     *
+     * @param type $objTemplate
+     * @param type $post
+     * @return type
+     * @throws \Exception 
+     * @todo YAML assistant
+     * @todo Cx/Module sandbox
+     * @todo Language var checker (/translation helper)
+     * @todo Component analysis (/testing)
+     */
+    public function getPage($objTemplate, $post) {
+        // this is the code for the DQL SANDBOX. This should be moved to a new SanboxController or something similiar
+        $dql = '';
+        $output = '';
+        if (!empty($post['dql'])) {
+            $dql = $post['dql'];
+        }
+        if (trim($dql) != '') {
+            $strQuery = trim($post['dql']);
+            $lister = new \Cx\Core_Modules\Listing\Controller\ListingController(
+                function(&$offset, &$count, &$criteria, &$order) use ($strQuery) {
+                    // @todo: add statements for offset, count, crit and order
+                    $query = \Env::get('em')->createQuery($strQuery);
+                    $result = $query->getResult();
+                    if (!$result) {
+                        throw new \Exception('Empty result');
+                    }
+                    return new \Cx\Core_Modules\Listing\Model\DataSet($result);
+                }
+            );
+            try {
+                $output = (new \BackendTable($lister->getData()))->toHtml().$lister;
+            } catch (\Exception $e) {
+                $output = 'Could not execute query (' . $e->getMessage() . ')!';
+            }
+        }
+        $objTemplate->setVariable('ADMIN_CONTENT', $output.'<form method="post"><textarea name="dql">' . $dql . '</textarea><input type="submit" /></form>');//*/
+    }
+    
     public function getConfigEntry($identifier) {
         if (!$this->config) {
             $this->loadConfig();
