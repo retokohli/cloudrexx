@@ -354,7 +354,7 @@ class Products
                         PREG_SPLIT_NO_EMPTY));
                 if (count($arrCategoryId) > 1) {
                     unset($arrCategoryId[$category_id]);
-                    $objProduct->setShopCategoryId(
+                    $objProduct->category_id(
                         join(',', array_keys($arrCategoryId)));
                     if (!$objProduct->store()) {
                         return false;
