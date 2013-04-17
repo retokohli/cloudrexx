@@ -1052,7 +1052,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                     // TODO: response/reporting/refresh
                     if (!r.status) { 
                         jQuery.jstree.rollback(data.rlbk);
-                    } else { 
+                    } else {
                         jQuery(data.rslt.oc).attr("id", "node_" + r.id);
                         if (data.rslt.cy && jQuery(data.rslt.oc).children("UL").length) {
                             data.inst.refresh(data.inst._get_parent(data.rslt.oc));
@@ -1133,8 +1133,10 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                         jQuery(this).parent().children('.jstree-move').css('display', 'none');
                     } else {
                         jQuery(document).bind('mouseup.link', function() {
-                            jQuery(e.currentTarget).siblings('.jstree-wrapper').removeClass('hover');
-                            jQuery(e.currentTarget).parent().children('.jstree-move').css('display', 'none');
+                            if (e.type != 'mouseleave') {
+                                jQuery(e.currentTarget).siblings('.jstree-wrapper').removeClass('hover');
+                                jQuery(e.currentTarget).parent().children('.jstree-move').css('display', 'none');
+                            }
                             jQuery(document).unbind('mouseup.link');
                         });
                     }
