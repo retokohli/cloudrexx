@@ -308,6 +308,7 @@ function executeContrexxUpdate() {
                         }
                         return false;
                     }
+                    $_SESSION['contrexx_update']['update']['done'][] = 'moduleStyles';
                 }
             }
         }
@@ -1039,11 +1040,11 @@ function _updateCssDefinitions(&$viewUpdateTable, $objUpdate) {
     }
     
     // Find type for theme and update its CSS definitions
+    $errorMessages = '';
     while (!$result->EOF) {
         if (!is_dir(ASCMS_THEMES_PATH . '/' . $result->fields['foldername'])) {
             \DBG::msg('Skipping theme "' . $result->fields['themesname'] . '"; No such folder!');
-            setUpdateMsg('<div class="message-warning">' . sprintf($_CORELANG['TXT_CSS_UPDATE_MISSING_FOLDER'], $result->fields['themesname']) . '</div>', 'msg');
-            setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_CONTINUE_UPDATE'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
+            $errorMessages .= '<div class="message-warning">' . sprintf($_CORELANG['TXT_CSS_UPDATE_MISSING_FOLDER'], $result->fields['themesname']) . '</div>';
             $result->moveNext();
             continue;
         }
@@ -1064,6 +1065,12 @@ function _updateCssDefinitions(&$viewUpdateTable, $objUpdate) {
             return false;
         }
         $result->moveNext();
+    }
+    if (!empty($errorMessages)) {
+        setUpdateMsg($errorMessages, 'msg');
+        setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_CONTINUE_UPDATE'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
+        $_SESSION['contrexx_update']['update']['done'][] = 'moduleStyles';
+        return false;
     }
     return true;
 }
