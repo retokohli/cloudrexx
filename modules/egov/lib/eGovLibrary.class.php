@@ -10,6 +10,9 @@
  * @todo        Edit PHP DocBlocks!
  */
 
+// load validator class for Regex-Constants in static array $arrCheckTypes
+\Env::get('ClassLoader')->loadFile(ASCMS_FRAMEWORK_PATH . '/Validator.class.php');
+
 /**
  * eGovLibrary
  * @copyright   CONTREXX CMS - COMVATION AG
