@@ -618,6 +618,7 @@ function executeContrexxUpdate() {
 }
 
 function getMissedModules() {
+    global $objUpdate, $_CONFIG;
     $installedModules = array();
     $result = \Cx\Lib\UpdateUtil::sql('SELECT `name`, `description_variable` FROM `'.DBPREFIX.'modules` WHERE `status` = "y" ORDER BY `name` ASC');
     if ($result) {
@@ -625,6 +626,13 @@ function getMissedModules() {
             $installedModules[] = $result->fields['name'];
             $result->MoveNext();
         }
+    }
+
+    // the egov module is installed but not turned to 'y' in update
+    if (   $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.0.3')
+        && !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.0.2')
+        && \Cx\Lib\UpdateUtil::table_exist(DBPREFIX . 'module_egov_configuration')) {
+        $installedModules[] = 'egov';
     }
 
     $missedModules = array();
