@@ -314,20 +314,29 @@ class CrmLibrary {
 
     }
 
-    function getCustomerTypeDropDown($objTpl, $selectedId = 0, $block = "customerTypes") {
+    function getCustomerTypeDropDown($objTpl, $selectedId = 0, $block = "customerTypes", $options = array()) {
         global $_ARRAYLANG;
 
         $this->getCustomerTypes();
 
-        foreach ($this->customerTypes as $key => $value) {
+        if ($options['is_hide'] && count($this->customerTypes) < 2) {
+            $objTpl->hideBlock('block_customer_type');
+        } else {
+            if ($objTpl->blockExists('block_customer_type')) {
+                $objTpl->touchBlock('block_customer_type');
+            }            
+            foreach ($this->customerTypes as $key => $value) {
 
-            $selected = ($value['id'] == $selectedId ) ? 'selected ="selected"' : '';
-            $objTpl->setVariable(array(
-                    'CRM_CUSTOMER_TYPE_SELECTED' => $selected,
-                    'CRM_CUSTOMER_TYPE'          => contrexx_raw2xhtml($value['label']),
-                    'CRM_CUSTOMER_TYPE_ID'       => (int) $value['id']));
-            $objTpl->parse($block);
+                $selected = ($value['id'] == $selectedId ) ? 'selected ="selected"' : '';
+                $objTpl->setVariable(array(
+                        'CRM_CUSTOMER_TYPE_SELECTED' => $selected,
+                        'CRM_CUSTOMER_TYPE'          => contrexx_raw2xhtml($value['label']),
+                        'CRM_CUSTOMER_TYPE_ID'       => (int) $value['id']));
+                $objTpl->parse($block);
+            }
         }
+
+
     }
 
     function getCustomerCurrencyDropDown($objTpl, $selectedId = 0, $block = "currency") {
@@ -1150,20 +1159,27 @@ class CrmLibrary {
         }
     }
 
-    function getOverviewMembershipDropdown($objTpl, $modelMembership, $selected = 0, $block = "memberships") {
+    function getOverviewMembershipDropdown($objTpl, $modelMembership, $selected = 0, $block = "memberships", $options = array()) {
         $data = array(
                 'status = 1'
         );
         $result = $modelMembership->findAllByLang($data);
-        while (!$result->EOF) {
-            $objTpl->setVariable(array(
-                    "CRM_MEMBERSHIP_ID"         => (int) $result->fields['id'],
-                    "CRM_MEMBERSHIP_VALUE"      => contrexx_raw2xhtml($result->fields['value']),
-                    "CRM_MEMBERSHIP_SELECTED"   => ($result->fields['id'] == $selected) ? "selected='selected'" : '',
-            ));
-            $objTpl->parse($block);
-            $result->MoveNext();
+
+        if ($options['is_hide'] && $result->RecordCount() < 2) {
+            $objTpl->hideBlock('block_memberships');
+        } else {
+            while (!$result->EOF) {
+                $objTpl->setVariable(array(
+                        "CRM_MEMBERSHIP_ID"         => (int) $result->fields['id'],
+                        "CRM_MEMBERSHIP_VALUE"      => contrexx_raw2xhtml($result->fields['value']),
+                        "CRM_MEMBERSHIP_SELECTED"   => ($result->fields['id'] == $selected) ? "selected='selected'" : '',
+                ));
+                $objTpl->parse($block);
+                $result->MoveNext();
+            }
         }
+        
+        
     }
 
     function addUser($email, $password, $sendLoginDetails = false) {

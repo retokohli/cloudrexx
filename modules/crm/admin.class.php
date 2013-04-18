@@ -4,27 +4,22 @@
  *
  * Crm class
  *
- * @copyright	CONTREXX CMS
- * @author	SoftSolutions4U Development Team <info@softsolutions4u.com>
+ * @author    SoftSolutions4U Development Team <info@softsolutions4u.com>
+ * @copyright 2011 CONTREXX CMS
  * @module	CRM
  * @modulegroup	modules
  * @access	public
  * @version	1.0.0
  */
-//DBG::activate();
-require_once ASCMS_MODULE_PATH   . '/crm/lib/crmLib.class.php';
+// DBG::activate();
+require_once ASCMS_MODULE_PATH.'/crm/lib/crmLib.class.php';
 
-require_once CRM_MODULE_LIB_PATH . '/javascript.class.php';
-require_once CRM_MODULE_LIB_PATH . '/sort.class.php';
-require_once CRM_MODULE_LIB_PATH . '/Csv_bv.class.php';
+require_once CRM_MODULE_LIB_PATH.'/javascript.class.php';
+require_once CRM_MODULE_LIB_PATH.'/sort.class.php';
+require_once CRM_MODULE_LIB_PATH.'/Csv_bv.class.php';
 
 class CrmManager extends CrmLibrary {
-    /**
-     * Template object
-     *
-     * @access private
-     * @var object
-     */
+    // Template object
     var $_objTpl;
 
     /**
@@ -52,9 +47,11 @@ class CrmManager extends CrmLibrary {
     /**
      * Constructor
      */
-    function Crm()
+
+    function CrmManager()
     {
         $this->__construct();
+
     }
 
     /**
@@ -63,7 +60,7 @@ class CrmManager extends CrmLibrary {
      * @global object $objTemplate
      * @global array $_ARRAYLANG
      */
-    function __construct()
+    public function __construct()
     {
 
         global $objTemplate, $_ARRAYLANG, $objJs;
@@ -429,7 +426,7 @@ class CrmManager extends CrmLibrary {
                         'CRM_NOTES_TYPE_ID'           => intval($objComment->fields['notes_type_id']),
                         'CRM_ADDED_USER'              => contrexx_raw2xhtml($objComment->fields['username']),
                         'CRM_UPDATED_USER'            => contrexx_raw2xhtml($objComment->fields['updatedUser']),
-                        'TXT_CRM_COMMENT_DESCRIPTION' => $this->strip_only_tags($objComment->fields['comment'], '<script><iframe>', $stripContent=false),
+                        'TXT_CRM_COMMENT_DESCRIPTION' => $this->stripOnlyTags($objComment->fields['comment'], '<script><iframe>', $stripContent=false),
                         'TXT_CRM_IMAGE_EDIT'          => $_ARRAYLANG['TXT_CRM_IMAGE_EDIT'],
                         'TXT_CRM_IMAGE_DELETE'        => $_ARRAYLANG['TXT_CRM_IMAGE_DELETE'],
                         'ENTRY_ROWCLASS'              => $row = ($row == 'row1') ? 'row2' : 'row1',
@@ -772,10 +769,10 @@ class CrmManager extends CrmLibrary {
                 'CRM_REDIRECT_LINK'         => '&redirect='.base64_encode("&act=customers{$searchLink}{$sortLink}{$pageLink}"),
         ));
 
-        $this->getCustomerTypeDropDown($this->_objTpl, isset($_GET['customer_type']) ? $_GET['customer_type'] : 0);
+        $this->getCustomerTypeDropDown($this->_objTpl, isset($_GET['customer_type']) ? $_GET['customer_type'] : 0, 'customerTypes', array('is_hide' => true));
 
         $this->membership = $this->load->model("membership", __CLASS__);
-        $this->getOverviewMembershipDropdown($this->_objTpl, $this->membership, isset($_GET['filter_membership']) ? $_GET['filter_membership'] : 0) ;
+        $this->getOverviewMembershipDropdown($this->_objTpl, $this->membership, isset($_GET['filter_membership']) ? $_GET['filter_membership'] : 0, 'memberships', array('is_hide' => true)) ;
 
         $this->_objTpl->setGlobalVariable('TXT_CRM_DOWNLOAD_VCARD' , $_ARRAYLANG['TXT_CRM_DOWNLOAD_VCARD']);
 
@@ -1484,7 +1481,7 @@ END;
                 $this->settingsController->currencyoverview();
                 break;
             case 'notes':
-                $this->Notesoverview();
+                $this->notesOverview();
                 break;
             case 'tasktypes':
                 $this->settingsController->taskTypesoverview();
@@ -1817,7 +1814,7 @@ END;
         global $objDatabase;
 
         // New update Query
-        $idArr = array_map(intval, array_keys($_POST['sorting']));
+        $idArr = array_map('intval', array_keys($_POST['sorting']));
         $ids = implode(',', $idArr);
 
         $query = "UPDATE ".DBPREFIX."module_".$this->moduleName."_stages SET `sorting` = CASE id ";
@@ -1852,7 +1849,7 @@ END;
         global $_CORELANG, $_ARRAYLANG, $objDatabase ,$objJs;
         
         $this->_pageTitle = $_ARRAYLANG['TXT_CRM_EDIT_CUSTOMER_TYPE'];
-        $this->_objTpl->loadTemplateFile('module_'.$this->moduleName.'_setting_editcustomer.html',true,true);
+        $this->_objTpl->loadTemplateFile('module_'.$this->moduleName.'_setting_editcustomer.html', true, true);
         $this->_objTpl->setGlobalVariable('MODULE_NAME', $this->moduleName);
         $id                 = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
@@ -1866,14 +1863,14 @@ END;
         $customerStatus     = isset($_POST['activeStatus']) || !isset ($_POST['customer_type_submit']) ? 1 : 0;
         $hrlyRate           = array();
             
-        if($_POST['customer_type_submit']) {
+        if ($_POST['customer_type_submit']) {
             $success = true;          
 
             $searchingQuery = "SELECT label FROM `".DBPREFIX."module_{$this->moduleName}_customer_types`
                                    WHERE  label = '".contrexx_input2db($customerLabel)."' AND id != $id ";
             $objResult = $objDatabase->Execute($searchingQuery);
 
-            if(!$objResult->EOF) {
+            if (!$objResult->EOF) {
                 $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPE_ALREADY_EXIST'];
                 $success = false;
             } else {
@@ -1944,7 +1941,7 @@ END;
         $chkdefaultType = $objDatabase->Execute($query);
         $defaultId = $chkdefaultType->fields['id'];
 
-        if(!empty($id)) {
+        if (!empty($id)) {
             $query = 'SELECT 1 FROM `'.DBPREFIX.'module_'.$this->moduleName.'_contacts` WHERE `customer_type` = '.$id;
             $chkCustomerTypes = $objDatabase->Execute($query);
             if ($chkCustomerTypes->RecordCount() == 0) {
@@ -1973,7 +1970,7 @@ END;
                 $chkCustomerTypes->MoveNext();
             }
 
-            foreach($deleteIds as $id) {
+            foreach ($deleteIds as $id) {
                 if (in_array($id, $idContainsCustomer)) {
                     $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPES_CANNOT_BE_DELETED'];
                     continue;
@@ -2084,13 +2081,13 @@ END;
         $customerContacts    = isset($_POST['companyContacts']) ? array_map('intval', (array) $_POST['companyContacts']) : array();        
         $assignedMembersShip = isset($_POST['assigned_memberships']) ? array_map('intval', (array) $_POST['assigned_memberships']) : array();
 
-        $this->contact->notes  = isset($_POST['notes']) ? html_entity_decode($_POST['notes'], ENT_QUOTES, CONTREXX_CHARSET) : '';
-        $this->contact->industryType  = isset($_POST['industryType']) ? (int) $_POST['industryType'] : 0;
-        $this->contact->user_name   = isset($_POST['contact_username']) ? contrexx_input2raw($_POST['contact_username']) : '';
+        $this->contact->notes        = isset($_POST['notes']) ? html_entity_decode($_POST['notes'], ENT_QUOTES, CONTREXX_CHARSET) : '';
+        $this->contact->industryType = isset($_POST['industryType']) ? (int) $_POST['industryType'] : 0;
+        $this->contact->user_name    = isset($_POST['contact_username']) ? contrexx_input2raw($_POST['contact_username']) : '';
 
-        if(isset($_POST['save_contact']) || isset($_POST['save_add_new_contact'])) {
-            $description            = $this->strip_only_tags($this->contact->notes, '<script><iframe>', $stripContent=false);
-            $this->contact->notes   = $description;
+        if (isset($_POST['save_contact']) || isset($_POST['save_add_new_contact'])) {
+            $description          = $this->stripOnlyTags($this->contact->notes, '<script><iframe>', $stripContent=false);
+            $this->contact->notes = $description;
             $msg = '';
             switch(true) {
                 case ($contactType == 1 && !empty($id)):
@@ -2185,7 +2182,7 @@ END;
                 foreach ($result['contactsocial'] as $value) {
                     if (!empty($value['value'])) {
                         $fields = array(
-                                    'id'            => array('val' => !empty($value['id']) ? (int) $value['id'] : NULL, 'omitEmpty' => true) ,
+                                    'id'            => array('val' => !empty($value['id']) ? (int) $value['id'] : null, 'omitEmpty' => true) ,
                                     'url'           => $value['value'],
                                     'url_profile'   => (int) $value['profile'],
                                     'is_primary'    => $value['primary'],
@@ -2222,10 +2219,10 @@ END;
 
                 $objDatabase->Execute($query);
                 $ChckCount = 0;
-                if(!empty($id)) {
+                if (!empty($id)) {
                     $contactId = $this->contact->contact_customer;
                 }
-                if($this->contact->contactType == 2) {
+                if ($this->contact->contactType == 2) {
                     $contactId = $this->contact->contact_customer;
                 }
 
@@ -2259,12 +2256,12 @@ END;
             } elseif (empty($accountUserEmail)) {
                 $this->_strErrMessage = $_ARRAYLANG['TXT_CRM_EMAIL_EMPTY'];
             }
-        } elseif($this->contact->load($id)) {
+        } elseif ($this->contact->load($id)) {
 
             if ($contactType == 1) {
                 $objContact = $objDatabase->Execute("SELECT `id` FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE `contact_customer` = {$this->contact->id}");
                 if ($objContact) {
-                    while(!$objContact->EOF) {
+                    while (!$objContact->EOF) {
                         $customerContacts[] = (int) $objContact->fields['id'];
                         $objContact->MoveNext();
                     }
@@ -2282,35 +2279,35 @@ END;
             // Get emails and phones
             $objEmails = $objDatabase->Execute("SELECT * FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_emails` WHERE contact_id = {$this->contact->id} ORDER BY id ASC");
             if ($objEmails) {
-                while(!$objEmails->EOF) {
+                while (!$objEmails->EOF) {
                     $result['contactemail'][] = array("type" => $objEmails->fields['email_type'], "primary" => $objEmails->fields['is_primary'], "value" => $objEmails->fields['email']);
                     $objEmails->MoveNext();
                 }
             }
             $objPhone = $objDatabase->Execute("SELECT * FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_phone` WHERE contact_id = {$this->contact->id} ORDER BY id ASC");
             if ($objPhone) {
-                while(!$objPhone->EOF) {
+                while (!$objPhone->EOF) {
                     $result['contactphone'][] = array("type" => $objPhone->fields['phone_type'], "primary" => $objPhone->fields['is_primary'], "value" => $objPhone->fields['phone']);
                     $objPhone->MoveNext();
                 }
             }
             $objWebsite = $objDatabase->Execute("SELECT * FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_websites` WHERE contact_id = {$this->contact->id} ORDER BY id ASC");
             if ($objWebsite) {
-                while(!$objWebsite->EOF) {
+                while (!$objWebsite->EOF) {
                     $result['contactwebsite'][] = array("id" => $objWebsite->fields['id'], "profile" => $objWebsite->fields['url_profile'], "primary" => $objWebsite->fields['is_primary'], "value" => $objWebsite->fields['url']);
                     $objWebsite->MoveNext();
                 }
             }
             $objSocial = $objDatabase->Execute("SELECT * FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_social_network` WHERE contact_id = {$this->contact->id} ORDER BY id ASC");
             if ($objSocial) {
-                while(!$objSocial->EOF) {
+                while (!$objSocial->EOF) {
                     $result['contactsocial'][] = array("id" => $objSocial->fields['id'], "profile" => $objSocial->fields['url_profile'], "primary" => $objSocial->fields['is_primary'], "value" => $objSocial->fields['url']);
                     $objSocial->MoveNext();
                 }
             }
             $objAddress = $objDatabase->Execute("SELECT * FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_address` WHERE contact_id = {$this->contact->id} ORDER BY id ASC");
             if ($objAddress) {
-                while(!$objAddress->EOF) {
+                while (!$objAddress->EOF) {
                     $result['contactAddress'][] = array("address" => $objAddress->fields['address'], "city" => $objAddress->fields['city'], "state" => $objAddress->fields['state'], "zip" => $objAddress->fields['zip'], "country" => $objAddress->fields['country'], "type" => $objAddress->fields['Address_Type'], "primary" => $objAddress->fields['is_primary']);
                     $objAddress->MoveNext();
                 }
@@ -2328,7 +2325,7 @@ END;
             $Count = 1;
             //$showEmail = false;
             $showEmail = true;
-            foreach($result['contactemail'] as $email) {
+            foreach ($result['contactemail'] as $email) {
                 if (!empty($email['value']) && !$showEmail)
                     $showEmail = true;
 
@@ -2344,7 +2341,7 @@ END;
             }
         }
         if (!empty($result['contactphone'])) {
-            foreach($result['contactphone'] as $phone) {
+            foreach ($result['contactphone'] as $phone) {
                 $this->_objTpl->setVariable(array(
                         'CRM_CONTACT_PHONE_NAME'    => "contactphone_{$Count}_{$phone['type']}_{$phone['primary']}",
                         'CRM_CONTACT_PHONE'         => contrexx_raw2xhtml($phone['value']),
@@ -2357,7 +2354,7 @@ END;
             }
         }
         if (!empty($result['contactwebsite'])) {            
-            foreach($result['contactwebsite'] as $website) {
+            foreach ($result['contactwebsite'] as $website) {
                 $this->_objTpl->setVariable(array(
                         'CRM_CONTACT_WEBSITE_NAME'    => "contactwebsite_{$Count}_{$website['profile']}_{$website['primary']}",
                         'CRM_CONTACT_WEBSITE'         => contrexx_raw2xhtml(urldecode($website['value'])),
@@ -2374,7 +2371,7 @@ END;
         }
         
         if (!empty($result['contactsocial'])) {
-            foreach($result['contactsocial'] as $social) {                
+            foreach ($result['contactsocial'] as $social) {
                 $this->_objTpl->setVariable(array(
                         'CRM_CONTACT_SOCIAL_NAME'     => "contactsocial_{$Count}_{$social['profile']}_{$social['primary']}",
                         'CRM_CONTACT_SOCIAL'          => contrexx_raw2xhtml($social['value']),
@@ -2392,7 +2389,7 @@ END;
         if (!empty($result['contactAddress'])) {
             $showAddress = false;
             
-            foreach($result['contactAddress'] as $address) {
+            foreach ($result['contactAddress'] as $address) {
                 if (!empty($address['address']) && !$showAddress)
                     $showAddress = true;
                 
@@ -2421,7 +2418,7 @@ END;
 
         // special fields for contacts
         $objResult =   $objDatabase->Execute('SELECT  id,name,lang FROM    '.DBPREFIX.'languages');
-        while(!$objResult->EOF) {
+        while (!$objResult->EOF) {
             $this->_objTpl->setVariable(array(
                     'TXT_LANG_ID'	=>  (int) $objResult->fields['id'],
                     'TXT_LANG_NAME'     =>  contrexx_raw2xhtml($objResult->fields['name']),
@@ -2441,7 +2438,7 @@ END;
                 $objContacts = $objDatabase->Execute("SELECT `id`, `customer_name`, `contact_familyname` FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE `id` IN (".implode(',', $customerContacts).")");
                 if ($objContacts) {
                     $row = "row2";
-                    while(!$objContacts->EOF) {
+                    while (!$objContacts->EOF) {
                         $this->_objTpl->setVariable(array(
                                 'CRM_CONTACT_ID'     => $objContacts->fields['id'],
                                 'CRM_CONTACT_NAME'   => contrexx_raw2xhtml($objContacts->fields['contact_familyname']." ".$objContacts->fields['customer_name']),
@@ -2857,7 +2854,7 @@ END;
      * @global object $objDatabase
      * @return true
      */
-    function Notesoverview()
+    function notesOverview()
     {
         global $_CORELANG, $_ARRAYLANG, $objDatabase, $objJs;
 
@@ -2881,12 +2878,12 @@ END;
         $position   = isset($_POST['sorting'])? intval($_POST['sorting']):'';
         $id         = isset($_GET['idr'])? intval($_GET['idr']):'';
 
-        if(isset($_GET['idr'])) {
+        if (isset($_GET['idr'])) {
             $objComment = $objDatabase->Execute("SELECT notes_type_id FROM ".DBPREFIX."module_".$this->moduleName."_customer_comment WHERE notes_type_id = '$id'");
-            if($objComment->fields['notes_type_id'] != $id) {
+            if ($objComment->fields['notes_type_id'] != $id) {
                 $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleName."_notes WHERE id = '$id'");
                 $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_NOTES_DELETED'];
-            }else {
+            } else {
                 $this->_strErrMessage = $_ARRAYLANG['TXT_CRM_NOTES_ERROR'];
             }
         }
@@ -2895,7 +2892,7 @@ END;
             if ($_POST['form_activate'] != '' or $_POST['form_deactivate'] != '') {
                 $ids = $_POST['selected'];
                 $to  = $_POST['form_activate'] ? 1 : 0;
-                foreach($ids as $id) {
+                foreach ($ids as $id) {
                     $query = "UPDATE ".DBPREFIX."module_".$this->moduleName."_notes
                                                                    SET   status  = '".$to."'
                                                                    WHERE system_defined != 1 AND  id      = '".intval($id)."'";
@@ -2906,18 +2903,17 @@ END;
             if ($_POST['form_delete'] != '') {
                 $ids = $_POST['selected'];
                 $x   = 0;
-                foreach($ids as $id) {
+                foreach ($ids as $id) {
                     $objComment = $objDatabase->Execute("SELECT notes_type_id FROM ".DBPREFIX."module_".$this->moduleName."_customer_comment WHERE notes_type_id = '$id'");
-                    if($objComment->fields['notes_type_id'] != $id) {
+                    if ($objComment->fields['notes_type_id'] != $id) {
                         $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleName."_notes
                                                                        WHERE system_defined != 1 AND id = '".intval($id)."'";
                         $objDatabase->SelectLimit($query, 1);
                         $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_NOTES_DELETED'];
-                    }else {
+                    } else {
                         $this->_strErrMessage = $_ARRAYLANG['TXT_CRM_NOTES_ERROR'];
                     }
                 }
-//            $this->_strOkMessage = ($_POST['form_delete'] == 1) ? $_ARRAYLANG['TXT_CRM_NOTES_DELETED'] : '';
             }
         }
         if (isset($_GET['chg']) and $_GET['chg'] == 1 and $_POST['form_sort'] == 1) {
@@ -2929,18 +2925,18 @@ END;
             }
             $this->_strOkMessage = ($_POST['form_sort'] == 1) ? $_ARRAYLANG['TXT_CRM_SORTING_COMPLETE'] : '';
         }
-        if(isset($_POST['save'])) {
+        if (isset($_POST['save'])) {
             $validate = $this->validation($name);
-            if($validate) {
+            if ($validate) {
                 $objResult = $objDatabase->Execute("INSERT ".DBPREFIX."module_".$this->moduleName."_notes SET name   ='$name',
                                                                                                                   status = '$status',
                                                                                                                   pos    = '$position'");
                 $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_NOTES_INSERTED'];
-            }else {
+            } else {
                 $this->_strErrMessage = $_ARRAYLANG['TXT_CRM_ERROR'];
             }
         }
-        if(isset($_POST['notes_save'])) {
+        if (isset($_POST['notes_save'])) {
             for ($x = 0; $x < count($_POST['form_id']); $x++) {
                 $query = "UPDATE ".DBPREFIX."module_".$this->moduleName."_notes
                                            SET   pos   = '".intval($_POST['form_pos'][$x])."'
@@ -2955,7 +2951,7 @@ END;
         $objResult = $objDatabase->Execute("SELECT id,name,status,pos, system_defined FROM ".DBPREFIX."module_".$this->moduleName."_notes ORDER BY $sortf $sorto");
 
         $row = 'row2';
-        while(!$objResult->EOF) {
+        while (!$objResult->EOF) {
             $stat = $objResult->fields['status'];
             
             if ($objResult->fields['system_defined']) {
@@ -3028,9 +3024,9 @@ END;
         $status   = isset($_POST['status'])? intval($_POST['status']):'';
         $position = isset($_POST['sorting'])? intval($_POST['sorting']):'';
 
-        if(isset($_POST['currency_submit'])) {
+        if (isset($_POST['currency_submit'])) {
             
-            if(!empty($id) && $this->validation($name, $id)) {
+            if (!empty($id) && $this->validation($name, $id)) {
                 $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_".$this->moduleName."_notes
                                                                                             SET   name    = '$name',
                                                                                                   status  = '$status',
@@ -3085,9 +3081,9 @@ END;
     {
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
         $objResult = $objDatabase->Execute("SELECT name FROM ".DBPREFIX."module_".$this->moduleName."_notes WHERE name='$name' AND id != $id");
-        if($objResult->fields['name'] == $name) {
+        if ($objResult->fields['name'] == $name) {
             return false;
-        }else {
+        } else {
             return true;
         }
     }
@@ -3104,13 +3100,13 @@ END;
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
         $id = $_GET['id'];
 
-        if(!empty($id)) {
+        if (!empty($id)) {
             $deleteQuery = 'DELETE FROM `'.DBPREFIX.'module_'.$this->moduleName.'_currency` WHERE id = '.$id;
             $objDatabase->Execute($deleteQuery);
             $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CURRENCY_DELETED_SUCCESSFULLY'];
         } else {
             $deleteIds = $_POST['selectedEntriesId'];
-            foreach($deleteIds as $id) {
+            foreach ($deleteIds as $id) {
                 $deleteQuery = 'DELETE FROM `'.DBPREFIX.'module_'.$this->moduleName.'_currency` WHERE id = '.$id;
                 $objDatabase->Execute($deleteQuery);
                 $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CURRENCY_DELETED_SUCCESSFULLY'];
@@ -3138,9 +3134,9 @@ END;
             $this->_strOkMessage = ($status == 1) ? $_ARRAYLANG['TXT_CRM_ACTIVATED_SUCCESSFULLY'] : $_ARRAYLANG['TXT_CRM_DEACTIVATED_SUCCESSFULLY'];
         }
 
-        if($_REQUEST['type'] == "activate") {
+        if ($_REQUEST['type'] == "activate") {
             $arrStatusNote = $_POST['selectedEntriesId'];
-            if($arrStatusNote != null) {
+            if ($arrStatusNote != null) {
                 foreach ($arrStatusNote as $noteId) {
                     $query = "UPDATE ".DBPREFIX."module_".$this->moduleName."_currency SET active='1' WHERE id=$noteId";
                     $objDatabase->Execute($query);
@@ -3148,9 +3144,9 @@ END;
             }
             $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_ACTIVATED_SUCCESSFULLY'];
         }
-        if($_REQUEST['type'] == "deactivate") {
+        if ($_REQUEST['type'] == "deactivate") {
             $arrStatusNote = $_POST['selectedEntriesId'];
-            if($arrStatusNote != null) {
+            if ($arrStatusNote != null) {
                 foreach ($arrStatusNote as $noteId) {
                     $query = "UPDATE ".DBPREFIX."module_".$this->moduleName."_currency SET active='0' WHERE id=$noteId";
                     $objDatabase->Execute($query);
@@ -3248,13 +3244,13 @@ END;
             $label      = $objResult->fields['name'];
             $sorting    = $objResult->fields['pos'];
             $status     = $objResult->fields['active'];
-            $hrlyRate   = json_decode($objResult->fields['hourly_rate'] ,true);
+            $hrlyRate   = json_decode($objResult->fields['hourly_rate'], true);
         }
 
         // Hourly rate
         
         $objResult = $objDatabase->Execute('SELECT id,label FROM  '.DBPREFIX.'module_'.$this->moduleName.'_customer_types WHERE  active!="0" ORDER BY pos,label');
-        while(!$objResult->EOF) {
+        while (!$objResult->EOF) {
             $this->_objTpl->setVariable(array(
                 'CRM_CUSTOMER_TYPE'     => contrexx_raw2xhtml($objResult->fields['label']),
                 'CRM_CUSTOMERTYPE_ID'   => (int) $objResult->fields['id'],
@@ -3316,7 +3312,7 @@ END;
      * @param stripContent boolean $stripContent
      * @return string
      */
-    function strip_only_tags($str, $tags, $stripContent=false)
+    function stripOnlyTags($str, $tags, $stripContent=false)
     {
         $content = '';
         if (!is_array($tags)) {
@@ -4246,9 +4242,11 @@ END;
 
     /**
      * return name of the file name
-     *
-     * @global array $_ARRAYLANG
+     *     
+     * @param integer $fileId
+     * @param integer $customerId
      * @global object $objDatabase
+     * 
      * @return file name
      */
     function getContactFileNameById($fileId = 0, $customerId = 0)
@@ -4795,7 +4793,7 @@ END;
         default:
             break;
         }
-//        if (!empty ($action) || isset($_POST['save_entries'])) {
+
         if (isset($_POST['save_entries'])) {
             $this->saveSortingIndustryType($indusEntriesorting);
         }
@@ -5346,17 +5344,20 @@ END;
         }
 
         if (isset($_REQUEST['term']) && !empty($_REQUEST['term'])) {
-            if (in_array(2, $searchContactTypeFilter))
+            if (in_array(2, $searchContactTypeFilter)) {
                 $fullTextContact[]  =  'c.customer_name, c.contact_familyname';
-            if (in_array(1, $searchContactTypeFilter))
+            }
+            if (in_array(1, $searchContactTypeFilter)) {
                 $fullTextContact[]  = 'c.customer_name';
+            }
             $where[] = " MATCH (".implode(',', $fullTextContact).") AGAINST ('".contrexx_input2raw($_REQUEST['term'])."*' IN BOOLEAN MODE)";
         }
 
         //  Join where conditions
         $filter = '';
-        if (!empty ($where))
+        if (!empty ($where)) {
             $filter = " WHERE ".implode(' AND ', $where);
+        }
 
         $sorto = 'DESC';
         $sortf = 'c.id';        
