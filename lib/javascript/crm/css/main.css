@@ -60,17 +60,6 @@ table#mapCSVColumn tbody tr td.not_match {background-color: whiteSmoke;}
 #taskStatusPanel a span {
     margin-left: 10px;
 }
-/*#taskStatusPanel:before {
-    position: absolute;
-    top: -7px;
-    left: 9px;
-    display: inline-block;
-    border-right: 7px solid transparent;
-    border-bottom: 7px solid #000;
-    border-left: 7px solid transparent;
-    border-bottom-color: #777777;
-    content: '';
-}*/
 #taskStatusPanel {
   position: absolute;
   top: 100%;
@@ -302,3 +291,4 @@ table#general-info tr td:first-child {
 .document-docx{background: url('../../../../images/modules/crm/docx.png') no-repeat;}
 .document-pdf{background: url('../../../../images/modules/crm/pdf.png') no-repeat;}
 .document-xls{background: url('../../../../images/modules/crm/xls.png') no-repeat;}
+.nowrap {white-space: nowrap;}

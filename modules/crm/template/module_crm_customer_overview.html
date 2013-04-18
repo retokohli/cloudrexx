@@ -205,19 +205,23 @@
                                <input type="checkbox" name="contactSearch[]" value="2" {CRM_CONTACT_CHECKED} class="search-checkbox" />&nbsp;{TXT_CRM_CONTACTS}
                     </div>
                 </td>
-                <td valign="top">                    
-                    <select style="width:257px" id="search_customer_type" name="customer_type">
+                <td valign="top">
+                    <!-- BEGIN block_customer_type -->
+                    <select style="width:200px" id="search_customer_type" name="customer_type">
                         <option value="0">-{TXT_CRM_FILTER_CUSTOMER_TYPE}-</option>
                         <!-- BEGIN customerTypes -->
                         <option value="{CRM_CUSTOMER_TYPE_ID}" {CRM_CUSTOMER_TYPE_SELECTED}>{CRM_CUSTOMER_TYPE}</option>
                         <!-- END customerTypes -->
                     </select>
-                    <select name="filter_membership" id="filter_membership" style="width:257px">
+                    <!-- END block_customer_type -->
+                    <!-- BEGIN block_memberships -->
+                    <select name="filter_membership" id="filter_membership" style="width:200px">
                         <option value="0">--{TXT_CRM_FILTER_MEMBERSHIP}--</option>
                         <!-- BEGIN memberships -->
                         <option value="{CRM_MEMBERSHIP_ID}" {CRM_MEMBERSHIP_SELECTED}>{CRM_MEMBERSHIP_VALUE}</option>
                         <!-- END memberships -->
                     </select>
+                    <!-- END block_memberships -->
                 </td>
             </tr>
         </table>
