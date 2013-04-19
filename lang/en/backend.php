@@ -1600,3 +1600,9 @@ $_ARRAYLANG['TXT_CRM_TASKS']                = "Task";
 $_ARRAYLANG['TXT_CRM_OPPORTUNITY']          = "Opportunity";
 $_ARRAYLANG['TXT_CRM_INTERFACE']            = "Interface";
 $_ARRAYLANG['TXT_CRM_SETTINGS']            = "Settings";
+
+$_ARRAYLANG['TXT_TOOLS'] = 'Tools';
+$_ARRAYLANG['TXT_MODULE_WORKBENCH'] = 'Development Tools';
+$_ARRAYLANG['TXT_MODULE_WORKBENCH_SANDBOX'] = 'Sandbox';
+$_ARRAYLANG['TXT_MODULE_WORKBENCH_DEVELOPMENT'] = 'Development Tools';
+$_ARRAYLANG['TXT_WORKBENCH_MODULE_DESCRIPTION'] = 'Development Tools';
