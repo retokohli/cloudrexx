@@ -731,6 +731,7 @@ $updatesSp2ToSp3 = array(
             'email'          => array('fields' => array('email')),
         ),
     ),
+    'UPDATE `' . DBPREFIX . 'modules` SET `status` = \'y\' WHERE `id` = 68',
 );
 
 $updatesRc1ToSp3    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3);
