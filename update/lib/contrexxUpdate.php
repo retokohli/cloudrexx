@@ -122,7 +122,7 @@ function getFormData(goBack)
   var similarPages     = $J("#similarPages").length         ? ",similarPages:"       + $J("#similarPages").val()         : "";
   var removePages      = $J("#removePages").length          ? ",removePages:"        + $J("#removePages").val()          : "";
   var delInAcLangs     = $J("#delInAcLangs:checked").length ? ",delInAcLangs:"       + $J("#delInAcLangs:checked").val() : "";
-  
+
   var parameters = doGroup + pgUsername + pgPassword + pgCmsVersion + pgMigrateLangIds + similarPages + removePages + delInAcLangs;
   
   return '{' + aFormData.join(',') + parameters + '}';
@@ -164,6 +164,7 @@ function parseResponse(response)
             request_active = false;
             doUpdate(false, true, false, true);
         } else {
+            jQuery('#similarPages').remove();
             setContent(oResponse.content);
             setNavigation(oResponse.navigation);
             setLogout(oResponse.logout);
