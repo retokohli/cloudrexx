@@ -275,7 +275,7 @@ class Cx {
     private function loadContent($frontend) {
         global $objTemplate, $page_content, $boolShop, $moduleStyleFile,
                 $moduleManager, $plainSection, $cl, $objDatabase, $_CORELANG,
-                $subMenuTitle, $objFWUser, $act, $objInit, $plainCmd;
+                $subMenuTitle, $objFWUser, $act, $objInit, $plainCmd, $_ARRAYLANG;
         
         if ($frontend) {
             $this->setPreContentLoadPlaceholders($objTemplate);        
@@ -300,10 +300,10 @@ class Cx {
         // this is a 1:1 copy from backend, rewrite to be used in front- and backend
         $moduleManager = new \modulemanager();
         try {
-            $moduleManager->loadModule($plainSection, $cl, $objDatabase, $_CORELANG, $subMenuTitle, $objTemplate, $objFWUser, $act, $objInit);
+            $moduleManager->loadModule($plainSection, $cl, $objDatabase, $_CORELANG, $subMenuTitle, $objTemplate, $objFWUser, $act, $objInit, $_ARRAYLANG);
         } catch (\ModuleManagerException $e) {
 //            echo $e->getMessage();
-            $moduleManager->loadLegacyModule($plainSection, $cl, $objDatabase, $_CORELANG, $subMenuTitle, $objTemplate, $objFWUser, $act, $objInit);
+            $moduleManager->loadLegacyModule($plainSection, $cl, $objDatabase, $_CORELANG, $subMenuTitle, $objTemplate, $objFWUser, $act, $objInit, $_ARRAYLANG);
         }
     }
     

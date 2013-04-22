@@ -461,7 +461,7 @@ return false;
      * @param type $objInit
      * @throws ModuleManagerException 
      */
-    public function loadModule(&$module, $classLoader, $objDatabase, &$coreLang, &$subMenuTitle, $objTemplate, $objFWUser, &$act, $objInit) {
+    public function loadModule(&$module, $classLoader, $objDatabase, &$coreLang, &$subMenuTitle, $objTemplate, $objFWUser, &$act, $objInit, $_ARRAYLANG) {
         \DBG::msg('Component load: Trying to load "' . $module . '"');
         // exceptions which need to be load the legacy way:
         if (in_array($module, array(
@@ -522,7 +522,7 @@ return false;
             throw new ModuleManagerException('Class "' . $backendClassName . '" for module "' . $module . '" has no method getPage($template)');
         }
         $backendClass = new $backendClassName($objInit->loadLanguageData($module));
-        $backendClass->getPage($objTemplate, $_POST);
+        $backendClass->getPage($objTemplate, $_POST, $_ARRAYLANG);
         \DBG::msg('Component load: Could load nice. This is nice component!');
     }
 
