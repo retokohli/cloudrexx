@@ -1067,6 +1067,35 @@ HTML;
     }
 }
 
+try {
+    // migrate content page to version 3.0.1
+    $search = array(
+        '/(.*)/ms',
+    );
+    $callback = function($matches) {
+        $content = $matches[1];
+        if (empty($content)) {
+            return $content;
+        }
+
+        // fix duplicated social networks blocks
+        if (preg_match('/<!--\s+BEGIN\s+access_social_networks\s+-->.*<!--\s+BEGIN\s+access_social_networks\s+-->/ms', $content)) {
+            $content = preg_replace('/<br\s+\/><br\s+\/><!--\s+BEGIN\s+access_social_networks\s+-->.*?<!--\s+END\s+access_social_networks\s+-->/ms', '', $content);
+        }
+
+        // add missing access_social_networks template block
+        if (!preg_match('/<!--\s+BEGIN\s+access_social_networks\s+-->.*<!--\s+END\s+access_social_networks\s+-->/ms', $content)) {
+            $content = preg_replace('/(<!--\s+BEGIN\s+access_signup_form\s+-->\s*?)(<div[^>]*>|)(\{ACCESS_SIGNUP_MESSAGE\})(<\/div>|)/ms', '$1<br /><br /><!-- BEGIN access_social_networks --><fieldset><legend>oder Login mit Social Media</legend><!-- BEGIN access_social_networks_facebook -->        <a class="facebook loginbutton" href="{ACCESS_SOCIALLOGIN_FACEBOOK}">Facebook</a>        <!-- END access_social_networks_facebook -->        <!-- BEGIN access_social_networks_google -->        <a class="google loginbutton" href="{ACCESS_SOCIALLOGIN_GOOGLE}">Google</a>        <!-- END access_social_networks_google -->        <!-- BEGIN access_social_networks_twitter -->        <a class="twitter loginbutton" href="{ACCESS_SOCIALLOGIN_TWITTER}">Twitter</a>        <!-- END access_social_networks_twitter -->    </fieldset>    <!-- END access_social_networks -->$2$3$4', $content);
+        }
+
+        return $content;
+    };
+
+    \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'access', 'cmd' => 'signup'), $search, $callback, array('content'), '3.0.3');
+} catch (\Cx\Lib\UpdateException $e) {
+    return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+}
+
 require(dirname(__FILE__).'/config.inc.php');
 \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'settings` SET `setvalue` = \'' . $arrUpdate['cmsVersion'] . '\' WHERE `setname` = \'coreCmsVersion\'');
 \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'settings` SET `setvalue` = \'' . $arrUpdate['cmsCodeName'] . '\' WHERE `setname` = \'coreCmsCodeName\'');
