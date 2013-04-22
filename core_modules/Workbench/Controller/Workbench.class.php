@@ -42,7 +42,7 @@ class Workbench {
      * @todo Language var checker (/translation helper)
      * @todo Component analysis (/testing)
      */
-    public function getPage($objTemplate, $post) {
+    public function getPage($objTemplate, $post, &$_ARRAYLANG) {
         \DBG::activate(DBG_PHP);
         
         // Initialize
@@ -67,15 +67,15 @@ class Workbench {
                     $act = 'dql';
                 }
                 $navEntries = array(
-                    'index.php?cmd=workbench&amp;act=sandbox/dql' => 'DQL',
-                    'index.php?cmd=workbench&amp;act=sandbox/php' => 'PHP',
+                    'index.php?cmd=Workbench&amp;act=sandbox/dql' => 'DQL',
+                    'index.php?cmd=Workbench&amp;act=sandbox/php' => 'PHP',
                 );
                 $objTemplate->setVariable('ADMIN_CONTENT', new Sandbox($_ARRAYLANG, $act, $_POST));
                 break;
             case 'development':
             default:
                 $navEntries = array(
-                    'index.php?cmd=workbench&amp;act=development' => '',
+                    'index.php?cmd=Workbench&amp;act=development' => '',
                 );
                 $objTemplate->setVariable('ADMIN_CONTENT', '');
                 break;
@@ -126,6 +126,9 @@ class Workbench {
     
     private function writeConfig() {
         $content = '';
+        if (!$this->config) {
+            return;
+        }
         foreach ($this->config as $key=>$value) {
             $content .= $key.'='.$value."\r\n";
         }
