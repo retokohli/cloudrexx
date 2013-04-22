@@ -15,7 +15,7 @@ class Sandbox {
         $this->mode = $mode;
         $this->initialize($arguments);
         $this->execute();
-        $this->show();
+        $this->show($language);
     }
     
     protected function initialize(&$arguments) {
@@ -125,18 +125,18 @@ class Sandbox {
     /**
      * @todo: no HTML here!
      */
-    protected function show() {
+    protected function show(&$lang) {
         $this->template = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/Workbench/View/Template');
         $this->template->loadTemplateFile('Sandbox.html');
         
         switch ($this->mode) {
             case self::MODE_DQL:
-                $sideboxTitle = $lang['TXT_COREMODULE_WORKBENCH_SANDBOX_ENTITIES'];
+                $sideboxTitle = $lang['TXT_WORKBENCH_SANDBOX_ENTITIES'];
                 $sideboxContent = $this->getEntities();
                 break;
             case self::MODE_PHP:
             default:
-                $sideboxTitle = $lang['TXT_COREMODULE_WORKBENCH_SANDBOX_VARIABLES'];
+                $sideboxTitle = $lang['TXT_WORKBENCH_SANDBOX_VARIABLES'];
                 $sideboxContent = '<ul>
                     <li>$em Doctrine entity manager</li>
                 </ul>';
@@ -145,7 +145,7 @@ class Sandbox {
         
         $this->template->setVariable(array(
             'FORM_ACTION' => 'index.php?cmd=workbench&act=sandbox/' . $this->mode,
-            'TXT_COREMODULE_WORKBENCH_SANDBOX_SUBMIT' => $lang['TXT_COREMODULE_WORKBENCH_SANDBOX_SUBMIT'],
+            'TXT_COREMODULE_WORKBENCH_SANDBOX_SUBMIT' => $lang['TXT_WORKBENCH_SANDBOX_SUBMIT'],
             'CODE' => $this->code,
             'RESULT' => $this->result,
             'SIDEBOX_TITLE' => $sideboxTitle,
