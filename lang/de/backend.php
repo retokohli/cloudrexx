@@ -1683,6 +1683,10 @@ $_ARRAYLANG['TXT_CRM_SETTINGS']            = "Einstellungen";
 
 $_ARRAYLANG['TXT_TOOLS'] = 'Werkzeuge';
 $_ARRAYLANG['TXT_MODULE_WORKBENCH'] = 'Entwicklertools';
+$_ARRAYLANG['TXT_WORKBENCH_MODULE_NAME'] = 'Entwicklertools';
 $_ARRAYLANG['TXT_MODULE_WORKBENCH_SANDBOX'] = 'Sandkasten';
 $_ARRAYLANG['TXT_MODULE_WORKBENCH_DEVELOPMENT'] = 'Entwicklertools';
 $_ARRAYLANG['TXT_WORKBENCH_MODULE_DESCRIPTION'] = 'Entwicklertools';
+
+$_ARRAYLANG['TXT_MAINTENANCE_MODULE_NAME'] = 'Wartungscenter';
+$_ARRAYLANG['TXT_MAINTENANCE_MODULE_DESCRIPTION'] = 'Zeigt anstehende Wartungsarbeiten an und führt diese durch';

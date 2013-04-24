@@ -1603,6 +1603,10 @@ $_ARRAYLANG['TXT_CRM_SETTINGS']            = "Settings";
 
 $_ARRAYLANG['TXT_TOOLS'] = 'Tools';
 $_ARRAYLANG['TXT_MODULE_WORKBENCH'] = 'Development Tools';
+$_ARRAYLANG['TXT_WORKBENCH_MODULE_NAME'] = 'Development Tools';
 $_ARRAYLANG['TXT_MODULE_WORKBENCH_SANDBOX'] = 'Sandbox';
 $_ARRAYLANG['TXT_MODULE_WORKBENCH_DEVELOPMENT'] = 'Development Tools';
 $_ARRAYLANG['TXT_WORKBENCH_MODULE_DESCRIPTION'] = 'Development Tools';
+
+$_ARRAYLANG['TXT_MAINTENANCE_MODULE_NAME'] = 'Maintenance centre';
+$_ARRAYLANG['TXT_MAINTENANCE_MODULE_DESCRIPTION'] = 'Shows pending maintenance tasks and performs them';
