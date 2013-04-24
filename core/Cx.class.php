@@ -52,6 +52,11 @@ namespace Cx\Core {
          * @var \Cx\Core\Component\Controller\ComponentHandler
          */
         protected $ch = null;
+        
+        /**
+         * @var \Cx\Core\ClassLoader\ClassLoader
+         */
+        protected $cl = null;
 
         /**
          * Initialized the Cx class
@@ -104,6 +109,10 @@ namespace Cx\Core {
             $this->finalize();                          // Set template vars and display content
         }
 
+        /**
+         * Set the mode Contrexx is used in
+         * @param mixed $mode Mode as string or true for front- or false for backend
+         */
         protected function setMode($mode) {
             switch ($mode) {
                 case self::MODE_BACKEND:
@@ -121,10 +130,25 @@ namespace Cx\Core {
             $this->mode = $mode;
         }
         
+        /**
+         * Returns the mode this instance of Cx is in
+         * @return string One of 'cli', 'frontend', 'backend'
+         */
+        public function getMode() {
+            return $this->mode;
+        }
+        
+        /**
+         * Starts time measurement for page parsing time
+         */
         protected function startTimer() {
             $this->startTime = explode(' ', microtime());
         }
         
+        /**
+         * Stops time measurement and returns page parsing time
+         * @return int Time needed to parse page in seconds
+         */
         protected function stopTimer() {
             $finishTime = explode(' ', microtime());
             return round(((float)$finishTime[0] + (float)$finishTime[1]) - ((float)$this->startTime[0] + (float)$this->startTime[1]), 5);
@@ -293,19 +317,19 @@ namespace Cx\Core {
              * before doctrine loads the Gedmo one)
              */
             require_once(ASCMS_CORE_PATH.'/ClassLoader/ClassLoader.class.php');
-            $cl = new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT, true, $customizing);
+            $cl = $this->cl = new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT, true, $customizing);
 
             /**
              * Environment repository
              */
-            require_once($cl->getFilePath(ASCMS_CORE_PATH.'/Env.class.php'));
-            \Env::set('ClassLoader', $cl);
+            require_once($this->cl->getFilePath(ASCMS_CORE_PATH.'/Env.class.php'));
+            \Env::set('ClassLoader', $this->cl);
 
             /**
              * Doctrine configuration
              * Loaded after installer redirect (not configured before installer)
              */
-            $incDoctrineStatus = include_once($cl->getFilePath(ASCMS_PATH.ASCMS_PATH_OFFSET.'/config/doctrine.php'));
+            $incDoctrineStatus = include_once($this->cl->getFilePath(ASCMS_PATH.ASCMS_PATH_OFFSET.'/config/doctrine.php'));
 
             if ($incDoctrineStatus === false) {
                 die('System halted: Unable to load basic configuration!');
@@ -322,7 +346,7 @@ namespace Cx\Core {
             /**
              * Include all the required files.
              */
-            $cl->loadFile(ASCMS_CORE_PATH.'/API.php');
+            $this->cl->loadFile(ASCMS_CORE_PATH.'/API.php');
             // Temporary fix until all GET operation requests will be replaced by POSTs
             \CSRF::setFrontendMode();
 
@@ -354,7 +378,7 @@ namespace Cx\Core {
 
         protected function loadContent() {
             global $objTemplate, $page_content, $boolShop, $moduleStyleFile,
-                    $moduleManager, $plainSection, $cl, $objDatabase, $_CORELANG,
+                    $moduleManager, $plainSection, $objDatabase, $_CORELANG,
                     $subMenuTitle, $objFWUser, $act, $objInit, $plainCmd, $_ARRAYLANG;
 
             if ($this->mode == self::MODE_FRONTEND) {
@@ -381,10 +405,10 @@ namespace Cx\Core {
             $moduleManager = new \modulemanager();
             try {
                 $em = \Env::get('em');
-                $moduleManager->loadModule($plainSection, $cl, $objDatabase, $_CORELANG, $subMenuTitle, $objTemplate, $objFWUser, $act, $objInit, $_ARRAYLANG, $em, $this);
+                $moduleManager->loadModule($plainSection, $this->cl, $objDatabase, $_CORELANG, $subMenuTitle, $objTemplate, $objFWUser, $act, $objInit, $_ARRAYLANG, $em, $this);
             } catch (\ModuleManagerException $e) {
     //            echo $e->getMessage();
-                $moduleManager->loadLegacyModule($plainSection, $cl, $objDatabase, $_CORELANG, $subMenuTitle, $objTemplate, $objFWUser, $act, $objInit, $_ARRAYLANG);
+                $moduleManager->loadLegacyModule($plainSection, $this->cl, $objDatabase, $_CORELANG, $subMenuTitle, $objTemplate, $objFWUser, $act, $objInit, $_ARRAYLANG);
             }
         }
 
@@ -529,7 +553,7 @@ namespace Cx\Core {
         }
 
         protected function finalize() {
-            global $themesPages, $moduleStyleFile, $objCache, $cl, $_CONFIG,
+            global $themesPages, $moduleStyleFile, $objCache, $_CONFIG,
                     $objInit, $page_title, $parsingtime, $starttime, $subMenuTitle,
                     $_CORELANG, $objFWUser, $plainCmd, $cmd, $startTime;
 
@@ -576,7 +600,7 @@ namespace Cx\Core {
                     );
 
                 if (isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
-                    $cl->loadFile(ASCMS_CORE_PATH.'/pdf.class.php');
+                    $this->cl->loadFile(ASCMS_CORE_PATH.'/pdf.class.php');
                     $objPDF          = new PDF();
                     $objPDF->title   = $page_title.(empty($page_title) ? null : '.pdf');
                     $objPDF->content = $this->template->get();
