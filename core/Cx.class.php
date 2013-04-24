@@ -16,16 +16,16 @@ namespace {
      * in order to catch errors with PHP versions prior to 5.3
      */
     function init($frontend = true) {
-        new \Cx\Core\Cx($frontend);
+        new \Cx\Core\Cx($frontend ? \Cx\Core\Cx::MODE_FRONTEND : \Cx\Core\Cx::MODE_BACKEND);
     }
 }
 
 namespace Cx\Core {
 
     /**
-    * This loads and controls everything
-    * @todo Remove all instances of "global" or at least move them to a single place
-    */
+     * This loads and controls everything
+     * @todo Remove all instances of "global" or at least move them to a single place
+     */
     class Cx {
         const MODE_CLI = 'cli';
         const MODE_FRONTEND = 'frontend';
@@ -34,116 +34,74 @@ namespace Cx\Core {
         protected $mode = null;
 
         /**
-        * @var \Cx\Core\Html\Sigma
-        */
-        protected $objTemplate = null;
+         * @var \Cx\Core\Html\Sigma
+         */
+        protected $template = null;
 
         /**
-        * @var \Doctrine\Orm\EntityManager
-        */
+         * @var \Doctrine\Orm\EntityManager
+         */
         protected $entityManager = null;
 
         /**
-        * @var \Cx\Core\Routing\Url
-        */
+         * @var \Cx\Core\Routing\Url
+         */
         protected $request = null;
+        
+        /**
+         * @var \Cx\Core\Component\Controller\ComponentHandler
+         */
+        protected $ch = null;
 
         /**
-        * Initializes the CMS
-        */
+         * Initialized the Cx class
+         */
         public function __construct($mode = null) {
-            global $starttime, $objFWUser, $objInit, $_LANGID, $_CORELANG,
-                    $virtualLanguageDirectory, $url, $objTemplate, $objNavbar,
-                    $pageId, $page, $plainSection, $_ARRAYLANG, $plainCmd;
-
             // start time measurement
             $this->startTimer();
 
             // set mode, default is self::MODE_FRONTEND
             $this->setMode($mode);
-
+            
+            // now we have a valid state, load it:
+            $this->loadContrexx();
+        }
+        
+        /**
+         * Loads Contrexx and initializes Contrexx
+         */
+        protected function loadContrexx() {
             // init
-            $this->preInit();       // APC, RAM
-            $this->init();          // ClassLoader, API, DB (incl. Doctrine)
-            $this->postInit();      // Components
-
-            // Init user
-            // @todo move to somewhere else
-            // For backend it's in FwUser->preResolve
-                // Get instance of FWUser object
-                $objFWUser = \FWUser::getFWUserObject();
-
+            $this->preInit();                           // APC, RAM
+            $this->init();                              // ClassLoader, API, DB (incl. Doctrine)
+            $this->postInit();                          // Components
+            
             // init template
-            // @todo move to somewhere else
-                // initialize objects
-                /**
-                * Template object
-                * @global \Cx\Core\Html\Sigma $objTemplate
-                */
-                $objTemplate = new \Cx\Core\Html\Sigma(($this->mode == self::MODE_FRONTEND) ? ASCMS_THEMES_PATH : ASCMS_ADMIN_TEMPLATE_PATH);
-                $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
-                if ($this->mode == self::MODE_BACKEND) {
-                    $objTemplate->loadTemplateFile('index.html');
-                    $objTemplate->addBlockfile('CONTENT_FILE', 'index_content', 'index_content.html');
-                }
+            $this->loadTemplate();                      // Sigma Template
+            
+            // @TODO: remove this
+            $this->legacyGlobalsHook(1);                // $objUser, $objTemplate
 
             // resolve
-            $this->preResolve();            // Call pre resolve hook scripts
-            $this->resolve();               // Resolving, Language
+            $this->preResolve();                        // Call pre resolve hook scripts
+            $this->resolve();                           // Resolving, Language
 
-            // Code to set language
-            // @todo: move this to somewhere else
-            // in backend it's in Language->postResolve
-            if ($this->mode == self::MODE_FRONTEND) {
-                $objInit->setFrontendLangId($_LANGID);
-                define('FRONTEND_LANG_ID', $_LANGID);
-                define('LANG_ID', $_LANGID);
-                // Load interface language data
-                /**
-                * Core language data
-                * @global array $_CORELANG
-                */
-                $_CORELANG = $objInit->loadLanguageData('core');
-            }
+            // @TODO: remove this
+            $this->legacyGlobalsHook(2);                // $objInit, $_LANGID, $_CORELANG, $url, $virtualLanguageDirectory;
 
-            // Resolver code
-            // @todo: move to resolver
-                //expose the virtual language directory to the rest of the cms
-                //please do not access this variable directly, use Env::get().
-                $virtualLanguageDirectory = '/'.$url->getLangDir();
-                \Env::set('virtualLanguageDirectory', $virtualLanguageDirectory);
-                // TODO: this constanst used to be located in config/set_constants.php, but needed to be relocated to this very place,
-                // because it depends on Env::get('virtualLanguageDirectory').
-                // Find an other solution; probably best is to replace CONTREXX_SCRIPT_PATH by a prettier method
-                define('CONTREXX_SCRIPT_PATH',
-                    ASCMS_PATH_OFFSET.
-                    \Env::get('virtualLanguageDirectory').
-                    '/'.
-                    CONTREXX_DIRECTORY_INDEX);
+            $this->postResolve();                       // Call post resolve hook scripts
 
-            $this->postResolve();           // Call post resolve hook scripts
-
-
-                // Initialize the navigation
-                $objNavbar = new \Navigation($pageId, $page);
-
-            // init module language
-            // @todo move this to somewhere else
-                // Load interface language data
-                /**
-                * Module specific data
-                * @global array $_ARRAYLANG
-                */
-                $_ARRAYLANG = $objInit->loadLanguageData($plainSection);
+            // @TODO: remove this
+            $this->legacyGlobalsHook(3);                // $objNavbar, $_ARRAYLANG, $pageId, $page, $plainSection, $objInit
 
             // load content
-            $this->preContentLoad();    // Call pre content load hook scripts
-            $this->loadContent();       // Init current module
-            $this->postContentLoad();   // Call post content load hook scripts
+            $this->preContentLoad();                    // Call pre content load hook scripts
+            $this->loadContent();                       // Init current module
+            $this->postContentLoad();                   // Call post content load hook scripts
 
-            $this->setPostContentLoadPlaceholders($objTemplate); // Set Placeholders
+            $this->setPostContentLoadPlaceholders();    // Set Placeholders
 
-            $this->finalize($objTemplate);          // Set template vars and display content
+            $this->finalize();                          // Set template vars and display content
         }
 
         protected function setMode($mode) {
@@ -172,47 +130,39 @@ namespace Cx\Core {
             return round(((float)$finishTime[0] + (float)$finishTime[1]) - ((float)$this->startTime[0] + (float)$this->startTime[1]), 5);
         }
 
-        private function preInit() {
+        protected function preInit() {
             $this->tryToEnableApc();
             $this->tryToSetMemoryLimit();
         }
 
-        private function postInit() {
+        protected function postInit() {
             $this->loadComponents();
         }
 
-        private function preResolve() {
-            global $ch;
-
-            $ch->callPreResolveHooks();
+        protected function preResolve() {
+            $this->ch->callPreResolveHooks();
         }
 
-        private function resolve() {
-
+        protected function resolve() {
+            // implemented as pre- and post resolve hooks by now
         }
 
-        private function postResolve() {
-            global $ch;
-
-            $ch->callPostResolveHooks();
+        protected function postResolve() {
+            $this->ch->callPostResolveHooks();
         }
 
-        private function preContentLoad() {
-            global $ch;
-
-            $ch->callPreContentLoadHooks();
+        protected function preContentLoad() {
+            $this->ch->callPreContentLoadHooks();
         }
 
-        private function postContentLoad() {
-            global $ch;
-
-            $ch->callPostContentLoadHooks();
+        protected function postContentLoad() {
+            $this->ch->callPostContentLoadHooks();
         }
 
         /**
-        * This tries to enable Alternate PHP Cache
-        */
-        private function tryToEnableApc() {
+         * This tries to enable Alternate PHP Cache
+         */
+        protected function tryToEnableApc() {
             global $apcEnabled;
 
             $apcEnabled = false;
@@ -229,9 +179,9 @@ namespace Cx\Core {
         }
 
         /**
-        * This tries to set the memory limit if its lower than 32 megabytes
-        */
-        private function tryToSetMemoryLimit() {
+         * This tries to set the memory limit if its lower than 32 megabytes
+         */
+        protected function tryToSetMemoryLimit() {
             global $memoryLimit, $apcEnabled;
 
             preg_match('/^\d+/', ini_get('memory_limit'), $memoryLimit);
@@ -246,35 +196,115 @@ namespace Cx\Core {
             }
         }
 
-        private function loadComponents() {
-            global $ch;
+        protected function loadComponents() {
+            $this->ch = new \Cx\Core\Component\ComponentHandler($this->mode == self::MODE_FRONTEND);
+            $this->ch->initComponents();
+        }
+        
+        public function getUser() {
+            return \FWUser::getFWUserObject();
+        }
+        
+        /**
+         * Init template object
+         */
+        protected function loadTemplate() {
+            $this->template = new \Cx\Core\Html\Sigma(($this->mode == self::MODE_FRONTEND) ? ASCMS_THEMES_PATH : ASCMS_ADMIN_TEMPLATE_PATH);
+            $this->template->setErrorHandling(PEAR_ERROR_DIE);
+            if ($this->mode == self::MODE_BACKEND) {
+                $this->template->loadTemplateFile('index.html');
+                $this->template->addBlockfile('CONTENT_FILE', 'index_content', 'index_content.html');
+            }
+        }
+        
+        /**
+         * This populates globals for legacy code
+         * @global type $objFWUser
+         * @param type $no 
+         */
+        protected function legacyGlobalsHook($no) {
+            global $objFWUser, $objTemplate,
+                    $objInit, $_LANGID, $_CORELANG, $url, $virtualLanguageDirectory,
+                    $objNavbar, $_ARRAYLANG, $pageId, $page, $plainSection, $objInit;
+            
+            switch ($no) {
+                case 1:
+                    // Get instance of FWUser object
+                    $objFWUser = $this->getUser();
+                    // populate template
+                    $objTemplate = $this->template;
+                    break;
+                
+                case 2:
+                    // Code to set language
+                    // @todo: move this to somewhere else
+                    // in backend it's in Language->postResolve
+                    if ($this->mode == self::MODE_FRONTEND) {
+                        $objInit->setFrontendLangId($_LANGID);
+                        define('FRONTEND_LANG_ID', $_LANGID);
+                        define('LANG_ID', $_LANGID);
+                        // Load interface language data
+                        /**
+                        * Core language data
+                        * @global array $_CORELANG
+                        */
+                        $_CORELANG = $objInit->loadLanguageData('core');
+                    }
 
-            $ch = new \Cx\Core\Component\ComponentHandler($this->mode == self::MODE_FRONTEND);
-            $ch->initComponents();
+                    // Resolver code
+                    // @todo: move to resolver
+                    //expose the virtual language directory to the rest of the cms
+                    //please do not access this variable directly, use Env::get().
+                    $virtualLanguageDirectory = '/'.$url->getLangDir();
+                    \Env::set('virtualLanguageDirectory', $virtualLanguageDirectory);
+                    // TODO: this constanst used to be located in config/set_constants.php, but needed to be relocated to this very place,
+                    // because it depends on Env::get('virtualLanguageDirectory').
+                    // Find an other solution; probably best is to replace CONTREXX_SCRIPT_PATH by a prettier method
+                    define('CONTREXX_SCRIPT_PATH',
+                        ASCMS_PATH_OFFSET.
+                        \Env::get('virtualLanguageDirectory').
+                        '/'.
+                        CONTREXX_DIRECTORY_INDEX);
+                    break;
+                    
+                case 3:
+                    // Initialize the navigation
+                    $objNavbar = new \Navigation($pageId, $page);
+
+                    // init module language
+                    // @todo move this to somewhere else
+                    // Load interface language data
+                    /**
+                    * Module specific data
+                    * @global array $_ARRAYLANG
+                    */
+                    $_ARRAYLANG = $objInit->loadLanguageData($plainSection);
+                    break;
+            }
         }
 
-        private function init() {
+        protected function init() {
             global $cl, $incDoctrineStatus, $_CONFIG, $_FTPCONFIG, $objDatabase,
                     $objInit, $errorMsg, $customizing;
 
             /**
-            * This needs to be initialized before loading config/doctrine.php
-            * Because we overwrite the Gedmo model (so we need to load our model
-            * before doctrine loads the Gedmo one)
-            */
+             * This needs to be initialized before loading config/doctrine.php
+             * Because we overwrite the Gedmo model (so we need to load our model
+             * before doctrine loads the Gedmo one)
+             */
             require_once(ASCMS_CORE_PATH.'/ClassLoader/ClassLoader.class.php');
             $cl = new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT, true, $customizing);
 
             /**
-            * Environment repository
-            */
+             * Environment repository
+             */
             require_once($cl->getFilePath(ASCMS_CORE_PATH.'/Env.class.php'));
             \Env::set('ClassLoader', $cl);
 
             /**
-            * Doctrine configuration
-            * Loaded after installer redirect (not configured before installer)
-            */
+             * Doctrine configuration
+             * Loaded after installer redirect (not configured before installer)
+             */
             $incDoctrineStatus = include_once($cl->getFilePath(ASCMS_PATH.ASCMS_PATH_OFFSET.'/config/doctrine.php'));
 
             if ($incDoctrineStatus === false) {
@@ -290,8 +320,8 @@ namespace Cx\Core {
             \Env::set('ftpConfig', $_FTPCONFIG);
 
             /**
-            * Include all the required files.
-            */
+             * Include all the required files.
+             */
             $cl->loadFile(ASCMS_CORE_PATH.'/API.php');
             // Temporary fix until all GET operation requests will be replaced by POSTs
             \CSRF::setFrontendMode();
@@ -299,9 +329,9 @@ namespace Cx\Core {
             // Initialize database object
             $errorMsg = '';
             /**
-            * Database object
-            * @global ADONewConnection $objDatabase
-            */
+             * Database object
+             * @global ADONewConnection $objDatabase
+             */
             $objDatabase = getDatabaseObject($errorMsg);
             \Env::set('db', $objDatabase);
             \Env::set('pageguard', new \PageGuard($objDatabase));
@@ -322,7 +352,7 @@ namespace Cx\Core {
             \Env::set('init', $objInit);
         }
 
-        private function loadContent() {
+        protected function loadContent() {
             global $objTemplate, $page_content, $boolShop, $moduleStyleFile,
                     $moduleManager, $plainSection, $cl, $objDatabase, $_CORELANG,
                     $subMenuTitle, $objFWUser, $act, $objInit, $plainCmd, $_ARRAYLANG;
@@ -358,7 +388,7 @@ namespace Cx\Core {
             }
         }
 
-        private function setPreContentLoadPlaceholders($objTemplate) {
+        protected function setPreContentLoadPlaceholders($objTemplate) {
             global $themesPages, $page_template, $page, $url, $objNavbar,
                     $page_content, $_CONFIG, $page_title, $objInit;
 
@@ -385,7 +415,7 @@ namespace Cx\Core {
             $page_content = str_replace('{CONTACT_FAX}',     isset($_CONFIG['contactFax'])       ? contrexx_raw2xhtml($_CONFIG['contactFax'])       : '', $page_content);
         }
 
-        private function setPostContentLoadPlaceholders($objTemplate) {
+        protected function setPostContentLoadPlaceholders() {
             global $objInit, $page_title, $page_metatitle, $page_catname, $_CONFIG,
                     $page_keywords, $page_desc, $page_robots, $pageCssName,
                     $objNavbar, $themesPages, $license, $boolShop, $objCounter,
@@ -393,11 +423,11 @@ namespace Cx\Core {
                     $page_modified, $page, $url;
 
             if ($this->mode == self::MODE_BACKEND) {
-                $objTemplate->setGlobalVariable(array(
+                $this->template->setGlobalVariable(array(
                     'TXT_FRONTEND'              => $_CORELANG['TXT_FRONTEND'],
                     'TXT_UPGRADE'               => $_CORELANG['TXT_UPGRADE'],
                 ));
-                $objTemplate->setVariable(array(
+                $this->template->setVariable(array(
                     'TXT_LOGOUT'                => $_CORELANG['TXT_LOGOUT'],
                     'TXT_PAGE_ID'               => $_CORELANG['TXT_PAGE_ID'],
                     'CONTAINER_BACKEND_CLASS'   => 'backend',
@@ -407,7 +437,7 @@ namespace Cx\Core {
             }
 
             // set global template variables
-            $objTemplate->setVariable(array(
+            $this->template->setVariable(array(
                 'CHARSET'                        => $objInit->getFrontendLangCharset(),
                 'TITLE'                          => $page_title,
                 'METATITLE'                      => $page_metatitle,
@@ -498,7 +528,7 @@ namespace Cx\Core {
             ));
         }
 
-        private function finalize($objTemplate) {
+        protected function finalize() {
             global $themesPages, $moduleStyleFile, $objCache, $cl, $_CONFIG,
                     $objInit, $page_title, $parsingtime, $starttime, $subMenuTitle,
                     $_CORELANG, $objFWUser, $plainCmd, $cmd, $startTime;
@@ -506,7 +536,7 @@ namespace Cx\Core {
             if ($this->mode == self::MODE_FRONTEND) {
                 // parse system
                 $time = $this->stopTimer();
-                $objTemplate->setVariable('PARSING_TIME', $time);
+                $this->template->setVariable('PARSING_TIME', $time);
 
                 $themesPages['sidebar'] = str_replace('{STANDARD_URL}',    $objInit->getUriBy('smallscreen', 0),    $themesPages['sidebar']);
                 $themesPages['sidebar'] = str_replace('{MOBILE_URL}',      $objInit->getUriBy('smallscreen', 1),    $themesPages['sidebar']);
@@ -523,7 +553,7 @@ namespace Cx\Core {
                 $themesPages['sidebar'] = str_replace('{CONTACT_PHONE}',   isset($_CONFIG['contactPhone'])     ? contrexx_raw2xhtml($_CONFIG['contactPhone'])     : '', $themesPages['sidebar']);
                 $themesPages['sidebar'] = str_replace('{CONTACT_FAX}',     isset($_CONFIG['contactFax'])       ? contrexx_raw2xhtml($_CONFIG['contactFax'])       : '', $themesPages['sidebar']);
 
-                $objTemplate->setVariable(array(
+                $this->template->setVariable(array(
                     'SIDEBAR_FILE' => $themesPages['sidebar'],
                     'JAVASCRIPT_FILE' => $themesPages['javascript'],
                     'BUILDIN_STYLE_FILE' => $themesPages['buildin_style'],
@@ -540,7 +570,7 @@ namespace Cx\Core {
                 ));
 
                 if (!empty($moduleStyleFile))
-                    $objTemplate->setVariable(
+                    $this->template->setVariable(
                         'STYLE_FILE',
                         "<link rel=\"stylesheet\" href=\"$moduleStyleFile\" type=\"text/css\" media=\"screen, projection\" />"
                     );
@@ -549,7 +579,7 @@ namespace Cx\Core {
                     $cl->loadFile(ASCMS_CORE_PATH.'/pdf.class.php');
                     $objPDF          = new PDF();
                     $objPDF->title   = $page_title.(empty($page_title) ? null : '.pdf');
-                    $objPDF->content = $objTemplate->get();
+                    $objPDF->content = $this->template->get();
                     $objPDF->Create();
                     exit;
                 }
@@ -560,24 +590,24 @@ namespace Cx\Core {
                 //ob_start("ob_gzhandler");
 
                 // fetch the parsed webpage
-                $endcode = $objTemplate->get();
+                $endcode = $this->template->get();
 
                 /**
-                * Get all javascripts in the code, replace them with nothing, and register the js file
-                * to the javascript lib. This is because we don't want something twice, and there could be
-                * a theme that requires a javascript, which then could be used by a module too and therefore would
-                * be loaded twice.
-                */
+                 * Get all javascripts in the code, replace them with nothing, and register the js file
+                 * to the javascript lib. This is because we don't want something twice, and there could be
+                 * a theme that requires a javascript, which then could be used by a module too and therefore would
+                 * be loaded twice.
+                 */
                 /* Finds all uncommented script tags, strips them out of the HTML and
-                * stores them internally so we can put them in the placeholder later
-                * (see JS::getCode() below)
-                */
+                 * stores them internally so we can put them in the placeholder later
+                 * (see JS::getCode() below)
+                 */
                 \JS::findJavascripts($endcode);
                 /*
-                * Proposal:  Use this
-                *     $endcode = preg_replace_callback('/<script\s.*?src=(["\'])(.*?)(\1).*?\/?>(?:<\/script>)?/i', array('JS', 'registerFromRegex'), $endcode);
-                * and change JS::registerFromRegex to use index 2
-                */
+                 * Proposal:  Use this
+                 *     $endcode = preg_replace_callback('/<script\s.*?src=(["\'])(.*?)(\1).*?\/?>(?:<\/script>)?/i', array('JS', 'registerFromRegex'), $endcode);
+                 * and change JS::registerFromRegex to use index 2
+                 */
                 // i know this is ugly, but is there another way
                 $endcode = str_replace('javascript_inserting_here', \JS::getCode(), $endcode);
 
@@ -599,7 +629,7 @@ namespace Cx\Core {
                 $parsingTime = $this->stopTimer();
                 $objAdminNav = new \adminMenu($plainCmd);
                 $objAdminNav->getAdminNavbar();
-                $objTemplate->setVariable(array(
+                $this->template->setVariable(array(
                     'SUB_MENU_TITLE' => $subMenuTitle,
                     'FRONTEND_LANG_MENU' => $objInit->getUserFrontendLangMenu(),
                     'TXT_GENERATED_IN' => $_CORELANG['TXT_GENERATED_IN'],
@@ -623,18 +653,18 @@ namespace Cx\Core {
                 // Style parsing
                 if (file_exists(ASCMS_ADMIN_TEMPLATE_PATH.'/css/'.$cmd.'.css')) {
                     // check if there's a css file in the core section
-                    $objTemplate->setVariable('ADD_STYLE_URL', ASCMS_ADMIN_TEMPLATE_WEB_PATH.'/css/'.$cmd.'.css');
-                    $objTemplate->parse('additional_style');
+                    $this->template->setVariable('ADD_STYLE_URL', ASCMS_ADMIN_TEMPLATE_WEB_PATH.'/css/'.$cmd.'.css');
+                    $this->template->parse('additional_style');
                 } elseif (file_exists(ASCMS_MODULE_PATH.'/'.$cmd.'/template/backend.css')) {
                     // of maybe in the current module directory
-                    $objTemplate->setVariable('ADD_STYLE_URL', ASCMS_MODULE_WEB_PATH.'/'.$cmd.'/template/backend.css');
-                    $objTemplate->parse('additional_style');
+                    $this->template->setVariable('ADD_STYLE_URL', ASCMS_MODULE_WEB_PATH.'/'.$cmd.'/template/backend.css');
+                    $this->template->parse('additional_style');
                 } elseif (file_exists(ASCMS_CORE_MODULE_PATH.'/'.$cmd.'/template/backend.css')) {
                     // or in the core module directory
-                    $objTemplate->setVariable('ADD_STYLE_URL', ASCMS_CORE_MODULE_WEB_PATH.'/'.$cmd.'/template/backend.css');
-                    $objTemplate->parse('additional_style');
+                    $this->template->setVariable('ADD_STYLE_URL', ASCMS_CORE_MODULE_WEB_PATH.'/'.$cmd.'/template/backend.css');
+                    $this->template->parse('additional_style');
                 } else {
-                    $objTemplate->hideBlock('additional_style');
+                    $this->template->hideBlock('additional_style');
                 }
 
 
@@ -643,7 +673,7 @@ namespace Cx\Core {
                 //WARNING: ob_start(): output handler 'ob_gzhandler' cannot be used after 'URL-Rewriter
                 //ob_start("ob_gzhandler");
 
-                $objTemplate->show();
+                $this->template->show();
                 /*echo '<pre>';
                 print_r($_SESSION);
                 /*echo '<b>Overall time: ' . (microtime(true) - $timeAtStart) . 's<br />';
