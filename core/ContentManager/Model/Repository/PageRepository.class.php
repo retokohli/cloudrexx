@@ -628,6 +628,7 @@ class PageRepository extends EntityRepository {
                 'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS,
                 'slug' => $parts[0],
             ), true);
+            $page = null;
             if (count($pages) == 1) {
                 $page = $pages[0];
             } else if (count($pages) != 0) {
