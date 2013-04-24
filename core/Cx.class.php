@@ -300,7 +300,8 @@ class Cx {
         // this is a 1:1 copy from backend, rewrite to be used in front- and backend
         $moduleManager = new \modulemanager();
         try {
-            $moduleManager->loadModule($plainSection, $cl, $objDatabase, $_CORELANG, $subMenuTitle, $objTemplate, $objFWUser, $act, $objInit, $_ARRAYLANG);
+            $em = \Env::get('em');
+            $moduleManager->loadModule($plainSection, $cl, $objDatabase, $_CORELANG, $subMenuTitle, $objTemplate, $objFWUser, $act, $objInit, $_ARRAYLANG, $em, $this);
         } catch (\ModuleManagerException $e) {
 //            echo $e->getMessage();
             $moduleManager->loadLegacyModule($plainSection, $cl, $objDatabase, $_CORELANG, $subMenuTitle, $objTemplate, $objFWUser, $act, $objInit, $_ARRAYLANG);

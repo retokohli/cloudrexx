@@ -461,7 +461,23 @@ return false;
      * @param type $objInit
      * @throws ModuleManagerException 
      */
-    public function loadModule(&$module, $classLoader, $objDatabase, &$coreLang, &$subMenuTitle, $objTemplate, $objFWUser, &$act, $objInit, $_ARRAYLANG) {
+    public function loadModule(
+        /*string*/                          &$module,
+        \Cx\Core\ClassLoader\ClassLoader    &$classLoader,
+        \ADODB_mysql                        &$objDatabase,
+        /*array*/                           &$coreLang,
+        /*string*/                          &$subMenuTitle,
+        \Cx\Core\Html\Sigma                 &$objTemplate,
+        \FWUser                             &$objFWUser,
+        /*string*/                          &$act,
+        \InitCMS                            &$objInit,
+        /*array*/                           &$_ARRAYLANG,
+        \Doctrine\ORM\EntityManager         &$em,
+        \Cx\Core\Cx                         &$cx
+    ) {
+        $dbgMode = \DBG::getMode();
+        //\DBG::activate(DBG_PHP);
+        
         \DBG::msg('Component load: Trying to load "' . $module . '"');
         // exceptions which need to be load the legacy way:
         if (in_array($module, array(
@@ -473,6 +489,7 @@ return false;
         }
     	$result = $objDatabase->query('
     		SELECT DISTINCT
+                        `m`.`is_core`,
     			`ba`.`access_id`
     		FROM
     			`contrexx_modules` AS `m`,
@@ -491,17 +508,24 @@ return false;
             \DBG::msg('Component load: Redirecting to login. This should never happen, page should have been resolved to "login" before');
             \CSRF::header('Location: ?cmd=login');
         }
-        $backendClassName = '\\Cx\\Core_Modules\\' . ucfirst($module) . '\\Controller\\' . ucfirst($module);
-    	if (!class_exists($backendClassName) && !$classLoader->loadFile(ASCMS_MODULE_PATH.'/' . $module . '/admin.class.php')) {
+        if ($result->fields['is_core']) {
+            $backendClassName = '\\Cx\\Core_Modules\\' . ucfirst($module) . '\\Controller\\ComponentController';
+            $componentFolder = ASCMS_CORE_MODULE_PATH;
+        } else {
+            $backendClassName = '\\Cx\\Modules\\' . ucfirst($module) . '\\Controller\\ComponentController';
+            $componentFolder = ASCMS_MODULE_PATH;
+        }
+    	if (!class_exists($backendClassName) && !$classLoader->loadFile($componentFolder.'/' . $module . '/admin.class.php')) {
             \DBG::msg('Component load: Component does not exist');
             throw new ModuleManagerException($coreLang['TXT_THIS_MODULE_DOESNT_EXISTS']);
         }
-        // TODO: check module title too
-        if (!isset($coreLang['TXT_' . strtoupper($module) . '_MODULE_DESCRIPTION'])) {
-            \DBG::msg('Component load: No description for module');
-            throw new ModuleManagerException('No description for module "' . $module . '"');
+        // TODO: check module description too
+        // TODO: load module name from Gedmo translated component table
+        if (!isset($coreLang['TXT_' . strtoupper($module) . '_MODULE_NAME'])) {
+            \DBG::msg('Component load: No language dependent name for module');
+            throw new ModuleManagerException('No language dependent name for module "' . $module . '"');
         }
-        $subMenuTitle = $coreLang['TXT_' . strtoupper($module) . '_MODULE_DESCRIPTION'];
+        $subMenuTitle = $coreLang['TXT_' . strtoupper($module) . '_MODULE_NAME'];
         if (!class_exists($backendClassName)) {
             // try legacy class names:
             $origBackendClassName = $backendClassName;
@@ -516,14 +540,25 @@ return false;
                     }
                 }
             }
+            \DBG::msg('Component load: Loading component from legacy class name (' . $backendClassName . ')');
         }
         if (!method_exists($backendClassName, 'getPage')) {
             \DBG::msg('Component load: Found class for component has not getPage() method');
             throw new ModuleManagerException('Class "' . $backendClassName . '" for module "' . $module . '" has no method getPage($template)');
         }
-        $backendClass = new $backendClassName($objInit->loadLanguageData($module));
-        $backendClass->getPage($objTemplate, $_POST, $_ARRAYLANG);
+        $componentController = new $backendClassName($objInit->loadLanguageData($module));
+        // TODO: $cx and $request must not be null
+        $em = \Env::get('em');
+        $db = \Env::get('db');
+        $cx = null;
+        $request = null;
+        $componentController->getPage(false, $_ARRAYLANG, $objTemplate, $em, $db, $cx, $request);
         \DBG::msg('Component load: Could load nice. This is nice component!');
+        
+        \DBG::deactivate();
+        if (!empty($dbgMode)) {
+            \DBG::activate($dbgMode);
+        }
     }
 
     /**
