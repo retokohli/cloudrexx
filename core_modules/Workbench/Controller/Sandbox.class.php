@@ -11,7 +11,7 @@ class Sandbox {
     protected $result = null;
 
     public function __construct(&$language, $mode, &$arguments) {
-        \DBG::activate(DBG_PHP);
+        //\DBG::activate(DBG_PHP);
         $this->mode = $mode;
         $this->initialize($arguments);
         $this->execute();
