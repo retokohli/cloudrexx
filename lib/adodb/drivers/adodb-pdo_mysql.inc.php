@@ -170,7 +170,7 @@ class ADODB_pdo_mysql extends ADODB_pdo {
 	{
 		$offsetStr =($offset>=0) ? "$offset," : '';
 		// jason judge, see http://phplens.com/lens/lensforum/msgs.php?id=9220
-		if ($nrows < 0) $nrows = '18446744073709551615'; 
+		if ($nrows < 0) $nrows = '1000'; 
 		
 		if ($secs)
 			$rs = $this->CacheExecute($secs,$sql." LIMIT $offsetStr$nrows",$inputarr);
