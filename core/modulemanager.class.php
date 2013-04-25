@@ -515,7 +515,7 @@ return false;
             $backendClassName = '\\Cx\\Modules\\' . ucfirst($module) . '\\Controller\\ComponentController';
             $componentFolder = ASCMS_MODULE_PATH;
         }
-    	if (!class_exists($backendClassName) && !$classLoader->loadFile($componentFolder.'/' . $module . '/admin.class.php')) {
+    	if (!$classLoader->classExists($backendClassName) && !$classLoader->loadFile($componentFolder.'/' . $module . '/admin.class.php')) {
             \DBG::msg('Component load: Component does not exist');
             throw new ModuleManagerException($coreLang['TXT_THIS_MODULE_DOESNT_EXISTS']);
         }
