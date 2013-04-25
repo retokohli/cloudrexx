@@ -1882,6 +1882,7 @@ class Order
                         foreach ($arrAttribute as $arrOption) {
                             $options .= ($options ? ', ' : '').
                                 $arrOption['name'].' ('.$arrOption['price'].')';
+                            $price += $arrOption['price'];
                         }
                         $name .=
                             '<i><br />- '.$attribute_name.': '.
