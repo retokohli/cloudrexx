@@ -1,5 +1,5 @@
 <?php
-global $_DBCONFIG, $loggableListener;
+global $_DBCONFIG, $loggableListener, $apcEnabled;
 
 use Doctrine\Common\Util\Debug as DoctrineDebug;
 use Cx\Core\ContentManager\Model\Doctrine\Event\PageEventListener as PageEventListener;
@@ -38,6 +38,10 @@ $classLoader->register();
 $config = new \Doctrine\ORM\Configuration();
 
 $cache = new \Doctrine\Common\Cache\ArrayCache();
+if ($apcEnabled) {
+    $cache = new \Doctrine\Common\Cache\ApcCache();
+}
+$config->setResultCacheImpl($cache);
 $config->setMetadataCacheImpl($cache);
 $config->setQueryCacheImpl($cache);
 
