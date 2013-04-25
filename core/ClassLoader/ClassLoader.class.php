@@ -152,4 +152,29 @@ class ClassLoader {
             $this->legacyClassLoader->autoload($name);
         }
     }
+    
+    /**
+     * Tests if a class is available. You may specify if legacy and customizing
+     * can be used to load it if necessary.
+     * @todo $useCustomizing does not work correctly if legacy is enabled
+     * @param string $class Class name to look for
+     * @param boolean $useLegacy (optional) Wheter to allow usage of legacy class loader or not (default false)
+     * @param boolean $useCustomizing (optional) Wheter to allow usage of customizings or not (default true)
+     * @return boolean True if class could be found using the allowed methods, false otherwise 
+     */
+    public function classExists($class, $useLegacy = false, $useCustomizing = true) {
+        if ($useLegacy) {
+            return class_exists($class);
+        }
+        $legacy = $this->legacyClassLoader;
+        $this->legacyClassLoader = null;
+        $customizing = $this->customizingPath;
+        if (!$useCustomizing) {
+            $customizing = null;
+        }
+        $ret = class_exists($class);
+        $this->legacyClassLoader = $legacy;
+        $this->customizingPath = $customizing;
+        return $ret;
+    }
 }
