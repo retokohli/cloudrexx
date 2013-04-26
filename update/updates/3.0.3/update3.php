@@ -462,7 +462,7 @@ $updatesSp1ToSp2 = array(
         ),
     ),
     '
-        INSERT INTO `'.DBPREFIX.'access_settings` (`key`, `value`, `status`) VALUES
+        INSERT IGNORE INTO `'.DBPREFIX.'access_settings` (`key`, `value`, `status`) VALUES
         (\'sociallogin\', \'\', 0),
         (\'sociallogin_active_automatically\', \'\', 1),
         (\'sociallogin_assign_to_groups\', \'3\', 0),
@@ -507,7 +507,7 @@ $updatesSp1ToSp2 = array(
         ),
     ),
     '
-        INSERT INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES
+        INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES
         (\'access\', \'providers\', \'sociallogin\', \'text\', \'{"facebook":{"active":"0","settings":["",""]},"twitter":{"active":"0","settings":["",""]},"google":{"active":"0","settings":["","",""]}}\', \'\', 0)
     ',
     array(
