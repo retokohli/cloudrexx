@@ -87,7 +87,7 @@ class ContentWorkflow extends Module {
         $this->db = $db;
         $this->nodeRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
         $this->pageRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-        $this->logRepo  = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
+        $this->logRepo  = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry');
         
         if (isset($_GET['pos'])) {
             $this->intPos = intval($_GET['pos']);

@@ -62,13 +62,14 @@ class ClassLoader {
         }
         $parts = explode('\\', $name);
         // new classes should be in namespace \Cx\something
-        if (!in_array(current($parts), array('Cx'/*, 'Doctrine'*/, 'Gedmo'/*, 'Symfony'*/)) || count($parts) < 3) {
+        if (!in_array(current($parts), array('Cx', 'Doctrine', 'Gedmo', 'DoctrineExtension', 'Symfony')) || count($parts) < 2) {
             return false;
         }
         if (substr($name, 0, 8) == 'PHPUnit_') {
             return false;
         }
         
+        $suffix = '.class';
         if ($parts[0] == 'Cx') {
             // Exception for model, its within /model/[entities|events]/cx/model/
             if ($parts[1] == 'Model') {
@@ -88,7 +89,22 @@ class ClassLoader {
         // Exception for overwritten gedmo classes, they are within /model/entities/Gedmo
         // This is not ideal, maybe move the classes somewhere
         } else if ($parts[0] == 'Gedmo') {
-            $parts = array_merge(array('Cx', 'Model', 'entities'), $parts);
+            $suffix = '';
+            $parts = array_merge(array('Cx', 'Lib', 'doctrine'), $parts);
+            //$parts = array_merge(array('Cx', 'Model', 'entities'), $parts);
+        } else if ($parts[0] == 'Doctrine') {
+            $suffix = '';
+            if ($parts[1] == 'ORM') {
+                $parts = array_merge(array('Cx', 'Lib', 'doctrine'), $parts);
+            } else {
+                $parts = array_merge(array('Cx', 'Lib', 'doctrine', 'vendor', 'doctrine-' . strtolower($parts[1]), 'lib'), $parts);
+            }
+        } else if ($parts[0] == 'DoctrineExtension') {
+            $suffix = '';
+            $parts = array_merge(array('Cx', 'Model', 'extensions'), $parts);
+        } else if ($parts[0] == 'Symfony') {
+            $suffix = '';
+            $parts = array_merge(array('Cx', 'Lib', 'doctrine', 'vendor'), $parts);
         }
         
         // we don't need the Cx part
@@ -110,9 +126,9 @@ class ClassLoader {
             $path .= $part;
         }
         $className = preg_replace('/Exception/', '', $className);
-        $resolvedPath = $path . '/' . $className . '.class.php';
+        $resolvedPath = $path . '/' . $className . $suffix . '.php';
         
-        if ($this->loadFile($path.'/'.$className.'.class.php')) {
+        if ($this->loadFile($path.'/'.$className . $suffix . '.php')) {
             return true;
         } else if ($this->loadFile($path.'/'.$className.'.interface.php')) {
             return true;

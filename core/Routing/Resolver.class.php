@@ -130,7 +130,7 @@ class Resolver {
         $this->pathOffset = $pathOffset;
         $this->pageRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
         $this->nodeRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
-        $this->logRepo  = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
+        $this->logRepo  = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry');
         $this->forceInternalRedirection = $forceInternalRedirection;
         $this->fallbackLanguages = $fallbackLanguages;
         $this->pagePreview = !empty($_GET['pagePreview']) && ($_GET['pagePreview'] == 1) ? 1 : 0;

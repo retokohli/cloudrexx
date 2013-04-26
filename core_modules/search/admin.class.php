@@ -95,7 +95,7 @@ class SearchManager extends \Module
         
         $this->pageRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
         $this->nodeRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
-        $this->logRepo  = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
+        $this->logRepo  = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry');
         
         $this->term     = !empty($_GET['term']) ? contrexx_input2raw($_GET['term']) : '';
         $this->pos      = !empty($_GET['pos'])  ? contrexx_input2raw($_GET['pos'])  : 0;

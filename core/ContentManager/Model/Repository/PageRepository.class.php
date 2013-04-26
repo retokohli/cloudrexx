@@ -712,7 +712,7 @@ class PageRepository extends EntityRepository {
         if (!is_object($currentPage)) {
             $currentPage = new \Cx\Core\ContentManager\Model\Entity\Page();
             $currentPage->setId($pageId);
-            $logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
+            $logRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry');
             $logRepo->revert($currentPage, $historyId);
             
             $logs = $logRepo->getLogsByAction('remove');
