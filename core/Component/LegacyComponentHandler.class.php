@@ -236,7 +236,7 @@ class LegacyComponentHandler {
                             if($history) {
                                 //access: backend access id for history requests
                                 $pageAccessId = $page->getBackendAccessId();
-                                $logRepo = \Env::em()->getRepository('Gedmo\Loggable\Entity\LogEntry');
+                                $logRepo = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry');
                                 try {
                                     $logRepo->revert($page, $history);
                                 }

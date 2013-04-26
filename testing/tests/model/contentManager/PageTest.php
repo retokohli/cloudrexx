@@ -51,7 +51,7 @@ class PageTest extends DoctrineTestCase
 
         self::$em->flush();
 
-        $repo = self::$em->getRepository('Gedmo\Loggable\Entity\LogEntry'); // we use default log entry class
+        $repo = self::$em->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry'); // we use default log entry class
 
         $this->assertEquals('testpage_changed_2',$p->getTitle());
         $repo->revert($p,1);

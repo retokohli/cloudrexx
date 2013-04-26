@@ -423,22 +423,6 @@ namespace Cx\Core {
              */
             require_once($this->cl->getFilePath(ASCMS_CORE_PATH.'/Env.class.php'));
             \Env::set('ClassLoader', $this->cl);            
-
-            /**
-             * Doctrine configuration
-             * Loaded after installer redirect (not configured before installer)
-             */
-            $incDoctrineStatus = include_once($this->cl->getFilePath(ASCMS_PATH.ASCMS_PATH_OFFSET.'/config/doctrine.php'));
-
-            if ($incDoctrineStatus === false) {
-                die('System halted: Unable to load basic configuration!');
-            }
-
-            // Check if system is running
-            if ($_CONFIG['systemStatus'] != 'on') {
-                header('Location: offline.html');
-                die(1);
-            }
             \Env::set('config', $_CONFIG);
             \Env::set('ftpConfig', $_FTPCONFIG);
 
@@ -449,22 +433,12 @@ namespace Cx\Core {
             // Temporary fix until all GET operation requests will be replaced by POSTs
             \CSRF::setFrontendMode();
 
-            // Initialize database object
-            $errorMsg = '';
-            /**
-             * Database object
-             * @global ADONewConnection $objDatabase
-             */
-            $objDatabase = getDatabaseObject($errorMsg);
+            $this->db = new \Cx\Core\Db\Db();
+            $objDatabase = $this->db->getAdoDb();
             \Env::set('db', $objDatabase);
-            \Env::set('pageguard', new \PageGuard($objDatabase));
-
-            if (!$objDatabase) {
-                die(
-                    'Database error.'.
-                    ($errorMsg != '' ? "<br />Message: $errorMsg" : '')
-                );
-            }
+            $em = $this->db->getEntityManager();
+            \Env::set('em', $em);
+            \Env::set('pageguard', new \PageGuard($this->db->getAdoDb()));
 
             \DBG::set_adodb_debug_mode();
 
@@ -750,6 +724,18 @@ namespace Cx\Core {
             } else {
                 // page parsing
                 $parsingTime = $this->stopTimer();
+//                var_dump($parsingTime);
+    /*echo ($finishTime[0] - $startTime[0]) . '<br />';
+    if (!isset($_SESSION['asdf1']) || isset($_GET['reset'])) {
+        $_SESSION['asdf1'] = 0;
+        $_SESSION['asdf2'] = 0;
+    }
+    echo $_SESSION['asdf1'] . '<br />';
+    if ($_SESSION['asdf1'] > 0) {
+        echo $_SESSION['asdf2'] / $_SESSION['asdf1'];
+    }
+    $_SESSION['asdf1']++;
+    $_SESSION['asdf2'] += ($finishTime[0] - $startTime[0]);//*/
                 $objAdminNav = new \adminMenu($plainCmd);
                 $objAdminNav->getAdminNavbar();
                 $this->template->setVariable(array(

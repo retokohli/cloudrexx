@@ -464,7 +464,7 @@ return false;
     public function loadModule(
         /*string*/                          &$module,
         \Cx\Core\ClassLoader\ClassLoader    &$classLoader,
-        \ADODB_mysql                        &$objDatabase,
+        \ADODB_pdo                          &$objDatabase,
         /*array*/                           &$coreLang,
         /*string*/                          &$subMenuTitle,
         \Cx\Core\Html\Sigma                 &$objTemplate,

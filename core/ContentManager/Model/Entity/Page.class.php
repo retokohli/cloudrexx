@@ -1833,10 +1833,10 @@ class Page extends \Cx\Model\Base\EntityBase
     
     /**
      * Returns the current log for this page
-     * @return \Gedmo\Loggable\Entity\LogEntry Current page log
+     * @return \Cx\Core\ContentManager\Model\Entity\LogEntry Current page log
      */
     public function getVersion() {
-        $logRepo = \Env::get('em')->getRepository('Gedmo\Loggable\Entity\LogEntry');
+        $logRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry');
         return $logRepo->getLatestLog($this);
     }
 }

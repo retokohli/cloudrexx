@@ -41,7 +41,7 @@ class JsonPage implements JsonAdapter {
         if ($this->em) {
             $this->pageRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
             $this->nodeRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
-            $this->logRepo  = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
+            $this->logRepo  = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry');
         }
         $this->messages = array();
         $this->tz       = new \DateTimeZone('Europe/Berlin');
@@ -128,7 +128,7 @@ class JsonPage implements JsonAdapter {
             }
             // load the draft revision if one is available and we're not loading historic data:
             else if ($page->getEditingStatus() == 'hasDraft' || $page->getEditingStatus() == 'hasDraftWaiting') {
-                $this->logRepo = $this->em->getRepository('Gedmo\Loggable\Entity\LogEntry');
+                $this->logRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry');
     
                 $availableRevisions = $this->logRepo->getLogEntries($page);
                 $this->logRepo->revert($page, $availableRevisions[1]->getVersion());

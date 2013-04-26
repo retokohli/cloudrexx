@@ -42,7 +42,7 @@ class JsonNode implements JsonAdapter {
     
     /**
      * Reference to the Doctring LogRepository
-     * @var \Gedmo\Loggable\Entity\Repository\CxLogEntryRepository
+     * @var \Cx\Core\ContentManager\Model\Repository\PageLogRepository
      */
     private $logRepo = null;
     
@@ -72,7 +72,7 @@ class JsonNode implements JsonAdapter {
         if ($this->em) {
             $this->nodeRepo = $this->em->getRepository('\Cx\Core\ContentManager\Model\Entity\Node');
             $this->pageRepo = $this->em->getRepository('\Cx\Core\ContentManager\Model\Entity\Page');
-            $this->logRepo  = $this->em->getRepository('\Gedmo\Loggable\Entity\LogEntry');
+            $this->logRepo  = $this->em->getRepository('\Cx\Core\ContentManager\Model\Entity\LogEntry');
         }
         $this->messages = array();
 

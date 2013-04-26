@@ -11,7 +11,7 @@
  * @subpackage  model_events
  */
 
-namespace Cx\Core\ContentManager\Model\Doctrine\Event;
+namespace Cx\Core\ContentManager\Model\Event;
 
 use \Cx\Core\ContentManager\Model\Entity\Page as Page;
 use Doctrine\Common\Util\Debug as DoctrineDebug;
