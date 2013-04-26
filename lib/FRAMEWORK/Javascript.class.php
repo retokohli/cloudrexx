@@ -158,7 +158,6 @@ jQuery(document).ready(function(){
         'ckeditor'     => array(
             'jsfiles'       => array(
                 'lib/ckeditor/ckeditor.js',
-                'lib/ckeditor/adapters/jquery.js',
             ),
             'dependencies' => array('jquery'),
         ),

@@ -12,11 +12,12 @@
             if (typeof(CKEDITOR.instances.ckeditor) == 'undefined') {
                 var config = {
                     customConfig : cx.variables.get('basePath', 'contrexx') + cx.variables.get('ckeditorconfigpath', 'block'),
-                    toolbar: 'Default',
-                    skin: 'kama',
+                    toolbar: 'Full',
+                    skin: 'moono',
                     height: 380
                 };
-                $J('#ckeditor').ckeditor(config);
+                CKEDITOR.config.removePlugins = 'bbcode';
+                CKEDITOR.replace('page[content]', config);
             }
 
             activeLangId = $J('ul.blockLang a.active').attr('id').split('_')[2];
