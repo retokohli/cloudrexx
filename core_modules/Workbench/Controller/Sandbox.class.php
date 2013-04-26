@@ -2,6 +2,8 @@
 
 namespace Cx\Core_Modules\Workbench\Controller;
 
+class SandboxException extends \Exception {}
+
 class Sandbox {
     const MODE_DQL = 'dql';
     const MODE_PHP = 'php';
@@ -62,10 +64,25 @@ class Sandbox {
                 }
                 break;
             case self::MODE_PHP:
+                $dbgMode = \DBG::getMode();
                 try {
-                    $function = create_function('$em', '' . $this->code . '');
+                    // This error handler catches all Warnings and Notices and some Strict errors
+                    \DBG::activate(DBG_PHP);
+                    set_error_handler(array($this, 'phpErrorsAsExceptionsHandler'));
+                    // Since DBG catches the rest (E_PARSE) let's use that
+                    ob_start();
+                    $function = create_function('$em', '' . $this->code . ';');
+                    $dbgContents = ob_get_clean();
+                    \DBG::activate($dbgMode);
+                    if (!is_callable($function)) {
+                        // parse exception
+                        throw new SandboxException($dbgContents);
+                    }
                     $this->result = var_export($function(\Env::get('em')), true);
+                    restore_error_handler();
                 } catch (\Exception $e) {
+                    \DBG::activate($dbgMode);
+                    restore_error_handler();
                     $this->result = get_class($e) . ': ' . $e->getMessage();
                 }
                 break;
@@ -151,6 +168,10 @@ class Sandbox {
             'SIDEBOX_TITLE' => $sideboxTitle,
             'SIDEBOX_CONTENT' => $sideboxContent,
         ));
+    }
+    
+    public function phpErrorsAsExceptionsHandler($errno, $errstr) {
+        throw new SandboxException($errstr);
     }
     
     public function __toString() {
