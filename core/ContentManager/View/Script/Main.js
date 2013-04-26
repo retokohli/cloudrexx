@@ -565,6 +565,7 @@ cx.cm = function(target) {
         if (!cx.cm.validateFields()) {
             return false;
         }
+        jQuery('#cm_ckeditor').val(CKEDITOR.instances.cm_ckeditor.getData());
         jQuery.post('index.php?cmd=jsondata&object=page&act=set', 'action=publish&'+jQuery('#cm_page').serialize(), function(response) {
             if (response.data != null) {
                 if (jQuery('#historyConatiner').html() != '') {
@@ -1674,13 +1675,13 @@ cx.cm.performAction = function(action, pageId, nodeId) {
 cx.cm.updatePageIcons = function(args) {
     var node = jQuery("#node_" + args.page.nodeId);
     var page = node.children("a." + args.page.lang);
-    
+
     if (!args.page.existing) {
         page.addClass("inexistent");
     } else {
         page.removeClass("inexistent");
     }
-    
+
     // reload the editor values
     if (args.page.id == jQuery('input#pageId').val()) {
         cx.cm.loadPage(args.page.id, undefined, args.page.version, undefined, false);
@@ -1699,7 +1700,7 @@ cx.cm.updateTranslationIcons = function(args) {
     var node = jQuery("#node_" + args.page.nodeId);
     var page = node.children("a." + args.page.lang);
     var translationIcon = page.siblings(".jstree-wrapper").children(".translations").children(".translation." + args.page.lang);
-    
+
     // reset classes
     translationIcon.attr("class", "translation " + args.page.lang);
     // set new status
@@ -1725,10 +1726,10 @@ cx.cm.updateTranslationsIcons = function(args) {
 cx.cm.updateActionMenu = function(args) {
     var node = jQuery("#node_" + args.page.nodeId);
     var menu = node.children(".jstree-wrapper").children(".actions").children(".actions-expanded").children("ul");
-    
+
     // reset menu
     menu.html("");
-    
+
     // add actions
     menu.append(jQuery("<li class=\"action-item\">").addClass("new").text(cx.variables.get("new", "contentmanager/lang/actions")));
     if (!args.page.publishing.locked) {
@@ -1801,15 +1802,15 @@ cx.cm.updateTreeEntry = function(newStatus) {
     var pageLang = page.attr("class").split(" ")[0];
     var publishing = page.children("ins.publishing");
     var visibility = page.children("ins.page");
-    
+
     // get temporary helpers
     var tmpPublishingStatus = publishing.attr("class");
     var tmpVisibilityStatus = visibility.attr("class");
-    
+
     // get things we will change
     var lockingStatus = publishing.hasClass("locked");
     var protectionStatus = visibility.hasClass("protected");
-    
+
     // handle special cases
     if (!newStatus.existing) {}
     if (newStatus.deleted) {
@@ -1818,7 +1819,7 @@ cx.cm.updateTreeEntry = function(newStatus) {
         // no need to trigger any event, createJsTree will do that on load
         return true;
     }
-    
+
     if (newStatus.publishing.locked == undefined) {
         newStatus.publishing.locked = lockingStatus;
     }
@@ -1852,7 +1853,7 @@ cx.cm.updateTreeEntry = function(newStatus) {
     if (newStatus.name != "" && newStatus.publishing.hasDraft == "no") {
         page.children(".name").text(newStatus.name);
     }
-    
+
     // set css classes
     publishing.attr("class", "");
     publishing.addClass("jstree-icon");
@@ -1898,14 +1899,14 @@ cx.cm.updateTreeEntry = function(newStatus) {
         default:
             break;
     }
-    
+
     // make sure IDs are correct
     newStatus.id = pageId;
     newStatus.lang = pageLang;
     newStatus.nodeId = nodeId;
-    
+
     cx.trigger("pageStatusUpdate", "contentmanager", {page: newStatus});
-    
+
     // return
     return true;
 }
@@ -1970,15 +1971,15 @@ cx.cm.getPageStatus = function(nodeId, lang) {
             }
         };
     }
-    
+
     var publishing = page.children("ins.publishing");
     var visibility = page.children("ins.page");
-    
+
     if (!publishing || !visibility) {
         // ins elements do not exists, state unknown, abort!
         return null;
     }
-    
+
     var hasDraft = "no";
     if (publishing.hasClass("draft")) {
         if (publishing.hasClass("waiting")) {
@@ -1987,7 +1988,7 @@ cx.cm.getPageStatus = function(nodeId, lang) {
             hasDraft = "yes";
         }
     }
-    
+
     var type = "standard";
     if (visibility.hasClass("application")) {
         type = "application";
@@ -1996,9 +1997,9 @@ cx.cm.getPageStatus = function(nodeId, lang) {
     } else if (visibility.hasClass("redirection")) {
         type = "redirection";
     }
-    
+
     var name = page.children(".name").text();
-    
+
     return {
         id: pageId,
         lang: lang,
@@ -2101,7 +2102,7 @@ cx.cm.showEditView = function(forceReset) {
     }
     jQuery('#multiple-actions-strike').hide();
     jQuery('.jstree .actions .label, .jstree .actions .arrow').hide();
-    
+
     jQuery('#site-tree .name').each(function() {
         width    = jQuery(this).width();
         data     = jQuery(this).parent().attr('data-href');
@@ -2179,10 +2180,10 @@ cx.cm.resetEditView = function() {
 
     // remove unused classes
     jQuery(".warning").removeClass("warning");
-    
+
     // switch to content tab
     cx.cm.selectTab("content", false);
-    
+
     // remove or show language dropdown
     if (cx.cm.isEditView()) {
         jQuery("#site-language .chzn-container").show();
@@ -2233,11 +2234,12 @@ cx.cm.createEditor = function() {
     if (!cx.cm.editorInUse()) {
         var config = {
             customConfig: cx.variables.get('basePath', 'contrexx') + cx.variables.get('ckeditorconfigpath', 'contentmanager'),
-            toolbar: 'Default',
-            skin: 'kama'
+            toolbar: 'Full',
+            skin: 'moono'
         };
-        jQuery('#cm_ckeditor').ckeditor(config);
-        
+        CKEDITOR.config.removePlugins = 'bbcode';
+        CKEDITOR.replace('page[content]', config);
+
         cx.cm.resizeEditorHeight();
     }
 };

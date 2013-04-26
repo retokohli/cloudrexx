@@ -1350,3 +1350,7 @@ background: url(../images/navigation_level_1_189_hover.png) no-repeat center 7px
 .live-search-user-info {
     padding: 4px 0 0 2px;
 }
+
+.cke_dialog_ui_vbox table, .cke_dialog_ui_hbox table {
+    margin: 0 !important;
+}

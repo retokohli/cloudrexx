@@ -57,7 +57,7 @@ $defaultTemplateFilePath = substr(\Env::get('ClassLoader')->getFilePath('/lib/ck
 ?>
 CKEDITOR.editorConfig = function( config )
 {
-    config.skin = 'kama';
+    config.skin = 'moono';
 
     config.height = 307;
     config.uiColor = '#ececec';
@@ -67,15 +67,17 @@ CKEDITOR.editorConfig = function( config )
     config.shiftEnterMode = CKEDITOR.ENTER_P;
     config.startupOutlineBlocks = true;
 
+    config.tabSpaces = 4;
+
     config.filebrowserBrowseUrl      = CKEDITOR.getUrl('<?php echo $linkBrowser; ?>');
     config.filebrowserImageBrowseUrl = CKEDITOR.getUrl('<?php echo $defaultBrowser; ?>');
     config.filebrowserFlashBrowseUrl = CKEDITOR.getUrl('<?php echo $defaultBrowser; ?>');
 
     config.templates_files = [ '<?php echo $defaultTemplateFilePath; ?>' ];
 
-    config.toolbar_Default = [
-        ['Source','-','NewPage','Preview','-','Templates'],
-        ['Cut','Copy','Paste','PasteText','PasteFromWord','-','Print','SpellChecker'],
+    config.toolbar_Full = [
+        ['Source','-','Templates'],
+        ['Cut','Copy','Paste','PasteText','PasteFromWord','-','Scayt'],
         ['Undo','Redo','-','Replace','-','SelectAll','RemoveFormat'],
         ['Bold','Italic','Underline','Strike','-','Subscript','Superscript'],
         ['NumberedList','BulletedList','-','Outdent','Indent', 'Blockquote'],
@@ -85,12 +87,13 @@ CKEDITOR.editorConfig = function( config )
         ['Format'],
         ['TextColor','BGColor'],
         ['ShowBlocks'],
-        ['Maximize']
+        ['Maximize'],
+        ['Div','CreateDiv']
     ]
 
-    config.toolbar_News = [
+    config.toolbar_Small = [
         ['NewPage','Preview'],
-        ['Cut','Copy','Paste','PasteText','PasteFromWord','-','Print','SpellChecker'],
+        ['Cut','Copy','Paste','PasteText','PasteFromWord','-','Print','Scayt'],
         ['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
         ['Bold','Italic','Underline','StrikeThrough','-','Subscript','Superscript'],
         ['OrderedList','UnorderedList','-','Outdent','Indent'],
