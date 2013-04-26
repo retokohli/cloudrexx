@@ -24,7 +24,9 @@ require_once $documentRoot . '/core/API.php';
 require_once $documentRoot . '/core/Init.class.php';
 require_once $documentRoot . '/core/settings.class.php';
 
-$objDatabase = getDatabaseObject($errorMsg, true);
+$db = new \Cx\Core\Db\Db();
+$objDatabase = $db->getAdoDb();
+\Env::set('db', $objDatabase);
 $objInit = new \InitCMS('frontend', null);
 $_CORELANG = $objInit->loadLanguageData('core');
 

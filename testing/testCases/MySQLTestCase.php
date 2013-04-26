@@ -5,8 +5,8 @@ class MySQLTestCase extends ContrexxTestCase {
     protected static $database;
 
     public static function setUpBeforeClass() {
-        $errMsg = '';
-        self::$database = getDatabaseObject($errMsg);
+        $db = new \Cx\Core\Db\Db();
+        self::$database = $db->getAdoDb();
     }
 
     public function setUp() {

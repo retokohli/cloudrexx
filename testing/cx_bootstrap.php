@@ -15,7 +15,9 @@ if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
 $cl = new \Cx\Core\ClassLoader\ClassLoader($documentRoot, true, $customizing);
 \Env::set('ClassLoader', $cl);
 $cl->loadFile($documentRoot.'/core/API.php');
-$objDatabase = getDatabaseObject($strErrMessage, true);
+$db = new \Cx\Core\Db\Db();
+$objDatabase = $db->getAdoDb();
+\Env::set('db', $objDatabase);
 include($documentRoot.'/config/doctrine.php');
 
 

@@ -34,7 +34,7 @@ if (version_compare($php, '5.3.0') < 0) {
  * will either activate or deactivate all levels.
  */
 /*require_once dirname(__FILE__).'/lib/FRAMEWORK/DBG/DBG.php';
-//\DBG::activate(DBG_PHP);*/
+\DBG::activate(DBG_PHP);*/
 
 require_once(dirname(__FILE__).'/core/Cx.class.php');
 init();

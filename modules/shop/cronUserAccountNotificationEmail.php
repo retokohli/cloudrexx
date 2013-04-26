@@ -27,7 +27,9 @@ require_once '../../config/configuration.php';
 require_once ASCMS_LIBRARY_PATH.'/adodb/adodb.inc.php';
 require_once ASCMS_CORE_PATH.'/database.php';
 
-$objDatabase = getDatabaseObject(&$errorMsg, $newInstance = false);
+$db = new \Cx\Core\Db\Db();
+$objDatabase = $db->getAdoDb();
+\Env::set('db', $objDatabase);
 if (!$objDatabase) {
     die("Error: Failed to connect to database");
 }

@@ -90,12 +90,12 @@ $cl->loadFile(ASCMS_CORE_PATH.'/API.php');
 CSRF::setFrontendMode();
 
 // Initialize database object
-$errorMsg = '';
 /**
  * Database object
  * @global ADONewConnection $objDatabase
  */
-$objDatabase = getDatabaseObject($errorMsg);
+$db = new \Cx\Core\Db\Db();
+$objDatabase = $db->getAdoDb();
 Env::set('db', $objDatabase);
 Env::set('pageguard', new PageGuard($objDatabase));
 

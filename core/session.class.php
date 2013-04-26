@@ -74,8 +74,7 @@ class cmsSession
      */
     private function initDatabase()
     {
-        $errorMsg = '';
-        $this->_objDb = getDatabaseObject($errorMsg, true);
+        $this->_objDb = \Env::get('db');
         
         $this->setAdodbDebugMode();
     }
