@@ -32,8 +32,9 @@
     //-------------------------------------------------------
     // Initialize database object
     //-------------------------------------------------------
-    $errorMsg = '';
-    $objDatabase = getDatabaseObject($errorMsg);
+    $db = new \Cx\Core\Db\Db();
+    $objDatabase = $db->getAdoDb();
+    \Env::set('db', $objDatabase);
     if ($objDatabase === false) {
         die('Database error.');
     }

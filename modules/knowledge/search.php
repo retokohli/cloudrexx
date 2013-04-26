@@ -42,8 +42,9 @@ require_once(ASCMS_MODULE_PATH.'/knowledge/lib/databaseError.class.php');
 
 require_once(ASCMS_LIBRARY_PATH.'/PEAR/HTML/Template/Sigma/Sigma.php');
 require_once(ASCMS_LIBRARY_PATH.'/adodb/adodb.inc.php');
-$objDb = getDatabaseObject($errorMsg);
-$objDatabase = &$objDb;
+$db = new \Cx\Core\Db\Db();
+$objDatabase = $db->getAdoDb();
+\Env::set('db', $objDatabase);
 
 if (!defined('FRONTEND_LANG_ID') && !empty($_GET['lang'])) {
     define('FRONTEND_LANG_ID', \FWLanguage::getLanguageIdByCode($_GET['lang']));

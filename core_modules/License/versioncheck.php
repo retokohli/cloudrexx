@@ -36,7 +36,9 @@ if (!class_exists('HTML_Template_Sigma', false)) {
     $cl->loadFile($documentRoot.'/core/API.php'); // needed for getDatabaseObject()
 }
 
-$objDatabase = getDatabaseObject($strErrMessage, true);
+$db = new \Cx\Core\Db\Db();
+$objDatabase = $db->getAdoDb();
+\Env::set('db', $objDatabase);
 $objInit = new InitCMS('backend', null);
 
 $objInit->_initBackendLanguage();

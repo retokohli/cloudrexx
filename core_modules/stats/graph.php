@@ -413,8 +413,9 @@ require_once(ASCMS_LIBRARY_PATH.'/ykcee/ykcee.php');
 $adminPage = true;
 $cl->loadFile(ASCMS_CORE_PATH.'/API.php');
 
-$errorMsg = '';
-$objDatabase = getDatabaseObject($errorMsg);
+$db = new \Cx\Core\Db\Db();
+$objDatabase = $db->getAdoDb();
+\Env::set('db', $objDatabase);
 
 $objInit= new InitCMS($mode="backend");
 

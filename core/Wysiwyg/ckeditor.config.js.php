@@ -31,8 +31,9 @@ require_once(ASCMS_CORE_PATH.'/validator.inc.php');
 require_once(ASCMS_LIBRARY_PATH.'/CSRF.php');
 require_once(ASCMS_CORE_PATH.'/Html.class.php');
 
-$strErrMessage = '';
-$objDatabase = getDatabaseObject($strErrMessage);
+$db = new \Cx\Core\Db\Db();
+$objDatabase = $db->getAdoDb();
+\Env::set('db', $objDatabase);
 $objSettings = new settingsManager();
 $objInit = new InitCMS('backend');
 $sessionObj = new cmsSession();

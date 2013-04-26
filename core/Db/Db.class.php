@@ -66,9 +66,10 @@ namespace Cx\Core\Db {
             global $ADODB_FETCH_MODE, $ADODB_NEWCONNECTION, $_CONFIG, $_DBCONFIG;
 
             // open db connection
+            \Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH.'/adodb/adodb.inc.php');
             $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
             $ADODB_NEWCONNECTION = 'cxAdodbPdoConnectionFactory';
-            $objDb = ADONewConnection('pdo');
+            $objDb = \ADONewConnection('pdo');
 
             $errorNo = $objDb->ErrorNo();
             if ($errorNo != 0) {

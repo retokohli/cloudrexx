@@ -70,8 +70,8 @@ $incDoctrineStatus = $cl->loadFile(ASCMS_PATH.ASCMS_PATH_OFFSET.'/config/doctrin
 $cl->loadFile(ASCMS_CORE_PATH.'/API.php');
 
 // Initialize database object
-$strErrMessage = '';
-$objDatabase = getDatabaseObject($strErrMessage);
+$db = new \Cx\Core\Db\Db();
+$objDatabase = $db->getAdoDb();
 Env::set('db', $objDatabase);
 Env::set('pageguard', new PageGuard($objDatabase));
 
