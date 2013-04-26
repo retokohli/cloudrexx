@@ -1,6 +1,6 @@
 <?php
 
-namespace Cx\Core_Modules\Workbench\Model;
+namespace Cx\Core_Modules\Workbench\Model\Entity;
 
 abstract class UserInterface {
     private $commands = array();

@@ -1,6 +1,6 @@
 <?php
 
-namespace Cx\Core_Modules\Workbench\Model;
+namespace Cx\Core_Modules\Workbench\Model\Entity;
 
 class CommandException extends \Cx\Core_Modules\Workbench\Controller\WorkbenchException {};
 
