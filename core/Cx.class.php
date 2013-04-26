@@ -15,8 +15,8 @@ namespace {
      * This is necessary, because we cannot use namespaces in index.php
      * in order to catch errors with PHP versions prior to 5.3
      */
-    function init($frontend = true) {
-        new \Cx\Core\Cx($frontend ? \Cx\Core\Cx::MODE_FRONTEND : \Cx\Core\Cx::MODE_BACKEND);
+    function init($mode = null) {
+        new \Cx\Core\Cx($mode);
     }
 }
 
@@ -57,19 +57,35 @@ namespace Cx\Core {
          * @var \Cx\Core\ClassLoader\ClassLoader
          */
         protected $cl = null;
+        
+        /**
+         * If null, customizing is deactivated
+         * @var string
+         */
+        protected $customizingPath = null;
 
         /**
          * Initialized the Cx class
          */
         public function __construct($mode = null) {
-            // start time measurement
-            $this->startTimer();
+            try {
+                $this->loadConfig();                    // loads config
+                $this->handleCustomizing();             // handles customizings of this class (customizings die here)
 
-            // set mode, default is self::MODE_FRONTEND
-            $this->setMode($mode);
-            
-            // now we have a valid state, load it:
-            $this->loadContrexx();
+                $this->startTimer();                    // start time measurement
+
+                $this->setMode($mode);                  // set mode, default is self::MODE_FRONTEND
+
+                // now we have a valid state, load it:
+                $this->loadContrexx();
+                
+            } catch (\Exception $e) {
+                //$e = new \Exception();
+                //echo nl2br($e->getTraceAsString());
+                \DBG::msg('Contrexx initialization failed! ' . get_class($e) . ': "' . $e->getMessage() . '"');
+                echo file_get_contents('offline.html');
+                die(1);
+            }
         }
         
         /**
@@ -85,7 +101,7 @@ namespace Cx\Core {
             $this->loadTemplate();                      // Sigma Template
             
             // @TODO: remove this
-            $this->legacyGlobalsHook(1);                // $objUser, $objTemplate
+            $this->legacyGlobalsHook(1);                // $objUser, $objTemplate, $cl
 
             // resolve
             $this->preResolve();                        // Call pre resolve hook scripts
@@ -124,6 +140,16 @@ namespace Cx\Core {
                         $mode = self::MODE_BACKEND;
                     } else {
                         $mode = self::MODE_FRONTEND;
+                        if (isset($_GET['__cap'])) {
+                            if (preg_match('#^' . ASCMS_PATH_OFFSET . '(/[a-z]{2})?(/admin|' . ASCMS_BACKEND_PATH . ')#', $_GET['__cap'])) {
+                                // this does not belong here:
+                                if (!preg_match('#^' . ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH . '#', $_GET['__cap'])) {
+                                    header('Location: ' . ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH);
+                                    die();
+                                }
+                                $mode = self::MODE_BACKEND;
+                            }
+                        }
                     }
                     break;
             }
@@ -136,6 +162,59 @@ namespace Cx\Core {
          */
         public function getMode() {
             return $this->mode;
+        }
+        
+        protected function loadConfig() {
+            global $_DBCONFIG, $_CONFIGURATION, $_CONFIG, $_PATHCONFIG;
+
+            /**
+             * User configuration settings
+             *
+             * This file is re-created by the CMS itself. It initializes the
+             * {@link $_CONFIG[]} global array.
+             */
+            $incSettingsStatus = include_once dirname(dirname(__FILE__)).'/config/settings.php';
+
+            /**
+             * Path, database, FTP configuration settings
+             *
+             * Initialises global settings array and constants.
+             */
+            include_once dirname(dirname(__FILE__)).'/config/configuration.php';
+
+            // Check if the system is installed
+            if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
+                header('Location: ../installer/index.php');
+                exit;
+            } else if ($incSettingsStatus === false) {
+                die('System halted: Unable to load basic configuration!');
+            }
+
+            // Check if the system is configured with enabled customizings
+            if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
+                $this->customizingPath = ASCMS_CUSTOMIZING_PATH;
+            }
+        }
+        
+        /**
+         * Loads a subclass of this class from customizing if available
+         * @todo make sure cx\customizing\core\cx is a subclass of self
+         * @return null
+         */
+        protected function handleCustomizing() {
+            if (!$this->customizingPath) {
+                return;
+            }
+            if (!class_exists('\\Cx\\Customizing\\Core\\Cx')) {
+                return;
+            }
+            // we have to use reflection here, since instanceof does not work if the child is no object
+            $myReflection = new ReflectionClass('\\Cx\\Customizing\\Core\\Cx');
+            if (!$myReflection->isSubclassOf(get_class($this))) {
+                return;
+            }
+            new \Cx\Customizing\Core\Cx($this->getMode());
+            die();
         }
         
         /**
@@ -155,6 +234,14 @@ namespace Cx\Core {
         }
 
         protected function preInit() {
+            global $_CONFIG;
+            
+            // Check if system is running
+            if ($_CONFIG['systemStatus'] != 'on') {
+                header('Location: offline.html');
+                die(1);
+            }
+            
             $this->tryToEnableApc();
             $this->tryToSetMemoryLimit();
         }
@@ -247,7 +334,7 @@ namespace Cx\Core {
          * @param type $no 
          */
         protected function legacyGlobalsHook($no) {
-            global $objFWUser, $objTemplate,
+            global $objFWUser, $objTemplate, $cl,
                     $objInit, $_LANGID, $_CORELANG, $url, $virtualLanguageDirectory,
                     $objNavbar, $_ARRAYLANG, $pageId, $page, $plainSection, $objInit;
             
@@ -257,6 +344,8 @@ namespace Cx\Core {
                     $objFWUser = $this->getUser();
                     // populate template
                     $objTemplate = $this->template;
+                    // populate classloader
+                    $cl = $this->cl;
                     break;
                 
                 case 2:
@@ -307,9 +396,19 @@ namespace Cx\Core {
             }
         }
 
+        /**
+         * Loading ClassLoader, Env, DB, API and InitCMS
+         * (Env, API and InitCMS are deprecated)
+         * @global type $incDoctrineStatus
+         * @global type $_CONFIG
+         * @global type $_FTPCONFIG
+         * @global type $objDatabase
+         * @global \InitCMS $objInit
+         * @global string $errorMsg 
+         */
         protected function init() {
-            global $cl, $incDoctrineStatus, $_CONFIG, $_FTPCONFIG, $objDatabase,
-                    $objInit, $errorMsg, $customizing;
+            global $incDoctrineStatus, $_CONFIG, $_FTPCONFIG, $objDatabase,
+                    $objInit, $errorMsg;
 
             /**
              * This needs to be initialized before loading config/doctrine.php
@@ -317,13 +416,13 @@ namespace Cx\Core {
              * before doctrine loads the Gedmo one)
              */
             require_once(ASCMS_CORE_PATH.'/ClassLoader/ClassLoader.class.php');
-            $cl = $this->cl = new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT, true, $customizing);
+            $this->cl = new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT, true, $this->customizingPath);
 
             /**
              * Environment repository
              */
             require_once($this->cl->getFilePath(ASCMS_CORE_PATH.'/Env.class.php'));
-            \Env::set('ClassLoader', $this->cl);
+            \Env::set('ClassLoader', $this->cl);            
 
             /**
              * Doctrine configuration
