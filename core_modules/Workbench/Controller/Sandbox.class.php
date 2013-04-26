@@ -66,7 +66,7 @@ class Sandbox {
                     $function = create_function('$em', '' . $this->code . '');
                     $this->result = var_export($function(\Env::get('em')), true);
                 } catch (\Exception $e) {
-                    $this->result = $e->getMessage();
+                    $this->result = get_class($e) . ': ' . $e->getMessage();
                 }
                 break;
             default:
@@ -144,7 +144,7 @@ class Sandbox {
         }
         
         $this->template->setVariable(array(
-            'FORM_ACTION' => 'index.php?cmd=workbench&act=sandbox/' . $this->mode,
+            'FORM_ACTION' => 'index.php?cmd=Workbench&act=sandbox/' . $this->mode,
             'TXT_COREMODULE_WORKBENCH_SANDBOX_SUBMIT' => $lang['TXT_WORKBENCH_SANDBOX_SUBMIT'],
             'CODE' => $this->code,
             'RESULT' => $this->result,
