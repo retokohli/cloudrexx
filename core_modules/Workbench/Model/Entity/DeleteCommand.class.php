@@ -1,6 +1,6 @@
 <?php
 
-namespace Cx\Core_Modules\Workbench\Model;
+namespace Cx\Core_Modules\Workbench\Model\Entity;
 
 class DeleteCommand extends Command {
     protected $name = 'delete';

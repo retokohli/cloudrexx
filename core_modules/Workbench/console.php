@@ -13,4 +13,4 @@ require_once $rootDir . '/core/ClassLoader/ClassLoader.class.php';
 $cl = new \Cx\Core\ClassLoader\ClassLoader($rootDir);
 \Env::set('cl', $cl);
 
-new \Cx\Core_Modules\Workbench\Model\ConsoleInterface($argv);
+new \Cx\Core_Modules\Workbench\Model\Entity\ConsoleInterface($argv);
