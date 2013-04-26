@@ -119,30 +119,6 @@ namespace Cx\Core\Db {
 
             global $_DBCONFIG, $loggableListener, $apcEnabled;
 
-            /* 
-            Cx\Core\ClassLoader\ClassLoader should be able to load those:
-
-            $doctrineDir = ASCMS_LIBRARY_PATH.'/doctrine/';
-            $classLoader = new ClassLoader('Doctrine\ORM', realpath($doctrineDir));
-            $classLoader->register();
-            $classLoader = new ClassLoader('Doctrine\DBAL', realpath($doctrineDir.'/vendor/doctrine-dbal/lib'));
-            $classLoader->register();
-            $classLoader = new ClassLoader('Doctrine\Common', realpath($doctrineDir.'/vendor/doctrine-common/lib'));
-            $classLoader->register();
-            $classLoader = new ClassLoader('Symfony', realpath($doctrineDir.'/vendor'));
-            $classLoader->register();
-            $classLoader = new ClassLoader('Cx\Model\Proxies', ASCMS_MODEL_PROXIES_PATH);
-            $classLoader->register();
-
-            $classLoader = new ClassLoader('DoctrineExtension', ASCMS_MODEL_PATH.'/extensions');
-            $classLoader->register();
-
-            $classLoader = new ClassLoader('Gedmo\Loggable\Entity', ASCMS_MODEL_PATH.'/entities');
-            $classLoader->register();
-
-            $classLoader = new ClassLoader('Gedmo', $doctrineDir);
-            $classLoader->register();*/
-
             $config = new \Doctrine\ORM\Configuration();
 
             $cache = new \Doctrine\Common\Cache\ArrayCache();
@@ -156,28 +132,31 @@ namespace Cx\Core\Db {
             $config->setProxyDir(ASCMS_MODEL_PROXIES_PATH);
             $config->setProxyNamespace('Cx\Model\Proxies');
             $config->setAutoGenerateProxyClasses(false);
-    $pdo = new \PDO(
-                'mysql:dbname=' . $_DBCONFIG['database'] . ';charset=' . $_DBCONFIG['charset'] . ';host='.$_DBCONFIG['host'],
-                $_DBCONFIG['user'],
-                $_DBCONFIG['password'],
-                array(
-                    // Setting the connection character set in the DSN (see below new \PDO()) prior to PHP 5.3.6 did not work.
-                    // We will have to manually do it by executing the SET NAMES query when connection to the database.
-                    \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES '.$_DBCONFIG['charset'],
-                )
-            );
+            
+// this should not be here, there should only be one connection to the DB
+// but I get a "SQLSTATE[HY000]: General error" by using only one connection
+$pdo = new \PDO(
+    'mysql:dbname=' . $_DBCONFIG['database'] . ';charset=' . $_DBCONFIG['charset'] . ';host='.$_DBCONFIG['host'],
+    $_DBCONFIG['user'],
+    $_DBCONFIG['password'],
+    array(
+        // Setting the connection character set in the DSN (see below new \PDO()) prior to PHP 5.3.6 did not work.
+        // We will have to manually do it by executing the SET NAMES query when connection to the database.
+        \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES '.$_DBCONFIG['charset'],
+    )
+);
             $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT);
             $connectionOptions = array(
-                'pdo' => $pdo,
+                'pdo' => $pdo,//$this->getPdoConnection(),
             );
 
             $evm = new \Doctrine\Common\EventManager();
 
             $chainDriverImpl = new \Doctrine\ORM\Mapping\Driver\DriverChain();
             $driverImpl = new \Doctrine\ORM\Mapping\Driver\YamlDriver(array(
-                ASCMS_MODEL_PATH.'/yml',
-                ASCMS_CORE_PATH.'/Component'.'/Model/Doctrine/Yaml',
-                ASCMS_CORE_PATH.'/ContentManager'.'/Model/Yaml',
+                ASCMS_MODEL_PATH.'/yml',                                // general YAML dir, deprecated
+                ASCMS_CORE_PATH.'/Component'.'/Model/Doctrine/Yaml',    // Component YAML files
+                ASCMS_CORE_PATH.'/ContentManager'.'/Model/Yaml',        // ContentManager YAML files, should be loaded via CUF
             ));
             $chainDriverImpl->addDriver($driverImpl, 'Cx');
 
@@ -202,7 +181,7 @@ namespace Cx\Core\Db {
             $prefixListener = new \DoctrineExtension\TablePrefixListener($_DBCONFIG['tablePrefix']);
             $evm->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $prefixListener);
 
-            //page listener for unique slugs
+            //page event listener, should be done via CUF in ContentManager/Controller/ComponentController::postCxInit()
             $pageListener = new \Cx\Core\ContentManager\Model\Event\PageEventListener();
             $evm->addEventListener(\Doctrine\ORM\Events::prePersist,  $pageListener);
             $evm->addEventListener(\Doctrine\ORM\Events::postPersist, $pageListener);
@@ -221,7 +200,7 @@ namespace Cx\Core\Db {
             $conn->setCharset($_DBCONFIG['charset']); 
             $conn->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
             $conn->getDatabasePlatform()->registerDoctrineTypeMapping('set', 'string');
-
+            
             $this->em = $em;
             return $this->em;
         }
