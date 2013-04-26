@@ -82,9 +82,9 @@ namespace Cx\Core {
             } catch (\Exception $e) {
                 //$e = new \Exception();
                 //echo nl2br($e->getTraceAsString());
-                \DBG::msg('Contrexx initialization failed! ' . get_class($e) . ': "' . $e->getMessage() . '"');
                 echo file_get_contents('offline.html');
-                die(1);
+                \DBG::msg('Contrexx initialization failed! ' . get_class($e) . ': "' . $e->getMessage() . '"');
+                die();
             }
         }
         
@@ -383,15 +383,6 @@ namespace Cx\Core {
                 case 3:
                     // Initialize the navigation
                     $objNavbar = new \Navigation($pageId, $page);
-
-                    // init module language
-                    // @todo move this to somewhere else
-                    // Load interface language data
-                    /**
-                    * Module specific data
-                    * @global array $_ARRAYLANG
-                    */
-                    $_ARRAYLANG = $objInit->loadLanguageData($plainSection);
                     break;
             }
         }
@@ -476,6 +467,13 @@ namespace Cx\Core {
 
             // this is a 1:1 copy from backend, rewrite to be used in front- and backend
             $moduleManager = new \modulemanager();
+
+            // init module language
+            /**
+             * Module specific data
+             * @global array $_ARRAYLANG
+             */
+            $_ARRAYLANG = $objInit->loadLanguageData($plainSection);
             try {
                 $em = \Env::get('em');
                 $moduleManager->loadModule($plainSection, $this->cl, $objDatabase, $_CORELANG, $subMenuTitle, $objTemplate, $objFWUser, $act, $objInit, $_ARRAYLANG, $em, $this);
