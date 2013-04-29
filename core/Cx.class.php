@@ -128,7 +128,9 @@ namespace Cx\Core {
 
             $this->setPostContentLoadPlaceholders();    // Set Placeholders
 
+            $this->preFinalize();                       // Call pre finalize hook scripts
             $this->finalize();                          // Set template vars and display content
+            $this->postFinalize();                      // Call post finalize hook scripts
         }
 
         /**
@@ -269,11 +271,10 @@ namespace Cx\Core {
         }
 
         protected function preResolve() {
-            global $url, $page;
+            global $url;
             
             $this->ch->callPreResolveHooks('legacy');
             $this->request = $url;
-            $this->resolvedPage = $page;
             $this->ch->callPreResolveHooks('proper');
         }
 
@@ -282,15 +283,35 @@ namespace Cx\Core {
         }
 
         protected function postResolve() {
-            $this->ch->callPostResolveHooks();
+            global $page, $page_title, $page_content;
+            
+            $this->ch->callPostResolveHooks('legacy');
+            $this->resolvedPage = $page;
+            $this->resolvedPage->setContentTitle($page_title);
+            $this->resolvedPage->setContent($page_content);
+            $this->ch->callPostResolveHooks('proper');
+            $page_title = $this->resolvedPage->getContentTitle();
+            $page_content = $this->resolvedPage->getContent();
         }
 
         protected function preContentLoad() {
+            global $page_title, $page_content;
+            
             $this->ch->callPreContentLoadHooks();
+            $page_title = $this->resolvedPage->getContentTitle();
+            $page_content = $this->resolvedPage->getContent();
         }
 
         protected function postContentLoad() {
             $this->ch->callPostContentLoadHooks();
+        }
+        
+        protected function preFinalize() {
+            $this->ch->callPreFinalizeHooks();
+        }
+        
+        protected function postFinalize() {
+            $this->ch->callPostFinalizeHooks();
         }
 
         /**

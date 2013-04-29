@@ -973,10 +973,10 @@ class LegacyComponentHandler {
                         // ACCESS: parse access_logged_in[1-9] and access_logged_out[1-9] blocks
                         \FWUser::parseLoggedInOutBlocks($page_content);
                     },
-                    'FrontendEditing' => function() {
+                    /*'FrontendEditing' => function() {
                         $frontendEditing = new \Cx\Core_Modules\FrontendEditing\Controller\ComponentController();
                         $frontendEditing->preContentLoad();
-                    },
+                    },*/
                 ),
                 'postContentLoad' => array(
                     'Shop' => function() {
@@ -1185,10 +1185,10 @@ class LegacyComponentHandler {
                             }
                         }
                     },
-                    'FrontendEditing' => function() {
+                    /*'FrontendEditing' => function() {
                         $frontendEditing = new \Cx\Core_Modules\FrontendEditing\Controller\ComponentController();
                         $frontendEditing->preFinalize();
-                    },
+                    },*/
                 ),
                 'load' => array(
 

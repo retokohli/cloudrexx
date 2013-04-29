@@ -22,7 +22,7 @@ namespace Cx\Core_Modules\FrontendEditing\Controller;
  * @subpackage  core_module_frontendediting
  * @version     1.0.0
  */
-class ComponentController
+class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponentController
 {
 
     /**
@@ -37,29 +37,34 @@ class ComponentController
     /**
      * Add the necessary divs for the inline editing
      */
-    public function preContentLoad(/*&$pageContent, &$page_title*/) {
-        global $page_content, $page_title;
+    public function preContentLoad(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page = null) {
+        // Are we in frontend mode?
+        if ($cx->getMode() != \Cx\Core\Cx::MODE_FRONTEND /*|| !$page*/) {
+            return;
+        }
 
+        // Is frontend editing active?
+        // maybe move this check to here, so FrontendController does not have to get loaded for this
         $frontendEditing = new \Cx\Core_Modules\FrontendEditing\Controller\FrontendController();
         if (!$frontendEditing->frontendEditingIsActive()) {
             return;
         }
-
+        
         $componentTemplate = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/' . $this->getName() . '/View/Template');
         $componentTemplate->setErrorHandling(PEAR_ERROR_DIE);
 
         // add div around content
         $componentTemplate->loadTemplateFile('ContentDiv.html');
-        $componentTemplate->setVariable('CONTENT', $page_content);
-        $page_content = $componentTemplate->get();
+        $componentTemplate->setVariable('CONTENT', $page->getContent());
+        $page->setContent($componentTemplate->get());
 
         // add div around the title
         $componentTemplate->loadTemplateFile('TitleDiv.html');
-        $componentTemplate->setVariable('TITLE', $page_title);
-        $page_title = $componentTemplate->get();
+        $componentTemplate->setVariable('TITLE', $page->getContentTitle());
+        $page->setContentTitle($componentTemplate->get());
     }
 
-    public function preFinalize() {
+    public function preFinalize(\Cx\Core\Cx $cx, \Cx\Core\Html\Sigma $template) {
         // init frontend editing
         $frontendEditing = new \Cx\Core_Modules\FrontendEditing\Controller\FrontendController();
         if (!$frontendEditing->frontendEditingIsActive()) {
@@ -67,5 +72,18 @@ class ComponentController
         }
         $frontendEditing->initFrontendEditing($this);
     }
-}
 
+    public function load(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page = null) {}
+
+    public function postContentLoad(\Cx\Core\Cx $cx, &$content) {}
+
+    public function postContentParse(\Cx\Core\Cx $cx, &$content) {}
+
+    public function postFinalize(\Cx\Core\Cx $cx) {}
+
+    public function postResolve(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page = null) {}
+
+    public function preContentParse(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page = null) {}
+
+    public function preResolve(\Cx\Core\Cx $cx, \Cx\Core\Routing\Url $request) {}
+}

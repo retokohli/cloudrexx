@@ -20,6 +20,9 @@ class ComponentHandler {
      */
     private $legacyComponentHandler;
     private $frontend;
+    /**
+     * @var \Cx\Core\Component\Model\Repository\SystemComponentRepository
+     */
     protected $systemComponentRepo;
     private $components = array(
         'License',
@@ -105,13 +108,17 @@ class ComponentHandler {
         }
     }
     
-    public function callPostResolveHooks() {
-        foreach ($this->components as $componentName) {
-            if ($this->checkLegacy('postResolve', $componentName)) {
-                continue;
+    public function callPostResolveHooks($mode = 'all') {
+        if ($mode == 'all' || $mode == 'legacy') {
+            foreach ($this->components as $componentName) {
+                if ($this->checkLegacy('postResolve', $componentName)) {
+                    continue;
+                }
             }
         }
-        $this->systemComponentRepo->callPostResolveHooks();
+        if ($mode == 'all' || $mode == 'proper') {
+            $this->systemComponentRepo->callPostResolveHooks();
+        }
     }
     
     public function callPreContentLoadHooks() {
@@ -130,6 +137,24 @@ class ComponentHandler {
             }
         }
         $this->systemComponentRepo->callPostContentLoadHooks();
+    }
+    
+    public function callPreFinalizeHooks() {
+        foreach ($this->components as $componentName) {
+            if ($this->checkLegacy('preFinalize', $componentName)) {
+                continue;
+            }
+        }
+        $this->systemComponentRepo->callPreFinalizeHooks();
+    }
+    
+    public function callPostFinalizeHooks() {
+        foreach ($this->components as $componentName) {
+            if ($this->checkLegacy('postFinalize', $componentName)) {
+                continue;
+            }
+        }
+        $this->systemComponentRepo->callPostFinalizeHooks();
     }
     
     public function loadComponent(\Cx\Core\Cx $cx, $componentName, \Cx\Core\ContentManager\Model\Entity\Page $page = null) {
