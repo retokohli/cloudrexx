@@ -1117,7 +1117,7 @@ class skins
         $themes = !empty($_POST['themes']) && !stristr($_POST['themes'], '..') ? contrexx_input2raw($_POST['themes']) : null;
         $themesPage = !empty($_POST['themesPage']) &&  !stristr($_POST['themesPage'], '..') ? contrexx_input2raw($_POST['themesPage']) : null;
 
-        if (empty($themes) || empty($themesPage)) {
+        if (empty($themes) || empty($themesPage) || ImageManager::_isImage($this->path.$themes.'/'.$themesPage)) {
             return false;
         }
 
@@ -1635,13 +1635,17 @@ class skins
         }
         if (!isset($themesPage)) {
             $themesPage = "index.html";
-        }
+        }        
         if ($themes != "" && $themesPage != ""){
-            $file = $this->path.$themes.'/'.$themesPage;
+            $file = $this->path.$themes.'/'.$themesPage;            
             if (file_exists($file)) {
-                $contenthtml = file_get_contents($file);
-                $contenthtml = preg_replace('/\{([A-Z0-9_]*?)\}/', '[[\\1]]', $contenthtml);
-                $contenthtml = htmlspecialchars($contenthtml);
+                $fileIsImage = ImageManager::_isImage($file);                
+                $contenthtml = '';
+                if (!$fileIsImage) {
+                    $contenthtml = file_get_contents($file);
+                    $contenthtml = preg_replace('/\{([A-Z0-9_]*?)\}/', '[[\\1]]', $contenthtml);
+                    $contenthtml = htmlspecialchars($contenthtml);
+                }                
 // TODO: Pointless!
 //                $objResult = $objDatabase->Execute("SELECT id,expert FROM ".DBPREFIX."skins WHERE foldername = '".$themes."'");
 //                if ($objResult !== false) {
@@ -1649,13 +1653,20 @@ class skins
 //                        $expert = $objResult->fields['expert'];
 //                        $objResult->MoveNext();
 //                    }
-//                }
+//                }                
                 $objTemplate->setVariable(array(
                     'THEMES_SELECTED_THEME'    => $themes,
                     'THEMES_SELECTED_PAGENAME' => $themesPage,
                     'THEMES_FULL_PATH'         => $this->webPath.$themes.'/'.$themesPage,
-                    'CONTENT_HTML'             => $contenthtml,
+                    'CONTENT_HTML'             => $contenthtml,                    
                 ));
+                if ($fileIsImage) {
+                    $objTemplate->touchBlock('template_image');
+                    $objTemplate->hideBlock('template_content');
+                } else {
+                    $objTemplate->touchBlock('template_content');
+                    $objTemplate->hideBlock('template_image');
+                }
                 //return $fileContent;
             }
         }
