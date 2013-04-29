@@ -655,19 +655,52 @@ class ImageManager
      */
     function _isImage($file)
     {
-        if (!file_exists($file)) return false;
-        $imageSize = @getimagesize($file);
-        // 1 = GIF,  2 = JPG,  3 = PNG,  4 = SWF,  5 = PSD, 6 = BMP,
-        // 7 = TIFF(intel byte order), 8 = TIFF(motorola byte order,
-        // 9 = JPC, 10 = JP2, 11 = JPX, 12 = JB2, 13 = SWC$
-        // Only accept GIF, JPG, or PNG
-        if ($imageSize[2] == 1 && function_exists('imagecreatefromgif'))
-            return $imageSize[2];
-        if ($imageSize[2] == 2 || $imageSize[2] == 3)
-            return $imageSize[2];
-        return false;
-    }
+        if (is_dir($file)) return false;
 
+// TODO: merge this function with isImage of lib/FRAMEWORK/Image.class.php
+        if (class_exists('finfo', false)) {
+            $finfo = new finfo(FILEINFO_MIME_TYPE);
+            $mimeType = $finfo->file($file);
+
+            if (strpos($mimeType, 'image') !== 0) {
+                return false;
+            }
+
+            $type = substr($mimeType, strpos($mimeType, '/') + 1);
+            switch ($type) {
+                case 'gif':
+                    return 1;
+                    break;
+
+                case 'jpeg':
+                    return 2;
+                    break;
+
+                case 'png':
+                    return 3;
+                    break;
+            }
+        }
+
+        if (function_exists('exif_imagetype')) {
+            $type = exif_imagetype($file);
+        } elseif (function_exists('getimagesize')) {
+            $img  = @getimagesize($file);
+            if ($img === false) {
+                return false;
+            }
+            $type = $img[2];
+        } else {
+            return false;
+        }
+
+        if ($type >= 1 && $type <= 3) {
+            // 1 = gif, 2 = jpg, 3 = png
+            return $type;
+        } else {
+            return false;
+        }
+    }
 
     /**
      * Gets the size of the image
