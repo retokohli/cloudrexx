@@ -90,10 +90,10 @@ CKEDITOR.editorConfig = function( config )
         ['ShowBlocks'],
         ['Maximize'],
         ['Div','CreateDiv']
-    ]
+    ];
 
     config.toolbar_Small = [
-        ['NewPage','Preview'],
+        ['Preview'],
         ['Cut','Copy','Paste','PasteText','PasteFromWord','-','Print','Scayt'],
         ['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
         ['Bold','Italic','Underline','StrikeThrough','-','Subscript','Superscript'],
@@ -105,5 +105,25 @@ CKEDITOR.editorConfig = function( config )
     config.toolbar_BBCode = [
         ['Source'],
         ['Bold','Italic','Underline','StrikeThrough','-','Link','Unlink', 'SpecialChar'],
+    ];
+
+    config.toolbar_FrontendEditingContent = [
+        ['Publish','Save'],
+        ['Cut','Copy','Paste','PasteText','PasteFromWord','-','Scayt'],
+        ['Undo','Redo','-','Replace','-','SelectAll','RemoveFormat'],
+        ['Bold','Italic','Underline','Strike','-','Subscript','Superscript'],
+        ['NumberedList','BulletedList','-','Outdent','Indent', 'Blockquote'],
+        '/',
+        ['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
+        ['Link','Unlink','Anchor'],
+        ['Image','Flash','Table','HorizontalRule','SpecialChar'],
+        ['Format'],
+        ['TextColor','BGColor']
+    ];
+
+    config.toolbar_FrontendEditingTitle = [
+        ['Publish','Save'],
+        ['Cut','Copy','Paste','-','Scayt'],
+        ['Undo','Redo']
     ];
 };

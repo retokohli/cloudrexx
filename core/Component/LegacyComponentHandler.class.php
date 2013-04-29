@@ -266,21 +266,6 @@ class LegacyComponentHandler {
 
                             // Frontend Editing: content has to be replaced with preview code if needed.
                             $page_content = $page->getContent();
-                            if ($_CONFIG['frontendEditingStatus'] == 'on') {
-                                if (!empty($_REQUEST['frontEditing'])) {
-                                    $themesPages['index']   = '{CONTENT_FILE}';
-                                    $themesPages['content'] = '{CONTENT_TEXT}';
-                                    $themesPages['home']    = '{CONTENT_TEXT}';
-
-                                    if (isset($_POST['previewContent'])) {
-                                        $page_content = preg_replace('/\[\[([A-Z0-9_-]+)\]\]/', '{\\1}',
-                                                            html_entity_decode(stripslashes($_POST['previewContent']),
-                                                                ENT_QUOTES, CONTREXX_CHARSET));
-                                    }
-                                } else {
-                                    $page_content = '<div id="fe_PreviewContent">'. $page_content.'</div>';
-                                }
-                            }
 
                             $page_catname = contrexx_raw2xhtml($page->getTitle());
 
@@ -347,15 +332,6 @@ class LegacyComponentHandler {
                             * @since   2.1.5
                             */
                             FWCaptcha::getInstance()->getPage();
-                        }
-                    },
-                    'FrontendEditing' => function() {
-                        global $section, $sessionObj, $objFrontendEditing;
-
-                        if ($section == 'frontendEditing') {
-                            $sessionObj = new cmsSession();
-                            $objFrontendEditing = new frontendEditing(\Env::em());
-                            $objFrontendEditing->performAction();
                         }
                     },
                     'JsonData' => function() {
@@ -997,6 +973,9 @@ class LegacyComponentHandler {
                         // ACCESS: parse access_logged_in[1-9] and access_logged_out[1-9] blocks
                         \FWUser::parseLoggedInOutBlocks($page_content);
                     },
+                    'FrontendEditing' => function() {
+                        \Cx\Core_Modules\FrontendEditing\Controller\ComponentController::preContentLoad();
+                    },
                 ),
                 'postContentLoad' => array(
                     'Shop' => function() {
@@ -1114,17 +1093,6 @@ class LegacyComponentHandler {
                             $objMediadir->getHeadlines($mediadirCheck);
                         }
                     },
-                    'FrontendEditing' => function() {
-                        global $strFeInclude, $strFeLink, $strFeContent, $_CONFIG, $pageId;
-
-                        // Frontend Editing: prepare needed code-fragments
-                        $strFeInclude = $strFeLink = $strFeContent = null;
-                        if ($_CONFIG['frontendEditingStatus'] == 'on') {
-                            $strFeInclude   = \frontendEditingLib::getIncludeCode();
-                            $strFeLink      = \frontendEditingLib::getLinkCode($pageId);
-                            $strFeContent   = \frontendEditingLib::getContentCode($pageId);
-                        }
-                    },
                     'FwUser' => function() {
                         global $objTemplate, $cl;
 
@@ -1215,6 +1183,9 @@ class LegacyComponentHandler {
                                 $objTemplate->hideBlock('access_birthday_member_list');
                             }
                         }
+                    },
+                    'FrontendEditing' => function() {
+                        \Cx\Core_Modules\FrontendEditing\Controller\ComponentController::preFinalize();
                     },
                 ),
                 'load' => array(
