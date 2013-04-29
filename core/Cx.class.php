@@ -39,9 +39,9 @@ namespace Cx\Core {
         protected $template = null;
 
         /**
-         * @var \Doctrine\Orm\EntityManager
+         * @var \Cx\Core\Db\Db
          */
-        protected $entityManager = null;
+        protected $db = null;
 
         /**
          * @var \Cx\Core\Routing\Url
@@ -63,6 +63,12 @@ namespace Cx\Core {
          * @var string
          */
         protected $customizingPath = null;
+        
+        /**
+         * If null, page is not resolved yet
+         * @var \Cx\Core\ContentManager\Model\Entity\Page
+         */
+        protected $resolvedPage = null;
 
         /**
          * Initialized the Cx class
@@ -162,6 +168,18 @@ namespace Cx\Core {
          */
         public function getMode() {
             return $this->mode;
+        }
+        
+        public function getRequest() {
+            return $this->request;
+        }
+        
+        public function getTemplate() {
+            return $this->template;
+        }
+        
+        public function getPage() {
+            return $this->resolvedPage;
         }
         
         protected function loadConfig() {
@@ -413,6 +431,7 @@ namespace Cx\Core {
              * Environment repository
              */
             require_once($this->cl->getFilePath(ASCMS_CORE_PATH.'/Env.class.php'));
+            \Env::set('cx', $this);
             \Env::set('ClassLoader', $this->cl);            
             \Env::set('config', $_CONFIG);
             \Env::set('ftpConfig', $_FTPCONFIG);
@@ -478,7 +497,7 @@ namespace Cx\Core {
                 $em = \Env::get('em');
                 $moduleManager->loadModule($plainSection, $this->cl, $objDatabase, $_CORELANG, $subMenuTitle, $objTemplate, $objFWUser, $act, $objInit, $_ARRAYLANG, $em, $this);
             } catch (\ModuleManagerException $e) {
-    //            echo $e->getMessage();
+//            echo $e->getMessage();
                 $moduleManager->loadLegacyModule($plainSection, $this->cl, $objDatabase, $_CORELANG, $subMenuTitle, $objTemplate, $objFWUser, $act, $objInit, $_ARRAYLANG);
             }
         }
