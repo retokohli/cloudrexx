@@ -125,10 +125,13 @@ class ClassLoader {
             }
             $path .= $part;
         }
-        $className = preg_replace('/Exception/', '', $className);
-        $resolvedPath = $path . '/' . $className . $suffix . '.php';
         
-        if ($this->loadFile($path.'/'.$className . $suffix . '.php')) {
+        $resolvedPath = $path . '/' . $className . $suffix . '.php';
+        if (preg_match('/Exception/', $className) && !$this->loadFile($resolvedPath)) {
+            $className = preg_replace('/Exception/', '', $className);
+        }
+        
+        if ($this->loadFile($resolvedPath)) {
             return true;
         } else if ($this->loadFile($path.'/'.$className.'.interface.php')) {
             return true;
