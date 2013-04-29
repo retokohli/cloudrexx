@@ -37,14 +37,15 @@ class ComponentController
     /**
      * Add the necessary divs for the inline editing
      */
-    static public function preContentLoad(/*&$pageContent, &$page_title*/) {
+    public function preContentLoad(/*&$pageContent, &$page_title*/) {
         global $page_content, $page_title;
 
-        if (!\Cx\Core_Modules\FrontendEditing\Controller\FrontendController::frontendEditingIsActive()) {
+        $frontendEditing = new \Cx\Core_Modules\FrontendEditing\Controller\FrontendController();
+        if (!$frontendEditing->frontendEditingIsActive()) {
             return;
         }
 
-        $componentTemplate = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/' . self::getName() . '/View/Template');
+        $componentTemplate = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/' . $this->getName() . '/View/Template');
         $componentTemplate->setErrorHandling(PEAR_ERROR_DIE);
 
         // add div around content
@@ -58,14 +59,13 @@ class ComponentController
         $page_title = $componentTemplate->get();
     }
 
-    static public function preFinalize() {
-        if (!\Cx\Core_Modules\FrontendEditing\Controller\FrontendController::frontendEditingIsActive()) {
-            return;
-        }
-
+    public function preFinalize() {
         // init frontend editing
         $frontendEditing = new \Cx\Core_Modules\FrontendEditing\Controller\FrontendController();
-        $frontendEditing->initFrontendEditing();
+        if (!$frontendEditing->frontendEditingIsActive()) {
+            return;
+        }
+        $frontendEditing->initFrontendEditing($this);
     }
 }
 

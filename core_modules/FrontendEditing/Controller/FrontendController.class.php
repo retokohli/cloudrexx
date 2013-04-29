@@ -28,12 +28,12 @@ namespace Cx\Core_Modules\FrontendEditing\Controller;
  */
 class FrontendController
 {
-    public function initFrontendEditing() {
+    public function initFrontendEditing($componentController) {
         global $objInit, $_ARRAYLANG, $page;
         // add css and javascript file
-        $jsFilesRoot = substr(ASCMS_CORE_MODULE_FOLDER.'/' . \Cx\Core_Modules\FrontendEditing\Controller\ComponentController::getName() . '/View/Script', 1);
+        $jsFilesRoot = substr(ASCMS_CORE_MODULE_FOLDER.'/' . $componentController->getName() . '/View/Script', 1);
 
-        \JS::registerCSS(substr(ASCMS_CORE_MODULE_FOLDER.'/' . \Cx\Core_Modules\FrontendEditing\Controller\ComponentController::getName() . '/View/Style' . '/Main.css', 1));
+        \JS::registerCSS(substr(ASCMS_CORE_MODULE_FOLDER.'/' . $componentController->getName() . '/View/Style' . '/Main.css', 1));
         \JS::registerJS($jsFilesRoot . '/Main.js');
         \JS::registerJS($jsFilesRoot . '/CKEditorPlugins.js');
 
@@ -54,7 +54,7 @@ class FrontendController
         );
 
         // add toolbar to html
-        $this->prepareTemplate();
+        $this->prepareTemplate($componentController);
 
         // assign js variables
         $ContrexxJavascript = \ContrexxJavascript::getInstance();
@@ -65,10 +65,10 @@ class FrontendController
         $ContrexxJavascript->setVariable('configPath', $configPath."?langId=".FRONTEND_LANG_ID, 'frontendEditing');
     }
 
-    private function prepareTemplate() {
+    private function prepareTemplate($componentController) {
         global $_ARRAYLANG, $license, $objInit, $objTemplate, $page;
 
-        $componentTemplate = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/' . \Cx\Core_Modules\FrontendEditing\Controller\ComponentController::getName() . '/View/Template');
+        $componentTemplate = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/' . $componentController->getName() . '/View/Template');
         $componentTemplate->setErrorHandling(PEAR_ERROR_DIE);
 
         // add div for toolbar after starting body tag
@@ -104,7 +104,7 @@ class FrontendController
      * Checks whether the frontend editing is active or not
      * @return boolean
      */
-    public static function frontendEditingIsActive() {
+    public function frontendEditingIsActive() {
         global $_CONFIG, $page;
         // check permission and frontend editing status
         if (   \FWUser::getFWUserObject()->objUser->getAdminStatus()

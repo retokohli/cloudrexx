@@ -974,7 +974,8 @@ class LegacyComponentHandler {
                         \FWUser::parseLoggedInOutBlocks($page_content);
                     },
                     'FrontendEditing' => function() {
-                        \Cx\Core_Modules\FrontendEditing\Controller\ComponentController::preContentLoad();
+                        $frontendEditing = new \Cx\Core_Modules\FrontendEditing\Controller\ComponentController();
+                        $frontendEditing->preContentLoad();
                     },
                 ),
                 'postContentLoad' => array(
@@ -1185,7 +1186,8 @@ class LegacyComponentHandler {
                         }
                     },
                     'FrontendEditing' => function() {
-                        \Cx\Core_Modules\FrontendEditing\Controller\ComponentController::preFinalize();
+                        $frontendEditing = new \Cx\Core_Modules\FrontendEditing\Controller\ComponentController();
+                        $frontendEditing->preFinalize();
                     },
                 ),
                 'load' => array(
