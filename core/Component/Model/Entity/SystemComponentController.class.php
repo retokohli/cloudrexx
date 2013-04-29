@@ -91,9 +91,9 @@ abstract class SystemComponentController {
      * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
      * CALCULATE YOUR STUFF AS LATE AS POSSIBLE
      * @param \Cx\Core\Cx                               $cx         The Contrexx main class
-     * @param \Cx\Core\Html                             $template   The main template
+     * @param \Cx\Core\Html\Sigma                       $template   The main template
      */
-    abstract function preFinalize(\Cx\Core\Cx $cx, \Cx\Core\Html $template);
+    abstract function preFinalize(\Cx\Core\Cx $cx, \Cx\Core\Html\Sigma $template);
     
     /**
      * Do something after main template got parsed

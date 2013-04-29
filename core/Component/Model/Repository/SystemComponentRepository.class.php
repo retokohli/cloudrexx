@@ -127,14 +127,14 @@ class SystemComponentRepository extends EntityRepository
     // NEW
     public function callPreFinalizeHooks() {
         foreach ($this->findAll() as $component) {
-            $component->postContentLoad($this->cx, $this->cx->getTemplate());
+            $component->preFinalize($this->cx, $this->cx->getTemplate());
         }
     }
     
     // NEW
     public function callPostFinalizeHooks() {
         foreach ($this->findAll() as $component) {
-            $component->postContentLoad($this->cx);
+            $component->postFinalize($this->cx);
         }
     }
 }
