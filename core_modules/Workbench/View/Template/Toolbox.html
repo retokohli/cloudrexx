@@ -1,0 +1,29 @@
+<div>
+    <form method="post" action="{FORM_ACTION}">
+        <fieldset>
+            <input type="radio" checked="checked" name="yaml_mode" value="fromTable" id="fromTable" />
+            <label for="fromTable">{TXT_WORKBENCH_TOOLBOX_YAML_FROM_TABLE}</label>
+            <select name="table">
+                <!-- BEGIN table_option -->
+                <option value="{TABLE}">{TABLE}</option>
+                <!-- END table_option -->
+            </select>
+        </fieldset>
+        <fieldset>
+            <input type="radio" name="yaml_mode" value="fromSql" id="fromSql" />
+            <label for="fromSql">{TXT_WORKBENCH_TOOLBOX_YAML_FROM_SQL}</label><br />
+            <textarea name="code" id="editor" rows="10" cols="70">SHOW TABLES;{CODE}</textarea>
+        </fieldset>
+        <br />
+        <input type="submit" value="{TXT_WORKBENCH_TOOLBOX_SUBMIT}" />
+    </form>
+    <script src="http://rawgithub.com/ajaxorg/ace-builds/master/src-noconflict/ace.js" type="text/javascript" charset="utf-8"></script>
+    <script>
+        var editor = ace.edit("editor");
+        editor.setTheme("ace/theme/monokai");
+        editor.getSession().setMode("ace/mode/sql");
+    </script>
+</div>
+<hr style="clear:both;" />
+{RESULT}
+
