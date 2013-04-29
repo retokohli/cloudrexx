@@ -99,23 +99,4 @@ class FrontendController
         }
         $objTemplate->_blocks['__global__'] = preg_replace('/<body[^>]*>/', '\\0' . $componentTemplate->get(), $objTemplate->_blocks['__global__']);
     }
-
-    /**
-     * Checks whether the frontend editing is active or not
-     * @return boolean
-     */
-    public function frontendEditingIsActive() {
-        global $_CONFIG, $page;
-        // check permission and frontend editing status
-        if (   \FWUser::getFWUserObject()->objUser->getAdminStatus()
-            || (   $_CONFIG['frontendEditingStatus'] == 'on'
-                && \Permission::checkAccess(6, 'static', true)
-                && \Permission::checkAccess(35, 'static', true)
-                && (   !$page->isBackendProtected()
-                    || Permission::checkAccess($page->getId(), 'page_backend', true)))
-        ) {
-            return true;
-        }
-        return false;
-    }
 }

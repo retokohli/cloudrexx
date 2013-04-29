@@ -33,20 +33,38 @@ class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponen
     {
         return 'FrontendEditing';
     }
+    
+    /**
+     * Checks whether the frontend editing is active or not
+     * @return boolean
+     */
+    public function frontendEditingIsActive($cx) {
+        global $_CONFIG;
+        
+        if ($cx->getMode() != \Cx\Core\Cx::MODE_FRONTEND || !$cx->getPage()) {
+            return false;
+        }
+
+        // check permission and frontend editing status
+        if (   $cx->getUser()->objUser->getAdminStatus()
+            || (   $_CONFIG['frontendEditingStatus'] == 'on'
+                && \Permission::checkAccess(6, 'static', true)
+                && \Permission::checkAccess(35, 'static', true)
+                && (   !$cx->getPage()->isBackendProtected()
+                    || Permission::checkAccess($cx->getPage()->getId(), 'page_backend', true)))
+        ) {
+            return true;
+        }
+        return false;
+    }
 
     /**
      * Add the necessary divs for the inline editing
      */
     public function preContentLoad(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page = null) {
-        // Are we in frontend mode?
-        if ($cx->getMode() != \Cx\Core\Cx::MODE_FRONTEND /*|| !$page*/) {
-            return;
-        }
-
+        
         // Is frontend editing active?
-        // maybe move this check to here, so FrontendController does not have to get loaded for this
-        $frontendEditing = new \Cx\Core_Modules\FrontendEditing\Controller\FrontendController();
-        if (!$frontendEditing->frontendEditingIsActive()) {
+        if (!$this->frontendEditingIsActive($cx)) {
             return;
         }
         
@@ -65,15 +83,13 @@ class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponen
     }
 
     public function preFinalize(\Cx\Core\Cx $cx, \Cx\Core\Html\Sigma $template) {
-        // Are we in frontend mode?
-        if ($cx->getMode() != \Cx\Core\Cx::MODE_FRONTEND /*|| !$page*/) {
+        
+        // Is frontend editing active?
+        if (!$this->frontendEditingIsActive($cx)) {
             return;
         }
-        // init frontend editing
+        
         $frontendEditing = new \Cx\Core_Modules\FrontendEditing\Controller\FrontendController();
-        if (!$frontendEditing->frontendEditingIsActive()) {
-            return;
-        }
         $frontendEditing->initFrontendEditing($this);
     }
 
