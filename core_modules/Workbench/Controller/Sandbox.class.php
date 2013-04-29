@@ -11,6 +11,7 @@ class Sandbox {
     protected $template = null;
     protected $code = null;
     protected $result = null;
+    protected $errrorHandlerActive = false;
 
     public function __construct(&$language, $mode, &$arguments) {
         //\DBG::activate(DBG_PHP);
@@ -47,13 +48,7 @@ class Sandbox {
                 $strQuery = trim($this->code);
                 $lister = new \Cx\Core_Modules\Listing\Controller\ListingController(
                     function(&$offset, &$count, &$criteria, &$order) use ($strQuery) {
-                        // @todo: add statements for offset, count, crit and order
-                        $query = \Env::get('em')->createQuery($strQuery);
-                        $result = $query->getResult();
-                        if (!$result) {
-                            throw new \Exception('Empty result');
-                        }
-                        return new \Cx\Core_Modules\Listing\Model\DataSet($result);
+                        return \Env::get('em')->createQuery($strQuery);
                     }
                 );
                 try {
@@ -69,6 +64,7 @@ class Sandbox {
                     // This error handler catches all Warnings and Notices and some Strict errors
                     \DBG::activate(DBG_PHP);
                     set_error_handler(array($this, 'phpErrorsAsExceptionsHandler'));
+                    $this->errrorHandlerActive = true;
                     // Since DBG catches the rest (E_PARSE) let's use that
                     ob_start();
                     $function = create_function('$em', '' . $this->code . ';');
@@ -80,9 +76,11 @@ class Sandbox {
                     }
                     $this->result = var_export($function(\Env::get('em')), true);
                     restore_error_handler();
+                    $this->errrorHandlerActive = false;
                 } catch (\Exception $e) {
                     \DBG::activate($dbgMode);
                     restore_error_handler();
+                    $this->errrorHandlerActive = false;
                     $this->result = get_class($e) . ': ' . $e->getMessage();
                 }
                 break;
@@ -162,7 +160,7 @@ class Sandbox {
         
         $this->template->setVariable(array(
             'FORM_ACTION' => 'index.php?cmd=Workbench&act=sandbox/' . $this->mode,
-            'TXT_COREMODULE_WORKBENCH_SANDBOX_SUBMIT' => $lang['TXT_WORKBENCH_SANDBOX_SUBMIT'],
+            'TXT_WORKBENCH_SANDBOX_SUBMIT' => $lang['TXT_WORKBENCH_SANDBOX_SUBMIT'],
             'CODE' => $this->code,
             'RESULT' => $this->result,
             'SIDEBOX_TITLE' => $sideboxTitle,
@@ -171,6 +169,9 @@ class Sandbox {
     }
     
     public function phpErrorsAsExceptionsHandler($errno, $errstr) {
+        if (!$this->errrorHandlerActive) {
+            return;
+        }
         throw new SandboxException($errstr);
     }
     

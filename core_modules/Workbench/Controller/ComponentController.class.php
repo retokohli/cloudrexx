@@ -6,7 +6,7 @@
  */
 namespace Cx\Core_Modules\Workbench\Controller;
 
-class ComponentController {
+class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponentController {
     
     /**
      *
@@ -19,7 +19,10 @@ class ComponentController {
      * @todo Language var checker (/translation helper)
      * @todo Component analysis (/testing)
      */
-    public function getPage($frontend, &$_ARRAYLANG, &$objTemplate, &$entityManager, &$objDatabase, &$objCx, &$request, $content = '') {
+    public function load(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page = null) {
+        $objTemplate = $cx->getTemplate();
+        $_ARRAYLANG = \Env::get('init')->loadLanguageData($this->getName());
+
         $post = $_POST;
         //\DBG::activate(DBG_PHP);
         
@@ -51,11 +54,14 @@ class ComponentController {
                 $objTemplate->setVariable('ADMIN_CONTENT', new Sandbox($_ARRAYLANG, $act, $_POST));
                 break;
             case 'development':
+                if ($act == '') {
+                    $act = 'yaml';
+                }
             default:
                 $navEntries = array(
-                    'index.php?cmd=Workbench&amp;act=development' => '',
+                    'index.php?cmd=Workbench&amp;act=development' => 'YAML',
                 );
-                $objTemplate->setVariable('ADMIN_CONTENT', '');
+                $objTemplate->setVariable('ADMIN_CONTENT', new Toolbox($_ARRAYLANG, $act, $_POST));
                 break;
         }
         
@@ -73,5 +79,37 @@ class ComponentController {
             $navigation->parse('tab_entry');
         }
         $objTemplate->setVariable('CONTENT_NAVIGATION', $navigation->get());
+    }
+
+    public function preResolve(\Cx\Core\Cx $cx, \Cx\Core\Routing\Url $request) {
+        
+    }
+
+    public function postResolve(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page = null) {
+        
+    }
+
+    public function preContentLoad(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page = null) {
+        
+    }
+
+    public function preContentParse(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page = null) {
+        
+    }
+
+    public function postContentParse(\Cx\Core\Cx $cx, &$content) {
+        
+    }
+
+    public function postContentLoad(\Cx\Core\Cx $cx, &$content) {
+        $warning = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/Workbench/View/Template');
+        $warning->loadTemplateFile('Warning.html');
+        echo $warning->get();
+    }
+
+    public function preFinalize(\Cx\Core\Cx $cx, \Cx\Core\Html $template) {
+    }
+
+    public function postFinalize(\Cx\Core\Cx $cx) {
     }
 }
