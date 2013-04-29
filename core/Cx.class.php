@@ -287,19 +287,25 @@ namespace Cx\Core {
             
             $this->ch->callPostResolveHooks('legacy');
             $this->resolvedPage = $page;
-            $this->resolvedPage->setContentTitle($page_title);
-            $this->resolvedPage->setContent($page_content);
+            if ($this->resolvedPage) {
+                $this->resolvedPage->setContentTitle($page_title);
+                $this->resolvedPage->setContent($page_content);
+            }
             $this->ch->callPostResolveHooks('proper');
-            $page_title = $this->resolvedPage->getContentTitle();
-            $page_content = $this->resolvedPage->getContent();
+            if ($this->resolvedPage) {
+                $page_title = $this->resolvedPage->getContentTitle();
+                $page_content = $this->resolvedPage->getContent();
+            }
         }
 
         protected function preContentLoad() {
             global $page_title, $page_content;
             
             $this->ch->callPreContentLoadHooks();
-            $page_title = $this->resolvedPage->getContentTitle();
-            $page_content = $this->resolvedPage->getContent();
+            if ($this->resolvedPage) {
+                $page_title = $this->resolvedPage->getContentTitle();
+                $page_content = $this->resolvedPage->getContent();
+            }
         }
 
         protected function postContentLoad() {
