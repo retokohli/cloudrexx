@@ -522,8 +522,8 @@ return false;
         // TODO: check module description too
         // TODO: load module name from Gedmo translated component table
         if (!isset($coreLang['TXT_' . strtoupper($module) . '_MODULE_NAME'])) {
-            \DBG::msg('Component load: No language dependent name for module');
-            throw new ModuleManagerException('No language dependent name for module "' . $module . '"');
+            /*\DBG::msg('Component load: No language dependent name for module');
+            throw new ModuleManagerException('No language dependent name for module "' . $module . '"');*/
         }
         $subMenuTitle = $coreLang['TXT_' . strtoupper($module) . '_MODULE_NAME'];
         if (!class_exists($backendClassName)) {
