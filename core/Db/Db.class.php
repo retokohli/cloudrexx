@@ -155,7 +155,7 @@ $pdo = new \PDO(
             $chainDriverImpl = new \Doctrine\ORM\Mapping\Driver\DriverChain();
             $driverImpl = new \Doctrine\ORM\Mapping\Driver\YamlDriver(array(
                 ASCMS_MODEL_PATH.'/yml',                                // general YAML dir, deprecated
-                ASCMS_CORE_PATH.'/Component'.'/Model/Doctrine/Yaml',    // Component YAML files
+                ASCMS_CORE_PATH.'/Component'.'/Model/Yaml',             // Component YAML files
                 ASCMS_CORE_PATH.'/ContentManager'.'/Model/Yaml',        // ContentManager YAML files, should be loaded via CUF
             ));
             $chainDriverImpl->addDriver($driverImpl, 'Cx');
