@@ -1354,3 +1354,23 @@ background: url(../images/navigation_level_1_189_hover.png) no-repeat center 7px
 .cke_dialog_ui_vbox table, .cke_dialog_ui_hbox table {
     margin: 0 !important;
 }
+
+a.cke_dialog_ui_button_ok {
+    border-color: #0aa3ea !important;
+    background: -webkit-gradient(linear,left top,left bottom,color-stop(0%,#0aa3ea),color-stop(100%,#0a85c8)) !important;
+    background: -webkit-linear-gradient(top,#0aa3ea 0,#0a85c8 100%) !important;
+    background: -o-linear-gradient(top,#0aa3ea 0,#0a85c8 100%) !important;
+    background: linear-gradient(to bottom,#0aa3ea 0,#0a85c8 100%) !important;
+    background: -moz-linear-gradient(top,#0aa3ea 0,#0a85c8 100%) !important;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#0aa3ea',endColorstr='#0a85c8',GradientType=0) !important;
+}
+
+a.cke_dialog_ui_button_ok:hover {
+    border-color: #0aa3ea !important;
+    background: -webkit-gradient(linear,left top,left bottom,color-stop(0%, #0a95dd),color-stop(100%, #0a76b2)) !important;
+    background: -webkit-linear-gradient(top,#0a95dd 0,#0a76b2 100%) !important;
+    background: -o-linear-gradient(top,#0a95dd 0,#0a76b2 100%) !important;
+    background: linear-gradient(to bottom,#0a95dd 0,#0a76b2 100%) !important;
+    background: -moz-linear-gradient(top,#0a95dd 0,#0a76b2 100%) !important;
+    filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#0a95dd',endColorstr='#0a76b2',GradientType=0) !important;
+}

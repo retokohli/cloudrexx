@@ -161,6 +161,12 @@ jQuery(document).ready(function(){
             ),
             'dependencies' => array('jquery'),
         ),
+        'jquery-cookie' => array(
+            'jsfiles'       => array(
+                'lib/javascript/jquery/cookie/jquery.cookie.js',
+            ),
+            'dependencies' => array('jquery'),
+        ),
         // Required by HTML::getDatepicker() (modules/shop)!
         // (Though other versions will do just as well)
 // TODO: remove & replace by cx call
@@ -241,9 +247,8 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             'jsfiles' => array(
                 'lib/javascript/jquery/jstree/jquery.jstree.js',
                 'lib/javascript/jquery/hotkeys/jquery.hotkeys.js',
-                'lib/javascript/jquery/cookie/jquery.cookie.js',
             ),
-            'dependencies' => array('jquery'),
+            'dependencies' => array('jquery', 'jquery-cookie'),
         ),
 
         // jQ UI input select enhancer. used in Content Manager 2
