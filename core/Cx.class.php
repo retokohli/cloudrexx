@@ -514,8 +514,7 @@ namespace Cx\Core {
             global $objInit, $page_title, $page_metatitle, $page_catname, $_CONFIG,
                     $page_keywords, $page_desc, $page_robots, $pageCssName,
                     $objNavbar, $themesPages, $license, $boolShop, $objCounter,
-                    $objBanner, $_CORELANG, $strFeInclude, $strFeLink, $strFeContent,
-                    $page_modified, $page, $url;
+                    $objBanner, $_CORELANG, $page_modified, $page, $url;
 
             if ($this->mode == self::MODE_BACKEND) {
                 $this->template->setGlobalVariable(array(
@@ -574,9 +573,7 @@ namespace Cx\Core {
                 'RANDOM'                         => md5(microtime()),
                 'TXT_SEARCH'                     => $_CORELANG['TXT_SEARCH'],
                 'MODULE_INDEX'                   => MODULE_INDEX,
-                'LOGIN_INCLUDE'                  => isset($strFeInclude) ? $strFeInclude : '',
-                'LOGIN_URL'                      => isset($strFeLink) ? $strFeLink : '',
-                'LOGIN_CONTENT'                  => isset($strFeContent) ? $strFeContent : '',
+                'LOGIN_URL'                      => '<a href="' . $objInit->getUriBy('section', 'login') . '">' . $_CORELANG['TXT_FRONTEND_EDITING_LOGIN'] . '</a>',
                 'JAVASCRIPT'                     => 'javascript_inserting_here',
                 'TXT_CORE_LAST_MODIFIED_PAGE'    => $_CORELANG['TXT_CORE_LAST_MODIFIED_PAGE'],
                 'LAST_MODIFIED_PAGE'             => date(ASCMS_DATE_FORMAT_DATE, $page_modified),
