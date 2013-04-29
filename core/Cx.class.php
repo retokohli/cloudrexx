@@ -269,7 +269,12 @@ namespace Cx\Core {
         }
 
         protected function preResolve() {
-            $this->ch->callPreResolveHooks();
+            global $url, $page;
+            
+            $this->ch->callPreResolveHooks('legacy');
+            $this->request = $url;
+            $this->resolvedPage = $page;
+            $this->ch->callPreResolveHooks('proper');
         }
 
         protected function resolve() {
@@ -326,7 +331,7 @@ namespace Cx\Core {
         }
 
         protected function loadComponents() {
-            $this->ch = new \Cx\Core\Component\ComponentHandler($this->mode == self::MODE_FRONTEND);
+            $this->ch = new \Cx\Core\Component\Controller\ComponentHandler($this->mode == self::MODE_FRONTEND, $this->db->getEntityManager());
             $this->ch->initComponents();
         }
         
@@ -492,13 +497,16 @@ namespace Cx\Core {
              * Module specific data
              * @global array $_ARRAYLANG
              */
-            $_ARRAYLANG = $objInit->loadLanguageData($plainSection);
             try {
-                $em = \Env::get('em');
-                $moduleManager->loadModule($plainSection, $this->cl, $objDatabase, $_CORELANG, $subMenuTitle, $objTemplate, $objFWUser, $act, $objInit, $_ARRAYLANG, $em, $this);
-            } catch (\ModuleManagerException $e) {
-//            echo $e->getMessage();
-                $moduleManager->loadLegacyModule($plainSection, $this->cl, $objDatabase, $_CORELANG, $subMenuTitle, $objTemplate, $objFWUser, $act, $objInit, $_ARRAYLANG);
+                $this->ch->loadComponent($this, $plainSection, $this->resolvedPage);
+            } catch (\Cx\Core\Component\Controller\ComponentException $e) {
+                try {
+                    $em = \Env::get('em');
+                    $moduleManager->loadModule($plainSection, $this->cl, $objDatabase, $_CORELANG, $subMenuTitle, $objTemplate, $objFWUser, $act, $objInit, $_ARRAYLANG, $em, $this);
+                } catch (\ModuleManagerException $e) {
+                    $_ARRAYLANG = $objInit->loadLanguageData($plainSection);
+                    $moduleManager->loadLegacyModule($plainSection, $this->cl, $objDatabase, $_CORELANG, $subMenuTitle, $objTemplate, $objFWUser, $act, $objInit, $_ARRAYLANG);
+                }
             }
         }
 
