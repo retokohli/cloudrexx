@@ -417,12 +417,12 @@ class Customer extends User
                     if ($objGroup) {
                         $_arrUserId = $objGroup->getAssociatedUserIds();
 //DBG::log("Customer::getUsers(): Group ID $group_id, User IDs: ".var_export($_arrUserId, true));
-
-                        $arrUserId += array_flip($_arrUserId);
+                        $arrUserId = array_merge($arrUserId, $_arrUserId);
 //DBG::log("Customer::getUsers(): Merged: ".var_export($arrUserId, true));
                     }
                 }
-                $filter['id'] = ($arrUserId ? array_flip($arrUserId) : array(0));
+                $filter['id'] = ($arrUserId
+                    ? array_unique($arrUserId) : array(0));
                 unset($filter['group']);
             }
         }
