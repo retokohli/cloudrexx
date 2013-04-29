@@ -217,6 +217,15 @@ CREATE TABLE `contrexx_backups` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_component` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(100) NOT NULL,
+  `type` enum('core','core_module','module') NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_content_node` (
   `id` int(11) NOT NULL auto_increment,
   `parent_id` int(11) default NULL,
