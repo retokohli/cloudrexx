@@ -65,6 +65,10 @@ class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponen
     }
 
     public function preFinalize(\Cx\Core\Cx $cx, \Cx\Core\Html\Sigma $template) {
+        // Are we in frontend mode?
+        if ($cx->getMode() != \Cx\Core\Cx::MODE_FRONTEND /*|| !$page*/) {
+            return;
+        }
         // init frontend editing
         $frontendEditing = new \Cx\Core_Modules\FrontendEditing\Controller\FrontendController();
         if (!$frontendEditing->frontendEditingIsActive()) {
