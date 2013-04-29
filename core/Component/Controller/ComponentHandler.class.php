@@ -5,7 +5,9 @@
  * and open the template in the editor.
  */
 
-namespace Cx\Core\Component;
+namespace Cx\Core\Component\Controller;
+
+class ComponentException extends \Exception {}
 
 /**
  * Description of ComponentHandler
@@ -18,6 +20,7 @@ class ComponentHandler {
      */
     private $legacyComponentHandler;
     private $frontend;
+    protected $systemComponentRepo;
     private $components = array(
         'License',
         'Resolver',
@@ -61,9 +64,10 @@ class ComponentHandler {
         'Message',
     );
     
-    public function __construct($frontend) {
+    public function __construct($frontend, $em) {
         $this->legacyComponentHandler = new LegacyComponentHandler();
         $this->frontend = $frontend;
+        $this->systemComponentRepo = $em->getRepository('Cx\\Core\\Component\\Model\\Entity\\SystemComponent');
     }
     
     /**
@@ -88,12 +92,16 @@ class ComponentHandler {
         return false;
     }
     
-    public function callPreResolveHooks() {
-        foreach ($this->components as $componentName) {
-            if ($this->checkLegacy('preResolve', $componentName)) {
-                continue;
+    public function callPreResolveHooks($mode = 'all') {
+        if ($mode == 'all' || $mode == 'legacy') {
+            foreach ($this->components as $componentName) {
+                if ($this->checkLegacy('preResolve', $componentName)) {
+                    continue;
+                }
             }
-            // @todo: add non legacy code
+        }
+        if ($mode == 'all' || $mode == 'proper') {
+            $this->systemComponentRepo->callPreResolveHooks();
         }
     }
     
@@ -102,8 +110,8 @@ class ComponentHandler {
             if ($this->checkLegacy('postResolve', $componentName)) {
                 continue;
             }
-            // @todo: add non legacy code
         }
+        $this->systemComponentRepo->callPostResolveHooks();
     }
     
     public function callPreContentLoadHooks() {
@@ -111,8 +119,8 @@ class ComponentHandler {
             if ($this->checkLegacy('preContentLoad', $componentName)) {
                 continue;
             }
-            // @todo: add non legacy code
         }
+        $this->systemComponentRepo->callPreContentLoadHooks();
     }
     
     public function callPostContentLoadHooks() {
@@ -120,15 +128,23 @@ class ComponentHandler {
             if ($this->checkLegacy('postContentLoad', $componentName)) {
                 continue;
             }
-            // @todo: add non legacy code
         }
+        $this->systemComponentRepo->callPostContentLoadHooks();
     }
     
-    public function loadComponent($componentName) {
+    public function loadComponent(\Cx\Core\Cx $cx, $componentName, \Cx\Core\ContentManager\Model\Entity\Page $page = null) {
         if ($this->checkLegacy('load', $componentName)) {
-            continue;
+            \DBG::msg('This is a legacy component (' . $componentName . '), load via LegacyComponentHandler');
+            throw new ComponentException('This is a legacy component(' . $componentName . '), load via LegacyComponentHandler!');
         }
-        // @todo: add non legacy code
+        $component = $this->systemComponentRepo->findOneBy(array('name'=>$componentName));
+        if (!$component) {
+            \DBG::msg('This is an ugly legacy component (' . $componentName . '), load via LegacyComponentHandler');
+            \DBG::msg('Add an exception for this component in LegacyComponentHandler!');
+            throw new ComponentException('This is an ugly legacy component(' . $componentName . '), load via LegacyComponentHandler!');
+        }
+        $component->load($cx, $page);
+        \DBG::msg('<b>WELL, THIS IS ONE NICE COMPONENT!</b>');
     }
     
     public function initComponents() {
