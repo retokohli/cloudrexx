@@ -45,58 +45,116 @@ class Toolbox {
                 $res = \Env::get('db')->Execute($query);
                 $modules = array();
                 while (!$res->EOF) {
-                    $modules[] = array(
+                    $fsExists = $this->componentExistsInFileSystem(
+                        $res->fields['is_core'],
+                        $res->fields['name']
+                    );
+                    $modules[$res->fields['name']] = array(
                         'id' => $res->fields['id'],
                         'name' => $res->fields['name'],
-                        'type' => ($res->fields['is_required'] && $res->fields['is_core'] ? 'core' : ($res->fields['is_core'] ? 'core_module' : 'module')),
+                        'type' => $res->fields['is_core'],
                         'exists_db' => 'true',
-                        'exists_filesystem' => $this->componentExistsInFileSystem(
-                            $res->fields['is_required'],
-                            $res->fields['is_core'],
-                            $res->fields['name']
-                        ),
+                        'exists_filesystem' => $fsExists,
                         'style' => $this->getComponentStyle(
-                            $res->fields['is_required'],
                             $res->fields['is_core'],
                             $res->fields['name']
                         ),
                     );
                     $res->MoveNext();
                 }
+                foreach (\Env::get('em')->getRepository('Cx\Core\Component\Model\Entity\SystemComponent')->findAll() as $component) {
+                    if (isset($modules[$component->getName()])) {
+                        continue;
+                    }
+                    $name = $component->getName();
+                    $type = $component->getType();
+                    $modules[$component->getName()] = array(
+                        'id' => $component->getId(),
+                        'name' => $component->getName(),
+                        'type' => $component->getType(),
+                        'exists_db' => '<span style="color:red;">false</span>',
+                        'exists_filesystem' => $this->componentExistsInFileSystem(
+                            $type,
+                            $name
+                        ),
+                        'style' => '3.1.0',
+                    );
+                }
+                // add all not-yet-listed components existing in filesystem
                 $table = new \BackendTable(new \Cx\Core_Modules\Listing\Model\Entity\DataSet($modules));
                 $this->template->setVariable(array(
+                    'RECORD_COUNT' => count($modules),
                     'RESULT' => $table->toHtml(),
                 ));
                 break;
         }
     }
     
-    protected function componentExistsInFileSystem($required, $core, $name) {
+    protected function componentExistsInFileSystem(&$type, &$name) {
         $path = ASCMS_MODULE_FOLDER;
-        if ($required && $core) {
-            $path = ASCMS_CORE_FOLDER;
-        } else if ($core) {
+        if ($type === '1' || $type == 'core' || $type == 'core_module') {
+            $type = 'core_module';
             $path = ASCMS_CORE_MODULE_FOLDER;
+        } else {
+            $type = 'module';
         }
-        $path .= '/' . $name;
-        if (is_dir(ASCMS_CUSTOMIZING_PATH . $path)) {
+        if ($name == 'jsondata') {
+            $name = 'Json';
+        }
+        $path .= '/';
+        if (is_dir(ASCMS_CUSTOMIZING_PATH . $path . $name)) {
             return 'customizing';
-        } else if (is_dir(ASCMS_DOCUMENT_ROOT . $path)) {
+        } else if (is_dir(ASCMS_DOCUMENT_ROOT . $path . $name)) {
             return 'true';
         }
-        return 'false';
-    }
-    
-    protected function getComponentStyle($required, $core, $name) {
-        if ($this->componentExists($name)) {
-            return '3.1';
+        if (is_dir(ASCMS_CUSTOMIZING_PATH . $path . ucfirst($name))) {
+            $name = ucfirst($name);
+            return 'customizing';
+        } else if (is_dir(ASCMS_DOCUMENT_ROOT . $path . ucfirst($name))) {
+            $name = ucfirst($name);
+            return 'true';
         }
-        if ($this->componentExistsInFileSystem($required, $core, $name) !== 'false') {
-            if (preg_match('/[A-Z]/', $name)) {
-                return '3.0';
+        if ($type == 'core_module') {
+            $path = ASCMS_CORE_FOLDER . '/';
+            if (is_dir(ASCMS_CUSTOMIZING_PATH . $path . $name)) {
+                $type = 'core';
+                return 'customizing';
+            } else if (is_dir(ASCMS_DOCUMENT_ROOT . $path . $name)) {
+                $type = 'core';
+                return 'true';
+            }
+            if (is_dir(ASCMS_CUSTOMIZING_PATH . $path . ucfirst($name))) {
+                $name = ucfirst($name);
+                $type = 'core';
+                return 'customizing';
+            } else if (is_dir(ASCMS_DOCUMENT_ROOT . $path . ucfirst($name))) {
+                $name = ucfirst($name);
+                $type = 'core';
+                return 'true';
             }
         }
-        return '<= 2.2.6';
+        return '<span style="color:red;">false</span>';
+    }
+    
+    protected function getComponentStyle($core, $name) {
+        if ($this->componentExists($name)) {
+            return '3.1.0';
+        }
+        if ($this->componentExistsInFileSystem($core, $name) !== '<span style="color:red;">false</span>') {
+            if (preg_match('/[A-Z]/', $name)) {
+                return '3.0.3';
+            }
+        }
+        // if there's a loading exception in legacy component handler
+        // return 3.0.0
+        $legacyComponentHandler = new \Cx\Core\Component\Controller\LegacyComponentHandler();
+        if (
+            $legacyComponentHandler->hasExceptionFor(true, 'load', $name) ||
+            $legacyComponentHandler->hasExceptionFor(false, 'load', $name)
+        ) {
+            return '3.0.0';
+        }
+        return '<span style="color:red;">&lt;= 2.2.6</span>';
     }
     
     protected function componentExists($name) {
