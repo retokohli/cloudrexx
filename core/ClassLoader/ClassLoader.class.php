@@ -129,6 +129,7 @@ class ClassLoader {
         $resolvedPath = $path . '/' . $className . $suffix . '.php';
         if (preg_match('/Exception/', $className) && !$this->loadFile($resolvedPath)) {
             $className = preg_replace('/Exception/', '', $className);
+            $resolvedPath = $path . '/' . $className . $suffix . '.php';
         }
         
         if ($this->loadFile($resolvedPath)) {
