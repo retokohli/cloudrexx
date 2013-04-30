@@ -1,44 +1,40 @@
 <?php
-include_once('../testCases/DoctrineTestCase.php');
+include_once(ASCMS_TEST_PATH.'/testCases/DoctrineTestCase.php');
 
 class PageEventListenerTest extends DoctrineTestCase
 {
     public function testUniqueSlugGeneration() {
-        $root = new \Cx\Model\ContentManager\Node();
+        $root = new \Cx\Core\ContentManager\Model\Entity\Node();
 
-        $n1 = new \Cx\Model\ContentManager\Node();
+        $n1 = new \Cx\Core\ContentManager\Model\Entity\Node();
         $n1->setParent($root);
-        $n2 = new \Cx\Model\ContentManager\Node();
+        $n2 = new \Cx\Core\ContentManager\Model\Entity\Node();
         $n2->setParent($root);
-        $n3 = new \Cx\Model\ContentManager\Node();
+        $n3 = new \Cx\Core\ContentManager\Model\Entity\Node();
         $n3->setParent($root);
 
-        $p1 = new \Cx\Model\ContentManager\Page();
+        $p1 = new \Cx\Core\ContentManager\Model\Entity\Page();
         $p1->setLang(1);
         $p1->setTitle('testpage');
         $p1->setNode($n1);
-        $p1->setUsername('user');
 
         //provocate a slug conflict
-        $p2 = new \Cx\Model\ContentManager\Page();
+        $p2 = new \Cx\Core\ContentManager\Model\Entity\Page();
         $p2->setLang(1);
         $p2->setTitle('testpage');
         $p2->setNode($n2);
-        $p2->setUsername('user');
 
         //different language, shouldn't conflict
-        $p3 = new \Cx\Model\ContentManager\Page();
+        $p3 = new \Cx\Core\ContentManager\Model\Entity\Page();
         $p3->setLang(2);
         $p3->setTitle('testpage');
         $p3->setNode($n1);
-        $p3->setUsername('user');
 
         //provocate another slug conflict
-        $p4 = new \Cx\Model\ContentManager\Page();
+        $p4 = new \Cx\Core\ContentManager\Model\Entity\Page();
         $p4->setLang(1);
         $p4->setTitle('testpage');
         $p4->setNode($n3);
-        $p4->setUsername('user');
 
         self::$em->persist($root);
         self::$em->persist($n1);
@@ -59,18 +55,17 @@ class PageEventListenerTest extends DoctrineTestCase
     }
 
     public function testUniqueSlugGenerationWithPersistedNodes() {
-        $root = new \Cx\Model\ContentManager\Node();
+        $root = new \Cx\Core\ContentManager\Model\Entity\Node();
 
-        $n1 = new \Cx\Model\ContentManager\Node();
+        $n1 = new \Cx\Core\ContentManager\Model\Entity\Node();
         $n1->setParent($root);
-        $n2 = new \Cx\Model\ContentManager\Node();
+        $n2 = new \Cx\Core\ContentManager\Model\Entity\Node();
         $n2->setParent($root);
 
-        $p1 = new \Cx\Model\ContentManager\Page();
+        $p1 = new \Cx\Core\ContentManager\Model\Entity\Page();
         $p1->setLang(1);
         $p1->setTitle('testpage');
         $p1->setNode($n1);
-        $p1->setUsername('user');
 
         self::$em->persist($root);
         self::$em->persist($n1);
@@ -85,27 +80,24 @@ class PageEventListenerTest extends DoctrineTestCase
         $node = self::$em->find('Cx\Model\ContentManager\Node', $id);
 
         //provocate a slug conflict
-        $p2 = new \Cx\Model\ContentManager\Page();
+        $p2 = new \Cx\Core\ContentManager\Model\Entity\Page();
         $p2->setLang(1);
         $p2->setTitle('testpage');
         $p2->setNode($node);
-        $p2->setUsername('user');
 
         //different language, shouldn't conflict
-        $p3 = new \Cx\Model\ContentManager\Page();
+        $p3 = new \Cx\Core\ContentManager\Model\Entity\Page();
         $p3->setLang(2);
         $p3->setTitle('testpage');
         $p3->setNode($node);
-        $p3->setUsername('user');
 
-        $newNode = new \Cx\Model\ContentManager\Node();
+        $newNode = new \Cx\Core\ContentManager\Model\Entity\Node();
         $newNode->setParent($node->getParent());
         //mixing in a conflict inside the new persists
-        $p4 = new \Cx\Model\ContentManager\Page();
+        $p4 = new \Cx\Core\ContentManager\Model\Entity\Page();
         $p4->setLang(1);
         $p4->setTitle('testpage');
         $p4->setNode($newNode);
-        $p4->setUsername('user');
 
         self::$em->persist($p2);
         self::$em->persist($p3);
@@ -120,18 +112,17 @@ class PageEventListenerTest extends DoctrineTestCase
     }
 
     public function testSlugReleasing() {
-        $root = new \Cx\Model\ContentManager\Node();
+        $root = new \Cx\Core\ContentManager\Model\Entity\Node();
 
-        $n1 = new \Cx\Model\ContentManager\Node();
+        $n1 = new \Cx\Core\ContentManager\Model\Entity\Node();
         $n1->setParent($root);
-        $n2 = new \Cx\Model\ContentManager\Node();
+        $n2 = new \Cx\Core\ContentManager\Model\Entity\Node();
         $n2->setParent($root);
 
-        $p1 = new \Cx\Model\ContentManager\Page();
+        $p1 = new \Cx\Core\ContentManager\Model\Entity\Page();
         $p1->setLang(1);
         $p1->setTitle('testpage');
         $p1->setNode($n1);
-        $p1->setUsername('user');
 
         self::$em->persist($root);
         self::$em->persist($n1);
@@ -150,11 +141,10 @@ class PageEventListenerTest extends DoctrineTestCase
         $n2 = self::$em->find('Cx\Model\ContentManager\Node', $idn2);
 
         //shouldn't provocate a slug conflict, since we delete the other page below
-        $p2 = new \Cx\Model\ContentManager\Page();
+        $p2 = new \Cx\Core\ContentManager\Model\Entity\Page();
         $p2->setLang(1);
         $p2->setTitle('testpage');
         $p2->setNode($n2);
-        $p2->setUsername('user');
 
         self::$em->remove($p1);
         self::$em->persist($p2);

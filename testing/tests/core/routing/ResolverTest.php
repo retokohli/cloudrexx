@@ -1,7 +1,5 @@
 <?php
-include_once ASCMS_CORE_PATH.'/routing/URL.class.php';
-include_once ASCMS_CORE_PATH.'/routing/Resolver.class.php';
-include_once('../testCases/DoctrineTestCase.php');
+include_once(ASCMS_TEST_PATH.'/testCases/DoctrineTestCase.php');
 
 use Cx\Core\Routing\Resolver as Resolver;
 use Cx\Core\Routing\Url as Url;
@@ -15,13 +13,13 @@ class ResolverTest extends DoctrineTestCase
     protected function insertFixtures() {
         $repo = self::$em->getRepository('Cx\Model\ContentManager\Page');
 
-        $root = new \Cx\Model\ContentManager\Node();
+        $root = new \Cx\Core\ContentManager\Model\Entity\Node();
         
-        $n1 = new \Cx\Model\ContentManager\Node();
-        $n2 = new \Cx\Model\ContentManager\Node();
-        $n3 = new \Cx\Model\ContentManager\Node();
-        $n4 = new \Cx\Model\ContentManager\Node(); //redirection
-        $n5 = new \Cx\Model\ContentManager\Node(); //alias
+        $n1 = new \Cx\Core\ContentManager\Model\Entity\Node();
+        $n2 = new \Cx\Core\ContentManager\Model\Entity\Node();
+        $n3 = new \Cx\Core\ContentManager\Model\Entity\Node();
+        $n4 = new \Cx\Core\ContentManager\Model\Entity\Node(); //redirection
+        $n5 = new \Cx\Core\ContentManager\Model\Entity\Node(); //alias
 
         $n1->setParent($root);
         $n2->setParent($n1);
@@ -29,30 +27,30 @@ class ResolverTest extends DoctrineTestCase
         $n4->setParent($root);
         $n5->setParent($root);
 
-        $p1 = new \Cx\Model\ContentManager\Page();     
+        $p1 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p1->setLang(1);
         $p1->setTitle('testpage1');
         $p1->setNode($n1);
         $p1->setUsername('user');
 
-        $p4 = new \Cx\Model\ContentManager\Page();     
+        $p4 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p4->setLang(1);
         $p4->setTitle('testpage1_child');
         $p4->setNode($n2);
         $p4->setUsername('user');
 
-        $p5 = new \Cx\Model\ContentManager\Page();     
+        $p5 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p5->setLang(1);
         $p5->setTitle('subtreeTest_target');
         $p5->setNode($n3);
         $p5->setUsername('user');
         
-        $p6 = new \Cx\Model\ContentManager\Page();
+        $p6 = new \Cx\Core\ContentManager\Model\Entity\Page();
         $p6->setLang(0);
         $p6->setTitle('testalias');
         $p6->setNode($n5);
         $p6->setUsername('user');
-        $p6->setType(\Cx\Model\ContentManager\Page::TYPE_ALIAS);
+        $p6->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS);
         $p6->setTarget($p4->getId().'|1');
 
         self::$em->persist($root);
@@ -68,9 +66,9 @@ class ResolverTest extends DoctrineTestCase
 
         self::$em->flush();
 
-        $p2 = new \Cx\Model\ContentManager\Page();     
+        $p2 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p2->setLang(1);
-        $p2->setType(\Cx\Model\ContentManager\Page::TYPE_REDIRECT);
+        $p2->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_REDIRECT);
         $p2->setTitle('redirection');
         $p2->setNode($n4);
         $p2->setTarget($n2->getId().'|?foo=test');
@@ -143,23 +141,23 @@ class ResolverTest extends DoctrineTestCase
     protected function getResolvedFallbackPage() {
         $repo = self::$em->getRepository('Cx\Model\ContentManager\Page');
 
-        $root = new \Cx\Model\ContentManager\Node();
+        $root = new \Cx\Core\ContentManager\Model\Entity\Node();
         
-        $n1 = new \Cx\Model\ContentManager\Node();
-        $n2 = new \Cx\Model\ContentManager\Node();
+        $n1 = new \Cx\Core\ContentManager\Model\Entity\Node();
+        $n2 = new \Cx\Core\ContentManager\Model\Entity\Node();
 
         $n1->setParent($root);
 
         //test if requesting this page...
-        $p2 = new \Cx\Model\ContentManager\Page();     
+        $p2 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p2->setLang(1);
         $p2->setTitle('pageThatsFallingBack');
         $p2->setNode($n1);
         $p2->setUsername('user');
-        $p2->setType(\Cx\Model\ContentManager\Page::TYPE_FALLBACK);
+        $p2->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK);
 
         //... will yield contents of this page as result.
-        $p1 = new \Cx\Model\ContentManager\Page();     
+        $p1 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p1->setLang(2);
         $p1->setTitle('pageThatHoldsTheContent');
         $p1->setNode($n1);

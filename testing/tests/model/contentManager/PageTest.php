@@ -1,16 +1,15 @@
 <?php
-include_once('../testCases/DoctrineTestCase.php');
+include_once(ASCMS_TEST_PATH.'/testCases/DoctrineTestCase.php');
 
 class PageTest extends DoctrineTestCase
 {
     public function testValidation() {
-        $node = new \Cx\Model\ContentManager\Node();
-        $p = new \Cx\Model\ContentManager\Page();
+        $node = new \Cx\Core\ContentManager\Model\Entity\Node();
+        $p = new \Cx\Core\ContentManager\Model\Entity\Page();
 
         $p->setLang(1);
         $p->setTitle('testpage');
         $p->setNode($node);
-        $p->setUsername('user');
         $p->setCmd('should_be_valid');
 
         //shouldn't raise a ValidationException
@@ -20,17 +19,16 @@ class PageTest extends DoctrineTestCase
     }
 
     public function testLoggable() {
-        $root = new \Cx\Model\ContentManager\Node();
-        $n = new \Cx\Model\ContentManager\Node();
+        $root = new \Cx\Core\ContentManager\Model\Entity\Node();
+        $n = new \Cx\Core\ContentManager\Model\Entity\Node();
 
         $n->setParent($root);
 
-        $p = new \Cx\Model\ContentManager\Page();
+        $p = new \Cx\Core\ContentManager\Model\Entity\Page();
 
         $p->setLang(1);
         $p->setTitle('testpage');
         $p->setNode($n);
-        $p->setUsername('user');
 
         self::$em->persist($root);
         self::$em->persist($n);
@@ -63,25 +61,25 @@ class PageTest extends DoctrineTestCase
     }
 
     public function testSlugGeneration() {
-        $p = new \Cx\Model\ContentManager\Page();
+        $p = new \Cx\Core\ContentManager\Model\Entity\Page();
         $p->setTitle('test');
         $this->assertEquals('test', $p->getSlug());
 
-        $p = new \Cx\Model\ContentManager\Page();
+        $p = new \Cx\Core\ContentManager\Model\Entity\Page();
         $p->setTitle('test with space');
         $this->assertEquals('test-with-space', $p->getSlug());
 
-        $p = new \Cx\Model\ContentManager\Page();
+        $p = new \Cx\Core\ContentManager\Model\Entity\Page();
         $p->setTitle('test ümläut');
         $this->assertEquals('test-mlut', $p->getSlug());
 
-        $p = new \Cx\Model\ContentManager\Page();
+        $p = new \Cx\Core\ContentManager\Model\Entity\Page();
         $p->setTitle('123');
         $this->assertEquals('123', $p->getSlug());
     }
 
     public function testImplicitExplicitSlugSetting() {
-        $p = new \Cx\Model\ContentManager\Page();
+        $p = new \Cx\Core\ContentManager\Model\Entity\Page();
         $p->setTitle('test');
         $this->assertEquals('test', $p->getSlug());
 
@@ -93,7 +91,7 @@ class PageTest extends DoctrineTestCase
     }
 
     public function testTargetProperties() {
-        $p = new \Cx\Model\ContentManager\Page();
+        $p = new \Cx\Core\ContentManager\Model\Entity\Page();
         $p->setTarget('12|querystring');
         $this->assertEquals(true, $p->isTargetInternal());
         $this->assertEquals(12, $p->getTargetNodeId());
@@ -114,7 +112,7 @@ class PageTest extends DoctrineTestCase
     }
 
     public function testProtectionProperties() {
-        $p = new \Cx\Model\ContentManager\Page();
+        $p = new \Cx\Core\ContentManager\Model\Entity\Page();
 
         //currently untested because set(Front|Backend)Protection() call static Permission-methods.
         

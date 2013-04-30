@@ -1,7 +1,7 @@
 <?php
 //those tests were broken by making all methods static and introducing constants to the code.
 //left below for reference purposes.
-include_once('../testCases/DoctrineTestCase.php');
+include_once(ASCMS_TEST_PATH.'/testCases/DoctrineTestCase.php');
 /* include_once(ASCMS_CORE_PATH.'/LinkGenerator.class.php'); */
 
 class LinkGeneratorTest extends DoctrineTestCase {
@@ -10,12 +10,12 @@ class LinkGeneratorTest extends DoctrineTestCase {
 /*     protected $nodeId; */
 
 /*     protected function insertFixtures() { */
-/*         $root = new \Cx\Model\ContentManager\Node(); */
-/*         $node = new \Cx\Model\ContentManager\Node(); */
+/*         $root = new \Cx\Core\ContentManager\Model\Entity\Node(); */
+/*         $node = new \Cx\Core\ContentManager\Model\Entity\Node(); */
 /*         $node->setParent($root); */
 
-/*         $p = new \Cx\Model\ContentManager\Page(); */
-/*         $p2 = new \Cx\Model\ContentManager\Page(); */
+/*         $p = new \Cx\Core\ContentManager\Model\Entity\Page(); */
+/*         $p2 = new \Cx\Core\ContentManager\Model\Entity\Page(); */
 
 /*         $p->setLang(1); */
 /*         $p->setTitle('testpage'); */
