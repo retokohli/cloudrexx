@@ -41,6 +41,13 @@ class Workbench {
         return $this->config[$identifier];
     }
     
+    public function setConfigEntry($identifier, $value) {
+        if (!$this->config) {
+            $this->loadConfig();
+        }
+        $this->config[$identifier] = $value;
+    }
+    
     public function __destruct() {
         $this->writeConfig();
     }

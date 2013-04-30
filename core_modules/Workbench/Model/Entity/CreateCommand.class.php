@@ -60,7 +60,11 @@ class CreateCommand extends Command {
                 break;
         }
         $this->createNonLibComponent(string($base . '/' . $systemName));
-        $this->interface->show('done');
+        if ($type == 'lib') {
+            $this->interface->show('done');
+            return;
+        }
+        $this->interface->getCommand('activate')->execute(array(null, null, $type, $name));
     }
     
     /**

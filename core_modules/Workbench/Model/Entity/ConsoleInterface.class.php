@@ -3,6 +3,7 @@
 namespace Cx\Core_Modules\Workbench\Model\Entity;
 
 class ConsoleInterface extends UserInterface {
+    protected $db = null;
 
     public function __construct($arguments) {
         parent::__construct();
@@ -29,7 +30,7 @@ class ConsoleInterface extends UserInterface {
         } else if ($this->commandExists($command)) {
             try {
                 $this->getCommand($command)->execute($arguments);
-            } catch (\Cx\Core_Modules\Workbench\Model\Generic\CommandException $e) {
+            } catch (\Cx\Core_Modules\Workbench\Model\Entity\CommandException $e) {
                 echo 'Command failed: ' . $e->getMessage();
             }
         } else {
@@ -49,6 +50,23 @@ Available subcommands:' . "\r\n";
         foreach ($this->getCommands() as $command) {
             echo "\t" . $command->getName() . ' - ' . $command->getDescription() . "\r\n";
         }
+    }
+    
+    public function getDb() {
+        if (!$this->db) {
+            $this->db = new \Cx\Core\Db\Db();
+        }
+        return $this->db;
+    }
+    
+    public function input($description, $defaultValue = '') {
+        echo $description . ' [' . $defaultValue . ']: ';
+        $handle = fopen('php://stdin', 'r');
+        $line = strtolower(trim(fgets($handle)));
+        if (trim($line) == '') {
+            $line = $defaultValue;
+        }
+        return $line;
     }
     
     public function yesNo($question) {

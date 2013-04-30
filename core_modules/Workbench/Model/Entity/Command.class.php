@@ -5,6 +5,9 @@ namespace Cx\Core_Modules\Workbench\Model\Entity;
 class CommandException extends \Cx\Core_Modules\Workbench\Controller\WorkbenchException {};
 
 abstract class Command {
+    /**
+     * @var UserInterface
+     */
     protected $interface;
     protected $name;
     protected $description;
