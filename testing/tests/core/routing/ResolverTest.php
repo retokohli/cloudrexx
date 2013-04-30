@@ -11,7 +11,7 @@ class ResolverTest extends DoctrineTestCase
         2 => 3
     );
     protected function insertFixtures() {
-        $repo = self::$em->getRepository('Cx\Model\ContentManager\Page');
+        $repo = self::$em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
 
         $root = new \Cx\Core\ContentManager\Model\Entity\Node();
         
@@ -31,25 +31,21 @@ class ResolverTest extends DoctrineTestCase
         $p1->setLang(1);
         $p1->setTitle('testpage1');
         $p1->setNode($n1);
-        $p1->setUsername('user');
 
         $p4 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p4->setLang(1);
         $p4->setTitle('testpage1_child');
         $p4->setNode($n2);
-        $p4->setUsername('user');
 
         $p5 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p5->setLang(1);
         $p5->setTitle('subtreeTest_target');
         $p5->setNode($n3);
-        $p5->setUsername('user');
         
         $p6 = new \Cx\Core\ContentManager\Model\Entity\Page();
         $p6->setLang(0);
         $p6->setTitle('testalias');
         $p6->setNode($n5);
-        $p6->setUsername('user');
         $p6->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS);
         $p6->setTarget($p4->getId().'|1');
 
@@ -72,7 +68,6 @@ class ResolverTest extends DoctrineTestCase
         $p2->setTitle('redirection');
         $p2->setNode($n4);
         $p2->setTarget($n2->getId().'|?foo=test');
-        $p2->setUsername('user');
 
         self::$em->persist($p2);
 
@@ -139,7 +134,7 @@ class ResolverTest extends DoctrineTestCase
     }
 
     protected function getResolvedFallbackPage() {
-        $repo = self::$em->getRepository('Cx\Model\ContentManager\Page');
+        $repo = self::$em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
 
         $root = new \Cx\Core\ContentManager\Model\Entity\Node();
         
@@ -153,7 +148,6 @@ class ResolverTest extends DoctrineTestCase
         $p2->setLang(1);
         $p2->setTitle('pageThatsFallingBack');
         $p2->setNode($n1);
-        $p2->setUsername('user');
         $p2->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK);
 
         //... will yield contents of this page as result.
@@ -161,7 +155,6 @@ class ResolverTest extends DoctrineTestCase
         $p1->setLang(2);
         $p1->setTitle('pageThatHoldsTheContent');
         $p1->setNode($n1);
-        $p1->setUsername('user');
         $p1->setType('content');
         $p1->setContent('fallbackContent');
 
