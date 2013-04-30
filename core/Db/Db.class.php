@@ -54,7 +54,7 @@ namespace Cx\Core\Db {
          * Returns the AdoDB connection
          * @deprecated Use Doctrine (getEntityManager()) instead
          * @global string $ADODB_FETCH_MODE
-         * @return boolean 
+         * @return \ADONewConnection 
          */
         public function getAdoDb() {
             if ($this->adodb) {
