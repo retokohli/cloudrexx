@@ -350,11 +350,6 @@ class Orders
             'SHOP_CURRENCY', Currency::getDefaultCurrencySymbol());
         $count = 0;
         $limit = SettingDb::getValue('numof_orders_per_page_backend');
-// TODO: Obsolete ASAP
-if (!$limit) {
-    ShopSettings::errorHandler();
-    $limit = 25;
-}
         $tries = 2;
         $arrOrders = null;
 //DBG::activate(DBG_ADODB);

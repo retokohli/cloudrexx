@@ -1534,12 +1534,18 @@ if ($test === NULL) {
                 ShopLibrary::getRegisterMenuoptions(
                     SettingDb::getValue('register')), false, '',
                     'style="width: 270px;"'),
+            'SHOP_SETTING_NUMOF_PRODUCTS_PER_PAGE_BACKEND' =>
+                SettingDb::getValue('numof_products_per_page_backend'),
+            'SHOP_SETTING_NUMOF_ORDERS_PER_PAGE_BACKEND' =>
+                SettingDb::getValue('numof_orders_per_page_backend'),
             'SHOP_SETTING_NUMOF_CUSTOMERS_PER_PAGE_BACKEND' =>
                 SettingDb::getValue('numof_customers_per_page_backend'),
             'SHOP_SETTING_NUMOF_MANUFACTURERS_PER_PAGE_BACKEND' =>
                 SettingDb::getValue('numof_manufacturers_per_page_backend'),
             'SHOP_SETTING_NUMOF_MAILTEMPLATE_PER_PAGE_BACKEND' =>
                 SettingDb::getValue('numof_mailtemplate_per_page_backend'),
+            'SHOP_SETTING_NUMOF_COUPON_PER_PAGE_BACKEND' =>
+                SettingDb::getValue('numof_coupon_per_page_backend'),
 // TODO: Use SettingDb::show(), and add a proper setting type!
             'SHOP_SETTING_USERGROUP_ID_CUSTOMER' =>
                 Html::getSelect(
@@ -2586,7 +2592,6 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
             'SHOP_HEADING_CUSTOMER_ACTIVE' => $objSorting->getHeaderForField('active'),
         ));
         $limit = SettingDb::getValue('numof_customers_per_page_backend');
-//DBG::log("view_customers(): limit $limit, count $count");
         $objCustomer = Customers::get(
             $arrFilter, ($listletter ? $listletter.'%' : $searchterm),
             array($objSorting->getOrderField() => $objSorting->getOrderDirection()),
@@ -3067,37 +3072,37 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
             '`product`.`stock`' => $_ARRAYLANG['TXT_SHOP_PRODUCT_STOCK'],
         );
         $objSorting = new Sorting($url, $arrSorting, false, 'order_shop_product');
-
-        $limit = SettingDb::getValue('numof_products_per_page_backend');
-// TODO: Obsolete ASAP
-if (!$limit) {
-    $limit = 25;
-    SettingDb::add('numof_products_per_page_backend',
-        $limit, 216, 'text', '', 'config');
-    SettingDb::init('shop', 'config');
-}
-        $count = $limit;
-        // Mind that $count is handed over by reference.
-        $arrProducts = Products::getByShopParams(
-            $count, Paging::getPosition(),
-            0, $category_id, $manufacturer_id, $searchTerm,
-            $flagSpecialoffer, false, $objSorting->getOrder(),
-            null, true // Include inactive Products
-        );
+        $count = $limit =
+            SettingDb::getValue('numof_products_per_page_backend');
+        $tries = 2;
+        while ($tries--) {
+            // Mind that $count is handed over by reference.
+            $arrProducts = Products::getByShopParams(
+                $count, Paging::getPosition(),
+                0, $category_id, $manufacturer_id, $searchTerm,
+                $flagSpecialoffer, false, $objSorting->getOrder(),
+                null, true // Include inactive Products
+            );
+            if (count($arrProducts) > 0 || Paging::getPosition() == 0) {
+                break;
+            }
+            Paging::reset();
+        }
         self::$objTemplate->setVariable(array(
             'SHOP_CATEGORY_MENU' => Html::getSelect( 'category_id',
                 array(0 => $_ARRAYLANG['TXT_ALL_PRODUCT_GROUPS'])
                   + ShopCategories::getNameArray(), $category_id),
             'SHOP_SEARCH_TERM' => $searchTerm,
             'SHOP_PRODUCT_TOTAL' => $count,
-            'SHOP_PRODUCT_PAGING' => Paging::get($url,
-                '<b>'.$_ARRAYLANG['TXT_PRODUCTS'].'</b>', $count, $limit),
         ));
         if (empty($arrProducts)) {
             self::$objTemplate->touchBlock('no_product');
             return true;
         }
         self::$objTemplate->setVariable(array(
+            // Paging shown only when there are results
+            'SHOP_PRODUCT_PAGING' => Paging::get($url,
+                '<b>'.$_ARRAYLANG['TXT_PRODUCTS'].'</b>', $count, $limit, true),
             'SHOP_HEADING_PRODUCT_ID' => $objSorting->getHeaderForField('`product`.`id`'),
             'SHOP_HEADING_PRODUCT_ACTIVE' => $objSorting->getHeaderForField('`product`.`active`'),
             'SHOP_HEADING_PRODUCT_ORD' => $objSorting->getHeaderForField('`product`.`ord`'),

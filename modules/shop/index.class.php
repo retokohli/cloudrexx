@@ -132,10 +132,6 @@ if (SettingDb::getValue('use_js_cart') === NULL) {
         // Global module index for clones
         self::$objTemplate->setGlobalVariable('MODULE_INDEX', MODULE_INDEX);
         // Do this *before* calling our friends, especially Customer methods!
-// TODO: Define SettingDb keys for various subsections
-        if (!SettingDb::getValue('numof_products_per_page_frontend')) {
-            ShopSettings::errorHandler();
-        }
         // Pick the default Country for delivery
         if (empty($_SESSION['shop']['countryId2'])) {
             $_SESSION['shop']['countryId2'] =
