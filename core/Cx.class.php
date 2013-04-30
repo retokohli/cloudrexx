@@ -257,7 +257,7 @@ namespace Cx\Core {
             global $_CONFIG;
             
             // Check if system is running
-            if ($_CONFIG['systemStatus'] != 'on') {
+            if ($_CONFIG['systemStatus'] != 'on' && $this->mode == self::MODE_FRONTEND) {
                 header('Location: offline.html');
                 die(1);
             }
