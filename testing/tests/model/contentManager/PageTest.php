@@ -4,7 +4,9 @@ include_once(ASCMS_TEST_PATH.'/testCases/DoctrineTestCase.php');
 class PageTest extends DoctrineTestCase
 {
     public function testValidation() {
+        $rootNode = new \Cx\Core\ContentManager\Model\Entity\Node();
         $node = new \Cx\Core\ContentManager\Model\Entity\Node();
+        $node->setParent($rootNode);
         $p = new \Cx\Core\ContentManager\Model\Entity\Page();
 
         $p->setLang(1);
