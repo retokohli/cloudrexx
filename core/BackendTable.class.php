@@ -20,7 +20,7 @@
 class BackendTable extends HTML_Table {
 
     public function __construct($attrs = array()) {
-    	if ($attrs instanceof \Cx\Core_Modules\Listing\Model\DataSet) {
+    	if ($attrs instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
     		$first = true;
     		$row = 1;
     		foreach ($attrs as $colname=>$rows) {

@@ -170,7 +170,7 @@ class ListingController {
         $entities = $query->getResult();
         
         // @todo: check if entities should be encapsulated in a class
-        $data = new \Cx\Core_Modules\Listing\Model\DataSet($entities);
+        $data = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($entities);
         
         // return calculated data
         return $data;
