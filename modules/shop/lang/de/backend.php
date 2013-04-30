@@ -921,3 +921,6 @@ $_ARRAYLANG['TXT_SHOP_PRODUCT_LANGUAGE_EDIT'] = "Produkt in %3\$s bearbeiten";
 $_ARRAYLANG['TXT_SHOP_CATEGORY_LANGUAGE_EDIT'] = "Rubrik in %3\$s bearbeiten";
 $_ARRAYLANG['TXT_SHOP_CUSTOMER_NOT_FOUND'] = "Information nicht vorhanden (der entsprechende Benutzer ist gelöscht worden)";
 $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_PRODUCT_INVALID'] = "ungültiges Produkt";
+$_ARRAYLANG['TXT_SHOP_SETTING_NUMOF_PRODUCTS_PER_PAGE_BACKEND'] = "Anzahl Produkte pro Seite in der Backend Übersicht";
+$_ARRAYLANG['TXT_SHOP_SETTING_NUMOF_ORDERS_PER_PAGE_BACKEND'] = "Anzahl Bestellungen pro Seite in der Backend Übersicht";
+$_ARRAYLANG['TXT_SHOP_SETTING_NUMOF_COUPON_PER_PAGE_BACKEND'] = "Anzahl Guscheincodes pro Seite in der Backend Übersicht";

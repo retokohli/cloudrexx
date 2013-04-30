@@ -147,6 +147,25 @@ class ShopSettings
         SettingDb::set('user_profile_attribute_notes',
             trim(strip_tags(contrexx_input2raw(
                 $_POST['user_profile_attribute_notes']))));
+        // New in V3.0.4 or V3.1.0
+        if (!SettingDb::set('numof_products_per_page_backend',
+            intval($_POST['numof_products_per_page_backend']))) {
+            SettingDb::add('numof_products_per_page_frontend',
+                intval($_POST['numof_products_per_page_backend']), 53,
+                SettingDb::TYPE_TEXT, null, 'config');
+        };
+        if (!SettingDb::set('numof_orders_per_page_backend',
+            intval($_POST['numof_orders_per_page_backend']))) {
+            SettingDb::add('numof_orders_per_page_backend',
+                intval($_POST['numof_orders_per_page_backend']), 54,
+                SettingDb::TYPE_TEXT, null, 'config');
+        }
+        if (!SettingDb::set('numof_coupon_per_page_backend',
+            intval($_POST['numof_coupon_per_page_backend']))) {
+            SettingDb::add('numof_coupon_per_page_backend',
+                intval($_POST['numof_coupon_per_page_backend']), 58,
+                SettingDb::TYPE_TEXT, null, 'config');
+        }
     }
 
 
