@@ -1,8 +1,8 @@
 <?php
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * This class is needed in order to make AdoDB use an existing PDO connection
+ * @author Michael Ritter <michael.ritter@comvation.com>
  */
 
 namespace Cx\Core\Db;
@@ -10,9 +10,8 @@ namespace Cx\Core\Db;
 \Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH . '/adodb/drivers/adodb-pdo.inc.php');
 
 /**
- * Description of CustomAdodbPdo
- *
- * @author ritt0r
+ * This class is needed in order to make AdoDB use an existing PDO connection
+ * @author Michael Ritter <michael.ritter@comvation.com>
  */
 class CustomAdodbPdo extends \ADODB_pdo 
 { 
