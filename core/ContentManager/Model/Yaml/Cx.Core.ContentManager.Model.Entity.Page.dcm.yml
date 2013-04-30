@@ -2,7 +2,9 @@ Cx\Core\ContentManager\Model\Entity\Page:
   type: entity
   table: content_page
   repositoryClass: Cx\Core\ContentManager\Model\Repository\PageRepository
-  
+  gedmo:
+    loggable:
+      logEntryClass: Cx\Core\ContentManager\Model\Entity\LogEntry
   id:
     id:
       type: integer
