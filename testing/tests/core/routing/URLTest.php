@@ -1,8 +1,7 @@
 <?php
-include_once ASCMS_CORE_PATH.'/routing/URL.class.php';
 use Cx\Core\Routing\Url as Url;
 
-include_once('../testCases/ContrexxTestCase.php');
+include_once(ASCMS_TEST_PATH.'/testCases/ContrexxTestCase.php');
 
 class URLTest extends \ContrexxTestCase {
     public function testDomainAndPath() {

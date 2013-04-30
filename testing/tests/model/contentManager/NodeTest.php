@@ -1,27 +1,25 @@
 <?php
-include_once('../testCases/DoctrineTestCase.php');
+include_once(ASCMS_TEST_PATH.'/testCases/DoctrineTestCase.php');
 
 class NodeTest extends DoctrineTestCase
 {
     public function testPagesByLang() {
-        $root = new \Cx\Model\ContentManager\Node();
-        $node = new \Cx\Model\ContentManager\Node();
+        $root = new \Cx\Core\ContentManager\Model\Entity\Node();
+        $node = new \Cx\Core\ContentManager\Model\Entity\Node();
 
         $node->setParent($root);
 
-        $p1 = new \Cx\Model\ContentManager\Page();
-        $p2 = new \Cx\Model\ContentManager\Page();
+        $p1 = new \Cx\Core\ContentManager\Model\Entity\Page();
+        $p2 = new \Cx\Core\ContentManager\Model\Entity\Page();
 
         $p1->setNode($node);
         $p2->setNode($node);
 
         $p1->setLang(1);
         $p1->setTitle('testpage');
-        $p1->setUsername('user');
 
         $p2->setLang(2);
         $p2->setTitle('testpage2');
-        $p2->setUsername('user');
 
         self::$em->persist($root);
         self::$em->persist($node);

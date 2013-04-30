@@ -1,19 +1,19 @@
 <?php
 use Doctrine\Common\Util\Debug as DoctrineDebug;
 
-include_once('../testCases/DoctrineTestCase.php');
+include_once(ASCMS_TEST_PATH.'/testCases/DoctrineTestCase.php');
 
 class PageRepositoryTest extends DoctrineTestCase
 {
     public function testTreeByTitle() {
         $repo = self::$em->getRepository('Cx\Model\ContentManager\Page');
         
-        $root = new \Cx\Model\ContentManager\Node();
-        $n1 = new \Cx\Model\ContentManager\Node();
-        $n2 = new \Cx\Model\ContentManager\Node();
-        $n3 = new \Cx\Model\ContentManager\Node();
-        $n4 = new \Cx\Model\ContentManager\Node();
-        $n5 = new \Cx\Model\ContentManager\Node();
+        $root = new \Cx\Core\ContentManager\Model\Entity\Node();
+        $n1 = new \Cx\Core\ContentManager\Model\Entity\Node();
+        $n2 = new \Cx\Core\ContentManager\Model\Entity\Node();
+        $n3 = new \Cx\Core\ContentManager\Model\Entity\Node();
+        $n4 = new \Cx\Core\ContentManager\Model\Entity\Node();
+        $n5 = new \Cx\Core\ContentManager\Model\Entity\Node();
 
         $n1->setParent($root);
         $n2->setParent($n1);
@@ -21,43 +21,43 @@ class PageRepositoryTest extends DoctrineTestCase
         $n4->setParent($n3);
         $n5->setParent($n3);        
 
-        $p1 = new \Cx\Model\ContentManager\Page();     
+        $p1 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p1->setLang(1);
         $p1->setTitle('rootTitle_1');
         $p1->setNode($n1);
         $p1->setUsername('user');
 
-        $p2 = new \Cx\Model\ContentManager\Page();     
+        $p2 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p2->setLang(2);
         $p2->setTitle('rootTitle_1');
         $p2->setNode($n1);
         $p2->setUsername('user');
 
-        $p3 = new \Cx\Model\ContentManager\Page();     
+        $p3 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p3->setLang(3);
         $p3->setTitle('rootTitle_2');
         $p3->setNode($n1);
         $p3->setUsername('user');
 
-        $p4 = new \Cx\Model\ContentManager\Page();     
+        $p4 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p4->setLang(3);
         $p4->setTitle('childTitle');
         $p4->setNode($n2);
         $p4->setUsername('user');
 
-        $p5 = new \Cx\Model\ContentManager\Page();     
+        $p5 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p5->setLang(1);
         $p5->setTitle('otherRootChild');
         $p5->setNode($n3);
         $p5->setUsername('user');
 
-        $p6 = new \Cx\Model\ContentManager\Page();     
+        $p6 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p6->setLang(1);
         $p6->setTitle('partialFetchTarget1');
         $p6->setNode($n4);
         $p6->setUsername('user');
 
-        $p7 = new \Cx\Model\ContentManager\Page();     
+        $p7 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p7->setLang(1);
         $p7->setTitle('partialFetchTarget2');
         $p7->setNode($n5);
@@ -110,41 +110,41 @@ class PageRepositoryTest extends DoctrineTestCase
     public function testPagesAtPath() {
         $repo = self::$em->getRepository('Cx\Model\ContentManager\Page');
 
-        $root = new \Cx\Model\ContentManager\Node();
+        $root = new \Cx\Core\ContentManager\Model\Entity\Node();
 
-        $n1 = new \Cx\Model\ContentManager\Node(); 
-        $n2 = new \Cx\Model\ContentManager\Node();
-        $n3 = new \Cx\Model\ContentManager\Node();
+        $n1 = new \Cx\Core\ContentManager\Model\Entity\Node(); 
+        $n2 = new \Cx\Core\ContentManager\Model\Entity\Node();
+        $n3 = new \Cx\Core\ContentManager\Model\Entity\Node();
 
         $n1->setParent($root);
         $n2->setParent($n1);
         $n3->setParent($root);
 
-        $p1 = new \Cx\Model\ContentManager\Page();     
+        $p1 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p1->setLang(1);
         $p1->setTitle('rootTitle_1');
         $p1->setNode($n1);
         $p1->setUsername('user');
 
-        $p2 = new \Cx\Model\ContentManager\Page();     
+        $p2 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p2->setLang(2);
         $p2->setTitle('rootTitle_1');
         $p2->setNode($n1);
         $p2->setUsername('user');
 
-        $p3 = new \Cx\Model\ContentManager\Page();     
+        $p3 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p3->setLang(3);
         $p3->setTitle('rootTitle_2');
         $p3->setNode($n1);
         $p3->setUsername('user');
 
-        $p4 = new \Cx\Model\ContentManager\Page();     
+        $p4 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p4->setLang(3);
         $p4->setTitle('childTitle');
         $p4->setNode($n2);
         $p4->setUsername('user');
 
-        $p5 = new \Cx\Model\ContentManager\Page();     
+        $p5 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p5->setLang(1);
         $p5->setTitle('otherRootChild');
         $p5->setNode($n3);
@@ -216,9 +216,9 @@ class PageRepositoryTest extends DoctrineTestCase
     public function testGetFromModuleCmdByLang() {
         $repo = self::$em->getRepository('Cx\Model\ContentManager\Page');
         
-        $n1 = new \Cx\Model\ContentManager\Node();
+        $n1 = new \Cx\Core\ContentManager\Model\Entity\Node();
 
-        $p1 = new \Cx\Model\ContentManager\Page();     
+        $p1 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p1->setLang(1);
         $p1->setTitle('rootTitle_1');
         $p1->setNode($n1);
@@ -226,7 +226,7 @@ class PageRepositoryTest extends DoctrineTestCase
         $p1->setModule('myModule');
         $p1->setCmd('cmd1');
 
-        $p2 = new \Cx\Model\ContentManager\Page();     
+        $p2 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p2->setLang(2);
         $p2->setTitle('rootTitle_1');
         $p2->setNode($n1);
@@ -235,7 +235,7 @@ class PageRepositoryTest extends DoctrineTestCase
         $p2->setCmd('cmd1');
 
 
-        $p3 = new \Cx\Model\ContentManager\Page();     
+        $p3 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p3->setLang(3);
         $p3->setTitle('rootTitle_2');
         $p3->setNode($n1);
@@ -276,14 +276,13 @@ class PageRepositoryTest extends DoctrineTestCase
     }
 
     public function testGetURL() {
-        $root = new \Cx\Model\ContentManager\Node();
-        $n1 = new \Cx\Model\ContentManager\Node();
+        $root = new \Cx\Core\ContentManager\Model\Entity\Node();
+        $n1 = new \Cx\Core\ContentManager\Model\Entity\Node();
         $n1->setParent($root);
-        $p1 = new \Cx\Model\ContentManager\Page();     
+        $p1 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p1->setLang(1);
         $p1->setTitle('root');
         $p1->setNode($n1);
-        $p1->setUsername('user');
         self::$em->persist($root);
         self::$em->persist($n1);
         self::$em->persist($p1);
@@ -300,24 +299,22 @@ class PageRepositoryTest extends DoctrineTestCase
     }
 
     public function testGetPathToPage() {
-        $root = new \Cx\Model\ContentManager\Node();
+        $root = new \Cx\Core\ContentManager\Model\Entity\Node();
 
-        $n1 = new \Cx\Model\ContentManager\Node();
+        $n1 = new \Cx\Core\ContentManager\Model\Entity\Node();
         $n1->setParent($root);
-        $n2 = new \Cx\Model\ContentManager\Node();
+        $n2 = new \Cx\Core\ContentManager\Model\Entity\Node();
         $n2->setParent($n1);
 
-        $p1 = new \Cx\Model\ContentManager\Page();     
+        $p1 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p1->setLang(1);
         $p1->setTitle('root');
         $p1->setNode($n1);
-        $p1->setUsername('user');
 
-        $p2 = new \Cx\Model\ContentManager\Page();     
+        $p2 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p2->setLang(1);
         $p2->setTitle('child page');
         $p2->setNode($n2);
-        $p2->setUsername('user');
 
         self::$em->persist($root);
 
@@ -342,24 +339,22 @@ class PageRepositoryTest extends DoctrineTestCase
     }
     
     public function testTranslate() {
-        $root = new \Cx\Model\ContentManager\Node();
+        $root = new \Cx\Core\ContentManager\Model\Entity\Node();
 
-        $n1 = new \Cx\Model\ContentManager\Node();
+        $n1 = new \Cx\Core\ContentManager\Model\Entity\Node();
         $n1->setParent($root);
-        $n2 = new \Cx\Model\ContentManager\Node();
+        $n2 = new \Cx\Core\ContentManager\Model\Entity\Node();
         $n2->setParent($n1);
 
-        $p1 = new \Cx\Model\ContentManager\Page();     
+        $p1 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p1->setLang(1);
         $p1->setTitle('root');
         $p1->setNode($n1);
-        $p1->setUsername('user');
 
-        $p2 = new \Cx\Model\ContentManager\Page();     
+        $p2 = new \Cx\Core\ContentManager\Model\Entity\Page();     
         $p2->setLang(1);
         $p2->setTitle('child page');
         $p2->setNode($n2);
-        $p2->setUsername('user');
 
         self::$em->persist($root);
 

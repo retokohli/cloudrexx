@@ -1,5 +1,5 @@
 <?php
-include_once('../testCases/ContrexxTestCase.php');
+include_once(ASCMS_TEST_PATH.'/testCases/ContrexxTestCase.php');
 include_once(ASCMS_CORE_PATH.'/LinkSanitizer.class.php');
 
 class LinkSanitizerTest extends ContrexxTestCase {

@@ -18,7 +18,8 @@ $cl->loadFile($documentRoot.'/core/API.php');
 $db = new \Cx\Core\Db\Db();
 $objDatabase = $db->getAdoDb();
 \Env::set('db', $objDatabase);
-include($documentRoot.'/config/doctrine.php');
+$em = $db->getEntityManager();
+\Env::set('em', $em);
 
 
 include('PHPUnit/phpunit.php');
