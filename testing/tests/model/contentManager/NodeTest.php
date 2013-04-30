@@ -32,7 +32,7 @@ class NodeTest extends DoctrineTestCase
 
         self::$em->clear();
 
-        $r = self::$em->getRepository('Cx\Model\ContentManager\Page');
+        $r = self::$em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
         $p = $r->find($id);
 
         $pages = $p->getNode()->getPagesByLang();

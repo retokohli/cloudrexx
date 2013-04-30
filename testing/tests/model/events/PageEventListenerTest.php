@@ -77,7 +77,7 @@ class PageEventListenerTest extends DoctrineTestCase
        
         self::$em->clear();
 
-        $node = self::$em->find('Cx\Model\ContentManager\Node', $id);
+        $node = self::$em->find('Cx\Core\ContentManager\Model\Entity\Node', $id);
 
         //provocate a slug conflict
         $p2 = new \Cx\Core\ContentManager\Model\Entity\Page();
@@ -137,8 +137,8 @@ class PageEventListenerTest extends DoctrineTestCase
 
         $this->assertEquals('testpage', $p1->getSlug());
 
-        $p1 = self::$em->find('Cx\Model\ContentManager\Page', $idp1);
-        $n2 = self::$em->find('Cx\Model\ContentManager\Node', $idn2);
+        $p1 = self::$em->find('Cx\Core\ContentManager\Model\Entity\Page', $idp1);
+        $n2 = self::$em->find('Cx\Core\ContentManager\Model\Entity\Node', $idn2);
 
         //shouldn't provocate a slug conflict, since we delete the other page below
         $p2 = new \Cx\Core\ContentManager\Model\Entity\Page();
