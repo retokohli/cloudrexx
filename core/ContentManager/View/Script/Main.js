@@ -628,6 +628,7 @@ cx.cm = function(target) {
         if (!cx.cm.validateFields()) {
             return false;
         }
+        jQuery('#cm_ckeditor').val(CKEDITOR.instances.cm_ckeditor.getData());
         jQuery.post('index.php?cmd=jsondata&object=page&act=set', jQuery('#cm_page').serialize(), function(response) {
             if (response.data != null) {
                 if (jQuery('#historyConatiner').html() != '') {
