@@ -597,7 +597,7 @@ namespace Cx\Core {
                 'METAKEYS'                       => $page_keywords,
                 'METADESC'                       => $page_desc,
                 'METAROBOTS'                     => $page_robots,
-                'CONTENT_TITLE'                  => '<span id="fe_PreviewTitle">'.$page_title.'</span>',
+                'CONTENT_TITLE'                  => $page_title,
                 'CSS_NAME'                       => $pageCssName,
                 'STANDARD_URL'                   => $objInit->getUriBy('smallscreen', 0),
                 'MOBILE_URL'                     => $objInit->getUriBy('smallscreen', 1),

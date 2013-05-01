@@ -17,17 +17,7 @@ cx.fe.addCustomPlugins = function () {
             var pluginName = 'Publish';
             editor.addCommand(pluginName, {
                 exec: function (editor) {
-                    cx.fe.page.title = CKEDITOR.instances.fe_title.getData();
-                    cx.fe.page.content = CKEDITOR.instances.fe_content.getData();
-                    cx.fe.page.scheduled_publishing = (cx.fe.page.scheduled_publishing ? 'on' : 'off');
-                    cx.fe.page.application = cx.fe.page.module;
-                    jQuery.post(cx.variables.get('basePath', 'contrexx') + 'cadmin/index.php?cmd=jsondata&object=page&act=set', {
-                        'action': 'publish',
-                        'page': cx.fe.page
-                    }, function(response) {
-                        if (response.data != null) {
-                        }
-                    });
+                    cx.fe.publishPage();
                 }
             });
 
@@ -45,16 +35,7 @@ cx.fe.addCustomPlugins = function () {
             var pluginName = 'Save';
             editor.addCommand(pluginName, {
                 exec: function (editor) {
-                    cx.fe.page.title = CKEDITOR.instances.fe_title.getData();
-                    cx.fe.page.content = CKEDITOR.instances.fe_content.getData();
-                    cx.fe.page.scheduled_publishing = (cx.fe.page.scheduled_publishing ? 'on' : 'off');
-                    cx.fe.page.application = cx.fe.page.module;
-                    jQuery.post(cx.variables.get('basePath', 'contrexx') + 'cadmin/index.php?cmd=jsondata&object=page&act=set', {
-                        'page': cx.fe.page
-                    }, function(response) {
-                        if (response.data != null) {
-                        }
-                    });
+                    cx.fe.savePage();
                 }
             });
 
