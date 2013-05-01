@@ -839,20 +839,22 @@ class JsonPage implements JsonAdapter {
         $logs         = $this->logRepo->getLogEntries($page);
         
         //(V) add the history entries
-        $row = 0;
         $logCount = count($logs);
+        $row = 0;
         // Paging:
         $offset = !empty($params['get']['pos']) ? $params['get']['pos'] : 0;
         $numberOfEntries = $_CONFIG['corePagingLimit'];
-        for ($i = 0; $i < $logCount; $i++) {
-            if ($offset > $i) {
+        $i = 0;
+        foreach ($logs as $index => $log){
+            if ($offset > $index) {
+                $i++;
                 continue;
             }
             if ($i >= ($numberOfEntries + $offset)) {
                 continue;
             }
-            if (isset($logs[$i + 1])) {
-                $data = $logs[$i]->getData();
+            if (isset($logs[$index + 1])) {
+                $data = $logs[$index]->getData();
                 $nextData = $logs[$i + 1]->getData();
                 if (isset($nextData['editingStatus']) && ($nextData['editingStatus'] == 'hasDraft' || $nextData['editingStatus'] == 'hasDraftWaiting')) {
                     if (!isset($data['editingStatus']) || ($data['editingStatus'] != 'hasDraft' && $data['editingStatus'] != 'hasDraftWaiting')) {
@@ -861,13 +863,14 @@ class JsonPage implements JsonAdapter {
                 }
             }
             
-            $version = $logs[$i]->getVersion();
+            $version = $logs[$index]->getVersion();
+            $i++;
             $row++;
-            $user = json_decode($logs[$i]->getUsername());
+            $user = json_decode($logs[$index]->getUsername());
             $username = $user->{'name'};
             try {
                 $this->logRepo->revert($page, $version);
-                $page->setUpdatedAt($logs[$i]->getLoggedAt());
+                $page->setUpdatedAt($logs[$index]->getLoggedAt());
 
                 $this->addHistoryEntries($page, $username, $table, $row, $version, $langDir . '/' . $path, $pageHasDraft);
             } catch (\Gedmo\Exception\UnexpectedValueException $e) {
@@ -875,7 +878,7 @@ class JsonPage implements JsonAdapter {
             }
         }
         // Add paging widget:
-        $paging = '<div id="history_paging">' . getPaging($row, $offset, '?cmd=content&page=16&tab=history', 'Einträge', true) . '</div>';
+        $paging = '<div id="history_paging">' . getPaging($logCount, $offset, '?cmd=content&page=16&tab=history', 'Einträge', true, $row) . '</div>';
 
         //(VI) render
         die($table->toHtml() . $paging);
@@ -889,7 +892,7 @@ class JsonPage implements JsonAdapter {
         $tableStyle  = '';
 
         if ($row == 1) {
-            $tableStyle  = 'style="display: none;"';
+            //$tableStyle  = 'style="display: none;"';
             if ($pageHasDraft) {
                 $dateString .= ' (' . $_ARRAYLANG['TXT_CORE_DRAFT'] . ')';
             }
