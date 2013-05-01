@@ -7,6 +7,9 @@
     width: 100%;
     height: 53px;
     background: #0873bb url(../../../../../cadmin/template/ascms/images/gradient.jpg) left top repeat-y;
+    -moz-box-shadow: 0px 0 9px #0c8ccd;
+    -webkit-box-shadow: 0px 0 9px #0c8ccd;
+    box-shadow: 0px 0 9px #0c8ccd;
 }
 
 #fe_toolbar_logo {
@@ -77,7 +80,7 @@
     font-size: 12px;
 }
 
-#fe_metanavigation a {
+#fe_metanavigation>a {
     float: left;
     padding: 0 0 0 17px;
     margin: 0 0 0 20px;
@@ -89,15 +92,34 @@
     margin: 0;
 }
 
-#fe_metanavigation a:hover,
-#fe_metanavigation a:focus,
-#fe_metanavigation a:active {
+#fe_metanavigation>a:hover,
+#fe_metanavigation>a:focus,
+#fe_metanavigation>a:active {
     color: #ffffff;
 }
 
-#fe_license-upgrade {
+#fe_metanavigation #fe_license-upgrade {
     padding-left: 18px;
     background: url(../../../../../cadmin/template/ascms/images/metanavigation_upgrade.png) no-repeat;
+}
+
+#fe_metanavigation #fe_history_box_anchor {
+    float: left;
+    position: relative;
+    padding-left: 21px;
+    background: url(../Media/toolbar-history.png) no-repeat;
+    margin: 0 0 0 20px;
+    color: #c5dbe8;
+    line-height: normal;
+}
+
+#fe_metanavigation #fe_history_box_anchor>a {
+    color: #c5dbe8;
+}
+
+#fe_metanavigation #fe_history_box_anchor>a:hover,
+#fe_metanavigation #fe_history_box_anchor:hover>a {
+    color: #fff;
 }
 
 #fe_metanavigation a.backend {
@@ -112,6 +134,45 @@
 #fe_metanavigation a.logout {
     padding-left: 16px;
     background: url(../../../../../cadmin/template/ascms/images/logout_icon.png) no-repeat;
+}
+
+#fe_history_box {
+    display: block;
+    position: absolute;
+    top: 45px;
+    left: -232px;
+    width: 550px;
+    background: #fff;
+    padding: 5px;
+    color: #000;
+    border: 2px #0f9bd8 solid;
+}
+
+#fe_history_arrow {
+    display: block;
+    position: absolute;
+    top: 19px;
+    left: 8px;
+    width: 51px;
+    height: 26px;
+    background: url("../Media/toolbar-history_arrow.png");
+}
+
+#fe_history_box .adminlist th {
+    height: 29px;
+    line-height: 29px;
+}
+
+#fe_history_box .historyLoad {
+    float: right;
+    padding: 0 15px 0 20px;
+    background: url(../Media/Restore.png) no-repeat left center;
+}
+
+#fe_history_box .historyPreview {
+    float: right;
+    padding: 0 0 0 18px;
+    background: url(../Media/Preview.png) no-repeat left center;
 }
 
 
@@ -175,4 +236,69 @@
 
 .warningbox a, #warningbox a {
     color: #DB7A0A;
+}
+
+/* jquery ui css customization */
+.ui-dialog.cxDialog {
+    position: fixed;
+    top: 0;
+    z-index: 2000000 !important;
+    border-top: 0;
+    border-right: 1px solid #0a85c8;
+    border-bottom: 1px solid #0a85c8;
+    border-left: 1px solid #0a85c8;
+    border-radius: 0;
+    text-align: center;
+    font-size: 13px;
+}
+
+.ui-dialog.noTitle .ui-dialog-titlebar {
+    display: none;
+}
+.ui-dialog .error {
+    color: #ff0000;
+}
+.ui-dialog .warning {
+    color: #DB7A0A;
+}
+.ui-dialog #loading {
+    float: none;
+    margin: 0 auto;
+    width: 95px !important;
+    height: 16px !important;
+}
+.ui-dialog #loading img {
+    float: left;
+}
+.ui-dialog #loading span {
+    float: left;
+    margin: 0 0 0 5px;
+    line-height: 16px;
+}
+
+.ui-tabs {
+    position: static !important;
+    border: 0 !important;
+    border-radius: 0 !important;
+    padding: 0 !important;
+}
+.ui-tabs-nav {
+    border: 0 !important;
+    margin: 0 !important;
+}
+.ui-tabs-panel {
+    padding: 0 !important;
+}
+
+.ui-widget-content a,
+.ui-widget-content a:link,
+.ui-widget-content a:visited {
+    color: #1a74bd;
+}
+
+.ui-widget-content a:hover,
+.ui-widget-content a:focus,
+.ui-widget-content a:active {
+    color: #0b4c7a;
+    cursor: pointer;
 }

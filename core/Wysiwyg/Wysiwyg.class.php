@@ -96,7 +96,7 @@ class Wysiwyg
             }
 
             if ($this->mode != 'forum') {
-                $arrCKEditorGlobalOptions[] = "CKEDITOR.config.removePlugins = 'bbcode';";
+                $this->mode = "CKEDITOR.config.extraPlugins = 'bbcode';";
             }
 
             $onReady[0] = sprintf($onReady[0], implode(",\n", $arrCKEditorOptions));

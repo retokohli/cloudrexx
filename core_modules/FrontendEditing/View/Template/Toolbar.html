@@ -3,8 +3,12 @@
     <div id="fe_toolbar_logo"></div>
     <div id="fe_toolbar_tab"></div>
     <div id="fe_metanavigation">
+        <div id="fe_history_box_anchor"><a href="#">{TXT_FRONTEND_EDITING_HISTORY}</a>
+            <div id="fe_history_arrow"></div>
+            <div id="fe_history_box"></div>
+        </div>
         <!-- BEGIN upgradable -->
-        <a id="fe_license-upgrade" class="first" href="{LINK_LICENSE}" target="_self">{TXT_UPGRADE}</a>
+        <a id="fe_license-upgrade" href="{LINK_LICENSE}" target="_self">{TXT_UPGRADE}</a>
         <!-- END upgradable -->
         <a class="backend" href="{LINK_CM}">{TXT_FRONTEND_EDITING_TOOLBAR_OPEN_CM}</a>
         <a class="profile" href="{LINK_PROFILE}">{LOGGED_IN_USER}</a>
@@ -12,7 +16,6 @@
     </div>
     <div id="fe_toolbar_status">
         <a href="#" id="fe_toolbar_startEditMode"></a>
-        <div id="fe_toolbar_status_message"></div>
     </div>
 </div>
 <!-- END coreModule_frontendEditing_toolbar.html -->

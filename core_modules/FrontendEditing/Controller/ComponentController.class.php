@@ -46,12 +46,13 @@ class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponen
         }
 
         // check permission and frontend editing status
-        if (   $cx->getUser()->objUser->getAdminStatus()
+        if (($cx->getUser()->objUser->getAdminStatus()
             || (   $_CONFIG['frontendEditingStatus'] == 'on'
                 && \Permission::checkAccess(6, 'static', true)
                 && \Permission::checkAccess(35, 'static', true)
                 && (   !$cx->getPage()->isBackendProtected()
-                    || Permission::checkAccess($cx->getPage()->getId(), 'page_backend', true)))
+                    || Permission::checkAccess($cx->getPage()->getId(), 'page_backend', true))))
+            && $cx->getPage()->getType() == 'content'
         ) {
             return true;
         }

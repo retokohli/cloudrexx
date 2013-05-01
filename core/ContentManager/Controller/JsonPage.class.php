@@ -843,7 +843,7 @@ class JsonPage implements JsonAdapter {
         $row = 0;
         // Paging:
         $offset = !empty($params['get']['pos']) ? $params['get']['pos'] : 0;
-        $numberOfEntries = $_CONFIG['corePagingLimit'];
+        $numberOfEntries = !empty($params['get']['limit']) ? $params['get']['limit'] : $_CONFIG['corePagingLimit'];
         $i = 0;
         foreach ($logs as $index => $log){
             if ($offset > $index) {

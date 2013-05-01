@@ -50,7 +50,8 @@ class FrontendController
             'TXT_FRONTEND_EDITING_SAVE'         => $_ARRAYLANG['TXT_FRONTEND_EDITING_SAVE'],
             'TXT_FRONTEND_EDITING_EDIT'         => $_ARRAYLANG['TXT_FRONTEND_EDITING_EDIT'],
             'TXT_FRONTEND_EDITING_STOP_EDIT'    => $_ARRAYLANG['TXT_FRONTEND_EDITING_STOP_EDIT'],
-            'TXT_FRONTEND_EDITING_HAS_DRAFT'    => sprintf($_ARRAYLANG['TXT_FRONTEND_EDITING_HAS_DRAFT'], '<a id="fe_toolbar_load_draft">' . $_ARRAYLANG['TXT_FRONTEND_EDITING_HAS_DRAFT_LOAD'] . '</a>'),
+            'TXT_FRONTEND_EDITING_THE_DRAFT'    => $_ARRAYLANG['TXT_FRONTEND_EDITING_THE_DRAFT'],
+            'TXT_FRONTEND_EDITING_SAVE_CURRENT_STATE'    => $_ARRAYLANG['TXT_FRONTEND_EDITING_SAVE_CURRENT_STATE'],
         );
 
         // add toolbar to html
@@ -60,6 +61,7 @@ class FrontendController
         $ContrexxJavascript = \ContrexxJavascript::getInstance();
         $ContrexxJavascript->setVariable('langVars', $langVariables, 'frontendEditing');
         $ContrexxJavascript->setVariable('pageId', $page->getId(), 'frontendEditing');
+        $ContrexxJavascript->setVariable('hasPublishPermission', \Permission::checkAccess(35, 'static', true), 'frontendEditing');
 
         $configPath = ASCMS_PATH_OFFSET.substr(\Env::get('ClassLoader')->getFilePath(ASCMS_CORE_PATH.'/Wysiwyg/ckeditor.config.js.php'), strlen(ASCMS_DOCUMENT_ROOT));
         $ContrexxJavascript->setVariable('configPath', $configPath."?langId=".FRONTEND_LANG_ID, 'frontendEditing');
@@ -85,6 +87,7 @@ class FrontendController
             'LOGGED_IN_USER'                        => !empty($firstname) && !empty($lastname) ? $firstname . ' ' . $lastname : $objUser->getUsername(),
             'TXT_LOGOUT'                            => $_ARRAYLANG['TXT_FRONTEND_EDITING_TOOLBAR_LOGOUT'],
             'TXT_FRONTEND_EDITING_TOOLBAR_OPEN_CM'  => $_ARRAYLANG['TXT_FRONTEND_EDITING_TOOLBAR_OPEN_CM'],
+            'TXT_FRONTEND_EDITING_HISTORY'          => $_ARRAYLANG['TXT_FRONTEND_EDITING_HISTORY'],
             'LINK_LOGOUT'                           => $objInit->getUriBy('section', 'logout'),
             'LINK_PROFILE'                          => ASCMS_PATH_OFFSET . '/cadmin/index.php?cmd=access&amp;act=user&amp;tpl=modify&amp;id=' . $objUser->getId(),
             'LINK_CM'                               => ASCMS_PATH_OFFSET . '/cadmin/index.php?cmd=content&amp;page=' . $page->getId() . '&amp;tab=content',
