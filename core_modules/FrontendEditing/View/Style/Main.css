@@ -46,7 +46,11 @@
 }
 
 .cke_button_publish {
-    background: url(../Media/ckeditor-publish-icon.png) no-repeat 6px 5px !important;
+    background: url(../Media/ckeditor-publish-icon.png) no-repeat -26px 1px !important;
+}
+
+.cke_button_save {
+    background: url(../Media/ckeditor-save-icon.png) no-repeat 6px 5px !important;
 }
 
 #fe_toolbar_status {
