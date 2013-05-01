@@ -840,9 +840,9 @@ class ContentMigration
                         \Cx\Lib\UpdateUtil::table(
                             DBPREFIX.'module_block_rel_pages',
                             array(
-                                'block_id'       => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0', 'primary' => true),
-                                'page_id'        => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0', 'after' => 'block_id', 'primary' => true),
-                                'placeholder'    => array('type' => 'ENUM(\'global\',\'direct\',\'category\')', 'notnull' => true, 'default' => 'global', 'after' => 'page_id', 'primary' => true)
+                                'block_id'       => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0'),
+                                'page_id'        => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0', 'after' => 'block_id'),
+                                'placeholder'    => array('type' => 'ENUM(\'global\',\'direct\',\'category\')', 'notnull' => true, 'default' => 'global', 'after' => 'page_id')
                             )
                         );
                     }
@@ -902,7 +902,15 @@ class ContentMigration
                         )
                     );
                 }
-
+                // add primary key after migration
+                \Cx\Lib\UpdateUtil::table(
+                    DBPREFIX.'module_block_rel_pages',
+                    array(
+                        'block_id'       => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0', 'primary' => true),
+                        'page_id'        => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0', 'after' => 'block_id', 'primary' => true),
+                        'placeholder'    => array('type' => 'ENUM(\'global\',\'direct\',\'category\')', 'notnull' => true, 'default' => 'global', 'after' => 'page_id', 'primary' => true)
+                    )
+                );
                 $_SESSION['contrexx_update']['blocks_part_2_migrated'] = true;
             }
 
