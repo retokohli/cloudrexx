@@ -2238,7 +2238,6 @@ cx.cm.createEditor = function() {
             toolbar: 'Full',
             skin: 'moono'
         };
-        CKEDITOR.config.removePlugins = 'bbcode';
         CKEDITOR.replace('page[content]', config);
 
         cx.cm.resizeEditorHeight();
@@ -2703,7 +2702,12 @@ cx.cm.updateHistoryTableHighlighting = function() {
         }
     });
     if (!hasHidden) {
-        jQuery('.historyLoad, .historyPreview').first().parent().children().hide();
+        if (jQuery('#load_' + (version - 1)).length > 0) {
+            jQuery('#load_' + (version - 1)).hide();
+        }
+        if (jQuery('#preview_' + (version - 1)).length > 0) {
+            jQuery('#preview_' + (version - 1)).hide();
+        }
     }
 }
 
