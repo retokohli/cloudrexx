@@ -160,7 +160,7 @@ class ComponentHandler {
     public function loadComponent(\Cx\Core\Cx $cx, $componentName, \Cx\Core\ContentManager\Model\Entity\Page $page = null) {
         if ($this->checkLegacy('load', $componentName)) {
             \DBG::msg('This is a legacy component (' . $componentName . '), load via LegacyComponentHandler');
-            throw new ComponentException('This is a legacy component(' . $componentName . '), load via LegacyComponentHandler!');
+            return;
         }
         $component = $this->systemComponentRepo->findOneBy(array('name'=>$componentName));
         if (!$component) {
