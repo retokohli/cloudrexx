@@ -1,25 +1,18 @@
 <?php
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * This is the superclass for all main Controllers for a Component
+ * Every component needs a ComponentController for initialization
+ * @author Michael Ritter <michael.ritter@comvation.com>
  */
 namespace Cx\Core\Component\Model\Entity;
+
 /**
- * Description of SystemComponentController
- *
- * @author ritt0r
+ * This is the superclass for all main Controllers for a Component
+ * Every component needs a ComponentController for initialization
+ * @author Michael Ritter <michael.ritter@comvation.com>
  */
-abstract class SystemComponentController {
-    protected $systemComponent;
-    
-    public function __construct(\Cx\Core\Component\Model\Entity\SystemComponent $systemComponent) {
-        $this->systemComponent = $systemComponent;
-    }
-    
-    public function __call($methodName, $arguments) {
-        return call_user_func(array($this->systemComponent, $methodName), $arguments);
-    }
+abstract class SystemComponentController extends Controller {
     
     /**
      * Do something before resolving is done
