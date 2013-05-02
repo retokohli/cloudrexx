@@ -1191,7 +1191,15 @@ class LegacyComponentHandler {
                     },*/
                 ),
                 'load' => array(
-
+                    'shop' => function() {
+                        global $cl, $_CORELANG, $objTemplate, $page_content, $boolShop, $_ARRAYLANG, $objInit, $plainSection;
+                        
+                        $_ARRAYLANG = $objInit->loadLanguageData($plainSection);
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/shop/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objTemplate->setVariable('CONTENT_TEXT', \Shop::getPage($page_content));
+                        $boolShop = true;
+                    }
                 ),
             ),
             'backend' => array(
