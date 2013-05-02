@@ -55,7 +55,7 @@ class Toolbox {
                         'type' => $res->fields['is_core'],
                         'exists_db' => 'true',
                         'exists_filesystem' => $fsExists,
-                        'style' => $this->getComponentStyle(
+                        'skeleton_version' => $this->getComponentStyle(
                             $res->fields['is_core'],
                             $res->fields['name']
                         ),
@@ -77,8 +77,35 @@ class Toolbox {
                             $type,
                             $name
                         ),
-                        'style' => '3.1.0',
+                    	'skeleton_version' => '3.1.0',
                     );
+                }
+                foreach (array(
+                	ASCMS_CORE_FOLDER,
+                	ASCMS_CORE_MODULE_FOLDER,
+                	ASCMS_MODULE_FOLDER,
+                ) as $basedir) {
+	                $dh = opendir(ASCMS_DOCUMENT_ROOT . $basedir);
+	                while ($file = readdir($dh)) {
+	                	if (substr($file, 0, 1) == '.') {
+	                		continue;
+	                	}
+	                	if (!is_dir(ASCMS_DOCUMENT_ROOT . $basedir . '/' . $file)) {
+	                		continue;
+	                	}
+	                	if (isset($modules[$file])) {
+	                		continue;
+	                	}
+	                    $modules[$file] = array(
+	                        'id' => '<span style="color:red;">(none)</span>',
+	                        'name' => $file,
+	                        'type' => preg_replace('/s/', '', substr(strtolower($basedir), 1)),
+	                        'exists_db' => '<span style="color:red;">false</span>',
+	                        'exists_filesystem' => '.' . $basedir . '/' . $file,
+	                    	'skeleton_version' => '<span style="color:red;">&lt;= 2.2.6</span>',
+	                    );
+	                }
+	                closedir($dh);
                 }
                 // add all not-yet-listed components existing in filesystem
                 $table = new \BackendTable(new \Cx\Core_Modules\Listing\Model\Entity\DataSet($modules));
@@ -92,6 +119,7 @@ class Toolbox {
     
     protected function componentExistsInFileSystem(&$type, &$name) {
         $path = ASCMS_MODULE_FOLDER;
+        $name = preg_replace('/[0-9]$/', '', $name);
         if ($type === '1' || $type == 'core' || $type == 'core_module') {
             $type = 'core_module';
             $path = ASCMS_CORE_MODULE_FOLDER;
@@ -103,34 +131,34 @@ class Toolbox {
         }
         $path .= '/';
         if (is_dir(ASCMS_CUSTOMIZING_PATH . $path . $name)) {
-            return 'customizing';
+            return './customizing' . $path . $name;
         } else if (is_dir(ASCMS_DOCUMENT_ROOT . $path . $name)) {
-            return 'true';
+            return '.' . $path . $name;
         }
         if (is_dir(ASCMS_CUSTOMIZING_PATH . $path . ucfirst($name))) {
             $name = ucfirst($name);
-            return 'customizing';
+            return './customizing' . $path . ucfirst($name);
         } else if (is_dir(ASCMS_DOCUMENT_ROOT . $path . ucfirst($name))) {
             $name = ucfirst($name);
-            return 'true';
+            return '.' . $path . ucfirst($name);
         }
         if ($type == 'core_module') {
             $path = ASCMS_CORE_FOLDER . '/';
             if (is_dir(ASCMS_CUSTOMIZING_PATH . $path . $name)) {
                 $type = 'core';
-                return 'customizing';
+                return './customizing' . $path . ucfirst($name);
             } else if (is_dir(ASCMS_DOCUMENT_ROOT . $path . $name)) {
                 $type = 'core';
-                return 'true';
+	            return '.' . $path . ucfirst($name);
             }
             if (is_dir(ASCMS_CUSTOMIZING_PATH . $path . ucfirst($name))) {
                 $name = ucfirst($name);
                 $type = 'core';
-                return 'customizing';
+                return './customizing' . $path . ucfirst($name);
             } else if (is_dir(ASCMS_DOCUMENT_ROOT . $path . ucfirst($name))) {
                 $name = ucfirst($name);
                 $type = 'core';
-                return 'true';
+	            return '.' . $path . ucfirst($name);
             }
         }
         return '<span style="color:red;">false</span>';
