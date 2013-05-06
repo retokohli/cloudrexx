@@ -33,7 +33,7 @@ define('ASCMS_CONTENT_IMAGE_PATH',          ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOL
 define('ASCMS_CONTENT_IMAGE_WEB_PATH',      ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/content');
 define('ASCMS_FEED_PATH',                   ASCMS_DOCUMENT_ROOT.'/feed');
 define('ASCMS_FEED_WEB_PATH',               ASCMS_PATH_OFFSET.'/feed');
-define('ASCMS_FORUM_UPLOAD_PATH',           ASCMS_DOCUMENT_ROOT.'/media/forum/upload');
+define('ASCMS_FORUM_UPLOAD_PATH',           ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/media/forum/upload');
 define('ASCMS_FORUM_UPLOAD_WEB_PATH',       ASCMS_PATH_OFFSET.'/media/forum/upload');
 define('ASCMS_GALLERY_THUMBNAIL_WEB_PATH',  ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/gallery_thumbs');
 define('ASCMS_GALLERY_THUMBNAIL_PATH',      ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/gallery_thumbs');
@@ -43,16 +43,16 @@ define('ASCMS_GALLERY_WEB_PATH',            ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDE
 define('ASCMS_GALLERY_PATH',                ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/gallery');
 define('ASCMS_LANGUAGE_PATH',               ASCMS_DOCUMENT_ROOT.'/lang');
 define('ASCMS_LIBRARY_PATH',                ASCMS_DOCUMENT_ROOT.ASCMS_LIBRARY_FOLDER);
-define('ASCMS_MEDIA1_PATH',                 ASCMS_DOCUMENT_ROOT.'/media/archive1');
-define('ASCMS_MEDIA1_WEB_PATH',             ASCMS_PATH_OFFSET.'/media/archive1');
-define('ASCMS_MEDIA2_PATH',                 ASCMS_DOCUMENT_ROOT.'/media/archive2');
-define('ASCMS_MEDIA2_WEB_PATH',             ASCMS_PATH_OFFSET.'/media/archive2');
-define('ASCMS_MEDIA3_PATH',                 ASCMS_DOCUMENT_ROOT.'/media/archive3');
-define('ASCMS_MEDIA3_WEB_PATH',             ASCMS_PATH_OFFSET.'/media/archive3');
-define('ASCMS_MEDIA4_PATH',                 ASCMS_DOCUMENT_ROOT.'/media/archive4');
-define('ASCMS_MEDIA4_WEB_PATH',             ASCMS_PATH_OFFSET.'/media/archive4');
-define('ASCMS_MEDIA_PATH',                  ASCMS_DOCUMENT_ROOT.'/media');
-define('ASCMS_MEDIA_WEB_PATH',              ASCMS_PATH_OFFSET.'/media');
+define('ASCMS_MEDIA1_PATH',                 ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/media/archive1');
+define('ASCMS_MEDIA1_WEB_PATH',             ASCMS_INSTANCE_OFFSET.'/media/archive1');
+define('ASCMS_MEDIA2_PATH',                 ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/media/archive2');
+define('ASCMS_MEDIA2_WEB_PATH',             ASCMS_INSTANCE_OFFSET.'/media/archive2');
+define('ASCMS_MEDIA3_PATH',                 ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/media/archive3');
+define('ASCMS_MEDIA3_WEB_PATH',             ASCMS_INSTANCE_OFFSET.'/media/archive3');
+define('ASCMS_MEDIA4_PATH',                 ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/media/archive4');
+define('ASCMS_MEDIA4_WEB_PATH',             ASCMS_INSTANCE_OFFSET.'/media/archive4');
+define('ASCMS_MEDIA_PATH',                  ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/media');
+define('ASCMS_MEDIA_WEB_PATH',              ASCMS_INSTANCE_OFFSET.'/media');
 define('ASCMS_FILESHARING_PATH',            ASCMS_DOCUMENT_ROOT.'/media/filesharing');
 define('ASCMS_FILESHARING_WEB_PATH',        ASCMS_PATH_OFFSET.'/media/filesharing');
 define('ASCMS_MODULE_FOLDER',               '/modules');
@@ -87,16 +87,16 @@ define('ASCMS_ACCESS_PHOTO_IMG_PATH',       ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOL
 //define('ASCMS_THEMES_IMAGE_PATH',           ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/themes');
 //define('ASCMS_THEMES_IMAGE_WEB_PATH',       ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/themes');
 define('ASCMS_IMAGE_PATH',                  ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'');
-define('ASCMS_TEMP_PATH',                   ASCMS_DOCUMENT_ROOT.'/tmp');
-define('ASCMS_TEMP_WEB_PATH',               ASCMS_PATH_OFFSET.'/tmp');
+define('ASCMS_TEMP_PATH',                   ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/tmp');
+define('ASCMS_TEMP_WEB_PATH',               ASCMS_INSTANCE_OFFSET.'/tmp');
 define('ASCMS_DIR_PATH',                    ASCMS_DOCUMENT_ROOT.ASCMS_MODULE_FOLDER.'/directory');
 define('ASCMS_DIR_WEB_PATH',                ASCMS_PATH_OFFSET.ASCMS_MODULE_FOLDER.'/directory');
-define('ASCMS_DIRECTORY_FEED_PATH',         ASCMS_DOCUMENT_ROOT.'/media/directory/feeds');
+define('ASCMS_DIRECTORY_FEED_PATH',         ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/media/directory/feeds');
 define('ASCMS_DIRECTORY_FEED_WEB_PATH',     ASCMS_PATH_OFFSET.'/media/directory/feeds');
-define('ASCMS_MODULE_MEDIA_PATH',           ASCMS_DOCUMENT_ROOT.'/media/directory');
-define('ASCMS_MODULE_MEDIA_WEB_PATH',       ASCMS_PATH_OFFSET.'/media/directory');
-define('ASCMS_MARKET_MEDIA_PATH',           ASCMS_DOCUMENT_ROOT.'/media/market');
-define('ASCMS_MARKET_MEDIA_WEB_PATH',       ASCMS_PATH_OFFSET.'/media/market');
+define('ASCMS_MODULE_MEDIA_PATH',           ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/media/directory');
+define('ASCMS_MODULE_MEDIA_WEB_PATH',       ASCMS_INSTANCE_OFFSET.'/media/directory');
+define('ASCMS_MARKET_MEDIA_PATH',           ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/media/market');
+define('ASCMS_MARKET_MEDIA_WEB_PATH',       ASCMS_INSTANCE_OFFSET.'/media/market');
 define('ASCMS_CACHE_PATH',                  ASCMS_TEMP_PATH.'/cache');
 define('ASCMS_ECARD_OPTIMIZED_PATH',        ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/modules/ecard/ecards_optimized');
 define('ASCMS_ECARD_OPTIMIZED_WEB_PATH',    ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/modules/ecard/ecards_optimized');
@@ -116,8 +116,8 @@ define('ASCMS_MODEL_PROXIES_PATH',          ASCMS_MODEL_PATH.'/proxies');
 // when needed.
 define('ASCMS_HOTELCARD_IMAGES_FOLDER',     ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/hotelcard');
 
-define('ASCMS_MEDIADIR_IMAGES_WEB_PATH',    ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/mediadir');
-define('ASCMS_MEDIADIR_IMAGES_PATH',        ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/mediadir');
+define('ASCMS_MEDIADIR_IMAGES_WEB_PATH',    ASCMS_INSTANCE_OFFSET.ASCMS_IMAGES_FOLDER.'/mediadir');
+define('ASCMS_MEDIADIR_IMAGES_PATH',        ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.ASCMS_IMAGES_FOLDER.'/mediadir');
 
 // For convenience, as seen in the frontend
 define('ADMIN_SCRIPT_PATH',                 ASCMS_ADMIN_WEB_PATH.'/'.CONTREXX_DIRECTORY_INDEX);

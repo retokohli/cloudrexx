@@ -36,6 +36,8 @@ $_DBCONFIG['timezone'] = $_CONFIG['timezone']; // Timezone
 */
 $_PATHCONFIG['ascms_root'] = '/home/user/web/cm23';
 $_PATHCONFIG['ascms_root_offset'] = '/cm_2_3'; // example: '/cms';
+$_PATHCONFIG['ascms_installation_root'] = $_PATHCONFIG['ascms_root'];
+$_PATHCONFIG['ascms_installation_offset'] = $_PATHCONFIG['ascms_root_offset']; // example: '/cms';
 
 /**
 * -------------------------------------------------------------------------
