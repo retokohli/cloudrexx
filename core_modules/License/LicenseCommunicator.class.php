@@ -104,7 +104,7 @@ class LicenseCommunicator {
             if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
                 $r = 'https://';
             }
-            $r .= $_SERVER['SERVER_NAME'] . ASCMS_PATH_OFFSET;
+            $r .= $_SERVER['SERVER_NAME'] . ASCMS_INSTANCE_OFFSET;
 
             $request = new \HTTP_Request2('http://' . $srvUri . $srvPath . '?v=' . $version, \HTTP_Request2::METHOD_POST);
             $request->setHeader('X-Edition', $e);

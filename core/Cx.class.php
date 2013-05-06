@@ -88,7 +88,7 @@ namespace Cx\Core {
             } catch (\Exception $e) {
                 //$e = new \Exception();
                 //echo nl2br($e->getTraceAsString());
-                echo file_get_contents('offline.html');
+                echo file_get_contents(ASCMS_DOCUMENT_ROOT.'/offline.html');
                 \DBG::msg('Contrexx initialization failed! ' . get_class($e) . ': "' . $e->getMessage() . '"');
                 die();
             }
@@ -149,10 +149,10 @@ namespace Cx\Core {
                     } else {
                         $mode = self::MODE_FRONTEND;
                         if (isset($_GET['__cap'])) {
-                            if (preg_match('#^' . ASCMS_PATH_OFFSET . '(/[a-z]{2})?(/admin|' . ASCMS_BACKEND_PATH . ')#', $_GET['__cap'])) {
+                            if (preg_match('#^' . ASCMS_INSTANCE_OFFSET . '(/[a-z]{2})?(/admin|' . ASCMS_BACKEND_PATH . ')#', $_GET['__cap'])) {
                                 // this does not belong here:
-                                if (!preg_match('#^' . ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH . '#', $_GET['__cap'])) {
-                                    header('Location: ' . ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH);
+                                if (!preg_match('#^' . ASCMS_INSTANCE_OFFSET . ASCMS_BACKEND_PATH . '#', $_GET['__cap'])) {
+                                    header('Location: ' . ASCMS_INSTANCE_OFFSET . ASCMS_BACKEND_PATH);
                                     die();
                                 }
                                 $mode = self::MODE_BACKEND;
@@ -200,7 +200,7 @@ namespace Cx\Core {
              *
              * Initialises global settings array and constants.
              */
-            include_once dirname(dirname(__FILE__)).'/config/configuration.php';
+            //include_once dirname(dirname(__FILE__)).'/config/configuration.php';
 
             // Check if the system is installed
             if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {

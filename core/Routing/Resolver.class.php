@@ -345,7 +345,7 @@ class Resolver {
                 if ($langId != $this->lang) {
                     $this->lang = $langId;
                     $this->url->setLangDir(\FWLanguage::getLanguageCodeById($langId));
-                    $this->pathOffset = ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageCodeById($langId);
+                    $this->pathOffset = ASCMS_INSTANCE_OFFSET.'/'.\FWLanguage::getLanguageCodeById($langId);
                 }
 
                 $targetPath = substr($targetPage->getPath(), 1);
@@ -362,7 +362,7 @@ class Resolver {
                     if ($target[0] == '/') {
                         $target = substr($target, 1);
                     }
-                    header('Location: '.ASCMS_PATH_OFFSET.'/'.\FWLanguage::getLanguageCodeById($this->lang).'/'.$target);
+                    header('Location: '.ASCMS_INSTANCE_OFFSET.'/'.\FWLanguage::getLanguageCodeById($this->lang).'/'.$target);
                     exit;
                 }
             }

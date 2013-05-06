@@ -19,6 +19,12 @@ if (version_compare($php, '5.3.0') < 0) {
     die('Das Contrexx CMS ben&ouml;tigt mindestens PHP in der Version 5.3.<br />Auf Ihrem System l&auml;uft PHP '.$php);
 }
 
+global $_PATHCONFIG;
+/**
+ * Load config for this instance
+ */
+include_once dirname(__FILE__).'/config/configuration.php';
+
 /**
  * Debug level, see lib/FRAMEWORK/DBG/DBG.php
  *   DBG_PHP             - show PHP errors/warnings/notices
@@ -33,8 +39,8 @@ if (version_compare($php, '5.3.0') < 0) {
  * Calling these methods without specifying a debug level
  * will either activate or deactivate all levels.
  */
-/*require_once dirname(__FILE__).'/lib/FRAMEWORK/DBG/DBG.php';
-\DBG::activate(DBG_PHP);*/
+require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/lib/FRAMEWORK/DBG/DBG.php';
+//\DBG::activate(DBG_PHP);//*/
 
-require_once(dirname(__FILE__).'/core/Cx.class.php');
+require_once($_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/core/Cx.class.php');
 init();

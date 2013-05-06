@@ -40,7 +40,7 @@ class settingsManager
      
     function __construct()
     {
-        $this->strSettingsFile = ASCMS_DOCUMENT_ROOT.'/config/settings.php';
+        $this->strSettingsFile = ASCMS_WEB_PATH.ASCMS_WEB_OFFSET.'/config/settings.php';
         $this->checkWritePermissions();
     }
 
