@@ -49,14 +49,14 @@ class FileSystemFile implements FileInterface
             throw new FileSystemFileException('No file path specified!');
         }
 
-        if (strpos($file, ASCMS_DOCUMENT_ROOT) === 0) {
+        if (strpos($file, ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET) === 0) {
             $this->filePath = $file;
-        } elseif (ASCMS_PATH_OFFSET && strpos($file, ASCMS_PATH_OFFSET) === 0) {
-            $this->filePath = ASCMS_PATH.$file;
+        } elseif (ASCMS_INSTANCE_OFFSET && strpos($file, ASCMS_INSTANCE_OFFSET) === 0) {
+            $this->filePath = ASCMS_INSTANCE_PATH.$file;
         } elseif (strpos($file, '/') === 0) {
-            $this->filePath = ASCMS_DOCUMENT_ROOT.$file;
+            $this->filePath = ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.$file;
         } else {
-            $this->filePath = ASCMS_DOCUMENT_ROOT.'/'.$file;
+            $this->filePath = ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/'.$file;
         }
     }
     
@@ -143,7 +143,7 @@ class FileSystemFile implements FileInterface
 
         $parentDirectory = dirname($this->filePath);
         if (!is_writable($parentDirectory)) {
-            if (strpos($parentDirectory, ASCMS_DOCUMENT_ROOT) === 0) {
+            if (strpos($parentDirectory, ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET) === 0) {
                 // parent directory lies within the Contrexx installation directory,
                 // therefore, we shall try to make it writable
                 \Cx\Lib\FileSystem\FileSystem::makeWritable($parentDirectory);

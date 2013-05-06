@@ -174,7 +174,7 @@ class Url {
     }
 
     public function setPath($path) {
-        $pathOffset = substr(ASCMS_PATH_OFFSET, 1);
+        $pathOffset = substr(ASCMS_INSTANCE_OFFSET, 1);
         if (!empty($pathOffset) && substr($path, 0, strlen($pathOffset)) == $pathOffset) {
             $path = substr($path, strlen($pathOffset) + 1);
         }
@@ -529,7 +529,7 @@ class Url {
             $protocol = ASCMS_PROTOCOL;
         }
         $host = $_CONFIG['domainUrl'];
-        $offset = ASCMS_PATH_OFFSET;
+        $offset = ASCMS_INSTACE_OFFSET;
         $langDir = \FWLanguage::getLanguageCodeById($lang);
         $parameters = '';
         if (count($arrParameters)) {
@@ -609,7 +609,7 @@ class Url {
             $protocol = ASCMS_PROTOCOL;
         }
         $host = $_CONFIG['domainUrl'];
-        $offset = ASCMS_PATH_OFFSET;
+        $offset = ASCMS_INSTANCE_OFFSET;
         $path = $page->getPath();
         $langDir = \FWLanguage::getLanguageCodeById($page->getLang());
         $getParams = '';
@@ -668,7 +668,7 @@ class Url {
     public function __toString()
     {
         return
-            ASCMS_PATH_OFFSET.'/'.
+            ASCMS_INSTANCE_OFFSET.'/'.
             ($this->getMode() != 'backend' ? $this->getLangDir().'/' : '').
             $this->path; // contains path (except for PATH_OFFSET and virtual language dir) and params
     }

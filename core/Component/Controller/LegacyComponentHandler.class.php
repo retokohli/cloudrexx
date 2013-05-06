@@ -55,7 +55,7 @@ class LegacyComponentHandler {
                         global $request, $url, $resolver, $aliaspage, $_LANGID, $redirectToCorrectLanguageDir, $_CONFIG, $objInit, $extractedLanguage;
                         
                         $request = !empty($_GET['__cap']) ? $_GET['__cap'] : '';
-                        $url = \Cx\Core\Routing\Url::fromCapturedRequest($request, ASCMS_PATH_OFFSET, $_GET);
+                        $url = \Cx\Core\Routing\Url::fromCapturedRequest($request, ASCMS_INSTANCE_OFFSET, $_GET);
                         $resolver = new \Cx\Core\Routing\Resolver($url, null, \Env::em(), null, null);
                         \Env::set('Resolver', $resolver);
                         $aliaspage = $resolver->resolveAlias();
@@ -181,7 +181,7 @@ class LegacyComponentHandler {
                             if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1 && empty($sessionObj)) {
                                 $sessionObj = new cmsSession();
                             }
-                            $resolver->init($url, FRONTEND_LANG_ID, \Env::em(), ASCMS_PATH_OFFSET.\Env::get('virtualLanguageDirectory'), \FWLanguage::getFallbackLanguageArray());
+                            $resolver->init($url, FRONTEND_LANG_ID, \Env::em(), ASCMS_INSTANCE_OFFSET.\Env::get('virtualLanguageDirectory'), \FWLanguage::getFallbackLanguageArray());
                             try {
                                 $resolver->resolve();
                                 $page = $resolver->getPage();
