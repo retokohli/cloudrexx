@@ -5,6 +5,7 @@ namespace Cx\Core_Modules\Workbench\Model\Entity;
 abstract class UserInterface {
     private $commands = array();
     private $workbench = null;
+    protected $silent = false;
     
     public function __construct() {
         \Env::get('ClassLoader')->loadFile(ASCMS_CORE_PATH.'/Typing/Model/Entity/AutoBoxedObject.class.php');
@@ -13,11 +14,14 @@ abstract class UserInterface {
             'create' => new CreateCommand($this), // create new component
             'delete' => new DeleteCommand($this), // delete a component
             'activate' => new ActivateCommand($this), // activate a component
-            //'deactivate' => new DeactivateCommand($this), // deactivate a component
+            'deactivate' => new DeactivateCommand($this), // deactivate a component
             //'export' => new ExportCommand($this), // export contrexx files without workbench
             //'remove' => new RemoveCommand($this), // remove workbench from installation
             //'update' => new UpdateCommand($this), // port a component to this version of contrexx
-            //'convert' => new ConvertCommand($this), // convert component types (core to core_module, etc.)
+            //'addnav' => new AddNavCommand($this), // add a backend navigation entry
+            //'rmnav' => new RmNavCommand($this), // remove a backend navigation entry
+            //'mvnav' => new MvNavCommand($this), // move a backend navigation entry (remove and add new)
+            'move' => new MoveCommand($this), // convert component types (core to core_module, etc.) and rename components
             //'publish' => new PublishCommand($this), // publish component to contrexx app repo (after successful unit testing)
             //'test' => new TestCommand($this), // run UnitTests
             //'db' => new DbCommmand($this), // wrapper for doctrine commandline tools
@@ -38,6 +42,18 @@ abstract class UserInterface {
             return null;
         }
         return $this->commands[$commandName];
+    }
+    
+    public function executeCommand($commandName, $arguments, $silent = false) {
+        $cachedSilence = $this->silent;
+        $this->silent = $silent;
+        $command = $this->getCommand($commandName);
+        if (!$command) {
+            return false;
+        }
+        $ret = $command->execute($arguments);
+        $this->silent = $cachedSilence;
+        return $ret;
     }
     
     public function getCommands() {
