@@ -25,8 +25,8 @@ class ActivateCommand extends Command {
         ';
         $res = $this->interface->getDb()->getAdoDb()->Execute($query);
         $moduleExists = (bool) $res->RecordCount();
-        $id = $res->Fields['id'];
-        $moduleActive = $res->Fields['is_active'] == 1;
+        $id = $res->fields['id'];
+        $moduleActive = $res->fields['is_active'] == 1;
         if (!$moduleExists) {
             $res = $this->interface->getDb()->getAdoDb()->Execute('SELECT MAX(`id`) AS `max_id` FROM `' . DBPREFIX . 'modules`');
             $id = $res->fields['max_id'];
@@ -67,7 +67,7 @@ class ActivateCommand extends Command {
                         1
                     )
             ';
-            if (false) {//!$this->interface->getDb()->getAdoDb()->Execute($query)) {
+            if (!$this->interface->getDb()->getAdoDb()->Execute($query)) {
                 throw new CommandException('Component activation failed!');
             }
             $moduleActive = true;
@@ -81,7 +81,7 @@ class ActivateCommand extends Command {
                 WHERE
                     `id` = ' . $id . '
             ';
-            if (false) {//!$this->interface->getDb()->getAdoDb()->Execute($query)) {
+            if (!$this->interface->getDb()->getAdoDb()->Execute($query)) {
                 throw new CommandException('Component activation failed!');
             }
         }
@@ -94,6 +94,6 @@ class ActivateCommand extends Command {
         }
         // create page for module
         $this->interface->show('TODO: Generate content page for this module!');
-        $this->interface->show('done');
+        $this->interface->show('Done');
     }
 }

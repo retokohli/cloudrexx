@@ -32,6 +32,8 @@ class ConsoleInterface extends UserInterface {
                 $this->getCommand($command)->execute($arguments);
             } catch (\Cx\Core_Modules\Workbench\Model\Entity\CommandException $e) {
                 echo 'Command failed: ' . $e->getMessage();
+            } catch (\Exception $e) {
+                echo 'FATAL: ' . $e->getMessage();
             }
         } else {
             $this->showHelp();
@@ -77,6 +79,9 @@ Available subcommands:' . "\r\n";
     }
     
     public function show($message) {
+        if ($this->silent) {
+            return;
+        }
         echo $message . "\r\n";
     }
 }

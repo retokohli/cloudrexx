@@ -10,7 +10,12 @@ include($rootDir . '/config/configuration.php');
 include($rootDir . '/config/settings.php');
 
 require_once $rootDir . '/core/ClassLoader/ClassLoader.class.php';
-$cl = new \Cx\Core\ClassLoader\ClassLoader($rootDir);
+if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
+    $customizingPath = ASCMS_CUSTOMIZING_PATH;
+}
+$cl = new \Cx\Core\ClassLoader\ClassLoader($rootDir, true, $customizingPath);
 \Env::set('ClassLoader', $cl);
+
+//\DBG::activate(DBG_PHP);
 
 new \Cx\Core_Modules\Workbench\Model\Entity\ConsoleInterface($argv);
