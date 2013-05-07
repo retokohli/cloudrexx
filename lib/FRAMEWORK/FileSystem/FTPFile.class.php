@@ -143,6 +143,31 @@ class FTPFile implements FileInterface
         }
         
     }
+    
+    public function rename($dst)
+    {
+        $this->move($dst);
+    }
+    
+    public function move($dst)
+    {
+        $this->initConnection();
+        
+        try {
+            $pathInfo = pathinfo($dst);
+            $path     = $pathInfo['dirname'];
+            $file     = $pathInfo['basename'];
+            $filePath = $this->getValidFilePath($file, $path);
+            $dst      = $filePath . '/' . $file;
+            
+            if (!ftp_rename($this->connection, $this->passedFilePath, $dst)) {
+                throw new FTPFileException('FTP rename from ' . $this->passedFilePath . ' to ' . $dst . ' failed.');
+            }
+        } catch (FTPFileException $e) {
+            throw new FTPFileException($e->getMessage());
+        }
+        
+    }
 
     public function makeWritable()
     {

@@ -118,6 +118,19 @@ class FileSystemFile implements FileInterface
         }
         \Cx\Lib\FileSystem\FileSystem::makeWritable($dst);
     }
+    
+    public function rename($dst)
+    {
+        $this->move($dst);
+    }
+    
+    public function move($dst)
+    {
+        if (!rename($this->filePath, $dst)) {
+            throw new FileSystemFileException('Unable to move ' . $this->filePath . ' to ' . $dst . '!');
+        }
+        \Cx\Lib\FileSystem\FileSystem::makeWritable($dst);
+    }
 
     public function getFilePermissions()
     {
