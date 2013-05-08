@@ -1259,6 +1259,22 @@ class CrmLibrary {
         return false;
     }
 
+    /**
+     * Make the url string's into clickable link's.
+     * Example: <p> http://www.contrexx.com </p> will be
+     * <p> <a href="http://www.contrexx.com" rel="nofollow"> http://www.contrexx.com </a> </p>
+     *
+     * @return  string       $html
+     */
+    function makeLinksInTheContent($html)
+    {
+        $html= preg_replace("/(^|[\n ])([\w]*?)((ht|f)tp(s)?:\/\/[\w]+[^ \,\"\n\r\t<]*)/is", "$1$2<a href=\"$3\" rel=\"nofollow\" >$3</a>", $html);
+        $html= preg_replace("/(^|[\n ])([\w]*?)((www|ftp)\.[^ \,\"\t\n\r<]*)/is", "$1$2<a href=\"http://$3\" rel=\"nofollow\" >$3</a>", $html);
+        $html= preg_replace("/(^|[\n ])([a-z0-9&\-_\.]+?)@([\w\-]+\.([\w\-\.]+)+)/i", "$1<a href=\"mailto:$2@$3\" rel=\"nofollow\">$2@$3</a>", $html);
+
+        return($html);
+    }
+    
     function addCrmContact($arrFormData = array())
     {
         global $objDatabase;

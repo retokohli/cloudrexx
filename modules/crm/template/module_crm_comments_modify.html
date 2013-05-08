@@ -7,7 +7,7 @@
         
         if(name == 0) {
             errChk = 1;
-            document.getElementById("notes_type").style.border = "1px solid red";
+            document.getElementById("notesCategoriesLink").style.border = "1px solid red";
             return showErrors(errors, errChk);
         }
         //return false;
@@ -96,6 +96,6 @@
     </table>
     <br>
     <br>
-    <input type="button"  value="{TXT_CRM_BACK}" onclick="window.location='./index.php?cmd={MODULE_NAME}&act=showcustdetail&id={CRM_CUSTOMER_ID}&csrf='+cx.variables.get('csrf', 'contrexx')" />
+    <input type="button"  value="{TXT_CRM_BACK}" onclick="window.location='{TXT_CRM_BACK_LINK}&csrf='+cx.variables.get('csrf', 'contrexx')" />
     <input type="submit" name="comment_submit" value="{TXT_CRM_SAVE}" onClick="return checkValidationsEdit();"/>
 </form>
