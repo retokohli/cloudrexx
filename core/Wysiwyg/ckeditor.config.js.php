@@ -118,7 +118,8 @@ CKEDITOR.editorConfig = function( config )
         ['Link','Unlink','Anchor'],
         ['Image','Flash','Table','HorizontalRule','SpecialChar'],
         ['Format'],
-        ['TextColor','BGColor']
+        ['TextColor','BGColor'],
+        ['ShowBlocks']
     ];
 
     config.toolbar_FrontendEditingTitle = [

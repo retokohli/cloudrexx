@@ -3,12 +3,13 @@
  * @author: Ueli Kramer <ueli.kramer@comvation.com>
  * @version: 1.0
  * @package: contrexx
- * @subpackage: core_modules_frontend_editing
+ * @subpackage: core_modules_frontendediting
  */
 
 /**
  * Add the custom plugins to the ckeditor
- * * the publish button
+ * * the "publish" button
+ * * the "save as draft" button
  */
 cx.fe.addCustomPlugins = function () {
     // publish a page

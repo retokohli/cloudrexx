@@ -107,22 +107,33 @@
     background: url(../../../../../cadmin/template/ascms/images/metanavigation_upgrade.png) no-repeat;
 }
 
-#fe_metanavigation #fe_history_box_anchor {
+#fe_metanavigation #fe_history_box_anchor,
+#fe_metanavigation #fe_options_box_anchor {
     float: left;
     position: relative;
     padding-left: 21px;
-    background: url(../Media/toolbar-history.png) no-repeat;
     margin: 0 0 0 20px;
     color: #c5dbe8;
     line-height: normal;
 }
 
-#fe_metanavigation #fe_history_box_anchor>a {
+#fe_metanavigation #fe_history_box_anchor {
+    background: url(../Media/toolbar-history.png) no-repeat;
+}
+
+#fe_metanavigation #fe_options_box_anchor {
+    background: url(../Media/toolbar-options.png) no-repeat;
+}
+
+#fe_metanavigation #fe_history_box_anchor>a,
+#fe_metanavigation #fe_options_box_anchor>a {
     color: #c5dbe8;
 }
 
 #fe_metanavigation #fe_history_box_anchor>a:hover,
-#fe_metanavigation #fe_history_box_anchor:hover>a {
+#fe_metanavigation #fe_history_box_anchor:hover>a,
+#fe_metanavigation #fe_options_box_anchor>a:hover,
+#fe_metanavigation #fe_options_box_anchor:hover>a {
     color: #fff;
 }
 
@@ -140,11 +151,12 @@
     background: url(../../../../../cadmin/template/ascms/images/logout_icon.png) no-repeat;
 }
 
-#fe_history_box {
+#fe_history_box,
+#fe_options_box {
     display: block;
     position: absolute;
     top: 45px;
-    left: -232px;
+    left: -248px;
     width: 550px;
     background: #fff;
     padding: 5px;
@@ -152,14 +164,15 @@
     border: 2px #0f9bd8 solid;
 }
 
-#fe_history_arrow {
+#fe_history_arrow,
+#fe_options_arrow {
     display: block;
     position: absolute;
     top: 19px;
     left: 8px;
     width: 51px;
     height: 26px;
-    background: url("../Media/toolbar-history_arrow.png");
+    background: url("../Media/toolbar-arrow.png");
 }
 
 #fe_history_box .adminlist th {
@@ -177,6 +190,26 @@
     float: right;
     padding: 0 0 0 18px;
     background: url(../Media/Preview.png) no-repeat left center;
+}
+
+#fe_options_box select,
+#fe_options_box input[type="text"] {
+    border: 1px solid #bbbbbb;
+    padding: 3px;
+    color: #444444;
+    margin: 7px 0 6px 0;
+    width: 300px;
+}
+
+#fe_options_box input[type="text"] {
+    width: 292px;
+}
+
+#fe_options_box label {
+    display: block;
+    width: 170px;
+    float: left;
+    padding: 11px 0 0 0;
 }
 
 
