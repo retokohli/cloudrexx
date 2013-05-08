@@ -126,7 +126,7 @@ class crmContact {
             'profile_picture'   => array ( 'val' => isset ($this->profile_picture) && !empty($this->profile_picture) ? $this->profile_picture : NULL, 'omitEmpty' => true)
         );
 
-        if (!isset($this->id)) {                   
+        if (!isset($this->id) || empty ($this->id)) {
             $fields['datasource'] = isset ($this->datasource) ? $this->datasource : '';
             $fields['added_date'] = date('Y-m-d H:i:s');
             $query = SQL::insert("module_{$this->moduleName}_contacts", $fields, array('escape' => true));
@@ -135,7 +135,7 @@ class crmContact {
         }
         //echo $query; exit();
         if ($objDatabase->execute($query)) {
-            if (!isset($this->id))
+            if (!isset($this->id) || empty ($this->id))
                     $this->id = $objDatabase->INSERT_ID();
             
             return true;
@@ -150,5 +150,29 @@ class crmContact {
 
     function  __get($name) {        
         return $this->{$name};
+    }
+
+    function clean() {
+        $this->id               = 0;
+        $this->contactType      = 0;
+        $this->customerId       = '';
+        $this->customerType     = 0;
+        $this->customerName     = '';
+        $this->family_name      = '';
+        $this->contact_role     = '';
+        $this->contact_language = 0;
+        $this->contact_customer = 0;
+        $this->addedUser        = 0;
+        $this->currency         = 0;
+        $this->notes            = '';
+        $this->industryType     = 0;
+        $this->account_id       = 0;
+        $this->datasource       = 0;
+        $this->contact_gender   = 0;
+        $this->profile_picture  = '';
+
+        $this->email            = '';
+        $this->phone            = '';
+        $this->added_date       = '';
     }
 }

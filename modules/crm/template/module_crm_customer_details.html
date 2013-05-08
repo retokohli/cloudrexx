@@ -13,8 +13,8 @@
                     $J("#profile-picture").val('');
                     $J( "#profile-photo" ).dialog( "close" );
                 } else {
-                    alert(json['error']);                    
-                }                
+                    alert(json['error']);
+                }
             }
         });
         return false;
@@ -37,7 +37,7 @@
                 $J(".action-progress-2").hide();
                 $J( "#profile-photo" ).dialog( "close" );
             }
-        });        
+        });
     }
     function deleteEntry(entryId){
         if(confirm('{TXT_CRM_CONFIRM_DELETE_ENTRY}'))
@@ -62,7 +62,7 @@
         "tasks"    : {"link" : "./index.php?cmd={MODULE_NAME}&{CSRF_PARAM}&act=getcontacttasks&id={ENTRY_ID}", "page": 0, "new_req" : true},
         "projects" : {"link" : "./index.php?cmd={MODULE_NAME}&{CSRF_PARAM}&act=getcontactprojects&id={ENTRY_ID}", "page": 0, "new_req" : true},
         "deals"    : {"link" : "./index.php?cmd={MODULE_NAME}&{CSRF_PARAM}&act=getcontactdeals&id={ENTRY_ID}", "page": 0, "new_req" : true},
-        "document" : {"link" : "./index.php?cmd={MODULE_NAME}&act=getcontactdocuments&id={ENTRY_ID}", "page": 0, "new_req" : true}
+        "documents" : {"link" : "./index.php?cmd={MODULE_NAME}&act=getcontactdocuments&id={ENTRY_ID}", "page": 0, "new_req" : true}
     };
     function getLink(obj, link) {
         returnLink = '';
@@ -87,16 +87,16 @@
         $J.each(obj, function(key, value) {
             if (key == link)
                 returnReq = value.new_req;
-           
+
         });
         return returnReq;
     }
     function setReq(obj, link) {
         $J.each(obj, function(key, value) {
             if (key == link) {
-                obj[key].new_req = false;                
+                obj[key].new_req = false;
             }
-        });        
+        });
     }
     var page = 0;
     $J(function() {
@@ -109,27 +109,27 @@
                 $closest.find('.profile_expanded').show();
                 $closest.find('.fixed-scroll').scrollToFixed({
                     limit: function() {
-                        
+
                         if ($closest.closest('tr').next().length) {
                             elm = $closest.closest('tr').next();
                         } else {
                             elm = $J("#tabs");
                         }
-                        
+
                         return elm.offset().top
                     }
                 });
             });
-        });        
+        });
 
-        $J('.profile_expanded .hide').click(function(){
+        $J('.profile_expanded .hide').click(function(){ 
             $elm     = $J(this);
             $closest = $elm.closest('td');
             $elm.closest('.profile_expanded').fadeOut('slow', function(){
                 $closest.find('.primary_profile').show();
-            });            
+            });
         });
-        
+
         $J(".deleteEntry").live("click", function(){
             $elm  = $J(this);
             en_id = $J(this).attr('rel').split('_')[1]
@@ -169,78 +169,63 @@
             }
         });
 
+        var page = 0;
         $J(window).scroll ( function()
-        {
-            if ($J(document).height() <= ($J(window).height() + $J(window).scrollTop()+100))
+        { 
+            tab  = $J("#tabs ul li.ui-tabs-selected a").attr("rel").split('_')[0];
+            if ($J(document).height() <= ($J(window).height() + $J(window).scrollTop()+100) && $J("#"+tab).is(":visible"))
             {
-                tabType = $J("#tabs ul li.ui-state-active").attr("rel").split('_')[0];
-                new_req = getReq(tabLinks, tabType);
+                new_req = getReq(tabLinks, tab);
                 if (new_req!=false)
-                {
-                    $J('#favloader').show();
+                { 
+                    $J('#favloader_'+tab).css('display', 'table-row');
 
-                    var $this = $J(this);
+                    var $this = $J("#"+tab);
                     if ($this.data('executing'))
                         return;
                     $this.data('executing', true).attr("src", "AJax in progress");
+                    url  = getLink(tabLinks, tab); 
+                    page = getPage(tabLinks, tab);
                     
-                    url  = getLink(tabLinks, tabType);
-                    page = getPage(tabLinks, tabType);
-                    
-                    $J.ajax({
-                        type: "get",
-                        url:  url,
-                        data: "ajax=1&page="+page,
-                        success: function(msg)
-                        {
-                            //alert($J("#ui-tabs-1 #message table.notesTab").html())
-                            //alert($J("table#"+tabType+"Tab table ").html());
-                            //alert(msg);
-                            msg = $J.trim(msg);
-                            
-                            if (msg!=0) $J("table#"+tabType+"Tab tbody").append(msg);                            
-                            setTableRow(tabType+"Tab");
-                            if (msg==0)
+                    var ajaxCall = function(tabSelected) { 
+                        var tab = tabSelected;                       
+                        $J.ajax({
+                            dataType: "JSON",
+                            type: "GET",
+                            url: url,
+                            data: "ajax=1&page="+page,
+                            success: function(json)
                             {
-                                setReq(tabLinks, tabType);
+                                msg = $J.trim(json.msg);
+                                if (msg!=0) $J("#"+tab+" table tbody").append(json.content);
+                                $J('#favloader_'+tab).hide();
+                                if (msg==0)
+                                {
+                                    if (page==1) $J("#"+tab+" table tbody").append(json.content);
+                                    setReq(tabLinks, tab);
+                                }
+                                // Drop down functionality for the task tab
+                                if (tab == 'tasks') {
+                                    $J.dropdownToggle({
+                                        dropdownID: 'taskStatusPanel',
+                                        switcherSelector: '.taskStatusLink',
+                                        addTop: 0,
+                                        addLeft: 0
+                                    });
+                                }
+                                $this.removeData('executing');
+
                             }
-                            //TO-DO : Not need twice
-                            // Drop down functionality for the task tab
-                            $J.dropdownToggle({
-                                dropdownID: 'taskStatusPanel',
-                                switcherSelector: '.taskStatusLink',
-                                addTop: 0,
-                                addLeft: 0
-                            });
-                            $J('#favloader').hide();
-                            $this.removeData('executing');
-                        }
-                    });
+                        });
+                    }
+                    ajaxCall(tab);                    
                 }
 
             }
         });
         $J( "#tabs" ).tabs({
-            cache: true,
-            spinner: "Retrieving data...",
-            //fx: { opacity: 'toggle' },
-            load: function(event, ui){
-                //$J('table.sortedTable').tablesorter();
-                //TO-DO : Not need twice
-                // Drop down functionality for the task tab
-                $J.dropdownToggle({
-                    dropdownID: 'taskStatusPanel',
-                    switcherSelector: '.taskStatusLink',
-                    addTop: 0,
-                    addLeft: 0
-                });
-            },
-            ajaxOptions: {
-                error: function( xhr, status, index, anchor ) {
-                    $J( anchor.hash ).html(
-                    "Couldn't load this tab. We'll try to fix this as soon as possible. " +
-                        "If this wouldn't be a demo." );
-                }
+            show: function() {
+                $J('.crm_details_tabs').scroll();
             }
         });
         $J( "#profile-photo" ).dialog({
@@ -255,9 +240,12 @@
             height  : 280,
             modal   : true,
             close: function(event, ui) {
+                $J("#documents table tbody").html('');
                 tabIndex = $J( "#tabs" ).tabs('option', 'selected');
                 $J("#tabs").tabs('load', tabIndex);
-                tabLinks['document'].page = 0;
+                tabLinks['documents'].page = 0;
+                tabLinks['documents'].new_req = true;
+                $J('.crm_details_tabs').scroll();
                 $J(".qq-upload-list").html('');
             }
         });
@@ -265,7 +253,6 @@
         $J( ".change-photo" ).click(function() {
             $J( "#profile-photo" ).dialog( "open" );
         });
-        
         $J('#jquery-wrapped-fine-uploader').fineUploader({
             request: {
                 endpoint: './index.php?cmd={MODULE_NAME}&act=fileupload&id={ENTRY_ID}'
@@ -336,7 +323,7 @@
     body table.adminlist thead tr.row3 th {
         padding-left: 3px;
     }
-    table.adminlist table tr td {border: medium none;}    
+    table.adminlist table tr td {border: medium none;}
     #tabmenu li, ul.tabmenu li {
         display: inline;
         list-style-type: none;
@@ -371,15 +358,21 @@
     .ajax-tabs #tabmenu {
         padding: 0;
     }
-    .ajax-tabs .ui-widget-content {
-        color: #444;
+    .ui-widget-content {
+        border: none;
+    }
+    #tabs .ui-widget-header {
+        background: none;
+    }
+    #tabs ul {
+        border: none;
     }
     .description {
         color: #83888D;
         font-size: 11px;
-    }    
+    }
     .default-images img {
-        cursor: pointer;        
+        cursor: pointer;
     }
     #profile-image {
         min-height: 160px;
@@ -478,7 +471,7 @@
                             {CRM_CUSTOMER_CURRENCY}
                         </td>
 
-                    </tr>                    
+                    </tr>
                 </table>
                 <!-- END customerGeneral -->
                 <!-- BEGIN contactGeneral -->
@@ -493,12 +486,12 @@
                         <!-- BEGIN contactCustomer -->
                         <td><strong>{TXT_CRM_COMPNAY_NAME}</strong></td>
                         <td>
-                            {CRM_COMPNAY_NAME}                            
+                            {CRM_COMPNAY_NAME}
                         </td>
                         <!-- END contactCustomer -->
                         <!-- BEGIN emptyContactCurrency -->
                         <td colspan="2">&nbsp;</td>
-                        <!-- END emptyContactCurrency -->                        
+                        <!-- END emptyContactCurrency -->
                     </tr>
                     <tr>
                         <!-- BEGIN contactCustomerType -->
@@ -522,7 +515,7 @@
                         </td>
                         <td>
                             {CRM_CUSTOMER_MEMBERSHIP}
-                        </td>                        
+                        </td>
                     </tr>
 
                 </table>
@@ -561,7 +554,7 @@
                                         <!-- END contact_website_list -->
                                     </div>
                                     <span class="crmLeft" style="position:relative;left:0;"><a class="fixed-scroll hide arrow-up">&nbsp;</a></span>
-                                </div>                                
+                                </div>
                             </td>
                         </tr>
                         <!-- END contactWebsite -->
@@ -577,7 +570,7 @@
                                         <!-- END contact_social_list -->
                                     </div>
                                     <span class="crmLeft" style="position:relative;left:0;"><a class="fixed-scroll hide arrow-up">&nbsp;</a></span>
-                                </div>                                
+                                </div>
                             </td>
                         </tr>
                         <!-- END contactSocial -->
@@ -616,7 +609,7 @@
                     </tbody>
                 </table>
             </td>
-        </tr>                    
+        </tr>
     </table>
 </div>
 <br>
@@ -688,28 +681,153 @@
 <br>
 <br>
 <!-- END displayContacts -->
-<div id="tabs" class="ajax-tabs" style="border: none;background: none;">
-    <ul id="tabmenu" style="background: none;border: none;">        
-        <li rel="notes_{ENTRY_ID}">
-            <a href="./index.php?cmd={MODULE_NAME}&act=notesdetail&id={ENTRY_ID}">{TXT_CRM_HISTROY}</a>
+<!-- show_sub_tabs -->
+<div id="tabs">
+    <ul id="tabmenu" class="crm_details_tabs">
+        <li>
+            <a href="#notes" rel="notes_notesdetail_{ENTRY_ID}" title="{TXT_CRM_HISTROY}">{TXT_CRM_HISTROY}</a>
         </li>
-        <li rel="tasks_{ENTRY_ID}">
-            <a href="./index.php?cmd={MODULE_NAME}&act=getcontacttasks&id={ENTRY_ID}">{TXT_CRM_TASKS}</a>
+        <li>
+            <a href="#tasks" rel="tasks_getcontacttasks_{ENTRY_ID}" title="{TXT_CRM_TASKS}">{TXT_CRM_TASKS}</a>
         </li>
         <!-- BEGIN contactsProjectsTab -->
-        <li rel="projects_{ENTRY_ID}">
-            <a href="./index.php?cmd={MODULE_NAME}&act=getcontactprojects&id={ENTRY_ID}">{TXT_CRM_PROJECTS}</a>
+        <li>
+            <a href="#projects" rel="projects_getcontactprojects_{ENTRY_ID}" title="{TXT_CRM_PROJECTS}">{TXT_CRM_PROJECTS}</a>
         </li>
         <!-- END contactsProjectsTab -->
-        <li rel="deals_{ENTRY_ID}">
-            <a href="./index.php?cmd={MODULE_NAME}&act=getcontactdeals&id={ENTRY_ID}">{TXT_CRM_DEALS}</a>
+        <li>
+            <a href="#deals" rel="deals_getcontactdeals_{ENTRY_ID}" title="{TXT_CRM_DEALS}">{TXT_CRM_DEALS}</a>
         </li>
-        <li rel="document_{ENTRY_ID}">
-            <a href="./index.php?cmd={MODULE_NAME}&act=getcontactdocuments&id={ENTRY_ID}">{TXT_CRM_DOCUMENTS}</a>
+        <li>
+            <a href="#documents" rel="documents_getcontactdocuments_{ENTRY_ID}" title="{TXT_CRM_DOCUMENTS}">{TXT_CRM_DOCUMENTS}</a>
         </li>
     </ul>
+    <div id="notes">
+        <table id="notesTab" cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist">
+            <thead>
+                <tr>
+                    <th colspan="9">{TXT_CRM_SHOW_COMMENT_HISTORY}</th>
+                </tr>
+                <tr class="row3" style="height:22px;">
+                    <td width="1%">{TXT_CRM_COMMENT_TITLE}</td>
+                    <td width="25%">{TXT_CRM_NOTES_TYPE}</td>
+                    <td width="15%">{TXT_CRM_ADDED_BY}</td>
+                    <td width="15%">{TXT_CRM_LAST_UPDATED_BY}</td>
+                    <td width="15%">{TXT_CRM_DUE_DATE}</td>
+                    <td width="10%" style="text-align: right;">{TXT_CRM_TASK_FUNCTIONS}</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="row1" id="favloader_notes" style="display:none;">
+                    <td colspan="9"><img src="../lib/javascript/jquery/jstree/themes/default/throbber.gif" />{TXT_CRM_LOADING}</td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+        <input onclick="window.location='./index.php?cmd={MODULE_NAME}&act=customers&tpl=addnote&cust_id={ENTRY_ID}&csrf='+cx.variables.get('csrf', 'contrexx')" type="button" name="{TXT_CRM_ADD_NOTE}" value="{TXT_CRM_ADD_NOTE}" />
+    </div>
+    <div id="tasks" style="display: none;">
+        <table id="task_overview" class="adminlist" width="100%" cellspacing="0" cellpadding="3">
+            <thead>
+                <tr><th colspan="8">{TXT_CRM_TASK}</th></tr>
+                <tr class="row3">
+                    <td width="6%" style="text-align: center;"><strong>{TXT_CRM_TASK_STATUS}</strong></td>
+                    <td width="50%">
+                        <strong>{TXT_CRM_TASK_TITLE}</strong>
+                    </td>
+                    <td width="22%"><strong>{TXT_CRM_CUSTOMER_NAME}</strong></td>
+                    <td width="14%"><strong>{TXT_CRM_TASK_RESPONSIBLE}</strong></td>
+                    <td width="8%" style="text-align:right;padding: 4px"><strong>{TXT_CRM_FUNCTIONS}</strong></td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="row1" id="favloader_tasks" style="display:none;">
+                    <td colspan="9"><img src="../lib/javascript/jquery/jstree/themes/default/throbber.gif" />{TXT_CRM_LOADING}</td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+        <input type="button" name="{TXT_CRM_ADD_TASK}" value="{TXT_CRM_ADD_TASK}" onclick="window.location='./index.php?cmd=crm&act=task&tpl=modify&customerId={ENTRY_ID}{CRM_REDIRECT_LINK}&csrf='+cx.variables.get('csrf', 'contrexx')" />
+
+    </div>
+    <!-- BEGIN contactsProjectsTabDetails -->
+    <div id="projects" style="display: none;">
+        <table id="projectsTab" cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist sortedTable">
+            <thead>
+                <tr>
+                    <th colspan="9">{TXT_CRM_PROJECTS}</th>
+                </tr>
+                <tr class="row3">
+                    <td width="2%" style="font-weight:bold;">{TXT_CRM_ACTIVE}</td>
+                    <td width="7%" class="nowrap" style="font-weight:bold;text-align:right;">{TXT_CRM_PROJECT_ID}</td>
+                    <td width="26%" class="nowrap" style="font-weight:bold;">{TXT_CRM_PROJECT_NAME}</td>
+                    <td width="11%" class="nowrap" style="font-weight:bold;text-align:right;">{TXT_CRM_PROJECT_QUOTED_PRICE}</td>
+                    <td width="20%" class="nowrap" style="padding-left: 15px;font-weight:bold;">{TXT_CRM_CUSTOMER_NAME}</td>
+                    <td width="10%" class="nowrap" style="font-weight:bold;">{TXT_CRM_PROJECT_STATUS}</td>
+                    <td width="10%" class="nowrap" style="font-weight:bold;">{TXT_CRM_PROJECT_RESPONSIBLE}</td>
+                    <td width="8%" class="nowrap" style="font-weight:bold;">{TXT_CRM_PROJECT_TARGET_DATE}</td>
+                    <td width="8%" style="text-align: right;font-weight:bold;padding-right: 2px;">{TXT_CRM_TITLE_FUNCTIONS}</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="row1" id="favloader_projects" style="display:none;">
+                    <td colspan="9"><img src="../lib/javascript/jquery/jstree/themes/default/throbber.gif" />{TXT_CRM_LOADING}</td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+        <a href="./index.php?cmd=pm&act=addnewproject&{CSRF_PARAM}&customer={ENTRY_ID}{CRM_REDIRECT_LINK_PROJECT}" title="{TXT_CRM_ADD_PROJECT}"><input type="button" name="{TXT_CRM_ADD_PROJECT}" value="{TXT_CRM_ADD_PROJECT}" /></a>
+
+    </div>
+    <!-- END contactsProjectsTabDetails -->
+    <div id="deals" style="display: none;">
+        <table id="dealsTab" cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist sortedTable">
+            <thead>
+                <tr>
+                    <th colspan="9">{TXT_CRM_DEALS_OVERVIEW} {TXT_CRM_OF_CONTACTS}</th>
+                </tr>
+                <tr class="row3">
+                    <td width="25%" style="white-space: nowrap">{TXT_CRM_DEALS_TITLE}</td>
+                    <td width="20%">{TXT_CRM_DEALS_CUSTOMER_NAME}</td>
+                    <td width="20%">{TXT_CRM_DEALS_RESPONSIBLE}</td>
+                    <td width="10%">{TXT_CRM_DEALS_DUE_DATE}</td>
+                    <td width="10%" style="text-align: right;">{TXT_CRM_FUNCTIONS}</td>
+                </tr>
+            </thead>
+            <tbody>
+                <tr class="row1" id="favloader_deals" style="display:none;">
+                    <td colspan="9"><img src="../lib/javascript/jquery/jstree/themes/default/throbber.gif" />{TXT_CRM_LOADING}</td>
+                </tr>
+            </tbody>
+        </table>
+        <br>
+        <input type="button" name="{TXT_CRM_ADD_OPPURTUNITY}" value="{TXT_CRM_ADD_OPPURTUNITY}" onclick="window.location='./index.php?cmd=crm&act=deals&tpl=manage&{CSRF_PARAM}&customer={ENTRY_ID}{CRM_REDIRECT_LINK}&csrf='+cx.variables.get('csrf', 'contrexx')" />
+
+    </div>
+    <div id="documents" style="display: none;">
+        <table id="doc_overview" class="adminlist" width="100%" cellspacing="0" cellpadding="3">
+            <thead>
+                <tr><th colspan="8">{TXT_CRM_DOCUMENTS}</th></tr>
+                <tr class="row3">
+                    <td width="50%">
+                        <strong>{TXT_CRM_DOCUMENT_NAME}</strong>
+                    </td>
+                    <td width="25%"><strong>{TXT_CRM_ADDED_BY}</strong></td>
+                    <td width="17%"><strong>{TXT_CRM_ADDED_DATE}</strong></td>
+                    <td width="8%" style="text-align:right;padding: 4px"><strong>{TXT_CRM_FUNCTIONS}</strong></td>
+                </tr>
+                <tr class="row1" id="favloader_documents" style="display:none;">
+                    <td colspan="9"><img src="../lib/javascript/jquery/jstree/themes/default/throbber.gif" />{TXT_CRM_LOADING}</td>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+        <br>
+        <input type="button" class="add-document" value="{TXT_CRM_ADD_DOCUMENTS}" />
+    </div>
 </div>
-<div id="favloader" style="display:none;"> <img src="./images/icons/icon-loading.gif" />LOADING ...</div>
+<!-- show_sub_tabs -->
 
 <div id="profile-photo" title="{TXT_CRM_PROFILE_PHTO_TITLE}">
     <h4>{TXT_CRM_PROFILE_PHOTO_TITLE1}</h4>

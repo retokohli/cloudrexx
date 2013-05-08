@@ -27,14 +27,14 @@ class crmInterface extends CrmLibrary
 {
     private $_delimiter = array(
                             array(
-                                'title'=>'Comma',
-                                'value' => ',',
-                                'placeholder' => 'TXT_CRM_COMMA'
-                            ),
-                            array(
                                 'title'=>'Semicolon',
                                 'value' => ';',
                                 'placeholder' => 'TXT_CRM_SEMICOLON'
+                            ),
+                            array(
+                                'title'=>'Comma',
+                                'value' => ',',
+                                'placeholder' => 'TXT_CRM_COMMA'
                             ),
                             array(
                                 'title'=>'Colon',
@@ -72,7 +72,7 @@ class crmInterface extends CrmLibrary
     {
         $this->_objTpl = $objTpl;
         $this->_mediaPath = ASCMS_MEDIA_PATH.'/crm';
-
+        parent::__construct();
     }
 
     /**
@@ -138,7 +138,17 @@ class crmInterface extends CrmLibrary
             'TXT_CRM_FILE_COLUMN'                   => $_ARRAYLANG['TXT_CRM_FILE_COLUMN'],
             'TXT_CRM_CORRESPONDING_FIELD'           => $_ARRAYLANG['TXT_CRM_CORRESPONDING_FIELD'],
             'TXT_CRM_CSV_VALUE'                     => $_ARRAYLANG['TXT_CRM_CSV_VALUE'],
+            'TXT_CRM_CHANGE'                        => $_ARRAYLANG['TXT_CRM_CHANGE'],
+            'TXT_CRM_LOADING'                       => $_ARRAYLANG['TXT_CRM_LOADING'],
+            'TXT_CRM_PREVIOUS_RECORD'               => $_ARRAYLANG['TXT_CRM_PREVIOUS_RECORD'],
+            'TXT_CRM_NEXT_RECORD'                   => $_ARRAYLANG['TXT_CRM_NEXT_RECORD'],
+            'TXT_CRM_TITLE_SAVING_CONTACTS'         => $_ARRAYLANG['TXT_CRM_TITLE_SAVING_CONTACTS'],
+            'TXT_CRM_INTERFACE_FINAL_INFO'          => $_ARRAYLANG['TXT_CRM_INTERFACE_FINAL_INFO'],
 
+            'TXT_CRM_RECORD_DONE'                   => $_ARRAYLANG['TXT_CRM_RECORD_DONE'],
+            'TXT_CRM_RECORD_SKIPPED'                => $_ARRAYLANG['TXT_CRM_RECORD_SKIPPED'],
+            'TXT_CRM_RECORD_IMPORT'                 => $_ARRAYLANG['TXT_CRM_RECORD_IMPORT'],
+            'TXT_CRM_RECORD_PROCESS'                => $_ARRAYLANG['TXT_CRM_RECORD_PROCESS'],
             'TXT_CRM_IMPORT_NAME'                   => $_ARRAYLANG['TXT_CRM_IMPORT_NAME'],
             'TXT_CRM_EXPORT_NAME'                   => $_ARRAYLANG['TXT_CRM_EXPORT_NAME']
         ));
@@ -157,8 +167,7 @@ class crmInterface extends CrmLibrary
 
         $csvSeprator    = isset ($_POST['csv_delimiter']) && in_array($_POST['csv_delimiter'], array_keys($this->_delimiter)) ? $this->_delimiter[$_POST['csv_delimiter']]['value'] : $this->_delimiter[0]['value'];
         $csvDelimiter   = isset ($_POST['csv_enclosure']) && in_array($_POST['csv_enclosure'], array_keys($this->_enclosure)) ? $this->_enclosure[$_POST['csv_enclosure']]['value'] : $this->_enclosure[0]['value'];
-        $csvIgnoreFirst = isset ($_POST['ignore_first']) && (int) $_POST['ignore_first'];
-        $fileName       = isset ($_POST['fileUri']) ? $_POST['fileUri'] : '';
+        $csvIgnoreFirst = isset ($_POST['ignore_first']) && (int) $_POST['ignore_first'];        
 
         if (!empty ($_FILES['importfile'])) {
             if (empty ($_FILES['importfile']['error'])) {
@@ -173,30 +182,31 @@ class crmInterface extends CrmLibrary
                 $json['error'] = 'Error in file';
             }            
         }
-
-        $rowIndex = 1;
-
-        $objCsv        = new Csv_bv($this->_mediaPath.'/'.$fileName, $csvSeprator, $csvDelimiter);
-        $importedLines = 0;
-        $first         = true;
-        $line          = $objCsv->NextLine();
-        while ($line) {
-            if ($first) {
-                $json['data']['contactHeader'] = $line;
-                $first = false;
-            }
-            if ($importedLines == $rowIndex) {
-                $json['data']['contactFields'] = $line;
-            }
-            $json['contactData'][$importedLines] = $line;
-            
-            ++$importedLines;
-            $line = $objCsv->NextLine();
-        }
-        $json['data']       = base64_encode(json_encode($json['data']));
-        $json['contactData']= base64_encode(json_encode($json['contactData']));
-        $json['totalRows']  = $importedLines - 1;
         
+        if (!isset($json['error'])) {
+            $rowIndex      = 1;
+            $importedLines = 0;
+            $first         = true;
+            $objCsv        = new Csv_bv($this->_mediaPath.'/'.$fileName, $csvSeprator, $csvDelimiter);
+            $line          = $objCsv->NextLine();
+            while ($line) {
+                if ($first) {
+                    $json['data']['contactHeader'] = $line;
+                    $first = false;
+                }
+                if ($importedLines == $rowIndex) {
+                    $json['data']['contactFields'] = $line;
+                }
+                $json['contactData'][$importedLines] = $line;
+
+                ++$importedLines;
+                $line = $objCsv->NextLine();
+            }
+            $json['data']       = base64_encode(json_encode($json['data']));
+            $json['contactData']= base64_encode(json_encode($json['contactData']));
+            $json['totalRows']  = $importedLines - 1;
+        }
+                
         echo json_encode($json);
         exit();
     }
@@ -562,39 +572,40 @@ class crmInterface extends CrmLibrary
         global $_ARRAYLANG;
         
         $headerCsv = array(
-            array("name"   => "", "title"  => $_ARRAYLANG['TXT_CRM_NO_MATCHES_FROM_LIST'], "Header" => false),
-            array("name"   => "-1", "title"  => $_ARRAYLANG['TXT_CRM_DONT_IMPORT_FIELD'], "Header" => false),
-            array("name"     => "", "title"    => $_ARRAYLANG['TXT_CRM_GENERAL_INFORMATION'], "Header" => true),
-            array('name' => 'firstname', 'title' => $_ARRAYLANG['TXT_CRM_CONTACT_NAME'], 'Header' => false),
-            array('name' => 'lastname', 'title' => $_ARRAYLANG['TXT_CRM_FAMILY_NAME'], 'Header' => false),
-            array('name' => 'company', 'title' => $_ARRAYLANG['TXT_CRM_TITLE_COMPANY_NAME'], 'Header' => false),
-            array('name' => 'website', 'title' => $_ARRAYLANG['TXT_CRM_WEBSITE'], 'Header' => false),
-            array('name' => 'role', 'title' => $_ARRAYLANG['TXT_CRM_ROLE'], 'Header' => false),
-            array('name' => 'customertype', 'title' => $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERTYPE'], 'Header' => false),
-            array('name' => 'industrytype', 'title' => $_ARRAYLANG['TXT_CRM_INDUSTRY_TYPE'], 'Header' => false),
-            array('name' => 'currency', 'title' => $_ARRAYLANG['TXT_CRM_TITLE_CURRENCY'], 'Header' => false),            
-            array('name' => 'customerId', 'title' => $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERID'], 'Header' => false),
-            array('name' => 'language', 'title' => $_ARRAYLANG['TXT_CRM_TITLE_LANGUAGE'], 'Header' => false),
-            array('name' => 'addedby', 'title' => $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMER_ADDEDBY'], 'Header' => false),
+            array("value" => "", "title"  => $_ARRAYLANG['TXT_CRM_NO_MATCHES_FROM_LIST'], "Header" => false),
+            array("value" => "", "title"  => $_ARRAYLANG['TXT_CRM_DONT_IMPORT_FIELD'], "Header" => false),
+            array("value" => "", "title"    => $_ARRAYLANG['TXT_CRM_GENERAL_INFORMATION'], "Header" => true),
+            array("value" => 'firstname', 'title' => $_ARRAYLANG['TXT_CRM_CONTACT_NAME'], 'Header' => false),
+            array("value" => 'lastname', 'title' => $_ARRAYLANG['TXT_CRM_FAMILY_NAME'], 'Header' => false),
+            array("value" => 'gender', 'title' => $_ARRAYLANG['TXT_CRM_GENDER'], 'Header' => false),
+            array("value" => 'company', 'title' => $_ARRAYLANG['TXT_CRM_TITLE_COMPANY_NAME'], 'Header' => false),
+            array("value" => 'role', 'title' => $_ARRAYLANG['TXT_CRM_ROLE'], 'Header' => false),
+            array("value" => 'customertype', 'title' => $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERTYPE'], 'Header' => false),
+            array("value" => 'industrytype', 'title' => $_ARRAYLANG['TXT_CRM_INDUSTRY_TYPE'], 'Header' => false),
+            array("value" => 'currency', 'title' => $_ARRAYLANG['TXT_CRM_TITLE_CURRENCY'], 'Header' => false),
+            array("value" => 'customerId', 'title' => $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERID'], 'Header' => false),
+            array("value" => 'language', 'title' => $_ARRAYLANG['TXT_CRM_TITLE_LANGUAGE'], 'Header' => false),            
+            array("value" => 'description', 'title' => $_ARRAYLANG['TXT_CRM_DESCRIPTION'], 'Header' => false),
             );
 
         foreach ($this->emailOptions as $key => $emailValue) {
-            array_push($headerCsv, array('name' => "customer_email_$key", 'title' => "{$_ARRAYLANG['TXT_CRM_EMAIL']} ({$_ARRAYLANG[$emailValue]})", 'Header' => false));
+            array_push($headerCsv, array("value" => "customer_email_$key", 'title' => "{$_ARRAYLANG['TXT_CRM_EMAIL']} ({$_ARRAYLANG[$emailValue]})", 'Header' => false));
         }
         foreach ($this->phoneOptions as $key => $phoneValue) {
-            array_push($headerCsv, array('name' => "customer_phone_$key", 'title' => "{$_ARRAYLANG['TXT_CRM_PHONE']} ({$_ARRAYLANG[$phoneValue]})", 'Header' => false));
+            array_push($headerCsv, array("value" => "customer_phone_$key", 'title' => "{$_ARRAYLANG['TXT_CRM_PHONE']} ({$_ARRAYLANG[$phoneValue]})", 'Header' => false));
         }
         foreach ($this->websiteProfileOptions as $websiteKey => $webValues) {
+            array_push($headerCsv, array("value" => "customer_website_{$websiteKey}", 'title' => "{$_ARRAYLANG['TXT_CRM_WEBSITE']} ({$_ARRAYLANG[$webValues]})", 'Header' => false));
+        }
+        foreach ($this->socialProfileOptions as $websiteKey => $webValues) {
             if (!empty($webValues)) {
-                foreach ($this->emailOptions as $key => $emailValue) {
-                    array_push($headerCsv, array('name' => "customer_website_{$websiteKey}_{$key}", 'title' => "{$_ARRAYLANG[$webValues]} ({$_ARRAYLANG[$emailValue]})", 'Header' => false));
-                }
+                array_push($headerCsv, array("value" => "customer_social_{$websiteKey}", 'title' => "{$_ARRAYLANG['TXT_CRM_SOCIAL_NETWORK']} ({$_ARRAYLANG[$webValues]})", 'Header' => false));
             }
         }
         foreach ($this->addressTypes as $addrKey => $addressType) {
             foreach ($this->addressValues as $key => $addressValue) {
                 if (!empty ($addressValue) && $addressValue != 'type') {
-                    array_push($headerCsv, array('name' => "customer_address_{$addrKey}_{$key}", 'title' => "Address ({$_ARRAYLANG[$addressType]}) $addressValue", 'Header' => false));
+                    array_push($headerCsv, array("value" => "customer_address_{$addrKey}_{$key}", 'title' => "$addressValue ({$_ARRAYLANG[$addressType]})", 'Header' => false));
                 }
             }
         }
@@ -612,9 +623,318 @@ class crmInterface extends CrmLibrary
      */
     function saveCsvData()
     {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG, $_LANGID;
 
         $json = array();
+
+        $csvSeprator    = isset ($_POST['csv_delimiter']) && in_array($_POST['csv_delimiter'], array_keys($this->_delimiter)) ? $this->_delimiter[$_POST['csv_delimiter']]['value'] : $this->_delimiter[0]['value'];
+        $csvDelimiter   = isset ($_POST['csv_enclosure']) && in_array($_POST['csv_enclosure'], array_keys($this->_enclosure)) ? $this->_enclosure[$_POST['csv_enclosure']]['value'] : $this->_enclosure[0]['value'];
+        $csvIgnoreFirst = isset ($_POST['ignore_first']) && (int) $_POST['ignore_first'];
+        $duplicate      = isset ($_POST['on_duplicate']) ? (int) $_POST['on_duplicate'] : 2;
+        $fileName       = isset ($_POST['fileUri']) ? $_POST['fileUri'] : '';
+        $objFWUser      = FWUser::getFWUserObject();
+        
+        foreach ($_POST['crm_contact_option_base'] as $colId => $value) {
+            if (!empty($value)) {
+                ${$value} = $colId;
+            }
+        }
+        if (isset($firstname) || isset($lastname) || isset($company)) {
+            $this->contact = $this->load->model('crmContact', __CLASS__);
+
+            $objCsv        = new Csv_bv($this->_mediaPath.'/'.$fileName, $csvSeprator, $csvDelimiter);
+            $line          = $objCsv->NextLine();
+            $first         = true;
+            $totalLines    = 0;
+            $importedLines = 0;
+            $skipedLines   = 0;
+            while ($line) {
+
+                sleep(1);
+                if (!$first || !$csvIgnoreFirst) {
+                    $this->contact->clean();
+                    $this->contact->contactType = !empty($line[$firstname]) || !empty($line[$lastname])
+                                                 ? 2
+                                                 : (!empty($line[$company]) ? 1 : 0);
+                    if (!empty($this->contact->contactType)) {                        
+
+                        $this->contact->datasource       = 3;
+                        
+                        $this->contact->family_name      = $this->contact->contactType == 2
+                                                          ? (isset($line[$lastname]) ? contrexx_input2raw($line[$lastname]) : '')
+                                                          : '';
+                        $this->contact->contact_role     = $this->contact->contactType == 2
+                                                          ? (isset($line[$role]) ? contrexx_input2raw($line[$role]) : '')
+                                                          : '';
+                        $this->contact->contact_language = $this->contact->contactType == 2
+                                                          ? (isset($line[$language]) ? $this->getLanguageIdByName($line[$language]) : $_LANGID)
+                                                          : '';
+                        $this->contact->contact_customer = $this->contact->contactType == 2
+                                                          ? (isset($line[$company]) ? $this->getCustomerIdByName($line[$company]) : 0)
+                                                          : 0;
+                        $this->contact->contact_gender   = $this->contact->contactType == 2
+                                                          ? (isset($line[$gender]) ? (int) ($line[$gender] == 'Female') ? '1' : (($line[$gender] == 'Male') ? '2' : 0) : 0)
+                                                          : 0;                        
+                        $this->contact->customerName     = $this->contact->contactType == 2
+                                                          ? (isset($line[$firstname]) ? contrexx_input2raw($line[$firstname]) : '')
+                                                          : (isset($line[$company]) ? contrexx_input2raw($line[$company]) : '');
+                        
+                        $this->contact->customerId   = isset($line[$customerId]) ? contrexx_input2raw($line[$customerId]) : '';
+                        $this->contact->customerType = isset($line[$customertype]) ? $this->getCustomerTypeIdByName($line[$customertype]) : 0;
+                        $this->contact->addedUser    = $objFWUser->objUser->getId();
+                        $this->contact->currency     = isset($line[$currency]) ? $this->getCurrencyIdByName($line[$currency]) : 0;
+                        $this->contact->notes        = isset($line[$description]) ? contrexx_input2raw($line[$description]) : '';
+                        $this->contact->industryType = isset($line[$industrytype]) ? $this->getIndustryTypeIdByName($line[$industrytype]) : 0;
+
+                        // unset customer type, customerId the contact have customer
+                        if (($this->contact->contactType == 2) && $this->contact->contact_customer != 0) {
+                            $this->contact->customerType = 0;
+                            $this->contact->currency     = 0;
+                            $this->contact->customerId   = '';
+                        }
+
+                        if (in_array($duplicate, array(0, 1))) {
+                            $emails = array();
+                            foreach ($this->emailOptions as $key => $emailValue) {                                
+                                if(isset(${"customer_email_$key"})) {
+                                    if(!empty($line[${"customer_email_$key"}]) && filter_var($line[${"customer_email_$key"}], FILTER_VALIDATE_EMAIL)) {
+                                        $emails[] = $line[${"customer_email_$key"}];
+                                    }
+                                }
+                            }
+                            $existingUser = $this->checkContactExists($this->contact->customerName, $this->contact->family_name, $emails, $this->contact->contactType);
+                        }
+
+                        $skip = false;
+                        switch ($duplicate) {
+                            case 0:
+                                if (empty ($existingUser)) {
+                                    $this->contact->save();
+                                } else {
+                                    $skip = true;
+                                }
+                                break;
+                            case 1:
+                                if (!empty ($existingUser)) {
+                                    $this->contact->id = $existingUser;
+                                }                                
+                            case 2:
+                                $this->contact->save();
+                                break;
+
+                        }
+
+                        if (!$skip) {
+                            $importedLines++;
+                            // insert Emails
+                            $objDatabase->Execute("DELETE FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_emails` WHERE `contact_id` = {$this->contact->id}");
+                            $query = "INSERT INTO `".DBPREFIX."module_{$this->moduleName}_customer_contact_emails` (email, email_type, is_primary, contact_id) VALUES ";
+
+                            $values = array();
+                            $first  = true;
+                            foreach ($this->emailOptions as $key => $emailValue) {
+                                if(isset(${"customer_email_$key"})) {
+                                    if(!empty($line[${"customer_email_$key"}]) && filter_var($line[${"customer_email_$key"}], FILTER_VALIDATE_EMAIL)) {
+                                        $primary  = $first ? '1' : '0';
+                                        $first    = false;
+                                        $values[] = "('".contrexx_input2db($line[${"customer_email_$key"}])."', '$key', '$primary', '".$this->contact->id."')";
+                                    }
+                                }
+                            }
+
+                            $query .= implode(",", $values);
+                            $objDatabase->Execute($query);
+
+                            // insert Phone
+                            $objDatabase->Execute("DELETE FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_phone` WHERE `contact_id` = {$this->contact->id}");
+                            $query = "INSERT INTO `".DBPREFIX."module_{$this->moduleName}_customer_contact_phone` (phone, phone_type, is_primary, contact_id) VALUES ";
+
+                            $values = array();
+                            $first  = true;
+                            foreach ($this->phoneOptions as $key => $phoneValue) {
+                                if(isset(${"customer_phone_$key"})) {
+                                    if(!empty($line[${"customer_phone_$key"}])) {
+                                        $primary  = $first ? '1' : '0';
+                                        $first    = false;
+                                        $values[] = "('".contrexx_input2db($line[${"customer_phone_$key"}])."', '$key', '$primary', '".$this->contact->id."')";
+                                    }
+                                }
+                            }
+
+                            $query .= implode(",", $values);
+                            $objDatabase->Execute($query);
+
+                            // insert Website
+                            $first = true;
+                            $custWeb = array('3','4','5');
+                            $conWeb  = array('0','1','2');
+                            $upFields = array('is_primary' => '0');
+                            $upQuery = SQL::update("module_{$this->moduleName}_customer_contact_websites", $upFields, array('escape' => true))." WHERE `contact_id` = {$this->contact->id}";
+                            $objDatabase->Execute($upQuery);
+                            foreach ($this->websiteProfileOptions as $websiteKey => $webValues) {
+                                $proceed = ($this->contact->contactType == 2 && in_array($websiteKey, $conWeb)) ? true : (($this->contact->contactType != 2 && in_array($websiteKey, $custWeb)) ? true : false);
+                                if (!empty($line[${"customer_website_$websiteKey"}]) && $proceed) {
+                                    $fields = array(
+                                                'url'           => urlencode($line[${"customer_website_$websiteKey"}]),
+                                                'url_profile'   => $websiteKey,
+                                                'is_primary'    => $first ? '1' : '0',
+                                                'contact_id'    => $this->contact->id
+                                              );
+                                    $first  = false;
+                                    $query  = SQL::insert("module_{$this->moduleName}_customer_contact_websites", $fields, array('escape' => true));
+                                    $db = $objDatabase->Execute($query);                                    
+                                }
+                            }
+
+                            // insert Social Network
+                            $first = true;
+                            $upFields = array('is_primary' => '0');
+                            $upQuery = SQL::update("module_{$this->moduleName}_customer_contact_social_network", $upFields, array('escape' => true))." WHERE `contact_id` = {$this->contact->id}";
+                            $objDatabase->Execute($upQuery);
+                            foreach ($this->socialProfileOptions as $websiteKey => $webValues) {
+                                if (!empty($line[${"customer_social_$websiteKey"}])) {
+                                    $fields = array(
+                                                'url'           => urlencode($line[${"customer_social_$websiteKey"}]),
+                                                'url_profile'   => $websiteKey,
+                                                'is_primary'    => $first ? '1' : '0',
+                                                'contact_id'    => $this->contact->id
+                                              );
+                                    $first  = false;
+                                    $query  = SQL::insert("module_{$this->moduleName}_customer_contact_social_network", $fields, array('escape' => true));
+                                    $db = $objDatabase->Execute($query);
+                                }
+                            }
+
+                            // insert address
+                            $objDatabase->Execute("DELETE FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_address` WHERE `contact_id` = {$this->contact->id}");
+                            $first = true;
+                            foreach ($this->addressTypes As $addTypeKey => $addTypeValue) {
+                                $fields = array();
+                                $insert = false;
+                                foreach ($this->addressValues As $addressKey => $addressValue) {
+                                    if (!empty ($line[${"customer_address_$addTypeKey"."_$addressKey"}])) {
+                                        if (!empty ($addressValue) && $addressValue != 'type') {
+                                            $insert = true;
+                                            $fields[$addressValue] = contrexx_input2raw($line[${"customer_address_$addTypeKey"."_$addressKey"}]);
+                                        }
+                                    }
+                                }
+                                $fields['Address_Type'] = $addTypeKey;
+                                $fields['contact_id']   = $this->contact->id;
+                                $fields['is_primary']   = $first ? '1' : '0';
+                                $first = false;
+                                if ($insert) {
+                                    $query  = SQL::insert("module_{$this->moduleName}_customer_contact_address", $fields, array('escape' => true));
+                                    $db = $objDatabase->Execute($query);
+                                }
+                            }
+                        } else {
+                            $skipedLines++;
+                        }
+                    }
+                }
+                $_SESSION[$fileName] = array(
+                    'totalRows'     => $totalLines,
+                    'importedRows'  => $importedLines,
+                    'skippedRows'   => $skipedLines
+                );
+                $totalLines++;
+                $first = false;
+                $line = $objCsv->NextLine();
+            }
+        } else {
+            $json['error'] = $_ARRAYLANG['TXT_CRM_CHOOSE_NAME_ERROR'];
+        }
+        
+        echo json_encode($json);
+        exit();
+    }
+
+    function getLanguageIdByName($language)
+    {
+        global $objDatabase;
+        
+        $objResult = $objDatabase->Execute("SELECT  `id` FROM `".DBPREFIX."languages` WHERE `name` = '". contrexx_raw2db($language)."' LIMIT 0, 1");
+
+        return (int) $objResult->fields['id'];
+    }
+
+    function getCustomerIdByName($company)
+    {
+        global $objDatabase;
+
+        $objResult = $objDatabase->Execute("SELECT `id` FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE `contact_type` = '1' AND `customer_name` = '". contrexx_raw2db($company)."' LIMIT 0, 1");
+
+        return (int) $objResult->fields['id'];
+    }
+
+    function getCustomerTypeIdByName($customerType)
+    {
+        global $objDatabase;
+        
+        $objResult = $objDatabase->Execute("SELECT `id` FROM `".DBPREFIX."module_{$this->moduleName}_customer_types` WHERE `label` = '".contrexx_raw2db($customerType)."' LIMIT 0, 1");
+        
+        return (int) $objResult->fields['id'];
+    }
+
+    function getCurrencyIdByName($currency)
+    {
+        global $objDatabase;
+        
+        $objResult = $objDatabase->Execute("SELECT `id` FROM `".DBPREFIX."module_{$this->moduleName}_currency` WHERE `name` = '". contrexx_raw2db($currency)."' LIMIT 0, 1");
+
+        return (int) $objResult->fields['id'];
+    }
+
+    function getIndustryTypeIdByName($industrytype)
+    {
+        global $objDatabase;
+        
+        $objResult = $objDatabase->Execute("SELECT `entry_id` FROM `".DBPREFIX."module_{$this->moduleName}_industry_type_local` WHERE `value` = '". contrexx_raw2db($industrytype)."' LIMIT 0, 1");
+
+        return (int) $objResult->fields['entry_id'];
+    }
+
+    function checkContactExists($customer_name, $family_name, $emails, $contact_type)
+    {
+        global $objDatabase;
+
+        $whereEmails = !empty($emails) 
+                      ? " AND e.email IN (".implode(' , ', array_map(function($el){ return "'$el'"; }, contrexx_raw2db($emails))).")"
+                      : '';
+        $query = "SELECT
+                        DISTINCT c.`id`
+                        FROM `".DBPREFIX."module_{$this->moduleName}_contacts` AS c
+                          LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_customer_contact_emails` as e
+                            ON (c.`id` = e.`contact_id`)
+                        WHERE c.`customer_name` = '". contrexx_raw2db($customer_name) ."'
+                          AND c.`contact_familyname` = '". contrexx_raw2db($family_name) ."'
+                          AND c.`contact_type` = '$contact_type'
+                          $whereEmails LIMIT 0, 1";
+        $objResult = $objDatabase->Execute($query);
+
+        return (int) $objResult->fields['id'];
+        
+    }
+
+    function getFileImportProgress()
+    {
+        $file = isset($_GET['file']) ? contrexx_input2raw($_GET['file']) : '';
+
+        $json = array();
+        if (!empty($file)) {
+            if (isset($_SESSION[$file])) {
+                $json['totalRows'] = isset ($_SESSION[$file]['totalRows']) ? $_SESSION[$file]['totalRows'] : 0;
+                $json['skippedRows'] = isset ($_SESSION[$file]['skippedRows']) ? $_SESSION[$file]['skippedRows'] : 0;
+                $json['importedRows'] = isset ($_SESSION[$file]['importedRows']) ? $_SESSION[$file]['importedRows'] : 0;
+                $json['percentCompleted'] = 100;
+
+            } else {
+                $json['error'] = "File import not yet started";
+            }
+        } else {
+            $json['error'] = "File is empty..!";
+        }
 
         echo json_encode($json);
         exit();
