@@ -3,10 +3,18 @@
  * @author: Ueli Kramer <ueli.kramer@comvation.com>
  * @version: 1.0
  * @package: contrexx
- * @subpackage: core_modules_frontend_editing
+ * @subpackage: core_modules_frontendediting
+ */
+
+/**
+ * Set CKEDITOR configuration, so the inline editing will not start automatically
+ * @type {boolean}
  */
 CKEDITOR.disableAutoInline = true;
 
+/**
+ * Run the frontend editing when DOM is ready
+ */
 cx.ready(function () {
     cx.fe();
 });
@@ -21,7 +29,7 @@ cx.fe = function () {
 
     cx.fe.addCustomPlugins();
     cx.fe.toolbar();
-    cx.fe.history();
+    cx.fe.toolbar.hideAnchors();
 };
 
 /**
@@ -45,7 +53,8 @@ cx.fe.contentEditor = function () {
             customConfig: CKEDITOR.getUrl(cx.variables.get('configPath', 'frontendEditing')),
             toolbar: 'FrontendEditingTitle',
             forcePasteAsPlainText: true,
-            extraPlugins: extraPlugins.join(',')
+            extraPlugins: extraPlugins.join(','),
+            entities: false
         });
     }
     if (!CKEDITOR.instances.fe_content) {
@@ -55,9 +64,6 @@ cx.fe.contentEditor = function () {
             extraPlugins: extraPlugins.join(',')
         });
     }
-
-    // show history
-    cx.fe.history.show();
     return false;
 };
 
@@ -91,8 +97,8 @@ cx.fe.contentEditor.stop = function () {
     // remove status message
     cx.jQuery.fn.cxDestroyDialogs();
 
-    // remove history
-    cx.fe.history.hide();
+    // remove history and options
+    cx.fe.toolbar.hideAnchors();
     return false;
 };
 
@@ -139,7 +145,13 @@ cx.fe.toolbar = function () {
             cx.jQuery(this).html(cx.fe.langVars.TXT_FRONTEND_EDITING_STOP_EDIT);
 
             // load newest version, draft or published and refresh the editor's content
-            cx.fe.loadPageData(null, true);
+            cx.fe.loadPageData(null, true, function () {
+                cx.fe.history();
+                cx.fe.options();
+                cx.fe.toolbar.showAnchors();
+            });
+
+            // init the ckeditor
             cx.fe.contentEditor();
         }
         return false;
@@ -182,6 +194,20 @@ cx.fe.toolbar.show = function () {
 };
 
 /**
+ * hide history and options anchors
+ */
+cx.fe.toolbar.hideAnchors = function () {
+    cx.jQuery('#fe_history_box_anchor,#fe_options_box_anchor').hide();
+};
+
+/**
+ * show history and options anchors
+ */
+cx.fe.toolbar.showAnchors = function () {
+    cx.jQuery('#fe_history_box_anchor,#fe_options_box_anchor').show();
+};
+
+/**
  * prepare Page for sending
  *
  * replace true and false statements to "on" and "off"
@@ -190,6 +216,9 @@ cx.fe.preparePageToSend = function () {
     cx.fe.page.title = CKEDITOR.instances.fe_title.getData();
     cx.fe.page.content = CKEDITOR.instances.fe_content.getData();
     cx.fe.page.application = cx.fe.page.module;
+    cx.fe.page.skin = cx.jQuery('#fe_options_box select[name="page[skin]"]').val();
+    cx.fe.page.customContent = cx.jQuery('#fe_options_box select[name="page[customContent]"]').val();
+    cx.fe.page.cssName = cx.jQuery('#fe_options_box input[name="page[cssName]"]').val();
 
     // rewrite true and false to on and off
     cx.fe.page.scheduled_publishing = (cx.fe.page.scheduled_publishing === true ? 'on' : 'off');
@@ -204,8 +233,9 @@ cx.fe.preparePageToSend = function () {
  * load the page data
  * @param historyId
  * @param putTheData
+ * @param callback
  */
-cx.fe.loadPageData = function (historyId, putTheData) {
+cx.fe.loadPageData = function (historyId, putTheData, callback) {
     console.log('called: loadPageData(' + historyId + ',' + putTheData + ')');
     var url = cx.variables.get('basePath', 'contrexx') + 'cadmin/index.php?cmd=jsondata&object=page&act=get&page=' + cx.variables.get('pageId', 'frontendEditing') + '&lang=' + cx.jQuery.cookie('langId') + '&userFrontendLangId=' + cx.jQuery.cookie('langId');
     if (historyId) {
@@ -244,10 +274,19 @@ cx.fe.loadPageData = function (historyId, putTheData) {
             } else {
                 cx.jQuery.fn.cxDestroyDialogs();
             }
+            if (callback) {
+                callback();
+            }
+            cx.fe.history.load();
+            cx.fe.options.load();
         }
     });
 };
 
+/**
+ * Returns true when the page is a draft, false if not
+ * @returns {boolean}
+ */
 cx.fe.pageIsADraft = function () {
     if (cx.fe.page.editingStatus == 'hasDraft'
         || cx.fe.page.editingStatus == 'hasDraftWaiting') {
@@ -256,6 +295,9 @@ cx.fe.pageIsADraft = function () {
     return false;
 };
 
+/**
+ * Does a request to publish the new contents
+ */
 cx.fe.publishPage = function () {
     cx.fe.preparePageToSend();
 
@@ -280,6 +322,10 @@ cx.fe.publishPage = function () {
     });
 };
 
+/**
+ * Save a page
+ * Does a request to the page jsonadapter to put the new values into the database
+ */
 cx.fe.savePage = function () {
     cx.fe.preparePageToSend();
 
@@ -299,41 +345,47 @@ cx.fe.savePage = function () {
     });
 };
 
+/**
+ * Init the history. show the box when clicking on label.
+ * Hide the history box after 2 seconds
+ */
 cx.fe.history = function () {
     cx.fe.history.hide();
-    cx.jQuery('#fe_history_box,#fe_history_arrow').hide();
 
-    cx.jQuery('#fe_history_box_anchor').children('a').click(function() {
-        return false;
-    });
-
-    cx.jQuery('#fe_history_box_anchor').hover(function () {
-        clearTimeout(cx.fe.history.displayTimeout);
+    cx.jQuery('#fe_history_box_anchor').click(function () {
         if (cx.jQuery('#fe_history_box').css('display') == 'none') {
-            cx.jQuery('#fe_history_box,#fe_history_arrow').show();
+            cx.fe.options.hide();
+            cx.fe.history.show();
             cx.fe.history.load();
         }
-    }, function() {
-        cx.fe.history.displayTimeout = setTimeout(function() {
-            cx.jQuery('#fe_history_box,#fe_history_arrow').hide();
-        }, 2000);
-    });
+        return false;
+    }).hover(function () {
+            clearTimeout(cx.fe.history.displayTimeout);
+        }, function () {
+            cx.fe.history.displayTimeout = setTimeout(function () {
+                cx.fe.history.hide();
+            }, 2000);
+        });
 };
 
 /**
  * show history anchor
  */
 cx.fe.history.show = function () {
-    cx.jQuery('#fe_history_box_anchor').show();
+    cx.jQuery('#fe_history_arrow,#fe_history_box').show();
 };
 
 /**
  * hide the history anchor
  */
 cx.fe.history.hide = function () {
-    cx.jQuery('#fe_history_box_anchor').hide();
+    cx.jQuery('#fe_history_arrow,#fe_history_box').hide();
 };
 
+/**
+ * Load history and put the history into the correct container
+ * @param pos
+ */
 cx.fe.history.load = function (pos) {
     if (!pos) {
         pos = 0;
@@ -357,7 +409,10 @@ cx.fe.history.load = function (pos) {
     });
 };
 
-cx.fe.history.updateHighlighting = function() {
+/**
+ * Remove functions for active history version
+ */
+cx.fe.history.updateHighlighting = function () {
     cx.jQuery('.historyLoad, .historyPreview').each(function () {
         if ((cx.jQuery(this).attr('id') == 'load_' + cx.fe.history.loadedVersion) || (cx.jQuery(this).attr('id') == 'preview_' + cx.fe.history.loadedVersion)) {
             cx.jQuery(this).css('display', 'none');
@@ -368,6 +423,89 @@ cx.fe.history.updateHighlighting = function() {
 }
 
 /**
+ * Init the options. show the box when clicking on label.
+ * Hide the options box after 2 seconds
+ */
+cx.fe.options = function () {
+    // hide options
+    cx.fe.options.hide();
+    cx.jQuery('#fe_options_box select[name="page[skin]"]').val(cx.fe.page.skin);
+    cx.fe.options.reloadCustomContentTemplates();
+    cx.jQuery('#fe_options_box select[name="page[customContent]"]').val(cx.fe.page.customContent);
+    cx.jQuery('#fe_options_box input[name="page[cssName]"]').val(cx.fe.page.cssName);
+
+    cx.jQuery('#fe_options_box_anchor').click(function () {
+        if (cx.jQuery('#fe_options_box').css('display') == 'none') {
+            cx.fe.history.hide();
+            cx.fe.options.show();
+            cx.fe.options.load();
+        }
+        return false;
+    }).hover(function () {
+            clearTimeout(cx.fe.options.displayTimeout);
+        }, function () {
+            cx.fe.options.displayTimeout = setTimeout(function () {
+                cx.fe.options.hide();
+            }, 2000);
+        });
+
+    cx.jQuery('#fe_options_box select[name="page[skin]"]').bind('change', function () {
+        cx.fe.options.reloadCustomContentTemplates();
+    });
+};
+
+/**
+ * reload the custom content templates
+ */
+cx.fe.options.reloadCustomContentTemplates = function () {
+    var skinId = jQuery('#fe_options_box select[name="page[skin]"]').val();
+    var module = jQuery('#fe_options_box select[name="page[application]"]').val();
+    var select = jQuery('#fe_options_box select[name="page[customContent]"]');
+    select.empty();
+    select.append(jQuery("<option value=\"\" selected=\"selected\">(Default)</option>"));
+
+    // Default skin
+    if (skinId == 0) {
+        skinId = cx.variables.get('defaultTemplate', 'frontendEditing');
+    }
+
+    var templates = cx.variables.get('contentTemplates', "frontendEditing");
+    if (templates[skinId] == undefined) {
+        return;
+    }
+
+    for (var i = 0; i < templates[skinId].length; i++) {
+        var isHome = /^home_/.exec(templates[skinId][i]);
+        if ((isHome && module == "home") || !isHome && module != "home") {
+            select.append(jQuery('<option>', {
+                value: templates[skinId][i]
+            }).text(templates[skinId][i]));
+        }
+    }
+};
+
+/**
+ * show options anchor
+ */
+cx.fe.options.show = function () {
+    cx.jQuery('#fe_options_arrow,#fe_options_box').show();
+};
+
+/**
+ * hide the options anchor
+ */
+cx.fe.options.hide = function () {
+    cx.jQuery('#fe_options_arrow,#fe_options_box').hide();
+};
+
+/**
+ * load the options into the options container
+ */
+cx.fe.options.load = function () {
+    cx.fe.options.reloadCustomContentTemplates();
+};
+
+/**
  * function which is called when the user clicks on "load" in history box
  * @param version
  */
@@ -375,7 +513,9 @@ loadHistoryVersion = function (version) {
     cx.fe.loadPageData(version, true);
 };
 
-/* Dialogs */
+/**
+ * Dialogs
+ */
 (function ($) {
     var defaultOpts = {
         draggable: false,

@@ -3,9 +3,29 @@
     <div id="fe_toolbar_logo"></div>
     <div id="fe_toolbar_tab"></div>
     <div id="fe_metanavigation">
-        <div id="fe_history_box_anchor"><a href="#">{TXT_FRONTEND_EDITING_HISTORY}</a>
+        <div id="fe_history_box_anchor">
+            <a href="#">{TXT_FRONTEND_EDITING_HISTORY}</a>
+
             <div id="fe_history_arrow"></div>
             <div id="fe_history_box"></div>
+        </div>
+        <div id="fe_options_box_anchor">
+            <a href="#">{TXT_FRONTEND_EDITING_OPTIONS}</a>
+
+            <div id="fe_options_arrow"></div>
+            <div id="fe_options_box">
+                <label for="page_skin">{TXT_FRONTEND_EDITING_THEMES}</label>
+                <select id="page_skin" name="page[skin]">
+                    <option value="0">(Default)</option>
+                    {SKIN_OPTIONS}
+                </select>
+                <label for="page_custom_content">{TXT_FRONTEND_EDITING_CUSTOM_CONTENT}</label>
+                <select id="page_custom_content" name="page[customContent]">
+                    <option value="">(Default)</option>
+                </select>
+                <label for="page_css_class">{TXT_FRONTEND_EDITING_CSS_CLASS}</label>
+                <input type="text" name="page[cssName]" id="page_css_class"/>
+            </div>
         </div>
         <!-- BEGIN upgradable -->
         <a id="fe_license-upgrade" href="{LINK_LICENSE}" target="_self">{TXT_UPGRADE}</a>
