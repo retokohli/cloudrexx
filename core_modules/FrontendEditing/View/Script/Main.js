@@ -54,7 +54,10 @@ cx.fe.contentEditor = function () {
             toolbar: 'FrontendEditingTitle',
             forcePasteAsPlainText: true,
             extraPlugins: extraPlugins.join(','),
-            entities: false
+            basicEntities: false,
+            entities: false,
+            entities_latin: false,
+            entities_greek: false
         });
     }
     if (!CKEDITOR.instances.fe_content) {
@@ -64,6 +67,11 @@ cx.fe.contentEditor = function () {
             extraPlugins: extraPlugins.join(',')
         });
     }
+    // save published content and title
+    cx.fe.publishedPage = {
+        title: CKEDITOR.instances.fe_title.getData(),
+        content: CKEDITOR.instances.fe_content.getData()
+    };
     return false;
 };
 
@@ -74,8 +82,11 @@ cx.fe.contentEditor.stop = function () {
     cx.fe.editMode = false;
 
     // load last published content if the page in the current editor is a draft
-    if (cx.jQuery('#fe_title').html() != cx.fe.publishedPage.title
-        || cx.jQuery('#fe_content').html() != cx.fe.publishedPage.content) {
+    if (CKEDITOR.instances.fe_title.getData() != cx.fe.publishedPage.title
+        || CKEDITOR.instances.fe_content.getData() != cx.fe.publishedPage.content
+        || cx.jQuery('#fe_options_box select[name="page[skin]"]').val() != cx.fe.page.skin
+        || cx.jQuery('#fe_options_box select[name="page[customContent]"]').val() != cx.fe.page.customContent
+        || cx.jQuery('#fe_options_box input[name="page[cssName]"]').val() != cx.fe.page.cssName) {
         if (confirm(cx.fe.langVars.TXT_FRONTEND_EDITING_SAVE_CURRENT_STATE)) {
             cx.fe.savePage();
         }
@@ -127,12 +138,6 @@ cx.fe.toolbar = function () {
             cx.fe.toolbar.show();
         }
     });
-
-    // save published content and title
-    cx.fe.publishedPage = {
-        title: cx.jQuery('#fe_title').html(),
-        content: cx.jQuery('#fe_content').html()
-    };
 
     // start / stop edit mode button
     cx.jQuery('#fe_toolbar_startEditMode').html(cx.fe.langVars.TXT_FRONTEND_EDITING_EDIT).click(function () {
@@ -314,8 +319,8 @@ cx.fe.publishPage = function () {
             cx.jQuery.fn.cxDestroyDialogs(5000);
         }
         cx.fe.publishedPage = {
-            title: cx.jQuery('#fe_title').html(),
-            content: cx.jQuery('#fe_content').html()
+            title: CKEDITOR.instances.fe_title.getData(),
+            content: CKEDITOR.instances.fe_content.getData()
         };
         // load new page data, but don't reload and don't put data into content
         cx.fe.loadPageData(null, false);
