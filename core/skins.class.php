@@ -1430,23 +1430,25 @@ class skins
         global $objDatabase;
 
         $activatedThemes = array();
-        $objResult = $objDatabase->Execute("SELECT id,themesid,print_themes_id,pdf_themes_id,is_default FROM ".DBPREFIX."languages ORDER BY id");
+        $objResult = $objDatabase->Execute("SELECT id,themesid,print_themes_id,pdf_themes_id,mobile_themes_id,app_themes_id,is_default FROM ".DBPREFIX."languages WHERE frontend=1");
         $i=0;
         if ($objResult !== false) {
             while (!$objResult->EOF) {
                 $activatedThemes[] = $objResult->fields['themesid'];
                 $activatedThemes[] = $objResult->fields['print_themes_id'];
                 $activatedThemes[] = $objResult->fields['pdf_themes_id'];
+                $activatedThemes[] = $objResult->fields['mobile_themes_id'];
+                $activatedThemes[] = $objResult->fields['app_themes_id'];
                 $i++;
                 $objResult->MoveNext();
             }
         }
-        $objResult = $objDatabase->Execute("SELECT id,themesname,foldername FROM ".DBPREFIX."skins ORDER BY id");
+        $objResult = $objDatabase->Execute("SELECT id,themesname,foldername FROM ".DBPREFIX."skins ORDER BY themesname");
         $tdm = '';
         if ($objResult !== false) {
             while (!$objResult->EOF) {
                 if (!in_array($objResult->fields['id'], $activatedThemes)) {
-                    $tdm .="<option value='".$objResult->fields['foldername']."'>".$objResult->fields['themesname']."</option>\n";
+                    $tdm .="<option value='".contrexx_raw2xhtml($objResult->fields['foldername'])."'>".$objResult->fields['themesname']."</option>\n";
                 }
                 $objResult->MoveNext();
             }
