@@ -388,7 +388,7 @@ function search_getResultArray($query,$section,$command,$pagevar,$term)
     $crit = array(
          'module' => $section,
          'lang'   => FRONTEND_LANG_ID,
-         'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
+         'type'   => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
          'cmd'    => $command,
     );
 
@@ -407,6 +407,37 @@ function search_getResultArray($query,$section,$command,$pagevar,$term)
     
     if (!$hasPageAccess) {
         return array();
+    }
+
+    // In case we are handling the search result of a module ($section is not empty),
+    // we have to check if we are allowed to list the results even when the associated module 
+    // page is invisible.
+    // We don't have to check for regular pages ($section is empty) here, because they
+    // are handled by an other method than this one.
+    if ($config['searchVisibleContentOnly'] == 'on' && !empty($section)) {
+        if (!$page->isVisible()) {
+            // If $command is set, then this would indicate that we have checked the
+            // visibility of the detail view page of the module.
+            // Those pages are almost always invisible.
+            // Therefore, we shall make the decision if we are allowd to list the results
+            // based on the visibility of the main module page (without CMD).
+            if (!empty($command)) {
+                $crit = array(
+                     'module' => $section,
+                     'lang'   => FRONTEND_LANG_ID,
+                     'type'   => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
+                     'cmd'    => '',
+                );
+                $mainModulePage = $pageRepo->findOneBy($crit);
+                if(!$mainModulePage || !$mainModulePage->isActive() || !$mainModulePage->isVisible()) {
+                    // main module page is also invisible
+                    return array();
+                }
+            } else {
+                // page is invisible
+                return array();
+            }
+        }
     }
 
     $pagePath = $pageRepo->getPath($page);
