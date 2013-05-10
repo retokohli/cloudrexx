@@ -392,8 +392,20 @@ function search_getResultArray($query,$section,$command,$pagevar,$term)
          'cmd'    => $command,
     );
 
+    // only list results in case the associated page of the module is active
     $page = $pageRepo->findOneBy($crit);
     if(!$page || !$page->isActive()) {
+        return array();
+    }
+
+    // don't list results in case the user doesn't have sufficient rights to access the page
+    // and the option to list only unprotected pages is set (coreListProtectedPages)
+    $hasPageAccess = true;
+    if ($config['coreListProtectedPages'] == 'off' && $page->isFrontendProtected()) {
+        $hasPageAccess = \Permission::checkAccess($page->getFrontendAccessId(), 'dynamic', true);
+    }
+    
+    if (!$hasPageAccess) {
         return array();
     }
 
