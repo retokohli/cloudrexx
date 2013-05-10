@@ -862,7 +862,7 @@ class PageRepository extends EntityRepository {
         foreach($pages as $page) {
             $isNotVisible  = ($config['searchVisibleContentOnly'] == 'on') && !$page->isVisible();
             $hasPageAccess = true;
-            if ($page->isFrontendProtected()) {
+            if ($config['coreListProtectedPages'] == 'off' && $page->isFrontendProtected()) {
                 $hasPageAccess = \Permission::checkAccess($page->getFrontendAccessId(), 'dynamic', true);
             }
             
