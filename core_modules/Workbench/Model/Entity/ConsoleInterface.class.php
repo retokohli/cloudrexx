@@ -84,4 +84,41 @@ Available subcommands:' . "\r\n";
         }
         echo $message . "\r\n";
     }
+    
+    /**
+     * Tested for 2 dimensions only
+     * @todo $childrenCount must be an array in order to handle more than 2 dimensions
+     * @param array $tree
+     * @param type $displayindex 
+     */
+    public function tree(array $tree, $displayindex = 0) {
+        $output = '';
+        $levelOffset = '──';
+        $level = 1;
+        $childrenCount = 0;
+        $tree = array_reverse($tree);
+        while (count($tree)) {
+            $currentItem = array_pop($tree);
+            if ($childrenCount == 0 && $level > 1) {
+                $level--;
+            }
+            if ($childrenCount) {
+                $childrenCount--;
+            }
+            $entryLevelOffset = '';
+            for ($i = 0; $i < $level; $i++) {
+                $entryLevelOffset .= $levelOffset;
+            }
+            $output .= '├' . $entryLevelOffset . $currentItem[$displayindex] . "\r\n";
+            if (isset($currentItem['children'])) {
+                $level++;
+                $children = array_reverse($currentItem['children']);
+                $childrenCount = count($children);
+                foreach ($children as $child) {
+                    array_push($tree, $child);
+                }
+            }
+        }
+        echo $output;
+    }
 }
