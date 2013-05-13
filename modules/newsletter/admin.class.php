@@ -573,7 +573,7 @@ class newsletter extends NewsletterLib
 			$importTemplate = intval($_POST['newsletter_import_template']);
 
         if (isset($_POST['newsletter_mail_html_content'])) {
-            $mailHtmlContent = $this->_getBodyContent($_POST['newsletter_mail_html_content']);
+            $mailHtmlContent = $this->_getBodyContent(contrexx_input2raw($_POST['newsletter_mail_html_content']));
         } elseif (isset($_POST['selected'])) {
 			$selectedNews = contrexx_input2db($_POST['selected']);
 			$HTML_TemplateSource_Import = $this->_getBodyContent($this->_prepareNewsPreview($this->GetTemplateSource($importTemplate, 'html')));
