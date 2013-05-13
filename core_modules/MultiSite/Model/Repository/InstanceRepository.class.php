@@ -1,5 +1,5 @@
 <?php
-namespace Cx\Modules\MultiSite\Model\Repository;
+namespace Cx\Core_Modules\MultiSite\Model\Repository;
 
 class InstanceRepository {
 	
@@ -11,8 +11,8 @@ class InstanceRepository {
 				continue;
 			}
 			try {
-				$instances[] = new \Cx\Modules\MultiSite\Model\Entity\Instance($basepath, $file);
-			} catch (\Cx\Modules\MultiSite\Model\Entity\InstanceException $e) {
+				$instances[] = new \Cx\Core_Modules\MultiSite\Model\Entity\Instance($basepath, $file);
+			} catch (\Cx\Core_Modules\MultiSite\Model\Entity\InstanceException $e) {
 				continue;
 			}
 		}

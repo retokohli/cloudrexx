@@ -1,5 +1,5 @@
 <?php
-namespace Cx\Modules\MultiSite\Controller;
+namespace Cx\Core_Modules\MultiSite\Controller;
 
 class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponentController {
 	
@@ -70,7 +70,7 @@ class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponen
         	$act = contrexx_input2raw($_GET['act']);
         }
         
-        $actTemplate = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH . '/MultiSite/View/Template');
+        $actTemplate = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/MultiSite/View/Template');
         
         switch ($act) {
 		
@@ -79,7 +79,7 @@ class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponen
             case 'instances':
                 $actTemplate->loadTemplateFile('Instances.html');
                 
-                $instRepo = new \Cx\Modules\MultiSite\Model\Repository\InstanceRepository();
+                $instRepo = new \Cx\Core_Modules\MultiSite\Model\Repository\InstanceRepository();
                 $instances = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($instRepo->findAll('/var/www'));
                 $actTemplate->setVariable(array(
                     'TABLE' => (new \BackendTable($instances))->toHtml(),
@@ -99,7 +99,7 @@ class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponen
 		}
         
         // set tabs
-        $navigation = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH . '/MultiSite/View/Template');
+        $navigation = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/MultiSite/View/Template');
         $navigation->loadTemplateFile('Navigation.html');
         foreach ($navEntries as $href=>$title) {
             $navigation->setVariable(array(
