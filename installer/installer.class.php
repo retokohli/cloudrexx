@@ -442,6 +442,7 @@ class Installer
             // get sytem informations
             $phpVersion = $objCommon->getPHPVersion();
             $mysqlSupport = $objCommon->checkMySQLSupport();
+            $pdoSupport = $objCommon->checkPDOSupport();
             $gdVersion = $objCommon->checkGDSupport();
 
             if (!$objCommon->isWindows() && ini_get('safe_mode')) {
@@ -456,7 +457,7 @@ class Installer
                 $iisUrlRewriteModuleSupport = true;
             }
 
-            if (($phpVersion >= $requiredPHPVersion || isset($_POST['ignore_php_requirement'])) && $mysqlSupport && ($gdVersion >= $requiredGDVersion) && $ftpSupport && $iisUrlRewriteModuleSupport) {
+            if (($phpVersion >= $requiredPHPVersion || isset($_POST['ignore_php_requirement'])) && $mysqlSupport && $pdoSupport && ($gdVersion >= $requiredGDVersion) && $ftpSupport && $iisUrlRewriteModuleSupport) {
                 $_SESSION['installer']['step']++;
             }
         }
@@ -486,6 +487,7 @@ class Installer
         // get sytem informations
         $phpVersion   = $objCommon->getPHPVersion();
         $mysqlSupport = $objCommon->checkMySQLSupport();
+        $pdoSupport   = $objCommon->checkPDOSupport();
         $gdVersion    = $objCommon->checkGDSupport();
         $ftpSupport   = $objCommon->checkFTPSupport();
         $apcSupport   = $objCommon->enableApc();
@@ -505,6 +507,9 @@ class Installer
         if (!$mysqlSupport) {
             $this->arrStatusMsg['extensions'] .= $_ARRLANG['TXT_MYSQL_SUPPORT_REQUIRED']."<br />";
         }
+        if (!$pdoSupport) {
+            $this->arrStatusMsg['extensions'] .= $_ARRLANG['TXT_PDO_SUPPORT_REQUIRED']."<br />";
+        }
         if ($gdVersion < $requiredGDVersion) {
             $this->arrStatusMsg['extensions'] .= str_replace("[VERSION]", $requiredGDVersion, $_ARRLANG['TXT_GD_VERSION_REQUIRED']."<br />");
         }
@@ -522,6 +527,8 @@ class Installer
             'PHP_VERSION_CLASS'      => $phpVersion >= $requiredPHPVersion ? 'successful' : 'failed',
             'MYSQL_SUPPORT'          => $mysqlSupport ? $_ARRLANG['TXT_YES'] : $_ARRLANG['TXT_NO'],
             'MYSQL_SUPPORT_CLASS'    => $mysqlSupport ? 'successful' : 'failed',
+            'PDO_SUPPORT'            => $pdoSupport ? $_ARRLANG['TXT_YES'] : $_ARRLANG['TXT_NO'],
+            'PDO_SUPPORT_CLASS'      => $pdoSupport ? 'successful' : 'failed',
             'GD_REQUIRED_VERSION'    => $_ARRLANG['TXT_GD_VERSION'].' >= '.$requiredGDVersion,
             'GD_VERSION'             => $gdVersion,
             'GD_VERSION_CLASS'       => $gdVersion >= $requiredGDVersion ? 'successful' : 'failed',

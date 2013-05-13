@@ -457,9 +457,15 @@ class CommonFunctions
     function checkMySQLSupport() {
         if (extension_loaded('mysql')) {
             return true;
-        } else {
-            return false;
         }
+        return false;
+    }
+
+    function checkPDOSupport() {
+        if (extension_loaded('pdo') && extension_loaded('pdo_mysql')) {
+            return true;
+        }
+        return false;
     }
 
     /**
