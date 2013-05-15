@@ -117,7 +117,7 @@ class AliasAdmin extends aliasLib
     {
         global $_ARRAYLANG, $_CONFIG;
 
-        $showLegacyPagealiases = isset($_POST['legacyPages']) && $_POST['legacyPages'];
+        $showLegacyPagealiases = isset($_GET['legacyPages']) && $_GET['legacyPages'];
 
         $this->_objTpl->loadTemplateFile('module_alias_list.html');
         $this->_pageTitle = $_ARRAYLANG['TXT_ALIAS_ALIAS_ES'];
@@ -199,8 +199,8 @@ class AliasAdmin extends aliasLib
             $this->_objTpl->parse('alias_data');
             $this->_objTpl->hideBlock('alias_no_data');
 
-            if ($this->_getAliasesCount() > count($arrAliases)) {
-                $this->_objTpl->setVariable('ALIAS_PAGING', '<br />'.getPaging($this->_getAliasesCount(), !empty($_GET['pos']) ? intval($_GET['pos']) : 0, '?cmd=alias', $_ARRAYLANG['TXT_ALIAS_ALIASES']));
+            if ($this->_getAliasesCount($showLegacyPagealiases) > count($arrAliases)) {
+                $this->_objTpl->setVariable('ALIAS_PAGING', '<br />'.getPaging($this->_getAliasesCount($showLegacyPagealiases), !empty($_GET['pos']) ? intval($_GET['pos']) : 0, '?cmd=alias', $_ARRAYLANG['TXT_ALIAS_ALIASES']));
             }
         } else {
             $this->_objTpl->setVariable('TXT_ALIAS_NO_ALIASES_MSG', $_ARRAYLANG['TXT_ALIAS_NO_ALIASES_MSG']);

@@ -75,9 +75,9 @@ class aliasLib
     }
 
 
-    function _getAliasesCount()
+    function _getAliasesCount($showLegacyPagealiases)
     {
-        return count($this->_getAliases(null, true));
+        return count($this->_getAliases(null, true, $showLegacyPagealiases));
     }
     
 
