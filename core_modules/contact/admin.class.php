@@ -729,7 +729,7 @@ class ContactManager extends ContactLib
         $useEmailOfSender = 0;
         $sendHtmlMail   = 1;
         $sendAttachment = 0;
-        $emails         = '';
+        $emails         = $_CONFIG['contactFormEmail'];
 
         $arrActiveSystemFrontendLanguages = FWLanguage::getActiveFrontendLanguages();
 
