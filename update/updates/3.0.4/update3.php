@@ -736,7 +736,9 @@ $updatesSp2ToSp3 = array(
     'UPDATE `' . DBPREFIX . 'modules` SET `status` = \'y\' WHERE `id` = 68',
 );
 
-$updatesSp3ToSp4 = array();
+$updatesSp3ToSp4 = array(
+    'UPDATE  `' . DBPREFIX . 'backend_areas` SET  `scope` =  \'backend\' WHERE  `area_id` = 161',
+);
 
 $updatesRc1ToSp4    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4);
 $updatesRc2ToSp4    = array_merge($updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4);

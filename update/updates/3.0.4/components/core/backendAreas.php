@@ -736,7 +736,7 @@ function _updateBackendAreas()
 			'area_id'			=> 161,
 			'parent_area_id'	=> 6,
 			'type'				=> 'function',
-			'scope'				=> 'global',
+			'scope'				=> 'backend',
 			'area_name'			=> 'TXT_MOVE_NODE',
 			'is_active'			=> 1,
 			'uri'				=> 'index.php?cmd=content',
