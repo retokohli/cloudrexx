@@ -30,6 +30,8 @@ if ($objResultRc1->fields['target'] != '_blank') {
     $version = 'sp1';
 } elseif ($_CONFIG['coreCmsVersion'] == '3.0.2') {
     $version = 'sp2';
+} elseif ($_CONFIG['coreCmsVersion'] == '3.0.3') {
+    $version = 'sp3';
 } else {
     // nothing to do
     return true;
@@ -734,24 +736,30 @@ $updatesSp2ToSp3 = array(
     'UPDATE `' . DBPREFIX . 'modules` SET `status` = \'y\' WHERE `id` = 68',
 );
 
-$updatesRc1ToSp3    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3);
-$updatesRc2ToSp3    = array_merge($updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3);
-$updatesStableToSp3 = array_merge($updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3);
-$updatesHotfixToSp3 = array_merge($updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3);
-$updatesSp1ToSp3    = array_merge($updatesSp1ToSp2, $updatesSp2ToSp3);
+$updatesSp3ToSp4 = array();
+
+$updatesRc1ToSp4    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4);
+$updatesRc2ToSp4    = array_merge($updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4);
+$updatesStableToSp4 = array_merge($updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4);
+$updatesHotfixToSp4 = array_merge($updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4);
+$updatesSp1ToSp4    = array_merge($updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4);
+$updatesSp2ToSp4    = array_merge($updatesSp2ToSp3, $updatesSp3ToSp4);
+$updatesSp3ToSp4    = $updatesSp3ToSp4;
 
 if ($version == 'rc1') {
-    $updates = $updatesRc1ToSp3;
+    $updates = $updatesRc1ToSp4;
 } elseif ($version == 'rc2') {
-    $updates = $updatesRc2ToSp3;
+    $updates = $updatesRc2ToSp4;
 } elseif ($version == 'stable') {
-    $updates = $updatesStableToSp3;
+    $updates = $updatesStableToSp4;
 } elseif ($version == 'hotfix') {
-    $updates = $updatesHotfixToSp3;
+    $updates = $updatesHotfixToSp4;
 } elseif ($version == 'sp1') {
-    $updates = $updatesSp1ToSp3;
+    $updates = $updatesSp1ToSp4;
+} elseif ($version == 'sp2') {
+    $updates = $updatesSp2ToSp4;
 } else {
-    $updates = $updatesSp2ToSp3;
+    $updates = $updatesSp3ToSp4;
 }
 
 foreach ($updates as $update) {

@@ -314,7 +314,7 @@ function _updateSettings()
 		),
 		97	=> array(
 			'setname'	=> 'coreCmsVersion',
-			'setvalue'	=> '3.0.3',
+			'setvalue'	=> '3.0.4',
 			'setmodule'	=> 66
 		),
 		98	=> array(

@@ -745,6 +745,17 @@ class ContrexxUpdate
                 $arrPhpExtensions['modRewrite']['name']  = $_CORELANG['TXT_UPDATE_MOD_REWRITE'];
             }
         }
+
+        if (!extension_loaded('pdo') || !extension_loaded('pdo_mysql')) {
+            $failed = true;
+            $arrPhpExtensions['pdo']['class'] = 'failed';
+            $arrPhpExtensions['pdo']['value'] = $_CORELANG['TXT_UPDATE_NO'];
+            $arrPhpExtensions['pdo']['name']  = $_CORELANG['TXT_UPDATE_PDO'];
+        } else {
+            $arrPhpExtensions['pdo']['class'] = 'successful';
+            $arrPhpExtensions['pdo']['value'] = $_CORELANG['TXT_UPDATE_YES'];
+            $arrPhpExtensions['pdo']['name']  = $_CORELANG['TXT_UPDATE_PDO'];
+        }
         
         if ($this->getWebserverSoftware() == 'iis') {
             if (!$this->checkIISUrlRewriteModule()) {

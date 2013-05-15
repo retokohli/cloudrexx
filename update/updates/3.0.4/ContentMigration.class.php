@@ -1,5 +1,5 @@
 <?php
-namespace Cx\Update\Cx_3_0_3;
+namespace Cx\Update\Cx_3_0_4;
 
 set_time_limit(0);
 
@@ -830,6 +830,17 @@ class ContentMigration
                 if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX . 'module_block_rel_pages', 'lang_id')
                     || !empty($_SESSION['contrexx_update']['blocks_part_2_migrated_timeout'])) {
 
+                    // create temporary table
+                    \Cx\Lib\UpdateUtil::table(
+                        DBPREFIX.'module_block_rel_pages_tmp',
+                        array(
+                            'block_id'       => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0', 'primary' => true),
+                            'page_id'        => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0', 'after' => 'block_id', 'primary' => true),
+                            'placeholder'    => array('type' => 'ENUM(\'global\',\'direct\',\'category\')', 'notnull' => true, 'default' => 'global', 'after' => 'page_id', 'primary' => true)
+                        )
+                    );
+                    \DBG::msg('BLOCK MIGRATION: GENERATED TEMPORARY TABLE');
+
                     if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX . 'module_block_rel_pages', 'lang_id')) {
                         \Cx\Lib\UpdateUtil::sql('
                             DELETE FROM `' . DBPREFIX . 'module_block_rel_pages`
@@ -847,42 +858,52 @@ class ContentMigration
                         );
                     }
 
+                    // now the old page ids can be moved to the temporary table with the new page ids
                     $objResult = \Cx\Lib\UpdateUtil::sql('
                         SELECT `block_id`, `page_id`
                         FROM `' . DBPREFIX . 'module_block_rel_pages`
                     ');
 
                     if ($objResult->RecordCount()) {
+                        // get the page repository
+                        $pageRepo  = self::$em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+
+                        // loop through all old entries
                         while (!$objResult->EOF) {
                             $blockId   = $objResult->fields['block_id'];
                             $oldPageId = $objResult->fields['page_id'];
 
-                            $pageRepo  = self::$em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
                             $aliasPage = $pageRepo->findOneBy(array(
                                 'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS,
                                 'slug' => 'legacy_page_' . $oldPageId,
                             ), true);
 
+                            // make new entry
                             if ($aliasPage) {
                                 $page = $pageRepo->getTargetPage($aliasPage);
                                 if ($page) {
                                     \Cx\Lib\UpdateUtil::sql('
-                                        UPDATE `' . DBPREFIX . 'module_block_rel_pages` SET `page_id` = ?
-                                        WHERE `page_id` = ?
-                                    ', array($page->getId(), $oldPageId));
+                                        INSERT IGNORE INTO `' . DBPREFIX . 'module_block_rel_pages_tmp` (`page_id`, `block_id`, `placeholder`)
+                                        VALUES (?, ?, ?)
+                                    ', array($page->getId(), $blockId, 'global'));
 
                                     // only for contrexx 2.x
                                     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')
                                         && !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.0.0')) {
                                         // do page association for direct placeholder
                                         \Cx\Lib\UpdateUtil::sql('
-                                            INSERT IGNORE INTO `' . DBPREFIX . 'module_block_rel_pages` (`page_id`, `block_id`, `placeholder`)
+                                            INSERT IGNORE INTO `' . DBPREFIX . 'module_block_rel_pages_tmp` (`page_id`, `block_id`, `placeholder`)
                                             VALUES (?, ?, ?)
                                         ', array($page->getId(), $blockId, 'direct'));
                                     }
+                                    \DBG::msg('BLOCK MIGRATION: inserted to temporary table, blockid: ' . $blockId . ', pageid: ' . $page->getId());
                                 }
                             }
 
+                            // delte old entry
+                            \Cx\Lib\UpdateUtil::sql('DELETE FROM `' . DBPREFIX . 'module_block_rel_pages` WHERE `block_id` = ? AND `page_id` = ?', array($blockId, $oldPageId));
+
+                            // check for memory limit and timeout limit
                             if (!checkMemoryLimit() || !checkTimeoutLimit()) {
                                 $_SESSION['contrexx_update']['blocks_part_2_migrated_timeout'] = true;
                                 return 'timeout';
@@ -891,6 +912,11 @@ class ContentMigration
                             $objResult->MoveNext();
                         }
                     }
+
+                    // move the temporary table to the new table
+                    \Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'module_block_rel_pages');
+                    \Cx\Lib\UpdateUtil::table_rename(DBPREFIX.'module_block_rel_pages_tmp', DBPREFIX.'module_block_rel_pages');
+                    \DBG::msg('BLOCK MIGRATION: REMOVED TEMPORARY TABLE');
                 } else {
                     // 3.0.3 : add new column `placeholder`
                     \Cx\Lib\UpdateUtil::table(
@@ -902,15 +928,15 @@ class ContentMigration
                         )
                     );
                 }
-                // add primary key after migration
-                \Cx\Lib\UpdateUtil::table(
-                    DBPREFIX.'module_block_rel_pages',
-                    array(
-                        'block_id'       => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0', 'primary' => true),
-                        'page_id'        => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0', 'after' => 'block_id', 'primary' => true),
-                        'placeholder'    => array('type' => 'ENUM(\'global\',\'direct\',\'category\')', 'notnull' => true, 'default' => 'global', 'after' => 'page_id', 'primary' => true)
-                    )
-                );
+                // IMPORTANT: add primary key after migration, not used anymore (temporary table)
+//                \Cx\Lib\UpdateUtil::table(
+//                    DBPREFIX.'module_block_rel_pages',
+//                    array(
+//                        'block_id'       => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0', 'primary' => true),
+//                        'page_id'        => array('type' => 'INT(7)', 'notnull' => true, 'default' => '0', 'after' => 'block_id', 'primary' => true),
+//                        'placeholder'    => array('type' => 'ENUM(\'global\',\'direct\',\'category\')', 'notnull' => true, 'default' => 'global', 'after' => 'page_id', 'primary' => true)
+//                    )
+//                );
                 $_SESSION['contrexx_update']['blocks_part_2_migrated'] = true;
             }
 
