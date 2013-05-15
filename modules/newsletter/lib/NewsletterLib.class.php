@@ -269,7 +269,7 @@ class NewsletterLib
             'phone_private' => array('val' => contrexx_addslashes($phone_private), 'omitEmpty' => !$recipientAttributeStatus['recipient_private']['active']),
             'phone_mobile' => array('val' => contrexx_addslashes($phone_mobile), 'omitEmpty' => !$recipientAttributeStatus['recipient_mobile']['active']),
             'fax' => array('val' => contrexx_addslashes($fax), 'omitEmpty' => !$recipientAttributeStatus['recipient_fax']['active']),
-            'notes' => contrexx_addslashes($notes),
+            'notes' => (!$notes ? '' : contrexx_addslashes($notes)),
             'birthday' => array('val' => contrexx_addslashes($birthday), 'omitEmpty' => !$recipientAttributeStatus['recipient_birthday']['active']),
             'status' => intval($status),
             'language' => intval($language)
