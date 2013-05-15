@@ -89,7 +89,8 @@ CKEDITOR.editorConfig = function( config )
         ['TextColor','BGColor'],
         ['ShowBlocks'],
         ['Maximize'],
-        ['Div','CreateDiv']
+        ['Div','CreateDiv'],
+        ['Form','Checkbox','Radio','Textfield','Textarea','Select','Button','Imagebutton','Hiddenfield']
     ];
 
     config.toolbar_Small = [
