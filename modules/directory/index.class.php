@@ -203,7 +203,7 @@ class rssDirectory extends directoryLibrary
 
         $insertFeeds = '';
         if ($cId == 0 && $lId == 0) {
-            $objResult = $objDatabase->SelectLimit("SELECT COUNT(1) AS feedCount FROM ".DBPREFIX."module_directory_dir AS files INNER JOIN ".DBPREFIX."module_directory_rel_dir_cat AS rel ON(rel.dir_id=files.id)
+            $objResult = $objDatabase->SelectLimit("SELECT COUNT(DISTINCT files.id) AS feedCount FROM ".DBPREFIX."module_directory_dir AS files INNER JOIN ".DBPREFIX."module_directory_rel_dir_cat AS rel ON(rel.dir_id=files.id)
             INNER JOIN ".DBPREFIX."module_directory_categories AS cat ON(cat.id=rel.cat_id) WHERE files.status='1' AND cat.showentries='1'", 1);
             if(!isset($objResult->fields['feedCount']))
                 $allFeeds=0;
@@ -633,7 +633,7 @@ $this->arrRows[2] = '';
 
         global $objDatabase, $_ARRAYLANG;
 
-        $objResult = $objDatabase->Execute("SELECT files.id FROM ".DBPREFIX."module_directory_dir AS files
+        $objResult = $objDatabase->Execute("SELECT DISTINCT files.id FROM ".DBPREFIX."module_directory_dir AS files
         INNER JOIN ".DBPREFIX."module_directory_rel_dir_cat AS rel ON(rel.dir_id=files.id)
         INNER JOIN ".DBPREFIX."module_directory_categories AS cat ON(cat.id=rel.cat_id)
         WHERE files.status = '1' AND cat.showentries='1' ORDER BY id DESC LIMIT 5");
