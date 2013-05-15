@@ -4162,7 +4162,7 @@ $WhereStatement = '';
         } elseif (isset($_POST['fieldsSelected'])) {
             // Speichern der Daten. Siehe Final weiter unten.
             $arrRecipients = $objImport->getFinalData($arrFields);
-            
+
             if (empty($_POST['newsletter_recipient_associated_list'])) {
                 self::$strErrMessage = $_ARRAYLANG['TXT_NEWSLETTER_SELECT_CATEGORY'];
             } else {
@@ -4228,9 +4228,9 @@ $WhereStatement = '';
                                     array_push($arrRecipientLists, $objList->fields['category']);
                                     $objList->MoveNext();
                                 }
-                            }      
-                            $arrAssociatedLists = array_unique($arrAssociatedLists);
-                            
+                            }
+                            $arrRecipientLists = array_unique($arrRecipientLists);
+
                             $recipientAttributeStatus = array();
                             $this->_updateRecipient($recipientAttributeStatus, $recipientId, $arrRecipient['email'], $arrRecipient['uri'], $arrRecipient['sex'],
                                             $recipientSalutationId, $arrRecipient['title'], $arrRecipient['lastname'], $arrRecipient['firstname'],
