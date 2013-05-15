@@ -6,7 +6,7 @@
  */
 $arrUpdate = array(
     'cmsName'          => 'Contrexx',
-    'cmsVersion'       => '3.0.3',
+    'cmsVersion'       => '3.0.4',
     'cmsStatus'        => 'Stable',
     'cmsEdition'       => 'Trial',
     'cmsCodeName'      => 'Nikola Tesla',
