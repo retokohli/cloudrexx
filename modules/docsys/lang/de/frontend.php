@@ -23,4 +23,3 @@ $_ARRAYLANG['TXT_DOCSYS_SORTING_ALPHA'] = "nach Alphabet";
 $_ARRAYLANG['TXT_DOCSYS_SORTING_DATE'] = "nach Datum";
 $_ARRAYLANG['TXT_DOCSYS_SORTING_DATE_ALPHA'] = "nach Datum und Alphabet";
 $_ARRAYLANG['TXT_DOCSYS_SORTTYPE'] = "Art der Sortierung";
-?>
