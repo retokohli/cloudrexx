@@ -34,13 +34,13 @@ function deleteGroup(groupId)
       </tr>
 <!-- BEGIN shopGroup -->
       <tr class="{SHOP_ROW_STYLE}">
-        <td nowrap="nowrap">
+        <td>
           <a href="index.php?cmd=shop&amp;act=products&amp;tpl=groups&amp;edit=1&amp;id={SHOP_GROUP_ID}"
               title="{TXT_EDIT}">
             {SHOP_GROUP_NAME}
           </a>
         </td>
-        <td nowrap="nowrap" class="a_right">
+        <td class="a_right">
           <a href="index.php?cmd=shop&amp;act=products&amp;tpl=groups&amp;edit=1&amp;id={SHOP_GROUP_ID}"
               title="{TXT_EDIT}">
             <img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" />
@@ -63,8 +63,8 @@ function deleteGroup(groupId)
       </tr>
 <!-- BEGIN shopGroupName -->
       <tr class="{SHOP_ROW_STYLE}">
-        <td nowrap="nowrap">{TXT_SHOP_ARTICLE_GROUP_NAME}</td>
-        <td nowrap="nowrap">
+        <td>{TXT_SHOP_ARTICLE_GROUP_NAME}</td>
+        <td>
           <input type="hidden" name="id" value="{SHOP_GROUP_ID_EDIT}" />
           <input type="text" size="40" name="groupName"
               value="{SHOP_GROUP_NAME}" />

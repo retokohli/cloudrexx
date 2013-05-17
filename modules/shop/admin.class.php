@@ -163,9 +163,8 @@ class Shopmanager extends ShopLibrary
                 $this->view_order_overview();
                 break;
         }
-// TODO: This seems unnecessary
-//        self::$objTemplate->setVariable('CSRF_PARAM', CSRF::param());
         Message::show();
+        CSRF::add_placeholder(self::$objTemplate);
         $objTemplate->setVariable(array(
             'CONTENT_TITLE' => self::$pageTitle,
             'ADMIN_CONTENT' => self::$objTemplate->get(),
@@ -1032,7 +1031,8 @@ class Shopmanager extends ShopLibrary
         $arrAttributeName = contrexx_input2raw($_POST['attribute_name']);
         $arrAttributeType = contrexx_input2int($_POST['attribute_type']);
         $arrAttributeList = contrexx_input2int($_POST['option_id']);
-        $arrOptionValue = contrexx_input2raw($_POST['option_name']);
+        $arrOptionValue = contrexx_input2raw(
+            isset($_POST['option_name']) ? $_POST['option_name'] : NULL);
         $arrOptionPrice = contrexx_input2float($_POST['option_price']);
         $flagChangedAny = false;
         foreach ($arrAttributeList as $attribute_id => $arrOptionIds) {
@@ -2404,7 +2404,6 @@ if ($test === NULL) {
         global $_ARRAYLANG;
 
         self::$pageTitle = $_ARRAYLANG['TXT_ORDERS'];
-
         // A return value of null means that nothing had to be done
         $result = Orders::updateStatusFromGet();
         if ($result === false) {
@@ -2708,7 +2707,7 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
      */
     function view_customer_details()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         self::$objTemplate->loadTemplateFile("module_shop_customer_details.html");
         if (isset($_POST['store'])) {
@@ -2750,32 +2749,26 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
             'SHOP_DISCOUNT_GROUP_CUSTOMER' => Discount::getCustomerGroupName(
                 $objCustomer->group_id()),
         ));
-// TODO: Use Orders methods
-        $query = "
-            SELECT date_time, id, status, currency_id, sum
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
-             WHERE customer_id=$customer_id
-             ORDER BY date_time DESC";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return self::error_database();
-        }
-        Currency::init($objResult->fields['currency_id']);
+// TODO: TEST
+        $count = NULL;
+        $orders = Orders::getArray($count, NULL, array(), Paging::getPosition(),
+                SettingDb::getValue('numof_orders_per_page_backend'));
         $i = 1;
-        while (!$objResult->EOF) {
-            //set edit fields
+        foreach ($orders as $order) {
+            Currency::init($order->currency_id());
             self::$objTemplate->setVariable(array(
                 'SHOP_ROWCLASS' => 'row'.(++$i % 2 + 1),
-                'SHOP_ORDER_ID' => $objResult->fields['id'],
+                'SHOP_ORDER_ID' => $order->id(),
                 'SHOP_ORDER_ID_CUSTOM' => ShopLibrary::getCustomOrderId(
-                    $objResult->fields['id'],
-                    $objResult->fields['date_time']),
-                'SHOP_ORDER_DATE' => $objResult->fields['date_time'],
-                'SHOP_ORDER_STATUS' => $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$objResult->fields['status']],
-                'SHOP_ORDER_SUM' => Currency::getDefaultCurrencyPrice($objResult->fields['sum']).' '.Currency::getDefaultCurrencySymbol(),
+                    $order->id(), $order->date_time()),
+                'SHOP_ORDER_DATE' => $order->date_time(),
+                'SHOP_ORDER_STATUS' =>
+                    $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$order->status()],
+                'SHOP_ORDER_SUM' =>
+                    Currency::getDefaultCurrencySymbol().' '.
+                    Currency::getDefaultCurrencyPrice($order->sum()),
             ));
             self::$objTemplate->parse('orderRow');
-            $objResult->MoveNext();
         }
         return true;
     }
@@ -3204,33 +3197,37 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
 
         $arrError = array();
         foreach (array_keys($_POST['product_id']) as $product_id) {
-// TODO: contrexx_input2raw() all!
-            $product_code = $_POST['identifier'][$product_id];
-            $product_code_old = $_POST['identifierOld'][$product_id];
-            $ord = $_POST['ord'][$product_id];
-            $ord_old = $_POST['ordOld'][$product_id];
+            $product_code =
+                contrexx_input2raw($_POST['identifier'][$product_id]);
+            $product_code_old =
+                contrexx_input2raw($_POST['identifierOld'][$product_id]);
+            $ord = intval($_POST['ord'][$product_id]);
+            $ord_old = intval($_POST['ordOld'][$product_id]);
             $discount_active = (isset($_POST['discount_active'][$product_id]) ? 1 : 0);
             $special_offer_old = $_POST['specialOfferOld'][$product_id];
-            $discount_price = $_POST['discount_price'][$product_id];
-            $discountOld = $_POST['discountOld'][$product_id];
-            $normalprice = $_POST['price1'][$product_id];
-            $normalpriceOld = $_POST['price1Old'][$product_id];
-            $resellerprice = $_POST['price2'][$product_id];
-            $resellerpriceOld = $_POST['price2Old'][$product_id];
-            $stock = $_POST['stock'][$product_id];
-            $stockOld = $_POST['stockOld'][$product_id];
+            $discount_price = floatval($_POST['discount_price'][$product_id]);
+            $discountOld = floatval($_POST['discountOld'][$product_id]);
+            $normalprice = floatval($_POST['price1'][$product_id]);
+            $normalpriceOld = floatval($_POST['price1Old'][$product_id]);
+            $resellerprice = floatval($_POST['price2'][$product_id]);
+            $resellerpriceOld = floatval($_POST['price2Old'][$product_id]);
+            $stock = intval($_POST['stock'][$product_id]);
+            $stockOld = intval($_POST['stockOld'][$product_id]);
 //            $status = (isset($_POST['active'][$product_id]) ? 1 : 0);
 //            $statusOld = $_POST['activeOld'][$product_id];
-            $vat_id = (isset($_POST['taxId'][$product_id]) ? $_POST['taxId'][$product_id] : 0);
-            $vat_id_old = $_POST['taxIdOld'][$product_id];
-            $shownOnStartpage = (isset($_POST['shownonstartpage'][$product_id]) ? $_POST['shownonstartpage'][$product_id] : 0);
-            $shownOnStartpageOld = (isset($_POST['shownonstartpageOld'][$product_id]) ? $_POST['shownonstartpageOld'][$product_id] : 0);
+            $vat_id = (isset($_POST['taxId'][$product_id])
+                ? intval($_POST['taxId'][$product_id]) : 0);
+            $vat_id_old = intval($_POST['taxIdOld'][$product_id]);
+            $shownOnStartpage =
+                (empty($_POST['shownonstartpage'][$product_id]) ? 0 : 1);
+            $shownOnStartpageOld =
+                (empty($_POST['shownonstartpageOld'][$product_id]) ? 0 : 1);
 // This is used when the Product name can be edited right on the overview
-            $name = (isset($_POST['name'][$product_id]) ? $_POST['name'][$product_id] : null);
-            $nameOld = (isset($_POST['nameOld'][$product_id]) ? $_POST['nameOld'][$product_id] : null);
-
-/*
-    Distribution and weight have been removed from the overview due to the
+            $name = (isset($_POST['name'][$product_id])
+                ? contrexx_input2raw($_POST['name'][$product_id]) : null);
+            $nameOld = (isset($_POST['nameOld'][$product_id])
+                ? contrexx_input2raw($_POST['nameOld'][$product_id]) : null);
+/*  Distribution and weight have been removed from the overview due to the
     changes made to the delivery options.
             $distribution = $_POST['distribution'][$product_id];
             $distributionOld = $_POST['distributionOld'][$product_id];
@@ -3272,7 +3269,6 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
                 $weight = Weight::getWeight($weightOld);
             }
 */
-
             // Check if any one value has been changed
             if (   $product_code != $product_code_old
                 || $ord != $ord_old
@@ -3286,11 +3282,9 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
                 || $shownOnStartpage != $shownOnStartpageOld
 // This is used when the Product name can be edited right on the overview
                 || $name != $nameOld
-/*
-                || $distribution != $distributionOld
+/*              || $distribution != $distributionOld
                 // Weight, see above
-                || $updateProduct
-*/
+                || $updateProduct*/
             ) {
                 $arrProducts =
 //                    ($product_code_old != ''
@@ -3338,7 +3332,7 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
     }
 
 
-    function shop_getMonthDropdwonMenu($selectedOption='')
+    static function getMonthDropdownMenu($selected=NULL)
     {
         global $_ARRAYLANG;
 
@@ -3348,24 +3342,21 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
             $monthNumber = $index + 1;
             $strMenu .=
                 '<option value="'.$monthNumber.'"'.
-                ($selectedOption == $monthNumber
-                    ? Html::ATTRIBUTE_SELECTED : '').
+                ($selected == $monthNumber ? Html::ATTRIBUTE_SELECTED : '').
                 ">$name</option>\n";
         }
         return $strMenu;
     }
 
 
-    function shop_getYearDropdwonMenu($startYear, $selectedOption='')
+    static function getYearDropdownMenu($selected=NULL, $startYear=NULL)
     {
         $strMenu = '';
         $yearNow = date('Y');
         while ($startYear <= $yearNow) {
             $strMenu .=
                 "<option value='$startYear'".
-                ($selectedOption == $startYear
-                    ? Html::ATTRIBUTE_SELECTED :   ''
-                ).
+                ($selected == $startYear ? Html::ATTRIBUTE_SELECTED :   '').
                 ">$startYear</option>\n";
             ++$startYear;
         }

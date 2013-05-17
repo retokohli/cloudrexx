@@ -136,10 +136,14 @@ class PaymentProcessing
      */
     static function getPaymentProcessorNameArray()
     {
+        global $_ARRAYLANG;
+
         if (empty(self::$arrPaymentProcessor)) self::init();
         $arrName = array();
         foreach (self::$arrPaymentProcessor as $id => $arrProcessor) {
-            $arrName[$id] = $arrProcessor['name'];
+            $arrName[$id] =
+                $_ARRAYLANG['TXT_SHOP_PSP_'.
+                strtoupper($arrProcessor['name'])];
         }
         return $arrName;
     }
@@ -232,28 +236,28 @@ class PaymentProcessing
         if (!is_array(self::$arrPaymentProcessor)) self::init();
         $return = '';
         switch (self::getPaymentProcessorName()) {
-            case 'Internal':
-                /* Redirect browser */
-                CSRF::header('location: index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=1&handler=Internal');
-                exit;
-            case 'Internal_LSV':
-                /* Redirect browser */
-                CSRF::header('location: index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=1&handler=Internal');
-                exit;
-            case 'Internal_CreditCard':
+            case 'internal':
+                HTTP::redirect(
+                    Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'success').
+                    '?result=1&handler=Internal');
+            case 'internal_lsv':
+                HTTP::redirect(
+                    Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'success').
+                    '?result=1&handler=Internal');
+            case 'internal_creditcard':
                 // Not implemented
-                //$return = self::_Internal_CreditCardProcessor();
-                CSRF::header('location: index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=1&handler=Internal');
-                break;
-            case 'Internal_Debit':
+                HTTP::redirect(
+                    Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'success').
+                    '?result=1&handler=Internal');
+            case 'internal_debit':
                 // Not implemented
-                //$return = self::_Internal_DebitProcessor();
-                CSRF::header('location: index.php?section=shop'.MODULE_INDEX.'&cmd=success&result=1&handler=Internal');
-                break;
-            case 'Saferpay':
-            case 'Saferpay_All_Cards':
-            case 'Saferpay_Mastercard_Multipay_CAR': // Obsolete
-            case 'Saferpay_Visa_Multipay_CAR':  // Obsolete
+                HTTP::redirect(
+                    Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'success').
+                    '?result=1&handler=Internal');
+            case 'saferpay':
+            case 'saferpay_all_cards':
+            case 'saferpay_mastercard_multipay_car': // Obsolete
+            case 'saferpay_visa_multipay_car':  // Obsolete
                 $return = self::_SaferpayProcessor();
                 break;
             case 'yellowpay': // was: 'PostFinance_DebitDirect'
@@ -276,10 +280,10 @@ DBG::log($error);
                 }
                 break;
             // Added 20081117 -- Reto Kohli
-            case 'Datatrans':
+            case 'datatrans':
                 $return = self::getDatatransForm(Currency::getActiveCurrencyCode());
                 break;
-            case 'Paypal':
+            case 'paypal':
                 $order_id = $_SESSION['shop']['order_id'];
                 $account_email = SettingDb::getValue('paypal_account_email');
                 $item_name = $_ARRAYLANG['TXT_SHOP_PAYPAL_ITEM_NAME'];
@@ -289,7 +293,7 @@ DBG::log($error);
                 $return = PayPal::getForm($account_email, $order_id,
                     $currency_code, $amount, $item_name);
                 break;
-            case 'Dummy':
+            case 'dummy':
                 $return = Dummy::getForm();
                 break;
         }
@@ -678,35 +682,22 @@ DBG::log("PaymentProcessing::checkIn(): WARNING: mobilesolutions: Payment verifi
         );
         Cx\Lib\UpdateUtil::table($table_name_new, $table_structure);
         $arrPsp = array(
-            array(01, 'external', 'Saferpay',
+            array(1, 'external', 'saferpay',
                 'Saferpay is a comprehensive Internet payment platform, specially developed for commercial applications. It provides a guarantee of secure payment processes over the Internet for merchants as well as for cardholders. Merchants benefit from the easy integration of the payment method into their e-commerce platform, and from the modularity with which they can take account of current and future requirements. Cardholders benefit from the security of buying from any shop that uses Saferpay.',
                 'http://www.saferpay.com/', 1, 'logo_saferpay.gif'),
-            array(02, 'external', 'Paypal',
+            array(2, 'external', 'paypal',
                 'With more than 40 million member accounts in over 45 countries worldwide, PayPal is the world\'s largest online payment service. PayPal makes sending money as easy as sending email! Any PayPal member can instantly and securely send money to anyone in the U.S. with an email address. PayPal can also be used on a web-enabled cell phone. In the future, PayPal will be available to use on web-enabled pagers and other handheld devices.',
                 'http://www.paypal.com/', 1, 'logo_paypal.gif'),
-            array(03, 'external', 'yellowpay',
+            array(3, 'external', 'yellowpay',
                 'PostFinance vereinfacht das Inkasso im Online-Shop.',
                 'http://www.postfinance.ch/', 1, 'logo_postfinance.gif'),
-            array(04, 'internal', 'Internal',
+            array(4, 'internal', 'internal',
                 'Internal no forms',
                 '', 1, ''),
-// Obsolete
-//            array(05, 'internal', 'Internal_CreditCard',
-//                'Internal with a Credit Card form',
-//                '', 1, ''),
-//            array(06, 'internal', 'Internal_Debit',
-//                'Internal with a Bank Debit Form',
-//                '', 1, ''),
-//            array(07, 'external', 'Saferpay_Mastercard_Multipay_CAR',
-//                'Saferpay is a comprehensive Internet payment platform, specially developed for commercial applications. It provides a guarantee of secure payment processes over the Internet for merchants as well as for cardholders. Merchants benefit from the easy integration of the payment method into their e-commerce platform, and from the modularity with which they can take account of current and future requirements. Cardholders benefit from the security of buying from any shop that uses Saferpay.',
-//                'http://www.saferpay.com/', 1, 'logo_saferpay.gif'),
-//            array(08, 'external', 'Saferpay_Visa_Multipay_CAR',
-//                'Saferpay is a comprehensive Internet payment platform, specially developed for commercial applications. It provides a guarantee of secure payment processes over the Internet for merchants as well as for cardholders. Merchants benefit from the easy integration of the payment method into their e-commerce platform, and from the modularity with which they can take account of current and future requirements. Cardholders benefit from the security of buying from any shop that uses Saferpay.',
-//                'http://www.saferpay.com/', 1, 'logo_saferpay.gif'),
-            array(09, 'internal', 'Internal_LSV',
+            array(9, 'internal', 'internal_lsv',
                 'LSV with internal form',
                 '', 1, ''),
-            array(10, 'external', 'Datatrans',
+            array(10, 'external', 'datatrans',
                 'Die professionelle und komplette Payment-Lösung',
                 'http://datatrans.biz/', 1, 'logo_datatrans.gif'),
             array(11, 'external', 'mobilesolutions',
@@ -727,6 +718,11 @@ DBG::log("PaymentProcessing::checkIn(): WARNING: mobilesolutions: Payment verifi
         if (Cx\Lib\UpdateUtil::table_exist($table_name_old)) {
             Cx\Lib\UpdateUtil::drop_table($table_name_old);
         }
+
+        // Drop obsolete PSPs -- see Payment::errorHandler()
+        Cx\Lib\UpdateUtil::sql("
+            DELETE FROM `contrexx_module_shop_payment_processors`
+             WHERE `id` IN (5, 6, 7, 8)");
 
         // Always
         return false;

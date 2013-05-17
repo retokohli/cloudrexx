@@ -83,7 +83,7 @@
         <p>
           <input type="checkbox" tabindex="61" value="1" id="dont_register"
                  name="dont_register" [[SHOP_DONT_REGISTER_CHECKED]]
-                 onClick="document.getElementById('account_password').style.display = (this.checked ? 'none' : 'block');" />
+                 onClick="toggle_registering();" />
           <label class="description" for="dont_register">[[TXT_SHOP_ACCOUNT_DONT_REGISTER]]</label>
           <br />
           [[TXT_SHOP_ACCOUNT_DONT_REGISTER_NOTE]]
@@ -92,56 +92,69 @@
           <p>
             <label>[[TXT_EMAIL]]<font color="#ff0000">&nbsp;*</font></label>
             <input type="text" tabindex="51" name="email" value="[[SHOP_ACCOUNT_EMAIL]]" />
-          </p><!-- BEGIN account_password -->
-          <p>
+          </p>
+          <p id="account_password" style="[[SHOP_ACCOUNT_PASSWORD_DISPLAY]];">
             <label>[[TXT_PASSWORD]]<font color="#ff0000">&nbsp;*</font></label>
             <input type="password" tabindex="52" name="password" value="" />
           </p>
-          <p>[[TXT_SHOP_ACCOUNT_PASSWORD_HINT]]</p><!-- END account_password -->
+          <p id="account_password_hint" style="[[SHOP_ACCOUNT_PASSWORD_DISPLAY]];">
+            [[TXT_SHOP_ACCOUNT_PASSWORD_HINT]]
+          </p>
         </div>
       </div><!-- END account_details -->
       <p>
-        <input type="reset" value="[[TXT_RESET]]" name="reset" tabindex="71" />
-        <input type="submit" value="[[TXT_SHOP_CONTINUE_ARROW]]" name="bsubmit" tabindex="72" />
+        <input type="reset" value="[[TXT_RESET]]" name="reset" tabindex="72" />
+        <input type="submit" value="[[TXT_SHOP_CONTINUE_ARROW]]" name="bsubmit" tabindex="71" />
       </p>
     </form>
   </div>
 </div>
 <script type="text/javascript">//<![CDATA[
 function copy_address() {
-  with (document.account) {
-    if (jQuery("#equal_address:checked").length) {
-      gender2.value = gender.value;
-      company2.value = company.value;
-      lastname2.value = lastname.value;
-      firstname2.value = firstname.value;
-      address2.value = address.value;
-      zip2.value = zip.value;
-      city2.value = city.value;
-      phone2.value = phone.value;
-      countryId2.value = countryId.value;
-      jQuery("#shipping_address").hide();
-    } else {
-      jQuery("#shipping_address").show();
+  if (jQuery("#equal_address").is(":checked")) {
+    var selector = "#shop_acc_data form ";
+    jQuery(selector+"[name=gender2]").val(jQuery(selector+"[name=gender]").val());
+    jQuery(selector+"[name=company2]").val(jQuery(selector+"[name=company]").val());
+    jQuery(selector+"[name=lastname2]").val(jQuery(selector+"[name=lastname]").val());
+    jQuery(selector+"[name=firstname2]").val(jQuery(selector+"[name=firstname]").val());
+    jQuery(selector+"[name=address2]").val(jQuery(selector+"[name=address]").val());
+    jQuery(selector+"[name=zip2]").val(jQuery(selector+"[name=zip]").val());
+    jQuery(selector+"[name=city2]").val(jQuery(selector+"[name=city]").val());
+    jQuery(selector+"[name=phone2]").val(jQuery(selector+"[name=phone]").val());
+    jQuery(selector+"[name=countryId2]").val(jQuery(selector+"[name=countryId]").val());
+    jQuery(selector+"[name=2]").val(jQuery(selector+"[name=]").val());
+    jQuery(selector+"[name=2]").val(jQuery(selector+"[name=]").val());
+    jQuery("#shipping_address").hide();
+  } else {
+    jQuery("#shipping_address").show();
 /* Optionally clear the shipment address
-      gender2.value = "";
-      company2.value = "";
-      lastname2.value = "";
-      firstname2.value = "";
-      address2.value = "";
-      zip2.value = "";
-      city2.value = "";
-      phone2.value = "";*/
-    }
+    gender2.value = "";
+    company2.value = "";
+    lastname2.value = "";
+    firstname2.value = "";
+    address2.value = "";
+    zip2.value = "";
+    city2.value = "";
+    phone2.value = "";*/
   }
 }
 jQuery(function () {
-  jQuery(".customer_address").delegate("input", "blur", function() {
+  jQuery(".customer_address").delegate("input,select", "blur", function() {
     if (jQuery("#equal_address:checked").length) {
       copy_address();
     }
   });
 });
+function toggle_registering() {
+  var checked = jQuery("#dont_register").is(":checked");
+  if (checked) {
+    jQuery('#account_password').hide();
+    jQuery('#account_password_hint').hide();
+  } else {
+    jQuery('#account_password').show();
+    jQuery('#account_password_hint').show();
+  }
+}
 // Redisplay the shipping address after the reset button has been clicked
 function shopReset()
 {

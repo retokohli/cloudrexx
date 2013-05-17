@@ -13,30 +13,30 @@
   <input type="hidden" name="list_id" value="{SHOP_PRICELIST_ID}" />
   <table width="100%" cellspacing="0" cellpadding="2" border="0" class="adminlist">
     <tr>
-      <th nowrap="nowrap" colspan="2">{SHOP_PRICELIST_EDIT}</th>
+      <th colspan="2">{SHOP_PRICELIST_EDIT}</th>
     </tr>
     <tr class="row1">
-      <td nowrap="nowrap">{TXT_PDF_LINK}</td>
-      <td nowrap="nowrap">{SHOP_PRICELIST_LINK_PDF}</td>
+      <td>{TXT_PDF_LINK}</td>
+      <td>{SHOP_PRICELIST_LINK_PDF}</td>
     </tr>
     <tr class="row2">
-      <td nowrap="nowrap">{TXT_NAME}</td>
-      <td nowrap="nowrap">
+      <td>{TXT_NAME}</td>
+      <td>
         <input type="text" name="name" value="{SHOP_PRICELIST_NAME}"
             style="width: 250px;" />
       </td>
     </tr>
     <tr class="row1">
-      <td nowrap="nowarp">{TXT_LANGUAGE}</td>
-      <td nowrap="nowrap">
+      <td>{TXT_LANGUAGE}</td>
+      <td>
         <select name="lang_id" size="1" style="width: 250px;">
           {SHOP_PRICELIST_LANGUAGE_MENUOPTIONS}
         </select>
       </td>
     </tr>
     <tr class="row2">
-      <td nowrap="nowrap">{TXT_FRAME}</td>
-      <td nowrap="nowrap">
+      <td>{TXT_FRAME}</td>
+      <td>
         <label>
           <input type="checkbox" name="border" value="1" {SHOP_PRICELIST_BORDER_CHECKED} />
           {TXT_DISPLAY}
@@ -44,8 +44,8 @@
       </td>
     </tr>
     <tr class="row1">
-      <td nowrap="nowrap">{TXT_HEADER}</td>
-      <td nowrap="nowrap">
+      <td>{TXT_HEADER}</td>
+      <td>
         <label>
           <input type="checkbox" name="header" value="1" onchange="toggle_header();"
               {SHOP_PRICELIST_HEADER_CHECKED} />
@@ -54,16 +54,16 @@
       </td>
     </tr>
     <tr class="row1" id="pricelist_header">
-      <td nowrap="nowarp" valign="top">&nbsp;</td>
-      <td nowrap="nowrap">
+      <td>&nbsp;</td>
+      <td>
         <textarea name="header_left" rows="4"  style="width: 250px;">{SHOP_PRICELIST_HEADER_LEFT}</textarea>
         &nbsp;
         <textarea name="header_right" rows="4" style="width: 250px;" class="a_right">{SHOP_PRICELIST_HEADER_RIGHT}</textarea>
       </td>
     </tr>
     <tr class="row2">
-      <td nowrap="nowrap">{TXT_FOOTER}</td>
-      <td nowrap="nowrap">
+      <td>{TXT_FOOTER}</td>
+      <td>
         <label>
           <input type="checkbox" name="footer" value="1" onchange="toggle_footer();"
             {SHOP_PRICELIST_FOOTER_CHECKED} />
@@ -72,8 +72,8 @@
       </td>
     </tr>
     <tr class="row2" id="pricelist_footer">
-      <td nowrap="nowrap" valign="top">&nbsp;</td>
-      <td nowrap="nowrap">
+      <td>&nbsp;</td>
+      <td>
         <textarea name="footer_left" rows="4" style="width: 250px;">{SHOP_PRICELIST_FOOTER_LEFT}</textarea>
         &nbsp;
         <textarea name="footer_right" rows="4" style="width: 250px;" class="a_right">{SHOP_PRICELIST_FOOTER_RIGHT}</textarea>
@@ -82,8 +82,8 @@
       </td>
     </tr>
     <tr class="row1">
-      <td nowrap="nowrap" valign="top">{TXT_SHOP_PRICELIST_CATEGORIES}</td>
-      <td nowrap="nowrap">
+      <td>{TXT_SHOP_PRICELIST_CATEGORIES}</td>
+      <td>
         <input type="checkbox" name="category_all" id="category_all" value="1"
             onchange="toggle_categories();" {SHOP_PRICELIST_CATEGORY_ALL_CHECKED} />
         <label for="category_all">{TXT_SHOP_PRICELIST_CATEGORIES_ALL}</label>

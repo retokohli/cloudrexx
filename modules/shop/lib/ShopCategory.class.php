@@ -486,6 +486,9 @@ class ShopCategory
         if ($flagDeleteImages) {
             File::delete_file($this->picture());
         }
+        // Delete Text
+        Text::deleteById($this->id(), 'shop', self::TEXT_NAME);
+        Text::deleteById($this->id(), 'shop', self::TEXT_DESCRIPTION);
         // Delete Category
         $objResult = $objDatabase->Execute("
             DELETE FROM ".DBPREFIX."module_shop".MODULE_INDEX."_categories

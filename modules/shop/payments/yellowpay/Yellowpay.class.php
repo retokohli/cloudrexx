@@ -467,7 +467,9 @@ class Yellowpay
             $arrField['LANGUAGE'] = strtolower(FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)).'_'.strtoupper(FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID));
         }
 
-        $baseUri = 'http://'.$_SERVER['HTTP_HOST'].CONTREXX_SCRIPT_PATH.'?'.$uriParam.(empty($uriParam) ? '' : '&').'result=';
+        $baseUri =
+            Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'success')->toString().
+            '?'.$uriParam.(empty($uriParam) ? '' : '&').'result=';
         if (empty($arrField['ACCEPTURL'])) {
             $arrField['ACCEPTURL'] = $baseUri.'1';
         }

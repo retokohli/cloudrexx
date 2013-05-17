@@ -589,6 +589,20 @@ class Payment
         }
         Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
 
+        // Update Payments that use obsolete PSPs:
+        //  - 05, 'Internal_CreditCard'
+        //  - 06, 'Internal_Debit',
+        // Uses 04, Internal
+        Cx\Lib\UpdateUtil::sql(
+            "UPDATE $table_name
+                SET `processor_id`=4 WHERE `processor_id` IN (5, 6)");
+        // - 07, 'Saferpay_Mastercard_Multipay_CAR',
+        // - 08, 'Saferpay_Visa_Multipay_CAR',
+        // Uses 01, Saferpay
+        Cx\Lib\UpdateUtil::sql(
+            "UPDATE $table_name
+                SET `processor_id`=1 WHERE `processor_id` IN (7, 8)");
+
         $table_name = DBPREFIX.'module_shop_rel_payment';
         $table_structure = array(
             'payment_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'primary' => true),

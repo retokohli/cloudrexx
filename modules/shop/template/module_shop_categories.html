@@ -110,28 +110,28 @@ function cancelEdit()
   style="display:{SHOP_CATEGORY_LIST_DISPLAY};">
   <form name="selectCat" method="post"
       action="index.php?cmd=shop{MODULE_INDEX}&amp;act=categories">
-    <table summary="" width="100%" cellspacing="0" cellpadding="2" border="0" class="adminlist">
+    <table width="100%" cellspacing="0" cellpadding="2" border="0" class="adminlist">
       <tr>
         <th colspan="6">{TXT_CATEGORIES}&nbsp;({TXT_TOTAL}&nbsp;{SHOP_TOTAL_CATEGORIES})</th>
       </tr>
       <tr class="row3">
-        <td width="01%" nowrap="nowrap" class="a_center f_bold">#</td>
-        <td width="03%" nowrap="nowrap" class="a_right f_bold">{TXT_ID}&nbsp;&nbsp;</td>
-        <td width="03%" nowrap="nowrap" class="f_bold">{TXT_ACTIVE}</td>
-        <td width="92%" nowrap="nowrap" class="f_bold">{TXT_NAME}&nbsp;&nbsp;&nbsp;</td>
-        <!-- This feature isn't ready to use yet: td width=" 3%" nowrap="nowrap" class="f_bold">{TXT_SHOP_CATEGORY_VIRTUAL}</td-->
-        <td width="01%" nowrap="nowrap" class="a_right f_bold">{TXT_ACTION}</td>
+        <td width="01%" class="a_center f_bold">#</td>
+        <td width="03%" class="a_right f_bold">{TXT_ID}&nbsp;&nbsp;</td>
+        <td width="03%" class="f_bold">{TXT_ACTIVE}</td>
+        <td width="92%" class="f_bold">{TXT_NAME}&nbsp;&nbsp;&nbsp;</td>
+        <!-- This feature isn't ready to use yet: td width=" 3%" class="f_bold">{TXT_SHOP_CATEGORY_VIRTUAL}</td-->
+        <td width="01%" class="a_right f_bold">{TXT_ACTION}</td>
       </tr>
       <!-- BEGIN category_row -->
       <tr class="{SHOP_ROWCLASS}">
-        <td nowrap="nowrap">
+        <td>
           <input type="checkbox" name="selected_category_id[]" value="{SHOP_CATEGORY_ID}" />
         </td>
-        <td nowrap="nowrap" class="a_right">
+        <td class="a_right">
           <input type="hidden" value="{SHOP_CATEGORY_ID}" name="update_category_id[]" />
           {SHOP_CATEGORY_ID}&nbsp;&nbsp;
         </td>
-        <td nowrap="nowrap">
+        <td>
           <input type="checkbox" name="active[{SHOP_CATEGORY_ID}]"
               value="1" {SHOP_CATEGORY_ACTIVE_CHECKED} />
           <input type="hidden" value="{SHOP_CATEGORY_ACTIVE_VALUE}"
@@ -140,7 +140,7 @@ function cancelEdit()
               alt="{SHOP_CATEGORY_ACTIVE}" title="{SHOP_CATEGORY_ACTIVE}" />
           &nbsp;&nbsp;
         </td>
-        <td nowrap="nowrap">
+        <td>
           {SHOP_CATEGORY_LEVELSPACE}<input type="text" name="ord[{SHOP_CATEGORY_ID}]"
               value="{SHOP_CATEGORY_ORD}" size="3" maxlength="4" />
           &nbsp;
@@ -157,13 +157,13 @@ function cancelEdit()
           <input type="hidden" value="{SHOP_CATEGORY_ORD}"
               name="ord_old[{SHOP_CATEGORY_ID}]" />
         </td>
-        <!--td nowrap="nowrap">
+        <!--td>
           <input type="checkbox" name="virtual[{SHOP_CATEGORY_ID}]"
               value="1" {SHOP_CATEGORY_VIRTUAL_CHECKED} />
           <input type="hidden" value="{SHOP_CATEGORY_VIRTUAL_CHECKED}"
               name="virtual_old[{SHOP_CATEGORY_ID}]" />
         </td-->
-        <td nowrap="nowrap" class="a_right">
+        <td class="a_right">
 <!-- BEGIN category_language -->
           <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=categories&amp;category_id={SHOP_CATEGORY_ID}&amp;userFrontendLangId={SHOP_CATEGORY_LANGUAGE_ID}">
             <img src="images/icons/edit.gif" border="0"
@@ -200,7 +200,7 @@ function cancelEdit()
   <form name="categoryForm" method="post"
       action="index.php?cmd=shop{MODULE_INDEX}&amp;act=categories">
     <input type="hidden" name="category_id" value="{SHOP_CATEGORY_ID}" />
-    <table summary="" width="100%" border="0" cellspacing="0" cellpadding="2" class="adminlist">
+    <table width="100%" border="0" cellspacing="0" cellpadding="2" class="adminlist">
       <tr>
         <th colspan="2">{TXT_ADD_NEW_SHOP_GROUP}</th>
       </tr>
@@ -214,7 +214,7 @@ function cancelEdit()
         </td>
       </tr>
       <tr class="row2">
-        <td nowrap="nowrap">
+        <td>
           <label for="parent_id">{TXT_SHOP_CATEGORY_PARENT}</label>
         </td>
         <td>
@@ -243,7 +243,7 @@ function cancelEdit()
         </td>
       </tr-->
       <tr class="row2">
-        <td valign="top">
+        <td>
           {TXT_SHOP_CATEGORY_IMAGE}
         </td>
         <td>
@@ -265,7 +265,7 @@ function cancelEdit()
         </td>
       </tr>
       <tr class="row1">
-        <td valign="top">
+        <td>
           <label for="desc">{TXT_SHOP_CATEGORY_DESCRIPTION}</label>
         </td>
         <td>
@@ -274,7 +274,7 @@ function cancelEdit()
         </td>
       </tr>
       <!--tr class="row2">
-        <td valign="top">
+        <td>
           {TXT_SHOP_CATEGORY_DOCUMENT}
         </td>
         <td>

@@ -132,11 +132,11 @@ function MakeExport(groupCode) {
         <th colspan="2" class="f_bold">{TXT_SHOP_IMPORT_IMPORT_CATEGORIES}</th>
       </tr>
       <tr class="row2">
-        <td nowrap="nowrap" width='20%'>
+        <td width='20%'>
           {TXT_SHOP_IMPORT_FILE}&nbsp;
           <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SHOP_IMPORT_CATEGORIES_TIPS}</span>
         </td>
-        <td nowrap="nowrap" width='80%'>
+        <td width='80%'>
           <input type="file" name="importFileCategories"
             id="importFileCategories" style="width: 200px;"
             size="50" />
@@ -163,18 +163,18 @@ function MakeExport(groupCode) {
         <th colspan="2" class="f_bold">{TXT_SHOP_IMPORT_PRODUCTS}</th>
       </tr>
       <tr class="row1">
-        <td nowrap="nowrap">{TXT_SHOP_IMPORT_SELECT_TEMPLATE}&nbsp;
+        <td>{TXT_SHOP_IMPORT_SELECT_TEMPLATE}&nbsp;
           <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SHOP_IMPORT_CHOOSE_TEMPLATE_TIPS}</span>
         </td>
-        <td nowrap="nowrap" width="80%">
+        <td width="80%">
           {SHOP_IMPORT_TEMPLATE_MENU}
         </td>
       </tr>
       <tr class="row2">
-        <td nowrap="nowrap">{TXT_SHOP_IMPORT_FILE}&nbsp;
+        <td>{TXT_SHOP_IMPORT_FILE}&nbsp;
           <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SHOP_IMPORT_CHOOSE_TEMPLATE_TIPS}</span>
         </td>
-        <td nowrap="nowrap">
+        <td>
           <input type="file" name="importfile" id="importfile"
                  style="width: 200px;" size="50" />
         </td>
@@ -208,13 +208,13 @@ function MakeExport(groupCode) {
         <th colspan="4" class="f_bold">{TXT_SHOP_IMPORT_IMPORTTEMPLATE}</th>
       </tr>
       <tr class="row2">
-        <td valign="top" class="f_bold">
+        <td class="f_bold">
           {TXT_SHOP_IMPORT_TEXTFILE}
           <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SHOP_IMPORT_ASSIGNMENT_TIPS}</span>
           {FILE_FIELDS_LIST}
         </td>
         <td>&nbsp;&nbsp;</td>
-        <td valign="top" class="f_bold">
+        <td class="f_bold">
           {TXT_SHOP_IMPORT_DATABASE}
           <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SHOP_IMPORT_CATEGORY_TIPS}</span>
           {DB_FIELDS_LIST}
@@ -242,14 +242,14 @@ function MakeExport(groupCode) {
         </td>
       </tr>
       <tr class="row2">
-        <td valign="top">
+        <td>
           <select name="fileList" id="pairs_left" style="width: 200px;" size="10"
                   onchange="document.getElementById('pairs_right')[this.selectedIndex].selected=true">
           </select>
           <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SHOP_IMPORT_ASSIGNMENT_REMOVE_TIPS}</span>
         </td>
         <td>&nbsp;&nbsp;</td>
-        <td valign="top">
+        <td>
           <select name="DbList" id="pairs_right" style="width: 200px;" size="10" onchange="document.getElementById('pairs_left')[this.selectedIndex].selected=true"></select>
         </td>
         <td>
@@ -330,18 +330,18 @@ function MakeExport(groupCode) {
   <table border="0" cellspacing="0" cellpadding="2" width=100% class="adminlist">
   <colgroup><col width='10%'/><col width='10%'/><col width='80%'/></colgroup>
     <tr>
-      <th nowrap='nowrap' colspan="3" class="f_bold">{TXT_SHOP_EXPORT}</th>
+      <th class="nowrap" colspan="3" class="f_bold">{TXT_SHOP_EXPORT}</th>
     </tr>
 <!--
     <tr class="row1">
-      <td nowrap='nowrap' valign="top" colspan="3" class="f_bold">
+      <td colspan="3" class="f_bold">
         {TXT_SHOP_EXPORT_SELECTION}<br />
       </td>
     </tr>
 -->
 <!-- BEGIN groupRow -->
     <tr class="{CLASS_NAME}">
-      <td nowrap='nowrap'>
+      <td class="nowrap">
         <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{SHOP_EXPORT_GROUP}</span>
       </td>
       <td colspan="2">

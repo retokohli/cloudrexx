@@ -297,8 +297,15 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
 // TODO: Test mail with login data!
         $arrSubstitution +=
               $objCustomer->getSubstitutionArray()
-            + self::getSubstitutionArray();
-//die("sendConfirmationMail($order_id, $create_accounts): Subs: ".var_export($arrSubstitution, true));
+            + self::getSubstitutionArray()
+            + array(
+                'TIMESTAMP' =>
+                    date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME,
+                        // Local time, as configured by $_CONFIG['timezone']
+                        date_timestamp_get(date_create())),
+                'ROOT_URL' =>
+                    Cx\Core\Routing\Url::fromDocumentRoot()->toString());
+//DBG::log("sendConfirmationMail($order_id, $create_accounts): Subs: ".var_dump($arrSubstitution, true));
         if (empty($arrSubstitution)) return false;
         // Prepared template for order confirmation
         $arrMailTemplate = array(
@@ -311,6 +318,18 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
             'substitution' => &$arrSubstitution,
         );
 //DBG::log("sendConfirmationMail($order_id, $create_accounts): Template: ".var_export($arrMailTemplate, true));
+//DBG::log("sendConfirmationMail($order_id, $create_accounts): Substitution: ".var_export($arrSubstitution, true));
+// TODO: Create some XML order file
+//        $template = file_get_contents(
+//            ASCMS_MODULE_PATH.'/shop/template/module_shop_export_orders.xml');
+//        MailTemplate::substitute($template, $arrSubstitution, true);
+//        // Strip leftover comments from blocks: "<!---->" or "<!--  -->"
+//        $template = preg_replace('/<!--\s*-->/', '', $template);
+//        $file = new Cx\Lib\FileSystem\File(
+//            ASCMS_DOCUMENT_ROOT.'/orders/'.$order_id.'.xml');
+////        $file->makeWritable(); // Fails on win32
+//        $file->write($template);
+///
         if (!MailTemplate::send($arrMailTemplate)) return false;
         return $arrSubstitution['CUSTOMER_EMAIL'];
     }

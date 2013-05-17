@@ -688,7 +688,8 @@ class Cart
      */
     static function needs_shipment()
     {
-        return $_SESSION['shop']['cart']['shipment'];
+        return (isset($_SESSION['shop']['cart']['shipment'])
+            ? $_SESSION['shop']['cart']['shipment'] : FALSE);
     }
 
 
@@ -898,6 +899,184 @@ die("Cart::view(): ERROR: No template");
             $objTemplate->setVariable(
                 'TXT_NEXT', $_ARRAYLANG['TXT_NEXT']);
         }
+    }
+
+
+// TODO: implement/test this
+    /**
+     * Restores the Cart from the Order ID given
+     *
+     * Redirects to the login when nobody is logged in.
+     * Redirects to the history overview when the Order cannot be loaded,
+     * or when it does not belong to the current Customer.
+     * When $editable is true, redirects to the detail view of the first
+     * Item for editing.  Editing will be disabled otherwise.
+     * @global  array   $_ARRAYLANG
+     * @param   integer $order_id   The Order ID
+     * @param   boolean $editable   Items in the Cart are editable iff true
+     */
+    static function from_order($order_id, $editable=false)
+    {
+        global $_ARRAYLANG;
+
+        $objCustomer = Shop::customer();
+        if (!$objCustomer) {
+            Message::information($_ARRAYLANG['TXT_SHOP_ORDER_LOGIN_TO_REPEAT']);
+            HTTP::redirect(
+                Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'login').
+                '?redirect='.base64_encode(
+                    Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'cart').
+                    '?order_id='.$order_id));
+        }
+        $customer_id = $objCustomer->getId();
+        $order = Order::getById($order_id);
+        if (!$order || $order->customer_id() != $customer_id) {
+            Message::warning($_ARRAYLANG['TXT_SHOP_ORDER_INVALID_ID']);
+            HTTP::redirect(
+                Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'history'));
+        }
+// Optional!
+        self::destroy();
+        $_SESSION['shop']['shipperId'] = $order->shipment_id();
+        $_SESSION['shop']['paymentId'] = $order->payment_id();
+        $order_attributes = $order->getOptionArray();
+        $count = null;
+        $arrAttributes = Attributes::getArray($count, 0, -1, null, array());
+        // Find an Attribute and option IDs for the reprint type
+        $attribute_id_reprint = $option_id_reprint = NULL;
+        if (!$editable) {
+//DBG::log("Cart::from_order(): Checking for reprint...");
+            foreach ($arrAttributes as $attribute_id => $objAttribute) {
+                if ($objAttribute->getType() == Attribute::TYPE_EZS_REPRINT) {
+//DBG::log("Cart::from_order(): TYPE reprint");
+                    $options = $objAttribute->getOptionArray();
+                    if ($options) {
+                        $option_id_reprint = current(array_keys($options));
+                        $attribute_id_reprint = $attribute_id;
+//DBG::log("Cart::from_order(): Found reprint Attribute $attribute_id_reprint, option $option_id_reprint");
+                        break;
+                    }
+                }
+            }
+        }
+        foreach ($order->getItems() as $item) {
+            $item_id = $item['item_id'];
+            $attributes = $order_attributes[$item_id];
+            $options = array();
+            foreach ($attributes as $attribute_id => $attribute) {
+//                foreach (array_keys($attribute['options']) as $option_id) {
+                foreach ($attribute['options'] as $option_id => $option) {
+//DBG::log("Cart::from_order(): Option: ".var_export($option, true));
+                    switch ($arrAttributes[$attribute_id]->getType()) {
+                        case Attribute::TYPE_TEXT_OPTIONAL:
+                        case Attribute::TYPE_TEXT_MANDATORY:
+                        case Attribute::TYPE_TEXTAREA_OPTIONAL:
+                        case Attribute::TYPE_TEXTAREA_MANDATORY:
+                        case Attribute::TYPE_EMAIL_OPTIONAL:
+                        case Attribute::TYPE_EMAIL_MANDATORY:
+                        case Attribute::TYPE_URL_OPTIONAL:
+                        case Attribute::TYPE_URL_MANDATORY:
+                        case Attribute::TYPE_DATE_OPTIONAL:
+                        case Attribute::TYPE_DATE_MANDATORY:
+                        case Attribute::TYPE_NUMBER_INT_OPTIONAL:
+                        case Attribute::TYPE_NUMBER_INT_MANDATORY:
+                        case Attribute::TYPE_NUMBER_FLOAT_OPTIONAL:
+                        case Attribute::TYPE_NUMBER_FLOAT_MANDATORY:
+                        case Attribute::TYPE_EZS_ACCOUNT_3:
+                        case Attribute::TYPE_EZS_ACCOUNT_4:
+                        case Attribute::TYPE_EZS_IBAN:
+                        case Attribute::TYPE_EZS_IN_FAVOR_OF:
+                        case Attribute::TYPE_EZS_REFERENCE:
+                        case Attribute::TYPE_EZS_CLEARING:
+                        case Attribute::TYPE_EZS_DEPOSIT_FOR_6:
+                        case Attribute::TYPE_EZS_DEPOSIT_FOR_2L:
+                        case Attribute::TYPE_EZS_DEPOSIT_FOR_2H:
+                        case Attribute::TYPE_EZS_PURPOSE_35:
+                        case Attribute::TYPE_EZS_PURPOSE_50:
+                            $options[$attribute_id][] = $option['name'];
+                            break;
+                        case Attribute::TYPE_EZS_REDPLATE:
+                        case Attribute::TYPE_EZS_CONFIRMATION:
+                            if (!$attribute_id_reprint) {
+//DBG::log("Cart::from_order(): No reprint, adding option {$option['name']}");
+                                $options[$attribute_id][] = $option_id;
+                            }
+                            break;
+                        case Attribute::TYPE_EZS_REPRINT:
+                            // Automatically added below when appropriate
+                            break;
+                        default:
+//                        case Attribute::TYPE_EZS_ZEWOLOGO:
+//                        case Attribute::TYPE_EZS_EXPRESS:
+//                        case Attribute::TYPE_EZS_PURPOSE_BOLD:
+                            $options[$attribute_id][] = $option_id;
+                            break;
+                    }
+//DBG::log("Cart::from_order(): Added option: ".var_export($options, true));
+                }
+            }
+            if ($attribute_id_reprint) {
+                $options[$attribute_id_reprint][] = $option_id_reprint;
+//DBG::log("Cart::from_order(): Item has reprint Attribute, added $attribute_id_reprint => ($option_id_reprint)");
+            }
+            self::add_product(array(
+                'id' => $item['product_id'],
+                'quantity' => $item['quantity'],
+                'options' => $options,
+            ));
+        }
+        if ($attribute_id_reprint) {
+            // Mark the Cart as being unchanged since the restore, so the
+            // additional cost for some Attributes won't be added again.
+            self::restored_order_id($order_id);
+        }
+        Message::information($_ARRAYLANG['TXT_SHOP_ORDER_RESTORED']);
+// Enable for production
+        HTTP::redirect(
+            Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'cart'));
+    }
+
+
+// c_sp
+    /**
+     * Returns the original Order ID from which the Cart has been restored
+     *
+     * Optionally sets the given Order ID.
+     * Set to 0 (zero) in order to mark the Cart as changed (different from
+     * the original Order, apart from single item quantities)
+     * @param   integer   $order_id     The optional original Order ID,
+     *                                  or 0 (zero)
+     * @return  integer                 The original Order ID
+     * @author      Reto Kohli <reto.kohli@comvation.com>
+     */
+    static function restored_order_id($order_id=null)
+    {
+        if (isset($order_id)) {
+            $_SESSION['shop']['restored_order_id'] = max(0, intval($order_id));
+        }
+        return (isset($_SESSION['shop']['restored_order_id'])
+            ? $_SESSION['shop']['restored_order_id']
+            : 0);
+    }
+
+
+    /**
+     * Returns the quantity set for the given Cart ID
+     *
+     * If the Cart ID is invalid, returns 0 (zero).
+     * @param   integer $cart_id        The Cart ID
+     * @return  integer                 The quantity
+     */
+    static function get_quantity_by_cart_id($cart_id)
+    {
+        if (empty(self::$products)) {
+            self::update(null);
+        }
+        if (empty(self::$products[$cart_id])
+            && empty(self::$products[$cart_id]['quantity'])) {
+            return 0;
+        }
+        return self::$products[$cart_id]['quantity'];
     }
 
 }

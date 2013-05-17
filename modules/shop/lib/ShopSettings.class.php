@@ -142,11 +142,9 @@ class ShopSettings
         SettingDb::set('usergroup_id_reseller',
             intval($_POST['usergroup_id_reseller']));
         SettingDb::set('user_profile_attribute_customer_group_id',
-            trim(strip_tags(contrexx_input2raw(
-                $_POST['user_profile_attribute_customer_group_id']))));
+            intval($_POST['user_profile_attribute_customer_group_id']));
         SettingDb::set('user_profile_attribute_notes',
-            trim(strip_tags(contrexx_input2raw(
-                $_POST['user_profile_attribute_notes']))));
+            intval($_POST['user_profile_attribute_notes']));
         // New in V3.0.4 or V3.1.0
         if (!SettingDb::set('numof_products_per_page_backend',
             intval($_POST['numof_products_per_page_backend']))) {
@@ -789,20 +787,24 @@ class ShopSettings
         SettingDb::add('payment_lsv_active', 0, ++$i,
             SettingDb::TYPE_TEXT, null, 'config');
         // New for V3.0
-//  use_js_cart (true)
-
-        // disable jsCart by default
-        // activate in case it was activated in config/configuration.php
+        // Disable jsCart by default.
         $useJsCart = '0';
+        // Activate it in case it was activated in config/configuration.php
         if (   isset($_CONFIGURATION['custom']['shopJsCart'])
-            && $_CONFIGURATION['custom']['shopJsCart'] == 'true') {
+            && $_CONFIGURATION['custom']['shopJsCart']) {
             $useJsCart = '1';
         }
         SettingDb::add('use_js_cart', $useJsCart, ++$i,
-            SettingDb::TYPE_CHECKBOX, '1');
-//  shopnavbar_on_all_pages (false)
-        SettingDb::add('shopnavbar_on_all_pages', '0', ++$i,
-            SettingDb::TYPE_CHECKBOX, '1');
+            SettingDb::TYPE_CHECKBOX);
+        // Disable shopnavbar on other pages by default.
+        $shopnavbar = '0';
+        // Activate it in case it was activated in config/configuration.php
+        if (   isset($_CONFIGURATION['custom']['shopnavbar'])
+            && $_CONFIGURATION['custom']['shopnavbar']) {
+            $shopnavbar = '1';
+        }
+        SettingDb::add('shopnavbar_on_all_pages', $shopnavbar, ++$i,
+            SettingDb::TYPE_CHECKBOX);
         // New for v2.2(?)
         SettingDb::add('orderitems_amount_max', 0, ++$i,
             SettingDb::TYPE_TEXT, null, 'config');

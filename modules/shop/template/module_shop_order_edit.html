@@ -8,22 +8,22 @@
       <th colspan="4">{TXT_ORDER}</th>
     </tr>
     <tr class="row1">
-      <td nowrap="nowrap">{TXT_ORDERNUMBER}</td>
-      <td nowrap="nowrap">{SHOP_ORDERID}
+      <td>{TXT_ORDERNUMBER}</td>
+      <td>{SHOP_ORDERID}
         <input type="hidden" name="order_id" value="{SHOP_ORDERID}" />
       </td>
-      <td nowrap="nowrap">{TXT_IP_ADDRESS}</td>
-      <td nowrap="nowrap">{SHOP_CUSTOMER_IP}</td>
+      <td>{TXT_IP_ADDRESS}</td>
+      <td>{SHOP_CUSTOMER_IP}</td>
     </tr>
     <tr class="row2">
-      <td nowrap="nowrap">{TXT_ORDERDATE}</td>
-      <td nowrap="nowrap">{SHOP_DATE}&nbsp;</td>
-      <td nowrap="nowrap">{TXT_CLIENT_HOST}</td>
-      <td nowrap="nowrap">{SHOP_CUSTOMER_HOST}</td>
+      <td>{TXT_ORDERDATE}</td>
+      <td>{SHOP_DATE}&nbsp;</td>
+      <td>{TXT_CLIENT_HOST}</td>
+      <td>{SHOP_CUSTOMER_HOST}</td>
     </tr>
     <tr class="row1" style="vertical-align:top;">
-      <td nowrap="nowrap">{TXT_ORDERSTATUS}</td>
-      <td nowrap="nowrap">
+      <td>{TXT_ORDERSTATUS}</td>
+      <td>
         {SHOP_ORDER_STATUS}
         <div id="sendMailDiv" style="{SHOP_SEND_MAIL_STYLE}">
           <br />
@@ -34,77 +34,77 @@
           </label>
         </div>
       </td>
-      <td nowrap="nowrap">{TXT_BROWSER_VERSION}</td>
-      <td nowrap="nowrap">{SHOP_CUSTOMER_BROWSER}</td>
+      <td>{TXT_BROWSER_VERSION}</td>
+      <td>{SHOP_CUSTOMER_BROWSER}</td>
     </tr>
     <tr class="row2">
-      <td nowrap="nowrap">{TXT_LAST_EDIT}</td>
-      <td nowrap="nowrap">
+      <td>{TXT_LAST_EDIT}</td>
+      <td>
         {SHOP_LAST_MODIFIED}
         <input type="hidden" name="lastModified" value="{SHOP_LAST_MODIFIED_DATE}" />
       </td>
-      <td nowrap="nowrap">{TXT_BROWSER_LANGUAGE}</td>
-      <td nowrap="nowrap">{SHOP_CUSTOMER_LANG}</td>
+      <td>{TXT_BROWSER_LANGUAGE}</td>
+      <td>{SHOP_CUSTOMER_LANG}</td>
     </tr>
-<!-- see below <tr class="row1"> <td nowrap="nowrap" width="15%">{TXT_ORDER_SUM}</td> <td nowrap="nowrap" width="85%" colspan="3">{SHOP_ORDER_SUM}&nbsp;{SHOP_CURRENCY}</td> </tr> -->
+<!-- see below <tr class="row1"> <td width="15%">{TXT_ORDER_SUM}</td> <td width="85%" colspan="3">{SHOP_ORDER_SUM}&nbsp;{SHOP_CURRENCY}</td> </tr> -->
     <tr><td colspan="4">&nbsp;</td></tr>
     <tr>
-      <th nowrap="nowrap" colspan="2">{TXT_BILLING_ADDRESS}</th>
-      <th nowrap="nowrap" colspan="2">{TXT_SHIPPING_ADDRESS}</th>
+      <th colspan="2">{TXT_BILLING_ADDRESS}</th>
+      <th colspan="2">{TXT_SHIPPING_ADDRESS}</th>
     </tr>
     <tr class="row1">
-      <td nowrap="nowrap">{TXT_COMPANY}</td>
-      <td nowrap="nowrap">
+      <td>{TXT_COMPANY}</td>
+      <td>
         <input type="text" name="billing_company" value="{SHOP_SHIP_COMPANY}" />
       </td>
-      <td nowrap="nowrap">{TXT_COMPANY}</td>
-      <td nowrap="nowrap">
+      <td>{TXT_COMPANY}</td>
+      <td>
         <input type="text" name="shipCompany" value="{SHOP_SHIP_COMPANY}" />
       </td>
     </tr>
     <tr class="row2">
-      <td nowrap="nowrap">{TXT_SHOP_TITLE}</td>
-      <td nowrap="nowrap">{SHOP_GENDER}&nbsp;</td>
-      <td nowrap="nowrap">{TXT_SHOP_TITLE}</td>
-      <td nowrap="nowrap">{SHOP_SHIP_GENDER}</td>
+      <td>{TXT_SHOP_TITLE}</td>
+      <td>{SHOP_GENDER}&nbsp;</td>
+      <td>{TXT_SHOP_TITLE}</td>
+      <td>{SHOP_SHIP_GENDER}</td>
     </tr>
     <tr class="row1">
-      <td nowrap="nowrap">{TXT_LAST_NAME}</td>
-      <td nowrap="nowrap">
+      <td>{TXT_LAST_NAME}</td>
+      <td>
         <input type="text" name="billing_lastname" value="{SHOP_LASTNAME}" />
       </td>
-      <td nowrap="nowrap">{TXT_LAST_NAME}</td>
-      <td nowrap="nowrap">
+      <td>{TXT_LAST_NAME}</td>
+      <td>
         <input type="text" name="shipLastname" value="{SHOP_SHIP_LASTNAME}" />
       </td>
     </tr>
     <tr class="row2">
-      <td nowrap="nowrap">{TXT_FIRST_NAME}</td>
-      <td nowrap="nowrap">
+      <td>{TXT_FIRST_NAME}</td>
+      <td>
         <input type="text" name="billing_firstname" value="{SHOP_FIRSTNAME}" />
-      <td nowrap="nowrap">{TXT_FIRST_NAME}</td>
-      <td nowrap="nowrap">
+      <td>{TXT_FIRST_NAME}</td>
+      <td>
         <input type="text" name="shipFirstname" value="{SHOP_SHIP_FIRSTNAME}" />
       </td>
     </tr>
     <tr class="row1">
-      <td nowrap="nowrap">{TXT_ADDRESS}</td>
-      <td nowrap="nowrap">
+      <td>{TXT_ADDRESS}</td>
+      <td>
         <input type="text" name="billing_address" value="{SHOP_ADDRESS}" />
       </td>
-      <td nowrap="nowrap">{TXT_ADDRESS}</td>
-      <td nowrap="nowrap">
+      <td>{TXT_ADDRESS}</td>
+      <td>
         <input type="text" name="shipAddress" value="{SHOP_SHIP_ADDRESS}" />
       </td>
     </tr>
     <tr class="row2">
-      <td nowrap="nowrap">{TXT_ZIP_CITY}</td>
-      <td nowrap="nowrap">
+      <td>{TXT_ZIP_CITY}</td>
+      <td>
         <input type="text" name="billing_zip" value="{SHOP_ZIP}" />
         <input type="text" name="billing_city" value="{SHOP_CITY}" />
       </td>
-      <td nowrap="nowrap">{TXT_ZIP_CITY}</td>
-      <td nowrap="nowrap">
+      <td>{TXT_ZIP_CITY}</td>
+      <td>
         <input type="text" name="shipZip" size="8" maxlength="8"
                value="{SHOP_SHIP_ZIP}" />
         &nbsp;
@@ -112,44 +112,44 @@
       </td>
     </tr>
     <tr class="row1">
-      <td nowrap="nowrap">{TXT_COUNTRY}</td>
-      <td nowrap="nowrap">
+      <td>{TXT_COUNTRY}</td>
+      <td>
         {SHOP_COUNTRY}
       </td>
-      <td nowrap="nowrap">{TXT_COUNTRY}</td>
-      <td nowrap="nowrap">{SHOP_SHIP_COUNTRY}</td>
+      <td>{TXT_COUNTRY}</td>
+      <td>{SHOP_SHIP_COUNTRY}</td>
     </tr>
     <tr class="row2">
-      <td nowrap="nowrap">{TXT_PHONE}</td>
-      <td nowrap="nowrap">
+      <td>{TXT_PHONE}</td>
+      <td>
         <input type="text" name="billing_phone" value="{SHOP_PHONE}" />
       </td>
-      <td nowrap="nowrap">{TXT_PHONE}</td>
-      <td nowrap="nowrap">
+      <td>{TXT_PHONE}</td>
+      <td>
         <input type="text" name="shipPhone" value="{SHOP_SHIP_PHONE}" />
       </td>
     </tr>
     <tr class="row1">
-      <td nowrap="nowrap">
+      <td>
         {TXT_FAX}
       </td>
-      <td nowrap="nowrap">
+      <td>
         <input type="text" name="billing_fax" value="{SHOP_FAX}" />
       </td>
       <td></td>
       <td></td>
     </tr>
     <tr class="row2">
-      <td nowrap="nowrap">
+      <td>
         {TXT_EMAIL}<input type="hidden" name="mailTo" value="{SHOP_EMAIL}" />
       </td>
-      <td nowrap="nowrap">
+      <td>
         <input type="text" name="billing_email" value="{SHOP_EMAIL}" />
 <!--        <a href="index.php?cmd=shop&amp;act=settings&amp;tpl=mail&amp;strTab=mailSend&amp;mailTo={SHOP_EMAIL}"></a>&nbsp;-->
       </td>
-      <td nowrap="nowrap">
+      <td>
         {TXT_SHIPPING_METHOD}</td>
-      <td nowrap="nowrap">
+      <td>
         {SHOP_SHIPPING_TYP_MENU}</td>
     </tr>
   </table>
@@ -159,42 +159,42 @@
       <th colspan="2">{TXT_PAYMENT_INFORMATIONS}</th>
     </tr>
     <tr class="row1">
-      <td nowrap="nowrap" width="15%">{TXT_PAYMENT_TYPE}</td>
-    <td nowrap='nowrap'>{SHOP_PAYMENTTYPE}&nbsp;({SHOP_PAYMENT_HANDLER})</td>
+      <td width="15%">{TXT_PAYMENT_TYPE}</td>
+    <td class="nowrap">{SHOP_PAYMENTTYPE}&nbsp;({SHOP_PAYMENT_HANDLER})</td>
     </tr>
 
 <!-- BEGIN creditCard -->
 <!-- Obsolete! -->
     <tr class="row2">
-      <td nowrap="nowrap">{TXT_CREDIT_CARD_OWNER}</td>
-      <td nowrap="nowrap">{SHOP_CCNAME}&nbsp;</td>
+      <td>{TXT_CREDIT_CARD_OWNER}</td>
+      <td>{SHOP_CCNAME}&nbsp;</td>
     </tr>
     <tr class="row1">
-      <td nowrap="nowrap">{TXT_CARD_NUMBER}</td>
-      <td nowrap="nowrap">{SHOP_CCNUMBER}&nbsp;</td>
+      <td>{TXT_CARD_NUMBER}</td>
+      <td>{SHOP_CCNUMBER}&nbsp;</td>
     </tr>
     <tr class="row2">
-      <td nowrap="nowrap">{TXT_CVC_CODE}</td>
-      <td nowrap="nowrap">{SHOP_CVC_CODE}&nbsp;</td>
+      <td>{TXT_CVC_CODE}</td>
+      <td>{SHOP_CVC_CODE}&nbsp;</td>
     </tr>
     <tr class="row1">
-      <td nowrap="nowrap">{TXT_EXPIRY_DATE}</td>
-      <td nowrap="nowrap">{SHOP_CCDATE}&nbsp;</td>
+      <td>{TXT_EXPIRY_DATE}</td>
+      <td>{SHOP_CCDATE}&nbsp;</td>
     </tr>
 <!-- END creditCard -->
 
 <!-- BEGIN lsv -->
     <tr class="row2">
-    <td nowrap='nowrap'>{TXT_ACCOUNT_HOLDER}</td>
-    <td nowrap='nowrap'>{SHOP_ACCOUNT_HOLDER}&nbsp;</td>
+    <td class="nowrap">{TXT_ACCOUNT_HOLDER}</td>
+    <td class="nowrap">{SHOP_ACCOUNT_HOLDER}&nbsp;</td>
     </tr>
     <tr class="row1">
-    <td nowrap='nowrap'>{TXT_ACCOUNT_BANK}</td>
-    <td nowrap='nowrap'>{SHOP_ACCOUNT_BANK}&nbsp;</td>
+    <td class="nowrap">{TXT_ACCOUNT_BANK}</td>
+    <td class="nowrap">{SHOP_ACCOUNT_BANK}&nbsp;</td>
     </tr>
     <tr class="row2">
-    <td nowrap='nowrap'>{TXT_ACCOUNT_BLZ}</td>
-    <td nowrap='nowrap'>{SHOP_ACCOUNT_BLZ}&nbsp;</td>
+    <td class="nowrap">{TXT_ACCOUNT_BLZ}</td>
+    <td class="nowrap">{SHOP_ACCOUNT_BLZ}&nbsp;</td>
     </tr>
 <!-- END lsv -->
 
@@ -205,23 +205,23 @@
       <th colspan="6">{TXT_BILL}</th>
     </tr>
     <tr class="row1">
-      <td width="10%" nowrap="nowrap" class="f_bold">{TXT_NUMBER}</td>
-      <td width="10%" nowrap="nowrap" class="f_bold">{TXT_SHOP_PRODUCT}</td>
-      <!--td width="40%" nowrap="nowrap" class="f_bold">{TXT_PRODUCT_NAME}</td-->
-      <td width="10%" nowrap="nowrap" class="f_bold">{TXT_WEIGHT}</td>
-      <td width="10%" nowrap="nowrap" class="f_bold">{TXT_PRODUCT_PRICE}</td>
-      <td width="10%" nowrap="nowrap" class="f_bold">{TXT_TAX_RATE}</td>
-      <td width="10%" nowrap="nowrap" class="f_bold">{TXT_SUM}</td>
+      <td width="10%" class="f_bold">{TXT_NUMBER}</td>
+      <td width="10%" class="f_bold">{TXT_SHOP_PRODUCT}</td>
+      <!--td width="40%" class="f_bold">{TXT_PRODUCT_NAME}</td-->
+      <td width="10%" class="f_bold">{TXT_WEIGHT}</td>
+      <td width="10%" class="f_bold">{TXT_PRODUCT_PRICE}</td>
+      <td width="10%" class="f_bold">{TXT_TAX_RATE}</td>
+      <td width="10%" class="f_bold">{TXT_SUM}</td>
     </tr>
-<!-- BEGIN orderdetailsRow -->
+<!-- BEGIN order_item -->
     <!--tr id="{SHOP_P_ID}" class="{SHOP_ROWCLASS}"-->
     <tr class="{SHOP_ROWCLASS}">
-      <td nowrap="nowrap">
+      <td>
         <input type="text" id="productQuantity-{SHOP_P_ID}"
             name="productQuantity[{SHOP_P_ID}]" value="{SHOP_QUANTITY}"
             size="5" maxlength="5" onchange="calcPrice({SHOP_P_ID});" />
       </td>
-      <td nowrap="nowrap">
+      <td>
         <input type="hidden" name="product_id_old[{SHOP_P_ID}]" value="{SHOP_P_ID}" />
         <input type="hidden" name="product_id[{SHOP_P_ID}]"
                id="product_id-{SHOP_P_ID}" value="{SHOP_P_ID}" />
@@ -230,22 +230,22 @@
           {SHOP_PRODUCT_IDS_MENU}
         </select>
       </td>
-      <!--td nowrap="nowrap">
+      <!--td>
         <input type="text" size="50" id="product_name-{SHOP_P_ID}"
             name="product_name[{SHOP_P_ID}]" value="{SHOP_PRODUCT_NAME}" />
       </td-->
-      <td nowrap="nowrap">
+      <td>
         <input class="inputCurrency" type="text" id="productWeight-{SHOP_P_ID}"
             name="productWeight[{SHOP_P_ID}]" value="{SHOP_PRODUCT_WEIGHT}"
             onchange="calcPrice({SHOP_P_ID});" />
       </td>
-      <td nowrap="nowrap">
+      <td>
         <input class="inputCurrency" type="text" id="productPrice-{SHOP_P_ID}"
             name="productPrice[{SHOP_P_ID}]" value="{SHOP_PRODUCT_PRICE}"
             onchange="calcPrice({SHOP_P_ID});" />
         &nbsp;{SHOP_CURRENCY}
       </td>
-      <td nowrap="nowrap">
+      <td>
         <input class="inputCurrency" type="text"
             id="productTaxPercent-{SHOP_P_ID}"
             name="productTaxPercent[{SHOP_P_ID}]"
@@ -253,21 +253,21 @@
             onchange="calcPrice({SHOP_P_ID});" />
         &nbsp;%
       </td>
-      <td nowrap="nowrap">
+      <td>
         <input readonly="readonly" class="inputCurrency" type="text"
             id="productSum-{SHOP_P_ID}" name="productSum[{SHOP_P_ID}]"
             value="{SHOP_PRODUCT_SUM}" />
         &nbsp;{SHOP_CURRENCY}
       </td>
     </tr>
-<!-- END orderdetailsRow -->
+<!-- END order_item -->
     <!--tr id="0" class="{SHOP_ROWCLASS_NEW}"-->
     <tr class="{SHOP_ROWCLASS_NEW}">
-      <td nowrap="nowrap">
+      <td>
         <input type="text" id="productQuantity-0" name="productQuantity[0]"
             value="0" size="5" maxlength="5" onchange="calcPrice(0);" />
       </td>
-      <td nowrap="nowrap">
+      <td>
         <input type="hidden" id="product_id-0" name="product_id[0]"
             value="0" />
         <select id="product_list-0" name="product_list[0]" size="1"
@@ -275,26 +275,26 @@
           {SHOP_PRODUCT_IDS_MENU_NEW}
         </select>
       </td>
-      <!--td nowrap="nowrap">
+      <!--td>
         <input type="text" size="50" id="product_name-0" name="product_name[0]" value="" />
       </td-->
-      <td nowrap="nowrap">
+      <td>
         <input class="inputCurrency" type="text" id="productWeight-0"
             name="productWeight[0]" value="0 g" onchange="calcPrice(0);" />
       </td>
-      <td nowrap="nowrap">
+      <td>
         <input class="inputCurrency" type="text" id="productPrice-0"
             name="productPrice[0]" onchange="calcPrice(0);"
             value="0.00" />
         &nbsp;{SHOP_CURRENCY}
       </td>
-      <td nowrap="nowrap">
+      <td>
         <input class="inputCurrency" type="text" id="productTaxPercent-0"
             name="productTaxPercent[0]" onchange="calcPrice(0);"
             value="0.00" />
         &nbsp;%
       </td>
-      <td nowrap="nowrap">
+      <td>
         <input class="inputCurrency" type="text" id="productSum-0"
             name="productSum[0]" value="0.00" onchange="calcPrice(0);" />
         &nbsp;{SHOP_CURRENCY}
@@ -304,19 +304,19 @@
 <!-- BEGIN coupon_row -->
   <tr class="{SHOP_ROWCLASS}">
     <td>&nbsp;</td>
-    <td nowrap='nowrap'>{SHOP_COUPON_NAME}&nbsp;{SHOP_COUPON_CODE}</td>
+    <td class="nowrap">{SHOP_COUPON_NAME}&nbsp;{SHOP_COUPON_CODE}</td>
     <td colspan="3">&nbsp;</td>
-    <td nowrap='nowrap'>{SHOP_COUPON_AMOUNT}&nbsp;{SHOP_CURRENCY}</td>
+    <td class="nowrap">{SHOP_COUPON_AMOUNT}&nbsp;{SHOP_CURRENCY}</td>
   </tr>
 <!-- END coupon_row -->
 
 <!-- BEGIN netPrice -->
     <tr class="row1">
       <td colspan="4">&nbsp;</td>
-      <td nowrap="nowrap" class="a_right f_bold">
+      <td class="a_right f_bold">
         {TXT_NET_PRICE}&nbsp;
       </td>
-      <td nowrap="nowrap">
+      <td>
         <input class="inputCurrency" type="text" id="netPrice"
             name="netPrice" value="{SHOP_NET_PRICE}"
             onchange="calcPrice(0);" />&nbsp;{SHOP_CURRENCY}
@@ -326,10 +326,10 @@
 <!-- BEGIN taxPrice -->
     <tr>
       <td colspan="4">&nbsp;</td>
-      <td nowrap="nowrap" class="f_bold">
+      <td class="f_bold">
         {SHOP_PART_TAX_PROCENTUAL}&nbsp;
       </td>
-      <td nowrap="nowrap">
+      <td>
         <input class="inputCurrency" type="text" id="taxPrice"
             name="taxPrice" value="{SHOP_TAX_PRICE}"
             onchange="calcPrice(0);" />&nbsp;{SHOP_CURRENCY}
@@ -339,19 +339,19 @@
     <tr><td colspan="6">&nbsp;</td></tr>
     <tr>
       <td colspan="1">&nbsp;</td>
-      <td nowrap="nowrap" class="a_right f_bold">
+      <td class="a_right f_bold">
         {TXT_TOTAL_WEIGHT}&nbsp;
       </td>
-      <td nowrap="nowrap">
+      <td>
         <input class="inputCurrency" type="text" id="totalWeight"
             name="totalWeight" value="{SHOP_TOTAL_WEIGHT}"
             onchange="calcPrice(0);" />
       </td>
       <td colspan="1">&nbsp;</td>
-      <td nowrap="nowrap" class="a_right f_bold">
+      <td class="a_right f_bold">
         {TXT_SHIPPING_PRICE}&nbsp;
       </td>
-      <td nowrap="nowrap">
+      <td>
         <input class="inputCurrency" type="text" id="shippingPrice"
             name="shippingPrice" value="{SHOP_SHIPPING_PRICE}"
             onchange="calcPrice(0);" />&nbsp;{SHOP_CURRENCY}
@@ -359,20 +359,20 @@
     </tr>
     <tr>
       <td colspan="4">&nbsp;</td>
-      <td nowrap="nowrap" class="a_right f_bold">
+      <td class="a_right f_bold">
         {TXT_PAYMENT_COSTS}&nbsp;
       </td>
-      <td nowrap="nowrap">
+      <td>
         <input class="inputCurrency" type="text" id="paymentPrice"
             name="paymentPrice" value="{SHOP_PAYMENT_PRICE}"
             onchange="calcPrice(0);" />&nbsp;{SHOP_CURRENCY}</td>
     </tr>
     <tr>
       <td colspan="4">&nbsp;</td>
-      <td nowrap="nowrap" class="a_right f_bold">
+      <td class="a_right f_bold">
         {TXT_TOTAL}&nbsp;
       </td>
-      <td nowrap="nowrap">
+      <td>
         <input class="inputCurrency" type="text" id="currencyOrderSum"
             name="currencyOrderSum" value="{SHOP_ORDER_SUM}"
             onchange="calcPrice(0);" />&nbsp;{SHOP_CURRENCY}
@@ -463,7 +463,6 @@ function changeProduct(orderItemId, newProductId)
   }
   if (newProductId == "0") {
     // the new product ID is zero, so an item is to be deleted
-// TODO: What exactly does this condition do?
     if (orderItemId == 0) {
       document.getElementById("product_id-"+orderItemId).value = "0";
     }

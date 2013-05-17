@@ -39,19 +39,19 @@ function deleteDiscountRate(discountRateId)
       </tr>
 <!-- BEGIN discount -->
       <tr class="{SHOP_DISCOUNT_ROW_STYLE}">
-        <td nowrap="nowrap">
+        <td>
           <a href="index.php?cmd=shop&amp;act=products&amp;tpl=discounts&amp;editDiscount=1&amp;id={SHOP_DISCOUNT_ID}"
               title="{TXT_EDIT}">
             {SHOP_DISCOUNT_GROUP_NAME}
           </a>
         </td>
-        <td nowrap="nowrap">
+        <td>
           <a href="index.php?cmd=shop&amp;act=products&amp;tpl=discounts&amp;editDiscount=1&amp;id={SHOP_DISCOUNT_ID}"
               title="{TXT_EDIT}">
             {SHOP_DISCOUNT_GROUP_UNIT}
           </a>
         </td>
-        <td nowrap="nowrap" class="a_right">
+        <td class="a_right">
           <a href="index.php?cmd=shop&amp;act=products&amp;tpl=discounts&amp;editDiscount=1&amp;id={SHOP_DISCOUNT_ID}"
               title="{TXT_EDIT}">
             <img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" />
@@ -74,14 +74,14 @@ function deleteDiscountRate(discountRateId)
       </tr>
 <!-- BEGIN discountName -->
       <tr class="{SHOP_DISCOUNT_ROW_STYLE}">
-        <td nowrap="nowrap">{TXT_SHOP_DISCOUNT_GROUP_NAME}</td>
-        <td nowrap="nowrap">
+        <td>{TXT_SHOP_DISCOUNT_GROUP_NAME}</td>
+        <td>
           <input type="hidden" name="discountId" value="{SHOP_DISCOUNT_ID_EDIT}" />
           <input type="text" size="40" name="discountGroupName"
               value="{SHOP_DISCOUNT_GROUP_NAME}" />
         </td>
-        <td nowrap="nowrap">{TXT_SHOP_DISCOUNT_GROUP_UNIT}</td>
-        <td nowrap="nowrap">
+        <td>{TXT_SHOP_DISCOUNT_GROUP_UNIT}</td>
+        <td>
           <input type="text" size="40" name="discountGroupUnit"
               value="{SHOP_DISCOUNT_GROUP_UNIT}" />
         </td>
@@ -89,19 +89,19 @@ function deleteDiscountRate(discountRateId)
 <!-- END discountName -->
 <!-- BEGIN discountRate -->
       <tr class="{SHOP_DISCOUNT_ROW_STYLE}">
-        <td width="20%" nowrap="nowrap">
+        <td width="20%">
           {TXT_SHOP_DISCOUNT_MIN_COUNT}
           <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SHOP_DISCOUNT_COUNT_TIP}</span>
         </td>
-        <td nowrap="nowrap">
-          <input type="text" size="40"
+        <td>
+          <input type="text" size="40" class="a_right"
               name="discountCount[{SHOP_DISCOUNT_RATE_INDEX}]"
               value="{SHOP_DISCOUNT_COUNT}" />
         </td>
-        <td width="20%" nowrap="nowrap">
+        <td width="20%">
           {TXT_SHOP_DISCOUNT_RATE}
         </td>
-        <td nowrap="nowrap">
+        <td>
           <input type="text" size="40" class="a_right"
               name="discountRate[{SHOP_DISCOUNT_RATE_INDEX}]"
               value="{SHOP_DISCOUNT_RATE}" />%
