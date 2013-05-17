@@ -52,12 +52,15 @@ class docSysManager extends docSysLibrary
         global $objTemplate, $_ARRAYLANG;
 
         $objTemplate->setVariable("CONTENT_NAVIGATION",
-            "<a href='?cmd=docsys" . MODULE_INDEX . "' class='" . ($this->act == ''
-                    ? 'active' : '') . "'>" . $_ARRAYLANG['TXT_DOC_SYS_MENU_OVERVIEW'] . "</a>
-                                                      <a href='?cmd=docsys" . MODULE_INDEX . "&amp;act=add' class='" . ($this->act
-            == 'add' ? 'active' : '') . "'>" . $_ARRAYLANG['TXT_CREATE_DOCUMENT'] . "</a>
-                                                      <a href='?cmd=docsys" . MODULE_INDEX . "&amp;act=cat' class='" . ($this->act
-            == 'cat' ? 'active' : '') . "'>" . $_ARRAYLANG['TXT_CATEGORY_MANAGER'] . "</a>");
+            "<a href='index.php?cmd=docsys" . MODULE_INDEX . "' class='" .
+            ($this->act == '' ? 'active' : '') . "'>" .
+            $_ARRAYLANG['TXT_DOC_SYS_MENU_OVERVIEW'] . "</a>
+            <a href='index.php?cmd=docsys" . MODULE_INDEX . "&amp;act=add' class='" .
+            ($this->act == 'add' ? 'active' : '') . "'>" .
+            $_ARRAYLANG['TXT_CREATE_DOCUMENT'] . "</a>
+            <a href='index.php?cmd=docsys" . MODULE_INDEX . "&amp;act=cat' class='" .
+            ($this->act == 'cat' ? 'active' : '') . "'>" .
+            $_ARRAYLANG['TXT_CATEGORY_MANAGER'] . "</a>");
     }
 
     /**
@@ -71,7 +74,6 @@ class docSysManager extends docSysLibrary
         if (!isset($_GET['act'])) {
             $_GET['act'] = "";
         }
-
         switch ($_GET['act']) {
             case "add":
                 $this->add();
@@ -108,8 +110,7 @@ class docSysManager extends docSysLibrary
             'CONTENT_STATUS_MESSAGE' => $this->strErrMessage,
             'ADMIN_CONTENT' => $this->_objTpl->get()
         ));
-
-        $this->act = $_REQUEST['act'];
+        $this->act = $_GET['act'];
         $this->setNavigation();
     }
 
@@ -148,6 +149,7 @@ class docSysManager extends docSysLibrary
                 $_ARRAYLANG['TXT_DOCSYS_DOCUMENTS'], true) : '');
         $row = 1;
         $this->_objTpl->setCurrentBlock('row');
+        if (!$entries) return;
         foreach ($entries as $entry) {
             $this->_objTpl->setVariable(array(
                 'DOCSYS_ID' => $entry['id'],
