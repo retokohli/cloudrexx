@@ -186,6 +186,7 @@ $_ARRAYLANG['SHOP_ACCOUNT_LOGIN'] = "Anmelden &gt;&gt;";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_TITLE'] = "Eine Online-Bestellung ist einfach.";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_NEW_CUSTOMER'] = "I'm a new customer.";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_NOTE'] = "Durch Ihre Anmeldung bei uns sind Sie in der Lage schneller zu bestellen, kennen jederzeit den Status Ihrer Bestellung und haben immer eine aktuelle Übersicht über Ihre bisherigen Bestellungen.";
+$_ARRAYLANG['TXT_SHOP_ACCOUNT_NOTE_NO_REGISTRATION'] = "Sie sind momentan nicht angemeldet und können ohne Registrierung bestellen.";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_EXISTING_CUSTOMER'] = "Ich bin bereits Kunde.";
 $_ARRAYLANG['TXT_SHOP_ACCOUNT_LOGIN'] = "Anmelden &gt;&gt;";
 $_ARRAYLANG['TXT_SHOP_CATEGORIES'] = "Kategorien:";

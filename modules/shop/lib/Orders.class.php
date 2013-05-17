@@ -113,11 +113,16 @@ class Orders
                   : (is_array($filter['id'])
                       ? " AND `order`.`id` IN (".join(',', $filter['id']).")"
                       : " AND `order`.`id`=".intval($filter['id']))).
-              (isset($filter['customer_id'])
-                  ? (is_array($filter['customer_id'])
-                      ? " AND `order`.`customer_id` IN (".join(',', $filter['customer_id']).")"
-                      : " AND `order`.`customer_id`=".intval($filter['customer_id']))
-                  : '').
+              (empty($filter['id>'])
+                  ? ''
+                  : " AND `order`.`id`>".intval($filter['id>'])).
+              (empty($filter['customer_id'])
+                  ? ''
+                  : (is_array($filter['customer_id'])
+                      ? " AND `order`.`customer_id` IN (".
+                        join(',', $filter['customer_id']).")"
+                      : " AND `order`.`customer_id`=".
+                        intval($filter['customer_id']))).
               (empty($filter['status'])
                   ? ''
                   // Include status
@@ -129,7 +134,16 @@ class Orders
                   // Exclude status
                   : (is_array($filter['!status'])
                       ? " AND `order`.`status` NOT IN (".join(',', $filter['!status']).")"
-                      : " AND `order`.`status`!=".intval($filter['!status'])));
+                      : " AND `order`.`status`!=".intval($filter['!status']))).
+              (empty($filter['date>='])
+                  ? ''
+                  : " AND `order`.`date_time`>='".
+                    addslashes($filter['date>='])."'");
+              (empty($filter['date<'])
+                  ? ''
+                  : " AND `order`.`date_time`<'".
+                    addslashes($filter['date<'])."'");
+
         if (isset($filter['letter'])) {
             $term = addslashes($filter['letter']).'%';
             $query_where .= "
@@ -221,13 +235,15 @@ class Orders
      * Sets the $objTemplate parameter to the default backend template,
      * if empty.
      * @param   \Cx\Core\Html\Sigma $objTemplate    The Template, by reference
+     * @param   array       $filter                 The optional filter
      * @return  boolean                             True on success,
      *                                              false otherwise
      */
-    static function view_list(&$objTemplate=null)
+    static function view_list(&$objTemplate=null, $filter=NULL)
     {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG, $objInit;
 
+        $backend = ($objInit->mode == 'backend');
         if (!$objTemplate) {
             $objTemplate = new \Cx\Core\Html\Sigma(
                 ASCMS_MODULE_PATH.'/shop/template');
@@ -235,17 +251,20 @@ class Orders
             $objTemplate->loadTemplateFile('module_shop_orders.html');
 //DBG::log("Orders::view_list(): loaded Template: ".$objTemplate->get());
         }
-        $uri = Html::getRelativeUri_entities();
+        $uri = ($backend
+            ? Html::getRelativeUri_entities()
+            : Cx\Core\Routing\Url::fromModuleAndCmd(
+                'shop', 'history', NULL));
+//DBG::log("Orders::view_list(): URI: $uri");
         Html::stripUriParam($uri, 'act');
         Html::stripUriParam($uri, 'searchterm');
         Html::stripUriParam($uri, 'listletter');
         Html::stripUriParam($uri, 'customer_type');
         Html::stripUriParam($uri, 'status');
         Html::stripUriParam($uri, 'show_pending_orders');
-        $filter = array(
-            'term' => null,
-            'letter' => null,
-        );
+        if (!is_array($filter)) {
+            $filter = array();
+        }
         if (!empty($_REQUEST['searchterm'])) {
             $filter['term'] =
                 trim(strip_tags(contrexx_input2raw($_REQUEST['searchterm'])));
@@ -292,23 +311,24 @@ class Orders
         }
         // Let the user choose whether to see pending orders, too
         $show_pending_orders = false;
-        if (empty($_REQUEST['show_pending_orders'])) {
-            if (empty($arrStatus)) {
-                $arrStatus = self::getStatusArray();
-                unset($arrStatus[Order::STATUS_PENDING]);
+        if ($backend) {
+            if (empty($_REQUEST['show_pending_orders'])) {
+                if (empty($arrStatus)) {
+                    $arrStatus = self::getStatusArray();
+                    unset($arrStatus[Order::STATUS_PENDING]);
+                }
+            } else {
+                if ($arrStatus) {
+                    $arrStatus[Order::STATUS_PENDING] = true;
+                }
+                $show_pending_orders = true;
+                Html::replaceUriParameter($uri, 'show_pending_orders=1');
             }
-        } else {
-            if ($arrStatus) {
-                $arrStatus[Order::STATUS_PENDING] = true;
-            }
-            $show_pending_orders = true;
-            Html::replaceUriParameter($uri, 'show_pending_orders=1');
         }
         if ($arrStatus) {
             $filter['status'] = array_keys($arrStatus);
         }
-//DBG::log("URI for Sorting: $uri, decoded ".html_entity_decode($uri));
-
+//DBG::log("Orders::view_list(): URI for Sorting: $uri, decoded ".html_entity_decode($uri));
         $arrSorting = array(
             // Too long
 //            'id' => $_ARRAYLANG['TXT_SHOP_ORDER_ID'],
@@ -325,65 +345,82 @@ class Orders
         Html::stripUriParam($uri_search, 'customer_type');
         Html::stripUriParam($uri_search, 'status');
         Html::stripUriParam($uri_search, 'show_pending_orders');
-
         $objTemplate->setGlobalVariable($_ARRAYLANG);
-        $txt_order_complete = sprintf(
-            $_ARRAYLANG['TXT_SEND_TEMPLATE_TO_CUSTOMER'],
-            $_ARRAYLANG['TXT_ORDER_COMPLETE']);
-//DBG::log("Order complete: $txt_order_complete");
+        if ($backend) {
+            $txt_order_complete = sprintf(
+                $_ARRAYLANG['TXT_SEND_TEMPLATE_TO_CUSTOMER'],
+                $_ARRAYLANG['TXT_ORDER_COMPLETE']);
+            $objTemplate->setVariable(array(
+                'SHOP_SEND_TEMPLATE_TO_CUSTOMER' => $txt_order_complete,
+                'SHOP_CUSTOMER_TYPE_MENUOPTIONS' => Customers::getTypeMenuoptions($customer_type, true),
+                'SHOP_CUSTOMER_SORT_MENUOPTIONS' => Customers::getSortMenuoptions(
+                    $objSorting->getOrderField()),
+                'SHOP_SHOW_PENDING_ORDERS_CHECKED' =>
+                    ($show_pending_orders ? Html::ATTRIBUTE_CHECKED : ''),
+                'SHOP_ORDER_STATUS_MENUOPTIONS' => self::getStatusMenuoptions($status, true),
+            ));
+        }
+//DBG::log("Orders::view_list(): Order complete: $txt_order_complete");
+//DBG::log("Orders::view_list(): URI: $uri");
         $objTemplate->setGlobalVariable(array(
-            'SHOP_SEND_TEMPLATE_TO_CUSTOMER' => $txt_order_complete,
-            'SHOP_SEARCH_TERM' => $filter['term'],
-            'SHOP_ORDER_STATUS_MENUOPTIONS' => self::getStatusMenuoptions($status, true),
-            'SHOP_CUSTOMER_TYPE_MENUOPTIONS' => Customers::getTypeMenuoptions($customer_type, true),
-            'SHOP_CUSTOMER_SORT_MENUOPTIONS' => Customers::getSortMenuoptions(
-                $objSorting->getOrderField()),
-            'SHOP_SHOW_PENDING_ORDERS_CHECKED' =>
-                ($show_pending_orders ? Html::ATTRIBUTE_CHECKED : ''),
+            'SHOP_SEARCH_TERM' => (isset($filter['term'])
+                ? $filter['term'] : ''),
             'SHOP_ORDERS_ORDER_NAME' => $objSorting->getOrderParameterName(),
             'SHOP_ORDERS_ORDER_VALUE' => $objSorting->getOrderUriEncoded(),
             'SHOP_ACTION_URI_SEARCH_ENCODED' => $uri_search,
             'SHOP_ACTION_URI_ENCODED' => $uri,
             'SHOP_ACTION_URI' => html_entity_decode($uri),
+            'SHOP_CURRENCY', Currency::getDefaultCurrencySymbol()
         ));
-        $objTemplate->setGlobalVariable(
-            'SHOP_CURRENCY', Currency::getDefaultCurrencySymbol());
         $count = 0;
         $limit = SettingDb::getValue('numof_orders_per_page_backend');
+// TODO: Obsolete ASAP
+if (!$limit) {
+    ShopSettings::errorHandler();
+    $limit = 25;
+}
         $tries = 2;
         $arrOrders = null;
-//DBG::activate(DBG_ADODB);
+//\DBG::activate(DBG_DB_FIREPHP);
         while (--$tries && empty($arrOrders)) {
             $arrOrders = self::getArray(
                 $count, $objSorting->getOrder(), $filter,
                 Paging::getPosition(), $limit);
             if (empty($arrOrders)) Paging::reset();
         }
-//DBG::deactivate(DBG_ADODB);
+//DBG::deactivate(DBG_DB);
+//\DBG::log("Orders: ".count($arrOrders));
         $paging = Paging::get($uri, $_ARRAYLANG['TXT_ORDERS'],
             $count, $limit, ($count > 0));
         $objTemplate->setVariable(array(
             'SHOP_ORDER_PAGING' => $paging,
-            'SHOP_CUSTOMER_LISTLETTER' => $filter['letter'],
+            'SHOP_CUSTOMER_LISTLETTER' => (isset($filter['letter'])
+                ? $filter['letter'] : ''),
             'SHOP_HEADER_ID' => $objSorting->getHeaderForField('id'),
             'SHOP_HEADER_DATE_TIME' => $objSorting->getHeaderForField('date_time'),
             'SHOP_HEADER_STATUS' => $objSorting->getHeaderForField('status'),
             'SHOP_HEADER_CUSTOMER_NAME' => $objSorting->getHeaderForField('customer_name'),
             'SHOP_HEADER_NOTES' => $_ARRAYLANG['TXT_SHOP_ORDER_NOTES'],
             'SHOP_HEADER_SUM' => $objSorting->getHeaderForField('sum'),
-            'SHOP_LISTLETTER_LINKS' => self::getListletterLinks($filter['letter']),
+            'SHOP_LISTLETTER_LINKS' => self::getListletterLinks(
+                (isset($filter['letter']) ? $filter['letter'] : NULL)),
         ));
-
         if (empty($arrOrders)) {
 //            $objTemplate->hideBlock('orderTable');
             $objTemplate->setVariable(
                 'SHOP_ORDER_NONE_FOUND',
                 $_ARRAYLANG['TXT_SHOP_ORDERS_NONE_FOUND']);
+//\DBG::log("NO Orders!");
             return true;
         }
-//        $objTemplate->setCurrentBlock('orderRow');
         $i = 0;
-        foreach ($arrOrders as $order_id => $objOrder) {
+// TODO: For Order export
+/*        $min_date = '9999-00-00 00:00:00';
+        $max_date = '0000-00-00 00:00:00';
+        $min_id = 1e10;
+        $max_id = 0;*/
+        foreach ($arrOrders as $objOrder) {
+            $order_id = $objOrder->id();
             // Custom order ID may be created and used as account name.
             // Adapt the method as needed.
 //            $order_id_custom = ShopLibrary::getCustomOrderId(
@@ -405,28 +442,59 @@ class Orders
                   preg_replace('/[\n\r]+/', '<br />',
                       nl2br(contrexx_raw2xhtml($tipNote))).
                   '</span>');
-            $order_id = $order_id;
             $status = $objOrder->status();
             $objTemplate->setVariable(array(
                 'SHOP_ROWCLASS' => ($status == 0
                     ? 'rowwarn' : 'row'.(++$i % 2 + 1)),
                 'SHOP_ORDERID' => $order_id,
                 'SHOP_TIP_LINK' => $tipLink,
-                'SHOP_DATE' => $objOrder->date_time(),
+                'SHOP_DATE' => date(ASCMS_DATE_FORMAT_DATETIME,
+                    strtotime($objOrder->date_time())),
                 'SHOP_NAME' => $customer_name,
                 'SHOP_ORDER_SUM' => Currency::getDefaultCurrencyPrice(
                     $objOrder->sum()),
-                'SHOP_ORDER_STATUS' => self::getStatusMenu(
-                    intval($status), false, $order_id,
-                    'changeOrderStatus('.
-                      $order_id.','.$status.',this.value)'),
+                'SHOP_ORDER_STATUS' => ($backend
+                    ? self::getStatusMenu(
+                        intval($status), false, $order_id,
+                        'changeOrderStatus('.
+                          $order_id.','.$status.',this.value)')
+                    : $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$status]),
                 // Protected download account validity end date
 // TODO (still unused in the view)
 //                'SHOP_VALIDITY' => $endDate,
             ));
             $objTemplate->parse('orderRow');
+//\DBG::log("Parsed Order ID $order_id");
+// TODO: Order export
+/*            if ($objOrder->date_time() < $min_date)
+                $min_date = $objOrder->date_time();
+            if ($objOrder->date_time() > $max_date)
+                $max_date = $objOrder->date_time();
+            if ($objOrder->id() < $min_id) $min_id = $objOrder->id();
+            if ($objOrder->id() > $max_id) $max_id = $objOrder->id();*/
         }
         $objTemplate->setVariable('SHOP_ORDER_PAGING', $paging);
+// TODO: Order export
+/*        $arrId = range($min_id-1, $max_id);
+        $arrId = array(0 => "0") + array_combine($arrId, $arrId);
+        $objTemplate->setVariable(array(
+            'SHOP_ORDER_EXPORT_LAST_ID_MENUOPTIONS' =>
+                Html::getOptions($arrId),
+            'SHOP_ORDER_EXPORT_START_DATE' =>
+                Html::getDatepicker('start_date', array(
+                    'defaultDate' => date(ASCMS_DATE_FORMAT_DATE,
+                        strtotime($min_date)),
+                    'minDate' => '-7d',
+                    'maxDate' => '+0d', )),
+            'SHOP_ORDER_EXPORT_END_DATE' =>
+                Html::getDatepicker('end_date', array(
+                    'defaultDate' => date(ASCMS_DATE_FORMAT_DATE,
+                        strtotime($max_date)+86400),
+                    'minDate' => '-6d',
+                    'maxDate' => '+1d', )),
+        ));
+//die("Template: ".  nl2br(htmlentities(var_export($objTemplate, true))));
+//die("Template: ".  $objTemplate->get());*/
         return true;
     }
 
@@ -438,8 +506,9 @@ class Orders
      * @global  ADONewConnection        $objDatabase
      * @global  array                   $_ARRAYLANG
      * @todo    Rewrite the statistics in a seperate class, extending Order
+     * @static
      */
-    function view_statistics(&$objTemplate=null)
+    static function view_statistics(&$objTemplate=null)
     {
         global $objDatabase, $_ARRAYLANG;
 
@@ -517,14 +586,14 @@ class Orders
         $startDate = $stopDate = 0;
         if (isset($_REQUEST['submitdate'])) {
             $objTemplate->setVariable(array(
-                'SHOP_START_MONTH' => $this->shop_getMonthDropdwonMenu(
+                'SHOP_START_MONTH' => Shopmanager::getMonthDropdownMenu(
                     intval($_REQUEST['startmonth'])),
-                'SHOP_END_MONTH' => $this->shop_getMonthDropdwonMenu(
+                'SHOP_END_MONTH' => Shopmanager::getMonthDropdownMenu(
                     intval($_REQUEST['stopmonth'])),
-                'SHOP_START_YEAR' => $this->shop_getYearDropdwonMenu(
-                    $orderStartyear, intval($_REQUEST['startyear'])),
-                'SHOP_END_YEAR' => $this->shop_getYearDropdwonMenu(
-                    $orderStartyear, intval($_REQUEST['stopyear'])),
+                'SHOP_START_YEAR' => Shopmanager::getYearDropdownMenu(
+                    intval($_REQUEST['startyear']), $orderStartyear),
+                'SHOP_END_YEAR' => Shopmanager::getYearDropdownMenu(
+                    intval($_REQUEST['stopyear']), $orderStartyear),
             ));
 // TODO: Use proper date functions
             $startDate =
@@ -551,15 +620,15 @@ class Orders
             $endMonth = Date('m');
             $objTemplate->setVariable(array(
                 'SHOP_START_MONTH' =>
-                    $this->shop_getMonthDropdwonMenu($orderStartmonth),
+                    Shopmanager::getMonthDropdownMenu($orderStartmonth),
                 'SHOP_END_MONTH' =>
-                    $this->shop_getMonthDropdwonMenu($endMonth),
+                    Shopmanager::getMonthDropdownMenu($endMonth),
                 'SHOP_START_YEAR' =>
-                    $this->shop_getYearDropdwonMenu(
-                        $orderStartyear, $lastYear),
+                    Shopmanager::getYearDropdownMenu(
+                        $lastYear, $orderStartyear),
                 'SHOP_END_YEAR' =>
-                    $this->shop_getYearDropdwonMenu(
-                        $orderStartyear, date('Y')),
+                    Shopmanager::getYearDropdownMenu(
+                        date('Y'), $orderStartyear),
             ));
             $startDate =
                 $lastYear.'-'.$orderStartmonth.'-01 00:00:00';
@@ -1100,8 +1169,7 @@ class Orders
      */
     static function getSubstitutionArray($order_id, $create_accounts=true)
     {
-        global $objDatabase, $_ARRAYLANG;
-
+        global $_ARRAYLANG;
 /*
             $_ARRAYLANG['TXT_SHOP_URI_FOR_DOWNLOAD'].":\r\n".
             'http://'.$_SERVER['SERVER_NAME'].
@@ -1187,12 +1255,14 @@ class Orders
             );
         }
         // Pick the order items from the database
-        $query = "
-            SELECT `id`, `product_id`, `product_name`, `price`, `quantity`
-              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_order_items`
-             WHERE `order_id`=$order_id";
-        $objResultItem = $objDatabase->Execute($query);
-        if (!$objResultItem || $objResultItem->EOF) {
+//        $query = "
+//            SELECT `id`, `product_id`, `product_name`, `price`, `quantity`
+//              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_order_items`
+//             WHERE `order_id`=$order_id";
+//        $objResultItem = $objDatabase->Execute($query);
+//        if (!$objResultItem || $objResultItem->EOF) {
+        $arrItems = $objOrder->getItems();
+        if (!$arrItems) {
             Message::warning($_ARRAYLANG['TXT_SHOP_ORDER_WARNING_NO_ITEM']);
         }
         // Deduct Coupon discounts, either from each Product price, or
@@ -1214,41 +1284,39 @@ class Orders
         $orderItemCount = 0;
         $total_item_price = 0;
 //        $total_discount = 0;
-        while (!$objResultItem->EOF) {
-            $orderItemId = $objResultItem->fields['id'];
-            $product_id = $objResultItem->fields['product_id'];
-//DBG::log("Orders::getSubstitutionArray(): Item: Product ID $product_id");
-            $product_name = substr($objResultItem->fields['product_name'], 0, 40);
-            $item_price = $objResultItem->fields['price'];
-            $item_price = Currency::getCurrencyPrice($item_price);
-            $quantity = $objResultItem->fields['quantity'];
-// TODO: Add individual VAT rates for Products
-//            $orderItemVatPercent = $objResultItem->fields['vat_percent'];
+        foreach ($arrItems as $item) {
+//        while (!$objResultItem->EOF) {
+//            $orderItemId = $objResultItem->fields['id'];
+            $product_id = $item['product_id'];
             $objProduct = Product::getById($product_id);
             if (!$objProduct) {
-                $objResultItem->MoveNext();
 //die("Product ID $product_id not found");
                 continue;
             }
+//DBG::log("Orders::getSubstitutionArray(): Item: Product ID $product_id");
+            $item_id = $item['item_id'];
+            $product_name = substr($item['product_name'], 0, 40);
+            $item_price = Currency::getCurrencyPrice($item['price']);
+            $quantity = $item['quantity'];
+// TODO: Add individual VAT rates for Products
+//            $orderItemVatPercent = $objResultItem->fields['vat_percent'];
             // Decrease the Product stock count,
             // applies to "real", shipped goods only
             $objProduct->decreaseStock($quantity);
             $product_code = $objProduct->code();
-            // Pick the order items attributes from the database
-            $query = "
-                SELECT `attribute_name`, `option_name`, `price`
-                  FROM `".DBPREFIX."module_shop".MODULE_INDEX."_order_attributes`
-                 WHERE `item_id`=$orderItemId
-                 ORDER BY `attribute_name` ASC, `option_name` ASC";
-            $objResultAttribute = $objDatabase->Execute($query);
-            if (!$objResultAttribute) Order::errorHandler();
+            // Pick the order items attributes
             $str_options = '';
             // Any attributes?
-            if ($objResultAttribute && $objResultAttribute->RecordCount() > 0) {
+            if ($item['attributes']) {
                 $str_options = '  '; // '[';
                 $attribute_name_previous = '';
-                while (!$objResultAttribute->EOF) {
-                    $attribute_name = $objResultAttribute->fields['attribute_name'];
+/*   *      "Attribute name" => array(
+     *        Attribute ID => array
+     *          'name' => "option name",
+     *          'price' => "price",*/
+                foreach ($item['attributes'] as
+                        $attribute_name => $arrAttribute) {
+//DBG::log("Attribute /$attribute_name/ => ".var_export($arrAttribute, true));
                     $option_name = $objResultAttribute->fields['option_name'];
 // NOTE: The option price is optional and may be left out
                     $optionPrice = $objResultAttribute->fields['price'];
@@ -1319,7 +1387,7 @@ class Orders
                             self::usernamePrefix.
                             "_${order_id}_${product_id}_${instance}";
                         $userEmail =
-                            $username.'-'.$_SESSION['shop']['email'];
+                            $username.'-'.$arrSubstitution['CUSTOMER_EMAIL'];
                         $userpass = User::make_password();
                         $objUser = new User();
                         $objUser->setUsername($username);
@@ -1381,7 +1449,6 @@ class Orders
             if (empty($arrSubstitution['ORDER_ITEM']))
                 $arrSubstitution['ORDER_ITEM'] = array();
             $arrSubstitution['ORDER_ITEM'][] = $arrProduct;
-            $objResultItem->MoveNext();
         }
         $arrSubstitution['ORDER_ITEM_SUM'] =
             sprintf('% 9.2f', $total_item_price);

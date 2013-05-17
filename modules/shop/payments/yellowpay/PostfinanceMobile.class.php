@@ -99,16 +99,12 @@ class PostfinanceMobile
             pack('H*', $sign)
         );
         $urlsuccess =
-            'http://'.$_CONFIG['domainUrl'].
-            CONTREXX_SCRIPT_PATH.
-            '?section=shop&amp;cmd=success'.
-            '&amp;handler=mobilesolutions&amp;result=1'.
+            Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'success')->toString().
+            '?handler=mobilesolutions&amp;result=1'.
             '&amp;order_id='.$order_id;
         $urlerror =
-            'http://'.$_CONFIG['domainUrl'].
-            CONTREXX_SCRIPT_PATH.
-            '?section=shop&amp;cmd=success'.
-            '&amp;handler=mobilesolutions&amp;result=0'.
+            Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'success')->toString().
+            '?handler=mobilesolutions&amp;result=0'.
             '&amp;order_id='.$order_id;
 /*
 Live URIs:

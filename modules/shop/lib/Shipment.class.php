@@ -311,14 +311,20 @@ class Shipment
                     self::$arrShippers[$shipper_id]['name'],
                     ENT_QUOTES, CONTREXX_CHARSET).
                 '<input type="hidden" name="shipperId"'.
-                ' value="'.current($arrId).'"'."\n";
+                ' value="'.current($arrId).'" />'."\n";
         }
         $menu =
-            (empty($selectedId)
-                ? '<option value="0" selected="selected">'.
-                  $_ARRAYLANG['TXT_SHOP_SHIPMENT_PLEASE_SELECT'].
-                  "</option>\n"
-                : '');
+// TODO: Because the value posted from the form is not currently verified,
+// but simply replaced by the default (first available) shipper ID if empty
+// anyway, there is no use in showing this dummy option.
+//            (empty($selectedId)
+//                ? '<option value="0" selected="selected">'.
+//                  $_ARRAYLANG['TXT_SHOP_SHIPMENT_PLEASE_SELECT'].
+//                  "</option>\n"
+//                :
+            ''
+//            )
+            ;
         foreach ($arrId as $shipper_id) {
             $menu .=
                 '<option value="'.$shipper_id.'"'.

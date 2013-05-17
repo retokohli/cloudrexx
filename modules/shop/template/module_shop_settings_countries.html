@@ -92,18 +92,18 @@ function moveAllOptions(from, to)
         <th colspan="3">{TXT_COUNTRY_LIST}</th>
       </tr>
       <tr class="row1">
-        <td nowrap="nowrap" width="15%" class="f_bold"><font color="#009900">{TXT_DISPLAY_IT_IN_THE_SHOP}:</font></td>
+        <td width="15%" class="f_bold"><font color="#009900">{TXT_DISPLAY_IT_IN_THE_SHOP}:</font></td>
         <td width="5%">&nbsp;</td>
         <td class="f_bold"><font color="#FF0000">{TXT_DONT_DISPLAY_IT_IN_THE_SHOP}:</font></td>
       </tr>
       <tr class="row2">
-        <td nowrap="nowrap">
+        <td>
           <select name="list1[]" multiple="multiple" size="15" style="width: 300px;"
               ondblclick="moveSelectedOptions(this.form['list1[]'],this.form['list2[]'])">
             {SHOP_COUNTRY_SELECTED_OPTIONS}
           </select>
         </td>
-        <td nowrap="nowrap" class="a_center" style="vertical-align: middle;">
+        <td class="a_center" style="vertical-align: middle;">
           <input type="button" title="{TXT_ADD_ALL}" name="add_all"
                  value="&gt;&gt;" onclick="moveAllOptions(this.form['list1[]'],this.form['list2[]'])" /><br /><br />
           <input type="button" title="{TXT_ADD_SELECTION}" name="add"
@@ -113,7 +113,7 @@ function moveAllOptions(from, to)
           <input type="button" title="{TXT_REMOVE_ALL}" name="remove_all"
                  value="&lt;&lt;" onclick="moveAllOptions(this.form['list2[]'],this.form['list1[]'])" />
         </td>
-        <td nowrap="nowrap">
+        <td>
           <select name="list2[]" multiple="multiple" size="15" style="width: 300px;"
               ondblclick="moveSelectedOptions(this.form['list2[]'],this.form['list1[]'])">
             {SHOP_COUNTRY_NOTSELECTED_OPTIONS}

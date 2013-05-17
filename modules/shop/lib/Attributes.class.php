@@ -68,48 +68,6 @@ class Attributes
 
 
     /**
-     * OBSOLETE AND DISFUNCT
-     * Returns an array of Attribute names.
-     *
-     * If the optional $product_id argument is greater than zero,
-     * only names associated with this Product are returned,
-     * all names found in the database otherwise.
-     * @static
-     * @access  public
-     * @param   integer     $product_id      The optional Product ID
-     * @return  array                       Array of Attribute names
-     *                                      upon success, false otherwise.
-    static function getArrayByProductId($product_id=0)
-    {
-        global $objDatabase;
-
-        $query = "
-            SELECT DISTINCT `id`, `name`, `type`
-              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_attribute`
-            ".($product_id
-              ? "INNER JOIN `".DBPREFIX."module_shop".MODULE_INDEX."_rel_product_attribute`
-                    ON `attribute_id`=`id`
-                 WHERE `product_id`=$product_id
-                 ORDER BY `ord` ASC
-            " : '');
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) return false;
-        self::$arrAttributes = array();
-        while (!$objResult->EOF) {
-            $id = $objResult->fields['id'];
-            self::$arrAttributes[$id] = array(
-                'id' => $id,
-                'name' => $objResult->fields['name'],
-                'type' => $objResult->fields['type'],
-            );
-            $objResult->MoveNext();
-        }
-        return self::$arrAttributes;
-    }
-    */
-
-
-    /**
      * Returns an array of Attribute data for the given name ID
      *
      * This array contains no options, just the Attribute name and type.

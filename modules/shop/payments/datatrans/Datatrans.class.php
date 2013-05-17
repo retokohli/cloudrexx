@@ -682,5 +682,3 @@ Datatrans::initialize('1000011011', '995', 'CHF', '234');
   </body>
 </html>
 */
-
-?>

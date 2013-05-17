@@ -232,28 +232,30 @@ function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
 <!-- start content1 div -->
 <div id="content1" class="attributeTab" style="display:block">
   <form name="shopSelectOptions" id="shopSelectOptions" method="post" action="">
-    <table summary="" border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
+    <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
       <tr>
-        <th nowrap="nowrap" width="2%" class="a_center">#</th>
-        <th nowrap="nowrap" width="30%">{TXT_NAME}</th>
-        <th nowrap="nowrap" width="30%">{TXT_VALUES}</th>
-        <th nowrap="nowrap" width="30%">{TXT_SHOP_ATTRIBUTE_TYPE}</th>
-        <th nowrap="nowrap" width="8%" class="a_right">{TXT_FUNCTIONS}</th>
+        <th width="2%" class="a_center">#</th>
+        <th width="2%" class="a_right">ID</th>
+        <th width="30%">{TXT_NAME}</th>
+        <th width="30%">{TXT_VALUES}</th>
+        <th width="30%">{TXT_SHOP_ATTRIBUTE_TYPE}</th>
+        <th width="8%" class="a_right">{TXT_FUNCTIONS}</th>
       </tr>
 <!-- BEGIN attributeList -->
       <tr class="{SHOP_PRODUCT_ATTRIBUTE_ROW_CLASS}" style="vertical-align:top;">
-        <td nowrap="nowrap">
+        <td>
           <input name="selected_attribute_id[]" value="{SHOP_PRODUCT_ATTRIBUTE_ID}" type="checkbox" />
         </td>
-        <td nowrap="nowrap">
+        <td>{SHOP_PRODUCT_ATTRIBUTE_ID}</td>
+        <td>
           <input type="text" name="attribute_name[{SHOP_PRODUCT_ATTRIBUTE_ID}]"
               style="width: 250px;" maxlength="255"
               value="{SHOP_PRODUCT_ATTRIBUTE_NAME}" />
         </td>
-        <td nowrap="nowrap">
+        <td>
           {SHOP_PRODUCT_ATTRIBUTE_VALUE_MENU}
         </td>
-        <td nowrap="nowrap">
+        <td>
           <div style="float: right;">
             {SHOP_PRODUCT_ATTRIBUTE_DISPLAY_TYPE}
           </div>
@@ -285,7 +287,7 @@ function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
             </div>
           </div>
         </td>
-        <td nowrap="nowrap" class="a_right">
+        <td class="a_right">
           <a href="javascript:{}" onclick="swapEdit({SHOP_PRODUCT_ATTRIBUTE_ID})"
               title="{TXT_EDIT_OPTION}">
             <img src="images/icons/edit.gif"
@@ -317,21 +319,21 @@ function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
 <!-- start content2 div -->
 <div id="content2" class="attributeTab" style="display:none">
   <form action="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;tpl=attributes" method="post" name="shopProductsForm" onsubmit="return storeNewOption()">
-    <table summary="" border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
+    <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
       <tr>
-        <th nowrap="nowrap" width="2%">&nbsp;</th>
-        <th nowrap="nowrap" width="30%">{TXT_NAME}</th>
-        <th nowrap="nowrap" width="30%">{TXT_VALUES}</th>
-        <th nowrap="nowrap" width="30%">{TXT_SHOP_ATTRIBUTE_TYPE}</th>
-        <th nowrap="nowrap" width="8%">&nbsp;</th>
+        <th width="2%">&nbsp;</th>
+        <th width="30%">{TXT_NAME}</th>
+        <th width="30%">{TXT_VALUES}</th>
+        <th width="30%">{TXT_SHOP_ATTRIBUTE_TYPE}</th>
+        <th width="8%">&nbsp;</th>
       </tr>
       <tr class="row1" style="vertical-align: top;">
         <td>&nbsp;</td>
-        <td nowrap="nowrap">
+        <td>
           <input type="text" id="attribute_name-0" name="attribute_name[0]"
               style="width: 250px;" maxlength="255" />
         </td>
-        <td nowrap="nowrap">
+        <td>
           <select name="option_id[0][]" id="option_id-0" size="10"
               onchange="setSelectedValue(0)" style="width: 250px;">
           </select>
@@ -342,7 +344,7 @@ function shopOptionDoAction(strForm,strCheckbox,objSelect,strAct)
             {TXT_REMOVE_SELECTED_VALUE}
           </a>
         </td>
-        <td nowrap="nowrap">
+        <td>
           <div style="float: right;">
             {SHOP_PRODUCT_ATTRIBUTE_TYPE_MENU}
           </div>

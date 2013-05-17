@@ -25,7 +25,7 @@
         {TXT_SHOP_DISCOUNT_GROUP_CUSTOMER_COLON}
       </td>
 <!-- BEGIN customer_group_header_column -->
-      <td nowrap="nowrap" class="a_right">
+      <td class="a_right">
         <a href="index.php?cmd=shop&amp;act=customers&amp;tpl=groups&amp;edit=1&amp;id={SHOP_CUSTOMER_GROUP_ID}"
             title="{TXT_EDIT}">
           {SHOP_CUSTOMER_GROUP_NAME}
@@ -48,14 +48,14 @@
 
 <!-- BEGIN article_group_row -->
     <tr class="{SHOP_DISCOUNT_ROW_STYLE}">
-      <td class="col3" nowrap="nowrap">
+      <td class="col3">
         <a href="index.php?cmd=shop&amp;act=products&amp;tpl=groups&amp;edit=1&amp;id={SHOP_ARTICLE_GROUP_ID}"
             title="{TXT_EDIT}">
           {SHOP_ARTICLE_GROUP_NAME}
         </a>
       </td>
 <!-- BEGIN discount_column -->
-      <td nowrap="nowrap" class="a_right">
+      <td class="a_right">
         <input type="text" size="2" maxlength="6" class="a_right"
             name="discountRate[{SHOP_CUSTOMER_GROUP_ID}][{SHOP_ARTICLE_GROUP_ID}]"
             value="{SHOP_DISCOUNT_RATE}" />&nbsp;%

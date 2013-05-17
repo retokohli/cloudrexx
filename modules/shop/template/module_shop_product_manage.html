@@ -221,28 +221,28 @@ function disableButtons(from, dest, add, remove) {
     <input type="hidden" name="TempThumbnail" value="{SHOP_TEMP_THUMBNAIL}" />
     <input type="hidden" name="edit" value="1" />
     <input type="hidden" name="ImageName" value="{SHOP_IMAGE_NAME}" />
-    <table summary="" class="adminlist" border="0" width="100%" cellpadding="3" cellspacing="0">
-      <tr valign="top">
-        <th nowrap="nowrap" colspan="2">
+    <table class="adminlist" border="0" width="100%" cellpadding="3" cellspacing="0">
+      <tr>
+        <th colspan="2">
           {TXT_PRODUCT_INFORMATIONS}
         </th>
       </tr>
       {SHOP_ID_COMMENT_START}
-      <tr valign="top" class="row1">
-        <td nowrap="nowrap" width="25%">{TXT_ID}</td>
-        <td nowrap="nowrap" width="75%">{SHOP_PRODUCT_ID}</td>
+      <tr class="row1">
+        <td width="25%">{TXT_ID}</td>
+        <td width="75%">{SHOP_PRODUCT_ID}</td>
       </tr>
       {SHOP_ID_COMMENT_END}
-      <tr valign="top" class="row2">
-        <td nowrap="nowrap">{TXT_PRODUCT_NAME}</td>
-        <td nowrap="nowrap">
+      <tr class="row2">
+        <td>{TXT_PRODUCT_NAME}</td>
+        <td>
           <input maxlength="255" name="product_name" size="40" value="{SHOP_PRODUCT_NAME}" />
         </td>
       </tr>
-      <tr valign="top" class="row1">
-        <td nowrap="nowrap">{TXT_CATEGORY}</td>
-        <td nowrap="nowrap">
-          <table summary="" width="10%">
+      <tr class="row1">
+        <td>{TXT_CATEGORY}</td>
+        <td>
+          <table width="10%">
             <tr>
               <td style="border-bottom: 0px;">
                 {TXT_SHOP_CATEGORIES_AVAILABLE}<br />
@@ -271,26 +271,26 @@ function disableButtons(from, dest, add, remove) {
           </table>
         </td>
       </tr>
-      <tr valign="top" class="row2">
-        <td nowrap="nowrap">{TXT_SHOP_PRODUCT_CUSTOM_ID}</td>
-        <td nowrap="nowrap">
+      <tr class="row2">
+        <td>{TXT_SHOP_PRODUCT_CUSTOM_ID}</td>
+        <td>
           <input maxlength="255" name="product_code" size="40" value="{SHOP_PRODUCT_CODE}" />
         </td>
       </tr>
-      <tr valign="top" class="row1">
-        <td nowrap="nowrap">{TXT_CUSTOMER_PRICE}&nbsp;<span class="status">&nbsp;</span></td>
+      <tr class="row1">
+        <td>{TXT_CUSTOMER_PRICE}&nbsp;<span class="status">&nbsp;</span></td>
         <td>
           <input maxlength="255" name="customer_price" size="40" value="{SHOP_CUSTOMER_PRICE}" />
         </td>
       </tr>
-      <tr valign="top" class="row2">
-        <td nowrap="nowrap">{TXT_RESELLER_PRICE}</td>
+      <tr class="row2">
+        <td>{TXT_RESELLER_PRICE}</td>
         <td>
           <input maxlength="255" name="reseller_price" size="40" value="{SHOP_RESELLER_PRICE}" />
         </td>
       </tr>
       <tr class="row1">
-        <td nowrap="nowrap">{TXT_SPECIAL_OFFER}</td>
+        <td>{TXT_SPECIAL_OFFER}</td>
         <td>
           <input maxlength="10" name="discount_price" size="40" value="{SHOP_DISCOUNT}" />
           <input type="checkbox" name="discount_active" value="1" {SHOP_SPECIAL_OFFER} />
@@ -298,7 +298,7 @@ function disableButtons(from, dest, add, remove) {
         </td>
       </tr>
       <tr class="row2">
-        <td nowrap>{TXT_SHOP_DISCOUNT_GROUP_ARTICLE}</td>
+        <td class="nowrap">{TXT_SHOP_DISCOUNT_GROUP_ARTICLE}</td>
         <td>
           <select name="discount_group_article_id" style="width: 220px;">
             {SHOP_DISCOUNT_GROUP_ARTICLE_MENU_OPTIONS}
@@ -306,15 +306,15 @@ function disableButtons(from, dest, add, remove) {
         </td>
       </tr>
       <tr class="row1">
-        <td nowrap>{TXT_SHOP_DISCOUNT_GROUP_COUNT}</td>
+        <td class="nowrap">{TXT_SHOP_DISCOUNT_GROUP_COUNT}</td>
         <td>
-          <select name="discount_group_count_id" style="width:220px;">
+          <select name="discount_group_count_id" style="width: 220px;">
             {SHOP_DISCOUNT_GROUP_COUNT_MENU_OPTIONS}
           </select>
         </td>
       </tr>
       <tr class="row2">
-        <td nowrap="nowrap">{TXT_TAX_RATE}</td>
+        <td>{TXT_TAX_RATE}</td>
         <td>
           <select name="vat_id" style="width:220px;">
             {SHOP_VAT_MENUOPTIONS}
@@ -322,20 +322,20 @@ function disableButtons(from, dest, add, remove) {
         </td>
       </tr>
       <tr class="row1">
-        <td nowrap="nowrap">{TXT_DISTRIBUTION}</td>
+        <td>{TXT_DISTRIBUTION}</td>
         <td>{SHOP_DISTRIBUTION_MENU}</td>
       </tr>
       <!-- either -->
       <tr class="row2" id="shopWeightRow" style="display: none;">
-        <td nowrap="nowrap">{TXT_WEIGHT}</td>
+        <td>{TXT_WEIGHT}</td>
         <td>
           <input maxlength="10" name="weight" size="40" value="{SHOP_WEIGHT}" />
         </td>
       </tr>
       <!-- or -->
       <tr class="row2" id="shopAccountRow" style="display: none;">
-        <!--td nowrap="nowrap">{TXT_SHOP_PROTECTED_DOWNLOAD}</td>
-        <td nowrap="nowrap">
+        <!--td>{TXT_SHOP_PROTECTED_DOWNLOAD}</td>
+        <td>
           <input type="radio" name="createAccount" id="createAccountYes"
             onchange="accountChanged();"{SHOP_CREATE_ACCOUNT_YES_CHECKED} />
           <label for="createAccountYes">{TXT_SHOP_YES}</label>
@@ -346,7 +346,7 @@ function disableButtons(from, dest, add, remove) {
       </tr>
       <!-- if shopCreateAccountYes.checked (2 rows) -->
       <tr class="row2" id="shopValidityRow" style="display: none;">
-        <td nowrap="nowrap">{TXT_SHOP_ACCOUNT_VALIDITY}</td>
+        <td>{TXT_SHOP_ACCOUNT_VALIDITY}</td>
         <td>
           <select name="accountValidity">
             {SHOP_ACCOUNT_VALIDITY_OPTIONS}
@@ -354,10 +354,10 @@ function disableButtons(from, dest, add, remove) {
         </td>
       </tr>
       <tr class="row1" id="shopGroupsRow" style="display: none;">
-        <td nowrap="nowrap" valign="top">{TXT_SHOP_USERGROUPS}</td>
+        <td>{TXT_SHOP_USERGROUPS}</td>
         <td>
           <!-- Table width contracts the select boxes and the arrows -->
-          <table summary="" width="10%">
+          <table width="10%">
             <tr>
               <td style="border-bottom: 0px;">
                 {TXT_SHOP_GROUPS_AVAILABLE}<br />
@@ -396,45 +396,45 @@ function disableButtons(from, dest, add, remove) {
 <!-- DISABLED FTTB
 BEGIN shopFlags
       <tr class="row2">
-        <td nowrap="nowrap">{TXT_SHOP_FLAGS}</td>
+        <td>{TXT_SHOP_FLAGS}</td>
         <td>{SHOP_FLAGS_SELECTION}</td>
       </tr>
 END shopFlags -->
-      <tr valign="top" class="row2">
+      <tr class="row2">
         <td colspan="2">{TXT_SHORT_DESCRIPTION}</td>
       </tr>
-      <tr valign="top" class="row1 reset">
+      <tr class="row1 reset">
         <td colspan="2">{SHOP_SHORT_DESCRIPTION}</td>
       </tr>
-      <tr valign="top" class="row2">
+      <tr class="row2">
         <td colspan="2">{TXT_DESCRIPTION}</td>
       </tr>
-      <tr valign="top" class="row1 reset">
+      <tr class="row1 reset">
         <td colspan="2">{SHOP_DESCRIPTION}</td>
       </tr>
-      <tr valign="top" class="row2">
+      <tr class="row2">
         <td>{TXT_SHOP_KEYWORDS}</td>
         <td>
           <textarea name="keywords" rows="5" cols="80">{SHOP_KEYWORDS}</textarea>
         </td>
       </tr>
-      <tr valign="top" class="row1">
-        <td nowrap="nowrap">{TXT_SHOP_MANUFACTURER}</td>
+      <tr class="row1">
+        <td>{TXT_SHOP_MANUFACTURER}</td>
         <td>
           <select name="manufacturer_id" style="width: 220px;">
             {SHOP_MANUFACTURER_MENUOPTIONS}
           </select>
         </td>
       </tr>
-      <tr valign="top" class="row2">
-        <td nowrap="nowrap">{TXT_MANUFACTURER_URL}</td>
+      <tr class="row2">
+        <td>{TXT_MANUFACTURER_URL}</td>
         <td>
           <input maxlength="255" name="uri" size="40" value="{SHOP_MANUFACTURER_URL}" />
           ({TXT_WITH_HTTP})
         </td>
       </tr>
-      <tr valign="top" class="row1">
-        <td nowrap="nowrap">{TXT_STOCK}</td>
+      <tr class="row1">
+        <td>{TXT_STOCK}</td>
         <td>
           <input maxlength=10 name="stock" size="10" value="{SHOP_STOCK}" />
           &nbsp;
@@ -448,22 +448,22 @@ END shopFlags -->
 <!-- end content1 div -->
 <!-- start content2 div -->
   <div id="content2" class="productManageTab" style="display: none;">
-    <table summary="" class="adminlist" border=0 width="100%" cellpadding="3" cellspacing="0">
-      <tr valign="top">
-        <th nowrap="nowrap"  colspan="2">{TXT_PRODUCT_OPTIONS}</th>
+    <table class="adminlist" border=0 width="100%" cellpadding="3" cellspacing="0">
+      <tr>
+        <th  colspan="2">{TXT_PRODUCT_OPTIONS}</th>
       </tr>
       <tr class="row1">
-          <td nowrap="nowrap" width="5%" class="f_bold">{TXT_SHOP_SORTING_ORDER}</td>
-          <td nowrap="nowrap" width="95%" class="f_bold">{TXT_SHOP_PRODUCT_OPTION}</td>
+          <td width="5%" class="f_bold">{TXT_SHOP_SORTING_ORDER}</td>
+          <td width="95%" class="f_bold">{TXT_SHOP_PRODUCT_OPTION}</td>
       </tr>
       <!-- BEGIN attributeList -->
-      <tr valign="top" class="{SHOP_PRODUCTS_ATTRIBUTE_ROW_CLASS}">
-        <td nowrap="nowrap" width="5%">
+      <tr class="{SHOP_PRODUCTS_ATTRIBUTE_ROW_CLASS}">
+        <td width="5%">
           <input style="width:25px;" type="text"
               name="productOptionsSortId[{SHOP_PRODUCTS_ATTRIBUTE_ID}]"
               value="{SHOP_PRODUCTS_ATTRIBUTE_SORTID}" />
         </td>
-        <td nowrap="nowrap">
+        <td>
           <input id="productOptions{SHOP_PRODUCTS_ATTRIBUTE_ID}"
               onclick="toggleOptions({SHOP_PRODUCTS_ATTRIBUTE_ID})"
               type="checkbox" value="{SHOP_PRODUCTS_ATTRIBUTE_ID}"
@@ -493,14 +493,14 @@ END shopFlags -->
 <!-- end content2 div -->
 <!-- start content3 div -->
   <div id="content3" class="productManageTab" style="display: none;">
-    <table summary="" class="adminlist" border=0 width="100%" cellpadding="3" cellspacing="0">
+    <table class="adminlist" border=0 width="100%" cellpadding="3" cellspacing="0">
       <tr>
-        <th nowrap="nowrap" colspan="4">
+        <th colspan="4">
           {TXT_PRODUCT_IMAGE}
         </th>
       </tr>
       <tr  class="row1">
-        <td nowrap="nowrap" width="25%" valign="top"> {TXT_SHOP_EDIT_OR_ADD_IMAGE}</td>
+        <td width="25%"> {TXT_SHOP_EDIT_OR_ADD_IMAGE}</td>
         <td width="25%">
           <a href="javascript:void(0);" title="{TXT_SHOP_EDIT_OR_ADD_IMAGE}"
               onclick="openBrowser('index.php?cmd=fileBrowser&amp;standalone=true&amp;type=shop','1','width=800,height=640,resizable=yes,status=no,scrollbars=yes','img','');">
@@ -573,31 +573,31 @@ END shopFlags -->
 <!-- end content3 div -->
 <!-- start content4 div -->
   <div id="content4" class="productManageTab" style="display: none;">
-    <table summary="" class="adminlist" border=0 width="100%" cellpadding="3" cellspacing="0">
-      <tr valign="top">
-        <th nowrap="nowrap" colspan="2">
+    <table class="adminlist" border=0 width="100%" cellpadding="3" cellspacing="0">
+      <tr>
+        <th colspan="2">
           {TXT_PRODUCT_STATUS}
         </th>
       </tr>
-      <tr valign="top" class="row1">
+      <tr class="row1">
         <td>{TXT_ACTIVE}</td>
         <td><input type="checkbox" name="articleActive" value="1" {SHOP_ARTICLE_ACTIVE} /></td>
       </tr>
-      <tr valign="top" class="row2">
+      <tr class="row2">
         <td>{TXT_B2B}</td>
         <td><input type="checkbox" name="B2B" value="1" {SHOP_B2B} /></td>
       </tr>
-      <tr valign="top" class="row1">
+      <tr class="row1">
         <td>{TXT_B2C}</td>
         <td><input type="checkbox" name="B2C" value="1" {SHOP_B2C} /></td>
       </tr>
-      <tr valign="top" class="row2">
+      <tr class="row2">
         <td>{TXT_START_DATE}</td>
         <td>
           {SHOP_DATE_START}
         </td>
       </tr>
-      <tr valign="top" class="row1">
+      <tr class="row1">
         <td>{TXT_END_DATE}</td>
         <td>
           {SHOP_DATE_END}

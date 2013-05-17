@@ -173,6 +173,9 @@ class Products
                 : ' AND `product`.`active`=1
                     AND `product`.`stock`>0
                     AND `category`.`active`=1').
+// TODO: Possibly use
+//                  AND (`product`.`stock_visible`=0 OR `product`.`stock`>0)
+// instead
             // Limit Products visible to resellers or non-resellers
             ($flagIsReseller === true
               ? ' AND `b2b`=1'
@@ -907,7 +910,6 @@ DBG::log("ERROR: Failed to delete Products in Category ID $category_id");
         }
         return $strMenuoptions;
     }
-
 
 
     static function getJavascriptArray($groupCustomerId=0, $isReseller=false)

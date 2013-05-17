@@ -1079,9 +1079,8 @@ class Order
      * The array looks like this:
      *  array(
      *    item ID => array(
-     *      'attribute' => "Attribute name",
-     *      'options' => array(
-     *        order attribute id => array(
+     *      "Attribute name" => array(
+     *        Attribute ID => array
      *          'name' => "option name",
      *          'price' => "price",
      *         ),
@@ -1516,7 +1515,7 @@ class Order
      * @return  boolean                 True on success, false otherwise
      * @static
      */
-    function updateItem($item_id, $product_id, $name, $price, $quantity,
+    static function updateItem($item_id, $product_id, $name, $price, $quantity,
         $vat_rate, $weight, $arrOptions
     ) {
         global $objDatabase, $_ARRAYLANG;
@@ -1645,13 +1644,20 @@ class Order
      * @param   boolean             $edit           Edit if true, view otherwise
      * @global  ADONewConnection    $objDatabase    Database connection object
      * @global  array               $_ARRAYLANG     Language array
+     * @return  boolean                             True on success,
+     *                                              false otherwise
      * @static
      * @author  Reto Kohli <reto.kohli@comvation.com> (parts)
      */
     static function view_detail(&$objTemplate=null, $edit=false)
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG, $objInit;
 
+        $backend = ($objInit->mode == 'backend');
+        if ($objTemplate->blockExists('order_list')) {
+            $objTemplate->hideBlock('order_list');
+        }
+        $have_option = false;
         // The order total -- in the currency chosen by the customer
         $order_sum = 0;
         // recalculated VAT total
@@ -1736,6 +1742,7 @@ class Order
                 ? ($objOrder->status() != Order::STATUS_CONFIRMED
                     ? Html::ATTRIBUTE_CHECKED : '')
                 : ''),
+            'SHOP_ORDER_SUM' => Currency::formatPrice($objOrder->sum()),
             'SHOP_DEFAULT_CURRENCY' => Currency::getDefaultCurrencySymbol(),
             'SHOP_GENDER' => ($edit
                 ? Customer::getGenderMenu(
@@ -1769,32 +1776,42 @@ class Order
             'SHOP_SHIP_PHONE' => $objOrder->phone(),
             'SHOP_PAYMENTTYPE' => Payment::getProperty($objOrder->payment_id(), 'name'),
             'SHOP_CUSTOMER_NOTE' => $objOrder->note(),
-            'SHOP_CUSTOMER_IP' => ($objOrder->ip()
-                ? '<a href="index.php?cmd=nettools&amp;tpl=whois&amp;address='.
-                  $objOrder->ip().'" title="'.$_ARRAYLANG['TXT_SHOW_DETAILS'].'">'.
-                  $objOrder->ip().'</a>'
-                : '&nbsp;'),
-            'SHOP_CUSTOMER_HOST' => ($objOrder->host()
-                ? '<a href="index.php?cmd=nettools&amp;tpl=whois&amp;address='.
-                  $objOrder->host().'" title="'.$_ARRAYLANG['TXT_SHOW_DETAILS'].'">'.
-                  $objOrder->host().'</a>'
-                : '&nbsp;'),
-            'SHOP_CUSTOMER_LANG' => FWLanguage::getLanguageParameter(
-                $objOrder->lang_id(), 'name'),
-            'SHOP_CUSTOMER_BROWSER' => ($objOrder->browser()
-                ? $objOrder->browser() : '&nbsp;'),
             'SHOP_COMPANY_NOTE' => $objCustomer->companynote(),
-            'SHOP_LAST_MODIFIED' =>
-                (   $objOrder->modified_on()
-                 && $objOrder->modified_on() != '0000-00-00 00:00:00'
-                  ? $objOrder->modified_on().'&nbsp;'.
-                    $_ARRAYLANG['TXT_EDITED_BY'].'&nbsp;'.
-                    $objOrder->modified_by()
-                  : $_ARRAYLANG['TXT_ORDER_WASNT_YET_EDITED']),
             'SHOP_SHIPPING_TYPE' => ($objOrder->shipment_id()
                 ? Shipment::getShipperName($objOrder->shipment_id())
                 : '&nbsp;'),
         ));
+        if ($backend) {
+            $objTemplate->setVariable(array(
+                'SHOP_CUSTOMER_IP' => ($objOrder->ip()
+                    ? '<a href="index.php?cmd=nettools&amp;tpl=whois&amp;address='.
+                      $objOrder->ip().'" title="'.$_ARRAYLANG['TXT_SHOW_DETAILS'].'">'.
+                      $objOrder->ip().'</a>'
+                    : '&nbsp;'),
+                'SHOP_CUSTOMER_HOST' => ($objOrder->host()
+                    ? '<a href="index.php?cmd=nettools&amp;tpl=whois&amp;address='.
+                      $objOrder->host().'" title="'.$_ARRAYLANG['TXT_SHOW_DETAILS'].'">'.
+                      $objOrder->host().'</a>'
+                    : '&nbsp;'),
+                'SHOP_CUSTOMER_LANG' => FWLanguage::getLanguageParameter(
+                    $objOrder->lang_id(), 'name'),
+                'SHOP_CUSTOMER_BROWSER' => ($objOrder->browser()
+                    ? $objOrder->browser() : '&nbsp;'),
+                'SHOP_LAST_MODIFIED' =>
+                    (   $objOrder->modified_on()
+                     && $objOrder->modified_on() != '0000-00-00 00:00:00'
+                      ? $objOrder->modified_on().'&nbsp;'.
+                        $_ARRAYLANG['TXT_EDITED_BY'].'&nbsp;'.
+                        $objOrder->modified_by()
+                      : $_ARRAYLANG['TXT_ORDER_WASNT_YET_EDITED']),
+            ));
+        } else {
+            // Frontend: Order history ONLY.  Repeat the Order, go to cart
+            $objTemplate->setVariable(array(
+                'SHOP_ACTION_URI_ENCODED' =>
+                    Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'cart'),
+            ));
+        }
         $ppName = '';
         $psp_id = Payment::getPaymentProcessorId($objOrder->payment_id());
         if ($psp_id) {
@@ -1806,13 +1823,6 @@ class Order
             'SHOP_PAYMENT_HANDLER' => $ppName,
             'SHOP_LAST_MODIFIED_DATE' => $objOrder->modified_on(),
         ));
-        $order_sum +=
-              $objOrder->shipment_amount()
-            + $objOrder->payment_amount();
-        $total_vat_amount +=
-              Vat::amount(Vat::getOtherRate(), $objOrder->payment_amount)
-            + Vat::amount(Vat::getOtherRate(), $objOrder->shipment_amount);
-//\DBG::log("VAT for handling: $total_vat_amount");
         if ($edit) {
             // edit order
             $strJsArrShipment = Shipment::getJSArrays();
@@ -1834,28 +1844,120 @@ class Order
             ));
         }
         // Order items
+        $total_weight = $i = 0;
+        $total_net_price = $objOrder->view_items(
+            $objTemplate, $edit, $total_weight, $i);
+        // Show VAT with the individual products:
+        // If VAT is enabled, and we're both in the same country
+        // ($total_vat_amount has been set above if both conditions are met)
+        // show the VAT rate.
+        // If there is no VAT, the amount is 0 (zero).
+        //if ($total_vat_amount) {
+            // distinguish between included VAT, and additional VAT added to sum
+            $tax_part_percentaged = (Vat::isIncluded()
+                ? $_ARRAYLANG['TXT_TAX_PREFIX_INCL']
+                : $_ARRAYLANG['TXT_TAX_PREFIX_EXCL']);
+            $objTemplate->setVariable(array(
+                'SHOP_TAX_PRICE' => Currency::formatPrice($total_vat_amount),
+                'SHOP_PART_TAX_PROCENTUAL' => $tax_part_percentaged,
+            ));
+        //} else {
+            // No VAT otherwise
+            // remove it from the details overview if empty
+            //$objTemplate->hideBlock('taxprice');
+            //$tax_part_percentaged = $_ARRAYLANG['TXT_NO_TAX'];
+        //}
+// Parse Coupon if applicable to this product
+        // Coupon
+        $objCoupon = Coupon::getByOrderId($order_id);
+        if ($objCoupon) {
+            $objTemplate->setVariable(array(
+                'SHOP_COUPON_NAME' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_CODE'],
+                'SHOP_COUPON_CODE' => $objCoupon->code(),
+                'SHOP_COUPON_AMOUNT' => Currency::formatPrice(
+                    -$objCoupon->discount_amount()),
+            ));
+            $total_net_price -= $objCoupon->discount_amount();
+//DBG::log("Order::view_detail(): Coupon: ".var_export($objCoupon, true));
+        }
+        $objTemplate->setVariable(array(
+            'SHOP_ROWCLASS_NEW' => 'row'.(++$i % 2 + 1),
+            'SHOP_TOTAL_WEIGHT' => Weight::getWeightString($total_weight),
+            'SHOP_NET_PRICE' => Currency::formatPrice($total_net_price),
+// See above
+//            'SHOP_ORDER_SUM' => Currency::formatPrice($order_sum),
+        ));
+        $objTemplate->setVariable(array(
+            'TXT_PRODUCT_ID' => $_ARRAYLANG['TXT_ID'],
+            // inserted VAT, weight here
+            // change header depending on whether the tax is included or excluded
+            'TXT_TAX_RATE' => (Vat::isIncluded()
+                ? $_ARRAYLANG['TXT_TAX_PREFIX_INCL']
+                : $_ARRAYLANG['TXT_TAX_PREFIX_EXCL']),
+            'TXT_SHOP_ACCOUNT_VALIDITY' => $_ARRAYLANG['TXT_SHOP_VALIDITY'],
+        ));
+        // Disable the "edit" button when there are Attributes
+        if ($backend && !$edit) {
+            if ($have_option) {
+                if ($objTemplate->blockExists('order_no_edit'))
+                    $objTemplate->touchBlock('order_no_edit');
+            } else {
+                if ($objTemplate->blockExists('order_edit'))
+                    $objTemplate->touchBlock('order_edit');
+            }
+        }
+        return true;
+    }
+
+
+    /**
+     * View of this Orders' items
+     * @global  ADONewConnection    $objDatabase
+     * @global  array               $_ARRAYLANG
+     * @param   HTML_Template_Sigma $objTemplate    The template
+     * @param   type                $edit           If true, items are editable
+     * @param   type                $total_weight   Initial value for the
+     *                                              total item weight, by
+     *                                              reference.
+     *                                              Usually empty or zero
+     * @param   type                $i              Initial value for the row
+     *                                              count, by reference.
+     *                                              Usually empty or zero.
+     * @return  float                               The net item sum on success,
+     *                                              false otherwise
+     */
+    function view_items($objTemplate, $edit, $total_weight=0, $i=0)
+    {
+        global $objDatabase, $_ARRAYLANG;
+
+        // Order items
+// c_sp
+// Mind the custom price calculation
+        $objCustomer = Customer::getById($this->customer_id);
+        if (!$objCustomer) {
+            Message::error(sprintf(
+                $_ARRAYLANG['TXT_SHOP_ORDER_ERROR_MISSING_CUSTOMER'],
+                $this->customer_id));
+            $objCustomer = new Customer();
+        }
         $query = "
             SELECT `id`, `product_id`, `product_name`,
                    `price`, `quantity`, `vat_rate`, `weight`
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_order_items`
-             WHERE `order_id`=$order_id";
-        $objResult = $objDatabase->Execute($query);
+             WHERE `order_id`=?";
+        $objResult = $objDatabase->Execute($query, array($this->id));
         if (!$objResult) {
             return self::errorHandler();
         }
-        $arrProductOptions = $objOrder->getOptionArray();
-        $i = 0;
-        $total_weight = 0;
+        $arrProductOptions = $this->getOptionArray();
+        $total_vat_amount = 0;
         $total_net_price = 0;
         // Orders with Attributes cannot currently be edited
         // (this would spoil all the options!)
-        $have_option = false;
-        $discount_amount = 0;
-        $objCoupon = Coupon::getByOrderId($order_id);
+//        $have_option = false;
         while (!$objResult->EOF) {
             $item_id = $objResult->fields['id'];
             $name = $objResult->fields['product_name'];
-            // Includes options
             $price = $objResult->fields['price'];
             $quantity = $objResult->fields['quantity'];
             $vat_rate = $objResult->fields['vat_rate'];
@@ -1872,44 +1974,27 @@ class Order
             $distribution = $objProduct->distribution();
             if (isset($arrProductOptions[$item_id])) {
                 if ($edit) {
-// TODO: Edit options
-                } elseif (isset($arrProductOptions[$item_id])) {
-//DBG::log("Order::view_detail(): Item ID $item_id, Attributes: ".var_export($arrProductOptions[$item_id], true));
-                    foreach ($arrProductOptions[$item_id] as $attribute_name => $arrAttribute) {
-                        $have_option = true;
-                        $options = '';
-                        // Note: $arrOption is indexed by item_attribute_id
-                        foreach ($arrAttribute as $arrOption) {
-                            $options .= ($options ? ', ' : '').
-                                $arrOption['name'].' ('.$arrOption['price'].')';
-                            $price += $arrOption['price'];
-                        }
-                        $name .=
-                            '<i><br />- '.$attribute_name.': '.
-                            $options.'</i>';
+// Edit options
+                } else {
+//DBG::log("Order::view_items(): Item ID $item_id, Attributes: ".var_export($arrProductOptions[$item_id], true));
+// Verify that options are properly shown
+                    $options_price = 0;
+                    foreach ($arrProductOptions[$item_id]
+                            as $attribute_id => $attribute) {
+                        $long = $cart = '';
+                        list($long, $cart) = Attributes::getAsStrings(
+                            array($attribute_id => $attribute['options']),
+// c_sp
+                            $options_price);
+//DBG::log("Order::view_items(): Added option, price: $options_price");
+                        $name .= $long;
                     }
                 }
             }
+// c_sp
             $row_net_price = $price * $quantity;
+            $row_price = $row_net_price; // VAT added later, if applicable
             $total_net_price += $row_net_price;
-            $discount_product = 0;
-            if ($objCoupon
-                && (   $objCoupon->product_id() == $product_id
-                    || $objCoupon->product_id() == 0)) {
-                $discount_product = $objCoupon->getDiscountAmount(
-                    $row_net_price);
-                if (   $objCoupon->discount_amount()
-                    && $discount_amount + $discount_product
-                        > $objCoupon->discount_amount()) {
-                    $discount_product =
-                        $discount_amount + $discount_product
-                        - $objCoupon->discount_amount();
-                }
-                $discount_amount += $discount_product;
-            }
-            // VAT added later, if applicable
-            $row_price = $row_net_price - $discount_product;
-            $order_sum += $row_price;
             // Here, the VAT has to be recalculated before setting up the
             // fields.  If the VAT is excluded, it must be added here.
             // Note: the old Order.vat_amount field is no longer valid,
@@ -1971,70 +2056,10 @@ class Order
                         $product_id, null,
                         $_ARRAYLANG['TXT_SHOP_PRODUCT_MENU_FORMAT']));
             }
-            $objTemplate->parse('orderdetailsRow');
+            $objTemplate->parse('order_item');
             $objResult->MoveNext();
         }
-
-        // Show VAT with the individual products:
-        // If VAT is enabled, and we're both in the same country
-        // ($total_vat_amount has been set above if both conditions are met)
-        // show the VAT rate.
-        // If there is no VAT, the amount is 0 (zero).
-        //if ($total_vat_amount) {
-            // distinguish between included VAT, and additional VAT added to sum
-            $tax_part_percentaged = (Vat::isIncluded()
-                ? $_ARRAYLANG['TXT_TAX_PREFIX_INCL']
-                : $_ARRAYLANG['TXT_TAX_PREFIX_EXCL']);
-            $objTemplate->setVariable(array(
-                'SHOP_TAX_PRICE' => Currency::formatPrice($total_vat_amount),
-                'SHOP_PART_TAX_PROCENTUAL' => $tax_part_percentaged,
-            ));
-        //} else {
-            // No VAT otherwise
-            // remove it from the details overview if empty
-            //$objTemplate->hideBlock('taxprice');
-            //$tax_part_percentaged = $_ARRAYLANG['TXT_NO_TAX'];
-        //}
-        if (!Vat::isIncluded()) {
-            $order_sum += $total_vat_amount;
-        }
-        // Coupon
-        if ($objCoupon) {
-            $objTemplate->setVariable(array(
-                'SHOP_COUPON_NAME' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_CODE'],
-                'SHOP_COUPON_CODE' => $objCoupon->code(),
-                'SHOP_COUPON_AMOUNT' => Currency::formatPrice(
-                    -$discount_amount),
-            ));
-            $total_net_price -= $discount_amount;
-//DBG::log("Order::view_detail(): Coupon: ".var_export($objCoupon, true));
-        }
-        $objTemplate->setVariable(array(
-            'SHOP_ROWCLASS_NEW' => 'row'.(++$i % 2 + 1),
-            'SHOP_TOTAL_WEIGHT' => Weight::getWeightString($total_weight),
-            'SHOP_NET_PRICE' => Currency::formatPrice($total_net_price),
-            'SHOP_ORDER_SUM' => Currency::formatPrice($order_sum),
-// See above
-//            'SHOP_ORDER_SUM' => Currency::formatPrice($order_sum),
-        ));
-        $objTemplate->setVariable(array(
-            'TXT_PRODUCT_ID' => $_ARRAYLANG['TXT_ID'],
-            // inserted VAT, weight here
-            // change header depending on whether the tax is included or excluded
-            'TXT_TAX_RATE' => (Vat::isIncluded()
-                ? $_ARRAYLANG['TXT_TAX_PREFIX_INCL']
-                : $_ARRAYLANG['TXT_TAX_PREFIX_EXCL']),
-            'TXT_SHOP_ACCOUNT_VALIDITY' => $_ARRAYLANG['TXT_SHOP_VALIDITY'],
-        ));
-        // Disable the "edit" button when there are Attributes
-        if (!$edit) {
-            if ($have_option) {
-                $objTemplate->touchBlock('order_no_edit');
-            } else {
-                $objTemplate->touchBlock('order_edit');
-            }
-        }
-        return true;
+        return $total_net_price;
     }
 
 
@@ -2265,6 +2290,72 @@ class Order
 
         // Always
         return false;
+    }
+
+
+    /**
+     * Returns an array of items contained in this Order
+     * @global  ADONewConnection    $objDatabase
+     * @global  array               $_ARRAYLANG
+     * @return  array                               The items array on success,
+     *                                              false otherwise
+     * @todo    Let items be handled by their own class
+     */
+    function getItems()
+    {
+        global $objDatabase, $_ARRAYLANG;
+
+        $query = "
+            SELECT `id`, `product_id`, `product_name`,
+                   `price`, `quantity`, `vat_rate`, `weight`
+              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_order_items`
+             WHERE `order_id`=?";
+        $objResult = $objDatabase->Execute($query, array($this->id));
+        if (!$objResult) {
+            return self::errorHandler();
+        }
+        $arrProductOptions = $this->getOptionArray();
+        while (!$objResult->EOF) {
+            $item_id = $objResult->fields['id'];
+            $product_id = $objResult->fields['product_id'];
+            $name = $objResult->fields['product_name'];
+            $price = $objResult->fields['price'];
+            $quantity = $objResult->fields['quantity'];
+            $vat_rate = $objResult->fields['vat_rate'];
+            // Get missing product details
+            $objProduct = Product::getById($product_id);
+            if (!$objProduct) {
+                Message::warning(sprintf(
+                    $_ARRAYLANG['TXT_SHOP_PRODUCT_NOT_FOUND'], $product_id));
+                $objProduct = new Product('', 0, $name, '', $price,
+                    0, 0, 0, $product_id);
+            }
+            $code = $objProduct->code();
+            $distribution = $objProduct->distribution();
+            $vat_id = $objProduct->vat_id();
+            $weight = '0';
+            if ($distribution != 'download') {
+                $weight = $objResult->fields['weight'];
+            }
+            $item = array(
+                'product_id' => $product_id,
+                'quantity' => $quantity,
+                'name' => $name,
+                'price' => $price,
+                'item_id' => $item_id,
+                'code' => $code,
+                'vat_id' => $vat_id,
+                'vat_rate' => $vat_rate,
+                'weight' => $weight,
+                'attributes' => array(),
+            );
+            if (isset($arrProductOptions[$item_id])) {
+                $item['attributes'] = $arrProductOptions[$item_id];
+            }
+            $items[] = $item;
+            $objResult->MoveNext();
+        }
+        return $items;
     }
 
 }

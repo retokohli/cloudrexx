@@ -43,7 +43,7 @@ function shopProductsIsChecked(fieldName)
 // ]]>
 </script>
 <form name="product_search" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=products">
-  <table summary="" width="100%" border="0" cellspacing="0" cellpadding="2" class="adminlist">
+  <table width="100%" border="0" cellspacing="0" cellpadding="2" class="adminlist">
     <tr>
       <th colspan="2">{TXT_SEARCH}</th>
     </tr>
@@ -67,31 +67,31 @@ function shopProductsIsChecked(fieldName)
   {SHOP_PRODUCT_PAGING}
   <br />
   <br />
-  <table summary="" width="100%" cellspacing="0" cellpadding="2" border="0" class="adminlist">
+  <table width="100%" cellspacing="0" cellpadding="2" border="0" class="adminlist">
     <tr>
       <th colspan="16">{TXT_PRODUCT_CATALOG}&nbsp;({TXT_TOTAL}&nbsp;{SHOP_PRODUCT_TOTAL})</th>
     </tr>
     <tr class="row1">
-      <td width="1%" nowrap="nowrap" class="a_center f_bold">#</td>
-      <td width="1%" nowrap="nowrap" class="a_right f_bold">{SHOP_HEADING_PRODUCT_ID}</td>
-      <td width="1%" nowrap="nowrap" class="a_center f_bold">
+      <td width="1%" class="a_center f_bold">#</td>
+      <td width="1%" class="a_right f_bold">{SHOP_HEADING_PRODUCT_ID}</td>
+      <td width="1%" class="a_center f_bold">
         {SHOP_HEADING_PRODUCT_ACTIVE}&nbsp;
       </td>
-      <td width="1%" nowrap="nowrap" class="a_right f_bold">{SHOP_HEADING_PRODUCT_ORD}</td>
-      <td width="1%" nowrap="nowrap">
+      <td width="1%" class="a_right f_bold">{SHOP_HEADING_PRODUCT_ORD}</td>
+      <td width="1%">
         <img src="images/icons/home.gif" alt="{TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE}" />
         <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE_TIP}</span>
       </td>
       <td width="50%" class="f_bold">{SHOP_HEADING_PRODUCT_NAME}</td>
-      <td width="1%" nowrap="nowrap" class="f_bold">{SHOP_HEADING_PRODUCT_CODE}</td>
-      <td width="1%" colspan="2" nowrap="nowrap" class="f_bold">{SHOP_HEADING_PRODUCT_DISCOUNTPRICE}</td>
-      <td width="1%" nowrap="nowrap" class="a_right f_bold">{SHOP_HEADING_PRODUCT_NORMALPRICE}</td>
-      <td width="1%" nowrap="nowrap" class="a_right f_bold">{SHOP_HEADING_PRODUCT_RESELLERPRICE}</td>
-      <td width="1%" nowrap="nowrap" class="a_right f_bold">{TXT_SHOP_VAT_ABBREV}</td>
-      <!--td width="5%" nowrap="nowrap" class="f_bold">{TXT_WEIGHT}</td-->
-      <td width="1%" nowrap="nowrap" class="f_bold">{SHOP_HEADING_PRODUCT_DISTRIBUTION}</td>
-      <td width="1%" nowrap="nowrap" class="a_right f_bold">{SHOP_HEADING_PRODUCT_STOCK}</td>
-      <td width="1%" nowrap="nowrap" class="a_right f_bold">{TXT_ACTION}</td>
+      <td width="1%" class="f_bold">{SHOP_HEADING_PRODUCT_CODE}</td>
+      <td width="1%" colspan="2" class="f_bold">{SHOP_HEADING_PRODUCT_DISCOUNTPRICE}</td>
+      <td width="1%" class="a_right f_bold">{SHOP_HEADING_PRODUCT_NORMALPRICE}</td>
+      <td width="1%" class="a_right f_bold">{SHOP_HEADING_PRODUCT_RESELLERPRICE}</td>
+      <td width="1%" class="a_right f_bold">{TXT_SHOP_VAT_ABBREV}</td>
+      <!--td width="5%" class="f_bold">{TXT_WEIGHT}</td-->
+      <td width="1%" class="f_bold">{SHOP_HEADING_PRODUCT_DISTRIBUTION}</td>
+      <td width="1%" class="a_right f_bold">{SHOP_HEADING_PRODUCT_STOCK}</td>
+      <td width="1%" class="a_right f_bold">{TXT_ACTION}</td>
     </tr>
 <!-- BEGIN no_product -->
     <tr class="row2" style="vertical-align: top;">
@@ -162,7 +162,7 @@ function shopProductsIsChecked(fieldName)
         <input type="hidden" name="stockOld[{SHOP_PRODUCT_ID}]"
                value="{SHOP_PRODUCT_STOCK}" />
       </td>
-      <td nowrap="nowrap" class="a_right">
+      <td class="a_right">
         <a href="index.php?cmd=shop{MODULE_INDEX}&amp;act=products&amp;tpl=manage&amp;id={SHOP_PRODUCT_ID}&amp;new=1"
            title="{TXT_AS_TEMPLATE}">
           <img src="images/icons/pages.gif" alt="{TXT_AS_TEMPLATE}" border="0" />

@@ -814,8 +814,8 @@ class ShopCategories
 
         $arrSqlName = Text::getSqlSnippets('`category`.`id`', FRONTEND_LANG_ID,
             'shop', array('name' => ShopCategory::TEXT_NAME));
-DBG::log("getChildNamed($strName, $parent_id, $active): SQL: ".var_export($arrSqlName, true));
-DBG::log("getChildNamed(): JOIN: ".var_export($arrSqlName['join'], true));
+//DBG::log("getChildNamed($strName, $parent_id, $active): SQL: ".var_export($arrSqlName, true));
+//DBG::log("getChildNamed(): JOIN: ".var_export($arrSqlName['join'], true));
         $parent_id = max(0, intval($parent_id));
         // Qquery flags: OR flags LIKE '%parent:$parent_id%'
         $objResult = $objDatabase->Execute("

@@ -24,52 +24,52 @@ function deletePayment(pId)
         <th colspan="7">{TXT_PAYMENT_TYPES}</th>
       </tr>
       <tr class="row1">
-        <td nowrap="nowrap" width="20%" class="f_bold">
+        <td width="20%" class="f_bold">
           {TXT_PAYMENT_TYPE}
         </td>
-        <td nowrap="nowrap" width="10%" class="f_bold">
+        <td width="10%" class="f_bold">
           {TXT_FEE}
         </td>
-        <td nowrap="nowrap" width="12%" class="f_bold">
+        <td width="12%" class="f_bold">
           {TXT_FREE_OF_CHARGE}
           <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_FREE_OF_CHARGE_TIP}</span>
         </td>
-        <td nowrap="nowrap" width="38%" class="f_bold">
+        <td width="38%" class="f_bold">
           {TXT_HANDLER}
         </td>
-        <td nowrap="nowrap" width="10%" class="f_bold">
+        <td width="10%" class="f_bold">
           {TXT_ZONE}
         </td>
-        <td nowrap="nowrap" width="05%" class="a_center f_bold">
+        <td width="05%" class="a_center f_bold">
           {TXT_ACTIVE}
         </td>
-        <td nowrap="nowrap" width="05%">&nbsp;</td>
+        <td width="05%">&nbsp;</td>
       </tr>
 <!-- BEGIN shopPayment -->
       <tr class="{SHOP_PAYMENT_STYLE}">
-        <td nowrap="nowrap">
+        <td>
           <input name="name[{SHOP_PAYMENT_ID}]" type="text"
                  value="{SHOP_PAYMENT_NAME}" size="30" maxlength="50" />
         </td>
-        <td nowrap="nowrap">
+        <td>
           <input type="text" name="fee[{SHOP_PAYMENT_ID}]"
                  value="{SHOP_PAYMENT_COST}" size="15" maxlength="50" />
         </td>
-        <td nowrap="nowrap">
+        <td>
           <input type="text" name="free_from[{SHOP_PAYMENT_ID}]"
                  value="{SHOP_PAYMENT_COST_FREE_SUM}" size="15" maxlength="50" />
         </td>
-        <td nowrap="nowrap">
+        <td>
           <select name="processor_id[{SHOP_PAYMENT_ID}]">
             {SHOP_PAYMENT_HANDLER_MENUOPTIONS}
           </select>
         </td>
-        <td nowrap="nowrap">{SHOP_ZONE_SELECTION}</td>
-        <td nowrap="nowrap" class="a_center">
+        <td>{SHOP_ZONE_SELECTION}</td>
+        <td class="a_center">
           <input type="checkbox" name="active[{SHOP_PAYMENT_ID}]"
                  value="1" {SHOP_PAYMENT_STATUS} />
         </td>
-        <td nowrap="nowrap" class="a_right">
+        <td class="a_right">
           <a href="javascript:deletePayment('{SHOP_PAYMENT_ID}')" title="{TXT_DELETE}">
             <img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" />
           </a>
@@ -89,29 +89,29 @@ function deletePayment(pId)
         <th colspan="6">{TXT_ADD}</th>
       </tr>
       <tr class="row1">
-        <td nowrap="nowrap" width="20%" class="f_bold">{TXT_PAYMENT_TYPE}</td>
-        <td nowrap="nowrap" width="10%" class="f_bold">{TXT_FEE}</td>
-        <td nowrap="nowrap" width="12%" class="f_bold">
+        <td width="20%" class="f_bold">{TXT_PAYMENT_TYPE}</td>
+        <td width="10%" class="f_bold">{TXT_FEE}</td>
+        <td width="12%" class="f_bold">
           {TXT_FREE_OF_CHARGE}
           <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_FREE_OF_CHARGE_TIP}</span>
         </td>
-        <td nowrap="nowrap" width="53%" class="f_bold">{TXT_HANDLER}</td>
-        <td nowrap="nowrap" width="10%" class="f_bold">{TXT_ZONE}</td>
-        <td nowrap="nowrap" width="5%" class="a_center f_bold">
+        <td width="53%" class="f_bold">{TXT_HANDLER}</td>
+        <td width="10%" class="f_bold">{TXT_ZONE}</td>
+        <td width="5%" class="a_center f_bold">
           {TXT_ACTIVE}
         </td>
       </tr>
       <tr class="row2">
-        <td nowrap="nowrap" class="f_bold"><input name="name_new" type="text" value="" size="30" maxlength="50" /></td>
-        <td nowrap="nowrap"><input type="text" name="fee_new" value="0.00" size="15" maxlength="50" /></td>
-        <td nowrap="nowrap"><input type="text" name="free_from_new" value="0.00" size="15" maxlength="50" /></td>
-        <td nowrap="nowrap">
+        <td class="f_bold"><input name="name_new" type="text" value="" size="30" maxlength="50" /></td>
+        <td><input type="text" name="fee_new" value="0.00" size="15" maxlength="50" /></td>
+        <td><input type="text" name="free_from_new" value="0.00" size="15" maxlength="50" /></td>
+        <td>
           <select name="processor_id_new">
             {SHOP_PAYMENT_HANDLER_MENUOPTIONS_NEW}
           </select>
         </td>
-        <td nowrap="nowrap">{SHOP_ZONE_SELECTION_NEW}</td>
-        <td nowrap="nowrap" class="a_center">
+        <td>{SHOP_ZONE_SELECTION_NEW}</td>
+        <td class="a_center">
           <input type="checkbox" name="active_new" value="1" checked="checked" />
         </td>
       </tr>
@@ -123,7 +123,7 @@ function deletePayment(pId)
 
 <!-- start content3 div -->
 <div id="content3" class="paymentTab" style="display:none;">
-  <table summary="" border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
+  <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
     <tr>
       <th colspan="3">{TXT_PAYMENT_HANDLER}</th>
     </tr>
@@ -134,13 +134,13 @@ function deletePayment(pId)
         {TXT_ACTIVE}
       </td>
     </tr>
-    <tr valign="top" class="row2">
-      <td width="15%" class="nowrap" valign="top">{TXT_YELLOWPAY_POSTFINANCE}</td>
+    <tr class="row2">
+      <td width="15%" class="nowrap">{TXT_YELLOWPAY_POSTFINANCE}</td>
       <td class="nowrap">
         <label for="postfinance_swapper">{TXT_SHOP_EDIT}&nbsp;</label>
         <input name="postfinance_swapper" id="postfinance_swapper" type="checkbox" onclick="swapBlock('postfinance');" value="1" />&nbsp;
         <div id="postfinance" style="display:none;">
-          <table width="100%" summary="">
+          <table width="100%">
             <tr>
               <td width="20%">{TXT_SHOP_YELLOWPAY_PSPID}</td>
               <td width="80%">
@@ -168,13 +168,13 @@ function deletePayment(pId)
               </td>
             </tr>
             <!-- OBSOLETE tr>
-              <td valign="top">{TXT_SHOP_ACCEPTED_PAYMENT_METHODS}</td>
+              <td>{TXT_SHOP_ACCEPTED_PAYMENT_METHODS}</td>
               <td>
                 {SHOP_YELLOWPAY_ACCEPTED_PAYMENT_METHODS_CHECKBOXES}
               </td>
             </tr-->
             <tr>
-              <td valign="top">{TXT_SHOP_YELLOWPAY_USE_TESTSERVER}</td>
+              <td>{TXT_SHOP_YELLOWPAY_USE_TESTSERVER}</td>
               <td>
                 <input id="postfinance_use_testserver" type="checkbox"
                   name="postfinance_use_testserver" value="1"
@@ -190,14 +190,14 @@ function deletePayment(pId)
       </td>
     </tr>
 
-    <tr valign="top" class="row1">
+    <tr class="row1">
       <td class="nowrap">{TXT_SHOP_POSTFINANCE_MOBILE}</td>
       <td class="nowrap">
         <label for="postfinance_mobile_swapper">{TXT_SHOP_EDIT}&nbsp;</label>
         <input name="postfinance_mobile_swapper" id="postfinance_mobile_swapper"
             type="checkbox" onclick="swapBlock('postfinance_mobile');" value="1" />&nbsp;
         <div id="postfinance_mobile" style="display: none;">
-          <table width="100%" summary="">
+          <table width="100%">
             <tr>
               <td width="20%">
                 {TXT_SHOP_POSTFINANCE_MOBILE_WEBUSER}
@@ -215,7 +215,7 @@ function deletePayment(pId)
               </td>
             </tr>
             <tr>
-              <td valign="top">
+              <td>
                 {TXT_SHOP_POSTFINANCE_MOBILE_IJUSTWANTTOTEST}
               </td>
               <td>
@@ -233,13 +233,13 @@ function deletePayment(pId)
       </td>
     </tr>
 
-    <tr valign="top" class="row2">
+    <tr class="row2">
       <td class="nowrap">{TXT_SHOP_DATATRANS}</td>
       <td class="nowrap">
         <label for="datatrans_swapper">{TXT_SHOP_EDIT}&nbsp;</label>
         <input name="datatrans_swapper" id="datatrans_swapper" type="checkbox" onclick="swapBlock('datatrans');" value="1" />&nbsp;
         <div id="datatrans" style="display:none;">
-          <table width="100%" summary="">
+          <table width="100%">
             <tr>
               <td width="20%">{TXT_SHOP_DATATRANS_MERCHANT_ID}</td>
               <td width="80%">
@@ -255,11 +255,11 @@ function deletePayment(pId)
               </td>
             </tr>
             <!--tr>
-              <td valign="top">{TXT_SHOP_ACCEPTED_PAYMENT_METHODS}</td>
+              <td>{TXT_SHOP_ACCEPTED_PAYMENT_METHODS}</td>
               <td>{SHOP_DATATRANS_ACCEPTED_PAYMENT_METHODS_CHECKBOXES}</td>
             </tr-->
             <tr>
-              <td valign="top">{TXT_SHOP_DATATRANS_USE_TESTSERVER}</td>
+              <td>{TXT_SHOP_DATATRANS_USE_TESTSERVER}</td>
               <td>
                 <input id="datatrans_use_testserver_yes" type="radio"
                   name="datatrans_use_testserver" value="1"{SHOP_DATATRANS_USE_TESTSERVER_YES_CHECKED} />
@@ -279,12 +279,12 @@ function deletePayment(pId)
       </td>
     </tr>
 
-    <tr valign="top" class="row1">
+    <tr class="row1">
       <td class="nowrap">{TXT_SAFERPAY}</td>
       <td class="nowrap"><label for="safperpay_swapper">{TXT_SHOP_EDIT}&nbsp;</label>
         <input name="safperpay_swapper" id="safperpay_swapper" type="checkbox" onclick="swapBlock('safperpay');" value="1" />&nbsp;
         <div id="safperpay" style="display:none;">
-          <table width="100%" summary="">
+          <table width="100%">
             <tr>
               <td width="20%">{TXT_ACCOUNT_ID}</td>
               <td width="80%">
@@ -320,12 +320,12 @@ function deletePayment(pId)
                {SHOP_SAFERPAY_STATUS} />
       </td>
     </tr>
-    <tr valign="top" class="row2">
+    <tr class="row2">
       <td>{TXT_PAYPAL}</td>
       <td><label for="paypal_swapper">{TXT_SHOP_EDIT}&nbsp;</label>
         <input name="paypal_swapper" id="paypal_swapper" type="checkbox" onclick="swapBlock('paypal');" value="1" />&nbsp;
         <div id="paypal" style="display:none;">
-          <table width="100%" summary="">
+          <table width="100%">
             <tr>
               <td width="20%">{TXT_PAYPAL_EMAIL_ACCOUNT}</td>
               <td width="80%">

@@ -71,6 +71,8 @@ class Attribute
      * The available Attribute types
      *
      * Listed in the dropdown menu in this order.
+     * Note that only types listed in this array are available for selecting
+     * in the shop backend!
      * Format is
      *  array(
      *    Type => Language entry postfix,

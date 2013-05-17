@@ -94,55 +94,55 @@ function updateExchangeRates(selectedElement)
 <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
     <tr>
       <th colspan="7" class="f_bold">{TXT_CURRENCIES}</th>
-      <th colspan="2" nowrap="nowrap" class="a_right">
+      <th colspan="2" class="a_right">
         <a href="http://www.xe.com/" target="_blank">{TXT_CURRENCY_CONVERTER}</a>
       </th>
       </tr>
     <tr class="row3">
-      <td width="05%" nowrap="nowrap" class="f_bold">{TXT_ID}&nbsp;</td>
-      <td width="10%" nowrap="nowrap" class="f_bold">{TXT_CODE}&nbsp;</td>
-      <td width="10%" nowrap="nowrap" class="f_bold">{TXT_SYMBOL}&nbsp;</td>
-      <td width="20%" nowrap="nowrap" class="f_bold">{TXT_NAME}</td>
-      <td width="15%" nowrap="nowrap" class="a_right f_bold">{TXT_RATE}</td>
-      <td width="10%" nowrap="nowrap" class="a_right f_bold">{TXT_SHOP_CURRENCY_INCREMENT}</td>
-      <td width="10%" nowrap="nowrap" class="a_center f_bold">{TXT_STANDARD}</td>
-      <td width="05%" nowrap="nowrap" class="a_center f_bold">{TXT_ACTIVE}</td>
-      <td width="02%" nowrap="nowrap" class="a_right f_bold">{TXT_FUNCTIONS}</td>
+      <td width="05%" class="f_bold">{TXT_ID}&nbsp;</td>
+      <td width="10%" class="f_bold">{TXT_CODE}&nbsp;</td>
+      <td width="10%" class="f_bold">{TXT_SYMBOL}&nbsp;</td>
+      <td width="20%" class="f_bold">{TXT_NAME}</td>
+      <td width="15%" class="a_right f_bold">{TXT_RATE}</td>
+      <td width="10%" class="a_right f_bold">{TXT_SHOP_CURRENCY_INCREMENT}</td>
+      <td width="10%" class="a_center f_bold">{TXT_STANDARD}</td>
+      <td width="05%" class="a_center f_bold">{TXT_ACTIVE}</td>
+      <td width="02%" class="a_right f_bold">{TXT_FUNCTIONS}</td>
     </tr>
 <!-- BEGIN shopCurrency -->
     <tr class="{SHOP_CURRENCY_STYLE}">
-      <td nowrap="nowrap">{SHOP_CURRENCY_ID}</td>
-      <td nowrap="nowrap">
+      <td>{SHOP_CURRENCY_ID}</td>
+      <td>
         <input name="currencyCode[{SHOP_CURRENCY_ID}]" type="text"
             value="{SHOP_CURRENCY_CODE}" size="10" maxlength="3" />
       </td>
-      <td nowrap="nowrap">
+      <td>
         <input name="currencySymbol[{SHOP_CURRENCY_ID}]"
             type="text" value="{SHOP_CURRENCY_SYMBOL}" size="10" maxlength="20" />
       </td>
-      <td nowrap="nowrap">
+      <td>
         <input type="text" name="currencyName[{SHOP_CURRENCY_ID}]"
             value="{SHOP_CURRENCY_NAME}" style="width: 340px;" maxlength="255" />
       </td>
-      <td nowrap="nowrap" class="a_right">
+      <td class="a_right">
         <input type="text" name="currencyRate[{SHOP_CURRENCY_ID}]"
                class="a_right"
                value="{SHOP_CURRENCY_RATE}" size="6" maxlength="11" />
       </td>
-      <td nowrap="nowrap" class="a_right">
+      <td class="a_right">
         <input type="text" name="currencyIncrement[{SHOP_CURRENCY_ID}]"
                class="a_right"
                value="{SHOP_CURRENCY_INCREMENT}" size="4" maxlength="7" />
       </td>
-      <td nowrap="nowrap" class="a_center">
+      <td class="a_center">
         <input name="currencyDefault" type="radio" value="{SHOP_CURRENCY_ID}"
             {SHOP_CURRENCY_STANDARD} onchange="updateExchangeRates(this)" />
       </td>
-      <td nowrap="nowrap" class="a_center">
+      <td class="a_center">
         <input type="checkbox" name="currencyActive[{SHOP_CURRENCY_ID}]"
             value="1" {SHOP_CURRENCY_ACTIVE} />
       </td>
-      <td nowrap="nowrap" class="a_right">
+      <td class="a_right">
         <a href="javascript:deleteCurrency('{SHOP_CURRENCY_ID}')" title="{TXT_DELETE}">
           <img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" />
         </a>
@@ -160,47 +160,47 @@ function updateExchangeRates(selectedElement)
 <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
     <tr>
       <th colspan="6" class="f_bold">{TXT_ADD}</th>
-      <th colspan="2" nowrap="nowrap" class="number">
+      <th colspan="2" class="number">
         <a href="http://www.xe.com/" target="_blank">{TXT_CURRENCY_CONVERTER}</a>
       </th>
     </tr>
     <tr class="row1">
-      <td width="05%" nowrap="nowrap" class="f_bold">{TXT_ID}&nbsp;</td>
-      <td width="20%" nowrap="nowrap" class="f_bold">{TXT_CODE}&nbsp;</td>
-      <td width="10%" nowrap="nowrap" class="f_bold">{TXT_SYMBOL}&nbsp;</td>
-      <td width="20%" nowrap="nowrap" class="f_bold">{TXT_NAME}</td>
-      <td width="15%" nowrap="nowrap" class="a_right f_bold">{TXT_RATE}</td>
-      <td width="10%" nowrap="nowrap" class="a_right f_bold">{TXT_SHOP_CURRENCY_INCREMENT}</td>
-      <td width="10%" nowrap="nowrap" class="a_center f_bold">{TXT_STANDARD}</td>
-      <td width="05%" nowrap="nowrap" class="a_center f_bold">{TXT_ACTIVE}</td>
+      <td width="05%" class="f_bold">{TXT_ID}&nbsp;</td>
+      <td width="20%" class="f_bold">{TXT_CODE}&nbsp;</td>
+      <td width="10%" class="f_bold">{TXT_SYMBOL}&nbsp;</td>
+      <td width="20%" class="f_bold">{TXT_NAME}</td>
+      <td width="15%" class="a_right f_bold">{TXT_RATE}</td>
+      <td width="10%" class="a_right f_bold">{TXT_SHOP_CURRENCY_INCREMENT}</td>
+      <td width="10%" class="a_center f_bold">{TXT_STANDARD}</td>
+      <td width="05%" class="a_center f_bold">{TXT_ACTIVE}</td>
     </tr>
     <tr class="row2">
-      <td nowrap="nowrap">N/A</td>
-      <td nowrap="nowrap">
+      <td>N/A</td>
+      <td>
         <select name="currencyCodeNew" onchange="updateCurrencyCode(this)" style="width: 430px;">
           {SHOP_CURRENCY_NAME_MENUOPTIONS}
         </select>
       </td>
-      <td nowrap="nowrap">
+      <td>
         <input name="currencySymbolNew" id="currencySymbolNew" type="text" value="" size="10" maxlength="20" />
       </td>
-      <td nowrap="nowrap">
+      <td>
         <input type="text" name="currencyNameNew" id="currencyNameNew" value=""
                style="width: 430px;" maxlength="255" />
       </td>
-      <td nowrap="nowrap" class="a_right">
+      <td class="a_right">
         <input type="text" name="currencyRateNew" value="1.0000"
                class="a_right" size="6" maxlength="11" />
       </td>
-      <td nowrap="nowrap" class="a_right">
+      <td class="a_right">
         <input type="text"
                name="currencyIncrementNew" id="currencyIncrementNew"
                class="a_right" value="0.01" size="4" maxlength="7" />
       </td>
-      <td nowrap="nowrap" class="a_center">
+      <td class="a_center">
         <input type="checkbox" name="currencyDefaultNew" value="1" />
       </td>
-      <td nowrap="nowrap" class="a_center">
+      <td class="a_center">
         <input type="checkbox" name="currencyActiveNew" value="1" checked="checked" />
       </td>
     </tr>
