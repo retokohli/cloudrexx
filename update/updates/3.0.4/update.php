@@ -60,6 +60,24 @@ function executeContrexxUpdate() {
                 'captcha',
             ),
         ),
+
+        // Media archives
+        'media1'        => array(
+            'version'       => '3.0.0.0',
+            'dependencies'  => array (),
+        ),
+        'media2'        => array(
+            'version'       => '3.0.0.0',
+            'dependencies'  => array (),
+        ),
+        'media3'        => array(
+            'version'       => '3.0.0.0',
+            'dependencies'  => array (),
+        ),
+        'media4'        => array(
+            'version'       => '3.0.0.0',
+            'dependencies'  => array (),
+        ),
     );
 
     $_SESSION['contrexx_update']['copyFilesFinished'] = !empty($_SESSION['contrexx_update']['copyFilesFinished']) ? $_SESSION['contrexx_update']['copyFilesFinished'] : false;
