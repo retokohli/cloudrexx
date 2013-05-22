@@ -346,11 +346,20 @@ class JsonNode implements JsonAdapter {
             }
             $last_resort = 0;
 
+            $numberOfPages = 0;
+            /**
+             * I (<michael.ritter@comvation.com> cannot recall the reason why to
+             * get alias pages too but I think there was one (probably not a nice one)
+             * @todo Write unit tests for CM then try $node->getPages()
+             * if the above is done do the following too
+             * @todo Replace $numberOfPages by $pages = $node->getPages(), then just count them
+             */
             foreach ($node->getPages(false, true) as $page) {
                 // don't display aliases in cm's tree
                 if ($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS) {
                     continue 2;
                 }
+                $numberOfPages++;
 
                 $user = $page->getUpdatedBy();
                 $data[\FWLanguage::getLanguageCodeById($page->getLang())] = array(
@@ -403,6 +412,9 @@ class JsonNode implements JsonAdapter {
                     'publishing' => $publishingStatus,
                 );
                 $last_resort = \FWLanguage::getLanguageCodeById($page->getLang());
+            }
+            if ($numberOfPages == 0) {
+                continue;
             }
             
             foreach ($fallback_langs as $lang => $fallback) {
