@@ -95,7 +95,7 @@ class Permission
     {
         global $objDatabase;
 
-        return (bool) $objDatabase->Execute('INSERT INTO `'.DBPREFIX.'access_group_'.$type.'_ids` (`access_id`, `group_id`) VALUES ('.$accessId.', '.(is_array($groupId) ? implode('),('.$accessId.',', $groupId) : $groupId).')');
+        return (bool) $objDatabase->Execute('INSERT IGNORE INTO `'.DBPREFIX.'access_group_'.$type.'_ids` (`access_id`, `group_id`) VALUES ('.$accessId.', '.(is_array($groupId) ? implode('),('.$accessId.',', $groupId) : $groupId).')');
     }
 
     /**
