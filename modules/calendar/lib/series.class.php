@@ -141,6 +141,10 @@ class seriesManager
         $query = "
             SELECT cal.id, cal.catid, cal.name, cal.comment, cal.pic,
                    cal.startdate, cal.priority, cal.enddate, cal.placeName,
+                   cal.link, cal.attachment,
+                   cal.placeStreet, cal.placeZip, cal.placeCity, cal.placeLink, cal.placeMap,
+                   cal.organizerName, cal.organizerStreet, cal.organizerPlace, cal.organizerZip,
+                   cal.organizerLink, cal.organizerMail,
                    cal.access, cal.series_status, cal.series_type,
                    cal.series_pattern_count, cal.series_pattern_weekday,
                    cal.series_pattern_day, cal.series_pattern_week,
@@ -160,12 +164,25 @@ class seriesManager
                     $tmpArray = array();
                     $tmpArray['id']             = $objResult->fields['id'];
                     $tmpArray['name']           = $objResult->fields['name'];
+                    $tmpArray['startdate']      = $objResult->fields['startdate'];
+                    $tmpArray['enddate']        = $objResult->fields['enddate'];
+                    $tmpArray['link']           = $objResult->fields['link'];
+                    $tmpArray['attachment']     = $objResult->fields['attachment'];
                     $tmpArray['pic']            = $objResult->fields['pic'];
                     $tmpArray['comment']        = $objResult->fields['comment'];
                     $tmpArray['priority']       = $objResult->fields['priority'];
                     $tmpArray['placeName']      = $objResult->fields['placeName'];
-                    $tmpArray['startdate']      = $objResult->fields['startdate'];
-                    $tmpArray['enddate']        = $objResult->fields['enddate'];
+                    $tmpArray['placeStreet']    = $objResult->fields['placeStreet'];
+                    $tmpArray['placeZip']       = $objResult->fields['placeZip'];
+                    $tmpArray['placeCity']      = $objResult->fields['placeCity'];
+                    $tmpArray['placeLink']      = $objResult->fields['placeLink'];
+                    $tmpArray['placeMap']       = $objResult->fields['placeMap'];
+                    $tmpArray['organizerName']  = $objResult->fields['organizerName'];
+                    $tmpArray['organizerStreet']= $objResult->fields['organizerStreet'];
+                    $tmpArray['organizerZip']   = $objResult->fields['organizerZip'];
+                    $tmpArray['organizerPlace'] = $objResult->fields['organizerPlace'];
+                    $tmpArray['organizerLink']  = $objResult->fields['organizerLink'];
+                    $tmpArray['organizerMail']  = $objResult->fields['organizerMail'];
                     $tmpArray['access']         = $objResult->fields['access'];
                     $tmpArray['series_status']  = $objResult->fields['series_status'];
                     $tmpArray['catid']          = $objResult->fields['catid'];

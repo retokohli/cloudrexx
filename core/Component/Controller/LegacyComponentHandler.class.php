@@ -995,27 +995,6 @@ class LegacyComponentHandler {
                             }
                         }
                     },
-                    'Calendar' => function() {
-                        global $calendarCheck1, $calendarCheck2, $objTemplate, $objHomeCalendar, $cl;
-
-                        // Calendar
-                        // print_r($objTemplate->getPlaceholderList());
-                        if (MODULE_INDEX < 2) {
-                            $calendarCheck1 = $objTemplate->placeholderExists('CALENDAR');
-                            $calendarCheck2 = $objTemplate->placeholderExists('CALENDAR_EVENTS');
-                            if (   ($calendarCheck1 || $calendarCheck2)
-                                /** @ignore */
-                                && $cl->loadFile(ASCMS_MODULE_PATH.'/calendar/HomeCalendar.class.php')) {
-                                $objHomeCalendar = new HomeCalendar();
-                                if (!empty($calendarCheck1)) {
-                                    $objTemplate->setVariable('CALENDAR', $objHomeCalendar->getHomeCalendar());
-                                }
-                                if (!empty($calendarCheck2)) {
-                                    $objTemplate->setVariable('CALENDAR_EVENTS', $objHomeCalendar->getHomeCalendarEvents());
-                                }
-                            }
-                        }
-                    },
                     'Directory' => function() {
                         global $directoryCheck, $objTemplate, $cl, $objDirectory, $_CORELANG;
 

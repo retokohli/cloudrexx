@@ -1027,22 +1027,26 @@ class calendarLibrary
         // parse to template
         $this->_objTpl->setVariable(array(
             'CALENDAR_ID'                    => $objResultNote->fields['id'],
-            'CALENDAR_TITLE'                 => htmlentities($objResultNote->fields['name'], ENT_QUOTES, CONTREXX_CHARSET),
+            'CALENDAR_TITLE'                 => contrexx_raw2xhtml($objResultNote->fields['name']),
+            'CALENDAR_DESCRIPTION'           => $ed,
+            'CALENDAR_CATEGORIE'             => $catName,
+
             'CALENDAR_START'                 => date(ASCMS_DATE_FORMAT_DATETIME, $startdate),
             'CALENDAR_END'                   => date(ASCMS_DATE_FORMAT_DATETIME, $enddate),
             'CALENDAR_START_SHOW'            => date(ASCMS_DATE_FORMAT_DATE, $startdate),
             'CALENDAR_END_SHOW'              => date(ASCMS_DATE_FORMAT_DATE, $enddate),
             'CALENDAR_START_TIME'            => date("H:i", $startdate),
             'CALENDAR_END_TIME'              => date("H:i", $enddate),
+
             'CALENDAR_LINK'                  => $objResultNote->fields['link'] != '' ? "<a href='".$objResultNote->fields['link']."' target='_blank' >".$objResultNote->fields['link']."</a>" : "",
             'CALENDAR_LINK_SOURCE'           => $objResultNote->fields['link'],
-            'CALENDAR_PIC_THUMBNAIL'         => $objResultNote->fields['pic'] != '' ? "<img src='".$pic_thumb_name."' border='0' alt='".$objResultNote->fields['name']."' />" : "",
+
+            'CALENDAR_PIC_THUMBNAIL'         => $objResultNote->fields['pic'] != '' ? "<img src='".$pic_thumb_name."' border='0' alt='".contrexx_raw2xhtml($objResultNote->fields['name'])."' />" : "",
             'CALENDAR_PIC_SOURCE'            => $objResultNote->fields['pic'],
-            'CALENDAR_PIC'                   => $objResultNote->fields['pic'] != '' ? "<img src='".$objResultNote->fields['pic']."' border='0' alt='".$objResultNote->fields['name']."' />" : "",
+            'CALENDAR_PIC'                   => $objResultNote->fields['pic'] != '' ? "<img src='".$objResultNote->fields['pic']."' border='0' alt='".contrexx_raw2xhtml($objResultNote->fields['name'])."' />" : "",
+
             'CALENDAR_SOURCE_ATTACHMENT'     => $objResultNote->fields['attachment'],
             'CALENDAR_ATTACHMENT'            => $objResultNote->fields['attachment'] != '' ? "<a href='".$objResultNote->fields['attachment']."' target='_blank' >".$attachName."</a>" : "",
-            'CALENDAR_DESCRIPTION'           => $ed,
-            'CALENDAR_ACTIVE'                => $active,
 
             'CALENDAR_PLACE'                 => htmlentities($objResultNote->fields['placeName'], ENT_QUOTES, CONTREXX_CHARSET),
             'CALENDAR_PLACE_STREET_NR'       => htmlentities($objResultNote->fields['placeStreet'], ENT_QUOTES, CONTREXX_CHARSET),
@@ -1063,25 +1067,32 @@ class calendarLibrary
             'CALENDAR_ORGANIZER_MAIL_SOURCE' => htmlentities($objResultNote->fields['organizerMail'], ENT_QUOTES, CONTREXX_CHARSET),
             'CALENDAR_ORGANIZER_MAIL'        => $objResultNote->fields['organizerMail'] != '' ? "<a href='mailto:".$objResultNote->fields['organizerMail']."' >".$objResultNote->fields['organizerMail']."</a>" : "",
 
-
-            'CALENDAR_ACCESS_PUBLIC'         => $public,
-            'CALENDAR_ACCESS_COMMUNITY'      => $community,
             'CALENDAR_ACCESS'                => $access,
             'CALENDAR_PRIORITY'              => $priority,
             'CALENDAR_PRIORITY_IMG'          => $priorityImg,
+
+            // those variables are only available on section=calendar&cmd=event
+            'CALENDAR_EVENT_COUNT_REG'                      => $reg_signoff[0],
+            'CALENDAR_EVENT_COUNT_SIGNOFF'                  => $reg_signoff[1],
+            'CALENDAR_EVENT_COUNT_SUBSCRIBER'               => $this->_countSubscriber($objResultNote->fields['id']),
+            'CALENDAR_REGISTRATIONS_SUBSCRIBER'             => $objResultNote->fields['num'],
+
+            /////////////////////////////////////////////
+            // EDIT ONLY
+            /////////////////////////////////////////////
+            // this very placeholder is backend only
+            'CALENDAR_ACTUALL_BOXES'         => $calendarbox,
+
+            'CALENDAR_ACTIVE'                => $active,
+            'CALENDAR_ACCESS_PUBLIC'         => $public,
+            'CALENDAR_ACCESS_COMMUNITY'      => $community,
+
             'CALENDAR_PRIORITY_VERY_HEIGHT'  => (isset($veryHeight)) ? $veryHeight : "",
             'CALENDAR_PRIORITY_HEIGHT'       => (isset($height)) ? $height : "",
             'CALENDAR_PRIORITY_NORMAL'       => (isset($normal)) ? $normal : "",
             'CALENDAR_PRIORITY_LOW'          => (isset($low)) ? $low : "",
             'CALENDAR_PRIORITY_VERY_LOW'     => (isset($veryLow)) ? $veryLow : "",
 
-            'CALENDAR_ACTUALL_BOXES'         => $calendarbox,
-            'CALENDAR_CATEGORIE'             => $catName,
-
-            'CALENDAR_EVENT_COUNT_REG'                      => $reg_signoff[0],
-            'CALENDAR_EVENT_COUNT_SIGNOFF'                  => $reg_signoff[1],
-            'CALENDAR_EVENT_COUNT_SUBSCRIBER'               => $this->_countSubscriber($objResultNote->fields['id']),
-            'CALENDAR_REGISTRATIONS_SUBSCRIBER'             => $objResultNote->fields['num'],
             'CALENDAR_REGISTRATIONS_ACTIVATED'              => $registrationsActivated,
             'CALENDAR_REGISTRATIONS_ADDRESSER_ALL'          => $registrationsAddresserAll,
             'CALENDAR_REGISTRATIONS_ADDRESSER_ALL_USER'     => $registrationsAddresserAllUser,
