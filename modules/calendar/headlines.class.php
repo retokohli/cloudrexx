@@ -85,7 +85,7 @@ class calHeadlines extends calendarLibrary
             $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('calendar'));
         }
 
-        $this->_objTemplate->setTemplate($this->_pageContent,true,true);
+        $this->_objTpl->setTemplate($this->_pageContent,true,true);
 
         if ($_CONFIG['calendarheadlines']) {
             if (!empty($this->eventList)) {
@@ -137,7 +137,7 @@ class calHeadlines extends calendarLibrary
                     $attachNamelength = strlen($array['attachment']);
                     $attachName       = substr($array['attachment'], $attachNamePos+1, $attachNamelength);
 
-                    $this->_objTemplate->setVariable(array(
+                    $this->_objTpl->setVariable(array(
                         'CALENDAR_EVENT_ROW'                  => (++$i % 2 ? 'row1' : 'row2'),
                         'CALENDAR_EVENT_DETAIL_LINK'          => $link,
 
@@ -211,11 +211,11 @@ class calHeadlines extends calendarLibrary
                         // alias for CALENDAR_EVENT_CATEGORY
                         'CALENDAR_EVENT_CATEGORIE'            => $this->getCategoryNameFromCategoryId($array['catid']), # backwards comp.
                     ));
-                    $this->_objTemplate->parse('calendar_headlines_row');
+                    $this->_objTpl->parse('calendar_headlines_row');
                 }
             }
         } else {
-            $this->_objTemplate->hideBlock('calendar_headlines_row');
+            $this->_objTpl->hideBlock('calendar_headlines_row');
         }
     }
     
