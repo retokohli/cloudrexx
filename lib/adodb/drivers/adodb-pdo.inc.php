@@ -198,7 +198,7 @@ class ADODB_pdo extends ADOConnection {
 		$save = $this->_driver->fetchMode;
 		$this->_driver->fetchMode = $this->fetchMode;
 	 	$this->_driver->debug = $this->debug;
-		$ret = $this->_driver->SelectLimit($sql,$nrows,$offset,$inputarr,$secs2cache);
+		$ret = $this->_driver->SelectLimit($sql,$nrows,(integer)$offset,$inputarr,$secs2cache);
 		$this->_driver->fetchMode = $save;
 		return $ret;
 	}
@@ -366,7 +366,9 @@ class ADODB_pdo extends ADOConnection {
 		#adodb_backtrace();
 		#var_dump($this->_bindInputArray);
 		if ($stmt) {
-			$this->_driver->debug = $this->debug;
+            if (isset($this->_driver)) {
+			    $this->_driver->debug = $this->debug;
+            }
 			if ($inputarr) $ok = $stmt->execute($inputarr);
 			else $ok = $stmt->execute();
 		} 
