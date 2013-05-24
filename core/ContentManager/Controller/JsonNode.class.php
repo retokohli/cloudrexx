@@ -239,20 +239,38 @@ class JsonNode implements JsonAdapter {
         }
         
         $node = $this->nodeRepo->find($arguments['post']['id']);
+        if (!$node) {
+            return array(
+                'action'                => 'delete',
+                'deletedCurrentPage'    => false,
+            );
+        }
         
         // explicit recursive delete in order to ensure logs get written
         $toDelete = array($node);
         while (count($toDelete)) {
+            $childNodes = array();
             $currentNode = array_pop($toDelete);
-            // if we removed this node already, all subnodes are removed too, so skip
-            if (in_array($currentNode->getId(), $this->deleteBuffer)) {
-                break;
+
+            // if we queued this node already, all subnodes have been queued too already, so skip
+            if (!in_array($currentNode->getId(), $this->deleteBuffer)) {
+                $childNodes = $currentNode->getChildren();
+                $this->deleteBuffer[] = $currentNode->getId();
             }
-            foreach ($currentNode->getChildren() as $child) {
-                array_push($toDelete, $child);
+
+            if (count($childNodes)) {
+                // Node has children -> re-queue node for removal.
+                // It will be removed after its children have been removed
+                array_push($toDelete, $currentNode);
+
+                // queue children to be removed
+                foreach ($childNodes as $child) {
+                    array_push($toDelete, $child);
+                }
+
+            } else {
+                $this->em->remove($currentNode);
             }
-            $this->deleteBuffer[] = $currentNode->getId();
-            $this->em->remove($currentNode);
         }
         if ($flush) {
             $this->em->flush();
@@ -260,7 +278,7 @@ class JsonNode implements JsonAdapter {
         }
         return array(
             'action'                => 'delete',
-            'deletedCurrentPage'    => ($arguments['post']['currentNodeId'] == $arguments['post']['id']),
+            'deletedCurrentPage'    => (isset($arguments['post']['currentNodeId']) && $arguments['post']['currentNodeId'] == $arguments['post']['id']),
         );
     }
     
