@@ -1,10 +1,35 @@
 <?php
 
+/**
+ * UpdateUtil
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_framework
+ */
+
 namespace Cx\Lib;
 
+/**
+ * UpdateException
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_framework
+ */
 class UpdateException extends \Exception {};
 
 
+/**
+ * Update_DatabaseException
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_framework
+ */
 class Update_DatabaseException extends UpdateException {
     public $sql;
 
@@ -14,7 +39,14 @@ class Update_DatabaseException extends UpdateException {
     }
 }
 
-
+/**
+ * UpdateUtil
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_framework
+ */
 class UpdateUtil
 {
     /**
@@ -132,6 +164,8 @@ class UpdateUtil
     private static function create_table($name, $struc, $idx, $engine,
         $comment='')
     {
+        global $_DBCONFIG;
+
         // create table statement
         $cols = array();
         foreach ($struc as $col => $spec) {
@@ -140,10 +174,12 @@ class UpdateUtil
         $colspec    = join(",\n", $cols);
         $primaries  = join("`,\n`", self::_getprimaries($struc));
         $comment    = !empty($comment) ? ' COMMENT="'.$comment.'"' : '';
+        $charset    = ' DEFAULT CHARACTER SET '.$_DBCONFIG['charset'].' COLLATE '.$_DBCONFIG['collation'];
+
         $table_stmt = "CREATE TABLE `$name`(
             $colspec".(!empty($primaries) ? ",
             PRIMARY KEY (`$primaries`)" : '')."
-        ) ENGINE=$engine$comment";
+        ) ENGINE=$engine$charset$comment";
 
         self::sql($table_stmt);
         // index statements. as we just created the table
@@ -318,7 +354,7 @@ class UpdateUtil
         $default = isset($spec['default']) ? $spec['default'] : (isset($spec['default_expr']) ? $spec['default_expr'] : '');
         if ($type != strtolower($spec['type'])
             || $col_spec->unsigned != (isset($spec['unsigned']) && $spec['unsigned'])
-            || $col_spec->zerofill != (isset($spec['zerofill']) && $spec['zerofill'])
+            || (isset($col_spec->zerofill) && $col_spec->zerofill) != (isset($spec['zerofill']) && $spec['zerofill'])
             || $col_spec->not_null != (!isset($spec['notnull']) || $spec['notnull'])
             || $col_spec->has_default != (isset($spec['default']) || isset($spec['default_expr']))
             || $col_spec->has_default && ($col_spec->default_value != $default)
