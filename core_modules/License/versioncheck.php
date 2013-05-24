@@ -15,8 +15,9 @@ if (!class_exists("DBG")) {
     require_once($documentRoot.'/lib/FRAMEWORK/DBG/DBG.php');
 }
 //DBG::activate(DBG_ERROR_FIREPHP);
-require_once($documentRoot.'/config/settings.php');              // needed for configuration.php
 require_once($documentRoot.'/config/configuration.php');         // needed for API
+require_once($documentRoot.'/config/settings.php');
+require_once($documentRoot.'/config/set_constants.php');
 require_once($documentRoot.'/core/validator.inc.php');
 
 $customizing = null;
