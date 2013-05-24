@@ -77,14 +77,15 @@ class UpdateUtil
      *                                     # are duplicates (which will be dropped). use with care.
      *        )
      */
-    public static function table($name, $struc, $idx = array(), $engine = 'MyISAM')
+    public static function table($name, $struc, $idx=array(), $engine='MyISAM',
+        $comment='')
     {
         if (self::table_exist($name)) {
             self::check_columns($name, $struc);
             self::check_indexes($name, $idx, $struc);
             self::check_dbtype($name, $engine);
         } else {
-            self::create_table($name, $struc, $idx, $engine);
+            self::create_table($name, $struc, $idx, $engine, $comment);
         }
     }
 
@@ -108,9 +109,26 @@ class UpdateUtil
 
         $col_info = $objDatabase->MetaColumns($name);
         if ($col_info === false) {
-            throw new UpdateException(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], $name));
+            throw new UpdateException(sprintf(
+                $_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'],
+                $name));
         }
         return isset($col_info[strtoupper($col)]);
+    }
+
+
+    public static function check_column_type($name, $col, $type)
+    {
+        global $objDatabase, $_ARRAYLANG;
+
+        $col_info = $objDatabase->MetaColumns($name);
+        if ($col_info === false) {
+            throw new UpdateException(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], $name));
+        }
+        if (!isset($col_info[strtoupper($col)])) {
+            throw new UpdateException(sprintf('Column %s does not exist!', $name.'.'.$col));
+        }
+        return $col_info[strtoupper($col)]->type == $type;
     }
 
 
@@ -120,7 +138,9 @@ class UpdateUtil
 
         $tableinfo = $objDatabase->MetaTables();
         if ($tableinfo === false) {
-            throw new UpdateException(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], $name));
+            throw new UpdateException(sprintf(
+                $_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'],
+                $name));
         }
         return in_array($name, $tableinfo);
     }
@@ -141,9 +161,10 @@ class UpdateUtil
     }
 
 
-    private static function create_table($name, $struc, $idx, $engine)
+    private static function create_table($name, $struc, $idx, $engine,
+        $comment='')
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_DBCONFIG;
 
         // create table statement
         $cols = array();
@@ -151,12 +172,14 @@ class UpdateUtil
             $cols[] = "`$col` ". self::_colspec($spec, true);
         }
         $colspec    = join(",\n", $cols);
-        $primaries  = join(",\n", self::_getprimaries($struc));
+        $primaries  = join("`,\n`", self::_getprimaries($struc));
+        $comment    = !empty($comment) ? ' COMMENT="'.$comment.'"' : '';
+        $charset    = ' DEFAULT CHARACTER SET '.$_DBCONFIG['charset'].' COLLATE '.$_DBCONFIG['collation'];
 
         $table_stmt = "CREATE TABLE `$name`(
             $colspec".(!empty($primaries) ? ",
-            PRIMARY KEY ($primaries)" : '')."
-        ) ENGINE=$engine";
+            PRIMARY KEY (`$primaries`)" : '')."
+        ) ENGINE=$engine$charset$comment";
 
         self::sql($table_stmt);
         // index statements. as we just created the table
@@ -234,7 +257,7 @@ class UpdateUtil
      * @global  ADOConnection   $objDatabase
      * @param   string          $statement      The query string
      * @param   array           $inputarray     The optional query parameters
-     * @return  ADORecordset
+     * @return  \ADORecordset
      */
     public static function sql($statement, $inputarray=null)
     {
@@ -283,8 +306,6 @@ class UpdateUtil
 
     private static function _drop_unspecified_columns($name, $struc, $col_info)
     {
-        global $objDatabase;
-
         foreach (array_keys($col_info) as $col) {
             // we have to do a stupid loop here as we don't know
             // the exact case of the name in $spec ;(
@@ -310,8 +331,6 @@ class UpdateUtil
      */
     private static function _check_column($name, $col_info, $col, $spec)
     {
-        global $objDatabase;
-
         if (!isset($col_info[strtoupper($col)])) {
             $colspec = self::_colspec($spec);
             $query = '';
@@ -335,7 +354,7 @@ class UpdateUtil
         $default = isset($spec['default']) ? $spec['default'] : (isset($spec['default_expr']) ? $spec['default_expr'] : '');
         if ($type != strtolower($spec['type'])
             || $col_spec->unsigned != (isset($spec['unsigned']) && $spec['unsigned'])
-            || $col_spec->zerofill != (isset($spec['zerofill']) && $spec['zerofill'])
+            || (isset($col_spec->zerofill) && $col_spec->zerofill) != (isset($spec['zerofill']) && $spec['zerofill'])
             || $col_spec->not_null != (!isset($spec['notnull']) || $spec['notnull'])
             || $col_spec->has_default != (isset($spec['default']) || isset($spec['default_expr']))
             || $col_spec->has_default && ($col_spec->default_value != $default)
@@ -423,10 +442,12 @@ class UpdateUtil
         }
 
         // create new keys
-        foreach ($idx as $keyname => $spec) {
-            if (!array_key_exists('exists', $spec)) {
-                $new_st = self::_keyspec($name, $keyname, $spec);
-                self::sql($new_st);
+        if (is_array($idx)) {
+            foreach ($idx as $keyname => $spec) {
+                if (!array_key_exists('exists', $spec)) {
+                    $new_st = self::_keyspec($name, $keyname, $spec);
+                    self::sql($new_st);
+                }
             }
         }
         // okay, that's it, have a nice day!
@@ -499,7 +520,7 @@ class UpdateUtil
         $descr .= $binary ? " BINARY" : '';
         $descr .= $unsigned ? " unsigned"      : '';
         $descr .= $zerofill ? " zerofill"      : '';
-        $descr .= $notnull ? " NOT NULL"       : '';
+        $descr .= $notnull ? " NOT NULL"       : ' NULL';
         $descr .= $autoinc ? " auto_increment" : '';
         $descr .= $default_st;
         $descr .= $on_update ? " ON UPDATE ".$on_update : '';
@@ -544,131 +565,176 @@ class UpdateUtil
      * specified by the module ID $moduleId and CMD $cmd.
      * If $cmd is set to NULL, the replacement will be done on every content
      * page of the specified module.
-     * $search and $replace can either be a single string or an array
-     * of strings.
-     * $changeVersion specifies the Contrexx version in which the replaced
+     * $search and $replace can either be a single string or an array of strings.
+     * $changeVersion specifies the Contrexx version in which the replacement
      * should take place. Latter means that the replace will only be done if
      * the installed Contrexx version is older than the one specified by
      * $changeVersion.
-     * @global  Contrexx_Update
-     * @global  Array
-     * @param   integer   $moduleId   Module ID
+     *
+     * @global  ContrexxUpdate     $objUpdate
+     * @global  Array               $_CONFIG
+     * @param   integer             $module           Module
      * @param   string    $cmd        CMD
      * @param   mixed     $search     Search string or array of strings
      * @param   mixed     $replace    Replacement string or array of strings
      * @param   string    $changeVersion  Contrexx version of the content page
      */
-    public static function migrateContentPage($moduleId, $cmd, $search,
-        $replace, $changeVersion)
+    public static function migrateContentPage($module, $cmd, $search, $replace, $changeVersion)
     {
         global $objUpdate, $_CONFIG;
 
         if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], $changeVersion)) {
-            $query = "
-                SELECT
-                    c.`id`,
-                    c.`content`,
-                    c.`title`,
-                    c.`metatitle`,
-                    c.`metadesc`,
-                    c.`metakeys`,
-                    c.`metarobots`,
-                    c.`css_name`,
-                    c.`redirect`,
-                    c.`expertmode`,
-                    n.`catid`,
-                    n.`is_validated`,
-                    n.`parcat`,
-                    n.`catname`,
-                    n.`target`,
-                    n.`displayorder`,
-                    n.`displaystatus`,
-                    n.`activestatus`,
-                    n.`cachingstatus`,
-                    n.`username`,
-                    n.`cmd`,
-                    n.`lang`,
-                    n.`startdate`,
-                    n.`enddate`,
-                    n.`protected`,
-                    n.`frontend_access_id`,
-                    n.`backend_access_id`,
-                    n.`themes_id`,
-                    n.`css_name`
-                FROM `".DBPREFIX."content` AS c
-                INNER JOIN `".DBPREFIX."content_navigation` AS n ON n.`catid` = c.`id`
-                WHERE n.`module` = $moduleId ".($cmd === null ? '' : "AND n.`cmd` = '$cmd'")." AND n.`username` != 'contrexx_update_$changeVersion'";
-            $objContent = self::sql($query);
-// TODO: Unused
-//            $orig_loopy_query = $query;
-//            $arrFailedPages = array();
-            while (!$objContent->EOF) {
-                $newContent = str_replace(
-                    $search,
-                    $replace,
-                    $objContent->fields['content']
-                );
-                $query = "UPDATE `".DBPREFIX."content` AS c INNER JOIN `".DBPREFIX."content_navigation` AS n on n.`catid` = c.`id` SET `content` = '".addslashes($newContent)."', `username` = 'contrexx_update_$changeVersion' WHERE c.`id` = ".$objContent->fields['id'];
-                self::sql($query);
-
-                $query = "UPDATE `".DBPREFIX."content_navigation_history` SET `is_active` = '0' WHERE `catid` = ".$objContent->fields['id'];
-                self::sql($query);
-
-                $query = "
-                    INSERT INTO `".DBPREFIX."content_navigation_history`
-                    SET
-                        `is_active` = '1',
-                        `catid` = ".$objContent->fields['id'].",
-                        `parcat` = ".$objContent->fields['parcat'].",
-                        `catname` = '".addslashes($objContent->fields['catname'])."',
-                        `target` = '".$objContent->fields['target']."',
-                        `displayorder` = ".$objContent->fields['displayorder'].",
-                        `displaystatus` = '".$objContent->fields['displaystatus']."',
-                        `activestatus` = '".$objContent->fields['activestatus']."',
-                        `cachingstatus` = '".$objContent->fields['cachingstatus']."',
-                        `username` = 'contrexx_update_$changeVersion',
-                        `changelog` = ".time().",
-                        `cmd` = '".$objContent->fields['cmd']."',
-                        `lang` = ".$objContent->fields['lang'].",
-                        `module` = $moduleId,
-                        `startdate` = '".$objContent->fields['startdate']."',
-                        `enddate` = '".$objContent->fields['enddate']."',
-                        `protected` = ".$objContent->fields['protected'].",
-                        `frontend_access_id` = ".$objContent->fields['frontend_access_id'].",
-                        `backend_access_id` = ".$objContent->fields['backend_access_id'].",
-                        `themes_id` = ".$objContent->fields['themes_id'].",
-                        `css_name` = '".$objContent->fields['css_name']."'";
-                $historyId = self::insert($query);
-
-                $query = "
-                    INSERT INTO `".DBPREFIX."content_history`
-                    SET
-                        `id` = ".$historyId.",
-                        `page_id` = ".$objContent->fields['id'].",
-                        `content` = '".addslashes($newContent)."',
-                        `title` = '".addslashes($objContent->fields['title'])."',
-                        `metatitle` = '".addslashes($objContent->fields['metatitle'])."',
-                        `metadesc` = '".addslashes($objContent->fields['metadesc'])."',
-                        `metakeys` = '".addslashes($objContent->fields['metakeys'])."',
-                        `metarobots` = '".addslashes($objContent->fields['metarobots'])."',
-                        `css_name` = '".addslashes($objContent->fields['css_name'])."',
-                        `redirect` = '".addslashes($objContent->fields['redirect'])."',
-                        `expertmode` = '".$objContent->fields['expertmode']."'";
-                self::sql($query);
-
-                $query = "
-                    INSERT INTO	`".DBPREFIX."content_logfile`
-                    SET
-                        `action` = 'update',
-                        `history_id` = ".$historyId.",
-                        `is_validated` = '1'";
-                self::sql($query);
-
-                $objContent->MoveNext();
+            $em = \Env::em();
+            $allPages = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->getAllFromModuleCmdByLang($module, $cmd);
+            foreach ($allPages as $lang => $pages) {
+                foreach ($pages as $page) {
+                    if ($page) {
+                        $page->setContent(str_replace($search, $replace, $page->getContent()));
+                        $page->setUpdatedAtToNow();
+                        $em->persist($page);
+                    }
+                }
             }
+            $em->flush();
         }
     }
 
+    /**
+     * Replace certain data of a content page using regexp
+     *
+     * This method will do a preg_replace() on pages (filtered by $criteria) data specified by $subject using $pattern as PATTERN and $replacement as REPLACEMENT.
+     * Subject is either a string or an array referencing attributes of a page.
+     * The behaviour of $pattern and $replacement is exactly the same as implemented by preg_replace().
+     * $changeVersion specifies the Contrexx version in which the replacement
+     * should take place. Latter means that the replace will only be done if
+     * the installed Contrexx version is older than the one specified by
+     * $changeVersion.
+     *
+     * @global  ContrexxUpdate     $objUpdate
+     * @global  Array               $_CONFIG
+     * @param   Array               $criteria         Argument list to filter page objects. Will be passed to Cx\Core\ContentManager\Model\Repository\PageRepository->findBy()
+     * @param   mixed               $pattern          The pattern to search for. It can be either a string or an array with strings.
+     * @param   mixed               $replacement      The string or an array with strings (pattern) to replace
+     * @param   mixed               $subject          A string or array containing the name of an attribute of the page object
+     * @param   string              $changeVersion    Contrexx version of the content page
+     */
+    public static function migrateContentPageUsingRegex($criteria, $pattern, $replacement, $subject, $changeVersion)
+    {
+        global $objUpdate, $_CONFIG;
+
+        if (!is_array($subject)) {
+            $subject = array($subject);
+        }
+
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], $changeVersion)) {
+            $em = \Env::em();
+            $pages = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->findBy($criteria, true);
+            foreach ($pages as $page) {
+                if ($page) {
+                    if (!checkMemoryLimit()) {
+                        throw new UpdateException();
+                    }
+                    foreach ($subject as $pageAttribute) {
+                        try {
+                            // fetch attribute value
+                            $pageAttributeValue = call_user_func(array($page, "get".ucfirst($pageAttribute)));
+
+                            // apply replace on attribute
+                            $pageAttributeValueChanged = preg_replace($pattern, $replacement, $pageAttributeValue);
+
+                            if (   $pageAttributeValueChanged !== null
+                                && $pageAttributeValueChanged != $pageAttributeValue
+                            ) {
+                                call_user_func(array($page, "set".ucfirst($pageAttribute)), $pageAttributeValueChanged);
+                                $page->setUpdatedAtToNow();
+                                $em->persist($page);
+                            }
+                        }
+                        catch (\Exception $e) {
+                            \DBG::log("Migrating page failed: ".$e->getMessage());
+                            throw new UpdateException('Bei der Migration einer Inhaltsseite trat ein Fehler auf! '.$e->getMessage());
+                        }
+                    }
+                }
+            }
+            $em->flush();
+        }
+    }
+
+    /**
+     * Replace content using preg_replace_callback()
+     * @todo    Add proper docblock
+     */
+    public static function migrateContentPageUsingRegexCallback($criteria, $pattern, $callback, $subject, $changeVersion)
+    {
+        global $objUpdate, $_CONFIG;
+
+        if (!is_array($subject)) {
+            $subject = array($subject);
+        }
+
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], $changeVersion)) {
+            $em = \Env::em();
+            $pages = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->findBy($criteria, true);
+            foreach ($pages as $page) {
+                if ($page) {
+                    if (!checkMemoryLimit()) {
+                        throw new UpdateException();
+                    }
+                    foreach ($subject as $pageAttribute) {
+                        try {
+                            // fetch attribute value
+                            $pageAttributeValue = call_user_func(array($page, "get".ucfirst($pageAttribute)));
+
+                            // apply replace on attribute
+                            $pageAttributeValueChanged = preg_replace_callback($pattern, $callback, $pageAttributeValue);
+
+                            if (   $pageAttributeValueChanged !== null
+                                && $pageAttributeValueChanged != $pageAttributeValue
+                            ) {
+                                call_user_func(array($page, "set".ucfirst($pageAttribute)), $pageAttributeValueChanged);
+                                $page->setUpdatedAtToNow();
+                                $em->persist($page);
+                            }
+                        }
+                        catch (\Exception $e) {
+                            \DBG::log("Migrating page failed: ".$e->getMessage());
+                            throw new UpdateException('Bei der Migration einer Inhaltsseite trat ein Fehler auf! '.$e->getMessage());
+                        }
+                    }
+                }
+            }
+            $em->flush();
+        }
+    }
+
+    public static function setSourceModeOnContentPage($criteria, $changeVersion)
+    {
+        global $objUpdate, $_CONFIG;
+
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], $changeVersion)) {
+            $em = \Env::em();
+            $pages = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->findBy($criteria, true);
+            foreach ($pages as $page) {
+                if ($page) {
+                    if (!checkMemoryLimit()) {
+                        throw new UpdateException();
+                    }
+                    try {
+                        // set source mode to content page
+                        $page->setSourceMode(true);
+                        $page->setUpdatedAtToNow();
+                        $em->persist($page);
+                    }
+                    catch (\Exception $e) {
+                        \DBG::log("Setting source mode to page failed: ".$e->getMessage());
+                        throw new UpdateException('Bei der Migration einer Inhaltsseite trat ein Fehler auf! '.$e->getMessage());
+                    }
+                }
+            }
+            $em->flush();
+        }
+    }
 
     public static function DefaultActionHandler($e)
     {
