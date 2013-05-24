@@ -342,27 +342,87 @@ JSCODE;
     	    		$yearEnd 	=  '&amp;yearEndID='.date("Y", $enddate);
             	}
 
+                if (strlen($array['comment']) > 100) {
+                    $points = '...';
+                } else {
+                    $points = '';
+                }
+                $parts= explode("\n", wordwrap($array['comment'], 100, "\n"));
+
                 $category 	= isset($_REQUEST['catid']) ? '&amp;catid='.intval($_REQUEST['catid']) : '';
             	$term 	    = isset($_REQUEST['keyword']) ? '&amp;keyword='.$_REQUEST['keyword'] : '';
 
 				$link = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=calendar&amp;cmd=event'.$year.$month.$day.$yearEnd.$monthEnd.$dayEnd.$term.$category.'&amp;id='.intval($key).'">'.htmlentities($array['name'], ENT_QUOTES, CONTREXX_CHARSET).'</a>';
 
+                $pic_thumb_name = ImageManager::getThumbnailFilename(
+                    $array['pic']);
+                $map_thumb_name = ImageManager::getThumbnailFilename(
+                    $array['placeMap']);
+
+                $arrInfo          = getimagesize(ASCMS_PATH.$array['placeMap']); //ermittelt die Gr��e des Bildes
+                $picWidth         = $arrInfo[0]+20;
+                $picHeight        = $arrInfo[1]+20;
+                $attachNamePos    = strrpos($array['attachment'], '/');
+                $attachNamelength = strlen($array['attachment']);
+                $attachName       = substr($array['attachment'], $attachNamePos+1, $attachNamelength);
+
 				$this->_objTpl->setVariable(array(
-					'CALENDAR_PRIORITY' 			=> $priority,
-					'CALENDAR_PRIORITY_IMG' 		=> $priorityImg,
-					'CALENDAR_PLACE' 				=> htmlentities($array['placeName'], ENT_QUOTES, CONTREXX_CHARSET),
-					'CALENDAR_TITLE' 				=> htmlentities($array['name'], ENT_QUOTES, CONTREXX_CHARSET),
+					'CALENDAR_ROW'	 				=> $i % 2 == 0 ? 'row1' : 'row2',
+					'CALENDAR_DETAIL_LINK'	 		=> $link,
+
+					'CALENDAR_ID'	 				=> intval($key),
+					'CALENDAR_TITLE' 				=> contrexx_raw2xhtml($array['name']),
+                    'CALENDAR_DESCRIPTION'          => $array['comment'],
+                    'CALENDAR_SHORT_DESCRIPTION'    => $parts[0].$points,
+                    'CALENDAR_CATEGORY'             => $this->getCategoryNameFromCategoryId($array['catid']), # cat name
+
 					'CALENDAR_START'		 		=> date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATE, $array['startdate']),
 					'CALENDAR_END'			 		=> date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATE, $array['enddate']),
 					'CALENDAR_START_SHOW'		 	=> date(ASCMS_DATE_FORMAT_DATE, $array['startdate']),
 					'CALENDAR_END_SHOW'			 	=> date(ASCMS_DATE_FORMAT_DATE, $array['enddate']),
+// this uses H:i:s!!! others only use H:i
 					'CALENDAR_START_TIME'		 	=> date(ASCMS_DATE_FORMAT_TIME, $array['startdate']),
 					'CALENDAR_END_TIME'			 	=> date(ASCMS_DATE_FORMAT_TIME, $array['enddate']),
-					"CALENDAR_ROW"	 				=> $i % 2 === 0 ? "row1" : "row2",
-					"CALENDAR_ID"	 				=> intval($key),
-					"CALENDAR_DETAIL_LINK"	 		=> $link,
-                    "CALENDAR_CATEGORIE"            => $this->getCategoryNameFromCategoryId($array['catid']), # backwards comp.
-                    "CALENDAR_CATEGORY"             => $this->getCategoryNameFromCategoryId($array['catid']), # cat name
+
+                    'CALENDAR_LINK'                 => $array['link'] != '' ? "<a href='".$array['link']."' target='_blank' >".$array['link']."</a>" : "",
+                    'CALENDAR_LINK_SOURCE'          => $array['link'],
+
+                    'CALENDAR_PIC_THUMBNAIL'        => $array['pic'] != '' ? "<img src='".$pic_thumb_name."' border='0' alt='".contrexx_raw2xhtml($array['name'])."' />" : "",
+                    'CALENDAR_PIC_SOURCE'           => $array['pic'],
+                    'CALENDAR_PIC'                  => $array['pic'] != '' ? "<img src='".$array['pic']."' border='0' alt='".contrexx_raw2xhtml($array['name'])."' />" : "",
+
+                    'CALENDAR_SOURCE_ATTACHMENT'    => $array['attachment'],
+                    'CALENDAR_ATTACHMENT'           => $array['attachment'] != '' ? "<a href='".$array['attachment']."' target='_blank' >".$attachName."</a>" : "",
+
+                    'CALENDAR_PLACE'                => htmlentities($array['placeName'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'CALENDAR_PLACE_STREET_NR'      => htmlentities($array['placeStreet'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'CALENDAR_PLACE_ZIP'            => htmlentities($array['placeZip'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'CALENDAR_PLACE_CITY'           => htmlentities($array['placeCity'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'CALENDAR_PLACE_LINK'           => $array['placeLink'] != '' ? "<a href='".$array['placeLink']."' target='_blank' >".$array['placeLink']."</a>" : "",
+                    'CALENDAR_PLACE_LINK_SOURCE'    => htmlentities($array['placeLink'], ENT_QUOTES, CONTREXX_CHARSET),
+                    'CALENDAR_PLACE_MAP_LINK'       => $array['placeMap'] != '' ? '<a href="'.$array['placeMap'].'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false">'.$_ARRAYLANG['TXT_CALENDAR_MAP'].'</a>' : "",
+                    'CALENDAR_PLACE_MAP_THUMBNAIL'  => $array['placeMap'] != '' ? '<a href="'.$array['placeMap'].'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false"><img src="'.$map_thumb_name.'" border="0" alt="'.$array['placeName'].'" /></a>' : "",
+                    'CALENDAR_PLACE_MAP_SOURCE'     => $array['placeMap'],
+
+                    'CALENDAR_ORGANIZER'             => contrexx_raw2xhtml($array['organizerName']),
+                    'CALENDAR_ORGANIZER_STREET_NR'   => contrexx_raw2xhtml($array['organizerStreet']),
+                    'CALENDAR_ORGANIZER_PLACE'       => contrexx_raw2xhtml($array['organizerPlace']),
+                    'CALENDAR_ORGANIZER_ZIP'         => contrexx_raw2xhtml($array['organizerZip']),
+                    'CALENDAR_ORGANIZER_LINK_SOURCE' => contrexx_raw2xhtml($array['organizerLink']),
+                    'CALENDAR_ORGANIZER_LINK'        => $array['organizerLink'] != '' ? "<a href='".$array['organizerLink']."' target='_blank' >".$array['organizerLink']."</a>" : "",
+                    'CALENDAR_ORGANIZER_MAIL_SOURCE' => contrexx_raw2xhtml($array['organizerMail']),
+                    'CALENDAR_ORGANIZER_MAIL'        => $array['organizerMail'] != '' ? "<a href='mailto:".$array['organizerMail']."' >".$array['organizerMail']."</a>" : "",
+
+                    'CALENDAR_ACCESS'                => $array['access'] == 1 ? $_ARRAYLANG['TXT_CALENDAR_ACCESS_COMMUNITY'] : $_ARRAYLANG['TXT_CALENDAR_ACCESS_PUBLIC'],
+					'CALENDAR_PRIORITY' 			 => $priority,
+					'CALENDAR_PRIORITY_IMG' 		 => $priorityImg,
+
+                    ////////////////////////////////////////////
+                    // ALIASES for backwards compatibility
+                    ////////////////////////////////////////////
+                    // alias for CALENDAR_CATEGORY
+                    'CALENDAR_CATEGORIE'             => $this->getCategoryNameFromCategoryId($array['catid']), # backwards comp.
+// TEXT VARS
 				));
 
 				$i++;
@@ -473,7 +533,7 @@ JSCODE;
 		}
 
 		$calendarbox 	= $this->getBoxes(3, $year, $month, $day, $catid);
-                $requestUri = '';
+        $requestUri = '';
 		$java_script  = "<script language=\"JavaScript\" type=\"text/javascript\">\n<!--\nfunction goTo()\n{\nwindow.location.href = \"". CSRF::enhanceURI(CONTREXX_DIRECTORY_INDEX."?section=calendar"). "&catid=".$catid."&month=\"+document.goToForm.goToMonth.value+\"&year=\"+document.goToForm.goToYear.value;\n}\n\n\n";
 		$java_script .= "function categories()\n{\nwindow.location.href = \"".CSRF::enhanceURI($requestUri)."&catid=\"+document.selectCategory.inputCategory.value;\n}\n// -->\n</script>";
 
@@ -512,7 +572,7 @@ JSCODE;
      */
 	function _showEvent($key, $id)
 	{
-		global $_ARRAYLANG;
+		global $_ARRAYLANG, $_CORELANG;
 
 		if (!isset($_GET['id'])) {
 		    if ($this->mandate == 1) {
@@ -534,14 +594,14 @@ JSCODE;
 		}
 
 		$this->_objTpl->setVariable(array(
-			'CALENDAR_START'		 		=> date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATE, $this->eventList[$key]['startdate']),
-			'CALENDAR_END'			 		=> date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATE, $this->eventList[$key]['enddate']),
-			'CALENDAR_START_SHOW'		 	=> date(ASCMS_DATE_FORMAT_DATE, $this->eventList[$key]['startdate']),
-			'CALENDAR_END_SHOW'			 	=> date(ASCMS_DATE_FORMAT_DATE,$this->eventList[$key]['enddate']),
-			'CALENDAR_START_TIME'		 	=> date(ASCMS_DATE_FORMAT_TIME, $this->eventList[$key]['startdate']),
-			'CALENDAR_END_TIME'			 	=> date(ASCMS_DATE_FORMAT_TIME, $this->eventList[$key]['enddate']),
+			//'CALENDAR_START'		 		=> date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATE, $this->eventList[$key]['startdate']),
+			//'CALENDAR_END'			 		=> date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATE, $this->eventList[$key]['enddate']),
+			//'CALENDAR_START_SHOW'		 	=> date(ASCMS_DATE_FORMAT_DATE, $this->eventList[$key]['startdate']),
+			//'CALENDAR_END_SHOW'			 	=> date(ASCMS_DATE_FORMAT_DATE,$this->eventList[$key]['enddate']),
+			//'CALENDAR_START_TIME'		 	=> date(ASCMS_DATE_FORMAT_TIME, $this->eventList[$key]['startdate']),
+			//'CALENDAR_END_TIME'			 	=> date(ASCMS_DATE_FORMAT_TIME, $this->eventList[$key]['enddate']),
 			'TXT_CALENDAR_CAT'            	=> $_ARRAYLANG['TXT_CALENDAR_CAT'],
-			'TXT_CALENDAR_NEW'            	=> $_ARRAYLANG['TXT_CALENDAR_NEW'],
+			//'TXT_CALENDAR_NEW'            	=> $_ARRAYLANG['TXT_CALENDAR_NEW'],
 			'TXT_CALENDAR_NAME'	          	=> $_ARRAYLANG['TXT_CALENDAR_NAME'],
 			'TXT_CALENDAR_PLACE'         	=> $_ARRAYLANG['TXT_CALENDAR_PLACE'],
 			'TXT_CALENDAR_PRIORITY'	      	=> $_ARRAYLANG['TXT_CALENDAR_PRIORITY'],
@@ -549,7 +609,7 @@ JSCODE;
 			'TXT_CALENDAR_END'            	=> $_ARRAYLANG['TXT_CALENDAR_END'],
 			'TXT_CALENDAR_COMMENT'        	=> $_ARRAYLANG['TXT_CALENDAR_COMMENT'],
 			'TXT_CALENDAR_LINK'           	=> $_ARRAYLANG['TXT_CALENDAR_INFO'],
-			'TXT_CALENDAR_RESET'          	=> $_ARRAYLANG['TXT_CALENDAR_RESET'],
+			//'TXT_CALENDAR_RESET'          	=> $_ARRAYLANG['TXT_CALENDAR_RESET'],
 			'TXT_CALENDAR_EVENT' 		  	=> $_ARRAYLANG['TXT_CALENDAR_TERMIN'],
 			'TXT_CALENDAR_STREET_NR' 		=> $_ARRAYLANG['TXT_CALENDAR_STREET_NR'],
 			'TXT_CALENDAR_ZIP' 		  		=> $_ARRAYLANG['TXT_CALENDAR_ZIP'],
