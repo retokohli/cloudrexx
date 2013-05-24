@@ -511,8 +511,8 @@ class LegacyComponentHandler {
                         $downloadBlock = preg_replace_callback(
                             "/<!--\s+BEGIN\s+downloads_category_(\d+)_list\s+-->(.*)<!--\s+END\s+downloads_category_\g1_list\s+-->/s",
                             function($matches) {
-                                if (isset($matches[0]) && $cl->loadFile(ASCMS_MODULE_PATH.'/downloads/index.class.php')) {
-                                    $objDownloadsModule = new downloads($matches[0], array('category' => $matches[1]));
+                                if (isset($matches[2]) && $cl->loadFile(ASCMS_MODULE_PATH.'/downloads/index.class.php')) {
+                                    $objDownloadsModule = new downloads($matches[2], array('category' => $matches[1]));
                                     return $objDownloadsModule->getPage();
                                 }
                             },

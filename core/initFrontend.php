@@ -578,8 +578,8 @@ $downloadBlock = preg_replace_callback(
     "/<!--\s+BEGIN\s+downloads_category_(\d+)_list\s+-->(.*)<!--\s+END\s+downloads_category_\g1_list\s+-->/s",
     function($matches) {
         \Env::get('init')->loadLanguageData('downloads');
-        if (isset($matches[0])) {
-            $objDownloadsModule = new downloads($matches[0], array('category' => $matches[1]));
+        if (isset($matches[2])) {
+            $objDownloadsModule = new downloads($matches[2], array('category' => $matches[1]));
             return $objDownloadsModule->getPage();
         }
     },
