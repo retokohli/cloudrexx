@@ -493,7 +493,7 @@ if (!$isRegularPageRequest) {
 
 
 // Initialize the navigation
-$objNavbar = new Navigation($pageId, $page);
+$objNavbar = new Navigation($_LANGID, $page);
 
 
 // Start page or default page for no section
@@ -1117,7 +1117,7 @@ switch ($plainSection) {
         // Set the meta page description to the teaser text if displaying news details
         $teaser = $newsObj->getTeaser();
         if ($teaser !== null) //news details, else getTeaser would return null
-            $page_desc = $teaser;
+            $page_desc = contrexx_raw2xhtml(contrexx_strip_tags(html_entity_decode($teaser, ENT_QUOTES, CONTREXX_CHARSET)));
         $page_title = $newsObj->newsTitle;
         $page_metatitle = $page_title;
         break;
@@ -1514,24 +1514,6 @@ if (!$boolShop
         Shop::init();
         Shop::setNavbar();
         $boolShop = true;
-    }
-}
-
-// Calendar
-// print_r($objTemplate->getPlaceholderList());
-if (MODULE_INDEX < 2) {
-    $calendarCheck1 = $objTemplate->placeholderExists('CALENDAR');
-    $calendarCheck2 = $objTemplate->placeholderExists('CALENDAR_EVENTS');
-    if (   ($calendarCheck1 || $calendarCheck2)
-        /** @ignore */
-        && $cl->loadFile(ASCMS_MODULE_PATH.'/calendar/HomeCalendar.class.php')) {
-        $objHomeCalendar = new HomeCalendar();
-        if (!empty($calendarCheck1)) {
-            $objTemplate->setVariable('CALENDAR', $objHomeCalendar->getHomeCalendar());
-        }
-        if (!empty($calendarCheck2)) {
-            $objTemplate->setVariable('CALENDAR_EVENTS', $objHomeCalendar->getHomeCalendarEvents());
-        }
     }
 }
 
