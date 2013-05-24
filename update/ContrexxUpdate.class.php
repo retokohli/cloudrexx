@@ -39,7 +39,7 @@ class ContrexxUpdate
         ));
         
         $this->objDatabase = Env::get('db');
-        
+
         DBG::set_adodb_debug_mode();
 
         if (!empty($_REQUEST['ajax'])) {
@@ -861,14 +861,24 @@ class ContrexxUpdate
     
     private function checkModRewrite()
     {
+        global $_CONFIG;
+
+        if ($this->_isNewerVersion('3.0.0', $_CONFIG['coreCmsVersion'])) {
+            return true;
+        }
+
         if (function_exists('apache_get_modules')) {
             $apacheModules = apache_get_modules();
             $modRewrite    = in_array('mod_rewrite', $apacheModules);
         } else {
-            include_once(UPDATE_LIB . '/PEAR/HTTP/Request2.php');
-            $request     = new HTTP_Request2('http://' . $_SERVER['HTTP_HOST'] . substr($_SERVER['SCRIPT_NAME'], 0, -9) . 'rewrite_test/');
-            $objResponse = $request->send();
-            $arrHeaders  = $objResponse->getHeader();
+            try {
+                include_once(UPDATE_LIB . '/PEAR/HTTP/Request2.php');
+                $request     = new HTTP_Request2('http://' . $_SERVER['HTTP_HOST'] . substr($_SERVER['SCRIPT_NAME'], 0, -9) . 'rewrite_test/');
+                $objResponse = $request->send();
+                $arrHeaders  = $objResponse->getHeader();
+            } catch (\HTTP_Request2_Exception $e) {
+                \DBG::log($e->getMessage());
+            }
             
             if (empty($arrHeaders['location'])) {
                 $modRewrite = 'warning';
