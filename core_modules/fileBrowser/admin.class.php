@@ -694,7 +694,10 @@ class FileBrowser {
                     } else {
                         $filesize = 0;
                     }
-                    $arrDimensions = @getimagesize($strPath.$file);
+                    $arrDimensions = array(0 => 0, 1 => 0);
+                    if (MediaLibrary::_isImage($strPath.$file)) {
+                        $arrDimensions = @getimagesize($strPath.$file);
+                    }
                     array_push($this->_arrFiles, array('name' => $file, 'path' => $this->_path.$file, 'size' => $filesize, 'icon' => $this->_getIcon($strPath.$file), 'width' => intval($arrDimensions[0]), 'height' => intval($arrDimensions[1])));
                 }
             }
