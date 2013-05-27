@@ -53,7 +53,20 @@ function checkNote()
         document.modifyCalendarNote.inputTitle.focus();
         return false;
     }
-    if(document.modifyCalendarNote.inputEndDate.value < document.modifyCalendarNote.inputStartDate.value)
+
+    var startDateDay = document.modifyCalendarNote.inputStartDate.value.substr(0, 2);
+    var startDateMonth = document.modifyCalendarNote.inputStartDate.value.substr(3, 2);
+    var startDateYear = document.modifyCalendarNote.inputStartDate.value.substr(6, 4);
+    var startDateTime = document.modifyCalendarNote.inputStartDate.value.substr(11, 8);
+    var startDateFormated = startDateMonth + '/' + startDateDay + '/' + startDateYear;
+
+    var endDateDay = document.modifyCalendarNote.inputEndDate.value.substr(0, 2);
+    var endDateMonth = document.modifyCalendarNote.inputEndDate.value.substr(3, 2);
+    var endDateYear = document.modifyCalendarNote.inputEndDate.value.substr(6, 4);
+    var endDateTime = document.modifyCalendarNote.inputEndDate.value.substr(11, 8);
+    var endDateFormated = endDateMonth + '/' + endDateDay + '/' + endDateYear;
+    if(   Date.parse(endDateFormated) < Date.parse(startDateFormated)
+       || (Date.parse(endDateFormated) == Date.parse(startDateFormated) && endDateTime < startDateTime))
     {
         alert('{TXT_CALENDAR_ERROR_DATE}');
         document.modifyCalendarNote.inputEndDate.focus();
@@ -61,13 +74,17 @@ function checkNote()
     }
     
     var seriesType = -1;
-    $$('select[name="inputSeriesType"] option').forEach(function(o){if(o.selected){seriesType = o.value;}});
+    cx.jQuery('select[name="inputSeriesType"] option').each(function(){
+        if(cx.jQuery(this).attr('selected') == 'selected') {
+            seriesType = cx.jQuery(this).val();
+        }
+    });
     if(seriesType == 2) { //weekly - check a weekday was selected
         var weekDaySelected = false;
-        $$('#seriesMaskWeekly .weekday').forEach(function(w){
-            if(w.checked)
+        cx.jQuery('#seriesMaskWeekly .weekday').each(function(){
+            if(cx.jQuery(this).attr('checked') == 'checked')
                weekDaySelected = true;
-        })
+        });
         if(!weekDaySelected) {
             alert('{TXT_CALENDAR_ERROR_WEEKLY_NO_WEEKDAY}');
             return false;
