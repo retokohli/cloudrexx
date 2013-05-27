@@ -42,7 +42,7 @@ $_CONFIG['sessionLifeTime']           = 3600;
 $_CONFIG['sessionLifeTimeRememberMe'] = 1209600;
 $_CONFIG['spamKeywords']              = "sex, viagra";
 $_CONFIG['systemStatus']              = "on";
-$_CONFIG['timezone']                  = "Europe/Zurich";
+$_CONFIG['timezone']                  = $_DBCONFIG['timezone'];
 $_CONFIG['xmlSitemapStatus']          = "on";
 $_CONFIG['useCustomizings']           = "off";
 

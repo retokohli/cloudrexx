@@ -1,4 +1,5 @@
 <?php
+global $_DBCONFIG, $_PATHCONFIG, $_FTPCONFIG;
 /**
 * @exclude
 *
@@ -59,6 +60,9 @@ $_FTPCONFIG['path'] = ''; // Ftp path to cms (must not include ascms_root_offset
 */
 // Set character encoding
 $_CONFIG['coreCharacterEncoding'] = 'UTF-8'; // example 'UTF-8'
+
+// @todo MOVE TO Cx CLASS
+
 @ini_set('default_charset', $_CONFIG['coreCharacterEncoding']);
 
 // Set output url seperator
@@ -68,12 +72,6 @@ $_CONFIG['coreCharacterEncoding'] = 'UTF-8'; // example 'UTF-8'
 @ini_set('url_rewriter.tags', 'a=href,area=href,frame=src,iframe=src,input=src,form=,fieldset=');
 
 // Set timezone
-@ini_set('date.timezone', $_CONFIG['timezone']);
+@ini_set('date.timezone', $_DBCONFIG['timezone']);
 
-/**
-* -------------------------------------------------------------------------
-* Set constants
-* -------------------------------------------------------------------------
-*/
-require_once dirname(__FILE__).'/set_constants.php';
 
