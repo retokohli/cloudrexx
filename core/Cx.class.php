@@ -186,14 +186,21 @@ namespace Cx\Core {
         
         protected function loadConfig() {
             global $_DBCONFIG, $_CONFIGURATION, $_CONFIG, $_PATHCONFIG;
-
+            
             /**
              * User configuration settings
              *
              * This file is re-created by the CMS itself. It initializes the
              * {@link $_CONFIG[]} global array.
              */
-            $incSettingsStatus = include_once dirname(dirname(__FILE__)).'/config/settings.php';
+            $incSettingsStatus = include_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/config/settings.php';
+
+            /**
+             * -------------------------------------------------------------------------
+             * Set constants
+             * -------------------------------------------------------------------------
+             */
+            require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/config/set_constants.php';
 
             /**
              * Path, database, FTP configuration settings
@@ -364,6 +371,10 @@ namespace Cx\Core {
         
         public function getUser() {
             return \FWUser::getFWUserObject();
+        }
+        
+        public function getDb() {
+            return $this->db;
         }
         
         /**
