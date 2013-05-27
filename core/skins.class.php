@@ -449,7 +449,7 @@ class skins
      * @param array $content file and directory list
      * @return boolean
      */
-    private function validateArchiveStructure($content, &$themeDirectory, &$themeDirectoryFromArchive, &$themeName, $arrDirectories)
+    private function validateArchiveStructure($content, &$themeDirectory, &$themeDirectoryFromArchive, &$themeName, &$arrDirectories)
     {
         global $_CORELANG;
 
@@ -625,6 +625,7 @@ class skins
 
                 //create database entry
                 self::validateThemeName($themeName);
+                $this->replaceThemeName($themeDirectoryFromArchive, $themeDirectory, $this->path . $arrDirectories[0]);
                 $this->insertSkinIntoDb($themeName, $themeDirectory);
                 $this->strOkMessage = contrexx_raw2xhtml($themeName).' ('.$themeDirectory.') '.$_CORELANG['TXT_THEME_SUCCESSFULLY_IMPORTED'];
                 break;
