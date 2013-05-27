@@ -236,7 +236,7 @@ CREATE TABLE `contrexx_content_node` (
   `lvl` int(11) NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `IDX_E5A18FDD727ACA70` (`parent_id`),
-  CONSTRAINT `contrexx_content_node_ibfk_1` FOREIGN KEY (`parent_id`) REFERENCES `contrexx_content_node` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  CONSTRAINT `contrexx_content_node_ibfk_2` FOREIGN KEY (`parent_id`) REFERENCES `contrexx_content_node` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -278,7 +278,7 @@ CREATE TABLE `contrexx_content_page` (
   PRIMARY KEY  (`id`),
   UNIQUE KEY `node_id` (`node_id`,`lang`),
   KEY `IDX_D8E86F54460D9FD7` (`node_id`),
-  CONSTRAINT `contrexx_content_page_ibfk_1` FOREIGN KEY (`node_id`) REFERENCES `contrexx_content_node` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION
+  CONSTRAINT `contrexx_content_page_ibfk_2` FOREIGN KEY (`node_id`) REFERENCES `contrexx_content_node` (`id`) ON DELETE NO ACTION ON UPDATE NO ACTION
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
