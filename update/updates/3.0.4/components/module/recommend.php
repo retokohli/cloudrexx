@@ -27,8 +27,9 @@ function _recommendUpdate()
 
                 // migration for newer versions
                 if (!$count) {
-                    $content = preg_replace('/(.*)(<p[^>]*>.*?\{RECOM_CAPTCHA_CODE\}.*?<\/p>)/ms', '$1<!-- BEGIN recommend_captcha -->$2<!-- END recommend_captcha -->', $content);
+                    $content = preg_replace('/(.*)(<p[^>]*>.*?\{RECOM_CAPTCHA_.*?\}.*?<\/p>)/ms', '$1<!-- BEGIN recommend_captcha -->$2<!-- END recommend_captcha -->', $content);
                 }
+                $content = preg_replace('/(.*)(<p[^>]*><label.*<\/label>)(.*?\{RECOM_CAPTCHA_.*?\}.*?)(<\/p>)/ms', '$1$2{RECOM_CAPTCHA_CODE}$4', $content);
             }
 
             return $content;
