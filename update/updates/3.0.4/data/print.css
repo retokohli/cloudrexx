@@ -4,7 +4,6 @@
 form p,
 form > fieldset > div {
     float: left;
-    width: 100%;
     padding: 0 0 10px 0;
 }
 
@@ -12,6 +11,16 @@ form > fieldset > div {
 form p {
     width: 400px;
     padding-left: 250px;
+}
+
+#contactFormError {
+    display: none;
+    color: #f00;
+}
+
+form p span {
+    margin-left: 0px;
+    width: auto;
 }
 
 form p label {
@@ -174,10 +183,8 @@ div.row2 {
 }
 #captcha #coreCaptchaLabel {
     float: left;
-    width: auto;
     clear: both;
     margin: 2px 0 2px 0;
-    white-space: nowrap;
     font-weight: normal;
 }
 #captcha .row {
