@@ -258,29 +258,7 @@ class Url {
      */
     private function addParamsToPath($paramsToAdd) {
         $paramsFromPath = $this->splitParamsFromPath();
-
-        //split params with subarray from the others
-        $paramsFromPathSubarray = array();
-        foreach ($paramsFromPath as $key => $value) {
-            if (is_array($value)) {
-                $paramsFromPathSubarray[$key] = $value;
-                unset($paramsFromPath[$key]);
-            }
-        }
-
-        $paramsToAddSubarray = array();
-        foreach ($paramsToAdd as $key => $value) {
-            if (is_array($value)) {
-                $paramsToAddSubarray[$key] = $value;
-                unset($paramsToAdd[$key]);
-            }
-        }
-
-        //merge all params together
-        $params1 = $paramsToAdd + $paramsFromPath;//simple params are going to be overwritten if the appropriate param exists already
-        $params2 = array_merge_recursive($paramsFromPathSubarray, $paramsToAddSubarray);//params with subarray will be merged
-        $params = $params1 + $params2;//put the parts together
-
+        $params = array_replace_recursive($paramsFromPath, $paramsToAdd);
         $this->writeParamsToPath($params);
     }
 
