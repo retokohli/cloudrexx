@@ -311,7 +311,7 @@ class mediaDirectory extends mediaDirectoryLibrary
                     $intNumEntries = intval($objEntries->countEntries($intCategoryId, $intLevelId, $intCmdFormId));
 
                     if($intNumEntries > $intLimitEnd) {
-                        $strPaging = getPaging($intNumEntries, $intLimitStart, "&amp;section=".$this->moduleName.$strPagingCmdParam.$strPagingLevelParam.$strPagingCatParam, "<b>".$_ARRAYLANG['TXT_MEDIADIR_ENTRIES']."</b>", true, $intLimitEnd);
+                        $strPaging = getPaging($intNumEntries, $intLimitStart, $strPagingCmdParam.$strPagingLevelParam.$strPagingCatParam, "<b>".$_ARRAYLANG['TXT_MEDIADIR_ENTRIES']."</b>", true, $intLimitEnd);
                         $this->_objTpl->setGlobalVariable(array(
                             $this->moduleLangVar.'_PAGING' =>  $strPaging
                         ));
@@ -374,12 +374,6 @@ class mediaDirectory extends mediaDirectoryLibrary
         $intLimitStart = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
         $intLimitEnd = intval($this->arrSettings['settingsPagingNumEntries']);
 
-        foreach ($_GET as $strCmdName => $strCmdValue) {
-            if($strCmdName != "pos") {
-                $strPaigingParams .= $strCmdName."=".$strCmdValue."&amp;";
-            }
-        }
-
         if(!empty($_GET['term']) || $_GET['type'] == 'exp') {
             $objSearch = new mediaDirectorySearch();
             $objSearch->searchEntries($_GET);
@@ -399,7 +393,7 @@ class mediaDirectory extends mediaDirectoryLibrary
                 $objEntries->listEntries($this->_objTpl, 2);
 
                 if($intNumEntries > $intLimitEnd) {
-                    $strPaging = getPaging($intNumEntries, $intLimitStart, "&amp;".$strPaigingParams, "<b>".$_ARRAYLANG['TXT_MEDIADIR_ENTRIES']."</b>", true, $intLimitEnd);
+                    $strPaging = getPaging($intNumEntries, $intLimitStart, null, "<b>".$_ARRAYLANG['TXT_MEDIADIR_ENTRIES']."</b>", true, $intLimitEnd);
                     $this->_objTpl->setGlobalVariable(array(
                         $this->moduleLangVar.'_PAGING' =>  $strPaging
                     ));
