@@ -1,37 +1,6 @@
 <script language="javascript" type="text/javascript">
 // <![CDATA[
 /**
- * resize applet to fit client area
- * @param applet an applet to resize
- * @param dx a horizontal space to substract from client area width
- * @param dy a vertical space to substract from client area width
- */
-function resizeApplet()
-{
-    var applet = document.jumpLoaderApplet;
-    var w_newWidth, w_newHeight;
-    var w_maxWidth = 2600, w_maxHeight = 2200;
-    var dx = 0;
-    var dy = 50;
-    if( navigator.appName.indexOf( "Microsoft" ) != -1 ) {
-        w_newWidth = document.body.clientWidth;
-        w_newHeight = document.body.clientHeight;
-    } else {
-        w_newWidth = window.innerWidth;
-        w_newHeight = window.innerHeight;
-    }
-    if( w_newWidth > w_maxWidth ) {
-        w_newWidth = w_maxWidth;
-    }
-    if( w_newHeight > w_maxHeight ) {
-        w_newHeight = w_maxHeight;
-    }
-    applet.width = w_newWidth - dx;
-    applet.height = w_newHeight - dy;
-    applet.setSize( w_newWidth - dx, w_newHeight - dy );
-}
-
-/**
  * remembers things about uploaders.
  * @var object { uploaderId: {
  *     pending: integer, #pending uploads
@@ -85,14 +54,15 @@ function appletInitialized(applet)
 }
 // ]]>
 </script>
-<div id="java_uploader" onResize="resizeApplet()" onLoad="resizeApplet()" >
+<div id="java_uploader">
     <applet name="jumpLoaderApplet"
             code="jmaster.jumploader.app.JumpLoaderApplet.class"
-            archive="{LANG_URL},{APPLET_URL}"
+            archive="{APPLET_URL}"
             width="100%"
             height="100%"
             mayscript>
 
+        <param name="ac_messagesZipUrl" value="{LANG_URL}"/>
 		<param name="ac_fireAppletInitialized" value="true"/>
         <param name="uc_uploadUrl" value="{UPLOAD_URL}" />
         <param name="uc_partitionLength" value="{CHUNK_LENGTH}" />

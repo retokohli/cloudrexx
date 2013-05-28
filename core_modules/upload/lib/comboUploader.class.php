@@ -109,8 +109,6 @@ class ComboUploader extends Uploader
              'TXT_CORE_FILES_NOT_UPLOADED' => $_CORELANG['TXT_CORE_FILES_NOT_UPLOADED']
         ));
 
-        $tpl->setVariable('UPLOADER_CODE', $formUploader->getXHtml());
-
         //see Uploader::handleInstanceBusiness
         $this->handleInstanceBusiness($tpl,'cu');
         
