@@ -722,6 +722,11 @@ class DBG
 
 function DBG_log_adodb($msg)
 {
+    if (strpos($msg, 'password') !== false) {
+        DBG::logSQL('*LOGIN (query suppressed)*');
+        return;
+    }
+
     $msg = trim(html_entity_decode(strip_tags($msg), ENT_QUOTES, CONTREXX_CHARSET));
     $sql = preg_replace('#^\(mysql\):\s*#', '', $msg);
     DBG::logSQL($sql);

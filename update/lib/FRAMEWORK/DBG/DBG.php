@@ -1,12 +1,13 @@
 <?php
 /**
  * Debugging
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      David Vogt <david.vogt@comvation.com>
  * @version     3.0.0
  * @since       2.1.3
  * @package     contrexx
- * @subpackage  lib
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      David Vogt <david.vogt@comvation.com>
+ * @subpackage  lib_dbg
  */
 
 // Basic flags
@@ -43,12 +44,13 @@ DBG::deactivate();
 
 /**
  * Debugging
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      David Vogt <david.vogt@comvation.com>
  * @version     3.0.0
  * @since       2.1.3
  * @package     contrexx
- * @subpackage  lib
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      David Vogt <david.vogt@comvation.com>
+ * @subpackage	lib_dbg
  */
 class DBG
 {
@@ -726,6 +728,11 @@ class DBG
 
 function DBG_log_adodb($msg)
 {
+    if (strpos($msg, 'password') !== false) {
+        DBG::logSQL('*LOGIN (query suppressed)*');
+        return;
+    }
+
     $msg = trim(html_entity_decode(strip_tags($msg), ENT_QUOTES, CONTREXX_CHARSET));
     $sql = preg_replace('#^\(mysql\):\s*#', '', $msg);
     DBG::logSQL($sql);
