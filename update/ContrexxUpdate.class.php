@@ -59,7 +59,7 @@ class ContrexxUpdate
         }
 
         if (isset($_GET['debug_update']) && $_GET['debug_update'] === 'true') {
-            \DBG::activate(DBG_PHP | DBG_DB_ERROR | DBG_LOG); 
+            \DBG::activate(DBG_PHP | DBG_DB | DBG_LOG); 
         }
 
         if (isset($_POST['doGroup']) && $_POST['doGroup']) {
@@ -1308,7 +1308,7 @@ function activateDebugging()
     $File = new \Cx\Lib\FileSystem\File(ASCMS_DOCUMENT_ROOT . '/update/dbg.log');
     $File->touch();
     if ($File->makeWritable()) {
-        \DBG::activate(DBG_LOG_FILE | DBG_PHP | DBG_DB_ERROR);
+        \DBG::activate(DBG_LOG_FILE | DBG_PHP | DBG_DB);
         return true;
     }
     return false;
