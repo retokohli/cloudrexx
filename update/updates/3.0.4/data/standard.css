@@ -50,26 +50,33 @@ form #uploadFormField_uploadWidget {
     padding: 0 0 0 250px;
 }
 
+.contactFormUpload {
+    margin-left: 250px;
+}
+
 form .contactFormUpload,
 form .formUploadedFiles,
 form .contactFormUpload div,
 form .formUploadedFiles div {
     float: left;
-    width: 326px;
+}
+
+form .contactFormUpload div {
+    width: 100%;
 }
 
 form .contactFormUpload ul,
 form .formUploadedFiles ul {
     float: left;
-    width: 326px;
+    width: 100%;
     padding: 0 0 5px 0;
 }
 
 form .contactFormUpload li,
 form .formUploadedFiles li {
     float: left;
-    width: 306px;
-    padding: 0 0 5px 20px;
+    width: 100%;
+    padding: 0;
     margin: 0 0 5px 0;
     border-bottom: 1px solid #DDDDDD;
 }
@@ -83,7 +90,7 @@ form .formUploadedFiles span {
 
 form .contactFormUpload .deleteIcon,
 form .formUploadedFiles .deleteIcon {
-    float: left;
+    float: right;
     width: 16px;
     height: 16px;
     margin: 2px 0 0 0;
@@ -123,29 +130,8 @@ table {
 
 table th {
     padding: 6px 8px 6px 8px;
-    color: #FFFFFF;
     text-align: left;
     font-weight: bold;
-    background-color: #0A85C8;
-}
-
-table th a {
-    color: #FFFFFF;
-}
-
-table tr.row1,
-table tr.marketRow2 {
-    background-color: #FFFFFF;
-}
-
-table tr.row2,
-table tr.marketRow3 {
-    background-color: #F6F6F6;
-}
-
-table tr.row3,
-table tr.marketRow1 {
-    background-color: #FFEE9F;
 }
 
 table td {
@@ -162,12 +148,10 @@ table td.none {
 /***************************************************/
 div.row_1,
 div.row1 {
-    background-color: #f9f9f9;
     border-bottom: 1px solid #ECEDF3;
 }
 div.row_2,
 div.row2 {
-    background-color: #ffffff;
     border-bottom: 1px solid #ECEDF3;
 }
 /***************************************************/
@@ -1149,12 +1133,8 @@ div.row2 {
 #shop table tr.row2 {
     border-bottom: 1px solid #DDDDDD;
 }
-#shop table tr.row2 {
-    background: #FFFFFF;
-}
 #shop table tr.row3 {
     border-bottom: 1px solid #FFFFFF;
-    background: #F6F6F6;
 }
 #shop div.menu,
 #shop div.cart_info,
@@ -1286,14 +1266,12 @@ div.row2 {
 #shop div.price {
     float: right;
     padding: 7px 10px 5px 10px;
-    color: #FFFFFF;
     font-size: 15px;
     font-weight: bold;
     border-radius: 5px 0 0 5px;
     -moz-border-radius: 5px 0 0 5px;
     -webkit-border-radius: 5px 0 0 5px;
     -o-border-radius: 5px 0 0 5px;
-    background: #AAAAAA;
 }
 #shop div.price s {
     padding: 0 5px 0 0;
@@ -1302,7 +1280,6 @@ div.row2 {
 #shop div.price-detail {
     float: left;
     width: 100%;
-    padding: 10px 0 0 0;
     font-size: 20px;
     text-align: right;
 }
@@ -1361,7 +1338,6 @@ div.row2 {
 }
 #shop div.functions {
     float: right;
-    padding: 20px 0 0 0;
 }
 #shop div.functions input[type=submit] {
     margin: 0;
@@ -1459,10 +1435,8 @@ div.row2 {
     width: 90%;
     padding: 4px 5% 6px 5%;
     margin: 0;
-    color: #FFFFFF;
     font-size: 15px;
     text-align: center;
-    background: #0A85C8;
 }
 
 #shop .continue-button {
@@ -1482,16 +1456,13 @@ div.row2 {
 #shop button.details-button {
     float: right;
     padding-right: 25px;
-    color: #FFFFFF;
     font-weight: bold;
-    background: #0A85C8 url('images/arrow-right-white.png') no-repeat 62px 13px;
 }
 
 #shop button.add-to-cart {
     float: right;
     height: 33px;
     padding: 5.5px 10px 7px 33px;
-    color: #FFFFFF;
     font-weight: bold;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
@@ -1501,12 +1472,6 @@ div.row2 {
     -webkit-border-bottom-left-radius: 0;
     -o-border-top-left-radius: 0;
     -o-border-bottom-left-radius: 0;
-    background: #0A85C8 url('images/cart-white.png') no-repeat 10px 7px;
-}
-
-#shop button.details-button:hover,
-#shop button.add-to-cart:hover {
-    background-color: #1F97D8;
 }
 
 /***************************************************/
