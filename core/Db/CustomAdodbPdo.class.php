@@ -1,8 +1,10 @@
 <?php
-
 /**
  * This class is needed in order to make AdoDB use an existing PDO connection
- * @author Michael Ritter <michael.ritter@comvation.com>
+ * @copyright   Comvation AG
+ * @author      Michael Ritter <michael.ritter@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_db
  */
 
 namespace Cx\Core\Db;
@@ -11,7 +13,10 @@ namespace Cx\Core\Db;
 
 /**
  * This class is needed in order to make AdoDB use an existing PDO connection
- * @author Michael Ritter <michael.ritter@comvation.com>
+ * @copyright   Comvation AG
+ * @author      Michael Ritter <michael.ritter@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_db
  */
 class CustomAdodbPdo extends \ADODB_pdo 
 { 
