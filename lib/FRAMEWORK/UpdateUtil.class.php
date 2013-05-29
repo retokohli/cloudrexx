@@ -76,16 +76,127 @@ class UpdateUtil
      *            'force'  => true/false,  # optional. forces creation of unique indexes, even if there
      *                                     # are duplicates (which will be dropped). use with care.
      *        )
+     * @param string engine - optional. Specification of the DB-Engine to use (i.e. MyISAM, InnoDB, etc)
+     *                          Defaults to 'MyISAM'
+     * @param string comment - optional. Table comment.
+     * @param array constraints - optional. Additional constraints specification. This is an associative array
+     *      where the keys represent the foreign keys and the values are arrays defining the constraint on the
+     *      foreign keys:
+     *          array(
+     *              'foreign_key' => array(
+     *                  'table'     => 'foreign_table', # table of foreign key constraint
+     *                  'column'    => 'foreign_column', # table's column of foreign key constraint
+     *                  'onDelete'     => 'CASCADE|SET NULL|NO ACTION|RESTRICT', # constraint action on foreign relation' delete
+     *                  'onUpdate'     => 'CASCADE|SET NULL|NO ACTION|RESTRICT', # constraint action on foreign relation' update
+     *              ),
+     *          )
      */
     public static function table($name, $struc, $idx=array(), $engine='MyISAM',
-        $comment='')
+        $comment='', $constraints = array())
     {
         if (self::table_exist($name)) {
             self::check_columns($name, $struc);
             self::check_indexes($name, $idx, $struc);
             self::check_dbtype($name, $engine);
+            self::set_constraints($name, $constraints);
         } else {
             self::create_table($name, $struc, $idx, $engine, $comment);
+            self::set_constraints($name, $constraints);
+        }
+    }
+
+    /**
+     * Set constraints to database table
+     *
+     * @param name table - Name of database table
+     * @param array constraints - optional. Constraints specification. This is an associative array
+     *      where the keys represent the foreign keys and the values are arrays defining the constraint on the
+     *      foreign keys:
+     *          array(
+     *              'foreign_key' => array(
+     *                  'table'     => 'foreign_table', # table of foreign key constraint
+     *                  'column'    => 'foreign_column', # table's column of foreign key constraint
+     *                  'onDelete'     => 'CASCADE|SET NULL|NO ACTION|RESTRICT', # constraint action on foreign relation' delete
+     *                  'onUpdate'     => 'CASCADE|SET NULL|NO ACTION|RESTRICT', # constraint action on foreign relation' update
+     *              ),
+     *          )
+     *      If left empty, all existing constraints will be removed from specified table
+     */
+    public static function set_constraints($name, $constraints = array())
+    {
+        global $objDatabase, $_ARRAYLANG;
+
+        $arrDefinedConstraints = array();
+
+        $objResult = $objDatabase->Execute("SHOW CREATE TABLE `$name`");
+        if (!$objResult) {
+            self::cry(sprintf($_ARRAYLANG['TXT_UNABLE_GETTING_DATABASE_TABLE_STRUCTURE'], $name));
+        }
+
+        $createTableStm = explode("\n", $objResult->fields['Create Table']);
+        $arrConstraintDefinitions = preg_grep('/^\s*CONSTRAINT/', $createTableStm);
+
+        foreach ($arrConstraintDefinitions as $constraintDefinition) {
+            if (preg_match('/CONSTRAINT\s+
+                    # 1. constraint name
+                    `([^`]+)`
+                    \s+FOREIGN\s+KEY\s+
+                    # 2. foreig key
+                    \(`([^`]+)`\)
+                    \s+REFERENCES\s+
+                    # 3. referenced table
+                    `([^`]+)`
+                    # 4. referenced column
+                    \s+\(`([^`]+)`\)
+                    # 5. on delete action
+                    (?:\s+ON\s+DELETE\s+(CASCADE|SET\s+NULL|NO\s+ACTION|RESTRICT))?
+                    # 6. on update action
+                    (?:\s+ON\s+UPDATE\s+(CASCADE|SET\s+NULL|NO\s+ACTION|RESTRICT))?
+                    /xs', $constraintDefinition, $match)
+            ) {
+                $onDelete = isset($match[5]) ? $match[5] : 'RESTRICT';
+                $onUpdate = isset($match[6]) ? $match[6] : 'RESTRICT';
+
+                $arrDefinedConstraints[$match[2]] = array(
+                    'key'       => $match[1],
+                    'table'     => $match[3],
+                    'column'    => $match[4],
+                    'onDelete'  => $onDelete,
+                    'onUpdate'  => $onUpdate,
+                );
+            }
+        }
+
+        foreach ($constraints as $foreignKey => $constraint) {
+            $dropForeignKeyStmt = '';
+
+            $onDelete = isset($constraint['onDelete']) ? $constraint['onDelete'] : 'RESTRICT';
+            $onUpdate = isset($constraint['onUpdate']) ? $constraint['onUpdate'] : 'RESTRICT';
+
+            if (isset($arrDefinedConstraints[$foreignKey])) {
+                if (   $arrDefinedConstraints[$foreignKey]['table'] == $constraint['table']
+                    && $arrDefinedConstraints[$foreignKey]['column'] == $constraint['column']
+                    && $arrDefinedConstraints[$foreignKey]['onDelete'] == $onDelete
+                    && $arrDefinedConstraints[$foreignKey]['onUpdate'] == $onUpdate
+                ) {
+                    continue;
+                }
+
+                $dropForeignKeyStmt = "DROP FOREIGN KEY `".$arrDefinedConstraints[$foreignKey]['key']."`,";
+            }
+
+            $query = "ALTER TABLE `".$name."`
+                            $dropForeignKeyStmt
+                            ADD FOREIGN KEY ( `".$foreignKey."` ) REFERENCES `".$constraint['table']."` ( `".$constraint['column']."`)
+                             ON DELETE ".$onDelete."
+                             ON UPDATE ".$onUpdate;
+            self::sql($query);
+        }
+
+        foreach ($arrDefinedConstraints as $foreignKey => $definedConstraint) {
+            if (!isset($constraints[$foreignKey])) {
+                self::sql("ALTER TABLE `".$name."` DROP FOREIGN KEY `".$definedConstraint['key']."`");
+            }
         }
     }
 

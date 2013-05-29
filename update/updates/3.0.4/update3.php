@@ -738,6 +738,8 @@ $updatesSp2ToSp3 = array(
 
 $updatesSp3ToSp4 = array(
     'UPDATE  `' . DBPREFIX . 'backend_areas` SET  `scope` =  \'backend\' WHERE  `area_id` = 161',
+    'ALTER IGNORE TABLE `' . DBPREFIX . 'access_group_dynamic_ids` ADD PRIMARY KEY ( `access_id` , `group_id` )',
+    'ALTER IGNORE TABLE `' . DBPREFIX . 'access_group_static_ids` ADD PRIMARY KEY ( `access_id` , `group_id` )',
 );
 
 $updatesRc1ToSp4    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4);
@@ -879,6 +881,7 @@ while (!$result->EOF) {
 }
 
 
+// fix fallback pages
 if ($version == 'rc1') {
     $em = \Env::em();
     $pageRepo = $em->getRepository('Cx\Model\ContentManager\Page');
@@ -1102,6 +1105,28 @@ try {
     };
 
     \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'access', 'cmd' => 'signup'), $search, $callback, array('content'), '3.0.3');
+} catch (\Cx\Lib\UpdateException $e) {
+    return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+}
+
+// update page and node constraints
+try {
+    \Cx\Lib\UpdateUtil::set_constraints(DBPREFIX.'content_node', array(
+        'parent_id' => array(
+            'table'     => DBPREFIX.'content_node',
+            'column'    => 'id',
+            'onDelete'  => 'NO ACTION',
+            'onUpdate'  => 'NO ACTION',
+        ),
+    ));
+    \Cx\Lib\UpdateUtil::set_constraints(DBPREFIX.'content_page', array(
+        'node_id' => array(
+            'table'     => DBPREFIX.'content_node',
+            'column'    => 'id',
+            'onDelete'  => 'SET NULL',
+            'onUpdate'  => 'NO ACTION',
+        )
+    ));
 } catch (\Cx\Lib\UpdateException $e) {
     return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
 }
