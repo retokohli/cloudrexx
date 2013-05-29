@@ -181,6 +181,7 @@ class downloads extends DownloadsLibrary
                 && !Permission::checkAccess($objCategory->getReadAccessId(), 'dynamic', true)
                 && $objCategory->getOwnerId() != $this->userId
             ) {
+// TODO: might we have to add a soft noAccess handler in case the output is meant for a regular page (not section=downloads)
                 Permission::noAccess(base64_encode(CONTREXX_SCRIPT_PATH.$this->moduleParamsJs.'&category='.$objCategory->getId()));
             }
 
@@ -984,8 +985,22 @@ JS_CODE;
         }
 
         $limitOffset = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
+        $includeDownloadsOfSubcategories = false;
+
+        // set downloads filter
+        $filter = array(
+            'expiration'    => array('=' => 0, '>' => time())
+        );
+        if ($objCategory->getId()) {
+            $filter['category_id'] = $objCategory->getId();
+
+            if (!empty($this->searchKeyword)) {
+                $includeDownloadsOfSubcategories = true;
+            }
+        }
+
         $objDownload = new Download();
-        $objDownload->loadDownloads(array('category_id' => $objCategory->getId(), 'expiration' => array('=' => 0, '>' => time())), $this->searchKeyword, null, null, $_CONFIG['corePagingLimit'], $limitOffset);
+        $objDownload->loadDownloads($filter, $this->searchKeyword, null, null, $_CONFIG['corePagingLimit'], $limitOffset, $includeDownloadsOfSubcategories);
         $categoryId = $objCategory->getId();
         $allowdDeleteFiles = false;
         if (!$objCategory->EOF) {
