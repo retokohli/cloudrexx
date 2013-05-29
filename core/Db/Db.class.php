@@ -1,10 +1,15 @@
 <?php
-
 /**
  * This is needed for backwards compatibility to PHP 5.3
  * $ADODB_NEWCONNECTION = array($this, 'adodbPdoConnectionFactory');
  * leads to a "function name must be a string"
+ *
+ * @copyright   Comvation AG
+ * @author      Michael Ritter <michael.ritter@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_db
  */
+
 namespace {
     /**
      * Factory callback for AdoDB NewConnection
@@ -19,10 +24,23 @@ namespace {
 
 namespace Cx\Core\Db {
 
+    /**
+     * DB Exception
+     *
+     * @copyright   Comvation AG
+     * @author      Michael Ritter <michael.ritter@comvation.com>
+     * @package     contrexx
+     * @subpackage  core_db
+     */
     class DbException extends \Exception {}
 
     /**
-     * Initializes database connection and its abstractions (AdoDB and Doctrine)
+     * Db Class
+     *
+     * @copyright   Comvation AG
+     * @author      Michael Ritter <michael.ritter@comvation.com>
+     * @package     contrexx
+     * @subpackage  core_db
      */
     class Db {
         protected $pdo = null;
