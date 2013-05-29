@@ -96,7 +96,16 @@ class ContentMigration
                     array(
                         'IDX_E5A18FDD727ACA70'               => array('fields' => array('parent_id'))
                     ),
-                    'InnoDB'
+                    'InnoDB',
+                    '',
+                    array(
+                        'parent_id' => array(
+                            'table' => DBPREFIX.'content_node',
+                            'column'    => 'id',
+                            'onDelete'  => 'NO ACTION',
+                            'onUpdate'  => 'NO ACTION',
+                        ),
+                    )
                 );
 
                 \Cx\Lib\UpdateUtil::table(
@@ -140,7 +149,16 @@ class ContentMigration
                         'node_id'                            => array('fields' => array('node_id','lang'), 'type' => 'UNIQUE'),
                         'IDX_D8E86F54460D9FD7'               => array('fields' => array('node_id'))
                     ),
-                    'InnoDB'
+                    'InnoDB',
+                    '',
+                    array(
+                        'node_id' => array(
+                            'table'     => DBPREFIX.'content_node',
+                            'column'    => 'id',
+                            'onDelete'  => 'SET NULL',
+                            'onUpdate'  => 'NO ACTION',
+                        ),
+                   )
                 );
 
                 \Cx\Lib\UpdateUtil::table(
@@ -163,26 +181,6 @@ class ContentMigration
                     ),
                     'InnoDB'
                 );
-
-                $objResult = \Cx\Lib\UpdateUtil::sql('SHOW CREATE TABLE `' . DBPREFIX . 'content_node`');
-                if (!empty($objResult->fields['Create Table'])) {
-                    $constraintExists = strpos(strtolower($objResult->fields['Create Table']), 'constraint') !== false;
-                } else {
-                    $constraintExists = false;
-                }
-                if (!$constraintExists) {
-                    \Cx\Lib\UpdateUtil::sql('ALTER TABLE `' . DBPREFIX . 'content_node` ADD CONSTRAINT FOREIGN KEY (`parent_id`) REFERENCES `' . DBPREFIX . 'content_node` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION');
-                }
-
-                $objResult = \Cx\Lib\UpdateUtil::sql('SHOW CREATE TABLE `' . DBPREFIX . 'content_page`');
-                if (!empty($objResult->fields['Create Table'])) {
-                    $constraintExists = strpos(strtolower($objResult->fields['Create Table']), 'constraint') !== false;
-                } else {
-                    $constraintExists = false;
-                }
-                if (!$constraintExists) {
-                    \Cx\Lib\UpdateUtil::sql('ALTER TABLE `' . DBPREFIX . 'content_page` ADD CONSTRAINT FOREIGN KEY (`node_id`) REFERENCES `' . DBPREFIX . 'content_node` (`id`) ON DELETE CASCADE ON UPDATE NO ACTION');
-                }
 
                 $_SESSION['contrexx_update']['tables_created'] = true;
                 if (!checkMemoryLimit() || !checkTimeoutLimit()) {
