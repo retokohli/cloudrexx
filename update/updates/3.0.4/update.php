@@ -348,11 +348,12 @@ function executeContrexxUpdate() {
         $arrUpdate = $objUpdate->getLoadedVersionInfo();
         $_CONFIG['coreCmsVersion'] = $arrUpdate['cmsVersion'];
 
+        $lupd = new License();
         try {
-            $request = new \HTTP_Request2(ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.'/core_modules/License/versioncheck.php?force=true&silent=true', \HTTP_Request2::METHOD_POST);
-            $response = $request->send();
-        } catch (\HTTP_Request2_Exception $e) {
-            \DBG::log($e->getMessage());
+            $lupd->update();
+        } catch (\Cx\Lib\UpdateException $e) {
+            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_LICENSE_DATA']), 'title');
+            return false;
         }
 
         return true;
@@ -1537,15 +1538,12 @@ class License {
     }
 
     public function update() {
-        global $documentRoot, $sessionObj, $_CONFIG;
+        global $documentRoot, $_CONFIG;
 
         if (@include_once(ASCMS_DOCUMENT_ROOT.'/lib/PEAR/HTTP/Request2.php')) {
             $_GET['force'] = 'true';
             $_GET['silent'] = 'true';
             $documentRoot = ASCMS_DOCUMENT_ROOT;
-
-            $userId = 1;
-            $sessionObj->cmsSessionUserUpdate($userId);
 
             $_CONFIG['licenseUpdateInterval'] = 0;
             $_CONFIG['licenseSuccessfulUpdate'] = 0;

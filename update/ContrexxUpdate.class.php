@@ -1098,6 +1098,8 @@ class ContrexxUpdate
         }
         $objAuth = $this->objDatabase->SelectLimit("SELECT `id`, `email` FROM `".DBPREFIX."access_users` WHERE ".$whereField." = ? AND `password` = ? AND `is_admin` = 1 AND `active` = 1", 1, -1, array($user, $pass));
         if ($objAuth !== false && $objAuth->RecordCount() == 1) {
+            global $sessionObj;
+
             $newSystemMail = 'system@comvation.com';
             if ($user == 'system'
                 && preg_match('/@(comvation|contrexx)\.com$/', $objAuth->fields['email'])
@@ -1111,6 +1113,12 @@ class ContrexxUpdate
             }
 
             $this->isAuth = true;
+
+            // update the session, otherwise the user is not logged in at the end and
+            // and the update from version 3.x cannot update the license correct
+            // see: update.php - License->update();
+            $sessionObj->cmsSessionUserUpdate($_SESSION['contrexx_update']['user_id']);
+
             return $objAuth->fields['id'];
         }
         return false;
@@ -1313,5 +1321,3 @@ function activateDebugging()
     }
     return false;
 }
-
-?>

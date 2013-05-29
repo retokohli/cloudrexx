@@ -94,7 +94,6 @@ form .formUploadedFiles .deleteIcon {
 
 form label {
     float: left;
-    width: 250px;
 }
 
 form input[type="submit"] {
