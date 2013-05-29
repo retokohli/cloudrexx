@@ -1455,14 +1455,12 @@ div.row2 {
 
 #shop button.details-button {
     float: right;
-    padding-right: 25px;
     font-weight: bold;
 }
 
 #shop button.add-to-cart {
     float: right;
     height: 33px;
-    padding: 5.5px 10px 7px 33px;
     font-weight: bold;
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
