@@ -22,7 +22,7 @@ function _coreUpdate()
     $objGroup = $objDatabase->Execute($query);
     if ($objGroup !== false) {
         while (!$objGroup->EOF) {
-            $query = "INSERT INTO `".DBPREFIX."access_group_static_ids` (`access_id`, `group_id`) VALUES ('127', '".$objGroup->fields['group_id']."')";
+            $query = "INSERT IGNORE INTO `".DBPREFIX."access_group_static_ids` (`access_id`, `group_id`) VALUES ('127', '".$objGroup->fields['group_id']."')";
             if ($objDatabase->Execute($query) === false) {
                 return _databaseError($query, $objDatabase->ErrorMsg());
             }
@@ -1651,14 +1651,13 @@ function _coreUpdate()
     return true;
 }
 
-function _writeNewConfigurationFile($setDbCharset = false)
+function _writeNewConfigurationFile()
 {
     global $_CORELANG, $_ARRAYLANG, $_DBCONFIG, $_PATHCONFIG, $_FTPCONFIG, $_CONFIGURATION, $_CONFIG;
 
     $ftpStatus = $_FTPCONFIG['is_activated'] ? 'true' : 'false';
     $ftpUsePassive = $_FTPCONFIG['use_passive'] ? 'true' : 'false';
-    $dbCharset = ($setDbCharset && UPDATE_UTF8) ? 'utf8' : (!empty($_DBCONFIG['charset']) ? $_DBCONFIG['charset'] : '');
-    $charset = UPDATE_UTF8 ? 'UTF-8' : 'ISO-8859-1';
+    $charset = 'UTF-8';
 
     $_FTPCONFIG['port'] = intval($_FTPCONFIG['port']);
 
@@ -1691,8 +1690,9 @@ define('CONTEXX_INSTALLED', true);
 \$_DBCONFIG['user'] = '{$_DBCONFIG['user']}'; // Database username
 \$_DBCONFIG['password'] = '{$_DBCONFIG['password']}'; // Database password
 \$_DBCONFIG['dbType'] = '{$_DBCONFIG['dbType']}';    // Database type (e.g. mysql,postgres ..)
-\$_DBCONFIG['charset'] = '{$dbCharset}'; // Charset (default, latin1, utf8, ..)
+\$_DBCONFIG['charset'] = '{$_DBCONFIG['charset']}'; // Charset (default, latin1, utf8, ..)
 \$_DBCONFIG['timezone'] = \$_CONFIG['timezone']; // Timezone
+\$_DBCONFIG['collation'] = '{$_DBCONFIG['collation']}';
 
 /**
 * -------------------------------------------------------------------------
@@ -1754,5 +1754,7 @@ CONFIG_TPL
             setUpdateMsg(sprintf($_ARRAYLANG['TXT_SET_WRITE_PERMISSON_TO_FILE'], ASCMS_DOCUMENT_ROOT.'/config/configuration.php', $_CORELANG['TXT_UPDATE_TRY_AGAIN']), 'msg');
             return false;
     }
+
+    return true;
 }
 

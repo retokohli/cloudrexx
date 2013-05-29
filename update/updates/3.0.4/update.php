@@ -142,8 +142,43 @@ function executeContrexxUpdate() {
     if (!isset($_SESSION['contrexx_update']['update']['done'])) {
         $_SESSION['contrexx_update']['update']['done'] = array();
     }
+    
 
+    /////////////////////
+    // UTF-8 MIGRATION //
+    /////////////////////
+    if (!include_once(dirname(__FILE__) . '/components/core/utf8.php')) {
+        setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/utf8.php'));
+        return false;
+    }
+    $result = _utf8Update();
+    if (!$result) {
+        if (empty($objUpdate->arrStatusMsg['title'])) {
+            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UTF_CONVERSION']), 'title');
+        }
+        return false;
+    }
+    if ($result == 'charset_changed') {
+        // write new charset/collation definition to config file
+        if (!_writeNewConfigurationFile()) {
+            return false;
+        }
+
+        // _utf8Update() did change the charset/collation,
+        // therefore, we will force a reinitialization of the update system
+        // to ensure that all db-connections are using the proper charset/collation
+        \DBG::msg('Changed collation to: '.$_DBCONFIG['collation']);
+        \DBG::msg('Force reinitialization of update...');
+        setUpdateMsg(1, 'timeout');
+        return false;
+    }
+    /////////////////////
+
+    
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+        //////////////////////////////
+        // BEGIN: CONTENT MIGRATION //
+        //////////////////////////////
         DBG::msg('Installed version: '.$_CONFIG['coreCmsVersion']);
         Env::get('ClassLoader')->loadFile(dirname(__FILE__) . '/ContentMigration.class.php');
         $contentMigration = new \Cx\Update\Cx_3_0_4\ContentMigration();
@@ -303,7 +338,13 @@ function executeContrexxUpdate() {
                 }
             }
         }
+        ////////////////////////////
+        // END: CONTENT MIGRATION //
+        ////////////////////////////
     } else {
+        ///////////////////////////////////////////
+        // BEGIN: UPDATE FOR CONTREXX 3 OR NEWER //
+        ///////////////////////////////////////////
         $result = _updateModuleRepository();
         if ($result === false) {
             DBG::msg('unable to update module repository');
@@ -318,7 +359,7 @@ function executeContrexxUpdate() {
                     setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_TEMPLATES']), 'title');
                 }
                 return false;
-            } else {
+            }/* else {
                 if (!in_array('moduleStyles', $_SESSION['contrexx_update']['update']['done'])) {
                     if (_updateCssDefinitions($viewUpdateTable, $objUpdate) === false) {
                         if (empty($objUpdate->arrStatusMsg['title'])) {
@@ -328,7 +369,7 @@ function executeContrexxUpdate() {
                     }
                     $_SESSION['contrexx_update']['update']['done'][] = 'moduleStyles';
                 }
-            }
+            }*/
         }
 
         // we are updating from 3.0.0 rc1, rc2, stable or 3.0.0.1
@@ -336,12 +377,21 @@ function executeContrexxUpdate() {
             setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/update3.php'));
             return false;
         }
-
+        
         if (!createHtAccess()) {
             $webServerSoftware = !empty($_SERVER['SERVER_SOFTWARE']) && stristr($_SERVER['SERVER_SOFTWARE'], 'apache') ? 'apache' : (stristr($_SERVER['SERVER_SOFTWARE'], 'iis') ? 'iis' : '');
             $file = $webServerSoftware == 'iis' ? 'web.config' : '.htaccess';
 
             setUpdateMsg('Die Datei \'' . $file . '\' konnte nicht erstellt/aktualisiert werden.');
+            return false;
+        }
+        
+        // Update configuration.php
+        if (!include_once(dirname(__FILE__) . '/components/core/core.php')) {
+            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/core.php'));
+            return false;
+        }
+        if (!_writeNewConfigurationFile()) {
             return false;
         }
 
@@ -357,16 +407,21 @@ function executeContrexxUpdate() {
         }
 
         return true;
+        /////////////////////////////////////////
+        // END: UPDATE FOR CONTREXX 3 OR NEWER //
+        /////////////////////////////////////////
     }
+
+
+    ///////////////////////////////////////////
+    // CONTINUE UPDATE FOR NON CX 3 VERSIONS //
+    ///////////////////////////////////////////
 
     $arrDirs = array('core_module', 'module');
     $updateStatus = true;
 
     if (!include_once(dirname(__FILE__) . '/components/core/core.php')) {
         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/core.php'));
-        return false;
-    } elseif (UPDATE_UTF8 && !include_once(dirname(__FILE__) . '/components/core/utf8.php')) {
-        setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/utf8.php'));
         return false;
     } elseif (!include_once(dirname(__FILE__) . '/components/core/backendAreas.php')) {
         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/backendAreas.php'));
@@ -377,40 +432,6 @@ function executeContrexxUpdate() {
     } elseif (!include_once(dirname(__FILE__) . '/components/core/settings.php')) {
         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/settings.php'));
         return false;
-    }
-
-    if (!in_array('configSettings', $_SESSION['contrexx_update']['update']['done'])) {
-        $result = _writeNewConfigurationFile();
-        if ($result === false) {
-            return false;
-        }
-
-        if (UPDATE_UTF8) {
-            $result = _utf8Update();
-            if ($result === false) {
-                if (empty($objUpdate->arrStatusMsg['title'])) {
-                    setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UTF_CONVERSION']), 'title');
-                }
-                return false;
-            }
-        }
-
-        $result = _writeNewConfigurationFile(true);
-        if ($result === false) {
-            if (empty($objUpdate->arrStatusMsg['title'])) {
-                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UTF_CONVERSION']), 'title');
-            }
-            return false;
-        } else {
-            $_SESSION['contrexx_update']['update']['done'][] = 'configSettings';
-        }
-    }
-
-    if (UPDATE_UTF8) {
-        $query = 'SET CHARACTER SET utf8';
-        if ($objDatabase->Execute($query) === false) {
-            return _databaseError($query, $objDatabase->ErrorMsg());
-        }
     }
 
     if (!in_array('coreUpdate', $_SESSION['contrexx_update']['update']['done'])) {
@@ -528,8 +549,8 @@ function executeContrexxUpdate() {
             }
             return false;
         } else {
-            $result = _writeNewConfigurationFile();
-            if ($result === false) {
+            // update configuration.php (migrate to new format)
+            if (!_writeNewConfigurationFile()) {
                 return false;
             }
             $_SESSION['contrexx_update']['update']['done'][] = 'coreSettings';
@@ -600,6 +621,17 @@ function executeContrexxUpdate() {
             return false;
         } else {
             $_SESSION['contrexx_update']['update']['done'][] = 'moduleStyles';
+        }
+    }
+    
+    if (!in_array('navigations', $_SESSION['contrexx_update']['update']['done'])) {
+        if (_updateNavigations() === false) {
+            if (empty($objUpdate->arrStatusMsg['title'])) {
+                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_NAVIGATIONS']), 'title');
+            }
+            return false;
+        } else {
+            $_SESSION['contrexx_update']['update']['done'][] = 'navigations';
         }
     }
     
@@ -1071,7 +1103,7 @@ function _updateCssDefinitions(&$viewUpdateTable, $objUpdate) {
     while (!$result->EOF) {
         if (!is_dir(ASCMS_THEMES_PATH . '/' . $result->fields['foldername'])) {
             \DBG::msg('Skipping theme "' . $result->fields['themesname'] . '"; No such folder!');
-            $errorMessages .= '<div class="message-warning">' . sprintf($_CORELANG['TXT_CSS_UPDATE_MISSING_FOLDER'], $result->fields['themesname']) . '</div>';
+            $errorMessages .= sprintf($_CORELANG['TXT_CSS_UPDATE_MISSING_FOLDER'], $result->fields['themesname']);
             $result->moveNext();
             continue;
         }
@@ -1094,7 +1126,7 @@ function _updateCssDefinitions(&$viewUpdateTable, $objUpdate) {
         $result->moveNext();
     }
     if (!empty($errorMessages)) {
-        setUpdateMsg($errorMessages, 'msg');
+        setUpdateMsg('<div class="message-warning">' . $errorMessages . '</div>', 'msg');
         setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_CONTINUE_UPDATE'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
         $_SESSION['contrexx_update']['update']['done'][] = 'moduleStyles';
         return false;
@@ -1104,7 +1136,7 @@ function _updateCssDefinitions(&$viewUpdateTable, $objUpdate) {
 
 function _updateCssDefinitionsForTemplate($templatePath, $templateType, &$viewUpdateTable, $objUpdate) {
     global $objUpdate;
-
+    
     \DBG::msg('Loading new module style definitions');
     $moduleStyles = _readNewCssDefinitions($templateType, $objUpdate->getLoadedVersionInfo());
     
@@ -1272,6 +1304,107 @@ function _writeNewCss($templatePath, $newCss, &$arrUpdate) {
         return false;
     }
 
+    return true;
+}
+
+/**
+ * This should only be executed when updating from version 2.2.6 or older
+ * Fix for the following tickets:
+ * http://bugs.contrexx.com/contrexx/ticket/1412
+ * http://bugs.contrexx.com/contrexx/ticket/1043
+ * @see http://helpdesk.comvation.com/131276-Die-Navigation-meiner-Seite-wird-nicht-mehr-korrekt-angezeigt
+ * 
+ * Adds placeholder {LEVELS_FULL} to all non-empty subnavbars
+ * Adds placeholder {LEVELS_BRANCH} to all navbars having a block named 'navigation' but none 'level_1'
+ */
+function _updateNavigations()
+{
+    global $objDatabase, $_CORELANG;
+    
+    $navbars = array('navbar', 'navbar2', 'navbar3');
+    $subnavbars = array('subnavbar', 'subnavbar2', 'subnavbar3');
+    
+    // Find all themes
+    $result = $objDatabase->Execute('SELECT `themesname`, `foldername` FROM `' . DBPREFIX . 'skins`');
+    if ($result->EOF) {
+        \DBG::msg('No themes, really?');
+        return false;
+    }
+    
+    // Update navigations for all themes
+    $errorMessages = '';
+    while (!$result->EOF) {
+        if (!is_dir(ASCMS_THEMES_PATH . '/' . $result->fields['foldername'])) {
+            \DBG::msg('Skipping theme "' . $result->fields['themesname'] . '"; No such folder!');
+            $errorMessages .= '<div class="message-warning">' . sprintf($_CORELANG['TXT_CSS_UPDATE_MISSING_FOLDER'], $result->fields['themesname']) . '</div>';
+            $result->moveNext();
+            continue;
+        }
+        
+        \DBG::msg('Updating navigations for theme "' . $result->fields['themesname'] . '" (' . $type . ')');
+        
+        // add {LEVELS_FULL} to all non-empty subnavbars
+        foreach ($subnavbars as $subnavbar) {
+            try {
+                $objFile = new \Cx\Lib\FileSystem\File(ASCMS_THEMES_PATH . '/' . $result->fields['foldername'] . '/' . $subnavbar . '.html');
+                $content = $objFile->getData();
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                \DBG::msg($e->getMessage());
+                continue;
+            }
+            if (trim($content) == '') {
+                continue;
+            }
+            $content = '{LEVELS_FULL}' . "\r\n" . $content;
+            try {
+                $objFile->write($content);
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                \DBG::msg($e->getMessage());
+                continue;
+            }
+            \DBG::msg('Updated file ' . $subnavbar . '.html for theme '  . $result->fields['themesname']);
+        }
+
+        // add {LEVELS_BRANCH} to all navbars matching the following criterias:
+        // 1. blockExists('navigation')
+        // 2. !blockExists('level_1')
+        foreach ($navbars as $navbar) {
+            try {
+                $objFile = new \Cx\Lib\FileSystem\File(ASCMS_THEMES_PATH . '/' . $result->fields['foldername'] . '/' . $navbar . '.html');
+                $content = $objFile->getData();
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                \DBG::msg($e->getMessage());
+                continue;
+            }
+            if (trim($content) == '') {
+                continue;
+            }
+            $template = new \Cx\Core\Html\Sigma('.');
+            $template->setTemplate($content);
+            if (!$template->blockExists('navigation')) {
+                continue;
+            }
+            if ($template->blockExists('level_1')) {
+                continue;
+            }
+            $content = '{LEVELS_BRANCH}' . "\r\n" . $content;
+            try {
+                $objFile->write($content);
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                \DBG::msg($e->getMessage());
+                continue;
+            }
+            \DBG::msg('Updated file ' . $navbar . '.html for theme '  . $result->fields['themesname']);
+        }
+        
+        $result->moveNext();
+    }
+    if (!empty($errorMessages)) {
+        setUpdateMsg($errorMessages, 'msg');
+        setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_CONTINUE_UPDATE'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
+        $_SESSION['contrexx_update']['update']['done'][] = 'navigations';
+        return false;
+    }
     return true;
 }
 
