@@ -657,7 +657,9 @@ div.row2 {
     background-repeat:no-repeat;
 }
 .loginbutton,
-.loginbutton:hover {
+.loginbutton:link,
+.loginbutton:hover,
+.loginbutton:visited {
     display: block;
     float: left;
     color: transparent;

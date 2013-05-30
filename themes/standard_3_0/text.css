@@ -219,7 +219,9 @@ input[type=reset] {
 }
 
 .loginbutton,
-.loginbutton:hover {
+.loginbutton:link,
+.loginbutton:hover,
+.loginbutton:visited {
     display: block;
     float: left;
     color: transparent;
