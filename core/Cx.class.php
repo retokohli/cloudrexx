@@ -535,6 +535,7 @@ namespace Cx\Core {
              * Module specific data
              * @global array $_ARRAYLANG
              */
+            $_ARRAYLANG = $objInit->loadLanguageData($plainSection);
             try {
                 $this->ch->loadComponent($this, $plainSection, $this->resolvedPage);
             } catch (\Cx\Core\Component\Controller\ComponentException $e) {
@@ -542,7 +543,6 @@ namespace Cx\Core {
                     $em = \Env::get('em');
                     $moduleManager->loadModule($plainSection, $this->cl, $objDatabase, $_CORELANG, $subMenuTitle, $objTemplate, $objFWUser, $act, $objInit, $_ARRAYLANG, $em, $this);
                 } catch (\ModuleManagerException $e) {
-                    $_ARRAYLANG = $objInit->loadLanguageData($plainSection);
                     $moduleManager->loadLegacyModule($plainSection, $this->cl, $objDatabase, $_CORELANG, $subMenuTitle, $objTemplate, $objFWUser, $act, $objInit, $_ARRAYLANG);
                 }
             }
