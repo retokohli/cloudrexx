@@ -45,7 +45,7 @@ class Resolver {
     protected $page = null;
 
     /**
-     * Doctrine PageRepository
+     * Doctrine Cx\Core\ContentManager\Model\Repository\PageRepository
      */
     protected $pageRepo = null;
 

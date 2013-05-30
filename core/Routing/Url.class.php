@@ -507,7 +507,7 @@ class Url {
             $protocol = ASCMS_PROTOCOL;
         }
         $host = $_CONFIG['domainUrl'];
-        $offset = ASCMS_INSTACE_OFFSET;
+        $offset = ASCMS_INSTANCE_OFFSET;
         $langDir = \FWLanguage::getLanguageCodeById($lang);
         $parameters = '';
         if (count($arrParameters)) {
