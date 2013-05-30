@@ -36,7 +36,7 @@ class SitemapPageTree extends SigmaPageTree {
             'SPACER'    => $spacer,
             'NAME'      => $title,
             'TARGET'    => empty($linkTarget) ? '_self' : $linkTarget,
-            'URL'       => ASCMS_PATH_OFFSET.$this->virtualLanguageDirectory.$path
+            'URL'       => ASCMS_INSTANCE_OFFSET.$this->virtualLanguageDirectory.$path
         ));
         
         $this->template->parse('sitemap');
