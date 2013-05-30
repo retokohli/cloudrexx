@@ -48,11 +48,18 @@ namespace Cx\Core\Db {
         protected $em = null;
 
         protected function getPdoConnection() {
-            global $_DBCONFIG;
+            global $_DBCONFIG, $_CONFIG;
 
             if ($this->pdo) {
                 return $this->pdo;
             }
+            $objDateTimeZone = new \DateTimeZone($_CONFIG['timezone']);
+            $objDateTime = new \DateTime('now', $objDateTimeZone);
+            $offset = $objDateTimeZone->getOffset($objDateTime);
+            $offsetHours = round(abs($offset)/3600); 
+            $offsetMinutes = round((abs($offset)-$offsetHours*3600) / 60); 
+            $offsetString = ($offset > 0 ? '+' : '-').($offsetHours < 10 ? '0' : '').$offsetHours.':'.($offsetMinutes < 10 ? '0' : '').$offsetMinutes;
+
             $this->pdo = new \PDO(
                 'mysql:dbname=' . $_DBCONFIG['database'] . ';charset=' . $_DBCONFIG['charset'] . ';host='.$_DBCONFIG['host'],
                 $_DBCONFIG['user'],
@@ -61,6 +68,7 @@ namespace Cx\Core\Db {
                     // Setting the connection character set in the DSN (see below new \PDO()) prior to PHP 5.3.6 did not work.
                     // We will have to manually do it by executing the SET NAMES query when connection to the database.
                     \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES '.$_DBCONFIG['charset'],
+                    \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET time_zone = \'' . $offsetString . '\'',
                 )
             );
             $this->pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT);
@@ -81,46 +89,25 @@ namespace Cx\Core\Db {
             // Make sure, \Env::get('pdo') is set
             $this->getPdoConnection();
 
-            global $ADODB_FETCH_MODE, $ADODB_NEWCONNECTION, $_CONFIG, $_DBCONFIG;
+            global $ADODB_FETCH_MODE, $ADODB_NEWCONNECTION;
 
             // open db connection
             \Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH.'/adodb/adodb.inc.php');
             $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
             $ADODB_NEWCONNECTION = 'cxAdodbPdoConnectionFactory';
-            $objDb = \ADONewConnection('pdo');
+            $this->adodb = \ADONewConnection('pdo');
 
-            $errorNo = $objDb->ErrorNo();
+            $errorNo = $this->adodb->ErrorNo();
             if ($errorNo != 0) {
                 if ($errorNo == 1049) {
                     throw new DbException('The database is unavailable');
                 } else {
-                    throw new DbException($objDb->ErrorMsg() . '<br />');
+                    throw new DbException($this->adodb->ErrorMsg() . '<br />');
                 }
-                unset($objDb);
+                unset($this->adodb);
                 return false;
             }
-
-            if (!empty($_CONFIG['timezone'])) {
-                if (!$objDb->Execute('SET TIME_ZONE="'.$_CONFIG['timezone'].'"') && array_search($_CONFIG['timezone'], timezone_identifiers_list())) {
-                    //calculate and set the timezone offset if the mysql timezone tables aren't loaded
-                    $objDateTimeZone = new \DateTimeZone($_CONFIG['timezone']);
-                    $objDateTime = new \DateTime('now', $objDateTimeZone);
-                    $offset = $objDateTimeZone->getOffset($objDateTime);
-                    $offsetHours = round(abs($offset)/3600); 
-                    $offsetMinutes = round((abs($offset)-$offsetHours*3600) / 60); 
-                    $offsetString = ($offset > 0 ? '+' : '-').($offsetHours < 10 ? '0' : '').$offsetHours.':'.($offsetMinutes < 10 ? '0' : '').$offsetMinutes;
-                    $objDb->Execute('SET TIME_ZONE="'.$offsetString.'"');
-                }
-            }
-
-            if (empty($_DBCONFIG['charset']) || $objDb->Execute('SET NAMES '.$_DBCONFIG['charset']) && $objDb) {
-                $this->adodb = $objDb;
-                return $this->adodb;
-            } else {
-                throw new DbException('Cannot connect to database server<i>&nbsp;(' . $objDb->ErrorMsg() . ')</i>');
-                $this->adodb = null;
-            }
-            return false;
+            return $this->adodb;
         }
 
         /**
@@ -139,9 +126,10 @@ namespace Cx\Core\Db {
 
             $config = new \Doctrine\ORM\Configuration();
 
-            $cache = new \Doctrine\Common\Cache\ArrayCache();
             if ($apcEnabled) {
                 $cache = new \Doctrine\Common\Cache\ApcCache();
+            } else {
+                $cache = new \Doctrine\Common\Cache\ArrayCache();
             }
             $config->setResultCacheImpl($cache);
             $config->setMetadataCacheImpl($cache);
@@ -151,21 +139,8 @@ namespace Cx\Core\Db {
             $config->setProxyNamespace('Cx\Model\Proxies');
             $config->setAutoGenerateProxyClasses(false);
             
-// this should not be here, there should only be one connection to the DB
-// but I get a "SQLSTATE[HY000]: General error" by using only one connection
-$pdo = new \PDO(
-    'mysql:dbname=' . $_DBCONFIG['database'] . ';charset=' . $_DBCONFIG['charset'] . ';host='.$_DBCONFIG['host'],
-    $_DBCONFIG['user'],
-    $_DBCONFIG['password'],
-    array(
-        // Setting the connection character set in the DSN (see below new \PDO()) prior to PHP 5.3.6 did not work.
-        // We will have to manually do it by executing the SET NAMES query when connection to the database.
-        \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES '.$_DBCONFIG['charset'],
-    )
-);
-            $pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT);
             $connectionOptions = array(
-                'pdo' => $pdo,//$this->getPdoConnection(),
+                'pdo' => $this->getPdoConnection(),
             );
 
             $evm = new \Doctrine\Common\EventManager();
