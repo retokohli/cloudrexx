@@ -9,6 +9,7 @@
  * @version     1.0.0
  * @package     contrexx
  * @subpackage  core
+ * @deprecated  Use PageTree instead
  * @todo        Edit PHP DocBlocks!
  */
 
@@ -22,6 +23,7 @@
  * @access	public
  * @version	1.0.0
  * @package     contrexx
+ * @deprecated  Use PageTree instead
  * @subpackage  core
  */
 class ContentTree {
@@ -55,7 +57,15 @@ class ContentTree {
     function convert($page, $alias) {
 //TODO: this conversion is a hack. in the final dump, we'll have module names instead of ids in the module attribute.
 //TODO: this means we will need to do exactly the opposite conversion (module2id)
-        $m2i = Env::get('module2id');
+        
+        /*$m2i = array();
+        $rs = $db->Query('SELECT id, name FROM '.DBPREFIX.'modules');
+        if ($rs) {
+            while(!$rs->EOF) {
+                $m2i[$rs->fields['name']] = $rs->fields['id'];
+                $rs->MoveNext();
+            }
+        }*/
         return array(
             'catname' => $page->getTitle(),
 //TODO:
@@ -66,7 +76,7 @@ class ContentTree {
             'displaystatus' => $page->getDisplay(),
             'cmd' => $page->getCmd(),
             'modulename' => $page->getModule(),
-            'moduleid' => $m2i[$page->getModule()],
+            //'moduleid' => $m2i[$page->getModule()],
             'lang' => $page->getLang(),
             'startdate' => $page->getStart(),
             'enddate' => $page->getEnd(),
