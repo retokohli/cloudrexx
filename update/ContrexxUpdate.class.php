@@ -511,6 +511,7 @@ class ContrexxUpdate
                         if (!activateDebugging()) {
                             throw new \Exception("The debugging file couldn't be created.");
                         }
+                        $result = true;
                     } catch (\Exception $e) {
                         setUpdateMsg($_CORELANG['TXT_UPDATE_DBG_FILE']);
                         $result = false;
@@ -666,10 +667,10 @@ class ContrexxUpdate
                     
                     if (@include_once(UPDATE_UPDATES . '/' . $file . '/config.inc.php')) {
                         if (is_array($arrUpdate)) {
-                            $installedVersionIsNewer  = $this->_isNewerVersion($arrUpdate['cmsVersion'], $_CONFIG['coreCmsVersion']);
+                            $updateVersionIsNewer  = $this->_isNewerVersion($_CONFIG['coreCmsVersion'], $arrUpdate['cmsVersion']);
                             $installedVersionIsTooOld = $this->_isNewerVersion($_CONFIG['coreCmsVersion'], $arrUpdate['cmsFromVersion']);
                             
-                            if (!$installedVersionIsNewer && !$installedVersionIsTooOld) {
+                            if ($updateVersionIsNewer && !$installedVersionIsTooOld) {
                                 $arrVersions[$file] = $arrUpdate;
                             }
                         }
@@ -1087,15 +1088,21 @@ class ContrexxUpdate
             }
         }
 
-        $objUseUsernameSetting = $this->objDatabase->SelectLimit("SELECT `status` FROM `".DBPREFIX."access_settings` WHERE `key` = ?", 1, -1, array('use_usernames'));
-        if ($objUseUsernameSetting !== false &&
-            $objUseUsernameSetting->RecordCount() > 0 &&
-            !$objUseUsernameSetting->fields['status']
-        ) {
-            $whereField = "`email`" ;
-        } else {
-            $whereField = "`username`";
-        }
+        // check if usernames are in use
+        $whereField = "`username`";
+        try {
+            $arrTables = $this->objDatabase->MetaTables('TABLES');
+            if (in_array(DBPREFIX.'access_settings', $arrTables)) {
+                $objUseUsernameSetting = $this->objDatabase->SelectLimit("SELECT `status` FROM `".DBPREFIX."access_settings` WHERE `key` = ?", 1, -1, array('use_usernames'));
+                if ($objUseUsernameSetting !== false &&
+                    $objUseUsernameSetting->RecordCount() > 0 &&
+                    !$objUseUsernameSetting->fields['status']
+                ) {
+                    $whereField = "`email`" ;
+                }
+            }
+        } catch (Exception $e) {}
+
         $objAuth = $this->objDatabase->SelectLimit("SELECT `id`, `email` FROM `".DBPREFIX."access_users` WHERE ".$whereField." = ? AND `password` = ? AND `is_admin` = 1 AND `active` = 1", 1, -1, array($user, $pass));
         if ($objAuth !== false && $objAuth->RecordCount() == 1) {
             global $sessionObj;
@@ -1117,7 +1124,7 @@ class ContrexxUpdate
             // update the session, otherwise the user is not logged in at the end and
             // and the update from version 3.x cannot update the license correct
             // see: update.php - License->update();
-            $sessionObj->cmsSessionUserUpdate($_SESSION['contrexx_update']['user_id']);
+            $sessionObj->cmsSessionUserUpdate($objAuth->fields['id']);
 
             return $objAuth->fields['id'];
         }
@@ -1305,6 +1312,7 @@ function checkTimeoutLimit()
     }
 
     \DBG::msg('Timeout of ' . $timeoutTime . 's reached!');
+    \DBG::stack();
     setUpdateMsg($_CORELANG['TXT_UPDATE_PROCESS_HALTED'], 'title');
     setUpdateMsg($_CORELANG['TXT_UPDATE_PROCESS_HALTED_TIME_MSG'].'<br /><br />', 'msg');
     setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_CONTINUE_UPDATE'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');

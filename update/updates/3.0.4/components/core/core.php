@@ -1658,6 +1658,7 @@ function _writeNewConfigurationFile()
     $ftpStatus = $_FTPCONFIG['is_activated'] ? 'true' : 'false';
     $ftpUsePassive = $_FTPCONFIG['use_passive'] ? 'true' : 'false';
     $charset = 'UTF-8';
+    $dbCharset = 'utf8';
 
     $_FTPCONFIG['port'] = intval($_FTPCONFIG['port']);
 
@@ -1690,7 +1691,7 @@ define('CONTEXX_INSTALLED', true);
 \$_DBCONFIG['user'] = '{$_DBCONFIG['user']}'; // Database username
 \$_DBCONFIG['password'] = '{$_DBCONFIG['password']}'; // Database password
 \$_DBCONFIG['dbType'] = '{$_DBCONFIG['dbType']}';    // Database type (e.g. mysql,postgres ..)
-\$_DBCONFIG['charset'] = '{$_DBCONFIG['charset']}'; // Charset (default, latin1, utf8, ..)
+\$_DBCONFIG['charset'] = '{$dbCharset}'; // Charset (default, latin1, utf8, ..)
 \$_DBCONFIG['timezone'] = \$_CONFIG['timezone']; // Timezone
 \$_DBCONFIG['collation'] = '{$_DBCONFIG['collation']}';
 

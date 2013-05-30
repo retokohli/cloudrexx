@@ -366,6 +366,10 @@ function _mediadirUpdate()
               'vote'           => array('type' => 'INT(11)', 'after' => 'ip')
           )
       );
+      
+        // remove the script tag at the beginning of the mediadir pages
+        \Cx\Lib\UpdateUtil::migrateContentPageUsingRegex(array('module' => 'mediadir'), '/^\s*(<script[^>]+>.+?Shadowbox.+?<\/script>)+/sm', '', array('content'), '3.0.4');
+        
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }

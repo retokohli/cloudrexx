@@ -82,7 +82,7 @@ function getDatabaseObject(&$errorMsg, $newInstance = false)
         }
         $objDb->Execute('SET sql_mode = \'' . implode(', ', $sqlModes) . '\'');
 
-        if (empty($_DBCONFIG['charset']) || $objDb->Execute('SET CHARACTER SET '.$_DBCONFIG['charset']) && $objDb) {
+        if (empty($_DBCONFIG['charset']) || $objDb->Execute('SET NAMES '.$_DBCONFIG['charset']) && $objDb) {
             if ($newInstance) {
                 return $objDb;
             } else {

@@ -33,12 +33,15 @@ function _accessUpdate()
             ),
             'InnoDB'
         );
+        \Cx\Lib\UpdateUtil::sql('ALTER IGNORE TABLE `' . DBPREFIX . 'access_group_dynamic_ids` ADD PRIMARY KEY ( `access_id` , `group_id` )');
+        \Cx\Lib\UpdateUtil::sql('ALTER IGNORE TABLE `' . DBPREFIX . 'access_group_static_ids` ADD PRIMARY KEY ( `access_id` , `group_id` )');
     }
     catch (\Cx\Lib\UpdateException $e) {
         // we COULD do something else here..
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
+	\DBG::msg('001');
     $arrMails = array(
         array(
             'type'            => 'reg_confirm',
@@ -289,7 +292,7 @@ function _accessUpdate()
         }
     }
 
-
+\DBG::msg('002');
 
     /*********************
      *
@@ -531,7 +534,7 @@ function _accessUpdate()
         }
     }
 
-
+\DBG::msg('003');
 
     /***********************************
      *
@@ -749,8 +752,7 @@ function _accessUpdate()
         // we COULD do something else here..
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
-
-
+\DBG::msg('004');
 
     // only update if installed version is at least a version 2.0.0
     // older versions < 2.0 have a complete other structure of the content page and must therefore completely be reinstalled
