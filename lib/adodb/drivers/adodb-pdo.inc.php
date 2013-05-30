@@ -600,7 +600,16 @@ class ADORecordSet_pdo extends ADORecordSet {
 	{
 		if (!$this->_queryID) return false;
 		
-		$this->fields = $this->_queryID->fetch($this->fetchMode);
+		/**
+		 * THIS IS A BUGFIX BY COMVATION AG
+		 * ONE CAN NOT CALL fetch() FOR UPDATE AND DELETE QUERIES
+		 * (added try catch)
+		 */
+		try {
+			$this->fields = $this->_queryID->fetch($this->fetchMode);
+		} catch (PDOException $e) {
+			return false;
+		}
 		return !empty($this->fields);
 	}
 	
