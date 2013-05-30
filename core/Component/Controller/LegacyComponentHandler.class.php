@@ -47,8 +47,8 @@ class LegacyComponentHandler {
                             $license->save(new \settingsManager(), $objDatabase);
                         }
                         if ($license->isFrontendLocked()) {
-                            print file_get_contents(ASCMS_DOCUMENT_ROOT.'/offline.html');
-                            die(1);
+                            // Since throwing an exception now results in showing offline.html, we can simply do
+                            throw new \Exception('Frontend locked by license');
                         }
                     },
                     'Resolver' => function() {
@@ -1170,15 +1170,520 @@ class LegacyComponentHandler {
                     },*/
                 ),
                 'load' => array(
+                    'access' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate, $objAccess, $page_metatitle, $page_title;
+                        
+                        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/access/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objAccess = new \Access($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $objAccess->getPage($page_metatitle, $page_title));
+                    },
+
+                    'login' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate, $sessionObj;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/login/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new cmsSession();
+                        $objLogin = new \Login($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $objLogin->getContent());
+                    },
+
+                    'nettools' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/nettools/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objNetTools = new \NetTools($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $objNetTools->getPage());
+                    },
+
                     'shop' => function() {
                         global $cl, $_CORELANG, $objTemplate, $page_content, $boolShop, $_ARRAYLANG, $objInit, $plainSection;
                         
-                        $_ARRAYLANG = $objInit->loadLanguageData($plainSection);
+                        /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/shop/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $objTemplate->setVariable('CONTENT_TEXT', \Shop::getPage($page_content));
                         $boolShop = true;
-                    }
+                    },
+
+                    'news' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate, $page_title, $page_metatitle;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/news/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $newsObj= new \news($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $newsObj->getNewsPage());
+                        $newsObj->getPageTitle($page_title);
+                        // Set the meta page description to the teaser text if displaying news details
+                        $teaser = $newsObj->getTeaser();
+                        if ($teaser !== null) //news details, else getTeaser would return null
+                            $page_desc = contrexx_raw2xhtml(contrexx_strip_tags(html_entity_decode($teaser, ENT_QUOTES, CONTREXX_CHARSET)));
+                        $page_title = $newsObj->newsTitle;
+                        $page_metatitle = $page_title;
+                    },
+
+                    'livecam' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/livecam/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objLivecam = new \Livecam($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $objLivecam->getPage());
+                    },
+
+                    'guestbook' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/guestbook/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objGuestbook = new \Guestbook($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $objGuestbook->getPage());
+                    },
+
+                    'memberdir' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/memberdir/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objMemberDir = new \memberDir($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $objMemberDir->getPage());
+                    },
+
+                    'data' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/data/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        //if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new cmsSession();
+                        #if (!isset($objAuth) || !is_object($objAuth)) $objAuth = &new Auth($type = 'frontend');
+
+                        $objData = new \Data($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $objData->getPage());
+                    },
+
+                    'download' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/download/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objDownload = new \Download($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $objDownload->getPage());
+                    },
+
+                    'recommend' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/recommend/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objRecommend = new \Recommend($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $objRecommend->getPage());
+                    },
+
+                    'ecard' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/ecard/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objEcard = new \Ecard($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $objEcard->getPage());
+                    },
+
+                    'tools' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/tools/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objTools = new \Tools($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $objTools->getPage());
+                    },
+
+                    'dataviewer' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/dataviewer/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objDataviewer = new \Dataviewer($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $objDataviewer->getPage());
+                    },
+
+                    'docsys' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate, $page_title, $page_metatitle;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/docsys/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $docSysObj= new \docSys($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $docSysObj->getDocSysPage());
+                        $docSysObj->getPageTitle($page_title);
+                        $page_title = $docSysObj->docSysTitle;
+                        $page_metatitle = $docSysObj->docSysTitle;
+                    },
+
+                    'search' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate, $pos;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/search/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $pos = (isset($_GET['pos'])) ? intval($_GET['pos']) : '';
+                        $objTemplate->setVariable('CONTENT_TEXT', search_getSearchPage($pos, $page_content, $license));
+                        unset($pos);
+                    },
+
+                    'contact' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate, $moduleStyleFile;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/contact/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $contactObj = new \Contact($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $contactObj->getContactPage());
+                        $moduleStyleFile = ASCMS_CORE_MODULE_WEB_PATH.'/contact/frontend_style.css';
+                    },
+
+                    'ids' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        
+                        $objTemplate->setVariable('CONTENT_TEXT', $page_content);
+                    },
+
+                    'sitemap' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/sitemap/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $sitemap = new \sitemap($page_content, $license);
+                        $objTemplate->setVariable('CONTENT_TEXT', $sitemap->getSitemapContent());
+                    },
+
+                    'media' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate, $plainSection;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/media/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objMedia = new \MediaManager($page_content, $plainSection.MODULE_INDEX);
+                        $objTemplate->setVariable('CONTENT_TEXT', $objMedia->getMediaPage());
+                    },
+
+                    'newsletter' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/newsletter/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $newsletter = new \newsletter($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $newsletter->getPage());
+                    },
+
+                    'gallery' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate, $page_title, $page_metatitle;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/gallery/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objGallery = new \Gallery($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $objGallery->getPage());
+
+                        $topGalleryName = $objGallery->getTopGalleryName();
+                        if ($topGalleryName) {
+                            $page_title = $topGalleryName;
+                            $page_metatitle = $topGalleryName;
+                        }
+                    },
+
+                    'voting' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/voting/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objTemplate->setVariable('CONTENT_TEXT', votingShowCurrent($page_content));
+                    },
+
+                    'feed' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/feed/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objFeed = new \feed($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $objFeed->getFeedPage());
+                    },
+
+                    'immo' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate, $page_title, $page_metatitle;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/immo/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objImmo = new \Immo($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $objImmo->getPage());
+                        if (!empty($_GET['cmd']) && $_GET['cmd'] == 'showObj') {
+                            $page_title = $objImmo->getPageTitle($page_title);
+                            $page_metatitle = $page_title;
+                        }
+                    },
+
+                    'calendar' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate, $page_title, $page_metatitle;
+                        
+                        define('CALENDAR_MANDATE', MODULE_INDEX);
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/calendar'.MODULE_INDEX.'/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objCalendar = new \Calendar($page_content, MODULE_INDEX);
+                        $objTemplate->setVariable('CONTENT_TEXT', $objCalendar->getCalendarPage());
+                        if ($objCalendar->pageTitle) {
+                            $page_metatitle = $objCalendar->pageTitle;
+                            $page_title = $objCalendar->pageTitle;
+                        }
+                    },
+
+                    'reservation' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate, $moduleStyleFile;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/reservation/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                            $objReservationModule = new \reservations($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $objReservationModule->getPage());
+                        $moduleStyleFile = ASCMS_MODULE_WEB_PATH.'/reservation/frontend_style.css';
+                    },
+
+                    'directory' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate, $page_title, $page_metatitle;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/directory/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $directory = new \rssDirectory($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $directory->getPage());
+                        $directory_pagetitle = $directory->getPageTitle();
+                        if (!empty($directory_pagetitle)) {
+                            $page_metatitle = $directory_pagetitle;
+                            $page_title = $directory_pagetitle;
+                        }
+                        if ($_GET['cmd'] == 'detail' && isset($_GET['id'])) {
+                            $objTemplate->setVariable(array(
+                                'DIRECTORY_ENTRY_ID' => intval($_GET['id']),
+                            ));
+                        }
+                    },
+
+                    'market' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/market/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $market = new \Market($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $market->getPage());
+                    },
+
+                    'podcast' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/podcast/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objPodcast = new \podcast($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $objPodcast->getPage($podcastFirstBlock));
+                    },
+
+                    'forum' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/forum/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objForum = new \Forum($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $objForum->getPage());
+                    //        $moduleStyleFile = 'modules/forum/css/frontend_style.css';
+                    },
+
+                    'blog' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/blog/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objBlog = new \Blog($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $objBlog->getPage());
+                    },
+
+                    'knowledge' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate, $page_title, $page_metatitle;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/knowledge/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objKnowledge = new \Knowledge($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $objKnowledge->getPage());
+                        if (!empty($objKnowledge->pageTitle)) {
+                            $page_title = $objKnowledge->pageTitle;
+                            $page_metatitle = $objKnowledge->pageTitle;
+                        }
+                    },
+
+                    'jobs' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate, $page_title, $page_metatitle;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/jobs/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $jobsObj= new \jobs($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $jobsObj->getJobsPage());
+                        $jobsObj->getPageTitle($page_title);
+                        $page_title = $jobsObj->jobsTitle;
+                        $page_metatitle = $jobsObj->jobsTitle;
+                    },
+
+                    'error' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_CORE_PATH.'/error.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $errorObj = new \error($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $errorObj->getErrorPage());
+                    },
+
+                    'egov' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/egov/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objEgov = new \eGov($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $objEgov->getPage());
+                    },
+
+                    'support' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        
+                        /**
+                        * Support System Module
+                        * @author  Reto Kohli <reto.kohli@comvation.com>
+                        * @since   1.2.0
+                        * @version 0.0.1 alpha
+                        */
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/support/index.class.php'))
+                            die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objSupport = new \support($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $objSupport->getPage());
+                    },
+
+                    'partners' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/partners/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objPartners = new \PartnersFrontend($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $objPartners->getPage());
+                    },
+
+                    'u2u' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/u2u/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objU2u = new \u2u($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $objU2u->getPage($page_metatitle, $page_title));
+                    },
+
+                    'auction' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/auction/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $auction = new \Auction($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $auction->getPage());
+                    },
+
+                    'downloads' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate, $page_title, $page_metatitle;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/downloads/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objDownloadsModule = new \downloads($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $objDownloadsModule->getPage());
+                        $downloads_pagetitle = $objDownloadsModule->getPageTitle();
+                        if ($downloads_pagetitle) {
+                            $page_metatitle = $downloads_pagetitle;
+                            $page_title = $downloads_pagetitle;
+                        }
+                    },
+
+                    'printshop' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate, $page_title, $page_metatitle;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/printshop/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objPrintshopModule = new \Printshop($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $objPrintshopModule->getPage());
+                        $page_metatitle .= ' '.$objPrintshopModule->getPageTitle();
+                        $page_title = '';
+                    },
+
+                    'mediadir' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate, $page_title, $page_metatitle;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/mediadir/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objMediaDirectory = new \mediaDirectory($page_content);
+                        $objMediaDirectory->pageTitle = $page_title;
+                        $objMediaDirectory->metaTitle = $page_metatitle;
+                        $objTemplate->setVariable('CONTENT_TEXT', $objMediaDirectory->getPage());
+                        if ($objMediaDirectory->getPageTitle() != '') {
+                            $page_title = $objMediaDirectory->getPageTitle();
+                        }
+                        if ($objMediaDirectory->getMetaTitle() != '') {
+                            $page_metatitle = $objMediaDirectory->getMetaTitle();
+                        }
+                    },
+
+                    'checkout' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/checkout/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objCheckout = new \Checkout($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $objCheckout->getPage());
+                    },
+
+                    'filesharing' => function() {
+                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/filesharing/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objFileshare = new \Filesharing($page_content);
+                        $objTemplate->setVariable('CONTENT_TEXT', $objFileshare->getPage());
+                    },
                 ),
             ),
             'backend' => array(
