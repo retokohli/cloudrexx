@@ -526,22 +526,23 @@ return false;
             throw new ModuleManagerException('No language dependent name for module "' . $module . '"');*/
         }
         $subMenuTitle = $coreLang['TXT_' . strtoupper($module) . '_MODULE_NAME'];
+        
+        // Since Component could not be loaded by ComponentHandler
+        // try legacy class names:
+        $origBackendClassName = $backendClassName;
+        $backendClassName = $module . 'manager';
         if (!class_exists($backendClassName)) {
-            // try legacy class names:
-            $origBackendClassName = $backendClassName;
-            $backendClassName = $module . 'manager';
+            $backendClassName = $module . 'Manager';
             if (!class_exists($backendClassName)) {
-                $backendClassName = $module . 'Manager';
+                $backendClassName = ucfirst($module) . 'Manager';
                 if (!class_exists($backendClassName)) {
-                    $backendClassName = ucfirst($module) . 'Manager';
-                    if (!class_exists($backendClassName)) {
-                        \DBG::msg('Component load: Could not find class for component');
-                        throw new ModuleManagerException('Class "' . $origBackendClassName . '" for module "' . $module . '" not found');
-                    }
+                    \DBG::msg('Component load: Could not find class for component');
+                    throw new ModuleManagerException('Class "' . $origBackendClassName . '" for module "' . $module . '" not found');
                 }
             }
-            \DBG::msg('Component load: Loading component from legacy class name (' . $backendClassName . ')');
         }
+        \DBG::msg('Component load: Loading component from legacy class name (' . $backendClassName . ')');
+        
         if (!method_exists($backendClassName, 'getPage')) {
             \DBG::msg('Component load: Found class for component has not getPage() method');
             throw new ModuleManagerException('Class "' . $backendClassName . '" for module "' . $module . '" has no method getPage($template)');
