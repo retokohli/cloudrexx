@@ -113,7 +113,7 @@ namespace Cx\Core\Db {
                 }
             }
 
-            if (empty($_DBCONFIG['charset']) || $objDb->Execute('SET CHARACTER SET '.$_DBCONFIG['charset']) && $objDb) {
+            if (empty($_DBCONFIG['charset']) || $objDb->Execute('SET NAMES '.$_DBCONFIG['charset']) && $objDb) {
                 $this->adodb = $objDb;
                 return $this->adodb;
             } else {
