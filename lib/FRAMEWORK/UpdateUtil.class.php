@@ -106,10 +106,10 @@ class UpdateUtil
     }
 
     /**
-     * Set constraints to database table
+     * Get constraints of database table
      *
      * @param name table - Name of database table
-     * @param array constraints - optional. Constraints specification. This is an associative array
+     * @return array constraints - Constraints definitions. This is an associative array
      *      where the keys represent the foreign keys and the values are arrays defining the constraint on the
      *      foreign keys:
      *          array(
@@ -120,9 +120,8 @@ class UpdateUtil
      *                  'onUpdate'     => 'CASCADE|SET NULL|NO ACTION|RESTRICT', # constraint action on foreign relation' update
      *              ),
      *          )
-     *      If left empty, all existing constraints will be removed from specified table
      */
-    public static function set_constraints($name, $constraints = array())
+    public static function get_constraints($name)
     {
         global $objDatabase, $_ARRAYLANG;
 
@@ -167,6 +166,29 @@ class UpdateUtil
             }
         }
 
+        return $arrDefinedConstraints;
+    }
+
+    /**
+     * Set constraints to database table
+     *
+     * @param name table - Name of database table
+     * @param array constraints - optional. Constraints specification. This is an associative array
+     *      where the keys represent the foreign keys and the values are arrays defining the constraint on the
+     *      foreign keys:
+     *          array(
+     *              'foreign_key' => array(
+     *                  'table'     => 'foreign_table', # table of foreign key constraint
+     *                  'column'    => 'foreign_column', # table's column of foreign key constraint
+     *                  'onDelete'     => 'CASCADE|SET NULL|NO ACTION|RESTRICT', # constraint action on foreign relation' delete
+     *                  'onUpdate'     => 'CASCADE|SET NULL|NO ACTION|RESTRICT', # constraint action on foreign relation' update
+     *              ),
+     *          )
+     *      If left empty, all existing constraints will be removed from specified table
+     */
+    public static function set_constraints($name, $constraints = array())
+    {
+        $arrDefinedConstraints = self::get_constraints($name);
         foreach ($constraints as $foreignKey => $constraint) {
             $dropForeignKeyStmt = '';
 
