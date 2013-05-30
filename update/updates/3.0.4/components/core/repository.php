@@ -28,4 +28,5 @@ function _updateModuleRepository_%MODULE_ID%()
     }
     return true;
 }
+
 ?>

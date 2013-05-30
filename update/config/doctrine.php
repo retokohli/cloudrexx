@@ -50,9 +50,14 @@ $config->setProxyNamespace('Cx\Model\Proxies');
 $config->setAutoGenerateProxyClasses(false);
 
 $connection = new \PDO(
-    'mysql:dbname=' . $_DBCONFIG['database'] . ';' . (isset($_DBCONFIG['charset']) ? 'charset=' . $_DBCONFIG['charset'] . ';' : '') . 'host='.$_DBCONFIG['host'],
+    'mysql:dbname=' . $_DBCONFIG['database'] . ';' . (!empty($_DBCONFIG['charset']) ? 'charset=' . $_DBCONFIG['charset'] . ';' : '') . 'host='.$_DBCONFIG['host'],
     $_DBCONFIG['user'],
-    $_DBCONFIG['password']
+    $_DBCONFIG['password'],
+    array(
+        // Setting the connection character set in the DSN (see below new \PDO()) prior to PHP 5.3.6 did not work.
+        // We will have to manually do it by executing the SET NAMES query when connection to the database.
+        \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES '.$_DBCONFIG['charset'],
+    )
 );
 $connection->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_SILENT);
 

@@ -7,7 +7,7 @@ require_once UPDATE_PATH . '/lib/FRAMEWORK/FileSystem/FileSystemFile.class.php';
 require_once UPDATE_PATH . '/lib/FRAMEWORK/FileSystem/FTPFile.class.php';
 
 function executeContrexxUpdate() {
-    global $_CORELANG, $_CONFIG, $objDatabase, $objUpdate;
+    global $_CORELANG, $_CONFIG, $objDatabase, $objUpdate, $_DBCONFIG;
     
     /**
      * These are the modules which MUST have new template in order for Contrexx
@@ -108,10 +108,11 @@ function executeContrexxUpdate() {
 
         // we need to stop the script here to force a reinitialization of the update system
         // this is required so that the new constants from config/set_constants.php are loaded
-        setUpdateMsg($_CORELANG['TXT_UPDATE_PROCESS_HALTED'], 'title');
-        setUpdateMsg($_CORELANG['TXT_UPDATE_PROCESS_HALTED_TIME_MSG'].'<br />', 'msg');
-        setUpdateMsg('Installation der neuen Dateien abgeschlossen.<br /><br />', 'msg');
-        setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_CONTINUE_UPDATE'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
+        //setUpdateMsg($_CORELANG['TXT_UPDATE_PROCESS_HALTED'], 'title');
+        //setUpdateMsg($_CORELANG['TXT_UPDATE_PROCESS_HALTED_TIME_MSG'].'<br />', 'msg');
+        //setUpdateMsg('Installation der neuen Dateien abgeschlossen.<br /><br />', 'msg');
+        //setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_CONTINUE_UPDATE'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
+        setUpdateMsg(1, 'timeout');
         return false;
     }
     unset($_SESSION['contrexx_update']['copiedCxFilesIndex']);
@@ -125,18 +126,6 @@ function executeContrexxUpdate() {
     $cl = new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT, true);
     Env::set('ClassLoader', $cl);
 
-    // Doctrine configuration
-    $incDoctrineStatus = require_once(UPDATE_PATH . '/config/doctrine.php');
-    Env::set('incDoctrineStatus', $incDoctrineStatus);
-
-    $userData = array(
-        'id'   => $_SESSION['contrexx_update']['user_id'],
-        'name' => $_SESSION['contrexx_update']['username'],
-    );
-    $loggableListener = \Env::get('loggableListener');
-    $loggableListener->setUsername(json_encode($userData));
-
-    // Reinitialize FWLanguage. Now with fallback (doctrine).
     FWLanguage::init();
 
     if (!isset($_SESSION['contrexx_update']['update']['done'])) {
@@ -147,24 +136,35 @@ function executeContrexxUpdate() {
     /////////////////////
     // UTF-8 MIGRATION //
     /////////////////////
+    if (!include_once(dirname(__FILE__) . '/components/core/core.php')) {
+        setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/core.php'));
+        return false;
+    }
     if (!include_once(dirname(__FILE__) . '/components/core/utf8.php')) {
         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/utf8.php'));
         return false;
     }
-    $result = _utf8Update();
-    if (!$result) {
-        if (empty($objUpdate->arrStatusMsg['title'])) {
-            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UTF_CONVERSION']), 'title');
-        }
-        return false;
-    }
-    if ($result == 'charset_changed') {
-        // write new charset/collation definition to config file
-        if (!_writeNewConfigurationFile()) {
+    if (!in_array('utf8', $_SESSION['contrexx_update']['update']['done'])) {
+        $result = _utf8Update();
+        if ($result === 'timeout') {
+            setUpdateMsg(1, 'timeout');
+            return false;
+        } elseif (!$result) {
+            if (empty($objUpdate->arrStatusMsg['title'])) {
+                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UTF_CONVERSION']), 'title');
+            }
             return false;
         }
+        if ($result === 'charset_changed') {
+            // write new charset/collation definition to config file
+            if (!_writeNewConfigurationFile()) {
+                return false;
+            }
+        }
 
-        // _utf8Update() did change the charset/collation,
+        $_SESSION['contrexx_update']['update']['done'][] = 'utf8';
+
+        // _utf8Update() might have changed the charset/collation and migrated some tables,
         // therefore, we will force a reinitialization of the update system
         // to ensure that all db-connections are using the proper charset/collation
         \DBG::msg('Changed collation to: '.$_DBCONFIG['collation']);
@@ -172,6 +172,19 @@ function executeContrexxUpdate() {
         setUpdateMsg(1, 'timeout');
         return false;
     }
+    /////////////////////
+
+
+    // Load Doctrine (this must be done after the UTF-8 Migration, because we'll need $_DBCONFIG['charset'] to be set)
+    $incDoctrineStatus = require_once(UPDATE_PATH . '/config/doctrine.php');
+    Env::set('incDoctrineStatus', $incDoctrineStatus);
+
+    $userData = array(
+        'id'   => $_SESSION['contrexx_update']['user_id'],
+        'name' => $_SESSION['contrexx_update']['username'],
+    );
+    $loggableListener = \Env::get('loggableListener');
+    $loggableListener->setUsername(json_encode($userData));
     /////////////////////
 
     
@@ -387,10 +400,6 @@ function executeContrexxUpdate() {
         }
         
         // Update configuration.php
-        if (!include_once(dirname(__FILE__) . '/components/core/core.php')) {
-            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/core.php'));
-            return false;
-        }
         if (!_writeNewConfigurationFile()) {
             return false;
         }
@@ -420,10 +429,7 @@ function executeContrexxUpdate() {
     $arrDirs = array('core_module', 'module');
     $updateStatus = true;
 
-    if (!include_once(dirname(__FILE__) . '/components/core/core.php')) {
-        setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/core.php'));
-        return false;
-    } elseif (!include_once(dirname(__FILE__) . '/components/core/backendAreas.php')) {
+    if (!include_once(dirname(__FILE__) . '/components/core/backendAreas.php')) {
         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/backendAreas.php'));
         return false;
     } elseif (!include_once(dirname(__FILE__) . '/components/core/modules.php')) {

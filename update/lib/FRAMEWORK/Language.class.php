@@ -43,8 +43,6 @@ class FWLanguage
     {
         global $_CONFIG, $objDatabase;
         
-        $incDoctrineStatus = Env::get('incDoctrineStatus');
-        
         $objResult = $objDatabase->Execute("
             SELECT id, lang, name, charset, themesid,
                    frontend, backend, is_default

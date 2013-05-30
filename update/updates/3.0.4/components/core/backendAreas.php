@@ -1702,7 +1702,7 @@ function _updateBackendAreas()
         $objResult = $objDatabase->Execute($query);
         if ($objResult) {
             while (!$objResult->EOF) {
-                $query = 'INSERT INTO `'.DBPREFIX.'access_group_static_ids` (`access_id`, `group_id`) VALUES ('.$arrAccessIds[$objResult->fields['access_id']].', '.$objResult->fields['group_id'].')';
+                $query = 'INSERT IGNORE INTO `'.DBPREFIX.'access_group_static_ids` (`access_id`, `group_id`) VALUES ('.$arrAccessIds[$objResult->fields['access_id']].', '.$objResult->fields['group_id'].')';
                 if ($objDatabase->Execute($query) === false) {
                     return _databaseError($query, $objDatabase->ErrorMsg());
                 }
