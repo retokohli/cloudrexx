@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Main script for Contrexx
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -240,6 +241,7 @@ namespace Cx\Core {
                 case self::MODE_BACKEND:
                 case self::MODE_FRONTEND:
                 case self::MODE_CLI:
+                case self::MODE_MINIMAL:
                     break;
                 default:
                     if ($mode === false) {
@@ -264,27 +266,71 @@ namespace Cx\Core {
         
         /**
          * Returns the mode this instance of Cx is in
-         * @return string One of 'cli', 'frontend', 'backend'
+         * @return string One of 'cli', 'frontend', 'backend', 'minimal'
          */
         public function getMode() {
             return $this->mode;
         }
         
+        /**
+         * Returns the request URL
+         * @return \Cx\Core\Routing\Url Request URL
+         */
         public function getRequest() {
             return $this->request;
         }
         
+        /**
+         * Returns the main template
+         * @return \Cx\Core\Html\Sigma Main template
+         */
         public function getTemplate() {
             return $this->template;
         }
         
+        /**
+         * Returns the resolved page
+         * 
+         * Please note, that this works only if mode is self::MODE_FRONTEND by now
+         * If resolving has not taken place yet, null is returned
+         * @return \Cx\Core\ContentManager\Model\Entity\Page Resolved page or null
+         */
         public function getPage() {
             return $this->resolvedPage;
         }
         
+        /**
+         * Loads configuration files (settings.php and set_constants.php)
+         * 
+         * configuration.php is loaded in index.php in order to load this file
+         * from its correct location.
+         * @todo Find a way to store configuration by avoiding global variables
+         * @global array $_CONFIG Configuration array from /config/settings.php
+         * @global array $_PATHCONFIG Path configuration from /config/configuration.php
+         * @throws \Exception If the CMS is deactivated, an exception is thrown
+         */
         protected function loadConfig() {
             global $_CONFIG, $_PATHCONFIG;
             
+            /**
+             * Handle multisite installations
+             * CUSTOMIZING from ppay.com
+             */
+            require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/core_modules/MultiSite/Model/Repository/InstanceRepository.class.php';
+            require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/core/Component/Model/Entity/EntityBase.class.php';
+            require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/core_modules/MultiSite/Model/Entity/Instance.class.php';
+            $multiSiteRepo = new \Cx\Core_Modules\MultiSite\Model\Repository\InstanceRepository();
+            $subdomain = current(explode('.', $_SERVER['HTTP_HOST']));
+            foreach ($multiSiteRepo->findAll('/var/www/trunk2/instances') as $instance) {
+                if ($subdomain == strtolower($instance->getName())) {
+                    require_once '/var/www/trunk2/instances/'.$instance->getName().'/config/configuration.php';
+                    break;
+                }
+            }
+            /**
+             * End CUSTOMIZING
+             */
+
             /**
              * User configuration settings
              *
@@ -299,13 +345,6 @@ namespace Cx\Core {
              * -------------------------------------------------------------------------
              */
             require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/config/set_constants.php';
-
-            /**
-             * Path, database, FTP configuration settings
-             *
-             * Initialises global settings array and constants.
-             */
-            //include_once dirname(dirname(__FILE__)).'/config/configuration.php';
             
             // Check if system is running
             if ($_CONFIG['systemStatus'] != 'on' && $this->mode == self::MODE_FRONTEND) {
@@ -362,15 +401,26 @@ namespace Cx\Core {
             return round(((float)$finishTime[0] + (float)$finishTime[1]) - ((float)$this->startTime[0] + (float)$this->startTime[1]), 5);
         }
 
+        /**
+         * Early initializations. Tries to enable APC and increase RAM size
+         */
         protected function preInit() {
             $this->tryToEnableApc();
             $this->tryToSetMemoryLimit();
         }
 
+        /**
+         * Late initializations. Loads components
+         */
         protected function postInit() {
             $this->loadComponents();
         }
 
+        /**
+         * Calls pre-resolve hooks
+         * @todo Remove usage of globals
+         * @global \Cx\Core\Routing\Url $url Request URL
+         */
         protected function preResolve() {
             global $url;
             
@@ -379,10 +429,22 @@ namespace Cx\Core {
             $this->ch->callPreResolveHooks('proper');
         }
 
+        /**
+         * Does the resolving
+         * 
+         * @todo Move resolving from LegacyComponentHandler to here and Resolver
+         */
         protected function resolve() {
             // implemented as pre- and post resolve hooks by now
         }
 
+        /**
+         * Calls post-resolve hooks
+         * @todo Remove usage of globals
+         * @global \Cx\Core\ContentManager\Model\Entity\Page $page Resolved page
+         * @global string $page_title Resolved page's title
+         * @global string $page_content Resolved page's content
+         */
         protected function postResolve() {
             global $page, $page_title, $page_content;
             
@@ -399,6 +461,12 @@ namespace Cx\Core {
             }
         }
 
+        /**
+         * Calls hooks before content is processed
+         * @todo Remove usage of globals
+         * @global string $page_title Resolved page's title
+         * @global string $page_content Resolved page's content
+         */
         protected function preContentLoad() {
             global $page_title, $page_content;
             
@@ -409,14 +477,23 @@ namespace Cx\Core {
             }
         }
 
+        /**
+         * Calls hooks after content was processed
+         */
         protected function postContentLoad() {
             $this->ch->callPostContentLoadHooks();
         }
         
+        /**
+         * Calls hooks before finalize() is called
+         */
         protected function preFinalize() {
             $this->ch->callPreFinalizeHooks();
         }
         
+        /**
+         * Calls hooks after call to finalize()
+         */
         protected function postFinalize() {
             $this->ch->callPostFinalizeHooks();
         }
@@ -458,21 +535,32 @@ namespace Cx\Core {
             }
         }
 
+        /**
+         * Loads all active components
+         */
         protected function loadComponents() {
             $this->ch = new \Cx\Core\Component\Controller\ComponentHandler($this->mode == self::MODE_FRONTEND, $this->db->getEntityManager());
             $this->ch->initComponents();
         }
         
+        /**
+         * Returns the current user object 
+         * @return \FWUser Current user
+         */
         public function getUser() {
             return \FWUser::getFWUserObject();
         }
         
+        /**
+         * Returns the database connection handler
+         * @return \Cx\Core\Db\Db DB connection handler
+         */
         public function getDb() {
             return $this->db;
         }
         
         /**
-         * Init template object
+         * Init main template object
          */
         protected function loadTemplate() {
             $this->template = new \Cx\Core\Html\Sigma(($this->mode == self::MODE_FRONTEND) ? ASCMS_THEMES_PATH : ASCMS_ADMIN_TEMPLATE_PATH);
@@ -485,7 +573,21 @@ namespace Cx\Core {
         
         /**
          * This populates globals for legacy code
+         * @todo Avoid this! All this should be part of some components hook
          * @global type $objFWUser
+         * @global type $objTemplate
+         * @global type $cl
+         * @global \InitCMS $objInit
+         * @global type $_LANGID
+         * @global type $_CORELANG
+         * @global \Cx\Core\Routing\Url $url
+         * @global string $virtualLanguageDirectory
+         * @global \Navigation $objNavbar
+         * @global type $_ARRAYLANG
+         * @global type $pageId
+         * @global \Cx\Core\ContentManager\Model\Entity\Page $page
+         * @global type $plainSection
+         * @global \InitCMS $objInit
          * @param type $no 
          */
         protected function legacyGlobalsHook($no) {
@@ -545,12 +647,14 @@ namespace Cx\Core {
         /**
          * Loading ClassLoader, Env, DB, API and InitCMS
          * (Env, API and InitCMS are deprecated)
+         * @todo Remove deprecated elements
+         * @todo Remove usage of globals
          * @global type $incDoctrineStatus
-         * @global type $_CONFIG
+         * @global array $_CONFIG
          * @global type $_FTPCONFIG
          * @global type $objDatabase
          * @global \InitCMS $objInit
-         * @global string $errorMsg 
+         * @global type $errorMsg 
          */
         protected function init() {
             global $incDoctrineStatus, $_CONFIG, $_FTPCONFIG, $objDatabase,
@@ -596,6 +700,25 @@ namespace Cx\Core {
             \Env::set('init', $objInit);
         }
 
+        /**
+         * This parses the content
+         * @todo Using this with mode self::MODE_CLI could lead to problems
+         * @todo Remove usage of globals
+         * @global type $objTemplate
+         * @global string $page_content
+         * @global boolean $boolShop
+         * @global null $moduleStyleFile
+         * @global \modulemanager $moduleManager
+         * @global type $plainSection
+         * @global type $objDatabase
+         * @global type $_CORELANG
+         * @global type $subMenuTitle
+         * @global type $objFWUser
+         * @global type $act
+         * @global \InitCMS $objInit
+         * @global type $plainCmd
+         * @global type $_ARRAYLANG 
+         */
         protected function loadContent() {
             global $objTemplate, $page_content, $boolShop, $moduleStyleFile,
                     $moduleManager, $plainSection, $objDatabase, $_CORELANG,
@@ -642,6 +765,21 @@ namespace Cx\Core {
             }
         }
 
+        /**
+         * Set main template placeholders required before parsing the content
+         * @todo Does this even make any sense? Couldn't simply everything be set after content parsing?
+         * @todo Remove usage of globals
+         * @global type $themesPages
+         * @global type $page_template
+         * @global \Cx\Core\ContentManager\Model\Entity\Page $page
+         * @global \Cx\Core\Routing\Url $url
+         * @global \Navigation $objNavbar
+         * @global string $page_content
+         * @global array $_CONFIG
+         * @global string $page_title
+         * @global \InitCMS $objInit
+         * @param type $objTemplate 
+         */
         protected function setPreContentLoadPlaceholders($objTemplate) {
             global $themesPages, $page_template, $page, $url, $objNavbar,
                     $page_content, $_CONFIG, $page_title, $objInit;
@@ -669,6 +807,30 @@ namespace Cx\Core {
             $page_content = str_replace('{CONTACT_FAX}',     isset($_CONFIG['contactFax'])       ? contrexx_raw2xhtml($_CONFIG['contactFax'])       : '', $page_content);
         }
 
+        /**
+         * Set main template placeholders required after content parsing
+         * @todo Remove usage of globals
+         * @global \InitCMS $objInit
+         * @global string $page_title
+         * @global type $page_metatitle
+         * @global type $page_catname
+         * @global array $_CONFIG
+         * @global type $page_keywords
+         * @global type $page_desc
+         * @global type $page_robots
+         * @global type $pageCssName
+         * @global \Navigation $objNavbar
+         * @global type $themesPages
+         * @global type $license
+         * @global boolean $boolShop
+         * @global type $objCounter
+         * @global type $objBanner
+         * @global type $_CORELANG
+         * @global type $page_modified
+         * @global \Cx\Core\ContentManager\Model\Entity\Page $page
+         * @global \Cx\Core\Routing\Url $url
+         * @return type 
+         */
         protected function setPostContentLoadPlaceholders() {
             global $objInit, $page_title, $page_metatitle, $page_catname, $_CONFIG,
                     $page_keywords, $page_desc, $page_robots, $pageCssName,
@@ -779,6 +941,24 @@ namespace Cx\Core {
             ));
         }
 
+        /**
+         * Parses the main template in order to finish request
+         * @todo Remove usage of globals
+         * @global type $themesPages
+         * @global null $moduleStyleFile
+         * @global type $objCache
+         * @global array $_CONFIG
+         * @global \InitCMS $objInit
+         * @global string $page_title
+         * @global type $parsingtime
+         * @global type $starttime
+         * @global type $subMenuTitle
+         * @global type $_CORELANG
+         * @global type $objFWUser
+         * @global type $plainCmd
+         * @global type $cmd
+         * @global type $startTime 
+         */
         protected function finalize() {
             global $themesPages, $moduleStyleFile, $objCache, $_CONFIG,
                     $objInit, $page_title, $parsingtime, $starttime, $subMenuTitle,
