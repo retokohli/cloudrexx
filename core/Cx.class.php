@@ -75,13 +75,20 @@ namespace Cx\Core {
          */
         public function __construct($mode = null) {
             try {
-                $this->loadConfig();                    // loads config
-                $this->handleCustomizing();             // handles customizings of this class (customizings die here)
-
                 $this->startTimer();                    // start time measurement
+
+                $this->loadConfig();                    // loads config
 
                 $this->setMode($mode);                  // set mode, default is self::MODE_FRONTEND
 
+                // init
+                $this->preInit();                       // APC, RAM
+                $this->init();                          // ClassLoader, API, DB (incl. Doctrine)
+                    
+                $this->handleCustomizing();             // handles customizings of this class (customizings die here)
+                
+                $this->postInit();                      // Components
+                
                 // now we have a valid state, load it:
                 $this->loadContrexx();
                 
@@ -98,11 +105,6 @@ namespace Cx\Core {
          * Loads Contrexx and initializes Contrexx
          */
         protected function loadContrexx() {
-            // init
-            $this->preInit();                           // APC, RAM
-            $this->init();                              // ClassLoader, API, DB (incl. Doctrine)
-            $this->postInit();                          // Components
-            
             // init template
             $this->loadTemplate();                      // Sigma Template
             
@@ -138,6 +140,10 @@ namespace Cx\Core {
          * @param mixed $mode Mode as string or true for front- or false for backend
          */
         protected function setMode($mode) {
+            if (php_sapi_name() === 'cli') {
+                $this->mode = self::MODE_CLI;
+                return;
+            }
             switch ($mode) {
                 case self::MODE_BACKEND:
                 case self::MODE_FRONTEND:
@@ -185,7 +191,7 @@ namespace Cx\Core {
         }
         
         protected function loadConfig() {
-            global $_DBCONFIG, $_CONFIGURATION, $_CONFIG, $_PATHCONFIG;
+            global $_CONFIG, $_PATHCONFIG;
             
             /**
              * User configuration settings
@@ -193,7 +199,7 @@ namespace Cx\Core {
              * This file is re-created by the CMS itself. It initializes the
              * {@link $_CONFIG[]} global array.
              */
-            $incSettingsStatus = include_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/config/settings.php';
+            $incSettingsStatus = include_once $_PATHCONFIG['ascms_root'].$_PATHCONFIG['ascms_root_offset'].'/config/settings.php';
 
             /**
              * -------------------------------------------------------------------------
@@ -225,7 +231,6 @@ namespace Cx\Core {
         
         /**
          * Loads a subclass of this class from customizing if available
-         * @todo make sure cx\customizing\core\cx is a subclass of self
          * @return null
          */
         protected function handleCustomizing() {
@@ -236,7 +241,7 @@ namespace Cx\Core {
                 return;
             }
             // we have to use reflection here, since instanceof does not work if the child is no object
-            $myReflection = new ReflectionClass('\\Cx\\Customizing\\Core\\Cx');
+            $myReflection = new \ReflectionClass('\\Cx\\Customizing\\Core\\Cx');
             if (!$myReflection->isSubclassOf(get_class($this))) {
                 return;
             }
@@ -481,6 +486,7 @@ namespace Cx\Core {
 
             /**
              * Include all the required files.
+             * @todo Remove API.php, it should be unnecessary
              */
             $this->cl->loadFile(ASCMS_CORE_PATH.'/API.php');
             // Temporary fix until all GET operation requests will be replaced by POSTs
@@ -495,9 +501,8 @@ namespace Cx\Core {
 
             \DBG::set_adodb_debug_mode();
 
-            createModuleConversionTables();
-
             // Initialize base system
+            // TODO: Get rid of InitCMS class, merge it with this class instead
             $objInit = new \InitCMS($this->mode == self::MODE_FRONTEND ? 'frontend' : 'backend', \Env::em());
             \Env::set('init', $objInit);
         }
