@@ -27,9 +27,36 @@ namespace Cx\Core {
      * @todo Remove all instances of "global" or at least move them to a single place
      */
     class Cx {
+        /**
+         * Commandline interface mode
+         * 
+         * In this mode, Contrexx is initialized for commandline usage
+         * This mode is BETA at this time
+         */
         const MODE_CLI = 'cli';
+        
+        /**
+         * Frontend mode
+         * 
+         * In this mode, Contrexx shows the frontend
+         */
         const MODE_FRONTEND = 'frontend';
+        
+        /**
+         * Backend mode
+         * 
+         * In this mode, Contrexx show the administrative backend
+         */
         const MODE_BACKEND = 'backend';
+        
+        /**
+         * Minimal mode
+         * 
+         * In this mode, the whole environment is loaded, but the
+         * main template will not be initialized, no component hooks
+         * will be executed and the template will not be parsed
+         * This mode is BETA at this time
+         */
         const MODE_MINIMAL = 'minimal';
         
         /**
