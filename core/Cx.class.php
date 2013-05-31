@@ -30,7 +30,16 @@ namespace Cx\Core {
         const MODE_CLI = 'cli';
         const MODE_FRONTEND = 'frontend';
         const MODE_BACKEND = 'backend';
+        const MODE_MINIMAL = 'minimal';
+        
+        /**
+         * @var array Array in the form array({milliseconds}, {seconds})
+         */
         protected $startTime = array();
+        
+        /**
+         * @var string Mode the system runs in
+         */
         protected $mode = null;
 
         /**
@@ -71,30 +80,85 @@ namespace Cx\Core {
         protected $resolvedPage = null;
 
         /**
-         * Initialized the Cx class
+         * Initializes the Cx class
+         * This does everything related to Contrexx.
+         * @param string $mode (optional) Use constants, one of self::MODE_[FRONTEND|BACKEND|CLI|MINIMAL]
          */
         public function __construct($mode = null) {
             try {
-                $this->startTimer();                    // start time measurement
+                /**
+                 * This starts time measurement
+                 * Timer will get stopped in finalize() method
+                 */
+                $this->startTimer();
 
-                $this->loadConfig();                    // loads config
+                /**
+                 * Sets the mode Contrexx runs in
+                 * One of self::MODE_[FRONTEND|BACKEND|CLI|MINIMAL]
+                 */
+                $this->setMode($mode);
 
-                $this->setMode($mode);                  // set mode, default is self::MODE_FRONTEND
+                /**
+                 * Early initializations, tries to enable APC and increase RAM size
+                 * This is not a hookscript, since no components are loaded so far
+                 */
+                $this->preInit();
 
-                // init
-                $this->preInit();                       // APC, RAM
-                $this->init();                          // ClassLoader, API, DB (incl. Doctrine)
-                    
-                $this->handleCustomizing();             // handles customizings of this class (customizings die here)
+                /**
+                 * Load config/configuration.php, config/settings.php and config/set_constants.php
+                 * If you want to load another config instead, you may call
+                 * 
+                 *     $cx->loadConfig($pathToYourConfigDirectory);
+                 *     $cx->handleCustomizing();
+                 *     $cx->postInit();
+                 *     $cx->loadContrexx();
+                 *     // something to stop execution of Cx which does not interrupt the script invoking Cx
+                 * 
+                 * in the constructor of your ComponentController. 
+                 */
+                $this->loadConfig();
                 
-                $this->postInit();                      // Components
+                /**
+                 * Loads ClassLoader and Database connection
+                 * For now, this also loads some legacy things like API, AdoDB, Env and InitCMS
+                 */
+                $this->init();
                 
-                // now we have a valid state, load it:
-                $this->loadContrexx();
+                /**
+                 * In order to make this file customizable, we explicitly
+                 * search for a subclass of Cx\Core\Cx named Cx\Customizing\Core\Cx
+                 * If such a class is found, it is loaded and this request will be stopped
+                 */
+                $this->handleCustomizing();
                 
+                /**
+                 * Load all components to have them ready
+                 */
+                $this->postInit();
+                
+                /**
+                 * Since we have a valid state now, we can start executing
+                 * all of the component's hook methods.
+                 * This initializes the main template, executes all hooks
+                 * and parses the template.
+                 * 
+                 * This is not executed automaticly in minimal mode. Invoke it
+                 * yourself if necessary and be sure to handle exceptions.
+                 */
+                if ($this->mode != self::MODE_MINIMAL) {
+                    $this->loadContrexx();
+                }
+                
+            /**
+             * Globally catch all exceptions and show offline.html
+             * This might have one of the following reasons:
+             * 1. CMS is disabled by config
+             * 2. Frontend is locked by license
+             * 3. An error occured
+             * 
+             * Enable \DBG to see what happened
+             */
             } catch (\Exception $e) {
-                //$e = new \Exception();
-                //echo nl2br($e->getTraceAsString());
                 echo file_get_contents(ASCMS_DOCUMENT_ROOT.'/offline.html');
                 \DBG::msg('Contrexx initialization failed! ' . get_class($e) . ': "' . $e->getMessage() . '"');
                 die();
@@ -102,7 +166,8 @@ namespace Cx\Core {
         }
         
         /**
-         * Loads Contrexx and initializes Contrexx
+         * Initializes global template, executes all component hook methods
+         * and parses the template.
          */
         protected function loadContrexx() {
             // init template
@@ -214,6 +279,11 @@ namespace Cx\Core {
              * Initialises global settings array and constants.
              */
             //include_once dirname(dirname(__FILE__)).'/config/configuration.php';
+            
+            // Check if system is running
+            if ($_CONFIG['systemStatus'] != 'on' && $this->mode == self::MODE_FRONTEND) {
+                throw new \Exception('System disabled by config');
+            }
 
             // Check if the system is installed
             if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
@@ -266,14 +336,6 @@ namespace Cx\Core {
         }
 
         protected function preInit() {
-            global $_CONFIG;
-            
-            // Check if system is running
-            if ($_CONFIG['systemStatus'] != 'on' && $this->mode == self::MODE_FRONTEND) {
-                header('Location: offline.html');
-                die(1);
-            }
-            
             $this->tryToEnableApc();
             $this->tryToSetMemoryLimit();
         }
