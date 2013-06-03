@@ -179,7 +179,7 @@ class LegacyComponentHandler {
                         if ($isRegularPageRequest) {
                         // TODO: history (empty($history) ? )
                             if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1 && empty($sessionObj)) {
-                                $sessionObj = new cmsSession();
+                                $sessionObj = new \cmsSession();
                             }
                             $resolver->init($url, FRONTEND_LANG_ID, \Env::em(), ASCMS_INSTANCE_OFFSET.\Env::get('virtualLanguageDirectory'), \FWLanguage::getFallbackLanguageArray());
                             try {
@@ -313,7 +313,7 @@ class LegacyComponentHandler {
                         global $section, $sessionObj, $cl, $_CORELANG, $objUploadModule;
 
                         if ($section == 'upload') {//handle uploads separately, since they have no content
-                            $sessionObj = new cmsSession();
+                            $sessionObj = new \cmsSession();
                             if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/upload/index.class.php'))
                                 die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                             $objUploadModule = new Upload();
@@ -1185,7 +1185,7 @@ class LegacyComponentHandler {
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/login/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new cmsSession();
+                        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new \cmsSession();
                         $objLogin = new \Login($page_content);
                         $objTemplate->setVariable('CONTENT_TEXT', $objLogin->getContent());
                     },
@@ -1263,7 +1263,7 @@ class LegacyComponentHandler {
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/data/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        //if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new cmsSession();
+                        //if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new \cmsSession();
                         #if (!isset($objAuth) || !is_object($objAuth)) $objAuth = &new Auth($type = 'frontend');
 
                         $objData = new \Data($page_content);
