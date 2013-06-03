@@ -66,6 +66,7 @@ cx.fe = function () {
 
 /**
  * Init the ckeditor for the content and title element
+ * this line is necessary for the start and end method of contentEditor
  */
 cx.fe.contentEditor = function () {
 };
@@ -164,11 +165,11 @@ cx.fe.contentEditor.stop = function () {
 };
 
 cx.fe.pageHasBeenModified = function () {
-    return CKEDITOR.instances.fe_title.getData() != cx.fe.publishedPage.title
-        || CKEDITOR.instances.fe_content.getData() != cx.fe.publishedPage.content
-        || cx.jQuery("#fe_options .fe_box select[name=\"page[skin]\"]").val() != cx.fe.page.skin
-        || cx.jQuery("#fe_options .fe_box select[name=\"page[customContent]\"]").val() != cx.fe.page.customContent
-        || cx.jQuery("#fe_options .fe_box input[name=\"page[cssName]\"]").val() != cx.fe.page.cssName;
+    return CKEDITOR.instances.fe_title.getData() != cx.fe.publishedPage.title ||
+        CKEDITOR.instances.fe_content.getData() != cx.fe.publishedPage.content ||
+        cx.jQuery("#fe_options .fe_box select[name=\"page[skin]\"]").val() != cx.fe.page.skin ||
+        cx.jQuery("#fe_options .fe_box select[name=\"page[customContent]\"]").val() != cx.fe.page.customContent ||
+        cx.jQuery("#fe_options .fe_box input[name=\"page[cssName]\"]").val() != cx.fe.page.cssName;
 };
 
 /**
@@ -188,7 +189,7 @@ cx.fe.toolbar = function () {
     // is toolbar already opened from last session
     cx.fe.toolbar_opened = cx.jQuery.cookie("fe_toolbar") == "true";
 
-    // if it was opened the last time, open now or init and hide
+    // if it was opened the last time, open now or hide
     if (cx.fe.toolbar_opened) {
         cx.fe.toolbar.show();
     } else {
@@ -214,13 +215,13 @@ cx.fe.toolbar = function () {
             // if the edit mode was not active, start the editor
             cx.jQuery(this).html(cx.fe.langVars.TXT_FRONTEND_EDITING_STOP_EDIT);
 
-            // load newest version, draft or published and refresh the editor"s content
+            // load newest version, draft or published and refresh the editor's content
             cx.fe.loadPageData(null, true, function () {
                 cx.fe.history();
                 cx.fe.options();
 
                 // check whether the content is editable or not
-                // don"t show inline editor for module pages, except home
+                // don't show inline editor for module pages, except home
                 if (cx.fe.page.type == "content" || (cx.fe.page.type == "application" && cx.fe.page.module == "home")) {
                     // init the inline ckeditor
                     cx.fe.contentEditor.start();
@@ -252,15 +253,15 @@ cx.fe.toolbar = function () {
  * Hide the toolbar
  */
 cx.fe.toolbar.hide = function () {
+    // hide anchor boxes
+    cx.fe.toolbar.hideBoxes();
+
     // do the css
     cx.jQuery("#fe_toolbar").css("top", "-" + cx.jQuery("#fe_toolbar").height() + "px");
     cx.jQuery("body").css("padding-top", "0px");
 
     // do the html
     cx.jQuery("#fe_toolbar_tab").html(cx.fe.langVars.TXT_FRONTEND_EDITING_SHOW_TOOLBAR);
-
-    // hide anchor boxes
-    cx.fe.toolbar.hideBoxes();
 
     // save the status
     cx.fe.toolbar_opened = false;
@@ -309,13 +310,16 @@ cx.fe.adminmenu = function () {
             cx.fe.adminmenu.show();
         }
         return false;
-    }).hover(function () {
+    }).hover(
+        function () {
             clearTimeout(cx.fe.adminmenu.displayTimeout);
-        }, function () {
+        },
+        function () {
             cx.fe.adminmenu.displayTimeout = setTimeout(function () {
                 cx.fe.adminmenu.hide();
             }, 2000);
-        });
+        }
+    );
 };
 
 /**
@@ -415,7 +419,12 @@ cx.fe.loadPageData = function (historyId, putTheData, callback) {
 
             // if it is a draft tell the user that he is editing a draft
             if (cx.fe.pageIsADraft() &&
-                cx.fe.editMode &&((historyId && historyId == cx.fe.page.historyId - 1) || !historyId)) {
+                cx.fe.editMode &&
+                (
+                    (historyId && historyId == cx.fe.page.historyId - 1) ||
+                    !historyId
+                )
+            ) {
                 if (cx.fe.dialogTimeout > 0) {
                     setTimeout(function () {
                         cx.jQuery("<div class=\"warning\">" + cx.fe.langVars.TXT_FRONTEND_EDITING_THE_DRAFT + "</div>").cxNotice();
@@ -502,8 +511,6 @@ cx.fe.savePage = function () {
  * Hide the history box after 2 seconds
  */
 cx.fe.history = function () {
-    cx.fe.history.hide();
-
     cx.jQuery("#fe_history").click(function () {
         if (cx.jQuery("#fe_history .fe_box").css("display") != "none") {
             return false;
