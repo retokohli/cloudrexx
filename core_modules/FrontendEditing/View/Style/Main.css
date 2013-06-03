@@ -1,6 +1,6 @@
 #fe_toolbar {
     font-family: Arial, sans-serif;
-    z-index: 1000000;
+    z-index: 1000;
     position: fixed;
     left: 0;
     top: 0;
@@ -53,13 +53,13 @@
     background: url(../Media/ckeditor-save-icon.png) no-repeat 6px 5px !important;
 }
 
-#fe_toolbar_status {
+#fe_toolbar_actions {
     position: absolute;
     left: 170px;
     top: 8px;
 }
 
-#fe_toolbar_startEditMode {
+#fe_toolbar_actions .fe_button {
     float: left;
     background: #dadada url(../../../../../cadmin/template/ascms/images/button_bg.png) repeat-x scroll left top;
     border: 1px solid #BBBBBB;
@@ -107,8 +107,7 @@
     background: url(../../../../../cadmin/template/ascms/images/metanavigation_upgrade.png) no-repeat;
 }
 
-#fe_metanavigation #fe_history_box_anchor,
-#fe_metanavigation #fe_options_box_anchor {
+#fe_metanavigation .fe_anchor {
     float: left;
     position: relative;
     padding-left: 21px;
@@ -117,23 +116,20 @@
     line-height: normal;
 }
 
-#fe_metanavigation #fe_history_box_anchor {
+#fe_history {
     background: url(../Media/toolbar-history.png) no-repeat;
 }
 
-#fe_metanavigation #fe_options_box_anchor {
+#fe_options {
     background: url(../Media/toolbar-options.png) no-repeat;
 }
 
-#fe_metanavigation #fe_history_box_anchor>a,
-#fe_metanavigation #fe_options_box_anchor>a {
+#fe_metanavigation .fe_anchor>a {
     color: #c5dbe8;
 }
 
-#fe_metanavigation #fe_history_box_anchor>a:hover,
-#fe_metanavigation #fe_history_box_anchor:hover>a,
-#fe_metanavigation #fe_options_box_anchor>a:hover,
-#fe_metanavigation #fe_options_box_anchor:hover>a {
+#fe_metanavigation .fe_anchor>a:hover,
+#fe_metanavigation .fe_anchor:hover>a {
     color: #fff;
 }
 
@@ -151,8 +147,7 @@
     background: url(../../../../../cadmin/template/ascms/images/logout_icon.png) no-repeat;
 }
 
-#fe_history_box,
-#fe_options_box {
+#fe_metanavigation .fe_anchor .fe_box {
     display: block;
     position: absolute;
     top: 45px;
@@ -164,8 +159,7 @@
     border: 2px #0f9bd8 solid;
 }
 
-#fe_history_arrow,
-#fe_options_arrow {
+#fe_metanavigation .fe_anchor .fe_arrow {
     display: block;
     position: absolute;
     top: 19px;
@@ -175,25 +169,25 @@
     background: url("../Media/toolbar-arrow.png");
 }
 
-#fe_history_box .adminlist th {
+#fe_metanavigation .fe_anchor .adminlist th {
     height: 29px;
     line-height: 29px;
 }
 
-#fe_history_box .historyLoad {
+#fe_metanavigation .fe_anchor .historyLoad {
     float: right;
     padding: 0 15px 0 20px;
     background: url(../Media/Restore.png) no-repeat left center;
 }
 
-#fe_history_box .historyPreview {
+#fe_metanavigation .fe_anchor .historyPreview {
     float: right;
     padding: 0 0 0 18px;
     background: url(../Media/Preview.png) no-repeat left center;
 }
 
-#fe_options_box select,
-#fe_options_box input[type="text"] {
+#fe_metanavigation .fe_anchor select,
+#fe_metanavigation .fe_anchor input[type="text"] {
     border: 1px solid #bbbbbb;
     padding: 3px;
     color: #444444;
@@ -201,15 +195,48 @@
     width: 300px;
 }
 
-#fe_options_box input[type="text"] {
+#fe_metanavigation .fe_anchor input[type="text"] {
     width: 292px;
 }
 
-#fe_options_box label {
+#fe_metanavigation .fe_anchor label {
     display: block;
     width: 170px;
     float: left;
     padding: 11px 0 0 0;
+}
+
+#fe_adminmenu ul.navigation_level_1 li {
+    clear: both;
+}
+
+#fe_adminmenu ul.navigation_level_1 li span.name {
+    display: block;
+    border-style: solid;
+    border-color: black;
+    border-bottom-width: 1px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+#fe_adminmenu ul.navigation_level_2 li {
+    clear: none;
+    float: left;
+    margin: 5px;
+    border-width: 1px;
+    height: 75px;
+    width: 75px;
+}
+
+#fe_adminmenu ul.navigation_level_2 li a {
+    height: 100%;
+    width: 100%;
+    display: block;
+}
+
+#fe_content.fe_outline,
+#fe_title.fe_outline {
+    outline: 1px #0873bb dashed;
 }
 
 
@@ -297,6 +324,9 @@
 }
 .ui-dialog .warning {
     color: #DB7A0A;
+}
+.ui-dialog .info {
+    color: #3a87ad;
 }
 .ui-dialog #loading {
     float: none;

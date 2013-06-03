@@ -3,17 +3,17 @@
     <div id="fe_toolbar_logo"></div>
     <div id="fe_toolbar_tab"></div>
     <div id="fe_metanavigation">
-        <div id="fe_history_box_anchor">
+        <div id="fe_history" class="fe_anchor fe_toggle">
             <a href="#">{TXT_FRONTEND_EDITING_HISTORY}</a>
 
-            <div id="fe_history_arrow"></div>
-            <div id="fe_history_box"></div>
+            <div class="fe_arrow fe_toggle"></div>
+            <div class="fe_box fe_toggle"></div>
         </div>
-        <div id="fe_options_box_anchor">
+        <div id="fe_options" class="fe_anchor fe_toggle">
             <a href="#">{TXT_FRONTEND_EDITING_OPTIONS}</a>
 
-            <div id="fe_options_arrow"></div>
-            <div id="fe_options_box">
+            <div class="fe_arrow fe_toggle"></div>
+            <div class="fe_box fe_toggle">
                 <label for="page_skin">{TXT_FRONTEND_EDITING_THEMES}</label>
                 <select id="page_skin" name="page[skin]">
                     <option value="0">(Default)</option>
@@ -27,6 +27,14 @@
                 <input type="text" name="page[cssName]" id="page_css_class"/>
             </div>
         </div>
+        <div id="fe_adminmenu" class="fe_anchor">
+            <a href="#">{TXT_FRONTEND_EDITING_ADMINMENU}</a>
+
+            <div class="fe_arrow fe_toggle"></div>
+            <div class="fe_box fe_toggle">
+                {NAVIGATION_OUTPUT}
+            </div>
+        </div>
         <!-- BEGIN upgradable -->
         <a id="fe_license-upgrade" href="{LINK_LICENSE}" target="_self">{TXT_UPGRADE}</a>
         <!-- END upgradable -->
@@ -34,8 +42,9 @@
         <a class="profile" href="{LINK_PROFILE}">{LOGGED_IN_USER}</a>
         <a class="logout" href="{LINK_LOGOUT}">{TXT_LOGOUT}</a>
     </div>
-    <div id="fe_toolbar_status">
-        <a href="#" id="fe_toolbar_startEditMode"></a>
+    <div id="fe_toolbar_actions">
+        <a href="#" id="fe_toolbar_startEditMode" class="fe_button"></a>
+        <a href="#" id="fe_toolbar_publishPage" class="fe_button"></a>
     </div>
 </div>
 <!-- END coreModule_frontendEditing_toolbar.html -->
