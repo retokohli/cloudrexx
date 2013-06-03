@@ -121,18 +121,6 @@ namespace Cx\Core {
                 $this->startTimer();
 
                 /**
-                 * Sets the mode Contrexx runs in
-                 * One of self::MODE_[FRONTEND|BACKEND|CLI|MINIMAL]
-                 */
-                $this->setMode($mode);
-
-                /**
-                 * Early initializations, tries to enable APC and increase RAM size
-                 * This is not a hookscript, since no components are loaded so far
-                 */
-                $this->preInit();
-
-                /**
                  * Load config/configuration.php, config/settings.php and config/set_constants.php
                  * If you want to load another config instead, you may call
                  * 
@@ -145,6 +133,18 @@ namespace Cx\Core {
                  * in the constructor of your ComponentController. 
                  */
                 $this->loadConfig();
+
+                /**
+                 * Sets the mode Contrexx runs in
+                 * One of self::MODE_[FRONTEND|BACKEND|CLI|MINIMAL]
+                 */
+                $this->setMode($mode);
+
+                /**
+                 * Early initializations, tries to enable APC and increase RAM size
+                 * This is not a hookscript, since no components are loaded so far
+                 */
+                $this->preInit();
                 
                 /**
                  * Loads ClassLoader and Database connection
@@ -312,6 +312,25 @@ namespace Cx\Core {
         protected function loadConfig() {
             global $_CONFIG, $_PATHCONFIG;
             
+            /**
+             * Handle multisite installations
+             * CUSTOMIZING from ppay.com
+             */
+            /*require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/core_modules/MultiSite/Model/Repository/InstanceRepository.class.php';
+            require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/core/Component/Model/Entity/EntityBase.class.php';
+            require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/core_modules/MultiSite/Model/Entity/Instance.class.php';
+            $multiSiteRepo = new \Cx\Core_Modules\MultiSite\Model\Repository\InstanceRepository();
+            $subdomain = current(explode('.', $_SERVER['HTTP_HOST']));
+            foreach ($multiSiteRepo->findAll('/var/www/trunk2/instances') as $instance) {
+                if ($subdomain == strtolower($instance->getName())) {
+                    require_once '/var/www/trunk2/instances/'.$instance->getName().'/config/configuration.php';
+                    break;
+                }
+            }*/
+            /**
+             * End CUSTOMIZING
+             */
+
             /**
              * User configuration settings
              *
