@@ -104,6 +104,19 @@ class LegacyComponentHandler {
                         $_COOKIE = $objSecurity->detectIntrusion($_COOKIE);
                         $_REQUEST = $objSecurity->detectIntrusion($_REQUEST);
                     },
+                    'Captcha' => function() {
+                        global $section;
+                        
+                        if (contrexx_input2raw($_GET['section']) == 'captcha') {
+                            /*
+                            * Captcha Module
+                            *
+                            * Generates no output, requests are answered by a die()
+                            * @since   2.1.5
+                            */
+                            \FWCaptcha::getInstance()->getPage();
+                        }
+                    },
                 ),
                 'postResolve' => array(
                     'License' => function() {
@@ -319,19 +332,6 @@ class LegacyComponentHandler {
                             $objUploadModule = new Upload();
                             $objUploadModule->getPage();
                             //execution never reaches this point
-                        }
-                    },
-                    'Captcha' => function() {
-                        global $section;
-
-                        if ($section == 'captcha') {
-                            /*
-                            * Captcha Module
-                            *
-                            * Generates no output, requests are answered by a die()
-                            * @since   2.1.5
-                            */
-                            FWCaptcha::getInstance()->getPage();
                         }
                     },
                     'JsonData' => function() {
