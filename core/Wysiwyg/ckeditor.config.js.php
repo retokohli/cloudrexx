@@ -8,6 +8,7 @@ if (strpos(dirname(__FILE__), 'customizing') === false) {
 }
 require_once($contrexx_config_path.'settings.php');
 require_once($contrexx_config_path.'configuration.php');
+require_once($contrexx_config_path.'set_constants.php');
 require_once(ASCMS_CORE_PATH.'/ClassLoader/ClassLoader.class.php');
 
 $customizing = null;

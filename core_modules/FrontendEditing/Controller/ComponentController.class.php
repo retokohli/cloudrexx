@@ -52,14 +52,18 @@ class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponen
 
         // check permission and frontend editing status
         // @todo: add check for mobile phone ( if it is a mobile phone, don't show the frontend editing )
-        if (($cx->getUser()->objUser->getAdminStatus()
-            || ($_CONFIG['frontendEditingStatus'] == 'on'
-                && \Permission::checkAccess(6, 'static', true)
-                && \Permission::checkAccess(35, 'static', true)
-                && (!$cx->getPage()->isBackendProtected()
-                    || Permission::checkAccess($cx->getPage()->getId(), 'page_backend', true))))
-            && ($cx->getPage()->getType() == 'content'
-                || ($cx->getPage()->getType() == 'application' && $cx->getPage()->getModule() == 'home'))
+        if ($_CONFIG['frontendEditingStatus'] != 'on') {
+            return false;
+        }
+        if ($cx->getUser()->objUser->getAdminStatus() ||
+            (
+                \Permission::checkAccess(6, 'static', true) &&
+                \Permission::checkAccess(35, 'static', true) &&
+                (
+                    !$cx->getPage()->isBackendProtected() ||
+                    Permission::checkAccess($cx->getPage()->getId(), 'page_backend', true)
+                )
+            )
         ) {
             return true;
         }
@@ -74,7 +78,6 @@ class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponen
      */
     public function preContentLoad(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page = null)
     {
-
         // Is frontend editing active?
         if (!$this->frontendEditingIsActive($cx)) {
             return;
@@ -102,14 +105,13 @@ class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponen
      */
     public function preFinalize(\Cx\Core\Cx $cx, \Cx\Core\Html\Sigma $template)
     {
-
         // Is frontend editing active?
         if (!$this->frontendEditingIsActive($cx)) {
             return;
         }
 
         $frontendEditing = new \Cx\Core_Modules\FrontendEditing\Controller\FrontendController();
-        $frontendEditing->initFrontendEditing($this);
+        $frontendEditing->initFrontendEditing($this, $cx);
     }
 
     public function load(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page = null)

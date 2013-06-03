@@ -35,14 +35,15 @@ class FrontendController
      * Adds the used language variables to contrexx-js variables, so the toolbar has access to these variables
      *
      * @param ComponentController $componentController
+     * @param \Cx\Core\Cx $cx
      */
-    public function initFrontendEditing(\Cx\Core_Modules\FrontendEditing\Controller\ComponentController $componentController)
+    public function initFrontendEditing(\Cx\Core_Modules\FrontendEditing\Controller\ComponentController $componentController, \Cx\Core\Cx &$cx)
     {
         global $objInit, $_ARRAYLANG, $page;
         // add css and javascript file
         $jsFilesRoot = substr(ASCMS_CORE_MODULE_FOLDER . '/' . $componentController->getName() . '/View/Script', 1);
 
-        \JS::registerCSS(substr(ASCMS_CORE_MODULE_FOLDER . '/' . $componentController->getName() . '/View/Style' . '/Main.css', 1));
+        \JS::registerCSS(substr(ASCMS_CORE_MODULE_FOLDER . '/' . $componentController->getName() . '/View/Style/Main.css', 1));
         \JS::registerJS($jsFilesRoot . '/Main.js');
         \JS::registerJS($jsFilesRoot . '/CKEditorPlugins.js');
 
@@ -61,31 +62,33 @@ class FrontendController
             'TXT_FRONTEND_EDITING_STOP_EDIT' => $_ARRAYLANG['TXT_FRONTEND_EDITING_STOP_EDIT'],
             'TXT_FRONTEND_EDITING_THE_DRAFT' => $_ARRAYLANG['TXT_FRONTEND_EDITING_THE_DRAFT'],
             'TXT_FRONTEND_EDITING_SAVE_CURRENT_STATE' => $_ARRAYLANG['TXT_FRONTEND_EDITING_SAVE_CURRENT_STATE'],
+            'TXT_FRONTEND_EDITING_MODULE_PAGE' => $_ARRAYLANG['TXT_FRONTEND_EDITING_MODULE_PAGE'],
         );
 
         // add toolbar to html
-        $this->prepareTemplate($componentController);
+        $this->prepareTemplate($componentController, $cx);
 
         // assign js variables
-        $ContrexxJavascript = \ContrexxJavascript::getInstance();
-        $ContrexxJavascript->setVariable('langVars', $langVariables, 'frontendEditing');
-        $ContrexxJavascript->setVariable('pageId', $page->getId(), 'frontendEditing');
-        $ContrexxJavascript->setVariable('hasPublishPermission', \Permission::checkAccess(35, 'static', true), 'frontendEditing');
-        $ContrexxJavascript->setVariable('contentTemplates', $this->getCustomContentTemplates(), 'frontendEditing');
-        $ContrexxJavascript->setVariable('defaultTemplate', $this->getDefaultTemplate(), 'frontendEditing');
+        $contrexxJavascript = \ContrexxJavascript::getInstance();
+        $contrexxJavascript->setVariable('langVars', $langVariables, 'FrontendEditing');
+        $contrexxJavascript->setVariable('pageId', $page->getId(), 'FrontendEditing');
+        $contrexxJavascript->setVariable('hasPublishPermission', \Permission::checkAccess(35, 'static', true), 'FrontendEditing');
+        $contrexxJavascript->setVariable('contentTemplates', $this->getCustomContentTemplates(), 'FrontendEditing');
+        $contrexxJavascript->setVariable('defaultTemplate', $this->getDefaultTemplate(), 'FrontendEditing');
 
         $configPath = ASCMS_PATH_OFFSET . substr(\Env::get('ClassLoader')->getFilePath(ASCMS_CORE_PATH . '/Wysiwyg/ckeditor.config.js.php'), strlen(ASCMS_DOCUMENT_ROOT));
-        $ContrexxJavascript->setVariable('configPath', $configPath . "?langId=" . FRONTEND_LANG_ID, 'frontendEditing');
+        $contrexxJavascript->setVariable('configPath', $configPath . "?langId=" . FRONTEND_LANG_ID, 'FrontendEditing');
     }
 
     /**
      * Adds the toolbar to the current html structure (after the starting body tag)
      *
      * @param ComponentController $componentController
+     * @param \Cx\Core\Cx $cx
      */
-    private function prepareTemplate(\Cx\Core_Modules\FrontendEditing\Controller\ComponentController $componentController)
+    private function prepareTemplate(\Cx\Core_Modules\FrontendEditing\Controller\ComponentController $componentController, \Cx\Core\Cx &$cx)
     {
-        global $_ARRAYLANG, $license, $objInit, $objTemplate, $page;
+        global $_ARRAYLANG, $license, $objInit, $objTemplate, $page, $_CORELANG;
 
         $componentTemplate = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/' . $componentController->getName() . '/View/Template');
         $componentTemplate->setErrorHandling(PEAR_ERROR_DIE);
@@ -97,7 +100,20 @@ class FrontendController
             'LINK_LICENSE' => ASCMS_PATH_OFFSET . '/cadmin/index.php?cmd=license',
         ));
 
-        $objUser = \FWUser::getFWUserObject()->objUser;
+        // @author: Michael Ritter
+        $template = $objTemplate;
+        $root = $componentTemplate->fileRoot;
+        $componentTemplate->setRoot(ASCMS_ADMIN_TEMPLATE_PATH);
+        $objTemplate = $componentTemplate;
+        \Env::get('ClassLoader')->loadFile(ASCMS_DOCUMENT_ROOT . '/lang/en/backend.php');
+        $_CORELANG = array_merge($_CORELANG, $_ARRAYLANG);
+        $menu = new \adminMenu('fe');
+        $menu->getAdminNavbar();
+        $componentTemplate->setRoot($root);
+        $objTemplate = $template;
+        // end code from Michael Ritter
+
+        $objUser = $cx->getUser()->objUser;
         $firstname = $objUser->getProfileAttribute('firstname');
         $lastname = $objUser->getProfileAttribute('lastname');
         $componentTemplate->setGlobalVariable(array(
@@ -106,6 +122,7 @@ class FrontendController
             'TXT_FRONTEND_EDITING_TOOLBAR_OPEN_CM' => $_ARRAYLANG['TXT_FRONTEND_EDITING_TOOLBAR_OPEN_CM'],
             'TXT_FRONTEND_EDITING_HISTORY' => $_ARRAYLANG['TXT_FRONTEND_EDITING_HISTORY'],
             'TXT_FRONTEND_EDITING_OPTIONS' => $_ARRAYLANG['TXT_FRONTEND_EDITING_OPTIONS'],
+            'TXT_FRONTEND_EDITING_ADMINMENU' => $_ARRAYLANG['TXT_FRONTEND_EDITING_ADMINMENU'],
             'TXT_FRONTEND_EDITING_CSS_CLASS' => $_ARRAYLANG['TXT_FRONTEND_EDITING_CSS_CLASS'],
             'TXT_FRONTEND_EDITING_CUSTOM_CONTENT' => $_ARRAYLANG['TXT_FRONTEND_EDITING_CUSTOM_CONTENT'],
             'TXT_FRONTEND_EDITING_THEMES' => $_ARRAYLANG['TXT_FRONTEND_EDITING_THEMES'],
@@ -148,7 +165,7 @@ class FrontendController
     private function getThemes()
     {
         global $objDatabase;
-        $query = "SELECT id,themesname FROM " . DBPREFIX . "skins ORDER BY id";
+        $query = 'SELECT id,themesname FROM ' . DBPREFIX . 'skins ORDER BY id';
         $rs = $objDatabase->Execute($query);
 
         $themes = array();
