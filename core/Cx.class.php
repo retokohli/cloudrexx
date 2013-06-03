@@ -313,25 +313,6 @@ namespace Cx\Core {
             global $_CONFIG, $_PATHCONFIG;
             
             /**
-             * Handle multisite installations
-             * CUSTOMIZING from ppay.com
-             */
-            require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/core_modules/MultiSite/Model/Repository/InstanceRepository.class.php';
-            require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/core/Component/Model/Entity/EntityBase.class.php';
-            require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/core_modules/MultiSite/Model/Entity/Instance.class.php';
-            $multiSiteRepo = new \Cx\Core_Modules\MultiSite\Model\Repository\InstanceRepository();
-            $subdomain = current(explode('.', $_SERVER['HTTP_HOST']));
-            foreach ($multiSiteRepo->findAll('/var/www/trunk2/instances') as $instance) {
-                if ($subdomain == strtolower($instance->getName())) {
-                    require_once '/var/www/trunk2/instances/'.$instance->getName().'/config/configuration.php';
-                    break;
-                }
-            }
-            /**
-             * End CUSTOMIZING
-             */
-
-            /**
              * User configuration settings
              *
              * This file is re-created by the CMS itself. It initializes the
