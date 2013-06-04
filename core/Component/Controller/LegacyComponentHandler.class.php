@@ -1519,7 +1519,7 @@ class LegacyComponentHandler {
                         $intAccessIdOffset = intval(MODULE_INDEX)*1000;
                     },
                     'FwUser' => function() {
-                        global $objFWUser, $loggedIn, $plainCmd, $isRegularPageRequest, $userData, $loggableListener,
+                        global $objFWUser, $loggedIn, $plainCmd, $isRegularPageRequest, $userData,
                                 $objUser, $firstname, $lastname, $txtProfile, $objTemplate;
                         
                         $objFWUser = \FWUser::getFWUserObject();
@@ -1546,7 +1546,7 @@ class LegacyComponentHandler {
                                 'id'   => \FWUser::getFWUserObject()->objUser->getId(),
                                 'name' => \FWUser::getFWUserObject()->objUser->getUsername(),
                             );
-                            $loggableListener->setUsername(json_encode($userData));
+                            \Env::get('cx')->getDb()->setUsername(json_encode($userData));
                         }
                         
                         $objUser = \FWUser::getFWUserObject()->objUser;
@@ -1592,7 +1592,7 @@ class LegacyComponentHandler {
                 ),
                 'postResolve' => array(
                     'License' => function() {
-                        global $plainCmd, $objDatabase, $loggedIn, $lc, $_CONFIG, $_CORELANG, $license;
+                        global $plainCmd, $objDatabase, $loggedIn, $_CONFIG, $_CORELANG, $license;
                         
                         // check if the requested module is active:
                         if (!in_array($plainCmd, array('login', 'license', 'noaccess', ''))) {
