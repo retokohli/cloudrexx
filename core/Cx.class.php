@@ -240,7 +240,7 @@ namespace Cx\Core {
             $this->resolve();                           // Resolving, Language
 
             // @TODO: remove this
-            $this->legacyGlobalsHook(2);                // $objInit, $_LANGID, $_CORELANG, $url, $virtualLanguageDirectory;
+            $this->legacyGlobalsHook(2);                // $objInit, $_LANGID, $_CORELANG, $url;
 
             $this->postResolve();                       // Call post resolve hook scripts
 
@@ -482,7 +482,7 @@ namespace Cx\Core {
                 $this->resolvedPage = $this->resolver->resolve();
                 
             } else {
-                global $cmd, $act, $isRegularPageRequest, $plainSection, $plainCmd;
+                global $cmd, $act, $isRegularPageRequest, $plainCmd;
 
                 $cmd = isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : '';
                 $act = isset($_REQUEST['act']) ? $_REQUEST['act'] : '';
@@ -627,10 +627,18 @@ namespace Cx\Core {
             return \FWUser::getFWUserObject();
         }
         
+        /**
+         * Tells wheter APC is enabled or not
+         * @return boolean True if APC is enabled, false otherwise
+         */
         public function isApcEnabled() {
             return $this->apcEnabled;
         }
         
+        /**
+         * Returns the toolbox
+         * @return \FWSystem Toolbox
+         */
         public function getToolbox() {
             if (!$this->toolbox) {
                 $this->toolbox = new \FWSystem();
@@ -679,16 +687,14 @@ namespace Cx\Core {
          * @global type $_LANGID
          * @global type $_CORELANG
          * @global \Cx\Core\Routing\Url $url
-         * @global string $virtualLanguageDirectory
          * @global \Navigation $objNavbar
          * @global type $pageId
          * @global \Cx\Core\ContentManager\Model\Entity\Page $page
          * @param type $no 
          */
         protected function legacyGlobalsHook($no) {
-            global $objFWUser, $objTemplate, $cl,
-                    $objInit, $_LANGID, $_CORELANG, $url, $virtualLanguageDirectory,
-                    $objNavbar, $pageId, $page;
+            global $objFWUser, $objTemplate, $cl, $objInit, $_LANGID, $_CORELANG,
+                    $url, $objNavbar, $pageId, $page;
             
             switch ($no) {
                 case 1:
@@ -723,9 +729,7 @@ namespace Cx\Core {
                     // Resolver code
                     // @todo: move to resolver
                     //expose the virtual language directory to the rest of the cms
-                    //please do not access this variable directly, use Env::get().
-                    $virtualLanguageDirectory = '/'.$url->getLangDir();
-                    \Env::set('virtualLanguageDirectory', $virtualLanguageDirectory);
+                    \Env::set('virtualLanguageDirectory', '/'.$url->getLangDir());
                     // TODO: this constanst used to be located in config/set_constants.php, but needed to be relocated to this very place,
                     // because it depends on Env::get('virtualLanguageDirectory').
                     // Find an other solution; probably best is to replace CONTREXX_SCRIPT_PATH by a prettier method
