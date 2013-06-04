@@ -464,16 +464,39 @@ namespace Cx\Core {
         /**
          * Calls hooks before content is processed
          * @todo Remove usage of globals
-         * @global string $page_title Resolved page's title
-         * @global string $page_content Resolved page's content
+         * @global string $page_title
+         * @global string $page_content
+         * @global boolean $boolShop
+         * @global null $moduleStyleFile
+         * @global type $plainCmd
+         * @global type $plainSection 
          */
         protected function preContentLoad() {
-            global $page_title, $page_content;
+            global $page_title, $page_content, $boolShop, $moduleStyleFile,
+                    $plainCmd, $plainSection;
             
             $this->ch->callPreContentLoadHooks();
             if ($this->resolvedPage) {
                 $page_title = $this->resolvedPage->getContentTitle();
                 $page_content = $this->resolvedPage->getContent();
+            }
+            
+            if ($this->mode == self::MODE_FRONTEND) {
+                $this->setPreContentLoadPlaceholders($this->template);        
+                //replace the {NODE_<ID>_<LANG>}- placeholders
+                \LinkGenerator::parseTemplate($page_content);
+
+                $boolShop = false;
+                $moduleStyleFile = null;
+            } else if ($this->mode == self::MODE_BACKEND) {
+                // Skip the nav/language bar for modules which don't make use of either.
+                // TODO: Remove language selector for modules which require navigation but bring their own language management.
+                if (in_array($plainCmd, array('content'))) {
+                    $this->template->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master_stripped.html');
+                } else {
+                    $this->template->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master.html');
+                }
+                $plainSection = $plainCmd;
             }
         }
 
@@ -561,6 +584,9 @@ namespace Cx\Core {
         
         /**
          * Init main template object
+         * 
+         * In backend mode, ASCMS_ADMIN_TEMPLATE_PATH/index.html is opened
+         * In all other modes, no file is loaded here
          */
         protected function loadTemplate() {
             $this->template = new \Cx\Core\Html\Sigma(($this->mode == self::MODE_FRONTEND) ? ASCMS_THEMES_PATH : ASCMS_ADMIN_TEMPLATE_PATH);
@@ -583,17 +609,14 @@ namespace Cx\Core {
          * @global \Cx\Core\Routing\Url $url
          * @global string $virtualLanguageDirectory
          * @global \Navigation $objNavbar
-         * @global type $_ARRAYLANG
          * @global type $pageId
          * @global \Cx\Core\ContentManager\Model\Entity\Page $page
-         * @global type $plainSection
-         * @global \InitCMS $objInit
          * @param type $no 
          */
         protected function legacyGlobalsHook($no) {
             global $objFWUser, $objTemplate, $cl,
                     $objInit, $_LANGID, $_CORELANG, $url, $virtualLanguageDirectory,
-                    $objNavbar, $_ARRAYLANG, $pageId, $page, $plainSection, $objInit;
+                    $objNavbar, $pageId, $page;
             
             switch ($no) {
                 case 1:
@@ -639,7 +662,9 @@ namespace Cx\Core {
                     
                 case 3:
                     // Initialize the navigation
-                    $objNavbar = new \Navigation($pageId, $page);
+                    if ($this->mode == self::MODE_FRONTEND) {
+                        $objNavbar = new \Navigation($pageId, $page);
+                    }
                     break;
             }
         }
@@ -649,16 +674,14 @@ namespace Cx\Core {
          * (Env, API and InitCMS are deprecated)
          * @todo Remove deprecated elements
          * @todo Remove usage of globals
-         * @global type $incDoctrineStatus
          * @global array $_CONFIG
          * @global type $_FTPCONFIG
          * @global type $objDatabase
-         * @global \InitCMS $objInit
-         * @global type $errorMsg 
+         * @global type $objInit 
          */
         protected function init() {
-            global $incDoctrineStatus, $_CONFIG, $_FTPCONFIG, $objDatabase,
-                    $objInit, $errorMsg;
+            global $_CONFIG, $_FTPCONFIG, $objDatabase,
+                    $objInit;
 
             /**
              * This needs to be initialized before loading config/doctrine.php
@@ -702,69 +725,70 @@ namespace Cx\Core {
 
         /**
          * This parses the content
-         * @todo Using this with mode self::MODE_CLI could lead to problems
+         * 
+         * This cannot be used in mode self::MODE_CLI, since content is added to template directly
+         * @todo Write a method, that only returns the content, in order to allow usage in CLI mode
          * @todo Remove usage of globals
-         * @global type $objTemplate
-         * @global string $page_content
-         * @global boolean $boolShop
-         * @global null $moduleStyleFile
          * @global \modulemanager $moduleManager
          * @global type $plainSection
-         * @global type $objDatabase
          * @global type $_CORELANG
          * @global type $subMenuTitle
-         * @global type $objFWUser
          * @global type $act
-         * @global \InitCMS $objInit
-         * @global type $plainCmd
          * @global type $_ARRAYLANG 
          */
         protected function loadContent() {
-            global $objTemplate, $page_content, $boolShop, $moduleStyleFile,
-                    $moduleManager, $plainSection, $objDatabase, $_CORELANG,
-                    $subMenuTitle, $objFWUser, $act, $objInit, $plainCmd, $_ARRAYLANG;
-
-            if ($this->mode == self::MODE_FRONTEND) {
-                $this->setPreContentLoadPlaceholders($objTemplate);        
-                //replace the {NODE_<ID>_<LANG>}- placeholders
-                \LinkGenerator::parseTemplate($page_content);
-
-                $boolShop = false;
-                $moduleStyleFile = null;
-            } else {
-                // Skip the nav/language bar for modules which don't make use of either.
-                // TODO: Remove language selector for modules which require navigation but bring their own language management.
-                $skipMaster = array('content');
-                if (in_array($plainCmd, $skipMaster)) {
-                    $objTemplate->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master_stripped.html');
-                } else {
-                    $objTemplate->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master.html');
-                }
-                $plainSection = $plainCmd;
-                //var_dump($plainCmd);
+            global $moduleManager, $plainSection, $_CORELANG,
+                    $subMenuTitle, $act, $_ARRAYLANG;
+            
+            if ($this->mode == self::MODE_CLI) {
+                return;
             }
 
-            // this is a 1:1 copy from backend, rewrite to be used in front- and backend
-            $moduleManager = new \modulemanager();
-
             // init module language
-            /**
-             * Module specific data
-             * @global array $_ARRAYLANG
-             */
-            $_ARRAYLANG = $objInit->loadLanguageData($plainSection);
+            $_ARRAYLANG = \Env::get('init')->loadLanguageData($plainSection);
+            
+            // load module
             try {
+                // This is the nice way
                 $this->ch->loadComponent($this, $plainSection, $this->resolvedPage);
             } catch (\Cx\Core\Component\Controller\ComponentException $e) {
+                // this is a 1:1 copy from backend, rewrite to be used in front- and backend
+                $moduleManager = new \modulemanager();
+                
                 try {
-                    $em = \Env::get('em');
-                    $moduleManager->loadModule($plainSection, $this->cl, $objDatabase, $_CORELANG, $subMenuTitle, $objTemplate, $objFWUser, $act, $objInit, $_ARRAYLANG, $em, $this);
+                    // This is the semi nice way
+                    $moduleManager->loadModule(
+                        $plainSection,
+                        $this->cl,
+                        $this->getDb()->getAdoDb(),
+                        $_CORELANG,
+                        $subMenuTitle,
+                        $this->template,
+                        $this->getUser(),
+                        $act,
+                        \Env::get('init'),
+                        $_ARRAYLANG,
+                        $this->getDb()->getEntityManager(),
+                        $this
+                    );
                 } catch (\ModuleManagerException $e) {
-                    $moduleManager->loadLegacyModule($plainSection, $this->cl, $objDatabase, $_CORELANG, $subMenuTitle, $objTemplate, $objFWUser, $act, $objInit, $_ARRAYLANG);
+                    // This is the old fashion way
+                    $moduleManager->loadLegacyModule(
+                        $plainSection,
+                        $this->cl,
+                        $this->getDb()->getAdoDb(),
+                        $_CORELANG,
+                        $subMenuTitle,
+                        $this->template,
+                        $this->getUser(),
+                        $act,
+                        \Env::get('init'),
+                        $_ARRAYLANG
+                    );
                 }
             }
         }
-
+        
         /**
          * Set main template placeholders required before parsing the content
          * @todo Does this even make any sense? Couldn't simply everything be set after content parsing?
