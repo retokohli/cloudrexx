@@ -244,9 +244,6 @@ namespace Cx\Core {
 
             $this->postResolve();                       // Call post resolve hook scripts
 
-            // @TODO: remove this
-            $this->legacyGlobalsHook(3);                // $objNavbar, $_ARRAYLANG, $pageId, $page, $plainSection, $objInit
-
             // load content
             $this->preContentLoad();                    // Call pre content load hook scripts
             $this->loadContent();                       // Init current module
@@ -687,14 +684,10 @@ namespace Cx\Core {
          * @global type $_LANGID
          * @global type $_CORELANG
          * @global \Cx\Core\Routing\Url $url
-         * @global \Navigation $objNavbar
-         * @global type $pageId
-         * @global \Cx\Core\ContentManager\Model\Entity\Page $page
          * @param type $no 
          */
         protected function legacyGlobalsHook($no) {
-            global $objFWUser, $objTemplate, $cl, $objInit, $_LANGID, $_CORELANG,
-                    $url, $objNavbar, $pageId, $page;
+            global $objFWUser, $objTemplate, $cl, $objInit, $_LANGID, $_CORELANG, $url;
             
             switch ($no) {
                 case 1:
@@ -729,7 +722,8 @@ namespace Cx\Core {
                     // Resolver code
                     // @todo: move to resolver
                     //expose the virtual language directory to the rest of the cms
-                    \Env::set('virtualLanguageDirectory', '/'.$url->getLangDir());
+                    $virtualLanguageDirectory = '/'.$url->getLangDir();
+                    \Env::set('virtualLanguageDirectory', $virtualLanguageDirectory);
                     // TODO: this constanst used to be located in config/set_constants.php, but needed to be relocated to this very place,
                     // because it depends on Env::get('virtualLanguageDirectory').
                     // Find an other solution; probably best is to replace CONTREXX_SCRIPT_PATH by a prettier method
@@ -738,13 +732,6 @@ namespace Cx\Core {
                         \Env::get('virtualLanguageDirectory').
                         '/'.
                         CONTREXX_DIRECTORY_INDEX);
-                    break;
-                    
-                case 3:
-                    // Initialize the navigation
-                    if ($this->mode == self::MODE_FRONTEND) {
-                        $objNavbar = new \Navigation($pageId, $page);
-                    }
                     break;
             }
         }
@@ -878,31 +865,25 @@ namespace Cx\Core {
          * @todo Remove usage of globals
          * @global type $themesPages
          * @global type $page_template
-         * @global \Cx\Core\ContentManager\Model\Entity\Page $page
-         * @global \Cx\Core\Routing\Url $url
-         * @global \Navigation $objNavbar
          * @global string $page_content
          * @global array $_CONFIG
          * @global string $page_title
-         * @global \InitCMS $objInit
          * @param type $objTemplate 
          */
         protected function setPreContentLoadPlaceholders($objTemplate) {
-            global $themesPages, $page_template, $page, $url, $objNavbar,
-                    $page_content, $_CONFIG, $page_title, $objInit;
+            global $themesPages, $page_template, $page_content, $_CONFIG, $page_title;
 
             $objTemplate->setTemplate($themesPages['index']);
             $objTemplate->addBlock('CONTENT_FILE', 'page_template', $page_template);
-            $objNavbar->setLanguagePlaceholders($page, $url, $objTemplate);
 
             // Set global content variables.
-            $page_content = str_replace('{PAGE_URL}',        htmlspecialchars($objInit->getPageUri()), $page_content);
-            $page_content = str_replace('{STANDARD_URL}',    $objInit->getUriBy('smallscreen', 0),     $page_content);
-            $page_content = str_replace('{MOBILE_URL}',      $objInit->getUriBy('smallscreen', 1),     $page_content);
-            $page_content = str_replace('{PRINT_URL}',       $objInit->getUriBy('printview', 1),       $page_content);
-            $page_content = str_replace('{PDF_URL}',         $objInit->getUriBy('pdfview', 1),         $page_content);
-            $page_content = str_replace('{APP_URL}',         $objInit->getUriBy('appview', 1),         $page_content);
-            $page_content = str_replace('{LOGOUT_URL}',      $objInit->getUriBy('section', 'logout'),  $page_content);
+            $page_content = str_replace('{PAGE_URL}',        htmlspecialchars(\Env::get('init')->getPageUri()), $page_content);
+            $page_content = str_replace('{STANDARD_URL}',    \Env::get('init')->getUriBy('smallscreen', 0),     $page_content);
+            $page_content = str_replace('{MOBILE_URL}',      \Env::get('init')->getUriBy('smallscreen', 1),     $page_content);
+            $page_content = str_replace('{PRINT_URL}',       \Env::get('init')->getUriBy('printview', 1),       $page_content);
+            $page_content = str_replace('{PDF_URL}',         \Env::get('init')->getUriBy('pdfview', 1),         $page_content);
+            $page_content = str_replace('{APP_URL}',         \Env::get('init')->getUriBy('appview', 1),         $page_content);
+            $page_content = str_replace('{LOGOUT_URL}',      \Env::get('init')->getUriBy('section', 'logout'),  $page_content);
             $page_content = str_replace('{TITLE}',           $page_title, $page_content);
             $page_content = str_replace('{CONTACT_EMAIL}',   isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '', $page_content);
             $page_content = str_replace('{CONTACT_COMPANY}', isset($_CONFIG['contactCompany'])   ? contrexx_raw2xhtml($_CONFIG['contactCompany'])   : '', $page_content);
@@ -917,25 +898,16 @@ namespace Cx\Core {
         /**
          * Set main template placeholders required after content parsing
          * @todo Remove usage of globals
-         * @global \InitCMS $objInit
-         * @global string $page_title
-         * @global type $page_metatitle
          * @global array $_CONFIG
-         * @global \Navigation $objNavbar
          * @global type $themesPages
-         * @global type $license
          * @global boolean $boolShop
          * @global type $objCounter
          * @global type $objBanner
          * @global type $_CORELANG
-         * @global \Cx\Core\ContentManager\Model\Entity\Page $page
-         * @global \Cx\Core\Routing\Url $url
          * @return type 
          */
         protected function setPostContentLoadPlaceholders() {
-            global $objInit, $page_title, $page_metatitle, $_CONFIG,
-                    $objNavbar, $themesPages, $license, $boolShop, $objCounter,
-                    $objBanner, $_CORELANG, $page, $url;
+            global $_CONFIG, $themesPages, $boolShop, $objCounter, $objBanner, $_CORELANG;
 
             if ($this->mode == self::MODE_BACKEND) {
                 $this->template->setGlobalVariable(array(
@@ -950,12 +922,14 @@ namespace Cx\Core {
                 ));
                 return;
             }
-
+            
             // set global template variables
+            $objNavbar = new \Navigation($this->resolvedPage->getId(), $this->resolvedPage);
+            $objNavbar->setLanguagePlaceholders($this->resolvedPage, $this->request, $this->template);
             $this->template->setVariable(array(
-                'CHARSET'                        => $objInit->getFrontendLangCharset(),
-                'TITLE'                          => $page_title,
-                'METATITLE'                      => $page_metatitle,
+                'CHARSET'                        => \Env::get('init')->getFrontendLangCharset(),
+                'TITLE'                          => $this->resolvedPage->getTitle(),
+                'METATITLE'                      => $this->resolvedPage->getMetatitle(),
                 'NAVTITLE'                       => contrexx_raw2xhtml($this->resolvedPage->getTitle()),
                 'GLOBAL_TITLE'                   => $_CONFIG['coreGlobalPageTitle'],
                 'DOMAIN_URL'                     => $_CONFIG['domainUrl'],
@@ -964,37 +938,37 @@ namespace Cx\Core {
                 'METAKEYS'                       => contrexx_raw2xhtml($this->resolvedPage->getMetakeys()),
                 'METADESC'                       => contrexx_raw2xhtml($this->resolvedPage->getMetadesc()),
                 'METAROBOTS'                     => contrexx_raw2xhtml($this->resolvedPage->getMetarobots()),
-                'CONTENT_TITLE'                  => $page_title,
+                'CONTENT_TITLE'                  => $this->resolvedPage->getTitle(),
                 'CSS_NAME'                       => $this->resolvedPage->getCssName(),
-                'STANDARD_URL'                   => $objInit->getUriBy('smallscreen', 0),
-                'MOBILE_URL'                     => $objInit->getUriBy('smallscreen', 1),
-                'PRINT_URL'                      => $objInit->getUriBy('printview', 1),
-                'PDF_URL'                        => $objInit->getUriBy('pdfview', 1),
-                'APP_URL'                        => $objInit->getUriBy('appview', 1),
-                'LOGOUT_URL'                     => $objInit->getUriBy('section', 'logout'),
-                'PAGE_URL'                       => htmlspecialchars($objInit->getPageUri()),
-                'CURRENT_URL'                    => $objInit->getCurrentPageUri(),
+                'STANDARD_URL'                   => \Env::get('init')->getUriBy('smallscreen', 0),
+                'MOBILE_URL'                     => \Env::get('init')->getUriBy('smallscreen', 1),
+                'PRINT_URL'                      => \Env::get('init')->getUriBy('printview', 1),
+                'PDF_URL'                        => \Env::get('init')->getUriBy('pdfview', 1),
+                'APP_URL'                        => \Env::get('init')->getUriBy('appview', 1),
+                'LOGOUT_URL'                     => \Env::get('init')->getUriBy('section', 'logout'),
+                'PAGE_URL'                       => htmlspecialchars(\Env::get('init')->getPageUri()),
+                'CURRENT_URL'                    => \Env::get('init')->getCurrentPageUri(),
                 'DATE'                           => showFormattedDate(),
                 'TIME'                           => date('H:i', time()),
                 'NAVTREE'                        => $objNavbar->getTrail(),
-                'SUBNAVBAR_FILE'                 => $objNavbar->getSubnavigation($themesPages['subnavbar'], $license,$boolShop),
-                'SUBNAVBAR2_FILE'                => $objNavbar->getSubnavigation($themesPages['subnavbar2'], $license,$boolShop),
-                'SUBNAVBAR3_FILE'                => $objNavbar->getSubnavigation($themesPages['subnavbar3'], $license,$boolShop),
-                'NAVBAR_FILE'                    => $objNavbar->getNavigation($themesPages['navbar'], $license, $boolShop),
-                'NAVBAR2_FILE'                   => $objNavbar->getNavigation($themesPages['navbar2'], $license, $boolShop),
-                'NAVBAR3_FILE'                   => $objNavbar->getNavigation($themesPages['navbar3'], $license, $boolShop),
+                'SUBNAVBAR_FILE'                 => $objNavbar->getSubnavigation($themesPages['subnavbar'], $this->license, $boolShop),
+                'SUBNAVBAR2_FILE'                => $objNavbar->getSubnavigation($themesPages['subnavbar2'], $this->license, $boolShop),
+                'SUBNAVBAR3_FILE'                => $objNavbar->getSubnavigation($themesPages['subnavbar3'], $this->license, $boolShop),
+                'NAVBAR_FILE'                    => $objNavbar->getNavigation($themesPages['navbar'], $this->license, $boolShop),
+                'NAVBAR2_FILE'                   => $objNavbar->getNavigation($themesPages['navbar2'], $this->license, $boolShop),
+                'NAVBAR3_FILE'                   => $objNavbar->getNavigation($themesPages['navbar3'], $this->license, $boolShop),
                 'ONLINE_USERS'                   => $objCounter->getOnlineUsers(),
                 'VISITOR_NUMBER'                 => $objCounter->getVisitorNumber(),
                 'COUNTER'                        => $objCounter->getCounterTag(),
                 'BANNER'                         => isset($objBanner) ? $objBanner->getBannerJS() : '',
                 'VERSION'                        => contrexx_raw2xhtml($_CONFIG['coreCmsName']),
-                'LANGUAGE_NAVBAR'                => $objNavbar->getFrontendLangNavigation($page, $url),
-                'LANGUAGE_NAVBAR_SHORT'          => $objNavbar->getFrontendLangNavigation($page, $url, true),
-                'ACTIVE_LANGUAGE_NAME'           => $objInit->getFrontendLangName(),
+                'LANGUAGE_NAVBAR'                => $objNavbar->getFrontendLangNavigation($this->resolvedPage, $this->request),
+                'LANGUAGE_NAVBAR_SHORT'          => $objNavbar->getFrontendLangNavigation($this->resolvedPage, $this->request, true),
+                'ACTIVE_LANGUAGE_NAME'           => \Env::get('init')->getFrontendLangName(),
                 'RANDOM'                         => md5(microtime()),
                 'TXT_SEARCH'                     => $_CORELANG['TXT_SEARCH'],
                 'MODULE_INDEX'                   => MODULE_INDEX,
-                'LOGIN_URL'                      => '<a href="' . $objInit->getUriBy('section', 'login') . '">' . $_CORELANG['TXT_FRONTEND_EDITING_LOGIN'] . '</a>',
+                'LOGIN_URL'                      => '<a href="' . \Env::get('init')->getUriBy('section', 'login') . '">' . $_CORELANG['TXT_FRONTEND_EDITING_LOGIN'] . '</a>',
                 'JAVASCRIPT'                     => 'javascript_inserting_here',
                 'TXT_CORE_LAST_MODIFIED_PAGE'    => $_CORELANG['TXT_CORE_LAST_MODIFIED_PAGE'],
                 'LAST_MODIFIED_PAGE'             => date(ASCMS_DATE_FORMAT_DATE, $this->resolvedPage->getUpdatedAt()->getTimestamp()),
@@ -1016,8 +990,8 @@ namespace Cx\Core {
                                                             fjs.parentNode.insertBefore(js, fjs);
                                                         }(document, \'script\', \'facebook-jssdk\'));
                                                     </script>
-                                                    <div class="fb-like" data-href="http://'.$_CONFIG['domainUrl'].$objInit->getCurrentPageUri().'" data-send="false" data-layout="button_count" data-show-faces="false" data-font="segoe ui"></div>',
-                'GOOGLE_PLUSONE'                 => '<div class="g-plusone" data-href="http://'.$_CONFIG['domainUrl'].$objInit->getCurrentPageUri().'"></div>
+                                                    <div class="fb-like" data-href="http://'.$_CONFIG['domainUrl'].\Env::get('init')->getCurrentPageUri().'" data-send="false" data-layout="button_count" data-show-faces="false" data-font="segoe ui"></div>',
+                'GOOGLE_PLUSONE'                 => '<div class="g-plusone" data-href="http://'.$_CONFIG['domainUrl'].\Env::get('init')->getCurrentPageUri().'"></div>
                                                     <script type="text/javascript">
                                                         window.___gcfg = {lang: \'de\'};
 
