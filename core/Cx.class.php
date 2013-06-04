@@ -806,21 +806,26 @@ namespace Cx\Core {
                 $this->ch->loadComponent($this, $plainSection, $this->resolvedPage);
             } catch (\Cx\Core\Component\Controller\ComponentException $e) {
                 $moduleManager = new \modulemanager();
+                // This is necessary to avoid notices, since those are passed by reference
+                $adodb = $this->getDb()->getAdoDb();
+                $em = $this->getDb()->getEntityManager();
+                $user = $this->getUser();
+                $init = \Env::get('init');
                 
                 try {
                     // This is the semi nice way
                     $moduleManager->loadModule(
                         $plainSection,
                         $this->cl,
-                        $this->getDb()->getAdoDb(),
+                        $adodb,
                         $_CORELANG,
                         $subMenuTitle,
                         $this->template,
-                        $this->getUser(),
+                        $user,
                         $act,
-                        \Env::get('init'),
+                        $init,
                         $_ARRAYLANG,
-                        $this->getDb()->getEntityManager(),
+                        $em,
                         $this
                     );
                 } catch (\ModuleManagerException $e) {
@@ -828,13 +833,13 @@ namespace Cx\Core {
                     $moduleManager->loadLegacyModule(
                         $plainSection,
                         $this->cl,
-                        $this->getDb()->getAdoDb(),
+                        $adodb,
                         $_CORELANG,
                         $subMenuTitle,
                         $this->template,
-                        $this->getUser(),
+                        $user,
                         $act,
-                        \Env::get('init'),
+                        $init,
                         $_ARRAYLANG
                     );
                 }
