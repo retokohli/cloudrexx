@@ -113,6 +113,7 @@ class CSRF {
      */
     public static function header($header, $replace = true, $httpResponseCode = null)
     {
+        \DBG::msg('\CSRF::header(): Set header "' . $header);
         header(self::__enhance_header($header), $replace, $httpResponseCode);
     }
 
