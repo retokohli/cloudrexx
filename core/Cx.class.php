@@ -124,7 +124,20 @@ namespace Cx\Core {
          * @var \Cx\Core_Modules\License\License
          */
         protected $license = null;
-
+        
+        /**
+         * Wheter APC is enabled or not
+         * @var bool
+         */
+        protected $apcEnabled = false;
+        
+        /**
+         * Contrexx toolbox
+         * @todo Update FWSystem
+         * @var \FWSystem
+         */
+        protected $toolbox = null;
+        
         /**
          * Initializes the Cx class
          * This does everything related to Contrexx.
@@ -371,7 +384,7 @@ namespace Cx\Core {
 
             // Check if the system is installed
             if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
-                header('Location: ../installer/index.php');
+                \CSRF::header('Location: ../installer/index.php');
                 exit;
             } else if ($incSettingsStatus === false) {
                 die('System halted: Unable to load basic configuration!');
@@ -567,16 +580,14 @@ namespace Cx\Core {
          * This tries to enable Alternate PHP Cache
          */
         protected function tryToEnableApc() {
-            global $apcEnabled;
-
-            $apcEnabled = false;
+            $this->apcEnabled = false;
             if (extension_loaded('apc')) {
                 if (ini_get('apc.enabled')) {
-                    $apcEnabled = true;
+                    $this->apcEnabled = true;
                 } else {
                     ini_set('apc.enabled', 1);
                     if (ini_get('apc.enabled')) {
-                        $apcEnabled = true;
+                        $this->apcEnabled = true;
                     }
                 }
             }
@@ -586,15 +597,15 @@ namespace Cx\Core {
          * This tries to set the memory limit if its lower than 32 megabytes
          */
         protected function tryToSetMemoryLimit() {
-            global $memoryLimit, $apcEnabled;
-
+            $memoryLimit = array();
             preg_match('/^\d+/', ini_get('memory_limit'), $memoryLimit);
-            if ($apcEnabled) {
-                if ($memoryLimit[0] < 32) {
+            $this->memoryLimit = $memoryLimit[0];
+            if ($this->apcEnabled) {
+                if ($this->memoryLimit < 32) {
                     ini_set('memory_limit', '32M');
                 }
             } else {
-                if ($memoryLimit[0] < 48) {
+                if ($this->memoryLimit < 48) {
                     ini_set('memory_limit', '48M');
                 }
             }
@@ -614,6 +625,17 @@ namespace Cx\Core {
          */
         public function getUser() {
             return \FWUser::getFWUserObject();
+        }
+        
+        public function isApcEnabled() {
+            return $this->apcEnabled;
+        }
+        
+        public function getToolbox() {
+            if (!$this->toolbox) {
+                $this->toolbox = new \FWSystem();
+            }
+            return $this->toolbox;
         }
         
         /**
@@ -761,7 +783,7 @@ namespace Cx\Core {
             // Temporary fix until all GET operation requests will be replaced by POSTs
             \CSRF::setFrontendMode();
 
-            $this->db = new \Cx\Core\Db\Db();
+            $this->db = new \Cx\Core\Db\Db($this);
             $objDatabase = $this->db->getAdoDb();
             \Env::set('db', $objDatabase);
             $em = $this->db->getEntityManager();
