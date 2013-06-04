@@ -62,9 +62,10 @@ class LegacyComponentHandler {
                         $_REQUEST = $objSecurity->detectIntrusion($_REQUEST);
                     },
                     'Captcha' => function() {
-                        global $section;
+                        global $url;
                         
-                        if ($section == 'captcha') {
+                        $params = $url->getParamArray();
+                        if (isset($params['section']) && $params['section'] == 'captcha') {
                             /*
                             * Captcha Module
                             *
