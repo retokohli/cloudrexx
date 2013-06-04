@@ -47,9 +47,14 @@ namespace Cx\Core\Db {
         protected $pdo = null;
         protected $adodb = null;
         protected $em = null;
+        protected $loggableListener = null;
         
         public function __construct(\Cx\Core\Cx $cx) {
             $this->cx = $cx;
+        }
+        
+        public function setUsername($username) {
+            $this->loggableListener->setUsername($username);
         }
 
         protected function getPdoConnection() {
@@ -118,7 +123,6 @@ namespace Cx\Core\Db {
         /**
          * @todo Use $this->pdo instead of new instance
          * @global type $_DBCONFIG
-         * @global \Gedmo\Loggable\LoggableListener $loggableListener
          * @return type 
          */
         public function getEntityManager() {
@@ -126,7 +130,7 @@ namespace Cx\Core\Db {
                 return $this->em;
             }
 
-            global $_DBCONFIG, $loggableListener;
+            global $_DBCONFIG;
 
             $config = new \Doctrine\ORM\Configuration();
 
@@ -163,11 +167,11 @@ namespace Cx\Core\Db {
             );
             $chainDriverImpl->addDriver($loggableDriverImpl, 'Gedmo\Loggable');
 
-            $loggableListener = new \Gedmo\Loggable\LoggableListener();
-            $loggableListener->setUsername('currently_loggedin_user');
+            $this->loggableListener = new \Gedmo\Loggable\LoggableListener();
+            $this->loggableListener->setUsername('currently_loggedin_user');
             // in real world app the username should be loaded from session, example:
             // Session::getInstance()->read('user')->getUsername();
-            $evm->addEventSubscriber($loggableListener);
+            $evm->addEventSubscriber($this->loggableListener);
 
             //tree stuff
             $treeListener = new \Gedmo\Tree\TreeListener();
