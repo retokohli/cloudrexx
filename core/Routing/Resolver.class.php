@@ -137,6 +137,196 @@ class Resolver {
         $this->historyId = !empty($_GET['history']) ? $_GET['history'] : 0;
         $this->sessionPage = !empty($_SESSION['page']) ? $_SESSION['page'] : array();
     }
+    
+    public function resolve() {
+        $aliaspage = $this->resolveAlias();
+
+        if ($aliaspage != null) {
+            $this->lang = $aliaspage->getTargetLangId();
+            return $aliaspage;
+        } else {
+            $this->lang = \Env::get('init')->getFallbackFrontendLangId();
+
+            //try to find the language in the url
+            $extractedLanguage = \FWLanguage::getLanguageIdByCode($this->url->getLangDir());
+            if (!$extractedLanguage) {
+                $this->redirectToCorrectLanguageDir();
+            }
+            //only set langid according to url if the user has not explicitly requested a language change.
+            if (!isset($_REQUEST['setLang'])) {
+                $this->lang = $extractedLanguage;
+            
+            //the user wants to change the language, but we're still inside the wrong language directory.
+            } else if($this->lang != $extractedLanguage) {
+                $this->redirectToCorrectLanguageDir();
+            }
+        }
+        
+        // used for LinkGenerator
+        define('FRONTEND_LANG_ID', $this->lang);
+        // used to load template file
+        \Env::get('init')->setFrontendLangId($this->lang);
+        
+        
+        
+                        global $section, $command, $history, $sessionObj, $url, $_CORELANG,
+                                $page, $pageId, $themesPages,
+                                $page_content, $page_template, $page_title, $page_metatitle,
+                                $isRegularPageRequest, $now, $start, $end, $plainSection;
+
+                        $section = isset($_REQUEST['section']) ? $_REQUEST['section'] : '';
+                        $command = isset($_REQUEST['cmd']) ? contrexx_addslashes($_REQUEST['cmd']) : '';
+                        $history = isset($_REQUEST['history']) ? intval($_REQUEST['history']) : 0;
+
+
+                        // Initialize page meta
+                        $page = null;
+                        $pageAccessId = 0;
+                        $page_protected = $pageId = $themesPages = $page_content = 
+                        $page_template = $page_title = $page_metatitle = null;
+
+                        // If standalone is set, then we will not have to initialize/load any content page related stuff
+                        $isRegularPageRequest = !isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false';
+
+
+                        // Regular page request
+                        if ($isRegularPageRequest) {
+                        // TODO: history (empty($history) ? )
+                            if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1 && empty($sessionObj)) {
+                                $sessionObj = new \cmsSession();
+                            }
+                            $this->init($url, $this->lang, \Env::em(), ASCMS_INSTANCE_OFFSET.\Env::get('virtualLanguageDirectory'), \FWLanguage::getFallbackLanguageArray());
+                            try {
+                                $this->resolvePage();
+                                $page = $this->getPage();
+                        // TODO: should this check (for type 'application') moved to \Cx\Core\ContentManager\Model\Entity\Page::getCmd()|getModule() ?
+                                // only set $section and $command if the requested page is an application
+                                $command = $this->getCmd();
+                                $section = $this->getSection();
+                            } catch (\Cx\Core\Routing\ResolverException $e) {
+                                try {
+                                    $this->legacyResolve($url, $section, $command);
+                                    $page = $this->getPage();
+                                    $command = $this->getCmd();
+                                    $section = $this->getSection();
+                                } catch(\Cx\Core\Routing\ResolverException $e) {
+                                    // legacy resolving also failed.
+                                    // provoke a 404
+                                    $page = null;
+                                }
+                            }
+
+                            if(!$page || !$page->isActive()) {
+                                //fallback for inexistant error page
+                                if ($section == 'error') {
+                                    // If the error module is not installed, show this
+                                    die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                                } else {
+                                    //page not found, redirect to error page.
+                                    \CSRF::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('error'));
+                                    exit;
+                                }
+                            }
+
+                        // TODO: question: what do we need this for? I think there is no need for this (had been added in r15026)
+                            //legacy: re-populate cmd and section into $_GET
+                            $_GET['cmd'] = $command;
+                            $_GET['section'] = $section;
+                        // END of TODO question
+
+                            //check whether the page is active
+                            $now = new \DateTime('now');
+                            $start = $page->getStart();
+                            $end = $page->getEnd();
+
+                            $pageId = $page->getId();
+
+                            //access: frontend access id for default requests
+                            $pageAccessId = $page->getFrontendAccessId();
+                            //revert the page if a history param has been given
+                            if($history) {
+                                //access: backend access id for history requests
+                                $pageAccessId = $page->getBackendAccessId();
+                                $logRepo = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry');
+                                try {
+                                    $logRepo->revert($page, $history);
+                                }
+                                catch(\Gedmo\Exception\UnexpectedValueException $e) {
+                                }
+
+                                $logRepo->revert($page, $history);
+                            }
+                            /*
+                            //404 for inactive pages
+                            if(($start > $now && $start != null) || ($now > $end && $end != null)) {
+                                if ($section == 'error') {
+                                    // If the error module is not installed, show this
+                                    die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                                }
+                                CSRF::header('Location: index.php?section=error&id=404');
+                                exit;
+                                }*/
+
+
+                            \Env::get('init')->setCustomizedTheme($page->getSkin(), $page->getCustomContent());
+
+                            $themesPages = \Env::get('init')->getTemplates();
+
+                            //replace the {NODE_<ID>_<LANG>}- placeholders
+                            \LinkGenerator::parseTemplate($themesPages);
+
+                            // Frontend Editing: content has to be replaced with preview code if needed.
+                            $page_content = $page->getContent();
+
+                            $page_title     = contrexx_raw2xhtml($page->getContentTitle());
+                            $page_metatitle = contrexx_raw2xhtml($page->getMetatitle());
+                        //TODO: analyze those, take action.
+                            //$page_protected = $objResult->fields['protected'];
+                            $page_protected = $page->isFrontendProtected();
+
+                            //$page_access_id = $objResult->fields['frontend_access_id'];
+                            $page_template  = $themesPages['content'];
+
+                        //TODO: history
+                        }
+
+                        // TODO: refactor system to be able to remove this backward compatibility
+                        // Backwards compatibility for code pre Contrexx 3.0 (update)
+                        $_GET['cmd']     = $_POST['cmd']     = $_REQUEST['cmd']     = $command;
+                        $_GET['section'] = $_POST['section'] = $_REQUEST['section'] = $section;
+
+                        // To clone any module, use an optional integer cmd suffix.
+                        // E.g.: "shop2", "gallery5", etc.
+                        // Mind that you *MUST* copy all necessary database tables, and fix any
+                        // references to your module (section and cmd parameters, database tables)
+                        // using the MODULE_INDEX constant in the right place both in your code
+                        // *AND* templates!
+                        // See the Shop module for an example.
+                        $arrMatch = array();
+                        if (preg_match('/^(\D+)(\d+)$/', $section, $arrMatch)) {
+                            // The plain section/module name, used below
+                            $plainSection = $arrMatch[1];
+                        } else {
+                            $plainSection = $section;
+                        }
+                        // The module index.
+                        // An empty or 1 (one) index represents the same (default) module,
+                        // values 2 (two) and larger represent distinct instances.
+                        $moduleIndex = (empty($arrMatch[2]) || $arrMatch[2] == 1 ? '' : $arrMatch[2]);
+                        define('MODULE_INDEX', $moduleIndex);
+
+                        // Authentification for protected pages
+                        $this->checkPageFrontendProtection($page, $history);
+
+                        // Start page or default page for no section
+                        if ($section == 'home') {
+                            if (!\Env::get('init')->hasCustomContent()){
+                                $page_template = $themesPages['home'];
+                            } else {
+                                $page_template = $themesPages['content'];
+                            }
+                        }
+    }
 
     /**
      * Checks for alias request
@@ -197,11 +387,18 @@ class Resolver {
 
         return $this->page;
     }
+    
+    public function redirectToCorrectLanguageDir() {
+        $this->url->setLangDir(\FWLanguage::getLanguageCodeById($this->lang));
+
+        \CSRF::header('Location: '.$this->url);
+        exit;
+    }
 
     /**
      * Does the resolving work, extends $this->url with targetPath and params.
      */
-    public function resolve($internal = false) {
+    public function resolvePage($internal = false) {
         // Abort here in case we're handling a legacy request.
         // The legacy request will be handled by $this->legacyResolve().
         // Important: We must check for $internal == FALSE here, to abort the resolving process
@@ -353,7 +550,7 @@ class Resolver {
                 $this->url->setTargetPath($targetPath.$qs);
                 $this->url->setPath($targetPath.$qs);
                 $this->isRedirection = true;
-                $this->resolve(true);
+                $this->resolvePage(true);
             } else { //external target - redirect via HTTP 302
                 if (\FWValidator::isUri($target)) {
                     header('Location: '.$target);
@@ -500,7 +697,7 @@ class Resolver {
             $this->url->setSuggestedTargetPath(substr($fallbackPage->getPath(), 1));
 
             // now lets resolve the page that is referenced by our fallback page
-            $this->resolve(true);
+            $this->resolvePage(true);
             $page->getFallbackContentFrom($this->page);
             $this->page = $page;
         }

@@ -106,6 +106,24 @@ namespace Cx\Core {
          * @var \Cx\Core\ContentManager\Model\Entity\Page
          */
         protected $resolvedPage = null;
+        
+        /**
+         * Resolver used for page resolving (for the moment frontend mode only)
+         * @var \Cx\Core\Routing\Resolver 
+         */
+        protected $resolver = null;
+        
+        /**
+         * Current language id
+         * @var int
+         */
+        protected $langId = null;
+        
+        /**
+         * License for this instance
+         * @var \Cx\Core_Modules\License\License
+         */
+        protected $license = null;
 
         /**
          * Initializes the Cx class
@@ -160,7 +178,7 @@ namespace Cx\Core {
                 $this->handleCustomizing();
                 
                 /**
-                 * Load all components to have them ready
+                 * Load all components to have them ready and initialize request and license
                  */
                 $this->postInit();
                 
@@ -413,29 +431,53 @@ namespace Cx\Core {
          * Late initializations. Loads components
          */
         protected function postInit() {
+            global $_CONFIG;
+            
             $this->loadComponents();
+            
+            // this makes \Env::get('Resolver')->getUrl() return a sensful result
+            $request = !empty($_GET['__cap']) ? $_GET['__cap'] : '';
+            $offset = ASCMS_PATH_OFFSET;
+            if ($this->mode == self::MODE_BACKEND) {
+                $request = ASCMS_PATH_OFFSET.'/cadmin';
+                $offset = ASCMS_INSTANCE_OFFSET;
+            }
+            $this->request = \Cx\Core\Routing\Url::fromCapturedRequest($request, $offset, $_GET);
+            $this->license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $this->getDb()->getAdoDb());
         }
 
         /**
          * Calls pre-resolve hooks
-         * @todo Remove usage of globals
-         * @global \Cx\Core\Routing\Url $url Request URL
          */
         protected function preResolve() {
-            global $url;
-            
-            $this->ch->callPreResolveHooks('legacy');
-            $this->request = $url;
-            $this->ch->callPreResolveHooks('proper');
+            $this->ch->callPreResolveHooks();
         }
 
         /**
          * Does the resolving
          * 
-         * @todo Move resolving from LegacyComponentHandler to here and Resolver
+         * @todo Implement resolver for backend
+         * @todo Is this useful in CLI mode?
+         * For modes other than 'frontend', no actual resolving is done,
+         * resolver is just initialized in order to return the correct result
+         * for $resolver->getUrl()
          */
         protected function resolve() {
-            // implemented as pre- and post resolve hooks by now
+            $this->resolver = new \Cx\Core\Routing\Resolver($this->getRequest(), null, $this->getDb()->getEntityManager(), null, null);
+            
+            if ($this->mode == self::MODE_FRONTEND) {
+                $this->resolvedPage = $this->resolver->resolve();
+                
+            } else {
+                global $cmd, $act, $isRegularPageRequest, $plainSection, $plainCmd;
+
+                $cmd = isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : '';
+                $act = isset($_REQUEST['act']) ? $_REQUEST['act'] : '';
+                $plainCmd = $cmd;
+                
+                // If standalone is set, then we will not have to initialize/load any content page related stuff
+                $isRegularPageRequest = !isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false';
+            }
         }
 
         /**
@@ -583,6 +625,14 @@ namespace Cx\Core {
         }
         
         /**
+         * Returns the license for this instance
+         * @return \Cx\Core_Modules\License\License
+         */
+        public function getLicense() {
+            return $this->license;
+        }
+        
+        /**
          * Init main template object
          * 
          * In backend mode, ASCMS_ADMIN_TEMPLATE_PATH/index.html is opened
@@ -620,6 +670,8 @@ namespace Cx\Core {
             
             switch ($no) {
                 case 1:
+                    // Request URL
+                    $url = $this->request;
                     // Get instance of FWUser object
                     $objFWUser = $this->getUser();
                     // populate template
@@ -633,8 +685,8 @@ namespace Cx\Core {
                     // @todo: move this to somewhere else
                     // in backend it's in Language->postResolve
                     if ($this->mode == self::MODE_FRONTEND) {
+                        $_LANGID = FRONTEND_LANG_ID;
                         $objInit->setFrontendLangId($_LANGID);
-                        define('FRONTEND_LANG_ID', $_LANGID);
                         define('LANG_ID', $_LANGID);
                         // Load interface language data
                         /**
@@ -643,6 +695,8 @@ namespace Cx\Core {
                         */
                         $_CORELANG = $objInit->loadLanguageData('core');
                     }
+                    
+                    \Env::set('Resolver', $this->resolver);
 
                     // Resolver code
                     // @todo: move to resolver
@@ -680,8 +734,7 @@ namespace Cx\Core {
          * @global type $objInit 
          */
         protected function init() {
-            global $_CONFIG, $_FTPCONFIG, $objDatabase,
-                    $objInit;
+            global $_CONFIG, $_FTPCONFIG, $objDatabase, $objInit;
 
             /**
              * This needs to be initialized before loading config/doctrine.php
@@ -743,7 +796,7 @@ namespace Cx\Core {
             if ($this->mode == self::MODE_CLI) {
                 return;
             }
-
+            
             // init module language
             $_ARRAYLANG = \Env::get('init')->loadLanguageData($plainSection);
             
@@ -752,7 +805,6 @@ namespace Cx\Core {
                 // This is the nice way
                 $this->ch->loadComponent($this, $plainSection, $this->resolvedPage);
             } catch (\Cx\Core\Component\Controller\ComponentException $e) {
-                // this is a 1:1 copy from backend, rewrite to be used in front- and backend
                 $moduleManager = new \modulemanager();
                 
                 try {
@@ -837,12 +889,7 @@ namespace Cx\Core {
          * @global \InitCMS $objInit
          * @global string $page_title
          * @global type $page_metatitle
-         * @global type $page_catname
          * @global array $_CONFIG
-         * @global type $page_keywords
-         * @global type $page_desc
-         * @global type $page_robots
-         * @global type $pageCssName
          * @global \Navigation $objNavbar
          * @global type $themesPages
          * @global type $license
@@ -850,16 +897,14 @@ namespace Cx\Core {
          * @global type $objCounter
          * @global type $objBanner
          * @global type $_CORELANG
-         * @global type $page_modified
          * @global \Cx\Core\ContentManager\Model\Entity\Page $page
          * @global \Cx\Core\Routing\Url $url
          * @return type 
          */
         protected function setPostContentLoadPlaceholders() {
-            global $objInit, $page_title, $page_metatitle, $page_catname, $_CONFIG,
-                    $page_keywords, $page_desc, $page_robots, $pageCssName,
+            global $objInit, $page_title, $page_metatitle, $_CONFIG,
                     $objNavbar, $themesPages, $license, $boolShop, $objCounter,
-                    $objBanner, $_CORELANG, $page_modified, $page, $url;
+                    $objBanner, $_CORELANG, $page, $url;
 
             if ($this->mode == self::MODE_BACKEND) {
                 $this->template->setGlobalVariable(array(
@@ -880,16 +925,16 @@ namespace Cx\Core {
                 'CHARSET'                        => $objInit->getFrontendLangCharset(),
                 'TITLE'                          => $page_title,
                 'METATITLE'                      => $page_metatitle,
-                'NAVTITLE'                       => $page_catname,
+                'NAVTITLE'                       => contrexx_raw2xhtml($this->resolvedPage->getTitle()),
                 'GLOBAL_TITLE'                   => $_CONFIG['coreGlobalPageTitle'],
                 'DOMAIN_URL'                     => $_CONFIG['domainUrl'],
                 'PATH_OFFSET'                    => ASCMS_PATH_OFFSET,
                 'BASE_URL'                       => ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET,
-                'METAKEYS'                       => $page_keywords,
-                'METADESC'                       => $page_desc,
-                'METAROBOTS'                     => $page_robots,
+                'METAKEYS'                       => contrexx_raw2xhtml($this->resolvedPage->getMetakeys()),
+                'METADESC'                       => contrexx_raw2xhtml($this->resolvedPage->getMetadesc()),
+                'METAROBOTS'                     => contrexx_raw2xhtml($this->resolvedPage->getMetarobots()),
                 'CONTENT_TITLE'                  => $page_title,
-                'CSS_NAME'                       => $pageCssName,
+                'CSS_NAME'                       => $this->resolvedPage->getCssName(),
                 'STANDARD_URL'                   => $objInit->getUriBy('smallscreen', 0),
                 'MOBILE_URL'                     => $objInit->getUriBy('smallscreen', 1),
                 'PRINT_URL'                      => $objInit->getUriBy('printview', 1),
@@ -921,7 +966,7 @@ namespace Cx\Core {
                 'LOGIN_URL'                      => '<a href="' . $objInit->getUriBy('section', 'login') . '">' . $_CORELANG['TXT_FRONTEND_EDITING_LOGIN'] . '</a>',
                 'JAVASCRIPT'                     => 'javascript_inserting_here',
                 'TXT_CORE_LAST_MODIFIED_PAGE'    => $_CORELANG['TXT_CORE_LAST_MODIFIED_PAGE'],
-                'LAST_MODIFIED_PAGE'             => date(ASCMS_DATE_FORMAT_DATE, $page_modified),
+                'LAST_MODIFIED_PAGE'             => date(ASCMS_DATE_FORMAT_DATE, $this->resolvedPage->getUpdatedAt()->getTimestamp()),
                 'CONTACT_EMAIL'                  => isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '',
                 'CONTACT_COMPANY'                => isset($_CONFIG['contactCompany'])   ? contrexx_raw2xhtml($_CONFIG['contactCompany'])   : '',
                 'CONTACT_ADDRESS'                => isset($_CONFIG['contactAddress'])   ? contrexx_raw2xhtml($_CONFIG['contactAddress'])   : '',
@@ -974,19 +1019,15 @@ namespace Cx\Core {
          * @global array $_CONFIG
          * @global \InitCMS $objInit
          * @global string $page_title
-         * @global type $parsingtime
-         * @global type $starttime
          * @global type $subMenuTitle
          * @global type $_CORELANG
          * @global type $objFWUser
          * @global type $plainCmd
          * @global type $cmd
-         * @global type $startTime 
          */
         protected function finalize() {
-            global $themesPages, $moduleStyleFile, $objCache, $_CONFIG,
-                    $objInit, $page_title, $parsingtime, $starttime, $subMenuTitle,
-                    $_CORELANG, $objFWUser, $plainCmd, $cmd, $startTime;
+            global $themesPages, $moduleStyleFile, $objCache, $_CONFIG, $objInit,
+                    $page_title, $subMenuTitle, $_CORELANG, $objFWUser, $plainCmd, $cmd;
 
             if ($this->mode == self::MODE_FRONTEND) {
                 // parse system

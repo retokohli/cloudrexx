@@ -169,7 +169,7 @@ class downloads extends DownloadsLibrary
 
     private function overview()
     {
-        global $_LANGID, $page_keywords;
+        global $_LANGID;
 
         $objDownload = new Download();
         $objCategory = Category::getCategory($this->categoryId);
@@ -196,7 +196,7 @@ class downloads extends DownloadsLibrary
 
                 $metakeys = $objDownload->getMetakeys(FRONTEND_LANG_ID);
                 if ($this->arrConfig['use_attr_metakeys'] && !empty($metakeys)) {
-                    $page_keywords = contrexx_raw2xhtml($metakeys);
+                    \Env::get('cx')->getPage()->setMetakeys($metakeys);
                 }
 
                 $this->parseRelatedCategories($objDownload);
