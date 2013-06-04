@@ -51,49 +51,6 @@ class LegacyComponentHandler {
                             throw new \Exception('Frontend locked by license');
                         }
                     },
-                    'Resolver' => function() {
-                        global $request, $url, $resolver, $aliaspage, $_LANGID, $redirectToCorrectLanguageDir, $_CONFIG, $objInit, $extractedLanguage;
-                        
-                        $request = !empty($_GET['__cap']) ? $_GET['__cap'] : '';
-                        $url = \Cx\Core\Routing\Url::fromCapturedRequest($request, ASCMS_INSTANCE_OFFSET, $_GET);
-                        $resolver = new \Cx\Core\Routing\Resolver($url, null, \Env::em(), null, null);
-                        \Env::set('Resolver', $resolver);
-                        $aliaspage = $resolver->resolveAlias();
-
-                        $_LANGID = '';
-                        $redirectToCorrectLanguageDir = function() use ($url, &$_LANGID, $_CONFIG) {
-                            $url->setLangDir(\FWLanguage::getLanguageCodeById($_LANGID));
-
-                            \CSRF::header('Location: '.$url);
-                            exit;
-                        };
-
-                        if ($aliaspage != null) {
-                            $_LANGID = $aliaspage->getTargetLangId();
-                        } else {
-                            /**
-                            * Frontend language ID
-                            * @global integer $_LANGID
-                            * @todo    Globally replace this with either the FRONTEND_LANG_ID, or LANG_ID constant
-                            */
-                            $_LANGID = $objInit->getFallbackFrontendLangId();
-
-                            //try to find the language in the url
-                            $extractedLanguage = 0;
-
-                            $extractedLanguage = \FWLanguage::getLanguageIdByCode($url->getLangDir());
-                            if (!$extractedLanguage) {
-                                $redirectToCorrectLanguageDir();
-                            }
-                            //only set langid according to url if the user has not explicitly requested a language change.
-                            if(!isset($_REQUEST['setLang'])) {
-                                $_LANGID = $extractedLanguage;
-                            }
-                            else if($_LANGID != $extractedLanguage) { //the user wants to change the language, but we're still inside the wrong language directory.
-                                $redirectToCorrectLanguageDir();
-                            }
-                        }
-                    },
                     'Security' => function() {
                         global $objSecurity;
 
@@ -107,7 +64,7 @@ class LegacyComponentHandler {
                     'Captcha' => function() {
                         global $section;
                         
-                        if (contrexx_input2raw($_GET['section']) == 'captcha') {
+                        if ($section == 'captcha') {
                             /*
                             * Captcha Module
                             *
@@ -120,11 +77,22 @@ class LegacyComponentHandler {
                 ),
                 'postResolve' => array(
                     'License' => function() {
-                        global $license, $_LANGID, $redirectToCorrectLanguageDir;
+                        global $license, $_LANGID, $section, $_CORELANG;
 
                         if (!$license->isInLegalComponents('fulllanguage') && $_LANGID != \FWLanguage::getDefaultLangId()) {
                             $_LANGID = \FWLanguage::getDefaultLangId();
-                            $redirectToCorrectLanguageDir();
+                            \Env::get('Resolver')->redirectToCorrectLanguageDir();
+                        }
+                        
+                        if (!empty($section) && !$license->isInLegalFrontendComponents($section)) {
+                            if ($section == 'error') {
+                                // If the error module is not installed, show this
+                                die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                            } else {
+                                //page not found, redirect to error page.
+                                \CSRF::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('error'));
+                                exit;
+                            }
                         }
                     },
                     'Cache' => function() {
@@ -136,189 +104,6 @@ class LegacyComponentHandler {
                         */
                         $objCache = new \Cache();
                         $objCache->startCache();
-                    },
-                    'Resolver' => function() {
-                        global $section, $command, $page, $history, $sessionObj, $resolver, $url, $_CORELANG,
-                                $page, $pageAccessId, $page_protected, $page_redirect, $pageId, $themesPages,
-                                $page_content, $page_template, $page_title, $page_metatitle, $page_catname,
-                                $page_keywords, $page_desc, $page_robots, $pageCssName, $page_modified,
-                                $isRegularPageRequest, $now, $start, $end, $logRepo, $objInit, $plainSection,
-                                $license, $_CONFIG;
-
-                        $section = isset($_REQUEST['section']) ? $_REQUEST['section'] : '';
-                        $command = isset($_REQUEST['cmd']) ? contrexx_addslashes($_REQUEST['cmd']) : '';
-                        $page    = isset($_REQUEST['page']) ? intval($_REQUEST['page']) : 0;
-                        $history = isset($_REQUEST['history']) ? intval($_REQUEST['history']) : 0;
-
-
-                        // Initialize page meta
-                        $page = null;
-                        $pageAccessId = 0;
-                        $page_protected = 0;
-                        $page_protected = $page_redirect = $pageId = $themesPages =
-                        $page_content = $page_template = $page_title = $page_metatitle =
-                        $page_catname = $page_keywords = $page_desc = $page_robots =
-                        $pageCssName = $page_modified = null;
-
-                        function setModuleIndexAndReturnPlainSection($section) {
-                            // To clone any module, use an optional integer cmd suffix.
-                            // E.g.: "shop2", "gallery5", etc.
-                            // Mind that you *MUST* copy all necessary database tables, and fix any
-                            // references to your module (section and cmd parameters, database tables)
-                            // using the MODULE_INDEX constant in the right place both in your code
-                            // *AND* templates!
-                            // See the Shop module for an example.
-                            $arrMatch = array();
-                            if (preg_match('/^(\D+)(\d+)$/', $section, $arrMatch)) {
-                                // The plain section/module name, used below
-                                $plainSection = $arrMatch[1];
-                            } else {
-                                $plainSection = $section;
-                            }
-                            // The module index.
-                            // An empty or 1 (one) index represents the same (default) module,
-                            // values 2 (two) and larger represent distinct instances.
-                            $moduleIndex = (empty($arrMatch[2]) || $arrMatch[2] == 1 ? '' : $arrMatch[2]);
-                            define('MODULE_INDEX', $moduleIndex);
-
-                            return $plainSection;
-                        }
-
-                        // If standalone is set, then we will not have to initialize/load any content page related stuff
-                        $isRegularPageRequest = !isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false';
-
-
-                        // Regular page request
-                        if ($isRegularPageRequest) {
-                        // TODO: history (empty($history) ? )
-                            if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1 && empty($sessionObj)) {
-                                $sessionObj = new \cmsSession();
-                            }
-                            $resolver->init($url, FRONTEND_LANG_ID, \Env::em(), ASCMS_INSTANCE_OFFSET.\Env::get('virtualLanguageDirectory'), \FWLanguage::getFallbackLanguageArray());
-                            try {
-                                $resolver->resolve();
-                                $page = $resolver->getPage();
-                        // TODO: should this check (for type 'application') moved to \Cx\Core\ContentManager\Model\Entity\Page::getCmd()|getModule() ?
-                                // only set $section and $command if the requested page is an application
-                                $command = $resolver->getCmd();
-                                $section = $resolver->getSection();
-                            }
-                            catch (\Cx\Core\Routing\ResolverException $e) {
-                                try {
-                                    $resolver->legacyResolve($url, $section, $command);
-                                    $page = $resolver->getPage();
-                                    $command = $resolver->getCmd();
-                                    $section = $resolver->getSection();
-                                } catch(\Cx\Core\Routing\ResolverException $e) {
-                                    // legacy resolving also failed.
-                                    // provoke a 404
-                                    $page = null;
-                                }
-                            }
-
-                            if(!$page || !$page->isActive() ||
-                                    (!empty($section) && !$license->isInLegalFrontendComponents($section))) {
-                                //fallback for inexistant error page
-                                if($section == 'error') {
-                                    // If the error module is not installed, show this
-                                    die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                                }
-                                else {
-                                    //page not found, redirect to error page.
-                                    header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('error'));
-                                    exit;
-                                }
-                            }
-
-                        // TODO: question: what do we need this for? I think there is no need for this (had been added in r15026)
-                            //legacy: re-populate cmd and section into $_GET
-                            $_GET['cmd'] = $command;
-                            $_GET['section'] = $section;
-                        // END of TODO question
-
-                            //check whether the page is active
-                            $now = new \DateTime('now');
-                            $start = $page->getStart();
-                            $end = $page->getEnd();
-
-                            $pageId = $page->getId();
-
-                            //access: frontend access id for default requests
-                            $pageAccessId = $page->getFrontendAccessId();
-                            //revert the page if a history param has been given
-                            if($history) {
-                                //access: backend access id for history requests
-                                $pageAccessId = $page->getBackendAccessId();
-                                $logRepo = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry');
-                                try {
-                                    $logRepo->revert($page, $history);
-                                }
-                                catch(\Gedmo\Exception\UnexpectedValueException $e) {
-                                }
-
-                                $logRepo->revert($page, $history);
-                            }
-                            /*
-                            //404 for inactive pages
-                            if(($start > $now && $start != null) || ($now > $end && $end != null)) {
-                                if ($section == 'error') {
-                                    // If the error module is not installed, show this
-                                    die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                                }
-                                CSRF::header('Location: index.php?section=error&id=404');
-                                exit;
-                                }*/
-
-
-                            $objInit->setCustomizedTheme($page->getSkin(), $page->getCustomContent());
-
-                            $themesPages = $objInit->getTemplates();
-
-                            //replace the {NODE_<ID>_<LANG>}- placeholders
-                            \LinkGenerator::parseTemplate($themesPages);
-
-                            // Frontend Editing: content has to be replaced with preview code if needed.
-                            $page_content = $page->getContent();
-
-                            $page_catname = contrexx_raw2xhtml($page->getTitle());
-
-                            $page_title     = contrexx_raw2xhtml($page->getContentTitle());
-                            $page_metatitle = contrexx_raw2xhtml($page->getMetatitle());
-                            $page_keywords  = contrexx_raw2xhtml($page->getMetakeys());
-                            $page_robots    = contrexx_raw2xhtml($page->getMetarobots());
-                            $pageCssName    = $page->getCssName();
-                            $page_desc      = contrexx_raw2xhtml($page->getMetadesc());
-                        //TODO: analyze those, take action.
-                            //$page_redirect  = $objResult->fields['redirect'];
-                            //$page_protected = $objResult->fields['protected'];
-                            $page_protected = $page->isFrontendProtected();
-
-                            //$page_access_id = $objResult->fields['frontend_access_id'];
-                            $page_template  = $themesPages['content'];
-                            $page_modified  = $page->getUpdatedAt()->getTimestamp();
-
-                        //TODO: history
-                        }
-
-                        // TODO: refactor system to be able to remove this backward compatibility
-                        // Backwards compatibility for code pre Contrexx 3.0 (update)
-                        $_GET['cmd']     = $_POST['cmd']     = $_REQUEST['cmd']     = $command;
-                        $_GET['section'] = $_POST['section'] = $_REQUEST['section'] = $section;
-
-
-                        $plainSection = setModuleIndexAndReturnPlainSection($section);
-
-                        // Authentification for protected pages
-                        $resolver->checkPageFrontendProtection($page, $history);
-
-                        // Start page or default page for no section
-                        if ($section == 'home') {
-                            if (!$objInit->hasCustomContent()){
-                                $page_template = $themesPages['home'];
-                            } else {
-                                $page_template = $themesPages['content'];
-                            }
-                        }
                     },
                 ),
                 'preContentLoad' => array(
@@ -973,10 +758,6 @@ class LegacyComponentHandler {
                         // ACCESS: parse access_logged_in[1-9] and access_logged_out[1-9] blocks
                         \FWUser::parseLoggedInOutBlocks($page_content);
                     },
-                    /*'FrontendEditing' => function() {
-                        $frontendEditing = new \Cx\Core_Modules\FrontendEditing\Controller\ComponentController();
-                        $frontendEditing->preContentLoad();
-                    },*/
                 ),
                 'postContentLoad' => array(
                     'Shop' => function() {
@@ -1211,7 +992,7 @@ class LegacyComponentHandler {
                     },
 
                     'news' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate, $page_title, $page_metatitle;
+                        global $cl, $_CORELANG, $page, $page_content, $objTemplate, $page_title, $page_metatitle;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/news/index.class.php'))
@@ -1222,7 +1003,7 @@ class LegacyComponentHandler {
                         // Set the meta page description to the teaser text if displaying news details
                         $teaser = $newsObj->getTeaser();
                         if ($teaser !== null) //news details, else getTeaser would return null
-                            $page_desc = contrexx_raw2xhtml(contrexx_strip_tags(html_entity_decode($teaser, ENT_QUOTES, CONTREXX_CHARSET)));
+                            $page->setMetadesc(contrexx_strip_tags(html_entity_decode($teaser, ENT_QUOTES, CONTREXX_CHARSET)));
                         $page_title = $newsObj->newsTitle;
                         $page_metatitle = $page_title;
                     },
@@ -1688,20 +1469,6 @@ class LegacyComponentHandler {
             ),
             'backend' => array(
                 'preResolve' => array(
-                    'Resolver' => function() {
-                        global $request, $url, $cmd, $act, $isRegularPageRequest;
-                        
-                        // this makes \Env::get('Resolver')->getUrl() return a sensful result
-                        $request = ASCMS_PATH_OFFSET.'/cadmin';
-                        $url = \Cx\Core\Routing\Url::fromCapturedRequest($request, ASCMS_PATH_OFFSET, $_GET);
-                        \Env::set('Resolver', new \Cx\Core\Routing\Resolver($url, null, \Env::em(), null, null));
-                        
-                        $cmd = isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : '';
-                        $act = isset($_REQUEST['act']) ? $_REQUEST['act'] : '';
-                        
-                        // If standalone is set, then we will not have to initialize/load any content page related stuff
-                        $isRegularPageRequest = !isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false';
-                    },
                     'Session' => function() {
                         global $sessionObj;
                         
