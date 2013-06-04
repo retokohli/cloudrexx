@@ -43,9 +43,14 @@ namespace Cx\Core\Db {
      * @subpackage  core_db
      */
     class Db {
+        protected $cx = null;
         protected $pdo = null;
         protected $adodb = null;
         protected $em = null;
+        
+        public function __construct(\Cx\Core\Cx $cx) {
+            $this->cx = $cx;
+        }
 
         protected function getPdoConnection() {
             global $_DBCONFIG, $_CONFIG;
@@ -114,7 +119,6 @@ namespace Cx\Core\Db {
          * @todo Use $this->pdo instead of new instance
          * @global type $_DBCONFIG
          * @global \Gedmo\Loggable\LoggableListener $loggableListener
-         * @global type $apcEnabled
          * @return type 
          */
         public function getEntityManager() {
@@ -122,11 +126,11 @@ namespace Cx\Core\Db {
                 return $this->em;
             }
 
-            global $_DBCONFIG, $loggableListener, $apcEnabled;
+            global $_DBCONFIG, $loggableListener;
 
             $config = new \Doctrine\ORM\Configuration();
 
-            if ($apcEnabled) {
+            if ($this->cx->isApcEnabled()) {
                 $cache = new \Doctrine\Common\Cache\ApcCache();
             } else {
                 $cache = new \Doctrine\Common\Cache\ArrayCache();
