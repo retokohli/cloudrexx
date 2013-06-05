@@ -63,12 +63,14 @@ namespace Cx\Core {
         const MODE_MINIMAL = 'minimal';
         
         /**
+         * Parsing star time
          * @var array Array in the form array({milliseconds}, {seconds})
          */
         protected $startTime = array();
         
         /**
-         * @var string Mode the system runs in
+         * System mode
+         * @var string Mode as string (see constants)
          */
         protected $mode = null;
 
