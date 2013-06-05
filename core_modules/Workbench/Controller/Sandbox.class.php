@@ -67,14 +67,14 @@ class Sandbox {
                     $this->errrorHandlerActive = true;
                     // Since DBG catches the rest (E_PARSE) let's use that
                     ob_start();
-                    $function = create_function('$em', '' . $this->code . ';');
+                    $function = create_function('$em, $cx', '' . $this->code . ';');
                     $dbgContents = ob_get_clean();
                     \DBG::activate($dbgMode);
                     if (!is_callable($function)) {
                         // parse exception
                         throw new SandboxException($dbgContents);
                     }
-                    $this->result = var_export($function(\Env::get('em')), true);
+                    $this->result = var_export($function(\Env::get('em'), \Env::get('cx')), true);
                     restore_error_handler();
                     $this->errrorHandlerActive = false;
                 } catch (\Exception $e) {
@@ -153,6 +153,7 @@ class Sandbox {
             default:
                 $sideboxTitle = $lang['TXT_WORKBENCH_SANDBOX_VARIABLES'];
                 $sideboxContent = '<ul>
+                    <li>$cx Contrexx main class</li>
                     <li>$em Doctrine entity manager</li>
                 </ul>';
                 break;
