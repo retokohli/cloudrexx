@@ -1521,7 +1521,7 @@ class LegacyComponentHandler {
                         //$intAccessIdOffset = intval(MODULE_INDEX)*1000;
                     },
                     'FwUser' => function() {
-                        global $objFWUser, $loggedIn, $plainCmd, $isRegularPageRequest, $userData,
+                        global $objFWUser, $plainCmd, $isRegularPageRequest, $userData,
                                 $objUser, $firstname, $lastname, $objTemplate;
                         
                         $objFWUser = \FWUser::getFWUserObject();
@@ -1616,7 +1616,9 @@ class LegacyComponentHandler {
                                 $plainCmd = 'license';
                             }
                         }
-                        if ($loggedIn) {
+                        
+                        // If logged in
+                        if (\Env::get('cx')->getUser()->objUser->login(true)) {
                             $license->check();
                             if ($license->getState() == \Cx\Core_Modules\License\License::LICENSE_NOK) {
                                 $plainCmd = 'license';
