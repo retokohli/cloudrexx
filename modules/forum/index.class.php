@@ -584,7 +584,7 @@ class Forum extends ForumLibrary {
      */
     function showThread($intThreadId)
     {
-        global $objDatabase, $_ARRAYLANG, $objCache, $page_title;
+        global $objDatabase, $_ARRAYLANG, $objCache;
 
         $objFWUser = FWUser::getFWUserObject();
         $this->_communityLogin();
@@ -1109,7 +1109,7 @@ class Forum extends ForumLibrary {
                         ));
                         $success = true;
                         $suffix = '';
-                        $page_title = $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_MOVE'];
+                        \Env::get('cx')->getPage()->setTitle($_ARRAYLANG['TXT_FORUM_THREAD_ACTION_MOVE']);
                     break;
                     case 'close':
                         $query = "UPDATE `".DBPREFIX."module_forum_postings` SET `is_locked` = IF(`is_locked` = '0' OR `is_locked` = '', '1', '0') WHERE thread_id = ".intval($_REQUEST['id']);
