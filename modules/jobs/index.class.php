@@ -238,8 +238,6 @@ class jobs extends jobsLibrary
     * Gets the list with the headlines
     *
     * @global     object    $objDatabase
-    * @param     integer   $pos
-    * @param     string       $page_content
     * @return    string    parsed content
     */
 
