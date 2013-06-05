@@ -513,42 +513,28 @@ namespace Cx\Core {
         /**
          * Calls post-resolve hooks
          * @todo Remove usage of globals
-         * @global string $page_title Resolved page's title
          */
         protected function postResolve() {
-            global $page_title;
-            
-            $this->ch->callPostResolveHooks('legacy');
-            if ($this->resolvedPage) {
-                $this->resolvedPage->setContentTitle($page_title);
-            }
-            $this->ch->callPostResolveHooks('proper');
-            if ($this->resolvedPage) {
-                $page_title = $this->resolvedPage->getContentTitle();
-            }
+            $this->ch->callPostResolveHooks();
         }
 
         /**
          * Calls hooks before content is processed
          * @todo Remove usage of globals
-         * @global string $page_title
          * @global null $moduleStyleFile
          * @global type $plainCmd
          * @global type $plainSection 
          */
         protected function preContentLoad() {
-            global $page_title, $moduleStyleFile,
+            global $moduleStyleFile,
                     $plainCmd, $plainSection;
             
             $this->ch->callPreContentLoadHooks();
-            if ($this->resolvedPage) {
-                $page_title = $this->resolvedPage->getContentTitle();
-                $pageContent = $this->resolvedPage->getContent();
-            }
             
             if ($this->mode == self::MODE_FRONTEND) {
                 $this->setPreContentLoadPlaceholders($this->template);        
                 //replace the {NODE_<ID>_<LANG>}- placeholders
+                $pageContent = $this->resolvedPage->getContent();
                 \LinkGenerator::parseTemplate($pageContent);
                 $this->resolvedPage->setContent($pageContent);
 
