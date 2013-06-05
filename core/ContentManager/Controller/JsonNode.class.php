@@ -119,7 +119,7 @@ class JsonNode implements JsonAdapter {
         // Global access check
         if (!\Permission::checkAccess(6, 'static', true) ||
                 !\Permission::checkAccess(35, 'static', true)) {
-            throw new \ContentManagerException($_CORELANG['TXT_CORE_CM_USAGE_DENIED']);
+            throw new ContentManagerException($_CORELANG['TXT_CORE_CM_USAGE_DENIED']);
         }
         
         $nodeId = 0;
@@ -176,10 +176,10 @@ class JsonNode implements JsonAdapter {
         // Global access check
         if (!\Permission::checkAccess(6, 'static', true) ||
                 !\Permission::checkAccess(35, 'static', true)) {
-            throw new \ContentManagerException($_CORELANG['TXT_CORE_CM_USAGE_DENIED']);
+            throw new ContentManagerException($_CORELANG['TXT_CORE_CM_USAGE_DENIED']);
         }
         if (!\Permission::checkAccess(160, 'static', true)) {
-            throw new \ContentManagerException($_CORELANG['TXT_CORE_CM_MOVE_DENIED']);
+            throw new ContentManagerException($_CORELANG['TXT_CORE_CM_MOVE_DENIED']);
         }
         
         $moved_node = $this->nodeRepo->find($arguments['post']['id']);
@@ -232,10 +232,10 @@ class JsonNode implements JsonAdapter {
         // Global access check
         if (!\Permission::checkAccess(6, 'static', true) ||
                 !\Permission::checkAccess(35, 'static', true)) {
-            throw new \ContentManagerException($_CORELANG['TXT_CORE_CM_USAGE_DENIED']);
+            throw new ContentManagerException($_CORELANG['TXT_CORE_CM_USAGE_DENIED']);
         }
         if (!\Permission::checkAccess(26, 'static', true)) {
-            throw new \ContentManagerException($_CORELANG['TXT_CORE_CM_DELETE_DENIED']);
+            throw new ContentManagerException($_CORELANG['TXT_CORE_CM_DELETE_DENIED']);
         }
         
         $node = $this->nodeRepo->find($arguments['post']['id']);

@@ -296,7 +296,8 @@ namespace Cx\Core {
                     }
                     // this does not belong here:
                     if (!preg_match('#^' . ASCMS_INSTANCE_OFFSET . ASCMS_BACKEND_PATH . '#', $_GET['__cap'])) {
-                        \CSRF::header('Location: ' . ASCMS_INSTANCE_OFFSET . ASCMS_BACKEND_PATH);
+                        // do not use \CSRF::header() here, since ClassLoader is not loaded at this time
+                        header('Location: ' . ASCMS_INSTANCE_OFFSET . ASCMS_BACKEND_PATH);
                         die();
                     }
                     $mode = self::MODE_BACKEND;
@@ -495,9 +496,14 @@ namespace Cx\Core {
             } else {
                 global $cmd, $act, $isRegularPageRequest, $plainCmd;
 
-                $cmd = isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : '';
-                $act = isset($_REQUEST['act']) ? $_REQUEST['act'] : '';
-                $plainCmd = $cmd;
+                $this->resolvedPage = new \Cx\Core\ContentManager\Model\Entity\Page();
+                $this->resolvedPage->setVirtual(true);
+                
+                if (!isset($plainCmd)) {
+                    $cmd = isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : '';
+                    $act = isset($_REQUEST['act']) ? $_REQUEST['act'] : '';
+                    $plainCmd = $cmd;
+                }
                 
                 // If standalone is set, then we will not have to initialize/load any content page related stuff
                 $isRegularPageRequest = !isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false';
@@ -514,7 +520,9 @@ namespace Cx\Core {
             global $page, $page_title;
             
             $this->ch->callPostResolveHooks('legacy');
-            $this->resolvedPage = $page;
+            if ($page) {
+                $this->resolvedPage = $page;
+            }
             if ($this->resolvedPage) {
                 $this->resolvedPage->setContentTitle($page_title);
             }
