@@ -114,13 +114,13 @@ class SystemComponentRepository extends EntityRepository
     // NEW
     public function callPostContentParseHooks() {
         foreach ($this->findAll() as $component) {
-            $component->postContentParse($this->cx, $this->cx->getTemplate());
+            $component->postContentParse($this->cx, $this->cx-getPage());
         }
     }
     
     public function callPostContentLoadHooks() {
         foreach ($this->findAll() as $component) {
-            $component->postContentLoad($this->cx, $this->cx->getTemplate());
+            $component->postContentLoad($this->cx, $this->cx->getPage());
         }
     }
     

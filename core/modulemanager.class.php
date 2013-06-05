@@ -564,7 +564,6 @@ return false;
 
     /**
      * @todo move to legacycomponenthandler
-     * @global type $page_content
      * @param type $plainCmd
      * @param type $cl
      * @param type $objDatabase
@@ -576,7 +575,7 @@ return false;
      * @param type $objInit 
      */
     public function loadLegacyModule(&$plainCmd, $cl, $objDatabase, &$_CORELANG, &$subMenuTitle, $objTemplate, $objFWUser, &$act, $objInit) {
-        global $page_content, $_CONFIG;
+        global $_CONFIG;
         
         switch ($plainCmd) {
             case 'login':
@@ -994,9 +993,7 @@ return false;
                 $objSearch->getPage();
                 break;
             default:
-                if ($objInit->mode != 'backend') {
-                    $objTemplate->setVariable('CONTENT_TEXT', $page_content);
-                } else {
+                if ($objInit->mode == 'backend') {
                     if (!$cl->loadFile(ASCMS_CORE_PATH.'/myAdmin.class.php'))
                         die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                     $objTemplate->setVariable('CONTAINER_DASHBOARD_CLASS', 'dashboard');

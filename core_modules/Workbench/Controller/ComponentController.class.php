@@ -19,7 +19,7 @@ class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponen
      * @todo Language var checker (/translation helper)
      * @todo Component analysis (/testing)
      */
-    public function load(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page = null) {
+    public function load(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {
         $objTemplate = $cx->getTemplate();
         $_ARRAYLANG = \Env::get('init')->loadLanguageData($this->getName());
         
@@ -81,23 +81,22 @@ class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponen
 
     public function preResolve(\Cx\Core\Cx $cx, \Cx\Core\Routing\Url $request) {}
 
-    public function postResolve(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page = null) {}
+    public function postResolve(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {}
 
-    public function preContentLoad(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page = null) {}
+    public function preContentLoad(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {}
 
-    public function preContentParse(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page = null) {}
+    public function preContentParse(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {}
 
-    public function postContentParse(\Cx\Core\Cx $cx, &$content) {}
+    public function postContentParse(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {}
 
-    public function postContentLoad(\Cx\Core\Cx $cx, &$content) {
+    public function postContentLoad(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {
         $warning = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/Workbench/View/Template');
         $warning->loadTemplateFile('Warning.html');
-        echo $warning->get() . '<div>';
+        $page->setContent($warning->get() . $page->getContent());
     }
 
     public function preFinalize(\Cx\Core\Cx $cx, \Cx\Core\Html\Sigma $template) {}
 
     public function postFinalize(\Cx\Core\Cx $cx) {
-        echo '</div>';
     }
 }

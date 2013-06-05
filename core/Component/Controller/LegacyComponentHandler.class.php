@@ -138,7 +138,7 @@ class LegacyComponentHandler {
                     },
                     'Newsletter' => function() {
                         global $section, $newsletter, $isRegularPageRequest, $plainSection, $cl, $_CORELANG,
-                                $newsletter, $_ARRAYLANG, $page_content, $page_template, $themesPages, $objInit;
+                                $newsletter, $_ARRAYLANG, $page_template, $themesPages, $objInit;
 
                         if ($section == "newsletter" && Newsletter::isTrackLink()) {//handle link tracker from newsletter, since user should be redirected to the link url
                             /*
@@ -172,8 +172,9 @@ class LegacyComponentHandler {
                         if ($cl->loadFile(ASCMS_MODULE_PATH.'/newsletter/index.class.php')) {
                             $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('newsletter'));
                             $newsletter = new \newsletter('');
-                            if (preg_match('/{NEWSLETTER_BLOCK}/', $page_content)) {
-                                $newsletter->setBlock($page_content);
+                            $content = \Env::get('cx')->getPage()->getContent();
+                            if (preg_match('/{NEWSLETTER_BLOCK}/', $content)) {
+                                $newsletter->setBlock($content);
                             }
                             if (preg_match('/{NEWSLETTER_BLOCK}/', $page_template)) {
                                 $newsletter->setBlock($page_template);
@@ -185,7 +186,7 @@ class LegacyComponentHandler {
                     },
                     'Immo' => function() {
                         global $isRegularPageRequest, $plainSection, $cl, $_CORELANG, $objImmo, $modulespath,
-                                $immoHeadlines, $themesPages, $immoHomeHeadlines, $page_content, $page_template;
+                                $immoHeadlines, $themesPages, $immoHomeHeadlines, $page_template;
 
                         if (!$isRegularPageRequest) {
                             // ATTENTION: These requests are not protected by the content manager
@@ -207,7 +208,7 @@ class LegacyComponentHandler {
                         if (file_exists($modulespath)) {
                             $immoHeadlines = new immoHeadlines($themesPages['immo']);
                             $immoHomeHeadlines = $immoHeadlines->getHeadlines();
-                            $page_content = str_replace('{IMMO_FILE}', $immoHomeHeadlines, $page_content);
+                            \Env::get('cx')->getPage()->setContent(str_replace('{IMMO_FILE}', $immoHomeHeadlines, \Env::get('cx')->getPage()->getContent()));
                             $themesPages['index'] = str_replace('{IMMO_FILE}', $immoHomeHeadlines, $themesPages['index']);
                             $page_template = str_replace('{IMMO_FILE}', $immoHomeHeadlines, $page_template);
                         }
@@ -220,12 +221,14 @@ class LegacyComponentHandler {
                         $objCounter->checkForSpider();
                     },
                     'Block' => function() {
-                        global $_CONFIG, $cl, $page_content, $page, $themesPages, $page_template;
+                        global $_CONFIG, $cl, $page, $themesPages, $page_template;
 
                         if ($_CONFIG['blockStatus'] == '1') {
                             /** @ignore */
                             if ($cl->loadFile(ASCMS_MODULE_PATH.'/block/index.class.php')) {
-                                \block::setBlocks($page_content, $page);
+                                $content = \Env::get('cx')->getPage()->getContent();
+                                \block::setBlocks($content, $page);
+                                \Env::get('cx')->getPage()->setContent($content);
                                 \block::setBlocks($themesPages, $page);
                         // TODO: this call in unhappy, becase the content/home template already gets parsed just the line above
                                 \block::setBlocks($page_template, $page);
@@ -233,31 +236,31 @@ class LegacyComponentHandler {
                         }
                     },
                     'Data' => function() {
-                        global $_CONFIG, $cl, $lang, $objInit, $dataBlocks, $lang, $page_content,
+                        global $_CONFIG, $cl, $lang, $objInit, $dataBlocks, $lang,
                                 $dataBlocks, $themesPages, $page_template;
 
                         // make the replacements for the data module
                         if ($_CONFIG['dataUseModule'] && $cl->loadFile(ASCMS_MODULE_PATH.'/data/dataBlocks.class.php')) {
                             $lang = $objInit->loadLanguageData('data');
                             $dataBlocks = new \dataBlocks($lang);
-                            $page_content = $dataBlocks->replace($page_content);
+                            \Env::get('cx')->getPage()->setContent($dataBlocks->replace(\Env::get('cx')->getPage()->getContent()));
                             $themesPages = $dataBlocks->replace($themesPages);
                             $page_template = $dataBlocks->replace($page_template);
                         }
                     },
                     'Teasers' => function() {
-                        global $_CONFIG, $page_content, $arrMatches, $cl, $objTeasers, $page_template,
+                        global $_CONFIG, $arrMatches, $cl, $objTeasers, $page_template,
                                 $themesPages;
 
                         $arrMatches = array();
                         // Set news teasers
                         if ($_CONFIG['newsTeasersStatus'] == '1') {
                             // set news teasers in the content
-                            if (preg_match_all('/{TEASERS_([0-9A-Z_-]+)}/', $page_content, $arrMatches)) {
+                            if (preg_match_all('/{TEASERS_([0-9A-Z_-]+)}/', \Env::get('cx')->getPage()->getContent(), $arrMatches)) {
                                 /** @ignore */
                                 if ($cl->loadFile(ASCMS_CORE_MODULE_PATH.'/news/lib/teasers.class.php')) {
                                     $objTeasers = new Teasers();
-                                    $objTeasers->setTeaserFrames($arrMatches[1], $page_content);
+                                    $objTeasers->setTeaserFrames($arrMatches[1], \Env::get('cx')->getPage()->getContent());
                                 }
                             }
                             // set news teasers in the page design
@@ -279,21 +282,22 @@ class LegacyComponentHandler {
                         }
                     },
                     'Downloads' => function() {
-                        global $page_content, $arrMatches, $cl, $objDownloadLib, $downloadBlock, $matches,
+                        global $arrMatches, $cl, $objDownloadLib, $downloadBlock, $matches,
                                 $objDownloadsModule;
 
                         // Set download groups
-                        if (preg_match_all('/{DOWNLOADS_GROUP_([0-9]+)}/', $page_content, $arrMatches)) {
+                        if (preg_match_all('/{DOWNLOADS_GROUP_([0-9]+)}/', \Env::get('cx')->getPage()->getContent(), $arrMatches)) {
                             /** @ignore */
                             if ($cl->loadFile(ASCMS_MODULE_PATH.'/downloads/lib/downloadsLib.class.php')) {
                                 $objDownloadLib = new DownloadsLibrary();
-                                $objDownloadLib->setGroups($arrMatches[1], $page_content);
+                                $objDownloadLib->setGroups($arrMatches[1], \Env::get('cx')->getPage()->getContent());
                             }
                         }
 
                         //--------------------------------------------------------
                         // Parse the download block 'downloads_category_#ID_list'
                         //--------------------------------------------------------
+                        $content = \Env::get('cx')->getPage()->getContent();
                         $downloadBlock = preg_replace_callback(
                             "/<!--\s+BEGIN\s+downloads_category_(\d+)_list\s+-->(.*)<!--\s+END\s+downloads_category_\g1_list\s+-->/s",
                             function($matches) {
@@ -302,19 +306,19 @@ class LegacyComponentHandler {
                                     return $objDownloadsModule->getPage();
                                 }
                             },
-                            $page_content);
-                        $page_content = $downloadBlock;
+                            $content);
+                        \Env::get('cx')->getPage()->setContent($downloadBlock);
                     },
                     'Feed' => function() {
-                        global $_CONFIG, $objNewsML, $page_content, $arrMatches, $page_template, $themesPages;
+                        global $_CONFIG, $objNewsML, $arrMatches, $page_template, $themesPages;
 
                         // Set NewsML messages
                         if ($_CONFIG['feedNewsMLStatus'] == '1') {
-                            if (preg_match_all('/{NEWSML_([0-9A-Z_-]+)}/', $page_content, $arrMatches)) {
+                            if (preg_match_all('/{NEWSML_([0-9A-Z_-]+)}/', \Env::get('cx')->getPage()->getContent(), $arrMatches)) {
                                 /** @ignore */
                                 if ($cl->loadFile(ASCMS_MODULE_PATH.'/feed/newsML.class.php')) {
                                     $objNewsML = new NewsML();
-                                    $objNewsML->setNews($arrMatches[1], $page_content);
+                                    $objNewsML->setNews($arrMatches[1], \Env::get('cx')->getPage()->getContent());
                                 }
                             }
                             if (preg_match_all('/{NEWSML_([0-9A-Z_-]+)}/', $page_template, $arrMatches)) {
@@ -349,21 +353,21 @@ class LegacyComponentHandler {
                         }
                     },
                     'News' => function() {
-                        global $modulespath, $headlinesNewsPlaceholder, $page_content, $themesPages, $page_template,
+                        global $modulespath, $headlinesNewsPlaceholder, $themesPages, $page_template,
                                 $newsHeadlinesObj, $homeHeadlines, $topNewsPlaceholder, $homeTopNews;
 
                         // Get Headlines
                         $modulespath = ASCMS_CORE_MODULE_PATH.'/news/lib/headlines.class.php';
                         $headlinesNewsPlaceholder = '{HEADLINES_FILE}';
                         if (   file_exists($modulespath)
-                            && (   strpos($page_content, $headlinesNewsPlaceholder) !== false
+                            && (   strpos(\Env::get('cx')->getPage()->getContent(), $headlinesNewsPlaceholder) !== false
                                 || strpos($themesPages['index'], $headlinesNewsPlaceholder) !== false
                                 || strpos($themesPages['sidebar'], $headlinesNewsPlaceholder) !== false
                                 || strpos($page_template, $headlinesNewsPlaceholder) !== false)
                         ) {
                             $newsHeadlinesObj = new \newsHeadlines($themesPages['headlines']);
                             $homeHeadlines = $newsHeadlinesObj->getHomeHeadlines();
-                            $page_content           = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $page_content);
+                            \Env::get('cx')->getPage()->setContent(str_replace($headlinesNewsPlaceholder, $homeHeadlines, \Env::get('cx')->getPage()->getContent()));
                             $themesPages['index']   = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $themesPages['index']);
                             $themesPages['sidebar'] = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $themesPages['sidebar']);
                             $page_template          = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $page_template);
@@ -374,21 +378,21 @@ class LegacyComponentHandler {
                         $modulespath = ASCMS_CORE_MODULE_PATH.'/news/lib/top_news.class.php';
                         $topNewsPlaceholder = '{TOP_NEWS_FILE}';
                         if (   file_exists($modulespath)
-                            && (   strpos($page_content, $topNewsPlaceholder) !== false
+                            && (   strpos(\Env::get('cx')->getPage()->getContent(), $topNewsPlaceholder) !== false
                                 || strpos($themesPages['index'], $topNewsPlaceholder) !== false
                                 || strpos($themesPages['sidebar'], $topNewsPlaceholder) !== false
                                 || strpos($page_template, $topNewsPlaceholder) !== false)
                         ) {
                             $newsTopObj = new newsTop($themesPages['top_news']);
                             $homeTopNews = $newsTopObj->getHomeTopNews();
-                            $page_content           = str_replace($topNewsPlaceholder, $homeTopNews, $page_content);
+                            \Env::get('cx')->getPage()->setContent(str_replace($topNewsPlaceholder, $homeTopNews, \Env::get('cx')->getPage()->getContent()));
                             $themesPages['index']   = str_replace($topNewsPlaceholder, $homeTopNews, $themesPages['index']);
                             $themesPages['sidebar'] = str_replace($topNewsPlaceholder, $homeTopNews, $themesPages['sidebar']);
                             $page_template          = str_replace($topNewsPlaceholder, $homeTopNews, $page_template);
                         }
                     },
                     'Calendar' => function() {
-                        global $modulespath, $eventsPlaceholder, $_CONFIG, $page_content, $themesPages, $page_template,
+                        global $modulespath, $eventsPlaceholder, $_CONFIG, $themesPages, $page_template,
                                 $calHeadlinesObj, $calHeadlines;
 
                         // Get Calendar Events
@@ -396,7 +400,7 @@ class LegacyComponentHandler {
                         $eventsPlaceholder = '{EVENTS_FILE}';
                         if (   MODULE_INDEX < 2
                             && $_CONFIG['calendarheadlines']
-                            && (   strpos($page_content, $eventsPlaceholder) !== false
+                            && (   strpos(\Env::get('cx')->getPage()->getContent(), $eventsPlaceholder) !== false
                                 || strpos($themesPages['index'], $eventsPlaceholder) !== false
                                 || strpos($themesPages['sidebar'], $eventsPlaceholder) !== false
                                 || strpos($page_template, $eventsPlaceholder) !== false)
@@ -404,22 +408,22 @@ class LegacyComponentHandler {
                         ) {
                             $calHeadlinesObj = new \calHeadlines($themesPages['calendar_headlines']);
                             $calHeadlines = $calHeadlinesObj->getHeadlines();
-                            $page_content           = str_replace($eventsPlaceholder, $calHeadlines, $page_content);
+                            \Env::get('cx')->getPage()->setContent(str_replace($eventsPlaceholder, $calHeadlines, \Env::get('cx')->getPage()->getContent()));
                             $themesPages['index']   = str_replace($eventsPlaceholder, $calHeadlines, $themesPages['index']);
                             $themesPages['sidebar'] = str_replace($eventsPlaceholder, $calHeadlines, $themesPages['sidebar']);
                             $page_template          = str_replace($eventsPlaceholder, $calHeadlines, $page_template);
                         }
                     },
                     'Knowledge' => function() {
-                        global $_CONFIG, $cl, $knowledgeInterface, $page_content, $page_template, $themesPages;
+                        global $_CONFIG, $cl, $knowledgeInterface, $page_template, $themesPages;
 
                         // get knowledge content
                         if (MODULE_INDEX < 2 && !empty($_CONFIG['useKnowledgePlaceholders'])) {
                             if ($cl->loadFile(ASCMS_MODULE_PATH.'/knowledge/interface.class.php')) {
 
                                 $knowledgeInterface = new \KnowledgeInterface();
-                                if (preg_match('/{KNOWLEDGE_[A-Za-z0-9_]+}/i', $page_content)) {
-                                    $knowledgeInterface->parse($page_content);
+                                if (preg_match('/{KNOWLEDGE_[A-Za-z0-9_]+}/i', \Env::get('cx')->getPage()->getContent())) {
+                                    $knowledgeInterface->parse(\Env::get('cx')->getPage()->getContent());
                                 }
                                 if (preg_match('/{KNOWLEDGE_[A-Za-z0-9_]+}/i', $page_template)) {
                                     $knowledgeInterface->parse($page_template);
@@ -431,15 +435,15 @@ class LegacyComponentHandler {
                         }
                     },
                     'Directory' => function() {
-                        global $_CONFIG, $cl, $dirc, $themesPages, $page_content, $page_template, $themesPages;
+                        global $_CONFIG, $cl, $dirc, $themesPages, $page_template, $themesPages;
 
                         // get Directory Homecontent
                         if ($_CONFIG['directoryHomeContent'] == '1') {
                             if ($cl->loadFile(ASCMS_MODULE_PATH.'/directory/homeContent.class.php')) {
 
                                 $dirc = $themesPages['directory_content'];
-                                if (preg_match('/{DIRECTORY_FILE}/', $page_content)) {
-                                    $page_content = str_replace('{DIRECTORY_FILE}', dirHomeContent::getObj($dirc)->getContent(), $page_content);
+                                if (preg_match('/{DIRECTORY_FILE}/', \Env::get('cx')->getPage()->getContent())) {
+                                    \Env::get('cx')->getPage()->setContent(str_replace('{DIRECTORY_FILE}', dirHomeContent::getObj($dirc)->getContent(), \Env::get('cx')->getPage()->getContent()));
                                 }
                                 if (preg_match('/{DIRECTORY_FILE}/', $page_template)) {
                                     $page_template = str_replace('{DIRECTORY_FILE}', dirHomeContent::getObj($dirc)->getContent(), $page_template);
@@ -452,7 +456,7 @@ class LegacyComponentHandler {
                     },
                     'Forum' => function() {
                         global $_CONFIG, $cl, $forumHomeContentInPageContent, $forumHomeContentInPageTemplate,
-                                $forumHomeContentInThemesPage, $page_content, $page_template, $themesPages,
+                                $forumHomeContentInThemesPage, $page_template, $themesPages,
                                 $homeForumContent, $_ARRAYLANG, $objInit, $objForum, $objForumHome,
                                 $forumHomeTagCloudInContent, $forumHomeTagCloudInTemplate, $forumHomeTagCloudInTheme,
                                 $forumHomeTagCloudInSidebar, $strTagCloudSource;
@@ -464,7 +468,7 @@ class LegacyComponentHandler {
                                 $forumHomeContentInPageContent = false;
                                 $forumHomeContentInPageTemplate = false;
                                 $forumHomeContentInThemesPage = false;
-                                if (strpos($page_content, '{FORUM_FILE}') !== false) {
+                                if (strpos(\Env::get('cx')->getPage()->getContent(), '{FORUM_FILE}') !== false) {
                                     $forumHomeContentInPageContent = true;
                                 }
                                 if (strpos($page_template, '{FORUM_FILE}') !== false) {
@@ -480,7 +484,7 @@ class LegacyComponentHandler {
                                     $homeForumContent = $objForum->getContent();
                                 }
                                 if ($forumHomeContentInPageContent) {
-                                    $page_content = str_replace('{FORUM_FILE}', $homeForumContent, $page_content);
+                                    \Env::get('cx')->getPage()->setContent(str_replace('{FORUM_FILE}', $homeForumContent, \Env::get('cx')->getPage()->getContent()));
                                 }
                                 if ($forumHomeContentInPageTemplate) {
                                     $page_template = str_replace('{FORUM_FILE}', $homeForumContent, $page_template);
@@ -497,7 +501,7 @@ class LegacyComponentHandler {
                             if ($cl->loadFile(ASCMS_MODULE_PATH.'/forum/homeContent.class.php')) {
                                 $objForumHome = new ForumHomeContent();
                                 //Forum-TagCloud
-                                $forumHomeTagCloudInContent = $objForumHome->searchKeywordInContent('FORUM_TAG_CLOUD', $page_content);
+                                $forumHomeTagCloudInContent = $objForumHome->searchKeywordInContent('FORUM_TAG_CLOUD', \Env::get('cx')->getPage()->getContent());
                                 $forumHomeTagCloudInTemplate = $objForumHome->searchKeywordInContent('FORUM_TAG_CLOUD', $page_template);
                                 $forumHomeTagCloudInTheme = $objForumHome->searchKeywordInContent('FORUM_TAG_CLOUD', $themesPages['index']);
                                 $forumHomeTagCloudInSidebar = $objForumHome->searchKeywordInContent('FORUM_TAG_CLOUD', $themesPages['sidebar']);
@@ -507,7 +511,7 @@ class LegacyComponentHandler {
                                     || $forumHomeTagCloudInSidebar
                                 ) {
                                     $strTagCloudSource = $objForumHome->getHomeTagCloud();
-                                    $page_content = $objForumHome->fillVariableIfActivated('FORUM_TAG_CLOUD', $strTagCloudSource, $page_content, $forumHomeTagCloudInContent);
+                                    \Env::get('cx')->getPage()->setContent($objForumHome->fillVariableIfActivated('FORUM_TAG_CLOUD', $strTagCloudSource, \Env::get('cx')->getPage()->getContent(), $forumHomeTagCloudInContent));
                                     $page_template = $objForumHome->fillVariableIfActivated('FORUM_TAG_CLOUD', $strTagCloudSource, $page_template, $forumHomeTagCloudInTemplate);
                                     $themesPages['index'] = $objForumHome->fillVariableIfActivated('FORUM_TAG_CLOUD', $strTagCloudSource, $themesPages['index'], $forumHomeTagCloudInTheme);
                                     $themesPages['sidebar'] = $objForumHome->fillVariableIfActivated('FORUM_TAG_CLOUD', $strTagCloudSource, $themesPages['sidebar'], $forumHomeTagCloudInSidebar);
@@ -516,15 +520,15 @@ class LegacyComponentHandler {
                         }
                     },
                     'Gallery' => function() {
-                        global $cl, $objGalleryHome, $page_content, $page_template, $themesPages, $latestImage;
+                        global $cl, $objGalleryHome, $page_template, $themesPages, $latestImage;
 
                         // Get Gallery-Images (Latest, Random)
                         /** @ignore */
                         if ($cl->loadFile(ASCMS_MODULE_PATH.'/gallery/homeContent.class.php')) {
                             $objGalleryHome = new \GalleryHomeContent();
                             if ($objGalleryHome->checkRandom()) {
-                                if (preg_match('/{GALLERY_RANDOM}/', $page_content)) {
-                                    $page_content = str_replace('{GALLERY_RANDOM}', $objGalleryHome->getRandomImage(), $page_content);
+                                if (preg_match('/{GALLERY_RANDOM}/', \Env::get('cx')->getPage()->getContent())) {
+                                    \Env::get('cx')->getPage()->setContent(str_replace('{GALLERY_RANDOM}', $objGalleryHome->getRandomImage(), \Env::get('cx')->getPage()->getContent()));
                                 }
                                 if (preg_match('/{GALLERY_RANDOM}/', $page_template))  {
                                     $page_template = str_replace('{GALLERY_RANDOM}', $objGalleryHome->getRandomImage(), $page_template);
@@ -538,8 +542,8 @@ class LegacyComponentHandler {
                             }
                             if ($objGalleryHome->checkLatest()) {
                                 $latestImage = $objGalleryHome->getLastImage();
-                                if (preg_match('/{GALLERY_LATEST}/', $page_content)) {
-                                    $page_content = str_replace('{GALLERY_LATEST}', $latestImage, $page_content);
+                                if (preg_match('/{GALLERY_LATEST}/', \Env::get('cx')->getPage()->getContent())) {
+                                    \Env::get('cx')->getPage()->setContent(str_replace('{GALLERY_LATEST}', $latestImage, \Env::get('cx')->getPage()->getContent()));
                                 }
                                 if (preg_match('/{GALLERY_LATEST}/', $page_template)) {
                                     $page_template = str_replace('{GALLERY_LATEST}', $latestImage, $page_template);
@@ -555,7 +559,7 @@ class LegacyComponentHandler {
                     },
                     'Podcast' => function() {
                         global $podcastFirstBlock, $podcastContent, $_CONFIG, $cl, $podcastHomeContentInPageContent,
-                                $podcastHomeContentInPageTemplate, $podcastHomeContentInThemesPage, $page_content,
+                                $podcastHomeContentInPageTemplate, $podcastHomeContentInThemesPage,
                                 $page_template, $themesPages, $_ARRAYLANG, $objInit, $objPodcast, $podcastBlockPos,
                                 $contentPos;
 
@@ -568,7 +572,7 @@ class LegacyComponentHandler {
                                 $podcastHomeContentInPageContent = false;
                                 $podcastHomeContentInPageTemplate = false;
                                 $podcastHomeContentInThemesPage = false;
-                                if (strpos($page_content, '{PODCAST_FILE}') !== false) {
+                                if (strpos(\Env::get('cx')->getPage()->getContent(), '{PODCAST_FILE}') !== false) {
                                     $podcastHomeContentInPageContent = true;
                                 }
                                 if (strpos($page_template, '{PODCAST_FILE}') !== false) {
@@ -584,7 +588,7 @@ class LegacyComponentHandler {
                                     $objPodcast = new podcastHomeContent($themesPages['podcast_content']);
                                     $podcastContent = $objPodcast->getContent();
                                     if ($podcastHomeContentInPageContent) {
-                                        $page_content = str_replace('{PODCAST_FILE}', $podcastContent, $page_content);
+                                        \Env::get('cx')->getPage()->setContent(str_replace('{PODCAST_FILE}', $podcastContent, \Env::get('cx')->getPage()->getContent()));
                                     }
                                     if ($podcastHomeContentInPageTemplate) {
                                         $page_template = str_replace('{PODCAST_FILE}', $podcastContent, $page_template);
@@ -604,7 +608,7 @@ class LegacyComponentHandler {
                         }
                     },
                     'Voting' => function() {
-                        global $cl, $_ARRAYLANG, $objInit, $themesPages, $arrMatches, $page_content, $page_template;
+                        global $cl, $_ARRAYLANG, $objInit, $themesPages, $arrMatches, $page_template;
 
                         // get voting
                         /** @ignore */
@@ -619,8 +623,8 @@ class LegacyComponentHandler {
                             if (preg_match('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@m', $themesPages['index'], $arrMatches)) {
                                 $themesPages['index'] = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@m', setVotingResult($arrMatches[2]), $themesPages['index']);
                             }
-                            if (preg_match('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@m', $page_content, $arrMatches)) {
-                                $page_content = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@m', setVotingResult($arrMatches[2]), $page_content);
+                            if (preg_match('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@m', \Env::get('cx')->getPage()->getContent(), $arrMatches)) {
+                                \Env::get('cx')->getPage()->setContent(preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@m', setVotingResult($arrMatches[2]), \Env::get('cx')->getPage()->getContent()));
                             }
                             if (preg_match('@<!--\s+BEGIN\s+(voting_result)\s+-->(.*)<!--\s+END\s+\1\s+-->@m', $page_template, $arrMatches)) {
                                 $page_template = preg_replace('@(<!--\s+BEGIN\s+(voting_result)\s+-->.*<!--\s+END\s+\2\s+-->)@m', setVotingResult($arrMatches[2]), $page_template);
@@ -628,7 +632,7 @@ class LegacyComponentHandler {
                         }
                     },
                     'Blog' => function() {
-                        global $cl, $objBlogHome, $themesPages, $page_content, $page_template, $_ARRAYLANG, $objInit,
+                        global $cl, $objBlogHome, $themesPages, $page_template, $_ARRAYLANG, $objInit,
                                 $blogHomeContentInContent, $blogHomeContentInTemplate, $blogHomeContentInTheme, $blogHomeContentInSidebar, $strContentSource,
                                 $blogHomeCalendarInContent, $blogHomeCalendarInTemplate, $blogHomeCalendarInTheme, $blogHomeCalendarInSidebar, $strCalendarSource,
                                 $blogHomeTagCloudInContent, $blogHomeTagCloudInTemplate, $blogHomeTagCloudInTheme, $blogHomeTagCloudInSidebar, $strTagCloudSource,
@@ -642,74 +646,74 @@ class LegacyComponentHandler {
                             $objBlogHome = new \BlogHomeContent($themesPages['blog_content']);
                             if ($objBlogHome->blockFunktionIsActivated()) {
                                 //Blog-File
-                                $blogHomeContentInContent = $objBlogHome->searchKeywordInContent('BLOG_FILE', $page_content);
+                                $blogHomeContentInContent = $objBlogHome->searchKeywordInContent('BLOG_FILE', \Env::get('cx')->getPage()->getContent());
                                 $blogHomeContentInTemplate = $objBlogHome->searchKeywordInContent('BLOG_FILE', $page_template);
                                 $blogHomeContentInTheme = $objBlogHome->searchKeywordInContent('BLOG_FILE', $themesPages['index']);
                                 $blogHomeContentInSidebar = $objBlogHome->searchKeywordInContent('BLOG_FILE', $themesPages['sidebar']);
                                 if ($blogHomeContentInContent || $blogHomeContentInTemplate || $blogHomeContentInTheme || $blogHomeContentInSidebar) {
                                     $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('blog'));
                                     $strContentSource = $objBlogHome->getLatestEntries();
-                                    $page_content = $objBlogHome->fillVariableIfActivated('BLOG_FILE', $strContentSource, $page_content, $blogHomeContentInContent);
+                                    \Env::get('cx')->getPage()->setContent($objBlogHome->fillVariableIfActivated('BLOG_FILE', $strContentSource, \Env::get('cx')->getPage()->getContent(), $blogHomeContentInContent));
                                     $page_template = $objBlogHome->fillVariableIfActivated('BLOG_FILE', $strContentSource, $page_template, $blogHomeContentInTemplate);
                                     $themesPages['index'] = $objBlogHome->fillVariableIfActivated('BLOG_FILE', $strContentSource, $themesPages['index'], $blogHomeContentInTheme);
                                     $themesPages['sidebar'] = $objBlogHome->fillVariableIfActivated('BLOG_FILE', $strContentSource, $themesPages['sidebar'], $blogHomeContentInSidebar);
                                 }
                                 //Blog-Calendar
-                                $blogHomeCalendarInContent = $objBlogHome->searchKeywordInContent('BLOG_CALENDAR', $page_content);
+                                $blogHomeCalendarInContent = $objBlogHome->searchKeywordInContent('BLOG_CALENDAR', \Env::get('cx')->getPage()->getContent());
                                 $blogHomeCalendarInTemplate = $objBlogHome->searchKeywordInContent('BLOG_CALENDAR', $page_template);
                                 $blogHomeCalendarInTheme = $objBlogHome->searchKeywordInContent('BLOG_CALENDAR', $themesPages['index']);
                                 $blogHomeCalendarInSidebar = $objBlogHome->searchKeywordInContent('BLOG_CALENDAR', $themesPages['sidebar']);
                                 if ($blogHomeCalendarInContent || $blogHomeCalendarInTemplate || $blogHomeCalendarInTheme || $blogHomeCalendarInSidebar) {
                                     $strCalendarSource = $objBlogHome->getHomeCalendar();
-                                    $page_content = $objBlogHome->fillVariableIfActivated('BLOG_CALENDAR', $strCalendarSource, $page_content, $blogHomeCalendarInContent);
+                                    \Env::get('cx')->getPage()->setContent($objBlogHome->fillVariableIfActivated('BLOG_CALENDAR', $strCalendarSource, \Env::get('cx')->getPage()->getContent(), $blogHomeCalendarInContent));
                                     $page_template = $objBlogHome->fillVariableIfActivated('BLOG_CALENDAR', $strCalendarSource, $page_template, $blogHomeCalendarInTemplate);
                                     $themesPages['index'] = $objBlogHome->fillVariableIfActivated('BLOG_CALENDAR', $strCalendarSource, $themesPages['index'], $blogHomeCalendarInTheme);
                                     $themesPages['sidebar'] = $objBlogHome->fillVariableIfActivated('BLOG_CALENDAR', $strCalendarSource, $themesPages['sidebar'], $blogHomeCalendarInSidebar);
                                 }
                                 //Blog-TagCloud
-                                $blogHomeTagCloudInContent = $objBlogHome->searchKeywordInContent('BLOG_TAG_CLOUD', $page_content);
+                                $blogHomeTagCloudInContent = $objBlogHome->searchKeywordInContent('BLOG_TAG_CLOUD', \Env::get('cx')->getPage()->getContent());
                                 $blogHomeTagCloudInTemplate = $objBlogHome->searchKeywordInContent('BLOG_TAG_CLOUD', $page_template);
                                 $blogHomeTagCloudInTheme = $objBlogHome->searchKeywordInContent('BLOG_TAG_CLOUD', $themesPages['index']);
                                 $blogHomeTagCloudInSidebar = $objBlogHome->searchKeywordInContent('BLOG_TAG_CLOUD', $themesPages['sidebar']);
                                 if ($blogHomeTagCloudInContent || $blogHomeTagCloudInTemplate || $blogHomeTagCloudInTheme || $blogHomeTagCloudInSidebar) {
                                     $strTagCloudSource = $objBlogHome->getHomeTagCloud();
-                                    $page_content = $objBlogHome->fillVariableIfActivated('BLOG_TAG_CLOUD', $strTagCloudSource, $page_content, $blogHomeTagCloudInContent);
+                                    \Env::get('cx')->getPage()->setContent($objBlogHome->fillVariableIfActivated('BLOG_TAG_CLOUD', $strTagCloudSource, \Env::get('cx')->getPage()->getContent(), $blogHomeTagCloudInContent));
                                     $page_template = $objBlogHome->fillVariableIfActivated('BLOG_TAG_CLOUD', $strTagCloudSource, $page_template, $blogHomeTagCloudInTemplate);
                                     $themesPages['index'] = $objBlogHome->fillVariableIfActivated('BLOG_TAG_CLOUD', $strTagCloudSource, $themesPages['index'], $blogHomeTagCloudInTheme);
                                     $themesPages['sidebar'] = $objBlogHome->fillVariableIfActivated('BLOG_TAG_CLOUD', $strTagCloudSource, $themesPages['sidebar'], $blogHomeTagCloudInSidebar);
                                 }
                                 //Blog-TagHitlist
-                                $blogHomeTagHitlistInContent = $objBlogHome->searchKeywordInContent('BLOG_TAG_HITLIST', $page_content);
+                                $blogHomeTagHitlistInContent = $objBlogHome->searchKeywordInContent('BLOG_TAG_HITLIST', \Env::get('cx')->getPage()->getContent());
                                 $blogHomeTagHitlistInTemplate = $objBlogHome->searchKeywordInContent('BLOG_TAG_HITLIST', $page_template);
                                 $blogHomeTagHitlistInTheme = $objBlogHome->searchKeywordInContent('BLOG_TAG_HITLIST', $themesPages['index']);
                                 $blogHomeTagHitlistInSidebar = $objBlogHome->searchKeywordInContent('BLOG_TAG_HITLIST', $themesPages['sidebar']);
                                 if ($blogHomeTagHitlistInContent || $blogHomeTagHitlistInTemplate || $blogHomeTagHitlistInTheme || $blogHomeTagHitlistInSidebar) {
                                     $strTagHitlistSource = $objBlogHome->getHomeTagHitlist();
-                                    $page_content = $objBlogHome->fillVariableIfActivated('BLOG_TAG_HITLIST', $strTagHitlistSource, $page_content, $blogHomeTagHitlistInContent);
+                                    \Env::get('cx')->getPage()->setContent($objBlogHome->fillVariableIfActivated('BLOG_TAG_HITLIST', $strTagHitlistSource, \Env::get('cx')->getPage()->getContent(), $blogHomeTagHitlistInContent));
                                     $page_template = $objBlogHome->fillVariableIfActivated('BLOG_TAG_HITLIST', $strTagHitlistSource, $page_template, $blogHomeTagHitlistInTemplate);
                                     $themesPages['index'] = $objBlogHome->fillVariableIfActivated('BLOG_TAG_HITLIST', $strTagHitlistSource, $themesPages['index'], $blogHomeTagHitlistInTheme);
                                     $themesPages['sidebar'] = $objBlogHome->fillVariableIfActivated('BLOG_TAG_HITLIST', $strTagHitlistSource, $themesPages['sidebar'], $blogHomeTagHitlistInSidebar);
                                 }
                                 //Blog-Categories (Select)
-                                $blogHomeCategorySelectInContent = $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_SELECT', $page_content);
+                                $blogHomeCategorySelectInContent = $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_SELECT', \Env::get('cx')->getPage()->getContent());
                                 $blogHomeCategorySelectInTemplate = $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_SELECT', $page_template);
                                 $blogHomeCategorySelectInTheme = $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_SELECT', $themesPages['index']);
                                 $blogHomeCategorySelectInSidebar = $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_SELECT', $themesPages['sidebar']);
                                 if ($blogHomeCategorySelectInContent || $blogHomeCategorySelectInTemplate || $blogHomeCategorySelectInTheme || $blogHomeCategorySelectInSidebar) {
                                     $strCategoriesSelect = $objBlogHome->getHomeCategoriesSelect();
-                                    $page_content = $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_SELECT', $strCategoriesSelect, $page_content, $blogHomeCategorySelectInContent);
+                                    \Env::get('cx')->getPage()->setContent($objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_SELECT', $strCategoriesSelect, \Env::get('cx')->getPage()->getContent(), $blogHomeCategorySelectInContent));
                                     $page_template = $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_SELECT', $strCategoriesSelect, $page_template, $blogHomeCategorySelectInTemplate);
                                     $themesPages['index'] = $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_SELECT', $strCategoriesSelect, $themesPages['index'], $blogHomeCategorySelectInTheme);
                                     $themesPages['sidebar'] = $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_SELECT', $strCategoriesSelect, $themesPages['sidebar'], $blogHomeCategorySelectInSidebar);
                                 }
                                 //Blog-Categories (List)
-                                $blogHomeCategoryListInContent = $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_LIST', $page_content);
+                                $blogHomeCategoryListInContent = $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_LIST', \Env::get('cx')->getPage()->getContent());
                                 $blogHomeCategoryListInTemplate = $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_LIST', $page_template);
                                 $blogHomeCategoryListInTheme = $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_LIST', $themesPages['index']);
                                 $blogHomeCategoryListInSidebar = $objBlogHome->searchKeywordInContent('BLOG_CATEGORIES_LIST', $themesPages['sidebar']);
                                 if ($blogHomeCategoryListInContent || $blogHomeCategoryListInTemplate || $blogHomeCategoryListInTheme || $blogHomeCategoryListInSidebar) {
                                     $strCategoriesList = $objBlogHome->getHomeCategoriesList();
-                                    $page_content = $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_LIST', $strCategoriesList, $page_content, $blogHomeCategoryListInContent);
+                                    \Env::get('cx')->getPage()->setContent($objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_LIST', $strCategoriesList, \Env::get('cx')->getPage()->getContent(), $blogHomeCategoryListInContent));
                                     $page_template = $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_LIST', $strCategoriesList, $page_template, $blogHomeCategoryListInTemplate);
                                     $themesPages['index'] = $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_LIST', $strCategoriesList, $themesPages['index'], $blogHomeCategoryListInTheme);
                                     $themesPages['sidebar'] = $objBlogHome->fillVariableIfActivated('BLOG_CATEGORIES_LIST', $strCategoriesList, $themesPages['sidebar'], $blogHomeCategoryListInSidebar);
@@ -718,15 +722,15 @@ class LegacyComponentHandler {
                         }
                     },
                     'MediaDir' => function() {
-                        global $cl, $objMadiadirPlaceholders, $page_content, $page_template, $themesPages;
+                        global $cl, $objMadiadirPlaceholders, $page_template, $themesPages;
 
                         // Media directory: set placeholders I
                         /** @ignore */
                         if ($cl->loadFile(ASCMS_MODULE_PATH.'/mediadir/placeholders.class.php')) {
                             $objMadiadirPlaceholders = new \mediaDirectoryPlaceholders();
                             // Level/Category Navbar
-                            if (preg_match('/{MEDIADIR_NAVBAR}/', $page_content)) {
-                                $page_content = str_replace('{MEDIADIR_NAVBAR}', $objMadiadirPlaceholders->getNavigationPlacholder(), $page_content);
+                            if (preg_match('/{MEDIADIR_NAVBAR}/', \Env::get('cx')->getPage()->getContent())) {
+                                \Env::get('cx')->getPage()->setContent(str_replace('{MEDIADIR_NAVBAR}', $objMadiadirPlaceholders->getNavigationPlacholder(), \Env::get('cx')->getPage()->getContent()));
                             }
                             if (preg_match('/{MEDIADIR_NAVBAR}/', $page_template)) {
                                 $page_template = str_replace('{MEDIADIR_NAVBAR}', $objMadiadirPlaceholders->getNavigationPlacholder(), $page_template);
@@ -738,8 +742,8 @@ class LegacyComponentHandler {
                                 $themesPages['sidebar'] = str_replace('{MEDIADIR_NAVBAR}', $objMadiadirPlaceholders->getNavigationPlacholder(), $themesPages['sidebar']);
                             }
                             // Latest Entries
-                            if (preg_match('/{MEDIADIR_LATEST}/', $page_content)) {
-                                $page_content = str_replace('{MEDIADIR_LATEST}', $objMadiadirPlaceholders->getLatestPlacholder(), $page_content);
+                            if (preg_match('/{MEDIADIR_LATEST}/', \Env::get('cx')->getPage()->getContent())) {
+                                \Env::get('cx')->getPage()->setContent(str_replace('{MEDIADIR_LATEST}', $objMadiadirPlaceholders->getLatestPlacholder(), \Env::get('cx')->getPage()->getContent()));
                             }
                             if (preg_match('/{MEDIADIR_LATEST}/', $page_template)) {
                                 $page_template = str_replace('{MEDIADIR_LATEST}', $objMadiadirPlaceholders->getLatestPlacholder(), $page_template);
@@ -753,10 +757,10 @@ class LegacyComponentHandler {
                         }
                     },
                     'FwUser' => function() {
-                        global $page_content;
-
                         // ACCESS: parse access_logged_in[1-9] and access_logged_out[1-9] blocks
-                        \FWUser::parseLoggedInOutBlocks($page_content);
+                        $content = \Env::get('cx')->getPage()->getContent();
+                        \FWUser::parseLoggedInOutBlocks($content);
+                        \Env::get('cx')->getPage()->setContent($content);
                     },
                 ),
                 'postContentLoad' => array(
@@ -952,53 +956,53 @@ class LegacyComponentHandler {
                 ),
                 'load' => array(
                     'access' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate, $objAccess, $page_metatitle, $page_title;
+                        global $cl, $_CORELANG, $objTemplate, $objAccess, $page_metatitle, $page_title;
                         
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/access/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objAccess = new \Access($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $objAccess->getPage($page_metatitle, $page_title));
+                        $objAccess = new \Access(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($objAccess->getPage($page_metatitle, $page_title));
                     },
 
                     'login' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate, $sessionObj;
+                        global $cl, $_CORELANG, $objTemplate, $sessionObj;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/login/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new \cmsSession();
-                        $objLogin = new \Login($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $objLogin->getContent());
+                        $objLogin = new \Login(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($objLogin->getContent());
                     },
 
                     'nettools' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        global $cl, $_CORELANG, $objTemplate;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/nettools/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objNetTools = new \NetTools($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $objNetTools->getPage());
+                        $objNetTools = new \NetTools(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($objNetTools->getPage());
                     },
 
                     'shop' => function() {
-                        global $cl, $_CORELANG, $objTemplate, $page_content, $boolShop, $_ARRAYLANG, $objInit, $plainSection;
+                        global $cl, $_CORELANG, $objTemplate, $boolShop, $_ARRAYLANG, $objInit, $plainSection;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/shop/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objTemplate->setVariable('CONTENT_TEXT', \Shop::getPage($page_content));
+                        \Env::get('cx')->getPage()->setContent(\Shop::getPage(\Env::get('cx')->getPage()->getContent()));
                         $boolShop = true;
                     },
 
                     'news' => function() {
-                        global $cl, $_CORELANG, $page, $page_content, $objTemplate, $page_title, $page_metatitle;
+                        global $cl, $_CORELANG, $page, $objTemplate, $page_title, $page_metatitle;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/news/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $newsObj= new \news($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $newsObj->getNewsPage());
+                        $newsObj= new \news(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($newsObj->getNewsPage());
                         $newsObj->getPageTitle($page_title);
                         // Set the meta page description to the teaser text if displaying news details
                         $teaser = $newsObj->getTeaser();
@@ -1009,37 +1013,37 @@ class LegacyComponentHandler {
                     },
 
                     'livecam' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        global $cl, $_CORELANG, $objTemplate;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/livecam/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objLivecam = new \Livecam($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $objLivecam->getPage());
+                        $objLivecam = new \Livecam(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($objLivecam->getPage());
                     },
 
                     'guestbook' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        global $cl, $_CORELANG, $objTemplate;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/guestbook/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objGuestbook = new \Guestbook($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $objGuestbook->getPage());
+                        $objGuestbook = new \Guestbook(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($objGuestbook->getPage());
                     },
 
                     'memberdir' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        global $cl, $_CORELANG, $objTemplate;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/memberdir/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objMemberDir = new \memberDir($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $objMemberDir->getPage());
+                        $objMemberDir = new \memberDir(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($objMemberDir->getPage());
                     },
 
                     'data' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        global $cl, $_CORELANG, $objTemplate;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/data/index.class.php'))
@@ -1047,139 +1051,137 @@ class LegacyComponentHandler {
                         //if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new \cmsSession();
                         #if (!isset($objAuth) || !is_object($objAuth)) $objAuth = &new Auth($type = 'frontend');
 
-                        $objData = new \Data($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $objData->getPage());
+                        $objData = new \Data(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($objData->getPage());
                     },
 
                     'download' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        global $cl, $_CORELANG, $objTemplate;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/download/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objDownload = new \Download($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $objDownload->getPage());
+                        $objDownload = new \Download(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($objDownload->getPage());
                     },
 
                     'recommend' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        global $cl, $_CORELANG, $objTemplate;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/recommend/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objRecommend = new \Recommend($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $objRecommend->getPage());
+                        $objRecommend = new \Recommend(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($objRecommend->getPage());
                     },
 
                     'ecard' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        global $cl, $_CORELANG, $objTemplate;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/ecard/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objEcard = new \Ecard($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $objEcard->getPage());
+                        $objEcard = new \Ecard(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($objEcard->getPage());
                     },
 
                     'tools' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        global $cl, $_CORELANG, $objTemplate;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/tools/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objTools = new \Tools($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $objTools->getPage());
+                        $objTools = new \Tools(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($objTools->getPage());
                     },
 
                     'dataviewer' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        global $cl, $_CORELANG, $objTemplate;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/dataviewer/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objDataviewer = new \Dataviewer($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $objDataviewer->getPage());
+                        $objDataviewer = new \Dataviewer(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($objDataviewer->getPage());
                     },
 
                     'docsys' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate, $page_title, $page_metatitle;
+                        global $cl, $_CORELANG, $objTemplate, $page_title, $page_metatitle;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/docsys/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $docSysObj= new \docSys($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $docSysObj->getDocSysPage());
+                        $docSysObj= new \docSys(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($docSysObj->getDocSysPage());
                         $docSysObj->getPageTitle($page_title);
                         $page_title = $docSysObj->docSysTitle;
                         $page_metatitle = $docSysObj->docSysTitle;
                     },
 
                     'search' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate, $pos;
+                        global $cl, $_CORELANG, $objTemplate, $pos;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/search/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $pos = (isset($_GET['pos'])) ? intval($_GET['pos']) : '';
-                        $objTemplate->setVariable('CONTENT_TEXT', search_getSearchPage($pos, $page_content, $license));
+                        \Env::get('cx')->getPage()->setContent(search_getSearchPage($pos, \Env::get('cx')->getPage()->getContent(), $license));
                         unset($pos);
                     },
 
                     'contact' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate, $moduleStyleFile;
+                        global $cl, $_CORELANG, $objTemplate, $moduleStyleFile;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/contact/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $contactObj = new \Contact($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $contactObj->getContactPage());
+                        $contactObj = new \Contact(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($contactObj->getContactPage());
                         $moduleStyleFile = ASCMS_CORE_MODULE_WEB_PATH.'/contact/frontend_style.css';
                     },
 
                     'ids' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate;
-                        
-                        $objTemplate->setVariable('CONTENT_TEXT', $page_content);
+                        // nothing to do
                     },
 
                     'sitemap' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        global $cl, $_CORELANG, $objTemplate;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/sitemap/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $sitemap = new \sitemap($page_content, $license);
-                        $objTemplate->setVariable('CONTENT_TEXT', $sitemap->getSitemapContent());
+                        $sitemap = new \sitemap(\Env::get('cx')->getPage()->getContent(), $license);
+                        \Env::get('cx')->getPage()->setContent($sitemap->getSitemapContent());
                     },
 
                     'media' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate, $plainSection;
+                        global $cl, $_CORELANG, $objTemplate, $plainSection;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/media/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objMedia = new \MediaManager($page_content, $plainSection.MODULE_INDEX);
-                        $objTemplate->setVariable('CONTENT_TEXT', $objMedia->getMediaPage());
+                        $objMedia = new \MediaManager(\Env::get('cx')->getPage()->getContent(), $plainSection.MODULE_INDEX);
+                        \Env::get('cx')->getPage()->setContent($objMedia->getMediaPage());
                     },
 
                     'newsletter' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        global $cl, $_CORELANG, $objTemplate;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/newsletter/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $newsletter = new \newsletter($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $newsletter->getPage());
+                        $newsletter = new \newsletter(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($newsletter->getPage());
                     },
 
                     'gallery' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate, $page_title, $page_metatitle;
+                        global $cl, $_CORELANG, $objTemplate, $page_title, $page_metatitle;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/gallery/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objGallery = new \Gallery($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $objGallery->getPage());
+                        $objGallery = new \Gallery(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($objGallery->getPage());
 
                         $topGalleryName = $objGallery->getTopGalleryName();
                         if ($topGalleryName) {
@@ -1189,32 +1191,32 @@ class LegacyComponentHandler {
                     },
 
                     'voting' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        global $cl, $_CORELANG, $objTemplate;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/voting/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objTemplate->setVariable('CONTENT_TEXT', votingShowCurrent($page_content));
+                        \Env::get('cx')->getPage()->setContent(votingShowCurrent(\Env::get('cx')->getPage()->getContent()));
                     },
 
                     'feed' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        global $cl, $_CORELANG, $objTemplate;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/feed/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objFeed = new \feed($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $objFeed->getFeedPage());
+                        $objFeed = new \feed(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($objFeed->getFeedPage());
                     },
 
                     'immo' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate, $page_title, $page_metatitle;
+                        global $cl, $_CORELANG, $objTemplate, $page_title, $page_metatitle;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/immo/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objImmo = new \Immo($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $objImmo->getPage());
+                        $objImmo = new \Immo(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($objImmo->getPage());
                         if (!empty($_GET['cmd']) && $_GET['cmd'] == 'showObj') {
                             $page_title = $objImmo->getPageTitle($page_title);
                             $page_metatitle = $page_title;
@@ -1222,14 +1224,14 @@ class LegacyComponentHandler {
                     },
 
                     'calendar' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate, $page_title, $page_metatitle;
+                        global $cl, $_CORELANG, $objTemplate, $page_title, $page_metatitle;
                         
                         define('CALENDAR_MANDATE', MODULE_INDEX);
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/calendar'.MODULE_INDEX.'/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objCalendar = new \Calendar($page_content, MODULE_INDEX);
-                        $objTemplate->setVariable('CONTENT_TEXT', $objCalendar->getCalendarPage());
+                        $objCalendar = new \Calendar(\Env::get('cx')->getPage()->getContent(), MODULE_INDEX);
+                        \Env::get('cx')->getPage()->setContent($objCalendar->getCalendarPage());
                         if ($objCalendar->pageTitle) {
                             $page_metatitle = $objCalendar->pageTitle;
                             $page_title = $objCalendar->pageTitle;
@@ -1237,24 +1239,24 @@ class LegacyComponentHandler {
                     },
 
                     'reservation' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate, $moduleStyleFile;
+                        global $cl, $_CORELANG, $objTemplate, $moduleStyleFile;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/reservation/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                            $objReservationModule = new \reservations($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $objReservationModule->getPage());
+                            $objReservationModule = new \reservations(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($objReservationModule->getPage());
                         $moduleStyleFile = ASCMS_MODULE_WEB_PATH.'/reservation/frontend_style.css';
                     },
 
                     'directory' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate, $page_title, $page_metatitle;
+                        global $cl, $_CORELANG, $objTemplate, $page_title, $page_metatitle;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/directory/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $directory = new \rssDirectory($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $directory->getPage());
+                        $directory = new \rssDirectory(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($directory->getPage());
                         $directory_pagetitle = $directory->getPageTitle();
                         if (!empty($directory_pagetitle)) {
                             $page_metatitle = $directory_pagetitle;
@@ -1268,54 +1270,54 @@ class LegacyComponentHandler {
                     },
 
                     'market' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        global $cl, $_CORELANG, $objTemplate;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/market/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $market = new \Market($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $market->getPage());
+                        $market = new \Market(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($market->getPage());
                     },
 
                     'podcast' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        global $cl, $_CORELANG, $objTemplate;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/podcast/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objPodcast = new \podcast($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $objPodcast->getPage($podcastFirstBlock));
+                        $objPodcast = new \podcast(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($objPodcast->getPage($podcastFirstBlock));
                     },
 
                     'forum' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        global $cl, $_CORELANG, $objTemplate;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/forum/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objForum = new \Forum($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $objForum->getPage());
+                        $objForum = new \Forum(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($objForum->getPage());
                     //        $moduleStyleFile = 'modules/forum/css/frontend_style.css';
                     },
 
                     'blog' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        global $cl, $_CORELANG, $objTemplate;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/blog/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objBlog = new \Blog($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $objBlog->getPage());
+                        $objBlog = new \Blog(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($objBlog->getPage());
                     },
 
                     'knowledge' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate, $page_title, $page_metatitle;
+                        global $cl, $_CORELANG, $objTemplate, $page_title, $page_metatitle;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/knowledge/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objKnowledge = new \Knowledge($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $objKnowledge->getPage());
+                        $objKnowledge = new \Knowledge(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($objKnowledge->getPage());
                         if (!empty($objKnowledge->pageTitle)) {
                             $page_title = $objKnowledge->pageTitle;
                             $page_metatitle = $objKnowledge->pageTitle;
@@ -1323,40 +1325,40 @@ class LegacyComponentHandler {
                     },
 
                     'jobs' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate, $page_title, $page_metatitle;
+                        global $cl, $_CORELANG, $objTemplate, $page_title, $page_metatitle;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/jobs/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $jobsObj= new \jobs($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $jobsObj->getJobsPage());
+                        $jobsObj= new \jobs(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($jobsObj->getJobsPage());
                         $jobsObj->getPageTitle($page_title);
                         $page_title = $jobsObj->jobsTitle;
                         $page_metatitle = $jobsObj->jobsTitle;
                     },
 
                     'error' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        global $cl, $_CORELANG, $objTemplate;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_CORE_PATH.'/error.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $errorObj = new \error($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $errorObj->getErrorPage());
+                        $errorObj = new \error(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($errorObj->getErrorPage());
                     },
 
                     'egov' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        global $cl, $_CORELANG, $objTemplate;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/egov/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objEgov = new \eGov($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $objEgov->getPage());
+                        $objEgov = new \eGov(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($objEgov->getPage());
                     },
 
                     'support' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        global $cl, $_CORELANG, $objTemplate;
                         
                         /**
                         * Support System Module
@@ -1367,48 +1369,48 @@ class LegacyComponentHandler {
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/support/index.class.php'))
                             die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objSupport = new \support($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $objSupport->getPage());
+                        $objSupport = new \support(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($objSupport->getPage());
                     },
 
                     'partners' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        global $cl, $_CORELANG, $objTemplate;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/partners/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objPartners = new \PartnersFrontend($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $objPartners->getPage());
+                        $objPartners = new \PartnersFrontend(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($objPartners->getPage());
                     },
 
                     'u2u' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        global $cl, $_CORELANG, $objTemplate;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/u2u/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objU2u = new \u2u($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $objU2u->getPage($page_metatitle, $page_title));
+                        $objU2u = new \u2u(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($objU2u->getPage($page_metatitle, $page_title));
                     },
 
                     'auction' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        global $cl, $_CORELANG, $objTemplate;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/auction/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $auction = new \Auction($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $auction->getPage());
+                        $auction = new \Auction(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($auction->getPage());
                     },
 
                     'downloads' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate, $page_title, $page_metatitle;
+                        global $cl, $_CORELANG, $objTemplate, $page_title, $page_metatitle;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/downloads/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objDownloadsModule = new \downloads($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $objDownloadsModule->getPage());
+                        $objDownloadsModule = new \downloads(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($objDownloadsModule->getPage());
                         $downloads_pagetitle = $objDownloadsModule->getPageTitle();
                         if ($downloads_pagetitle) {
                             $page_metatitle = $downloads_pagetitle;
@@ -1417,27 +1419,27 @@ class LegacyComponentHandler {
                     },
 
                     'printshop' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate, $page_title, $page_metatitle;
+                        global $cl, $_CORELANG, $objTemplate, $page_title, $page_metatitle;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/printshop/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objPrintshopModule = new \Printshop($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $objPrintshopModule->getPage());
+                        $objPrintshopModule = new \Printshop(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($objPrintshopModule->getPage());
                         $page_metatitle .= ' '.$objPrintshopModule->getPageTitle();
                         $page_title = '';
                     },
 
                     'mediadir' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate, $page_title, $page_metatitle;
+                        global $cl, $_CORELANG, $objTemplate, $page_title, $page_metatitle;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/mediadir/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objMediaDirectory = new \mediaDirectory($page_content);
+                        $objMediaDirectory = new \mediaDirectory(\Env::get('cx')->getPage()->getContent());
                         $objMediaDirectory->pageTitle = $page_title;
                         $objMediaDirectory->metaTitle = $page_metatitle;
-                        $objTemplate->setVariable('CONTENT_TEXT', $objMediaDirectory->getPage());
+                        \Env::get('cx')->getPage()->setContent($objMediaDirectory->getPage());
                         if ($objMediaDirectory->getPageTitle() != '') {
                             $page_title = $objMediaDirectory->getPageTitle();
                         }
@@ -1447,23 +1449,23 @@ class LegacyComponentHandler {
                     },
 
                     'checkout' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        global $cl, $_CORELANG, $objTemplate;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/checkout/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objCheckout = new \Checkout($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $objCheckout->getPage());
+                        $objCheckout = new \Checkout(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($objCheckout->getPage());
                     },
 
                     'filesharing' => function() {
-                        global $cl, $_CORELANG, $page_content, $objTemplate;
+                        global $cl, $_CORELANG, $objTemplate;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/filesharing/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objFileshare = new \Filesharing($page_content);
-                        $objTemplate->setVariable('CONTENT_TEXT', $objFileshare->getPage());
+                        $objFileshare = new \Filesharing(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($objFileshare->getPage());
                     },
                 ),
             ),

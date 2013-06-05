@@ -76,7 +76,7 @@ class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponen
      * @param \Cx\Core\Cx $cx
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page
      */
-    public function preContentLoad(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page = null)
+    public function preContentLoad(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page)
     {
         // Is frontend editing active?
         if (!$this->frontendEditingIsActive($cx)) {
@@ -114,15 +114,15 @@ class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponen
         $frontendEditing->initFrontendEditing($this, $cx);
     }
 
-    public function load(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page = null)
+    public function load(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page)
     {
     }
 
-    public function postContentLoad(\Cx\Core\Cx $cx, &$content)
+    public function postContentLoad(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page)
     {
     }
 
-    public function postContentParse(\Cx\Core\Cx $cx, &$content)
+    public function postContentParse(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page)
     {
     }
 
@@ -130,11 +130,11 @@ class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponen
     {
     }
 
-    public function postResolve(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page = null)
+    public function postResolve(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page)
     {
     }
 
-    public function preContentParse(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page = null)
+    public function preContentParse(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page)
     {
     }
 
