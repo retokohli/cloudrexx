@@ -828,6 +828,9 @@ namespace Cx\Core {
                 // This is the nice way
                 $this->ch->loadComponent($this, $plainSection, $this->resolvedPage);
             } catch (\Cx\Core\Component\Controller\ComponentException $e) {
+                
+                // this only happens in backend, add load exceptions for backend to avoid this
+                
                 $moduleManager = new \modulemanager();
                 // This is necessary to avoid notices, since those are passed by reference
                 $adodb = $this->getDb()->getAdoDb();
