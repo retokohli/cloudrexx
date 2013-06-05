@@ -5,7 +5,7 @@ namespace Cx\Core_Modules\Workbench\Model\Entity;
 class MoveCommand extends Command {
     protected $name = 'move';
     protected $description = 'Convert component types (core to core_module, etc.) and rename components';
-    protected $synopsis = 'workbench(.bat) move [core|core_module|lib|module] {component_name} [core|core_module|lib|module] {new_component_name}';
+    protected $synopsis = 'workbench(.bat) move [core|core_module|lib|module] {component_name} [core|core_module|lib|module] {new_component_name} ([customized|uncustomized])';
     protected $help = 'Moves specified component to the location specified.';
     
     public function execute(array $arguments) {
