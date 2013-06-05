@@ -513,16 +513,12 @@ namespace Cx\Core {
         /**
          * Calls post-resolve hooks
          * @todo Remove usage of globals
-         * @global \Cx\Core\ContentManager\Model\Entity\Page $page Resolved page
          * @global string $page_title Resolved page's title
          */
         protected function postResolve() {
-            global $page, $page_title;
+            global $page_title;
             
             $this->ch->callPostResolveHooks('legacy');
-            if ($page) {
-                $this->resolvedPage = $page;
-            }
             if ($this->resolvedPage) {
                 $this->resolvedPage->setContentTitle($page_title);
             }
@@ -703,7 +699,7 @@ namespace Cx\Core {
          * @global type $_LANGID
          * @global type $_CORELANG
          * @global \Cx\Core\Routing\Url $url
-         * @param type $no 
+         * @param int $no Hook number
          */
         protected function legacyGlobalsHook($no) {
             global $objFWUser, $objTemplate, $cl, $objInit, $_LANGID, $_CORELANG, $url;
@@ -728,11 +724,8 @@ namespace Cx\Core {
                         $_LANGID = FRONTEND_LANG_ID;
                         $objInit->setFrontendLangId($_LANGID);
                         define('LANG_ID', $_LANGID);
+                        
                         // Load interface language data
-                        /**
-                        * Core language data
-                        * @global array $_CORELANG
-                        */
                         $_CORELANG = $objInit->loadLanguageData('core');
                     }
                     
@@ -887,11 +880,10 @@ namespace Cx\Core {
          * @global type $themesPages
          * @global type $page_template
          * @global array $_CONFIG
-         * @global string $page_title
          * @param type $objTemplate 
          */
         protected function setPreContentLoadPlaceholders($objTemplate) {
-            global $themesPages, $page_template, $_CONFIG, $page_title;
+            global $themesPages, $page_template, $_CONFIG;
 
             $objTemplate->setTemplate($themesPages['index']);
             $objTemplate->addBlock('CONTENT_FILE', 'page_template', $page_template);
@@ -905,7 +897,7 @@ namespace Cx\Core {
             $pageContent = str_replace('{PDF_URL}',         \Env::get('init')->getUriBy('pdfview', 1),         $pageContent);
             $pageContent = str_replace('{APP_URL}',         \Env::get('init')->getUriBy('appview', 1),         $pageContent);
             $pageContent = str_replace('{LOGOUT_URL}',      \Env::get('init')->getUriBy('section', 'logout'),  $pageContent);
-            $pageContent = str_replace('{TITLE}',           $page_title, $pageContent);
+            $pageContent = str_replace('{TITLE}',           $this->resolvedPage->getTitle(), $pageContent);
             $pageContent = str_replace('{CONTACT_EMAIL}',   isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '', $pageContent);
             $pageContent = str_replace('{CONTACT_COMPANY}', isset($_CONFIG['contactCompany'])   ? contrexx_raw2xhtml($_CONFIG['contactCompany'])   : '', $pageContent);
             $pageContent = str_replace('{CONTACT_ADDRESS}', isset($_CONFIG['contactAddress'])   ? contrexx_raw2xhtml($_CONFIG['contactAddress'])   : '', $pageContent);
@@ -1045,29 +1037,26 @@ namespace Cx\Core {
          * @global null $moduleStyleFile
          * @global type $objCache
          * @global array $_CONFIG
-         * @global \InitCMS $objInit
-         * @global string $page_title
          * @global type $subMenuTitle
          * @global type $_CORELANG
-         * @global type $objFWUser
          * @global type $plainCmd
          * @global type $cmd
          */
         protected function finalize() {
-            global $themesPages, $moduleStyleFile, $objCache, $_CONFIG, $objInit,
-                    $page_title, $subMenuTitle, $_CORELANG, $objFWUser, $plainCmd, $cmd;
+            global $themesPages, $moduleStyleFile, $objCache, $_CONFIG,
+                    $subMenuTitle, $_CORELANG, $plainCmd, $cmd;
 
             if ($this->mode == self::MODE_FRONTEND) {
                 // parse system
                 $time = $this->stopTimer();
                 $this->template->setVariable('PARSING_TIME', $time);
 
-                $themesPages['sidebar'] = str_replace('{STANDARD_URL}',    $objInit->getUriBy('smallscreen', 0),    $themesPages['sidebar']);
-                $themesPages['sidebar'] = str_replace('{MOBILE_URL}',      $objInit->getUriBy('smallscreen', 1),    $themesPages['sidebar']);
-                $themesPages['sidebar'] = str_replace('{PRINT_URL}',       $objInit->getUriBy('printview', 1),      $themesPages['sidebar']);
-                $themesPages['sidebar'] = str_replace('{PDF_URL}',         $objInit->getUriBy('pdfview', 1),        $themesPages['sidebar']);
-                $themesPages['sidebar'] = str_replace('{APP_URL}',         $objInit->getUriBy('appview', 1),        $themesPages['sidebar']);
-                $themesPages['sidebar'] = str_replace('{LOGOUT_URL}',      $objInit->getUriBy('section', 'logout'), $themesPages['sidebar']);
+                $themesPages['sidebar'] = str_replace('{STANDARD_URL}',    \Env::get('init')->getUriBy('smallscreen', 0),    $themesPages['sidebar']);
+                $themesPages['sidebar'] = str_replace('{MOBILE_URL}',      \Env::get('init')->getUriBy('smallscreen', 1),    $themesPages['sidebar']);
+                $themesPages['sidebar'] = str_replace('{PRINT_URL}',       \Env::get('init')->getUriBy('printview', 1),      $themesPages['sidebar']);
+                $themesPages['sidebar'] = str_replace('{PDF_URL}',         \Env::get('init')->getUriBy('pdfview', 1),        $themesPages['sidebar']);
+                $themesPages['sidebar'] = str_replace('{APP_URL}',         \Env::get('init')->getUriBy('appview', 1),        $themesPages['sidebar']);
+                $themesPages['sidebar'] = str_replace('{LOGOUT_URL}',      \Env::get('init')->getUriBy('section', 'logout'), $themesPages['sidebar']);
                 $themesPages['sidebar'] = str_replace('{CONTACT_EMAIL}',   isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '', $themesPages['sidebar']);
                 $themesPages['sidebar'] = str_replace('{CONTACT_COMPANY}', isset($_CONFIG['contactCompany'])   ? contrexx_raw2xhtml($_CONFIG['contactCompany'])   : '', $themesPages['sidebar']);
                 $themesPages['sidebar'] = str_replace('{CONTACT_ADDRESS}', isset($_CONFIG['contactAddress'])   ? contrexx_raw2xhtml($_CONFIG['contactAddress'])   : '', $themesPages['sidebar']);
@@ -1101,8 +1090,9 @@ namespace Cx\Core {
 
                 if (isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
                     $this->cl->loadFile(ASCMS_CORE_PATH.'/pdf.class.php');
+                    $pageTitle = $this->resolvedPage->getTitle();
                     $objPDF          = new PDF();
-                    $objPDF->title   = $page_title.(empty($page_title) ? null : '.pdf');
+                    $objPDF->title   = $pageTitle.(empty($pageTitle) ? null : '.pdf');
                     $objPDF->content = $this->template->get();
                     $objPDF->Create();
                     exit;
@@ -1167,12 +1157,12 @@ namespace Cx\Core {
                 $objAdminNav->getAdminNavbar();
                 $this->template->setVariable(array(
                     'SUB_MENU_TITLE' => $subMenuTitle,
-                    'FRONTEND_LANG_MENU' => $objInit->getUserFrontendLangMenu(),
+                    'FRONTEND_LANG_MENU' => \Env::get('init')->getUserFrontendLangMenu(),
                     'TXT_GENERATED_IN' => $_CORELANG['TXT_GENERATED_IN'],
                     'TXT_SECONDS' => $_CORELANG['TXT_SECONDS'],
                     'TXT_LOGOUT_WARNING' => $_CORELANG['TXT_LOGOUT_WARNING'],
                     'PARSING_TIME'=> $parsingTime,
-                    'LOGGED_NAME' => htmlentities($objFWUser->objUser->getProfileAttribute('firstname').' '.$objFWUser->objUser->getProfileAttribute('lastname'), ENT_QUOTES, CONTREXX_CHARSET),
+                    'LOGGED_NAME' => htmlentities($this->getUser()->objUser->getProfileAttribute('firstname').' '.$this->getUser()->objUser->getProfileAttribute('lastname'), ENT_QUOTES, CONTREXX_CHARSET),
                     'TXT_LOGGED_IN_AS' => $_CORELANG['TXT_LOGGED_IN_AS'],
                     'TXT_LOG_OUT' => $_CORELANG['TXT_LOG_OUT'],
                 // TODO: This function call returns the empty string -- always!  What's the use?
