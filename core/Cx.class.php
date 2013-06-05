@@ -806,7 +806,6 @@ namespace Cx\Core {
          * This cannot be used in mode self::MODE_CLI, since content is added to template directly
          * @todo Write a method, that only returns the content, in order to allow usage in CLI mode
          * @todo Remove usage of globals
-         * @global \modulemanager $moduleManager
          * @global type $plainSection
          * @global type $_CORELANG
          * @global type $subMenuTitle
@@ -814,7 +813,7 @@ namespace Cx\Core {
          * @global type $_ARRAYLANG 
          */
         protected function loadContent() {
-            global $moduleManager, $plainSection, $_CORELANG,
+            global $plainSection, $_CORELANG,
                     $subMenuTitle, $act, $_ARRAYLANG;
             
             if ($this->mode == self::MODE_CLI) {
