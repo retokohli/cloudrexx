@@ -1522,7 +1522,7 @@ class LegacyComponentHandler {
                     },
                     'FwUser' => function() {
                         global $objFWUser, $loggedIn, $plainCmd, $isRegularPageRequest, $userData,
-                                $objUser, $firstname, $lastname, $txtProfile, $objTemplate;
+                                $objUser, $firstname, $lastname, $objTemplate;
                         
                         $objFWUser = \FWUser::getFWUserObject();
 
