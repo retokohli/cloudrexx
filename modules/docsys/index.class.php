@@ -138,8 +138,6 @@ class docSys extends docSysLibrary
      * @global    array
      * @global    ADONewConnection
      * @global    array
-     * @param     integer   $pos
-     * @param     string    $page_content
      * @return    string    parsed content
      */
     function getTitles()
