@@ -490,6 +490,7 @@ namespace Cx\Core {
             
             if ($this->mode == self::MODE_FRONTEND) {
                 $this->resolvedPage = $this->resolver->resolve();
+                $this->resolvedPage->setVirtual(true);
                 
             } else {
                 global $cmd, $act, $isRegularPageRequest, $plainCmd;
@@ -508,21 +509,18 @@ namespace Cx\Core {
          * @todo Remove usage of globals
          * @global \Cx\Core\ContentManager\Model\Entity\Page $page Resolved page
          * @global string $page_title Resolved page's title
-         * @global string $page_content Resolved page's content
          */
         protected function postResolve() {
-            global $page, $page_title, $page_content;
+            global $page, $page_title;
             
             $this->ch->callPostResolveHooks('legacy');
             $this->resolvedPage = $page;
             if ($this->resolvedPage) {
                 $this->resolvedPage->setContentTitle($page_title);
-                $this->resolvedPage->setContent($page_content);
             }
             $this->ch->callPostResolveHooks('proper');
             if ($this->resolvedPage) {
                 $page_title = $this->resolvedPage->getContentTitle();
-                $page_content = $this->resolvedPage->getContent();
             }
         }
 
@@ -530,26 +528,26 @@ namespace Cx\Core {
          * Calls hooks before content is processed
          * @todo Remove usage of globals
          * @global string $page_title
-         * @global string $page_content
          * @global boolean $boolShop
          * @global null $moduleStyleFile
          * @global type $plainCmd
          * @global type $plainSection 
          */
         protected function preContentLoad() {
-            global $page_title, $page_content, $boolShop, $moduleStyleFile,
+            global $page_title, $boolShop, $moduleStyleFile,
                     $plainCmd, $plainSection;
             
             $this->ch->callPreContentLoadHooks();
             if ($this->resolvedPage) {
                 $page_title = $this->resolvedPage->getContentTitle();
-                $page_content = $this->resolvedPage->getContent();
+                $pageContent = $this->resolvedPage->getContent();
             }
             
             if ($this->mode == self::MODE_FRONTEND) {
                 $this->setPreContentLoadPlaceholders($this->template);        
                 //replace the {NODE_<ID>_<LANG>}- placeholders
-                \LinkGenerator::parseTemplate($page_content);
+                \LinkGenerator::parseTemplate($pageContent);
+                $this->resolvedPage->setContent($pageContent);
 
                 $boolShop = false;
                 $moduleStyleFile = null;
@@ -878,34 +876,35 @@ namespace Cx\Core {
          * @todo Remove usage of globals
          * @global type $themesPages
          * @global type $page_template
-         * @global string $page_content
          * @global array $_CONFIG
          * @global string $page_title
          * @param type $objTemplate 
          */
         protected function setPreContentLoadPlaceholders($objTemplate) {
-            global $themesPages, $page_template, $page_content, $_CONFIG, $page_title;
+            global $themesPages, $page_template, $_CONFIG, $page_title;
 
             $objTemplate->setTemplate($themesPages['index']);
             $objTemplate->addBlock('CONTENT_FILE', 'page_template', $page_template);
 
             // Set global content variables.
-            $page_content = str_replace('{PAGE_URL}',        htmlspecialchars(\Env::get('init')->getPageUri()), $page_content);
-            $page_content = str_replace('{STANDARD_URL}',    \Env::get('init')->getUriBy('smallscreen', 0),     $page_content);
-            $page_content = str_replace('{MOBILE_URL}',      \Env::get('init')->getUriBy('smallscreen', 1),     $page_content);
-            $page_content = str_replace('{PRINT_URL}',       \Env::get('init')->getUriBy('printview', 1),       $page_content);
-            $page_content = str_replace('{PDF_URL}',         \Env::get('init')->getUriBy('pdfview', 1),         $page_content);
-            $page_content = str_replace('{APP_URL}',         \Env::get('init')->getUriBy('appview', 1),         $page_content);
-            $page_content = str_replace('{LOGOUT_URL}',      \Env::get('init')->getUriBy('section', 'logout'),  $page_content);
-            $page_content = str_replace('{TITLE}',           $page_title, $page_content);
-            $page_content = str_replace('{CONTACT_EMAIL}',   isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '', $page_content);
-            $page_content = str_replace('{CONTACT_COMPANY}', isset($_CONFIG['contactCompany'])   ? contrexx_raw2xhtml($_CONFIG['contactCompany'])   : '', $page_content);
-            $page_content = str_replace('{CONTACT_ADDRESS}', isset($_CONFIG['contactAddress'])   ? contrexx_raw2xhtml($_CONFIG['contactAddress'])   : '', $page_content);
-            $page_content = str_replace('{CONTACT_ZIP}',     isset($_CONFIG['contactZip'])       ? contrexx_raw2xhtml($_CONFIG['contactZip'])       : '', $page_content);
-            $page_content = str_replace('{CONTACT_PLACE}',   isset($_CONFIG['contactPlace'])     ? contrexx_raw2xhtml($_CONFIG['contactPlace'])     : '', $page_content);
-            $page_content = str_replace('{CONTACT_COUNTRY}', isset($_CONFIG['contactCountry'])   ? contrexx_raw2xhtml($_CONFIG['contactCountry'])   : '', $page_content);
-            $page_content = str_replace('{CONTACT_PHONE}',   isset($_CONFIG['contactPhone'])     ? contrexx_raw2xhtml($_CONFIG['contactPhone'])     : '', $page_content);
-            $page_content = str_replace('{CONTACT_FAX}',     isset($_CONFIG['contactFax'])       ? contrexx_raw2xhtml($_CONFIG['contactFax'])       : '', $page_content);
+            $pageContent = $this->resolvedPage->getContent();
+            $pageContent = str_replace('{PAGE_URL}',        htmlspecialchars(\Env::get('init')->getPageUri()), $pageContent);
+            $pageContent = str_replace('{STANDARD_URL}',    \Env::get('init')->getUriBy('smallscreen', 0),     $pageContent);
+            $pageContent = str_replace('{MOBILE_URL}',      \Env::get('init')->getUriBy('smallscreen', 1),     $pageContent);
+            $pageContent = str_replace('{PRINT_URL}',       \Env::get('init')->getUriBy('printview', 1),       $pageContent);
+            $pageContent = str_replace('{PDF_URL}',         \Env::get('init')->getUriBy('pdfview', 1),         $pageContent);
+            $pageContent = str_replace('{APP_URL}',         \Env::get('init')->getUriBy('appview', 1),         $pageContent);
+            $pageContent = str_replace('{LOGOUT_URL}',      \Env::get('init')->getUriBy('section', 'logout'),  $pageContent);
+            $pageContent = str_replace('{TITLE}',           $page_title, $pageContent);
+            $pageContent = str_replace('{CONTACT_EMAIL}',   isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '', $pageContent);
+            $pageContent = str_replace('{CONTACT_COMPANY}', isset($_CONFIG['contactCompany'])   ? contrexx_raw2xhtml($_CONFIG['contactCompany'])   : '', $pageContent);
+            $pageContent = str_replace('{CONTACT_ADDRESS}', isset($_CONFIG['contactAddress'])   ? contrexx_raw2xhtml($_CONFIG['contactAddress'])   : '', $pageContent);
+            $pageContent = str_replace('{CONTACT_ZIP}',     isset($_CONFIG['contactZip'])       ? contrexx_raw2xhtml($_CONFIG['contactZip'])       : '', $pageContent);
+            $pageContent = str_replace('{CONTACT_PLACE}',   isset($_CONFIG['contactPlace'])     ? contrexx_raw2xhtml($_CONFIG['contactPlace'])     : '', $pageContent);
+            $pageContent = str_replace('{CONTACT_COUNTRY}', isset($_CONFIG['contactCountry'])   ? contrexx_raw2xhtml($_CONFIG['contactCountry'])   : '', $pageContent);
+            $pageContent = str_replace('{CONTACT_PHONE}',   isset($_CONFIG['contactPhone'])     ? contrexx_raw2xhtml($_CONFIG['contactPhone'])     : '', $pageContent);
+            $pageContent = str_replace('{CONTACT_FAX}',     isset($_CONFIG['contactFax'])       ? contrexx_raw2xhtml($_CONFIG['contactFax'])       : '', $pageContent);
+            $this->resolvedPage->setContent($pageContent);
         }
 
         /**
@@ -952,6 +951,7 @@ namespace Cx\Core {
                 'METADESC'                       => contrexx_raw2xhtml($this->resolvedPage->getMetadesc()),
                 'METAROBOTS'                     => contrexx_raw2xhtml($this->resolvedPage->getMetarobots()),
                 'CONTENT_TITLE'                  => $this->resolvedPage->getTitle(),
+                'CONTENT_TEXT'                   => $this->resolvedPage->getContent(),
                 'CSS_NAME'                       => $this->resolvedPage->getCssName(),
                 'STANDARD_URL'                   => \Env::get('init')->getUriBy('smallscreen', 0),
                 'MOBILE_URL'                     => \Env::get('init')->getUriBy('smallscreen', 1),
