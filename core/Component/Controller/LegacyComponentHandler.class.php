@@ -1467,6 +1467,9 @@ class LegacyComponentHandler {
                         $objFileshare = new \Filesharing(\Env::get('cx')->getPage()->getContent());
                         \Env::get('cx')->getPage()->setContent($objFileshare->getPage());
                     },
+                    
+                    'home' => function() {
+                    },
                 ),
             ),
             'backend' => array(
