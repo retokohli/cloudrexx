@@ -1521,7 +1521,7 @@ class LegacyComponentHandler {
                         //$intAccessIdOffset = intval(MODULE_INDEX)*1000;
                     },
                     'FwUser' => function() {
-                        global $objFWUser, $plainCmd, $isRegularPageRequest, $userData,
+                        global $objFWUser, $plainCmd, $isRegularPageRequest,
                                 $objUser, $firstname, $lastname, $objTemplate;
                         
                         $objFWUser = \FWUser::getFWUserObject();
