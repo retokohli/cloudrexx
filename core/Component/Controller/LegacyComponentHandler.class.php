@@ -634,8 +634,7 @@ class LegacyComponentHandler {
                                 $blogHomeTagCloudInContent, $blogHomeTagCloudInTemplate, $blogHomeTagCloudInTheme, $blogHomeTagCloudInSidebar, $strTagCloudSource,
                                 $blogHomeTagHitlistInContent, $blogHomeTagHitlistInTemplate, $blogHomeTagHitlistInTheme, $blogHomeTagHitlistInSidebar, $strTagHitlistSource,
                                 $blogHomeCategorySelectInContent, $blogHomeCategorySelectInTemplate, $blogHomeCategorySelectInTheme, $blogHomeCategorySelectInSidebar, $strCategoriesSelect,
-                                $blogHomeCategoryListInContent, $blogHomeCategoryListInTemplate, $blogHomeCategoryListInTheme, $blogHomeCategoryListInSidebar, $strCategoriesList,
-                                $x;
+                                $blogHomeCategoryListInContent, $blogHomeCategoryListInTemplate, $blogHomeCategoryListInTheme, $blogHomeCategoryListInSidebar, $strCategoriesList;
 
                         // Get content for the blog-module.
                         /** @ignore */
@@ -1484,7 +1483,7 @@ class LegacyComponentHandler {
                         \JS::activate('chosen');
                     },
                     'ComponentHandler' => function() {
-                        global $arrMatch, $plainCmd, $cmd, $moduleIndex, $intAccessIdOffset;
+                        global $arrMatch, $plainCmd, $cmd, $moduleIndex;
                         
                         // To clone any module, use an optional integer cmd suffix.
                         // E.g.: "shop2", "gallery5", etc.
@@ -1516,7 +1515,8 @@ class LegacyComponentHandler {
                         // Simple way to distinguish any number of cloned modules
                         // and apply individual access rights.  This offset is added
                         // to any static access ID before checking it.
-                        $intAccessIdOffset = intval(MODULE_INDEX)*1000;
+                        // @todo this is never used in Cx Init
+                        //$intAccessIdOffset = intval(MODULE_INDEX)*1000;
                     },
                     'FwUser' => function() {
                         global $objFWUser, $loggedIn, $plainCmd, $isRegularPageRequest, $userData,
