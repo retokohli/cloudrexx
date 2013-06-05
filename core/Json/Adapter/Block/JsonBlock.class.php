@@ -54,7 +54,7 @@ class JsonBlock implements JsonAdapter {
      * @return array List of blocks (lang => id )
      */
     public function getBlocks() {
-        global $objInit;
+        global $objInit, $_CORELANG;
         
         if (!\FWUser::getFWUserObject()->objUser->login() || $objInit->mode != 'backend') {
             throw new \Exception($_CORELANG['TXT_ACCESS_DENIED_DESCRIPTION']);
