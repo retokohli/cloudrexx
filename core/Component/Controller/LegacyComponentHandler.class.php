@@ -953,12 +953,13 @@ class LegacyComponentHandler {
                 ),
                 'load' => array(
                     'access' => function() {
-                        global $cl, $_CORELANG, $objTemplate, $objAccess, $page_metatitle, $page_title;
+                        global $cl, $_CORELANG, $objTemplate, $objAccess, $page_metatitle;
                         
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/access/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $objAccess = new \Access(\Env::get('cx')->getPage()->getContent());
-                        \Env::get('cx')->getPage()->setContent($objAccess->getPage($page_metatitle, $page_title));
+                        $pageTitle = \Env::get('cx')->getPage()->getTitle();
+                        \Env::get('cx')->getPage()->setContent($objAccess->getPage($page_metatitle, $pageTitle));
                     },
 
                     'login' => function() {
@@ -992,20 +993,20 @@ class LegacyComponentHandler {
                     },
 
                     'news' => function() {
-                        global $cl, $_CORELANG, $page, $objTemplate, $page_title, $page_metatitle;
+                        global $cl, $_CORELANG, $page, $objTemplate, $page_metatitle;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/news/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $newsObj= new \news(\Env::get('cx')->getPage()->getContent());
                         \Env::get('cx')->getPage()->setContent($newsObj->getNewsPage());
-                        $newsObj->getPageTitle($page_title);
+                        $newsObj->getPageTitle(\Env::get('cx')->getPage()->getTitle());
                         // Set the meta page description to the teaser text if displaying news details
                         $teaser = $newsObj->getTeaser();
                         if ($teaser !== null) //news details, else getTeaser would return null
                             $page->setMetadesc(contrexx_strip_tags(html_entity_decode($teaser, ENT_QUOTES, CONTREXX_CHARSET)));
-                        $page_title = $newsObj->newsTitle;
-                        $page_metatitle = $page_title;
+                        \Env::get('cx')->getPage()->setTitle($newsObj->newsTitle);
+                        $page_metatitle = $newsObj->newsTitle;
                     },
 
                     'livecam' => function() {
@@ -1102,15 +1103,15 @@ class LegacyComponentHandler {
                     },
 
                     'docsys' => function() {
-                        global $cl, $_CORELANG, $objTemplate, $page_title, $page_metatitle;
+                        global $cl, $_CORELANG, $objTemplate, $page_metatitle;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/docsys/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $docSysObj= new \docSys(\Env::get('cx')->getPage()->getContent());
                         \Env::get('cx')->getPage()->setContent($docSysObj->getDocSysPage());
-                        $docSysObj->getPageTitle($page_title);
-                        $page_title = $docSysObj->docSysTitle;
+                        $docSysObj->getPageTitle(\Env::get('cx')->getPage()->getTitle());
+                        \Env::get('cx')->getPage()->setTitle($docSysObj->docSysTitle);
                         $page_metatitle = $docSysObj->docSysTitle;
                     },
 
@@ -1171,7 +1172,7 @@ class LegacyComponentHandler {
                     },
 
                     'gallery' => function() {
-                        global $cl, $_CORELANG, $objTemplate, $page_title, $page_metatitle;
+                        global $cl, $_CORELANG, $objTemplate, $page_metatitle;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/gallery/index.class.php'))
@@ -1181,7 +1182,7 @@ class LegacyComponentHandler {
 
                         $topGalleryName = $objGallery->getTopGalleryName();
                         if ($topGalleryName) {
-                            $page_title = $topGalleryName;
+                            \Env::get('cx')->getPage()->setTitle($topGalleryName);
                             $page_metatitle = $topGalleryName;
                         }
                     },
@@ -1206,7 +1207,7 @@ class LegacyComponentHandler {
                     },
 
                     'immo' => function() {
-                        global $cl, $_CORELANG, $objTemplate, $page_title, $page_metatitle;
+                        global $cl, $_CORELANG, $objTemplate, $page_metatitle;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/immo/index.class.php'))
@@ -1214,13 +1215,13 @@ class LegacyComponentHandler {
                         $objImmo = new \Immo(\Env::get('cx')->getPage()->getContent());
                         \Env::get('cx')->getPage()->setContent($objImmo->getPage());
                         if (!empty($_GET['cmd']) && $_GET['cmd'] == 'showObj') {
-                            $page_title = $objImmo->getPageTitle($page_title);
-                            $page_metatitle = $page_title;
+                            \Env::get('cx')->getPage()->setTitle($objImmo->getPageTitle(\Env::get('cx')->getPage()->getTitle()));
+                            $page_metatitle = \Env::get('cx')->getPage()->getTitle();
                         }
                     },
 
                     'calendar' => function() {
-                        global $cl, $_CORELANG, $objTemplate, $page_title, $page_metatitle;
+                        global $cl, $_CORELANG, $objTemplate, $page_metatitle;
                         
                         define('CALENDAR_MANDATE', MODULE_INDEX);
                         /** @ignore */
@@ -1230,7 +1231,7 @@ class LegacyComponentHandler {
                         \Env::get('cx')->getPage()->setContent($objCalendar->getCalendarPage());
                         if ($objCalendar->pageTitle) {
                             $page_metatitle = $objCalendar->pageTitle;
-                            $page_title = $objCalendar->pageTitle;
+                            \Env::get('cx')->getPage()->setTitle($objCalendar->pageTitle);
                         }
                     },
 
@@ -1246,7 +1247,7 @@ class LegacyComponentHandler {
                     },
 
                     'directory' => function() {
-                        global $cl, $_CORELANG, $objTemplate, $page_title, $page_metatitle;
+                        global $cl, $_CORELANG, $objTemplate, $page_metatitle;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/directory/index.class.php'))
@@ -1256,7 +1257,7 @@ class LegacyComponentHandler {
                         $directory_pagetitle = $directory->getPageTitle();
                         if (!empty($directory_pagetitle)) {
                             $page_metatitle = $directory_pagetitle;
-                            $page_title = $directory_pagetitle;
+                            \Env::get('cx')->getPage()->setTitle($directory_pagetitle);
                         }
                         if ($_GET['cmd'] == 'detail' && isset($_GET['id'])) {
                             $objTemplate->setVariable(array(
@@ -1307,7 +1308,7 @@ class LegacyComponentHandler {
                     },
 
                     'knowledge' => function() {
-                        global $cl, $_CORELANG, $objTemplate, $page_title, $page_metatitle;
+                        global $cl, $_CORELANG, $objTemplate, $page_metatitle;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/knowledge/index.class.php'))
@@ -1315,21 +1316,21 @@ class LegacyComponentHandler {
                         $objKnowledge = new \Knowledge(\Env::get('cx')->getPage()->getContent());
                         \Env::get('cx')->getPage()->setContent($objKnowledge->getPage());
                         if (!empty($objKnowledge->pageTitle)) {
-                            $page_title = $objKnowledge->pageTitle;
+                            \Env::get('cx')->getPage()->setTitle($objKnowledge->pageTitle);
                             $page_metatitle = $objKnowledge->pageTitle;
                         }
                     },
 
                     'jobs' => function() {
-                        global $cl, $_CORELANG, $objTemplate, $page_title, $page_metatitle;
+                        global $cl, $_CORELANG, $objTemplate, $page_metatitle;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/jobs/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $jobsObj= new \jobs(\Env::get('cx')->getPage()->getContent());
                         \Env::get('cx')->getPage()->setContent($jobsObj->getJobsPage());
-                        $jobsObj->getPageTitle($page_title);
-                        $page_title = $jobsObj->jobsTitle;
+                        $jobsObj->getPageTitle(\Env::get('cx')->getPage()->getTitle());
+                        \Env::get('cx')->getPage()->setTitle($jobsObj->jobsTitle);
                         $page_metatitle = $jobsObj->jobsTitle;
                     },
 
@@ -1386,7 +1387,7 @@ class LegacyComponentHandler {
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/u2u/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $objU2u = new \u2u(\Env::get('cx')->getPage()->getContent());
-                        \Env::get('cx')->getPage()->setContent($objU2u->getPage($page_metatitle, $page_title));
+                        \Env::get('cx')->getPage()->setContent($objU2u->getPage($page_metatitle, \Env::get('cx')->getPage()->getTitle()));
                     },
 
                     'auction' => function() {
@@ -1400,7 +1401,7 @@ class LegacyComponentHandler {
                     },
 
                     'downloads' => function() {
-                        global $cl, $_CORELANG, $objTemplate, $page_title, $page_metatitle;
+                        global $cl, $_CORELANG, $objTemplate, $page_metatitle;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/downloads/index.class.php'))
@@ -1410,12 +1411,12 @@ class LegacyComponentHandler {
                         $downloads_pagetitle = $objDownloadsModule->getPageTitle();
                         if ($downloads_pagetitle) {
                             $page_metatitle = $downloads_pagetitle;
-                            $page_title = $downloads_pagetitle;
+                            \Env::get('cx')->getPage()->setTitle($downloads_pagetitle);
                         }
                     },
 
                     'printshop' => function() {
-                        global $cl, $_CORELANG, $objTemplate, $page_title, $page_metatitle;
+                        global $cl, $_CORELANG, $objTemplate, $page_metatitle;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/printshop/index.class.php'))
@@ -1423,21 +1424,21 @@ class LegacyComponentHandler {
                         $objPrintshopModule = new \Printshop(\Env::get('cx')->getPage()->getContent());
                         \Env::get('cx')->getPage()->setContent($objPrintshopModule->getPage());
                         $page_metatitle .= ' '.$objPrintshopModule->getPageTitle();
-                        $page_title = '';
+                        \Env::get('cx')->getPage()->setTitle('');
                     },
 
                     'mediadir' => function() {
-                        global $cl, $_CORELANG, $objTemplate, $page_title, $page_metatitle;
+                        global $cl, $_CORELANG, $objTemplate, $page_metatitle;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/mediadir/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $objMediaDirectory = new \mediaDirectory(\Env::get('cx')->getPage()->getContent());
-                        $objMediaDirectory->pageTitle = $page_title;
+                        $objMediaDirectory->pageTitle = \Env::get('cx')->getPage()->getTitle();
                         $objMediaDirectory->metaTitle = $page_metatitle;
                         \Env::get('cx')->getPage()->setContent($objMediaDirectory->getPage());
                         if ($objMediaDirectory->getPageTitle() != '') {
-                            $page_title = $objMediaDirectory->getPageTitle();
+                            \Env::get('cx')->getPage()->setTitle($objMediaDirectory->getPageTitle());
                         }
                         if ($objMediaDirectory->getMetaTitle() != '') {
                             $page_metatitle = $objMediaDirectory->getMetaTitle();

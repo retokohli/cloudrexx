@@ -171,7 +171,7 @@ class Resolver {
         
                         global $section, $command, $history, $sessionObj, $url, $_CORELANG,
                                 $page, $pageId, $themesPages,
-                                $page_template, $page_title, $page_metatitle,
+                                $page_template, $page_metatitle,
                                 $isRegularPageRequest, $now, $start, $end, $plainSection;
 
                         $section = isset($_REQUEST['section']) ? $_REQUEST['section'] : '';
@@ -183,7 +183,7 @@ class Resolver {
                         $page = null;
                         $pageAccessId = 0;
                         $page_protected = $pageId = $themesPages = 
-                        $page_template = $page_title = $page_metatitle = null;
+                        $page_template = $page_metatitle = null;
 
                         // If standalone is set, then we will not have to initialize/load any content page related stuff
                         $isRegularPageRequest = !isset($_REQUEST['standalone']) || $_REQUEST['standalone'] == 'false';
@@ -275,7 +275,6 @@ class Resolver {
                             //replace the {NODE_<ID>_<LANG>}- placeholders
                             \LinkGenerator::parseTemplate($themesPages);
 
-                            $page_title     = contrexx_raw2xhtml($page->getContentTitle());
                             $page_metatitle = contrexx_raw2xhtml($page->getMetatitle());
                         //TODO: analyze those, take action.
                             //$page_protected = $objResult->fields['protected'];
