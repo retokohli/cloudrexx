@@ -13,8 +13,10 @@
 namespace {
     /**
      * Wrapper for new \Cx\Core\Cx()
+     * 
      * This is necessary, because we cannot use namespaces in index.php
      * in order to catch errors with PHP versions prior to 5.3
+     * @param string $mode (optional) One of 'frontend', 'backend', 'cli', 'minimal'
      */
     function init($mode = null) {
         new \Cx\Core\Cx($mode);
@@ -71,26 +73,31 @@ namespace Cx\Core {
         protected $mode = null;
 
         /**
+         * Main template
          * @var \Cx\Core\Html\Sigma
          */
         protected $template = null;
 
         /**
+         * Database connection handler
          * @var \Cx\Core\Db\Db
          */
         protected $db = null;
 
         /**
+         * Request URL
          * @var \Cx\Core\Routing\Url
          */
         protected $request = null;
         
         /**
+         * Component handler
          * @var \Cx\Core\Component\Controller\ComponentHandler
          */
         protected $ch = null;
         
         /**
+         * Class auto loader
          * @var \Cx\Core\ClassLoader\ClassLoader
          */
         protected $cl = null;
@@ -204,12 +211,14 @@ namespace Cx\Core {
                  * This is not executed automaticly in minimal mode. Invoke it
                  * yourself if necessary and be sure to handle exceptions.
                  */
-                if ($this->mode != self::MODE_MINIMAL) {
-                    $this->loadContrexx();
+                if ($this->mode == self::MODE_MINIMAL) {
+                    return;
                 }
+                $this->loadContrexx();
                 
             /**
              * Globally catch all exceptions and show offline.html
+             * 
              * This might have one of the following reasons:
              * 1. CMS is disabled by config
              * 2. Frontend is locked by license
@@ -274,19 +283,21 @@ namespace Cx\Core {
                 default:
                     if ($mode === false) {
                         $mode = self::MODE_BACKEND;
-                    } else {
-                        $mode = self::MODE_FRONTEND;
-                        if (isset($_GET['__cap'])) {
-                            if (preg_match('#^' . ASCMS_INSTANCE_OFFSET . '(/[a-z]{2})?(/admin|' . ASCMS_BACKEND_PATH . ')#', $_GET['__cap'])) {
-                                // this does not belong here:
-                                if (!preg_match('#^' . ASCMS_INSTANCE_OFFSET . ASCMS_BACKEND_PATH . '#', $_GET['__cap'])) {
-                                    header('Location: ' . ASCMS_INSTANCE_OFFSET . ASCMS_BACKEND_PATH);
-                                    die();
-                                }
-                                $mode = self::MODE_BACKEND;
-                            }
-                        }
+                        break;
                     }
+                    $mode = self::MODE_FRONTEND;
+                    if (!isset($_GET['__cap'])) {
+                        break;
+                    }
+                    if (!preg_match('#^' . ASCMS_INSTANCE_OFFSET . '(/[a-z]{2})?(/admin|' . ASCMS_BACKEND_PATH . ')#', $_GET['__cap'])) {
+                        break;
+                    }
+                    // this does not belong here:
+                    if (!preg_match('#^' . ASCMS_INSTANCE_OFFSET . ASCMS_BACKEND_PATH . '#', $_GET['__cap'])) {
+                        \CSRF::header('Location: ' . ASCMS_INSTANCE_OFFSET . ASCMS_BACKEND_PATH);
+                        die();
+                    }
+                    $mode = self::MODE_BACKEND;
                     break;
             }
             $this->mode = $mode;
@@ -466,11 +477,11 @@ namespace Cx\Core {
         /**
          * Does the resolving
          * 
-         * @todo Implement resolver for backend
-         * @todo Is this useful in CLI mode?
          * For modes other than 'frontend', no actual resolving is done,
          * resolver is just initialized in order to return the correct result
          * for $resolver->getUrl()
+         * @todo Implement resolver for backend
+         * @todo Is this useful in CLI mode?
          */
         protected function resolve() {
             $this->resolver = new \Cx\Core\Routing\Resolver($this->getRequest(), null, $this->getDb()->getEntityManager(), null, null);
