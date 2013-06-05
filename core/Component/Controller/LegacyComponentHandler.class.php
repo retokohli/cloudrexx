@@ -1485,7 +1485,7 @@ class LegacyComponentHandler {
                         \JS::activate('chosen');
                     },
                     'ComponentHandler' => function() {
-                        global $arrMatch, $plainCmd, $cmd, $moduleIndex;
+                        global $arrMatch, $plainCmd, $cmd;
                         
                         // To clone any module, use an optional integer cmd suffix.
                         // E.g.: "shop2", "gallery5", etc.
