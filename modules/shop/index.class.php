@@ -58,6 +58,12 @@ class Shop extends ShopLibrary
      * @see     lib/Customer.class.php
      */
     private static $objCustomer = null;
+    
+    /**
+     * Wheter the shop is initialized or not
+     * @var boolean
+     */
+    private static $initialized = false;
 
 
     /**
@@ -66,10 +72,9 @@ class Shop extends ShopLibrary
      */
     static function init()
     {
-        static $inited = null;
 
 //DBG::log("Shop::init(): Entered");
-        if ($inited) {
+        if (self::$initialized) {
 die("Shop::init(): ERROR: Shop::init() called more than once!");
         }
         if (self::use_session()) {
@@ -104,7 +109,16 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
         }
 //DBG::log("Shop::init(): After setJsCart: shopnavbar: {$themesPages['shopnavbar']}");
         self::registerJavascriptCode();
-        $inited = true;
+        self::$initialized = true;
+    }
+    
+    
+    /**
+     * Wheter the shop is initialized or not
+     * @return boolean True if initialized, false otherwise
+     */
+    public static function isInitialized() {
+        return self::$initialized;
     }
 
 

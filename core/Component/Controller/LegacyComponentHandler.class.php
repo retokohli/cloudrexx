@@ -765,10 +765,8 @@ class LegacyComponentHandler {
                 ),
                 'postContentLoad' => array(
                     'Shop' => function() {
-                        global $boolShop;
-
                         // Show the Shop navbar in the Shop, or on every page if configured to do so
-                        if (!$boolShop
+                        if (!\Shop::isInitialized()
                         // Optionally limit to the first instance
                         // && MODULE_INDEX == ''
                         ) {
@@ -776,7 +774,6 @@ class LegacyComponentHandler {
                             if (\SettingDb::getValue('shopnavbar_on_all_pages')) {
                                 \Shop::init();
                                 \Shop::setNavbar();
-                                $boolShop = true;
                             }
                         }
                     },
@@ -986,13 +983,12 @@ class LegacyComponentHandler {
                     },
 
                     'shop' => function() {
-                        global $cl, $_CORELANG, $objTemplate, $boolShop, $_ARRAYLANG, $objInit, $plainSection;
+                        global $cl, $_CORELANG, $objTemplate, $_ARRAYLANG, $objInit, $plainSection;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/shop/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         \Env::get('cx')->getPage()->setContent(\Shop::getPage(\Env::get('cx')->getPage()->getContent()));
-                        $boolShop = true;
                     },
 
                     'news' => function() {

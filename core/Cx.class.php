@@ -532,13 +532,12 @@ namespace Cx\Core {
          * Calls hooks before content is processed
          * @todo Remove usage of globals
          * @global string $page_title
-         * @global boolean $boolShop
          * @global null $moduleStyleFile
          * @global type $plainCmd
          * @global type $plainSection 
          */
         protected function preContentLoad() {
-            global $page_title, $boolShop, $moduleStyleFile,
+            global $page_title, $moduleStyleFile,
                     $plainCmd, $plainSection;
             
             $this->ch->callPreContentLoadHooks();
@@ -553,7 +552,6 @@ namespace Cx\Core {
                 \LinkGenerator::parseTemplate($pageContent);
                 $this->resolvedPage->setContent($pageContent);
 
-                $boolShop = false;
                 $moduleStyleFile = null;
             } else if ($this->mode == self::MODE_BACKEND) {
                 // Skip the nav/language bar for modules which don't make use of either.
@@ -914,14 +912,13 @@ namespace Cx\Core {
          * @todo Remove usage of globals
          * @global array $_CONFIG
          * @global type $themesPages
-         * @global boolean $boolShop
          * @global type $objCounter
          * @global type $objBanner
          * @global type $_CORELANG
          * @return type 
          */
         protected function setPostContentLoadPlaceholders() {
-            global $_CONFIG, $themesPages, $boolShop, $objCounter, $objBanner, $_CORELANG;
+            global $_CONFIG, $themesPages, $objCounter, $objBanner, $_CORELANG;
 
             if ($this->mode == self::MODE_BACKEND) {
                 $this->template->setGlobalVariable(array(
@@ -938,6 +935,7 @@ namespace Cx\Core {
             }
             
             // set global template variables
+            $boolShop = \Shop::isInitialized();
             $objNavbar = new \Navigation($this->resolvedPage->getId(), $this->resolvedPage);
             $objNavbar->setLanguagePlaceholders($this->resolvedPage, $this->request, $this->template);
             $this->template->setVariable(array(
