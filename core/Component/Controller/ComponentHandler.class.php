@@ -130,6 +130,24 @@ class ComponentHandler {
         $this->systemComponentRepo->callPreContentLoadHooks();
     }
     
+    public function callPreContentParseHooks() {
+        foreach ($this->components as $componentName) {
+            if ($this->checkLegacy('preContentParse', $componentName)) {
+                continue;
+            }
+        }
+        $this->systemComponentRepo->callPreContentParseHooks();
+    }
+    
+    public function callPostContentParseHooks() {
+        foreach ($this->components as $componentName) {
+            if ($this->checkLegacy('postContentParse', $componentName)) {
+                continue;
+            }
+        }
+        $this->systemComponentRepo->callPostContentParseHooks();
+    }
+    
     public function callPostContentLoadHooks() {
         foreach ($this->components as $componentName) {
             if ($this->checkLegacy('postContentLoad', $componentName)) {
