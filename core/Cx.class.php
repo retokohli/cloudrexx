@@ -809,6 +809,11 @@ namespace Cx\Core {
             $_ARRAYLANG = \Env::get('init')->loadLanguageData($plainSection);
             
             // load module
+            if (empty($plainSection) && $this->mode != self::MODE_BACKEND) {
+                return;
+            }
+            
+            $this->ch->callPreContentParseHooks();
             try {
                 // This is the nice way
                 $this->ch->loadComponent($this, $plainSection, $this->resolvedPage);
@@ -855,6 +860,7 @@ namespace Cx\Core {
                     );
                 }
             }
+            $this->ch->callPostContentParseHooks();
         }
         
         /**
