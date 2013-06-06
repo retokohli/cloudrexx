@@ -320,7 +320,9 @@ class cmsSession
             closedir($dh);
         }
 
-        $sessionPaths = preg_grep('#^'.$this->sessionPathPrefix.'[0-9A-F]{32}$#i', $dirs);
+        // depending on the php setting session.hash_function and session.hash_bits_per_character
+        // the length of the session-id varies between 22 and 40 characters.
+        $sessionPaths = preg_grep('#^'.$this->sessionPathPrefix.'[0-9A-Z,-]{22,40}$#i', $dirs);
         $sessions = array();
         $query = 'SELECT `sessionid` FROM `'.DBPREFIX.'sessions`';
         $objResult = $this->_objDb->Execute($query);
