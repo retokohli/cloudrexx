@@ -1177,7 +1177,7 @@ EOF;
             }else{
                 $mediumTitle = ($lastSlash = strrpos($mediumSource, '/')) !== false ? substr($mediumSource, $lastSlash+1) : $mediumSource;
                 $mediumTemplate = &$this->_getSuitableTemplate($mediumSource);
-                $dimensions = isset($_POST['podcast_medium_local_source']) ? @getimagesize(ASCMS_PATH.$_POST['podcast_medium_local_source']) : false;
+                $dimensions = isset($_POST['podcast_medium_local_source']) && MediaLibrary::_isImage(ASCMS_PATH.$_POST['podcast_medium_local_source']) ? @getimagesize(ASCMS_PATH.$_POST['podcast_medium_local_source']) : false;
                 if ($dimensions) {
                     $mediumWidth = $dimensions[0];
                     $mediumHeight = $dimensions[1];
