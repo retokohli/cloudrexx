@@ -17,6 +17,18 @@ namespace Cx\Core\Component\Model\Entity;
 abstract class SystemComponentController extends Controller {
     
     /**
+     * Returns a list of JsonAdapter class names
+     * 
+     * The array values might be a class name without namespace. In that case
+     * the namespace \Cx\{component_type}\{component_name}\Controller is used.
+     * If the array value starts with a backslash, no namespace is added.
+     * 
+     * Avoid calculation of anything, just return an array!
+     * @return array List of ComponentController classes
+     */
+    public abstract function getControllersAccessableByJson();
+    
+    /**
      * Do something before resolving is done
      * 
      * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!

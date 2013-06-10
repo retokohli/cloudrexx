@@ -1,6 +1,6 @@
 <?php
 /**
- * JSON Interface to Contrexx Doctrine Database
+ * JSON Interface to Contrexx
  * @copyright   Comvation AG
  * @author      Florian Schuetz <florian.schuetz@comvation.com>
  * @author      Michael Ritter <michael.ritter@comvation.com>
@@ -26,24 +26,15 @@ use \Cx\Core\Json\Adapter\JsonContentManager;
 class JsonData {
     
     /**
-     * Namespace containing adapter classes
-     * @var String Namespace
-     */
-    protected static $adapter_ns = '\\Cx\\Core\\Json\\Adapter\\';
-    protected static $adapter_path = '/json/adapter/';
-    
-    /**
-     * List of adapter class names. Just add yours to the list...
+     * List of adapter class names.
+     * @deprecated Use component framework instead (SystemComponentController->getControllersAccessableByJson())
      * @var array List of adapter class names 
      */
     protected static $adapter_classes = array(
-        '\Cx\Core\ContentManager\Controller' => array(
-            'JsonNode', 'JsonPage', 'JsonContentManager',
-        ),
-        'Block' => array(
+        '\\Cx\\Core\\Json\\Adapter\\Block' => array(
             'JsonBlock',
         ),
-        'User' => array(
+        '\\Cx\\Core\\Json\\Adapter\\User' => array(
             'JsonUser',
         ),
     );
@@ -61,15 +52,38 @@ class JsonData {
     public function __construct() {
         foreach (self::$adapter_classes as $ns=>$adapters) {
             foreach ($adapters as $adapter) {
-                if (substr($ns, 0, 1) == '\\') {
-                    $adapter = $ns . '\\' . $adapter;
-                } else {
-                    $adapter = self::$adapter_ns . $ns . '\\' . $adapter;
-                }
-                $object = new $adapter();
-                $this->adapters[$object->getName()] = $object;
+                $this->loadAdapter($adapter, $ns);
             }
         }
+    }
+    
+    public static function addAdapter($className, $namespace = '\\') {
+        if (is_array($className)) {
+            foreach ($className as $class) {
+                self::addAdapter($class, $namespace);
+            }
+            return;
+        }
+        self::$adapter_classes[$namespace][] = $className;
+    }
+    
+    /**
+     * Adds an adapter accessable by JSON requests.
+     * 
+     * Either specify a fully qualified classname, or a classname and the containing
+     * namespace separatly
+     * @param string $className Fully qualified or class name located in $namespace
+     * @param string $namespace (optional) Namespace for non fully qualified class name
+     */
+    public function loadAdapter($className, $namespace = '') {
+        if (substr($className, 0, 1) == '\\') {
+            $adapter = $className;
+        } else {
+            $adapter = $namespace . '\\' . $className;
+        }
+        // check if its an adapter!
+        $object = new $adapter();
+        $this->adapters[$object->getName()] = $object;
     }
 
     /**
