@@ -64,11 +64,16 @@ class SystemComponentRepository extends EntityRepository
                 continue;
             }
             $component = $this->decorateEntity($component);
-            // jsondata
+            \Cx\Core\Json\JsonData::addAdapter($component->getControllersAccessableByJson(), $this->getNamespaceFor($component) . '\\Controller');
         }
         return $components;
     }
     
+    /**
+     *
+     * @param \Cx\Core\Component\Model\Entity\SystemComponent $component
+     * @return \Cx\Core\Component\Model\Entity\SystemComponentController
+     */
     protected function decorateEntity(\Cx\Core\Component\Model\Entity\SystemComponent $component) {
         if (isset($this->loadedComponents[$component->getId()])) {
             return $this->loadedComponents[$component->getId()];
@@ -79,22 +84,27 @@ class SystemComponentRepository extends EntityRepository
         return $componentController;
     }
     
-    protected function getComponentControllerClassFor(\Cx\Core\Component\Model\Entity\SystemComponent $component) {
-        $className = '\\Cx';
+    protected function getNamespaceFor(\Cx\Core\Component\Model\Entity\SystemComponent $component) {
+        $namespace = '\\Cx';
         switch ($component->getType()) {
             case \Cx\Core\Component\Model\Entity\SystemComponent::TYPE_CORE:
-                $className .= '\\Core';
+                $namespace .= '\\Core';
                 break;
             case \Cx\Core\Component\Model\Entity\SystemComponent::TYPE_CORE_MODULE:
-                $className .= '\\Core_Modules';
+                $namespace .= '\\Core_Modules';
                 break;
             case \Cx\Core\Component\Model\Entity\SystemComponent::TYPE_MODULE:
-                $className .= '\\Modules';
+                $namespace .= '\\Modules';
                 break;
             default:
                 throw new \Cx\Core\Component\Controller\ComponentException('No such component type: "' . $component->getType() . '"');
         }
-        $className .= '\\' . $component->getName() . '\\Controller\\ComponentController';
+        $namespace .= '\\' . $component->getName();
+        return $namespace;
+    }
+    
+    protected function getComponentControllerClassFor(\Cx\Core\Component\Model\Entity\SystemComponent $component) {
+        $className .= $this->getNamespaceFor($component) . '\\Controller\\ComponentController';
         return $className;
     }
     

@@ -35,4 +35,10 @@ class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponen
     public function preFinalize(\Cx\Core\Cx $cx, \Cx\Core\Html\Sigma $template) {}
     
     public function preResolve(\Cx\Core\Cx $cx, \Cx\Core\Routing\Url $request) {}
+
+    public function getControllersAccessableByJson() {
+        return array(
+            'JsonNode', 'JsonPage', 'JsonContentManager',
+        );
+    }
 }

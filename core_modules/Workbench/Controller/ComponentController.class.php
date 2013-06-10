@@ -97,6 +97,9 @@ class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponen
 
     public function preFinalize(\Cx\Core\Cx $cx, \Cx\Core\Html\Sigma $template) {}
 
-    public function postFinalize(\Cx\Core\Cx $cx) {
+    public function postFinalize(\Cx\Core\Cx $cx) {}
+
+    public function getControllersAccessableByJson() {
+        return array();
     }
 }

@@ -141,4 +141,9 @@ class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponen
     public function preResolve(\Cx\Core\Cx $cx, \Cx\Core\Routing\Url $request)
     {
     }
+
+    public function getControllersAccessableByJson()
+    {
+        return array();
+    }
 }
