@@ -792,14 +792,10 @@ namespace Cx\Core {
          * @todo Write a method, that only returns the content, in order to allow usage in CLI mode
          * @todo Remove usage of globals
          * @global type $plainSection
-         * @global type $_CORELANG
-         * @global type $subMenuTitle
-         * @global type $act
          * @global type $_ARRAYLANG 
          */
         protected function loadContent() {
-            global $plainSection, $_CORELANG,
-                    $subMenuTitle, $act, $_ARRAYLANG;
+            global $plainSection, $_ARRAYLANG;
             
             if ($this->mode == self::MODE_CLI) {
                 return;
@@ -814,52 +810,9 @@ namespace Cx\Core {
             }
             
             $this->ch->callPreContentParseHooks();
-            try {
-                // This is the nice way
-                $this->ch->loadComponent($this, $plainSection, $this->resolvedPage);
-            } catch (\Cx\Core\Component\Controller\ComponentException $e) {
-                
-                // this only happens in backend, add load exceptions for backend to avoid this
-                
-                $moduleManager = new \modulemanager();
-                // This is necessary to avoid notices, since those are passed by reference
-                $adodb = $this->getDb()->getAdoDb();
-                $em = $this->getDb()->getEntityManager();
-                $user = $this->getUser();
-                $init = \Env::get('init');
-                
-                try {
-                    // This is the semi nice way
-                    $moduleManager->loadModule(
-                        $plainSection,
-                        $this->cl,
-                        $adodb,
-                        $_CORELANG,
-                        $subMenuTitle,
-                        $this->template,
-                        $user,
-                        $act,
-                        $init,
-                        $_ARRAYLANG,
-                        $em,
-                        $this
-                    );
-                } catch (\ModuleManagerException $e) {
-                    // This is the old fashion way
-                    $moduleManager->loadLegacyModule(
-                        $plainSection,
-                        $this->cl,
-                        $adodb,
-                        $_CORELANG,
-                        $subMenuTitle,
-                        $this->template,
-                        $user,
-                        $act,
-                        $init,
-                        $_ARRAYLANG
-                    );
-                }
-            }
+            
+            $this->ch->loadComponent($this, $plainSection, $this->resolvedPage);
+            
             $this->ch->callPostContentParseHooks();
         }
         
