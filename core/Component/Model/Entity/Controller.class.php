@@ -26,6 +26,14 @@ abstract class Controller {
     }
     
     /**
+     * Returns the SystemComponent this Controller decorates
+     * @return \Cx\Core\Component\Model\Entity\SystemComponent
+     */
+    public function getSystemComponent() {
+        return $this->systemComponent;
+    }
+    
+    /**
      * Decoration: all methods that are not specified in this or child classes
      * call the corresponding method of the decorated SystemComponent
      * @param string $methodName Name of method to call

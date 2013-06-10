@@ -64,7 +64,7 @@ class SystemComponentRepository extends EntityRepository
                 continue;
             }
             $component = $this->decorateEntity($component);
-            \Cx\Core\Json\JsonData::addAdapter($component->getControllersAccessableByJson(), $this->getNamespaceFor($component) . '\\Controller');
+            \Cx\Core\Json\JsonData::addAdapter($component->getControllersAccessableByJson(), $this->getNamespaceFor($component->getSystemComponent()) . '\\Controller');
         }
         return $components;
     }
@@ -104,7 +104,7 @@ class SystemComponentRepository extends EntityRepository
     }
     
     protected function getComponentControllerClassFor(\Cx\Core\Component\Model\Entity\SystemComponent $component) {
-        $className .= $this->getNamespaceFor($component) . '\\Controller\\ComponentController';
+        $className = $this->getNamespaceFor($component) . '\\Controller\\ComponentController';
         return $className;
     }
     
