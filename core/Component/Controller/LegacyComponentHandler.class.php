@@ -1692,6 +1692,541 @@ class LegacyComponentHandler {
                         }
                     },
                 ),
+                'load' => array(
+                    'login' => function() {
+                        global $cl, $_CORELANG, $objFWUser;
+
+                        if ($objFWUser->objUser->login(true)) {
+                            header('location: index.php');
+                        }
+                        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/login/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objLoginManager = new \LoginManager();
+                        $objLoginManager->getPage();
+                    },
+                    'access' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH."/access/admin.class.php"))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_COMMUNITY'];
+                        $objAccessManager = new \AccessManager();
+                        $objAccessManager->getPage();
+                    },
+                    'egov' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        \Permission::checkAccess(109, 'static');
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/egov/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_EGOVERNMENT'];
+                        $objEgov = new \eGov();
+                        $objEgov->getPage();
+                    },
+                    'banner' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        // Permission::checkAccess(??, 'static');
+                        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/banner/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_BANNER_ADMINISTRATION'];
+                        $objBanner = new \Banner();
+                        $objBanner->getPage();
+                    },
+                    'jobs' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        \Permission::checkAccess(11, 'static');
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/jobs/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_JOBS_MANAGER'];
+                        $objJobs = new \jobsManager();
+                        $objJobs->getJobsPage();
+                    },
+                    'fileBrowser' => function() {
+                        global $cl, $_CORELANG;
+
+                        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/fileBrowser/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objFileBrowser = new \FileBrowser();
+                        $objFileBrowser->getPage();
+                        exit;
+                    },
+                    'feed' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        \Permission::checkAccess(27, 'static');
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/feed/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_NEWS_SYNDICATION'];
+                        $objFeed = new \feedManager();
+                        $objFeed->getFeedPage();
+                    },
+                    'server' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        \Permission::checkAccess(4, 'static');
+                        if (!$cl->loadFile(ASCMS_CORE_PATH.'/serverSettings.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_SERVER_INFO'];
+                        $objServer = new \serverSettings();
+                        $objServer->getPage();
+                    },
+                    'log' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        \Permission::checkAccess(18, 'static');
+                        if (!$cl->loadFile(ASCMS_CORE_PATH.'/log.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_SYSTEM_LOGS'];
+                        $objLogManager = new \logmanager();
+                        $objLogManager->getLogPage();
+                    },
+                    'skins' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        //Permission::checkAccess(18, 'static');
+                        if (!$cl->loadFile(ASCMS_CORE_PATH.'/skins.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_DESIGN_MANAGEMENT'];
+                        $objSkins = new \skins();
+                        $objSkins->getPage();
+                    },
+                    'content' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle, $objTemplate, $objDatabase, $objInit, $act;
+
+                        $subMenuTitle = $_CORELANG['TXT_CONTENT_MANAGER'];
+                        $cm = new \Cx\Core\ContentManager\Controller\ContentManager($act, $objTemplate, $objDatabase, $objInit);
+                        $cm->getPage();
+                    },
+                    'license' => function() {
+                        global $cl, $_CORELANG, $objTemplate, $objDatabase, $_CONFIG, $act;
+
+                        $subMenuTitle = $_CORELANG['TXT_LICENSE'];
+                        $lm = new \Cx\Core_Modules\License\LicenseManager($act, $objTemplate, $_CORELANG, $_CONFIG, $objDatabase);
+                        $lm->getPage($_POST);
+                    },
+                // TODO: handle expired sessions in any xhr callers.
+                    'jsondata' => function() {
+                        global $cl, $_CORELANG;
+
+                        $json = new \Cx\Core\Json\JsonData();
+                // TODO: Verify that the arguments are actually present!
+                        $adapter = contrexx_input2raw($_GET['object']);
+                        $method = contrexx_input2raw($_GET['act']);
+                // TODO: Replace arguments by something reasonable
+                        $arguments = array('get' => $_GET, 'post' => $_POST);
+                        echo $json->jsondata($adapter, $method, $arguments);
+                        die();
+                    },
+                    'workflow' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle, $objTemplate, $objDatabase, $objInit, $act;
+
+                        if (!$cl->loadFile(ASCMS_CORE_PATH.'/ContentWorkflow.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_CONTENT_HISTORY'];
+                        $wf = new \ContentWorkflow($act, $objTemplate, $objDatabase, $objInit);
+                        $wf->getPage();
+                    },
+                    'docsys' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        \Permission::checkAccess(11, 'static');
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/docsys/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_DOC_SYS_MANAGER'];
+                        $objDocSys = new \docSysManager();
+                        $objDocSys->getDocSysPage();
+                    },
+                    'news' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        \Permission::checkAccess(10, 'static');
+                        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/news/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_NEWS_MANAGER'];
+                        $objNews = new \NewsManager();
+                        $objNews->getPage();
+                    },
+                    'contact' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        // Permission::checkAccess(10, 'static');
+                        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/contact/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_CONTACTS'];
+                        $objContact = new \contactManager();
+                        $objContact->getPage();
+                    },
+                    'immo' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/immo/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_IMMO_MANAGEMENT'];
+                        $objImmo = new \Immo();
+                        $objImmo->getPage();
+                    },
+                        // dataviewer
+                    'dataviewer' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        \Permission::checkAccess(9, 'static');
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/dataviewer/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_DATAVIEWER'];
+                        $objDataviewer = new \Dataviewer();
+                        $objDataviewer->getPage();
+                    },
+                    'download' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        \Permission::checkAccess(57, 'static');
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/download/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_DOWNLOAD_MANAGER'];
+                        $objDownload = new \DownloadManager();
+                        $objDownload->getPage();
+                    },
+                    'media' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/media/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_MEDIA_MANAGER'];
+                        $objMedia = new \MediaManager();
+                        $objMedia->getMediaPage();
+                    },
+                    'development' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        \Permission::checkAccess(81, 'static');
+                        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/development/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_DEVELOPMENT'];
+                        $objDevelopment = new \Development();
+                        $objDevelopment->getPage();
+                    },
+                    'dbm' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        if (!$cl->loadFile(ASCMS_CORE_PATH.'/DatabaseManager.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_DATABASE_MANAGER'];
+                        $objDatabaseManager = new \DatabaseManager();
+                        $objDatabaseManager->getPage();
+                    },
+                    'stats' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        \Permission::checkAccess(19, 'static');
+                        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/stats/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_STATISTIC'];
+                        $statistic= new \stats();
+                        $statistic->getContent();
+                    },
+                    'alias' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        \Permission::checkAccess(115, 'static');
+                        \Permission::checkAccess(78, 'static');
+                        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/alias/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_ALIAS_ADMINISTRATION'];
+                        $objAlias = new \AliasAdmin();
+                        $objAlias->getPage();
+                    },
+                    'nettools' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        \Permission::checkAccess(54, 'static');
+                        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/nettools/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_NETWORK_TOOLS'];
+                        $nettools = new \netToolsManager();
+                        $nettools->getContent();
+                    },
+                    'newsletter' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/newsletter/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_CORE_EMAIL_MARKETING'];
+                        $objNewsletter = new \newsletter();
+                        $objNewsletter->getPage();
+                    },
+                    'settings' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        \Permission::checkAccess(17, 'static');
+                        if (!$cl->loadFile(ASCMS_CORE_PATH.'/settings.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_SYSTEM_SETTINGS'];
+                        $objSettings = new \settingsManager();
+                        $objSettings->getPage();
+                    },
+                    'language' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        \Permission::checkAccess(22, 'static');
+                        if (!$cl->loadFile(ASCMS_CORE_PATH.'/language.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_LANGUAGE_SETTINGS'];
+                        $objLangManager = new \LanguageManager();
+                        $objLangManager->getLanguagePage();
+                    },
+                    'modulemanager' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        \Permission::checkAccess(23, 'static');
+                        if (!$cl->loadFile(ASCMS_CORE_PATH.'/modulemanager.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_MODULE_MANAGER'];
+                        $objModuleManager = new \modulemanager();
+                        $objModuleManager->getModulesPage();
+                    },
+                    'ecard' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/ecard/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_ECARD_TITLE'];
+                        $objEcard = new \ecard();
+                        $objEcard->getPage();
+                    },
+                    'voting' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        \Permission::checkAccess(14, 'static');
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/voting/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_CONTENT_MANAGER'];
+                        $objvoting = new \votingmanager();
+                        $objvoting->getVotingPage();
+                    },
+                    'survey' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        \Permission::checkAccess(111, 'static');
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/survey/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_SURVEY'];
+                        $objSurvey = new \SurveyAdmin();
+                        $objSurvey->getPage();
+                    },
+                    'calendar' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        \Permission::checkAccess(16, 'static');
+                        define('CALENDAR_MANDATE', MODULE_INDEX);
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/calendar'.MODULE_INDEX.'/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_CALENDAR'];
+                        $objCalendar = new \calendarManager();
+                        $objCalendar->getCalendarPage();
+                    },
+                    'reservation' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/reservation/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_RESERVATION_MODULE'];
+                        $objReservationModule = new reservationManager();
+                        $objReservationModule->getPage();
+                    },
+                    'forum' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        \Permission::checkAccess(106, 'static');
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/forum/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_FORUM'];
+                        $objForum = new \ForumAdmin();
+                        $objForum->getPage();
+                    },
+                    'directory' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        //Permission::checkAccess(18, 'static');
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/directory/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_LINKS_MODULE_DESCRIPTION'];
+                        $objDirectory = new \rssDirectory();
+                        $objDirectory->getPage();
+                    },
+                    'popup' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        \Permission::checkAccess(117, 'static');
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/popup/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_POPUP_SYSTEM'];
+                        $objPopup = new \popupManager();
+                        $objPopup->getPage();
+                    },
+                    'market' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        \Permission::checkAccess(98, 'static');
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/market/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_CORE_MARKET_TITLE'];
+                        $objMarket = new \Market();
+                        $objMarket->getPage();
+                    },
+                    'data' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        \Permission::checkAccess(122, 'static'); // ID !!
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH."/data/admin.class.php"))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_DATA_MODULE'];
+                        $objData = new \DataAdmin();
+                        $objData->getPage();
+                    },
+                    'support' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        // TODO: Assign a proper access ID to the support module
+                        //Permission::checkAccess(??, 'static');
+                        \Permission::checkAccess(87, 'static');
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/support/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_SUPPORT_SYSTEM'];
+                        $objSupport = new \Support();
+                        $objSupport->getPage();
+                    },
+                    'blog' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        \Permission::checkAccess(119, 'static');
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/blog/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_BLOG_MODULE'];
+                        $objBlog = new \BlogAdmin();
+                        $objBlog->getPage();
+                    },
+                    'knowledge' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        \Permission::checkAccess(129, 'static');
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/knowledge/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_KNOWLEDGE'];
+                        $objKnowledge = new \KnowledgeAdmin();
+                        $objKnowledge->getPage();
+                    },
+                    'u2u' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        \Permission::checkAccess(141, 'static');
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/u2u/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_U2U_MODULE'];
+                        $objU2u = new \u2uAdmin();
+                        $objU2u->getPage();
+                    },
+                    'partners' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        \Permission::checkAccess(140, 'static');
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/partners/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_PARTNERS_MODULE'];
+                        $objPartner = new \PartnersAdmin();
+                        $objPartner->getPage();
+                    },
+                    'auction' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        \Permission::checkAccess(143, 'static');
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/auction/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_AUCTION_TITLE'];
+                        $objAuction = new \Auction();
+                        $objAuction->getPage();
+                    },
+                    'upload' => function() {
+                        global $cl, $_CORELANG;
+
+                        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/upload/admin.class.php'))
+                            die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objUploadModule = new \Upload();
+                        $objUploadModule->getPage();
+                        //execution never reaches this point
+                    },
+                    'noaccess' => function() {
+                        global $cl, $_CORELANG, $objTemplate, $_CONFIG;
+
+                        //Temporary no-acces-file and comment
+                        $subMenuTitle = $_CORELANG['TXT_ACCESS_DENIED'];
+                        $objTemplate->setVariable(array(
+                            'CONTENT_NAVIGATION' => '<span id="noaccess_title">'.contrexx_raw2xhtml($_CONFIG['coreCmsName']).'</span>',
+                            'ADMIN_CONTENT' =>
+                                '<img src="images/no_access.png" alt="" /><br /><br />'.
+                                $_CORELANG['TXT_ACCESS_DENIED_DESCRIPTION'],
+                        ));
+                    },
+                    'logout' => function() {
+                        global $cl, $_CORELANG, $objFWUser;
+
+                        $objFWUser->logout();
+                        exit;
+                    },
+                    'downloads' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/downloads/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_DOWNLOADS'];
+                        $objDownloadsModule = new \downloads();
+                        $objDownloadsModule->getPage();
+                    },
+                    'country' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                // TODO: Move this define() somewhere else, allocate the IDs properly
+                        define('PERMISSION_COUNTRY_VIEW', 145);
+                        define('PERMISSION_COUNTRY_EDIT', 146);
+                        \Permission::checkAccess(PERMISSION_COUNTRY_VIEW, 'static');
+                        if (!$cl->loadFile(ASCMS_CORE_PATH.'/Country.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_CORE_COUNTRY'];
+                        \Country::getPage();
+                    },
+                    'mediadir' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        \Permission::checkAccess(153, 'static');
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/mediadir/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_MEDIADIR_MODULE'];
+                        $objMediaDirectory = new \mediaDirectoryManager();
+                        $objMediaDirectory->getPage();
+                    },
+                    'search' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle, $objTemplate, $objDatabase, $license, $objInit, $act;
+
+                        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/search/admin.class.php')) {
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        }
+                        $subMenuTitle = $_CORELANG['TXT_SEARCH'];
+                        $objSearch    = new \Cx\Core\Search\SearchManager($act, $objTemplate, $objDatabase, $objInit, $license);
+                        $objSearch->getPage();
+                    },
+                    '' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle, $objTemplate;
+
+                        if (!$cl->loadFile(ASCMS_CORE_PATH.'/myAdmin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objTemplate->setVariable('CONTAINER_DASHBOARD_CLASS', 'dashboard');
+                        $objFWUser = \FWUser::getFWUserObject();
+                        $subMenuTitle = $_CORELANG['TXT_WELCOME_MESSAGE'].", <a href='index.php?cmd=access&amp;act=user&amp;tpl=modify&amp;id=".$objFWUser->objUser->getId()."' title='".$objFWUser->objUser->getId()."'>".($objFWUser->objUser->getProfileAttribute('firstname') || $objFWUser->objUser->getProfileAttribute('lastname') ? htmlentities($objFWUser->objUser->getProfileAttribute('firstname'), ENT_QUOTES, CONTREXX_CHARSET).' '.htmlentities($objFWUser->objUser->getProfileAttribute('lastname'), ENT_QUOTES, CONTREXX_CHARSET) : htmlentities($objFWUser->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET))."</a>";
+                        $objAdminNav = new \myAdminManager();
+                        $objAdminNav->getPage();
+                    },
+                ),
                 'postContentLoad' => array(
                     'Message' => function() {
                         global $objTemplate;
