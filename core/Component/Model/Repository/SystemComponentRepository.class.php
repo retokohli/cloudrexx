@@ -40,15 +40,31 @@ class SystemComponentRepository extends EntityRepository
         if (!$components) {
             return $components;
         }
+        
         if (!is_array($components)) {
+            $reflComponent = new \Cx\Core\Component\Model\Entity\ReflectionComponent($components);
+            $yamlDir = $reflComponent->getDirectory().'/Model/Yaml';
+            $this->cx->getDb()->addSchemaFileDirectories(array($yamlDir));
             return $this->decorateEntity($components);
         }
+        
+        $yamlDirs = array();
+        foreach ($components as $component) {
+            if (isset($this->loadedComponents[$component->getId()])) {
+                continue;
+            }
+            $reflComponent = new \Cx\Core\Component\Model\Entity\ReflectionComponent($component);
+            $yamlDirs[] = $reflComponent->getDirectory().'/Model/Yaml';
+        }
+        
+        $this->cx->getDb()->addSchemaFileDirectories($yamlDirs);
         foreach ($components as &$component) {
             if (isset($this->loadedComponents[$component->getId()])) {
                 $component = $this->loadedComponents[$component->getId()];
                 continue;
             }
             $component = $this->decorateEntity($component);
+            // jsondata
         }
         return $components;
     }
@@ -56,7 +72,7 @@ class SystemComponentRepository extends EntityRepository
     protected function decorateEntity(\Cx\Core\Component\Model\Entity\SystemComponent $component) {
         if (isset($this->loadedComponents[$component->getId()])) {
             return $this->loadedComponents[$component->getId()];
-        }
+        }        
         $componentControllerClass = $this->getComponentControllerClassFor($component);
         $componentController = new $componentControllerClass($component);
         $this->loadedComponents[$component->getId()] = $componentController;
