@@ -46,6 +46,11 @@ namespace Cx\Core\Db {
         protected $cx = null;
         protected $pdo = null;
         protected $adodb = null;
+        
+        /**
+         *
+         * @var \Doctrine\ORM\EntityManager 
+         */
         protected $em = null;
         protected $loggableListener = null;
         
@@ -119,9 +124,18 @@ namespace Cx\Core\Db {
             }
             return $this->adodb;
         }
+        
+        public function addSchemaFileDirectories(array $paths) {
+            if (!$this->em) {
+                $this->getEntityManager();
+            }
+            
+            foreach ($this->em->getConfiguration()->getMetadataDriverImpl()->getDrivers() as $driver) {
+                $driver->addPaths($paths);
+            }
+        }
 
         /**
-         * @todo Use $this->pdo instead of new instance
          * @global type $_DBCONFIG
          * @return type 
          */
@@ -157,7 +171,6 @@ namespace Cx\Core\Db {
             $driverImpl = new \Doctrine\ORM\Mapping\Driver\YamlDriver(array(
                 ASCMS_MODEL_PATH.'/yml',                                // general YAML dir, deprecated
                 ASCMS_CORE_PATH.'/Component'.'/Model/Yaml',             // Component YAML files
-                ASCMS_CORE_PATH.'/ContentManager'.'/Model/Yaml',        // ContentManager YAML files, should be loaded via CUF
             ));
             $chainDriverImpl->addDriver($driverImpl, 'Cx');
 
