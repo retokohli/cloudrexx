@@ -1,9 +1,8 @@
 <?php
 /**
- * This is needed for backwards compatibility to PHP 5.3
- * $ADODB_NEWCONNECTION = array($this, 'adodbPdoConnectionFactory');
- * leads to a "function name must be a string"
+ * Db Class
  *
+ * Database connection handler
  * @copyright   Comvation AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @package     contrexx
@@ -13,6 +12,10 @@
 namespace {
     /**
      * Factory callback for AdoDB NewConnection
+     * 
+     * This is in global namespace for backwards compatibility to PHP 5.3
+     * $ADODB_NEWCONNECTION = array($this, 'adodbPdoConnectionFactory');
+     * leads to a "function name must be a string"
      * @deprecated Use Doctrine!
      * @return \Cx\Core\Db\CustomAdodbPdo 
      */
@@ -37,31 +40,66 @@ namespace Cx\Core\Db {
     /**
      * Db Class
      *
+     * Database connection handler
      * @copyright   Comvation AG
      * @author      Michael Ritter <michael.ritter@comvation.com>
      * @package     contrexx
      * @subpackage  core_db
      */
     class Db {
+        
+        /**
+         * Contrexx instance
+         * @var \Cx\Core\Cx
+         */
         protected $cx = null;
+        
+        /**
+         * PDO instance
+         * @var \PDO
+         */
         protected $pdo = null;
+        
+        /**
+         * AdoDB instance
+         * @var \ADONewConnection 
+         */
         protected $adodb = null;
         
         /**
-         *
+         * Doctrine entity manager instance
          * @var \Doctrine\ORM\EntityManager 
          */
         protected $em = null;
+        
+        /**
+         * Doctrine LoggableListener instance
+         * @var \Gedmo\Loggable\LoggableListener 
+         */
         protected $loggableListener = null;
         
+        /**
+         * Creates a new instance of the database connection handler
+         * @param \Cx\Core\Cx $cx Main class
+         */
         public function __construct(\Cx\Core\Cx $cx) {
             $this->cx = $cx;
         }
         
+        /**
+         * Sets the username for loggable listener
+         * @param string $username Username data as string
+         */
         public function setUsername($username) {
             $this->loggableListener->setUsername($username);
         }
 
+        /**
+         * Initializes the PDO connection
+         * @global array $_DBCONFIG Database configuration
+         * @global array $_CONFIG Configuration
+         * @return \PDO PDO connection
+         */
         protected function getPdoConnection() {
             global $_DBCONFIG, $_CONFIG;
 
@@ -125,6 +163,10 @@ namespace Cx\Core\Db {
             return $this->adodb;
         }
         
+        /**
+         * Adds YAML directories to entity manager
+         * @param array $paths List of paths
+         */
         public function addSchemaFileDirectories(array $paths) {
             if (!$this->em) {
                 $this->getEntityManager();
@@ -136,8 +178,9 @@ namespace Cx\Core\Db {
         }
 
         /**
-         * @global type $_DBCONFIG
-         * @return type 
+         * Returns the doctrine entity manager
+         * @global array $_DBCONFIG Database configuration
+         * @return \Doctrine\ORM\EntityManager 
          */
         public function getEntityManager() {
             if ($this->em) {
