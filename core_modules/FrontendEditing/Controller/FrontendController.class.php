@@ -106,6 +106,10 @@ class FrontendController
         $componentTemplate->setRoot(ASCMS_ADMIN_TEMPLATE_PATH);
         $objTemplate = $componentTemplate;
         \Env::get('ClassLoader')->loadFile(ASCMS_DOCUMENT_ROOT . '/lang/en/backend.php');
+        $langCode = \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID);
+        if ($langCode != 'en') {
+            \Env::get('ClassLoader')->loadFile(ASCMS_DOCUMENT_ROOT . '/lang/' . $langCode . '/backend.php');
+        }
         $_CORELANG = array_merge($_CORELANG, $_ARRAYLANG);
         $menu = new \adminMenu('fe');
         $menu->getAdminNavbar();
