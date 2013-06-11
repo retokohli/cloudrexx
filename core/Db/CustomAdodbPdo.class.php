@@ -19,7 +19,13 @@ namespace Cx\Core\Db;
  * @subpackage  core_db
  */
 class CustomAdodbPdo extends \ADODB_pdo 
-{ 
+{
+    
+    /**
+     * Initializes Adodb with an existing PDO connection
+     * @param \PDO $pdo PDO connection to use
+     * @return boolean True on success, false otherwise
+     */
     function __construct($pdo) 
     { 
         try { 
