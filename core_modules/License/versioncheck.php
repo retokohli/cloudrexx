@@ -1,5 +1,5 @@
 <?php
-global $sessionObj, $_CONFIG, $_CORELANG, $license, $objDatabase;
+global $sessionObj, $_CONFIG, $_CORELANG;
 
 require_once dirname(dirname(dirname(__FILE__))).'/init.php';
 $cx = init('minimal');
@@ -24,7 +24,7 @@ try {
 } catch (\Exception $e) {
     $license->check();
     if (!isset($_GET['nosave']) || $_GET['nosave'] != 'true') {
-        $license->save(new \settingsManager(), $objDatabase);
+        $license->save(new \settingsManager(), $cx->getDb()->getAdoDb());
     }
     if (!isset($_GET['silent']) || $_GET['silent'] != 'true') {
         echo "false";
@@ -33,7 +33,7 @@ try {
 }
 $license->check();
 if (!isset($_GET['nosave']) || $_GET['nosave'] != 'true') {
-    $license->save(new \settingsManager(), $objDatabase);
+    $license->save(new \settingsManager(), $cx->getDb()->getAdoDb());
 }
 
 if (!$objUser->login(true)) {
