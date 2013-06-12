@@ -17,9 +17,10 @@ namespace {
      * This is necessary, because we cannot use namespaces in index.php
      * in order to catch errors with PHP versions prior to 5.3
      * @param string $mode (optional) One of 'frontend', 'backend', 'cli', 'minimal'
+     * @return \Cx\Core\Cx Instance of Contrexx
      */
     function init($mode = null) {
-        new \Cx\Core\Cx($mode);
+        return new \Cx\Core\Cx($mode);
     }
 }
 
@@ -457,8 +458,6 @@ namespace Cx\Core {
         protected function postInit() {
             global $_CONFIG;
             
-            $this->loadComponents();
-            
             // this makes \Env::get('Resolver')->getUrl() return a sensful result
             $request = !empty($_GET['__cap']) ? $_GET['__cap'] : '';
             $offset = ASCMS_PATH_OFFSET;
@@ -466,8 +465,15 @@ namespace Cx\Core {
                 $request = ASCMS_PATH_OFFSET.'/cadmin';
                 $offset = ASCMS_INSTANCE_OFFSET;
             }
-            $this->request = \Cx\Core\Routing\Url::fromCapturedRequest($request, $offset, $_GET);
+            
+            if ($this->mode == self::MODE_FRONTEND || $this->mode == self::MODE_BACKEND) {
+                $this->request = \Cx\Core\Routing\Url::fromCapturedRequest($request, $offset, $_GET);
+            } else {
+                $this->request = \Cx\Core\Routing\Url::fromRequest();
+            }
             $this->license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $this->getDb()->getAdoDb());
+            
+            $this->loadComponents();
         }
 
         /**
@@ -812,6 +818,9 @@ namespace Cx\Core {
             $this->ch->callPreContentParseHooks();
             
             $this->ch->loadComponent($this, $plainSection, $this->resolvedPage);
+            
+            // This would be a postContentParseHook:
+            \Message::show();
             
             $this->ch->callPostContentParseHooks();
         }
