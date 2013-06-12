@@ -6,6 +6,7 @@
  * @package     contrexx
  * @subpackage  lang
  */
+global $_ARRAYLANG;
 $_ARRAYLANG['TXT_INTERNAL'] = "internal";
 $_ARRAYLANG['TXT_CORE_SEARCH_USER_INFO'] = "Enter at least %s character(s).";
 $_ARRAYLANG['TXT_CORE_SEARCH_USER'] = "Search user";
