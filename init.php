@@ -50,4 +50,4 @@ require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_install
  */
 //\DBG::activate(DBG_PHP);
 
-require_once($_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/core/Component/Controller/Cx.class.php');
+require_once($_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/core/Core/Controller/Cx.class.php');

@@ -50,7 +50,7 @@ namespace Cx\Core\Db {
         
         /**
          * Contrexx instance
-         * @var \Cx\Core\Component\Controller\Cx
+         * @var \Cx\Core\Core\Controller\Cx
          */
         protected $cx = null;
         
@@ -80,9 +80,9 @@ namespace Cx\Core\Db {
         
         /**
          * Creates a new instance of the database connection handler
-         * @param \Cx\Core\Component\Controller\Cx $cx Main class
+         * @param \Cx\Core\Core\Controller\Cx $cx Main class
          */
-        public function __construct(\Cx\Core\Component\Controller\Cx $cx) {
+        public function __construct(\Cx\Core\Core\Controller\Cx $cx) {
             $this->cx = $cx;
         }
         
@@ -213,7 +213,7 @@ namespace Cx\Core\Db {
             $chainDriverImpl = new \Doctrine\ORM\Mapping\Driver\DriverChain();
             $driverImpl = new \Doctrine\ORM\Mapping\Driver\YamlDriver(array(
                 ASCMS_MODEL_PATH.'/yml',                                // general YAML dir, deprecated
-                ASCMS_CORE_PATH.'/Component'.'/Model/Yaml',             // Component YAML files
+                ASCMS_CORE_PATH.'/Core'.'/Model/Yaml',             // Component YAML files
             ));
             $chainDriverImpl->addDriver($driverImpl, 'Cx');
 
