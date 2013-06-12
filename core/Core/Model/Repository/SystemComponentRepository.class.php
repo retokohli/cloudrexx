@@ -1,6 +1,6 @@
 <?php
 
-namespace Cx\Core\Component\Model\Repository;
+namespace Cx\Core\Core\Model\Repository;
 
 use Doctrine\ORM\EntityRepository;
 
@@ -42,7 +42,7 @@ class SystemComponentRepository extends EntityRepository
         }
         
         if (!is_array($components)) {
-            $reflComponent = new \Cx\Core\Component\Model\Entity\ReflectionComponent($components);
+            $reflComponent = new \Cx\Core\Core\Model\Entity\ReflectionComponent($components);
             $yamlDir = $reflComponent->getDirectory().'/Model/Yaml';
             $this->cx->getDb()->addSchemaFileDirectories(array($yamlDir));
             return $this->decorateEntity($components);
@@ -53,7 +53,7 @@ class SystemComponentRepository extends EntityRepository
             if (isset($this->loadedComponents[$component->getId()])) {
                 continue;
             }
-            $reflComponent = new \Cx\Core\Component\Model\Entity\ReflectionComponent($component);
+            $reflComponent = new \Cx\Core\Core\Model\Entity\ReflectionComponent($component);
             $yamlDirs[] = $reflComponent->getDirectory().'/Model/Yaml';
         }
         
@@ -71,10 +71,10 @@ class SystemComponentRepository extends EntityRepository
     
     /**
      *
-     * @param \Cx\Core\Component\Model\Entity\SystemComponent $component
-     * @return \Cx\Core\Component\Model\Entity\SystemComponentController
+     * @param \Cx\Core\Core\Model\Entity\SystemComponent $component
+     * @return \Cx\Core\Core\Model\Entity\SystemComponentController
      */
-    protected function decorateEntity(\Cx\Core\Component\Model\Entity\SystemComponent $component) {
+    protected function decorateEntity(\Cx\Core\Core\Model\Entity\SystemComponent $component) {
         if (isset($this->loadedComponents[$component->getId()])) {
             return $this->loadedComponents[$component->getId()];
         }        
@@ -84,26 +84,26 @@ class SystemComponentRepository extends EntityRepository
         return $componentController;
     }
     
-    protected function getNamespaceFor(\Cx\Core\Component\Model\Entity\SystemComponent $component) {
+    protected function getNamespaceFor(\Cx\Core\Core\Model\Entity\SystemComponent $component) {
         $namespace = '\\Cx';
         switch ($component->getType()) {
-            case \Cx\Core\Component\Model\Entity\SystemComponent::TYPE_CORE:
+            case \Cx\Core\Core\Model\Entity\SystemComponent::TYPE_CORE:
                 $namespace .= '\\Core';
                 break;
-            case \Cx\Core\Component\Model\Entity\SystemComponent::TYPE_CORE_MODULE:
+            case \Cx\Core\Core\Model\Entity\SystemComponent::TYPE_CORE_MODULE:
                 $namespace .= '\\Core_Modules';
                 break;
-            case \Cx\Core\Component\Model\Entity\SystemComponent::TYPE_MODULE:
+            case \Cx\Core\Core\Model\Entity\SystemComponent::TYPE_MODULE:
                 $namespace .= '\\Modules';
                 break;
             default:
-                throw new \Cx\Core\Component\Controller\ComponentException('No such component type: "' . $component->getType() . '"');
+                throw new \Cx\Core\Core\Controller\ComponentException('No such component type: "' . $component->getType() . '"');
         }
         $namespace .= '\\' . $component->getName();
         return $namespace;
     }
     
-    protected function getComponentControllerClassFor(\Cx\Core\Component\Model\Entity\SystemComponent $component) {
+    protected function getComponentControllerClassFor(\Cx\Core\Core\Model\Entity\SystemComponent $component) {
         $className = $this->getNamespaceFor($component) . '\\Controller\\ComponentController';
         return $className;
     }

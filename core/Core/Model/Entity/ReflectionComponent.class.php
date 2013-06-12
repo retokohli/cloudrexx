@@ -4,7 +4,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-namespace Cx\Core\Component\Model\Entity;
+namespace Cx\Core\Core\Model\Entity;
 /**
  * Represents an abstraction of a component
  * @author Michael Ritter <michael.ritter@comvation.com>
@@ -16,13 +16,13 @@ class ReflectionComponent {
     
     /**
      * Two different ways to instanciate this are supported:
-     * 1. Supply an instance of \Cx\Core\Component\Model\Entity\Component
+     * 1. Supply an instance of \Cx\Core\Core\Model\Entity\Component
      * 2. Supply a component name and type
-     * @param mixed $arg1 Either an instance of \Cx\Core\Component\Model\Entity\Component or the name of a component
+     * @param mixed $arg1 Either an instance of \Cx\Core\Core\Model\Entity\Component or the name of a component
      * @param string $arg2 (only if a component name was supplied as $arg1) Component type (one of core_module, module, core, lib)
      */
     public function __construct($arg1, $arg2 = null) {
-        if (is_a($arg1, 'Cx\Core\Component\Model\Entity\SystemComponent')) {
+        if (is_a($arg1, 'Cx\Core\Core\Model\Entity\SystemComponent')) {
             $this->componentName = $arg1->getName();
             $this->componentType = $arg1->getType();
             return;

@@ -4,7 +4,7 @@
  * To change this template, choose Tools | Templates
  * and open the template in the editor.
  */
-namespace Cx\Core\Component\Model\Entity;
+namespace Cx\Core\Core\Model\Entity;
 /**
  * Description of SystemComponentFrontendController
  *
@@ -12,7 +12,7 @@ namespace Cx\Core\Component\Model\Entity;
  */
 abstract class SystemComponentFrontendController extends Controller {
     
-    public function getPage(\Cx\Core\Component\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {
+    public function getPage(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {
         // init component template
         $componentTemplate = new \Cx\Core\Html\Sigma('.');
         $componentTemplate->setErrorHandling(PEAR_ERROR_DIE);
@@ -23,5 +23,5 @@ abstract class SystemComponentFrontendController extends Controller {
         $page->setContent($componentTemplate->get());
     }
     
-    public abstract function parsePage(\Cx\Core\Html\Sigma $template, \Cx\Core\Component\Controller\Cx $cx);
+    public abstract function parsePage(\Cx\Core\Html\Sigma $template, \Cx\Core\Core\Controller\Cx $cx);
 }

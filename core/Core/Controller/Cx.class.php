@@ -12,19 +12,19 @@
 
 namespace {
     /**
-     * Wrapper for new \Cx\Core\Component\Controller\Cx()
+     * Wrapper for new \Cx\Core\Core\Controller\Cx()
      * 
      * This is necessary, because we cannot use namespaces in index.php
      * in order to catch errors with PHP versions prior to 5.3
      * @param string $mode (optional) One of 'frontend', 'backend', 'cli', 'minimal'
-     * @return \Cx\Core\Component\Controller\Cx Instance of Contrexx
+     * @return \Cx\Core\Core\Controller\Cx Instance of Contrexx
      */
     function init($mode = null) {
-        return new \Cx\Core\Component\Controller\Cx($mode);
+        return new \Cx\Core\Core\Controller\Cx($mode);
     }
 }
 
-namespace Cx\Core\Component\Controller {
+namespace Cx\Core\Core\Controller {
 
     /**
      * This loads and controls everything
@@ -95,7 +95,7 @@ namespace Cx\Core\Component\Controller {
         
         /**
          * Component handler
-         * @var \Cx\Core\Component\Controller\ComponentHandler
+         * @var \Cx\Core\Core\Controller\ComponentHandler
          */
         protected $ch = null;
         
@@ -195,7 +195,7 @@ namespace Cx\Core\Component\Controller {
                 
                 /**
                  * In order to make this file customizable, we explicitly
-                 * search for a subclass of Cx\Core\Component\Controller\Cx named Cx\Customizing\Core\Cx
+                 * search for a subclass of Cx\Core\Core\Controller\Cx named Cx\Customizing\Core\Cx
                  * If such a class is found, it is loaded and this request will be stopped
                  */
                 $this->handleCustomizing();
@@ -617,7 +617,7 @@ namespace Cx\Core\Component\Controller {
          * Loads all active components
          */
         protected function loadComponents() {
-            $this->ch = new \Cx\Core\Component\Controller\ComponentHandler($this->mode == self::MODE_FRONTEND, $this->db->getEntityManager());
+            $this->ch = new \Cx\Core\Core\Controller\ComponentHandler($this->mode == self::MODE_FRONTEND, $this->db->getEntityManager());
             $this->ch->initComponents();
         }
         

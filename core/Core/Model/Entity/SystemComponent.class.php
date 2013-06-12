@@ -1,12 +1,12 @@
 <?php
 
 /**
- * Cx\Core\Component\Model\Entity\SystemComponent
+ * Cx\Core\Core\Model\Entity\SystemComponent
  */
-namespace Cx\Core\Component\Model\Entity;
+namespace Cx\Core\Core\Model\Entity;
 
 /**
- * Cx\Core\Component\Model\Entity\SystemComponent
+ * Cx\Core\Core\Model\Entity\SystemComponent
  */
 class SystemComponent
 {
