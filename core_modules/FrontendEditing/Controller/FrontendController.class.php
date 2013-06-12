@@ -35,9 +35,9 @@ class FrontendController
      * Adds the used language variables to contrexx-js variables, so the toolbar has access to these variables
      *
      * @param ComponentController $componentController
-     * @param \Cx\Core\Cx $cx
+     * @param \Cx\Core\Component\Controller\Cx $cx
      */
-    public function initFrontendEditing(\Cx\Core_Modules\FrontendEditing\Controller\ComponentController $componentController, \Cx\Core\Cx &$cx)
+    public function initFrontendEditing(\Cx\Core_Modules\FrontendEditing\Controller\ComponentController $componentController, \Cx\Core\Component\Controller\Cx &$cx)
     {
         global $objInit, $_ARRAYLANG, $page;
         // add css and javascript file
@@ -84,9 +84,9 @@ class FrontendController
      * Adds the toolbar to the current html structure (after the starting body tag)
      *
      * @param ComponentController $componentController
-     * @param \Cx\Core\Cx $cx
+     * @param \Cx\Core\Component\Controller\Cx $cx
      */
-    private function prepareTemplate(\Cx\Core_Modules\FrontendEditing\Controller\ComponentController $componentController, \Cx\Core\Cx &$cx)
+    private function prepareTemplate(\Cx\Core_Modules\FrontendEditing\Controller\ComponentController $componentController, \Cx\Core\Component\Controller\Cx &$cx)
     {
         global $_ARRAYLANG, $license, $objInit, $objTemplate, $page, $_CORELANG;
 
