@@ -1,5 +1,5 @@
 <?php
-global $sessionObj, $_CONFIG, $_CORELANG, $_PATHCONFIG, $license;
+global $sessionObj, $_CONFIG, $_CORELANG, $_PATHCONFIG, $license, $objDatabase;
 
 // Check php version (5.3 or newer is required)
 $php = phpversion();
