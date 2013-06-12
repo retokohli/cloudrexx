@@ -175,7 +175,7 @@ class ComponentHandler {
         $this->systemComponentRepo->callPostFinalizeHooks();
     }
     
-    public function loadComponent(\Cx\Core\Cx $cx, $componentName, \Cx\Core\ContentManager\Model\Entity\Page $page = null) {
+    public function loadComponent(\Cx\Core\Component\Controller\Cx $cx, $componentName, \Cx\Core\ContentManager\Model\Entity\Page $page = null) {
         if ($this->checkLegacy('load', $componentName)) {
             \DBG::msg('This is a legacy component (' . $componentName . '), load via LegacyComponentHandler');
             return;

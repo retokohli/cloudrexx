@@ -50,7 +50,7 @@ namespace Cx\Core\Db {
         
         /**
          * Contrexx instance
-         * @var \Cx\Core\Cx
+         * @var \Cx\Core\Component\Controller\Cx
          */
         protected $cx = null;
         
@@ -80,9 +80,9 @@ namespace Cx\Core\Db {
         
         /**
          * Creates a new instance of the database connection handler
-         * @param \Cx\Core\Cx $cx Main class
+         * @param \Cx\Core\Component\Controller\Cx $cx Main class
          */
-        public function __construct(\Cx\Core\Cx $cx) {
+        public function __construct(\Cx\Core\Component\Controller\Cx $cx) {
             $this->cx = $cx;
         }
         

@@ -17,7 +17,7 @@ abstract class SystemComponentBackendController extends Controller {
      */
     public abstract function getCommands();
     
-    public function getPage(\Cx\Core\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {
+    public function getPage(\Cx\Core\Component\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {
         global $_ARRAYLANG;
         
         $cmd = array('');
@@ -66,8 +66,8 @@ abstract class SystemComponentBackendController extends Controller {
      * 
      * You will get the template located in /View/Template/{CMD}.html
      * @param \Cx\Core\Html\Sigma $template Template for current CMD
-     * @param \Cx\Core\Cx $cx Contrexx main class
+     * @param \Cx\Core\Component\Controller\Cx $cx Contrexx main class
      * @param array $cmd CMD separated by slashes
      */
-    public abstract function parsePage(\Cx\Core\Html\Sigma $template, \Cx\Core\Cx $cx, array $cmd, &$successMessage, &$failureMessage);
+    public abstract function parsePage(\Cx\Core\Html\Sigma $template, \Cx\Core\Component\Controller\Cx $cx, array $cmd, &$successMessage, &$failureMessage);
 }
