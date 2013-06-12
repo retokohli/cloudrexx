@@ -22,7 +22,7 @@ namespace Cx\Core_Modules\FrontendEditing\Controller;
  * @subpackage  core_module_frontendediting
  * @version     1.0.0
  */
-class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponentController
+class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController
 {
 
     /**
@@ -39,14 +39,14 @@ class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponen
      *
      * The frontend editing is deactivated for application pages except the home page
      *
-     * @param \Cx\Core\Component\Controller\Cx $cx
+     * @param \Cx\Core\Core\Controller\Cx $cx
      * @return bool
      */
-    public function frontendEditingIsActive(\Cx\Core\Component\Controller\Cx $cx)
+    public function frontendEditingIsActive(\Cx\Core\Core\Controller\Cx $cx)
     {
         global $_CONFIG;
 
-        if ($cx->getMode() != \Cx\Core\Component\Controller\Cx::MODE_FRONTEND || !$cx->getPage()) {
+        if ($cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND || !$cx->getPage()) {
             return false;
         }
 
@@ -73,10 +73,10 @@ class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponen
     /**
      * Add the necessary divs for the inline editing around the content and around the title
      *
-     * @param \Cx\Core\Component\Controller\Cx $cx
+     * @param \Cx\Core\Core\Controller\Cx $cx
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page
      */
-    public function preContentLoad(\Cx\Core\Component\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page)
+    public function preContentLoad(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page)
     {
         // Is frontend editing active?
         if (!$this->frontendEditingIsActive($cx)) {
@@ -100,10 +100,10 @@ class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponen
     /**
      * When the frontend editing is active for this page init the frontend editing
      *
-     * @param \Cx\Core\Component\Controller\Cx $cx
+     * @param \Cx\Core\Core\Controller\Cx $cx
      * @param \Cx\Core\Html\Sigma $template
      */
-    public function preFinalize(\Cx\Core\Component\Controller\Cx $cx, \Cx\Core\Html\Sigma $template)
+    public function preFinalize(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\Html\Sigma $template)
     {
         // Is frontend editing active?
         if (!$this->frontendEditingIsActive($cx)) {
@@ -114,31 +114,31 @@ class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponen
         $frontendEditing->initFrontendEditing($this, $cx);
     }
 
-    public function load(\Cx\Core\Component\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page)
+    public function load(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page)
     {
     }
 
-    public function postContentLoad(\Cx\Core\Component\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page)
+    public function postContentLoad(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page)
     {
     }
 
-    public function postContentParse(\Cx\Core\Component\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page)
+    public function postContentParse(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page)
     {
     }
 
-    public function postFinalize(\Cx\Core\Component\Controller\Cx $cx)
+    public function postFinalize(\Cx\Core\Core\Controller\Cx $cx)
     {
     }
 
-    public function postResolve(\Cx\Core\Component\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page)
+    public function postResolve(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page)
     {
     }
 
-    public function preContentParse(\Cx\Core\Component\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page)
+    public function preContentParse(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page)
     {
     }
 
-    public function preResolve(\Cx\Core\Component\Controller\Cx $cx, \Cx\Core\Routing\Url $request)
+    public function preResolve(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\Routing\Url $request)
     {
     }
 

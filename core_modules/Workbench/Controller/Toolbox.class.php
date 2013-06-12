@@ -62,7 +62,7 @@ class Toolbox {
                     );
                     $res->MoveNext();
                 }
-                foreach (\Env::get('em')->getRepository('Cx\Core\Component\Model\Entity\SystemComponent')->findAll() as $component) {
+                foreach (\Env::get('em')->getRepository('Cx\Core\Core\Model\Entity\SystemComponent')->findAll() as $component) {
                     if (isset($modules[$component->getName()])) {
                         continue;
                     }
@@ -175,7 +175,7 @@ class Toolbox {
         }
         // if there's a loading exception in legacy component handler
         // return 3.0.0
-        $legacyComponentHandler = new \Cx\Core\Component\Controller\LegacyComponentHandler();
+        $legacyComponentHandler = new \Cx\Core\Core\Controller\LegacyComponentHandler();
         if (
             $legacyComponentHandler->hasExceptionFor(true, 'load', $name) ||
             $legacyComponentHandler->hasExceptionFor(false, 'load', $name)
@@ -186,7 +186,7 @@ class Toolbox {
     }
     
     protected function componentExists($name) {
-        $componentRepo = \Env::get('em')->getRepository('Cx\Core\Component\Model\Entity\SystemComponent');
+        $componentRepo = \Env::get('em')->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
         return (bool) $componentRepo->findOneBy(array('name' => $name));
     }
     

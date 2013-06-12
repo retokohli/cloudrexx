@@ -16,7 +16,7 @@ namespace Cx\Core\ContentManager\Controller;
  * YAML files and JsonAdapters via component framework
  * @author Michael Ritter <michael.ritter@comvation.com>
  */
-class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponentController {
+class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
 
     public function getControllersAccessableByJson() {
         return array(

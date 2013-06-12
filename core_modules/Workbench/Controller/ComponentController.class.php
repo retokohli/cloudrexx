@@ -6,7 +6,7 @@
  */
 namespace Cx\Core_Modules\Workbench\Controller;
 
-class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponentController {
+class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
     
     /**
      *
@@ -19,7 +19,7 @@ class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponen
      * @todo Language var checker (/translation helper)
      * @todo Component analysis (/testing)
      */
-    public function load(\Cx\Core\Component\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {
+    public function load(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {
         $objTemplate = $cx->getTemplate();
         $_ARRAYLANG = \Env::get('init')->loadLanguageData($this->getName());
         
@@ -79,25 +79,25 @@ class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponen
         $objTemplate->setVariable('CONTENT_NAVIGATION', $navigation->get());
     }
 
-    public function preResolve(\Cx\Core\Component\Controller\Cx $cx, \Cx\Core\Routing\Url $request) {}
+    public function preResolve(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\Routing\Url $request) {}
 
-    public function postResolve(\Cx\Core\Component\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {}
+    public function postResolve(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {}
 
-    public function preContentLoad(\Cx\Core\Component\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {}
+    public function preContentLoad(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {}
 
-    public function preContentParse(\Cx\Core\Component\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {}
+    public function preContentParse(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {}
 
-    public function postContentParse(\Cx\Core\Component\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {}
+    public function postContentParse(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {}
 
-    public function postContentLoad(\Cx\Core\Component\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {
+    public function postContentLoad(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {
         $warning = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/Workbench/View/Template');
         $warning->loadTemplateFile('Warning.html');
         $page->setContent($warning->get() . $page->getContent());
     }
 
-    public function preFinalize(\Cx\Core\Component\Controller\Cx $cx, \Cx\Core\Html\Sigma $template) {}
+    public function preFinalize(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\Html\Sigma $template) {}
 
-    public function postFinalize(\Cx\Core\Component\Controller\Cx $cx) {}
+    public function postFinalize(\Cx\Core\Core\Controller\Cx $cx) {}
 
     public function getControllersAccessableByJson() {
         return array();
