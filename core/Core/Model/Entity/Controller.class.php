@@ -4,7 +4,7 @@
  * 
  * @author Michael Ritter <michael.ritter@comvation.com>
  */
-namespace Cx\Core\Component\Model\Entity;
+namespace Cx\Core\Core\Model\Entity;
 
 /**
  * This is the superclass for all Controller classes
@@ -15,7 +15,7 @@ abstract class Controller {
     
     /**
      * SystemComponentController for this Component
-     * @var \Cx\Core\Component\Model\Entity\SystemComponentController
+     * @var \Cx\Core\Core\Model\Entity\SystemComponentController
      */
     private $systemComponentController = null;
     

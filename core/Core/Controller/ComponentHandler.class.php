@@ -5,7 +5,7 @@
  * and open the template in the editor.
  */
 
-namespace Cx\Core\Component\Controller;
+namespace Cx\Core\Core\Controller;
 
 class ComponentException extends \Exception {}
 
@@ -21,7 +21,7 @@ class ComponentHandler {
     private $legacyComponentHandler;
     private $frontend;
     /**
-     * @var \Cx\Core\Component\Model\Repository\SystemComponentRepository
+     * @var \Cx\Core\Core\Model\Repository\SystemComponentRepository
      */
     protected $systemComponentRepo;
     private $components = array(
@@ -70,7 +70,7 @@ class ComponentHandler {
     public function __construct($frontend, $em) {
         $this->legacyComponentHandler = new LegacyComponentHandler();
         $this->frontend = $frontend;
-        $this->systemComponentRepo = $em->getRepository('Cx\\Core\\Component\\Model\\Entity\\SystemComponent');
+        $this->systemComponentRepo = $em->getRepository('Cx\\Core\\Core\\Model\\Entity\\SystemComponent');
     }
     
     /**
@@ -175,7 +175,7 @@ class ComponentHandler {
         $this->systemComponentRepo->callPostFinalizeHooks();
     }
     
-    public function loadComponent(\Cx\Core\Component\Controller\Cx $cx, $componentName, \Cx\Core\ContentManager\Model\Entity\Page $page = null) {
+    public function loadComponent(\Cx\Core\Core\Controller\Cx $cx, $componentName, \Cx\Core\ContentManager\Model\Entity\Page $page = null) {
         if ($this->checkLegacy('load', $componentName)) {
             \DBG::msg('This is a legacy component (' . $componentName . '), load via LegacyComponentHandler');
             return;

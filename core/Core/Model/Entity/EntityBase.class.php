@@ -3,7 +3,7 @@
 /*
  * This is the base class for all entities!
  */
-namespace Cx\Core\Component\Model\Entity;
+namespace Cx\Core\Core\Model\Entity;
 /**
  * This is the base class for all entities!
  */

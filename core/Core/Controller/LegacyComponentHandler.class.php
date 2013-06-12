@@ -5,7 +5,7 @@
  * @todo: empty trash
  */
 
-namespace Cx\Core\Component\Controller;
+namespace Cx\Core\Core\Controller;
 
 /**
  * This handles exceptions for new Component structure. This is old code
