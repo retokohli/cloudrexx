@@ -5,8 +5,8 @@ require_once dirname(dirname(dirname(__FILE__))).'/init.php';
 $cx = init('minimal');
 
 // Init user
-if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new \cmsSession();
-$objUser = \FWUser::getFWUserObject()->objUser;
+if (empty($sessionObj)) $sessionObj = new \cmsSession();
+$objUser = $cx->getUser()->objUser;
 $objUser->login();
 
 // update license, return "false" if no connection to license server could be established
