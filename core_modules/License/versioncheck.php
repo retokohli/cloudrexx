@@ -1,55 +1,19 @@
 <?php
-/*ini_set('display_errors', 1);
-error_reporting(E_ALL);
-echo '<pre>';//*/
+global $sessionObj, $_CONFIG, $_CORELANG, $_PATHCONFIG, $license;
 
-global $_CONFIG, $_FTPCONFIG, $_DBCONFIG, $sessionObj, $objInit, $objDatabase, $documentRoot;
-
-// when included in installer, this is set
-if (!isset($documentRoot)) {
-    $documentRoot = dirname(dirname(dirname(__FILE__)));
+// Check php version (5.3 or newer is required)
+$php = phpversion();
+if (version_compare($php, '5.3.0') < 0) {
+    die('Das Contrexx CMS ben&ouml;tigt mindestens PHP in der Version 5.3.<br />Auf Ihrem System l&auml;uft PHP '.$php);
 }
 
-// load requirements
-if (!class_exists("DBG")) {
-    require_once($documentRoot.'/lib/FRAMEWORK/DBG/DBG.php');
-}
-//DBG::activate(DBG_ERROR_FIREPHP);
-require_once($documentRoot.'/config/configuration.php');         // needed for API
-require_once($documentRoot.'/config/settings.php');
-require_once($documentRoot.'/config/set_constants.php');
-require_once($documentRoot.'/core/validator.inc.php');
+include_once dirname(dirname(dirname(__FILE__))).'/config/configuration.php';
 
-$customizing = null;
-if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
-// TODO: webinstaller check: has ASCMS_CUSTOMIZING_PATH already been defined in the installation process?
-    $customizing = ASCMS_CUSTOMIZING_PATH;
-}
+require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/lib/FRAMEWORK/DBG/DBG.php';
+//\DBG::activate(DBG_PHP);//*/
 
-require_once($documentRoot.'/core/ClassLoader/ClassLoader.class.php');
-$cl = new \Cx\Core\ClassLoader\ClassLoader($documentRoot, true, $customizing);
-
-Env::set('ClassLoader', $cl);
-Env::set('config', $_CONFIG);
-Env::set('ftpConfig', $_FTPCONFIG);
-
-// core/API.php is not available in tmp/legacyClassClache.tmp, therefore we have to load it manually
-// if the class_exists check is not here, the update will fail because the api.php file loads the validator script
-if (!class_exists('HTML_Template_Sigma', false)) {
-    $cl->loadFile($documentRoot.'/core/API.php'); // needed for getDatabaseObject()
-}
-
-$db = new \Cx\Core\Db\Db();
-$objDatabase = $db->getAdoDb();
-\Env::set('db', $objDatabase);
-$objInit = new InitCMS('backend', null);
-
-$objInit->_initBackendLanguage();
-$_LANGID = $objInit->getBackendLangId();
-define('LANG_ID', $_LANGID);
-
-// load interface texts, might be used by the license system in case of communication errors
-$_CORELANG = $objInit->loadLanguageData('core');
+require_once($_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/core/Cx.class.php');
+$cx = init('minimal');
 
 // Init user
 if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new \cmsSession();
@@ -57,7 +21,7 @@ $objUser = \FWUser::getFWUserObject()->objUser;
 $objUser->login();
 
 // update license, return "false" if no connection to license server could be established
-$license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $objDatabase);
+$license = $cx->getLicense();
 $licenseCommunicator = \Cx\Core_Modules\License\LicenseCommunicator::getInstance($_CONFIG);
 try {
     $licenseCommunicator->update(
