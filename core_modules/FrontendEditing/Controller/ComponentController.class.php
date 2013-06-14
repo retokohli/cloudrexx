@@ -78,9 +78,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $componentTemplate->setErrorHandling(PEAR_ERROR_DIE);
 
         // add div around content
-        $componentTemplate->loadTemplateFile('ContentDiv.html');
-        $componentTemplate->setVariable('CONTENT', $page->getContent());
-        $page->setContent($componentTemplate->get());
+        // not used at the moment, because we have no proper way to "not parse" blocks in content and
+        // it should only print a div around the content without parsing the content at this time
+//        $componentTemplate->loadTemplateFile('ContentDiv.html');
+//        $componentTemplate->setVariable('CONTENT', $page->getContent());
+//        $page->setContent($componentTemplate->get());
+        $page->setContent('<div id="fe_content">' . $page->getContent() . '</div>');
 
         // add div around the title
         $componentTemplate->loadTemplateFile('TitleDiv.html');
