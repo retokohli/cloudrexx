@@ -5,6 +5,8 @@
  */
 namespace Cx\Core\Core\Model\Entity;
 
+class SystemComponentException extends \Exception {}
+
 /**
  * Cx\Core\Core\Model\Entity\SystemComponent
  */
@@ -77,5 +79,44 @@ class SystemComponent
     public function getType()
     {
         return $this->type;
+    }
+    
+    /**
+     * Returns the absolute path to this component's location in the file system
+     * @param boolean $allowCustomizing (optional) Set to false if you want to ignore customizings
+     * @return string Path for this component
+     */
+    public function getDirectory($allowCustomizing = true) {
+        $basepath = ASCMS_DOCUMENT_ROOT.$this->getPathForType($this->getType());
+        $componentPath = $basepath . '/' . $this->getName();
+        if (!$allowCustomizing) {
+            return $componentPath;
+        }
+        return \Env::get('ClassLoader')->getFilePath($componentPath);
+    }
+    
+    /**
+     * Returns the type folder (relative to document root)
+     * @return string Component type folder relative to document root
+     * @throws CommandException 
+     */
+    protected function getPathForType() {
+        switch ($this->getType()) {
+            case self::TYPE_CORE:
+                return ASCMS_CORE_FOLDER;
+                break;
+            case self::TYPE_CORE_MODULE:
+                return ASCMS_CORE_MODULE_FOLDER;
+                break;
+            case self::TYPE_MODULE:
+                return ASCMS_MODULE_FOLDER;
+                break;
+            case 'lib':
+                return ASCMS_LIBRARY_FOLDER;
+                break;
+            default:
+                throw new SystemComponentException('No such component type "' . $this->getType() . '"');
+                break;
+        }
     }
 }

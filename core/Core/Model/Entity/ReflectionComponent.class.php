@@ -45,20 +45,6 @@ class ReflectionComponent {
     }
     
     /**
-     * Returns the absolute path to this component's location in the file system
-     * @param boolean $allowCustomizing (optional) Set to false if you want to ignore customizings
-     * @return string Path for this component
-     */
-    public function getDirectory($allowCustomizing = true) {
-        $basepath = ASCMS_DOCUMENT_ROOT.$this->getPathForType($this->componentType);
-        $componentPath = $basepath . '/' . $this->componentName;
-        if (!$allowCustomizing) {
-            return $componentPath;
-        }
-        return \Env::get('ClassLoader')->getFilePath($componentPath);
-    }
-    
-    /**
      * Returns wheter this component exists or not
      * @param boolean $allowCustomizing (optional) Set to false if you want to ignore customizings
      * @return boolean True if it exists, false otherwise
@@ -104,27 +90,4 @@ class ReflectionComponent {
     /* PROTECTED UTIL METHODS */
     /**************************/
     
-    /**
-     * Returns the type folder (relative to document root)
-     * @return string Component type folder relative to document root
-     * @throws CommandException 
-     */
-    protected function getPathForType() {
-        switch ($this->componentType) {
-            case 'core':
-                return ASCMS_CORE_FOLDER;
-                break;
-            case 'core_module':
-                return ASCMS_CORE_MODULE_FOLDER;
-                break;
-            case 'module':
-                return ASCMS_MODULE_FOLDER;
-                break;
-            case 'lib':
-                return ASCMS_LIBRARY_FOLDER;
-            default:
-                throw new CommandException('No such component type "' . $this->componentType . '"');
-                break;
-        }
-    }
 }
