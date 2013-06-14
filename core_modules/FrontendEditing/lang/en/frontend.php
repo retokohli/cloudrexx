@@ -1,5 +1,11 @@
 <?php
-
+/**
+ * English language variables for frontend editing
+ * @copyright   CONTREXX CMS - Comvation AG Thun
+ * @author      Ueli Kramer <ueli.kramer@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_module_frontendediting
+ */
 $_ARRAYLANG['TXT_FRONTEND_EDITING_SHOW_TOOLBAR'] = 'Show toolbar';
 $_ARRAYLANG['TXT_FRONTEND_EDITING_HIDE_TOOLBAR'] = 'Hide toolbar';
 $_ARRAYLANG['TXT_FRONTEND_EDITING_PUBLISH'] = 'Publish';

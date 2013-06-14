@@ -15,7 +15,7 @@ CKEDITOR.disableAutoInline = true;
 /**
  * Init the frontend editing when DOM is loaded and ready
  */
-cx.ready(function () {
+cx.ready(function() {
     cx.fe();
 });
 
@@ -24,7 +24,7 @@ cx.ready(function () {
  * Do some configurations and start the editor
  * Open the toolbar if it was active already
  */
-cx.fe = function () {
+cx.fe = function() {
     /**
      * Lang vars which are used for the template
      * write language variables from php to javascript variable
@@ -68,13 +68,13 @@ cx.fe = function () {
  * Init the ckeditor for the content and title element
  * this line is necessary for the start and end method of contentEditor
  */
-cx.fe.contentEditor = function () {
+cx.fe.contentEditor = function() {
 };
 
 /**
  * Start content editor
  */
-cx.fe.contentEditor.start = function () {
+cx.fe.contentEditor.start = function() {
     // set a flag to true
     cx.fe.editMode = true;
 
@@ -104,7 +104,7 @@ cx.fe.contentEditor.start = function () {
             entities_latin: false,
             entities_greek: false,
             on: {
-                instanceReady: function (ev) {
+                instanceReady: function(ev) {
                     cx.fe.publishedPage.title = CKEDITOR.instances.fe_title.getData()
                 }
             }
@@ -116,7 +116,7 @@ cx.fe.contentEditor.start = function () {
             toolbar: "FrontendEditingContent",
             extraPlugins: extraPlugins.join(","),
             on: {
-                instanceReady: function (ev) {
+                instanceReady: function(ev) {
                     cx.fe.publishedPage.content = CKEDITOR.instances.fe_content.getData()
                 }
             }
@@ -130,7 +130,7 @@ cx.fe.contentEditor.start = function () {
 /**
  * stop the edit mode
  */
-cx.fe.contentEditor.stop = function () {
+cx.fe.contentEditor.stop = function() {
     // set flag to false
     cx.fe.editMode = false;
 
@@ -164,7 +164,7 @@ cx.fe.contentEditor.stop = function () {
     cx.jQuery("#fe_toolbar_publishPage").hide();
 };
 
-cx.fe.pageHasBeenModified = function () {
+cx.fe.pageHasBeenModified = function() {
     return CKEDITOR.instances.fe_title.getData() != cx.fe.publishedPage.title ||
         CKEDITOR.instances.fe_content.getData() != cx.fe.publishedPage.content ||
         cx.jQuery("#fe_options .fe_box select[name=\"page[skin]\"]").val() != cx.fe.page.skin ||
@@ -176,7 +176,7 @@ cx.fe.pageHasBeenModified = function () {
  * Ask to save as draft if the content or the options has been edited
  * @returns {*}
  */
-cx.fe.confirmSaveAsDraft = function () {
+cx.fe.confirmSaveAsDraft = function() {
     return confirm(cx.fe.langVars.TXT_FRONTEND_EDITING_SAVE_CURRENT_STATE);
 };
 
@@ -185,7 +185,7 @@ cx.fe.confirmSaveAsDraft = function () {
  * Show the toolbar if the cookie for the toolbar is set what means that it was opened
  * in the last session
  */
-cx.fe.toolbar = function () {
+cx.fe.toolbar = function() {
     // is toolbar already opened from last session
     cx.fe.toolbar_opened = cx.jQuery.cookie("fe_toolbar") == "true";
 
@@ -197,7 +197,7 @@ cx.fe.toolbar = function () {
     }
 
     // add click handler for toolbar tab
-    cx.jQuery("#fe_toolbar_tab").click(function () {
+    cx.jQuery("#fe_toolbar_tab").click(function() {
         if (cx.fe.toolbar_opened) {
             cx.fe.toolbar.hide();
         } else {
@@ -206,7 +206,7 @@ cx.fe.toolbar = function () {
     });
 
     // start / stop edit mode button
-    cx.jQuery("#fe_toolbar_startEditMode").html(cx.fe.langVars.TXT_FRONTEND_EDITING_EDIT).click(function () {
+    cx.jQuery("#fe_toolbar_startEditMode").html(cx.fe.langVars.TXT_FRONTEND_EDITING_EDIT).click(function() {
         if (cx.fe.editMode) {
             // if the edit mode was active, stop the editor
             cx.jQuery(this).html(cx.fe.langVars.TXT_FRONTEND_EDITING_EDIT);
@@ -216,7 +216,7 @@ cx.fe.toolbar = function () {
             cx.jQuery(this).html(cx.fe.langVars.TXT_FRONTEND_EDITING_STOP_EDIT);
 
             // load newest version, draft or published and refresh the editor's content
-            cx.fe.loadPageData(null, true, function () {
+            cx.fe.loadPageData(null, true, function() {
                 cx.fe.history();
                 cx.fe.options();
 
@@ -237,7 +237,7 @@ cx.fe.toolbar = function () {
     });
 
     // init publish button and hide it
-    cx.jQuery("#fe_toolbar_publishPage").html(cx.fe.langVars.TXT_FRONTEND_EDITING_PUBLISH).click(function () {
+    cx.jQuery("#fe_toolbar_publishPage").html(cx.fe.langVars.TXT_FRONTEND_EDITING_PUBLISH).click(function() {
         if (!cx.fe.editMode) {
             return false;
         }
@@ -252,7 +252,7 @@ cx.fe.toolbar = function () {
 /**
  * Hide the toolbar
  */
-cx.fe.toolbar.hide = function () {
+cx.fe.toolbar.hide = function() {
     // hide anchor boxes
     cx.fe.toolbar.hideBoxes();
 
@@ -271,7 +271,7 @@ cx.fe.toolbar.hide = function () {
 /**
  * Show the toolbar
  */
-cx.fe.toolbar.show = function () {
+cx.fe.toolbar.show = function() {
     // do the css
     cx.jQuery("body").css("padding-top", cx.jQuery("#fe_toolbar").height() + "px");
     cx.jQuery("#fe_toolbar").css({
@@ -290,9 +290,9 @@ cx.fe.toolbar.show = function () {
 /**
  * Init the administration menu
  */
-cx.fe.adminmenu = function () {
-    cx.jQuery("#fe_adminmenu .fe_box").find("a").each(function (index, el) {
-        cx.jQuery(el).click(function () {
+cx.fe.adminmenu = function() {
+    cx.jQuery("#fe_adminmenu .fe_box").find("a").each(function(index, el) {
+        cx.jQuery(el).click(function() {
             // ajax to backend link, show in cx.ui.dialog
             cx.ui.dialog({
                 title: cx.jQuery(this).text(),
@@ -304,18 +304,18 @@ cx.fe.adminmenu = function () {
         });
     });
 
-    cx.jQuery("#fe_adminmenu").click(function () {
+    cx.jQuery("#fe_adminmenu").click(function() {
         if (cx.jQuery("#fe_adminmenu .fe_box").css("display") == "none") {
             cx.fe.toolbar.hideBoxes();
             cx.fe.adminmenu.show();
         }
         return false;
     }).hover(
-        function () {
+        function() {
             clearTimeout(cx.fe.adminmenu.displayTimeout);
         },
-        function () {
-            cx.fe.adminmenu.displayTimeout = setTimeout(function () {
+        function() {
+            cx.fe.adminmenu.displayTimeout = setTimeout(function() {
                 cx.fe.adminmenu.hide();
             }, 2000);
         }
@@ -325,21 +325,21 @@ cx.fe.adminmenu = function () {
 /**
  * Show admin menu box
  */
-cx.fe.adminmenu.show = function () {
+cx.fe.adminmenu.show = function() {
     cx.jQuery("#fe_adminmenu .fe_toggle").show();
 };
 
 /**
  * Hide admin menu box
  */
-cx.fe.adminmenu.hide = function () {
+cx.fe.adminmenu.hide = function() {
     cx.jQuery("#fe_adminmenu .fe_toggle").hide();
 };
 
 /**
  * hide history and options anchors
  */
-cx.fe.toolbar.hideAnchors = function () {
+cx.fe.toolbar.hideAnchors = function() {
     cx.jQuery("#fe_metanavigation .fe_anchor.fe_toggle").hide();
     cx.fe.toolbar.hideBoxes();
 };
@@ -347,7 +347,7 @@ cx.fe.toolbar.hideAnchors = function () {
 /**
  * hide boxes of anchors
  */
-cx.fe.toolbar.hideBoxes = function () {
+cx.fe.toolbar.hideBoxes = function() {
     cx.jQuery("#fe_metanavigation .fe_anchor .fe_toggle").hide();
 };
 
@@ -356,7 +356,7 @@ cx.fe.toolbar.hideBoxes = function () {
  * @param history
  * @param options
  */
-cx.fe.toolbar.showAnchors = function (history, options) {
+cx.fe.toolbar.showAnchors = function(history, options) {
     if (history) {
         cx.jQuery("#fe_history").show();
     }
@@ -370,7 +370,7 @@ cx.fe.toolbar.showAnchors = function (history, options) {
  *
  * replace true and false statements to "on" and "off"
  */
-cx.fe.preparePageToSend = function () {
+cx.fe.preparePageToSend = function() {
     // load data from options box and write to page object
     cx.fe.page.title = CKEDITOR.instances.fe_title.getData();
     cx.fe.page.content = CKEDITOR.instances.fe_content.getData();
@@ -394,39 +394,56 @@ cx.fe.preparePageToSend = function () {
  * @param putTheData
  * @param callback
  */
-cx.fe.loadPageData = function (historyId, putTheData, callback) {
+cx.fe.loadPageData = function(historyId, putTheData, callback) {
     var url = cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=jsondata&object=page&act=get&page=" + cx.variables.get("pageId", "FrontendEditing") + "&lang=" + cx.jQuery.cookie("langId") + "&userFrontendLangId=" + cx.jQuery.cookie("langId");
     if (historyId) {
         url += "&history=" + historyId;
     }
     jQuery.ajax({
         url: url,
-        complete: function (response) {
+        complete: function(response) {
             // get the page json data response
             cx.fe.page = jQuery.parseJSON(response.responseText).data;
 
+            // check whether the page is a content page or a home page
+            // the application pages do not allow to update title and content
             if (putTheData && (cx.fe.page.type != "application" || cx.fe.page.module == "home")) {
                 // put the new data of page into the html and start editor if the user is in edit mode
                 cx.jQuery("#fe_title").html(cx.fe.page.title);
                 cx.jQuery("#fe_content").html(cx.fe.page.content);
+                // when the editor is in the edit mode, restart the content editor
                 if (cx.fe.editMode) {
                     cx.fe.contentEditor.start();
                 }
             }
 
-            cx.fe.history.loadedVersion = (historyId ? historyId : (cx.fe.pageIsADraft() ? cx.fe.page.historyId - 1 : cx.fe.page.historyId));
+            // a specific history is requested
+            if (historyId) {
+                cx.fe.history.loadedVersion = historyId;
+            } else {
+                // no specific history requested
+                // check if the current page is a draft
+                // if it is a draft, load the previous history
+                if (cx.fe.pageIsADraft()) {
+                    cx.fe.history.loadedVersion = cx.fe.page.historyId - 1;
+                } else {
+                    // load the current history
+                    cx.fe.history.loadedVersion = cx.fe.page.historyId;
+                }
+            }
+
+            // update the history highlighting in history box
             cx.fe.history.updateHighlighting();
 
             // if it is a draft tell the user that he is editing a draft
             if (cx.fe.pageIsADraft() &&
                 cx.fe.editMode &&
                 (
-                    (historyId && historyId == cx.fe.page.historyId - 1) ||
-                    !historyId
-                )
-            ) {
+                    (historyId && historyId == cx.fe.page.historyId - 1) || !historyId
+                    )
+                ) {
                 if (cx.fe.dialogTimeout > 0) {
-                    setTimeout(function () {
+                    setTimeout(function() {
                         cx.jQuery("<div class=\"warning\">" + cx.fe.langVars.TXT_FRONTEND_EDITING_THE_DRAFT + "</div>").cxNotice();
                         clearTimeout(cx.fe.dialogTimeout);
                     }, 5000);
@@ -436,9 +453,12 @@ cx.fe.loadPageData = function (historyId, putTheData, callback) {
             } else {
                 cx.jQuery.fn.cxDestroyDialogs();
             }
+            // call the callback function after loading the content from db
             if (callback) {
                 callback();
             }
+
+            // reload the boxes
             cx.fe.history.load();
             cx.fe.options.load();
         }
@@ -449,9 +469,10 @@ cx.fe.loadPageData = function (historyId, putTheData, callback) {
  * Returns true when the page is a draft, false if not
  * @returns {boolean}
  */
-cx.fe.pageIsADraft = function () {
+cx.fe.pageIsADraft = function() {
     if (cx.fe.page.editingStatus == "hasDraft" ||
-        cx.fe.page.editingStatus == "hasDraftWaiting") {
+        cx.fe.page.editingStatus == "hasDraftWaiting"
+        ) {
         return true;
     }
     return false;
@@ -460,84 +481,95 @@ cx.fe.pageIsADraft = function () {
 /**
  * Does a request to publish the new contents
  */
-cx.fe.publishPage = function () {
+cx.fe.publishPage = function() {
     cx.fe.preparePageToSend();
 
-    jQuery.post(cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=jsondata&object=page&act=set", {
-        "action": "publish",
-        "page": cx.fe.page
-    }, function (response) {
-        var className = "";
-        if (response.status != "success") {
-            className = " class=\"error\"";
-        }
-        cx.jQuery("<div" + className + ">" + response.message + "</div>").cxNotice();
-        cx.jQuery.fn.cxDestroyDialogs(5000);
+    jQuery.post(
+        cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=jsondata&object=page&act=set",
+        {
+            action: "publish",
+            page: cx.fe.page
+        },
+        function(response) {
+            var className = "success";
+            if (response.status != "success") {
+                className = "error";
+            }
+            cx.jQuery("<div class=\"" + className + "\">" + response.message + "</div>").cxNotice();
+            cx.jQuery.fn.cxDestroyDialogs(5000);
 
-        cx.fe.publishedPage = {
-            title: CKEDITOR.instances.fe_title.getData(),
-            content: CKEDITOR.instances.fe_content.getData()
-        };
-        // load new page data, but don"t reload and don"t put data into content
-        cx.fe.loadPageData(null, false);
-    });
+            cx.fe.publishedPage = {
+                title: CKEDITOR.instances.fe_title.getData(),
+                content: CKEDITOR.instances.fe_content.getData()
+            };
+            // load new page data, but don't reload and don't put data into content
+            cx.fe.loadPageData(null, false);
+        }
+    );
 };
 
 /**
  * Save a page
  * Does a request to the page jsonadapter to put the new values into the database
  */
-cx.fe.savePage = function () {
+cx.fe.savePage = function() {
     cx.fe.preparePageToSend();
 
-    jQuery.post(cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=jsondata&object=page&act=set", {
-        "page": cx.fe.page
-    }, function (response) {
-        if (response.data != null) {
-            var className = "";
-            if (response.status != "success") {
-                className = " class=\"error\"";
+    jQuery.post(
+        cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=jsondata&object=page&act=set",
+        {
+            page: cx.fe.page
+        },
+        function(response) {
+            if (response.data != null) {
+                var className = "success";
+                if (response.status != "success") {
+                    className = "error";
+                }
+                cx.jQuery("<div class=\"" + className + "\">" + response.message + "</div>").cxNotice();
+                cx.jQuery.fn.cxDestroyDialogs(5000);
             }
-            cx.jQuery("<div" + className + ">" + response.message + "</div>").cxNotice();
-            cx.jQuery.fn.cxDestroyDialogs(5000);
+            // load new page data, but don't reload and don't put data into content
+            cx.fe.loadPageData(null, false);
         }
-        // load new page data, but don"t reload and don"t put data into content
-        cx.fe.loadPageData(null, false);
-    });
+    );
 };
 
 /**
- * Init the history. show the box when clicking on label.
+ * Init the history. Show the box when clicking on label.
  * Hide the history box after 2 seconds
  */
-cx.fe.history = function () {
-    cx.jQuery("#fe_history").click(function () {
+cx.fe.history = function() {
+    cx.jQuery("#fe_history").click(function() {
         if (cx.jQuery("#fe_history .fe_box").css("display") != "none") {
             return false;
         }
         cx.fe.toolbar.hideBoxes();
         cx.fe.history.show();
         cx.fe.history.load();
-    }).hover(function () {
+    }).hover(
+        function() {
             clearTimeout(cx.fe.history.displayTimeout);
-        }, function () {
-            cx.fe.history.displayTimeout = setTimeout(function () {
+        },
+        function() {
+            cx.fe.history.displayTimeout = setTimeout(function() {
                 cx.fe.history.hide();
             }, 2000);
-        });
+        }
+    );
 };
 
 /**
  * show history anchor
  */
-cx.fe.history.show = function () {
+cx.fe.history.show = function() {
     cx.jQuery("#fe_history .fe_toggle").show();
 };
 
 /**
  * hide the history anchor
  */
-cx.fe.history.hide = function () {
+cx.fe.history.hide = function() {
     cx.jQuery("#fe_history .fe_toggle").hide();
 };
 
@@ -545,34 +577,37 @@ cx.fe.history.hide = function () {
  * Load history and put the history into the correct container
  * @param pos
  */
-cx.fe.history.load = function (pos) {
+cx.fe.history.load = function(pos) {
     if (!pos) {
         pos = 0;
     }
 
     jQuery("#fe_history .fe_box").html("<div class=\"historyInit\"><img src=\"" + cx.variables.get("basePath", "contrexx") + "/lib/javascript/jquery/jstree/themes/default/throbber.gif\" alt=\"Loading...\" /></div>");
-    jQuery("#fe_history .fe_box").load(cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=jsondata&object=page&act=getHistoryTable&page=" + cx.fe.page.id + "&pos=" + pos + "&limit=10", function () {
-        jQuery("#history_paging").find("a").each(function (index, el) {
-            el = jQuery(el);
-            var pos;
-            if (el.attr("class") == "pagingFirst") {
-                pos = 0;
-            } else {
-                pos = el.attr("href").match(/pos=(\d*)/)[1];
-            }
-            el.data("pos", pos);
-        }).attr("href", "#").click(function () {
-                cx.fe.history.load(cx.jQuery(this).data("pos"));
-            });
-        cx.fe.history.updateHighlighting();
-    });
+    jQuery("#fe_history .fe_box").load(
+        cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=jsondata&object=page&act=getHistoryTable&page=" + cx.fe.page.id + "&pos=" + pos + "&limit=10",
+        function() {
+            jQuery("#history_paging").find("a").each(function(index, el) {
+                el = jQuery(el);
+                var pos;
+                if (el.attr("class") == "pagingFirst") {
+                    pos = 0;
+                } else {
+                    pos = el.attr("href").match(/pos=(\d*)/)[1];
+                }
+                el.data("pos", pos);
+            }).attr("href", "#").click(function() {
+                    cx.fe.history.load(cx.jQuery(this).data("pos"));
+                });
+            cx.fe.history.updateHighlighting();
+        }
+    );
 };
 
 /**
  * Remove functions for active history version
  */
-cx.fe.history.updateHighlighting = function () {
-    cx.jQuery(".historyLoad, .historyPreview").each(function () {
+cx.fe.history.updateHighlighting = function() {
+    cx.jQuery(".historyLoad, .historyPreview").each(function() {
         if (cx.jQuery(this).attr("id") == "load_" + cx.fe.history.loadedVersion ||
             cx.jQuery(this).attr("id") == "preview_" + cx.fe.history.loadedVersion) {
             cx.jQuery(this).css("display", "none");
@@ -586,29 +621,32 @@ cx.fe.history.updateHighlighting = function () {
  * Init the options. show the box when clicking on label.
  * Hide the options box after 2 seconds
  */
-cx.fe.options = function () {
+cx.fe.options = function() {
     // hide options
     cx.jQuery("#fe_options .fe_box select[name=\"page[skin]\"]").val(cx.fe.page.skin);
     cx.fe.options.reloadCustomContentTemplates();
     cx.jQuery("#fe_options .fe_box select[name=\"page[customContent]\"]").val(cx.fe.page.customContent);
     cx.jQuery("#fe_options .fe_box input[name=\"page[cssName]\"]").val(cx.fe.page.cssName);
 
-    cx.jQuery("#fe_options").click(function () {
+    cx.jQuery("#fe_options").click(function() {
         if (cx.jQuery("#fe_options .fe_box").css("display") == "none") {
             cx.fe.toolbar.hideBoxes();
             cx.fe.options.show();
             cx.fe.options.load();
         }
         return false;
-    }).hover(function () {
+    }).hover(
+        function() {
             clearTimeout(cx.fe.options.displayTimeout);
-        }, function () {
-            cx.fe.options.displayTimeout = setTimeout(function () {
+        },
+        function() {
+            cx.fe.options.displayTimeout = setTimeout(function() {
                 cx.fe.options.hide();
             }, 2000);
-        });
+        }
+    );
 
-    cx.jQuery("#fe_options .fe_box select[name=\"page[skin]\"]").bind("change", function () {
+    cx.jQuery("#fe_options .fe_box select[name=\"page[skin]\"]").bind("change", function() {
         cx.fe.options.reloadCustomContentTemplates();
     });
 };
@@ -616,9 +654,9 @@ cx.fe.options = function () {
 /**
  * reload the custom content templates
  */
-cx.fe.options.reloadCustomContentTemplates = function () {
+cx.fe.options.reloadCustomContentTemplates = function() {
     var skinId = cx.jQuery("#fe_options .fe_box select[name=\"page[skin]\"]").val();
-    var module = cx.jQuery("#fe_options .fe_box select[name=\"page[application]\"]").val();
+    var application = cx.jQuery("#fe_options .fe_box select[name=\"page[application]\"]").val();
     var select = cx.jQuery("#fe_options .fe_box select[name=\"page[customContent]\"]");
     select.empty();
     select.append(cx.jQuery("<option value=\"\" selected=\"selected\">(Default)</option>"));
@@ -635,7 +673,7 @@ cx.fe.options.reloadCustomContentTemplates = function () {
 
     for (var i = 0; i < templates[skinId].length; i++) {
         var isHome = /^home_/.exec(templates[skinId][i]);
-        if ((isHome && module == "home") || !isHome && module != "home") {
+        if ((isHome && application == "home") || !isHome && application != "home") {
             select.append(cx.jQuery("<option>", {
                 value: templates[skinId][i]
             }).text(templates[skinId][i]));
@@ -646,21 +684,21 @@ cx.fe.options.reloadCustomContentTemplates = function () {
 /**
  * show options anchor
  */
-cx.fe.options.show = function () {
+cx.fe.options.show = function() {
     cx.jQuery("#fe_options .fe_toggle").show();
 };
 
 /**
  * hide the options anchor
  */
-cx.fe.options.hide = function () {
+cx.fe.options.hide = function() {
     cx.jQuery("#fe_options .fe_toggle").hide();
 };
 
 /**
  * load the options into the options container
  */
-cx.fe.options.load = function () {
+cx.fe.options.load = function() {
     cx.fe.options.reloadCustomContentTemplates();
 };
 
@@ -668,14 +706,14 @@ cx.fe.options.load = function () {
  * function which is called when the user clicks on "load" in history box
  * @param version
  */
-loadHistoryVersion = function (version) {
+loadHistoryVersion = function(version) {
     cx.fe.loadPageData(version, true);
 };
 
 /**
  * Dialogs
  */
-(function ($) {
+(function($) {
     var defaultOpts = {
         draggable: false,
         resizable: false,
@@ -684,7 +722,7 @@ loadHistoryVersion = function (version) {
         dialogClass: "cxDialog noTitle"
     };
 
-    $.fn.cxNotice = function (options) {
+    $.fn.cxNotice = function(options) {
         $.fn.cxDestroyDialogs();
 
         var dialogOptions = {
@@ -697,9 +735,9 @@ loadHistoryVersion = function (version) {
         return this;
     };
 
-    $.fn.cxDestroyDialogs = function (delay) {
+    $.fn.cxDestroyDialogs = function(delay) {
         if (delay !== undefined && delay > 0) {
-            cx.fe.dialogTimeout = setTimeout(function () {
+            cx.fe.dialogTimeout = setTimeout(function() {
                 cx.jQuery(".cxDialog .ui-dialog-content").dialog("destroy");
                 clearTimeout(cx.fe.dialogTimeout);
             }, delay);
