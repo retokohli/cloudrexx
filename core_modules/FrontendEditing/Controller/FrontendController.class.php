@@ -26,7 +26,7 @@ namespace Cx\Core_Modules\FrontendEditing\Controller;
  * @subpackage  core_module_frontendediting
  * @version     1.0.0
  */
-class FrontendController
+class FrontendController extends \Cx\Core\Core\Model\Entity\Controller
 {
     /**
      * Init the frontend editing.
@@ -35,11 +35,15 @@ class FrontendController
      * Adds the used language variables to contrexx-js variables, so the toolbar has access to these variables
      *
      * @param ComponentController $componentController
-     * @param \Cx\Core\Core\Controller\Cx $cx
      */
-    public function initFrontendEditing(\Cx\Core_Modules\FrontendEditing\Controller\ComponentController $componentController, \Cx\Core\Core\Controller\Cx &$cx)
+    public function initFrontendEditing(\Cx\Core_Modules\FrontendEditing\Controller\ComponentController $componentController)
     {
-        global $objInit, $_ARRAYLANG, $page;
+        global $_ARRAYLANG;
+
+        // get necessary objects
+        $objInit = \Env::get('init');
+        $page = $this->cx->getPage();
+
         // add css and javascript file
         $jsFilesRoot = substr(ASCMS_CORE_MODULE_FOLDER . '/' . $componentController->getName() . '/View/Script', 1);
 
@@ -66,7 +70,7 @@ class FrontendController
         );
 
         // add toolbar to html
-        $this->prepareTemplate($componentController, $cx);
+        $this->prepareTemplate($componentController);
 
         // assign js variables
         $contrexxJavascript = \ContrexxJavascript::getInstance();
@@ -77,19 +81,24 @@ class FrontendController
         $contrexxJavascript->setVariable('defaultTemplate', $this->getDefaultTemplate(), 'FrontendEditing');
 
         $configPath = ASCMS_PATH_OFFSET . substr(\Env::get('ClassLoader')->getFilePath(ASCMS_CORE_PATH . '/Wysiwyg/ckeditor.config.js.php'), strlen(ASCMS_DOCUMENT_ROOT));
-        $contrexxJavascript->setVariable('configPath', $configPath . "?langId=" . FRONTEND_LANG_ID, 'FrontendEditing');
+        $contrexxJavascript->setVariable('configPath', $configPath . '?langId=' . FRONTEND_LANG_ID, 'FrontendEditing');
     }
 
     /**
      * Adds the toolbar to the current html structure (after the starting body tag)
      *
      * @param ComponentController $componentController
-     * @param \Cx\Core\Core\Controller\Cx $cx
      */
-    private function prepareTemplate(\Cx\Core_Modules\FrontendEditing\Controller\ComponentController $componentController, \Cx\Core\Core\Controller\Cx &$cx)
+    private function prepareTemplate(\Cx\Core_Modules\FrontendEditing\Controller\ComponentController $componentController)
     {
-        global $_ARRAYLANG, $license, $objInit, $objTemplate, $page, $_CORELANG;
+        global $_ARRAYLANG, $_CORELANG;
 
+        // get necessary objects
+        $objInit = \Env::get('init');
+        $license = $this->cx->getLicense();
+        $page = $this->cx->getPage();
+
+        // init component template object
         $componentTemplate = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/' . $componentController->getName() . '/View/Template');
         $componentTemplate->setErrorHandling(PEAR_ERROR_DIE);
 
@@ -101,6 +110,7 @@ class FrontendController
         ));
 
         // @author: Michael Ritter
+        global $objTemplate;
         $template = $objTemplate;
         $root = $componentTemplate->fileRoot;
         $componentTemplate->setRoot(ASCMS_ADMIN_TEMPLATE_PATH);
@@ -117,7 +127,7 @@ class FrontendController
         $objTemplate = $template;
         // end code from Michael Ritter
 
-        $objUser = $cx->getUser()->objUser;
+        $objUser = $this->cx->getUser()->objUser;
         $firstname = $objUser->getProfileAttribute('firstname');
         $lastname = $objUser->getProfileAttribute('lastname');
         $componentTemplate->setGlobalVariable(array(
@@ -168,14 +178,13 @@ class FrontendController
      */
     private function getThemes()
     {
-        global $objDatabase;
-        $query = 'SELECT id,themesname FROM ' . DBPREFIX . 'skins ORDER BY id';
-        $rs = $objDatabase->Execute($query);
+        $query = 'SELECT `id`, `themesname` FROM `' . DBPREFIX . 'skins` ORDER BY `id`';
+        $result = $this->cx->getDb()->getAdoDb()->Execute($query);
 
         $themes = array();
-        while (!$rs->EOF) {
-            $themes[$rs->fields['id']] = $rs->fields['themesname'];
-            $rs->MoveNext();
+        while (!$result->EOF) {
+            $themes[$result->fields['id']] = $result->fields['themesname'];
+            $result->MoveNext();
         }
 
         return $themes;
@@ -188,8 +197,8 @@ class FrontendController
      */
     private function getCustomContentTemplates()
     {
-        global $objInit;
         $templates = array();
+        $objInit = \Env::get('init');
         // foreach theme
         foreach ($this->getThemes() as $id => $name) {
             $templates[$id] = $objInit->getCustomContentTemplatesForTheme($id);
@@ -205,9 +214,7 @@ class FrontendController
      */
     private function getDefaultTemplate()
     {
-        global $objDatabase;
         $query = 'SELECT `id`, `lang`, `themesid` FROM `' . DBPREFIX . 'languages` WHERE `id` = ' . FRONTEND_LANG_ID;
-        $rs = $objDatabase->SelectLimit($query, 1);
-        return $rs->fields['themesid'];
+        return $this->cx->getDb()->getAdoDb()->SelectLimit($query, 1)->fields['themesid'];
     }
 }

@@ -30,14 +30,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      *
      * The frontend editing is deactivated for application pages except the home page
      *
-     * @param \Cx\Core\Core\Controller\Cx $cx
      * @return bool
      */
-    public function frontendEditingIsActive(\Cx\Core\Core\Controller\Cx $cx)
+    public function frontendEditingIsActive()
     {
         global $_CONFIG;
 
-        if ($cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND || !$cx->getPage()) {
+        if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND || !$this->cx->getPage()) {
             return false;
         }
 
@@ -46,13 +45,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         if ($_CONFIG['frontendEditingStatus'] != 'on') {
             return false;
         }
-        if ($cx->getUser()->objUser->getAdminStatus() ||
+        if ($this->cx->getUser()->objUser->getAdminStatus() ||
             (
                 \Permission::checkAccess(6, 'static', true) &&
                 \Permission::checkAccess(35, 'static', true) &&
                 (
-                    !$cx->getPage()->isBackendProtected() ||
-                    Permission::checkAccess($cx->getPage()->getId(), 'page_backend', true)
+                    !$this->cx->getPage()->isBackendProtected() ||
+                    Permission::checkAccess($this->cx->getPage()->getId(), 'page_backend', true)
                 )
             )
         ) {
@@ -64,13 +63,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Add the necessary divs for the inline editing around the content and around the title
      *
-     * @param \Cx\Core\Core\Controller\Cx $cx
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page
      */
-    public function preContentLoad(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page)
+    public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page)
     {
         // Is frontend editing active?
-        if (!$this->frontendEditingIsActive($cx)) {
+        if (!$this->frontendEditingIsActive()) {
             return;
         }
 
@@ -94,17 +92,16 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * When the frontend editing is active for this page init the frontend editing
      *
-     * @param \Cx\Core\Core\Controller\Cx $cx
      * @param \Cx\Core\Html\Sigma $template
      */
-    public function preFinalize(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\Html\Sigma $template)
+    public function preFinalize(\Cx\Core\Html\Sigma $template)
     {
         // Is frontend editing active?
-        if (!$this->frontendEditingIsActive($cx)) {
+        if (!$this->frontendEditingIsActive()) {
             return;
         }
 
-        $frontendEditing = new \Cx\Core_Modules\FrontendEditing\Controller\FrontendController();
-        $frontendEditing->initFrontendEditing($this, $cx);
+        $frontendEditing = new \Cx\Core_Modules\FrontendEditing\Controller\FrontendController($this, $this->cx);
+        $frontendEditing->initFrontendEditing($this);
     }
 }
