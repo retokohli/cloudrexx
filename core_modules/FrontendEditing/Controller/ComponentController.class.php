@@ -40,11 +40,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return false;
         }
 
-        // check permission and frontend editing status
-        // @todo: add check for mobile phone ( if it is a mobile phone, don't show the frontend editing )
-        if ($_CONFIG['frontendEditingStatus'] != 'on') {
+        // check frontend editing status in settings and don't show frontend editing on mobile phone
+        if ($_CONFIG['frontendEditingStatus'] != 'on' || \Cx\Core\InitCMS::_is_mobile_phone()) {
             return false;
         }
+
+        // check permission
+        // if the user don't have permission to edit pages, disable the frontend editing
         if ($this->cx->getUser()->objUser->getAdminStatus() ||
             (
                 \Permission::checkAccess(6, 'static', true) &&
