@@ -7,13 +7,9 @@
 namespace Cx\Core_Modules\Workbench\Controller;
 
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
-    
+
     /**
-     *
-     * @param type $objTemplate
-     * @param type $post
-     * @return type
-     * @throws \Exception 
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page
      * @todo YAML assistant
      * @todo Cx/Module sandbox
      * @todo Language var checker (/translation helper)
@@ -79,9 +75,15 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $objTemplate->setVariable('CONTENT_NAVIGATION', $navigation->get());
     }
 
+    /**
+     * Add the warning banner
+     *
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page
+     */
     public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        $objTemplate = $this->cx->getTemplate();
         $warning = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/Workbench/View/Template');
         $warning->loadTemplateFile('Warning.html');
-        $page->setContent($warning->get() . $page->getContent());
+        $objTemplate->_blocks['__global__'] = preg_replace('/<body[^>]*>/', '\\0' . $warning->get(), $objTemplate->_blocks['__global__']);
     }
 }
