@@ -40,8 +40,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             return false;
         }
 
+        $objInit = \Env::get('init');
+
         // check frontend editing status in settings and don't show frontend editing on mobile phone
-        if ($_CONFIG['frontendEditingStatus'] != 'on' || \Cx\Core\InitCMS::_is_mobile_phone()) {
+        if ($_CONFIG['frontendEditingStatus'] != 'on' || $objInit::_is_mobile_phone()) {
             return false;
         }
 

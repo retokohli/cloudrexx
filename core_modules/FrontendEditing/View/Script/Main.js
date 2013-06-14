@@ -104,8 +104,13 @@ cx.fe.contentEditor.start = function() {
             entities_latin: false,
             entities_greek: false,
             on: {
-                instanceReady: function(ev) {
+                instanceReady: function() {
                     cx.fe.publishedPage.title = CKEDITOR.instances.fe_title.getData()
+                },
+                onblur: function() {
+                    if (cx.fe.pageHasBeenModified()) {
+                        cx.fe.savePage();
+                    }
                 }
             }
         });
@@ -116,8 +121,13 @@ cx.fe.contentEditor.start = function() {
             toolbar: "FrontendEditingContent",
             extraPlugins: extraPlugins.join(","),
             on: {
-                instanceReady: function(ev) {
+                instanceReady: function() {
                     cx.fe.publishedPage.content = CKEDITOR.instances.fe_content.getData()
+                },
+                onblur: function () {
+                    if (cx.fe.pageHasBeenModified()) {
+                        cx.fe.savePage();
+                    }
                 }
             }
         });
