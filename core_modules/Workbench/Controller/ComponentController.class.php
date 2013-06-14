@@ -19,8 +19,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @todo Language var checker (/translation helper)
      * @todo Component analysis (/testing)
      */
-    public function load(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {
-        $objTemplate = $cx->getTemplate();
+    public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        $objTemplate = $this->cx->getTemplate();
         $_ARRAYLANG = \Env::get('init')->loadLanguageData($this->getName());
         
         // Initialize
@@ -79,27 +79,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $objTemplate->setVariable('CONTENT_NAVIGATION', $navigation->get());
     }
 
-    public function preResolve(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\Routing\Url $request) {}
-
-    public function postResolve(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {}
-
-    public function preContentLoad(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {}
-
-    public function preContentParse(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {}
-
-    public function postContentParse(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {}
-
-    public function postContentLoad(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {
+    public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         $warning = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/Workbench/View/Template');
         $warning->loadTemplateFile('Warning.html');
         $page->setContent($warning->get() . $page->getContent());
-    }
-
-    public function preFinalize(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\Html\Sigma $template) {}
-
-    public function postFinalize(\Cx\Core\Core\Controller\Cx $cx) {}
-
-    public function getControllersAccessableByJson() {
-        return array();
     }
 }

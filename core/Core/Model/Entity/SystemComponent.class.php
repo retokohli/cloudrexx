@@ -100,8 +100,8 @@ class SystemComponent
      * @return string Component type folder relative to document root
      * @throws CommandException 
      */
-    protected function getPathForType() {
-        switch ($this->getType()) {
+    public static function getPathForType($type) {
+        switch ($type) {
             case self::TYPE_CORE:
                 return ASCMS_CORE_FOLDER;
                 break;
@@ -115,7 +115,30 @@ class SystemComponent
                 return ASCMS_LIBRARY_FOLDER;
                 break;
             default:
-                throw new SystemComponentException('No such component type "' . $this->getType() . '"');
+                throw new SystemComponentException('No such component type "' . $type . '"');
+                break;
+        }
+    }
+    
+    /**
+     * Returns the namespace for a component type
+     * @param string $type Component type
+     * @return string Namespace
+     * @throws CommandException 
+     */
+    public static function getBaseNamespaceForType($type) {
+        switch ($type) {
+            case 'core':
+                return 'Cx\\Core';
+                break;
+            case 'core_module':
+                return 'Cx\\Core_Modules';
+                break;
+            case 'module':
+                return 'Cx\\Modules';
+                break;
+            default:
+                throw new SystemComponentException('No such component type "' . $type . '"');
                 break;
         }
     }

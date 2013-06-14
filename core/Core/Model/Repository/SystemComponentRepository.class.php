@@ -77,7 +77,7 @@ class SystemComponentRepository extends EntityRepository
             return $this->loadedComponents[$component->getId()];
         }        
         $componentControllerClass = $this->getComponentControllerClassFor($component);
-        $componentController = new $componentControllerClass($component);
+        $componentController = new $componentControllerClass($component, $this->cx);
         $this->loadedComponents[$component->getId()] = $componentController;
         return $componentController;
     }
@@ -108,57 +108,57 @@ class SystemComponentRepository extends EntityRepository
     
     public function callPreResolveHooks() {
         foreach ($this->findAll() as $component) {
-            $component->preResolve($this->cx, $this->cx->getRequest());
+            $component->preResolve($this->cx->getRequest());
         }
     }
     
     public function callPostResolveHooks() {
         foreach ($this->findAll() as $component) {
-            $component->postResolve($this->cx, $this->cx->getPage());
+            $component->postResolve($this->cx->getPage());
         }
     }
     
     public function callPreContentLoadHooks() {
         foreach ($this->findAll() as $component) {
-            $component->preContentLoad($this->cx, $this->cx->getPage());
+            $component->preContentLoad($this->cx->getPage());
         }
     }
     
     // NEW
     public function callPreContentParseHooks() {
         foreach ($this->findAll() as $component) {
-            $component->preContentParse($this->cx, $this->cx->getPage());
+            $component->preContentParse($this->cx->getPage());
         }
     }
     
     public function loadComponent($componentName) {
-        $this->findOneBy(array('name'=>$componentName))->load($this->cx, $this->cx->getPage());
+        $this->findOneBy(array('name'=>$componentName))->load($this->cx->getPage());
     }
     
     // NEW
     public function callPostContentParseHooks() {
         foreach ($this->findAll() as $component) {
-            $component->postContentParse($this->cx, $this->cx->getPage());
+            $component->postContentParse($this->cx->getPage());
         }
     }
     
     public function callPostContentLoadHooks() {
         foreach ($this->findAll() as $component) {
-            $component->postContentLoad($this->cx, $this->cx->getPage());
+            $component->postContentLoad($this->cx->getPage());
         }
     }
     
     // NEW
     public function callPreFinalizeHooks() {
         foreach ($this->findAll() as $component) {
-            $component->preFinalize($this->cx, $this->cx->getTemplate());
+            $component->preFinalize($this->cx->getTemplate());
         }
     }
     
     // NEW
     public function callPostFinalizeHooks() {
         foreach ($this->findAll() as $component) {
-            $component->postFinalize($this->cx);
+            $component->postFinalize();
         }
     }
 }
