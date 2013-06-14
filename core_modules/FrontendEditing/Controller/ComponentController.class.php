@@ -26,15 +26,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 {
 
     /**
-     * Returns the name of this component
-     * @return String Component name
-     */
-    public function getName()
-    {
-        return 'FrontendEditing';
-    }
-
-    /**
      * Checks whether the frontend editing is active or not
      *
      * The frontend editing is deactivated for application pages except the home page
@@ -112,38 +103,5 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
         $frontendEditing = new \Cx\Core_Modules\FrontendEditing\Controller\FrontendController();
         $frontendEditing->initFrontendEditing($this, $cx);
-    }
-
-    public function load(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page)
-    {
-    }
-
-    public function postContentLoad(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page)
-    {
-    }
-
-    public function postContentParse(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page)
-    {
-    }
-
-    public function postFinalize(\Cx\Core\Core\Controller\Cx $cx)
-    {
-    }
-
-    public function postResolve(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page)
-    {
-    }
-
-    public function preContentParse(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page)
-    {
-    }
-
-    public function preResolve(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\Routing\Url $request)
-    {
-    }
-
-    public function getControllersAccessableByJson()
-    {
-        return array();
     }
 }
