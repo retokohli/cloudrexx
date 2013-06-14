@@ -12,16 +12,16 @@ namespace Cx\Core\Core\Model\Entity;
  */
 abstract class SystemComponentFrontendController extends Controller {
     
-    public function getPage(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {
+    public function getPage(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         // init component template
         $componentTemplate = new \Cx\Core\Html\Sigma('.');
         $componentTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $componentTemplate->setTemplate($page->getContent());
         
         // parse page
-        $this->parsePage($componentTemplate, $cx);
+        $this->parsePage($componentTemplate);
         $page->setContent($componentTemplate->get());
     }
     
-    public abstract function parsePage(\Cx\Core\Html\Sigma $template, \Cx\Core\Core\Controller\Cx $cx);
+    public abstract function parsePage(\Cx\Core\Html\Sigma $template);
 }

@@ -32,7 +32,7 @@ abstract class Controller {
     public function __construct(SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx) {
         $this->cx = $cx;
         $this->systemComponentController = $systemComponentController;
-        $this->systemComponentController->registerController();
+        $this->systemComponentController->registerController($this);
     }
     
     /**

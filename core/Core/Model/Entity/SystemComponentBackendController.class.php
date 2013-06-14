@@ -17,7 +17,7 @@ abstract class SystemComponentBackendController extends Controller {
      */
     public abstract function getCommands();
     
-    public function getPage(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {
+    public function getPage(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         global $_ARRAYLANG;
         
         $cmd = array('');
@@ -32,7 +32,7 @@ abstract class SystemComponentBackendController extends Controller {
         $failureMessage = '';
         
         // todo: $actTemplate->loadTemplateFile(), Messages
-        $this->parsePage($actTemplate, $cx, $cmd, $successMessage, $failureMessage);
+        $this->parsePage($actTemplate, $cmd, $successMessage, $failureMessage);
         
         // set tabs
         $navigation = new \Cx\Core\Html\Sigma(ASCMS_CORE_PATH . '/Component/View/Template');
@@ -55,7 +55,7 @@ abstract class SystemComponentBackendController extends Controller {
         }
         
         $page->setContent($actTemplate->get());
-        $cx->getTemplate()->setVariable(array(
+        $this->cx->getTemplate()->setVariable(array(
             'CONTENT_NAVIGATION' => $navigation->get(),
             'CONTENT_STATUS_MESSAGE' => $successMessage,
         ));
@@ -69,5 +69,5 @@ abstract class SystemComponentBackendController extends Controller {
      * @param \Cx\Core\Core\Controller\Cx $cx Contrexx main class
      * @param array $cmd CMD separated by slashes
      */
-    public abstract function parsePage(\Cx\Core\Html\Sigma $template, \Cx\Core\Core\Controller\Cx $cx, array $cmd, &$successMessage, &$failureMessage);
+    public abstract function parsePage(\Cx\Core\Html\Sigma $template, array $cmd, &$successMessage, &$failureMessage);
 }
