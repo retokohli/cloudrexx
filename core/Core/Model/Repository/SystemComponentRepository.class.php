@@ -42,8 +42,7 @@ class SystemComponentRepository extends EntityRepository
         }
         
         if (!is_array($components)) {
-            $reflComponent = new \Cx\Core\Core\Model\Entity\ReflectionComponent($components);
-            $yamlDir = $reflComponent->getDirectory().'/Model/Yaml';
+            $yamlDir = $component->getDirectory().'/Model/Yaml';
             $this->cx->getDb()->addSchemaFileDirectories(array($yamlDir));
             return $this->decorateEntity($components);
         }
@@ -53,8 +52,7 @@ class SystemComponentRepository extends EntityRepository
             if (isset($this->loadedComponents[$component->getId()])) {
                 continue;
             }
-            $reflComponent = new \Cx\Core\Core\Model\Entity\ReflectionComponent($component);
-            $yamlDirs[] = $reflComponent->getDirectory().'/Model/Yaml';
+            $yamlDirs[] = $component->getDirectory().'/Model/Yaml';
         }
         
         $this->cx->getDb()->addSchemaFileDirectories($yamlDirs);
