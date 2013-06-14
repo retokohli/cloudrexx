@@ -27,9 +27,11 @@ abstract class SystemComponentController extends Controller {
     /**
      * Initializes a controller
      * @param \Cx\Core\Core\Model\Entity\SystemComponent $systemComponent SystemComponent to decorate
+     * @param \Cx\Core\Core\Controller\Cx                               $cx         The Contrexx main class
      */
-    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponent $systemComponent) {
+    public function __construct(\Cx\Core\Core\Model\Entity\SystemComponent $systemComponent, \Cx\Core\Core\Controller\Cx $cx) {
         $this->systemComponent = $systemComponent;
+        $this->cx = $cx;
     }
     
     /**
@@ -100,30 +102,27 @@ abstract class SystemComponentController extends Controller {
      * 
      * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
      * CALCULATE YOUR STUFF AS LATE AS POSSIBLE
-     * @param \Cx\Core\Core\Controller\Cx                               $cx         The Contrexx main class
      * @param \Cx\Core\Routing\Url                      $request    The URL object for this request
      */
-    public function preResolve(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\Routing\Url $request) {}
+    public function preResolve(\Cx\Core\Routing\Url $request) {}
     
     /**
      * Do something after resolving is done
      * 
      * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
      * CALCULATE YOUR STUFF AS LATE AS POSSIBLE
-     * @param \Cx\Core\Core\Controller\Cx                               $cx         The Contrexx main class
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
-    public function postResolve(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {}
+    public function postResolve(\Cx\Core\ContentManager\Model\Entity\Page $page) {}
     
     /**
      * Do something before content is loaded from DB
      * 
      * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
      * CALCULATE YOUR STUFF AS LATE AS POSSIBLE
-     * @param \Cx\Core\Core\Controller\Cx                               $cx         The Contrexx main class
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
-    public function preContentLoad(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {}
+    public function preContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {}
     
     /**
      * Do something before a module is loaded
@@ -132,10 +131,9 @@ abstract class SystemComponentController extends Controller {
      * gets loaded for content parsing
      * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
      * CALCULATE YOUR STUFF AS LATE AS POSSIBLE
-     * @param \Cx\Core\Core\Controller\Cx                               $cx         The Contrexx main class
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
-    public function preContentParse(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page){}
+    public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page){}
     
     /**
      * Load your component. It is needed for this request.
@@ -144,23 +142,22 @@ abstract class SystemComponentController extends Controller {
      * mode Cx runs in. For modes other than frontend and backend, nothing is done.
      * If you you'd like to name your Controllers differently, or have another
      * use case, overwrite this.
-     * @param \Cx\Core\Core\Controller\Cx                               $cx         The Contrexx main class
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
-    public function load(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {
+    public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         $controllerClass = null;
-        $baseNs = $cx->getDb()->getEntityManager()->getRepository('\\Cx\\Core\\Core\\Model\\Entity\\SystemComponent')->getNamespaceFor($this->getSystemComponent());
+        $baseNs = $this->cx->getDb()->getEntityManager()->getRepository('\\Cx\\Core\\Core\\Model\\Entity\\SystemComponent')->getNamespaceFor($this->getSystemComponent());
         $baseNs .= '\\Controller\\';
-        if ($cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+        if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             $controllerClass = $baseNs . 'FrontendController';
-        } else if ($cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
+        } else if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
             $controllerClass = $baseNs . 'BackendController';
         }
         if (!$controllerClass && !class_exists($controllerClass)) {
             return;
         }
-        $controller = new $controllerClass($this);
-        $controller->getPage($cx, $page);
+        $controller = new $controllerClass($this, $this->cx);
+        $controller->getPage($page);
     }
     
     /**
@@ -170,36 +167,32 @@ abstract class SystemComponentController extends Controller {
      * gets loaded for content parsing
      * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
      * CALCULATE YOUR STUFF AS LATE AS POSSIBLE
-     * @param \Cx\Core\Core\Controller\Cx                               $cx         The Contrexx main class
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
-    public function postContentParse(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {}
+    public function postContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {}
     
     /**
      * Do something after content is loaded from DB
      * 
      * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
      * CALCULATE YOUR STUFF AS LATE AS POSSIBLE
-     * @param \Cx\Core\Core\Controller\Cx                               $cx         The Contrexx main class
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
-    public function postContentLoad(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\ContentManager\Model\Entity\Page $page) {}
+    public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {}
     
     /**
      * Do something before main template gets parsed
      * 
      * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
      * CALCULATE YOUR STUFF AS LATE AS POSSIBLE
-     * @param \Cx\Core\Core\Controller\Cx                               $cx         The Contrexx main class
      * @param \Cx\Core\Html\Sigma                       $template   The main template
      */
-    public function preFinalize(\Cx\Core\Core\Controller\Cx $cx, \Cx\Core\Html\Sigma $template) {}
+    public function preFinalize(\Cx\Core\Html\Sigma $template) {}
     
     /**
      * Do something after main template got parsed
      * 
      * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
-     * @param \Cx\Core\Core\Controller\Cx                               $cx         The Contrexx main class
      */
-    public function postFinalize(\Cx\Core\Core\Controller\Cx $cx) {}
+    public function postFinalize() {}
 }

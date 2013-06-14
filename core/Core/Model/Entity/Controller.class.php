@@ -14,6 +14,12 @@ namespace Cx\Core\Core\Model\Entity;
 abstract class Controller {
     
     /**
+     * Main class instance
+     * @var \Cx\Core\Core\Controller\Cx
+     */
+    protected $cx = null;
+    
+    /**
      * SystemComponentController for this Component
      * @var \Cx\Core\Core\Model\Entity\SystemComponentController
      */
@@ -23,7 +29,8 @@ abstract class Controller {
      * Creates new controller
      * @param SystemComponentController $systemComponentController Main controller for this system component
      */
-    public function __construct(SystemComponentController $systemComponentController) {
+    public function __construct(SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx) {
+        $this->cx = $cx;
         $this->systemComponentController = $systemComponentController;
         $this->systemComponentController->registerController();
     }
