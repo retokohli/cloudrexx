@@ -455,18 +455,9 @@ class blockLibrary
 
         $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_rel_pages WHERE page_id = ? AND placeholder = ?", array($pageId, 'global'));
 
-        $query = '
-            INSERT INTO
-                `' . DBPREFIX . 'module_block_rel_pages`
-                (
-                    `block_id`,
-                    `page_id`,
-                    `placeholder`
-                )
-            VALUES';
         $values = array();
         foreach ($blockIds as $blockId) {
-            $block = $this->_getBlock($blockIds);
+            $block = $this->_getBlock($blockId);
             // block is global and will be shown on all pages, don't need to save the relation
             if ($block['global'] == 1) {
                 continue;
@@ -482,8 +473,17 @@ class blockLibrary
                     \'global\'
                 )';
         }
-        $query .= join(', ', $values);
-        $objDatabase->Execute($query);
+        if (!empty($values)) {
+            $query = 'INSERT INTO
+                    `' . DBPREFIX . 'module_block_rel_pages`
+                    (
+                        `block_id`,
+                        `page_id`,
+                        `placeholder`
+                    )
+                VALUES' . implode(', ', $values);
+            $objDatabase->Execute($query);
+        }
         $objDatabase->Execute('
             DELETE FROM
                 `' . DBPREFIX . 'module_block_rel_pages`
@@ -491,7 +491,7 @@ class blockLibrary
                 `page_id` = \'' . $pageId . '\' AND
                 `block_id` NOT IN
                     (
-                        \'' . join('\',\'', array_map('intval', $blockIds)).'\'
+                        \'' . implode('\',\'', array_map('intval', $blockIds)).'\'
                     ) AND
                 `placeholder` = \'global\'
         ');
