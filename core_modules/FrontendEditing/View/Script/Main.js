@@ -107,8 +107,8 @@ cx.fe.contentEditor.start = function() {
                 instanceReady: function() {
                     cx.fe.publishedPage.title = CKEDITOR.instances.fe_title.getData()
                 },
-                onblur: function() {
-                    if (cx.fe.pageHasBeenModified()) {
+                blur: function() {
+                    if (cx.fe.pageHasBeenModified() && cx.fe.confirmSaveAsDraft()) {
                         cx.fe.savePage();
                     }
                 }
@@ -120,21 +120,19 @@ cx.fe.contentEditor.start = function() {
             customConfig: CKEDITOR.getUrl(cx.variables.get("configPath", "FrontendEditing")),
             toolbar: "FrontendEditingContent",
             extraPlugins: extraPlugins.join(","),
+            startupOutlineBlocks: false,
             on: {
                 instanceReady: function() {
                     cx.fe.publishedPage.content = CKEDITOR.instances.fe_content.getData()
                 },
-                onblur: function () {
-                    if (cx.fe.pageHasBeenModified()) {
+                blur: function() {
+                    if (cx.fe.pageHasBeenModified() && cx.fe.confirmSaveAsDraft()) {
                         cx.fe.savePage();
                     }
                 }
             }
         });
     }
-
-    // show publish button
-    cx.jQuery("#fe_toolbar_publishPage").show();
 };
 
 /**
@@ -242,21 +240,29 @@ cx.fe.toolbar = function() {
                     cx.fe.toolbar.showAnchors(false, true); // only show option anchor, hide history anchor
                 }
             });
+            // show publish button
+            cx.jQuery("#fe_toolbar_publishPage").show();
         }
         return false;
     });
 
     // init publish button and hide it
-    cx.jQuery("#fe_toolbar_publishPage").html(cx.fe.langVars.TXT_FRONTEND_EDITING_PUBLISH).click(function() {
-        if (!cx.fe.editMode) {
+    cx.jQuery("#fe_toolbar_publishPage")
+        .html(
+            cx.variables.get("hasPublishPermission", "FrontendEditing") ?
+                cx.fe.langVars.TXT_FRONTEND_EDITING_PUBLISH :
+                cx.fe.langVars.TXT_FRONTEND_EDITING_SUBMIT_FOR_RELEASE
+        ).click(function() {
+            if (!cx.fe.editMode) {
+                return false;
+            }
+            cx.fe.publishPage();
             return false;
-        }
-        cx.fe.publishPage();
-        return false;
-    }).hide();
+        }).hide();
 
     // init the admin menu anchor and box
-    cx.fe.adminmenu();
+    // not used for contrexx 3.1
+//    cx.fe.adminmenu();
 };
 
 /**
@@ -445,6 +451,11 @@ cx.fe.loadPageData = function(historyId, putTheData, callback) {
             // update the history highlighting in history box
             cx.fe.history.updateHighlighting();
 
+            // call the callback function after loading the content from db
+            if (callback) {
+                callback();
+            }
+
             // if it is a draft tell the user that he is editing a draft
             if (cx.fe.pageIsADraft() &&
                 cx.fe.editMode &&
@@ -460,12 +471,6 @@ cx.fe.loadPageData = function(historyId, putTheData, callback) {
                 } else {
                     cx.jQuery("<div class=\"warning\">" + cx.fe.langVars.TXT_FRONTEND_EDITING_THE_DRAFT + "</div>").cxNotice();
                 }
-            } else {
-                cx.jQuery.fn.cxDestroyDialogs();
-            }
-            // call the callback function after loading the content from db
-            if (callback) {
-                callback();
             }
 
             // reload the boxes
@@ -505,6 +510,9 @@ cx.fe.publishPage = function() {
             if (response.status != "success") {
                 className = "error";
             }
+
+            // remove all dialogs
+            cx.jQuery.fn.cxDestroyDialogs();
             cx.jQuery("<div class=\"" + className + "\">" + response.message + "</div>").cxNotice();
             cx.jQuery.fn.cxDestroyDialogs(5000);
 
