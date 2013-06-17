@@ -202,6 +202,7 @@ namespace Cx\Core\Core\Controller {
                 
                 /**
                  * Load all components to have them ready and initialize request and license
+                 * Request is not initialized for CLI mode
                  */
                 $this->postInit();
                 
@@ -211,10 +212,10 @@ namespace Cx\Core\Core\Controller {
                  * This initializes the main template, executes all hooks
                  * and parses the template.
                  * 
-                 * This is not executed automaticly in minimal mode. Invoke it
+                 * This is not executed automaticly in minimal and CLI mode. Invoke it
                  * yourself if necessary and be sure to handle exceptions.
                  */
-                if ($this->mode == self::MODE_MINIMAL) {
+                if ($this->mode == self::MODE_MINIMAL || $this->mode == self::MODE_CLI) {
                     return;
                 }
                 $this->loadContrexx();
@@ -466,10 +467,14 @@ namespace Cx\Core\Core\Controller {
                 $offset = ASCMS_INSTANCE_OFFSET;
             }
             
-            if ($this->mode == self::MODE_FRONTEND || $this->mode == self::MODE_BACKEND) {
-                $this->request = \Cx\Core\Routing\Url::fromCapturedRequest($request, $offset, $_GET);
-            } else {
-                $this->request = \Cx\Core\Routing\Url::fromRequest();
+            switch ($this->mode) {
+                case self::MODE_FRONTEND:
+                case self::MODE_BACKEND:
+                    $this->request = \Cx\Core\Routing\Url::fromCapturedRequest($request, $offset, $_GET);
+                    break;
+                case self::MODE_MINIMAL:
+                    $this->request = \Cx\Core\Routing\Url::fromRequest();
+                    break;
             }
             $this->license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $this->getDb()->getAdoDb());
             
