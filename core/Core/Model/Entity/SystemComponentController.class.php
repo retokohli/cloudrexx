@@ -95,7 +95,9 @@ abstract class SystemComponentController extends Controller {
      * Avoid calculation of anything, just return an array!
      * @return array List of ComponentController classes
      */
-    public function getControllersAccessableByJson() {}
+    public function getControllersAccessableByJson() {
+        return array();
+    }
     
     /**
      * Do something before resolving is done
