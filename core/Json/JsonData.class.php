@@ -58,6 +58,9 @@ class JsonData {
     }
     
     public static function addAdapter($className, $namespace = '\\') {
+        if (!$className) {
+            return;
+        }
         if (is_array($className)) {
             foreach ($className as $class) {
                 self::addAdapter($class, $namespace);

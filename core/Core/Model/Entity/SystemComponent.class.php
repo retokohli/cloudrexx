@@ -95,6 +95,12 @@ class SystemComponent
         return \Env::get('ClassLoader')->getFilePath($componentPath);
     }
     
+    public function getNamespace() {
+        $ns = self::getBaseNamespaceForType($this->getType());
+        $ns .= '\\' . $this->getName();
+        return $ns;
+    }
+    
     /**
      * Returns the type folder (relative to document root)
      * @return string Component type folder relative to document root

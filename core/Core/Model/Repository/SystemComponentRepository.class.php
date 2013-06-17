@@ -62,7 +62,7 @@ class SystemComponentRepository extends EntityRepository
                 continue;
             }
             $component = $this->decorateEntity($component);
-            \Cx\Core\Json\JsonData::addAdapter($component->getControllersAccessableByJson(), $this->getNamespaceFor($component->getSystemComponent()) . '\\Controller');
+            \Cx\Core\Json\JsonData::addAdapter($component->getControllersAccessableByJson(), $component->getNamespace() . '\\Controller');
         }
         return $components;
     }
@@ -82,27 +82,8 @@ class SystemComponentRepository extends EntityRepository
         return $componentController;
     }
     
-    protected function getNamespaceFor(\Cx\Core\Core\Model\Entity\SystemComponent $component) {
-        $namespace = '\\Cx';
-        switch ($component->getType()) {
-            case \Cx\Core\Core\Model\Entity\SystemComponent::TYPE_CORE:
-                $namespace .= '\\Core';
-                break;
-            case \Cx\Core\Core\Model\Entity\SystemComponent::TYPE_CORE_MODULE:
-                $namespace .= '\\Core_Modules';
-                break;
-            case \Cx\Core\Core\Model\Entity\SystemComponent::TYPE_MODULE:
-                $namespace .= '\\Modules';
-                break;
-            default:
-                throw new \Cx\Core\Core\Controller\ComponentException('No such component type: "' . $component->getType() . '"');
-        }
-        $namespace .= '\\' . $component->getName();
-        return $namespace;
-    }
-    
     protected function getComponentControllerClassFor(\Cx\Core\Core\Model\Entity\SystemComponent $component) {
-        $className = $this->getNamespaceFor($component) . '\\Controller\\ComponentController';
+        $className = $component->getNamespace() . '\\Controller\\ComponentController';
         return $className;
     }
     
