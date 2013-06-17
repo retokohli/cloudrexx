@@ -91,7 +91,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\Controller
      */
     private function prepareTemplate(\Cx\Core_Modules\FrontendEditing\Controller\ComponentController $componentController)
     {
-        global $_ARRAYLANG, $_CORELANG;
+        global $_ARRAYLANG, $objTemplate;
 
         // get necessary objects
         $objInit = \Env::get('init');
@@ -110,21 +110,22 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\Controller
         ));
 
         // @author: Michael Ritter
-        global $objTemplate;
-        $template = $objTemplate;
-        $root = $componentTemplate->fileRoot;
-        $componentTemplate->setRoot(ASCMS_ADMIN_TEMPLATE_PATH);
-        $objTemplate = $componentTemplate;
-        \Env::get('ClassLoader')->loadFile(ASCMS_DOCUMENT_ROOT . '/lang/en/backend.php');
-        $langCode = \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID);
-        if ($langCode != 'en') {
-            \Env::get('ClassLoader')->loadFile(ASCMS_DOCUMENT_ROOT . '/lang/' . $langCode . '/backend.php');
-        }
-        $_CORELANG = array_merge($_CORELANG, $_ARRAYLANG);
-        $menu = new \adminMenu('fe');
-        $menu->getAdminNavbar();
-        $componentTemplate->setRoot($root);
-        $objTemplate = $template;
+        // not used for contrexx 3.1
+//        global $_CORELANG;
+//        $template = $objTemplate;
+//        $root = $componentTemplate->fileRoot;
+//        $componentTemplate->setRoot(ASCMS_ADMIN_TEMPLATE_PATH);
+//        $objTemplate = $componentTemplate;
+//        \Env::get('ClassLoader')->loadFile(ASCMS_DOCUMENT_ROOT . '/lang/en/backend.php');
+//        $langCode = \FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID);
+//        if ($langCode != 'en') {
+//            \Env::get('ClassLoader')->loadFile(ASCMS_DOCUMENT_ROOT . '/lang/' . $langCode . '/backend.php');
+//        }
+//        $_CORELANG = array_merge($_CORELANG, $_ARRAYLANG);
+//        $menu = new \adminMenu('fe');
+//        $menu->getAdminNavbar();
+//        $componentTemplate->setRoot($root);
+//        $objTemplate = $template;
         // end code from Michael Ritter
 
         $objUser = $this->cx->getUser()->objUser;
