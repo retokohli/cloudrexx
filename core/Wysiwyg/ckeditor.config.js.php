@@ -1,42 +1,15 @@
 <?php
 if (strpos(dirname(__FILE__), 'customizing') === false) {
-    $contrexx_config_path = dirname(dirname(dirname(__FILE__))).'/config/';
+    $contrexx_path = dirname(dirname(dirname(__FILE__)));
 } else {
     // this files resides within the customizing directory, therefore we'll have to strip
     // out one directory more than usually
-    $contrexx_config_path = dirname(dirname(dirname(dirname(__FILE__)))).'/config/';
-}
-require_once($contrexx_config_path.'settings.php');
-require_once($contrexx_config_path.'configuration.php');
-require_once($contrexx_config_path.'set_constants.php');
-require_once(ASCMS_CORE_PATH.'/ClassLoader/ClassLoader.class.php');
-
-$customizing = null;
-if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
-// TODO: webinstaller check: has ASCMS_CUSTOMIZING_PATH already been defined in the installation process?
-    $customizing = ASCMS_CUSTOMIZING_PATH;
+    $contrexx_path = dirname(dirname(dirname(dirname(__FILE__))));
 }
 
-$cl = new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT, true, $customizing);
-/**
- * Environment repository
- */
-$cl->loadFile(ASCMS_CORE_PATH.'/Env.class.php');
-\Env::set('ClassLoader', $cl);
-\Env::set('ftpConfig', $_FTPCONFIG);
+require_once($contrexx_path . '/init.php');
+init('minimal');
 
-require_once(ASCMS_FRAMEWORK_PATH.'/DBG/DBG.php');
-require_once(ASCMS_CORE_PATH.'/settings.class.php');
-$cl->loadFile(ASCMS_CORE_PATH.'/API.php');
-require_once(ASCMS_CORE_PATH.'/validator.inc.php');
-require_once(ASCMS_LIBRARY_PATH.'/CSRF.php');
-require_once(ASCMS_CORE_PATH.'/Html.class.php');
-
-$db = new \Cx\Core\Db\Db();
-$objDatabase = $db->getAdoDb();
-\Env::set('db', $objDatabase);
-$objSettings = new settingsManager();
-$objInit = new InitCMS('backend');
 $sessionObj = new cmsSession();
 $sessionObj->cmsSessionStatusUpdate('backend');
 $CSRF = '&'.CSRF::key().'='.CSRF::code();
