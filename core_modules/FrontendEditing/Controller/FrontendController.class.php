@@ -61,6 +61,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\Controller
             'TXT_FRONTEND_EDITING_SHOW_TOOLBAR' => $_ARRAYLANG['TXT_FRONTEND_EDITING_SHOW_TOOLBAR'],
             'TXT_FRONTEND_EDITING_HIDE_TOOLBAR' => $_ARRAYLANG['TXT_FRONTEND_EDITING_HIDE_TOOLBAR'],
             'TXT_FRONTEND_EDITING_PUBLISH' => $_ARRAYLANG['TXT_FRONTEND_EDITING_PUBLISH'],
+            'TXT_FRONTEND_EDITING_SUBMIT_FOR_RELEASE' => $_ARRAYLANG['TXT_FRONTEND_EDITING_SUBMIT_FOR_RELEASE'],
             'TXT_FRONTEND_EDITING_SAVE' => $_ARRAYLANG['TXT_FRONTEND_EDITING_SAVE'],
             'TXT_FRONTEND_EDITING_EDIT' => $_ARRAYLANG['TXT_FRONTEND_EDITING_EDIT'],
             'TXT_FRONTEND_EDITING_STOP_EDIT' => $_ARRAYLANG['TXT_FRONTEND_EDITING_STOP_EDIT'],
@@ -76,7 +77,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\Controller
         $contrexxJavascript = \ContrexxJavascript::getInstance();
         $contrexxJavascript->setVariable('langVars', $langVariables, 'FrontendEditing');
         $contrexxJavascript->setVariable('pageId', $page->getId(), 'FrontendEditing');
-        $contrexxJavascript->setVariable('hasPublishPermission', \Permission::checkAccess(35, 'static', true), 'FrontendEditing');
+        $contrexxJavascript->setVariable('hasPublishPermission', \Permission::checkAccess(78, 'static', true), 'FrontendEditing');
         $contrexxJavascript->setVariable('contentTemplates', $this->getCustomContentTemplates(), 'FrontendEditing');
         $contrexxJavascript->setVariable('defaultTemplate', $this->getDefaultTemplate(), 'FrontendEditing');
 
