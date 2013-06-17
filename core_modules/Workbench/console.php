@@ -1,21 +1,13 @@
 <?php
 
-/*ini_set('display_errors', 1);
-error_reporting(E_ALL);//*/
-
-$_CONFIG = null;
 $rootDir = dirname(dirname(__DIR__));
 
-include($rootDir . '/config/configuration.php');
-include($rootDir . '/config/settings.php');
+include($rootDir . '/init.php');
 
-require_once $rootDir . '/core/ClassLoader/ClassLoader.class.php';
-if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
-    $customizingPath = ASCMS_CUSTOMIZING_PATH;
-}
-$cl = new \Cx\Core\ClassLoader\ClassLoader($rootDir, true, $customizingPath);
-\Env::set('ClassLoader', $cl);
-
+// Uncomment the following line if you want to debug workbench commandline script
 //\DBG::activate(DBG_PHP);
+
+// This loads Contrexx in CLI mode
+init();
 
 new \Cx\Core_Modules\Workbench\Model\Entity\ConsoleInterface($argv);
