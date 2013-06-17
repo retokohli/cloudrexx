@@ -26,6 +26,12 @@ cx.ready(function() {
  */
 cx.fe = function() {
     /**
+     * Status message object to show message on top of the page
+     * @type {cx.tools.StatusMessage}
+     */
+    cx.fe.statusMessage = new cx.tools.StatusMessage({});
+
+    /**
      * Lang vars which are used for the template
      * write language variables from php to javascript variable
      * @type {Array}
@@ -162,9 +168,6 @@ cx.fe.contentEditor.stop = function() {
     // remove outline of editable content divs
     cx.jQuery("#fe_content,#fe_title").attr("contenteditable", false).removeClass('fe_outline');
 
-    // remove status message
-    cx.jQuery.fn.cxDestroyDialogs();
-
     // remove history and options
     cx.fe.toolbar.hideAnchors();
 
@@ -236,7 +239,7 @@ cx.fe.toolbar = function() {
                     cx.fe.toolbar.showAnchors(true, true); // show both anchors, history and options
                 } else {
                     cx.fe.editMode = true;
-                    cx.jQuery("<div class=\"info\">" + cx.fe.langVars.TXT_FRONTEND_EDITING_MODULE_PAGE + "</div>").cxNotice();
+                    cx.fe.statusMessage.showMessage(cx.fe.langVars.TXT_FRONTEND_EDITING_MODULE_PAGE, 'info');
                     cx.fe.toolbar.showAnchors(false, true); // only show option anchor, hide history anchor
                 }
             });
@@ -463,14 +466,7 @@ cx.fe.loadPageData = function(historyId, putTheData, callback) {
                     (historyId && historyId == cx.fe.page.historyId - 1) || !historyId
                     )
                 ) {
-                if (cx.fe.dialogTimeout > 0) {
-                    setTimeout(function() {
-                        cx.jQuery("<div class=\"warning\">" + cx.fe.langVars.TXT_FRONTEND_EDITING_THE_DRAFT + "</div>").cxNotice();
-                        clearTimeout(cx.fe.dialogTimeout);
-                    }, 5000);
-                } else {
-                    cx.jQuery("<div class=\"warning\">" + cx.fe.langVars.TXT_FRONTEND_EDITING_THE_DRAFT + "</div>").cxNotice();
-                }
+                cx.fe.statusMessage.showMessage(cx.fe.langVars.TXT_FRONTEND_EDITING_THE_DRAFT, 'warning');
             }
 
             // reload the boxes
@@ -511,10 +507,7 @@ cx.fe.publishPage = function() {
                 className = "error";
             }
 
-            // remove all dialogs
-            cx.jQuery.fn.cxDestroyDialogs();
-            cx.jQuery("<div class=\"" + className + "\">" + response.message + "</div>").cxNotice();
-            cx.jQuery.fn.cxDestroyDialogs(5000);
+            cx.fe.statusMessage.showMessage(response.message, className, 5000);
 
             cx.fe.publishedPage = {
                 title: CKEDITOR.instances.fe_title.getData(),
@@ -544,8 +537,7 @@ cx.fe.savePage = function() {
                 if (response.status != "success") {
                     className = "error";
                 }
-                cx.jQuery("<div class=\"" + className + "\">" + response.message + "</div>").cxNotice();
-                cx.jQuery.fn.cxDestroyDialogs(5000);
+                cx.fe.statusMessage.showMessage(response.message, className, 5000);
             }
             // load new page data, but don't reload and don't put data into content
             cx.fe.loadPageData(null, false);
@@ -727,40 +719,3 @@ cx.fe.options.load = function() {
 loadHistoryVersion = function(version) {
     cx.fe.loadPageData(version, true);
 };
-
-/**
- * Dialogs
- */
-(function($) {
-    var defaultOpts = {
-        draggable: false,
-        resizable: false,
-        minWidth: 100,
-        minHeight: 28,
-        dialogClass: "cxDialog noTitle"
-    };
-
-    $.fn.cxNotice = function(options) {
-        $.fn.cxDestroyDialogs();
-
-        var dialogOptions = {
-            position: ["center", "top"]
-        };
-        var applicableOptions = $.extend({}, defaultOpts, dialogOptions, options);
-
-        this.dialog(applicableOptions);
-
-        return this;
-    };
-
-    $.fn.cxDestroyDialogs = function(delay) {
-        if (delay !== undefined && delay > 0) {
-            cx.fe.dialogTimeout = setTimeout(function() {
-                cx.jQuery(".cxDialog .ui-dialog-content").dialog("destroy");
-                clearTimeout(cx.fe.dialogTimeout);
-            }, delay);
-        } else {
-            $(".cxDialog .ui-dialog-content").dialog("destroy");
-        }
-    };
-})(cx.jQuery);
