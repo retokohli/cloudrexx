@@ -238,8 +238,8 @@ class ReflectionComponent {
             FROM
                 `'.DBPREFIX.'backend_areas`
             WHERE
-                `uri` LIKE \'%cmd=' . contrexx_raw2db($plainCmd) . '&%\' OR
-                `uri` LIKE \'%cmd=' . contrexx_raw2db($plainCmd) . '\'
+                `uri` LIKE \'%cmd=' . contrexx_raw2db($this->componentName) . '&%\' OR
+                `uri` LIKE \'%cmd=' . contrexx_raw2db($this->componentName) . '\'
         ';
         $result = $cx->getDb()->getAdoDb()->query($query);
         if (!$result->EOF) {
@@ -330,7 +330,7 @@ class ReflectionComponent {
     
     /**
      * This completely removes this component from DB
-     * @todo Test queries
+     * @todo Test backend_areas query
      */
     protected function removeFromDb() {
         $cx = \Env::get('cx');
@@ -410,7 +410,6 @@ class ReflectionComponent {
      * Fix the namespace of all files of this component
      * @todo Update references in other components!
      * @todo Update references in DB
-     * @todo Test namespaces with double backslash
      */
     public function fixNamespaces($oldBaseNs) {
         // calculate new proper base NS
@@ -442,9 +441,17 @@ class ReflectionComponent {
             }
             
             // replace old NS with new NS (without leading \, be sure to match \ and \\)
+            $regexDoubleBackslash = '/' . preg_quote(str_replace('\\', '\\\\', $oldNs) . '\\', '/') . '/';
+            
             $content = preg_replace(
-                '/' . preg_replace('/\\\\/', '\\\\\\', $oldNs) . '/',
-                $ns,
+                $regexDoubleBackslash,
+                preg_quote(str_replace('\\', '\\\\', $ns)) . '\\\\',
+                $content
+            );
+            
+            $content = preg_replace(
+                '/' . preg_quote($oldNs . '\\', '/') . '/',
+                $ns . '\\',
                 $content
             );
             $objFile->write($content);
