@@ -42,9 +42,10 @@ class SystemComponentRepository extends EntityRepository
         }
         
         if (!is_array($components)) {
-            $yamlDir = $component->getDirectory().'/Model/Yaml';
+            $yamlDir = $components->getDirectory().'/Model/Yaml';
             $this->cx->getDb()->addSchemaFileDirectories(array($yamlDir));
-            return $this->decorateEntity($components);
+            $entity = $this->decorateEntity($components);
+            return $entity;
         }
         
         $yamlDirs = array();
@@ -83,6 +84,9 @@ class SystemComponentRepository extends EntityRepository
     }
     
     protected function getComponentControllerClassFor(\Cx\Core\Core\Model\Entity\SystemComponent $component) {
+        if (!file_exists($component->getDirectory() . '/Controller/ComponentController.class.php')) {
+            return '\\Cx\\Core\\Core\\Model\\Entity\\SystemComponentController';
+        }
         $className = $component->getNamespace() . '\\Controller\\ComponentController';
         return $className;
     }

@@ -16,7 +16,7 @@ namespace Cx\Core\Core\Model\Entity;
  * Every component needs a SystemComponentController for initialization
  * @author Michael Ritter <michael.ritter@comvation.com>
  */
-abstract class SystemComponentController extends Controller {
+class SystemComponentController extends Controller {
     private $controllers = array();
     
     /**
