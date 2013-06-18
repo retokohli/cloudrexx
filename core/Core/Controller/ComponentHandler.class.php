@@ -71,6 +71,7 @@ class ComponentHandler {
         $this->legacyComponentHandler = new LegacyComponentHandler();
         $this->frontend = $frontend;
         $this->systemComponentRepo = $em->getRepository('Cx\\Core\\Core\\Model\\Entity\\SystemComponent');
+        $this->systemComponentRepo->findAll();
     }
     
     /**
