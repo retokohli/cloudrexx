@@ -34,7 +34,8 @@ class PageEventListenerException extends \Exception {}
  * @package     contrexx
  * @subpackage  model_events
  */
-class PageEventListener {
+class PageEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
+    
     public function prePersist($eventArgs) {
         $this->setUpdatedByCurrentlyLoggedInUser($eventArgs);
         $this->fixAutoIncrement();
@@ -201,5 +202,9 @@ class PageEventListener {
         if ($result !== false && $result->fields['Auto_increment'] < $oldAutoIncrement) {
             $database->Execute("ALTER TABLE `" . DBPREFIX . "content_page` AUTO_INCREMENT = ?", array($oldAutoIncrement));
         }
+    }
+
+    public function onEvent($eventName, $eventArgs) {
+        $this->$eventName(current($eventArgs));
     }
 }

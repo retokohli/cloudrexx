@@ -238,16 +238,6 @@ namespace Cx\Core\Db {
             $prefixListener = new \DoctrineExtension\TablePrefixListener($_DBCONFIG['tablePrefix']);
             $evm->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $prefixListener);
 
-            //page event listener, should be done via CUF in ContentManager/Controller/ComponentController::postCxInit()
-            $pageListener = new \Cx\Core\ContentManager\Model\Event\PageEventListener();
-            $evm->addEventListener(\Doctrine\ORM\Events::prePersist,  $pageListener);
-            $evm->addEventListener(\Doctrine\ORM\Events::postPersist, $pageListener);
-            $evm->addEventListener(\Doctrine\ORM\Events::preUpdate,   $pageListener);
-            $evm->addEventListener(\Doctrine\ORM\Events::postUpdate,  $pageListener);
-            $evm->addEventListener(\Doctrine\ORM\Events::preRemove,   $pageListener);
-            $evm->addEventListener(\Doctrine\ORM\Events::postRemove,  $pageListener);
-            $evm->addEventListener(\Doctrine\ORM\Events::onFlush,     $pageListener);
-
             $config->setSqlLogger(new \Cx\Lib\DBG\DoctrineSQLLogger());
 
             $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config, $evm);
