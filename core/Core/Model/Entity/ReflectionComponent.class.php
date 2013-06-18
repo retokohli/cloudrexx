@@ -234,7 +234,7 @@ class ReflectionComponent {
         // backend_areas
         $query = '
             SELECT
-                `id`
+                `area_id`
             FROM
                 `'.DBPREFIX.'backend_areas`
             WHERE
@@ -249,7 +249,7 @@ class ReflectionComponent {
                 SET
                     `module_id` = ' . $id . ',
                 WHERE
-                    `id` = ' . $result->fields['id'] . '
+                    `area_id` = ' . $result->fields['area_id'] . '
             ';
         } else {
             $parent = 0;
@@ -276,7 +276,7 @@ class ReflectionComponent {
                         ' . $parent . ',
                         \'navigation\',
                         \'backend\',
-                        \'TXT_' . strtoupper($this->componentType) . '_' . strtoupper($this->componentName) . '\'
+                        \'TXT_' . strtoupper($this->componentType) . '_' . strtoupper($this->componentName) . '\',
                         ' . ((int) $parent == 2) . ',
                         \'index.php?cmd=' . $this->componentName . '\',
                         \'_self\',
@@ -374,6 +374,7 @@ class ReflectionComponent {
             WHERE
                 `module_id` = \'' . $moduleId . '\'
         ';
+        $adoDb->execute($query);
         
         // pages
         $this->deactivate();
