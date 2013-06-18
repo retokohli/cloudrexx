@@ -149,6 +149,12 @@ namespace Cx\Core\Core\Controller {
         protected $toolbox = null;
         
         /**
+         * Contrexx event manager
+         * @var \Cx\Core\Event\Controller\EventManager
+         */
+        protected $eventManager = null;
+        
+        /**
          * Initializes the Cx class
          * This does everything related to Contrexx.
          * @param string $mode (optional) Use constants, one of self::MODE_[FRONTEND|BACKEND|CLI|MINIMAL]
@@ -188,7 +194,7 @@ namespace Cx\Core\Core\Controller {
                 $this->preInit();
                 
                 /**
-                 * Loads ClassLoader and Database connection
+                 * Loads ClassLoader, EventManager and Database connection
                  * For now, this also loads some legacy things like API, AdoDB, Env and InitCMS
                  */
                 $this->init();
@@ -643,6 +649,14 @@ namespace Cx\Core\Core\Controller {
         }
         
         /**
+         *
+         * @return \Cx\Core\Event\Controller\EventManager
+         */
+        public function getEvents() {
+            return $this->eventManager;
+        }
+        
+        /**
          * Returns the toolbox
          * @return \FWSystem Toolbox
          */
@@ -744,7 +758,7 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
-         * Loading ClassLoader, Env, DB, API and InitCMS
+         * Loading ClassLoader, EventManager, Env, DB, API and InitCMS
          * (Env, API and InitCMS are deprecated)
          * @todo Remove deprecated elements
          * @todo Remove usage of globals
@@ -789,6 +803,9 @@ namespace Cx\Core\Core\Controller {
             \Env::set('pageguard', new \PageGuard($this->db->getAdoDb()));
 
             \DBG::set_adodb_debug_mode();
+            
+            $this->eventManager = new \Cx\Core\Event\Controller\EventManager();
+            new \Cx\Core\Event\Controller\ModelEventWrapper($this);
 
             // Initialize base system
             // TODO: Get rid of InitCMS class, merge it with this class instead
