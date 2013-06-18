@@ -221,7 +221,11 @@ class Livecam extends LivecamLibrary
                 $archiveDate = substr($_GET['file'], 0, 10);
                 $imageLink = 'index.php?section=livecam&act=archive&date='.$archiveDate;
             } else {
-                $imageLink = '?section=livecam&amp;act=today';
+                $cmd = '';
+                if (!empty($_GET['cmd'])) {
+                    $cmd = '&amp;cmd='.intval($_GET['cmd']);
+                }
+                $imageLink = "?section=livecam$cmd&amp;act=today";
             }
         }
 
