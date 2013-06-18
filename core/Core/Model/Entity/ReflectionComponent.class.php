@@ -139,7 +139,10 @@ class ReflectionComponent {
     
     /**
      * This adds all necessary DB entries in order to activate this component (if they do not exist)
-     * @todo Implement
+     * @todo Add backend_area entry
+     * @todo Fields 'ord' and 'access_id' of backend_areas entry
+     * @todo Add pages (if component is a module)
+     * @todo Use distributor from workbench if available
      */
     public function activate() {
         $cx = \Env::get('cx');
@@ -162,32 +165,136 @@ class ReflectionComponent {
 
         // modules
         $query = '
-            INSERT INTO
-                `' . DBPREFIX . '_modules`
-                (
-                    `name`,
-                    `distributor`,
-                    `description_variable`,
-                    `status`,
-                    `is_required`,
-                    `is_core`,
-                    `is_active`
-                )
-            VALUES
-                (
-                    \'' . $this->componentName . '\',
-                    \'Comvation AG\',
-                    \'TXT_' . strtoupper($this->componentType) . '_' . strtoupper($this->componentName) . '\',
-                    \'y\',
-                    ' . (int) $this->componentType == 'core' . ',
-                    ' . (int) ($this->componentType == 'core' || $this->componentType == 'core_module') . ',
-                    1
-                )
+            SELECT
+                `id`
+            FROM
+                `' . DBPREFIX . 'modules`
+            WHERE
+                `name` = \'' . $this->componentName . '\'
         ';
+        $result = $cx->getDb()->getAdoDb()->query($query);
+        if (!$result->EOF) {
+            $id = $result->fields['id'];
+            $query = '
+                UPDATE
+                    `' . DBPREFIX . 'modules`
+                SET
+                    `status` = \'y\',
+                    `is_required` = ' . ((int) $this->componentType == 'core') . ',
+                    `is_core` = ' . ((int) ($this->componentType == 'core' || $this->componentType == 'core_module')) . ',
+                    `is_active` = 1
+                WHERE
+                    `id` = ' . $id . '
+            ';
+        } else {
+            $query = '
+                SELECT
+                    `id`
+                FROM
+                    `' . DBPREFIX . 'modules`
+                WHERE
+                    `id` > 900
+                ORDER BY
+                    `id` DESC
+                LIMIT 1
+            ';
+            $id = 900;
+            $result = $cx->getDb()->getAdoDb()->query($query);
+            if (!$result->EOF) {
+                $id = $result->fields['id'] + 1;
+            }
+            $query = '
+                INSERT INTO
+                    `' . DBPREFIX . 'modules`
+                    (
+                        `id`,
+                        `name`,
+                        `distributor`,
+                        `description_variable`,
+                        `status`,
+                        `is_required`,
+                        `is_core`,
+                        `is_active`
+                    )
+                VALUES
+                    (
+                        ' . $id . ',
+                        \'' . $this->componentName . '\',
+                        \'Comvation AG\',
+                        \'TXT_' . strtoupper($this->componentType) . '_' . strtoupper($this->componentName) . '_DESCRIPTION\',
+                        \'y\',
+                        ' . ((int) $this->componentType == 'core') . ',
+                        ' . ((int) ($this->componentType == 'core' || $this->componentType == 'core_module')) . ',
+                        1
+                    )
+            ';
+        }
         $cx->getDb()->getAdoDb()->query($query);
         
         // backend_areas
+        $query = '
+            SELECT
+                `id`
+            FROM
+                `'.DBPREFIX.'backend_areas`
+            WHERE
+                `uri` LIKE \'%cmd=' . contrexx_raw2db($plainCmd) . '&%\' OR
+                `uri` LIKE \'%cmd=' . contrexx_raw2db($plainCmd) . '\'
+        ';
+        $result = $cx->getDb()->getAdoDb()->query($query);
+        if (!$result->EOF) {
+            $query = '
+                UPDATE
+                    `'.DBPREFIX.'backend_areas`
+                SET
+                    `module_id` = ' . $id . ',
+                WHERE
+                    `id` = ' . $result->fields['id'] . '
+            ';
+        } else {
+            $parent = 0;
+            if ($this->componentType == 'module') {
+                $parent = 2;
+            }
+            $query = '
+                INSERT INTO
+                    `'.DBPREFIX.'backend_areas`
+                    (
+                        `parent_area_id`,
+                        `type`,
+                        `scope`,
+                        `area_name`,
+                        `is_active`,
+                        `uri`,
+                        `target`,
+                        `module_id`,
+                        `order_id`,
+                        `access_id`
+                    )
+                VALUES
+                    (
+                        ' . $parent . ',
+                        \'navigation\',
+                        \'backend\',
+                        \'TXT_' . strtoupper($this->componentType) . '_' . strtoupper($this->componentName) . '\'
+                        ' . ((int) $parent == 2) . ',
+                        \'index.php?cmd=' . $this->componentName . '\',
+                        \'_self\',
+                        ' . $id . ',
+                        0,
+                        0
+                    )
+            ';
+        }
+        $cx->getDb()->getAdoDb()->query($query);
+        
         // pages (if necessary) from repo (if has existing entry/ies) or empty one
+        if ($this->componentType != 'module') {
+            // only modules need a frontend page to be active
+            return;
+        }
+            // does modulemanager have something for us?
+            // if not: create an empty page
     }
     
     /**
