@@ -36,7 +36,6 @@ jQuery(document).ready(function() {
             shadowboxActivate : jQuery(this).parent().find('.shadowboxActivate:checked').val()
         };
 
-        console.log(properties);
         jQuery.post('index.php?cmd=livecam&act=saveCam', properties).success(function() {
             jQuery('#okbox').show();
             window.setTimeout(function() {

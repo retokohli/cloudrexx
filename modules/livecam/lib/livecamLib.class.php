@@ -72,7 +72,7 @@ class LivecamLibrary
                             shadowboxActivate,
                             showFrom,
                             showTill
-                    FROM contrexx_module_livecam";
+                    FROM ".DBPREFIX."module_livecam";
         if ($id != 0) {
             // select only one
             $query .= " WHERE id = ".$id;
