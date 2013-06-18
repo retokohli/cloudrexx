@@ -139,7 +139,6 @@ class ReflectionComponent {
     
     /**
      * This adds all necessary DB entries in order to activate this component (if they do not exist)
-     * @todo Add backend_area entry
      * @todo Fields 'ord' and 'access_id' of backend_areas entry
      * @todo Add pages (if component is a module)
      * @todo Use distributor from workbench if available
@@ -299,7 +298,7 @@ class ReflectionComponent {
     
     /**
      * This deactivates the component (does not remove any DB entries, except for pages)
-     * @todo Test queries and Doctrine Page remove()
+     * @todo Test Doctrine Page remove()
      */
     public function deactivate() {
         $cx = \Env::get('cx');
@@ -330,7 +329,6 @@ class ReflectionComponent {
     
     /**
      * This completely removes this component from DB
-     * @todo Test backend_areas query
      */
     protected function removeFromDb() {
         $cx = \Env::get('cx');
