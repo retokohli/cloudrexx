@@ -163,7 +163,7 @@ function search_getSearchPage($pos, $page_content, $license)
         foreach($arraySearchOut as $kk => $details){
             $objTpl->setVariable('COUNT_MATCH', $_ARRAYLANG['TXT_RELEVANCE'].' '.$details['Score'].'%');
             $objTpl->setVariable('LINK', '<b><a href="'.contrexx_raw2xhtml($details['Link']).'" title="'.contrexx_raw2xhtml($details['Title']).'">'.contrexx_raw2xhtml($details['Title']).'</a></b>');
-            $objTpl->setVariable('SHORT_CONTENT', $details['Content'].' ...');
+            $objTpl->setVariable('SHORT_CONTENT', strip_tags($details['Content']).' ...');
             $objTpl->parse('search_result');
         }
     } else {
