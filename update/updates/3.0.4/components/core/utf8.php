@@ -408,23 +408,26 @@ function _utf8Update()
         foreach ($arrContrexxTables as $table) {
             $converted = false;
 
-            if (in_array($table, array_keys($arrInstalledTables))) {
+            if (in_array($table, $arrInstalledTableNames)) {
                 if ($arrInstalledTables[$table] == $_SESSION['contrexx_update']['update']['core']['utf8_collation']) {
                     continue;
                 } else {
                     \DBG::msg('UTF-8: Migrate DB-Table: '.$table);
-                    if (!in_array($table.'_new', $arrInstalledTables)) {
+                    if (!in_array($table.'_new', $arrInstalledTableNames)) {
                         $objTableStructure = \Cx\Lib\UpdateUtil::sql("SHOW CREATE TABLE `".$table."`");
 
                         $objTableStructure->fields['Create Table'] = preg_replace(
                             array(
                                 '/'.$table.'/',
+                                '/collate[\s|=][a-z0-9_]+_bin/i',
                                 '/default current_timestamp on update current_timestamp/i',
+                                '/character\s+set[\s|=][a-z0-9_]+/i',
                                 '/collate[\s|=][a-z0-9_]+/i',
                                 '/default charset=[a-z0-9_]+/i',
                             ),
                             array(
                                 $table.'_new',
+                                'BINARY',
                                 '',
                             ),
                             $objTableStructure->fields['Create Table']
@@ -451,7 +454,7 @@ function _utf8Update()
                 }
             }
 
-            if (in_array($table.'_new', $arrInstalledTables) || $converted) {
+            if (in_array($table.'_new', $arrInstalledTableNames) || $converted) {
                 \Cx\Lib\UpdateUtil::sql("RENAME TABLE `".$table."_new`  TO `".$table."`");
             }
 
