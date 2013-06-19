@@ -612,6 +612,9 @@ namespace Cx\Core\Core\Controller {
         protected function tryToSetMemoryLimit() {
             $memoryLimit = array();
             preg_match('/^\d+/', ini_get('memory_limit'), $memoryLimit);
+            if (!isset($memoryLimit[0])) {
+                return;
+            }
             $this->memoryLimit = $memoryLimit[0];
             if ($this->apcEnabled) {
                 if ($this->memoryLimit < 32) {
@@ -628,8 +631,7 @@ namespace Cx\Core\Core\Controller {
          * Loads all active components
          */
         protected function loadComponents() {
-            $this->ch = new \Cx\Core\Core\Controller\ComponentHandler($this->mode == self::MODE_FRONTEND, $this->db->getEntityManager());
-            $this->ch->initComponents();
+            $this->ch = new \Cx\Core\Core\Controller\ComponentHandler($this->license, $this->mode == self::MODE_FRONTEND, $this->db->getEntityManager());
         }
         
         /**
@@ -649,7 +651,7 @@ namespace Cx\Core\Core\Controller {
         }
         
         /**
-         *
+         * Returns the Contrexx event manager instance
          * @return \Cx\Core\Event\Controller\EventManager
          */
         public function getEvents() {
