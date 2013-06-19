@@ -28,6 +28,7 @@ abstract class Controller {
     /**
      * Creates new controller
      * @param SystemComponentController $systemComponentController Main controller for this system component
+     * @param \Cx\Core\Core\Controller\Cx $cx Main class instance
      */
     public function __construct(SystemComponentController $systemComponentController, \Cx\Core\Core\Controller\Cx $cx) {
         $this->cx = $cx;
