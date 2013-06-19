@@ -21,13 +21,13 @@ class Workbench {
      */
     public function getFileList() {
         return array(
+            '/core/Core/Model/Entity/ReflectionComponent.class.php',
             '/core_modules/Workbench',
             '/workbench.config',
+            '/workbench',
             '/workbench.sh',
             '/workbench.bat',
             '/testing',
-            '/model/doctrine.php',
-            '/model/doctrine',
         );
     }
     
