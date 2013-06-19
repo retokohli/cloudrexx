@@ -73,18 +73,23 @@ abstract class UserInterface {
         return $this->commands;
     }
     
-    public function getConfigVar($name) {
+    /**
+     *
+     * @return \Cx\Core_Modules\Workbench\Controller\Workbench
+     */
+    public function getWorkbench() {
         if (!$this->workbench) {
             $this->workbench = new \Cx\Core_Modules\Workbench\Controller\Workbench();
         }
-        return $this->workbench->getConfigEntry($name);
+        return $this->workbench;
+    }
+    
+    public function getConfigVar($name) {
+        return $this->getWorkbench()->getConfigEntry($name);
     }
     
     public function setConfigVar($name, $value) {
-        if (!$this->workbench) {
-            $this->workbench = new \Cx\Core_Modules\Workbench\Controller\Workbench();
-        }
-        return $this->workbench->setConfigEntry($name, $value);
+        return $this->getWorkbench()->setConfigEntry($name, $value);
     }
     
     /**
