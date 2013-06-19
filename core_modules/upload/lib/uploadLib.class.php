@@ -87,20 +87,21 @@ class UploadLib
     }
 
     public function response($uploadId) {
+        global $sessionObj;
+
         $sessionResponseKey = 'upload_response_data_'.$uploadId;
         if(isset($_SESSION[$sessionResponseKey])) {
             $r = UploadResponse::fromSession($_SESSION[$sessionResponseKey]);
             if($r->isUploadFinished()) {
                 echo $r->getJSON();
                 unset($_SESSION[$sessionResponseKey]);
-            }
-            else {
-                echo '{}';
+                die();
             }
         }
-        else {
-            echo '{}';
-        }
+
+        // don't write session-data to database
+        $sessionObj->discardChanges();
+        echo '{}';
         die();
     }
 }
