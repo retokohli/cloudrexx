@@ -1,20 +1,26 @@
 <?php
-
 /**
- * Cx\Core\Core\Model\Entity\SystemComponent
+ * A system component (aka "module", "core_module" or "core component")
+ * @author Michael Ritter <michael.ritter@comvation.com>
  */
+
 namespace Cx\Core\Core\Model\Entity;
 
+/**
+ * Thrown for illegal component types
+ */
 class SystemComponentException extends \Exception {}
 
 /**
- * Cx\Core\Core\Model\Entity\SystemComponent
+ * A system component (aka "module", "core_module" or "core component")
+ * @author Michael Ritter <michael.ritter@comvation.com>
  */
 class SystemComponent
 {
     const TYPE_CORE = 'core';
     const TYPE_CORE_MODULE = 'core_module';
     const TYPE_MODULE = 'module';
+    
     /**
      * @var integer $id
      */
@@ -24,7 +30,11 @@ class SystemComponent
      * @var string $name
      */
     private $name;
-
+    
+    /**
+     * @var enum $type
+     */
+    private $type;
 
     /**
      * Get id
@@ -55,11 +65,6 @@ class SystemComponent
     {
         return $this->name;
     }
-    /**
-     * @var enum $type
-     */
-    private $type;
-
 
     /**
      * Set type
@@ -95,6 +100,10 @@ class SystemComponent
         return \Env::get('ClassLoader')->getFilePath($componentPath);
     }
     
+    /**
+     * Returns the base namespace for this component
+     * @return string Namespace
+     */
     public function getNamespace() {
         $ns = self::getBaseNamespaceForType($this->getType());
         $ns .= '\\' . $this->getName();
@@ -103,8 +112,9 @@ class SystemComponent
     
     /**
      * Returns the type folder (relative to document root)
+     * @param string $type Component type name
      * @return string Component type folder relative to document root
-     * @throws CommandException 
+     * @throws CommandException For non-existing type
      */
     public static function getPathForType($type) {
         switch ($type) {
@@ -128,9 +138,9 @@ class SystemComponent
     
     /**
      * Returns the namespace for a component type
-     * @param string $type Component type
+     * @param string $type Component type name
      * @return string Namespace
-     * @throws CommandException 
+     * @throws CommandException For non-existing type
      */
     public static function getBaseNamespaceForType($type) {
         switch ($type) {
