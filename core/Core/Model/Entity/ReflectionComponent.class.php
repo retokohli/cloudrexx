@@ -1,9 +1,9 @@
 <?php
-
-/*
+/**
  * Represents an abstraction of a component
  * @author Michael Ritter <michael.ritter@comvation.com>
  */
+
 namespace Cx\Core\Core\Model\Entity;
 
 /**
@@ -121,6 +121,7 @@ class ReflectionComponent {
     /**
      * Returns the absolute path to this component's location in the file system
      * @param boolean $allowCustomizing (optional) Set to false if you want to ignore customizings
+     * @param boolean $forceCustomized (optional) If true, the directory in customizing folder is returned, default false
      * @return string Path for this component
      */
     public function getDirectory($allowCustomizing = true, $forceCustomized = false) {
@@ -139,7 +140,6 @@ class ReflectionComponent {
     
     /**
      * This adds all necessary DB entries in order to activate this component (if they do not exist)
-     * @todo Fields 'ord' and 'access_id' of backend_areas entry
      * @todo Add pages (if component is a module)
      * @todo Use distributor from workbench if available
      */
@@ -255,6 +255,38 @@ class ReflectionComponent {
             if ($this->componentType == 'module') {
                 $parent = 2;
             }
+            $order_id = 0;
+            $query = '
+                SELECT
+                    `order_id`
+                FROM
+                    `'.DBPREFIX.'backend_areas`
+                WHERE
+                    `parent_area_id` = ' . $parent . '
+                ORDER BY
+                    `order_id` DESC
+                LIMIT 1
+            ';
+            $result = $cx->getDb()->getAdoDb()->query($query);
+            if (!$result->EOF) {
+                $order_id = $result->fields['order_id'] + 1;
+            }
+            $access_id = 900;
+            $query = '
+                SELECT
+                    `access_id`
+                FROM
+                    `'.DBPREFIX.'backend_areas`
+                WHERE
+                    `access_id` > 900
+                ORDER BY
+                    `access_id` DESC
+                LIMIT 1
+            ';
+            $result = $cx->getDb()->getAdoDb()->query($query);
+            if (!$result->EOF) {
+                $access_id = $result->fields['access_id'] + 1;
+            }
             $query = '
                 INSERT INTO
                     `'.DBPREFIX.'backend_areas`
@@ -280,8 +312,8 @@ class ReflectionComponent {
                         \'index.php?cmd=' . $this->componentName . '\',
                         \'_self\',
                         ' . $id . ',
-                        0,
-                        0
+                        ' . $order_id . ',
+                        ' . $access_id . '
                     )
             ';
         }
@@ -292,7 +324,10 @@ class ReflectionComponent {
             // only modules need a frontend page to be active
             return;
         }
-            // does modulemanager have something for us?
+            // we will not use modulemanager here in order to be able to replace
+            // modulemanager by this in a later release
+            // 
+            // does the module repository have something for us?
             // if not: create an empty page
     }
     
@@ -407,13 +442,14 @@ class ReflectionComponent {
     
     /**
      * Fix the namespace of all files of this component
-     * @todo Update references in other components!
+     * @param string $oldBaseNs Base namespace of old component
+     * @param string $baseDir Directory in which the recursive replace should be done
      * @todo Update references in DB
      */
-    public function fixNamespaces($oldBaseNs) {
+    public function fixNamespaces($oldBaseNs, $baseDir) {
         // calculate new proper base NS
         $baseNs = SystemComponent::getBaseNamespaceForType($this->componentType) . '\\' . $this->componentName;
-        $baseDir = $this->getDirectory();
+        //$baseDir = $this->getDirectory();
         
         $directoryIterator = new \RecursiveDirectoryIterator($baseDir);
         $iterator = new \RecursiveIteratorIterator($directoryIterator);
@@ -468,7 +504,7 @@ class ReflectionComponent {
      * - Alter or copy pages
      * - Create DB entries for new component
      * - Activate new component
-     * @todo Page changes: copy
+     * @todo Test copy of pages
      * @param string $newName New component name
      * @param string $newType New component type, one of 'core', 'core_module' and 'module'
      * @param boolean $customized Copy/move to customizing folder?
@@ -506,7 +542,11 @@ class ReflectionComponent {
         $this->internalFsRelocate($newLocation, $copy);
         
         // fix namespaces
-        $newComponent->fixNamespaces(SystemComponent::getBaseNamespaceForType($this->componentType) . '\\' . $this->componentName);
+        $baseDir = ASCMS_DOCUMENT_ROOT;
+        if ($copy) {
+            $baseDir = $newComponent->getDirectory();
+        }
+        $newComponent->fixNamespaces(SystemComponent::getBaseNamespaceForType($this->componentType) . '\\' . $this->componentName, $baseDir);
         
         // add new component to db and activate it (component, modules, backend_areas, pages)
         $newComponent->activate();
