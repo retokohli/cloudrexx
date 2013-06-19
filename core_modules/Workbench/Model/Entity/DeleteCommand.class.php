@@ -13,7 +13,7 @@ class DeleteCommand extends Command {
      * @return type 
      */
     public function execute(array $arguments) {
-        if (!$this->interface->yesNo('Do you really want to irrevocably delete?')) {
+        if (!$this->interface->yesNo('Do you really want to irrevocably delete ' . $arguments[2] . ' "' . $arguments[3] . '"?')) {
             return;
         }
         
