@@ -7,7 +7,7 @@
 # (c) 2013 by Comvation AG    #
 ###############################
 
-DOWNLOAD_URL="http://dev.contrexx.com/files/current/"
+DOWNLOAD_URL="http://updatesrv1.contrexx.com/"
 FILENAME="workbench-%s.tar.gz"
 
 if [ "$1" != "" ] && [ -d "$1" ]; then
@@ -23,7 +23,7 @@ if [ ! -f "$INSTALLATION_PATH/config/settings.php" ]; then
     exit
 fi
 
-CONTREXX_VERSION=`grep "'coreCmsVersion'" /var/www/trunk/config/settings.php | awk '{print substr($3, 2, index($3,";")-3)}'`
+CONTREXX_VERSION=`grep "'coreCmsVersion'" "$INSTALLATION_PATH/config/settings.php" | awk '{print substr($3, 2, index($3,";")-3)}'`
 FILENAME=`printf "$FILENAME" $CONTREXX_VERSION`
 
 PHP_PATH="php"
@@ -44,16 +44,22 @@ else
     if [ "$answer" == "n" ]; then
         exit
     fi
+    
+    read -p "What name should be used as distributor for components? " DISTRIBUTOR
 
-    echo "Downloading workbench:"
-    wget "$DOWNLOAD_URL$FILENAME"
+    echo -n "Downloading workbench... "
+    wget "$DOWNLOAD_URL$FILENAME" -o /dev/null
 
     if [ ! -f "./$FILENAME" ]; then
         echo "Download failed, aborting."
         exit
     fi
+    echo "done"
 
-    echo "Installing:"
-    tar -zxvf "$FILENAME"
-    echo "php=$PHP_PATH" > "$INSTALLATION_PATH/workbench.config"
+    echo -n "Installing... "
+    tar -zxvf "$FILENAME" > /dev/null
+    rm "$FILENAME"
+    echo -e "php=$PHP_PATH\ndistributor=$DISTRIBUTOR" > "$INSTALLATION_PATH/workbench.config"
+    echo -e "done\n"
+    ./workbench
 fi
