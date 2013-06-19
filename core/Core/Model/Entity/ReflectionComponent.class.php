@@ -139,6 +139,44 @@ class ReflectionComponent {
     }
     
     /**
+     * Creates this component using a skeleton
+     * @todo copy skeleton component
+     */
+    public function create() {
+        if ($this->exists()) {
+            return;
+        }
+        
+        // copy skeleton component
+        $this->activate();
+    }
+    
+    /**
+     * Removes this component
+     * 
+     * This might not work perfectly for legacy components, since there could
+     * be files outside the component's directory!
+     * Be sure there is no other component relying on this one!
+     * @todo implement
+     */
+    public function remove() {
+        // remove from db
+            // component
+            // modules
+            // backend_areas
+            // doctrine entities
+            // legacy tables
+        
+        // if there are no files, quit
+        if (!$this->exists()) {
+            return;
+        }
+        
+        // remove from fs
+        \Cx\Lib\FileSystem\FileSystem::delete_folder($this->getDirectory(), true);
+    }
+    
+    /**
      * This adds all necessary DB entries in order to activate this component (if they do not exist)
      * @todo Add pages (if component is a module)
      */
