@@ -1,29 +1,49 @@
 <?php
 
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * Handles all components, including legacy ones.
+ * 
+ * This is a wrapper class for SystemComponentRepository and LegacyComponentHandler
+ * @author Michael Ritter <michael.ritter@comvation.com>
  */
 
 namespace Cx\Core\Core\Controller;
 
+/**
+ * ComponentHandler is thrown for legacy components without an exception in LegacyComponentHandler
+ */
 class ComponentException extends \Exception {}
 
 /**
- * Description of ComponentHandler
- *
+ * Handles all components, including legacy ones.
+ * 
+ * This is a wrapper class for SystemComponentRepository and LegacyComponentHandler
  * @author Michael Ritter <michael.ritter@comvation.com>
  */
 class ComponentHandler {
+    
     /**
      * @var LegacyContentHandler
      */
     private $legacyComponentHandler;
+    
+    /**
+     * Are we in frontend or backend mode?
+     * @var boolean
+     */
     private $frontend;
+    
     /**
      * @var \Cx\Core\Core\Model\Repository\SystemComponentRepository
      */
     protected $systemComponentRepo;
+    
+    /**
+     * Available (and legal by license) components
+     * This list should be written in constructor (read from license). This
+     * does not work by now since license has different component names.
+     * @var array
+     */
     private $components = array(
         'License',
         'Resolver',
@@ -67,9 +87,17 @@ class ComponentHandler {
         'Message',
     );
     
-    public function __construct($frontend, $em) {
+    /**
+     * Instanciates a new ComponentHandler
+     * @todo Read component list from license (see $this->components for why we didn't do that yet)
+     * @param \Cx\Core_Modules\License\License $license Current license
+     * @param boolean $frontend Wheter we are in frontend mode or not
+     * @param \Doctrine\ORM\EntityManager $em Doctrine entity manager
+     */
+    public function __construct(\Cx\Core_Modules\License\License $license, $frontend, \Doctrine\ORM\EntityManager $em) {
         $this->legacyComponentHandler = new LegacyComponentHandler();
         $this->frontend = $frontend;
+        //$this->components = $license->getLegalComponentsList();
         $this->systemComponentRepo = $em->getRepository('Cx\\Core\\Core\\Model\\Entity\\SystemComponent');
         $this->systemComponentRepo->findAll();
     }
@@ -96,6 +124,10 @@ class ComponentHandler {
         return false;
     }
     
+    /**
+     * Calls hook scripts on legacy and non-legacy components before resolving
+     * @param string $mode (optional) One of 'all', 'proper' and 'legacy', default is 'all'
+     */
     public function callPreResolveHooks($mode = 'all') {
         if ($mode == 'all' || $mode == 'legacy') {
             foreach ($this->components as $componentName) {
@@ -109,6 +141,10 @@ class ComponentHandler {
         }
     }
     
+    /**
+     * Calls hook scripts on legacy and non-legacy components after resolving
+     * @param string $mode (optional) One of 'all', 'proper' and 'legacy', default is 'all'
+     */
     public function callPostResolveHooks($mode = 'all') {
         if ($mode == 'all' || $mode == 'legacy') {
             foreach ($this->components as $componentName) {
@@ -122,6 +158,9 @@ class ComponentHandler {
         }
     }
     
+    /**
+     * Calls hook scripts on legacy and non-legacy components before loading content
+     */
     public function callPreContentLoadHooks() {
         foreach ($this->components as $componentName) {
             if ($this->checkLegacy('preContentLoad', $componentName)) {
@@ -131,6 +170,9 @@ class ComponentHandler {
         $this->systemComponentRepo->callPreContentLoadHooks();
     }
     
+    /**
+     * Calls hook scripts on legacy and non-legacy components before loading module content
+     */
     public function callPreContentParseHooks() {
         foreach ($this->components as $componentName) {
             if ($this->checkLegacy('preContentParse', $componentName)) {
@@ -140,6 +182,9 @@ class ComponentHandler {
         $this->systemComponentRepo->callPreContentParseHooks();
     }
     
+    /**
+     * Calls hook scripts on legacy and non-legacy components after loading module content
+     */
     public function callPostContentParseHooks() {
         foreach ($this->components as $componentName) {
             if ($this->checkLegacy('postContentParse', $componentName)) {
@@ -149,6 +194,9 @@ class ComponentHandler {
         $this->systemComponentRepo->callPostContentParseHooks();
     }
     
+    /**
+     * Calls hook scripts on legacy and non-legacy components after loading content
+     */
     public function callPostContentLoadHooks() {
         foreach ($this->components as $componentName) {
             if ($this->checkLegacy('postContentLoad', $componentName)) {
@@ -158,6 +206,9 @@ class ComponentHandler {
         $this->systemComponentRepo->callPostContentLoadHooks();
     }
     
+    /**
+     * Calls hook scripts on legacy and non-legacy components before finalizing
+     */
     public function callPreFinalizeHooks() {
         foreach ($this->components as $componentName) {
             if ($this->checkLegacy('preFinalize', $componentName)) {
@@ -167,6 +218,9 @@ class ComponentHandler {
         $this->systemComponentRepo->callPreFinalizeHooks();
     }
     
+    /**
+     * Calls hook scripts on legacy and non-legacy components after finalizing
+     */
     public function callPostFinalizeHooks() {
         foreach ($this->components as $componentName) {
             if ($this->checkLegacy('postFinalize', $componentName)) {
@@ -176,6 +230,14 @@ class ComponentHandler {
         $this->systemComponentRepo->callPostFinalizeHooks();
     }
     
+    /**
+     * Load the component with the name specified (legacy or not)
+     * @param \Cx\Core\Core\Controller\Cx $cx Main class instance
+     * @param string $componentName Name of component to load
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page Resolved page
+     * @return null
+     * @throws ComponentException For legacy components without a load entry in LegacyClassLoader
+     */
     public function loadComponent(\Cx\Core\Core\Controller\Cx $cx, $componentName, \Cx\Core\ContentManager\Model\Entity\Page $page = null) {
         if ($this->checkLegacy('load', $componentName)) {
             \DBG::msg('This is a legacy component (' . $componentName . '), load via LegacyComponentHandler');
@@ -189,9 +251,5 @@ class ComponentHandler {
         }
         $component->load($cx, $page);
         \DBG::msg('<b>WELL, THIS IS ONE NICE COMPONENT!</b>');
-    }
-    
-    public function initComponents() {
-        // nothing to do yet
     }
 }
