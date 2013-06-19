@@ -13,20 +13,18 @@ abstract class UserInterface {
         \Env::get('ClassLoader')->loadFile(ASCMS_CORE_PATH.'/Typing/Model/Entity/AutoBoxedObject.class.php');
         \Env::get('ClassLoader')->loadFile(ASCMS_CORE_PATH.'/Typing/Model/Entity/Primitives.class.php');
         $this->commands = array(
-            /* FINISHED COMMANDS */
+            /* EXISTING COMMANDS */
             'db' => new DbCommand($this), // wrapper for doctrine commandline tools
-            
-            /* BETA COMMANDS */
             'create' => new CreateCommand($this), // create new component
             'delete' => new DeleteCommand($this), // delete a component
             'activate' => new ActivateCommand($this), // activate a component
             'deactivate' => new DeactivateCommand($this), // deactivate a component
             'move' => new MoveCommand($this), // convert component types (core to core_module, etc.) and rename components
             'copy' => new CopyCommand($this), // copy components
-            //'remove' => new RemoveCommand($this), // remove workbench from installation
-            //'test' => new TestCommand($this), // run UnitTests
+            'remove' => new RemoveCommand($this), // remove workbench from installation
             
             /* FUTURE COMMANDS */
+            //'test' => new TestCommand($this), // run UnitTests
             //'treenav' => new TreeNavCommand($this), // recursive tree view of backend navigation
             //'addnav' => new AddNavCommand($this), // add a backend navigation entry
             //'rmnav' => new RmNavCommand($this), // remove a backend navigation entry
