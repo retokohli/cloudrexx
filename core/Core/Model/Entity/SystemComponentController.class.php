@@ -1,5 +1,4 @@
 <?php
-
 /**
  * This is the superclass for all main Controllers for a Component
  * 
@@ -7,6 +6,7 @@
  * Every component needs a SystemComponentController for initialization
  * @author Michael Ritter <michael.ritter@comvation.com>
  */
+
 namespace Cx\Core\Core\Model\Entity;
 
 /**
@@ -17,6 +17,10 @@ namespace Cx\Core\Core\Model\Entity;
  * @author Michael Ritter <michael.ritter@comvation.com>
  */
 class SystemComponentController extends Controller {
+    /**
+     * Available controllers
+     * @var array List of Controller objects
+     */
     private $controllers = array();
     
     /**
@@ -50,6 +54,11 @@ class SystemComponentController extends Controller {
         return $this->systemComponent;
     }
     
+    /**
+     * Registers a controller instance
+     * @param Controller $controller Controller to register
+     * @return null
+     */
     public function registerController(Controller $controller) {
         if (isset($this->controllers[get_class($controller)])) {
             return;
@@ -57,6 +66,11 @@ class SystemComponentController extends Controller {
         $this->controllers[get_class($controller)] = $controller;
     }
     
+    /**
+     * Returns a list of controllers
+     * @param boolean $loadedOnly (optional) If false, controller that did not register are instanciated, default true
+     * @return array List of Controller instances
+     */
     public function getControllers($loadedOnly = true) {
         if ($loadedOnly) {
             return $this->controllers;
@@ -70,6 +84,12 @@ class SystemComponentController extends Controller {
         return $this->getControllers();
     }
     
+    /**
+     * Returns all Controller class names for this component (except this)
+     * 
+     * Be sure to return all your controller classes if you add your own
+     * @return array List of Controller class names (without namespace)
+     */
     public function getControllerClasses() {
         return array('Frontend', 'Backend');
     }

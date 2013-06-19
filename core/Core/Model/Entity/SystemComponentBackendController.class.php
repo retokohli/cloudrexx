@@ -1,22 +1,34 @@
 <?php
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-namespace Cx\Core\Core\Model\Entity;
 /**
- * Description of SystemComponentBackendController
+ * Backend controller to create a default backend view.
  *
- * @author ritt0r
+ * Create a subclass of this in order to create a normal backend view
+ * @author Michael Ritter <michael.ritter@comvation.com>
+ */
+
+namespace Cx\Core\Core\Model\Entity;
+
+/**
+ * Backend controller to create a default backend view.
+ *
+ * Create a subclass of this in order to create a normal backend view
+ * @author Michael Ritter <michael.ritter@comvation.com>
  */
 abstract class SystemComponentBackendController extends Controller {
     
     /**
+     * Returns a list of available commands (?act=XY)
      * @return array List of acts
      */
     public abstract function getCommands();
     
+    /**
+     * This is called by the default ComponentController and does all the repeating work
+     * 
+     * This loads a template named after current $act and calls parsePage($actTemplate)
+     * @global array $_ARRAYLANG Language data
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page Resolved page
+     */
     public function getPage(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         global $_ARRAYLANG;
         
@@ -28,11 +40,9 @@ abstract class SystemComponentBackendController extends Controller {
         
         $actTemplate = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/MultiSite/View/Template');
         $actTemplate->loadTemplateFile();
-        $successMessage = '';
-        $failureMessage = '';
         
         // todo: $actTemplate->loadTemplateFile(), Messages
-        $this->parsePage($actTemplate, $cmd, $successMessage, $failureMessage);
+        $this->parsePage($actTemplate, $cmd);
         
         // set tabs
         $navigation = new \Cx\Core\Html\Sigma(ASCMS_CORE_PATH . '/Component/View/Template');
@@ -57,7 +67,6 @@ abstract class SystemComponentBackendController extends Controller {
         $page->setContent($actTemplate->get());
         $this->cx->getTemplate()->setVariable(array(
             'CONTENT_NAVIGATION' => $navigation->get(),
-            'CONTENT_STATUS_MESSAGE' => $successMessage,
         ));
     }
     
@@ -65,9 +74,10 @@ abstract class SystemComponentBackendController extends Controller {
      * Use this to parse your backend page
      * 
      * You will get the template located in /View/Template/{CMD}.html
+     * You can access Cx class using $this->cx
+     * To show messages, use \Message class
      * @param \Cx\Core\Html\Sigma $template Template for current CMD
-     * @param \Cx\Core\Core\Controller\Cx $cx Contrexx main class
      * @param array $cmd CMD separated by slashes
      */
-    public abstract function parsePage(\Cx\Core\Html\Sigma $template, array $cmd, &$successMessage, &$failureMessage);
+    public abstract function parsePage(\Cx\Core\Html\Sigma $template, array $cmd);
 }
