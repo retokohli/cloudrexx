@@ -8,6 +8,6 @@ include($rootDir . '/init.php');
 //\DBG::activate(DBG_PHP);
 
 // This loads Contrexx in CLI mode
-init();
+$cx = init();
 
-new \Cx\Core_Modules\Workbench\Model\Entity\ConsoleInterface($argv);
+new \Cx\Core_Modules\Workbench\Model\Entity\ConsoleInterface($argv, $cx);

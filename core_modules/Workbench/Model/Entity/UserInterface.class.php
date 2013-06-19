@@ -3,34 +3,41 @@
 namespace Cx\Core_Modules\Workbench\Model\Entity;
 
 abstract class UserInterface {
+    protected $cx = null;
     private $commands = array();
     private $workbench = null;
     protected $silent = false;
     
-    public function __construct() {
+    public function __construct($cx) {
+        $this->cx = $cx;
         \Env::get('ClassLoader')->loadFile(ASCMS_CORE_PATH.'/Typing/Model/Entity/AutoBoxedObject.class.php');
         \Env::get('ClassLoader')->loadFile(ASCMS_CORE_PATH.'/Typing/Model/Entity/Primitives.class.php');
         $this->commands = array(
             /* FINISHED COMMANDS */
+            'db' => new DbCommand($this), // wrapper for doctrine commandline tools
             
             /* BETA COMMANDS */
             'create' => new CreateCommand($this), // create new component
             'delete' => new DeleteCommand($this), // delete a component
             'activate' => new ActivateCommand($this), // activate a component
             'deactivate' => new DeactivateCommand($this), // deactivate a component
+            'move' => new MoveCommand($this), // convert component types (core to core_module, etc.) and rename components
+            'copy' => new CopyCommand($this), // copy components
             //'remove' => new RemoveCommand($this), // remove workbench from installation
-            'treenav' => new TreeNavCommand($this), // recursive tree view of backend navigation
+            //'test' => new TestCommand($this), // run UnitTests
+            
+            /* FUTURE COMMANDS */
+            //'treenav' => new TreeNavCommand($this), // recursive tree view of backend navigation
             //'addnav' => new AddNavCommand($this), // add a backend navigation entry
             //'rmnav' => new RmNavCommand($this), // remove a backend navigation entry
             //'mvnav' => new MvNavCommand($this), // move a backend navigation entry (remove and add new)
-            'move' => new MoveCommand($this), // convert component types (core to core_module, etc.) and rename components
-            //'test' => new TestCommand($this), // run UnitTests
-            //'db' => new DbCommmand($this), // wrapper for doctrine commandline tools
-            
-            /* FUTURE COMMANDS */
             //'export' => new ExportCommand($this), // export contrexx files without workbench
             //'publish' => new PublishCommand($this), // publish component to contrexx app repo (after successful unit testing)
+            //'install' => new InstallCommand($this), // install a component from contrexx app repo
             //'update' => new UpdateCommand($this), // port a component to this version of contrexx
+            //'upgrade' => new UpgradeCommand($this), // upgrade a component to current or current beta version
+            //'push' => new PushCommand($this), // Pushes this installation to a FTP server
+            //'pack' => new PackCommand($this), // Create install/update package of current installation
         );
     }
     
