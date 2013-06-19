@@ -141,7 +141,6 @@ class ReflectionComponent {
     /**
      * This adds all necessary DB entries in order to activate this component (if they do not exist)
      * @todo Add pages (if component is a module)
-     * @todo Use distributor from workbench if available
      */
     public function activate() {
         $cx = \Env::get('cx');
@@ -163,6 +162,12 @@ class ReflectionComponent {
         }
 
         // modules
+        $distributor = 'Comvation AG';
+        $workbenchComponent = new self('Workbench', 'core_module');
+        if ($workbenchComponent->exists()) {
+            $workbench = new \Cx\Core_Modules\Workbench\Controller\Workbench();
+            $distributor = $workbench->getConfigEntry('distributor');
+        }
         $query = '
             SELECT
                 `id`
@@ -219,7 +224,7 @@ class ReflectionComponent {
                     (
                         ' . $id . ',
                         \'' . $this->componentName . '\',
-                        \'Comvation AG\',
+                        \'' . $distributor . '\',
                         \'TXT_' . strtoupper($this->componentType) . '_' . strtoupper($this->componentName) . '_DESCRIPTION\',
                         \'y\',
                         ' . ((int) $this->componentType == 'core') . ',
