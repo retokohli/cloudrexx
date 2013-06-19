@@ -140,7 +140,6 @@ class ReflectionComponent {
     
     /**
      * Creates this component using a skeleton
-     * @todo copy skeleton component
      */
     public function create() {
         if ($this->exists()) {
@@ -148,6 +147,9 @@ class ReflectionComponent {
         }
         
         // copy skeleton component
+        \Cx\Lib\FileSystem\FileSystem::copy_folder(ASCMS_CORE_PATH.'/Core/Data/Skeleton', $this->getDirectory(false));
+        
+        // activate component
         $this->activate();
     }
     
@@ -157,15 +159,10 @@ class ReflectionComponent {
      * This might not work perfectly for legacy components, since there could
      * be files outside the component's directory!
      * Be sure there is no other component relying on this one!
-     * @todo implement
      */
     public function remove() {
         // remove from db
-            // component
-            // modules
-            // backend_areas
-            // doctrine entities
-            // legacy tables
+        $this->removeFromDb();
         
         // if there are no files, quit
         if (!$this->exists()) {
@@ -407,6 +404,7 @@ class ReflectionComponent {
     
     /**
      * This completely removes this component from DB
+     * @todo Remove components tables (including doctrine schema)
      */
     protected function removeFromDb() {
         $cx = \Env::get('cx');
