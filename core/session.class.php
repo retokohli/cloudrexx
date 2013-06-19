@@ -34,6 +34,7 @@ class cmsSession
     private $defaultLifetime;
     private $defaultLifetimeRememberMe;
     private $rememberMe = false;
+    private $discardChanges = false;
 
     function __construct($status='')
     {
@@ -217,6 +218,11 @@ class cmsSession
 
     function cmsSessionWrite( $aKey, $aVal )
     {
+        // Don't write session data to databse.
+        // This is used to prevent an unwanted session overwrite by a continuous
+        // script request (javascript) that only checks for a certain event to happen.
+        if ($this->discardChanges) return true;
+
         $aVal = addslashes( $aVal );
         $query = "UPDATE ".DBPREFIX."sessions SET datavalue = '".$aVal."', lastupdated = '".time()."' WHERE sessionid = '".$aKey."'";
         $this->_objDb->Execute($query);
@@ -336,5 +342,18 @@ class cmsSession
                 \Cx\Lib\FileSystem\FileSystem::delete_folder(ASCMS_TEMP_WEB_PATH.'/'.$sessionPath, true);
             }
         }
+    }
+
+    /**
+     * Discard changes made to the $_SESSION-array.
+     *
+     * If called, this method causes the session not to store
+     * any changes made to the $_SESSION-array to the database.
+     * Use this method when doing multiple ajax-requests simultaneously
+     * to prevent an unwanted session overwrite.
+     */
+    public function discardChanges()
+    {
+        $this->discardChanges = true;
     }
 }
