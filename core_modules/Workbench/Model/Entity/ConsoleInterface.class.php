@@ -3,10 +3,9 @@
 namespace Cx\Core_Modules\Workbench\Model\Entity;
 
 class ConsoleInterface extends UserInterface {
-    protected $db = null;
 
-    public function __construct($arguments) {
-        parent::__construct();
+    public function __construct($arguments, $cx) {
+        parent::__construct($cx);
 
         $command = 'help';
         if (isset($arguments[1])) {
@@ -55,10 +54,7 @@ Available subcommands:' . "\r\n";
     }
     
     public function getDb() {
-        if (!$this->db) {
-            $this->db = new \Cx\Core\Db\Db();
-        }
-        return $this->db;
+        return $this->cx->getDb();
     }
     
     public function input($description, $defaultValue = '') {

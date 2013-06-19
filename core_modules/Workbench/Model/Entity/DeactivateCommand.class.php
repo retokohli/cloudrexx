@@ -9,24 +9,9 @@ class DeactivateCommand extends Command {
     protected $help = 'Deactivates a component of the specified type named {component_name}.';
     
     public function execute(array $arguments) {
-        $isCore = $arguments[2] == 'core' || $arguments[2] == 'core_module';
-        $isRequired = $arguments[2] == 'core';
         
-        $query = '
-            DELETE FROM
-                `' . DBPREFIX . 'modules`
-            WHERE
-                `is_required` = ' . (int) $isRequired . ' AND
-                `is_core` = ' . (int) $isCore . ' AND
-                `name` = \'' . $arguments[3] . '\'
-        ';
-        if (!$this->interface->getDb()->getAdoDb()->Execute($query)) {
-            throw new CommandException('Deactivating component failed');
-        }
-        
-        $this->interface->show('TODO: Remove content pages for this component');
-        
-        $this->interface->show('TODO: Remove backend navigation entries for this component');
+        $component = new \Cx\Core\Core\Model\Entity\ReflectionComponent($arguments[3], $arguments[2]);
+        $component->deactivate();
         
         $this->interface->show('Done');
     }
