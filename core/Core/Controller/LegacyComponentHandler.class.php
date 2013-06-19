@@ -1,8 +1,9 @@
 <?php
-
-/*
- * This file is the global trash.
- * @todo: empty trash
+/**
+ * This handles exceptions for new Component structure. This is old code
+ * and should be replaced so that this class becomes unnecessary
+ * @todo: Remove this code (move all exceptions to components)
+ * @author Michael Ritter <michael.ritter@comvation.com>
  */
 
 namespace Cx\Core\Core\Controller;
@@ -14,8 +15,34 @@ namespace Cx\Core\Core\Controller;
  * @author Michael Ritter <michael.ritter@comvation.com>
  */
 class LegacyComponentHandler {
-    private $exceptions;
+    /**
+     * This is the list of exceptions
+     * 
+     * array[
+     *     frontend|
+     *     backend
+     * ][
+     *     preResolve|
+     *     postResolve|
+     *     preContentLoad|
+     *     preContentParse|
+     *     load|
+     *     postContentParse|
+     *     postContentLoad|
+     *     preFinalize|
+     *     postFinalize
+     * ] = {callable}
+     * @var array 
+     */
+    private $exceptions = array();
     
+    /**
+     * Tells wheter there is an exception for a certain action and component or not
+     * @param boolean $frontend Are we in frontend mode or not
+     * @param string $action Name of action
+     * @param string $componentName Component name
+     * @return boolean True if there is an exception listed, false otherwise
+     */
     public function hasExceptionFor($frontend, $action, $componentName) {
         if (!isset($this->exceptions[$frontend ? 'frontend' : 'backend'][$action])) {
             return false;
@@ -23,6 +50,13 @@ class LegacyComponentHandler {
         return isset($this->exceptions[$frontend ? 'frontend' : 'backend'][$action][$componentName]);
     }
     
+    /**
+     * Executes an exception (if any) for a certain action and component
+     * @param boolean $frontend Are we in frontend mode or not
+     * @param string $action Name of action
+     * @param string $componentName Component name
+     * @return mixed Return value of called exception (most of them return null)
+     */
     public function executeException($frontend, $action, $componentName) {
         if (!$this->hasExceptionFor($frontend, $action, $componentName)) {
             return false;
@@ -30,6 +64,10 @@ class LegacyComponentHandler {
         return $this->exceptions[$frontend ? 'frontend' : 'backend'][$action][$componentName]();
     }
     
+    /**
+     * Pushes all the legacy code into our array of exceptions
+     * @throws \Exception If frontend is locked by license
+     */
     public function __construct() {
         // now follows the loooooooooooong list of old code:
         $this->exceptions = array(
