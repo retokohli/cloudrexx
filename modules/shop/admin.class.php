@@ -88,7 +88,7 @@ class Shopmanager extends ShopLibrary
     {
         global $objTemplate, $_ARRAYLANG;
 
-//DBG::activate(DBG_ERROR_FIREPHP);
+//DBG::activate(DBG_ERROR_FIREPHP | DBG_LOG);
         if (!isset($_GET['act'])) {
             $_GET['act'] = '';
         }
@@ -126,8 +126,8 @@ class Shopmanager extends ShopLibrary
                 $this->view_order_details(true);
                 break;
             case 'delorder':
+                // Redirects back to Order overview
                 $this->delete_order();
-                $this->view_order_overview();
                 break;
             case 'delcustomer':
                 $this->delete_customer();
@@ -328,6 +328,18 @@ class Shopmanager extends ShopLibrary
             }
         }
         $objCSVimport->initTemplateArray();
+        // When there is an uploaded file, check its extension and type.
+        // Displays one of two warnings on mismatch.
+        if (!empty($_FILES)) {
+            $file = current($_FILES);
+            if (!preg_match('/\.csv$/i', $file['name'])) {
+                Message::warning($_ARRAYLANG['TXT_SHOP_IMPORT_WARNING_EXTENSION_MISMATCH']);
+            } else {
+                if (!preg_match('/application\\/vnd\.ms-excel|text\\/(?:plain|csv)/', $file['type'])) {
+                    Message::warning($_ARRAYLANG['TXT_SHOP_IMPORT_WARNING_TYPE_MISMATCH']);
+                }
+            }
+        }
         // Import Categories
         // This is not subject to change, so it's hardcoded
         if (isset($_REQUEST['ImportCategories'])) {
@@ -453,16 +465,18 @@ class Shopmanager extends ShopLibrary
                     $objProduct->$index($value);
                 }
                 if ($objProduct->store()) {
-                    $arrId[] = $objDatabase->Insert_ID();
+                    $arrId[] = $objProduct->id();
                     ++$importedLines;
                 } else {
                     ++$errorLines;
                 }
             }
             // Fix picture field and create thumbnails
-            $this->makeProductThumbnailsById($arrId);
-            Message::ok($_ARRAYLANG['TXT_SHOP_IMPORT_SUCCESSFULLY_IMPORTED_PRODUCTS'].
-                ': '.$importedLines);
+            Products::makeThumbnailsById($arrId);
+            if ($importedLines) {
+                Message::ok($_ARRAYLANG['TXT_SHOP_IMPORT_SUCCESSFULLY_IMPORTED_PRODUCTS'].
+                    ': '.$importedLines);
+            }
             if ($errorLines) {
                 Message::error($_ARRAYLANG['TXT_SHOP_IMPORT_NOT_SUCCESSFULLY_IMPORTED_PRODUCTS'].': '.$errorLines);
             }
@@ -747,89 +761,6 @@ class Shopmanager extends ShopLibrary
             $tipText .= 'Text['.$i.']=["","'.$_ARRAYLANG['TXT_SHOP_EXPORT_GROUP_'.strtoupper($arrGroups[$i]).'_TIP'].'"];';
         }
 */
-    }
-
-
-    /**
-     * Create thumbnails and update corresponding Product records
-     *
-     * Scans all Products with their IDs listed in the array.  If a non-empty
-     * picture string is encountered, tries to load the file of the same name
-     * and to create a thumbnail.  If it succeeds, it also updates the
-     * original records' picture field with the fixed entry.
-     * Note that only single file names are supported!
-     * Also note that this method only returns false upon encountering
-     * a database error.  It silently skips records which contain no or
-     * invalid image names, thumbnails that cannot be created, and records
-     * which refuse to be updated!
-     * The reasoning behind this is that this method is currently only called
-     * from within the {@link _import()} method.  The focus lies on importing
-     * Products; whether or not thumbnails can be created is secondary, as the
-     * process can be repeated if there is a problem.
-     * @param   array   $arrId  Array of Product IDs
-     * @return  boolean         True on success, false otherwise.
-     *                          Note that everything except an illegal
-     *                          argument (a non-array) is considered a
-     *                          success!
-     */
-    function makeProductThumbnailsById($arrId)
-    {
-        global $objDatabase, $_ARRAYLANG;
-
-        if (!is_array($arrId)) return false;
-        $objImageManager = new ImageManager();
-        foreach ($arrId as $product_id) {
-            $picture = '';
-            $query = "
-                SELECT picture
-                  FROM ".DBPREFIX."module_shop".MODULE_INDEX."_products
-                 WHERE id=$product_id";
-            $objResult = $objDatabase->Execute($query);
-            if (!$objResult) {
-                Message::error($_ARRAYLANG['TXT_SHOP_DATABASE_QUERY_ERROR']);
-                continue;
-            }
-            if ($objResult->EOF) {
-                Message::warning(sprintf($_ARRAYLANG['TXT_SHOP_INVALID_PRODUCT_ID'], $product_id));
-                continue;
-            }
-            $imageName = $objResult->fields['picture'];
-            // Only try to create thumbs from entries that contain a
-            // plain text file name (i.e. from an import).  Skip others
-            // silently (not all imports will update the picture field).
-            if (   $imageName == ''
-                || !preg_match('/\.(?:jpe?g|gif|png)$/', $imageName))
-                continue;
-            // Note:  The old thumbnail is deleted in _createThumbWhq().
-            // Reset the ImageManager
-            $objImageManager->imageCheck = 1;
-            // Create the new thumbnail
-            if ($objImageManager->_createThumbWhq(
-                ASCMS_SHOP_IMAGES_PATH.'/',
-                ASCMS_SHOP_IMAGES_WEB_PATH.'/',
-                $imageName,
-                SettingDb::getValue('thumbnail_max_width'),
-                SettingDb::getValue('thumbnail_max_height'),
-                SettingDb::getValue('thumbnail_quality')
-            )) {
-                $width = $objImageManager->orgImageWidth;
-                $height = $objImageManager->orgImageHeight;
-                $picture =
-                    base64_encode($imageName).
-                    '?'.base64_encode($width).
-                    '?'.base64_encode($height).'::';
-                $query = "
-                    UPDATE ".DBPREFIX."module_shop".MODULE_INDEX."_products
-                       SET picture='$picture'
-                     WHERE id=$product_id";
-                $objResult = $objDatabase->Execute($query);
-            } else {
-                Message::warning(sprintf(
-                    $_ARRAYLANG['TXT_SHOP_ERROR_CREATING_THUMBNAIL_FOR_PRODUCT_ID'],
-                    $product_id));
-            }
-        }
-        return true;
     }
 
 
@@ -1521,6 +1452,9 @@ if ($test === NULL) {
             // Order amount upper limit
             'SHOP_ORDERITEMS_AMOUNT_MAX' => Currency::formatPrice(
                 SettingDb::getValue('orderitems_amount_max')),
+            // Order amount lower limit
+            'SHOP_ORDERITEMS_AMOUNT_MIN' => Currency::formatPrice(
+                SettingDb::getValue('orderitems_amount_min')),
             'SHOP_CURRENCY_CODE' => Currency::getCurrencyCodeById(
                 Currency::getDefaultCurrencyId()),
             // New extended settings in V3.0.0
@@ -1592,6 +1526,7 @@ if ($test === NULL) {
         $this->delete_categories();
         $this->store_category();
         $this->update_categories();
+        $this->toggle_category();
         $i = 1;
         self::$pageTitle = $_ARRAYLANG['TXT_CATEGORIES'];
         self::$objTemplate->loadTemplateFile('module_shop_categories.html');
@@ -1609,7 +1544,8 @@ if ($test === NULL) {
         $desc = '';
         $active = true;
         $virtual = false;
-        $pictureFilename = $picturePath = $thumbPath = self::$defaultImage;
+        $pictureFilename = NULL;
+        $picturePath = $thumbPath = self::$defaultImage;
         if ($category_id) {
             // Edit the selected category:  Flip view to the edit tab
             $flagEditTabActive = true;
@@ -1644,9 +1580,11 @@ if ($test === NULL) {
             'SHOP_CATEGORY_NAME' => $name,
             'SHOP_CATEGORY_MENUOPTIONS' => ShopCategories::getMenuoptions(
                 $parent_id, false),
-            'SHOP_PICTURE_IMG_HREF' => $picturePath,
             'SHOP_THUMB_IMG_HREF' => $thumbPath,
-            'SHOP_CATEGORY_IMAGE_FILENAME' => $pictureFilename,
+            'SHOP_CATEGORY_IMAGE_FILENAME' => ($pictureFilename == ''
+                ? $_ARRAYLANG['TXT_SHOP_IMAGE_UNDEFINED'] : $pictureFilename),
+            'SHOP_PICTURE_REMOVE_DISPLAY' => ($pictureFilename == ''
+                ? Html::CSS_DISPLAY_NONE : Html::CSS_DISPLAY_INLINE),
             'SHOP_CATEGORY_VIRTUAL_CHECKED' =>
                 ($virtual ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_CATEGORY_ACTIVE_CHECKED' =>
@@ -1660,6 +1598,11 @@ if ($test === NULL) {
             'SHOP_IMAGE_HEIGHT' => $max_height,
             'SHOP_TOTAL_CATEGORIES' => $count,
         ));
+        if ($pictureFilename) {
+            self::$objTemplate->setVariable(array(
+                'SHOP_PICTURE_IMG_HREF' => $picturePath,
+            ));
+        }
         self::$objTemplate->parse('category_edit');
 // TODO: Add controls to fold parent categories
 //        $level_prev = null;
@@ -1726,8 +1669,8 @@ if ($test === NULL) {
 //DBG::log("store_category(): Nothing to do");
             return null;
         }
-        $name = contrexx_input2raw($_POST['name']);
         $category_id = intval($_POST['category_id']);
+        $name = contrexx_input2raw($_POST['name']);
         $active = isset($_POST['active']);
         $virtual = isset($_POST['virtual']);
         $parentid = intval($_POST['parent_id']);
@@ -1755,8 +1698,9 @@ if ($test === NULL) {
         // Ignore the picture if it's the default image!
         // Storing it would be pointless, and we should
         // use the picture of a contained Product instead.
-        if (   $picture == self::$defaultImage
-            || !self::moveImage($picture)) {
+        if (   $picture
+            && (   $picture == self::$defaultImage
+                || !self::moveImage($picture))) {
             $picture = '';
         }
         $objCategory->picture($picture);
@@ -1802,18 +1746,18 @@ if ($test === NULL) {
         foreach ($_POST['update_category_id'] as $category_id) {
             $ord = $_POST['ord'][$category_id];
             $ord_old = $_POST['ord_old'][$category_id];
-            $active = isset($_POST['active'][$category_id]);
-            $active_old = intval($_POST['active_old'][$category_id]);
+//            $active = isset($_POST['active'][$category_id]);
+//            $active_old = intval($_POST['active_old'][$category_id]);
 //            $virtual = isset($_POST['virtual'][$category_id]);
 //            $virtual_old = isset($_POST['virtual_old'][$category_id]);
 //DBG::log("Shopmanager::update_categories(): ord $ord, ord_old $ord_old, active $active, active_old $active_old"); // virtual $virtual, virtual_old $virtual_old,
             if ($ord != $ord_old
-             || $active != $active_old
+//             || $active != $active_old
 //             || $virtual != $virtual_old
             ) {
                 $objCategory = ShopCategory::getById($category_id);
                 $objCategory->ord($ord);
-                $objCategory->active($active);
+//                $objCategory->active($active);
 //                $objCategory->virtual($virtual);
                 if ($objCategory->store()) {
                     if (is_null($success)) $success = true;
@@ -1926,6 +1870,37 @@ if ($test === NULL) {
             return Message::ok($_ARRAYLANG['TXT_DELETED_CATEGORY_AND_PRODUCTS']);
         }
         return null;
+    }
+
+
+    /**
+     * Toggles the active state of a ShopCategory
+     *
+     * The ShopCategory ID may be present in $_REQUEST['toggle_category_id'].
+     * If it's not, returns NULL immediately.
+     * Otherwise, will add a message indicating success or failure,
+     * and redirect back to the category overview.
+     * @global  array       $_ARRAYLANG
+     * @return  boolean                     Null on noop
+     */
+    function toggle_category()
+    {
+        global $_ARRAYLANG;
+
+        if (empty($_REQUEST['toggle_category_id'])) return NULL;
+        $category_id = intval($_REQUEST['toggle_category_id']);
+        $result = ShopCategories::toggleStatusById($category_id);
+        if (is_null($result)) {
+            // NOOP
+            return;
+        }
+        if ($result) {
+            Message::ok($_ARRAYLANG['TXT_SHOP_CATEGORY_UPDATED_SUCCESSFULLY']);
+        } else {
+            Message::error(sprintf(
+                $_ARRAYLANG['TXT_SHOP_CATEGORY_ERROR_UPDATING'], $category_id));
+        }
+        HTTP::redirect('index.php?cmd=shop&act=categories');
     }
 
 
@@ -2076,14 +2051,18 @@ if ($test === NULL) {
 //DBG::log("Dates from ".$objProduct->date_start()." ($start_time, $start_date) to ".$objProduct->date_start()." ($end_time, $end_date)");
         self::$objTemplate->setVariable(array(
             'SHOP_PRODUCT_ID' => (isset($_REQUEST['new']) ? 0 : $objProduct->id()),
-            'SHOP_PRODUCT_CODE' => $objProduct->code(),
-            'SHOP_DATE' => date('Y-m-d H:m'),
-            'SHOP_PRODUCT_NAME' => $objProduct->name(),
+            'SHOP_PRODUCT_CODE' => contrexx_raw2xhtml($objProduct->code()),
+// Unused
+//            'SHOP_DATE' => date('Y-m-d H:m'),
+            'SHOP_PRODUCT_NAME' => contrexx_raw2xhtml($objProduct->name()),
             'SHOP_CATEGORIES_ASSIGNED' => $arrAssignedCategories['assigned'],
             'SHOP_CATEGORIES_AVAILABLE' => $arrAssignedCategories['available'],
-            'SHOP_CUSTOMER_PRICE' => Currency::formatPrice($objProduct->price()),
-            'SHOP_RESELLER_PRICE' => Currency::formatPrice($objProduct->resellerprice()),
-            'SHOP_DISCOUNT' => Currency::formatPrice($objProduct->discountprice()),
+            'SHOP_CUSTOMER_PRICE' => contrexx_raw2xhtml(
+                Currency::formatPrice($objProduct->price())),
+            'SHOP_RESELLER_PRICE' => contrexx_raw2xhtml(
+                Currency::formatPrice($objProduct->resellerprice())),
+            'SHOP_DISCOUNT' => contrexx_raw2xhtml(
+                Currency::formatPrice($objProduct->discountprice())),
             'SHOP_SPECIAL_OFFER' => ($objProduct->discount_active() ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_VAT_MENUOPTIONS' => Vat::getMenuoptions(
                 $objProduct->vat_id(), true),
@@ -2092,9 +2071,7 @@ if ($test === NULL) {
             'SHOP_DESCRIPTION' => new \Cx\Core\Wysiwyg\Wysiwyg(
                 'long', $objProduct->long(), 'shop'),
             'SHOP_STOCK' => $objProduct->stock(),
-            'SHOP_MANUFACTURER_URL' => htmlentities(
-                $objProduct->uri(),
-                ENT_QUOTES, CONTREXX_CHARSET),
+            'SHOP_MANUFACTURER_URL' => contrexx_raw2xhtml($objProduct->uri()),
 // TODO: Any attributes for the datepicker input?
             'SHOP_DATE_START' => Html::getDatepicker('date_start',
                 array('defaultDate' => $start_date),
@@ -2105,7 +2082,8 @@ if ($test === NULL) {
             'SHOP_ARTICLE_ACTIVE' => ($objProduct->active() ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_B2B' => ($objProduct->b2b() ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_B2C' => ($objProduct->b2c() ? Html::ATTRIBUTE_CHECKED : ''),
-            'SHOP_STOCK_VISIBILITY' => ($objProduct->stock_visible() ? Html::ATTRIBUTE_CHECKED : ''),
+            'SHOP_STOCK_VISIBILITY' => ($objProduct->stock_visible()
+                ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_MANUFACTURER_MENUOPTIONS' =>
                 Manufacturer::getMenuoptions($objProduct->manufacturer_id()),
             'SHOP_PICTURE1_IMG_SRC' =>
@@ -2168,7 +2146,7 @@ if ($test === NULL) {
                 Discount::getMenuOptionsGroupCount($discount_group_count_id),
             'SHOP_DISCOUNT_GROUP_ARTICLE_MENU_OPTIONS' =>
                 Discount::getMenuOptionsGroupArticle($discount_group_article_id),
-            'SHOP_KEYWORDS' => $keywords,
+            'SHOP_KEYWORDS' => contrexx_raw2xhtml($keywords),
             // Enable JavaScript functionality for the weight if enabled
             'SHOP_WEIGHT_ENABLED' => (SettingDb::getValue('weight_enable')
                 ? 1 : 0),
@@ -2405,23 +2383,7 @@ if ($test === NULL) {
 
         self::$pageTitle = $_ARRAYLANG['TXT_ORDERS'];
         // A return value of null means that nothing had to be done
-        $result = Orders::updateStatusFromGet();
-        if ($result === false) {
-            Message::error($_ARRAYLANG['TXT_SHOP_ORDER_ERROR_UPDATING_STATUS']);
-        }
-        if ($result === true) {
-            // Send an email to the customer
-            if (   !empty($_GET['sendMail'])
-                && !empty($_GET['order_id'])) {
-                $result = ShopLibrary::sendConfirmationMail($_GET['order_id']);
-                if (!empty($result)) {
-                    Message::ok(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'],
-                        $result));
-                } else {
-                    Message::error($_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']);
-                }
-            }
-        }
+        Orders::updateStatusFromGet();
         self::$objTemplate = null;
         return Orders::view_list(self::$objTemplate);
     }
@@ -2465,9 +2427,10 @@ if ($test === NULL) {
      *
      * If the $order_id parameter value is empty, checks $_GET['order_id']
      * and $_POST['selectedOrderId'] in this order for Order IDs.
+     * Backend use only.  Redirects to the Order overview
      * @version 3.0.0
      * @param   integer     $order_id   The optional Order ID to be deleted
-     * @return  boolean                 True on success, false otherwise
+     * @return  void
      */
     function delete_order($order_id=null)
     {
@@ -2494,7 +2457,7 @@ if ($test === NULL) {
             Message::ok($_ARRAYLANG['TXT_ORDER_DELETED']);
         }
 // TODO: Add error message
-        return $result;
+        HTTP::redirect('index.php?cmd=shop&act=orders');
     }
 
 
@@ -2512,6 +2475,7 @@ if ($test === NULL) {
         if ($template == 'groups') {
             return $this->view_customer_groups();
         }
+        $this->toggleCustomer();
         $i = 0;
         self::$objTemplate->loadTemplateFile("module_shop_customers.html");
         $customer_active = null;
@@ -2520,12 +2484,6 @@ if ($test === NULL) {
         $listletter = null;
         $group_id_customer = SettingDb::getValue('usergroup_id_customer');
         $group_id_reseller = SettingDb::getValue('usergroup_id_reseller');
-// TODO: Obsolete ASAP
-if (empty($group_id_customer) || empty($group_id_reseller)) {
-    Customer::errorHandler();
-    $group_id_customer = SettingDb::getValue('usergroup_id_customer');
-    $group_id_reseller = SettingDb::getValue('usergroup_id_reseller');
-}
         $uri = Html::getRelativeUri();
 // TODO: Strip what URI parameters?
         Html::stripUriParam($uri, 'active');
@@ -2611,6 +2569,8 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
                 'SHOP_EMAIL' => $objCustomer->email(),
                 'SHOP_CUSTOMER_STATUS_IMAGE' =>
                     ($objCustomer->active() ? 'led_green.gif' : 'led_red.gif'),
+                'SHOP_CUSTOMER_ACTIVE' => ($objCustomer->active()
+                    ? $_ARRAYLANG['TXT_ACTIVE'] : $_ARRAYLANG['TXT_INACTIVE']),
             ));
             self::$objTemplate->parse('shop_customer');
             $objCustomer->next();
@@ -2629,6 +2589,37 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
 //            'SHOP_LISTLETTER_MENUOPTIONS' => self::getListletterMenuoptions,
         ));
         return true;
+    }
+
+
+    /**
+     * Toggles the active state of a Customer
+     *
+     * The Customer ID may be present in $_REQUEST['toggle_customer_id'].
+     * If it's not, returns NULL immediately.
+     * Otherwise, will add a message indicating success or failure,
+     * and redirect back to the customer overview.
+     * @global  array       $_ARRAYLANG
+     * @return  boolean                     Null on noop
+     */
+    function toggleCustomer()
+    {
+        global $_ARRAYLANG;
+
+        if (empty($_REQUEST['toggle_customer_id'])) return NULL;
+        $customer_id = intval($_REQUEST['toggle_customer_id']);
+        $result = Customers::toggleStatusById($customer_id);
+        if (is_null($result)) {
+            // NOOP
+            return;
+        }
+        if ($result) {
+            Message::ok($_ARRAYLANG['TXT_SHOP_CUSTOMER_UPDATED_SUCCESSFULLY']);
+        } else {
+            Message::error(sprintf(
+                $_ARRAYLANG['TXT_SHOP_ERROR_CUSTOMER_UPDATING'], $customer_id));
+        }
+        HTTP::redirect('index.php?cmd=shop&act=customers');
     }
 
 
@@ -2855,14 +2846,6 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
                 'SHOP_SEND_LOGING_DATA_STATUS', Html::ATTRIBUTE_CHECKED);
             $customer_id = null;
         }
-
-//$objAttribute = new User_Profile_Attribute();
-//die(var_export($objAttribute->, true));
-
-// TODO from here
-//echo(var_export($objCustomer->objAttribute->getById('gender')->getMenuOptionValue(), true));
-//die(var_export($objCustomer->getProfileAttribute('gender'), true));
-
         self::$objTemplate->setVariable(array(
             'SHOP_CUSTOMERID' => $customer_id,
             'SHOP_COMPANY' => $company,
@@ -2946,6 +2929,9 @@ if (empty($group_id_customer) || empty($group_id_reseller)) {
         // Set automatically: $objCustomer->setRegisterDate($registerdate);
         $objCustomer->group_id($customer_group_id);
         $objCustomer->username($username);
+        if (isset($_POST['sendlogindata']) && $password == '') {
+            $password = User::make_password();
+        }
         if ($password != '') {
             $objCustomer->password($password);
         }

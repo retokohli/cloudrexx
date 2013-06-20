@@ -59,12 +59,6 @@ class Shop extends ShopLibrary
      */
     private static $objCustomer = null;
     
-    /**
-     * Wheter the shop is initialized or not
-     * @var boolean
-     */
-    private static $initialized = false;
-
 
     /**
      * Initialize
@@ -72,9 +66,10 @@ class Shop extends ShopLibrary
      */
     static function init()
     {
+        static $inited = null;
 
 //DBG::log("Shop::init(): Entered");
-        if (self::$initialized) {
+        if ($inited) {
 die("Shop::init(): ERROR: Shop::init() called more than once!");
         }
         if (self::use_session()) {
@@ -109,16 +104,7 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
         }
 //DBG::log("Shop::init(): After setJsCart: shopnavbar: {$themesPages['shopnavbar']}");
         self::registerJavascriptCode();
-        self::$initialized = true;
-    }
-    
-    
-    /**
-     * Wheter the shop is initialized or not
-     * @return boolean True if initialized, false otherwise
-     */
-    public static function isInitialized() {
-        return self::$initialized;
+        $inited = true;
     }
 
 
@@ -129,7 +115,7 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
      */
     static function getPage($template)
     {
-//DBG::activate(DBG_ERROR_FIREPHP);
+//DBG::activate(DBG_ERROR_FIREPHP|DBG_LOG);
 //DBG::activate(DBG_LOG_FILE);
         self::init();
         self::$defaultImage = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.ShopLibrary::noPictureName;
@@ -2035,17 +2021,19 @@ function shopUpdateCart(data, textStatus, jqXHR)
 {
   try {
     objCart = data;
-    if (document.getElementById('shopJsCart')) {
-      shopGenerateCart();
+//console.log('Cart: '+objCart.toSource());
+    if (jQuery('#shopJsCart').length == 0) {
+//console.log('No shopJsCart!');
+      return;
     }
-  } catch(e) {}
-  request_active = false;
-}
-
-function shopGenerateCart()
-{
+    if (objCart.item_count == 0) {
+//console.log('Empty cart!');
+      showCart('<ul><li class=\"empty\">".
+        contrexx_raw2xhtml($_ARRAYLANG['TXT_EMPTY_SHOPPING_CART']).
+        "<\\/li><\\/ul>');
+      return;
+    }
   cart = '';
-  if (objCart.items.length) {
     jQuery.each(objCart.items, function(n, i) {
       cartProduct = cartProductsTpl.replace('[[SHOP_JS_PRODUCT_QUANTITY]]', i.quantity);
       cartProduct = cartProduct.replace('[[SHOP_JS_PRODUCT_TITLE]]', i.title+i.options_cart);
@@ -2062,11 +2050,8 @@ function shopGenerateCart()
     cart = cart.replace('[[SHOP_JS_TOTAL_PRICE]]', objCart.total_price);
     cart = cart.replace('[[SHOP_JS_TOTAL_PRICE_UNIT]]', objCart.unit);
     showCart(cart);
-  } else {
-    showCart('<ul><li class=\"empty\">".
-      contrexx_raw2xhtml($_ARRAYLANG['TXT_EMPTY_SHOPPING_CART']).
-      "<\\/li><\\/ul>');
-  }
+  } catch(e) {}
+  request_active = false;
 }
 
 function hideCart()
@@ -2670,9 +2655,10 @@ die("Shop::processRedirect(): This method is obsolete!");
         if (!isset($_SESSION['shop']['cancellation_terms'])) {
             $_SESSION['shop']['cancellation_terms'] = '';
         }
+        // Since 3.1.0
         $page_repository = Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-        if ($page_repository->existsModuleCmd(
-            FRONTEND_LANG_ID, 'shop', 'payment')) {
+        if ($page_repository->findOneByModuleCmdLang(
+            'shop', 'payment', FRONTEND_LANG_ID)) {
             HTTP::redirect(
                 Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'payment'));
         }
@@ -2951,7 +2937,7 @@ die("Shop::processRedirect(): This method is obsolete!");
 
 //DBG::log("Shop::viewpart_lsv(): Entered");
 
-        if (self::processor_name() != 'Internal_LSV') return;
+        if (self::processor_name() != 'internal_lsv') return;
         if (!empty($_POST['account_holder']))
             $_SESSION['shop']['account_holder'] = $_POST['account_holder'];
         if (!empty($_POST['account_bank']))
@@ -3332,6 +3318,9 @@ die("Shop::processRedirect(): This method is obsolete!");
     {
         global $objDatabase, $_ARRAYLANG;
 
+// FOR TESTING ONLY (repeatedly process/store the order, also disable self::destroyCart())
+//$_SESSION['shop']['order_id'] = NULL;
+
         // Verify that the order hasn't yet been saved
         // (and has thus not yet been confirmed)
         if (isset($_SESSION['shop']['order_id'])) {
@@ -3509,6 +3498,8 @@ die("Shop::processRedirect(): This method is obsolete!");
 //DBG::log("Cart::update(): Coupon Code: $coupon_code");
         $items_total = 0;
 
+        // Suppress Coupon messages (see Coupon::available())
+        Message::save();
         foreach (Cart::get_products_array() as $arrProduct) {
             $objProduct = Product::getById($arrProduct['id']);
             if (!$objProduct) {
@@ -3575,6 +3566,7 @@ DBG::log("Shop::process(): ERROR: Failed to store Coupon for Product ID $product
 DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
             }
         }
+        Message::restore();
 
         $processor_id = Payment::getProperty($_SESSION['shop']['paymentId'], 'processor_id');
         $processor_name = PaymentProcessing::getPaymentProcessorName($processor_id);

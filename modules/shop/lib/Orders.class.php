@@ -208,7 +208,7 @@ class Orders
 //DBG::activate(DBG_ADODB);
         $objResult = $objDatabase->SelectLimit(
             $query_id.$query_from.$query_join.$query_where.$query_order,
-            $limit, $offset);
+            $limit, intval($offset));
 //DBG::deactivate(DBG_ADODB);
         if (!$objResult) return Order::errorHandler();
         $arrId = array();
@@ -518,128 +518,56 @@ if (!$limit) {
             $objTemplate->loadTemplateFile('module_shop_statistic.html');
         }
         $objTemplate->setGlobalVariable($_ARRAYLANG);
-        $sumColumn3 = $sumColumn4 = 0;
-        $sumColumn2 = '';
-        $totalSoldProducts = 0;
-        $totalOrderSum = 0;
-        $totalOrders = 0;
-        $bestMonthSum = 0;
-        $bestMonthDate = '';
-        $arrShopMonthSum = array();
-        $i = 0;
-        // Get the first order date, if its empty, no order has been made yet!
+        // Get the first order date; if its empty, no order has been placed yet
         $time_first_order = Order::getFirstOrderTime();
         if (!$time_first_order) {
             $objTemplate->touchBlock('no_order');
             return $objTemplate;
         }
-        $orderStartyear = date('Y', $time_first_order);
-        $orderStartmonth = date('m', $time_first_order);
-        // Query the Order sum, number of Orders, and the best month
-        $query = "
-            SELECT currency_id, sum,
-                   DATE_FORMAT(date_time, '%m') AS month,
-                   DATE_FORMAT(date_time, '%Y') AS year
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
-             WHERE status=".Order::STATUS_CONFIRMED."
-                OR status=".Order::STATUS_COMPLETED."
-             ORDER BY date_time DESC";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-            return Order::errorHandler();
-        }
-        while (!$objResult->EOF) {
-            $orderSum = Currency::getDefaultCurrencyPrice($objResult->fields['sum']);
-            if (!isset($arrShopMonthSum[$objResult->fields['year']][$objResult->fields['month']])) {
-                $arrShopMonthSum[$objResult->fields['year']][$objResult->fields['month']] = 0;
-            }
-            $arrShopMonthSum[$objResult->fields['year']][$objResult->fields['month']] += $orderSum;
-            $totalOrderSum += $orderSum;
-            $totalOrders++;
-            $objResult->MoveNext();
-        }
-        $months = explode(',', $_ARRAYLANG['TXT_MONTH_ARRAY']);
-        foreach ($arrShopMonthSum as $year => $arrMonth) {
-            foreach ($arrMonth as $month => $sum) {
-                if ($bestMonthSum < $sum) {
-                    $bestMonthSum = $sum;
-                    $bestMonthDate = $months[$month-1].' '.$year;
+        $year_first_order = date('Y', $time_first_order);
+        $month_first_order = date('m', $time_first_order);
+        $start_month = $end_month = $start_year = $end_year = NULL;
+        if (isset($_REQUEST['submitdate'])) {
+            // A range is requested
+            $start_month = intval($_REQUEST['startmonth']);
+            $end_month = intval($_REQUEST['stopmonth']);
+            $start_year = intval($_REQUEST['startyear']);
+            $end_year = intval($_REQUEST['stopyear']);
+        } else {
+            // Default range to one year, or back to the first order if less
+            $start_month = $month_first_order;
+            $end_month = Date('m');
+            $start_year = $end_year = Date('Y');
+            if ($year_first_order < $start_year) {
+                $start_year -= 1;
+                if (   $year_first_order < $start_year
+                    || $month_first_order < $start_month) {
+                    $start_month = $end_month;
                 }
             }
         }
-        // The total sum of products sold
-        $query = "
-            SELECT sum(A.quantity) AS shopTotalSoldProducts
-              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items AS A,
-                   ".DBPREFIX."module_shop".MODULE_INDEX."_orders AS B
-             WHERE A.order_id=B.id
-               AND (   B.status=".Order::STATUS_CONFIRMED."
-                    OR B.status=".Order::STATUS_COMPLETED.")";
-        $objResult = $objDatabase->SelectLimit($query, 1);
-        if ($objResult) {
-            if (!$objResult->EOF) {
-                $totalSoldProducts = $objResult->fields['shopTotalSoldProducts'];
-                $objResult->MoveNext();
-            }
-        }
-        // If a timeperiod is set, set the begin and end date
-        $startDate = $stopDate = 0;
-        if (isset($_REQUEST['submitdate'])) {
-            $objTemplate->setVariable(array(
-                'SHOP_START_MONTH' => Shopmanager::getMonthDropdownMenu(
-                    intval($_REQUEST['startmonth'])),
-                'SHOP_END_MONTH' => Shopmanager::getMonthDropdownMenu(
-                    intval($_REQUEST['stopmonth'])),
-                'SHOP_START_YEAR' => Shopmanager::getYearDropdownMenu(
-                    intval($_REQUEST['startyear']), $orderStartyear),
-                'SHOP_END_YEAR' => Shopmanager::getYearDropdownMenu(
-                    intval($_REQUEST['stopyear']), $orderStartyear),
-            ));
-// TODO: Use proper date functions
-            $startDate =
-                intval($_REQUEST['startyear']).'-'.
-                sprintf('%02s', intval($_REQUEST['startmonth'])).
-                '-01 00:00:00';
-            $stopDate =
-                intval($_REQUEST['stopyear']).'-'.
-                sprintf('%02s', intval($_REQUEST['stopmonth'])).
-                '-'.
-                date(
-                  't',
-                  mktime(0, 0, 0,
-                    intval($_REQUEST['stopmonth']),
-                    1,
-                    intval($_REQUEST['stopyear']))
-                ).' 23:59:59';
-        } else {   //set timeperiod to max. one year
-            $lastYear = Date('Y');
-            if ($orderStartyear < Date('Y')) {
-                $orderStartmonth = Date('m');
-                $lastYear = Date('Y')-1;
-            }
-            $endMonth = Date('m');
-            $objTemplate->setVariable(array(
-                'SHOP_START_MONTH' =>
-                    Shopmanager::getMonthDropdownMenu($orderStartmonth),
-                'SHOP_END_MONTH' =>
-                    Shopmanager::getMonthDropdownMenu($endMonth),
-                'SHOP_START_YEAR' =>
-                    Shopmanager::getYearDropdownMenu(
-                        $lastYear, $orderStartyear),
-                'SHOP_END_YEAR' =>
-                    Shopmanager::getYearDropdownMenu(
-                        date('Y'), $orderStartyear),
-            ));
-            $startDate =
-                $lastYear.'-'.$orderStartmonth.'-01 00:00:00';
-            $stopDate =
-                date('Y').'-'.$endMonth.'-'.
-                date('t', mktime(0, 0, 0, $endMonth, 1, date('Y'))).
-                ' 23:59:59';
-        }
-        //check if a statistic has been requested
-        $selectedStat =
-            (isset($_REQUEST['selectstats'])
+        $objTemplate->setVariable(array(
+            'SHOP_START_MONTH' =>
+                Shopmanager::getMonthDropdownMenu($start_month),
+            'SHOP_END_MONTH' =>
+                Shopmanager::getMonthDropdownMenu($end_month),
+            'SHOP_START_YEAR' =>
+                Shopmanager::getYearDropdownMenu(
+                    $start_year, $year_first_order),
+            'SHOP_END_YEAR' =>
+                Shopmanager::getYearDropdownMenu(
+                    $end_year, $year_first_order),
+        ));
+        $start_date = date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME,
+            mktime(0, 0, 0, $start_month, 1, $start_year));
+        // mktime() will fix the month from 13 to 01, see example 2
+        // on http://php.net/manual/de/function.mktime.php.
+        // Mind that this is exclusive and only used in the queries below
+        // so that Order date < $end_date!
+        $end_date = date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME,
+            mktime(0, 0, 0, $end_month+1, 1, $end_year));
+
+        $selectedStat = (isset($_REQUEST['selectstats'])
                 ? intval($_REQUEST['selectstats']) : 0);
         if ($selectedStat == 2) {
             // Product statistic
@@ -666,12 +594,12 @@ if (!$limit) {
                   JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_products AS B
                     ON A.product_id=B.id".
                 $arrSql['join']."
-                 WHERE C.date_time>='$startDate'
-                   AND C.date_time<='$stopDate'
+                 WHERE C.date_time>='$start_date'
+                   AND C.date_time<'$end_date'
                    AND (   C.status=".Order::STATUS_CONFIRMED."
                         OR C.status=".Order::STATUS_COMPLETED.")
                  ORDER BY shopColumn2 DESC";
-        } elseif ( $selectedStat == 3) {
+        } elseif ($selectedStat == 3) {
             // Customer statistic
             $objTemplate->setVariable(array(
                 'TXT_COLUMN_1_DESC' => $_ARRAYLANG['TXT_NAME'],
@@ -689,8 +617,8 @@ if (!$limit) {
                   FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders AS A
                   JOIN ".DBPREFIX."module_shop".MODULE_INDEX."_order_items AS B
                     ON A.id=B.order_id
-                 WHERE A.date_time>='$startDate'
-                   AND A.date_time<='$stopDate'
+                 WHERE A.date_time>='$start_date'
+                   AND A.date_time<'$end_date'
                    AND (   A.status=".Order::STATUS_CONFIRMED."
                         OR A.status=".Order::STATUS_COMPLETED.")
                  GROUP BY B.order_id
@@ -715,8 +643,8 @@ if (!$limit) {
                   FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items AS A,
                        ".DBPREFIX."module_shop".MODULE_INDEX."_orders AS B
                  WHERE A.order_id=B.id
-                   AND B.date_time>='$startDate'
-                   AND B.date_time<='$stopDate'
+                   AND B.date_time>='$start_date'
+                   AND B.date_time<'$end_date'
                    AND (   B.status=".Order::STATUS_CONFIRMED."
                         OR B.status=".Order::STATUS_COMPLETED.")
                  GROUP BY B.id
@@ -727,6 +655,8 @@ if (!$limit) {
         if (!$objResult) {
             return Order::errorHandler();
         }
+        $sumColumn3 = $sumColumn4 = 0;
+        $sumColumn2 = '';
         if ($selectedStat == 2) {
             // Product statistc
             while (!$objResult->EOF) {
@@ -763,26 +693,20 @@ if (!$limit) {
             }
         } elseif ($selectedStat == 3) {
             // Customer statistic
-            $objUser = FWUser::getFWUserObject()->objUser;
-            $objUser = $objUser->getUsers(array(
-                'group_id' => array(
-                    SettingDb::getValue('usergroup_id_customer'),
-                    SettingDb::getValue('usergroup_id_reseller'),
-            )));
             while (!$objResult->EOF) {
                 Currency::setActiveCurrencyId($objResult->fields['currency_id']);
                 $key = $objResult->fields['id'];
-                $objUser = FWUser::getFWUserObject()->objUser;
-                $objUser = $objUser->getUser($key);
-                $company = '';
-                $name = $_ARRAYLANG['TXT_SHOP_CUSTOMER_NOT_FOUND'];
-                if ($objUser) {
-                    $company = $objUser->getProfileAttribute('company');
-                    $name =
-                        $objUser->getProfileAttribute('firstname').' '.
-                        $objUser->getProfileAttribute('lastname');
-                }
                 if (!isset($arrayResults[$key])) {
+                    $objUser = FWUser::getFWUserObject()->objUser;
+                    $objUser = $objUser->getUser($key);
+                    $company = '';
+                    $name = $_ARRAYLANG['TXT_SHOP_CUSTOMER_NOT_FOUND'];
+                    if ($objUser) {
+                        $company = $objUser->getProfileAttribute('company');
+                        $name =
+                            $objUser->getProfileAttribute('firstname').' '.
+                            $objUser->getProfileAttribute('lastname');
+                    }
                     $arrayResults[$key] = array(
                         'column1' =>
                             '<a href="index.php?cmd=shop'.MODULE_INDEX.
@@ -823,8 +747,8 @@ if (!$limit) {
             }
             krsort($arrayResults, SORT_NUMERIC);
         }
-        // Display
         $objTemplate->setCurrentBlock('statisticRow');
+        $i = 0;
         if (is_array($arrayResults)) {
             foreach ($arrayResults as $entry) {
                 $objTemplate->setVariable(array(
@@ -839,7 +763,58 @@ if (!$limit) {
                 $objTemplate->parse('statisticRow');
             }
         }
-        // Totals
+
+        $query = "
+            SELECT currency_id, sum,
+                   DATE_FORMAT(date_time, '%m') AS month,
+                   DATE_FORMAT(date_time, '%Y') AS year
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_orders
+             WHERE status=".Order::STATUS_CONFIRMED."
+                OR status=".Order::STATUS_COMPLETED."
+             ORDER BY date_time DESC";
+        $objResult = $objDatabase->Execute($query);
+        if (!$objResult) {
+            return Order::errorHandler();
+        }
+        $totalSoldProducts = 0;
+        $query = "
+            SELECT sum(A.quantity) AS shopTotalSoldProducts
+              FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items AS A,
+                   ".DBPREFIX."module_shop".MODULE_INDEX."_orders AS B
+             WHERE A.order_id=B.id
+               AND (   B.status=".Order::STATUS_CONFIRMED."
+                    OR B.status=".Order::STATUS_COMPLETED.")";
+        $objResult = $objDatabase->SelectLimit($query, 1);
+        if ($objResult) {
+            if (!$objResult->EOF) {
+                $totalSoldProducts = $objResult->fields['shopTotalSoldProducts'];
+                $objResult->MoveNext();
+            }
+        }
+        $totalOrderSum = 0;
+        $totalOrders = 0;
+        $bestMonthSum = 0;
+        $bestMonthDate = '';
+        $arrShopMonthSum = array();
+        while (!$objResult->EOF) {
+            $orderSum = Currency::getDefaultCurrencyPrice($objResult->fields['sum']);
+            if (!isset($arrShopMonthSum[$objResult->fields['year']][$objResult->fields['month']])) {
+                $arrShopMonthSum[$objResult->fields['year']][$objResult->fields['month']] = 0;
+            }
+            $arrShopMonthSum[$objResult->fields['year']][$objResult->fields['month']] += $orderSum;
+            $totalOrderSum += $orderSum;
+            $totalOrders++;
+            $objResult->MoveNext();
+        }
+        $months = explode(',', $_ARRAYLANG['TXT_MONTH_ARRAY']);
+        foreach ($arrShopMonthSum as $year => $arrMonth) {
+            foreach ($arrMonth as $month => $sum) {
+                if ($bestMonthSum < $sum) {
+                    $bestMonthSum = $sum;
+                    $bestMonthDate = $months[$month-1].' '.$year;
+                }
+            }
+        }
         $objTemplate->setVariable(array(
             'SHOP_ROWCLASS' => 'row'.(++$i % 2 + 1),
             'SHOP_TOTAL_SUM' =>
@@ -927,7 +902,7 @@ if (!$limit) {
      */
     static function updateStatusFromGet()
     {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
 
         // Update the order status if valid
         if (   !isset($_GET['changeOrderStatus'])
@@ -940,7 +915,8 @@ if (!$limit) {
             || $status >= Order::STATUS_MAX
             || $order_id <= 0)
         {
-            return false;
+            Message::error($_ARRAYLANG['TXT_SHOP_ORDER_ERROR_UPDATING_STATUS']);
+            HTTP::redirect('index.php?cmd=shop&act=orders');
         }
         $objUser = FWUser::getFWUserObject()->objUser;
         $query = "
@@ -949,7 +925,22 @@ if (!$limit) {
                    `modified_by`='".addslashes($objUser->getUsername())."',
                    `modified_on`='".date('Y-m-d H:i:s')."'
              WHERE `id`=$order_id";
-        return (boolean)$objDatabase->Execute($query);
+        if (!$objDatabase->Execute($query)) {
+            Message::error($_ARRAYLANG['TXT_SHOP_ORDER_ERROR_UPDATING_STATUS']);
+            HTTP::redirect('index.php?cmd=shop&act=orders');
+        }
+        // Send an email to the customer
+        if (   !empty($_GET['sendMail'])
+            && !empty($_GET['order_id'])) {
+            $result = ShopLibrary::sendConfirmationMail($_GET['order_id']);
+            if (!empty($result)) {
+                Message::ok(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'],
+                    $result));
+            } else {
+                Message::error($_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']);
+            }
+        }
+        HTTP::redirect('index.php?cmd=shop&act=orders');
     }
 
 
@@ -1201,7 +1192,7 @@ if (!$limit) {
             'CUSTOMER_PHONE' => $objOrder->billing_phone(),
             'CUSTOMER_FAX' => $objOrder->billing_fax(),
             'LANG_ID' => $lang_id,
-            'NOW' => date(ASCMS_DATE_FORMAT),
+            'NOW' => date(ASCMS_DATE_FORMAT_DATETIME),
             'TODAY' => date(ASCMS_DATE_FORMAT_DATE),
 //            'DATE' => date(ASCMS_DATE_FORMAT_DATE, strtotime($objOrder->date_time())),
             'ORDER_ID' => $order_id,
@@ -1211,12 +1202,12 @@ if (!$limit) {
                 date(ASCMS_DATE_FORMAT_DATE,
                     strtotime($objOrder->date_time())),
             'ORDER_TIME' =>
-                date(ASCMS_DATE_FORMAT_INTERNATIONAL_TIME,
+                date(ASCMS_DATE_FORMAT_TIME,
                     strtotime($objOrder->date_time())),
             'ORDER_STATUS_ID' => $status,
             'ORDER_STATUS' => $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_'.$status],
             'MODIFIED' =>
-                date(ASCMS_DATE_FORMAT,
+                date(ASCMS_DATE_FORMAT_DATETIME,
                     strtotime($objOrder->modified_on())),
             'REMARKS' => $objOrder->note(),
             'ORDER_SUM' => sprintf('% 9.2f', $objOrder->sum()),
@@ -1254,13 +1245,6 @@ if (!$limit) {
                 )),
             );
         }
-        // Pick the order items from the database
-//        $query = "
-//            SELECT `id`, `product_id`, `product_name`, `price`, `quantity`
-//              FROM `".DBPREFIX."module_shop".MODULE_INDEX."_order_items`
-//             WHERE `order_id`=$order_id";
-//        $objResultItem = $objDatabase->Execute($query);
-//        if (!$objResultItem || $objResultItem->EOF) {
         $arrItems = $objOrder->getItems();
         if (!$arrItems) {
             Message::warning($_ARRAYLANG['TXT_SHOP_ORDER_WARNING_NO_ITEM']);
@@ -1284,9 +1268,9 @@ if (!$limit) {
         $orderItemCount = 0;
         $total_item_price = 0;
 //        $total_discount = 0;
+        // Suppress Coupon messages (see Coupon::available())
+        Message::save();
         foreach ($arrItems as $item) {
-//        while (!$objResultItem->EOF) {
-//            $orderItemId = $objResultItem->fields['id'];
             $product_id = $item['product_id'];
             $objProduct = Product::getById($product_id);
             if (!$objProduct) {
@@ -1294,8 +1278,7 @@ if (!$limit) {
                 continue;
             }
 //DBG::log("Orders::getSubstitutionArray(): Item: Product ID $product_id");
-            $item_id = $item['item_id'];
-            $product_name = substr($item['product_name'], 0, 40);
+            $product_name = substr($item['name'], 0, 40);
             $item_price = Currency::getCurrencyPrice($item['price']);
             $quantity = $item['quantity'];
 // TODO: Add individual VAT rates for Products
@@ -1310,44 +1293,41 @@ if (!$limit) {
             if ($item['attributes']) {
                 $str_options = '  '; // '[';
                 $attribute_name_previous = '';
-/*   *      "Attribute name" => array(
-     *        Attribute ID => array
-     *          'name' => "option name",
-     *          'price' => "price",*/
                 foreach ($item['attributes'] as
                         $attribute_name => $arrAttribute) {
 //DBG::log("Attribute /$attribute_name/ => ".var_export($arrAttribute, true));
-                    $option_name = $objResultAttribute->fields['option_name'];
 // NOTE: The option price is optional and may be left out
-                    $optionPrice = $objResultAttribute->fields['price'];
-                    $item_price += $optionPrice;
-                    // Recognize the names of uploaded files,
-                    // verify their presence and use the original name
-                    $option_name_stripped = ShopLibrary::stripUniqidFromFilename($option_name);
-                    $path = Order::UPLOAD_FOLDER.$option_name;
-                    if (   $option_name != $option_name_stripped
-                        && File::exists($path)) {
-                        $option_name = $option_name_stripped;
-                    }
-                    if ($attribute_name != $attribute_name_previous) {
-                        if ($attribute_name_previous) {
-                            $str_options .= '; ';
+                    foreach ($arrAttribute as $arrOption) {
+                        $option_name = $arrOption['name'];
+                        $option_price = $arrOption['price'];
+                        $item_price += $option_price;
+                        // Recognize the names of uploaded files,
+                        // verify their presence and use the original name
+                        $option_name_stripped = ShopLibrary::stripUniqidFromFilename($option_name);
+                        $path = Order::UPLOAD_FOLDER.$option_name;
+                        if (   $option_name != $option_name_stripped
+                            && File::exists($path)) {
+                            $option_name = $option_name_stripped;
                         }
-                        $str_options .= $attribute_name.': '.$option_name;
-                        $attribute_name_previous = $attribute_name;
-                    } else {
-                        $str_options .= ', '.$option_name;
-                    }
+                        if ($attribute_name != $attribute_name_previous) {
+                            if ($attribute_name_previous) {
+                                $str_options .= '; ';
+                            }
+                            $str_options .= $attribute_name.': '.$option_name;
+                            $attribute_name_previous = $attribute_name;
+                        } else {
+                            $str_options .= ', '.$option_name;
+                        }
 // TODO: Add proper formatting with sprintf() and language entries
-                    if ($optionPrice != 0) {
-                        $str_options .=
-                            ' './/' ('.
-                            Currency::formatPrice($optionPrice).
-                            ' '.Currency::getActiveCurrencyCode()
-//                            .')'
-                            ;
+                        if ($option_price != 0) {
+                            $str_options .=
+                                ' './/' ('.
+                                Currency::formatPrice($option_price).
+                                ' '.Currency::getActiveCurrencyCode()
+//                                .')'
+                                ;
+                        }
                     }
-                    $objResultAttribute->MoveNext();
                 }
 //                $str_options .= ']';
             }
@@ -1429,7 +1409,8 @@ if (!$limit) {
 //DBG::log("Orders::getSubstitutionArray(): Getting code");
                         $code = Coupon::getNewCode();
 //DBG::log("Orders::getSubstitutionArray(): Got code: $code, calling Coupon::addCode($code, 0, 0, 0, $item_price)");
-                        Coupon::addCode($code, 0, 0, 0, $item_price, 0, 0, 1e10);
+                        Coupon::storeCode(
+                            $code, 0, 0, 0, $item_price, 0, 0, 1e10, true);
                         $arrProduct['COUPON_DATA'][] = array(
                             'COUPON_CODE' => $code
                         );
@@ -1461,6 +1442,7 @@ if (!$limit) {
                 $objCoupon->redeem($order_id, $customer_id, $total_item_price);
             }
         }
+        Message::restore();
         // Fill in the Coupon block with proper discount and amount
         if ($coupon_amount) {
 //DBG::log("Orders::getSubstitutionArray(): Got Order Coupon ".$objCouponOrder->code());
@@ -1474,7 +1456,6 @@ if (!$limit) {
         Products::deactivate_soldout();
         if (Vat::isEnabled()) {
 //DBG::log("Orders::getSubstitutionArray(): VAT amount: ".$objOrder->vat_amount());
-// TODO: Update mail template!
             $arrSubstitution['VAT'] = array(0 => array(
                 'VAT_TEXT' => sprintf('%-40s',
                     (Vat::isIncluded()

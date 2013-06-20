@@ -456,7 +456,7 @@ window.setTimeout(3000, function() {
             'SIGNATURE' => urlencode(contrexx_input2raw($SIGNATURE)),
         );
         $attributes = self::getAttributeList('payConfirm', $arrOrder);
-// TODO: This won't work without allow_url_fopen
+        // This won't work without allow_url_fopen
         $confirmUrl = self::$gateway['payConfirm'].'?'.$attributes;
 //DBG::log("payConfirm: URL: $confirmUrl");
         $result = file_get_contents($confirmUrl);
@@ -570,7 +570,6 @@ window.setTimeout(3000, function() {
                 return $value;
             case 'LANGID':
                 $value = strtolower($value);
-// TODO: Make static
                 if (!in_array($value, self::$arrLangId)) {
                     $value = self::$arrLangId[0];
                     self::$arrWarning[] = $attribute.' was set to default value "'.self::$arrLangId['0'].'".';

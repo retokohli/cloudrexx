@@ -437,6 +437,23 @@ class ShopCategories
 
 
     /**
+     * Toggles the Category status for the given ID
+     *
+     * If the Category doesn't exist to begin with, returns null.
+     * @param   integer     $id         The ShopCategory ID
+     * @return  boolean                 True on success, false on failure,
+     *                                  or null otherwise
+     */
+    static function toggleStatusById($id)
+    {
+        $objCategory = ShopCategory::getById($id);
+        if ($objCategory === null) return null;
+        $objCategory->active(!$objCategory->active());
+        return $objCategory->update();
+    }
+
+
+    /**
      * Delete all ShopCategories from the database.
      *
      * Also removes associated subcategories and Products.

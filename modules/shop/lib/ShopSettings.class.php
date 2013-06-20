@@ -120,6 +120,10 @@ class ShopSettings
         SettingDb::set('product_sorting',
             empty($_POST['product_sorting'])
               ? 1 : intval($_POST['product_sorting']));
+        // Order amount lower limit (new in 3.1.0)
+        SettingDb::set('orderitems_amount_min',
+            empty($_POST['orderitems_amount_min'])
+                ? 0 : floatval($_POST['orderitems_amount_max']));
         // Order amount upper limit (applicable when using Saferpay)
         SettingDb::set('orderitems_amount_max',
             empty($_POST['orderitems_amount_max'])
@@ -236,15 +240,7 @@ class ShopSettings
 //DBG::log("after Payment::update: ".self::$success.", changed: ".self::$changed);
         Payment::reset();
         if (empty ($_POST['bpayment'])) return;
-/*
-// OBSOLETE
-        // Postfinance (FKA yellowpay)
-//        $strYellowpayAcceptedPM = (!empty($_POST['postfinance_accepted_payment_methods'])
-//            ? addslashes(join(',', $_POST['postfinance_accepted_payment_methods']))
-//            : ''
-//        );
-*/
-// TODO: All the following should be handled by Payment::settings()
+// NOTE: All the following could be handled by Payment::settings()
         SettingDb::set('postfinance_shop_id',
             trim(strip_tags(contrexx_input2raw($_POST['postfinance_shop_id']))));
         SettingDb::set('postfinance_active',
@@ -805,6 +801,9 @@ class ShopSettings
         }
         SettingDb::add('shopnavbar_on_all_pages', $shopnavbar, ++$i,
             SettingDb::TYPE_CHECKBOX);
+        // New for v3.1.0
+        SettingDb::add('orderitems_amount_min', 0, ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
         // New for v2.2(?)
         SettingDb::add('orderitems_amount_max', 0, ++$i,
             SettingDb::TYPE_TEXT, null, 'config');
@@ -818,6 +817,10 @@ class ShopSettings
                 ShopLibrary::REGISTER_NONE)),
             'config');
         SettingDb::add('numof_products_per_page_frontend', 25, ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
+        SettingDb::add('history_maximum_age_days', 730, ++$i,
+            SettingDb::TYPE_TEXT, null, 'config');
+        SettingDb::add('numof_orders_per_page_frontend', 10, ++$i,
             SettingDb::TYPE_TEXT, null, 'config');
         SettingDb::add('numof_orders_per_page_backend', 25, ++$i,
             SettingDb::TYPE_TEXT, null, 'config');

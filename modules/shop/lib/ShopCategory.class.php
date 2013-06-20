@@ -841,10 +841,10 @@ class ShopCategory
     {
         // Get the parent ShopCategory ID
         $parentShopCategoryId =
-            ShopCategory::getParentCategoryId($shopCategoryId);
+            self::getParentCategoryId($shopCategoryId);
         // Get the IDs of all active children
         $arrChildShopCategoryId =
-            ShopCategory::getChildCategoryIdArray($parentShopCategoryId, true);
+            ShopCategories::getChildCategoryIdArray($parentShopCategoryId, true);
         $index = array_search($parentShopCategoryId, $arrChildShopCategoryId);
         if (   $index === false
             || empty($arrChildShopCategoryId[$index+1])) {

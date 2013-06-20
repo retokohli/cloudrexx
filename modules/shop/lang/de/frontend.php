@@ -450,14 +450,21 @@ $_ARRAYLANG['TXT_SHOP_ADDITIONAL_FEES_INCLUDED'] = "<br />(Einschliesslich Zusat
 $_ARRAYLANG['TXT_SHOP_DISCOUNT_RATE_DISCOUNT'] = "Zusätzlicher Rabatt:";
 $_ARRAYLANG['TXT_SHOP_EDIT_ITEM'] = "Artikel bearbeiten";
 $_ARRAYLANG['TXT_SHOP_GOTO_SENDPASS'] = "<a href=\"%1\$s\">Passwort vergessen?</a>";
-
 $_ARRAYLANG['TXT_SHOP_ATTRIBUTE_CART_FORMAT'] = " [%2\$s]";
 $_ARRAYLANG['TXT_SHOP_ATTRIBUTE_CART_FORMAT_JOINER'] = " ";
 $_ARRAYLANG['TXT_SHOP_ATTRIBUTE_LONG_FORMAT'] = "<i>- %1\$s: %2\$s</i>";
 $_ARRAYLANG['TXT_SHOP_ATTRIBUTE_LONG_FORMAT_JOINER'] = "<br />";
-
 $_ARRAYLANG['TXT_SHOP_OPTION_CART_FORMAT'] = "%1\$s";
 $_ARRAYLANG['TXT_SHOP_OPTION_CART_FORMAT_JOINER'] = ", ";
 $_ARRAYLANG['TXT_SHOP_OPTION_LONG_FORMAT'] = "%1\$s&nbsp;(%2\$01.2f&nbsp;%4\$s)";
 $_ARRAYLANG['TXT_SHOP_OPTION_LONG_FORMAT_JOINER'] = ", ";
 $_ARRAYLANG['TXT_SHOP_CONFIRM_DELETE_PRODUCT'] = "Wollen Sie diesen Artikel wirklich aus dem Warenkorb entfernen?";
+// 20130523
+$_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_FOR_THIS_PRODUCT'] = "Der eingegebene Gutscheincode ist für dieses Produkt nicht gültig";
+$_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_FOR_THIS_PAYMENT'] = "Der eingegebene Gutscheincode ist für diese Bezahlmethode nicht gültig";
+$_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_YET'] = "Der eingegebene Gutscheincode ist noch nicht gültig";
+$_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_ALREADY'] = "Der eingegebene Gutscheincode ist nicht mehr gültig";
+$_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_CAUSE_USED_UP'] = "Der eingegebene Gutscheincode wurde bereits verwendet und ist nicht mehr gültig";
+$_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_FOR_AMOUNT'] = "Der eingegebene Gutscheincode ist erst ab einer Bestellsumme von %2\$s %1\$.2f gültig";
+// 3.1.0
+$_ARRAYLANG['TXT_SHOP_ORDERITEMS_AMOUNT_MIN'] = "Achtung!<br />Der Gesamtbetrag Ihrer Bestellung erreicht nicht den Mindestbestellwert von %2\$s %1\$0.2f.";

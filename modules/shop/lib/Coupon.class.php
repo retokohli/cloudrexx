@@ -255,7 +255,7 @@ class Coupon
     function getIndex()
     {
         if (empty($this->code)) return NULL;
-        return $this->code().'-'.$this->customer_id();
+        return $this->code.'-'.$this->customer_id;
     }
 
 
@@ -334,6 +334,8 @@ DBG::log("Coupon::get($code): ERROR: Query failed");
     static function available($code, $order_amount,
         $customer_id=null, $product_id=null, $payment_id=null
     ) {
+        global $_ARRAYLANG;
+
         // See if the code exists and is still valid
         $objCoupon = self::get($code);
         if ($objCoupon === false) {
@@ -341,32 +343,36 @@ DBG::log("Coupon::get($code): ERROR: Query failed");
             return false;
         }
         if (!$objCoupon) return null;
-        if ($objCoupon->minimum_amount() > floatval($order_amount)) {
-//DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Order amount too low");
-            return null;
-        }
-        if ($objCoupon->customer_id()
-         && $objCoupon->customer_id() != intval($customer_id)) {
+        // Verify "ownership" first.  No point in setting status messages
+        // that are inappropriate for other users.
+        if ($objCoupon->customer_id
+         && $objCoupon->customer_id != intval($customer_id)) {
 //DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Wrong Customer ID");
             return null;
         }
-        if ($objCoupon->product_id() != intval($product_id)) {
-//DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Wrong Product ID, need ".$objCoupon->product_id());
+        if ($objCoupon->product_id != intval($product_id)) {
+//DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Wrong Product ID, need ".$objCoupon->product_id);
+            if ($objCoupon->product_id) {
+                Message::information($_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_FOR_THIS_PRODUCT']);
+            }
             return null;
         }
-        if ($objCoupon->payment_id()
-         && $objCoupon->payment_id() != intval($payment_id)) {
+        if ($objCoupon->payment_id
+         && $objCoupon->payment_id != intval($payment_id)) {
 //DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Wrong Payment ID");
+            Message::information($_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_FOR_THIS_PAYMENT']);
             return null;
         }
-        if ($objCoupon->start_time()
-         && $objCoupon->start_time() > time()) {
+        if ($objCoupon->start_time
+         && $objCoupon->start_time > time()) {
 //DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Not valid yet");
+            Message::information($_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_YET']);
             return null;
         }
-        if ($objCoupon->end_time()
-         && $objCoupon->end_time() < time()) {
+        if ($objCoupon->end_time
+         && $objCoupon->end_time < time()) {
 //DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): No longer valid");
+            Message::information($_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_ALREADY']);
             return null;
         }
         // Unlimited uses
@@ -375,12 +381,20 @@ DBG::log("Coupon::get($code): ERROR: Query failed");
         // - If the Coupon's customer_id is empty, subtract all uses
         // - Otherwise, subtract the current customer's uses only
         $objCoupon->uses(
-            $objCoupon->uses()
+            $objCoupon->uses
           - $objCoupon->getUsedCount(
-              ($objCoupon->customer_id()
+              ($objCoupon->customer_id
                 ? $customer_id : null)));
-        if ($objCoupon->uses() <= 0) {
+        if ($objCoupon->uses <= 0) {
 //DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Fully redeemed");
+            Message::information($_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_CAUSE_USED_UP']);
+            return null;
+        }
+        if ($objCoupon->minimum_amount > floatval($order_amount)) {
+//DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Order amount too low");
+            Message::information(sprintf(
+                $_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_FOR_AMOUNT'],
+                $objCoupon->minimum_amount, Currency::getActiveCurrencyCode()));
             return null;
         }
 //DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Found ".(var_export($objCoupon, true)));
@@ -452,16 +466,16 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
         $objCoupon->product_id($objResult->fields['product_id']);
         // Subtract the number of times the Coupon has been used
         $objCoupon->uses($objResult->fields['uses']);
-        if ($objCoupon->uses() < 1e9) {
+        if ($objCoupon->uses < 1e9) {
             $objCoupon->uses(
-                $objCoupon->uses()
+                $objCoupon->uses
               - $objCoupon->getUsedCount($customer_id));
         }
         // Subtract the amount used with the Coupon
         $objCoupon->discount_amount($objResult->fields['discount_amount']);
-        if ($objCoupon->uses() < 1e9) {
+        if ($objCoupon->uses < 1e9) {
             $objCoupon->uses(
-                $objCoupon->uses()
+                $objCoupon->uses
               - $objCoupon->getUsedCount($customer_id));
         }
 //DBG::log("Coupon::getByOrderId($order_id): Found ".(var_export($objCoupon, true)));
@@ -688,7 +702,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
             $objCoupon->customer_id($objResult->fields['customer_id']);
             $objCoupon->product_id($objResult->fields['product_id']);
             $objCoupon->used = $objCoupon->getUsedCount();
-            $arrCoupons[$code.'-'.$objCoupon->customer_id()] = $objCoupon;
+            $arrCoupons[$code.'-'.$objCoupon->customer_id] = $objCoupon;
             $objResult->MoveNext();
         }
         $query = "
@@ -754,14 +768,15 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
              WHERE `code`='".addslashes($code)."'
                AND `customer_id`=".intval($customer_id);
         $objResult = $objDatabase->Execute($query);
-        // Failure or none found
         if (!$objResult) {
             // Failure!  Assume that the Coupon exists.
             return true;
         }
         if ($objResult->EOF) {
+            // None found
             return false;
         }
+        // Exists
         return true;
     }
 
@@ -832,16 +847,6 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
             return Message::error(
                 $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_ERROR_ADDING_INVALID_CODE']);
         }
-
-        $update = false;
-        if (self::recordExists($index)) {
-            $update = true;
-// Alternatively,
-//            return Message::error(sprintf(
-//                $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_ERROR_ADDING_CODE_EXISTS'],
-//                $code));
-        }
-
         // These all default to zero if invalid
         $discount_rate = max(0, $discount_rate);
         $discount_amount = max(0, $discount_amount);
@@ -870,6 +875,14 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
         $query = '';
         if (empty($index)) {
             $index = "$code-$customer_id";
+        }
+        $update = false;
+        if (self::recordExists($index)) {
+            $update = true;
+// Alternatively,
+//            return Message::error(sprintf(
+//                $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_ERROR_ADDING_CODE_EXISTS'],
+//                $code));
         }
         if (self::recordExists($index)) {
             // Update
@@ -1086,7 +1099,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
             $coupon_uri_id = 'coupon_uri_'.$index;
             $objTemplate->setVariable(array(
                 'SHOP_ROWCLASS' => 'row'.(++$row % 2 + 1),
-                'SHOP_DISCOUNT_COUPON_CODE' => $objCoupon->code(),
+                'SHOP_DISCOUNT_COUPON_CODE' => $objCoupon->code,
                 'SHOP_DISCOUNT_COUPON_URI_ICON' =>
                     '<div class="icon_url"'.
                     '>&nbsp;</div>',
@@ -1096,64 +1109,64 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
                         'http://'.$_CONFIG['domainUrl'].
                         ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX.
                         '?section=shop'.MODULE_INDEX.
-                        '&coupon_code='.$objCoupon->code(), false,
+                        '&coupon_code='.$objCoupon->code, false,
                         'readonly="readonly"'.
                         ' style="width: 420px;"'.
                         ' onfocus="this.select();"'.
                         ' onblur="jQuery(\'#'.$coupon_uri_id.'\').hide();"'
                     ).'</div>',
                 'SHOP_DISCOUNT_COUPON_START_TIME' =>
-                    ($objCoupon->start_time()
-                      ? date(ASCMS_DATE_FORMAT_DATE, $objCoupon->start_time())
+                    ($objCoupon->start_time
+                      ? date(ASCMS_DATE_FORMAT_DATE, $objCoupon->start_time)
                       : $_ARRAYLANG['TXT_SHOP_DATE_NONE']),
                 'SHOP_DISCOUNT_COUPON_END_TIME' =>
-                    ($objCoupon->end_time()
-                      ? date(ASCMS_DATE_FORMAT_DATE, $objCoupon->end_time())
+                    ($objCoupon->end_time
+                      ? date(ASCMS_DATE_FORMAT_DATE, $objCoupon->end_time)
                       : $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_END_TIME_UNLIMITED']),
                 'SHOP_DISCOUNT_COUPON_MINIMUM_AMOUNT' =>
-                    ($objCoupon->minimum_amount() > 0
-                      ? $objCoupon->minimum_amount()
+                    ($objCoupon->minimum_amount > 0
+                      ? $objCoupon->minimum_amount
                       : $_ARRAYLANG['TXT_SHOP_AMOUNT_NONE']),
                 'SHOP_DISCOUNT_COUPON_RATE' =>
-                    ($objCoupon->discount_rate() > 0
-                      ? $objCoupon->discount_rate()
+                    ($objCoupon->discount_rate > 0
+                      ? $objCoupon->discount_rate
                       : $_ARRAYLANG['TXT_SHOP_RATE_NONE']),
                 'SHOP_DISCOUNT_COUPON_AMOUNT' =>
-                    ($objCoupon->discount_amount() > 0
-                      ? $objCoupon->discount_amount()
+                    ($objCoupon->discount_amount > 0
+                      ? $objCoupon->discount_amount
                       : $_ARRAYLANG['TXT_SHOP_AMOUNT_NONE']),
                 'SHOP_DISCOUNT_COUPON_USES' =>
                     sprintf($_ARRAYLANG['TXT_SHOP_COUPON_USES_FORMAT'],
                         $objCoupon->used,
-                        ($objCoupon->uses() < 1e9
-                          ? $objCoupon->uses()
+                        ($objCoupon->uses < 1e9
+                          ? $objCoupon->uses
                           : $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_USES_UNLIMITED'])),
                 'SHOP_DISCOUNT_COUPON_SCOPE' =>
-                    ($objCoupon->is_global()
+                    ($objCoupon->global
                       ? $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_GLOBALLY']
                       : $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_PER_CUSTOMER']),
                 'SHOP_DISCOUNT_COUPON_PER_CUSTOMER' =>
-                    (!$objCoupon->is_global()
+                    (!$objCoupon->global
                       ? Html::getRadio('foo_'.++$i, '', false,
                         true, '', Html::ATTRIBUTE_DISABLED)
                       : '&nbsp;'),
                 'SHOP_DISCOUNT_COUPON_CUSTOMER' =>
-                    ($objCoupon->customer_id()
+                    ($objCoupon->customer_id
                       ? Customers::getNameById(
-                          $objCoupon->customer_id(), '%4$s (%3$u)')
+                          $objCoupon->customer_id, '%4$s (%3$u)')
                       : $_ARRAYLANG['TXT_SHOP_CUSTOMER_ANY']),
                 'SHOP_DISCOUNT_COUPON_PRODUCT' =>
-                    ($objCoupon->product_id()
-                      ? (isset($arrProductName[$objCoupon->product_id()])
-                            ? $arrProductName[$objCoupon->product_id()]
+                    ($objCoupon->product_id
+                      ? (isset($arrProductName[$objCoupon->product_id])
+                            ? $arrProductName[$objCoupon->product_id]
                             : $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_PRODUCT_INVALID'])
                       : $_ARRAYLANG['TXT_SHOP_PRODUCT_ANY']),
                 'SHOP_DISCOUNT_COUPON_PAYMENT' =>
-                    ($objCoupon->payment_id()
+                    ($objCoupon->payment_id
                       ? sprintf(
                           $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_PAYMENT_FORMAT'],
-                          $objCoupon->payment_id(),
-                          $arrPaymentName[$objCoupon->payment_id()])
+                          $objCoupon->payment_id,
+                          $arrPaymentName[$objCoupon->payment_id])
                       : $_ARRAYLANG['TXT_SHOP_PAYMENT_ANY']),
                 'SHOP_DISCOUNT_COUPON_FUNCTIONS' => Html::getBackendFunctions(
                     array(
@@ -1184,19 +1197,19 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
 //        $attribute_customer = 'style="width: 230px;"';
         $attribute_product = 'style="width: 230px;"';
         $attribute_payment = 'style="width: 230px;"';
-        $type = ($objCouponEdit->discount_rate() > 0 ? 'rate' : 'amount');
+        $type = ($objCouponEdit->discount_rate > 0 ? 'rate' : 'amount');
         $customer_name = '';
-        if ($objCouponEdit->customer_id()) {
+        if ($objCouponEdit->customer_id) {
             $customer_name = Customers::getNameById(
-                $objCouponEdit->customer_id(), '%4$s (%3$u)');
-//DBG::log("Customer ID ".$objCouponEdit->customer_id().": name $customer_name");
+                $objCouponEdit->customer_id, '%4$s (%3$u)');
+//DBG::log("Customer ID ".$objCouponEdit->customer_id.": name $customer_name");
         }
         $objTemplate->setVariable(array(
             // Add new coupon code
             'SHOP_ROWCLASS' => 'row'.(++$row % 2 + 1),
             'SHOP_DISCOUNT_COUPON_INDEX' => $objCouponEdit->getIndex(),
             'SHOP_DISCOUNT_COUPON_CODE' =>
-                Html::getInputText('code', $objCouponEdit->code(),
+                Html::getInputText('code', $objCouponEdit->code,
                     '', $attribute_code),
             'SHOP_DISCOUNT_COUPON_CODE_CREATE' => Html::getInputButton(
                 'code_create', $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_CODE_NEW'],
@@ -1206,25 +1219,25 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
             'SHOP_DISCOUNT_COUPON_START_TIME' =>
                 Html::getDatepicker('start_date', array(
                     'defaultDate' => date(ASCMS_DATE_FORMAT_DATE,
-                        ($objCouponEdit->start_time()
-                          ? $objCouponEdit->start_time()
+                        ($objCouponEdit->start_time
+                          ? $objCouponEdit->start_time
                           : time()))),
                     $attribute_time),
             'SHOP_DISCOUNT_COUPON_END_TIME' =>
                 Html::getDatepicker('end_date', array(
-                    'defaultDate' => ($objCouponEdit->end_time()
+                    'defaultDate' => ($objCouponEdit->end_time
                       ? date(ASCMS_DATE_FORMAT_DATE,
-                            $objCouponEdit->end_time())
+                            $objCouponEdit->end_time)
                       : '')),
                     $attribute_time),
             'SHOP_DISCOUNT_COUPON_END_TIME_UNLIMITED' =>
                 Html::getCheckbox('end_time_unlimited', 1, '',
-                ($objCouponEdit->end_time() ? '' : Html::ATTRIBUTE_CHECKED)).
+                ($objCouponEdit->end_time ? '' : Html::ATTRIBUTE_CHECKED)).
                 Html::getLabel('end_time_unlimited',
                     $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_END_TIME_UNLIMITED']),
             'SHOP_DISCOUNT_COUPON_MINIMUM_AMOUNT' =>
                 Html::getInputText('minimum_amount',
-                    $objCouponEdit->minimum_amount(), false,
+                    $objCouponEdit->minimum_amount, false,
                     $attribute_minimum_amount),
             'SHOP_DISCOUNT_COUPON_TYPE' =>
                 Html::getRadioGroup('coupon_type', array(
@@ -1234,48 +1247,48 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
             'SHOP_DISCOUNT_COUPON_TYPE_SELECTED' => $type,
             'SHOP_DISCOUNT_COUPON_RATE' =>
                 Html::getInputText('discount_rate',
-                    $objCouponEdit->discount_rate(), false,
+                    $objCouponEdit->discount_rate, false,
                     $attribute_discount_rate),
             'SHOP_DISCOUNT_COUPON_AMOUNT' =>
                 Html::getInputText('discount_amount',
-                    number_format($objCouponEdit->discount_amount(), 2), false,
+                    number_format($objCouponEdit->discount_amount, 2), false,
                     $attribute_discount_amount),
             'SHOP_DISCOUNT_COUPON_USES' =>
                 Html::getInputText('uses',
-                    ($objCouponEdit->uses() < 1e9
-                      ? $objCouponEdit->uses() : ''),
+                    ($objCouponEdit->uses < 1e9
+                      ? $objCouponEdit->uses : ''),
                     'uses', $attribute_uses),
             'SHOP_DISCOUNT_COUPON_USES_UNLIMITED' =>
                 Html::getCheckbox('unlimited', 1, 'unlimited',
-                    $objCouponEdit->uses() > 1e9).
+                    $objCouponEdit->uses > 1e9).
                 Html::getLabel('unlimited',
                     $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_USES_UNLIMITED']),
             'SHOP_DISCOUNT_COUPON_GLOBALLY' =>
                 Html::getRadio('global_or_customer', '1',
-                    'global', $objCouponEdit->is_global()).
+                    'global', $objCouponEdit->global).
                 Html::getLabel('global',
                     $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_GLOBALLY']),
             'SHOP_DISCOUNT_COUPON_PER_CUSTOMER' =>
                 Html::getRadio('global_or_customer', '0',
-                    'customer', !$objCouponEdit->is_global()).
+                    'customer', !$objCouponEdit->global).
                 Html::getLabel('customer',
                     $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_PER_CUSTOMER']),
-            'SHOP_DISCOUNT_COUPON_CUSTOMER_ID' => $objCouponEdit->customer_id(),
+            'SHOP_DISCOUNT_COUPON_CUSTOMER_ID' => $objCouponEdit->customer_id,
             'SHOP_DISCOUNT_COUPON_CUSTOMER_NAME' => $customer_name,
             'SHOP_DISCOUNT_COUPON_PRODUCT' =>
                 Html::getSelect(
                     'product_id',
                       array(0 => $_ARRAYLANG['TXT_SHOP_PRODUCT_ANY'])
-                    + $arrProductName, $objCouponEdit->product_id(), false, '',
+                    + $arrProductName, $objCouponEdit->product_id, false, '',
                     $attribute_product),
             'SHOP_DISCOUNT_COUPON_PAYMENT' =>
                 Html::getSelect(
                     'payment_id',
                       array(0 => $_ARRAYLANG['TXT_SHOP_PAYMENT_ANY'])
-                    + $arrPaymentName, $objCouponEdit->payment_id(), false, '',
+                    + $arrPaymentName, $objCouponEdit->payment_id, false, '',
                     $attribute_payment),
             'SHOP_DISCOUNT_COUPON_CUSTOMER_WIDGET_DISPLAY' =>
-                ($objCouponEdit->is_global()
+                ($objCouponEdit->global
                     ? Html::CSS_DISPLAY_NONE : Html::CSS_DISPLAY_INLINE),
         ));
         $objTemplate->parse('shopDiscountCouponEdit');

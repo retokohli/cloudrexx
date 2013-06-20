@@ -654,7 +654,7 @@ DBG::log("Attributes::getOptionPriceSum(): ERROR: option ID $option_id is not nu
 
         $strMenu =
             "<select name='attribute_type[$attribute_id]' ".
-            "style='width: 300px;'".
+            "style='width: 100%;'".
             (empty($onchange) ? '' : ' onchange="'.$onchange.'"').
             ">\n";
         foreach (Attribute::$arrType as $_type => $language_postfix) {

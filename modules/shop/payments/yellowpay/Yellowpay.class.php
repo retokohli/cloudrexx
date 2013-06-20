@@ -874,36 +874,6 @@ class Yellowpay
 
 
     /**
-     * OBSOLETE AND UNUSED
-     * Returns the HTML checkboxes for selecting zero or more from the known
-     * payment methods.
-     * @param   string  $indices        The comma separated list of selected
-     *                                  payment type indices
-     * @return  string                  The HTML checkboxes
-     */
-    static function getKnownPaymentMethodCheckboxes($indices)
-    {
-die("Obsolete method called: Yellowpay::getKnownPaymentMethodCheckboxes()");
-/*        global $_ARRAYLANG;
-
-        $strOptions = '';
-        $arrIndices = preg_split('/\s*,\s* __TODO__ /', $indices, null, PREG_SPLIT_NO_EMPTY);
-        foreach (self::$arrKnownPaymentMethod
-                as $index => $strPaymentMethod) {
-            $strOptions .=
-                '<input name="postfinance_accepted_payment_methods[]" '.
-                'id="postfinance_pm_'.$index.'" type="checkbox" '.
-                (in_array($index, $arrIndices) ? 'checked="checked" ' : '').
-                'value="'.$index.'" />'."\n".
-                '<label for="postfinance_pm_'.$index.'">&nbsp;'.
-                $_ARRAYLANG['TXT_SHOP_YELLOWPAY_'.strtoupper($strPaymentMethod)].
-                '</label><br />'."\n";
-        }
-        return $strOptions;*/
-    }
-
-
-    /**
      * Returns HTML code for the authorization menuoptions
      * @global  array   $_ARRAYLANG
      * @param   string  $authorization  The selected authorization method

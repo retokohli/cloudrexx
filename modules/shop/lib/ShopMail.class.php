@@ -146,11 +146,10 @@ class ShopMail
                "Failed to get frontend language IDs");
         }
         if (Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'module_shop_mail')) {
-            // Migrate existing templates from the shop to the MailTemplate.
-            // These are the keys replacing the IDs.
-// TODO: Migrate the old template using the original IDs, make them unprotected
-// TODO: Add the new default templates with the new keys
-// and have the user migrate changes herself!
+            // Migrate existing templates from the shop to the MailTemplate,
+            // appending "_backup_by_update" to the respective keys.
+            // Make them unprotected.
+            // These are the keys replacing the IDs:
             $arrKey =  array(
                 // DE: Bestellungsbestätigung (includes account data, obsoletes #4)
                 // EN:
@@ -178,8 +177,8 @@ class ShopMail
                 $arrTemplates = self::getTemplateArray($lang_id);
                 if (empty($arrTemplates)) continue;
                 foreach ($arrTemplates as $id => $arrTemplate) {
-// TODO: utf8_encode() may not be necessary in all cases.
-// It worked without it for me earlier, but was necessary for verkehrstheorie.ch
+// NOTE: utf8_encode() may be necessary in some cases.
+// It usually works without it, but was necessary on a few installations.
 //                    $arrTemplate = array_map("utf8_encode", $arrTemplate);
                     if (   !empty($arrTemplate['from'])
                         && empty($arrFrom[$id])) {
@@ -222,7 +221,7 @@ class ShopMail
                     foreach ($arrTemplate as &$string) {
                         // Replace old <PLACEHOLDERS> with new [PLACEHOLDERS].
                         $string = preg_replace('/\\<([A-Z_]+)\\>/', '[$1]', $string);
-// TODO: This is completely unreliable.
+// This is completely unreliable.
 // Use the process as described above, not replacing the old templates,
 // but adding the new ones instead.
 //                    $string = str_replace('[ORDER_DATA]', $order_data, $string);
@@ -243,6 +242,8 @@ class ShopMail
             Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'module_shop_mail_content');
             Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'module_shop_mail');
         }
+        // Add the new default templates with the new keys
+        // and have the user migrate changes herself!
         foreach ($arrLanguageId as $lang_id) {
             if (!MailTemplate::get('shop', 'order_confirmation', $lang_id)) {
                 MailTemplate::store('shop', array(

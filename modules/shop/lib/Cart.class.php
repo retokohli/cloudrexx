@@ -10,7 +10,6 @@
  * @todo        Test!
  */
 
-
 /**
  * Shop Cart
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -746,6 +745,7 @@ class Cart
 die("Cart::view(): ERROR: No template");
 //            return false;
 }
+        $objTemplate->setGlobalVariable($_ARRAYLANG);
         $i = 0;
         if (count(self::$products)) {
             foreach (self::$products as $arrProduct) {
@@ -808,10 +808,13 @@ die("Cart::view(): ERROR: No template");
             }
         } else {
             $objTemplate->hideBlock('shopCart');
+            if ($objTemplate->blockExists('shopCartEmpty')) {
+                $objTemplate->touchBlock('shopCartEmpty');
+                $objTemplate->parse('shopCartEmpty');
+            }
         }
 
-        $objTemplate->setGlobalVariable($_ARRAYLANG
-          + array(
+        $objTemplate->setGlobalVariable(array(
             'TXT_PRODUCT_ID' => $_ARRAYLANG['TXT_ID'],
             'SHOP_PRODUCT_TOTALITEM' => self::get_item_count(),
             'SHOP_PRODUCT_TOTALPRICE' => Currency::formatPrice(
@@ -884,9 +887,19 @@ die("Cart::view(): ERROR: No template");
                     $_SESSION['shop']['countryId2']),
             ));
         }
-        if (   SettingDb::getValue('orderitems_amount_max') > 0
-            && SettingDb::getValue('orderitems_amount_max') <
-                  self::get_price()
+        if (   SettingDb::getValue('orderitems_amount_min') > 0
+            && SettingDb::getValue('orderitems_amount_min') > self::get_price()
+        ) {
+            $objTemplate->setVariable(
+                'TXT_SHOP_NOTE_AMOUNT_TOO_LOW',
+                    sprintf(
+                        $_ARRAYLANG['TXT_SHOP_ORDERITEMS_AMOUNT_MIN'],
+                        Currency::formatPrice(
+                            SettingDb::getValue('orderitems_amount_min')),
+                        Currency::getActiveCurrencySymbol()));
+        } elseif (
+               SettingDb::getValue('orderitems_amount_max') > 0
+            && SettingDb::getValue('orderitems_amount_max') < self::get_price()
         ) {
             $objTemplate->setVariable(
                 'TXT_SHOP_NOTE_AMOUNT_LIMIT_REACHED',
