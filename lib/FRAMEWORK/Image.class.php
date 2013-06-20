@@ -412,6 +412,16 @@ class ImageManager
                 \DBG::msg($e->getMessage());
             }
         }
+// TODO: Unfortunately, the functions imagegif(), imagejpeg() and imagepng() can't use the Contrexx FileSystem wrapper,
+//       therefore we need to set the global write access image files.
+//       This issue might be solved by using the output-buffer and write the image manually afterwards.
+//
+//       IMPORTANT: In case something went wrong (see bug #1441) and the path $strPathNew.$strFileNew refers to a directory
+//       we must abort the operation here, otherwise we would remove the execution flag on a directory, which would
+//       cause to remove any browsing access to the directory.
+        if (is_dir($file)) {
+            return false;
+        }
         \Cx\Lib\FileSystem\FileSystem::chmod($file, 0666);//\Cx\Lib\FileSystem\FileSystem::CHMOD_FILE);
         
         $this->newImageFile = $file;
