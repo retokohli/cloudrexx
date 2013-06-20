@@ -2297,7 +2297,7 @@ class galleryManager extends GalleryLibrary
         // replace $change with ''
         $change = array('+');
         // replace $signs1 with $signs
-        $signs1 = array(' ', '�', '�', '�', '�');
+        $signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
         $signs2 = array('_', 'ae', 'oe', 'ue', 'c');
 
         foreach ($change as $str) {
@@ -3587,6 +3587,13 @@ $strFileNew = '';
 // TODO: Unfortunately, the functions imagegif(), imagejpeg() and imagepng() can't use the Contrexx FileSystem wrapper,
 //       therefore we need to set the global write access image files.
 //       This issue might be solved by using the output-buffer and write the image manually afterwards.
+//
+//       IMPORTANT: In case something went wrong (see bug #1441) and the path $strPathNew.$strFileNew refers to a directory
+//       we must abort the operation here, otherwise we would remove the execution flag on a directory, which would
+//       cause to remove any browsing access to the directory.
+        if (is_dir($strPathNew.$strFileNew)) {
+            return false;
+        }
         \Cx\Lib\FileSystem\FileSystem::chmod($strPathNew.$strFileNew, 0666);//\Cx\Lib\FileSystem\FileSystem::CHMOD_FILE);
 
         //fix cases of zeroes
