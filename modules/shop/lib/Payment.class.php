@@ -152,7 +152,6 @@ class Payment
         global $objDatabase;
 
         if (is_null(self::$arrPayments)) self::init();
-// TODO: TEST
         if (isset($_SESSION['shop']['paymentId'])) {
             $payment_id = $_SESSION['shop']['paymentId'];
             $processor_id = self::getPaymentProcessorId($payment_id);

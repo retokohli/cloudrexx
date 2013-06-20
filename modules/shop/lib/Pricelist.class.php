@@ -575,14 +575,10 @@ class Pricelist
      */
     static function getUrl($list_id)
     {
-        global $_CONFIG;
-
-// TODO: Use the get_absolute_url() method of the Dispatcher (or whatever class it ends up in)
         return
-            'http://'.$_CONFIG['domainUrl'].
-            ASCMS_PATH_OFFSET.'/'.CONTREXX_DIRECTORY_INDEX.
-            '?section=shop'.MODULE_INDEX.'&amp;act=pricelist'.
-            '&amp;list_id='.$list_id;
+            Cx\Core\Routing\Url::fromModuleAndCmd('shop', '', '',
+                array('act' => 'pricelist', 'list_id' => $list_id, )
+            )->toString();
     }
 
 

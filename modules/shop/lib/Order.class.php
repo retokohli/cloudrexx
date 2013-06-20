@@ -1426,7 +1426,7 @@ class Order
     static function getFirstOrderTime()
     {
         $count = 0;
-        $arrOrder = Orders::getArray($count, 'date_time ASC', null, null, 1);
+        $arrOrder = Orders::getArray($count, 'date_time ASC', null, 0, 1);
         if (empty($arrOrder)) return null;
         $objOrder = current($arrOrder);
         return strtotime($objOrder->date_time());
@@ -1648,6 +1648,7 @@ class Order
      *                                              false otherwise
      * @static
      * @author  Reto Kohli <reto.kohli@comvation.com> (parts)
+     * @version 3.1.0
      */
     static function view_detail(&$objTemplate=null, $edit=false)
     {
@@ -2315,6 +2316,7 @@ class Order
             return self::errorHandler();
         }
         $arrProductOptions = $this->getOptionArray();
+        $items = array();
         while (!$objResult->EOF) {
             $item_id = $objResult->fields['id'];
             $product_id = $objResult->fields['product_id'];

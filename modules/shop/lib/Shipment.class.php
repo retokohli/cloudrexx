@@ -856,7 +856,6 @@ class Shipment
     static function errorHandler()
     {
 // Shipment
-// TODO: Resolve recursion!
         static $break = false;
         if ($break) {
             die("

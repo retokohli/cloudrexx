@@ -108,8 +108,12 @@ class PaymentProcessing
             $objResult->MoveNext();
         }
         // Verify version 3.0 complete data
-        if (empty (self::$arrPaymentProcessor[11])) {
+        // Fix version 3.0.4 data
+        if (   empty(self::$arrPaymentProcessor[11])
+            || empty(self::$arrPaymentProcessor[4]['name'])
+            || self::$arrPaymentProcessor[4]['name'] != 'internal') {
             self::errorHandler();
+            self::init();
         }
     }
 
@@ -235,25 +239,26 @@ class PaymentProcessing
 
         if (!is_array(self::$arrPaymentProcessor)) self::init();
         $return = '';
+        // @since 3.0.5: Names are now lowercase, i.e. "internal" instead of "Internal"
         switch (self::getPaymentProcessorName()) {
             case 'internal':
                 HTTP::redirect(
                     Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'success').
-                    '?result=1&handler=Internal');
+                    '?result=1&handler=internal');
             case 'internal_lsv':
                 HTTP::redirect(
                     Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'success').
-                    '?result=1&handler=Internal');
+                    '?result=1&handler=internal');
             case 'internal_creditcard':
                 // Not implemented
                 HTTP::redirect(
                     Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'success').
-                    '?result=1&handler=Internal');
+                    '?result=1&handler=internal');
             case 'internal_debit':
                 // Not implemented
                 HTTP::redirect(
                     Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'success').
-                    '?result=1&handler=Internal');
+                    '?result=1&handler=internal');
             case 'saferpay':
             case 'saferpay_all_cards':
             case 'saferpay_mastercard_multipay_car': // Obsolete
@@ -581,10 +586,10 @@ DBG::log("PaymentProcessing::checkIn(): WARNING: mobilesolutions: Payment verifi
             // Note: A backup of the order ID is kept in the session
             // for payment methods that do not return it. This is used
             // to cancel orders in all cases where false is returned.
-            case 'Internal':
-            case 'Internal_CreditCard':
-            case 'Internal_Debit':
-            case 'Internal_LSV':
+            case 'internal':
+            case 'internal_creditcard':
+            case 'internal_debit':
+            case 'internal_lsv':
                 return true;
             // Dummy payment.
             case 'dummy':
@@ -721,7 +726,7 @@ DBG::log("PaymentProcessing::checkIn(): WARNING: mobilesolutions: Payment verifi
 
         // Drop obsolete PSPs -- see Payment::errorHandler()
         Cx\Lib\UpdateUtil::sql("
-            DELETE FROM `contrexx_module_shop_payment_processors`
+            DELETE FROM `".DBPREFIX."module_shop_payment_processors`
              WHERE `id` IN (5, 6, 7, 8)");
 
         // Always

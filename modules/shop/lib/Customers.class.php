@@ -271,4 +271,22 @@ DBG::log("Customers::getCount(): ERROR: Failed to get Usergroup for ID $usergrou
             'gender_female' => $_ARRAYLANG['TXT_SHOP_GENDER_FEMALE'],
         ), $selected);
     }
+
+
+    /**
+     * Toggles the Customer status for the given ID
+     *
+     * If the Customer doesn't exist to begin with, returns null.
+     * @param   integer     $id         The Customer ID
+     * @return  boolean                 True on success, false on failure,
+     *                                  or null otherwise
+     */
+    static function toggleStatusById($id)
+    {
+        $objCustomer = Customer::getById($id);
+        if ($objCustomer === null) return null;
+        $objCustomer->active(!$objCustomer->active());
+        return $objCustomer->store();
+    }
+
 }

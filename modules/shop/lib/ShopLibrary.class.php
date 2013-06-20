@@ -294,7 +294,6 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
 //die("Failed to get Customer for ID $customer_id");
             return false;
         }
-// TODO: Test mail with login data!
         $arrSubstitution +=
               $objCustomer->getSubstitutionArray()
             + self::getSubstitutionArray()
@@ -319,7 +318,7 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
         );
 //DBG::log("sendConfirmationMail($order_id, $create_accounts): Template: ".var_export($arrMailTemplate, true));
 //DBG::log("sendConfirmationMail($order_id, $create_accounts): Substitution: ".var_export($arrSubstitution, true));
-// TODO: Create some XML order file
+// NOTE: Creates some XML order file (for customizing)
 //        $template = file_get_contents(
 //            ASCMS_MODULE_PATH.'/shop/template/module_shop_export_orders.xml');
 //        MailTemplate::substitute($template, $arrSubstitution, true);
@@ -327,7 +326,7 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
 //        $template = preg_replace('/<!--\s*-->/', '', $template);
 //        $file = new Cx\Lib\FileSystem\File(
 //            ASCMS_DOCUMENT_ROOT.'/orders/'.$order_id.'.xml');
-////        $file->makeWritable(); // Fails on win32
+//        //$file->makeWritable(); // Fails on win32
 //        $file->write($template);
 ///
         if (!MailTemplate::send($arrMailTemplate)) return false;

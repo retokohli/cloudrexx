@@ -97,10 +97,15 @@
         </table>
         <div class="cart-buttons">
             <input type="submit" name="update" value="[[TXT_UPDATE]]" />&nbsp;
-            <input type="submit" name="continue" class="continue-button" value="[[TXT_NEXT]] &gt;&gt;" />
+            <!-- BEGIN continue -->
+            <input type="submit" name="continue" class="continue-button" value="[[TXT_NEXT]]" />
+            <!-- END continue -->
         </div>
     </form>
     <!-- END shopCart -->
+    <!-- BEGIN shopCartEmpty -->
+    [[TXT_EMPTY_SHOPPING_CART]]
+    <!-- END shopCartEmpty -->
     <div class="cart-links">
         <a href="index.php?section=shop" title="[[TXT_CONTINUE_SHOPPING]]">[[TXT_CONTINUE_SHOPPING]]</a><br />
         <a href="index.php?section=shop&amp;act=destroy" title="[[TXT_EMPTY_CART]]">[[TXT_EMPTY_CART]]</a>

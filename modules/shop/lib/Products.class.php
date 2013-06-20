@@ -139,9 +139,11 @@ class Products
 // NOTE:
 // This is an optimization, but does not (yet) consider the other parameters.
         if ($product_id) {
-            // select single Product by ID
+            // Select single Product by ID
             $objProduct = Product::getById($product_id);
-            if ($objProduct) {
+            // Inactive Products MUST NOT be shown in the frontend
+            if (   $objProduct
+                && ($flagShowInactive || $objProduct->active())) {
                 $count = 1;
                 return array($objProduct);
             }
@@ -566,8 +568,7 @@ DBG::log("ERROR: Failed to delete Products in Category ID $category_id");
      * Products; whether or not thumbnails can be created is secondary, as the
      * process can be repeated if there is a problem.
      * @param   integer     $arrId      The array of Product IDs
-     * @return  string                  Empty string on success, a string
-     *                                  with error messages otherwise.
+     * @return  boolean                 True on success, false on any error
      * @global  ADONewConnection  $objDatabase    Database connection object
      * @global  array
      * @static
@@ -577,27 +578,19 @@ DBG::log("ERROR: Failed to delete Products in Category ID $category_id");
     {
         global $_ARRAYLANG;
 
-
-        if (!is_array($arrId))
-            //$this->addMessage("Keine Produkt IDs zum erstellen der Thumbnails vorhanden ($id).");
-            return false;
-
-        // Collect and group errors
-        $arrMissingProductPicture = array();
-        $arrFailedCreatingThumb   = array();
-        $strError = '';
-
+        if (!is_array($arrId)) return false;
+        $error = false;
         $objImageManager = new ImageManager();
-        foreach ($arrId as $id) {
-            if ($id <= 0) {
-                $strError .= ($strError ? '<br />' : '').
-                    sprintf($_ARRAYLANG['TXT_SHOP_INVALID_PRODUCT_ID'], $id);
+        foreach ($arrId as $product_id) {
+            if ($product_id <= 0) {
+                Message::error(sprintf($_ARRAYLANG['TXT_SHOP_INVALID_PRODUCT_ID'], $product_id));
+                $error = true;
                 continue;
             }
-            $objProduct = Product::getById($id);
+            $objProduct = Product::getById($product_id);
             if (!$objProduct) {
-                $strError .= ($strError ? '<br />' : '').
-                    sprintf($_ARRAYLANG['TXT_SHOP_INVALID_PRODUCT_ID'], $id);
+                Message::error(sprintf($_ARRAYLANG['TXT_SHOP_INVALID_PRODUCT_ID'], $product_id));
+                $error = true;
                 continue;
             }
             $imageName = $objProduct->pictures();
@@ -605,17 +598,20 @@ DBG::log("ERROR: Failed to delete Products in Category ID $category_id");
             // only try to create thumbs from entries that contain a
             // plain text file name (i.e. from an import)
             if (   $imageName == ''
-                || !preg_match('/\.(?:jpg|jpeg|gif|png)$/', $imageName)) {
-                $strError .= ($strError ? '<br />' : '').
-                    sprintf(
+                || !preg_match('/\.(?:jpg|jpeg|gif|png)$/i', $imageName)) {
+                Message::error(sprintf(
                         $_ARRAYLANG['TXT_SHOP_UNSUPPORTED_IMAGE_FORMAT'],
-                        $imageName, $id
-                    );
+                        $product_id, $imageName
+                    ));
+                $error = true;
                 continue;
             }
             // if the picture is missing, skip it.
             if (!file_exists($imagePath)) {
-                $arrMissingProductPicture["$id - $imageName"] = 1;
+                Message::error(sprintf(
+                    $_ARRAYLANG['TXT_SHOP_MISSING_PRODUCT_IMAGE'],
+                    $product_id, $imageName));
+                $error = true;
                 continue;
             }
             $thumbResult = true;
@@ -626,7 +622,7 @@ DBG::log("ERROR: Failed to delete Products in Category ID $category_id");
             $thumb_name = ImageManager::getThumbnailFilename($imagePath);
             if (   file_exists($thumb_name)
                 && filemtime($thumb_name) > filemtime($imagePath)) {
-                //$this->addMessage("Hinweis: Thumbnail fuer Produkt ID '$id' existiert bereits");
+                //$this->addMessage("Hinweis: Thumbnail fuer Produkt ID '$product_id' existiert bereits");
                 // Need the original size to update the record, though
                 list($width, $height) =
                     $objImageManager->_getImageSize($imagePath);
@@ -656,22 +652,13 @@ DBG::log("ERROR: Failed to delete Products in Category ID $category_id");
                 $objProduct->pictures($shopPicture);
                 $objProduct->store();
             } else {
-                $arrFailedCreatingThumb[] = $id;
+                Message::error(sprintf(
+                    $_ARRAYLANG['TXT_SHOP_ERROR_CREATING_PRODUCT_THUMBNAIL'],
+                    $product_id, $imageName));
+                $error = true;
             }
         }
-        if (count($arrMissingProductPicture)) {
-            ksort($arrMissingProductPicture);
-            $strError .= ($strError ? '<br />' : '').
-                $_ARRAYLANG['TXT_SHOP_MISSING_PRODUCT_IMAGES'].' '.
-                join(', ', array_keys($arrMissingProductPicture));
-        }
-        if (count($arrFailedCreatingThumb)) {
-            sort($arrFailedCreatingThumb);
-            $strError .= ($strError ? '<br />' : '').
-                $_ARRAYLANG['TXT_SHOP_ERROR_CREATING_PRODUCT_THUMBNAIL'].' '.
-                join(', ', $arrFailedCreatingThumb);
-        }
-        return $strError;
+        return $error;
     }
 
 

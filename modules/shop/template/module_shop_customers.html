@@ -1,21 +1,18 @@
 <!-- START shop_customers.html -->
-<script type="text/javascript">
-<!-- //
-function deleteCustomer(customer_id)
-{
+<script type="text/javascript">//<![CDATA[
+function deleteCustomer(customer_id) {
   if (confirm('{TXT_CONFIRM_DELETE_CUSTOMER}\n {TXT_ALL_ORDERS_WILL_BE_DELETED}\n {TXT_ACTION_IS_IRREVERSIBLE}'))
     window.location.replace("index.php?cmd=shop{MODULE_INDEX}&{CSRF_PARAM}&act=delcustomer&customer_id="+customer_id);
 }
-
-function sendForm(letter)
-{
+function toggleCustomer(id) {
+  window.location.replace("index.php?{CSRF_PARAM}&cmd=shop{MODULE_INDEX}&act=customers&toggle_customer_id="+id);
+}
+function sendForm(letter) {
     document.shop_filter.listletter.value = letter;
     document.shop_filter.searchterm.value = "";
     document.shop_filter.submit();
 }
-
-function customersDoAction(strForm, strCheckbox, objSelect)
-{
+function customersDoAction(strForm, strCheckbox, objSelect) {
   if (checkboxIsChecked(strForm, strCheckbox) == true) {
     switch (objSelect.value) {
       case 'activate':
@@ -36,8 +33,7 @@ function customersDoAction(strForm, strCheckbox, objSelect)
   alert("{TXT_MAKE_SELECTION}");
   objSelect.value = "";
 }
-// -->
-</script>
+//]]></script>
 <div id="subnavbar_level2">
   <ul>
     <li><a href="index.php?cmd=shop&amp;act=customers&amp;tpl=catalog" title="{TXT_OVERVIEW}">{TXT_OVERVIEW}</a></li>
@@ -97,7 +93,12 @@ function customersDoAction(strForm, strCheckbox, objSelect)
           <input type="checkbox" name="selected_customer_id[]" value="{SHOP_CUSTOMERID}" />
         </td>
         <td class="a_center">
-          <img src="images/icons/{SHOP_CUSTOMER_STATUS_IMAGE}" alt="{TXT_STATUS}" />
+          <span style="cursor: pointer;"
+                onclick="toggleCustomer({SHOP_CUSTOMERID});">
+            <img src="images/icons/{SHOP_CUSTOMER_STATUS_IMAGE}"
+                 alt="{SHOP_CUSTOMER_ACTIVE}"
+                 title="{SHOP_CUSTOMER_ACTIVE}" />
+          </span>
         </td>
         <td>{SHOP_CUSTOMERID}</td>
         <td>{SHOP_COMPANY}</td>
