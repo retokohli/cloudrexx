@@ -11,8 +11,6 @@
 
 # here the linux part starts
 
-# todo: read php location if workbench is installed
-# todo: fix AWK script, since PHP is now stored in a Windoof variable
 
 # find work dir
 if [ "$1" != "" ]; then
@@ -28,8 +26,7 @@ fi
 
 # start or install workbench
 if [ -f "$INSTALLATION_PATH/workbench.config" ]; then
-    # read php location
-    PHP_PATH="php"
+    PHP_PATH=`awk -F= '/php=/{print $2}' workbench.config`
     $PHP_PATH "$INSTALLATION_PATH/core_modules/Workbench/console.php" $COMMANDLINE_ARGS
     exit
 else
@@ -42,15 +39,22 @@ else
         fi
         PHP_PATH=$path
     done
-    $PHP_PATH -r "`awk 'seen&&/"/{seen=0} seen{print} /-r "/{seen = 1}' "$(basename $0)"`"
+    #$PHP_PATH -r "`awk 'seen&&/"/{seen=0} seen{print} /-r "/{seen = 1}' "$(basename $0)"`"
+    $PHP_PATH -r "`awk 'seen{print} /php_code=/{seen = 1} !/[\^]/{seen=0}' "$(basename $0)"`"
     # maybe rename this file to "workbench"
 fi
 
+
 # here the linux part ends
+
+
 exit
 :WINDOOF
 @ECHO off
+
+
 REM here the windows part starts
+
 
 REM todo: PHP
 REM todo: Make directory and file checks work
@@ -98,7 +102,8 @@ IF EXIST $INSTALLATION_PATH/workbench.config (
         REM uncompress zip file using zip library of contrexx
         REM write workbench.config
 )
+PAUSE
+
 
 REM here the windows part ends
-PAUSE
 
