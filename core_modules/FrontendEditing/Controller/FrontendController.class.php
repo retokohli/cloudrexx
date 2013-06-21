@@ -49,7 +49,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\Controller
 
         \JS::registerCSS(substr(ASCMS_CORE_MODULE_FOLDER . '/' . $componentController->getName() . '/View/Style/Main.css', 1));
         \JS::registerJS($jsFilesRoot . '/Main.js');
-        \JS::registerJS($jsFilesRoot . '/CKEditorPlugins.js');
+        // not used for contrexx version 3.1
+//        \JS::registerJS($jsFilesRoot . '/CKEditorPlugins.js');
 
         // activate ckeditor
         \JS::activate('ckeditor');
