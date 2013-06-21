@@ -26,12 +26,6 @@ cx.ready(function() {
  */
 cx.fe = function() {
     /**
-     * Status message object to show message on top of the page
-     * @type {cx.tools.StatusMessage}
-     */
-    cx.fe.statusMessage = new cx.tools.StatusMessage({});
-
-    /**
      * Lang vars which are used for the template
      * write language variables from php to javascript variable
      * @type {Array}
@@ -112,11 +106,6 @@ cx.fe.contentEditor.start = function() {
             on: {
                 instanceReady: function() {
                     cx.fe.publishedPage.title = CKEDITOR.instances.fe_title.getData()
-                },
-                blur: function() {
-                    if (cx.fe.pageHasBeenModified() && cx.fe.confirmSaveAsDraft()) {
-                        cx.fe.savePage();
-                    }
                 }
             }
         });
@@ -130,15 +119,18 @@ cx.fe.contentEditor.start = function() {
             on: {
                 instanceReady: function() {
                     cx.fe.publishedPage.content = CKEDITOR.instances.fe_content.getData()
-                },
-                blur: function() {
-                    if (cx.fe.pageHasBeenModified() && cx.fe.confirmSaveAsDraft()) {
-                        cx.fe.savePage();
-                    }
                 }
             }
         });
     }
+
+    // bind event on window
+    // if the user leaves the page without saving, ask him to save as draft
+    cx.jQuery(window).bind("beforeunload", function () {
+        if(cx.fe.pageHasBeenModified()) {
+            return cx.fe.langVars.TXT_FRONTEND_EDITING_CONFIRM_UNSAVED_EXIT;
+        }
+    });
 };
 
 /**
@@ -171,8 +163,17 @@ cx.fe.contentEditor.stop = function() {
     // remove history and options
     cx.fe.toolbar.hideAnchors();
 
+    // remove status messages which are permanent
+    cx.tools.StatusMessage.removeAllDialogs();
+
+    // @todo: load last published version, not draft!!
+    cx.fe.loadPageData(null, true);
+
     // hide publish button
     cx.jQuery("#fe_toolbar_publishPage").hide();
+
+    // remove event on window
+    cx.jQuery(window).unbind();
 };
 
 cx.fe.pageHasBeenModified = function() {
@@ -239,7 +240,7 @@ cx.fe.toolbar = function() {
                     cx.fe.toolbar.showAnchors(true, true); // show both anchors, history and options
                 } else {
                     cx.fe.editMode = true;
-                    cx.fe.statusMessage.showMessage(cx.fe.langVars.TXT_FRONTEND_EDITING_MODULE_PAGE, 'info');
+                    cx.tools.StatusMessage.showMessage(cx.fe.langVars.TXT_FRONTEND_EDITING_MODULE_PAGE, 'info');
                     cx.fe.toolbar.showAnchors(false, true); // only show option anchor, hide history anchor
                 }
             });
@@ -307,8 +308,9 @@ cx.fe.toolbar.show = function() {
 
 
 /**
- * Init the administration menu
+ * Init the administration menu (not used for contrexx 3.1)
  */
+/*
 cx.fe.adminmenu = function() {
     cx.jQuery("#fe_adminmenu .fe_box").find("a").each(function(index, el) {
         cx.jQuery(el).click(function() {
@@ -340,20 +342,25 @@ cx.fe.adminmenu = function() {
         }
     );
 };
+//*/
 
 /**
- * Show admin menu box
+ * Show admin menu box (not used for contrexx 3.1)
  */
+/*
 cx.fe.adminmenu.show = function() {
     cx.jQuery("#fe_adminmenu .fe_toggle").show();
 };
+//*/
 
 /**
- * Hide admin menu box
+ * Hide admin menu box (not used for contrexx 3.1)
  */
+/*
 cx.fe.adminmenu.hide = function() {
     cx.jQuery("#fe_adminmenu .fe_toggle").hide();
 };
+//*/
 
 /**
  * hide history and options anchors
@@ -466,7 +473,7 @@ cx.fe.loadPageData = function(historyId, putTheData, callback) {
                     (historyId && historyId == cx.fe.page.historyId - 1) || !historyId
                     )
                 ) {
-                cx.fe.statusMessage.showMessage(cx.fe.langVars.TXT_FRONTEND_EDITING_THE_DRAFT, 'warning');
+                cx.tools.StatusMessage.showMessage(cx.fe.langVars.TXT_FRONTEND_EDITING_THE_DRAFT, 'warning', 5000);
             }
 
             // reload the boxes
@@ -507,7 +514,7 @@ cx.fe.publishPage = function() {
                 className = "error";
             }
 
-            cx.fe.statusMessage.showMessage(response.message, className, 5000);
+            cx.tools.StatusMessage.showMessage(response.message, className, 5000);
 
             cx.fe.publishedPage = {
                 title: CKEDITOR.instances.fe_title.getData(),
@@ -537,7 +544,7 @@ cx.fe.savePage = function() {
                 if (response.status != "success") {
                     className = "error";
                 }
-                cx.fe.statusMessage.showMessage(response.message, className, 5000);
+                cx.tools.StatusMessage.showMessage(response.message, className, 5000);
             }
             // load new page data, but don't reload and don't put data into content
             cx.fe.loadPageData(null, false);
@@ -550,14 +557,15 @@ cx.fe.savePage = function() {
  * Hide the history box after 2 seconds
  */
 cx.fe.history = function() {
-    cx.jQuery("#fe_history").click(function() {
+    cx.jQuery("#fe_history").children("a").click(function() {
         if (cx.jQuery("#fe_history .fe_box").css("display") != "none") {
             return false;
         }
         cx.fe.toolbar.hideBoxes();
         cx.fe.history.show();
         cx.fe.history.load();
-    }).hover(
+        return false;
+    }).parent().hover(
         function() {
             clearTimeout(cx.fe.history.displayTimeout);
         },
@@ -592,7 +600,9 @@ cx.fe.history.load = function(pos) {
         pos = 0;
     }
 
-    jQuery("#fe_history .fe_box").html("<div class=\"historyInit\"><img src=\"" + cx.variables.get("basePath", "contrexx") + "/lib/javascript/jquery/jstree/themes/default/throbber.gif\" alt=\"Loading...\" /></div>");
+    jQuery("#fe_history .fe_box").html(
+        "<div class=\"historyInit\"><img src=\"" + cx.variables.get("basePath", "contrexx") + "/lib/javascript/jquery/jstree/themes/default/throbber.gif\" alt=\"Loading...\" /></div>"
+    );
     jQuery("#fe_history .fe_box").load(
         cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=jsondata&object=page&act=getHistoryTable&page=" + cx.fe.page.id + "&pos=" + pos + "&limit=10",
         function() {
@@ -638,14 +648,15 @@ cx.fe.options = function() {
     cx.jQuery("#fe_options .fe_box select[name=\"page[customContent]\"]").val(cx.fe.page.customContent);
     cx.jQuery("#fe_options .fe_box input[name=\"page[cssName]\"]").val(cx.fe.page.cssName);
 
-    cx.jQuery("#fe_options").click(function() {
-        if (cx.jQuery("#fe_options .fe_box").css("display") == "none") {
-            cx.fe.toolbar.hideBoxes();
-            cx.fe.options.show();
-            cx.fe.options.load();
+    cx.jQuery("#fe_options").children("a").click(function() {
+        if (cx.jQuery("#fe_options .fe_box").css("display") != "none") {
+            return false;
         }
+        cx.fe.toolbar.hideBoxes();
+        cx.fe.options.show();
+        cx.fe.options.load();
         return false;
-    }).hover(
+    }).parent().hover(
         function() {
             clearTimeout(cx.fe.options.displayTimeout);
         },
