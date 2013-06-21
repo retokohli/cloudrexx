@@ -166,8 +166,12 @@ cx.fe.contentEditor.stop = function() {
     // remove status messages which are permanent
     cx.tools.StatusMessage.removeAllDialogs();
 
-    // @todo: load last published version, not draft!!
-    cx.fe.loadPageData(null, true);
+    // @todo: testing
+    cx.fe.loadPageData(null, true, function() {
+        if(cx.fe.pageIsADraft()) {
+            cx.fe.loadPageData(cx.fe.page.historyId + 1, true);
+        }
+    });
 
     // hide publish button
     cx.jQuery("#fe_toolbar_publishPage").hide();
@@ -473,6 +477,7 @@ cx.fe.loadPageData = function(historyId, putTheData, callback) {
                     (historyId && historyId == cx.fe.page.historyId - 1) || !historyId
                     )
                 ) {
+                // @todo: show icon on top left with draft bullet
                 cx.tools.StatusMessage.showMessage(cx.fe.langVars.TXT_FRONTEND_EDITING_THE_DRAFT, 'warning', 5000);
             }
 
