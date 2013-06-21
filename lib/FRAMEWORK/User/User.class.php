@@ -371,7 +371,7 @@ class User extends User_Profile
     public function checkPassword($password)
     {
         global $objDatabase;
-        
+
         $query = '
             SELECT 1
               FROM `'.DBPREFIX.'access_users`
@@ -379,7 +379,7 @@ class User extends User_Profile
                AND `password` = "'.md5($password).'"
         ';
         $objResult = $objDatabase->Execute($query);
-        
+
         return $objResult->RecordCount() ? true : false;
     }
 
@@ -1741,7 +1741,15 @@ class User extends User_Profile
     }
 
 
-    private function validateEmail()
+    /**
+     * Returns true if this Users' e-mail address is valid and unique.
+     *
+     * Otherwise, adds appropriate error messages, and returns false.
+     * Required to be public by the Shop!
+     * @return  boolean         True for valid and unique e-mail addresses,
+     *                          false otherwise
+     */
+    public function validateEmail()
     {
         global $_CORELANG;
 
