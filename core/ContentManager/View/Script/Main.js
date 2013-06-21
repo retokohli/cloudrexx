@@ -116,49 +116,6 @@ reloadCustomContentTemplates = function() {
     }
 };
 
-/* Dialogs */
-(function($) {
-    defaultOpts = {
-        draggable: false,
-        resizable: false,
-        minWidth: 100,
-        minHeight: 28,
-        dialogClass: 'cxDialog noTitle'
-    };
-
-    $.fn.cxDialog = function(options) {
-        $.fn.cxDestroyDialogs();
-
-        dialogOptions = {};
-        applicableOptions = $.extend({}, defaultOpts, dialogOptions, options); 
-
-        this.dialog(applicableOptions);
-
-        return this;
-    }
-
-    $.fn.cxNotice = function(options) {
-        $.fn.cxDestroyDialogs();
-
-        dialogOptions = {
-            position: ['center', 'top']
-        };
-        applicableOptions = $.extend({}, defaultOpts, dialogOptions, options);
-
-        this.dialog(applicableOptions);
-
-        return this;
-    }
-
-    $.fn.cxDestroyDialogs = function(delay) {
-        if (delay !== undefined && delay > 0) {
-            setTimeout("jQuery('.cxDialog .ui-dialog-content').dialog('destroy')", 10000);
-        } else {
-            jQuery('.cxDialog .ui-dialog-content').dialog('destroy');
-        }
-    }
-})(jQuery);
-
 cx.ready(function() {
     // wheter expand all was once called on the tree
     cx.cm.all_opened = false;
@@ -241,7 +198,7 @@ cx.ready(function() {
             // no need to get the whole tree twice
             cx.cm.all_opened = true;
             cx.cm.is_opening = true;
-            jQuery('#loading').cxNotice();
+            cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + jQuery('#loading').html() + "</div>");
             jQuery("#site-tree").hide();
             // get complete tree
             jQuery.ajax({
@@ -310,8 +267,7 @@ cx.ready(function() {
                             return;
                         }
                         if (json.message) {
-                            $J('<div>'+json.message+'</div>').cxNotice();
-                            jQuery.fn.cxDestroyDialogs(10000);
+                            cx.tools.StatusMessage.showMessage(json.message, null, 10000);
                         }
                         jQuery('#multiple-actions-select').val(0);
                         cx.cm.createJsTree(jQuery("#site-tree"), json.data.tree, json.data.nodeLevels, false);
@@ -622,7 +578,7 @@ cx.cm = function(target) {
                     cx.cm.updateTreeEntry(page);
                 }
             }
-            jQuery.fn.cxDestroyDialogs(10000);
+            cx.tools.StatusMessage.removeAllDialogs();
         });
     });
 
@@ -1448,7 +1404,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
         }
         cx.cm.is_opening = false;
         jQuery("#site-tree").show();
-        jQuery('#loading').dialog('destroy');
+        cx.tools.StatusMessage.removeAllDialogs();
         
         var setPageTitlesWidth = setInterval(function() {
             if (jQuery('#content-manager').hasClass('edit_view') && jQuery('#site-tree .name').length) {
@@ -1477,21 +1433,21 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
     })
     .ajaxStart(function(){
         if (!cx.cm.is_opening) {
-            $J('#loading').cxNotice();
+            cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + jQuery("#loading").html() + "</div>");
         }
     })
     .ajaxError(function(event, request, settings) {
     })
     .ajaxStop(function(event, request, settings){
         if (!cx.cm.is_opening) {
-            $J('#loading').dialog('destroy');
+            cx.tools.StatusMessage.removeAllDialogs();
         }
     })
     .ajaxSuccess(function(event, request, settings) {
         try {
             response = $J.parseJSON(request.responseText);
             if (response.message) {
-                $J('<div>'+response.message+'</div>').cxNotice();
+                cx.tools.StatusMessage.showMessage(response.message, null, 10000);
             }
         }
         catch (e) {}
@@ -1592,7 +1548,7 @@ cx.cm.validateFields = function() {
         }
     });
     if (error) {
-        $J('<div></div>').text(cx.variables.get('TXT_CORE_CM_VALIDATION_FAIL', 'contentmanager/lang')).cxNotice();
+        cx.tools.StatusMessage.showMessage(cx.variables.get('TXT_CORE_CM_VALIDATION_FAIL', 'contentmanager/lang'), 'error', 10000);
     }
     return !error;
 }
@@ -2352,12 +2308,11 @@ cx.cm.loadPage = function(pageId, nodeId, historyId, selectTab, reloadHistory) {
                 cx.cm.pageLoaded(page.data, selectTab, reloadHistory, historyId);
             }
             if (page.status == "error" && page.message)  {
-                $J('<div class="error">'+page.message+'</div>').cxNotice();
+                cx.tools.StatusMessage.showMessage(page.message, "error", 10000);
             } else if (page.message) {
-                $J('<div>'+page.message+'</div>').cxNotice();
+                cx.tools.StatusMessage.showMessage(page.message, null, 10000);
             }
             cx.cm.updateHistoryTableHighlighting();
-            jQuery.fn.cxDestroyDialogs(10000);
         }
     });
 };
