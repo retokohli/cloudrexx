@@ -806,6 +806,17 @@ class ContentMigration
                             // use direct placeholder to set the pages where to show
                             // only do this if the global was set to 2 (show on each selected page)
                             $direct = ($global == 2 ? 1 : 0);
+                            // if there is no association from block to page and the global placeholder was set to
+                            // "only show on"... the direct placeholder has been shown on any page
+                            $objBlockPagesResult = \Cx\Lib\UpdateUtil::sql(
+                                'SELECT COUNT(1) as `count`
+                                    FROM `' . DBPREFIX . 'module_block_rel_pages`
+                                        WHERE `block_id` = ?',
+                                array($blockId)
+                            );
+                            if ($objBlockPagesResult->fields['count'] == 0 && $direct == 1) {
+                                $direct = 0;
+                            }
                             \Cx\Lib\UpdateUtil::sql('
                                 UPDATE `' . DBPREFIX . 'module_block_blocks`
                                 SET `global` = ' . $global . ',
