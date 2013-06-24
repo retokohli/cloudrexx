@@ -189,6 +189,7 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
     
     /**
      * Load a component (tell it to parse its content)
+     * @param string $componentName Name of component to load
      */
     public function loadComponent($componentName) {
         $this->findOneBy(array('name'=>$componentName))->load($this->cx->getPage());
