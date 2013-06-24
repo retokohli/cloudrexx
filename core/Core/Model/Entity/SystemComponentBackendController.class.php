@@ -26,6 +26,7 @@ abstract class SystemComponentBackendController extends Controller {
      * This is called by the default ComponentController and does all the repeating work
      * 
      * This loads a template named after current $act and calls parsePage($actTemplate)
+     * @todo $this->cx->getTemplate()->setVariable() should not be called here but in Cx class
      * @global array $_ARRAYLANG Language data
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page Resolved page
      */
@@ -38,35 +39,37 @@ abstract class SystemComponentBackendController extends Controller {
             $cmd = explode('/', contrexx_input2raw($_GET['act']));
         }
         
-        $actTemplate = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/MultiSite/View/Template');
-        $actTemplate->loadTemplateFile();
+        $actTemplate = new \Cx\Core\Html\Sigma($this->getSystemComponentController()->getDirectory() . '/View/Template');
+        $actTemplate->loadTemplateFile($cmd[0] . '.html');
         
         // todo: $actTemplate->loadTemplateFile(), Messages
         $this->parsePage($actTemplate, $cmd);
         
         // set tabs
-        $navigation = new \Cx\Core\Html\Sigma(ASCMS_CORE_PATH . '/Component/View/Template');
+        $navigation = new \Cx\Core\Html\Sigma(ASCMS_CORE_PATH . '/Core/View/Template');
         $navigation->loadTemplateFile('Navigation.html');
-        foreach ($this->getCommands() as $cmd) {
-            $act = '&amp;act=' . $cmd;
-            $txt = $cmd;
-            if (empty($cmd)) {
+        foreach ($this->getCommands() as $command) {
+            $act = '&amp;act=' . $command;
+            $txt = $command;
+            if (empty($command)) {
                 $act = '';
                 $txt = 'DEFAULT';
             }
             $navigation->setVariable(array(
                 'HREF' => 'index.php?cmd=' . $this->getSystemComponentController()->getName() . $act,
-                'TITLE' => $_ARRAYLANG['TXT_' . strtoupper($this->getSystemComponentController()->getName() . '_ACT_' . $txt)],
+                'TITLE' => $_ARRAYLANG['TXT_' . strtoupper($this->getSystemComponentController()->getType()) . '_' . strtoupper($this->getSystemComponentController()->getName() . '_ACT_' . $txt)],
             ));
-            if (strtolower($title) == $act) {
+            if ($cmd[0] == $command) {
                 $navigation->touchBlock('active');
             }
             $navigation->parse('tab_entry');
         }
         
+        $actTemplate->setVariable($_ARRAYLANG);
         $page->setContent($actTemplate->get());
         $this->cx->getTemplate()->setVariable(array(
             'CONTENT_NAVIGATION' => $navigation->get(),
+            'ADMIN_CONTENT' => $page->getContent(),
         ));
     }
     
