@@ -521,7 +521,7 @@ cx.cm = function(target) {
         if (!cx.cm.validateFields()) {
             return false;
         }
-        if (CKEDITOR.instances.cm_ckeditor != undefined) {
+        if (cx.cm.editorInUse()) {
             jQuery('#cm_ckeditor').val(CKEDITOR.instances.cm_ckeditor.getData());
         }
         jQuery.post('index.php?cmd=jsondata&object=page&act=set', 'action=publish&'+jQuery('#cm_page').serialize(), function(response) {
@@ -586,7 +586,9 @@ cx.cm = function(target) {
         if (!cx.cm.validateFields()) {
             return false;
         }
-        jQuery('#cm_ckeditor').val(CKEDITOR.instances.cm_ckeditor.getData());
+        if (CKEDITOR.instances.cm_ckeditor != null) {
+            jQuery('#cm_ckeditor').val(CKEDITOR.instances.cm_ckeditor.getData());
+        }
         jQuery.post('index.php?cmd=jsondata&object=page&act=set', jQuery('#cm_page').serialize(), function(response) {
             if (response.data != null) {
                 if (jQuery('#historyConatiner').html() != '') {
