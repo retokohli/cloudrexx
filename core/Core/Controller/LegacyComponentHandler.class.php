@@ -2253,6 +2253,17 @@ class LegacyComponentHandler {
                         $objSearch    = new \Cx\Core\Search\SearchManager($act, $objTemplate, $objDatabase, $objInit, $license);
                         $objSearch->getPage();
                     },
+                    'crm' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+
+                        \Permission::checkAccess(555, 'static');
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/crm/admin.class.php')) {
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        }
+                        $subMenuTitle = $_CORELANG['TXT_CRM'];
+                        $objCrmModule = new \CrmManager();
+                        $objCrmModule->getPage();
+                    },
                     '' => function() {
                         global $cl, $_CORELANG, $subMenuTitle, $objTemplate;
 
