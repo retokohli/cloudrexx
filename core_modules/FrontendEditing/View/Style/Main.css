@@ -371,29 +371,37 @@
 }
 
 #fe_state_wrapper {
+    display: none;
     float: left;
     background: #fff;
     margin-top: 5px;
     border: 1px solid #BBBBBB;
 }
 
-#fe_state {
+#fe_state_icon {
+    float: left;
     margin: 6px 5px;
 }
 
-#fe_state.publishing {
+#fe_state_text {
+    float: left;
+    margin-top: 3px;
+    margin-right: 10px;
+}
+
+#fe_state_icon.publishing {
     width: 13px;
     height: 14px;
     background: url('../Media/PublishingUnlocked.png') no-repeat -34px -5px;
 }
 
-#fe_state.publishing-draft {
+#fe_state_icon.publishing-draft {
     width: 13px;
     height: 14px;
     background: url('../Media/PublishingUnlocked.png') no-repeat -34px -34px;
 }
 
-#fe_state.publishing-waiting {
+#fe_state_icon.publishing-waiting {
     width: 13px;
     height: 14px;
     background: url('../Media/PublishingUnlocked.png') no-repeat -34px -63px;

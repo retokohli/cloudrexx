@@ -487,16 +487,19 @@ cx.fe.loadPageData = function(historyId, putTheData, callback) {
             }
 
             // add icon on the right side of the publish and stop button
-            cx.jQuery("#fe_state")
+            cx.jQuery("#fe_state_icon")
                 .removeClass("publishing")
                 .removeClass("publishing-draft")
                 .removeClass("publishing-draft-waiting");
             if (cx.fe.pageHasDraft()) {
-                cx.jQuery("#fe_state").addClass("publishing-draft");
+                cx.jQuery("#fe_state_icon").addClass("publishing-draft");
+                cx.jQuery("#fe_state_text").html(cx.fe.langVars.TXT_FRONTEND_EDITING_DRAFT);
             } else if(cx.fe.pageHasDraftWaiting()) {
-                cx.jQuery("#fe_state").addClass("publishing-waiting");
+                cx.jQuery("#fe_state_icon").addClass("publishing-waiting");
+                cx.jQuery("#fe_state_text").html(cx.fe.langVars.TXT_FRONTEND_EDITING_DRAFT);
             } else {
-                cx.jQuery("#fe_state").addClass("publishing");
+                cx.jQuery("#fe_state_icon").addClass("publishing");
+                cx.jQuery("#fe_state_text").html(cx.fe.langVars.TXT_FRONTEND_EDITING_PUBLISHED);
             }
 
             // reload the boxes
@@ -677,10 +680,7 @@ cx.fe.history.updateHighlighting = function() {
  */
 cx.fe.options = function() {
     // hide options
-    cx.jQuery("#fe_options .fe_box select[name=\"page[skin]\"]").val(cx.fe.page.skin);
-    cx.fe.options.reloadCustomContentTemplates();
-    cx.jQuery("#fe_options .fe_box select[name=\"page[customContent]\"]").val(cx.fe.page.customContent);
-    cx.jQuery("#fe_options .fe_box input[name=\"page[cssName]\"]").val(cx.fe.page.cssName);
+    cx.fe.options.load();
 
     cx.jQuery("#fe_options").children("a").click(function() {
         if (cx.jQuery("#fe_options .fe_box").css("display") != "none") {
@@ -755,6 +755,10 @@ cx.fe.options.hide = function() {
  */
 cx.fe.options.load = function() {
     cx.fe.options.reloadCustomContentTemplates();
+
+    cx.jQuery("#fe_options .fe_box select[name=\"page[skin]\"]").val(cx.fe.page.skin);
+    cx.jQuery("#fe_options .fe_box select[name=\"page[customContent]\"]").val(cx.fe.page.customContent);
+    cx.jQuery("#fe_options .fe_box input[name=\"page[cssName]\"]").val(cx.fe.page.cssName);
 };
 
 /**
