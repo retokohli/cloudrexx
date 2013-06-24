@@ -925,4 +925,41 @@ class PageRepository extends EntityRepository {
 
         return $query->getResult();
     }
+    
+    /**
+     * Creates a page with the given parameters.
+     * 
+     * This should be a constructor of Page. Since PHP does not support method
+     * overloading and doctrine needs a constructor without parameters, it's
+     * located here.
+     * @param \Cx\Core\ContentManager\Model\Entity\Node $parentNode
+     * @param int $lang Language id
+     * @param string $title Page title
+     * @param string $type Page type (fallback, content, application)
+     * @param string $module Module name
+     * @param string $cmd Module cmd
+     * @param boolean $display Is page shown in navigation?
+     * @param string $content HTML content
+     * @return \Cx\Core\ContentManager\Model\Entity\Page Newly created page
+     */
+    public function createPage($parentNode, $lang, $title, $type, $module, $cmd, $display, $content) {
+        $page = new \Cx\Core\ContentManager\Model\Entity\Page();
+        $page->setNode($parentNode);
+        $page->setNodeIdShadowed($parentNode->getId());
+        $page->setLang($lang);
+        $page->setTitle($title);
+        $page->setType($type);
+        $page->setModule($module);
+        $page->setCmd($cmd);
+        $page->setActive(true);
+        $page->setDisplay($display);
+        $page->setContent($content);
+        $page->setMetatitle($title);
+        $page->setMetadesc($title);
+        $page->setMetakeys($title);
+        $page->setMetarobots('index');
+        $page->setMetatitle($title);
+        $page->setUpdatedBy(\FWUser::getFWUserObject()->objUser->getUsername());
+        return $page;
+    }
 }
