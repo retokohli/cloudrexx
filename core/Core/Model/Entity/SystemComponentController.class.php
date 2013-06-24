@@ -168,12 +168,14 @@ class SystemComponentController extends Controller {
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         $controllerClass = null;
-        $baseNs = $this->cx->getDb()->getEntityManager()->getRepository('\\Cx\\Core\\Core\\Model\\Entity\\SystemComponent')->getNamespaceFor($this->getSystemComponent());
+        $baseNs = $this->getNamespace();
         $baseNs .= '\\Controller\\';
         if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
             $controllerClass = $baseNs . 'FrontendController';
         } else if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
             $controllerClass = $baseNs . 'BackendController';
+        } else if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_CLI) {
+            $controllerClass = $baseNs . 'CliController';
         }
         if (!$controllerClass && !class_exists($controllerClass)) {
             return;
