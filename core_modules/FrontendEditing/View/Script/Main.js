@@ -126,11 +126,14 @@ cx.fe.contentEditor.start = function() {
 
     // bind event on window
     // if the user leaves the page without saving, ask him to save as draft
-    cx.jQuery(window).bind("beforeunload", function () {
-        if(cx.fe.pageHasBeenModified()) {
+    cx.jQuery(window).bind("beforeunload", function() {
+        if (cx.fe.pageHasBeenModified()) {
             return cx.fe.langVars.TXT_FRONTEND_EDITING_CONFIRM_UNSAVED_EXIT;
         }
     });
+
+    // show state icon
+    cx.jQuery("#fe_state_wrapper").show();
 };
 
 /**
@@ -166,9 +169,9 @@ cx.fe.contentEditor.stop = function() {
     // remove status messages which are permanent
     cx.tools.StatusMessage.removeAllDialogs();
 
-    // @todo: testing
+    // load published page data
     cx.fe.loadPageData(null, true, function() {
-        if(cx.fe.pageIsADraft()) {
+        if (cx.fe.pageIsADraft()) {
             cx.fe.loadPageData(cx.fe.page.historyId + 1, true);
         }
     });
@@ -178,6 +181,9 @@ cx.fe.contentEditor.stop = function() {
 
     // remove event on window
     cx.jQuery(window).unbind();
+
+    // hide state icon
+    cx.jQuery("#fe_state_wrapper").hide();
 };
 
 cx.fe.pageHasBeenModified = function() {
@@ -477,8 +483,20 @@ cx.fe.loadPageData = function(historyId, putTheData, callback) {
                     (historyId && historyId == cx.fe.page.historyId - 1) || !historyId
                     )
                 ) {
-                // @todo: show icon on top left with draft bullet
                 cx.tools.StatusMessage.showMessage(cx.fe.langVars.TXT_FRONTEND_EDITING_THE_DRAFT, 'warning', 5000);
+            }
+
+            // add icon on the right side of the publish and stop button
+            cx.jQuery("#fe_state")
+                .removeClass("publishing")
+                .removeClass("publishing-draft")
+                .removeClass("publishing-draft-waiting");
+            if (cx.fe.pageHasDraft()) {
+                cx.jQuery("#fe_state").addClass("publishing-draft");
+            } else if(cx.fe.pageHasDraftWaiting()) {
+                cx.jQuery("#fe_state").addClass("publishing-waiting");
+            } else {
+                cx.jQuery("#fe_state").addClass("publishing");
             }
 
             // reload the boxes
@@ -493,13 +511,24 @@ cx.fe.loadPageData = function(historyId, putTheData, callback) {
  * @returns {boolean}
  */
 cx.fe.pageIsADraft = function() {
-    if (cx.fe.page.editingStatus == "hasDraft" ||
-        cx.fe.page.editingStatus == "hasDraftWaiting"
-        ) {
-        return true;
-    }
-    return false;
+    return cx.fe.pageHasDraft() || cx.fe.pageHasDraftWaiting();
 };
+
+/**
+ * Page has a draft
+ * @returns {boolean}
+ */
+cx.fe.pageHasDraft = function() {
+    return cx.fe.page.editingStatus == "hasDraft";
+};
+
+/**
+ * Page has a draft waiting
+ * @returns {boolean}
+ */
+cx.fe.pageHasDraftWaiting = function() {
+    return cx.fe.page.editingStatus == "hasDraftWaiting";
+}
 
 /**
  * Does a request to publish the new contents

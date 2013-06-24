@@ -369,3 +369,32 @@
     color: #0b4c7a;
     cursor: pointer;
 }
+
+#fe_state_wrapper {
+    float: left;
+    background: #fff;
+    margin-top: 5px;
+    border: 1px solid #BBBBBB;
+}
+
+#fe_state {
+    margin: 6px 5px;
+}
+
+#fe_state.publishing {
+    width: 13px;
+    height: 14px;
+    background: url('../Media/PublishingUnlocked.png') no-repeat -34px -5px;
+}
+
+#fe_state.publishing-draft {
+    width: 13px;
+    height: 14px;
+    background: url('../Media/PublishingUnlocked.png') no-repeat -34px -34px;
+}
+
+#fe_state.publishing-waiting {
+    width: 13px;
+    height: 14px;
+    background: url('../Media/PublishingUnlocked.png') no-repeat -34px -63px;
+}
