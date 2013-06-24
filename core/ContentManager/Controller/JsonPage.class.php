@@ -834,51 +834,60 @@ class JsonPage implements JsonAdapter {
 
         //(III) collect page informations - path, virtual language directory
         $path         = $this->pageRepo->getPath($page);
-        $pageHasDraft = $page->getEditingStatus() != '' ? true : false;
         $langDir      = \FWLanguage::getLanguageCodeById($page->getLang());
         $logs         = $this->logRepo->getLogEntries($page);
         
         //(V) add the history entries
-        $logCount = count($logs);
-        $row = 0;
         // Paging:
         $offset = !empty($params['get']['pos']) ? $params['get']['pos'] : 0;
         $numberOfEntries = !empty($params['get']['limit']) ? $params['get']['limit'] : $_CONFIG['corePagingLimit'];
-        $i = 0;
+        $logCount = 0;
+        $row = 0;
+        $rowId = 0;
+
         foreach ($logs as $index => $log){
-            if ($offset > $index) {
-                $i++;
-                continue;
-            }
-            if ($i >= ($numberOfEntries + $offset)) {
-                continue;
-            }
+            // check whether the next data is a draft, if it is go ahead
             if (isset($logs[$index + 1])) {
-                $data = $logs[$index]->getData();
-                $nextData = $logs[$i + 1]->getData();
+                $data = $log->getData();
+                $nextData = $logs[$index + 1]->getData();
                 if (isset($nextData['editingStatus']) && ($nextData['editingStatus'] == 'hasDraft' || $nextData['editingStatus'] == 'hasDraftWaiting')) {
                     if (!isset($data['editingStatus']) || ($data['editingStatus'] != 'hasDraft' && $data['editingStatus'] != 'hasDraftWaiting')) {
                         continue;
                     }
                 }
             }
-            
-            $version = $logs[$index]->getVersion();
-            $i++;
-            $row++;
-            $user = json_decode($logs[$index]->getUsername());
-            $username = $user->{'name'};
-            try {
-                $this->logRepo->revert($page, $version);
-                $page->setUpdatedAt($logs[$index]->getLoggedAt());
 
-                $this->addHistoryEntries($page, $username, $table, $row, $version, $langDir . '/' . $path, $pageHasDraft);
+            // check whether the current index is between the range which should be displayed
+            if ($row < $offset || $row >= ($numberOfEntries + $offset)) {
+                $logCount++;
+                $row++;
+                continue;
+            }
+
+            $logCount++;
+            $row++;
+
+            try {
+                $data = $log->getData();
+                if (!isset($data['editingStatus']) || ($data['editingStatus'] != 'hasDraft' && $data['editingStatus'] != 'hasDraftWaiting')) {
+                    $pageHasDraft = false;
+                } else {
+                    $pageHasDraft = true;
+                }
+                $version = $log->getVersion();
+                $user = json_decode($log->getUsername());
+                $username = $user->{'name'};
+                $this->logRepo->revert($page, $version);
+                $page->setUpdatedAt($log->getLoggedAt());
+
+                $this->addHistoryEntries($page, $username, $table, ++$rowId, $version, $langDir . '/' . $path, $pageHasDraft);
+
             } catch (\Gedmo\Exception\UnexpectedValueException $e) {
                 
             }
         }
         // Add paging widget:
-        $paging = '<div id="history_paging">' . getPaging($logCount, $offset, '?cmd=content&page=16&tab=history', 'Einträge', true, $row) . '</div>';
+        $paging = '<div id="history_paging">' . getPaging($logCount, $offset, '?cmd=content&page=' . $page->getId() . '&tab=history', 'Einträge', true, $numberOfEntries) . '</div>';
 
         //(VI) render
         die($table->toHtml() . $paging);
