@@ -175,14 +175,14 @@ class ReflectionComponent {
     
     /**
      * This adds all necessary DB entries in order to activate this component (if they do not exist)
-     * @todo Add pages (if component is a module)
+     * @todo Test add pages (if component is a module)
      */
     public function activate() {
         $cx = \Env::get('cx');
+        $em = $cx->getDb()->getEntityManager();
         
         // component
         if (!$this->isLegacy()) {
-            $em = $cx->getDb()->getEntityManager();
             $componentRepo = $em->getRepository('Cx\\Core\\Core\\Model\\Entity\\SystemComponent');
             if (!$componentRepo->findOneBy(array(
                 'name' => $this->componentName,
@@ -364,11 +364,130 @@ class ReflectionComponent {
             // only modules need a frontend page to be active
             return;
         }
-            // we will not use modulemanager here in order to be able to replace
-            // modulemanager by this in a later release
-            // 
-            // does the module repository have something for us?
+        
+        // we will not use modulemanager here in order to be able to replace
+        // modulemanager by this in a later release
+        
+        // does the module repository have something for us?
+        if (!$this->loadPagesFromModuleRepository()) {
+        
+            $nodeRepo = $em->getRepository('\Cx\Core\ContentManager\Model\Entity\Node');
+            $pageRepo = $em->getRepository('\Cx\Core\ContentManager\Model\Entity\Page');
+        
             // if not: create an empty page
+            $parcat = $nodeRepo->getRoot();
+            $newnode = new \Cx\Core\ContentManager\Model\Entity\Node();
+            $newnode->setParent($parcat); // replace root node by parent!
+            $em->persist($newnode);
+            $em->flush();
+            $nodeRepo->moveDown($newnode, true); // move to the end of this level
+            $page = $pageRepo->createPage(
+                $newnode,
+                $lang['id'],
+                $objResult->fields['title'],
+                \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
+                $module_name,
+                $objResult->fields['cmd'],
+                !$root && $objResult->fields['displaystatus'],
+                $objResult->fields['content']
+            );
+            $em->persist($page);
+            $em->flush();
+        }
+    }
+    
+    /**
+     * Loads pages from module repository
+     * @return boolean True on success, false if no pages found in repo
+     */
+    protected function loadPagesFromModuleRepository() {
+        $cx = \Env::get('cx');
+        $em = $cx->getDb()->getEntityManager();
+        
+        $nodeRepo = $em->getRepository('\Cx\Core\ContentManager\Model\Entity\Node');
+        $pageRepo = $em->getRepository('\Cx\Core\ContentManager\Model\Entity\Page');
+
+        $module_name = $this->componentName;
+            
+        // get content from repo
+        $query = '
+            SELECT
+                `id`,
+                `moduleid`,
+                `content`,
+                `title`,
+                `cmd`,
+                `expertmode`,
+                `parid`,
+                `displaystatus`,
+                `username`,
+                `displayorder`
+            FROM
+                `'.DBPREFIX.'module_repository`
+            WHERE
+                `moduleid` = ' . $id . '
+            ORDER BY
+                `parid` ASC
+        ';
+        $objResult = $cx->getDb()->getAdoDb()->query($query);
+        if ($objResult->EOF) {
+            // no pages
+            return false;
+        }
+
+        $paridarray = array();
+        while (!$objResult->EOF) {
+            // define parent node
+            $root = false;
+            if (isset($paridarray[$objResult->fields['parid']])) {
+                $parcat = $paridarray[$objResult->fields['parid']];
+            } else {
+                $root = true;
+                $parcat = $nodeRepo->getRoot();
+            }
+
+            // create node
+            $newnode = new \Cx\Core\ContentManager\Model\Entity\Node();
+            $newnode->setParent($parcat); // replace root node by parent!
+            $em->persist($newnode);
+            $em->flush();
+            $nodeRepo->moveDown($newnode, true); // move to the end of this level
+            $paridarray[$objResult->fields['id']] = $newnode;
+
+            // add content to default lang
+            // add content to all langs without fallback
+            // link content to all langs with fallback
+            foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
+                if ($lang['is_default'] === 'true' || $lang['fallback'] == null) {
+                    $page = $pageRepo->createPage(
+                        $newnode,
+                        $lang['id'],
+                        $objResult->fields['title'],
+                        \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
+                        $module_name,
+                        $objResult->fields['cmd'],
+                        !$root && $objResult->fields['displaystatus'],
+                        $objResult->fields['content']
+                    );
+                } else {
+                    $page = $pageRepo->createPage(
+                        $newnode,
+                        $lang['id'],
+                        $objResult->fields['title'],
+                        \Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK,
+                        $module_name,
+                        $objResult->fields['cmd'],
+                        !$root && $objResult->fields['displaystatus'],
+                        ''
+                    );
+                }
+                $em->persist($page);
+            }
+            $em->flush();
+            $objResult->MoveNext();
+        }
+
+        return true;
     }
     
     /**
@@ -485,7 +604,7 @@ class ReflectionComponent {
      * Fix the namespace of all files of this component
      * @param string $oldBaseNs Base namespace of old component
      * @param string $baseDir Directory in which the recursive replace should be done
-     * @todo Update references in DB
+     * @todo Test references update in DB
      */
     public function fixNamespaces($oldBaseNs, $baseDir) {
         // calculate new proper base NS
@@ -532,6 +651,23 @@ class ReflectionComponent {
             );
             $objFile->write($content);
         }
+        
+        // fix namespaces in DB
+        // at the moment, only log_entry stores namespaces so we can simply:
+        $em = \Env::get('cx')->getDb()->getEntityManager();
+        $query = $em->createQuery('SELECT FROM Cx\Core\ContentManager\Model\Entity\LogEntry l WHERE l.object_class LIKE \'' . $ns . '%\'');
+        foreach ($query->getResult() as $log) {
+            $object_class = $log->getObjectClass();
+            $object_class = preg_replace(
+                '/' . preg_quote($oldNs . '\\', '/') . '/',
+                $ns . '\\',
+                $object_class
+            );
+            $log->setObjectClass($object_class);
+            $em->persist($log);
+        }
+        $em->flush();
+        
         return true;
     }
     
