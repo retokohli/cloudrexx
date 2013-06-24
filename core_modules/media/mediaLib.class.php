@@ -758,14 +758,52 @@ class MediaLibrary
     // gets the icon for the file
     function _getIcon($file)
     {
+        $icon = '';
         if (is_file($file)) {
             $info = pathinfo($file);
-            $icon = strtolower($info['extension']);
+            $icon = strtoupper($info['extension']);
+        }
+        
+        $arrImageExt        = array('JPEG', 'JPG', 'TIFF', 'GIF', 'BMP', 'PNG');
+        $arrVideoExt        = array('3GP', 'AVI', 'DAT', 'FLV', 'FLA', 'M4V', 'MOV', 'MPEG', 'MPG', 'OGG', 'WMV', 'SWF');
+        $arrAudioExt        = array('WAV', 'WMA', 'AMR', 'MP3', 'AAC');
+        $arrPresentationExt = array('ODP', 'PPT', 'PPTX');
+        $arrSpreadsheetExt  = array('CSV', 'ODS', 'XLS', 'XLSX');
+        $arrDocumentsExt    = array('DOC', 'DOCX', 'ODT', 'RTF');
+        
+        switch (true) {
+            case ($icon == 'TXT'):
+                $icon = 'Text';
+                break;
+            case ($icon == 'PDF'):
+                $icon = 'Pdf';
+                break;
+            case in_array($icon, $arrImageExt):
+                $icon = 'Image';
+                break;
+            case in_array($icon, $arrVideoExt):
+                $icon = 'Video';
+                break;
+            case in_array($icon, $arrAudioExt):
+                $icon = 'Audio';
+                break;
+            case in_array($icon, $arrPresentationExt):
+                $icon = 'Presentation';
+                break;
+            case in_array($icon, $arrSpreadsheetExt):
+                $icon = 'Spreadsheet';
+                break;
+            case in_array($icon, $arrDocumentsExt):
+                $icon = 'TextDocument';
+                break;
+            default :
+                $icon = 'Unknown';
+                break;
         }
         if (is_dir($file)) {
             $icon = '_folder';
         }
-        if (!file_exists($this->iconPath.$icon.'.gif') or !isset($icon)) {
+        if (!file_exists($this->iconPath.$icon.'.png') or !isset($icon)) {
             $icon = '_blank';
         }
         return $icon;

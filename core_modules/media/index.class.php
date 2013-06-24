@@ -59,8 +59,8 @@ class MediaManager extends MediaLibrary
         $this->archive = (intval(substr($archive,-1,1)) == 0) ? 'media1' : $archive;
         
         // directory variables
-        $this->iconPath     = ASCMS_MODULE_IMAGE_PATH . '/media/';
-        $this->iconWebPath  = ASCMS_MODULE_IMAGE_WEB_PATH . '/media/';
+        $this->iconPath     = ASCMS_CORE_MODULE_PATH.'/media/View/Media/';
+        $this->iconWebPath  = ASCMS_CORE_MODULE_WEB_PATH.'/media/View/Media/';
 
         $this->arrPaths = array(ASCMS_MEDIA1_PATH . '/',
                                     ASCMS_MEDIA2_PATH . '/',
@@ -208,7 +208,7 @@ class MediaManager extends MediaLibrary
                     }
                     $this->_objTpl->setVariable(array(  // file
                         'MEDIA_DIR_TREE_ROW'  => $class,
-                        'MEDIA_FILE_ICON'     => $this->iconWebPath . $dirTree[$key]['icon'][$x] . '.gif',
+                        'MEDIA_FILE_ICON'     => $this->iconWebPath . $dirTree[$key]['icon'][$x] . '.png',
                         'MEDIA_FILE_NAME'     => $dirTree[$key]['name'][$x],
                         'MEDIA_FILE_SIZE'     => $this->_formatSize($dirTree[$key]['size'][$x]),
                         'MEDIA_FILE_TYPE'     => $this->_formatType($dirTree[$key]['type'][$x]),
