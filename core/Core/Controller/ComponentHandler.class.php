@@ -23,6 +23,7 @@ class ComponentException extends \Exception {}
 class ComponentHandler {
     
     /**
+     * Legacy code for old components
      * @var LegacyContentHandler
      */
     private $legacyComponentHandler;
@@ -34,6 +35,7 @@ class ComponentHandler {
     private $frontend;
     
     /**
+     * Repository of SystemComponents
      * @var \Cx\Core\Core\Model\Repository\SystemComponentRepository
      */
     protected $systemComponentRepo;

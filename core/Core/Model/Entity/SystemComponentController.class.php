@@ -24,6 +24,7 @@ class SystemComponentController extends Controller {
     private $controllers = array();
     
     /**
+     * Decorated SystemComponent
      * @var Cx\Core\Core\Model\Entity\SystemComponent
      */
     protected $systemComponent;

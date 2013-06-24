@@ -22,16 +22,19 @@ class SystemComponent
     const TYPE_MODULE = 'module';
     
     /**
+     * Unique ID
      * @var integer $id
      */
     private $id;
 
     /**
+     * Component name
      * @var string $name
      */
     private $name;
     
     /**
+     * Component type
      * @var enum $type
      */
     private $type;
