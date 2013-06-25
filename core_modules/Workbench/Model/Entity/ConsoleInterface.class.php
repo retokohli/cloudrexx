@@ -1,9 +1,22 @@
 <?php
+/**
+ * User interface for console usage
+ * @author Michael Ritter <michael.ritter@comvation.com>
+ */
 
 namespace Cx\Core_Modules\Workbench\Model\Entity;
 
+/**
+ * User interface for console usage
+ * @author Michael Ritter <michael.ritter@comvation.com>
+ */
 class ConsoleInterface extends UserInterface {
 
+    /**
+     * Initialize this interface
+     * @param array $arguments Commandline arguments
+     * @param \Cx\Core\Core\Controller\Cx $cx Contrexx main class
+     */
     public function __construct($arguments, $cx) {
         parent::__construct($cx);
 
@@ -40,6 +53,9 @@ class ConsoleInterface extends UserInterface {
         echo "\r\n";
     }
     
+    /**
+     * Shows help for workbench
+     */
     private function showHelp() {
         echo 'Contrexx Workbench command line utility
 
@@ -53,10 +69,20 @@ Available subcommands:' . "\r\n";
         }
     }
     
+    /**
+     * Gives commands access to database object
+     * @return \AdoNewConnection Database connection
+     */
     public function getDb() {
         return $this->cx->getDb();
     }
     
+    /**
+     * Get a user input
+     * @param string $description Description to display the user
+     * @param string $defaultValue (optional) Value to return if user does not enter anything, default ''
+     * @return string User input or default value
+     */
     public function input($description, $defaultValue = '') {
         echo $description . ' [' . $defaultValue . ']: ';
         $handle = fopen('php://stdin', 'r');
@@ -67,6 +93,11 @@ Available subcommands:' . "\r\n";
         return $line;
     }
     
+    /**
+     * Ask the user a yes/no question, default answer is no
+     * @param string $question Question for the user
+     * @return boolean True for yes, false otherwise
+     */
     public function yesNo($question) {
         echo $question . ' [N,y] ';
         $handle = fopen('php://stdin', 'r');
@@ -74,6 +105,10 @@ Available subcommands:' . "\r\n";
         return ($line == 'yes' || $line == 'y');
     }
     
+    /**
+     * Display a message for the user
+     * @param string $message Message to display
+     */
     public function show($message) {
         if ($this->silent) {
             return;
@@ -82,10 +117,13 @@ Available subcommands:' . "\r\n";
     }
     
     /**
-     * Tested for 2 dimensions only
+     * Recursively show an array to the user (BETA)
+     * 
+     * Accepts an array in the form array({something}=>{title}, 'children'=>{recursion})
+     * @todo Tested for 2 dimensions only
      * @todo $childrenCount must be an array in order to handle more than 2 dimensions
-     * @param array $tree
-     * @param type $displayindex 
+     * @param array $tree Array to show
+     * @param mixed $displayindex Index to display of an entry
      */
     public function tree(array $tree, $displayindex = 0) {
         $output = '';

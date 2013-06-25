@@ -1,16 +1,44 @@
 <?php
+/**
+ * Command to access doctrine command line tools
+ * @author Michael Ritter <michael.ritter@comvation.com>
+ */
 
 namespace Cx\Core_Modules\Workbench\Model\Entity;
 
+/**
+ * Command to access doctrine command line tools
+ * @author Michael Ritter <michael.ritter@comvation.com>
+ */
 class DbCommand extends Command {
+    
+    /**
+     * Command name
+     * @var string
+     */
     protected $name = 'db';
+    
+    /**
+     * Command description
+     * @var string
+     */
     protected $description = 'Allows access to doctrine command line tools';
+    
+    /**
+     * Command synopsis
+     * @var string
+     */
     protected $synopsis = 'workbench(.bat) db {doctrine syntax}';
+    
+    /**
+     * Command help text
+     * @var string
+     */
     protected $help = 'Gives access to doctrine command line tools. Use "help" to see what commands doctrine provides.';
     
     /**
-     * @param array $arguments
-     * @return type 
+     * Execute this command
+     * @param array $arguments Array of commandline arguments
      */
     public function execute(array $arguments) {
         $_SERVER['argv'] = array_slice($arguments, 1);
