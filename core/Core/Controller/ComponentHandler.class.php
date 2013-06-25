@@ -105,6 +105,15 @@ class ComponentHandler {
     }
     
     /**
+     * Wheter the component with the supplied name is a legacy one or not
+     * @param string $componentName Name of the component to check
+     * @return boolean True if it's a legacy component, false otherwise
+     */
+    public function isLegacyComponent($componentName) {
+        return !$this->systemComponentRepo->findOneBy(array('name'=>$componentName));
+    }
+    
+    /**
      * Checks for existance of legacy exception and executes it if available
      * @param String $action The action to be executed
      * @param String $componentName Name of the component to execute the action

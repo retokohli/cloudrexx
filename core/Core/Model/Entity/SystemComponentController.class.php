@@ -103,7 +103,7 @@ class SystemComponentController extends Controller {
      * @return mixed Return value of the method to call
      */
     public function __call($methodName, $arguments) {
-        return call_user_func(array($this->systemComponent, $methodName), $arguments);
+        return call_user_func_array(array($this->systemComponent, $methodName), $arguments);
     }
     
     /**

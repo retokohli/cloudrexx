@@ -92,10 +92,15 @@ class SystemComponent
     /**
      * Returns the absolute path to this component's location in the file system
      * @param boolean $allowCustomizing (optional) Set to false if you want to ignore customizings
+     * @param boolean $relative (optional) If set to true, the path relative to Contrexx main dir is returned, default false
      * @return string Path for this component
      */
-    public function getDirectory($allowCustomizing = true) {
-        $basepath = ASCMS_DOCUMENT_ROOT.$this->getPathForType($this->getType());
+    public function getDirectory($allowCustomizing = true, $relative = false) {
+        $basepath = ASCMS_DOCUMENT_ROOT;
+        if ($relative) {
+            $basepath = '';
+        }
+        $basepath .= $this->getPathForType($this->getType());
         $componentPath = $basepath . '/' . $this->getName();
         if (!$allowCustomizing) {
             return $componentPath;
