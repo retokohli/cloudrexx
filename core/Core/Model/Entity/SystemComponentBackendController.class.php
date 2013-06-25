@@ -40,9 +40,13 @@ abstract class SystemComponentBackendController extends Controller {
         }
         
         $actTemplate = new \Cx\Core\Html\Sigma($this->getSystemComponentController()->getDirectory() . '/View/Template');
-        $actTemplate->loadTemplateFile($cmd[0] . '.html');
+        $filename = $cmd[0] . '.html';
+        if (!\Env::get('ClassLoader')->getFilePath($actTemplate->getRoot() . '/' . $filename)) {
+            $filename = 'Default.html';
+        }
+        $actTemplate->loadTemplateFile($filename);
         
-        // todo: $actTemplate->loadTemplateFile(), Messages
+        // todo: Messages
         $this->parsePage($actTemplate, $cmd);
         
         // set tabs
