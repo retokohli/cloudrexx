@@ -35,7 +35,7 @@ class XmlSitemapPageTree extends PageTree {
      * @return boolean True on success (including deactivated), false otherwise
      */
     public static function write() {
-        global $_CONFIG, $_CORELANG, $license;
+        global $_CONFIG, $_CORELANG;
 
         if ($_CONFIG['xmlSitemapStatus'] == 'on') {
             $arrActiveLanguages = array();
@@ -47,7 +47,7 @@ class XmlSitemapPageTree extends PageTree {
 
             $arrFailed = array();
             foreach ($arrActiveLanguages as $langId => $langCode) {
-                $langSitemap = new static(\Env::get('em'), $license, 0, null, $langId);
+                $langSitemap = new static(\Env::get('em'), \Env::get('cx')->getLicense(), 0, null, $langId);
                 if (!$langSitemap->writeXML()) {
                     $arrFailed[] = sprintf($_CORELANG['TXT_CORE_XML_SITEMAP_NOT_WRITABLE'], sprintf(self::$strFileNameWithLang, $langCode));
                 }
