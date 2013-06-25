@@ -31,7 +31,8 @@ abstract class SystemComponentBackendController extends Controller {
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page Resolved page
      */
     public function getPage(\Cx\Core\ContentManager\Model\Entity\Page $page) {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG, $subMenuTitle;
+        $subMenuTitle = $_ARRAYLANG['TXT_' . strtoupper($this->getType()) . '_' . strtoupper($this->getName())];
         
         $cmd = array('');
         
@@ -39,7 +40,7 @@ abstract class SystemComponentBackendController extends Controller {
             $cmd = explode('/', contrexx_input2raw($_GET['act']));
         }
         
-        $actTemplate = new \Cx\Core\Html\Sigma($this->getSystemComponentController()->getDirectory() . '/View/Template');
+        $actTemplate = new \Cx\Core\Html\Sigma($this->getDirectory() . '/View/Template');
         $filename = $cmd[0] . '.html';
         if (!\Env::get('ClassLoader')->getFilePath($actTemplate->getRoot() . '/' . $filename)) {
             $filename = 'Default.html';
@@ -60,8 +61,8 @@ abstract class SystemComponentBackendController extends Controller {
                 $txt = 'DEFAULT';
             }
             $navigation->setVariable(array(
-                'HREF' => 'index.php?cmd=' . $this->getSystemComponentController()->getName() . $act,
-                'TITLE' => $_ARRAYLANG['TXT_' . strtoupper($this->getSystemComponentController()->getType()) . '_' . strtoupper($this->getSystemComponentController()->getName() . '_ACT_' . $txt)],
+                'HREF' => 'index.php?cmd=' . $this->getName() . $act,
+                'TITLE' => $_ARRAYLANG['TXT_' . strtoupper($this->getType()) . '_' . strtoupper($this->getName() . '_ACT_' . $txt)],
             ));
             if ($cmd[0] == $command) {
                 $navigation->touchBlock('active');

@@ -146,7 +146,7 @@ class modulemanager
 
     function showModules()
     {
-        global $objDatabase, $_CORELANG, $objTemplate;
+        global $objDatabase, $_CORELANG, $_ARRAYLANG, $objTemplate;
 
         $objTemplate->setVariable('MODULE_ACTION', 'edit');
         $arrayInstalledModules = $this->getModules();
@@ -199,9 +199,22 @@ class modulemanager
                     $objTemplate->setVariable('MODULE_REQUIRED', $objResult->fields['is_active'] ? $_CORELANG['TXT_OPTIONAL'] : $_CORELANG['TXT_LICENSE_NOT_LICENSED']);
                 }
 
+                if (isset($_CORELANG[$objResult->fields['description_variable']])) {
+                    $description = $_CORELANG[$objResult->fields['description_variable']];
+                } else {
+                    $arrLang = $_ARRAYLANG;
+                    // load language file
+                    \Env::get('init')->loadLanguageData($objResult->fields['name']);
+                    if (isset($_ARRAYLANG[$objResult->fields['description_variable']])) {
+                        $description = $_ARRAYLANG[$objResult->fields['description_variable']];
+                    } else {
+                        $description = '';
+                    }
+                    $_ARRAYLANG = $arrLang;
+                }
                 $objTemplate->setVariable(array(
                     'MODULE_ROWCLASS'   => $class . (!$objResult->fields['is_active'] ? ' rowInactive' : ''),
-                    'MODULE_DESCRIPTON' => $_CORELANG[$objResult->fields['description_variable']],
+                    'MODULE_DESCRIPTON' => $description,
                     'MODULE_ID'         => $objResult->fields['id']
                 ));
                 $objTemplate->parse('moduleRow');
@@ -394,7 +407,7 @@ return false;
 
     function manageModules()
     {
-        global $objDatabase, $_CORELANG, $objTemplate;
+        global $objDatabase, $_CORELANG, $_ARRAYLANG, $objTemplate;
 
         $objTemplate->setVariable("MODULE_ACTION", "manage");
         if (isset($_POST['installModule']) && is_array($_POST['installModule'])) {
@@ -432,10 +445,23 @@ return false;
                         'MODULE_STATUS'  => "<img src='images/icons/led_red.gif' alt='' />"
                     ));
                 }
+                if (isset($_CORELANG[$objResult->fields['description_variable']])) {
+                    $description = $_CORELANG[$objResult->fields['description_variable']];
+                } else {
+                    $arrLang = $_ARRAYLANG;
+                    // load language file
+                    \Env::get('init')->loadLanguageData($objResult->fields['name']);
+                    if (isset($_ARRAYLANG[$objResult->fields['description_variable']])) {
+                        $description = $_ARRAYLANG[$objResult->fields['description_variable']];
+                    } else {
+                        $description = '';
+                    }
+                    $_ARRAYLANG = $arrLang;
+                }
                 $objTemplate->setVariable(array(
                     'MODULE_ROWCLASS'   => ($i % 2 ? 'row2' : 'row2'),
                     'MODULE_NAME'       => $objResult->fields['name'],
-                    'MODULE_DESCRIPTON' => $_CORELANG[$objResult->fields['description_variable']],
+                    'MODULE_DESCRIPTON' => $description,
                     'MODULE_ID'         => $objResult->fields['id']
                 ));
                 $objTemplate->parse("moduleRow");
