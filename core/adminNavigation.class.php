@@ -50,7 +50,7 @@ class adminMenu
 
     private function init()
     {
-        global $_CORELANG, $objDatabase;
+        global $_CORELANG, $_ARRAYLANG, $objDatabase;
 
         $objFWUser = FWUser::getFWUserObject();
         $sqlWhereString = "";
@@ -97,11 +97,23 @@ class adminMenu
                 if ($objResult->fields['type'] == "group") {
                     $this->arrMenuGroups[$objResult->fields['area_id']] = $objResult->fields['area_name'];
                 }
+                if (isset($_CORELANG[$objResult->fields['area_name']])) {
+                    $name = $_CORELANG[$objResult->fields['area_name']];
+                } else {
+                    $arrLang = $_ARRAYLANG;
+                    // load language file
+                    \Env::get('init')->loadLanguageData($objResult->fields['module_name']);
+                    if (isset($_ARRAYLANG[$objResult->fields['area_name']])) {
+                        $name = $_ARRAYLANG[$objResult->fields['area_name']];
+                    } else {
+                        $name = '';
+                    }
+                    $_ARRAYLANG = $arrLang;
+                }
                 $this->arrMenuItems[$objResult->fields['area_id']] =
                 array(
                     $objResult->fields['parent_area_id'],
-                    (isset($_CORELANG[$objResult->fields['area_name']])
-                      ? $_CORELANG[$objResult->fields['area_name']] : ''),
+                    $name,
                     $objResult->fields['uri'],
                     $objResult->fields['target'],
                     $objResult->fields['module_name'],
