@@ -251,7 +251,7 @@ class ComponentHandler {
             \DBG::msg('Add an exception for this component in LegacyComponentHandler!');
             throw new ComponentException('This is an ugly legacy component(' . $componentName . '), load via LegacyComponentHandler!');
         }
-        $component->load($cx, $page);
+        $component->load($page);
         \DBG::msg('<b>WELL, THIS IS ONE NICE COMPONENT!</b>');
     }
 }

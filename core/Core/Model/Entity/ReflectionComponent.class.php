@@ -262,7 +262,7 @@ class ReflectionComponent {
                         \'' . $distributor . '\',
                         \'TXT_' . strtoupper($this->componentType) . '_' . strtoupper($this->componentName) . '_DESCRIPTION\',
                         \'y\',
-                        ' . ((int) $this->componentType == 'core') . ',
+                        ' . ((int) ($this->componentType == 'core')) . ',
                         ' . ((int) ($this->componentType == 'core' || $this->componentType == 'core_module')) . ',
                         1
                     )
@@ -348,7 +348,7 @@ class ReflectionComponent {
                         \'navigation\',
                         \'backend\',
                         \'TXT_' . strtoupper($this->componentType) . '_' . strtoupper($this->componentName) . '\',
-                        ' . ((int) $parent == 2) . ',
+                        ' . ((int) ($parent == 2)) . ',
                         \'index.php?cmd=' . $this->componentName . '\',
                         \'_self\',
                         ' . $id . ',
