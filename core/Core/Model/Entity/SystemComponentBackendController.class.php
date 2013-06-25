@@ -35,7 +35,6 @@ abstract class SystemComponentBackendController extends Controller {
         $subMenuTitle = $_ARRAYLANG['TXT_' . strtoupper($this->getType()) . '_' . strtoupper($this->getName())];
         
         $cmd = array('');
-        
         if (isset($_GET['act'])) {
             $cmd = explode('/', contrexx_input2raw($_GET['act']));
         }
@@ -53,28 +52,83 @@ abstract class SystemComponentBackendController extends Controller {
         // set tabs
         $navigation = new \Cx\Core\Html\Sigma(ASCMS_CORE_PATH . '/Core/View/Template');
         $navigation->loadTemplateFile('Navigation.html');
-        foreach ($this->getCommands() as $command) {
-            $act = '&amp;act=' . $command;
-            $txt = $command;
-            if (empty($command)) {
-                $act = '';
-                $txt = 'DEFAULT';
+        $commands = array_merge(array(''), $this->getCommands());
+        foreach ($commands as $key=>$command) {
+            $subnav = array();
+            if (is_array($command)) {
+                $subnav = array_merge(array(''), $command);
+                $command = $key;
             }
-            $navigation->setVariable(array(
-                'HREF' => 'index.php?cmd=' . $this->getName() . $act,
-                'TITLE' => $_ARRAYLANG['TXT_' . strtoupper($this->getType()) . '_' . strtoupper($this->getName() . '_ACT_' . $txt)],
-            ));
-            if ($cmd[0] == $command) {
-                $navigation->touchBlock('active');
+            
+            if ($key !== '') {
+                if ($cmd[0] == $command) {
+                    $navigation->touchBlock('tab_active');
+                } else {
+                    $navigation->hideBlock('tab_active');
+                }
+                $act = '&amp;act=' . $command;
+                $txt = $command;
+                if (empty($command)) {
+                    $act = '';
+                    $txt = 'DEFAULT';
+                }
+                $navigation->setVariable(array(
+                    'HREF' => 'index.php?cmd=' . $this->getName() . $act,
+                    'TITLE' => $_ARRAYLANG['TXT_' . strtoupper($this->getType()) . '_' . strtoupper($this->getName() . '_ACT_' . $txt)],
+                ));
+                $navigation->parse('tab_entry');
             }
-            $navigation->parse('tab_entry');
+            
+            // subnav
+            if ($cmd[0] == $command && count($subnav)) {
+                $first = true;
+                foreach ($subnav as $subcommand) {
+                    if ((!isset($cmd[1]) && $first) || ((isset($cmd[1]) ? $cmd[1] : '') == $subcommand)) {
+                        $navigation->touchBlock('subnav_active');
+                    } else {
+                        $navigation->hideBlock('subnav_active');
+                    }
+                    $act = '&amp;act=' . $cmd[0] . '/' . $subcommand;
+                    $txt = (empty($cmd[0]) ? 'DEFAULT' : $cmd[0]) . '_';
+                    if (empty($subcommand)) {
+                        $act = '&amp;act=' . $cmd[0] . '/';
+                        $txt .= 'DEFAULT';
+                    } else {
+                        $txt .= strtoupper($subcommand);
+                    }
+                    $navigation->setVariable(array(
+                        'HREF' => 'index.php?cmd=' . $this->getName() . $act,
+                        'TITLE' => $_ARRAYLANG['TXT_' . strtoupper($this->getType()) . '_' . strtoupper($this->getName() . '_ACT_' . $txt)],
+                    ));
+                    $navigation->parse('subnav_entry');
+                    $first = false;
+                }
+            }
+        }
+        $txt = $cmd[0];
+        if (empty($txt)) {
+            $txt = 'DEFAULT';
         }
         
+        // default css and js
+        if (file_exists($this->cx->getClassLoader()->getFilePath($this->getDirectory() . '/View/Style/Main.css'))) {
+            \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Style/Main.css', 1));
+        }
+        if (file_exists($this->cx->getClassLoader()->getFilePath($this->getDirectory() . '/View/Script/Main.js'))) {
+            \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Script/Main.js', 1));
+        }
+        
+        // finish
         $actTemplate->setVariable($_ARRAYLANG);
         $page->setContent($actTemplate->get());
+        $cachedRoot = $this->cx->getTemplate()->getRoot();
+        $this->cx->getTemplate()->setRoot(ASCMS_CORE_PATH . '/Core/View/Template');
+        $this->cx->getTemplate()->addBlockfile('CONTENT_OUTPUT', 'content_master', 'ContentMaster.html');
+        $this->cx->getTemplate()->setRoot($cachedRoot);
         $this->cx->getTemplate()->setVariable(array(
             'CONTENT_NAVIGATION' => $navigation->get(),
             'ADMIN_CONTENT' => $page->getContent(),
+            'CONTENT_TITLE' => $_ARRAYLANG['TXT_' . strtoupper($this->getType()) . '_' . strtoupper($this->getName() . '_ACT_' . $txt)],
         ));
     }
     

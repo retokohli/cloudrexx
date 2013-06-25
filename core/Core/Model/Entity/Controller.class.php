@@ -51,6 +51,6 @@ abstract class Controller {
      * @return mixed Return value of the method to call
      */
     public function __call($methodName, $arguments) {
-        return call_user_func(array($this->systemComponentController, $methodName), $arguments);
+        return call_user_func_array(array($this->systemComponentController, $methodName), $arguments);
     }
 }
