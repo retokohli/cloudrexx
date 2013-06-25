@@ -276,7 +276,7 @@ namespace Cx\Core\Core\Controller {
          */
         protected function loadConfig() {
             global $_CONFIG, $_PATHCONFIG;
-
+            
             /**
              * User configuration settings
              *
@@ -460,15 +460,15 @@ namespace Cx\Core\Core\Controller {
             if (!$this->customizingPath) {
                 return;
             }
-            if (!class_exists('\\Cx\\Customizing\\Core\\Cx')) {
+            if (!file_exists($this->customizingPath.'/core/Core/Controller/Cx')) {
                 return;
             }
             // we have to use reflection here, since instanceof does not work if the child is no object
-            $myReflection = new \ReflectionClass('\\Cx\\Customizing\\Core\\Cx');
+            $myReflection = new \ReflectionClass('\\Cx\\Customizing\\Core\\Controller\\Cx');
             if (!$myReflection->isSubclassOf(get_class($this))) {
                 return;
             }
-            new \Cx\Customizing\Core\Cx($this->getMode());
+            new \Cx\Customizing\Core\Controller\Cx($this->getMode());
             die();
         }
 
@@ -687,10 +687,12 @@ namespace Cx\Core\Core\Controller {
             } else if ($this->mode == self::MODE_BACKEND) {
                 // Skip the nav/language bar for modules which don't make use of either.
                 // TODO: Remove language selector for modules which require navigation but bring their own language management.
-                if (in_array($plainCmd, array('content'))) {
-                    $this->template->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master_stripped.html');
-                } else {
-                    $this->template->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master.html');
+                if ($this->ch->isLegacyComponent($plainCmd)) {
+                    if (in_array($plainCmd, array('content'))) {
+                        $this->template->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master_stripped.html');
+                    } else {
+                        $this->template->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master.html');
+                    }
                 }
                 $plainSection = $plainCmd;
             }
@@ -1172,6 +1174,14 @@ namespace Cx\Core\Core\Controller {
          */
         public function getLicense() {
             return $this->license;
+        }
+        
+        /**
+         * Return ClassLoader instance
+         * @return \Cx\Core\ClassLoader\ClassLoader
+         */
+        public function getClassLoader() {
+            return $this->cl;
         }
     }
 }
