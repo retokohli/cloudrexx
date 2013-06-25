@@ -175,9 +175,13 @@ class ReflectionComponent {
     
     /**
      * This adds all necessary DB entries in order to activate this component (if they do not exist)
-     * @todo Test add pages (if component is a module)
+     * @todo Test add repo pages (if component is a module)
      */
     public function activate() {
+        if (!$this->exists()) {
+            throw new \Cx\Core\Core\Controller\ComponentException('No such component: "' . $this->componentName . '" of type "' . $this->componentType . '"');
+        }
+        
         $cx = \Env::get('cx');
         $em = $cx->getDb()->getEntityManager();
         
@@ -219,7 +223,7 @@ class ReflectionComponent {
                     `' . DBPREFIX . 'modules`
                 SET
                     `status` = \'y\',
-                    `is_required` = ' . ((int) $this->componentType == 'core') . ',
+                    `is_required` = ' . ((int) ($this->componentType == 'core')) . ',
                     `is_core` = ' . ((int) ($this->componentType == 'core' || $this->componentType == 'core_module')) . ',
                     `is_active` = 1
                 WHERE
@@ -232,7 +236,7 @@ class ReflectionComponent {
                 FROM
                     `' . DBPREFIX . 'modules`
                 WHERE
-                    `id` > 900
+                    `id` >= 900
                 ORDER BY
                     `id` DESC
                 LIMIT 1
@@ -286,7 +290,7 @@ class ReflectionComponent {
                 UPDATE
                     `'.DBPREFIX.'backend_areas`
                 SET
-                    `module_id` = ' . $id . ',
+                    `module_id` = ' . $id . '
                 WHERE
                     `area_id` = ' . $result->fields['area_id'] . '
             ';
@@ -318,7 +322,7 @@ class ReflectionComponent {
                 FROM
                     `'.DBPREFIX.'backend_areas`
                 WHERE
-                    `access_id` > 900
+                    `access_id` >= 900
                 ORDER BY
                     `access_id` DESC
                 LIMIT 1
@@ -369,7 +373,7 @@ class ReflectionComponent {
         // modulemanager by this in a later release
         
         // does the module repository have something for us?
-        if (!$this->loadPagesFromModuleRepository()) {
+        if (!$this->loadPagesFromModuleRepository($id)) {
         
             $nodeRepo = $em->getRepository('\Cx\Core\ContentManager\Model\Entity\Node');
             $pageRepo = $em->getRepository('\Cx\Core\ContentManager\Model\Entity\Page');
@@ -381,17 +385,24 @@ class ReflectionComponent {
             $em->persist($newnode);
             $em->flush();
             $nodeRepo->moveDown($newnode, true); // move to the end of this level
-            $page = $pageRepo->createPage(
-                $newnode,
-                $lang['id'],
-                $objResult->fields['title'],
-                \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
-                $module_name,
-                $objResult->fields['cmd'],
-                !$root && $objResult->fields['displaystatus'],
-                $objResult->fields['content']
-            );
-            $em->persist($page);
+            foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
+                if ($lang['is_default'] === 'true' || $lang['fallback'] == null) {
+                    $type = \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION;
+                } else {
+                    $type = \Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK;
+                }
+                $page = $pageRepo->createPage(
+                    $newnode,
+                    $lang['id'],
+                    $this->componentName,
+                    $type,
+                    $this->componentName,
+                    '',
+                    false,
+                    ''
+                );
+                $em->persist($page);
+            }
             $em->flush();
         }
     }
@@ -400,9 +411,11 @@ class ReflectionComponent {
      * Loads pages from module repository
      * @return boolean True on success, false if no pages found in repo
      */
-    protected function loadPagesFromModuleRepository() {
+    protected function loadPagesFromModuleRepository($moduleId) {
         $cx = \Env::get('cx');
         $em = $cx->getDb()->getEntityManager();
+        
+        $id = $moduleId;
         
         $nodeRepo = $em->getRepository('\Cx\Core\ContentManager\Model\Entity\Node');
         $pageRepo = $em->getRepository('\Cx\Core\ContentManager\Model\Entity\Page');
@@ -492,7 +505,6 @@ class ReflectionComponent {
     
     /**
      * This deactivates the component (does not remove any DB entries, except for pages)
-     * @todo Test Doctrine Page remove()
      */
     public function deactivate() {
         $cx = \Env::get('cx');
@@ -513,12 +525,12 @@ class ReflectionComponent {
         $em = $cx->getDb()->getEntityManager();
         $pageRepo = $em->getRepository('Cx\\Core\\ContentManager\\Model\\Entity\\Page');
         $pages = $pageRepo->findBy(array(
-            'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
             'module' => $this->componentName,
         ));
         foreach ($pages as $page) {
             $em->remove($page); // <-- does this work?
         }
+        $em->flush();
     }
     
     /**
