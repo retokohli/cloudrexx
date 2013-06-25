@@ -44,7 +44,7 @@ $_CONFIG['spamKeywords']              = "sex, viagra";
 $_CONFIG['systemStatus']              = "on";
 $_CONFIG['timezone']                  = 'Europe/Zurich';
 $_CONFIG['xmlSitemapStatus']          = "on";
-$_CONFIG['useCustomizings']           = "off";
+$_CONFIG['useCustomizings']           = "on";
 
 /**
 * -------------------------------------------------------------------------
