@@ -269,6 +269,13 @@ cx.fe.toolbar = function() {
         return false;
     });
 
+    // detect esc key press
+    cx.jQuery(document).keyup(function(e) {
+        if (e.keyCode == 27) {
+            cx.fe.toolbar.hideBoxes();
+        }
+    });
+
     // init the admin menu anchor and box
     // not used for contrexx 3.1
 //    cx.fe.adminmenu();
@@ -662,11 +669,12 @@ cx.fe.savePage = function() {
  */
 cx.fe.history = function() {
     cx.jQuery("#fe_history").children("a").click(function() {
-        if (cx.jQuery("#fe_history .fe_box").css("display") != "none") {
-            return false;
+        if (!cx.fe.history.isVisible) {
+            cx.fe.toolbar.hideBoxes();
         }
-        cx.fe.toolbar.hideBoxes();
-        cx.fe.history.show();
+        // toggle box, if it is opened hide it
+        cx.fe.history.toggle();
+        // load history data
         cx.fe.history.load();
         return false;
     }).parent().hover(
@@ -682,6 +690,26 @@ cx.fe.history = function() {
 };
 
 /**
+ * is the history box visible?
+ * @returns {boolean}
+ */
+cx.fe.history.isVisible = function() {
+    return cx.jQuery("#fe_history .fe_toggle").css("display") != "none";
+};
+
+/**
+ * toggle history anchor
+ */
+cx.fe.history.toggle = function() {
+    // if you use cx.jQuery.toggle instead, the timeout is not cleared (see: cx.fe.history.hide();)
+    if(cx.fe.history.isVisible()) {
+        cx.fe.history.hide();
+    } else {
+        cx.fe.history.show();
+    }
+};
+
+/**
  * show history anchor
  */
 cx.fe.history.show = function() {
@@ -693,6 +721,7 @@ cx.fe.history.show = function() {
  */
 cx.fe.history.hide = function() {
     cx.jQuery("#fe_history .fe_toggle").hide();
+    clearTimeout(cx.fe.history.displayTimeout);
 };
 
 /**
