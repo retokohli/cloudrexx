@@ -43,7 +43,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $objInit = \Env::get('init');
 
         // check frontend editing status in settings and don't show frontend editing on mobile phone
-        if ($_CONFIG['frontendEditingStatus'] != 'on' || $objInit::_is_mobile_phone()) {
+        if (
+            $_CONFIG['frontendEditingStatus'] != 'on' ||
+            (
+                // check whether it is a tablet or not (mobile phone = true, tablet = false)
+                $objInit::_is_mobile_phone() &&
+                    !$objInit::_is_tablet()
+            )
+        ) {
             return false;
         }
 
@@ -55,7 +62,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 \Permission::checkAccess(35, 'static', true) &&
                 (
                     !$this->cx->getPage()->isBackendProtected() ||
-                    Permission::checkAccess($this->cx->getPage()->getId(), 'page_backend', true)
+                    \Permission::checkAccess($this->cx->getPage()->getId(), 'page_backend', true)
                 )
             )
         ) {
