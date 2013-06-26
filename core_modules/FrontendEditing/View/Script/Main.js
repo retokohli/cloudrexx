@@ -287,10 +287,16 @@ cx.fe.toolbar = function() {
 cx.fe.toolbar.hide = function() {
     // hide anchor boxes
     cx.fe.toolbar.hideBoxes();
+    
+    var toolbarOffset = parseInt(cx.jQuery("#workbenchWarning").height());
+    if (!toolbarOffset) {
+        toolbarOffset = 0;
+    }
+    cx.jQuery("#workbenchWarning").css('position', 'fixed').css('top', '0');
 
     // do the css
-    cx.jQuery("#fe_toolbar").css("top", "-" + cx.jQuery("#fe_toolbar").height() + "px");
-    cx.jQuery("body").css("padding-top", "0px");
+    cx.jQuery("#fe_toolbar").css("top", "-" + (parseInt(cx.jQuery("#fe_toolbar").height()) - toolbarOffset) + "px");
+    cx.jQuery("body").css("padding-top", toolbarOffset + "px");
 
     // do the html
     cx.jQuery("#fe_toolbar_tab").html(cx.fe.langVars.TXT_FRONTEND_EDITING_SHOW_TOOLBAR);
@@ -305,9 +311,16 @@ cx.fe.toolbar.hide = function() {
  */
 cx.fe.toolbar.show = function() {
     // do the css
-    cx.jQuery("body").css("padding-top", cx.jQuery("#fe_toolbar").height() + "px");
+    
+    var toolbarOffset = parseInt(cx.jQuery("#workbenchWarning").height());
+    if (!toolbarOffset) {
+        toolbarOffset = 0;
+    }
+    cx.jQuery("#workbenchWarning").css('position', 'fixed').css('top', '0');
+    
+    cx.jQuery("body").css("padding-top", (parseInt(cx.jQuery("#fe_toolbar").height()) + toolbarOffset) + "px");
     cx.jQuery("#fe_toolbar").css({
-        top: "0px"
+        top: toolbarOffset + "px"
     });
 
     // do the html
