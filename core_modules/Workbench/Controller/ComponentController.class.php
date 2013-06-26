@@ -17,6 +17,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         $objTemplate = $this->cx->getTemplate();
+        $cachedRoot = $this->cx->getTemplate()->getRoot();
+        $this->cx->getTemplate()->setRoot(ASCMS_CORE_PATH . '/Core/View/Template');
+        $this->cx->getTemplate()->addBlockfile('CONTENT_OUTPUT', 'content_master', 'ContentMaster.html');
+        $this->cx->getTemplate()->setRoot($cachedRoot);
         $_ARRAYLANG = \Env::get('init')->loadLanguageData($this->getName());
         
         // Initialize
@@ -60,7 +64,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
         
         // set tabs
-        $navigation = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/Workbench/View/Template');
+        $navigation = new \Cx\Core\Html\Sigma(ASCMS_CORE_PATH . '/Core/View/Template');
         $navigation->loadTemplateFile('Navigation.html');
         foreach ($navEntries as $href=>$title) {
             $navigation->setVariable(array(
@@ -68,7 +72,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 'TITLE' => $title,
             ));
             if (strtolower($title) == $act) {
-                $navigation->touchBlock('active');
+                $navigation->touchBlock('tab_active');
             }
             $navigation->parse('tab_entry');
         }

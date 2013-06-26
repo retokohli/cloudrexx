@@ -10,6 +10,7 @@ class Toolbox {
         switch ($mode) {
             case 'yaml':
                 $this->template->loadTemplateFile('Yaml.html');
+                return;
                 $res = \Env::get('db')->Execute('SHOW TABLES');
                 while (!$res->EOF) {
                     $this->template->setVariable('TABLE', current($res->fields));
