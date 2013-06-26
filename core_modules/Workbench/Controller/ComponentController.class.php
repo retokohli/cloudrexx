@@ -88,6 +88,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $objTemplate = $this->cx->getTemplate();
         $warning = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/Workbench/View/Template');
         $warning->loadTemplateFile('Warning.html');
-        $objTemplate->_blocks['__global__'] = preg_replace('/<body[^>]*>/', '\\0' . $warning->get(), $objTemplate->_blocks['__global__']);
+        if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
+            \JS::registerCSS('core_modules/Workbench/View/Style/WarningBackend.css');
+            $objTemplate->_blocks['__global__'] = preg_replace('/<div id="container"[^>]*>/', '\\0' . $warning->get(), $objTemplate->_blocks['__global__']);
+        } else {
+            \JS::registerCSS('core_modules/Workbench/View/Style/WarningFrontend.css');
+            $objTemplate->_blocks['__global__'] = preg_replace('/<body[^>]*>/', '\\0' . $warning->get(), $objTemplate->_blocks['__global__']);
+        }
     }
 }
