@@ -62,6 +62,8 @@ cx.fe = function() {
     cx.fe.toolbar.hideAnchors();
     cx.fe.actionButtons();
     cx.fe.actionButtons.hide();
+    // hide state icon
+    cx.jQuery("#fe_state_wrapper").hide();
 
     cx.jQuery("#fe_toolbar").show();
 };
@@ -133,9 +135,6 @@ cx.fe.contentEditor.start = function() {
             return cx.fe.langVars.TXT_FRONTEND_EDITING_CONFIRM_UNSAVED_EXIT;
         }
     });
-
-    // show state icon
-    cx.jQuery("#fe_state_wrapper").show();
 };
 
 /**
@@ -178,13 +177,13 @@ cx.fe.contentEditor.stop = function() {
         }
     });
 
+    // hide action buttons
     cx.fe.actionButtons.hide();
 
     // remove event on window
     cx.jQuery(window).unbind();
 
-    // hide state icon
-    cx.jQuery("#fe_state_wrapper").hide();
+
 };
 
 /**
@@ -238,6 +237,8 @@ cx.fe.toolbar = function() {
             // if the edit mode was active, stop the editor
             cx.jQuery(this).html(cx.fe.langVars.TXT_FRONTEND_EDITING_EDIT);
             cx.fe.contentEditor.stop();
+            // show state icon
+            cx.jQuery("#fe_state_wrapper").hide();
         } else {
             // if the edit mode was not active, start the editor
             cx.jQuery(this).html(cx.fe.langVars.TXT_FRONTEND_EDITING_CANCEL_EDIT);
@@ -259,6 +260,9 @@ cx.fe.toolbar = function() {
                     cx.fe.toolbar.showAnchors(false, true); // only show option anchor, hide history anchor
                 }
 
+                // show state icon
+                cx.jQuery("#fe_state_wrapper").show();
+                // show action buttons
                 cx.fe.actionButtons.show();
             });
         }
