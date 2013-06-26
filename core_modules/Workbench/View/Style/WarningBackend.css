@@ -3,10 +3,6 @@
     top: 20px;
 }
 
-#content_wrapper {
-    padding-top: 73px;
-}
-
 #workbenchWarning {
     z-index: 1000001;
     width: 100%;
