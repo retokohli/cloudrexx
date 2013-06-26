@@ -223,7 +223,8 @@ cx.fe.toolbar = function() {
     }
 
     // add click handler for toolbar tab
-    cx.jQuery("#fe_toolbar_tab").click(function() {
+    cx.jQuery("#fe_toolbar_tab").click(function(e) {
+        e.preventDefault();
         if (cx.fe.toolbar_opened) {
             cx.fe.toolbar.hide();
         } else {
@@ -232,7 +233,8 @@ cx.fe.toolbar = function() {
     });
 
     // start / stop edit mode button
-    cx.jQuery("#fe_toolbar_startEditMode").html(cx.fe.langVars.TXT_FRONTEND_EDITING_EDIT).click(function() {
+    cx.jQuery("#fe_toolbar_startEditMode").html(cx.fe.langVars.TXT_FRONTEND_EDITING_EDIT).click(function(e) {
+        e.preventDefault();
         if (cx.fe.editMode) {
             // if the edit mode was active, stop the editor
             cx.jQuery(this).html(cx.fe.langVars.TXT_FRONTEND_EDITING_EDIT);
@@ -266,7 +268,6 @@ cx.fe.toolbar = function() {
                 cx.fe.actionButtons.show();
             });
         }
-        return false;
     });
 
     // detect esc key press
@@ -541,16 +542,17 @@ cx.fe.loadPageData = function(historyId, putTheData, callback) {
  * Init click handler on action buttons
  */
 cx.fe.actionButtons = function() {
-    cx.jQuery("#fe_toolbar_publishPage").click(function() {
+    cx.jQuery("#fe_toolbar_publishPage").click(function(e) {
+            e.preventDefault();
             if (!cx.fe.editMode) {
                 return false;
             }
             cx.fe.publishPage();
-            return false;
         });
 
     // init save as draft button and hide it
-    cx.jQuery("#fe_toolbar_savePage").click(function() {
+    cx.jQuery("#fe_toolbar_savePage").click(function(e) {
+            e.preventDefault();
             cx.fe.savePage();
         });
 };
@@ -681,15 +683,15 @@ cx.fe.savePage = function() {
  * Hide the history box after 2 seconds
  */
 cx.fe.history = function() {
-    cx.jQuery("#fe_history").children("a").click(function() {
-        if (!cx.fe.history.isVisible) {
+    cx.jQuery("#fe_history").children("a").click(function(e) {
+        e.preventDefault();
+        if (!cx.fe.history.isVisible()) {
             cx.fe.toolbar.hideBoxes();
         }
         // toggle box, if it is opened hide it
         cx.fe.history.toggle();
         // load history data
         cx.fe.history.load();
-        return false;
     }).parent().hover(
         function() {
             clearTimeout(cx.fe.history.displayTimeout);
@@ -761,7 +763,8 @@ cx.fe.history.load = function(pos) {
                     pos = el.attr("href").match(/pos=(\d*)/)[1];
                 }
                 el.data("pos", pos);
-            }).attr("href", "#").click(function() {
+            }).attr("href", "#").click(function(e) {
+                    e.preventDefault();
                     cx.fe.history.load(cx.jQuery(this).data("pos"));
                 });
             cx.fe.history.updateHighlighting();
@@ -791,14 +794,14 @@ cx.fe.options = function() {
     // hide options
     cx.fe.options.load();
 
-    cx.jQuery("#fe_options").children("a").click(function() {
+    cx.jQuery("#fe_options").children("a").click(function(e) {
+        e.preventDefault();
         if (cx.jQuery("#fe_options .fe_box").css("display") != "none") {
             return false;
         }
         cx.fe.toolbar.hideBoxes();
         cx.fe.options.show();
         cx.fe.options.load();
-        return false;
     }).parent().hover(
         function() {
             clearTimeout(cx.fe.options.displayTimeout);
