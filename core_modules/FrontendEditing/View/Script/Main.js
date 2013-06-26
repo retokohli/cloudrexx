@@ -256,7 +256,7 @@ cx.fe.toolbar = function() {
                     cx.fe.toolbar.showAnchors(true, true); // show both anchors, history and options
                 } else {
                     cx.fe.editMode = true;
-                    cx.tools.StatusMessage.showMessage(cx.fe.langVars.TXT_FRONTEND_EDITING_MODULE_PAGE, 'info');
+                    cx.tools.StatusMessage.showMessage(cx.fe.langVars.TXT_FRONTEND_EDITING_MODULE_PAGE, 'info', 5000);
                     cx.fe.toolbar.showAnchors(false, true); // only show option anchor, hide history anchor
                 }
 
@@ -265,6 +265,13 @@ cx.fe.toolbar = function() {
                 // show action buttons
                 cx.fe.actionButtons.show();
             });
+        }
+    }).hide();
+
+    // show start / stop button if the page is not an application
+    cx.fe.loadPageData(null, false, function() {
+        if (cx.fe.page.type == "content" || (cx.fe.page.type == "application" && cx.fe.page.module == "home")) {
+            cx.jQuery("#fe_toolbar_startEditMode").show();
         }
     });
 
