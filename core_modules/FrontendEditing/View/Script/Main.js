@@ -60,8 +60,7 @@ cx.fe = function() {
     // add the toolbar, hide the anchors and hide the action buttons
     cx.fe.toolbar();
     cx.fe.toolbar.hideAnchors();
-    cx.fe.actionButtons();
-    cx.fe.actionButtons.hide();
+
     // hide state icon
     cx.jQuery("#fe_state_wrapper").hide();
 
@@ -247,8 +246,7 @@ cx.fe.toolbar = function() {
 
             // load newest version, draft or published and refresh the editor's content
             cx.fe.loadPageData(null, true, function() {
-                cx.fe.history();
-                cx.fe.options();
+                cx.fe.options.load();
 
                 // check whether the content is editable or not
                 // don't show inline editor for module pages, except home
@@ -276,6 +274,14 @@ cx.fe.toolbar = function() {
             cx.fe.toolbar.hideBoxes();
         }
     });
+
+    // init action buttons and hide them
+    cx.fe.actionButtons();
+    cx.fe.actionButtons.hide();
+
+    // init history and options
+    cx.fe.history();
+    cx.fe.options();
 
     // init the admin menu anchor and box
     // not used for contrexx 3.1
@@ -791,17 +797,14 @@ cx.fe.history.updateHighlighting = function() {
  * Hide the options box after 2 seconds
  */
 cx.fe.options = function() {
-    // hide options
-    cx.fe.options.load();
-
     cx.jQuery("#fe_options").children("a").click(function(e) {
         e.preventDefault();
         if (cx.jQuery("#fe_options .fe_box").css("display") != "none") {
             return false;
         }
         cx.fe.toolbar.hideBoxes();
-        cx.fe.options.show();
         cx.fe.options.load();
+        cx.fe.options.show();
     }).parent().hover(
         function() {
             clearTimeout(cx.fe.options.displayTimeout);
