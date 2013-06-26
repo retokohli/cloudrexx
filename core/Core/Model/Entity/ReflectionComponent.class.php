@@ -175,7 +175,6 @@ class ReflectionComponent {
     
     /**
      * This adds all necessary DB entries in order to activate this component (if they do not exist)
-     * @todo Test add repo pages (if component is a module)
      */
     public function activate() {
         if (!$this->exists()) {
@@ -528,14 +527,14 @@ class ReflectionComponent {
             'module' => $this->componentName,
         ));
         foreach ($pages as $page) {
-            $em->remove($page); // <-- does this work?
+            $em->remove($page);
         }
         $em->flush();
     }
     
     /**
      * This completely removes this component from DB
-     * @todo Remove components tables (including doctrine schema)
+     * @todo Test removing components tables (including doctrine schema)
      */
     protected function removeFromDb() {
         $cx = \Env::get('cx');
@@ -581,6 +580,21 @@ class ReflectionComponent {
         ';
         $adoDb->execute($query);
         
+        // module tables (LIKE DBPREFIX . strtolower($moduleName)%)
+        $query = '
+            SHOW TABLES
+            LIKE
+                \'' . DBPREFIX . 'module_' . strtolower($this->componentName) . '%\'
+        ';
+        $result = $adoDb->execute($query);
+        while (!$result->EOF) {
+            $query = '
+                DROP TABLE
+                    `' . current($result->fields) . '`
+            ';
+            $adoDb->execute($query);
+        }
+                
         // pages
         $this->deactivate();
     }
@@ -714,6 +728,10 @@ class ReflectionComponent {
         foreach ($pages as $page) {
             if ($copy) {
                 // copy page
+                $node = $page->getNode()->copy();
+                $em->persist($node);
+                $node->getPage()->setModule($newName);
+                $em->persist($node->getPage());
             } else {
                 $page->setModule($newName);
                 $em->persist($page);
@@ -724,6 +742,8 @@ class ReflectionComponent {
         // remove old component from db (component, modules, backend_areas)
         if (!$copy) {
             $this->removeFromDb();
+        } else {
+            // copy db tables and refactor
         }
         
         // copy/move in filesystem (name, type and customizing)
