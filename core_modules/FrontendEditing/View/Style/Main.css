@@ -110,10 +110,13 @@
 #fe_metanavigation .fe_anchor {
     float: left;
     position: relative;
-    padding-left: 21px;
     margin: 0 0 0 20px;
     color: #c5dbe8;
     line-height: normal;
+}
+
+#fe_metanavigation .fe_anchor>a {
+    padding-left: 21px;
 }
 
 #fe_history {
@@ -151,7 +154,7 @@
     display: block;
     position: absolute;
     top: 45px;
-    left: -248px;
+    left: -531px;
     width: 550px;
     background: #fff;
     padding: 5px;
@@ -163,7 +166,7 @@
     display: block;
     position: absolute;
     top: 19px;
-    left: 8px;
+    left: -18px;
     width: 51px;
     height: 26px;
     background: url("../Media/toolbar-arrow.png");
