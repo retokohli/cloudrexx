@@ -801,7 +801,7 @@ class MediaLibrary
                 break;
         }
         if (is_dir($file)) {
-            $icon = '_folder';
+            $icon = 'Folder';
         }
         if (!file_exists($this->iconPath.$icon.'.png') or !isset($icon)) {
             $icon = '_blank';
