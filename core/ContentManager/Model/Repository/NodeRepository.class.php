@@ -136,8 +136,28 @@ class NodeRepository extends NestedTreeRepository {
             $level = $rootNode->getLvl();
         }
         echo $rootNode->getId() . '<br />';
+
+        // The order in which the children are returned by $rootnode->getChildren() is wrong.
+        // Therefore we'll have to manually put the children in the right order.
+        // Tote that $children is an object, which is why we have to transform it into an array
+        // to be able to using usort() to sort the children.
+        $children = $rootNode->getChildren();
+        $aChildren = array();
+        foreach ($children as $child) {
+            $aChildren[] = $child;
+        }
+        usort($aChildren, function($a, $b) {
+            if ($a->getLft() < $b->getLft()) {
+                return -1;
+            } elseif ($a->getLft() > $b->getLft()) {
+                return 1;
+            } else {
+                return 0;
+            }
+        });
+
         $level++;
-        foreach ($rootNode->getChildren() as $child) {
+        foreach ($aChildren as $child) {
             $left++;
             $child->setLft($left);
             $child->setLvl($level);
