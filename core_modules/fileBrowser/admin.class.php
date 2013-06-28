@@ -111,7 +111,7 @@ class FileBrowser {
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
-        $this->_iconPath = ASCMS_MODULE_IMAGE_WEB_PATH.'/fileBrowser/';
+        $this->_iconPath = ASCMS_CORE_MODULE_WEB_PATH.'/fileBrowser/View/Media/';
         $this->_path = $this->_getPath();
         $this->_setFrontendLanguageId();
         $this->_mediaType = $this->_getMediaType();
@@ -413,7 +413,7 @@ class FileBrowser {
                         'FILEBROWSER_FILE_PATH_CLICK'   => "javascript:{setUrl($url,null,null,'".\FWLanguage::getLanguageCodeById($this->_frontendLanguageId).$path."','page')}",
                         'FILEBROWSER_FILE_NAME'         => $arrPage['catname'],
                         'FILEBROWSER_FILESIZE'          => '&nbsp;',
-                        'FILEBROWSER_FILE_ICON'         => $this->_iconPath.'htm.gif',
+                        'FILEBROWSER_FILE_ICON'         => $this->_iconPath.'htm.png',
                         'FILEBROWSER_FILE_DIMENSION'    => '&nbsp;',
                         'FILEBROWSER_SPACING_STYLE'     => 'style="margin-left: '.($arrPage['level'] * 15).'px;"',
                     ));
@@ -666,7 +666,7 @@ class FileBrowser {
             $path = array();
             if (   $this->_path !== "/"
                 && preg_match('#(.*/).+[/]?$#', $this->_path, $path)) {
-                array_push($this->_arrDirectories, array('name' => '..', 'path' => $path[1], 'icon' => $this->_iconPath.'_folder.gif'));
+                array_push($this->_arrDirectories, array('name' => '..', 'path' => $path[1], 'icon' => $this->_iconPath.'Folder.png'));
             }
 
             $file = readdir($objDir);
@@ -708,22 +708,58 @@ class FileBrowser {
     /**
      * Search the icon for a file
      * @param  string $file: The icon of this file will be searched
-     */
+     */    
     function _getIcon($file)
     {
+        $icon = '';
         if (is_file($file)) {
             $info = pathinfo($file);
-            $icon = strtolower($info['extension']);
+            $icon = strtoupper($info['extension']);
         }
-
+        
+        $arrImageExt        = array('JPEG', 'JPG', 'TIFF', 'GIF', 'BMP', 'PNG');
+        $arrVideoExt        = array('3GP', 'AVI', 'DAT', 'FLV', 'FLA', 'M4V', 'MOV', 'MPEG', 'MPG', 'OGG', 'WMV', 'SWF');
+        $arrAudioExt        = array('WAV', 'WMA', 'AMR', 'MP3', 'AAC');
+        $arrPresentationExt = array('ODP', 'PPT', 'PPTX');
+        $arrSpreadsheetExt  = array('CSV', 'ODS', 'XLS', 'XLSX');
+        $arrDocumentsExt    = array('DOC', 'DOCX', 'ODT', 'RTF');
+        
+        switch (true) {
+            case ($icon == 'TXT'):
+                $icon = 'Text';
+                break;
+            case ($icon == 'PDF'):
+                $icon = 'Pdf';
+                break;
+            case in_array($icon, $arrImageExt):
+                $icon = 'Image';
+                break;
+            case in_array($icon, $arrVideoExt):
+                $icon = 'Video';
+                break;
+            case in_array($icon, $arrAudioExt):
+                $icon = 'Audio';
+                break;
+            case in_array($icon, $arrPresentationExt):
+                $icon = 'Presentation';
+                break;
+            case in_array($icon, $arrSpreadsheetExt):
+                $icon = 'Spreadsheet';
+                break;
+            case in_array($icon, $arrDocumentsExt):
+                $icon = 'TextDocument';
+                break;
+            default :
+                $icon = 'Unknown';
+                break;
+        }
         if (is_dir($file)) {
-            $icon = '_folder';
+            $icon = 'Folder';
         }
-
-        if (!file_exists(ASCMS_MODULE_IMAGE_PATH.'/fileBrowser/'.$icon.'.gif') or !isset($icon)) {
+        if (!file_exists(ASCMS_CORE_MODULE_PATH.'/fileBrowser/View/Media/'.$icon.'.png') or !isset($icon)) {
             $icon = '_blank';
         }
-        return $this->_iconPath.$icon.'.gif';
+        return $this->_iconPath.$icon.'.png';
     }
 
 
