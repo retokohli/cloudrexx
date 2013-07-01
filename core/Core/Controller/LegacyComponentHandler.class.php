@@ -1753,6 +1753,7 @@ class LegacyComponentHandler {
 
                         if ($objFWUser->objUser->login(true)) {
                             header('location: index.php');
+                            exit;
                         }
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/login/admin.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1791,7 +1792,7 @@ class LegacyComponentHandler {
                     'jobs' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
 
-                        \Permission::checkAccess(11, 'static');
+                        \Permission::checkAccess(148, 'static');
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/jobs/admin.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $subMenuTitle = $_CORELANG['TXT_JOBS_MANAGER'];
@@ -1859,7 +1860,7 @@ class LegacyComponentHandler {
 
                         $subMenuTitle = $_CORELANG['TXT_LICENSE'];
                         $lm = new \Cx\Core_Modules\License\LicenseManager($act, $objTemplate, $_CORELANG, $_CONFIG, $objDatabase);
-                        $lm->getPage($_POST);
+                        $lm->getPage($_POST, $_CORELANG);
                     },
                 // TODO: handle expired sessions in any xhr callers.
                     'jsondata' => function() {
@@ -1974,7 +1975,7 @@ class LegacyComponentHandler {
                     'stats' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
 
-                        \Permission::checkAccess(19, 'static');
+                        \Permission::checkAccess(163, 'static');
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/stats/admin.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $subMenuTitle = $_CORELANG['TXT_STATISTIC'];
