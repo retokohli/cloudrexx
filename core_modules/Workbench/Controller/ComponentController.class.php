@@ -1,14 +1,23 @@
 <?php
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
+/**
+ * ComponentController for Workbench
+ * 
+ * Loads backend view Controllers and adds warning message
+ * @author Michael Ritter <michael.ritter@comvation.com>
  */
+
 namespace Cx\Core_Modules\Workbench\Controller;
 
+/**
+ * ComponentController for Workbench
+ * 
+ * Loads backend view Controllers and adds warning message
+ * @author Michael Ritter <michael.ritter@comvation.com>
+ */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
 
     /**
+     * Loads backend view Controllers (BETA)
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page
      * @todo YAML assistant
      * @todo Cx/Module sandbox
@@ -82,7 +91,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     /**
      * Add the warning banner
      *
-     * @param \Cx\Core\ContentManager\Model\Entity\Page $page
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page Resolved page
      */
     public function postContentLoad(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         $objTemplate = $this->cx->getTemplate();
