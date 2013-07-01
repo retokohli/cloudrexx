@@ -1828,6 +1828,16 @@ class LegacyComponentHandler {
                         $objServer = new \serverSettings();
                         $objServer->getPage();
                     },
+                    'shop' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle, $intAccessIdOffset;
+                        
+                        \Permission::checkAccess($intAccessIdOffset+13, 'static');
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/shop/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_SHOP_ADMINISTRATION'];
+                        $objShopManager = new \shopmanager();
+                        $objShopManager->getPage();
+                    },
                     'log' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
 
@@ -1923,6 +1933,26 @@ class LegacyComponentHandler {
                         $objImmo = new \Immo();
                         $objImmo->getPage();
                     },
+                    'livecam' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+                        
+                        // \Permission::checkAccess(9, 'static');
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/livecam/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_LIVECAM'];
+                        $objLivecam = new \LivecamManager();
+                        $objLivecam->getPage();
+                    },
+                    'guestbook' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+                        
+                        \Permission::checkAccess(9, 'static');
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/guestbook/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_GUESTBOOK'];
+                        $objGuestbook = new \GuestbookManager();
+                        $objGuestbook->getPage();
+                    },
                         // dataviewer
                     'dataviewer' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
@@ -1933,6 +1963,16 @@ class LegacyComponentHandler {
                         $subMenuTitle = $_CORELANG['TXT_DATAVIEWER'];
                         $objDataviewer = new \Dataviewer();
                         $objDataviewer->getPage();
+                    },
+                    'memberdir' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+                        
+                        \Permission::checkAccess(83, 'static');
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/memberdir/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_MEMBERDIR'];
+                        $objMemberdir = new \MemberDirManager();
+                        $objMemberdir->getPage();
                     },
                     'download' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
@@ -2091,6 +2131,16 @@ class LegacyComponentHandler {
                         $objReservationModule = new reservationManager();
                         $objReservationModule->getPage();
                     },
+                    'recommend' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+                        
+                        \Permission::checkAccess(64, 'static');
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/recommend/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_RECOMMEND'];
+                        $objCalendar = new \RecommendManager();
+                        $objCalendar->getPage();
+                    },
                     'forum' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
 
@@ -2101,6 +2151,16 @@ class LegacyComponentHandler {
                         $objForum = new \ForumAdmin();
                         $objForum->getPage();
                     },
+                    'gallery' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+                        
+                        \Permission::checkAccess(12, 'static');
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/gallery/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_GALLERY_TITLE'];
+                        $objGallery = new \galleryManager();
+                        $objGallery->getPage();
+                    },
                     'directory' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
 
@@ -2110,6 +2170,16 @@ class LegacyComponentHandler {
                         $subMenuTitle = $_CORELANG['TXT_LINKS_MODULE_DESCRIPTION'];
                         $objDirectory = new \rssDirectory();
                         $objDirectory->getPage();
+                    },
+                    'block' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+                        
+                        \Permission::checkAccess(76, 'static');
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/block/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_BLOCK_SYSTEM'];
+                        $objBlock = new \blockManager();
+                        $objBlock->getPage();
                     },
                     'popup' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
@@ -2140,6 +2210,16 @@ class LegacyComponentHandler {
                         $subMenuTitle = $_CORELANG['TXT_DATA_MODULE'];
                         $objData = new \DataAdmin();
                         $objData->getPage();
+                    },
+                    'podcast' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+                        
+                        \Permission::checkAccess(87, 'static');
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/podcast/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_PODCAST'];
+                        $objPodcast = new \podcastManager();
+                        $objPodcast->getPage();
                     },
                     'support' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
@@ -2270,6 +2350,15 @@ class LegacyComponentHandler {
                         $subMenuTitle = $_CORELANG['TXT_SEARCH'];
                         $objSearch    = new \Cx\Core\Search\SearchManager($act, $objTemplate, $objDatabase, $objInit, $license);
                         $objSearch->getPage();
+                    },
+                    'checkout' => function() {
+                        global $cl, $_CORELANG, $subMenuTitle;
+                        
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/checkout/admin.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $subMenuTitle = $_CORELANG['TXT_CHECKOUT_MODULE'];
+                        $objCheckoutManager = new \CheckoutManager();
+                        $objCheckoutManager->getPage();
                     },
                     'crm' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
