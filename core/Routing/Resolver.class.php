@@ -143,6 +143,7 @@ class Resolver {
 
         if ($aliaspage != null) {
             $this->lang = $aliaspage->getTargetLangId();
+            $aliaspage->setVirtual(true);
             return $aliaspage;
         } else {
             $this->lang = \Env::get('init')->getFallbackFrontendLangId();
@@ -322,7 +323,23 @@ class Resolver {
                                 $page_template = $themesPages['content'];
                             }
                         }
-                        return $this->page;
+        
+        $this->page->setVirtual();
+        
+        // check for further URL parts to resolve
+        if (
+            $this->page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION &&
+            $this->page->getPath() != '/' . $this->url->getSuggestedTargetPath()
+        ) {
+            // does this work for fallback(/aliases)?
+            $additionalPath = substr('/' . $this->url->getSuggestedTargetPath(), strlen($this->page->getPath()));
+            $componentController = $this->em->getRepository('Cx\Core\Core\Model\Entity\SystemComponent')->findOneBy(array('name'=>$this->page->getModule()));
+            if ($componentController) {
+                $parts = explode('/', substr($additionalPath, 1));
+                $componentController->resolve($parts, $this->page);
+            }
+        }
+        return $this->page;
     }
 
     /**

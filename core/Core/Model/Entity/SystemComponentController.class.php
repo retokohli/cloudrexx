@@ -121,6 +121,19 @@ class SystemComponentController extends Controller {
     }
     
     /**
+     * Called for additional, component specific resolving
+     * 
+     * If /en/Path/to/Page is the path to a page for this component
+     * a request like /en/Path/to/Page/with/some/parameters will
+     * give an array like array('with', 'some', 'parameters') for $parts
+     * 
+     * This may be used to redirect to another page
+     * @param array $parts List of additional path parts
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page Resolved virtual page
+     */
+    public function resolve($parts, $page) {}
+    
+    /**
      * Do something before resolving is done
      * 
      * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
