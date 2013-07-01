@@ -178,31 +178,26 @@ class LegacyComponentHandler {
                         global $section, $newsletter, $isRegularPageRequest, $plainSection, $cl, $_CORELANG,
                                 $newsletter, $_ARRAYLANG, $page_template, $themesPages, $objInit;
 
-                        if ($section == "newsletter" && Newsletter::isTrackLink()) {//handle link tracker from newsletter, since user should be redirected to the link url
-                            /*
-                            * Newsletter Module
-                            *
-                            * Generates no output, requests are answered by a redirect to foreign site
-                            *
-                            */
-                            $newsletter = new Newsletter();
-                            $newsletter->trackLink();
-                            //execution should never reach this point
-                        }
-
-                        if (!$isRegularPageRequest) {
-                            // ATTENTION: These requests are not protected by the content manager
-                            //            and must therefore be authorized by the calling component itself!
-                            switch ($plainSection) {
-                                case 'newsletter':
-                                    /** @ignore */
-                                    if (!$cl->loadFile(ASCMS_MODULE_PATH.'/newsletter/index.class.php'))
-                                        die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                                    $newsletter = new newsletter();
-                                    $newsletter->getPage();
-                                    exit;
-                                    break;
+                        if ($section == "newsletter") {
+                            if (\Newsletter::isTrackLink()) {
+                                //handle link tracker from newsletter, since user should be redirected to the link url
+                                /*
+                                 * Newsletter Module
+                                 *
+                                 * Generates no output, requests are answered by a redirect to foreign site
+                                 *
+                                 */
+                                \Newsletter::trackLink();
+                                //execution should never reach this point, but let's be safe and call exit anyway
+                                exit;
+                            } elseif ($command == 'displayInBrowser') {
+                                \Newsletter::displayInBrowser();
+                                //execution should never reach this point, but let's be safe and call exit anyway
+                                exit;
                             }
+
+                            // regular newsletter request (like subscribing, profile management, etc).
+                            // must not abort by an exit call here!
                         }
 
                         // get Newsletter
@@ -339,8 +334,9 @@ class LegacyComponentHandler {
                         $downloadBlock = preg_replace_callback(
                             "/<!--\s+BEGIN\s+downloads_category_(\d+)_list\s+-->(.*)<!--\s+END\s+downloads_category_\g1_list\s+-->/s",
                             function($matches) {
-                                if (isset($matches[2]) && $cl->loadFile(ASCMS_MODULE_PATH.'/downloads/index.class.php')) {
-                                    $objDownloadsModule = new downloads($matches[2], array('category' => $matches[1]));
+                                \Env::get('init')->loadLanguageData('downloads');
+                                if (isset($matches[2])) {
+                                    $objDownloadsModule = new \downloads($matches[2], array('category' => $matches[1]));
                                     return $objDownloadsModule->getPage();
                                 }
                             },
@@ -444,12 +440,31 @@ class LegacyComponentHandler {
                                 || strpos($page_template, $eventsPlaceholder) !== false)
                             && file_exists($modulespath)
                         ) {
+                            $_ARRAYLANG = array_merge($_ARRAYLANG, \Env::get('init')->loadLanguageData('calendar'));
                             $calHeadlinesObj = new \calHeadlines($themesPages['calendar_headlines']);
                             $calHeadlines = $calHeadlinesObj->getHeadlines();
                             \Env::get('cx')->getPage()->setContent(str_replace($eventsPlaceholder, $calHeadlines, \Env::get('cx')->getPage()->getContent()));
                             $themesPages['index']   = str_replace($eventsPlaceholder, $calHeadlines, $themesPages['index']);
                             $themesPages['sidebar'] = str_replace($eventsPlaceholder, $calHeadlines, $themesPages['sidebar']);
                             $page_template          = str_replace($eventsPlaceholder, $calHeadlines, $page_template);
+                        }
+
+                        // Get Calendar Box Three
+                        if ($cl->loadFile(ASCMS_MODULE_PATH.'/calendar/headlines.class.php')) {
+                            $calHeadlinesObj2 = new \calHeadlines($themesPages['calendar_headlines']);
+                            $calHeadlineThreeBoxes = $calHeadlinesObj2->showThreeBoxes();
+                            if (preg_match('/{CALENDAR_HEADLINES}/', $page_content)) {
+                                $page_content = str_replace('{CALENDAR_HEADLINES}', $calHeadlineThreeBoxes, $page_content);
+                            }
+                            if (preg_match('/{CALENDAR_HEADLINES}/', $page_template)) {
+                                $page_template = str_replace('{CALENDAR_HEADLINES}', $calHeadlineThreeBoxes, $page_template);
+                            }
+                            if (preg_match('/{CALENDAR_HEADLINES}/', $themesPages['index'])) {
+                                $themesPages['index'] = str_replace('{CALENDAR_HEADLINES}', $calHeadlineThreeBoxes, $themesPages['index']);
+                            }
+                            if (preg_match('/{CALENDAR_HEADLINES}/', $themesPages['sidebar'])) {
+                                $themesPages['sidebar'] = str_replace('{CALENDAR_HEADLINES}', $calHeadlineThreeBoxes, $themesPages['sidebar']);
+                            }
                         }
                     },
                     'Knowledge' => function() {
@@ -1042,7 +1057,7 @@ class LegacyComponentHandler {
                         // Set the meta page description to the teaser text if displaying news details
                         $teaser = $newsObj->getTeaser();
                         if ($teaser !== null) //news details, else getTeaser would return null
-                            $page->setMetadesc(contrexx_strip_tags(html_entity_decode($teaser, ENT_QUOTES, CONTREXX_CHARSET)));
+                            $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags(html_entity_decode($teaser, ENT_QUOTES, CONTREXX_CHARSET))));
                         \Env::get('cx')->getPage()->setTitle($newsObj->newsTitle);
                         $page_metatitle = $newsObj->newsTitle;
                     },
