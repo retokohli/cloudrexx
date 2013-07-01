@@ -373,6 +373,12 @@ namespace Cx\Core\Core\Controller {
                     }
                 }
             }
+
+            // Disable eAccelerator if active
+            if (extension_loaded('eaccelerator')) {
+                ini_set('eaccelerator.enable', 0);
+                ini_set('eaccelerator.optimizer', 0);
+            }
         }
 
         /**
@@ -849,7 +855,6 @@ namespace Cx\Core\Core\Controller {
                 'TXT_SEARCH'                     => $_CORELANG['TXT_SEARCH'],
                 'MODULE_INDEX'                   => MODULE_INDEX,
                 'LOGIN_URL'                      => '<a href="' . \Env::get('init')->getUriBy('section', 'login') . '">' . $_CORELANG['TXT_FRONTEND_EDITING_LOGIN'] . '</a>',
-                'JAVASCRIPT'                     => 'javascript_inserting_here',
                 'TXT_CORE_LAST_MODIFIED_PAGE'    => $_CORELANG['TXT_CORE_LAST_MODIFIED_PAGE'],
                 'LAST_MODIFIED_PAGE'             => date(ASCMS_DATE_FORMAT_DATE, $this->resolvedPage->getUpdatedAt()->getTimestamp()),
                 'CONTACT_EMAIL'                  => isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '',
@@ -870,8 +875,8 @@ namespace Cx\Core\Core\Controller {
                                                             fjs.parentNode.insertBefore(js, fjs);
                                                         }(document, \'script\', \'facebook-jssdk\'));
                                                     </script>
-                                                    <div class="fb-like" data-href="http://'.$_CONFIG['domainUrl'].\Env::get('init')->getCurrentPageUri().'" data-send="false" data-layout="button_count" data-show-faces="false" data-font="segoe ui"></div>',
-                'GOOGLE_PLUSONE'                 => '<div class="g-plusone" data-href="http://'.$_CONFIG['domainUrl'].\Env::get('init')->getCurrentPageUri().'"></div>
+                                                    <div class="fb-like" data-href="http://'.urlencode($_CONFIG['domainUrl'].\Env::get('init')->getCurrentPageUri()).'" data-send="false" data-layout="button_count" data-show-faces="false" data-font="segoe ui"></div>',
+                'GOOGLE_PLUSONE'                 => '<div class="g-plusone" data-href="http://'.urlencode($_CONFIG['domainUrl'].\Env::get('init')->getCurrentPageUri()).'"></div>
                                                     <script type="text/javascript">
                                                         window.___gcfg = {lang: \'de\'};
 
@@ -976,6 +981,7 @@ namespace Cx\Core\Core\Controller {
                 //ob_start("ob_gzhandler");
 
                 // fetch the parsed webpage
+                $this->template->setVariable('JAVASCRIPT', 'javascript_inserting_here');
                 $endcode = $this->template->get();
 
                 /**
@@ -1009,7 +1015,7 @@ namespace Cx\Core\Core\Controller {
 
                 echo $endcode;
 
-                $objCache->endCache();
+                $objCache->endCache($this->resolvedPage);
             } else {
                 // page parsing
                 $parsingTime = $this->stopTimer();

@@ -150,6 +150,11 @@ class Resolver {
 
             //try to find the language in the url
             $extractedLanguage = \FWLanguage::getLanguageIdByCode($this->url->getLangDir());
+            $activeLanguages = \FWLanguage::getActiveFrontendLanguages();
+            if (!in_array($extractedLanguage, array_keys($activeLanguages))) {
+                $this->lang = \FWLanguage::getDefaultLangId();
+                $this->redirectToCorrectLanguageDir();
+            }
             if (!$extractedLanguage) {
                 $this->redirectToCorrectLanguageDir();
             }
@@ -284,6 +289,10 @@ class Resolver {
                             //$page_access_id = $objResult->fields['frontend_access_id'];
                             $page_template  = $themesPages['content'];
 
+                            // Authentification for protected pages
+                            // This is only done for regular page requests ($isRegularPageRequest == TRUE)
+                            $this->checkPageFrontendProtection($page, $history);
+
                         //TODO: history
                         }
 
@@ -311,9 +320,6 @@ class Resolver {
                         // values 2 (two) and larger represent distinct instances.
                         $moduleIndex = (empty($arrMatch[2]) || $arrMatch[2] == 1 ? '' : $arrMatch[2]);
                         define('MODULE_INDEX', $moduleIndex);
-
-                        // Authentification for protected pages
-                        $this->checkPageFrontendProtection($page, $history);
 
                         // Start page or default page for no section
                         if ($section == 'home') {
