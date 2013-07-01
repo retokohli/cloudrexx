@@ -1,4 +1,7 @@
 <?php
+/**
+ * Backend view language variables for Workbench
+ */
 
 $_ARRAYLANG['TXT_WORKBENCH_SANDBOX_ENTITIES'] = 'Entities';
 $_ARRAYLANG['TXT_WORKBENCH_SANDBOX_VARIABLES'] = 'Available variables';

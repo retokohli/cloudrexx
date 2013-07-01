@@ -1,4 +1,10 @@
 <?php
+/**
+ * This is a temporary wrapper-script to access Workbench from console.
+ * The nice way for this would be to directly access Cx from console like
+ * > cx Workbench ....
+ * @author Michael Ritter <michael.ritter@comvation.com>
+ */
 
 $rootDir = dirname(dirname(__DIR__));
 

@@ -1,26 +1,34 @@
 <?php
-
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-namespace Cx\Core_Modules\Workbench\Controller;
 /**
- * Description of Workbench
- *
- * @author ritt0r
+ * This is the Workbench Controller
+ * 
+ * This handles Workbench's configuration and files
+ * @author Michael Ritter <michael.ritter@comvation.com>
+ */
+
+namespace Cx\Core_Modules\Workbench\Controller;
+
+/**
+ * This is the base Exception for all Exceptions thrown in this component
  */
 class WorkbenchException extends \Exception {}
 
+/**
+ * This is the Workbench Controller
+ * 
+ * This handles Workbench's configuration and files
+ * @author Michael Ritter <michael.ritter@comvation.com>
+ */
 class Workbench {
     private $config = null;
     
     /**
      * Returns a list of files (directories include all contained files and folders)
-     * @return array 
+     * @return array List of files and folders
      */
     public function getFileList() {
         return array(
+            '/core/Core/Data/Skeleton',
             '/core/Core/Model/Entity/ReflectionComponent.class.php',
             '/core_modules/Workbench',
             '/workbench.config',
@@ -31,6 +39,11 @@ class Workbench {
         );
     }
     
+    /**
+     * Returns the configuration value for the given identifier
+     * @param string $identifier Configuration identifier
+     * @return string Configuration value
+     */
     public function getConfigEntry($identifier) {
         if (!$this->config) {
             $this->loadConfig();
@@ -41,6 +54,11 @@ class Workbench {
         return $this->config[$identifier];
     }
     
+    /**
+     * Sets the configuration value with the given identifier to the given value
+     * @param string $identifier Configuration identifier
+     * @param string $value Configuration value
+     */
     public function setConfigEntry($identifier, $value) {
         if (!$this->config) {
             $this->loadConfig();
@@ -48,11 +66,19 @@ class Workbench {
         $this->config[$identifier] = $value;
     }
     
+    /**
+     * Destructor
+     * 
+     * Write Workbench configuration
+     */
     public function __destruct() {
         $this->writeConfig();
     }
     
-    private function loadConfig() {
+    /**
+     * Read configuration into memory
+     */
+    protected function loadConfig() {
         $content = file_get_contents(ASCMS_DOCUMENT_ROOT.'/workbench.config');
         $content = explode("\n", $content);
         $this->config = array();
@@ -65,7 +91,10 @@ class Workbench {
         }
     }
     
-    private function writeConfig() {
+    /**
+     * Write configuration from memory into filesystem
+     */
+    protected function writeConfig() {
         $content = '';
         if (!$this->config) {
             return;
