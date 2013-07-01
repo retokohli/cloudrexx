@@ -636,7 +636,6 @@ namespace Cx\Core\Core\Controller {
             
             if ($this->mode == self::MODE_FRONTEND) {
                 $this->resolvedPage = $this->resolver->resolve();
-                $this->resolvedPage->setVirtual(true);
                 
             } else {
                 global $cmd, $act, $isRegularPageRequest, $plainCmd;
