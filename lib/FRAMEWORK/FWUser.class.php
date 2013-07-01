@@ -139,7 +139,10 @@ class FWUser extends User_Setting
         setcookie(session_name(), '', time() - 3600, ASCMS_PATH_OFFSET.'/');
 
         if ($this->backendMode) {
-            CSRF::header('Location: '.ASCMS_PATH_OFFSET);
+            $pathOffset = ASCMS_PATH_OFFSET;
+            CSRF::header('Location: '.(!empty($pathOffset)
+                ? $pathOffset
+                : '/'));
         } else {
             CSRF::header('Location: '.(!empty($_REQUEST['redirect'])
                 ? urldecode($_REQUEST['redirect'])
