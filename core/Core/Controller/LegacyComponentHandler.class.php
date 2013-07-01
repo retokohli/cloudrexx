@@ -427,7 +427,7 @@ class LegacyComponentHandler {
                     },
                     'Calendar' => function() {
                         global $modulespath, $eventsPlaceholder, $_CONFIG, $themesPages, $page_template,
-                                $calHeadlinesObj, $calHeadlines;
+                                $calHeadlinesObj, $calHeadlines, $cl;
 
                         // Get Calendar Events
                         $modulespath = ASCMS_MODULE_PATH.'/calendar/headlines.class.php';
