@@ -111,11 +111,11 @@ abstract class SystemComponentBackendController extends Controller {
         }
         
         // default css and js
-        if (file_exists($this->cx->getClassLoader()->getFilePath($this->getDirectory() . '/View/Style/Main.css'))) {
-            \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Style/Main.css', 1));
+        if (file_exists($this->cx->getClassLoader()->getFilePath($this->getDirectory() . '/View/Style/Backend.css'))) {
+            \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Style/Backend.css', 1));
         }
-        if (file_exists($this->cx->getClassLoader()->getFilePath($this->getDirectory() . '/View/Script/Main.js'))) {
-            \JS::registerCSS(substr($this->getDirectory(false, true) . '/View/Script/Main.js', 1));
+        if (file_exists($this->cx->getClassLoader()->getFilePath($this->getDirectory() . '/View/Script/Backend.js'))) {
+            \JS::registerJS(substr($this->getDirectory(false, true) . '/View/Script/Backend.js', 1));
         }
         
         // finish
