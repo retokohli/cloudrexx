@@ -56,6 +56,17 @@ class Settings extends CrmLibrary
     public function showCustomerSettings()
     {
         global $_CORELANG, $_ARRAYLANG, $objDatabase ,$objJs;
+        
+        $fn = isset($_REQUEST['fn']) ? $_REQUEST['fn'] : '';
+        if (!empty($fn)) {
+            switch ($fn) {
+            case 'editCustomerTypes':
+                    $this->editCustomerTypes();
+                break;
+            }
+            return;
+        }
+        
         $this->_objTpl->addBlockfile('CRM_SETTINGS_FILE', 'settings_block', 'module_'.$this->moduleName.'_settings_customers.html');
         $this->_objTpl->setGlobalVariable('MODULE_NAME', $this->moduleName);
 
@@ -223,6 +234,95 @@ class Settings extends CrmLibrary
     }
 
     /**
+     * Edit page of cutomer types
+     *
+     * @param string $labelValue label value
+     * 
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function editCustomerTypes($labelValue="")
+    {
+        global $_CORELANG, $_ARRAYLANG, $objDatabase ,$objJs;
+
+        $this->_pageTitle = $_ARRAYLANG['TXT_CRM_EDIT_CUSTOMER_TYPE'];
+        $this->_objTpl->addBlockfile('CRM_SETTINGS_FILE', 'settings_block', 'module_'.$this->moduleName.'_setting_editcustomer.html');
+        $this->_objTpl->setGlobalVariable('MODULE_NAME', $this->moduleName);
+        $id                 = isset($_GET['id']) ? intval($_GET['id']) : 0;
+
+        if (empty($id)) {
+            CSRF::header("location:./index.php?cmd={$this->moduleName}&act=settings&tpl=customertypes");
+            exit();
+        }
+
+        $customerLabel      = isset($_POST['label']) ? contrexx_input2raw($_POST['label']) : '';
+        $customerSorting    = isset($_POST['sortingNumber']) ? intval($_POST['sortingNumber']) : '';
+        $customerStatus     = isset($_POST['activeStatus']) || !isset ($_POST['customer_type_submit']) ? 1 : 0;
+        $hrlyRate           = array();
+
+        if ($_POST['customer_type_submit']) {
+            $success = true;
+
+            $searchingQuery = "SELECT label FROM `".DBPREFIX."module_{$this->moduleName}_customer_types`
+                                   WHERE  label = '".contrexx_input2db($customerLabel)."' AND id != $id ";
+            $objResult = $objDatabase->Execute($searchingQuery);
+
+            if (!$objResult->EOF) {
+                $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPE_ALREADY_EXIST'];
+                $success = false;
+            } else {
+                $insertCustomerTypes = "UPDATE `".DBPREFIX."module_".$this->moduleName."_customer_types`
+                                            SET    `label`             = '".contrexx_input2db($customerLabel)."',
+                                                   `pos`               = '".intval($customerSorting)."',
+                                                   `active`            = '".intval($customerStatus)."'
+                                            WHERE id =$id";
+
+                $db = $objDatabase->Execute($insertCustomerTypes);
+                if ($db)
+                    $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPES_UPDATED_SUCCESSFULLY'];
+                else
+                    $success = false;
+            }
+
+            if ($success) {
+                CSRF::header("location:./index.php?cmd={$this->moduleName}&act=settings&tpl=customertypes");
+                exit();
+            }
+        } else {
+            $objResult =   $objDatabase->Execute('SELECT  id,label, pos, active
+                                                  FROM '.DBPREFIX.'module_'.$this->moduleName.'_customer_types WHERE id = '.$id);
+
+            $customerLabel      = $objResult->fields['label'];
+            $customerSorting    = $objResult->fields['pos'];
+            $customerStatus     = $objResult->fields['active'];
+        }
+
+        $this->_objTpl->setVariable(array(
+                'CUSTOMER_TYPES_JAVASCRIPT'         => $objJs->editCustomerTypeJavascript(),
+                'TXT_CUSTOMER_TYPE_ID'              => (int) $id,
+                'TXT_LABEL_VALUE'		    => contrexx_raw2xhtml($customerLabel),
+                'CRM_CUSTOMER_TYPE_SORTING_NUMBER'  => (int) $customerSorting,
+                'TXT_ACTIVATED_VALUE'               => $customerStatus ? 'checked' : '',
+
+                'TXT_CRM_CUSTOMERS'                     => $_ARRAYLANG['TXT_CRM_CUSTOMERS'],
+                'TXT_CRM_LABEL'                         => $_ARRAYLANG['TXT_CRM_LABEL'],
+                'TXT_CRM_SAVE'                          => $_ARRAYLANG['TXT_CRM_SAVE'],
+                'TXT_CRM_BACK'                          => $_ARRAYLANG['TXT_CRM_BACK'],
+                'TXT_CRM_TITLEACTIVE'                   => $_ARRAYLANG['TXT_CRM_TITLEACTIVE'],
+                'TXT_CRM_FUNCTIONS'                     => $_ARRAYLANG['TXT_CRM_FUNCTIONS'],
+                'TXT_CRM_SELECT_ACTION'                 => $_ARRAYLANG['TXT_CRM_SELECT_ACTION'],
+                'TXT_CRM_DELETE_SELECTED'               => $_ARRAYLANG['TXT_CRM_DELETE_SELECTED'],
+                'TXT_CRM_ADD_CUSTOMER_TYPES'            => $_ARRAYLANG['TXT_CRM_ADD_CUSTOMER_TYPES'],
+                'TXT_CRM_EDIT_CUSTOMER_TYPE'            => $_ARRAYLANG['TXT_CRM_EDIT_CUSTOMER_TYPE'],
+                'TXT_CRM_ENTER_LABEL_FIELD'             => $_ARRAYLANG['TXT_CRM_ENTER_LABEL_FIELD'],
+                'TXT_CUSTOMER_TYPE_SORTING_NUMBER'  => $_ARRAYLANG['TXT_CRM_SORTING_NUMBER'],
+                'TXT_CRM_ENTER_LABEL_FIELD_WITHOUT_SPECIAL_CHARACTERS' => $_ARRAYLANG['TXT_CRM_ENTER_LABEL_FIELD_WITHOUT_SPECIAL_CHARACTERS'],
+                'TXT_CRM_CURRENCY_RATES'                => $_ARRAYLANG['TXT_CRM_CURRENCY_RATES'],
+                'CSRF_PARAM'                        => CSRF::param(),
+        ));
+    }
+    /**
      * store the customer type
      *
      * @global array $_CORELANG
@@ -280,6 +380,17 @@ class Settings extends CrmLibrary
     public function currencyoverview()
     {
         global $_CORELANG, $_ARRAYLANG, $objDatabase, $objJs;
+        
+        $fn = isset($_REQUEST['fn']) ? $_REQUEST['fn'] : '';
+        if (!empty($fn)) {
+            switch ($fn) {
+            case 'editcurrency':
+                $this->editCurrency();
+            break;
+            }
+            return;
+        }
+        
         $this->_objTpl->addBlockfile('CRM_SETTINGS_FILE', 'settings_block', 'module_'.$this->moduleName.'_settings_currency.html');
         $this->_pageTitle = $_ARRAYLANG['TXT_CRM_SETTINGS'];
 
@@ -434,6 +545,108 @@ class Settings extends CrmLibrary
     }
 
     /**
+     * get the edit currency page
+     *
+     * @param integer $labelValue label value
+     * 
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function editCurrency($labelValue="")
+    {
+        global $_CORELANG, $_ARRAYLANG, $objDatabase, $objJs;
+
+        $this->_pageTitle = $_ARRAYLANG['TXT_CRM_EDIT_CURRENCY'];
+        $this->_objTpl->addBlockfile('CRM_SETTINGS_FILE', 'settings_block', 'module_'.$this->moduleName.'_setting_editcurrency.html');
+        $this->_objTpl->setGlobalVariable(array(
+                'MODULE_NAME' => $this->moduleName
+        ));
+
+        $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+        if (empty($id)) {
+            CSRF::header(ASCMS_ADMIN_WEB_PATH."/index.php?cmd={$this->moduleName}&act=settings&tpl=currency");
+            exit();
+        }
+
+        $label      = isset($_POST['name']) ? contrexx_input2raw($_POST['name']) : '';
+        $sorting    = isset($_POST['sortingNumber']) ? (int) $_POST['sortingNumber'] : '';
+        $status     = isset($_POST['activeStatus']) ? 1 : 0;
+        $hrlyRate           = array();
+        if (!empty($_POST['customerType'])) {
+            foreach ($_POST['customerType'] as $customerTypeId) {
+                $hrlyRate[$customerTypeId] = (isset($_POST['rateValue_'.$customerTypeId])) ? intval($_POST['rateValue_'.$customerTypeId]) : 0;
+            }
+        }
+
+        if (isset($_POST['currency_submit'])) {
+            $success = true;
+
+            $searchDuplicateQuery = "SELECT name
+                                        FROM `".DBPREFIX."module_{$this->moduleName}_currency`
+                                        WHERE name='$label' AND id != $id";
+            $objData = $objDatabase->Execute($searchDuplicateQuery);
+
+            if ($objData->RecordCount()) {
+                $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_CURRENCY_ALREADY_EXISTS'];
+            } else {
+                $updateProjectTypes = "UPDATE `".DBPREFIX."module_{$this->moduleName}_currency`
+    							     SET  `name`  = '$label',
+                                          `pos`   = '$sorting',
+                                          `active`= '$status',
+                                          `hourly_rate` = '".json_encode($hrlyRate)."'
+                                     WHERE id = $id";
+                $objDatabase->Execute($updateProjectTypes);
+                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CURRENCY_UPDATED_SUCCESSFULLY'];
+
+                CSRF::header("location:./index.php?cmd={$this->moduleName}&act=settings&tpl=currency");
+                exit();
+            }
+        } else {
+            $objResult =   $objDatabase->Execute("SELECT  id, name,pos, hourly_rate, active FROM ".DBPREFIX."module_{$this->moduleName}_currency WHERE id = $id");
+
+            $label      = $objResult->fields['name'];
+            $sorting    = $objResult->fields['pos'];
+            $status     = $objResult->fields['active'];
+            $hrlyRate   = json_decode($objResult->fields['hourly_rate'], true);
+        }
+
+        // Hourly rate
+
+        $objResult = $objDatabase->Execute('SELECT id,label FROM  '.DBPREFIX.'module_'.$this->moduleName.'_customer_types WHERE  active!="0" ORDER BY pos,label');
+        while (!$objResult->EOF) {
+            $this->_objTpl->setVariable(array(
+                'CRM_CUSTOMER_TYPE'     => contrexx_raw2xhtml($objResult->fields['label']),
+                'CRM_CUSTOMERTYPE_ID'   => (int) $objResult->fields['id'],
+                'PM_CURRENCY_HOURLY_RATE'   => !empty($hrlyRate[$objResult->fields['id']]) ? intval($hrlyRate[$objResult->fields['id']]) : 0,
+            ));
+            $this->_objTpl->parse("hourlyRate");
+            $objResult->MoveNext();
+        }
+
+        $this->_objTpl->setVariable(array(
+            'TXT_SORTINGNUMBER'       => (int) $sorting,
+            'TXT_CURRENCY_ID'	      => (int) $id,
+            'TXT_NAME_VALUE'	      => contrexx_raw2xhtml($label),
+            'TXT_ACTIVATED_VALUE'     => $status ? 'checked' : '',
+
+            'TXT_CRM_EDIT_CURRENCY'       => $_ARRAYLANG['TXT_CRM_EDIT_CURRENCY'],
+            'TXT_CRM_NAME'                => $_ARRAYLANG['TXT_CRM_NAME'],
+            'TXT_CRM_FUNCTIONS'           => $_ARRAYLANG['TXT_CRM_FUNCTIONS'],
+            'TXT_CRM_SAVE'                => $_ARRAYLANG['TXT_CRM_SAVE'],
+            'TXT_CRM_SORTING_NUMBER'      => $_ARRAYLANG['TXT_CRM_SORTING_NUMBER'],
+            'TXT_CRM_TITLEACTIVE'         => $_ARRAYLANG['TXT_CRM_TITLEACTIVE'],
+            'TXT_CRM_BACK'                => $_ARRAYLANG['TXT_CRM_BACK'],
+            'TXT_CRM_SELECT_ACTION'       => $_ARRAYLANG['TXT_CRM_SELECT_ACTION'],
+            'TXT_CRM_DELETE_SELECTED'     => $_ARRAYLANG['TXT_CRM_DELETE_SELECTED'],
+            'TXT_CRM_CURRENCY_RATES'              => $_ARRAYLANG['TXT_CRM_CURRENCY_RATES'],
+            'TXT_CRM_HOURLY_RATE'                 => $_ARRAYLANG['TXT_CRM_HOURLY_RATE'],
+            'CSRF_PARAM'              => CSRF::param(),
+            'CURRENCY_JAVASCRIPT'     => $objJs->getAddCurrencyJavascript()
+        ));
+    }
+
+    /**
      * store currency
      *
      * @global array $_CORELANG
@@ -507,6 +720,17 @@ class Settings extends CrmLibrary
     {
         global $objDatabase,$_ARRAYLANG;
 
+        $fn = isset($_REQUEST['fn']) ? $_REQUEST['fn'] : '';
+        if (!empty($fn)) {
+            switch ($fn) {
+            case 'editTaskType':
+                Permission::checkAccess($this->staffAccessId, 'static');
+                $this->editTaskType();
+            break;
+            }
+            return;
+        }
+        
         $objTpl = $this->_objTpl;
         $objTpl->addBlockfile('CRM_SETTINGS_FILE', 'settings_block', 'module_'.$this->moduleName.'_settings_task_types.html');
         $this->_pageTitle = $_ARRAYLANG['TXT_CRM_SETTINGS'];
@@ -585,6 +809,47 @@ class Settings extends CrmLibrary
         ));
     }
 
+    /**
+     * Edit the task type
+     *
+     * @global array $_ARRAYLANG
+     * @global object $objDatabase
+     * @return true
+     */
+    function editTaskType()
+    {
+        global $objDatabase, $_ARRAYLANG;
+
+        JS::activate("jquery");
+        // Activate validation scripts
+        JS::registerCSS("lib/javascript/validationEngine/css/validationEngine.jquery.css");
+        JS::registerJS("lib/javascript/validationEngine/js/languages/jquery.validationEngine-en.js");
+        JS::registerJS("lib/javascript/validationEngine/js/jquery.validationEngine.js");
+        JS::registerCSS("lib/javascript/chosen/chosen.css");
+        JS::registerJS("lib/javascript/chosen/chosen.jquery.js");
+
+        $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+
+        if ($_POST['saveTaskType']) {
+            $this->saveTaskTypes($id);
+            $msg = "taskUpdated";
+            CSRF::header("Location:./index.php?cmd={$this->moduleName}&act=settings&tpl=tasktypes&msg=".base64_encode($msg));
+            exit();
+        }
+
+        $objTpl = $this->_objTpl;
+        $this->_pageTitle = $_ARRAYLANG['TXT_CRM_EDIT_TASK_TYPE'];
+        $objTpl->addBlockfile('CRM_SETTINGS_FILE', 'settings_block', "module_{$this->moduleName}_settings_edit_task_types.html");
+
+        $this->getModifyTaskTypes($id);
+
+        $objTpl->setVariable(array(
+                'TXT_CRM_ADD_TASK_TYPE'     => $_ARRAYLANG['TXT_CRM_EDIT_TASK_TYPE'],
+                'TXT_CRM_BACK1'                 => $_ARRAYLANG['TXT_CRM_BACK1'],
+                'CSRF_PARAM'                => CSRF::param(),
+        ));
+
+    }
     /**
      * change status of task type
      *

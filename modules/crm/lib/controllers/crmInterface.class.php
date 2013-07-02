@@ -94,7 +94,7 @@ class crmInterface extends CrmLibrary
         
         $objTpl = $this->_objTpl;
 
-        $objTpl->loadTemplateFile("module_{$this->moduleName}_interface_import_options.html");
+        $objTpl->addBlockfile('CRM_SETTINGS_FILE', 'settings_block', "module_{$this->moduleName}_interface_import_options.html");
         $objTpl->setGlobalVariable(array('MODULE_NAME' => $this->moduleName));
 
         foreach ($this->_delimiter as $key => $value) {
@@ -167,7 +167,7 @@ class crmInterface extends CrmLibrary
 
         $csvSeprator    = isset ($_POST['csv_delimiter']) && in_array($_POST['csv_delimiter'], array_keys($this->_delimiter)) ? $this->_delimiter[$_POST['csv_delimiter']]['value'] : $this->_delimiter[0]['value'];
         $csvDelimiter   = isset ($_POST['csv_enclosure']) && in_array($_POST['csv_enclosure'], array_keys($this->_enclosure)) ? $this->_enclosure[$_POST['csv_enclosure']]['value'] : $this->_enclosure[0]['value'];
-        $csvIgnoreFirst = isset ($_POST['ignore_first']) && (int) $_POST['ignore_first'];        
+        $csvIgnoreFirst = isset ($_POST['ignore_first']) && (int) $_POST['ignore_first'];
 
         if (!empty ($_FILES['importfile'])) {
             if (empty ($_FILES['importfile']['error'])) {
@@ -182,35 +182,63 @@ class crmInterface extends CrmLibrary
                 $json['error'] = 'Error in file';
             }            
         }
-        
+
         if (!isset($json['error'])) {
             $rowIndex      = 1;
             $importedLines = 0;
             $first         = true;
             $objCsv        = new Csv_bv($this->_mediaPath.'/'.$fileName, $csvSeprator, $csvDelimiter);
             $line          = $objCsv->NextLine();
-            while ($line) {
+            while ($line) { 
                 if ($first) {
                     $json['data']['contactHeader'] = $line;
                     $first = false;
                 }
                 if ($importedLines == $rowIndex) {
                     $json['data']['contactFields'] = $line;
+                    $json['contactData'][$importedLines] = $line;
                 }
-                $json['contactData'][$importedLines] = $line;
 
                 ++$importedLines;
                 $line = $objCsv->NextLine();
             }
+            $json['data']['contactHeader'] = array_map('utf8_encode', $json['data']['contactHeader']);
+            $json['data']['contactFields'] = array_map('utf8_encode', $json['data']['contactFields']);
             $json['data']       = base64_encode(json_encode($json['data']));
             $json['contactData']= base64_encode(json_encode($json['contactData']));
             $json['totalRows']  = $importedLines - 1;
         }
-                
+
         echo json_encode($json);
         exit();
     }
 
+    function getCsvRecord() {
+        global $_ARRAYLANG, $objDatabase;
+
+        $json = array();
+
+        $csvSeprator    = isset ($_POST['csv_delimiter']) && in_array($_POST['csv_delimiter'], array_keys($this->_delimiter)) ? $this->_delimiter[$_POST['csv_delimiter']]['value'] : $this->_delimiter[0]['value'];
+        $csvDelimiter   = isset ($_POST['csv_enclosure']) && in_array($_POST['csv_enclosure'], array_keys($this->_enclosure)) ? $this->_enclosure[$_POST['csv_enclosure']]['value'] : $this->_enclosure[0]['value'];
+        $fileName       = isset ($_POST['fileUri']) ? $_POST['fileUri'] : '';
+        $currentRow     = isset ($_GET['currentRow']) ? (int) $_GET['currentRow'] : '';
+
+        $importedLines = 0;
+        $objCsv        = new Csv_bv($this->_mediaPath.'/'.$fileName, $csvSeprator, $csvDelimiter);
+        $line          = $objCsv->NextLine();
+        while ($line) {
+            if ($importedLines == $currentRow) {
+                $json['contactData'][$importedLines] = $line;
+                break;
+            }
+            ++$importedLines;
+            $line = $objCsv->NextLine();
+        }
+        $json['contactData'][$currentRow] = array_map('utf8_encode', $json['contactData'][$currentRow]);
+        $json['contactData']= base64_encode(json_encode($json['contactData']));
+        echo json_encode($json);
+        exit();
+    }
     
     function uploadCSV($name, $path) {
         //check file array
@@ -256,7 +284,7 @@ class crmInterface extends CrmLibrary
 
         $objTpl = $this->_objTpl;
 
-        $objTpl->loadTemplateFile("module_{$this->moduleName}_interface_export_options.html");
+        $objTpl->addBlockfile('CRM_SETTINGS_FILE', 'settings_block', "module_{$this->moduleName}_interface_export_options.html");
         $objTpl->setGlobalVariable(array('MODULE_NAME' => $this->moduleName));
 
         $objTpl->setVariable(array(
@@ -504,14 +532,14 @@ class crmInterface extends CrmLibrary
                 $objWebsite = $objDatabase->Execute("SELECT * FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_websites` WHERE contact_id = {$objResult->fields['id']} ORDER BY id ASC");
                 if ($objWebsite) {
                     while(!$objWebsite->EOF) {
-                        $result['contactwebsite'][$objWebsite->fields['url_profile']] = $objWebsite->fields['url'];
+                        $result['contactwebsite'][$objWebsite->fields['url_profile']] = urldecode($objWebsite->fields['url']);
                         $objWebsite->MoveNext();
                     }
                 }
                 $objSocial = $objDatabase->Execute("SELECT * FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_social_network` WHERE contact_id = {$objResult->fields['id']} ORDER BY id ASC");
                 if ($objSocial) {
                     while(!$objSocial->EOF) {
-                        $result['contactsocial'][$objSocial->fields['url_profile']] = $objSocial->fields['url'];
+                        $result['contactsocial'][$objSocial->fields['url_profile']] = urldecode($objSocial->fields['url']);
                         $objSocial->MoveNext();
                     }
                 }
@@ -633,12 +661,15 @@ class crmInterface extends CrmLibrary
         $duplicate      = isset ($_POST['on_duplicate']) ? (int) $_POST['on_duplicate'] : 2;
         $fileName       = isset ($_POST['fileUri']) ? $_POST['fileUri'] : '';
         $objFWUser      = FWUser::getFWUserObject();
-        
+
+        $_SESSION[$fileName] = array();
+        //DBG::activate();
         foreach ($_POST['crm_contact_option_base'] as $colId => $value) {
             if (!empty($value)) {
                 ${$value} = $colId;
             }
         }
+        
         if (isset($firstname) || isset($lastname) || isset($company)) {
             $this->contact = $this->load->model('crmContact', __CLASS__);
 
@@ -648,10 +679,11 @@ class crmInterface extends CrmLibrary
             $totalLines    = 0;
             $importedLines = 0;
             $skipedLines   = 0;
-            while ($line) {
-
-                sleep(1);
-                if (!$first || !$csvIgnoreFirst) {
+            while ($line) { 
+                session_start();
+                $_SESSION[$fileName]['totalRows'] = $totalLines;
+                if (!$first || !$csvIgnoreFirst) { 
+                    $line = array_map('utf8_encode', $line); 
                     $this->contact->clean();
                     $this->contact->contactType = !empty($line[$firstname]) || !empty($line[$lastname])
                                                  ? 2
@@ -726,87 +758,84 @@ class crmInterface extends CrmLibrary
 
                         if (!$skip) {
                             $importedLines++;
+                            $_SESSION[$fileName]['importedRows'] = $importedLines;
+                            
                             // insert Emails
-                            $objDatabase->Execute("DELETE FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_emails` WHERE `contact_id` = {$this->contact->id}");
-                            $query = "INSERT INTO `".DBPREFIX."module_{$this->moduleName}_customer_contact_emails` (email, email_type, is_primary, contact_id) VALUES ";
-
-                            $values = array();
                             $first  = true;
                             foreach ($this->emailOptions as $key => $emailValue) {
                                 if(isset(${"customer_email_$key"})) {
                                     if(!empty($line[${"customer_email_$key"}]) && filter_var($line[${"customer_email_$key"}], FILTER_VALIDATE_EMAIL)) {
-                                        $primary  = $first ? '1' : '0';
+                                        $tableName = "module_{$this->moduleName}_customer_contact_emails";
+                                        $fields   = array(
+                                            'email'         => contrexx_input2db($line[${"customer_email_$key"}]),
+                                            'email_type'    => $key,
+                                            'is_primary'    => $first ? '1' : '0',
+                                            'contact_id'    => $this->contact->id
+                                        );
                                         $first    = false;
-                                        $values[] = "('".contrexx_input2db($line[${"customer_email_$key"}])."', '$key', '$primary', '".$this->contact->id."')";
+                                        $values   = array('email_type', $key, $this->contact->id);
+                                        $this->checkRecordStoreTODB($tableName, $values, $fields);
                                     }
                                 }
                             }
 
-                            $query .= implode(",", $values);
-                            $objDatabase->Execute($query);
-
                             // insert Phone
-                            $objDatabase->Execute("DELETE FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_phone` WHERE `contact_id` = {$this->contact->id}");
-                            $query = "INSERT INTO `".DBPREFIX."module_{$this->moduleName}_customer_contact_phone` (phone, phone_type, is_primary, contact_id) VALUES ";
-
-                            $values = array();
                             $first  = true;
                             foreach ($this->phoneOptions as $key => $phoneValue) {
                                 if(isset(${"customer_phone_$key"})) {
                                     if(!empty($line[${"customer_phone_$key"}])) {
-                                        $primary  = $first ? '1' : '0';
-                                        $first    = false;
-                                        $values[] = "('".contrexx_input2db($line[${"customer_phone_$key"}])."', '$key', '$primary', '".$this->contact->id."')";
+                                        $tableName = "module_{$this->moduleName}_customer_contact_phone";
+                                        $fields    = array(
+                                            'phone'         => contrexx_input2db($line[${"customer_phone_$key"}]),
+                                            'phone_type'    => $key,
+                                            'is_primary'    => $first ? '1' : '0',
+                                            'contact_id'    => $this->contact->id
+                                        );
+                                        $first     = false;
+                                        $values    = array('phone_type', $key, $this->contact->id);
+                                        $this->checkRecordStoreTODB($tableName, $values, $fields);
                                     }
                                 }
                             }
-
-                            $query .= implode(",", $values);
-                            $objDatabase->Execute($query);
 
                             // insert Website
                             $first = true;
                             $custWeb = array('3','4','5');
                             $conWeb  = array('0','1','2');
-                            $upFields = array('is_primary' => '0');
-                            $upQuery = SQL::update("module_{$this->moduleName}_customer_contact_websites", $upFields, array('escape' => true))." WHERE `contact_id` = {$this->contact->id}";
-                            $objDatabase->Execute($upQuery);
                             foreach ($this->websiteProfileOptions as $websiteKey => $webValues) {
                                 $proceed = ($this->contact->contactType == 2 && in_array($websiteKey, $conWeb)) ? true : (($this->contact->contactType != 2 && in_array($websiteKey, $custWeb)) ? true : false);
                                 if (!empty($line[${"customer_website_$websiteKey"}]) && $proceed) {
+                                    $tableName = "module_{$this->moduleName}_customer_contact_websites";
                                     $fields = array(
-                                                'url'           => urlencode($line[${"customer_website_$websiteKey"}]),
-                                                'url_profile'   => $websiteKey,
-                                                'is_primary'    => $first ? '1' : '0',
-                                                'contact_id'    => $this->contact->id
-                                              );
-                                    $first  = false;
-                                    $query  = SQL::insert("module_{$this->moduleName}_customer_contact_websites", $fields, array('escape' => true));
-                                    $db = $objDatabase->Execute($query);                                    
+                                        'url'           => urlencode($line[${"customer_website_$websiteKey"}]),
+                                        'url_profile'   => $websiteKey,
+                                        'is_primary'    => $first ? '1' : '0',
+                                        'contact_id'    => $this->contact->id
+                                    );
+                                    $first     = false;
+                                    $values    = array('url_profile', $websiteKey, $this->contact->id);
+                                    $this->checkRecordStoreTODB($tableName, $values, $fields);
                                 }
                             }
 
                             // insert Social Network
                             $first = true;
-                            $upFields = array('is_primary' => '0');
-                            $upQuery = SQL::update("module_{$this->moduleName}_customer_contact_social_network", $upFields, array('escape' => true))." WHERE `contact_id` = {$this->contact->id}";
-                            $objDatabase->Execute($upQuery);
                             foreach ($this->socialProfileOptions as $websiteKey => $webValues) {
                                 if (!empty($line[${"customer_social_$websiteKey"}])) {
+                                    $tableName = "module_{$this->moduleName}_customer_contact_social_network";
                                     $fields = array(
-                                                'url'           => urlencode($line[${"customer_social_$websiteKey"}]),
-                                                'url_profile'   => $websiteKey,
-                                                'is_primary'    => $first ? '1' : '0',
-                                                'contact_id'    => $this->contact->id
-                                              );
-                                    $first  = false;
-                                    $query  = SQL::insert("module_{$this->moduleName}_customer_contact_social_network", $fields, array('escape' => true));
-                                    $db = $objDatabase->Execute($query);
+                                        'url'           => urlencode($line[${"customer_social_$websiteKey"}]),
+                                        'url_profile'   => $websiteKey,
+                                        'is_primary'    => $first ? '1' : '0',
+                                        'contact_id'    => $this->contact->id
+                                    );
+                                    $first     = false;
+                                    $values    = array('url_profile', $websiteKey, $this->contact->id);
+                                    $this->checkRecordStoreTODB($tableName, $values, $fields);
                                 }
                             }
 
                             // insert address
-                            $objDatabase->Execute("DELETE FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_address` WHERE `contact_id` = {$this->contact->id}");
                             $first = true;
                             foreach ($this->addressTypes As $addTypeKey => $addTypeValue) {
                                 $fields = array();
@@ -819,35 +848,52 @@ class crmInterface extends CrmLibrary
                                         }
                                     }
                                 }
-                                $fields['Address_Type'] = $addTypeKey;
-                                $fields['contact_id']   = $this->contact->id;
-                                $fields['is_primary']   = $first ? '1' : '0';
-                                $first = false;
                                 if ($insert) {
-                                    $query  = SQL::insert("module_{$this->moduleName}_customer_contact_address", $fields, array('escape' => true));
-                                    $db = $objDatabase->Execute($query);
+                                    $tableName = "module_{$this->moduleName}_customer_contact_address";
+                                    $fields['Address_Type'] = $addTypeKey;
+                                    $fields['is_primary']   = $first ? '1' : '0';
+                                    $fields['contact_id']   = $this->contact->id;
+                                    $first     = false;
+                                    $values    = array('Address_Type', $addTypeKey, $this->contact->id);
+                                    $this->checkRecordStoreTODB($tableName, $values, $fields);
                                 }
                             }
-                        } else {
+                        } else { 
                             $skipedLines++;
+                            $_SESSION[$fileName]['skippedRows'] = $skipedLines;
                         }
                     }
                 }
-                $_SESSION[$fileName] = array(
-                    'totalRows'     => $totalLines,
-                    'importedRows'  => $importedLines,
-                    'skippedRows'   => $skipedLines
-                );
                 $totalLines++;
                 $first = false;
                 $line = $objCsv->NextLine();
+                session_write_close();
+                echo '    ';
+            }
+            if (!$line) {
+                echo $json['success'] = 'Record Imported Successfully.';
             }
         } else {
-            $json['error'] = $_ARRAYLANG['TXT_CRM_CHOOSE_NAME_ERROR'];
+            echo $json['error'] = $_ARRAYLANG['TXT_CRM_CHOOSE_NAME_ERROR'];
         }
-        
-        echo json_encode($json);
+
+//        echo json_encode($json);
         exit();
+    }
+    
+    function checkRecordStoreTODB($tableName = '', $values = array(), $fields = array())
+    {
+        global $objDatabase;
+
+        if (!empty ($tableName) && !empty ($fields)) {
+            $objRecordExist = $objDatabase->getOne("SELECT id FROM `".DBPREFIX."{$tableName}` WHERE $values[0] = '".$values[1]."' AND contact_id = {$values[2]}");
+            if ($objRecordExist) {
+                $query = SQL::update($tableName, $fields, array('escape' => true))." WHERE `id` = {$objRecordExist}";
+            } else {
+                $query = SQL::insert($tableName, $fields, array('escape' => true));
+            }
+            $objDatabase->execute($query);
+        }
     }
 
     function getLanguageIdByName($language)
@@ -889,10 +935,15 @@ class crmInterface extends CrmLibrary
     function getIndustryTypeIdByName($industrytype)
     {
         global $objDatabase;
-        
-        $objResult = $objDatabase->Execute("SELECT `entry_id` FROM `".DBPREFIX."module_{$this->moduleName}_industry_type_local` WHERE `value` = '". contrexx_raw2db($industrytype)."' LIMIT 0, 1");
 
-        return (int) $objResult->fields['entry_id'];
+        $query = "SELECT `id` FROM `".DBPREFIX."module_{$this->moduleName}_industry_types` As ind
+                    LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_industry_type_local` As ind_loc
+                        ON (ind.id = ind_loc.entry_id)
+                    WHERE ind_loc.value = '". contrexx_raw2db($industrytype)."' LIMIT 0, 1";
+
+        $objResult = $objDatabase->Execute($query);
+
+        return (int) $objResult->fields['id'];
     }
 
     function checkContactExists($customer_name, $family_name, $emails, $contact_type)
