@@ -149,6 +149,9 @@ class ReflectionComponent {
         // copy skeleton component
         \Cx\Lib\FileSystem\FileSystem::copy_folder(ASCMS_CORE_PATH.'/Core/Data/Skeleton', $this->getDirectory(false));
         
+        $this->fixNamespaces('Cx\Modules\Skeleton', $this->getDirectory());
+        $this->fixLanguagePlaceholders('MODULE_SKELETON', $this->getDirectory());
+        
         // activate component
         $this->activate();
     }
@@ -698,6 +701,41 @@ class ReflectionComponent {
     }
     
     /**
+     * Fix the language variables of all files of this component
+     * @param string $oldBaseIndex Base language var index of old component
+     * @param string $baseDir Directory in which the recursive replace should be done
+     */
+    public function fixLanguagePlaceholders($oldBaseIndex, $baseDir) {
+        $baseIndex = strtoupper($this->componentType . '_' . $this->componentName);
+        
+        $directoryIterator = new \RecursiveDirectoryIterator($baseDir);
+        $iterator = new \RecursiveIteratorIterator($directoryIterator);
+        $files = new \RegexIterator($iterator, '/^.+\.(php|html|js)$/i', \RegexIterator::GET_MATCH);
+        
+        // recursive foreach .php, .html and .js file
+        foreach($files as $file) {
+            // prepare data
+            $file = current($file);
+            $bi = $baseIndex;
+            $oldBi = $oldBaseIndex;
+            
+            
+            // file_get_contents()
+            $objFile = new \Cx\Lib\FileSystem\File($file);
+            $content = $objFile->getData();
+            
+            $content = preg_replace(
+                '/' . $oldBi . '/',
+                preg_quote($bi),
+                $content
+            );
+            echo 'Replace ' . $oldBi . ' by ' . $bi . ' in ' . $file . "\n";
+            
+            $objFile->write($content);
+        }
+    }
+    
+    /**
      * Relocates this component (copy or move)
      * 
      * This does the following tasks
@@ -756,6 +794,7 @@ class ReflectionComponent {
             $baseDir = $newComponent->getDirectory();
         }
         $newComponent->fixNamespaces(SystemComponent::getBaseNamespaceForType($this->componentType) . '\\' . $this->componentName, $baseDir);
+        $newComponent->fixLanguagePlaceholders(strtoupper($this->componentType . '_' . $this->componentName), $baseDir);
         
         // add new component to db and activate it (component, modules, backend_areas, pages)
         $newComponent->activate();
