@@ -1380,9 +1380,9 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
           WHERE
             cat_rel.`category_id` = cat_name.`category_id`
           AND
-            cat_rel.`entry_id` = '?'
+            cat_rel.`entry_id` = ?
           AND
-            cat_name.`lang_id` = '?'
+            cat_name.`lang_id` = ?
           ORDER BY
             cat_name.`category_name` ASC
           ";
@@ -1402,9 +1402,9 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
           WHERE
             level_rel.`level_id` = level_name.`level_id`
           AND
-            level_rel.`entry_id` = '?'
+            level_rel.`entry_id` = ?
           AND
-            level_name.`lang_id` = '?'
+            level_name.`lang_id` = ?
           ORDER BY
             level_name.`level_name` ASC
           ";
