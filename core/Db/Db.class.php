@@ -172,9 +172,8 @@ namespace Cx\Core\Db {
                 $this->getEntityManager();
             }
             
-            foreach ($this->em->getConfiguration()->getMetadataDriverImpl()->getDrivers() as $driver) {
-                $driver->addPaths($paths);
-            }
+            $drivers = $this->em->getConfiguration()->getMetadataDriverImpl()->getDrivers();
+            $drivers['Cx']->addPaths($paths);
         }
 
         /**
