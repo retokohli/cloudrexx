@@ -95,7 +95,9 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
         
         if (!is_array($components)) {
             $yamlDir = $components->getDirectory().'/Model/Yaml';
-            $this->cx->getDb()->addSchemaFileDirectories(array($yamlDir));
+            if (file_exists($yamlDir)) {
+                $this->cx->getDb()->addSchemaFileDirectories(array($yamlDir));
+            }
             $entity = $this->decorateEntity($components);
             return $entity;
         }
@@ -105,7 +107,9 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
             if (isset($this->loadedComponents[$component->getId()])) {
                 continue;
             }
-            $yamlDirs[] = $component->getDirectory().'/Model/Yaml';
+            if (file_exists($component->getDirectory().'/Model/Yaml')) {
+                $yamlDirs[] = $component->getDirectory().'/Model/Yaml';
+            }
         }
         
         $this->cx->getDb()->addSchemaFileDirectories($yamlDirs);
