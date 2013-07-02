@@ -22,7 +22,8 @@
     # See core/Dispatcher.class.php, look for "CONTREXX_ALIAS_PARAMETER"
     # The Dispatcher will decide.
     # Warning: Overhead!
-    RewriteCond   %{REQUEST_FILENAME}  index.php
+    RewriteCond   %{REQUEST_FILENAME}  index.php [OR]
+    RewriteCond   %{REQUEST_URI} cadmin/$
     RewriteRule   .  index.php?__cap=%{REQUEST_URI} [L,QSA]
 
     RewriteCond   %{REQUEST_FILENAME}  !-d
