@@ -1,8 +1,8 @@
 <!-- START module_crm_interface.html -->
 <div id="subnavbar_level2">
     <ul>
-        <li><a class="active" href="./index.php?cmd={MODULE_NAME}&amp;act=interface&amp;tpl=import" title="{TXT_CRM_IMPORT_NAME}">{TXT_CRM_IMPORT_NAME}</a></li>
-        <li><a href="./index.php?cmd={MODULE_NAME}&amp;act=interface&amp;tpl=export" title="{TXT_CRM_EXPORT_NAME}">{TXT_CRM_EXPORT_NAME}</a></li>
+        <li><a class="active" href="./index.php?cmd={MODULE_NAME}&amp;act=settings&amp;tpl=interface&amp;subTpl=import" title="{TXT_CRM_IMPORT_NAME}">{TXT_CRM_IMPORT_NAME}</a></li>
+        <li><a href="./index.php?cmd={MODULE_NAME}&amp;act=settings&amp;tpl=interface&amp;subTpl=export" title="{TXT_CRM_EXPORT_NAME}">{TXT_CRM_EXPORT_NAME}</a></li>
     </ul>
 </div>
 <div id="Import">
@@ -24,7 +24,7 @@
         </div>
     </div>
     <div id="step1">
-        <form name="frmImport" id="frmImport" method="post" action="index.php?cmd={MODULE_NAME}&act=interface&tpl=importCsv" enctype="multipart/form-data">
+        <form name="frmImport" id="frmImport" method="post" action="index.php?cmd={MODULE_NAME}&act=settings&amp;tpl=interface&amp;subTpl=importCsv" enctype="multipart/form-data">
             <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
                 <thead>
                     <tr>
@@ -117,6 +117,7 @@
                         <td class="import_step1" colspan="2">
                             <div class="actions">
                                 <input type="submit" id="start_upload" class="disabled" value="{TXT_CRM_CONTINUE}" title="{TXT_CRM_CONTINUE}" name="imported" />&nbsp;&nbsp;
+                                <!--<input type="button" id="cancel_upload" value="{TXT_CRM_CANCEL}" title="{TXT_CRM_CANCEL}" onClick="window.location.replace('./index.php?cmd=crm&act=overview&{CSRF_PARAM}')" />-->
                             </div>
                             <div class="ajax_loading">
                                 <img alt="loading" src="../lib/javascript/jquery/jstree/themes/default/throbber.gif" />{TXT_CRM_LOADING}..
@@ -129,7 +130,7 @@
         </form>
     </div>
     <div id="step2" style="display: none;">
-        <form name="frmImport2" id="frmImport2" method="post" action="index.php?cmd={MODULE_NAME}&act=interface&tpl=save">
+        <form name="frmImport2" id="frmImport2" method="post" action="index.php?cmd={MODULE_NAME}&act=settings&amp;tpl=interface&amp;subTpl=save">
             <table width="100%" cellspacing="0" cellpadding="3" border="0" id="mapCSVColumn" class="adminlist">
                 <thead>
                     <tr>
@@ -169,7 +170,7 @@
                     <tr>
                         <td class="import_step2" colspan="3">
                             <div class="actions">
-                                <input type="button" id="cancel_upload" value="{TXT_CRM_CANCEL}" title="{TXT_CRM_CANCEL}" onClick="window.location.replace('./index.php?cmd=crm&act=interface&{CSRF_PARAM}')" />&nbsp;&nbsp;
+                                <input type="button" id="cancel_upload" value="{TXT_CRM_CANCEL}" title="{TXT_CRM_CANCEL}" onClick="window.location.replace('./index.php?cmd=crm&act=settings&amp;tpl=interface&amp;{CSRF_PARAM}')" />&nbsp;&nbsp;
                                 <input type="submit" id="import_data" class="disabled" value="{TXT_CRM_CONTINUE}" title="{TXT_CRM_CONTINUE}" name="imported" />
                             </div>
                             <div class="ajax_loading">
@@ -209,7 +210,7 @@
             </tbody>
         </table>
         <br>
-        <input type="button" id="cancelled" name="cancel" value="{TXT_CRM_CANCEL}"/>&nbsp;&nbsp;&nbsp;<input type="button" id="Done" class="disabled" name="Done" value="{TXT_CRM_RECORD_DONE}" onClick="window.location.replace('./index.php?cmd=crm&act=overview&{CSRF_PARAM}');"/>
+        <input type="button" id="cancelled" name="cancel" value="{TXT_CRM_CANCEL}"/>&nbsp;&nbsp;&nbsp;<input type="button" id="Done" class="disabled" disabled name="Done" value="{TXT_CRM_RECORD_DONE}" onClick="window.location.replace('./index.php?cmd=crm&act=customers&{CSRF_PARAM}');"/>
     </div>
     <select name="crm_contact_option_base[]" id="crm_contact_option_base" style="display: none;" ></select>
     <script id="columnSelectorTemplate" type="text/x-jquery-tmpl">

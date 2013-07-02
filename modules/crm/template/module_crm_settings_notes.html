@@ -109,16 +109,20 @@
                 <td ><input type="checkbox" name="selected[]" value="{TXT_NOTES_ID}" onclick="isChecked(this.checked);"/></td>
                 <td style="text-align:center"><a href="./index.php?cmd=crm&act=noteschangestatus&ids={TXT_NOTES_ID}&stat={TXT_NOTES_STATVAL}"><img src="images/icons/led_{TXT_NOTES_STATUS}.gif" alt="" /></a></td>
                 <td style="width: 26%;"><input type="hidden" name="form_id[]" value="{TXT_NOTES_ID}" /><input  style="width:25px; text-align:right; padding:2px;" type="text" name="form_pos[]" value="{TXT_NOTES_SORTING}"></td>
-                <td style="width: 67%;"><a href="./index.php?cmd=crm&act=editnotestype&id={TXT_NOTES_ID}">{TXT_NOTES_NAME}</a></td>            
-                <td style="width: 38%;text-align: right;">                    
-                    <a title="Edit" href="./index.php?cmd=crm&act=editnotestype&id={TXT_NOTES_ID}">
-                        <img width="16" height="16" border="0" alt='{TXT_EDIT}' src="images/icons/edit.gif">
-                    </a>
-                    <!-- BEGIN noteDeleteIcon -->
-                    <a title="Delete" onclick="return confirmSubmit();" href="./index.php?cmd=crm&act=settings&tpl=notes&idr={TXT_NOTES_ID}">
-                        <img width="17" height="17" border="0" alt='{TXT_DELETE}' src="images/icons/delete.gif">
-                    </a>
-                    <!-- END noteDeleteIcon -->
+                <td style="width: 67%;"><a href="./index.php?cmd=crm&amp;act=settings&amp;tpl=notes&amp;fn=editnotestype&amp;id={TXT_NOTES_ID}">{TXT_NOTES_NAME}</a></td>            
+                <td style="width: 38%;text-align: right;">
+                    <div style="float: left; width: 65%;">
+                        <a title="Edit" href="./index.php?cmd=crm&amp;act=settings&amp;tpl=notes&amp;fn=editnotestype&id={TXT_NOTES_ID}">
+                            <img width="16" height="16" border="0" alt='{TXT_EDIT}' src="images/icons/edit.gif">
+                        </a>
+                    </div>
+                    <div style="float: left; width: 35%;">
+                        <!-- BEGIN noteDeleteIcon -->
+                        <a title="Delete" onclick="return confirmSubmit();" href="./index.php?cmd=crm&act=settings&tpl=notes&idr={TXT_NOTES_ID}">
+                            <img width="17" height="17" border="0" alt='{TXT_DELETE}' src="images/icons/delete.gif">
+                        </a>
+                        <!-- END noteDeleteIcon -->
+                    </div>
                 </td>                
             </tr>
             <!-- END users -->

@@ -49,7 +49,7 @@
     }
     function deleteCommentEntry(entryId,CustId){
         if(confirm('{TXT_CRM_CONFIRM_DELETE_ENTRY}'))
-            window.location.replace("?cmd={MODULE_NAME}&{CSRF_PARAM}&act=showcustdetail&deleteComment=1&commentid="+entryId+"&id="+CustId);
+            window.location.replace("?cmd={MODULE_NAME}&{CSRF_PARAM}&act=customers&tpl=showcustdetail&deleteComment=1&commentid="+entryId+"&id="+CustId);
     }
     function confirmTaskDelete() {
         if(confirm('{TXT_CRM_CONFIRM_DELETE_ENTRY}')) {
@@ -138,6 +138,12 @@
                     url     : './index.php?cmd={MODULE_NAME}&{CSRF_PARAM}&act=deals&actionType=deletedeals&ajax=1&id='+en_id,
                     type    : 'POST',
                     success : function(msg){
+                        $J("#dealsTab table tbody").html('');
+                        tabIndex = $J( "#tabs" ).tabs('option', 'selected');
+                        $J("#tabs").tabs('load', tabIndex);
+                        tabLinks['deals'].page = 0;
+                        tabLinks['deals'].new_req = true;
+                        $J('.crm_details_tabs').scroll();
                         $elm.closest("tr").remove();
                         setTableRow("dealsTab");
                         $J("#okbox")
@@ -261,7 +267,7 @@
                 uploadButton: '<div class="button blue">upload a file</div>'
             },
             validation: {
-                allowedExtensions: ["jpeg", "png", "gif", "jpg", "bmp", "doc", "docx", "pdf", "txt", "csv", "xls"],
+                allowedExtensions: ["jpeg", "png", "gif", "jpg", "doc", "docx", "pdf", "txt", "csv", "xls"],
                 sizeLimit: 2097152
             }
         });
@@ -386,6 +392,10 @@
     .viewAll,.hide {
         padding: 0 13px 0 0;
     }
+    .detailsList .add-map {
+        margin-left: 130px;
+        position: absolute;
+    }
 </style>
 <div id="subnavbar_level2">
     <ul>
@@ -428,185 +438,181 @@
             </td>
         </tr>
         <tr>
-            <td style="width: 150px;text-align:center;">
+            <td style="width: 150px;text-align:left; padding-left: 0px; padding-top: 10px;">
                 <div id="profile-image"><img src="{CRM_ACCESS_PROFILE_IMG_WEB_PATH}/{CRM_CONTACT_PROFILE_IMAGE}" alt="Profile" /></div>
                 <div ><a class="change-photo" href="javascript:void(0);">{TXT_CRM_CHANGE_PHOTO}</a></div>
             </td>
             <td>
-                <!-- BEGIN customerGeneral -->
-                <table width="100%" class="innerTable" id="" cellspacing="0" cellpadding="3">
-                    <tr class="row1">
-                        <td style="width: 145px;">
-                            <strong>{TXT_CRM_CUSTOMERTYPE}</strong>
-                        </td>
-                        <td style="width: 350px;">
-                            {CRM_CUSTOMER_TYPE}
-                        </td>
-                        <td style="width: 145px;">
-                            <strong>{TXT_CRM_INDUSTRY_TYPE}</strong>
-                        </td>
-                        <td>
-                            {CRM_INDUSTRY_TYPE}
-                        </td>
-                    </tr>
-                    <tr class="row1">
-                        <td >
-                            <strong>{TXT_CRM_CUSTOMERID}</strong>
-                        </td>
-                        <td >
-                            {CRM_CUSTOMERID}
-                        </td>
-                        <td>
-                            <strong>{TXT_CRM_MEMBERSHIP}</strong>
-                        </td>
-                        <td>
-                            {CRM_CUSTOMER_MEMBERSHIP}
-                        </td>
-                    </tr>
-                    <tr class="row1">
-                        <td>
-                            <strong>{TXT_CRM_CUSTOMER_CURRENCY}</strong>
-                        </td>
-                        <td colspan="3">
-                            {CRM_CUSTOMER_CURRENCY}
-                        </td>
-
-                    </tr>
-                </table>
-                <!-- END customerGeneral -->
-                <!-- BEGIN contactGeneral -->
-                <table width="100%" class="innerTable" id="" cellspacing="0" cellpadding="3">
-                    <tr class="row1">
-                        <td style="width: 145px;"><strong>{TXT_CRM_CONTACT_ROLE}</strong></td>
-                        <td style="width: 350px;">{CRM_CONTACT_ROLE}</td>
-                        <td style="width: 145px;"><strong>{TXT_CRM_CONTACT_LANGUAGE}</strong></td>
-                        <td >{CRM_CONTACT_LANGUAGE}</td>
-                    </tr>
-                    <tr class="row2">
-                        <!-- BEGIN contactCustomer -->
-                        <td><strong>{TXT_CRM_COMPNAY_NAME}</strong></td>
-                        <td>
-                            {CRM_COMPNAY_NAME}
-                        </td>
-                        <!-- END contactCustomer -->
-                        <!-- BEGIN emptyContactCurrency -->
-                        <td colspan="2">&nbsp;</td>
-                        <!-- END emptyContactCurrency -->
-                    </tr>
+                <table class="adminlist" width="100%" cellpadding="4" cellspacing="0">
                     <tr>
-                        <!-- BEGIN contactCustomerType -->
-                        <td><strong>{TXT_CRM_CUSTOMERTYPE}</strong></td>
-                        <td>
-                            {CRM_CUSTOMERTYPE}
-                        </td>
-                        <!-- END contactCustomerType -->
-                        <!-- BEGIN contactCurrency -->
-                        <td>
-                            <strong>{TXT_CRM_CUSTOMER_CURRENCY}</strong>
-                        </td>
-                        <td>
-                            {CRM_CUSTOMER_CURRENCY}
-                        </td>
-                        <!-- END contactCurrency -->
-                    </tr>
-                    <tr class="row1">
-                        <td>
-                            <strong>{TXT_CRM_MEMBERSHIP}</strong>
-                        </td>
-                        <td>
-                            {CRM_CUSTOMER_MEMBERSHIP}
-                        </td>
-                    </tr>
+                        <!-- BEGIN showGeneralInfo -->
+                        <td width="50%">
+                            <table id="general-info" class="adminlist innerTable" width="100%" cellpadding="3" cellspacing="0">
+                                <tbody>
+                                    <!-- BEGIN contactAddresses -->
+                                    <tr class="row2">
+                                        <td valign="top" class="td-subject"><strong>{TXT_CRM_CONTACT_ADDRESSES}</strong></td>
+                                        <td >
+                                            <div class="primary_profile"><div class="detailsList">{CRM_CONTACT_ADDRESS_PRIMARY}&nbsp;&nbsp;<a style="display: {CRM_ADDRESS_SHOW_ALL}" class="viewAll arrow-down" href="javascript:void(0);"></a></div></div>
+                                            <div class="profile_expanded" style="display:none;">
+                                                <div class="detailsList crmLeft">
+                                                    <!-- BEGIN contact_address_list -->
+                                                    {CRM_CONTACT_ADDRESS}<br/>
+                                                    <!-- END contact_address_list -->
+                                                </div>
+                                                <span class="crmLeft" style="position:relative;left:0;"><a class="fixed-scroll hide arrow-up">&nbsp;</a></span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <!-- END contactAddresses -->
+                                    <!-- BEGIN contactPhones -->
+                                    <tr class="row2">
+                                        <td valign="top" class="td-subject"><strong>{TXT_CRM_CONTACT_PHONE}</strong></td>
+                                        <td>
+                                            <div class="primary_profile"><div class="detailsList">{CRM_CONTACT_PHONE_PRIMARY}&nbsp;&nbsp;<a style="display: {CRM_PHONE_SHOW_ALL}" class="viewAll arrow-down" href="javascript:void(0);"></a></div></div>
+                                            <div class="profile_expanded" style="display:none;">
+                                                <div class="detailsList crmLeft">
+                                                    <!-- BEGIN contact_phones_list -->
+                                                    {CRM_CONTACT_PHONE}<br/>
+                                                    <!-- END contact_phones_list -->
+                                                </div>
+                                                <span class="crmLeft" style="position:relative;left:0;"><a class="fixed-scroll hide arrow-up">&nbsp;</a></span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <!-- END contactPhones -->
+                                    <!-- BEGIN contactEmails -->
+                                    <tr class="row1">
+                                        <td class="td-subject" valign="top"><strong>{TXT_CRM_CONTACT_EMAIL}</strong></td>
+                                        <td>
+                                            <div class="primary_profile"><div class="detailsList">{CRM_CONTACT_EMAIL_PRIMARY}&nbsp;&nbsp;<a style="display: {CRM_EMAIL_SHOW_ALL}" class="viewAll arrow-down" href="javascript:void(0);"></a></div></div>
+                                            <div class="profile_expanded" style="display:none;">
+                                                <div class="detailsList crmLeft">
+                                                    <!-- BEGIN contact_email_list -->
+                                                    {CRM_CONTACT_EMAIL}<br>
+                                                    <!-- END contact_email_list -->
+                                                </div>
+                                                <span class="crmLeft" style="position:relative;left:0;"><a class="fixed-scroll hide arrow-up">&nbsp;</a></span>
+                                            </div>
 
-                </table>
-                <!-- END contactGeneral -->
-                <table id="general-info" class="adminlist innerTable" width="100%" cellpadding="3" cellspacing="0">
-                    <tbody>
-                        <tr>
-                            <td colspan="2">&nbsp;</td>
-                        </tr>
-                        <!-- BEGIN contactEmails -->
-                        <tr class="row1">
-                            <td class="td-subject" valign="top"><strong>{TXT_CRM_CONTACT_EMAIL}</strong></td>
-                            <td>
-                                <div class="primary_profile"><div class="detailsList">{CRM_CONTACT_EMAIL_PRIMARY}&nbsp;&nbsp;<a style="display: {CRM_EMAIL_SHOW_ALL}" class="viewAll arrow-down" href="javascript:void(0);"></a></div></div>
-                                <div class="profile_expanded" style="display:none;">
-                                    <div class="detailsList crmLeft">
-                                        <!-- BEGIN contact_email_list -->
-                                        {CRM_CONTACT_EMAIL}<br>
-                                        <!-- END contact_email_list -->
-                                    </div>
-                                    <span class="crmLeft" style="position:relative;left:0;"><a class="fixed-scroll hide arrow-up">&nbsp;</a></span>
-                                </div>
-
-                            </td>
-                        </tr>
-                        <!-- END contactEmails -->
-                        <!-- BEGIN contactWebsite -->
-                        <tr class="row2">
-                            <td valign="top" class="td-subject"><strong>{TXT_CRM_WEBSITE}</strong></td>
-                            <td>
-                                <div class="primary_profile"><div class="detailsList">{CRM_WEBSITE_URL_PRIMARY} {CRM_WEBSITE_TYPE_PRIMARY}&nbsp;&nbsp;<a style="display: {CRM_WEBSITE_SHOW_ALL}" class="viewAll arrow-down" href="javascript:void(0);"></a></div></div>
-                                <div class="profile_expanded" style="display:none;">
-                                    <div class="detailsList crmLeft">
-                                        <!-- BEGIN contact_website_list -->
-                                        {CRM_WEBSITE_URL} {CRM_WEBSITE_TYPE}<br />
-                                        <!-- END contact_website_list -->
-                                    </div>
-                                    <span class="crmLeft" style="position:relative;left:0;"><a class="fixed-scroll hide arrow-up">&nbsp;</a></span>
-                                </div>
-                            </td>
-                        </tr>
-                        <!-- END contactWebsite -->
-                        <!-- BEGIN contactSocial -->
-                        <tr class="row2">
-                            <td valign="top" class="td-subject"><strong>{TXT_CRM_SOCIAL_NETWORK}</strong></td>
-                            <td>
-                                <div class="primary_profile"><div class="detailsList">{CRM_SOCIAL_URL_PRIMARY} {CRM_SOCIAL_TYPE_PRIMARY}&nbsp;&nbsp;<a style="display: {CRM_SOCIAL_SHOW_ALL}" class="viewAll arrow-down" href="javascript:void(0);"></a></div></div>
-                                <div class="profile_expanded" style="display:none;">
-                                    <div class="detailsList crmLeft">
-                                        <!-- BEGIN contact_social_list -->
-                                        {CRM_SOCIAL_URL} {CRM_SOCIAL_TYPE}<br/>
-                                        <!-- END contact_social_list -->
-                                    </div>
-                                    <span class="crmLeft" style="position:relative;left:0;"><a class="fixed-scroll hide arrow-up">&nbsp;</a></span>
-                                </div>
-                            </td>
-                        </tr>
-                        <!-- END contactSocial -->
-                        <!-- BEGIN contactPhones -->
-                        <tr class="row2">
-                            <td valign="top" class="td-subject"><strong>{TXT_CRM_CONTACT_PHONE}</strong></td>
-                            <td>
-                                <div class="primary_profile"><div class="detailsList">{CRM_CONTACT_PHONE_PRIMARY}&nbsp;&nbsp;<a style="display: {CRM_PHONE_SHOW_ALL}" class="viewAll arrow-down" href="javascript:void(0);"></a></div></div>
-                                <div class="profile_expanded" style="display:none;">
-                                    <div class="detailsList crmLeft">
-                                        <!-- BEGIN contact_phones_list -->
-                                        {CRM_CONTACT_PHONE}<br/>
-                                        <!-- END contact_phones_list -->
-                                    </div>
-                                    <span class="crmLeft" style="position:relative;left:0;"><a class="fixed-scroll hide arrow-up">&nbsp;</a></span>
-                                </div>
-                            </td>
-                        </tr>
-                        <!-- END contactPhones -->
-                        <!-- BEGIN contactAddresses -->
-                        <tr class="row2">
-                            <td valign="top" class="td-subject"><strong>{TXT_CRM_CONTACT_ADDRESSES}</strong></td>
-                            <td >
-                                <div class="primary_profile"><div class="detailsList">{CRM_CONTACT_ADDRESS_PRIMARY}&nbsp;&nbsp;<a style="display: {CRM_ADDRESS_SHOW_ALL}" class="viewAll arrow-down" href="javascript:void(0);"></a></div></div>
-                                <div class="profile_expanded" style="display:none;">
-                                    <div class="detailsList crmLeft">
-                                        <!-- BEGIN contact_address_list -->
-                                        {CRM_CONTACT_ADDRESS}<br/>
-                                        <!-- END contact_address_list -->
-                                    </div>
-                                    <span class="crmLeft" style="position:relative;left:0;"><a class="fixed-scroll hide arrow-up">&nbsp;</a></span>
-                                </div>
-                            </td>
-                        </tr>
-                        <!-- END contactAddresses -->
-                    </tbody>
+                                        </td>
+                                    </tr>
+                                    <!-- END contactEmails -->
+                                    <!-- BEGIN contactWebsite -->
+                                    <tr class="row2">
+                                        <td valign="top" class="td-subject"><strong>{TXT_CRM_WEBSITE}</strong></td>
+                                        <td>
+                                            <div class="primary_profile"><div class="detailsList">{CRM_WEBSITE_URL_PRIMARY} {CRM_WEBSITE_TYPE_PRIMARY}&nbsp;&nbsp;<a style="display: {CRM_WEBSITE_SHOW_ALL}" class="viewAll arrow-down" href="javascript:void(0);"></a></div></div>
+                                            <div class="profile_expanded" style="display:none;">
+                                                <div class="detailsList crmLeft">
+                                                    <!-- BEGIN contact_website_list -->
+                                                    {CRM_WEBSITE_URL} {CRM_WEBSITE_TYPE}<br />
+                                                    <!-- END contact_website_list -->
+                                                </div>
+                                                <span class="crmLeft" style="position:relative;left:0;"><a class="fixed-scroll hide arrow-up">&nbsp;</a></span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <!-- END contactWebsite -->
+                                    <!-- BEGIN contactSocial -->
+                                    <tr class="row2">
+                                        <td valign="top" class="td-subject"><strong>{TXT_CRM_SOCIAL_NETWORK}</strong></td>
+                                        <td>
+                                            <div class="primary_profile"><div class="detailsList">{CRM_SOCIAL_URL_PRIMARY} {CRM_SOCIAL_TYPE_PRIMARY}&nbsp;&nbsp;<a style="display: {CRM_SOCIAL_SHOW_ALL}" class="viewAll arrow-down" href="javascript:void(0);"></a></div></div>
+                                            <div class="profile_expanded" style="display:none;">
+                                                <div class="detailsList crmLeft">
+                                                    <!-- BEGIN contact_social_list -->
+                                                    {CRM_SOCIAL_URL} {CRM_SOCIAL_TYPE}<br/>
+                                                    <!-- END contact_social_list -->
+                                                </div>
+                                                <span class="crmLeft" style="position:relative;left:0;"><a class="fixed-scroll hide arrow-up">&nbsp;</a></span>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                    <!-- END contactSocial -->
+                                </tbody>
+                            </table>
+                        </td>
+                        <!-- END showGeneralInfo -->
+                        <!-- BEGIN customerGeneral -->
+                        <td width="50%">
+                            <table width="100%" class="innerTable" id="" cellspacing="0" cellpadding="3">
+                                <!-- BEGIN companyCustomerType -->
+                                <tr class="row1">
+                                    <td style="width: 145px;"><strong>{TXT_CRM_CUSTOMERTYPE}</strong></td>
+                                    <td style="width: 350px;">{CRM_CUSTOMER_TYPE}</td>
+                                </tr>
+                                <!-- END companyCustomerType -->
+                                <tr class="row1">
+                                    <td style="width: 145px;"><strong>{TXT_CRM_CUSTOMERID}</strong></td>
+                                    <td style="width: 350px;">{CRM_CUSTOMERID}</td>
+                                </tr>
+                                <tr class="row1">
+                                    <td style="width: 145px;"><strong>{TXT_CRM_CUSTOMER_CURRENCY}</strong></td>
+                                    <td style="width: 350px;">{CRM_CUSTOMER_CURRENCY}</td>
+                                </tr>
+                                <!-- BEGIN companyIndustryType -->
+                                <tr class="row1">
+                                    <td style="width: 145px;"><strong>{TXT_CRM_INDUSTRY_TYPE}</strong></td>
+                                    <td style="width: 350px;">{CRM_INDUSTRY_TYPE}</td>
+                                </tr>
+                                <!-- END companyIndustryType -->
+                                <!-- BEGIN companyMembership -->
+                                <tr class="row1">
+                                    <td style="width: 145px;"><strong>{TXT_CRM_MEMBERSHIP}</strong></td>
+                                    <td style="width: 350px;">{CRM_CUSTOMER_MEMBERSHIP}</td>
+                                </tr>
+                                <!-- END companyMembership -->
+                            </table>
+                        </td>
+                        <!-- END customerGeneral -->
+                        <!-- BEGIN contactGeneral -->
+                        <td width="50%">
+                            <table width="100%" class="innerTable" id="" cellspacing="0" cellpadding="3">
+                                <!-- BEGIN contactRole -->
+                                <tr class="row1">
+                                    <td width="145px;"><strong>{TXT_CRM_CONTACT_ROLE}</strong></td>
+                                    <td width="350px;">{CRM_CONTACT_ROLE}</td>
+                                </tr>
+                                <!-- END contactRole -->
+                                <!-- BEGIN contactCustomer -->
+                                <tr class="row2">
+                                    <td><strong>{TXT_CRM_COMPNAY_NAME}</strong></td>
+                                    <td>
+                                        {CRM_COMPNAY_NAME}
+                                    </td>
+                                </tr>
+                                <!-- END contactCustomer -->
+                                <!-- BEGIN contactCustomerType -->
+                                <tr class="row1">
+                                    <td width="145px;"><strong>{TXT_CRM_CUSTOMERTYPE}</strong></td>
+                                    <td width="350px;">
+                                        {CRM_CUSTOMERTYPE}
+                                    </td>
+                                </tr>
+                                <!-- END contactCustomerType -->
+                                <!-- BEGIN contactCurrency -->
+                                <tr class="row2">
+                                    <td width="145px;"><strong>{TXT_CRM_CUSTOMER_CURRENCY}</strong></td>
+                                    <td width="350px;">{CRM_CUSTOMER_CURRENCY}</td>
+                                </tr>
+                                <!-- END contactCurrency -->
+                                <!-- BEGIN contactMembership -->
+                                <tr class="row1">
+                                    <td width="145px;"><strong>{TXT_CRM_MEMBERSHIP}</strong></td>
+                                    <td width="350px;">{CRM_CUSTOMER_MEMBERSHIP}</td>
+                                </tr>
+                                <!-- END contactMembership -->
+                                <!-- BEGIN contactLang -->
+                                <tr class="row2">
+                                    <td width="145px;"><strong>{TXT_CRM_CONTACT_LANGUAGE}</strong></td>
+                                    <td width="350px;">{CRM_CONTACT_LANGUAGE}</td>
+                                </tr>
+                                <!-- END contactLang -->
+                            </table>
+                        </td>
+                        <!-- END contactGeneral -->
+                    </tr>
                 </table>
             </td>
         </tr>
@@ -776,7 +782,7 @@
             </tbody>
         </table>
         <br>
-        <a href="./index.php?cmd=pm&act=addnewproject&{CSRF_PARAM}&customer={ENTRY_ID}{CRM_REDIRECT_LINK_PROJECT}" title="{TXT_CRM_ADD_PROJECT}"><input type="button" name="{TXT_CRM_ADD_PROJECT}" value="{TXT_CRM_ADD_PROJECT}" /></a>
+        <a href="./index.php?cmd=pm&act=projects&tpl=addnewproject&{CSRF_PARAM}&customer={ENTRY_ID}{CRM_REDIRECT_LINK_PROJECT}" title="{TXT_CRM_ADD_PROJECT}"><input type="button" name="{TXT_CRM_ADD_PROJECT}" value="{TXT_CRM_ADD_PROJECT}" /></a>
 
     </div>
     <!-- END contactsProjectsTabDetails -->
@@ -846,10 +852,10 @@
         <h4>{TXT_CRM_PROFILE_PHOTO_TITLE2}</h4>
         <div class="default-images">
             <!-- BEGIN company_default_image -->
-            <img src="{CRM_ACCESS_PROFILE_IMG_WEB_PATH}/0_no_company_picture.gif" onclick="setDefaultImage('0_no_company_picture.gif', {ENTRY_ID})" width="40" height="60" alt="Profile" />
+            <img src="{CRM_ACCESS_PROFILE_IMG_WEB_PATH}/profile_company_small.png" onclick="setDefaultImage('profile_company_big.png', {ENTRY_ID})" width="40" height="60" alt="Profile" />
             <!-- END company_default_image -->
             <!-- BEGIN person_default_image -->
-            <img src="{CRM_ACCESS_PROFILE_IMG_WEB_PATH}/0_noavatar.gif" onclick="setDefaultImage('0_noavatar.gif', {ENTRY_ID})" width="40" height="60" alt="Profile" />
+            <img src="{CRM_ACCESS_PROFILE_IMG_WEB_PATH}/profile_person_small.png" onclick="setDefaultImage('profile_person_big.png', {ENTRY_ID})" width="40" height="60" alt="Profile" />
             <!-- END person_default_image -->
         </div>
         <div class="action-progress-2" style="display:none;"><img src="../images/modules/crm/loader.gif" width="121" style="padding-top: 5px;" alt="Uploading...."/>Uploading....</div>

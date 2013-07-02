@@ -831,19 +831,19 @@ END;
 function deleteSupportCase(entryId,customId){
             if(confirm("$TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES"))
        
-       window.location.replace("index.php?cmd=$MODULE_NAME&act=showcustdetail&act=deleteCustomerSupportcase&id="+entryId+"&customId="+customId);
+       window.location.replace("index.php?cmd=$MODULE_NAME&act=customers&tpl=showcustdetail&act=deleteCustomerSupportcase&id="+entryId+"&customId="+customId);
      
         }
         
   function deleteHosting(entryId,customId){
             if(confirm("$TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES"))
        
-       window.location.replace("index.php?cmd=crm&act=showcustdetail&action=addHosting&act=deleteCustomerHosting&id="+entryId+"&customId="+customId);
+       window.location.replace("index.php?cmd=crm&act=customers&tpl=showcustdetail&action=addHosting&act=deleteCustomerHosting&id="+entryId+"&customId="+customId);
      
         }
          function deleteServicePlan(entryId,customerId){
             if(confirm("$TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES"))
-  window.location.replace("index.php?cmd=$MODULE_NAME&act=showcustdetail&act=deleteCustomerServiceplan&seriveId="+entryId+"&customerId="+customerId);
+  window.location.replace("index.php?cmd=$MODULE_NAME&act=customers&tpl=showcustdetail&act=deleteCustomerServiceplan&seriveId="+entryId+"&customerId="+customerId);
    
         }
 
@@ -1577,7 +1577,7 @@ END;
                 function customerDetail(data) {
                     if(data.errChk == 0){
                         if(data.contactId != 0){
-                            window.parent.location = "./index.php?cmd=crm&act=showcustdetail&id="+data.contactId+"&mes="+data.msg;
+                            window.parent.location = "./index.php?cmd=crm&act=customers&tpl=showcustdetail&id="+data.contactId+"&mes="+data.msg;
                             window.parent.Shadowbox.close();
                             }else{
                             window.parent.location.reload();
@@ -1630,7 +1630,7 @@ END;
                                               \$J('#formerr').show();
                                           } else {
                                               //window.parent.changeCustomer(data.customerId, data.customerName);
-                                              window.parent.location = './index.php?cmd=crm&act=showcustdetail&id='+data.customerId+'&mes='+data.msg;
+                                              window.parent.location = './index.php?cmd=crm&act=customers&tpl=showcustdetail&id='+data.customerId+'&mes='+data.msg;
                                           }
                                       },  // post-submit callback
                 };

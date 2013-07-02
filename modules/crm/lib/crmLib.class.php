@@ -1430,7 +1430,7 @@ class CrmLibrary {
         if (!empty ($emails)) {
             $info['substitution'] = array(
                     'CRM_ASSIGNED_USER_EMAIL'           => implode(',', $emails),
-                    'CRM_CONTACT_DETAILS_LINK'          => "<a href='". ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}". ASCMS_ADMIN_WEB_PATH ."/index.php?cmd={$this->moduleName}&act=showcustdetail&id=$customerId'>".$customer_name."</a>"
+                    'CRM_CONTACT_DETAILS_LINK'          => "<a href='". ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}". ASCMS_ADMIN_WEB_PATH ."/index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id=$customerId'>".$customer_name."</a>"
             );
 
             $dispatcher = EventDispatcher::getInstance();
