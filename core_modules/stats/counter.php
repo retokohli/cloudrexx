@@ -16,13 +16,11 @@ ini_set('display_errors', 0);
 /**
  * Includes
  */
-require_once(dirname(__FILE__).'/../../config/settings.php');
-require_once(dirname(__FILE__).'/../../config/configuration.php');
-require_once(ASCMS_CORE_PATH.'/ClassLoader/ClassLoader.class.php');
-new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT);
-
-require_once(ASCMS_CORE_PATH.'/Env.class.php');
-require_once(ASCMS_LIBRARY_PATH.'/adodb/adodb.inc.php');
+global $objDatabase, $objDb;
+require_once dirname(__FILE__).'/../../init.php';
+$cx = init('minimal');
+$objDatabase = $cx->getDb()->getAdoDb();
+$objDb = $objDatabase;
 
 $arrBannedWords = array();
 $arrRobots = array();
@@ -30,15 +28,9 @@ require_once(ASCMS_CORE_MODULE_PATH.'/stats/lib/spiders.inc.php');
 require_once(ASCMS_CORE_MODULE_PATH.'/stats/lib/referers.inc.php');
 require_once(ASCMS_CORE_MODULE_PATH.'/stats/lib/banned.inc.php');
 
-$objDb = ADONewConnection($_DBCONFIG['dbType']); # eg 'mysql' or 'postgres'
-$objDb->Connect($_DBCONFIG['host'], $_DBCONFIG['user'], $_DBCONFIG['password'], $_DBCONFIG['database']);
-
-if(!empty($_DBCONFIG['charset']))
-  $objDb->Execute('SET CHARACTER SET '.$_DBCONFIG['charset']);
-$objDatabase = $objDb;
 require_once(ASCMS_FRAMEWORK_PATH.'/Language.class.php');
 \FWLanguage::init();
-require_once(ASCMS_DOCUMENT_ROOT.'/config/doctrine.php');
+
 $counter = new counter($arrRobots, $arrBannedWords);
 
 /**
@@ -650,6 +642,9 @@ class counter
         global $objDb;
 
         $page = \Env::get('em')->getRepository('\Cx\Core\ContentManager\Model\Entity\Page')->findOneBy(array('id' => $this->pageId));
+        if (!$page) {
+            return;
+        }
         $url = \Cx\Core\Routing\Url::fromPage($page);
         if ($page) {
             $objDb->Execute('

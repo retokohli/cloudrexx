@@ -12,7 +12,7 @@
 /**
  * @ignore
  */
-require_once "searchInterface.php";
+require_once ASCMS_MODULE_PATH.'/knowledge/lib/searchInterface.php';
 
 /**
  * Search object
@@ -61,13 +61,6 @@ class Search {
     private $tpl;
 
     /**
-     * JSON object
-     *
-     * @var object
-     */
-    private $json;
-
-    /**
      * The response object
      *
      * @var object
@@ -83,9 +76,6 @@ class Search {
         // should change when this class is used globally
         $this->interfacesPath = ASCMS_MODULE_PATH."/knowledge/lib/searchInterfaces";
         $this->templateFile = ASCMS_MODULE_PATH."/knowledge/lib/searchTemplate.html";
-
-        require_once(ASCMS_LIBRARY_PATH."/PEAR/Services/JSON.php");
-        $this->json = new Services_JSON();
 
         // the template system
         $this->tpl = new \Cx\Core\Html\Sigma('');
@@ -142,7 +132,7 @@ class Search {
         }
 
         $this->response->status = $status;
-        $response = $this->json->encode($this->response);
+        $response = json_encode($this->response);
 
         die($response);
     }
