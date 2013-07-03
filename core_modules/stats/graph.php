@@ -394,30 +394,15 @@ error_reporting(0);
 /**
  * Includes
  */
-require_once(dirname(__FILE__).'/../../config/settings.php');
-require_once(dirname(__FILE__).'/../../config/configuration.php');
-require_once(ASCMS_CORE_PATH.'/ClassLoader/ClassLoader.class.php');
 
-$customizing = null;
-if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
-// TODO: webinstaller check: has ASCMS_CUSTOMIZING_PATH already been defined in the installation process?
-    $customizing = ASCMS_CUSTOMIZING_PATH;
-}
-
-$cl = new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT, true, $customizing);
-\Env::set('ClassLoader', $cl);
-
-require_once(ASCMS_FRAMEWORK_PATH.'/DBG/DBG.php');
-require_once(ASCMS_LIBRARY_PATH.'/ykcee/ykcee.php');
+global $objDatabase, $objInit, $_ARRAYLANG, $adminPage;
+require_once dirname(__FILE__).'/../../init.php';
+$cx = init('minimal');
+include ASCMS_LIBRARY_PATH.'/ykcee/ykcee.php';
+$objDatabase = $cx->getDb()->getAdoDb();
 
 $adminPage = true;
-$cl->loadFile(ASCMS_CORE_PATH.'/API.php');
-
-$db = new \Cx\Core\Db\Db();
-$objDatabase = $db->getAdoDb();
-\Env::set('db', $objDatabase);
-
-$objInit= new InitCMS($mode="backend");
+$objInit = new InitCMS($mode="backend");
 
 $sessionObj = new cmsSession();
 $sessionObj->cmsSessionStatusUpdate("backend");

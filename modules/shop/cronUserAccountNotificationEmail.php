@@ -23,17 +23,18 @@
  * for autocreated user accounts.  Leave it untouched at all times!
  *
  */
-require_once '../../config/configuration.php';
-require_once ASCMS_LIBRARY_PATH.'/adodb/adodb.inc.php';
-require_once ASCMS_CORE_PATH.'/database.php';
 
 // Since 3.1.0
-$db = new \Cx\Core\Db\Db();
-$objDatabase = $db->getAdoDb();
-\Env::set('db', $objDatabase);
+global $objDatabase;
+require_once dirname(__FILE__).'/../../init.php';
+$cx = init('minimal');
+$objDatabase = $cx->getDb()->getAdoDb();
 if (!$objDatabase) {
     die("Error: Failed to connect to database");
 }
+
+// THIS SCRIPT DOES NOT WORK AS IS!
+// (Unknown column 'interests' in 'where clause')
 
 // Test: Clear and insert fresh test data
 /*

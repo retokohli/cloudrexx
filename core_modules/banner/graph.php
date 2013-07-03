@@ -15,12 +15,11 @@ error_reporting(0);
 /**
  * Includes
  */
-require_once dirname(__FILE__).'/../../config/configuration.php';
+global $objDatabase;
+require_once dirname(__FILE__).'/../../init.php';
+$cx = init('minimal');
 include ASCMS_LIBRARY_PATH.'/ykcee/ykcee.php';
-require_once ASCMS_LIBRARY_PATH.'/adodb/adodb.inc.php';
-
-$objDatabase = ADONewConnection($_DBCONFIG['dbType']); # eg 'mysql' or 'postgres'
-$objDatabase->Connect($_DBCONFIG['host'],$_DBCONFIG['user'],$_DBCONFIG['password'],$_DBCONFIG['database']);
+$objDatabase = $cx->getDb()->getAdoDb();
 
 /**
  * Banner management
