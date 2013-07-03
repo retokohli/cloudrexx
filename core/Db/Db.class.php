@@ -211,7 +211,6 @@ namespace Cx\Core\Db {
 
             $chainDriverImpl = new \Doctrine\ORM\Mapping\Driver\DriverChain();
             $driverImpl = new \Doctrine\ORM\Mapping\Driver\YamlDriver(array(
-                ASCMS_MODEL_PATH.'/yml',                                // general YAML dir, deprecated
                 ASCMS_CORE_PATH.'/Core'.'/Model/Yaml',             // Component YAML files
             ));
             $chainDriverImpl->addDriver($driverImpl, 'Cx');
