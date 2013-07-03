@@ -441,30 +441,12 @@ class LegacyComponentHandler {
                             && file_exists($modulespath)
                         ) {
                             $_ARRAYLANG = array_merge($_ARRAYLANG, \Env::get('init')->loadLanguageData('calendar'));
-                            $calHeadlinesObj = new \calHeadlines($themesPages['calendar_headlines']);
+                            $calHeadlinesObj = new \CalendarHeadlines($themesPages['calendar_headlines']);
                             $calHeadlines = $calHeadlinesObj->getHeadlines();
                             \Env::get('cx')->getPage()->setContent(str_replace($eventsPlaceholder, $calHeadlines, \Env::get('cx')->getPage()->getContent()));
                             $themesPages['index']   = str_replace($eventsPlaceholder, $calHeadlines, $themesPages['index']);
                             $themesPages['sidebar'] = str_replace($eventsPlaceholder, $calHeadlines, $themesPages['sidebar']);
                             $page_template          = str_replace($eventsPlaceholder, $calHeadlines, $page_template);
-                        }
-
-                        // Get Calendar Box Three
-                        if ($cl->loadFile(ASCMS_MODULE_PATH.'/calendar/headlines.class.php')) {
-                            $calHeadlinesObj2 = new \calHeadlines($themesPages['calendar_headlines']);
-                            $calHeadlineThreeBoxes = $calHeadlinesObj2->showThreeBoxes();
-                            if (preg_match('/{CALENDAR_HEADLINES}/', $page_content)) {
-                                $page_content = str_replace('{CALENDAR_HEADLINES}', $calHeadlineThreeBoxes, $page_content);
-                            }
-                            if (preg_match('/{CALENDAR_HEADLINES}/', $page_template)) {
-                                $page_template = str_replace('{CALENDAR_HEADLINES}', $calHeadlineThreeBoxes, $page_template);
-                            }
-                            if (preg_match('/{CALENDAR_HEADLINES}/', $themesPages['index'])) {
-                                $themesPages['index'] = str_replace('{CALENDAR_HEADLINES}', $calHeadlineThreeBoxes, $themesPages['index']);
-                            }
-                            if (preg_match('/{CALENDAR_HEADLINES}/', $themesPages['sidebar'])) {
-                                $themesPages['sidebar'] = str_replace('{CALENDAR_HEADLINES}', $calHeadlineThreeBoxes, $themesPages['sidebar']);
-                            }
                         }
                     },
                     'Knowledge' => function() {
