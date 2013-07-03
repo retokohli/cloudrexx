@@ -685,109 +685,226 @@ CREATE TABLE `contrexx_module_blog_votes` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_calendar` (
-  `id` int(11) NOT NULL auto_increment,
-  `active` tinyint(1) NOT NULL default '1',
-  `catid` int(11) NOT NULL default '0',
-  `startdate` int(14) default NULL,
-  `enddate` int(14) default NULL,
-  `priority` int(1) NOT NULL default '3',
-  `access` int(1) NOT NULL default '0',
-  `name` varchar(100) NOT NULL default '',
-  `comment` text NOT NULL,
-  `placeName` varchar(255) NOT NULL,
-  `link` varchar(255) NOT NULL default 'http://',
-  `pic` varchar(255) NOT NULL default '',
-  `attachment` varchar(255) NOT NULL default '',
-  `placeStreet` varchar(255) NOT NULL default '',
-  `placeZip` varchar(255) NOT NULL default '',
-  `placeCity` varchar(255) NOT NULL default '',
-  `placeLink` varchar(255) NOT NULL default '',
-  `placeMap` varchar(255) NOT NULL default '',
-  `organizerName` varchar(255) NOT NULL default '',
-  `organizerStreet` varchar(255) NOT NULL default '',
-  `organizerZip` varchar(255) NOT NULL default '',
-  `organizerPlace` varchar(255) NOT NULL default '',
-  `organizerMail` varchar(255) NOT NULL default '',
-  `organizerLink` varchar(255) NOT NULL default '',
-  `key` varchar(255) NOT NULL default '',
-  `num` int(5) NOT NULL default '0',
-  `mailTitle` varchar(255) NOT NULL default '',
-  `mailContent` text NOT NULL,
-  `registration` int(1) NOT NULL default '0',
-  `groups` text NOT NULL,
-  `all_groups` int(1) NOT NULL default '0',
-  `public` int(1) NOT NULL default '0',
-  `notification` int(1) NOT NULL,
-  `notification_address` varchar(255) NOT NULL default '',
-  `series_status` tinyint(4) NOT NULL,
-  `series_type` int(11) NOT NULL,
-  `series_pattern_count` int(11) NOT NULL,
-  `series_pattern_weekday` varchar(7) NOT NULL,
-  `series_pattern_day` int(11) NOT NULL,
-  `series_pattern_week` int(11) NOT NULL,
-  `series_pattern_month` int(11) NOT NULL,
-  `series_pattern_type` int(11) NOT NULL,
-  `series_pattern_dourance_type` int(11) NOT NULL,
-  `series_pattern_end` int(11) NOT NULL,
-  `series_pattern_begin` int(11) NOT NULL default '0',
-  `series_pattern_exceptions` longtext NOT NULL,
-  PRIMARY KEY  (`id`),
-  FULLTEXT KEY `name` (`name`,`comment`,`placeName`)
-) ENGINE=MyISAM ;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_calendar_categories` (
+CREATE TABLE `contrexx_module_calendar_category` (
   `id` int(5) NOT NULL auto_increment,
-  `name` varchar(150) NOT NULL default '',
-  `status` int(1) NOT NULL default '0',
-  `lang` int(1) NOT NULL default '0',
-  `pos` int(5) NOT NULL default '0',
+  `pos` int(5) default NULL,
+  `status` int(1) default NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_calendar_form_data` (
-  `reg_id` int(10) NOT NULL default '0',
-  `field_id` int(10) NOT NULL default '0',
-  `data` text NOT NULL
+CREATE TABLE `contrexx_module_calendar_category_name` (
+  `cat_id` int(11) NOT NULL,
+  `lang_id` int(11) default NULL,
+  `name` varchar(225) default NULL,
+  KEY `fk_contrexx_module_calendar_category_names_contrexx_module_ca1` (`cat_id`)
 ) ENGINE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_calendar_form_fields` (
+CREATE TABLE `contrexx_module_calendar_event` (
+  `id` int(11) NOT NULL auto_increment,
+  `type` int(11) NOT NULL default '0',
+  `startdate` int(14) default NULL,
+  `enddate` int(14) default NULL,
+  `use_custom_date_display` tinyint(1) NOT NULL,
+  `showStartDateList` int(1) NOT NULL,
+  `showEndDateList` int(1) NOT NULL,
+  `showStartTimeList` int(1) NOT NULL,
+  `showEndTimeList` int(1) NOT NULL,
+  `showTimeTypeList` int(1) NOT NULL,
+  `showStartDateDetail` int(1) NOT NULL,
+  `showEndDateDetail` int(1) NOT NULL,
+  `showStartTimeDetail` int(1) NOT NULL,
+  `showEndTimeDetail` int(1) NOT NULL,
+  `showTimeTypeDetail` int(1) NOT NULL,
+  `google` int(11) NOT NULL,
+  `access` int(1) NOT NULL default '0',
+  `priority` int(1) NOT NULL default '3',
+  `price` int(11) NOT NULL default '0',
+  `link` varchar(255) NOT NULL,
+  `pic` varchar(255) NOT NULL default '',
+  `attach` varchar(255) NOT NULL,
+  `place_mediadir_id` int(11) NOT NULL,
+  `catid` int(11) NOT NULL default '0',
+  `show_in` varchar(255) NOT NULL,
+  `invited_groups` varchar(45) default NULL,
+  `invited_mails` mediumtext,
+  `invitation_sent` int(1) NOT NULL,
+  `registration` int(1) NOT NULL default '0',
+  `registration_form` int(11) NOT NULL,
+  `registration_num` varchar(45) default NULL,
+  `registration_notification` varchar(45) default NULL,
+  `email_template` int(11) NOT NULL,
+  `ticket_sales` tinyint(1) NOT NULL default '0',
+  `num_seating` text NOT NULL,
+  `series_status` tinyint(4) NOT NULL default '0',
+  `series_type` int(11) NOT NULL default '0',
+  `series_pattern_count` int(11) NOT NULL default '0',
+  `series_pattern_weekday` varchar(7) NOT NULL,
+  `series_pattern_day` int(11) NOT NULL default '0',
+  `series_pattern_week` int(11) NOT NULL default '0',
+  `series_pattern_month` int(11) NOT NULL default '0',
+  `series_pattern_type` int(11) NOT NULL default '0',
+  `series_pattern_dourance_type` int(11) NOT NULL default '0',
+  `series_pattern_end` int(11) NOT NULL default '0',
+  `series_pattern_begin` int(11) NOT NULL default '0',
+  `series_pattern_exceptions` longtext NOT NULL,
+  `status` tinyint(1) NOT NULL default '1',
+  `confirmed` tinyint(1) NOT NULL default '1',
+  `author` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `fk_contrexx_module_calendar_notes_contrexx_module_calendar_ca1` (`catid`)
+) ENGINE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_calendar_event_field` (
+  `event_id` int(11) NOT NULL default '0',
+  `lang_id` varchar(225) default NULL,
+  `title` varchar(255) default NULL,
+  `place` varchar(255) default NULL,
+  `place_id` int(11) NOT NULL default '0',
+  `place_street` varchar(255) default NULL,
+  `place_zip` varchar(10) default NULL,
+  `place_city` varchar(255) default NULL,
+  `place_country` varchar(255) default NULL,
+  `description` mediumtext,
+  `redirect` varchar(255) NOT NULL,
+  KEY `lang_field` (`title`),
+  KEY `fk_contrexx_module_calendar_note_field_contrexx_module_calend1` (`event_id`)
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_calendar_host` (
+  `id` int(1) NOT NULL auto_increment,
+  `title` varchar(255) NOT NULL,
+  `uri` mediumtext NOT NULL,
+  `cat_id` int(11) NOT NULL,
+  `key` varchar(40) NOT NULL,
+  `confirmed` int(11) NOT NULL,
+  `status` int(1) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `fk_contrexx_module_calendar_shared_hosts_contrexx_module_cale1` (`cat_id`)
+) ENGINE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_calendar_mail` (
   `id` int(7) NOT NULL auto_increment,
-  `note_id` int(10) NOT NULL default '0',
-  `name` text NOT NULL,
-  `type` int(1) NOT NULL default '0',
-  `required` int(1) NOT NULL default '0',
-  `order` int(3) NOT NULL default '0',
-  `key` int(7) NOT NULL default '0',
+  `title` varchar(255) NOT NULL,
+  `content_text` longtext NOT NULL,
+  `content_html` longtext NOT NULL,
+  `recipients` mediumtext NOT NULL,
+  `lang_id` int(1) NOT NULL,
+  `action_id` int(1) NOT NULL,
+  `is_default` int(1) NOT NULL,
+  `status` int(1) NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_calendar_registrations` (
-  `id` int(7) NOT NULL auto_increment,
-  `note_id` int(7) NOT NULL default '0',
-  `note_date` int(11) NOT NULL,
-  `time` int(14) NOT NULL default '0',
-  `host` varchar(255) NOT NULL,
-  `ip_address` varchar(15) NOT NULL,
-  `type` int(1) NOT NULL default '0',
+CREATE TABLE `contrexx_module_calendar_mail_action` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(255) NOT NULL,
+  `default_recipient` enum('empty','admin','author') NOT NULL,
+  `need_auth` int(11) NOT NULL,
   PRIMARY KEY  (`id`)
+) ENGINE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_calendar_registration` (
+  `id` int(7) NOT NULL auto_increment,
+  `event_id` int(7) NOT NULL,
+  `date` int(15) NOT NULL,
+  `host_name` varchar(255) NOT NULL,
+  `ip_address` varchar(15) NOT NULL,
+  `type` int(1) NOT NULL,
+  `key` varchar(45) NOT NULL,
+  `user_id` int(7) NOT NULL,
+  `lang_id` int(11) NOT NULL,
+  `export` int(11) NOT NULL,
+  `payment_method` int(11) NOT NULL,
+  `payed` int(11) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_calendar_registration_form` (
+  `id` int(11) NOT NULL auto_increment,
+  `status` int(11) NOT NULL,
+  `order` int(11) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_calendar_registration_form_field` (
+  `id` int(7) NOT NULL auto_increment,
+  `form` int(11) NOT NULL,
+  `type` enum('inputtext','textarea','select','radio','checkbox','mail','seating','agb','salutation','firstname','lastname','selectBillingAddress','title') NOT NULL,
+  `required` int(1) NOT NULL,
+  `order` int(3) NOT NULL,
+  `affiliation` varchar(45) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_calendar_registration_form_field_name` (
+  `field_id` int(7) NOT NULL,
+  `form_id` int(11) NOT NULL,
+  `lang_id` int(1) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `default` mediumtext NOT NULL
+) ENGINE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_calendar_registration_form_field_value` (
+  `reg_id` int(7) NOT NULL,
+  `field_id` int(7) NOT NULL,
+  `value` mediumtext NOT NULL
+) ENGINE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_calendar_rel_event_host` (
+  `host_id` int(11) NOT NULL,
+  `event_id` int(11) NOT NULL
 ) ENGINE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_calendar_settings` (
-  `setid` int(7) NOT NULL auto_increment,
-  `setname` varchar(255) NOT NULL,
-  `setvalue` text NOT NULL,
-  PRIMARY KEY  (`setid`)
+  `id` int(7) NOT NULL auto_increment,
+  `section_id` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  `value` mediumtext NOT NULL,
+  `info` mediumtext NOT NULL,
+  `type` int(11) NOT NULL,
+  `options` mediumtext NOT NULL,
+  `special` varchar(255) NOT NULL,
+  `order` int(11) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_calendar_settings_section` (
+  `id` int(11) NOT NULL auto_increment,
+  `parent` int(11) NOT NULL,
+  `order` int(11) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `title` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
