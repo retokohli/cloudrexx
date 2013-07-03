@@ -348,8 +348,8 @@ class Node extends \Cx\Model\Base\EntityBase
         $page->setActive($activate);
         $page->setType($type);
         
-        $page->setupPath($targetLang);
+        $pageToTranslate->setupPath($targetLang);
         
         return $page;
     }
-}
+        }

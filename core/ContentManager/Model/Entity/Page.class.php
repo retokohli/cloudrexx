@@ -1451,6 +1451,12 @@ class Page extends \Cx\Model\Base\EntityBase
                 $followFallbacks,
                 $page
         );
+        $fallback_language = \FWLanguage::getFallbackLanguageIdById($destinationLang);
+        if ($fallback_language) {
+            $copy->setType(self::TYPE_FALLBACK);
+        } else if ($copy->getType() == self::TYPE_FALLBACK) {
+            $copy->setType(self::TYPE_CONTENT);
+        }
         $copy->setLang($destinationLang);
         return $copy;
     }
@@ -1700,13 +1706,26 @@ class Page extends \Cx\Model\Base\EntityBase
     public function setupPath($targetLang) {
         $node  = $this->getNode()->getParent();
         $pages = $node->getPagesByLang();
+        $sourceLang = $this->getLang();
+        if ($targetLang == $sourceLang) {
+            $sourceLang = \FWLanguage::getDefaultLangId();
+        }
         
         if (!empty($pages) && !isset($pages[$targetLang])) {
-            $page = $pages[$this->getLang()]->translate($targetLang);
+            $page = $pages[$sourceLang]->copyToLang(
+                $targetLang,
+                true,   // includeContent
+                true,   // includeModuleAndCmd
+                true,   // includeName
+                true,   // includeMetaData
+                true,   // includeProtection
+                false,  // followRedirects
+                true    // followFallbacks
+            );
             $page->setDisplay(false);
             \Env::em()->persist($page);
             // recursion
-            return $page->setupPath($targetLang);
+            return $pages[$sourceLang]->setupPath($targetLang);
         } else {
             return;
         }
