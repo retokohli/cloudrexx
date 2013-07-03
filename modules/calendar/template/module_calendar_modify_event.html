@@ -1,0 +1,843 @@
+<!-- START module_calendar_modify_event.html -->
+<script language="JavaScript" type="text/javascript">
+    var $J = jQuery.noConflict();
+
+    cx.ready(function() {
+        refreshDatePickers();
+    });
+
+    function SetUrl(url, width, height, alt) {
+        switch (fileType) {
+            case 'image':
+            case 'webpages':    
+            case 'link':
+                 document.getElementById(insertBox).value = url; 
+                break;
+        }
+    }
+
+    function getFileBrowser(name, type)
+    {
+        insertBox = name;
+        fileType = type;
+        switch (type) { 
+            case 'image':
+            case 'webpages':
+                openWindow('index.php?cmd=fileBrowser&standalone=true&type=images','','width=800,height=600,resizable=yes,status=no,scrollbars=yes'); 
+                break
+            case 'link':
+                 openWindow('index.php?cmd=fileBrowser&standalone=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes'); 
+                break;
+        }
+        
+    }
+
+
+    function openWindow(theURL,winName,features) {
+        browserPopup = window.open(theURL,"Browser",features);
+        browserPopup.focus();
+    }
+    
+    function formCheck()
+    {
+        var status = true;
+        var elm = new Array(3) 
+        
+        //elm[0] = document.getElementById('title_{CALENDAR_EVENT_DEFAULT_LANG_ID}');
+        elm[0] = document.getElementById('{CALENDAR_EVENT_START_DATE_INPUT_ID}');
+        elm[1] = document.getElementById('{CALENDAR_EVENT_END_DATE_INPUT_ID}');
+        elm[2] = document.getElementById('category');
+
+        
+        for(i=0; i < elm.length; i++) {
+            if(elm[i].value == '') {
+                elm[i].style.border = "#ff0000 1px solid";
+                document.getElementById('errorMessage').style.display = 'block';
+                status = false;
+            } else {
+                elm[i].style.borderColor = '';
+            }
+        }
+        
+        if(jQuery('[name="seriesStatus"]').is(':checked') && document.getElementById('seriesTypeSelect').value == 2){
+            var isChecked = false;
+            if(jQuery('#seriesMaskWeekly input:checked').length > 0){
+                isChecked = true;
+            }
+            if(!isChecked){
+                status = false;
+                jQuery('#seriesMaskWeekly').children('table').css('border', '#ff0000 1px solid');
+                document.getElementById('errorMessage').style.display = 'block';
+            }
+        }
+        var pattern = /^showIn/;
+        var reg = new RegExp(pattern);                       
+        
+        for (i = 0; i < document.formModifyEvent.elements.length; ++i) {   
+            var elm = document.formModifyEvent.elements[i];      
+            
+            if (elm.name.match(reg)) {
+                var langId = elm.value; 
+                if (elm.checked) {     
+                    var elmTitle = document.getElementById('title_' + langId);
+                    if(elmTitle.value == '') {
+                        elmTitle.style.border = "#ff0000 1px solid";
+                        document.getElementById('errorMessage').style.display = 'block';
+                        status = false;
+                    } else {
+                        elmTitle.style.borderColor = '';
+                    } 
+                } 
+            }  
+        }
+
+        if(status) {
+            return true;
+        } else {
+            return false;
+        }     
+    }
+
+    function langCheck()
+    {
+        var pattern = /^showIn/;
+        var reg = new RegExp(pattern);
+        var firstLang = false;       
+        var type = document.getElementById('type').value;   
+        
+        for (i = 0; i < document.formModifyEvent.elements.length; ++i) {
+            var elm = document.formModifyEvent.elements[i];
+
+            if (elm.name.match(reg)) {   
+                var langId = elm.value; 
+                var tab1 =  document.getElementById('eventTitleTab_' + langId + '_title');
+                var tab1body =  document.getElementById(langId + '_title');    
+                var tab2 =  document.getElementById('eventDescTab_' + langId + '_desc');
+                var tab2body =  document.getElementById(langId + '_desc');                  
+                
+                var type1 =  document.getElementById(langId + '_typeEvent');    
+                var type2 =  document.getElementById(langId + '_typeRedirect');    
+                
+                if (type == 1) {
+                    type1.style.display = 'none';
+                    type2.style.display = 'block'; 
+                } else {         
+                    type1.style.display = 'block';
+                    type2.style.display = 'none'; 
+                }   
+
+                if (elm.checked) {
+                    tab1.style.display = 'inline';
+                    tab2.style.display = 'inline'; 
+                
+                    firstLang = true       
+                } else {
+                    if (langCount(reg) >= 1) {
+                        tab1.style.display = 'none';
+                        tab2.style.display = 'none';     
+                    } else {
+                        elm.checked = true;    
+                    }
+                }  
+                
+                /*if(firstLang) {
+                    tab1body.style.display = 'block';
+                    tab2body.style.display = 'block'; 
+                    firstLang = false   
+                } else {
+                    tab1body.style.display = 'none';
+                    tab2body.style.display = 'none'; 
+                }  */         
+            }
+        }
+    }
+
+    function langCount(reg)
+    {
+        var activeLanguages = 0;
+
+        for (x = 0; x < document.formModifyEvent.elements.length; ++x) {
+            var elm = document.formModifyEvent.elements[x];
+            if (elm.name.match(reg)) {
+                if (elm.checked) {
+                    activeLanguages++;
+                }
+            }
+        }
+
+        return activeLanguages;
+    }
+
+    function moveElement(from, dest, add, remove) {
+        if (from.selectedIndex < 0) {
+            if (from.options[0] != null) from.options[0].selected = true;
+                from.focus();
+                return false;
+            } else {
+                for (i = 0; i < from.length; ++i) {
+                    if (from.options[i].selected) {
+                        dest.options[dest.options.length] = new Option(from.options[i].text, from.options[i].value, false, false);
+                    }
+                }
+                for (i = from.options.length-1; i >= 0; --i) {
+                    if (from.options[i].selected) {
+                    from.options[i] = null;
+                }
+            }
+        } 
+    }
+
+    function selectAll(control){
+        for (i = 0; i < control.length; ++i) {
+            control.options[i].selected = true;
+        }
+    }
+
+    function deselectAll(control){
+        for (i = 0; i < control.length; ++i) {
+            control.options[i].selected = false;
+        }
+    }
+
+    function ExpandMinimize(toggle, opener){  
+        elm1 = document.getElementById(toggle);
+        elm1.style.display = (elm1.style.display=='none') ? 'block' : 'none';
+
+        if(opener != '') {
+            elm2 = document.getElementById(opener);
+            elm2.style.display = (elm2.style.display=='none') ? 'inline' : 'none';
+        }
+    }
+    
+    function showOrHide()
+    {                                                                                             
+        var seriesMaskSelect  = $J('#seriesTypeSelect').val();
+        
+        if (seriesMaskSelect == 1) {
+            $J('#seriesMaskDaily').css('display', 'block');
+            $J('#seriesMaskWeekly').css('display', 'none');
+            $J('#seriesMaskMonthly').css('display', 'none');
+        } else if (seriesMaskSelect == 2) {
+            $J('#seriesMaskDaily').css('display', 'none');
+            $J('#seriesMaskWeekly').css('display', 'block');
+            $J('#seriesMaskMonthly').css('display', 'none');
+        } else if (seriesMaskSelect == 3) {
+            $J('#seriesMaskDaily').css('display', 'none');
+            $J('#seriesMaskWeekly').css('display', 'none');
+            $J('#seriesMaskMonthly').css('display', 'block');
+        } else {
+            $J('seriesMaskDaily').css('display', 'block');
+            $J('seriesMaskDaily').css('display', 'block');
+            $J('seriesMaskWeekly').css('display', 'none');
+            $J('seriesMaskMonthly').css('display', 'none');
+        }
+        
+        refreshDatePickers();
+    }  
+    
+    function checkRegistration()
+    {                   
+        registrationMask  = document.getElementById('registrationMore');  
+        registrationMaskSelect  = document.getElementsByName('registration')[0].checked;              
+        
+        if (registrationMaskSelect == true) {  
+            registrationMask.style.display = 'block'; 
+        } else { 
+            registrationMask.style.display = 'none'; 
+        }  
+    }
+    
+    
+    function checkTime()
+    { 
+        var startdate = document.getElementById("formModifyEvent").startDate.value;
+        var enddate = document.getElementById("formModifyEvent").endDate.value;      
+        var starthour = document.getElementById("formModifyEvent").startHour.value;
+        if(starthour < 10) { starthour = "0" + starthour};   
+        var startminute = document.getElementById("formModifyEvent").startMinute.value;
+        if(startminute < 10) { startminute = "0" + startminute}; 
+        var endhour = document.getElementById("formModifyEvent").endHour.value;
+        if(endhour < 10) { endhour = "0" + endhour};        
+        var endminute = document.getElementById("formModifyEvent").endMinute.value;
+        if(endminute < 10) { endminute = "0" + endminute};  
+        
+        var starttime = starthour+startminute;      
+        var endtime = endhour+endminute;       
+        
+       // alert(starttime + " - " + endtime);
+        
+        if (starttime > endtime && enddate <= startdate) {
+            var endhour = document.getElementById("formModifyEvent").endHour.value = starthour;       
+            var endminute = document.getElementById("formModifyEvent").endMinute.value = startminute; 
+        }    
+    }
+
+    function showSelection()
+    {
+        var list = document.getElementById("listformat");
+        var detail = document.getElementById("detailformat");
+        var el = document.getElementById("showDateSettings");
+
+        if(el.checked) {
+            list.style.display = '';
+            detail.style.display = '';
+        } else {
+            list.style.display = 'none';
+            detail.style.display = 'none';
+        }
+
+    }
+
+    function showTimeListSelection()
+    {
+        var timeSelection = document.getElementById("showTimeTypeList");
+        var index = timeSelection.selectedIndex;
+        var value = timeSelection.options[index].value;
+        var timeSelectionContent = document.getElementById("timeSelectionContentList");
+
+        if(value != 1) {
+            timeSelectionContent.style.visibility = 'hidden';
+        } else {
+            timeSelectionContent.style.visibility = 'visible';
+        }
+
+    }
+
+    function showTimeDetailSelection()
+    {
+        var timeSelection = document.getElementById("showTimeTypeDetail");
+        var index = timeSelection.selectedIndex;
+        var value = timeSelection.options[index].value;
+        var timeSelectionContent = document.getElementById("timeSelectionContentDetail");
+
+        if(value != 1) {
+            timeSelectionContent.style.visibility = 'hidden';
+        } else {
+            timeSelectionContent.style.visibility = 'visible';
+        }
+
+    }
+
+    function refreshEditors()
+    {
+    }
+    
+    var lastExeptionId = {CALENDAR_SERIES_LAST_EXEPTION_ID};
+    var blankExeption = '<div id="exeption_EXEPTION_ID"><input type="text" name="seriesExeptions[]" value="" id="DPC_editEXEPTION_ID_DD.MM.YYYY" style="width: 129px;" />&nbsp;<a href="#" onclick="deleteExeption(EXEPTION_ID);" title="{TXT_CALENDAR_DELETE}"><img style="vertical-align: middle;" src="images/icons/delete.gif" alt="{TXT_CALENDAR_DELETE}" width="17" border="0" height="17"></a></div>';
+    
+    function appendExeption(){
+        lastExeptionId = lastExeptionId + 1;
+
+        var tmpblankExeption1 = blankExeption.replace(/EXEPTION_ID/g, lastExeptionId);
+        
+        
+        $J('#seriesExeptionsList').append(tmpblankExeption1);
+        $J('#exeption_'+lastExeptionId).css('display', 'none');
+        $J('#exeption_'+lastExeptionId).fadeIn("slow");
+        
+        refreshDatePickers();
+    }
+
+    function deleteExeption(exeptionId){
+        $J('#exeption_'+exeptionId).fadeOut("slow", function(){ $J('#exeption_'+exeptionId).remove(); refreshDatePickers();});
+    }
+        
+    function refreshDatePickers(tmp){
+        console.log(tmp + ": refreshDatePickers");
+        var options = {
+            dateFormat: '{CALENDAR_EVENT_DATE_FORMAT}',
+            timeFormat: 'hh:mm',
+            onSelect: function(dateText, inst) {
+                startDateTime = jQuery(".startDate").datetimepicker("getDate").getTime() / 1000;
+                endDateTime   = jQuery(".endDate").datetimepicker("getDate").getTime() / 1000;                
+    
+                if (startDateTime > endDateTime) {
+                    jQuery(".endDate").datetimepicker('setDate', jQuery(".startDate").val());
+                }
+            },
+            showSecond: false
+        };
+        jQuery('input[name=startDate]').datetimepicker(options);
+        jQuery('input[name=endDate]').datetimepicker(options);
+    }
+</script>      
+
+
+<form action="index.php?cmd={CALENDAR_MODULE_NAME}&act=modify_event" id="formModifyEvent" name="formModifyEvent" method="post" onsubmit="selectAll(document.formModifyEvent.elements['selectedGroups[]']); {CALENDAR_EVENT_ONSUBMIT_PUBLICATIONS} return formCheck();">
+    <input type="hidden" name="id" value="{CALENDAR_EVENT_ID}" />
+    <ul id="tabmenu">
+        <li><a id="eventTab_event" class="active" href="javascript:{}" onclick="selectTab('event'); refreshDatePickers();" title="{TXT_CALENDAR_EVENT}">{TXT_CALENDAR_EVENT}</a></li>
+        <li><a id="eventTab_details" href="javascript:{}" onclick="selectTab('details');refreshEditors();" title="{TXT_CALENDAR_EVENT_DETAILS}" >{TXT_CALENDAR_EVENT_DETAILS}</a></li>
+        <li><a id="eventTab_invite" href="javascript:{}" onclick="selectTab('invite'); checkRegistration();" title="{TXT_CALENDAR_EVENT_INVITE}" >{TXT_CALENDAR_EVENT_INVITE}</a></li>
+        <li><a id="eventTab_series" href="javascript:{}" onclick="selectTab('series');  showOrHide(); refreshDatePickers();" title="{TXT_CALENDAR_EVENT_SERIES}" >{TXT_CALENDAR_EVENT_SERIES}</a></li>
+        <!-- BEGIN eventPublicateMenu -->
+        <li><a id="eventTab_publicate" href="javascript:{}" onclick="selectTab('publicate')" title="{TXT_CALENDAR_EVENT_PUBLICATE}">{TXT_CALENDAR_EVENT_PUBLICATE}</a></li>
+        <!-- END eventPublicateMenu -->        
+    </ul>
+    <div id="event" class="eventTab" style="display:block;">
+        <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+            <tr>
+                <th colspan="3"><b>{TXT_CALENDAR_EVENT}</b></th>
+            </tr>
+            <tr class="row1" style="{CALENDAR_HIDE_ON_SINGLE_LANG}">
+                <td width="180" valign="top">{TXT_CALENDAR_EVENT_SHOW_IN}</td>
+                <td colspan="2">
+                    <!-- BEGIN eventShowIn -->
+                    <label><input name="showIn[]" id="showIn_{CALENDAR_EVENT_LANG_ID}" value="{CALENDAR_EVENT_LANG_ID}" type="checkbox" {CALENDAR_EVENT_LANG_CHECKED} onchange="langCheck();" />&nbsp;{TXT_CALENDAR_EVENT_LANG_NAME}&nbsp;&nbsp;&nbsp;</label>
+                    <!-- END eventShowIn -->
+                </td>
+            </tr>
+            <tr class="row2">
+                <td width="180"  valign="top">{TXT_CALENDAR_EVENT_START} <font color="#ff0000">*</font></td>
+                <td colspan="2">
+                    <input type="text"  name="startDate" class="startDate" id="{CALENDAR_EVENT_START_DATE_INPUT_ID}" value="{CALENDAR_EVENT_START_DATE}" style="width: 250px;" />
+                </td>
+            </tr>
+            <tr class="row1">
+                <td valign="top">{TXT_CALENDAR_EVENT_END} <font color="#ff0000">*</font></td>
+                <td colspan="2">
+                    <input type="text" name="endDate" class="endDate" id="{CALENDAR_EVENT_END_DATE_INPUT_ID}" value="{CALENDAR_EVENT_END_DATE}" style="width: 250px;" />
+                </td>
+            </tr>
+             <tr class="row2">
+                <td>{TXT_CALENDAR_SHOW_TIME_TYPE}</td>
+                <td colspan="2"><input name="showDateSettings" id="showDateSettings" value="1" type="checkbox" onchange="showSelection();" {CALENDAR_USE_CUSTOM_DATE_DISPLAY} /></td>
+            </tr>
+            <tr class="row1" style="height: 30px !important;" id="listformat">
+                <td style="height: 30px !important;">{TXT_CALENDAR_LIST}</td>
+                <td width="250" style="height: 30px !important;">
+                    <label><input name="showStartDateList" id="showStartDateList" value="{CALENDAR_START_DATE_VALUE_LIST}" type="checkbox" {CALENDAR_START_DATE_CHECKED_LIST} />&nbsp;{TXT_CALENDAR_SHOW_START_DATE}&nbsp;&nbsp;</label>
+                    <label><input name="showEndDateList" id="showEndDateList" value="{CALENDAR_END_DATE_VALUE_LIST}" type="checkbox" {CALENDAR_END_DATE_CHECKED_LIST} />&nbsp;{TXT_CALENDAR_SHOW_END_DATE}&nbsp;&nbsp;</label>
+                </td>
+                <td style="height: 30px !important;">
+                    {CALENDAR_SHOW_TIME_TYPE_DROPDOWN_LIST}&nbsp;<span id="timeSelectionContentList"><label><input name="showStartTimeList" id="showStartTimeList" value="{CALENDAR_START_TIME_VALUE_LIST} " type="checkbox" {CALENDAR_START_TIME_CHECKED_LIST} />&nbsp;{TXT_CALENDAR_SHOW_START_TIME}&nbsp;&nbsp;</label><label><input name="showEndTimeList" id="showEndTimeList" value="{CALENDAR_END_TIME_VALUE_LIST}" type="checkbox" {CALENDAR_END_TIME_CHECKED_LIST} />&nbsp;{TXT_CALENDAR_SHOW_END_TIME}</label></span>
+                </td>
+            </tr>
+            <tr class="row2" style="height: 30px !important;" id="detailformat">
+                <td style="height: 30px !important;">{TXT_CALENDAR_DETAIL}</td>
+                <td width="250" style="height: 30px !important;">
+                    <label><input name="showStartDateDetail" id="showStartDateDetail" value="{CALENDAR_START_DATE_VALUE_DETAIL}" type="checkbox" {CALENDAR_START_DATE_CHECKED_DETAIL} />&nbsp;{TXT_CALENDAR_SHOW_START_DATE}&nbsp;&nbsp;</label>
+                    <label><input name="showEndDateDetail" id="showEndDateDetail" value="{CALENDAR_END_DATE_VALUE_DETAIL}" type="checkbox" {CALENDAR_END_DATE_CHECKED_DETAIL} />&nbsp;{TXT_CALENDAR_SHOW_END_DATE}&nbsp;&nbsp;</label>
+                </td>
+                <td style="height: 30px !important;">
+                    {CALENDAR_SHOW_TIME_TYPE_DROPDOWN_DETAIL}&nbsp;<span id="timeSelectionContentDetail"><label><input name="showStartTimeDetail" id="showStartTimeDetail" value="{CALENDAR_START_TIME_VALUE_DETAIL} " type="checkbox" {CALENDAR_START_TIME_CHECKED_DETAIL} />&nbsp;{TXT_CALENDAR_SHOW_START_TIME}&nbsp;&nbsp;</label><label><input name="showEndTimeDetail" id="showEndTimeDetail" value="{CALENDAR_END_TIME_VALUE_DETAIL}" type="checkbox" {CALENDAR_END_TIME_CHECKED_DETAIL} />&nbsp;{TXT_CALENDAR_SHOW_END_TIME}</label></span>
+                </td>
+            </tr>
+        </table>        
+        <ul id="tabmenu" style="{CALENDAR_HIDE_ON_SINGLE_LANG} margin-top: 15px;">
+            <!-- BEGIN eventTabMenuTitleTab -->
+            <li><a id="eventTitleTab_{CALENDAR_EVENT_LANG_ID}_title" class="{CALENDAR_EVENT_TAB_CLASS}" href="javascript:{}" onclick="selectTab('{CALENDAR_EVENT_LANG_ID}_title')" title="" hidefocus="">{TXT_CALENDAR_EVENT_LANG_NAME}</a></li>
+            <!-- END eventTabMenuTitleTab -->
+        </ul>        
+        
+        <!-- BEGIN eventTitleTab -->
+        <div id="{CALENDAR_EVENT_LANG_ID}_title" class="eventTitleTab" style="display: {CALENDAR_EVENT_TAB_DISPLAY};" >
+            <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+                <tr style="{CALENDAR_HIDE_ON_SINGLE_LANG}">                    
+                    <th colspan="2">{TXT_CALENDAR_EVENT_LANG_NAME}</th>
+                </tr>
+                <tr class="row1">
+                    <td width="180"  valign="top">{TXT_CALENDAR_EVENT_TITLE} <font color="#ff0000">*</font></td>
+                    <td>
+                         <input id="title_{CALENDAR_EVENT_LANG_ID}" name="title[{CALENDAR_EVENT_LANG_ID}]" type="text" style="width: 250px" value="{CALENDAR_EVENT_TITLE}" />
+                    </td>
+                </tr>
+                <tr class="row2">
+                    <td valign="top">{TXT_CALENDAR_EVENT_PLACE}</td>
+                    <td>
+                        <!-- BEGIN eventPlaceInput -->
+                        <input name="place[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_PLACE}" style="width: 250px" />&nbsp;<a id="eventPlaceMoreLink_{CALENDAR_EVENT_LANG_SHORTCUT}" href="javascript:ExpandMinimize('eventPlaceMore_{CALENDAR_EVENT_LANG_SHORTCUT}', 'eventPlaceMoreLink_{CALENDAR_EVENT_LANG_SHORTCUT}')">&raquo; {TXT_CALENDAR_EXPAND}</a>
+                        <!-- END eventPlaceInput -->
+                        
+                        <!-- BEGIN eventPlaceSelect -->
+                        <select name="placeMediadir[{CALENDAR_EVENT_LANG_ID}]" style="width: 252px;">
+                            {CALENDAR_EVENT_PLACE_OPTIONS}
+                        </select>
+                        <!-- END eventPlaceSelect -->
+                    </td>
+                </tr>
+            </table>
+            <div id="eventPlaceMore_{CALENDAR_EVENT_LANG_SHORTCUT}" style="display: none;" >
+                <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+                    <tr class="row1">
+                        <td width="180"  valign="top">{TXT_CALENDAR_EVENT_STREET}</td>
+                        <td>
+                             <input name="street[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_STREET}" style="width: 250px" />
+                        </td>
+                    </tr>
+                    <tr class="row2">
+                        <td valign="top">{TXT_CALENDAR_EVENT_ZIP}</td>
+                        <td>
+                             <input name="zip[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_ZIP}" style="width: 250px" />
+                        </td>
+                    </tr>
+                    <tr class="row1">
+                        <td valign="top">{TXT_CALENDAR_EVENT_CITY}</td>
+                        <td>
+                             <input name="city[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_CITY}" style="width: 250px" />
+                        </td>
+                    </tr>
+                    <tr class="row2">
+                        <td valign="top">{TXT_CALENDAR_EVENT_COUNTRY}</td>
+                        <td>
+                             <input name="country[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_COUNTRY}" style="width: 250px" />&nbsp;<a href="javascript:ExpandMinimize('eventPlaceMore_{CALENDAR_EVENT_LANG_SHORTCUT}', 'eventPlaceMoreLink_{CALENDAR_EVENT_LANG_SHORTCUT}')">&laquo; {TXT_CALENDAR_MINIMIZE}</a>
+                        </td>
+                    </tr>
+                    <tr class="row1">
+                        <td valign="top">{TXT_CALENDAR_EVENT_MAP}</td>
+                        <td>
+                            <label><input name="map[{CALENDAR_EVENT_LANG_ID}]" value="1" type="checkbox" {CALENDAR_EVENT_MAP}/> {TXT_CALENDAR_EVENT_USE_GOOGLEMAPS}</label>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
+        <!-- END eventTitleTab -->
+        <br />
+        <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">        
+            <tr class="row1">
+                <td style="border-top: 1px solid #DDE4FF;" width="180"  valign="top">{TXT_CALENDAR_EVENT_ACCESS}</td>
+                <td style="border-top: 1px solid #DDE4FF;">
+                    <select name="access" style="width: 252px">
+                        <!-- BEGIN eventAccess -->
+                        <option value="{CALENDAR_EVENT_ACCESS}" {CALENDAR_EVENT_ACCESS_SELECT}>{CALENDAR_EVENT_ACCESS_NAME}</option>
+                        <!-- END eventAccess -->
+                    </select>
+                </td>
+            </tr> 
+            <tr class="row2">
+                <td width="180"  valign="top">{TXT_CALENDAR_EVENT_PRIORITY}</td>
+                <td>
+                    <select name="priority" style="width: 252px">
+                        <!-- BEGIN eventPriority -->
+                        <option value="{CALENDAR_EVENT_PRIORITY}" {CALENDAR_EVENT_PRIORITY_SELECT}>{CALENDAR_EVENT_PRIORITY_NAME}</option>
+                        <!-- END eventPriority -->
+                    </select>
+                </td>
+            </tr>    
+        </table>
+        <br />
+        <input type="button" onclick="location.href='index.php?cmd=calendar&{CALENDAR_CSRF}';" value="{TXT_CALENDAR_CANCEL}" />&nbsp;<input type="button" onclick="selectTab('details');" value="{TXT_CALENDAR_NEXT}" />
+    </div>
+    <div id="details" class="eventTab" style="display:none;">
+        <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+            <tr>
+                <th colspan="2"><b>{TXT_CALENDAR_EVENT_DETAILS}</b></th>
+            </tr>
+            <tr class="row1">
+                <td width="180" valign="top">{TXT_CALENDAR_EVENT_PRICE}</td>
+                <td>
+                    <input type="text" name="price" value="{CALENDAR_EVENT_PRICE}" id="eventPrice" style="width: 250px;" />&nbsp;{CALENDAR_EVENT_CURRENCY}
+                </td>
+            </tr>    
+            <tr class="row2">
+                <td width="180" valign="top">{TXT_CALENDAR_EVENT_LINK}</td>
+                <td>
+                    <input type="text" name="link" value="{CALENDAR_EVENT_LINK}" id="eventLink" style="width: 250px;" />
+                </td>
+            </tr>             
+            <tr class="row1">
+                <td width="180" valign="top">{TXT_CALENDAR_EVENT_PICTURE}</td>
+                <td>
+                    <input type="text" name="picture" value="{CALENDAR_EVENT_PICTURE}" id="eventPicture" style="width: 250px;" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('eventPicture', 'image')" />
+                </td>
+            </tr>
+            <tr class="row2">
+                <td valign="top">{TXT_CALENDAR_EVENT_ATTACHMENT}</td>
+                <td>
+                    <input type="text" name="attachment" value="{CALENDAR_EVENT_ATTACHMENT}" id="eventAttachment" style="width: 250px;" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('eventAttachment', 'image')" />
+                </td>
+            </tr>
+            <tr class="row1">
+                <td valign="top">{TXT_CALENDAR_EVENT_CATEGORY} <font color="#ff0000">*</font></td>
+                <td>
+                    <select id="category" name="category" style="width: 252px">
+                        {CALENDAR_EVENT_CATEGORIES}
+                    </select>
+                </td>
+            </tr>    
+            <tr class="row2">
+                <td valign="top">{TXT_CALENDAR_EVENT_TYPE}</td>
+                <td>    
+                    <select id="type" name="type" style="width: 252px" onchange="langCheck();">
+                        <option value="0" {CALENDAR_EVENT_TYPE_EVENT}>{TXT_CALENDAR_EVENT_TYPE_EVENT}</option>
+                        <option value="1" {CALENDAR_EVENT_TYPE_REDIRECT}>{TXT_CALENDAR_EVENT_TYPE_REDIRECT}</option>                                                                            
+                    </select>                                                              
+                </td>
+            </tr> 
+        </table>        
+        <ul id="tabmenu" style="{CALENDAR_HIDE_ON_SINGLE_LANG} margin-top: 15px;">
+            <!-- BEGIN eventTabMenuDescTab -->
+            <li><a id="eventDescTab_{CALENDAR_EVENT_LANG_ID}_desc" class="{CALENDAR_EVENT_TAB_CLASS}" href="javascript:{}" onclick="selectTab('{CALENDAR_EVENT_LANG_ID}_desc');refreshEditors()" title="">{TXT_CALENDAR_EVENT_LANG_NAME}</a></li>
+            <!-- END eventTabMenuDescTab -->
+        </ul>
+        <!-- BEGIN eventDescTab -->
+        <div id="{CALENDAR_EVENT_LANG_ID}_desc" class="eventDescTab" style="display: {CALENDAR_EVENT_TAB_DISPLAY};" >
+            <div id="{CALENDAR_EVENT_LANG_ID}_typeEvent" style="display: {CALENDAR_EVENT_TYPE_EVENT_DISPLAY};" > 
+                <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+                    <tr style="{CALENDAR_HIDE_ON_SINGLE_LANG}">                            
+                        <th colspan="2">{TXT_CALENDAR_EVENT_LANG_NAME}</th>
+                    </tr>    
+                    <tr class="row1">
+                        <td width="180"  valign="top">{TXT_CALENDAR_EVENT_DESCRIPTION}</td>
+                        <td>
+                             {CALENDAR_EVENT_DESCRIPTION}                                                                                                         
+                        </td>
+                    </tr>
+                </table>
+            </div>   
+            <div id="{CALENDAR_EVENT_LANG_ID}_typeRedirect" style="display: {CALENDAR_EVENT_TYPE_REDIRECT_DISPLAY};" > 
+                <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+                    <tr>    
+                        <th><br /></th>
+                        <th>{TXT_CALENDAR_EVENT_LANG_NAME}</th>
+                    </tr>    
+                    <tr class="row1">
+                        <td width="180"  valign="top">{TXT_CALENDAR_EVENT_TYPE_REDIRECT}</td>
+                        <td>
+                             <input type="text" style="width: 250px;" name="redirect[{CALENDAR_EVENT_LANG_ID}]" value="{CALENDAR_EVENT_REDIRECT}" id="eventRedirect" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('eventRedirect', 'link')" />                                                                                                      
+                        </td>
+                    </tr>
+                </table>
+            </div> 
+        </div>            
+        <!-- END eventDescTab -->                      
+        <br />
+        <input type="button" onclick="selectTab('event');" value="{TXT_CALENDAR_BACK}" />&nbsp;<input type="button" onclick="selectTab('invite');" value="{TXT_CALENDAR_NEXT}" />
+    </div>
+    <div id="invite" class="eventTab" style="display:none;">
+        <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+            <tr>
+                <th colspan="2"><b>{TXT_CALENDAR_EVENT_INVITE}</b></th>
+            </tr>
+            <tr class="row1">
+                <td width="180" valign="top">{TXT_CALENDAR_COMMUNITY_GROUPS}</td>
+                <td>
+                    <div style="float: left; height: auto !important;">
+                        <div style="float: left; height: auto !important;">
+                            <select id="deselectedGroups" name="deselectedGroups[]" size="12" multiple="multiple" style="width: 180px;">
+                                {CALENDAR_EVENT_DESELECTED_GROUPS}
+                            </select>
+                        </div>
+                        <div style="float: left; height: 100px; padding: 60px 10px 0px 10px;">
+                            <input style="width: 40px; min-width: 40px;" value=" &gt;&gt; " name="addElement" onclick="moveElement(document.formModifyEvent.elements['deselectedGroups[]'],document.formModifyEvent.elements['selectedGroups[]'],addElement,removeElement);" type="button"><br />
+                            <input style="width: 40px; min-width: 40px;" value=" &lt;&lt; " name="removeElement" onclick="moveElement(document.formModifyEvent.elements['selectedGroups[]'],document.formModifyEvent.elements['deselectedGroups[]'],removeElement,addElement);" type="button">
+                        </div>
+                        <div style="float: left; height: auto !important;">
+                            <select id="selectedGroups" name="selectedGroups[]" size="12" multiple="multiple" style="width: 180px;">
+                                {CALENDAR_EVENT_SELECTED_GROUPS}
+                            </select>
+                        </div>
+                    </div>
+                </td>
+            </tr>
+            <tr class="row2">
+                <td valign="top">{TXT_CALENDAR_EVENT_MORE_INVITATIONS}</td>
+                <td>
+                    <textarea name="invitedMails" style="width: 250px; height: 60px;" />{CALENDAR_EVENT_MORE_INVITATIONS}</textarea>&nbsp;&nbsp;<span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_CALENDAR_EVENT_MORE_INVITATIONS_INFO}</span>
+                </td>
+            </tr>
+            <tr class="row1">
+                <td valign="top">{TXT_CALENDAR_EVENT_SEND_INVITATION}</td>
+                <td>
+                    <label><input name="sendInvitation" type="checkbox" value="1" {CALENDAR_EVENT_SEND_INVITATION}/>&nbsp;{TXT_CALENDAR_ACTIVATE}</label>
+                </td>
+            </tr>
+            <tr class="row2">
+                <td valign="top">{TXT_CALENDAR_EVENT_REGISTRATION}</td>
+                <td>
+                    <label><input name="registration" type="checkbox"  onclick="checkRegistration();" value="1" {CALENDAR_EVENT_REGISTRATION} />&nbsp;{TXT_CALENDAR_ACTIVATE}</label>
+                </td>
+            </tr>    
+        </table>
+        <div id="registrationMore" style="display:none;">
+            <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+                <tr class="row1">
+                    <td width="180" valign="top">{TXT_CALENDAR_EVENT_REGISTRATION_FORM}</td>
+                    <td>
+                        <select id="registrationForm" name="registrationForm" style="width: 252px">
+                            {CALENDAR_EVENT_REGISTRATION_FORMS}
+                        </select>
+                    </td>
+                </tr>
+                <tr class="row2">
+                    <td valign="top">{TXT_CALENDAR_EVENT_NUM_SUBSCRIBER}</td>
+                    <td>
+                        <input name="numSubscriber" type="text" style="width: 250px" value="{CALENDAR_EVENT_NUM_SUBSCRIBER}" />&nbsp;&nbsp;<span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_CALENDAR_EVENT_NUM_SUBSCRIBER_INFO}</span>
+                    </td>
+                </tr>
+                <tr class="row1">
+                    <td valign="top">{TXT_CALENDAR_EVENT_NOTIFICATION_TO}</td>
+                    <td>
+                        <input name="notificationTo" type="text" style="width: 250px" value="{CALENDAR_EVENT_NOTIFICATION_TO}" />&nbsp;&nbsp;<span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_CALENDAR_EVENT_NOTIFICATION_TO_INFO}</span>
+                    </td>
+                </tr>
+                <tr class="row2">
+                    <td valign="top">{TXT_CALENDAR_EVENT_EMAIL_TEMPLATE}</td>
+                    <td>
+                        <select name="emailTemplate" style="width: 252px;">
+                            {CALENDAR_EVENT_EMAIL_TEMPLATE}
+                        </select>&nbsp;&nbsp;<span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_CALENDAR_EVENT_EMAIL_TEMPLATE_INFO}</span>
+                    </td>
+                </tr>
+                <tr class="row1">
+                    <td valign="top">{TXT_CALENDAR_EVENT_TICKET_SALES}</td>
+                    <td>
+                        <label><input name="ticketSales" type="checkbox" value="1" {CALENDAR_EVENT_TICKET_SALES} />&nbsp;{TXT_CALENDAR_ACTIVATE}</label>
+                    </td>
+                </tr>
+                <tr class="row2">
+                    <td valign="top">{TXT_CALENDAR_EVENT_NUM_SEATING}</td>
+                    <td>
+                        <input name="numSeating" type="text" style="width: 250px" value="{CALENDAR_EVENT_NUM_SEATING}" />&nbsp;&nbsp;<span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_CALENDAR_EVENT_NUM_SEATING_INFO}</span>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br />
+        <input type="button" onclick="selectTab('details');" value="{TXT_CALENDAR_BACK}" />&nbsp;<input type="button" onclick="selectTab('series');" value="{TXT_CALENDAR_NEXT}" /> 
+    </div>
+    <div id="series" class="eventTab" style="display:none;">
+        <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+            <tr>
+                <th colspan="2"><b>{TXT_CALENDAR_EVENT_SERIES}</b></th>
+            </tr>
+            <tr class="row1">
+                <td valign="top" width="180">Srientyp</td>
+                <td>
+                    <label><input type="checkbox" name='seriesStatus' value="1" {CALENDAR_EVENT_SERIES_STATUS}/>&nbsp;{TXT_CALENDAR_ACTIVATE}</label>
+                </td>
+            </tr>
+            <tr class="row2">
+                <td valign="top">Serienmuster</td>
+                <td valign="middle">
+                    <select name="seriesType" id="seriesTypeSelect" style="width: 252px;" onchange="showOrHide();">
+                        <option value="1" {CALENDAR_SERIES_PATTERN_DAILY}>{TXT_CALENDAR_SERIES_PATTERN_DAILY}</option>
+                        <option value="2" {CALENDAR_SERIES_PATTERN_WEEKLY}>{TXT_CALENDAR_SERIES_PATTERN_WEEKLY}</option>
+                        <option value="3" {CALENDAR_SERIES_PATTERN_MONTHLY}>{TXT_CALENDAR_SERIES_PATTERN_MONTHLY}</option>
+                    </select>
+                </td>
+           </tr>
+        </table>
+
+        <div id="seriesMaskDaily" style="display:block">
+            <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+                <tr class="row1">
+                    <td valign="middle" width="180"><br /></td>
+                    <td valign="middle">
+                        <label><input type="radio" name='seriesDaily'  value="1" {CALENDAR_SERIES_PATTERN_DAILY_1}/>&nbsp;{TXT_CALENDAR_ALL}&nbsp;</label><input type="text" name='seriesDailyDays' maxlength="3" value="{CALENDAR_SERIES_PATTERN_DAILY_DAYS}" style="width: 20px;" />&nbsp;{TXT_CALENDAR_DAYS}&nbsp;&nbsp;<br />
+                        <label><input type="radio" name='seriesDaily' value="2" {CALENDAR_SERIES_PATTERN_DAILY_2} />&nbsp;{TXT_CALENDAR_EVERY_2} {TXT_CALENDAR_DAYS_WORKDAY}&nbsp;&nbsp;</label>
+                    </td>
+                </tr>
+            </table>
+        </div>     
+        <div id="seriesMaskWeekly" style="display:none">
+            <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+                <tr class="row1">
+                    <td valign="middle" width="180"><br /></td>
+                    <td valign="middle">
+                        {TXT_CALENDAR_ALL}&nbsp;<input type="text" name='seriesWeeklyWeeks' maxlength="3" value="{CALENDAR_SERIES_PATTERN_WEEKLY_WEEKS}" style="width: 20px;" />&nbsp;{TXT_CALENDAR_WEEKS}&nbsp;{TXT_CALENDAR_AT}:&nbsp;<br />
+                        <label><input type="checkbox" name='seriesWeeklyDays[1]' value="1" {CALENDAR_SERIES_PATTERN_WEEKLY_MONDAY}/>&nbsp;{TXT_CALENDAR_DAYS_MONDAY}&nbsp;&nbsp;</label>
+                        <label><input type="checkbox" name='seriesWeeklyDays[2]' value="1" {CALENDAR_SERIES_PATTERN_WEEKLY_TUESDAY}/>&nbsp;{TXT_CALENDAR_DAYS_TUESDAY}&nbsp;&nbsp;</label>
+                        <label><input type="checkbox" name='seriesWeeklyDays[3]' value="1" {CALENDAR_SERIES_PATTERN_WEEKLY_WEDNESDAY}/>&nbsp;{TXT_CALENDAR_DAYS_WEDNESDAY}&nbsp;&nbsp;</label>
+                        <label><input type="checkbox" name='seriesWeeklyDays[4]' value="1" {CALENDAR_SERIES_PATTERN_WEEKLY_THURSDAY}/>&nbsp;{TXT_CALENDAR_DAYS_THURSDAY}&nbsp;&nbsp;</label>
+                        <label><input type="checkbox" name='seriesWeeklyDays[5]' value="1" {CALENDAR_SERIES_PATTERN_WEEKLY_FRIDAY}/>&nbsp;{TXT_CALENDAR_DAYS_FRIDAY}&nbsp;&nbsp;</label>
+                        <label><input type="checkbox" name='seriesWeeklyDays[6]' value="1" {CALENDAR_SERIES_PATTERN_WEEKLY_SATURDAY}/>&nbsp;{TXT_CALENDAR_DAYS_SATURDAY}&nbsp;&nbsp;</label>
+                        <label><input type="checkbox" name='seriesWeeklyDays[7]' value="1" {CALENDAR_SERIES_PATTERN_WEEKLY_SUNDAY}/>&nbsp;{TXT_CALENDAR_DAYS_SUNDAY}&nbsp;&nbsp;</label>
+                    </td>
+                </tr>
+            </table>
+        </div>   
+        <div id="seriesMaskMonthly" style="display:none">
+            <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+                <tr class="row1">
+                    <td valign="middle" width="180"><br /></td>
+                    <td valign="middle">
+                        <label><input type="radio" name='seriesMonthly' value="1" {CALENDAR_SERIES_PATTERN_MONTHLY_1}/>&nbsp;{TXT_CALENDAR_AT}&nbsp;</label><input type="text" name='seriesMonthlyDay' maxlength="3" value="{CALENDAR_SERIES_PATTERN_MONTHLY_DAY}" style="width: 20px;" />.&nbsp;{TXT_CALENDAR_DAYS_DAY}&nbsp;{TXT_CALENDAR_EVERY_1}&nbsp;<input type="text" name='seriesMonthlyMonth_1' maxlength="3" value="{CALENDAR_SERIES_PATTERN_MONTHLY_MONTH_1}" style="width: 20px;" />.&nbsp;{TXT_CALENDAR_MONTHS}<br />
+                        <label><input type="radio" name='seriesMonthly' value="2" {CALENDAR_SERIES_PATTERN_MONTHLY_2}/>&nbsp;{TXT_CALENDAR_AT}&nbsp;</label><select name="seriesMonthlyDayCount" style="width: 75px;">{CALENDAR_EVENT_SERIES_PATTERN_MONTHLY_COUNT}</select>&nbsp;<select name="seriesMonthlyWeekday" style="width: 109px;">{CALENDAR_EVENT_SERIES_PATTERN_MONTHLY_WEEKDAY}</select>&nbsp;{TXT_CALENDAR_EVERY_1}&nbsp;<input type="text" name='seriesMonthlyMonth_2' maxlength="3" value="{CALENDAR_SERIES_PATTERN_MONTHLY_MONTH_2}" style="width: 20px;" />.&nbsp;{TXT_CALENDAR_MONTHS}
+                    </td>
+                </tr>
+            </table>
+        </div>
+
+        <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+            <tr class="row2">
+                <td valign="top" width="180">Ausnahmen</td>
+                <td valign="top">
+                    <div id="seriesExeptionsList">
+                        <!-- BEGIN eventExeptions -->
+                        <div id="exeption_{CALENDAR_SERIES_EXEPTION_ID}">
+                            <input type="text" name="seriesExeptions[]" value="{CALENDAR_SERIES_EXEPTION_DATE}" id="{CALENDAR_SERIES_EXEPTION_INPUT_ID}" style="width: 129px;" />&nbsp;<a href="#" onclick="deleteExeption({CALENDAR_SERIES_EXEPTION_ID});" title="{TXT_CALENDAR_DELETE}"><img style="vertical-align: middle;" src="images/icons/delete.gif" alt="{TXT_CALENDAR_DELETE}" width="17" border="0" height="17"></a>
+                        </div>
+                        <!-- END eventExeptions -->
+                    </div>
+                    <input type="button" value="Add" onclick="appendExeption();">
+                </td>
+            </tr>
+            <tr class="row1">
+                <td valign="top">{TXT_CALENDAR_SERIES_PATTERN_DURANCE}</td>
+                <td valign="middle">
+                    <label><input type="radio" name='seriesDouranceType' value="1" {CALENDAR_SERIES_PATTERN_DOURANCE_1}/>&nbsp;{TXT_CALENDAR_SERIES_PATTERN_NO_ENDDATE}</label><br />
+                    <label><input type="radio" name='seriesDouranceType' value="2" {CALENDAR_SERIES_PATTERN_DOURANCE_2}/>&nbsp;{TXT_CALENDAR_SERIES_PATTERN_ENDS_AFTER}&nbsp;<label>
+                    <input type="text" name='seriesDouranceEvents' maxlength="3" value="{CALENDAR_SERIES_PATTERN_ENDS_EVENTS}" style="width: 20px;" />&nbsp;{TXT_CALENDAR_SERIES_PATTERN_APPONTMENTS}<br />
+                    <label><input type="radio" name='seriesDouranceType' onclick="refreshDatePickers();" value="3" {CALENDAR_SERIES_PATTERN_DOURANCE_3}/>&nbsp;{TXT_CALENDAR_SERIES_PATTERN_ENDS}&nbsp;</label>
+                    <input type="text" name="seriesDouranceDate"  id="{CALENDAR_SERIES_PATTERN_ENDS_INPUT_ID}" style="width: 140px;" value="{CALENDAR_SERIES_PATTERN_ENDS_DATE}" />      
+                </td>
+            </tr>
+        </table>
+        <br />
+        <input type="button" onclick="selectTab('invite');" value="{TXT_CALENDAR_BACK}" />&nbsp;  
+        <!-- BEGIN eventSeriesNextButton --> 
+        <input type="button" onclick="selectTab('publicate');" value="{TXT_CALENDAR_NEXT}" />  
+        <!-- END eventSeriesNextButton -->     
+        <!-- BEGIN eventSeriesSaveButton --> 
+        <input type="submit" name="submitModifyEvent"  value="{TXT_CALENDAR_SAVE}" />   
+        <!-- END eventSeriesSaveButton -->  
+    </div>
+    
+    <!-- BEGIN eventPublicateTab -->   
+    <div id="publicate" class="eventTab" style="display: none;">
+        <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+            <tr>
+                <th colspan="2"><b>{TXT_CALENDAR_EVENT_PUBLICATE}</b></th>
+            </tr>
+            <tr class="row1">
+                <td width="180" valign="top">{TXT_CALENDAR_EVENT_SHOW_IN}</td>
+                   <td>
+                    <div style="float: left; height: auto !important;">
+                        <div style="float: left; height: auto !important;">
+                            <select id="deselectedHosts" name="deselectedHosts[]" size="12" multiple="multiple" style="width: 180px;">
+                                {CALENDAR_EVENT_DESELECTED_HOSTS}
+                            </select>
+                        </div>
+                        <div style="float: left; height: 100px; padding: 60px 10px 0px 10px;">
+                            <input style="width: 40px; min-width: 40px;" value=" &gt;&gt; " name="addElement" onclick="moveElement(document.formModifyEvent.elements['deselectedHosts[]'],document.formModifyEvent.elements['selectedHosts[]'],addElement,removeElement);" type="button"><br />
+                            <input style="width: 40px; min-width: 40px;" value=" &lt;&lt; " name="removeElement" onclick="moveElement(document.formModifyEvent.elements['selectedHosts[]'],document.formModifyEvent.elements['deselectedHosts[]'],removeElement,addElement);" type="button">
+                        </div>
+                        <div style="float: left; height: auto !important;">
+                            <select id="selectedHosts" name="selectedHosts[]" size="12" multiple="multiple" style="width: 180px;">
+                                {CALENDAR_EVENT_SELECTED_HOSTS}
+                            </select>
+                        </div>
+                    </div>
+                </td>
+            </tr>           
+        </table>
+        <br />
+        <!-- <input type="button" onclick="selectTab('series');" value="{TXT_CALENDAR_BACK}" />&nbsp;<input type="submit" name="submitModifyEvent"  value="{TXT_CALENDAR_SAVE}" />-->
+        <input type="button" onclick="selectTab('invite');" value="{TXT_CALENDAR_BACK}" />&nbsp;<input type="submit" name="submitModifyEvent"  value="{TXT_CALENDAR_SAVE}" />
+    </div>
+    <!-- END eventPublicateTab -->  
+</form>
+
+<div id="errorMessage" style="color: #ff0000; display: none;"><br />{TXT_CALENDAR_PLEASE_CHECK_INPUT}</div>
+
+<script language="JavaScript" type="text/javascript">
+langCheck();
+showSelection();
+showTimeListSelection();
+showTimeDetailSelection();
+</script>
+
+<!-- END module_calendar_modify_event.html -->
+
