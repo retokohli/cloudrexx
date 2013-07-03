@@ -1,0 +1,1123 @@
+<?php
+
+/**
+ * Calendar Class Event
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @version     1.0.0
+ * @package     contrexx
+ * @subpackage  module_calendar
+ * @todo        Edit PHP DocBlocks!
+ */
+
+class CalendarEventManager extends CalendarLibrary
+{   
+    private $startDate;
+    private $endDate;
+    private $date;
+    private $sepDateTime;
+    private $time;
+    private $clock;
+    private $categoryId;
+    private $showSeries;
+    private $searchTerm;
+    private $needAuth;
+    private $onlyActive;
+    private $startPos;
+    private $numEvents;
+    private $sortDirection;
+    private $onlyConfirmed;
+    private $author;
+    
+    public $eventList = array();
+    public $countEvents; 
+    
+    function __construct($startDate=null,$endDate=null,$categoryId=null,$searchTerm=null,$showSeries=true,$needAuth=false,$onlyActive=false,$startPos=0,$numEvents='n',$sortDirection='ASC',$onlyConfirmed=true,$author=null){
+        $this->startDate = intval($startDate);
+        $this->endDate = intval($endDate);
+        $this->categoryId = intval($categoryId);
+        $this->showSeries = $showSeries;
+        $this->searchTerm = contrexx_addslashes($searchTerm);
+        $this->needAuth = $needAuth;
+        $this->onlyActive = $onlyActive;
+        $this->startPos = $startPos;
+        $this->numEvents = $numEvents;
+        $this->sortDirection = $sortDirection;   
+        $this->onlyConfirmed = $onlyConfirmed;                  
+        $this->author = $author;                  
+    }
+    
+    function getEventList() {
+        global $objDatabase, $_ARRAYLANG, $_LANGID, $objInit; 
+        
+        parent::getSettings();
+        
+        $onlyActive_where = ($this->onlyActive == true ? ' AND event.status=1' : '');  
+        $categoryId_where = ($this->categoryId != 0 ? ' AND event.catid='.$this->categoryId : '');  
+        
+        if($objInit->mode == 'backend') {                                             
+            $showIn_where = "";     
+        } else {
+            if($this->arrSettings['showEventsOnlyInActiveLanguage'] == 1) {
+                $showIn_where = "AND FIND_IN_SET('".$_LANGID."',event.show_in)>0 ";  
+            } else {                                      
+                $showIn_where = "";     
+            }  
+            
+            $objFWUser = FWUser::getFWUserObject();   
+            if ($objFWUser->objUser->login()) {
+                $needAuth_where = '';     
+            } else {
+                $needAuth_where = ' AND event.access=0';
+            } 
+        }                                                                                        
+
+        if (isset($this->endDate) && $this->endDate != 0) {
+            $dateScope_where = '((
+                ((event.startdate <= '.$this->startDate.') AND ('.$this->endDate.' <= event.enddate)) OR
+                ((('.$this->startDate.' <= event.startdate) AND ('.$this->endDate.' <= event.enddate)) AND ((event.startdate <= '.$this->endDate.') AND ('.$this->endDate.' <= event.enddate))) OR
+                (((event.startdate <= '.$this->startDate.') AND (event.enddate <= '.$this->endDate.')) AND (('.$this->startDate.' <= event.enddate) AND (event.enddate <= '.$this->endDate.'))) OR
+                (('.$this->startDate.' <= event.startdate) AND (event.enddate <= '.$this->endDate.'))
+            ) OR (
+                (event.series_status = 1) AND (event.startdate <= '.$this->endDate.')
+            ))';
+
+        } else {                                        
+            $dateScope_where = '((
+                ((event.enddate >= '.$this->startDate.') AND (event.startdate <= '.$this->startDate.')) OR
+                ((event.startdate >= '.$this->startDate.') AND (event.enddate >= '.$this->startDate.'))
+            ) OR (
+                (event.series_status = 1)
+            ))';
+        }
+        
+        if(!empty($this->searchTerm) && $this->searchTerm != $_ARRAYLANG['TXT_CALENDAR_KEYWORD']) {
+            $searchTerm_DB = ", ".DBPREFIX."module_".$this->moduleTablePrefix."_event_field AS field";
+            $searchTerm_where = " AND ((field.title LIKE '%".$this->searchTerm."%' OR field.description LIKE '%".$this->searchTerm."%' OR field.place LIKE '%".$this->searchTerm."%') AND field.event_id = event.id)";
+        } else {
+            $searchTerm_DB = "";
+        }
+        
+        if($this->onlyConfirmed) {
+            $confirmed_where =' AND (event.confirmed = 1)';
+        } else {
+            $confirmed_where =' AND (event.confirmed = 0)';
+        }
+        
+        if(intval($this->author) != 0) {
+            $author_where =' AND (event.author = '.intval($this->author).')';
+        }  
+                                                   
+        $query = "SELECT event.id AS id
+                    FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_event AS event
+                         ".$searchTerm_DB."
+                   WHERE ".$dateScope_where."
+                         ".$onlyActive_where."
+                         ".$needAuth_where."
+                         ".$categoryId_where."
+                         ".$searchTerm_where."
+                         ".$showIn_where."
+                         ".$confirmed_where."
+                         ".$author_where."
+                GROUP BY event.id
+                ORDER BY event.startdate";    
+        
+        $objResult = $objDatabase->Execute($query);
+        
+        if ($objResult !== false) {
+            while (!$objResult->EOF) {
+                $objEvent = new CalendarEvent(intval($objResult->fields['id']));
+
+                if($objInit->mode == 'frontend' || $this->showSeries) {
+                    if(self::_addToEventList($objEvent)) {
+                        $this->eventList[] = $objEvent;
+                    }
+
+                    if($objEvent->seriesStatus == 1 && $_GET['cmd'] != 'my_events') {
+                        self::_setNextSeriesElement($objEvent);
+                    }
+                } else {
+                    $this->eventList[] = $objEvent;
+                }
+
+                if (count($this->eventList) > $this->numEvents && $objInit->mode == 'frontend') {
+                     break;
+                } else {
+                     $objResult->MoveNext();
+                }
+            }
+        }
+        
+        if($this->arrSettings['publicationStatus'] == 1) {
+            self::_importEvents();  
+        }
+        
+        self::_clearEmptyEvents();  
+        self::_sortEventList();
+        
+        $this->countEvents = count($this->eventList);
+        
+        
+        if ($this->numEvents != 'n' && $this->numEvents != 0) { 
+            $this->eventList = array_slice($this->eventList, $this->startPos, $this->numEvents);    
+        }
+    }
+            
+    function _importEvents() 
+    {      
+        global $objDatabase, $objInit, $_LANGID, $_CONFIG;               
+        
+        if($objInit->mode == 'frontend') {
+            parent::getSettings();
+            
+            $objHostManager = new CalendarHostManager($this->categoryId, true, true);
+            $objHostManager->getHostList();  
+             
+            
+            foreach($objHostManager->hostList as $key => $objHost)  {
+                $id = $objHost->id;       
+                $name = $objHost->title;       
+                $key = $objHost->key;    
+                
+                if(substr($objHost->uri,-1) != '/') {
+                    $uri = $objHost->uri.'/'; 
+                } else {
+                    $uri = $objHost->uri;
+                }
+                
+                if(substr($objHost->uri,0,7) != 'http://') {
+                    $protocol = 'http://';  
+                } else {
+                    $protocol = '';  
+                }        
+                
+                $location = $protocol.$uri."modules/calendar/lib/webservice/soap.server.class.php";
+              
+                if(self::urlfind($protocol.$uri)){
+                    $connection = true;
+                } else { 
+                    $connection = false;
+                }                     
+                
+                if($connection) {         
+                    if($objWebserviceClient = new CalendarWebserviceClient($location, $uri)) {      
+                        $myHost = $_CONFIG['domainUrl'].ASCMS_PATH_OFFSET;   
+                        
+                        if(substr($myHost,-1) != '/') {
+                            $myHost = $myHost.'/'; 
+                        }
+                        
+                        $catId = $objHost->catId;
+                        $key = $objHost->key;           
+                                                
+                        $foreignHostData = $objWebserviceClient->verifyHost($myHost,$key); 
+                        
+                        if($foreignHostData != false) {  
+                            $arrEvents = $objWebserviceClient->getEventList($this->startDate, $this->endDate, $this->needAuth, $this->searchTerm, $_LANGID, $foreignHostData['id'], $id, $this->arrSettings['showEventsOnlyInActiveLanguage']); 
+
+                            if(!empty($arrEvents[0])) {
+                                foreach ($arrEvents as $key => $objExternalEvent) {
+                                    /*$objExternalEvent->showStartDateList = intval($this->arrSettings['showStartDateList']);
+                                    $objExternalEvent->showEndDateList = intval($this->arrSettings['showEndDateList']);
+                                    $objExternalEvent->showStartTimeList = intval($this->arrSettings['showStartTimeList']);
+                                    $objExternalEvent->showEndTimeList = intval($this->arrSettings['showEndTimeList']);
+                                    $objExternalEvent->showTimeTypeList = intval($this->arrSettings['showTimeTypeList']);
+                                    $objExternalEvent->showStartDateDetail = intval($this->arrSettings['showStartDateDetail']);
+                                    $objExternalEvent->showEndDateDetail = intval($this->arrSettings['showEndDateDetail']);
+                                    $objExternalEvent->showStartTimeDetail = intval($this->arrSettings['showStartTimeDetail']);
+                                    $objExternalEvent->showEndTimeDetail = intval($this->arrSettings['showEndTimeDetail']);
+                                    $objExternalEvent->showTimeTypeDetail = intval($this->arrSettings['showTimeTypeDetail']);*/
+
+                                    if($objExternalEvent->seriesStatus == 1 && $_GET['cmd'] != 'my_events') {
+                                        self::_setNextSeriesElement($objExternalEvent); 
+                                    }  
+                                    
+                                    $this->eventList[] = $objExternalEvent;
+                                }   
+                            }  
+                        }          
+                    }
+                }  
+            }
+        }     
+    }
+    
+    function _clearEmptyEvents() { 
+         foreach($this->eventList as $key => $objEvent) {
+             if(empty($objEvent->title)) {
+                unset($this->eventList[$key]); 
+             }
+         }
+    }
+   
+   
+    function _addToEventList($objEvent) {
+       if($this->startDate == 0) {
+            if($objEvent->endDate < $this->endDate) {
+                return true;
+            } else {
+                return false;
+            }
+        } else {
+            if(($objEvent->endDate >= $this->startDate) || ($objEvent->startDate >= $this->startDate)) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    }
+    
+    
+    function _sortEventList(){
+        usort($this->eventList, array(__CLASS__, "cmp"));
+    }
+
+
+    function cmp($a, $b)
+    {
+        if ($a->startDate == $b->startDate) {
+            return 0;
+        }
+        
+        if($this->sortDirection == 'DESC') {
+            return ($a->startDate > $b->startDate) ? -1 : 1;
+        } else {
+            return ($a->startDate < $b->startDate) ? -1 : 1;
+        }
+    }
+    
+    function getEvent($eventId, $eventStartDate) {
+        global $objInit;
+        
+        $objEvent = new CalendarEvent(intval($eventId));
+        
+        $this->eventList[] = $objEvent;
+        
+        if($objEvent->seriesStatus == 1 && $objInit->mode == 'frontend') {
+            self::_setNextSeriesElement($objEvent); 
+        }
+        foreach ($this->eventList as $tmpKey => $tmpObjEvent) {  
+            if ($tmpObjEvent->startDate != $eventStartDate) {
+                unset($this->eventList[$tmpKey]);
+            }
+        }
+        
+        sort($this->eventList);
+    }
+    
+    function getExternalEvent($eventId, $eventStartDate) {
+        global $objInit;
+        
+        self::_importEvents();  
+
+        foreach ($this->eventList as $tmpKey => $tmpObjEvent) {          
+            if ($tmpObjEvent->startDate != $eventStartDate) {
+                unset($this->eventList[$tmpKey]);
+            }
+        }
+        
+        sort($this->eventList);
+    }
+    
+    function showEvent($objTpl, $eventId, $eventStartDate) {   
+        global $objInit, $_ARRAYLANG, $_LANGID, $_CONFIG;
+        
+        parent::getSettings();
+        
+        if($objInit->mode == 'frontend' && ($eventId != null && $eventStartDate != null)) {   
+            $objEvent = $this->eventList[0];
+            
+            if(empty($objEvent)) {
+                CSRF::header("Location: index.php?section=".$this->moduleName);
+                return;   
+            }
+            
+            if($objEvent->access == 1 && !FWUser::getFWUserObject()->objUser->login()){
+                $link = base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);           
+                CSRF::header("Location: ".CONTREXX_SCRIPT_PATH."?section=login&redirect=".$link);  
+                return;    
+            }   
+            
+            $objCategory = new CalendarCategory($objEvent->catId);     
+            
+            $attachNamePos  = strrpos($objEvent->attach, '/');
+            $attachNamelength = strlen($objEvent->attach);
+            $attachName        = substr($objEvent->attach, $attachNamePos+1, $attachNamelength);
+            
+            if($objEvent->external) {   
+                $objHost = new CalendarHost($objEvent->hostId);    
+                
+                if(substr($objHost->uri,-1) != '/') {   
+                     $hostUri = $objHost->uri.'/';  
+                } else {         
+                     $hostUri = $objHost->uri; 
+                }     
+                
+                if(substr($hostUri,0,7) != 'http://') {
+                    $hostUri = "http://".$hostUri;
+                }
+                        
+                $hostTarget = 'target="_blank"';    
+            }     
+        
+            if($this->arrSettings['showEventsOnlyInActiveLanguage'] == 2) {
+                $_LANGID = $objEvent->availableLang;       
+            }            
+
+            $objTpl->setVariable(array(
+                $this->moduleLangVar.'_EVENT_ID'                => $objEvent->id,
+                $this->moduleLangVar.'_EVENT_START_DATE'        => date(parent::getDateFormat(), $objEvent->startDate),
+                $this->moduleLangVar.'_EVENT_START_TIME'        => date("H:i", $objEvent->startDate),  
+                $this->moduleLangVar.'_EVENT_END_DATE'          => date(parent::getDateFormat(), $objEvent->endDate),
+                $this->moduleLangVar.'_EVENT_END_TIME'          => date("H:i", $objEvent->endDate),                                                       
+                $this->moduleLangVar.'_EVENT_TITLE'             => $objEvent->title,                                                      
+                $this->moduleLangVar.'_EVENT_ATTACHMENT'        => $objEvent->attach != '' ? '<a href="'.$hostUri.$objEvent->attach.'" target="_blank" >'.$attachName.'</a>' : '',                             
+                $this->moduleLangVar.'_EVENT_PICTURE'           => $objEvent->pic != '' ? '<img src="'.$hostUri.$objEvent->pic.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',                                                          
+                $this->moduleLangVar.'_EVENT_THUMBNAIL'         => $objEvent->pic != '' ? '<img src="'.$hostUri.$objEvent->pic.'.thumb" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',   
+                $this->moduleLangVar.'_EVENT_DESCRIPTION'       => $objEvent->description,                                                           
+                $this->moduleLangVar.'_EVENT_PRIORITY'          => $priority,                                                           
+                $this->moduleLangVar.'_EVENT_PRIORITY_IMG'      => $priorityImg,                                                           
+                $this->moduleLangVar.'_EVENT_CATEGORY'          => $objCategory->name,
+                $this->moduleLangVar.'_EVENT_EXPORT_LINK'       => $hostUri.'index.php?section='.$this->moduleName.'&amp;export='.$objEvent->id,
+                $this->moduleLangVar.'_EVENT_EXPORT_ICON'       => '<a href="'.$hostUri.'index.php?section='.$this->moduleName.'&amp;export='.$objEvent->id.'"><img src="images/modules/calendar/ical_export.gif" border="0" title="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" alt="'.$_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_EVENT'].'" /></a>',
+                $this->moduleLangVar.'_EVENT_PRICE'             => $this->arrSettings['paymentCurrency'].' '.$objEvent->price,
+                $this->moduleLangVar.'_EVENT_FREE_PLACES'       => $objEvent->freePlaces == 0 ? $objEvent->freePlaces.' ('.$_ARRAYLANG['TXT_CALENDAR_SAVE_IN_WAITLIST'].')' : $objEvent->freePlaces,
+            ));
+
+            //show date and time by user settings
+            if($objTpl->blockExists('calendarDateDetail')) {
+                
+                $showStartDateDetail  = $objEvent->useCustomDateDisplay ? $objEvent->showStartDateDetail : ($this->arrSettings['showStartDateDetail'] == 1);
+                $showEndDateDetail    = $objEvent->useCustomDateDisplay ? $objEvent->showEndDateDetail : ($this->arrSettings['showEndDateDetail'] == 1);
+                $showStartTimeDetail  = $objEvent->useCustomDateDisplay ? $objEvent->showStartTimeDetail : ($this->arrSettings['showStartTimeDetail'] == 1);
+                $showEndTimeDetail    = $objEvent->useCustomDateDisplay ? $objEvent->showEndTimeDetail : ($this->arrSettings['showEndTimeDetail'] == 1);
+                $showTimeTypeDetail   = $objEvent->useCustomDateDisplay ? $objEvent->showTimeTypeDetail : 1;
+                
+                // get date for several days format > show starttime with startdate and endtime with enddate > only if several days event and all values (dates/times) are displayed
+                if(date(parent::getDateFormat(), $objEvent->startDate) != date(parent::getDateFormat(), $objEvent->endDate) && ($showStartDateDetail && $showEndDateDetail && $showStartTimeDetail && $showEndTimeDetail)) {
+                    //part 1
+                    $part = 1;
+                    $this->getMultiDateBlock($objEvent, $this->arrSettings['separatorDateTimeDetail'], $this->arrSettings['separatorSeveralDaysDetail'], ($this->arrSettings['showClockDetail'] == 1), $part);
+                    
+                    $objTpl->setVariable(array(
+                        $this->moduleLangVar.'_DATE_DETAIL'                => $this->date,
+                        $this->moduleLangVar.'_SEP_DATE_TIME_DETAIL'       => $this->sepDateTime,
+                        $this->moduleLangVar.'_TIME_DETAIL'                => $this->time,
+                        'TXT_'.$this->moduleLangVar.'_CLOCK_DETAIL'        => $this->clock,
+                    ));
+                    
+                    $objTpl->parse('calendarDateDetail');
+
+                    //part 2
+                    $part = 2;
+                    $this->getMultiDateBlock($objEvent, $this->arrSettings['separatorDateTimeDetail'], $this->arrSettings['separatorSeveralDaysDetail'], ($this->arrSettings['showClockDetail'] == 1), $part);
+
+                    $objTpl->setVariable(array(
+                        $this->moduleLangVar.'_DATE_DETAIL'                => $this->date,
+                        $this->moduleLangVar.'_SEP_DATE_TIME_DETAIL'       => $this->sepDateTime,
+                        $this->moduleLangVar.'_TIME_DETAIL'                => $this->time,
+                        'TXT_'.$this->moduleLangVar.'_CLOCK_DETAIL'        => $this->clock,
+                    ));
+                    $objTpl->parse('calendarDateDetail');
+                } else {
+                    // get date for single day format
+                    $this->getSingleDateBlock($objEvent, $showStartDateDetail, $showEndDateDetail, $this->arrSettings['separatorDateDetail'], $showTimeTypeDetail, $showStartTimeDetail, $showEndTimeDetail, $this->arrSettings['separatorDateTimeDetail'], $this->arrSettings['separatorTimeDetail'], ($this->arrSettings['showClockDetail'] == 1));
+
+                    $objTpl->setVariable(array(
+                        $this->moduleLangVar.'_DATE_DETAIL'                => $this->date,
+                        $this->moduleLangVar.'_SEP_DATE_TIME_DETAIL'       => $this->sepDateTime,
+                        $this->moduleLangVar.'_TIME_DETAIL'                => $this->time,
+                        'TXT_'.$this->moduleLangVar.'_CLOCK_DETAIL'        => $this->clock,
+                    ));
+                    $objTpl->parse('calendarDateDetail');
+                }
+            }
+            
+            if($objEvent->arrData['place'][$_LANGID] == '' && $objEvent->arrData['place_street'][$_LANGID] == '' && $objEvent->arrData['place_zip'][$_LANGID] == '' && $objEvent->arrData['place_city'][$_LANGID] == '' && $objEvent->arrData['place_country'][$_LANGID] == '' && $objEvent->map == 0) {
+                $objTpl->hideBlock('calendarEventAdress');  
+            } else {
+                if($objEvent->map == 1) { 
+                    $googleCoordinates = self::_getCoorinates($objEvent->arrData['place_street'][$_LANGID], $objEvent->arrData['place_zip'][$_LANGID], $objEvent->arrData['place_city'][$_LANGID]);
+                    if($googleCoordinates != false) {
+                        $lat = $googleCoordinates[0];
+                        $lon = $googleCoordinates[1];  
+                                             
+                        $objGoogleMap = new googleMap();
+                        $objGoogleMap->setMapId($this->moduleName.'GoogleMap');
+                        $objGoogleMap->setMapStyleClass('mapLarge');
+                        $objGoogleMap->setMapType(0);                                                          
+                        $objGoogleMap->setMapZoom(12);
+                        $objGoogleMap->setMapCenter($lon, $lat);   
+                        
+                        $strValueClick = 'marker'.$objEvent->id.'.openInfoWindowHtml(info'.$objEvent->id.');';   
+                        $objGoogleMap->addMapMarker($objEvent->id, $lon, $lat, "<b>".$objEvent->arrData['place'][$_LANGID]."</b><br />".$objEvent->arrData['place_street'][$_LANGID]."<br />".$objEvent->arrData['place_zip'][$_LANGID]." ".$objEvent->arrData['place_city'][$_LANGID]."<br />".$objEvent->arrData['place_country'][$_LANGID],true, null, true, $strValueClick, null, null);   
+                        
+                        $googleMap = $objGoogleMap->getMap();
+                    } else {
+                        $googleMap = '<a href="http://maps.google.ch/maps?q='.$objEvent->arrData['place_street'][$_LANGID].'+'.$objEvent->arrData['place_zip'][$_LANGID].'+'.$objEvent->arrData['place_city'][$_LANGID].'&z=15" target="_blank">'.$_ARRAYLANG['TXT_CALENDAR_MAP'].'</a>';
+                    }
+                } else {
+                    $googleMap = '';
+                }
+                
+                $objTpl->setVariable(array(                                                          
+                    $this->moduleLangVar.'_EVENT_PLACE'           => $objEvent->place,
+                    $this->moduleLangVar.'_EVENT_STREET_NR'       => $objEvent->arrData['place_street'][$_LANGID],
+                    $this->moduleLangVar.'_EVENT_ZIP'             => $objEvent->arrData['place_zip'][$_LANGID],
+                    $this->moduleLangVar.'_EVENT_CITY'            => $objEvent->arrData['place_city'][$_LANGID],
+                    $this->moduleLangVar.'_EVENT_COUNTRY'         => $objEvent->arrData['place_country'][$_LANGID],                                                  
+                    $this->moduleLangVar.'_EVENT_MAP'             => $googleMap,
+                ));    
+                
+                $objTpl->parse('calendarEventAdress'); 
+            }
+             
+            if(($objEvent->registration == 1) && (mktime() <= $objEvent->startDate)) {  
+                $objRegistrationManager = new CalendarRegistrationManager($objEvent->id,true,false);  
+                $objRegistrationManager->getRegistrationList();
+                $numRegistrations = intval(count($objRegistrationManager->registrationList));     
+                
+                if($numRegistrations < $objEvent->numSubscriber || $objEvent->external == 1) {
+                    $regLink = '<a href="'.$hostUri.CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'&amp;cmd=register&amp;id='.$objEvent->id.'&amp;date='.$objEvent->startDate.'" '.$hostTarget.'>'.$_ARRAYLANG['TXT_CALENDAR_REGISTRATION'].'</a>';
+                } else {
+                    $regLink = '<i>'.$_ARRAYLANG['TXT_CALENDAR_EVENT_FULLY_BLOCKED'].'</i>';
+                }
+                $objTpl->setVariable(array(
+                    $this->moduleLangVar.'_EVENT_REGISTRATION_LINK'    => $regLink,
+                ));
+                
+                $objTpl->parse('calendarEventRegistration');
+            } else {   
+                $objTpl->hideBlock('calendarEventRegistration');
+            } 
+        }
+    }
+    
+    function showEventList($objTpl, $type='') {
+        global $objInit, $_ARRAYLANG, $_LANGID;
+        
+        parent::getFrontendLanguages();
+        
+        //if($objInit->mode == 'backend') {
+            $i=0;
+            foreach ($this->eventList as $key => $objEvent) {
+
+                $objCategory = new CalendarCategory(intval($objEvent->catId));   
+                
+                $showIn = explode(",",$objEvent->showIn);
+                $languages = null;
+                foreach ($this->arrFrontendLanguages as $langKey => $arrLang) {
+                    if(in_array($arrLang['id'], $showIn)) {
+                        $languages .= "[".$arrLang['lang']."] ";
+                    }
+                }     
+                
+                switch ($objEvent->priority) {
+                    case 1:
+                        $priority    = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_HEIGHT'];
+                        $priorityImg = "<img src='images/modules/calendar/very_height.gif' border='0' title='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_HEIGHT']."' alt='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_HEIGHT']."' />";
+                        break;
+                    case 2:
+                        $priority    = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_HEIGHT'];
+                        $priorityImg = "<img src='images/modules/calendar/height.gif' border='0' title='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_HEIGHT']."' alt='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_HEIGHT']."' />";
+                        break;
+                    case 3:
+                        $priority    = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_NORMAL'];
+                        $priorityImg = "&nbsp;";
+                        break;
+                    case 4:
+                        $priority    = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_LOW'];
+                        $priorityImg = "<img src='images/modules/calendar/low.gif' border='0' title='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_LOW']."' alt='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_LOW']."' />";
+                        break;
+                    case 5:
+                        $priority    = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_LOW'];
+                        $priorityImg = "<img src='images/modules/calendar/very_low.gif' border='0' title='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_LOW']."' alt='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_LOW']."' />";
+                        break;
+                }                
+                
+                $objTpl->setVariable(array(
+                    $this->moduleLangVar.'_EVENT_ROW'            => $i%2==0 ? 'row1' : 'row2',
+                    $this->moduleLangVar.'_EVENT_LED'            => $objEvent->status==0 ? 'red' : 'green',
+                    $this->moduleLangVar.'_EVENT_STATUS'         => $objEvent->status==0 ? $_ARRAYLANG['TXT_CALENDAR_INACTIVE'] : $_ARRAYLANG['TXT_CALENDAR_ACTIVE'],
+                    $this->moduleLangVar.'_EVENT_ID'             => $objEvent->id,
+                    $this->moduleLangVar.'_EVENT_TITLE'          => $objEvent->title,                                                         
+                    $this->moduleLangVar.'_EVENT_PICTURE'        => $objEvent->pic != '' ? '<img src="'.$objEvent->pic.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',                                                          
+                    $this->moduleLangVar.'_EVENT_THUMBNAIL'      => $objEvent->pic != '' ? '<img src="'.$objEvent->pic.'.thumb" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',                                                               
+                    $this->moduleLangVar.'_EVENT_PRIORITY'       => $priority,                                                           
+                    $this->moduleLangVar.'_EVENT_PRIORITY_IMG'   => $priorityImg, 
+                    $this->moduleLangVar.'_EVENT_PLACE'          => $objEvent->place,
+                    $this->moduleLangVar.'_EVENT_DESCRIPTION'    => $objEvent->description,
+                    $this->moduleLangVar.'_EVENT_DATE'           => date(parent::getDateFormat(), $objEvent->startDate),
+                    $this->moduleLangVar.'_EVENT_START_DATE'     => date(parent::getDateFormat(), $objEvent->startDate),
+                    $this->moduleLangVar.'_EVENT_START_TIME'     => date("H:i", $objEvent->startDate),
+                    $this->moduleLangVar.'_EVENT_END_DATE'       => date(parent::getDateFormat(), $objEvent->endDate),
+                    $this->moduleLangVar.'_EVENT_END_TIME'       => date("H:i", $objEvent->endDate),    
+                    $this->moduleLangVar.'_EVENT_LANGUAGES'      => $languages,
+                    $this->moduleLangVar.'_EVENT_CATEGORY'       => $objCategory->name,
+                    $this->moduleLangVar.'_EVENT_DETAIL_LINK'    => $objEvent->type==0 ? self::_getDetailLink($objEvent) : $objEvent->arrData['redirect'][$_LANGID],
+                    $this->moduleLangVar.'_EVENT_EDIT_LINK'      => CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'&amp;cmd=edit&id='.$objEvent->id,
+                    $this->moduleLangVar.'_EVENT_DETAIL_TARGET'  => $objEvent->type==0 ? '_self' : '_blank',
+                    $this->moduleLangVar.'_EVENT_SERIES'         => $objEvent->seriesStatus == 1 ? '<img src="images/icons/refresh.gif" border="0"/>' : '<i>'.$_ARRAYLANG['TXT_CALENDAR_NO_SERIES'].'</i>',
+                    $this->moduleLangVar.'_EVENT_FREE_PLACES'    => $objEvent->freePlaces,
+                ));              
+            
+                if($objInit->mode == 'backend') {
+                    $objRegistrationManager = new CalendarRegistrationManager($objEvent->id, true, false);  
+                    $objRegistrationManager->getRegistrationList();
+                    $objDeregistrationManager = new CalendarRegistrationManager($objEvent->id, false, true);  
+                    $objDeregistrationManager->getRegistrationList();
+                    $objWaitlistManager = new CalendarRegistrationManager($objEvent->id, false, false, true);
+                    $objWaitlistManager->getRegistrationList();
+                    
+                    $objTpl->setVariable(array(
+                        $this->moduleLangVar.'_EVENT_COUNT_REG'      => count($objRegistrationManager->registrationList),
+                        $this->moduleLangVar.'_EVENT_COUNT_DEREG'    => count($objDeregistrationManager->registrationList),
+                        $this->moduleLangVar.'_EVENT_COUNT_WAITLIST' => count($objWaitlistManager->registrationList),
+                    ));    
+                }
+                
+                $i++;
+
+                // show date block
+                if($objTpl->blockExists('calendarDateList')) {
+                    
+                    $showStartDateList  = $objEvent->useCustomDateDisplay ? $objEvent->showStartDateList : ($this->arrSettings['showStartDateList'] == 1);
+                    $showEndDateList    = $objEvent->useCustomDateDisplay ? $objEvent->showEndDateList : ($this->arrSettings['showEndDateList'] == 1);
+                    $showStartTimeList  = $objEvent->useCustomDateDisplay ? $objEvent->showStartTimeList : ($this->arrSettings['showStartTimeList'] == 1);
+                    $showEndTimeList    = $objEvent->useCustomDateDisplay ? $objEvent->showEndTimeList : ($this->arrSettings['showEndTimeList'] == 1);
+                    $showTimeTypeList   = $objEvent->useCustomDateDisplay ? $objEvent->showTimeTypeList : 1;
+                    
+                    // get date for several days format > show starttime with startdate and endtime with enddate > only if several days event and all values (dates/times) are displayed
+                    if(date(parent::getDateFormat(), $objEvent->startDate) != date(parent::getDateFormat(), $objEvent->endDate) && ($showStartDateList && $showEndDateList && $showStartTimeList && $showEndTimeList)) {
+                        
+                        //part 1
+                        $part = 1;
+                        $this->getMultiDateBlock($objEvent, $this->arrSettings['separatorDateTimeList'], $this->arrSettings['separatorSeveralDaysList'], ($this->arrSettings['showClockList'] == 1), $part);
+
+                        $objTpl->setVariable(array(
+                            $this->moduleLangVar.'_DATE_LIST'                => $this->date,
+                            $this->moduleLangVar.'_SEP_DATE_TIME_LIST'       => $this->sepDateTime,
+                            $this->moduleLangVar.'_TIME_LIST'                => $this->time,
+                            'TXT_'.$this->moduleLangVar.'_CLOCK_LIST'        => $this->clock,
+                        ));
+                        $objTpl->parse('calendarDateList');
+
+                        //part 2
+                        $part = 2;
+                        $this->getMultiDateBlock($objEvent, $this->arrSettings['separatorDateTimeList'], $this->arrSettings['separatorSeveralDaysList'], ($this->arrSettings['showClockList'] == 1), $part);
+
+                        $objTpl->setVariable(array(
+                            $this->moduleLangVar.'_DATE_LIST'                => $this->date,
+                            $this->moduleLangVar.'_SEP_DATE_TIME_LIST'       => $this->sepDateTime,
+                            $this->moduleLangVar.'_TIME_LIST'                => $this->time,
+                            'TXT_'.$this->moduleLangVar.'_CLOCK_LIST'        => $this->clock,
+                        ));
+                        $objTpl->parse('calendarDateList');
+                    } else {          
+                        // get date for single day format
+                       $this->getSingleDateBlock($objEvent, $showStartDateList, $showEndDateList, $this->arrSettings['separatorDateList'], $showTimeTypeList, $showStartTimeList, $showEndTimeList, $this->arrSettings['separatorDateTimeList'], $this->arrSettings['separatorTimeList'], ($this->arrSettings['showClockList'] == 1));
+                        
+                        $objTpl->setVariable(array(
+                            $this->moduleLangVar.'_DATE_LIST'                => $this->date,
+                            $this->moduleLangVar.'_SEP_DATE_TIME_LIST'       => $this->sepDateTime,
+                            $this->moduleLangVar.'_TIME_LIST'                => $this->time,
+                            'TXT_'.$this->moduleLangVar.'_CLOCK_LIST'        => $this->clock,
+                        ));
+                        $objTpl->parse('calendarDateList');
+                    }
+                }
+
+                if($type == 'confirm') {
+                    if($objTpl->blockExists('eventConfirmList')) {
+                        $objTpl->parse('eventConfirmList');
+                    }
+                } else {
+                    if($objTpl->blockExists('eventList')) {
+                        $objTpl->parse('eventList');
+                    }
+                    
+                    if($objTpl->blockExists('calendar_headlines_row')) {
+                        $objTpl->parse('calendar_headlines_row');
+                    }   
+                }
+                
+            }
+            if(count($this->eventList) == 0 && $type != 'confirm') {
+                $objTpl->hideBlock('eventList');
+                
+                $objTpl->setVariable(array(
+                    'TXT_'.$this->moduleLangVar.'_NO_EVENTS'        => $_ARRAYLANG['TXT_CALENDAR_EVENTS_NO'],
+                ));
+                
+                $objTpl->parse('emptyEventList');
+            }
+        //}
+    }
+
+    function getEventsWithDate() {
+        $arrEvents = array();
+        foreach ($this->eventList as $objEvent) {
+            $eventDate = $objEvent->startDate;
+            $eventDateYear = date('Y', $eventDate);
+            $eventDateMonth = date('m', $eventDate);
+            $eventDateDay = date('d', $eventDate);
+
+            $arrEvents[] = array("year" => $eventDateYear, "month" => $eventDateMonth, "day" => $eventDateDay);
+        }
+        return $arrEvents;
+    }
+    
+    function _getDetailLink($objEvent)
+    {
+        $identifier     = '&amp;id='.intval($objEvent->id);
+        $date           = '&amp;date='.intval($objEvent->startDate);
+        
+        if($objEvent->external) {
+            $external           = '&amp;external=1';   
+        } else {
+            $external           = '';   
+        }
+        
+        $link     = CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'&amp;cmd=detail'.$identifier.$date.$external;
+        
+        return $link;
+    }
+    
+    function urlfind($url){
+        if (!ini_get('allow_url_fopen')) {     
+            ini_set('allow_url_fopen', 'On');
+        } 
+        
+        if (ini_get('allow_url_fopen')) {  
+            if($url) {
+                $file = @fopen ($url.'/modules/calendar/lib/webservice/soap.server.class.php', "r");
+            }                                                    
+            
+            if($file){
+                fclose($file);
+                return true;  
+            } else {
+                return false;
+            }
+        } else {                                                
+            require_once ASCMS_MODULE_PATH . '/calendar/lib/httpconnection/httpconnection.class.php'; 
+            
+            if(substr($url,0,7) == 'http://') {
+                $url = substr($url,7); 
+            } 
+            
+            $url = explode('/',$url);     
+            $offset = array();
+            
+            foreach($url as $key => $dir) {
+                if($key == 0) {
+                    $domain = $dir;
+                } else {
+                    $offset[] = $dir;
+                }
+            }
+            
+            $offset = join("/", $offset);
+            
+            if(substr($offset,-1) != '/') {  
+                $offset = $offset.'/';  
+            }         
+                                                                                                                      
+            $http = new httpconnection($domain);   
+            $data = $http->get($offset.'modules/calendar/lib/webservice/soap.server.class.php'); 
+                                 
+            
+            if(!empty($data)) {     
+                if($data['head']['code'] == '404') {
+                    unset($http);  
+                    return false;     
+                } else {
+                    unset($http);  
+                    return true;     
+                }  
+            } else {            
+                unset($http); 
+                return false;  
+            }         
+        }
+    }
+
+    
+    function _setNextSeriesElement($objEvent) {  
+        $objCloneEvent = clone $objEvent;
+        
+        parent::getSettings();
+        
+        switch ($objCloneEvent->seriesData['seriesType']){
+            case 1:
+                //daily
+                if ($objCloneEvent->seriesData['seriesPatternType'] == 1) {
+                    $hour       = date("H", $objEvent->startDate);
+                    $minutes    = date("i", $objEvent->startDate);
+                    $seconds    = date("s", $objEvent->startDate);
+                    $day        = date("d", $objEvent->startDate)+$objEvent->seriesData['seriesPatternDay'];
+                    $month      = date("m", $objEvent->startDate);
+                    $year       = date("Y", $objEvent->startDate);
+
+                    $objCloneEvent->startDate = mktime($hour, $minutes, $seconds, $month, $day, $year);
+                    $compareDate = mktime(0, 0, 0, $month, $day, $year);
+
+                    $hour       = date("H", $objEvent->endDate);
+                    $minutes    = date("i", $objEvent->endDate);
+                    $seconds    = date("s", $objEvent->endDate);
+                    $day        = date("d", $objEvent->endDate)+$objEvent->seriesData['seriesPatternDay'];
+                    $month      = date("m", $objEvent->endDate);
+                    $year       = date("Y", $objEvent->endDate);
+
+                    $objCloneEvent->endDate = mktime($hour, $minutes, $seconds, $month, $day, $year);
+                } else {
+                    $oldWeekday = date("w", $objEvent->startDate);
+
+                    if ($oldWeekday == 5) {
+                        $addDays = 3;
+                    } else {
+                        $addDays = 1;
+                    }
+
+                    $hour       = date("H", $objEvent->startDate);
+                    $minutes    = date("i", $objEvent->startDate);
+                    $seconds    = date("s", $objEvent->startDate);
+                    $day        = date("d", $objEvent->startDate)+$addDays;
+                    $month      = date("m", $objEvent->startDate);
+                    $year       = date("Y", $objEvent->startDate);
+
+                    $objCloneEvent->startDate = mktime($hour, $minutes, $seconds, $month, $day, $year);
+                    $compareDate = mktime(0, 0, 0, $month, $day, $year);
+
+                    $hour       = date("H", $objEvent->endDate);
+                    $minutes    = date("i", $objEvent->endDate);
+                    $seconds    = date("s", $objEvent->endDate);
+                    $day        = date("d", $objEvent->endDate)+$addDays;
+                    $month      = date("m", $objEvent->endDate);
+                    $year       = date("Y", $objEvent->endDate);
+
+                    $objCloneEvent->endDate = mktime($hour, $minutes, $seconds, $month, $day, $year);
+                }
+            break;
+            case 2:
+                //weekly
+                $oldWeekday         = date("w", $objEvent->startDate);
+                $weekdayPattern     = $objEvent->seriesData['seriesPatternWeekday'];
+                $match              = false;
+                $i                  = 0;
+                $oldKW              = date("W", $objEvent->startDate);
+
+                while(!$match){
+                    $i++;
+
+                    if(substr($weekdayPattern, $oldWeekday, 1) == 1) {
+                        $addDays = $i;
+                        $match = true;
+                    } else {
+                        $oldWeekday++;
+                    }
+
+                    if ($oldWeekday > 6) {
+                        $oldWeekday = 0;
+                    }
+
+                    if ($i > 8){
+                        break;
+                    }
+
+                }
+                
+                $hour       = date("H", $objEvent->startDate);
+                $minutes    = date("i", $objEvent->startDate);
+                $seconds    = date("s", $objEvent->startDate);
+                $day        = date("d", $objEvent->startDate)+$addDays;
+                $month      = date("m", $objEvent->startDate);
+                $year       = date("Y", $objEvent->startDate);
+
+
+                $newKW = date("W", mktime($hour, $minutes, $seconds, $month, $day, $year));
+
+                if ($objEvent->seriesData['seriesPatternWeek'] > 1) {
+                    if ($oldKW < $newKW) {
+                        $addWeeks = ($objEvent->seriesData['seriesPatternWeek']-1)*7;
+                    }
+                }
+
+                $objCloneEvent->startDate = mktime($hour, $minutes, $seconds, $month, $day+$addWeeks, $year);
+                $compareDate = mktime(0, 0, 0, $month, $day+$addWeeks, $year);
+
+                $hour       = date("H", $objEvent->endDate);
+                $minutes    = date("i", $objEvent->endDate);
+                $seconds    = date("s", $objEvent->endDate);
+                $day        = date("d", $objEvent->endDate)+$addDays+$addWeeks;
+                $month      = date("m", $objEvent->endDate);
+                $year       = date("Y", $objEvent->endDate);
+
+                $objCloneEvent->endDate = mktime($hour, $minutes, $seconds, $month, $day, $year);
+            break;
+            case 3:
+                //monthly
+                if ($objCloneEvent->seriesData['seriesPatternType'] == 1) {
+                    $monthDays = 0;
+                    
+                    $hour       = date("H", $objEvent->startDate);
+                    $minutes    = date("i", $objEvent->startDate);
+                    $seconds    = date("s", $objEvent->startDate);
+                    $day        = date("d", $objEvent->startDate);
+                    $month      = date("m", $objEvent->startDate);
+                    $year       = date("Y", $objEvent->startDate);
+
+                    $monthDays  = date("t", $objEvent->startDate);
+
+                    $addDays    = $monthDays-$day+$objEvent->seriesData['seriesPatternDay'];
+                    $addMonths  = $objEvent->seriesData['seriesPatternMonth'];
+
+                    if($addMonths > 1) {
+                        for ($i = 1; $i < $addMonths; $i++) {
+                           $nextMonthDays = date("t", mktime($hour, $minutes, $seconds, $month+$i, $day, $year));
+                           $addDays = $addDays+$nextMonthDays;
+                        }
+                    }
+
+                    $objCloneEvent->startDate = mktime($hour, $minutes, $seconds, $month, $day+$addDays, $year);
+                    $compareDate = mktime(0, 0, 0, $month, $day+$addDays, $year);
+
+                    $hour       = date("H", $objEvent->endDate);
+                    $minutes    = date("i", $objEvent->endDate);
+                    $seconds    = date("s", $objEvent->endDate);
+                    $day        = date("d", $objEvent->endDate);
+                    $month      = date("m", $objEvent->endDate);
+                    $year       = date("Y", $objEvent->endDate);
+
+                    $objCloneEvent->endDate = mktime($hour, $minutes, $seconds, $month, $day+$addDays, $year);
+                } else {
+                    $hour       = date("H", $objEvent->startDate);
+                    $minutes    = date("i", $objEvent->startDate);
+                    $seconds    = date("s", $objEvent->startDate);
+                    $day        = date("d", $objEvent->startDate);
+                    $month      = date("m", $objEvent->startDate);
+                    $year       = date("Y", $objEvent->startDate);
+
+                    $weekdayPattern = $objEvent->seriesData['seriesPatternWeekday'];
+                    $countPattern   = $objEvent->seriesData['seriesPatternCount'];
+                    $monthPattern   = $objEvent->seriesData['seriesPatternMonth'];
+                    $nextMonth      = $month + $monthPattern;
+
+                    $match  = false;
+                    $i      = 0;
+                    
+                    while (!$match) {
+                        if(substr($weekdayPattern, $i, 1) == 1) {
+                            $weekday = $i+1;
+                            $match = true;
+                        } else {
+                            $i++;
+                        }
+                    }
+
+                    if ($weekday > 6) {
+                        $weekday = 0;
+                    }
+
+                    if($countPattern < 5) {
+                        $match  = false;
+                        $d      = 1;
+
+                        while (!$match) {
+                            $checkDate  = mktime($hour, $minutes, $seconds, $nextMonth, $d, $year);
+                            $checkDay  = date("w", $checkDate);
+                            
+                            if ($checkDay == $weekday) {
+                                $match = true;
+                            } else {
+                                $d++;
+                            }
+                        }
+
+                        if($countPattern > 1) {
+                           $countPattern = 7*($countPattern-1);
+                        } else {
+                           $countPattern = 0;
+                        }
+                    } else {
+                        $match          = false;
+                        $d              = date("t", mktime($hour, $minutes, $seconds, $nextMonth, $day, $year));
+                        $countPattern   = 0;
+
+                        while (!$match) {
+                            $checkDate  = mktime($hour, $minutes, $seconds, $nextMonth, $d, $year);
+                            $checkDay  = date("w", $checkDate);
+
+                            if ($checkDay == $weekday) {
+                                $match = true;
+                            } else {
+                                $d--;
+                            }
+                        }
+                    }
+
+                    $addMonth   = $nextMonth-$month;
+                    $newDay     = $d+$countPattern;
+                    
+                    $objCloneEvent->startDate = mktime($hour, $minutes, $seconds, $month+$addMonth, $newDay, $year);
+                    $compareDate = mktime(0, 0, 0, $month+$addMonth, $newDay, $year);
+                    
+                    $hour       = date("H", $objEvent->endDate);
+                    $minutes    = date("i", $objEvent->endDate);
+                    $seconds    = date("s", $objEvent->endDate);
+                    $dayStart   = $objEvent->startDate;
+                    $dayEnd     = $objEvent->endDate;
+                    $dayDiff    = date("d",$dayEnd-$dayStart)-1;
+                    $month      = date("m", $objEvent->endDate);
+                    $year       = date("Y", $objEvent->endDate);
+
+                    $objCloneEvent->endDate = mktime($hour, $minutes, $seconds, $month+$addMonth, $newDay+$dayDiff, $year);
+                }
+            break;
+        }
+        
+        switch($objCloneEvent->seriesData['seriesPatternDouranceType']) {
+            case 1:
+                $lastDate = mktime(date("H", $this->startDate), date("i", $this->startDate), date("s", $this->startDate), date("m", $this->startDate), date("d", $this->startDate), date("Y", $this->startDate)+intval($this->arrSettings['maxSeriesEndsYear'])+1);
+                
+                if($objCloneEvent->startDate <= $lastDate) {
+                    $getNextEvent = true;
+                } else {
+                    $getNextEvent = false;
+                }
+                break;
+            case 2:
+                $objCloneEvent->seriesData['seriesPatternEnd'] = $objCloneEvent->seriesData['seriesPatternEnd']-1;
+                
+                if($objCloneEvent->seriesData['seriesPatternEnd'] > 0) {
+                    $getNextEvent = true;
+                } else {
+                    $getNextEvent = false;
+                }
+                break;
+            case 3:
+                if($objCloneEvent->startDate <= $objCloneEvent->seriesData['seriesPatternEnd']) {
+                    $getNextEvent = true;
+                } else {
+                    $getNextEvent = false;
+                }
+                break;
+        }
+        
+        if(!in_array($compareDate, $objCloneEvent->seriesData['seriesPatternExceptions']) && self::_addToEventList($objCloneEvent)) {
+            array_push($this->eventList, $objCloneEvent);    
+        }
+        
+        if ($getNextEvent) {
+            self::_setNextSeriesElement($objCloneEvent);    
+        }
+    }
+    
+    
+    function _getCoorinates($street,$zipcode,$city) {
+        global $_CONFIG;
+        
+        if (!ini_get('allow_url_fopen')) {     
+            ini_set('allow_url_fopen', 'On');
+        } 
+        
+        if(ini_get('allow_url_fopen')) { 
+            $address = '';
+            $address .= $street;
+            $address .= ', ';
+            $address .= $city;
+            $address .= ', ';
+            $address .= $zipcode;             
+                                                    
+            $key = $_CONFIG['googleMapsAPIKey'];
+                                  
+            $url='http://maps.google.com/maps/geo?output=xml&q=';    
+            $urlcontent = file_get_contents($url . urlencode($address));  
+            $urlcontent = utf8_encode($urlcontent);     
+            $xml = new SimpleXMLElement($urlcontent);
+            
+            $arrCoordinates = explode (",",$xml->Response->Placemark->Point->coordinates);       
+        } else {
+            //echo "please check your Google Maps API Key or activate 'allow_url_fopen' or deactivate Goope Maps in this Event.";
+            $arrCoordinates   = false;
+        }   
+        
+        return $arrCoordinates;
+    }
+
+    //show date and time by user settings > single day view > start-/endtime separated by start-/enddate
+    function getSingleDateBlock($objEvent, $showStartDate, $showEndDate, $separatorDate, $showTimeType, $showStartTime, $showEndTime, $separatorDateTime, $separatorTime, $showClock) {
+        global $_ARRAYLANG;
+        
+        //date
+        if($showStartDate && $showEndDate) {
+            $this->date = date(parent::getDateFormat(), $objEvent->startDate).$separatorDate.date(parent::getDateFormat(), $objEvent->endDate);
+        } else if($showStartDate) {
+            $this->date = date(parent::getDateFormat(), $objEvent->startDate);
+        } else if($showEndDate) {
+            $this->date = date(parent::getDateFormat(), $objEvent->endDate);
+        } else {
+            $this->date = '';
+        }
+
+        //time
+        if($showTimeType == 1) {
+            //start and/or end time
+            if($showStartTime && $showEndTime) {
+                $this->sepDateTime = html_entity_decode($separatorDateTime);
+                $this->time = date('H:i', $objEvent->startDate).$separatorTime.date('H:i', $objEvent->endDate);
+            } else if($showStartTime) {
+                $this->sepDateTime = html_entity_decode($separatorDateTime);
+                $this->time = date('H:i', $objEvent->startDate);
+            } else if($showEndTime) {
+                $this->sepDateTime = html_entity_decode($separatorDateTime);
+                $this->time = date('H:i', $objEvent->endDate);
+            } else {
+                $this->time = '';
+            }
+            //show / hide clock
+            ($showClock && $this->time != '') ? $this->clock = '&nbsp;'.$_ARRAYLANG['TXT_CALENDAR_OCLOCK'] : $this->clock = '';
+        } else if($showTimeType == 2) {
+            //fulltime
+            $this->clock = '';
+            $this->sepDateTime = html_entity_decode($separatorDateTime);
+            $this->time = $_ARRAYLANG['TXT_CALENDAR_TIME_TYPE_FULLTIME'];
+        } else {
+            //no time
+            $this->clock = '';
+            $this->time = '';
+        }
+    }
+
+    //show date and time by user settings > several day view
+    function getMultiDateBlock($objEvent, $separatorDateTime, $separatorSeveralDays, $showClock, $part) {
+        global $_ARRAYLANG;
+
+        $this->sepDateTime = html_entity_decode($separatorDateTime);
+
+        if($part == 1) {
+            // parse part 1 (start)
+            //date
+            $this->date = date(parent::getDateFormat(), $objEvent->startDate);
+            //time
+            $this->time = date('H:i', $objEvent->startDate);
+            //show / hide clock
+            ($showClock && $this->time != '') ? $this->clock = '&nbsp;'.$_ARRAYLANG['TXT_CALENDAR_OCLOCK'] : $this->clock = '';
+            //add separator for several days
+            if($this->clock != '') {
+                $this->clock .= html_entity_decode($separatorSeveralDays);
+            } else {
+                $this->time .= html_entity_decode($separatorSeveralDays);
+            }
+        } else {
+            // parse part 2 (end)
+            //date
+            $this->date = date(parent::getDateFormat(), $objEvent->endDate);
+            //time
+            $this->time = date('H:i', $objEvent->endDate);
+            //show / hide clock
+            ($showClock && $this->time != '') ? $this->clock = '&nbsp;'.$_ARRAYLANG['TXT_CALENDAR_OCLOCK'] : $this->clock = '';
+        }
+    }
+
+}

@@ -1,0 +1,479 @@
+<?php
+
+/**
+ * Calendar
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author         Comvation Development Team <info@comvation.com>
+ * @version     1.1.0
+ * @package     contrexx
+ * @subpackage  module_calendar".$this->mandateLink."
+ * @todo        Edit PHP DocBlocks!
+ */
+
+/**
+ * Calendar
+ *
+ * LibClass to manage cms calendar
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author Comvation Development Team <info@comvation.com>
+ * @access public
+ * @version 1.1.0
+ * @package     contrexx
+ * @subpackage  module_calendar".$this->mandateLink."
+ */
+
+class CalendarLibrary
+{
+    public $_objTpl;   
+    public $pageContent; 
+    
+    public $moduleName = "calendar";
+    public $moduleTablePrefix = "calendar";
+    public $moduleLangVar  = "CALENDAR";
+    
+    public $uploadImgPath = '';
+    public $uploadImgWebPath = '';
+    
+    public $errMessage = '';
+    public $okMessage = '';
+    
+    public $csvSeparator = ';';
+    public $arrFrontendLanguages = array();
+    public $arrSettings = array();
+    public $arrCommunityGroups = array();    
+        
+    function __construct($tplPath){                                                                      
+        $this->_objTpl = new HTML_Template_Sigma($tplPath);
+        $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);    
+        
+    	$this->uploadImgPath = ASCMS_PATH.ASCMS_IMAGE_PATH.'/'.$this->moduleName.'/';
+        $this->uploadImgWebPath = ASCMS_IMAGE_PATH.'/'.$this->moduleName.'/';
+        
+        $this->_objTpl->setGlobalVariable(array(
+            $this->moduleLangVar.'_MODULE_NAME'  => $this->moduleName,
+            $this->moduleLangVar.'_CSRF'         => 'csrf='.CSRF::code(),     
+            $this->moduleLangVar.'_DATE_FORMAT'  => self::getDateFormat(1),
+            $this->moduleLangVar.'_JAVASCRIPT'   => self::getJavascript(),
+        ));        
+    }         
+    
+    
+    function checkAccess($strAction)
+    {
+        global $objInit;
+
+        if($objInit->mode == 'backend') {
+            //backend access
+        } else {
+            //frontend access
+
+            $strStatus = '';
+            $objFWUser  = FWUser::getFWUserObject();
+
+            //get user attributes
+            $objUser         = $objFWUser->objUser;
+            $intUserId      = intval($objUser->getId());
+            $intUserName    = $objUser->getUsername();
+            $bolUserLogin   = $objUser->login();
+            $intUserIsAdmin = $objUser->getAdminStatus();                                                                                 
+
+            $accessId = 0; //used to remember which access id the user needs to have. this is passed to Permission::checkAccess() later.
+            
+            $intUserIsAdmin = false;
+
+            if(!$intUserIsAdmin) {
+                self::getSettings();
+
+                switch($strAction) {
+                    case 'add_event':  
+                       if($this->arrSettings['addEventsFrontend'] == 1 || $this->arrSettings['addEventsFrontend'] == 2) {
+                            if($this->arrSettings['addEventsFrontend'] == 2) {
+                                if($bolUserLogin) {
+                                    $bolAdd = true;
+                                } else {
+                                    $bolAdd = false;
+                                }
+                            } else {
+                                $bolAdd = true;
+                            } 
+
+                            if($bolAdd) {
+                                //get groups attributes
+                                $arrUserGroups  = array();
+                                $objGroup = $objFWUser->objGroup->getGroups($filter = array('is_active' => true, 'type' => 'frontend'));
+
+                                while (!$objGroup->EOF) {
+                                    if(in_array($objGroup->getId(), $objUser->getAssociatedGroupIds())) {
+                                        $arrUserGroups[] = $objGroup->getId();
+                                    }
+                                    $objGroup->next();
+                                }                  
+                            } else {
+                                $strStatus = 'login';
+                            }
+                        } else {
+                            $strStatus = 'redirect';
+                        }
+                        
+                        break;
+                    case 'edit_event':                
+                        if($this->arrSettings['addEventsFrontend'] == 2) {
+                            if($bolUserLogin) {         
+                                if(isset($_POST['submitFormModifyEvent'])) {
+                                    $eventId = intval($_POST['id']);
+                                } else {
+                                    $eventId = intval($_GET['id']);
+                                }                       
+                                
+                                $objEvent = new CalendarEvent($eventId);
+                                
+                                if($objEvent->author != $intUserId) {
+                                    $strStatus = 'no_access';
+                                }
+                            } else {
+                                $strStatus = 'login';
+                            }   
+                        } else {  
+                            $strStatus = 'redirect';
+                        }
+                        break;
+                    
+                    case 'my_events':
+                        if($this->arrSettings['addEventsFrontend'] == 2) { 
+                            if(!$bolUserLogin) {
+                                $strStatus = 'login';
+                            }
+                        } else {  
+                            $strStatus = 'redirect';
+                        }
+                        break;
+                }
+
+                switch($strStatus) {
+                    case 'no_access':
+                        CSRF::header('Location: '.CONTREXX_SCRIPT_PATH.'?section=login&cmd=noaccess');
+                        exit();
+                        break;
+                    case 'login':
+                        $link = base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
+                        CSRF::header("Location: ".CONTREXX_SCRIPT_PATH."?section=login&redirect=".$link);
+                        exit();
+                        break;
+                    case 'redirect':
+                        CSRF::header('Location: '.CONTREXX_SCRIPT_PATH.'?section='.$this->moduleName);   
+                        exit();
+                        break;
+                }
+            }
+        }
+    }
+    
+        
+    function getSettings()
+    {
+        global $objDatabase, $_ARRAYLANG, $objInit;
+        
+    	$arrSettings = array();
+        $arrDateSettings =  array(
+                            'separatorDateList','separatorDateTimeList', 'separatorSeveralDaysList', 'separatorTimeList',
+                            'separatorDateDetail','separatorDateTimeDetail', 'separatorSeveralDaysDetail', 'separatorTimeDetail',
+                            );
+
+        $objSettings = $objDatabase->Execute("SELECT name,value,options, type FROM  ".DBPREFIX."module_".$this->moduleTablePrefix."_settings ORDER BY name ASC");
+        if ($objSettings !== false) {
+            while (!$objSettings->EOF) {
+                //return date settings
+                if($objSettings->fields['type'] == 5 && in_array($objSettings->fields['name'], $arrDateSettings) )
+                {
+                    $strOptions = $objSettings->fields['options'];
+                    $arrOptions = explode(',', $strOptions );
+                    $value = $arrOptions[$objSettings->fields['value']];
+                    
+                    if($objInit->mode == 'backend') {
+                        // This is for the preview in settings > Date
+                        $arrSettings["{$objSettings->fields['name']}_value"] = htmlspecialchars($_ARRAYLANG["{$value}_VALUE"], ENT_QUOTES, CONTREXX_CHARSET);
+                    }
+                    $value = $_ARRAYLANG[$value];                    
+                    $arrSettings[$objSettings->fields['name']] = htmlspecialchars($value, ENT_QUOTES, CONTREXX_CHARSET);
+                } else {
+                    //return all exept date settings
+                    $arrSettings[$objSettings->fields['name']] = htmlspecialchars($objSettings->fields['value'], ENT_QUOTES, CONTREXX_CHARSET);
+                }
+
+                $objSettings->MoveNext();
+            }
+        }
+        
+        $this->arrSettings = $arrSettings;
+    }
+    
+    function buildDropdownmenu($arrOptions, $intSelected=null)
+    {
+        foreach ($arrOptions as $intValue => $strName) {
+            $checked = $intValue==$intSelected ? 'selected="selected"' : '';
+            $strOptions .= "<option value='".$intValue."' ".$checked.">".htmlspecialchars($strName, ENT_QUOTES, CONTREXX_CHARSET)."</option>";
+        }
+
+        return $strOptions;
+    }
+    
+    function getFrontendLanguages()
+    {
+        global $_ARRAYLANG, $_CORELANG, $objDatabase;
+
+        $arrLanguages = array();
+
+        $objLanguages = $objDatabase->Execute("SELECT id,lang,name,frontend,is_default FROM ".DBPREFIX."languages WHERE frontend = '1' ORDER BY is_default ASC");
+        if ($objLanguages !== false) {
+            while (!$objLanguages->EOF) {
+                $arrData = array();
+
+                $arrData['id'] = intval($objLanguages->fields['id']);
+                $arrData['lang'] = htmlspecialchars($objLanguages->fields['lang'], ENT_QUOTES, CONTREXX_CHARSET);
+                $arrData['name'] = htmlspecialchars($objLanguages->fields['name'], ENT_QUOTES, CONTREXX_CHARSET);
+                $arrData['frontend'] = intval($objLanguages->fields['frontend']);
+                $arrData['is_default'] = htmlspecialchars($objLanguages->fields['is_default'], ENT_QUOTES, CONTREXX_CHARSET);
+
+                $arrLanguages[intval($objLanguages->fields['id'])] = $arrData;
+
+                $objLanguages->MoveNext();
+            }
+        }
+
+        // return $arrLanguages;
+        $this->arrFrontendLanguages = $arrLanguages;
+    }
+    
+    function getDateFormat($type=null)
+    {
+        global $objDatabase;
+        
+        $objDateFormat = $objDatabase->Execute("SELECT value FROM  ".DBPREFIX."module_".$this->moduleTablePrefix."_settings WHERE name = 'dateFormat' LIMIT 1");
+        if ($objDateFormat !== false) {        
+            $dateFormat = $objDateFormat->fields['value'];      
+        }
+        
+        if($type == 1) {
+            switch ($dateFormat) {
+                 case 0:  
+                    $dateFormat = 'dd.mm.yy';
+                    break;
+                 case 1:
+                    $dateFormat = 'dd/mm/yy';
+                    break;
+                 case 2:
+                    $dateFormat = 'yy.mm.dd';
+                    break;
+                 case 3:
+                    $dateFormat = 'mm/dd/yy';
+                    break;
+                 case 4:
+                    $dateFormat = 'yy-mm-dd';
+                    break;
+            }                                                                
+        } else {   
+            switch ($dateFormat) {
+                 case 0:  
+                    $dateFormat = 'd.m.Y';
+                    break;
+                 case 1:
+                    $dateFormat = 'd/m/Y';
+                    break;
+                 case 2:
+                    $dateFormat = 'Y.m.d';
+                    break;
+                 case 3:
+                    $dateFormat = 'm/d/Y';
+                    break;
+                 case 4:
+                    $dateFormat = 'Y-m-d';
+                    break;
+            } 
+        }
+        
+        return $dateFormat;
+    }
+    
+    function getDateTimestamp($date, $hour=0, $minute=0)
+    {
+        self::getSettings();
+        
+        switch($this->arrSettings['dateFormat']) {
+            case 0:
+                $date = str_replace(".", "", $date);                 
+                $posYear = 4;
+                $posMonth = 2;  
+                $posDay = 0;       
+                break;
+            case 1:                                                
+                $date = str_replace("/", "", $date); 
+                $posYear = 4;
+                $posMonth = 2;  
+                $posDay = 0;   
+                break;
+            case 2:                                               
+                $date = str_replace(".", "", $date); 
+                $posYear = 0;
+                $posMonth = 4;  
+                $posDay = 6;
+                break;
+            case 3:                                           
+                
+                $date = str_replace("/", "", $date);   
+                $posYear = 4;
+                $posMonth = 0;  
+                $posDay = 2;
+                break;
+            case 4:   
+                $date = str_replace("-", "", $date);  
+                $posYear = 0;
+                $posMonth = 4;  
+                $posDay = 6;
+                break;
+        }
+                                                                   
+        $year = substr($date, $posYear,4);
+        $month = substr($date, $posMonth,2);
+        $day = substr($date, $posDay,2);      
+        
+        $timestamp = mktime($hour,$minute,0,$month,$day,$year);   
+        
+        return $timestamp;
+    }
+    
+    
+    function getCommunityGroups()
+    {
+        global $objDatabase;
+
+        $arrCommunityGroups = array();
+
+        $objCommunityGroups = $objDatabase->Execute("SELECT
+                                                        `group`.`group_id` AS group_id,
+                                                        `group`.`group_name` AS group_name,
+                                                        `group`.`is_active` AS is_active,
+                                                        `group`.`type` AS `type`
+                                                      FROM  ".DBPREFIX."access_user_groups AS `group`");
+        if ($objCommunityGroups !== false) {
+            while (!$objCommunityGroups->EOF) {
+                $arrCommunityGroups[intval($objCommunityGroups->fields['group_id'])]['id'] = intval($objCommunityGroups->fields['group_id']);
+                $arrCommunityGroups[intval($objCommunityGroups->fields['group_id'])]['name'] = htmlspecialchars($objCommunityGroups->fields['group_name'], ENT_QUOTES, CONTREXX_CHARSET);
+                $arrCommunityGroups[intval($objCommunityGroups->fields['group_id'])]['active'] = intval($objCommunityGroups->fields['is_active']);
+                $arrCommunityGroups[intval($objCommunityGroups->fields['group_id'])]['type'] = htmlspecialchars($objCommunityGroups->fields['type'], ENT_QUOTES, CONTREXX_CHARSET);  
+
+                $objCommunityGroups->MoveNext();
+            }
+        }
+                                           
+        $this->arrCommunityGroups = $arrCommunityGroups;
+    }
+    
+    function getJavascript()
+    {
+        $javascript = <<< EOF
+<script type="text/javascript" src="lib/datepickercontrol/datepickercontrol.js"></script>
+EOF;
+        if($_GET['cmd'] == 'register') {
+             $javascript .= <<< EOF
+             
+<script type="text/javascript">
+/* <![CDATA[ */
+if(\$J('#calendarSelectBillingAddress').length > 0) {
+    \$J(document).ready(function() {
+        checkSelectBillingAddress();        
+    });
+    
+    \$J('#calendarSelectBillingAddress').change(function() {
+        checkSelectBillingAddress();
+    });
+}
+
+function checkSelectBillingAddress() {
+    var displayValue;
+    var selectValue =  \$J('#calendarSelectBillingAddress').val();
+        
+    if(selectValue == 'deviatesFromContact') {
+        displayValue = 'block'; 
+    } else {
+        displayValue = 'none'; 
+    }
+    
+    \$J(".affiliationBilling").each(function() { 
+       \$J(this).css('display', displayValue); 
+    });  
+}
+
+/* ]]> */
+</script>
+             
+EOF;
+        }
+        
+        
+        return $javascript;
+    }
+    
+    function generateKey()
+    {
+        $arrRandom = array();
+        $arrChars = array ('a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z'); 
+        $arrNumerics =  array (0,1,2,3,4,5,6,7,8,9); 
+        
+        for ($i = 0; $i <= rand(15,40); $i++) {
+            $charOrNum = rand(0,1);
+            if($charOrNum == 1) {
+                $posChar = rand(0,25);
+                $upOrLow = rand(0,1);
+
+                if($upOrLow == 0) {
+                    $arrRandom[$i] = strtoupper($arrChars[$posChar]);
+                } else {
+                    $arrRandom[$i] = strtolower($arrChars[$posChar]);
+                }
+            } else {
+                $posNum = rand(0,9);
+                $arrRandom[$i] = $arrNumerics[$posNum];
+            }
+        }
+        
+        $key = join($arrRandom);
+            
+        return $key;
+    }
+    
+    function escapeCsvValue(&$value)
+    {
+        $value = preg_replace('/\r\n/', "\n", $value);
+        $valueModified = str_replace('"', '""', $value);
+
+        if ($valueModified != $value || preg_match('/['.$this->csvSeparator.'\n]+/', $value)) {
+            $value = '"'.$valueModified.'"';
+        }
+        
+        return strtolower(CONTREXX_CHARSET) == 'utf-8' ? utf8_decode($value) : $value;
+    }
+
+    function loadDatePicker(&$datePicker, $cat = null) {
+        global $_CORELANG;
+        if($this->_objTpl->placeholderExists($this->moduleLangVar.'_DATEPICKER')) {
+            $timestamp = time();
+            $datePickerYear = $_REQUEST["yearID"] ? $_REQUEST["yearID"] : date('Y', $timestamp);
+            $datePickerMonth = $_REQUEST["monthID"] ? $_REQUEST["monthID"] : date('m', $timestamp);
+            $datePickerDay = $_REQUEST["dayID"] ? $_REQUEST["dayID"] : date('d', $timestamp);
+            $datePicker = new activeCalendar($datePickerYear, $datePickerMonth, $datePickerDay);
+            $datePicker->enableMonthNav("?section=calendar");
+            $datePicker->enableDayLinks("?section=calendar");
+            $datePicker->setDayNames(split(",", $_CORELANG['TXT_DAY_ARRAY']));
+            $datePicker->setMonthNames(split(",", $_CORELANG['TXT_MONTH_ARRAY']));
+
+            $eventManagerAllEvents = new CalendarEventManager(null, null, $cat, null, true, false, true);
+            $eventManagerAllEvents->getEventList();
+            $events = $eventManagerAllEvents->getEventsWithDate();
+            foreach($events as $event) {
+                $datePicker->setEvent($event["year"], $event["month"], $event["day"], " withEvent");
+            }
+
+            $datePicker = $datePicker->showMonth();
+        }
+    }
+}

@@ -1,0 +1,168 @@
+<!-- START module_calendar_settings_form.html -->
+<script src="../lib/javascript/jquery/jquery-1.6.1.min.js" type="text/javascript"></script>
+
+
+<script type="text/javascript">
+/* <![CDATA[ */
+var $J = jQuery.noConflict();
+    
+/* ]]> */
+</script>
+
+
+<script language="JavaScript" type="text/javascript">
+
+
+
+var lastId      = {CALENDAR_INPUTFIELD_LAST_ID};
+var lastRow     = {CALENDAR_INPUTFIELD_LAST_ROW};
+var BlankField  = '<tr class="FIELD_ROW" id="inputfield_FIELD_ID"><td valign="top" style="text-align: center;">FIELD_ID</td><td valign="top" style="text-align: center;"><input name="inputfield[FIELD_ID][order]" type="text" value="99" style="width: 20px;" onfocus="this.select();" />&nbsp;</td><td valign="top"><div id="inputfield_FIELD_ID_name_Minimized" style="display: block;"><input name="inputfield[FIELD_ID][name][0]" maxlength="255" style="width: 200px;" type="text" value="" /></div><div id="inputfield_FIELD_ID_name_Expanded" style="display: none;">{CALENDAR_INPUTFIELD_NAMES_JS}</div></td><td valign="top"><select name="inputfield[FIELD_ID][type]" style="width: 140px">{CALENDAR_INPUTFIELD_TYPES_JS}</select></td><td valign="top"><div id="inputfield_FIELD_ID_default_value_Minimized" style="display: block;"><input name="inputfield[FIELD_ID][default_value][0]" maxlength="255" style="width: 200px;" type="text" value="" /></div><div id="inputfield_FIELD_ID_default_value_Expanded" style="display: none;">{CALENDAR_INPUTFIELD_DEFAULT_VALUES_JS}</div></td><td valign="top" style="text-align: center;"><input name="inputfield[FIELD_ID][required]" type="checkbox" value="1"/></td><td valign="top"><select name="inputfield[FIELD_ID][affiliation]" style="width: 140px">{CALENDAR_INPUTFIELD_AFFILIATION_JS}</select></td><td valign="top" style="line-height: 19px;"><div id="inputfield_FIELD_ID_lang_name_Minimized" style="display: {CALENDAR_DISPLAY_EXPAND};"><a href="javascript:ExpandMinimize(\'name\', \'FIELD_ID\'); ExpandMinimize(\'default_value\', \'FIELD_ID\'); ExpandMinimize(\'lang_name\', \'FIELD_ID\');" >{TXT_CALENDAR_EXPAND}&nbsp;&raquo;</a></div><div id="inputfield_FIELD_ID_lang_name_Expanded" style="display: none;">{CALENDAR_INPUTFIELD_LANG_NAMES_JS}</div></td><td style="text-align: right;" valign="top"><a href="#" onclick="deleteField(FIELD_ID);" title="{TXT_CALENDAR_DELETE}"><img style="vertical-align: middle;" src="images/icons/delete.gif" alt="{TXT_CALENDAR_DELETE}" width="17" border="0" height="17"></a></td></tr>';
+
+function appendField(){
+    lastId = lastId + 1;
+
+    if(lastRow == 'row1') {
+    	lastRow = 'row2';
+    } else {
+    	lastRow = 'row1';
+    }
+
+    var tmpBlankField1 = BlankField.replace(/FIELD_ID/g, lastId);
+    var tmpBlankField2 = tmpBlankField1.replace(/FIELD_ROW/g, lastRow);
+    
+    $J('#inputfields').append(tmpBlankField2);
+    $J('#inputfield_'+lastId).css('display', 'none');
+    $J('#inputfield_'+lastId).fadeIn("slow");
+}
+
+function deleteField(fieldId){
+    $J('#inputfield_'+fieldId).fadeOut("slow", function(){ $J('#inputfield_'+fieldId).remove();});
+}
+
+
+function ExpandMinimize(toggle, id) {
+    if (toggle != "lang_name") {
+        var masterValue = document.getElementsByName('inputfield[' + id + '][' + toggle + '][0]')[0].value;
+        var defaultValue = document.getElementsByName('inputfield[' + id + '][' + toggle + '][1]')[0].value;
+
+        var reg = new RegExp('inputfield\\[' + id + '\\]\\[' + toggle + '\\]');
+
+        for (i = 0; i < document.formModifyForm.elements.length; ++i) {
+            var field = document.formModifyForm.elements[i];
+
+            if (field.name.match(reg)) {
+                if (field.value == '') {
+                    field.value = masterValue;
+                }
+
+                var regDefaultLang = new RegExp('inputfield\\[' + id + '\\]\\[' + toggle + '\\]\\[1\\]');
+
+                if (field.name.match(regDefaultLang)) {
+                    field.value = masterValue;
+                }
+
+                var regMaster = new RegExp('inputfield\\[' + id + '\\]\\[' + toggle + '\\]\\[0\\]');
+
+                if (field.name.match(regMaster)) {
+                    field.value = defaultValue;
+                }
+            }
+        }
+    }
+
+    elm1 = document.getElementById('inputfield_' + id + '_' + toggle + '_Minimized');
+    elm2 = document.getElementById('inputfield_' + id + '_' + toggle + '_Expanded');
+
+    elm1.style.display = (elm1.style.display=='none') ? 'block' : 'none';
+    elm2.style.display = (elm2.style.display=='none') ? 'block' : 'none';
+}
+
+</script>
+
+<form name="formModifyForm" method="post" action="index.php?cmd={CALENDAR_MODULE_NAME}&act=settings&tpl=forms">
+    <input name="formId" type="hidden" value="{CALENDAR_FORM_ID}" />  
+	<table id="form" style="width: 100%; border-spacing: 0px;" class="adminlist" cellspacing="0" cellpadding="3">
+	    <tr>
+	        <th colspan="2">{TXT_CALENDAR_REGISTRATION_FORM_TITLE}</th>
+	    </tr>
+        <tr class="row1">  
+            <td width="87">{TXT_CALENDAR_TITLE}</td>
+            <td><input name="formTitle" maxlength="255" style="width: 200px;" type="text" value="{CALENDAR_FORM_TITLE}" /></td>      
+        </tr>
+    </table>
+    <table id="inputfields" style="width: 100%; border-spacing: 0px;" class="adminlist" cellspacing="0" cellpadding="3">    
+	    <tr class="row3">
+            <td style="text-align: center; font-weight: bold" width="1%" nowrap="nowrap">&nbsp;ID&nbsp;</td>
+            <td style="text-align: center; font-weight: bold" width="1%" nowrap="nowrap">&nbsp;{TXT_CALENDAR_SORT}&nbsp;</td>
+            <td style="text-align: left; font-weight: bold" width="1%" nowrap="nowrap">{TXT_CALENDAR_FIELD_NAME}</td>
+            <td style="text-align: left; font-weight: bold" width="1%" nowrap="nowrap">{TXT_CALENDAR_FIELD_TYPE}</td>
+            <td style="text-align: left; font-weight: bold" width="1%" nowrap="nowrap">{TXT_CALENDAR_DEFAULT_VALUES}</td>
+            <td style="text-align: left; font-weight: bold" width="1%" nowrap="nowrap">&nbsp;&nbsp;{TXT_CALENDAR_FIELD_REQUIRED}&nbsp;&nbsp;</td>
+            <td style="text-align: left; font-weight: bold" width="1%" nowrap="nowrap">{TXT_CALENDAR_FIELD_AFFILIATION}</td>
+            <td style="text-align: left;" width="1%" nowrap="nowrap"><br /></td>
+            <td style="text-align: right; font-weight: bold" width="93%" nowrap="nowrap">{TXT_CALENDAR_ACTIONS}</td>
+        </tr>
+        <!-- BEGIN inputfieldList -->
+        <tr class="{CALENDAR_INPUTFIELD_ROW}" id="inputfield_{CALENDAR_INPUTFIELD_ID}">
+            <td valign="top" style="text-align: center;">
+                {CALENDAR_INPUTFIELD_ID}
+            </td>
+            <td valign="top" style="text-align: center;" nowrap="nowrap">
+                <input name="inputfield[{CALENDAR_INPUTFIELD_ID}][order]" type="text" value="{CALENDAR_INPUTFIELD_ORDER}" style="width: 20px;" onfocus="this.select();" />&nbsp;
+            </td>
+            <td valign="top">
+                <div id="inputfield_{CALENDAR_INPUTFIELD_ID}_name_Minimized" style="display: block;">
+                    <input name="inputfield[{CALENDAR_INPUTFIELD_ID}][name][0]" maxlength="255" style="width: 200px;" type="text" value="{CALENDAR_INPUTFIELD_NAME_MASTER}" />
+                </div>
+                <div id="inputfield_{CALENDAR_INPUTFIELD_ID}_name_Expanded" style="display: none;"> 
+                    <!-- BEGIN inputfieldNameList -->
+                    <input name="inputfield[{CALENDAR_INPUTFIELD_ID}][name][{CALENDAR_INPUTFIELD_LANG_ID}]" maxlength="255" type="text" style="width: 179px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url('images/flags/flag_{CALENDAR_INPUTFIELD_LANG_SHORTCUT}.gif') no-repeat 3px 3px;" title="{CALENDAR_INPUTFIELD_LANG_NAME}" value="{CALENDAR_INPUTFIELD_NAME}" /><br />
+                    <!--  END inputfieldNameList --> 
+                </div>
+            </td>
+            <td valign="top">
+                <select name="inputfield[{CALENDAR_INPUTFIELD_ID}][type]" style="width: 140px"> 
+                    {CALENDAR_INPUTFIELD_TYPE}
+                </select>
+            </td>
+            <td valign="top">
+                <div id="inputfield_{CALENDAR_INPUTFIELD_ID}_default_value_Minimized" style="display: block;">
+                    <input name="inputfield[{CALENDAR_INPUTFIELD_ID}][default_value][0]" maxlength="255" style="width: 200px;" type="text" value="{CALENDAR_INPUTFIELD_DEFAULT_VALUE_MASTER}" />
+                </div>
+                <div id="inputfield_{CALENDAR_INPUTFIELD_ID}_default_value_Expanded" style="display: none;"> 
+                    <!-- BEGIN inputfieldDefaultValueList -->
+                    <input name="inputfield[{CALENDAR_INPUTFIELD_ID}][default_value][{CALENDAR_INPUTFIELD_LANG_ID}]" maxlength="255" type="text" style="width: 179px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url('images/flags/flag_{CALENDAR_INPUTFIELD_LANG_SHORTCUT}.gif') no-repeat 3px 3px;" title="{CALENDAR_INPUTFIELD_LANG_NAME}" value="{CALENDAR_INPUTFIELD_DEFAULT_VALUE}" /><br />
+                    <!--  END inputfieldDefaultValueList --> 
+                </div>
+            </td>
+            <td valign="top" style="text-align: center;">
+                <input name="inputfield[{CALENDAR_INPUTFIELD_ID}][required]" type="checkbox" value="1" {CALENDAR_INPUTFIELD_REQUIRED}/>
+            </td>
+            <td valign="top">
+                <select name="inputfield[{CALENDAR_INPUTFIELD_ID}][affiliation]" style="width: 140px"> 
+                    {CALENDAR_INPUTFIELD_AFFILIATION}
+                </select>
+            </td>
+            <td valign="top" style="line-height: 19px;" nowrap="nowrap">
+                <!-- BEGIN formFieldExpand -->
+                <div id="inputfield_{CALENDAR_INPUTFIELD_ID}_lang_name_Minimized" style="display: block;">
+                    <a href="javascript:ExpandMinimize('name', '{CALENDAR_INPUTFIELD_ID}'); ExpandMinimize('default_value', '{CALENDAR_INPUTFIELD_ID}'); ExpandMinimize('lang_name', '{CALENDAR_INPUTFIELD_ID}');" >{TXT_CALENDAR_EXPAND}&nbsp;&raquo;</a>
+                </div>
+                <!-- END formFieldExpand -->
+                <div id="inputfield_{CALENDAR_INPUTFIELD_ID}_lang_name_Expanded" style="display: none;">
+                    <!-- BEGIN inputfieldLanguagesList -->
+                    {TXT_CALENDAR_INPUTFIELD_LANG_NAME}&nbsp;&nbsp;&nbsp;{CALENDAR_MINIMIZE}<br />
+                    <!-- END inputfieldLanguagesList -->
+                </div>
+            </td>
+            <td style="text-align: right;" valign="top">
+                <a href="#" onclick="deleteField({CALENDAR_INPUTFIELD_ID});" title="{TXT_CALENDAR_DELETE}"><img style="vertical-align: middle;" src="images/icons/delete.gif" alt="{TXT_CALENDAR_DELETE}" width="17" border="0" height="17"></a>
+            </td>
+        </tr>
+        <!-- END inputfieldList -->
+    </table>
+    <input type="button" onclick="appendField();" name="newInputfiels" value="{TXT_CALENDAR_NEW_INPUTFIELD}" style="margin-left: 96px; margin-top: 6px;" />
+    <br />
+    <input type="submit" name="submitModifyForm" value="{TXT_CALENDAR_SAVE}" />
+</form>
+<!-- END module_calendar_settings_form.html -->
