@@ -64,18 +64,18 @@ class LinkSanitizer {
             # match file path and closing quote
             ([^'\"]*)(['\"])
         /x", function($matches) {
-            if (file_exists(ASCMS_DOCUMENT_ROOT.'/'.$matches[self::FILE_PATH])) {
+            if (file_exists(ASCMS_DOCUMENT_ROOT.'/'.$matches[\LinkSanitizer::FILE_PATH])) {
                 // this is an existing file, do not add virtual language dir
-                return $matches[self::ATTRIBUTE_AND_OPEN_QUOTE] .
+                return $matches[\LinkSanitizer::ATTRIBUTE_AND_OPEN_QUOTE] .
                     ASCMS_INSTANCE_OFFSET .
-                    '/'.$matches[self::FILE_PATH] .
-                    $matches[self::CLOSE_QUOTE];
+                    '/'.$matches[\LinkSanitizer::FILE_PATH] .
+                    $matches[\LinkSanitizer::CLOSE_QUOTE];
             } else {
                 // this is a link to a page, add virtual language dir
-                return $matches[self::ATTRIBUTE_AND_OPEN_QUOTE] .
+                return $matches[\LinkSanitizer::ATTRIBUTE_AND_OPEN_QUOTE] .
                     $this->offset .
-                    $matches[self::FILE_PATH] .
-                    $matches[self::CLOSE_QUOTE];
+                    $matches[\LinkSanitizer::FILE_PATH] .
+                    $matches[\LinkSanitizer::CLOSE_QUOTE];
             }
         }, $this->content);
 

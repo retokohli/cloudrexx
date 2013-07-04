@@ -376,7 +376,7 @@ namespace Cx\Core\Core\Controller {
             // turning '/var/www/myoffset' into '/var/www'
             $documentRoot = '';
             $arrMatches = array();
-            $scriptPath = str_replace('\\', '/', dirname(__FILE__));
+            $scriptPath = str_replace('\\', '/', dirname(dirname(__FILE__)));
             if (preg_match("/(.*)(?:\/[\d\D]*){2}$/", $scriptPath, $arrMatches) == 1) {
                 $scriptPath = $arrMatches[1];
             }
