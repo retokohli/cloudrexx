@@ -78,37 +78,16 @@ class PageEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         $uow     = $em->getUnitOfWork();
         $entity  = $eventArgs->getEntity();
         
-        if ($entity instanceof \Cx\Core\ContentManager\Model\Entity\Node) {
-            $pages = $entity->getPages(true);
-            
-            foreach ($pages as $page) {
-                // NOTE: aliases will be removed when this hook is triggered again
-                //       by the removal process of the page (see below)
-                $em->remove($page);
+        // remove aliases of page
+        $aliases = $entity->getAliases();
+        if (!empty($aliases)) {
+            foreach ($aliases as $alias) {
+                $node = $alias->getNode();
+                $em->remove($node);
                 $uow->computeChangeSet(
-                    $em->getClassMetadata('Cx\Core\ContentManager\Model\Entity\Page'),
-                    $page
+                    $em->getClassMetadata('Cx\Core\ContentManager\Model\Entity\Node'),
+                    $node
                 );
-            }
-
-            // NOTE: removeFromTree() will manually remove $entity from the database using DQL.
-            //       Additionally, it will detach/remove $entity from UnitOfWork,
-            //       which will UnitOfWork cause to skip the final remove() operation on $entity
-            //       to prevent causing an issue with the already removed $entity.
-            $nodeRepo = $em->getRepository('\Cx\Core\ContentManager\Model\Entity\Node');
-            $nodeRepo->removeFromTree($entity);
-        } else if ($entity instanceof \Cx\Core\ContentManager\Model\Entity\Page) {
-            // remove aliases of page
-            $aliases = $entity->getAliases();
-            if (!empty($aliases)) {
-                foreach ($aliases as $alias) {
-                    $node = $alias->getNode();
-                    $em->remove($node);
-                    $uow->computeChangeSet(
-                        $em->getClassMetadata('Cx\Core\ContentManager\Model\Entity\Node'),
-                        $node
-                    );
-                }
             }
         }
     }
