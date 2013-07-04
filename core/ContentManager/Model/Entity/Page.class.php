@@ -1419,6 +1419,7 @@ class Page extends \Cx\Model\Base\EntityBase
                 $page
         );
         $copy->setNode($destinationNode);
+        $destinationNode->addPage($copy);
         return $copy;
     }
     
