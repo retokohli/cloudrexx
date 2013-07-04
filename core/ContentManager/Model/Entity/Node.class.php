@@ -352,4 +352,43 @@ class Node extends \Cx\Model\Base\EntityBase
         
         return $page;
     }
+    
+    /**
+     * Creates a copy of this node including its pages
+     * 
+     * This does not persist anything.
+     * @todo This is untested!
+     * @param boolean $recursive (optional) Wheter copy all children to the new node or not, default false
+     * @param Node $newParent (optional) New parent node for the copy, default is parent of this
+     * @param boolean $persist (optional) Wheter to persist new entities or not, default true, if set to false, be sure to persist everything
+     * @return \Cx\Core\ContentManager\Model\Entity\Node Copy of this node
+     */
+    public function copy($recursive = false, Node $newParent = null, $persist = true) {
+        $em = \Env::get('cx')->getDb()->getEntityManager();
+        
+        if (!$newParent) {
+            $newParent = $this->getParent();
         }
+        $copy = new self();
+        $copy->setParent($newParent);
+        if ($persist) {
+            $em->persist($copy);
+        }
+        
+        foreach ($this->getPages(true) as $page) {
+            $pageCopy = $page->copyToNode($copy);
+            if ($persist) {
+                $em->persist($pageCopy);
+            }
+        }
+        
+        if (!$recursive) {
+            return $copy;
+        }
+        
+        foreach ($this->getChildren() as $child) {
+            $copy->addParsedChild($child->copy(true, $copy));
+        }
+        return $copy;
+    }
+}
