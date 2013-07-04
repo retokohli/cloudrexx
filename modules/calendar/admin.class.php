@@ -1,19 +1,36 @@
 <?php
-
 /**
  * Calendar
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation 
- * @package     contrexx                                
- * @todo        Edit PHP DocBlocks!
+ * @author      Comvation <info@comvation.com>
+ * @version     $Id: index.inc.php,v 1.00 $
+ * @package     contrexx
+ * @subpackage  module_calendar
  */
 
+
+/**
+ * CalendarAdmin
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation <info@comvation.com>
+ * @version     $Id: index.inc.php,v 1.00 $
+ * @package     contrexx
+ * @subpackage  module_calendar
+ */
 class CalendarManager extends CalendarLibrary
 {
+    /**
+     * Page title
+     *
+     * @access private
+     * @var string 
+     */
     var $_pageTitle;
 
     /**
-     * PHP 5 Constructor
+     * Constructor   -> Create the module-menu and an internal template-object
+     * @global array  $_ARRAYLANG
+     * @global object $objTemplate
      */
     function __construct()
     {
@@ -32,8 +49,10 @@ class CalendarManager extends CalendarLibrary
     }
 
     /**
-     * Get Calendar Page
-     */
+    * Perform the right operation depending on the $_GET-params
+    *
+    * @global   \Cx\Core\Html\Sigma
+    */
     function getCalendarPage()
     {
         global $objTemplate, $objDatabase, $_ARRAYLANG;

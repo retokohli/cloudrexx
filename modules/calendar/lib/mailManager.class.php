@@ -1,23 +1,47 @@
 <?php
-
 /**
  * Calendar Class Mail Manager
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @version     1.0.0
+ * @author      Comvation <info@comvation.com>
+ * @version     $Id: index.inc.php,v 1.00 $
  * @package     contrexx
  * @subpackage  module_calendar
- * @todo        Edit PHP DocBlocks!
  */
 
+
+/**
+ * CalendarMailManager
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation <info@comvation.com>
+ * @version     $Id: index.inc.php,v 1.00 $
+ * @package     contrexx
+ * @subpackage  module_calendar
+ */
 class CalendarMailManager extends CalendarLibrary {
+    /**
+     * Mail list array
+     * 
+     * @access public
+     * @var array 
+     */
     public $mailList = array();
     
+    /**
+     * Constructor
+     */
     function __construct()
     {
         parent::getFrontendLanguages();
     }
     
+    /**
+     * Return's the mailing list
+     * 
+     * @global object $objDatabase
+     * @global array $_ARRAYLANG
+     * @global integer $_LANGID
+     * @return array Return's the mailing list
+     */
     function getMailList() 
     {
         global $objDatabase,$_ARRAYLANG,$_LANGID;   
@@ -36,6 +60,13 @@ class CalendarMailManager extends CalendarLibrary {
         }
     }
     
+    /**
+     * Set the mailing list placeholders to the template
+     * 
+     * @global object $objDatabase
+     * @global array $_ARRAYLANG
+     * @param object $objTpl
+     */
     function showMailList($objTpl) 
     {
         global $objDatabase, $_ARRAYLANG;
@@ -85,6 +116,14 @@ class CalendarMailManager extends CalendarLibrary {
         }
     }
     
+    /**
+     * Sets the mail placeholders to the template
+     * 
+     * @global object $objInit
+     * @global array $_ARRAYLANG
+     * @param object $objTpl
+     * @param integer $mailId
+     */
     function showMail($objTpl, $mailId) 
     {
         global $objInit, $_ARRAYLANG;
@@ -103,6 +142,18 @@ class CalendarMailManager extends CalendarLibrary {
         ));
     }
     
+    /**
+     * Initialize the mail functionality to the recipient
+     * 
+     * @global object $objDatabase
+     * @global array $_ARRAYLANG
+     * @global integer $_LANGID
+     * @global array $_CONFIG
+     * @param integer $eventId
+     * @param integer $actionId
+     * @param integer $regId
+     * @param string $mailTemplate
+     */
     function sendMail($eventId, $actionId, $regId=null, $mailTemplate = null)
     {  
         global $objDatabase,$_ARRAYLANG,$_LANGID, $_CONFIG ;

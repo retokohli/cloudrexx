@@ -2,23 +2,55 @@
 /**
  * Calendar Class Catagory Manager
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @version     1.0.0
+ * @author      Comvation <info@comvation.com>
+ * @version     $Id: index.inc.php,v 1.00 $
  * @package     contrexx
  * @subpackage  module_calendar
- * @todo        Edit PHP DocBlocks!
  */
 
+
+/**
+ * CalendarCategoryManager
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation <info@comvation.com>
+ * @version     $Id: index.inc.php,v 1.00 $
+ * @package     contrexx
+ * @subpackage  module_calendar
+ */
 class CalendarCategoryManager extends CalendarLibrary
 {
+    /**
+     * Category List
+     * 
+     * @access public
+     * @var array 
+     */
     public $categoryList = array();
     
+    /**
+     * Only Active
+     * 
+     * @access private
+     * @var boolean 
+     */
     private $onlyActive;
 
+    /**
+     * Constructor
+     * 
+     * @param boolean $onlyActive
+     */
     function __construct($onlyActive=false){
     	$this->onlyActive = $onlyActive;
     }
     
+    /**
+     * Returns all the calendar categories
+     * 
+     * @global object  $objDatabase
+     * @global integer $_LANGID
+     * @return array Returns all calendar categories
+     */
     function getCategoryList() {
         global $objDatabase,$_LANGID;
         
@@ -40,6 +72,14 @@ class CalendarCategoryManager extends CalendarLibrary
         }
     }
     
+    /**
+     * Sets the category placeholder's to the template
+     * 
+     * @global object $objInit
+     * @global array $_ARRAYLANG
+     * @param object $objTpl
+     * @param integer $categoryId     
+     */
     function showCategory($objTpl, $categoryId) {
         global $objInit, $_ARRAYLANG;
         
@@ -56,6 +96,12 @@ class CalendarCategoryManager extends CalendarLibrary
         ));
     }
     
+    /**
+     * Sets the category placeholder's to the template for the list view
+     * 
+     * @global array $_ARRAYLANG
+     * @param object $objTpl
+     */
     function showCategoryList($objTpl) {
         global $_ARRAYLANG;
         
@@ -85,6 +131,14 @@ class CalendarCategoryManager extends CalendarLibrary
         }
     }
     
+    /**
+     * Return's the category dropdown
+     * 
+     * @global array $_ARRAYLANG
+     * @param integer $selectedId
+     * @param integer $type
+     * @return string Return's the html dropdown of the categories.
+     */
     function getCategoryDropdown($selectedId=null, $type) {
     	global $_ARRAYLANG;
     	
