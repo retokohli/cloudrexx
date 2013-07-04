@@ -1575,7 +1575,7 @@ class Page extends \Cx\Model\Base\EntityBase
      * Sets this pages virtual flag
      * @param boolean $virtual 
      */
-    public function setVirtual($virtual) {
+    public function setVirtual($virtual = true) {
         if ($this->isVirtual && !$virtual) {
             throw new PageException('Can not set a virtual page to "non virtual"');
         }
