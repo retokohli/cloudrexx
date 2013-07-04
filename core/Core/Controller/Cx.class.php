@@ -275,7 +275,7 @@ namespace Cx\Core\Core\Controller {
          * @throws \Exception If the CMS is deactivated, an exception is thrown
          */
         protected function loadConfig() {
-            global $_CONFIG, $_PATHCONFIG;
+            global $_CONFIG, $_PATHCONFIG, $_DBCONFIG;
             
             /**
              * Should we overwrite path configuration?
@@ -308,7 +308,18 @@ namespace Cx\Core\Core\Controller {
              * {@link $_CONFIG[]} global array.
              */
             $incSettingsStatus = include_once $_PATHCONFIG['ascms_root'].$_PATHCONFIG['ascms_root_offset'].'/config/settings.php';
-
+            
+            @ini_set('default_charset', $_CONFIG['coreCharacterEncoding']);
+            
+            // Set output url seperator
+            @ini_set('arg_separator.output', '&amp;');
+            
+            // Set url rewriter tags
+            @ini_set('url_rewriter.tags', 'a=href,area=href,frame=src,iframe=src,input=src,form=,fieldset=');
+            
+            // Set timezone
+            @ini_set('date.timezone', $_DBCONFIG['timezone']);
+            
             /**
              * -------------------------------------------------------------------------
              * Set constants
