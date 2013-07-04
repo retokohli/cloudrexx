@@ -1567,6 +1567,9 @@ cx.cm.performAction = function(action, pageId, nodeId) {
             jQuery("#parent_node").val(nodeId);
             cx.cm.createEditor();
             return;
+        case "copy":
+            url = "index.php?cmd=jsondata&object=node&act=copy&id=" + nodeId;
+            break;
         case "activate":
         case "deactivate":
             // do not toggle activity for drafts
@@ -1616,6 +1619,10 @@ cx.cm.performAction = function(action, pageId, nodeId) {
                     break;
                 case "deactivate":
                     page.publishing.published = false;
+                    break;
+                case "copy":
+                    cx.cm.createJsTree();
+                    return;
                     break;
                 case "delete":
                     page.deleted = true;
@@ -1693,6 +1700,7 @@ cx.cm.updateActionMenu = function(args) {
 
     // add actions
     menu.append(jQuery("<li class=\"action-item\">").addClass("new").text(cx.variables.get("new", "contentmanager/lang/actions")));
+    menu.append(jQuery("<li class=\"action-item\">").addClass("copy").text(cx.variables.get("copy", "contentmanager/lang/actions")));
     if (!args.page.publishing.locked) {
         if (args.page.publishing.hasDraft == "no") {
             if (args.page.publishing.published) {
@@ -2490,6 +2498,9 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
 };
 
 cx.cm.setPageTarget = function(pageTarget, pageTargetPath) {
+    if (pageTarget == null) {
+        pageTarget = "";
+    }
     jQuery('#page_target_backup').val(pageTarget);
     jQuery('#page_target_protocol > option').removeAttr("selected");
 

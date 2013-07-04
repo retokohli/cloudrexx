@@ -98,7 +98,7 @@ class JsonNode implements JsonAdapter {
      * @return array List of method names
      */
     public function getAccessableMethods() {
-        return array('getTree', 'delete', 'multipleDelete', 'move', 'getPageTitlesTree');
+        return array('getTree', 'delete', 'copy', 'multipleDelete', 'move', 'getPageTitlesTree');
     }
 
     /**
@@ -220,6 +220,73 @@ class JsonNode implements JsonAdapter {
         return array(
             'nodeLevels' => $nodeLevels,
         );
+    }
+    
+    public function copy($arguments) {
+        global $_CORELANG;
+        
+        // Global access check
+        if (!\Permission::checkAccess(6, 'static', true) ||
+                !\Permission::checkAccess(35, 'static', true)) {
+            throw new ContentManagerException($_CORELANG['TXT_CORE_CM_USAGE_DENIED']);
+        }
+        if (!\Permission::checkAccess(53, 'static', true)) {
+            throw new ContentManagerException($_CORELANG['TXT_CORE_CM_COPY_DENIED']);
+        }
+        
+        $node = $this->nodeRepo->find($arguments['get']['id']);
+        if (!$node) {
+            throw new ContentManagerException($_CORELANG['TXT_CORE_CM_COPY_FAILED']);
+        }
+        
+        // this is necessary to get the position of the original node
+        $sortedLevel = array();
+        foreach ($node->getParent()->getChildren() as $levelNode) {
+            $sortedLevel[$levelNode->getLft()] = $levelNode;
+        }
+        ksort($sortedLevel);
+        $position = 0;
+        foreach ($sortedLevel as $sortedNode) {
+            $position++;
+            if ($sortedNode == $node) {
+                break;
+            }
+        }
+        
+        // copy the node recursively and persist changes
+        $newNode = $node->copy(true);
+        $this->em->flush();
+        
+        // rename page
+        foreach ($newNode->getPages() as $page) {
+            $title = $page->getTitle() . ' (' . $_CORELANG['TXT_CORE_CM_COPY_OF_PAGE'] . ')';
+            $i = 1;
+            while ($this->titleExists($node->getParent(), $page->getLang(), $title)) {
+                $i++;
+                if ($page->getLang() == \FWLanguage::getDefaultLangId()) {
+                    $position++;
+                }
+                $title = $page->getTitle() . ' (' . sprintf($_CORELANG['TXT_CORE_CM_COPY_N_OF_PAGE'], $i) . ')';
+            }
+            $page->setTitle($title);
+            $this->em->persist($page);
+        }
+        
+        // move the node to correct position
+        $this->nodeRepo->moveUp($newNode, true);
+        $this->nodeRepo->moveDown($newNode, $position, true);
+        $this->em->persist($newNode);
+        
+        $this->em->flush();
+    }
+    
+    protected function titleExists($parentNode, $lang, $title) {
+        foreach ($parentNode->getChildren() as $childNode) {
+            if ($childNode->getPage($lang) && $childNode->getPage($lang)->getTitle() == $title) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**

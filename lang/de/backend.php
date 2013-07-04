@@ -1624,6 +1624,7 @@ $_ARRAYLANG['TXT_CORE_CM_ACTION_UNPUBLISH'] = "Deaktivieren";
 $_ARRAYLANG['TXT_CORE_CM_ACTION_HIDE'] = "Verstecken";
 $_ARRAYLANG['TXT_CORE_CM_ACTION_SHOW'] = "Anzeigen";
 $_ARRAYLANG['TXT_CORE_CM_ACTION_NEW'] = "Neu innerhalb";
+$_ARRAYLANG['TXT_CORE_CM_ACTION_COPY'] = "Kopieren";
 $_ARRAYLANG['TXT_CORE_CM_ACTION_DELETE'] = "Löschen";
 $_ARRAYLANG['TXT_CORE_CM_RECURSIVE_QUESTION'] = 'Möchten Sie die Aktion auch auf alle Unterelemente ausführen?';
 $_ARRAYLANG['TXT_CORE_CM_PUBLISHING_INFO_STATUSES'] = "Status: ";
@@ -1660,6 +1661,9 @@ $_ARRAYLANG['TXT_CORE_CM_ACCESS_CHANGE_DENIED'] = 'Sie haben nicht genügend Rec
 $_ARRAYLANG['TXT_CORE_CM_PUBLISH_DENIED'] = 'Sie haben nicht genügend Rechte, um Seiten zu veröffentlichen.';
 $_ARRAYLANG['TXT_CORE_CM_COPY_DENIED'] = 'Sie haben nicht genügend Rechte, um Seiten zu kopieren.';
 $_ARRAYLANG['TXT_CORE_CM_VALIDATION_FAIL'] = 'Bitte füllen Sie alle erforderlichen Felder aus';
+$_ARRAYLANG['TXT_CORE_CM_COPY_FAILED'] = 'Kopieren fehlgeschlagen';
+$_ARRAYLANG['TXT_CORE_CM_COPY_OF_PAGE'] = 'Kopie';
+$_ARRAYLANG['TXT_CORE_CM_COPY_N_OF_PAGE'] = '%s. Kopie';
 
 // core login
 $_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Sicherheitscode";
