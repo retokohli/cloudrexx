@@ -164,6 +164,7 @@ class ContentManager extends \Module
         $arrLangVars = array(
             'actions' => array(
                 'new'               => 'TXT_CORE_CM_ACTION_NEW',
+                'copy'              => 'TXT_CORE_CM_ACTION_COPY',
                 'activate'          => 'TXT_CORE_CM_ACTION_PUBLISH',
                 'deactivate'        => 'TXT_CORE_CM_ACTION_UNPUBLISH',
                 'publish'           => 'TXT_CORE_CM_ACTION_PUBLISH_DRAFT',

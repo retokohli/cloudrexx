@@ -401,6 +401,10 @@ h1{ font-size: 20px }
     margin: 2px 0 2px 0;
 }
 
+#site-tree .actions-expanded ul li.copy {
+    background-image: url(../Media/ActionCopy.png);
+}
+
 #site-tree .actions-expanded ul li.activate {
     background-image: url(../Media/ActionActivate.png);
 }

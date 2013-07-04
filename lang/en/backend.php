@@ -1551,6 +1551,7 @@ $_ARRAYLANG['TXT_CORE_CM_ACTION_UNPUBLISH'] = "Unpublish";
 $_ARRAYLANG['TXT_CORE_CM_ACTION_HIDE'] = "Hide";
 $_ARRAYLANG['TXT_CORE_CM_ACTION_SHOW'] = "Show";
 $_ARRAYLANG['TXT_CORE_CM_ACTION_NEW'] = "New within";
+$_ARRAYLANG['TXT_CORE_CM_ACTION_COPY'] = "Copy";
 $_ARRAYLANG['TXT_CORE_CM_ACTION_DELETE'] = "Delete";
 $_ARRAYLANG['TXT_CORE_CM_RECURSIVE_QUESTION'] = 'Would you like to perform this action on all subelements?';
 $_ARRAYLANG['TXT_CORE_CM_PUBLISHING_INFO_STATUSES'] = "Statuses: ";
@@ -1585,6 +1586,9 @@ $_ARRAYLANG['TXT_CORE_CM_ACCESS_CHANGE_DENIED'] = "You don't have enough rights 
 $_ARRAYLANG['TXT_CORE_CM_PUBLISH_DENIED'] = "You don't have enough rights to publish pages.";
 $_ARRAYLANG['TXT_CORE_CM_COPY_DENIED'] = 'You don\'t have enough rights to copy pages.';
 $_ARRAYLANG['TXT_CORE_CM_VALIDATION_FAIL'] = 'Please fill in all required fields';
+$_ARRAYLANG['TXT_CORE_CM_COPY_FAILED'] = 'Copying failed';
+$_ARRAYLANG['TXT_CORE_CM_COPY_OF_PAGE'] = 'Copy';
+$_ARRAYLANG['TXT_CORE_CM_COPY_N_OF_PAGE'] = 'Copy %s';
 
 // upload
 $_ARRAYLANG['TXT_CORE_UPLOAD_MORE'] = "Upload more";
