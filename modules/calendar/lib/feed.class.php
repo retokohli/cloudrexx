@@ -2,16 +2,37 @@
 /**
  * Calendar Class RSS Feed
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @version     1.0.0
+ * @author      Comvation <info@comvation.com>
+ * @version     $Id: index.inc.php,v 1.00 $
  * @package     contrexx
  * @subpackage  module_calendar
- * @todo        Edit PHP DocBlocks!
  */
 
+
+/**
+ * CalendarFeed
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation <info@comvation.com>
+ * @version     $Id: index.inc.php,v 1.00 $
+ * @package     contrexx
+ * @subpackage  module_calendar
+ */
 class CalendarFeed extends CalendarLibrary {
+    /**
+     * Object Event manager
+     * 
+     * @access public
+     * @var object 
+     */
     private $objEventManager;
     
+    /**
+     * Constructor
+     * 
+     * @global array $_CONFIG
+     * @global object $objDatabase
+     * @param object $objEventManager
+     */
     function __construct($objEventManager){
         global $_CONFIG, $objDatabase;
         
@@ -19,6 +40,12 @@ class CalendarFeed extends CalendarLibrary {
         $this->domainUrl = ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET."/";
     }
     
+    /**
+     * Create's new rss feed for the calendar module
+     * 
+     * @global array $_CONFIG
+     * @global object $objDatabase
+     */
     function creatFeed(){
         global $_CONFIG, $objDatabase;
         

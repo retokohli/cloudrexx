@@ -1,13 +1,22 @@
 <?php
-
 /**
  * Calendar
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation
+ * @author      Comvation <info@comvation.com>
+ * @version     $Id: index.inc.php,v 1.00 $
  * @package     contrexx
- * @todo        Edit PHP DocBlocks!
+ * @subpackage  module_calendar
  */
 
+
+/**
+ * CalendarAdmin
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation <info@comvation.com>
+ * @version     $Id: index.inc.php,v 1.00 $
+ * @package     contrexx
+ * @subpackage  module_calendar
+ */
 class Calendar extends CalendarLibrary
 {
     private $objEventManager;
@@ -27,7 +36,11 @@ class Calendar extends CalendarLibrary
     public $metaTitle;
 
     /**
-     * PHP 5 Constructor
+     * Constructor
+     * 
+     * @global array $_ARRAYLANG
+     * @global object $objTemplate
+     * @param string $pageContent
      */
     function __construct($pageContent)
     {
