@@ -278,6 +278,30 @@ namespace Cx\Core\Core\Controller {
             global $_CONFIG, $_PATHCONFIG;
             
             /**
+             * Should we overwrite path configuration?
+             */
+            $fixPaths = false;
+            // path configuration is empty, so yes, we should...
+            if (empty($_PATHCONFIG['ascms_root'])) {
+                $fixPaths = true;
+            } else {
+                try {
+                    require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/core/Routing/Url.class.php';
+                    $this->request = \Cx\Core\Routing\Url::fromCapturedRequest(!empty($_GET['__cap']) ? $_GET['__cap'] : '', $_PATHCONFIG['ascms_root_offset'], $_GET);
+                } catch (\Cx\Core\Routing\UrlException $e) {
+                    // URL doesn't seem to start with provided offset
+                    $fixPaths = true;
+                }
+            }
+            if ($fixPaths) {
+                $this->fixPaths($_PATHCONFIG['ascms_root'], $_PATHCONFIG['ascms_root_offset']);
+            }
+            if ($fixPaths || empty($_PATHCONFIG['ascms_installation_root'])) {
+                $_PATHCONFIG['ascms_installation_root'] = $_PATHCONFIG['ascms_root'];
+                $_PATHCONFIG['ascms_installation_offset'] = $_PATHCONFIG['ascms_root_offset'];
+            }
+            
+            /**
              * User configuration settings
              *
              * This file is re-created by the CMS itself. It initializes the
@@ -311,6 +335,45 @@ namespace Cx\Core\Core\Controller {
             }
         }
         
+        /**
+         * Sets the parameters to the correct path values
+         * @param string $documentRoot Document root for this vHost
+         * @param string $rootOffset Document root offset for this installation
+         */
+        protected function fixPaths(&$documentRoot, &$rootOffset) {
+            // calculate correct offset path
+            // turning '/myoffset/somefile.php' into '/myoffset'
+            $rootOffset = '';
+            $directories = explode('/', $_SERVER['SCRIPT_NAME']);
+            for ($i = 0; $i < count($directories) - 1; $i++) {
+                if ($directories[$i] !== '') {
+                    $rootOffset .= '/'.$directories[$i];
+                }
+            }
+            
+            // fix wrong offset if another file than index.php was requested
+            // turning '/myoffset/core_module/somemodule' into '/myoffset'
+            $fileRoot = dirname(dirname(dirname(dirname(__FILE__))));
+            $nonOffset = preg_replace('#' . $fileRoot . '#', '', $_SERVER['SCRIPT_FILENAME']);
+            $nonOffsetParts = explode('/', $nonOffset);
+            end($nonOffsetParts);
+            unset($nonOffsetParts[key($nonOffsetParts)]);
+            $nonOffset = implode('/', $nonOffsetParts);
+            $rootOffset = preg_replace('#' . $nonOffset . '#', '', $rootOffset);
+
+            // calculate correct document root
+            // turning '/var/www/myoffset' into '/var/www'
+            $documentRoot = '';
+            $arrMatches = array();
+            $scriptPath = str_replace('\\', '/', dirname(__FILE__));
+            if (preg_match("/(.*)(?:\/[\d\D]*){2}$/", $scriptPath, $arrMatches) == 1) {
+                $scriptPath = $arrMatches[1];
+            }
+            if (preg_match("#(.*)".preg_replace(array('#\\\#', '#\^#', '#\$#', '#\.#', '#\[#', '#\]#', '#\|#', '#\(#', '#\)#', '#\?#', '#\*#', '#\+#', '#\{#', '#\}#'), '\\\\$0', $rootOffset)."#", $scriptPath, $arrMatches) == 1) {
+                $documentRoot = $arrMatches[1];
+            }
+        }
+
         /**
          * Set the mode Contrexx is used in
          * @param mixed $mode Mode as string or true for front- or false for backend
@@ -484,22 +547,21 @@ namespace Cx\Core\Core\Controller {
         protected function postInit() {
             global $_CONFIG;
             
-            // this makes \Env::get('Resolver')->getUrl() return a sensful result
-            $request = !empty($_GET['__cap']) ? $_GET['__cap'] : '';
-            $offset = ASCMS_PATH_OFFSET;
-            if ($this->mode == self::MODE_BACKEND) {
-                $request = ASCMS_PATH_OFFSET.'/cadmin';
+            // if path configuration was wrong in loadConfig(), Url is not yet initialized
+            if (!$this->request) {
+                // this makes \Env::get('Resolver')->getUrl() return a sensful result
+                $request = !empty($_GET['__cap']) ? $_GET['__cap'] : '';
                 $offset = ASCMS_INSTANCE_OFFSET;
-            }
-            
-            switch ($this->mode) {
-                case self::MODE_FRONTEND:
-                case self::MODE_BACKEND:
-                    $this->request = \Cx\Core\Routing\Url::fromCapturedRequest($request, $offset, $_GET);
-                    break;
-                case self::MODE_MINIMAL:
-                    $this->request = \Cx\Core\Routing\Url::fromRequest();
-                    break;
+
+                switch ($this->mode) {
+                    case self::MODE_FRONTEND:
+                    case self::MODE_BACKEND:
+                        $this->request = \Cx\Core\Routing\Url::fromCapturedRequest($request, $offset, $_GET);
+                        break;
+                    case self::MODE_MINIMAL:
+                        $this->request = \Cx\Core\Routing\Url::fromRequest();
+                        break;
+                }
             }
             $this->license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $this->getDb()->getAdoDb());
             
