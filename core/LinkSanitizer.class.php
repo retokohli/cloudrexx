@@ -33,7 +33,7 @@ class LinkSanitizer {
      * Calculates and returns the content with all replacements done.
      */
     function replace() {
-        $content = preg_replace("/
+        $content = preg_replace_callback("/
             (
                 # match all SRC and HREF attributes 
                 \s+(src|href|action)\s*=\s*['\"]
@@ -48,7 +48,7 @@ class LinkSanitizer {
             # ..and neither start with a protocol (http:, ftp:, javascript:, mailto:, etc)
             (?![a-zA-Z]+:)
 
-            # ..and neither start width an ampersand followed by a sharp and end with a semicolon (which would indicate that the url contains html codes for ascii characters)
+            # ..and neither start with an ampersand followed by a sharp and end with a semicolon (which would indicate that the url contains html codes for ascii characters)
             (?!&\#\d+;)
 
             # ..and neither start with a sharp
@@ -56,7 +56,17 @@ class LinkSanitizer {
 
             # ..and neither start with a backslash which would indicate that the url lies within some javascript code
             (?!\\\)
-        /x", '\1'.$this->offset, $this->content);
+            
+            ([^'\"]*)(['\"])
+        /x", function($matches) {
+            if (file_exists(ASCMS_DOCUMENT_ROOT.'/'.$matches[3])) {
+                // this is an existing file, do not add virtual language dir
+                return $matches[1].ASCMS_INSTANCE_OFFSET.'/'.$matches[3].$matches[4];
+            } else {
+                // this is a link to a page, add virtual language dir
+                return $matches[1].$this->offset.$matches[3].$matches[4];
+            }
+        }, $this->content);
 
         if (!empty($_GET['preview']) || (isset($_GET['appview']) && ($_GET['appview'] == 1))) {
             $content = preg_replace_callback("/
