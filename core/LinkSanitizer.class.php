@@ -23,14 +23,16 @@ class LinkSanitizer {
     const FILE_PATH = 3;
     const CLOSE_QUOTE = 4;
     
-    protected $offset;
+    public static $offset;
     protected $content;
     /**
      * @param string $offset the path offset to prepend, e.g. '/' or '/cms/'
      */
     function __construct($offset, &$content) {
         $this->content = &$content;
-        $this->offset = $offset;      
+        
+        // This needs to be static to be accessible from an inline function in PHP 5.3
+        self::$offset = $offset;      
     }
 
     /**
@@ -73,7 +75,7 @@ class LinkSanitizer {
             } else {
                 // this is a link to a page, add virtual language dir
                 return $matches[\LinkSanitizer::ATTRIBUTE_AND_OPEN_QUOTE] .
-                    $this->offset .
+                    \LinkSanitizer::$offset .
                     $matches[\LinkSanitizer::FILE_PATH] .
                     $matches[\LinkSanitizer::CLOSE_QUOTE];
             }
