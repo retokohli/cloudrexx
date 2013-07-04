@@ -1182,7 +1182,7 @@ class LegacyComponentHandler {
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/sitemap/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $sitemap = new \sitemap(\Env::get('cx')->getPage()->getContent(), $license);
+                        $sitemap = new \sitemap(\Env::get('cx')->getPage()->getContent(), \Env::get('cx')->getLicense());
                         \Env::get('cx')->getPage()->setContent($sitemap->getSitemapContent());
                     },
 
