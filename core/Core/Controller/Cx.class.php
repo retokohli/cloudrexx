@@ -310,7 +310,7 @@ namespace Cx\Core\Core\Controller {
                 $this->customizingPath = ASCMS_CUSTOMIZING_PATH;
             }
         }
-
+        
         /**
          * Set the mode Contrexx is used in
          * @param mixed $mode Mode as string or true for front- or false for backend
@@ -339,9 +339,9 @@ namespace Cx\Core\Core\Controller {
                         break;
                     }
                     // this does not belong here:
-                    if (!preg_match('#^' . ASCMS_INSTANCE_OFFSET . ASCMS_BACKEND_PATH . '#', $_GET['__cap'])) {
+                    if (!preg_match('#^' . ASCMS_INSTANCE_OFFSET . ASCMS_BACKEND_PATH . '/#', $_GET['__cap'])) {
                         // do not use \CSRF::header() here, since ClassLoader is not loaded at this time
-                        header('Location: ' . ASCMS_INSTANCE_OFFSET . ASCMS_BACKEND_PATH);
+                        header('Location: ' . ASCMS_INSTANCE_OFFSET . ASCMS_BACKEND_PATH . '/');
                         die();
                     }
                     $mode = self::MODE_BACKEND;
