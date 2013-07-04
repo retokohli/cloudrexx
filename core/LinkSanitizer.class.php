@@ -19,6 +19,10 @@
  * @subpackage  core
  */
 class LinkSanitizer {
+    const ATTRIBUTE_AND_OPEN_QUOTE = 1;
+    const FILE_PATH = 3;
+    const CLOSE_QUOTE = 4;
+    
     protected $offset;
     protected $content;
     /**
@@ -57,14 +61,21 @@ class LinkSanitizer {
             # ..and neither start with a backslash which would indicate that the url lies within some javascript code
             (?!\\\)
             
+            # match file path and closing quote
             ([^'\"]*)(['\"])
         /x", function($matches) {
-            if (file_exists(ASCMS_DOCUMENT_ROOT.'/'.$matches[3])) {
+            if (file_exists(ASCMS_DOCUMENT_ROOT.'/'.$matches[self::FILE_PATH])) {
                 // this is an existing file, do not add virtual language dir
-                return $matches[1].ASCMS_INSTANCE_OFFSET.'/'.$matches[3].$matches[4];
+                return $matches[self::ATTRIBUTE_AND_OPEN_QUOTE] .
+                    ASCMS_INSTANCE_OFFSET .
+                    '/'.$matches[self::FILE_PATH] .
+                    $matches[self::CLOSE_QUOTE];
             } else {
                 // this is a link to a page, add virtual language dir
-                return $matches[1].$this->offset.$matches[3].$matches[4];
+                return $matches[self::ATTRIBUTE_AND_OPEN_QUOTE] .
+                    $this->offset .
+                    $matches[self::FILE_PATH] .
+                    $matches[self::CLOSE_QUOTE];
             }
         }, $this->content);
 
