@@ -1,23 +1,66 @@
 <?php
 /**
+ * Calendar 
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
+ */
+
+
+/**
  * Calendar Class Settings
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @version     1.0.0
- * @package     contrexx
- * @subpackage  module_calendar
- * @todo        Edit PHP DocBlocks!
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
  */
 class CalendarSettings extends CalendarLibrary
 {
-	public $okMessage;
-	public $errMessage;
+    /**
+     * Status message
+     *
+     * @access public
+     * @var string 
+     */
+    public $okMessage;
+    
+    /**
+     * Error message
+     *
+     * @access public
+     * @var string
+     */
+    public $errMessage;
+    
+    /**
+     * Yellowpay settigns
+     *
+     * @access private
+     * @var array
+     */
     private $yellowPaySettings = array();
 	
+    /**
+     * Constructor
+     * 
+     * @see getFrontendLanguages();
+     */
     function __construct(){
         parent::getFrontendLanguages();
     }
     
+    /**
+     * General settings block
+     *      
+     * @param object $objTpl Template object
+     * 
+     * @return null
+     */
     function general($objTpl)
     {
         global $objDatabase, $_ARRAYLANG, $_CORELANG;
@@ -31,6 +74,13 @@ class CalendarSettings extends CalendarLibrary
         $this->_getSettingElements($objTpl, 1);
     }
 
+    /**
+     * Date settings block
+     *      
+     * @param object $objTpl Template object
+     * 
+     * @return null
+     */
     function dateDisplay($objTpl)
     {
         global $objDatabase, $_ARRAYLANG, $_CORELANG;
@@ -59,6 +109,11 @@ class CalendarSettings extends CalendarLibrary
         $this->_getSettingElements($objTpl, 14);
     }
     
+    /**
+     * Initialize the date seprators for parsing
+     * 
+     * @return null
+     */
     function _getDateSeparators()
     {
         global $_ARRAYLANG, $objDatabase;
@@ -88,6 +143,12 @@ class CalendarSettings extends CalendarLibrary
         }        
     }
     
+    /**
+     * Return date seprator by name
+     * 
+     * @param string $settingName setting name 
+     * @return array date seperators list by its name
+     */
     function getDateSeparatorByName($settingName)
     {
         if (isset($this->arrSeparatorValue[$settingName])) {
@@ -97,6 +158,13 @@ class CalendarSettings extends CalendarLibrary
         return array();
     }
     
+    /**
+     * Loads the payment settings
+     *      
+     * @param object $objTpl Template object
+     * 
+     * @return null
+     */
     function payment($objTpl)
     {
         global $objDatabase, $_ARRAYLANG, $_CORELANG;
@@ -111,6 +179,13 @@ class CalendarSettings extends CalendarLibrary
 
     }
     
+    /**
+     * Loads the form settings
+     *      
+     * @param object $objTpl Template object
+     * 
+     * @return null
+     */
     function forms($objTpl)
     {
         global $objDatabase, $_ARRAYLANG, $_CORELANG;
@@ -189,6 +264,14 @@ class CalendarSettings extends CalendarLibrary
         $objFormManager->showFormList($objTpl);
     }
     
+    /**
+     * Add / edit of settings -> form
+     *      
+     * @param object  $objTpl Template object
+     * @param integer $formId FormId
+     * 
+     * @return null
+     */
     function modifyForm($objTpl,$formId)
     {
         global $_ARRAYLANG, $_CORELANG;
@@ -284,6 +367,13 @@ class CalendarSettings extends CalendarLibrary
         $objFormManager->showForm($objTpl, intval($formId), 1);    
     }
     
+    /**
+     * Loads the mail settings
+     *      
+     * @param object $objTpl Template object
+     * 
+     * @return null
+     */
     function mails($objTpl)
     {
         global $objDatabase, $_ARRAYLANG, $_CORELANG;
@@ -349,6 +439,14 @@ class CalendarSettings extends CalendarLibrary
         $objMailManager->showMailList($objTpl);
     }
     
+    /**
+     * Add / edit of Mail template
+     *      
+     * @param object  $objTpl Template object
+     * @param integer $mailId Mail id
+     * 
+     * @return null
+     */
     function modifyMail($objTpl, $mailId)
     {
         global $objDatabase, $_ARRAYLANG, $_CORELANG;
@@ -423,6 +521,13 @@ class CalendarSettings extends CalendarLibrary
         ));
     }
     
+    /**
+     * Loads the Host settings
+     *      
+     * @param object $objTpl Html template object
+     * 
+     * @return null
+     */
     function hosts($objTpl)
     {
         global $_ARRAYLANG, $_CORELANG;
@@ -521,8 +626,14 @@ class CalendarSettings extends CalendarLibrary
         $objHostManager->showHostList($objTpl);
     }
     
-
-    
+    /**
+     * Add / edit of Host settings
+     *      
+     * @param object  $objTpl Template object
+     * @param integer $hostId Host id
+     * 
+     * @return null
+     */
     function modifyHost($objTpl, $hostId)
     {
         global $_ARRAYLANG, $_CORELANG;
@@ -563,6 +674,11 @@ class CalendarSettings extends CalendarLibrary
         ));
     }
     
+    /**
+     * Global save function for saving the settings into database
+     * 
+     * @return null
+     */
     function _saveSettings() 
     {
         global $_ARRAYLANG, $objDatabase;
@@ -585,6 +701,14 @@ class CalendarSettings extends CalendarLibrary
        }
     }       
     
+    /**
+     * Return's the settings Elements by its section id
+     *      
+     * @param object  $objTpl  Template object
+     * @param integer $section section id
+     * 
+     * @return null
+     */
     function _getSettingElements($objTpl, $section) 
     {
         global $_ARRAYLANG, $objDatabase;
@@ -642,6 +766,20 @@ class CalendarSettings extends CalendarLibrary
         }
     }
     
+    /**
+     * Return's settings element html by given properties
+     *      
+     * @param integer $id      Field id
+     * @param string  $name    Html input name of the field
+     * @param string  $title   Name/Title of the field
+     * @param string  $value   Value of the field
+     * @param string  $info    Info about the field
+     * @param integer $type    Type of the settings field
+     * @param string  $options options array
+     * @param string  $special integer value of special field
+     * 
+     * @return string Html of the setting field
+     */
     function _getSettingProperties($id,$name,$title,$value,$info,$type,$options,$special)
     {
         global $_ARRAYLANG, $_CORELANG;
@@ -753,6 +891,13 @@ class CalendarSettings extends CalendarLibrary
         return $arrSetting;
     }
 
+    /**
+     * Return's the yellowpay settings by name
+     *      
+     * @param string $name yellowpay settings name
+     * 
+     * @return array yellowpay settings
+     */
     function getYellowpaySettings($name = false) {
         global $objDatabase;
         if(!$this->yellowPaySettings) {

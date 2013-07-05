@@ -1,34 +1,132 @@
 <?php
+/**
+ * Calendar
+ *  
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
+ */
+
 
 /**
  * Calendar Class Mail
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @version     1.0.0
- * @package     contrexx
- * @subpackage  module_calendar
- * @todo        Edit PHP DocBlocks!
- */
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
+ */ 
 class CalendarMail extends CalendarLibrary
 {
+    /**
+     * Mail Id
+     * 
+     * @access public
+     * @var integer 
+     */
     public $id;
+    
+    /**
+     * Mail Title
+     *
+     * @access public
+     * @var string 
+     */
     public $title;
+    
+    /**
+     * mail content text
+     *
+     * @access public
+     * @var string
+     */
     public $content_text;
+    
+    /**
+     * mail content html
+     *
+     * @access public
+     * @var string 
+     */
     public $content_html;
+    
+    /**
+     * Language id
+     *
+     * @access public
+     * @var integer 
+     */
     public $lang_id;
+    
+    /**
+     * recipients
+     *
+     * @access public
+     * @var string 
+     */
     public $recipients;
+    
+    /**
+     * default recipient
+     *
+     * @access public
+     * @var string
+     */
     public $default_recipient;
+    
+    /**
+     * Action id
+     *
+     * @access public
+     * @var integer 
+     */
     public $action_id;
+    
+    /**
+     * Is default mail
+     *
+     * @access public
+     * @var boolean 
+     */
     public $is_default;
+    
+    /**
+     * Status
+     *
+     * @access public
+     * @var boolean 
+     */
     public $status;
+    
+    /**
+     * List of templates
+     *
+     * @access public
+     * @var array 
+     */
     public $templateList;
     
+    /**
+     * Mail Constructor loads the mail object with the given id
+     * 
+     * @param integer $id mail id
+     */
     function __construct($id=null){
         if($id != null) {
             self::get($id);
         }
     }
     
+    /**
+     * Loads the mail by Id
+     *      
+     * @param integer $mailId Mail id
+     * 
+     * @return null
+     */
     function get($mailId) {
         global $objDatabase, $_ARRAYLANG, $_LANGID;
         
@@ -51,6 +149,11 @@ class CalendarMail extends CalendarLibrary
         }
     }
     
+    /**
+     * Delete the mail 
+     *      
+     * @return boolean true if data deleted, false otherwise
+     */
     function delete(){
         global $objDatabase;
         
@@ -65,6 +168,11 @@ class CalendarMail extends CalendarLibrary
         }
     }
     
+    /**
+     * Set the mail as a default mail
+     *      
+     * @return boolean true if data updated, false otherwise
+     */
     function setAsDefault(){
         global $objDatabase;
         
@@ -86,6 +194,11 @@ class CalendarMail extends CalendarLibrary
         }
     }
     
+    /**
+     * Switch the status of the mail
+     *      
+     * @return boolean true if data updated, false otherwise
+     */
     function switchStatus(){
         global $objDatabase;
         
@@ -107,6 +220,13 @@ class CalendarMail extends CalendarLibrary
         }
     }
     
+    /**
+     * Save the mail data
+     *      
+     * @param type $data Posted data from the user
+     * 
+     * @return boolean true if data updated, false otherwise
+     */
     function save($data) {
         global $objDatabase;
         
@@ -140,6 +260,11 @@ class CalendarMail extends CalendarLibrary
         }
     }
     
+    /**
+     * Initialize the Template list
+     * 
+     * @return null
+     */
     public function getTemplateList() {
         global $objDatabase;
         
@@ -158,6 +283,14 @@ class CalendarMail extends CalendarLibrary
         }
     }
     
+    /**
+     * Return's the mailing template list drop down
+     * 
+     * @param integer $selectedId Template list to be selected
+     * @param action  $actionId   Action id
+     * 
+     * @return string Html drop down with the mail templates
+     */
     function getTemplateDropdown($selectedId=null, $actionId=null) {
         parent::getSettings();
         $arrOptions = array();

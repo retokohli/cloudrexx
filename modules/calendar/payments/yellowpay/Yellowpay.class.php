@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Class Yellowpay
  *
@@ -9,7 +8,7 @@
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @version     3.0.0
  * @package     contrexx
- * @subpackage  module_shop
+ * @subpackage  module_calendar
  * @todo        Edit PHP DocBlocks!
  */
 
@@ -19,7 +18,7 @@
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @version     3.0.0
  * @package     contrexx
- * @subpackage  module_shop
+ * @subpackage  module_calendar
  * @internal    Yellowpay must be configured to return with the follwing requests:
  * POST after payment was made:
  *      http://<my>.com/index.php?section=shop&cmd=success&handler=yellowpay&result=-1

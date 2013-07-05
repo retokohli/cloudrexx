@@ -1,29 +1,87 @@
 <?php
-
 /**
- * Calendar Class Categroy
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @version     1.0.0
- * @package     contrexx
- * @subpackage  module_calendar
- * @todo        Edit PHP DocBlocks!
+ * Calendar 
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
  */
 
+
+/**
+ * Calendar Class Host Manager
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
+ */
 class CalendarCategory extends CalendarLibrary
 {
+    /**
+     * category id
+     * 
+     * @access public
+     * @var integer
+     */
     public $id;
+    
+    /**
+     * category name
+     *
+     * @access public
+     * @var string
+     */
     public $name;
+    
+    /**
+     * position
+     *
+     * @access public
+     * @var integer
+     */
     public $pos;
+    
+    /**
+     * status
+     *
+     * @access public
+     * @var boolean
+     */
     public $status;
+    
+    /**
+     * Category data
+     *
+     * @access public
+     * @var array
+     * @see getData();
+     */
     public $arrData = array();
     
+    /**
+     * category manager constructor
+     * 
+     * Loads the category by given id
+     * 
+     * @param integer $id category id     
+     */
     function __construct($id=null){
         if($id != null) {
             self::get($id);
         }
     }
     
+    /**
+     * Loads the catgory
+     *      
+     * @param integer $catId
+     * 
+     * @return null
+     */
     function get($catId) {
         global $objDatabase, $_LANGID;
         
@@ -48,6 +106,11 @@ class CalendarCategory extends CalendarLibrary
         }
     }
     
+    /**
+     * Loads the category data
+     * 
+     * @return null
+     */
     function getData() {
         global $objDatabase, $_LANGID;
         
@@ -84,6 +147,11 @@ class CalendarCategory extends CalendarLibrary
         }
     }
     
+    /**
+     * Switch the status of the catgory
+     * 
+     * @return boolean true if status updated successfully, false otherwise
+     */
     function switchStatus(){
         global $objDatabase;
         
@@ -107,6 +175,13 @@ class CalendarCategory extends CalendarLibrary
         }
     }
     
+    /**
+     * Save the category order
+     *      
+     * @param integer $order order number of the category
+     * 
+     * @return boolean true if order updated successfully, false otherwise
+     */
     function saveOrder($order) {
         global $objDatabase, $_LANGID;    
                   
@@ -123,6 +198,13 @@ class CalendarCategory extends CalendarLibrary
         }
     }
     
+    /**
+     * Save the category
+     *      
+     * @param array $data posted data from the user
+     * 
+     * @return boolean true if data saved successfully, false otherwise
+     */
     function save($data) {
         global $objDatabase, $_LANGID;
     	
@@ -191,6 +273,11 @@ class CalendarCategory extends CalendarLibrary
         }
     }
     
+    /**
+     * Delete the category
+     *     
+     * @return boolean true if data deleted successfully, false otherwise
+     */
     function delete(){
         global $objDatabase;
         
@@ -224,6 +311,11 @@ class CalendarCategory extends CalendarLibrary
         }
     }
     
+    /**
+     * Count the number of entries in the category
+     *      
+     * @return integer Entry count of the category
+     */
     function countEntries(){
         global $objDatabase;  
         
