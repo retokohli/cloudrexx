@@ -1,30 +1,102 @@
 <?php
 /**
- * Calendar Class Host
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @version     1.0.0
- * @package     contrexx
- * @subpackage  module_calendar
- * @todo        Edit PHP DocBlocks!
+ * Calendar 
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
  */
 
+
+/**
+ * Calendar Class Host
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
+ */
 class CalendarHost extends CalendarLibrary
 {
+    /**
+     * Host Id
+     * 
+     * @access public
+     * @var integer
+     */
     public $id;
+    
+    /**
+     * Host title
+     *
+     * @access public
+     * @var string 
+     */
     public $title;
+    
+    /**
+     * URL of the host
+     *
+     * @access public
+     * @var string 
+     */
     public $uri;
+    
+    /**
+     * Category id
+     *
+     * @access public
+     * @var integer 
+     */
     public $catId;
+    
+    /**
+     * Key
+     *
+     * @access public
+     * @var string
+     */
     public $key;
+    
+    /**
+     * Status
+     *
+     * @access public
+     * @var boolean
+     */
     public $status;
+    
+    /**
+     * Confirmed
+     *
+     * @access public
+     * @var boolean
+     */
     public $confirmed;
     
+    /**
+     * Host Constructor
+     * 
+     * Loads the host attributes if id provided
+     * 
+     * @param integer $id Host id
+     */
     function __construct($id=null){
         if($id != null) {
             self::get($id);
         }
     }
     
+    /**
+     * Loads the Host by Id
+     *      
+     * @param integer $hostId Host id
+     * 
+     * @return null
+     */
     function get($hostId) {
         global $objDatabase, $_LANGID;
         
@@ -46,6 +118,13 @@ class CalendarHost extends CalendarLibrary
         }
     }
     
+    /**
+     * Save the Host data's into database
+     *      
+     * @param array $data posted data from the form
+     * 
+     * @return boolean true if the data updated successfully, false otherwise
+     */
     function save($data) {
         global $objDatabase;
         
@@ -88,6 +167,11 @@ class CalendarHost extends CalendarLibrary
         }
     }
     
+    /**
+     * Swtich the host status
+     *      
+     * @return boolean true if the data updated successfully, false otherwise
+     */
     function switchStatus(){
         global $objDatabase;
         
@@ -110,6 +194,11 @@ class CalendarHost extends CalendarLibrary
         }
     }
     
+    /**
+     * Delete the host
+     *      
+     * @return boolean true if the data updated successfully, false otherwise
+     */
     function delete(){
         global $objDatabase;
         

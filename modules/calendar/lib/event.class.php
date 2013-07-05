@@ -1,65 +1,410 @@
 <?php
+/**
+ * Calendar Class Event
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
+ */
+
 
 /**
  * Calendar Class Event
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @version     1.0.0
- * @package     contrexx
- * @subpackage  module_calendar
- * @todo        Edit PHP DocBlocks!
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
  */    
 class CalendarEvent extends CalendarLibrary
 {
-    public $id;       
-    public $type;       
-    public $title;
-    public $pic;
-    public $attach;
-    public $startDate;
-    public $endDate;
-    public $showStartDateList;
-    public $showEndDateList;
-    public $showStartTimeList;
-    public $showEndTimeList;
-    public $showTimeTypeList;
-    public $showStartDateDetail;
-    public $showEndDateDetail;
-    public $showStartTimeDetail;
-    public $showEndTimeDetail;
-    public $showTimeTypeDetail;
-    public $price;
-    public $link;
-    public $priority;
-    public $access;
-    public $description;
-    public $place;             
-    public $status;
-    public $confirmed;
-    public $author;
-    public $catId;
-    public $seriesStatus;
-    public $seriesData = array();
-    public $showIn;
-    public $availableLang;
-    public $map;    
-    public $invitedGroups = array();
-    public $invitedMails = array();
-    public $invitationSent;
-    public $registration;
-    public $registrationForm;
-    public $numSubscriber;
-    public $notificationTo;
-    public $emailTemplate;
-    public $ticketSales;
-    public $numSeating;
-    public $freePlaces;
-    public $relatedHosts = array();
-    public $arrData = array();
-    public $external = false;
-    public $hostId = "local";
-    public $objMoPageInterface = null;
+    /**
+     * Event id
+     * 
+     * @access public
+     * @var integer 
+     */
+    public $id;
     
+    /**
+     * Event Type
+     * 
+     * @access public
+     * @var integer 
+     */
+    public $type;
+    
+    /**
+     * Event title
+     *
+     * @var string 
+     * @access public
+     */
+    public $title;
+    
+    /**
+     * Event Picture
+     * 
+     * @access public
+     * @var string 
+     */
+    public $pic;
+    
+    /**
+     * Event attachment file name
+     *  
+     * @access public
+     * @var string 
+     */
+    public $attach;
+    
+    /** 
+     * Event Start date timestamp
+     * 
+     * @access public
+     * @var integer
+     */
+    public $startDate;
+    
+    /**
+     * Event enddate timestamp 
+     * 
+     * @access public
+     * @var integer
+     */
+    public $endDate;
+    
+    /**
+     * Event show start date on list view
+     * 
+     * @access public
+     * @var boolean
+     */
+    public $showStartDateList;
+    
+    /**
+     * Event show End date on list view
+     * 
+     * @access public
+     * @var boolean
+     */
+    public $showEndDateList;
+    
+    /**
+     * Event show start time on list view
+     * 
+     * @access public
+     * @var boolean
+     */
+    public $showStartTimeList;
+    
+    /**
+     * Event show End time on list view
+     * 
+     * @access public
+     * @var boolean
+     */
+    public $showEndTimeList;
+    
+    /**
+     * Event time type on list view
+     * 
+     * @access public
+     * @var integer
+     */
+    public $showTimeTypeList;
+    
+    /**
+     * Event show start date on detail view
+     * 
+     * @access public
+     * @var boolean
+     */
+    public $showStartDateDetail;
+    
+    /**
+     * Event show end date on detail view
+     * 
+     * @access public
+     * @var boolean
+     */
+    public $showEndDateDetail;
+    
+    /**
+     * Event show start time on detail view
+     * 
+     * @access public
+     * @var boolean
+     */
+    public $showStartTimeDetail;
+    
+    /**
+     * Event show end time on detail view
+     * 
+     * @access public
+     * @var boolean
+     */
+    public $showEndTimeDetail;
+    
+    /**
+     * Event time type on detail view
+     * 
+     * @access public
+     * @var integer
+     */
+    public $showTimeTypeDetail;
+    
+    /**
+     * Event price
+     * 
+     * @access public
+     * @var integer
+     */
+    public $price;
+    
+    /**
+     * Event link
+     * 
+     * @access public
+     * @var string
+     */
+    public $link;
+    
+    /**
+     * Event priority
+     * 
+     * @access public
+     * @var integer
+     */
+    public $priority;
+    
+    /**
+     * Event show end date on detail view
+     * 
+     * @access public
+     * @var boolean
+     */
+    public $access;
+    
+    /**
+     * Event description
+     * 
+     * @access public
+     * @var string
+     */
+    public $description;
+    
+    /**
+     * Event place
+     * 
+     * @access public
+     * @var string
+     */
+    public $place;
+    
+    /**
+     * Event status
+     * 
+     * @access public
+     * @var integer
+     */
+    public $status;
+    
+    /**
+     * Event confirmed
+     * 
+     * @access public
+     * @var boolean
+     */
+    public $confirmed;
+    
+    /**
+     * Event author
+     * 
+     * @access public
+     * @var string
+     */
+    public $author;
+    
+    /**
+     * Event category id
+     *
+     * @access public
+     * @var integer 
+     */
+    public $catId;
+    
+    /**
+     * Event series status
+     *
+     * @access public
+     * @var integer 
+     */
+    public $seriesStatus;
+    
+    /**
+     * Event series data
+     *
+     * @access public
+     * @var array
+     */
+    public $seriesData = array();
+    
+    /**
+     * Event languages to show
+     *
+     * @access public
+     * @var array 
+     */
+    public $showIn;
+    
+    /**
+     * Avaliable languages
+     *
+     * @access public
+     * @var array
+     */
+    public $availableLang;
+    
+    /**
+     * Event map status
+     *
+     * @access public
+     * @var integer 
+     */
+    public $map;
+    
+    /**
+     * Event invited group
+     *
+     * @access public
+     * @var array
+     */
+    public $invitedGroups = array();
+    
+    /**
+     * Event invited mail
+     *
+     * @access public
+     * @var array
+     */
+    public $invitedMails = array();
+    
+    /**
+     * is Event invitation sent
+     *
+     * @access public
+     * @var boolean
+     */
+    public $invitationSent;
+    
+    /**
+     * Event status of registration
+     *
+     * @access public
+     * @var boolean
+     */
+    public $registration;
+    
+    /**
+     * Event registration form
+     *
+     * @access public
+     * @var integer
+     */
+    public $registrationForm;
+    
+    /**
+     * Event number of subscriber
+     *
+     * @access public
+     * @var integer
+     */
+    public $numSubscriber;
+    
+    /**
+     * Event notification the event
+     *
+     * @access public
+     * @var string
+     */
+    public $notificationTo;
+    
+    /**
+     * Event E-mail template
+     *
+     * @access public
+     * @var integer
+     */
+    public $emailTemplate;
+    
+    /**
+     * Event ticket sales
+     *
+     * @access public
+     * @var integer
+     */
+    public $ticketSales;
+    
+    /**
+     * Event available seating
+     *
+     * @access public
+     * @var integer
+     */
+    public $numSeating;
+    
+    /**
+     * Event free palces
+     *
+     * @access public
+     * @var integer
+     */
+    public $freePlaces;
+    
+    /**
+     * Event related websites
+     *
+     * @access public
+     * @var array
+     */
+    public $relatedHosts = array();
+    
+    /**
+     * Event data
+     *
+     * @access public
+     * @var array
+     */
+    public $arrData = array();
+    
+    /**
+     * External
+     *
+     * @access public
+     * @var boolean
+     */
+    public $external = false;
+    
+    /**
+     * Event host id
+     *
+     * @access public
+     * @var string
+     */
+    public $hostId = "local";
+    
+    /**
+     * Constructor
+     * 
+     * Loads the event object of given id
+     * Call the parent constructor to initialize the settings values
+     * 
+     * @param integer $id Event id     
+     */
     function __construct($id=null){
         if($id != null) {
             self::get($id);
@@ -67,7 +412,16 @@ class CalendarEvent extends CalendarLibrary
         
         parent::getSettings();
     }
-    
+        
+    /**
+     * Load the requested event by id
+     * 
+     * @param integer $eventId        Event Id
+     * @param integer $eventStartDate Event start date
+     * @param integer $langId         Language id
+     * 
+     * @return null 
+     */
     function get($eventId, $eventStartDate=null, $langId=null) {
         global $objDatabase, $_ARRAYLANG, $_LANGID, $objInit;
         
@@ -281,6 +635,11 @@ class CalendarEvent extends CalendarLibrary
         }
     }
     
+    /**
+     * gets the data for the event
+     * 
+     * @return null
+     */
     function getData() {
         global $objDatabase, $_ARRAYLANG, $_LANGID;
         
@@ -319,6 +678,13 @@ class CalendarEvent extends CalendarLibrary
         }                        
     }     
     
+    /**
+     * Save the event to the database
+     *      
+     * @param array $data
+     * 
+     * @return boolean true if saved successfully, false otherwise
+     */
     function save($data){
         global $objDatabase, $_LANGID, $_CONFIG, $objInit;
         
@@ -744,6 +1110,11 @@ class CalendarEvent extends CalendarLibrary
         return true;
     }
     
+    /**
+     * Delete the event
+     *      
+     * @return boolean true if deleted successfully, false otherwise
+     */
     function delete(){
         global $objDatabase;
         
@@ -775,7 +1146,11 @@ class CalendarEvent extends CalendarLibrary
         }
     }
     
-    
+    /**
+     * Export the Event with calendar and stop excuting script
+     *      
+     * @return null
+     */
     function export(){
         global $_CONFIG;
                                      
@@ -843,15 +1218,31 @@ class CalendarEvent extends CalendarLibrary
         exit;          
     }
     
+    /**
+     * set the event start date
+     * 
+     * @param integer $value start date
+     */
     function setStartDate($value){
         $this->startDate = intval($value);
     }
     
+    /**
+     * set the event end date
+     * 
+     * @param integer $value End date
+     * 
+     * @return null
+     */
     function setEndDate($value){
         $this->endDate = intval($value);
     }
     
-    
+    /**
+     * switch status of the event
+     *      
+     * @return boolean true if status updated, false otherwise
+     */
     function switchStatus(){
         global $objDatabase;
         
@@ -874,6 +1265,11 @@ class CalendarEvent extends CalendarLibrary
         }
     }
     
+    /**
+     * confirm event
+     *      
+     * @return boolean true if event confirmed, false otherwise
+     */
     function confirm(){
         global $objDatabase;    
              

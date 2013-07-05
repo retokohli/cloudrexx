@@ -1,17 +1,23 @@
 <?php
 /**
- * @package PHPClassCollection
- * @subpackage TCPConnection
- * @link classes
- * @author Dennis Wronka <reptiler@users.sourceforge.net>
+ * Calendar 
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
  */
+
+
 /**
- * @package PHPClassCollection
- * @subpackage TCPConnection
- * @link classes
- * @author Dennis Wronka <reptiler@users.sourceforge.net>
- * @version 1.2
- * @license http://www.gnu.org/licenses/old-licenses/lgpl-2.1.html LGPL 2.1
+ * tcpconnection
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
  */
 class tcpconnection
 {

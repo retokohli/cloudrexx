@@ -1,19 +1,40 @@
 <?php
-
 /**
- * Calendar Class Host Manager
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @version     1.0.0
- * @package     contrexx
- * @subpackage  module_calendar
- * @todo        Edit PHP DocBlocks!
+ * Calendar 
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
  */
 
-class CalendarFormManager extends CalendarLibrary {
-    
+
+/**
+ * Calendar Class Form manager
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
+ */
+class CalendarFormManager extends CalendarLibrary 
+{
+    /**
+     * Form list
+     * 
+     * @access public
+     * @var array 
+     */
     public $formList = array(); 
     
+    /**
+     * Input fields type
+     *
+     * @access private
+     * @var array
+     */
     private $arrInputfieldTypes = array(
         1  => 'inputtext',
         2  => 'textarea',
@@ -29,17 +50,43 @@ class CalendarFormManager extends CalendarLibrary {
         12 => 'selectBillingAddress',
         13 => 'title',
     );
+    
+    /**
+     * Input fields affiliations
+     *
+     * @access private
+     * @var array 
+     */
     private $arrInputfieldAffiliations = array(
         1  => 'form',
         2  => 'contact',
         3  => 'billing',
     );
+    
+    /**
+     * only Active
+     *
+     * @access private
+     * @var boolean
+     */
     private $onlyActive;  
     
+    /**
+     * Form manager constructor
+     * 
+     * @param boolean $onlyActive get only active forms
+     */
     function __construct($onlyActive=false){
         $this->onlyActive = $onlyActive;
     }
     
+    /**
+     * Get the forms list
+     * 
+     * Loads the forms from the database into $this->formList array
+     * 
+     * @return null
+     */
     function getFormList() {
         global $objDatabase,$_ARRAYLANG,$_LANGID;    
         
@@ -61,6 +108,13 @@ class CalendarFormManager extends CalendarLibrary {
         }
     }
     
+    /**
+     * Sets the form list placeholders to the template
+     *      
+     * @param object $objTpl Template object
+     * 
+     * @return null
+     */
     function showFormList($objTpl) 
     {
         global $objDatabase, $_ARRAYLANG;
@@ -90,6 +144,13 @@ class CalendarFormManager extends CalendarLibrary {
         }
     }
     
+    /**
+     * Returns the form list drop down
+     *      
+     * @param integer $selectedId selected option in the form
+     * 
+     * @return string HTML drop down menu 
+     */
     function getFormDorpdown($selectedId=null) {
         global $_ARRAYLANG;
         
@@ -105,6 +166,16 @@ class CalendarFormManager extends CalendarLibrary {
         return $options;
     }
     
+    /**
+     * Sets placeholders for the form view.
+     *      
+     * @param object $objTpl         Template object
+     * @param integer $formId        Form id
+     * @param integer $intView       request mode frontend or backend
+     * @param integer $arrNumSeating number of seating
+     * 
+     * @return null
+     */
     function showForm($objTpl, $formId, $intView, $arrNumSeating=array()) {
         global $objDatabase, $objInit, $_ARRAYLANG, $_LANGID;  
         

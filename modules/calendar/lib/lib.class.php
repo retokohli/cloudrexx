@@ -1,47 +1,138 @@
 <?php
-
 /**
  * Calendar
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author         Comvation Development Team <info@comvation.com>
- * @version     1.1.0
- * @package     contrexx
- * @subpackage  module_calendar".$this->mandateLink."
- * @todo        Edit PHP DocBlocks!
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
  */
+
 
 /**
  * Calendar
  *
  * LibClass to manage cms calendar
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author Comvation Development Team <info@comvation.com>
- * @access public
- * @version 1.1.0
- * @package     contrexx
- * @subpackage  module_calendar".$this->mandateLink."
- */
-
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
+ */  
 class CalendarLibrary
 {
-    public $_objTpl;   
+    /**
+     * Template object
+     * 
+     * @access public
+     * @var object 
+     */
+    public $_objTpl;  
+    
+    /**
+     * template content
+     *
+     * @access public
+     * @var string 
+     */
     public $pageContent; 
     
+    /**
+     * module name
+     *
+     * @access public
+     * @var string 
+     */
     public $moduleName = "calendar";
+    
+    /**
+     * module table prefix
+     *
+     * @access public
+     * @var string 
+     */
     public $moduleTablePrefix = "calendar";
+    
+    /**
+     * module language variable prefix
+     *
+     * @access public
+     * @var string 
+     */
     public $moduleLangVar  = "CALENDAR";
     
+    /**
+     * module image upload physical path
+     *
+     * @access public
+     * @var string 
+     */
     public $uploadImgPath = '';
+    
+    /**
+     * module uploaded image web path
+     *
+     * @access public
+     * @var string 
+     */
     public $uploadImgWebPath = '';
     
+    /**
+     * Error message
+     *
+     * @access public
+     * @var string 
+     */
     public $errMessage = '';
+    
+    /**
+     * Success message
+     *
+     * @access public
+     * @var type 
+     */
     public $okMessage = '';
     
+    /**
+     * CSV separator
+     *
+     * @access public
+     * @var string
+     */
     public $csvSeparator = ';';
+    
+    /**
+     * active frontend languages
+     *
+     * @access public
+     * @var array 
+     */
     public $arrFrontendLanguages = array();
+    
+    /**
+     * Settings array
+     *
+     * @access public
+     * @var array 
+     */
     public $arrSettings = array();
+    
+    /**
+     * Community group array
+     *
+     * @access public
+     * @var array 
+     */
     public $arrCommunityGroups = array();    
         
+    /**
+     * Assign the template path
+     * Sets the Global variable for the calendar module
+     * 
+     * @param string $tplPath Template path
+     */
     function __construct($tplPath){                                                                      
         $this->_objTpl = new HTML_Template_Sigma($tplPath);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);    
@@ -57,7 +148,18 @@ class CalendarLibrary
         ));        
     }         
     
-    
+    /**
+     * Checks the access level for the given action     
+     *      
+     * It checks the access level for the given action
+     * and return's null if access is granted otherwise it redirect the action
+     * to the respective fallback pages.
+     *  
+     * @param string $strAction possible values are add_event, 
+     *                          edit_event, my_events
+     * 
+     * @return null
+     */
     function checkAccess($strAction)
     {
         global $objInit;
@@ -168,7 +270,14 @@ class CalendarLibrary
         }
     }
     
-        
+    /**
+     * Prepares the settings from database to array format
+     * 
+     * Loads the settings values from the database and assign those values into
+     * $this->arrSettings
+     * 
+     * @return null
+     */    
     function getSettings()
     {
         global $objDatabase, $_ARRAYLANG, $objInit;
@@ -207,6 +316,14 @@ class CalendarLibrary
         $this->arrSettings = $arrSettings;
     }
     
+    /**
+     * Used to bulid the option menu from the array
+     * 
+     * @param type    $arrOptions  options value for the select menu
+     * @param integer $intSelected selected option in the select menu
+     * 
+     * @return string drop down options
+     */
     function buildDropdownmenu($arrOptions, $intSelected=null)
     {
         foreach ($arrOptions as $intValue => $strName) {
@@ -217,6 +334,14 @@ class CalendarLibrary
         return $strOptions;
     }
     
+    /**
+     * Initialize the active frontend languages array
+     * 
+     * Fetch the active frontend languages from the database and assign those
+     * values into $this->arrFrontendLanguages
+     * 
+     * @return null
+     */
     function getFrontendLanguages()
     {
         global $_ARRAYLANG, $_CORELANG, $objDatabase;
@@ -244,6 +369,16 @@ class CalendarLibrary
         $this->arrFrontendLanguages = $arrLanguages;
     }
     
+    /**
+     * Return's the dataformat based on the type
+     * 
+     * Return's the dateformat by the given type 
+     * 1 => frontend else backend
+     *      
+     * @param integer $type type 1 => frontend else backend
+     * 
+     * @return string Date format
+     */
     function getDateFormat($type=null)
     {
         global $objDatabase;
@@ -294,6 +429,15 @@ class CalendarLibrary
         return $dateFormat;
     }
     
+    /**
+     * Return's the timestamp value from the given date
+     * 
+     * @param string  $date   Date
+     * @param integer $hour   Hours
+     * @param integer $minute Minute value
+     * 
+     * @return integer Unix timestamp value
+     */
     function getDateTimestamp($date, $hour=0, $minute=0)
     {
         self::getSettings();
@@ -341,7 +485,14 @@ class CalendarLibrary
         return $timestamp;
     }
     
-    
+    /**
+     * Initilize the available group
+     * 
+     * Fetch the available group from the database and assign those values into
+     * $this->arrCommunityGroups
+     * 
+     * @return null
+     */
     function getCommunityGroups()
     {
         global $objDatabase;
@@ -368,6 +519,11 @@ class CalendarLibrary
         $this->arrCommunityGroups = $arrCommunityGroups;
     }
     
+    /**
+     * Return's the billing address javascript
+     * 
+     * @return string Billing HereDoc phpscript
+     */
     function getJavascript()
     {
         $javascript = <<< EOF
@@ -413,6 +569,11 @@ EOF;
         return $javascript;
     }
     
+    /**
+     * generates the random key
+     * 
+     * @return string combination of alphabet and number in random order
+     */
     function generateKey()
     {
         $arrRandom = array();
@@ -441,6 +602,13 @@ EOF;
         return $key;
     }
     
+    /**
+     * Returns the escaped value for processing csv
+     * 
+     * @param string &$value string to be send to the csv
+     * 
+     * @return string escaped value for csv
+     */
     function escapeCsvValue(&$value)
     {
         $value = preg_replace('/\r\n/', "\n", $value);
@@ -453,6 +621,14 @@ EOF;
         return strtolower(CONTREXX_CHARSET) == 'utf-8' ? utf8_decode($value) : $value;
     }
 
+    /**
+     * Loads datepicker
+     *      
+     * @param object  &$datePicker
+     * @param integer $cat
+     * 
+     * @return null
+     */
     function loadDatePicker(&$datePicker, $cat = null) {
         global $_CORELANG;
         if($this->_objTpl->placeholderExists($this->moduleLangVar.'_DATEPICKER')) {

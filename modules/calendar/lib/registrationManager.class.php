@@ -1,24 +1,87 @@
 <?php
-
 /**
- * Calendar Class Host Manager
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @version     1.0.0
- * @package     contrexx
- * @subpackage  module_calendar
- * @todo        Edit PHP DocBlocks!
+ * Calendar 
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
  */
 
-class CalendarRegistrationManager extends CalendarLibrary {
+
+/**
+ * Calendar Class Registration manager
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
+ */
+class CalendarRegistrationManager extends CalendarLibrary 
+{
+    /**
+     * Event id
+     *
+     * @access private
+     * @var integer
+     */
     private $eventId;
+    
+    /**
+     * Form id
+     * 
+     * @access private
+     * @var integer
+     */
     private $formId;       
+    
+    /**
+     * Get Registration
+     *
+     * @access private
+     * @var boolean
+     */
     private $getRegistrations;
+    
+    /**
+     * Get deregistration
+     *
+     * @access private
+     * @var boolean
+     */
     private $getDeregistrations;
+    
+    /**
+     * Get waitlist
+     *
+     * @access private
+     * @var boolean
+     */
     private $getWaitlist;
     
+    /**
+     * Registration list
+     *
+     * @access public
+     * @var array
+     */
     public $registrationList = array();
     
+    /**
+     * Registration manager constructor
+     * 
+     * Loads the form object by loading the calendarEvent object
+     * 
+     * @param integer $eventId            Event id
+     * @param boolean $getRegistrations   condition to check whether we need the
+     *                                    registrations
+     * @param boolean $getDeregistrations condition to check whether we need the 
+     *                                    deregistrations
+     * @param boolean $getWaitlist        condition to check whether we need the
+     *                                    waitlist
+     */
     function __construct($eventId, $getRegistrations=true, $getDeregistrations=false, $getWaitlist=false)
     {   
         $this->eventId = intval($eventId);
@@ -30,6 +93,11 @@ class CalendarRegistrationManager extends CalendarLibrary {
         $this->formId = $objEvent->registrationForm;                    
     }  
     
+    /**
+     * Initialize the registration list
+     * 
+     * @return null
+     */
     function getRegistrationList()
     {
         global $objDatabase;
@@ -64,6 +132,13 @@ class CalendarRegistrationManager extends CalendarLibrary {
         }
     }
     
+    /**
+     * Set the registration list place holder to the template
+     *      
+     * @param object $objTpl Template object
+     * 
+     * @return null
+     */
     function showRegistrationList($objTpl)
     {
         global $objDatabase, $_LANGID, $_ARRAYLANG;
@@ -175,6 +250,15 @@ class CalendarRegistrationManager extends CalendarLibrary {
         }
     }
     
+    /**
+     * Set the registration fields placeholders to the template
+     *      
+     * @param integer $formId Form id
+     * @param integer $regId  Registration id
+     * @param object  $objTpl Template object
+     * 
+     * @return null
+     */
     function showRegistrationInputfields($formId, $regId = null, $objTpl)
     {
         global $objDatabase, $_LANGID, $_ARRAYLANG;

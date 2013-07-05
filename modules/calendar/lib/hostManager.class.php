@@ -1,29 +1,77 @@
 <?php
+/**
+ * Calendar 
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
+ */
+
 
 /**
  * Calendar Class Host Manager
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @version     1.0.0
- * @package     contrexx
- * @subpackage  module_calendar
- * @todo        Edit PHP DocBlocks!
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
  */
-
-class CalendarHostManager extends CalendarLibrary {
+class CalendarHostManager extends CalendarLibrary 
+{
+    /**
+     * Host list
+     *
+     * @access public
+     * @var array
+     */
     public $hostList = array();
     
+    /**
+     * Category id
+     *
+     * @access private
+     * @var integer
+     */
     private $catId;
+    
+    /**
+     * only confirmes
+     *
+     * @access private
+     * @var boolean
+     */
     private $onlyConfirmed;
+    
+    /**
+     * only Active
+     *
+     * @access private
+     * @var boolean
+     */
     private $onlyActive;
     
+    /**
+     * Host manager constructor
+     * 
+     * @param integer $catId         Category Id
+     * @param boolean $onlyConfirmed condition to get only confirmed
+     * @param boolean $onlyActive    condition to get only active
+     */
     function __construct($catId=null,$onlyConfirmed=false,$onlyActive=false){
     	$this->catId = intval($catId);
         $this->onlyConfirmed = intval($onlyConfirmed);
         $this->onlyActive = intval($onlyActive);  
     }
     
-     function getHostList() {
+    /**
+     * Initialize the host list
+     * 
+     * @return null
+     */
+    function getHostList() {
         global $objDatabase,$_ARRAYLANG,$_LANGID;
         
         if($this->catId != null) {                                                              
@@ -54,6 +102,13 @@ class CalendarHostManager extends CalendarLibrary {
         }
     }
     
+    /**
+     * Sets the host list place holders to the template
+     * 
+     * @param object $objTpl Template object
+     * 
+     * @return null
+     */
     function showHostList($objTpl) {
         global $_ARRAYLANG;
         
@@ -87,6 +142,14 @@ class CalendarHostManager extends CalendarLibrary {
         }
     }
     
+    /**
+     * Sets the host place holder to the template
+     * 
+     * @param object  $objTpl Html Template object
+     * @param integer $hostId Host id
+     * 
+     * @return null
+     */
     function showHost($objTpl, $hostId) {
         $objHost = new CalendarHost(intval($hostId));
         $this->hostList[$hostId] = $objHost;

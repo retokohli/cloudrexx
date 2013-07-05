@@ -1,33 +1,157 @@
 <?php
 /**
- * Calendar Class Registration
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @version     1.0.0
- * @package     contrexx
- * @subpackage  module_calendar
- * @todo        Edit PHP DocBlocks!
+ * Calendar
+ *  
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
  */
 
+
+/**
+ * Calendar
+ * 
+ * Calendar Class Registration
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
+ */ 
 class CalendarRegistration extends CalendarLibrary
 {
+    /**
+     * Registration id
+     *
+     * @access public
+     * @var integer 
+     */
     public $id; 
+    
+    /**
+     * Event Id
+     *
+     * @access public
+     * @var integer 
+     */
     public $eventId;  
+    
+    /**
+     * Event date
+     *
+     * @access public
+     * @var integer Timestamp of Event date
+     */
     public $eventDate; 
+    
+    /**
+     * User id
+     *
+     * @access public
+     * @var interger 
+     */
     public $userId;   
+    
+    /**
+     * Language Id
+     *
+     * @access public
+     * @var integer
+     */
     public $langId; 
+    
+    /**
+     * Type
+     *
+     * @access public
+     * @var integer
+     */
     public $type; 
+    
+    /**
+     * Host name
+     *
+     * @access public
+     * @var string
+     */
     public $hostName; 
-    public $ipAddress; 
+    
+    /**
+     * User Ip address
+     *
+     * @access public
+     * @var string
+     */
+    public $ipAddress;
+    
+    /**
+     * Reg Key
+     *
+     * @access public
+     * @var string 
+     */
     public $key;     
+    
+    /**
+     * First Export time
+     *
+     * @access public
+     * @var integer 
+     */
     public $firstExport;
+    
+    /**
+     * Paymend method
+     *
+     * @access public
+     * @var integer
+     */
     public $paymentMethod;
+    
+    /**
+     * Payment status
+     *
+     * @access public
+     * @var interger
+     */
     public $payed;
+    
+    /**
+     * Save In
+     *
+     * @access public
+     * @var integer 
+     */
     public $saveIn;
+    
+    /**
+     * Fields
+     *
+     * @access public
+     * @var array 
+     */
     public $fields = array(); 
     
+    /**
+     * Registration form object
+     *
+     * @access private
+     * @var object 
+     */
     private $form;
     
+    /**
+     * Constructor for registration class
+     * 
+     * Loads the form object from CalendarForm class
+     * IF the $id is not null load the register object for the given id
+     * 
+     * @param integer $formId Registration Form Id
+     * @param integer $id     Registration id
+     */
     function __construct($formId, $id=null){              
         $objForm = new CalendarForm(intval($formId));
         $this->form = $objForm;     
@@ -37,6 +161,13 @@ class CalendarRegistration extends CalendarLibrary
         }        
     }
     
+    /**
+     * Loads the registration by id
+     *      
+     * @param integer $regId Registration id
+     * 
+     * @return null
+     */
     function get($regId) {
         global $objDatabase, $_LANGID;    
         
@@ -93,6 +224,13 @@ class CalendarRegistration extends CalendarLibrary
         }       
     }
     
+    /**
+     * Save the registration
+     *      
+     * @param array $data posted data from the form
+     * 
+     * @return boolean true if the registration saved, false otherwise
+     */
     function save($data) {
         global $objDatabase, $objInit, $_LANGID;
         
@@ -233,6 +371,13 @@ class CalendarRegistration extends CalendarLibrary
         return true;
     }
     
+    /**
+     * Delete the registration
+     *      
+     * @param integer $regId Registration id
+     * 
+     * @return boolean true if data deleted, false otherwise
+     */
     function delete($regId) {
         global $objDatabase, $_LANGID; 
         
@@ -264,6 +409,14 @@ class CalendarRegistration extends CalendarLibrary
         }
     }
     
+    /**
+     * Update the registration to the given type
+     *      
+     * @param integer $regId  Registration id
+     * @param integer $typeId Type Id
+     * 
+     * @return boolean true if registration updated, false otherwise
+     */
     function move($regId, $typeId) {
         global $objDatabase, $_LANGID; 
         
@@ -286,6 +439,11 @@ class CalendarRegistration extends CalendarLibrary
         }
     }
     
+    /**
+     * Update the export date into the registration
+     *      
+     * @return boolean true if date updated sucessfully, false otherwise
+     */
     function tagExport() { 
         global $objDatabase, $_LANGID;
         
@@ -303,6 +461,13 @@ class CalendarRegistration extends CalendarLibrary
         }
     }
 
+    /**
+     * Updatete the payment status
+     *      
+     * @param integer $payStatus payment status
+     * 
+     * @return null
+     */
     function setPayed($payStatus = 0) {
         global $objDatabase;
         $query = '
