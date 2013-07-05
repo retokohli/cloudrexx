@@ -120,16 +120,23 @@ $this->bytes = memory_get_peak_usage();
             
             $hasChilds = false;
             if ($this->skipInvisible) {
-                if (!$page || $page->isVisible()) {
+                if (!$page || ($page->isVisible() && $page->isActive())) {
                     foreach ($children as $child) {
-                        if ($child->getPage($this->lang) && $child->getPage($this->lang)->isVisible()) {
+                        if ($child->getPage($this->lang) && $child->getPage($this->lang)->isVisible() && $child->getPage($this->lang)->isActive()) {
                             $hasChilds = true;
                             break;
                         }
                     }
                 }
             } else {
-                $hasChilds = count($children);
+                if (!$page || $page->isActive()) {
+                    foreach ($children as $child) {
+                        if ($child->getPage($this->lang) && $child->getPage($this->lang)->isActive()) {
+                            $hasChilds = true;
+                            break;
+                        }
+                    }
+                }
             }
             if ($hasChilds && !$dontDescend) {
                 // add preRenderLevel to stack
