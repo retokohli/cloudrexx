@@ -285,10 +285,7 @@ namespace Cx\Core\Core\Controller {
             if (empty($_PATHCONFIG['ascms_root'])) {
                 $fixPaths = true;
             } else {
-                try {
-                    require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/core/Routing/Url.class.php';
-                    $this->request = \Cx\Core\Routing\Url::fromCapturedRequest(!empty($_GET['__cap']) ? $_GET['__cap'] : '', $_PATHCONFIG['ascms_root_offset'], $_GET);
-                } catch (\Cx\Core\Routing\UrlException $e) {
+                if (substr(!empty($_GET['__cap']) ? $_GET['__cap'] : '', 0, strlen($_PATHCONFIG['ascms_root_offset'])) != $_PATHCONFIG['ascms_root_offset']) {
                     // URL doesn't seem to start with provided offset
                     $fixPaths = true;
                 }
@@ -326,7 +323,7 @@ namespace Cx\Core\Core\Controller {
              * -------------------------------------------------------------------------
              */
             require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/config/set_constants.php';
-            
+
             // Check if system is running
             if ($_CONFIG['systemStatus'] != 'on' && $this->mode == self::MODE_FRONTEND) {
                 throw new \Exception('System disabled by config');
@@ -513,7 +510,7 @@ namespace Cx\Core\Core\Controller {
             $this->cl->loadFile(ASCMS_CORE_PATH.'/API.php');
             // Temporary fix until all GET operation requests will be replaced by POSTs
             \CSRF::setFrontendMode();
-
+            
             $this->db = new \Cx\Core\Db\Db($this);
             $objDatabase = $this->db->getAdoDb();
             \Env::set('db', $objDatabase);
