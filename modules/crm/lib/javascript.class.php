@@ -1,31 +1,45 @@
 <?php
-
 /**
- * Library Class CRM
+ * Javascript Class CRM
  *
- * Javascript class
- *
- * @copyright	CONTREXX CMS
- * @author		SoftSolutions4U Development Team <info@softsolutions4u.com>
- * @module		CRM
- * @modulegroup	modules
- * @access		public
- * @version		1.0.0
+ * @category   Javascript
+ * @package    Contrexx
+ * @subpackage Module_Crm
+ * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
+ * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @license    trial license
+ * @link       www.contrexx.com
  */
 
+/**
+ * Javascript Class CRM
+ *
+ * @category   Javascript
+ * @package    Contrexx
+ * @subpackage Module_Crm
+ * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
+ * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @license    trial license
+ * @link       www.contrexx.com
+ */
 
 class Javascript {
 
+    /**
+    * Module Name
+    *
+    * @access private
+    * @var string
+    */
     private $moduleName = 'crm';
 
     /**
+     * Get Add Currency Script
      *
-     * @global <type> $_CORELANG
-     * @global <type> $_ARRAYLANG
-     * @global <type> $objDatabase
-     * @return <type> $javascript
+     * @return String $javascript
      */
-    function getAddCurrencyJavascript() {
+    function getAddCurrencyJavascript()
+    {
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
 
 
@@ -293,8 +307,15 @@ function deleteEntry(entryId){
 END;
         return $javascript;
     }
-    
-    function getAddNotesJavascript() {
+
+
+    /**
+     * Get Add Notes Script
+     *
+     * @return String $javascript
+     */
+    function getAddNotesJavascript()
+    {
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
 
 
@@ -478,12 +499,12 @@ END;
     }
 
     /**
-     *
-     * @global <type> $_ARRAYLANG
-     * @return <type> $javascript
+     * Get service type script
+     * 
+     * @return String $javascript
      */
-
-    function getServiceTypeJavascript() {
+    function getServiceTypeJavascript()
+    {
         global $_ARRAYLANG;
         $TXT_CRM_ENTER_NAME                               =  $_ARRAYLANG['TXT_CRM_ENTER_NAME'];
         $TXT_ENTER_SUPPORTCASES                       =  $_ARRAYLANG['TXT_ENTER_SUPPORTCASES'];
@@ -634,12 +655,12 @@ END;
     }
 
     /**
+     * Get Hosting type script
      *
-     * @global <type> $_ARRAYLANG
-     * @return <type> $javascript
+     * @return String $javascript
      */
-
-    function getHostingTypeJavascript() {
+    function getHostingTypeJavascript()
+    {
         global $_ARRAYLANG;
         $TXT_CRM_ENTER_NAME                         =  $_ARRAYLANG['TXT_CRM_ENTER_NAME'];
         $TXT_ENTER_PRICE                              =  $_ARRAYLANG['TXT_ENTER_PRICE'];
@@ -786,7 +807,13 @@ END;
         return $javascript;
     }
 
-    function getShowCustomerdetailsJavascript() {
+    /**
+     * Get customer details script
+     *
+     * @return String $javascript
+     */
+    function getShowCustomerdetailsJavascript()
+    {
         global $_ARRAYLANG;
         $TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES = $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES'];
         $TXT_CRM_ARE_YOU_SURE_DELETE_SELECTED_ENTRIES = $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_DELETE_SELECTED_ENTRIES'];
@@ -1028,12 +1055,12 @@ END;
     }
 
     /**
+     * Get customer type script
      *
-     * @global <type> $_ARRAYLANG
-     * @return <type> $javascript
+     * @return String $javascript
      */
-
-    function getCustomerTypeJavascript() {
+    function getCustomerTypeJavascript()
+    {
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
 
         $TXT_CRM_SURE_TO_DELETE_SELECTED_ENTRIES  = $_ARRAYLANG['TXT_CRM_SURE_TO_DELETE_SELECTED_ENTRIES'];
@@ -1255,12 +1282,12 @@ END;
     }
 
     /**
+     * Get edit customer type script
      *
-     * @global <type> $_ARRAYLANG
-     * @return <type> $javascript
+     * @return String $javascript
      */
-
-    function editCustomerTypeJavascript() {
+    function editCustomerTypeJavascript()
+    {
         global $_ARRAYLANG;
         $TXT_CRM_ENTER_LABEL_FIELD   = $_ARRAYLANG['TXT_CRM_ENTER_LABEL_FIELD'];
         $TXT_CRM_ENTER_LABEL_FIELD_WITHOUT_SPECIAL_CHARACTERS = $_ARRAYLANG['TXT_CRM_ENTER_LABEL_FIELD_WITHOUT_SPECIAL_CHARACTERS'];
@@ -1448,7 +1475,13 @@ END;
         return $javascript;
     }
 
-    function showPopup() {
+    /**
+     * Get script for popup
+     *
+     * @return String $javascript
+     */
+    function showPopup()
+    {
         $javascript = <<<END
 		<script>
 		var \$j  = jQuery.noConflict(); 
@@ -1461,7 +1494,13 @@ END;
         return $javascript;
     }
 
-    function showServicePopup() {
+    /**
+     * Get script for service popup
+     *
+     * @return String $javascript
+     */
+    function showServicePopup()
+    {
         $javascript = <<<END
 		<script>
 		var \$j  = jQuery.noConflict(); 
@@ -1474,7 +1513,13 @@ END;
         return $javascript;
     }
 
-    function showServicePlanPopup() {
+    /**
+     * Get script for service plan popup
+     *
+     * @return String $javascript
+     */
+    function showServicePlanPopup()
+    {
 
         $javascript = <<<END
 		<script>
@@ -1488,7 +1533,13 @@ END;
         return $javascript;
     }
 
-    function showHostingPopup() {
+    /**
+     * Get script for hosting popup
+     *
+     * @return String $javascript
+     */
+    function showHostingPopup()
+    {
         $javascript = <<<END
 		<script>
 		var \$j  = jQuery.noConflict(); 
@@ -1501,7 +1552,13 @@ END;
         return $javascript;
     }
 
-    function showSupportcases() {
+    /**
+     * Get script for support case
+     *
+     * @return String $javascript
+     */
+    function showSupportcases()
+    {
         $javascript = <<<END
 		<script>
 		var \$j  = jQuery.noConflict(); 
@@ -1514,7 +1571,13 @@ END;
         return $javascript;
     }
 
-    function crmAjaxformSubmitForShadowbox() {
+    /**
+     * Get script for crm shadowbox
+     *
+     * @return String $javascript
+     */
+    function crmAjaxformSubmitForShadowbox()
+    {
         global $_ARRAYLANG;
         $CRM_COMPANY_NAME_ALREADY_PRESENT   = $_ARRAYLANG['TXT_CRM_COMPANYNAME_ALREADY_EXISTS'];
         $javascript = <<<END
@@ -1558,7 +1621,15 @@ END;
 
     }
 
-    function pmAjaxformSubmitForShadowbox($tpl) {
+    /**
+     * Get script for pm shadowbox
+     *
+     * @param String $tpl
+     *
+     * @return String $javascript
+     */
+    function pmAjaxformSubmitForShadowbox($tpl)
+    {
         global $_ARRAYLANG;
         $CRM_COMPANY_NAME_ALREADY_PRESENT   = $_ARRAYLANG['TXT_CRM_COMPANYNAME_ALREADY_EXISTS'];
         $javascript = <<<END
@@ -1611,7 +1682,13 @@ END;
 
     }
 
-    function pmAjaxformContactFormSubmit() {
+    /**
+     * Get script for pm contact form
+     *
+     * @return String $javascript
+     */
+    function pmAjaxformContactFormSubmit()
+    {
         global $_ARRAYLANG;
         $CRM_COMPANY_NAME_ALREADY_PRESENT   = $_ARRAYLANG['TXT_CRM_COMPANYNAME_ALREADY_EXISTS'];
         $javascript = <<<END
@@ -1655,7 +1732,13 @@ END;
 
     }
 
-    function getImportAnalysisJavascript() {
+    /**
+     * Get script for get import analysis
+     *
+     * @return String $javascript
+     */
+    function getImportAnalysisJavascript()
+    {
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
 
         $javascript = <<<END
@@ -1823,7 +1906,13 @@ END;
         return $javascript;
     }
 
-    function getInterfaceJavascript() {
+    /**
+     * Get script for get interface
+     *
+     * @return String $javascript
+     */
+    function getInterfaceJavascript()
+    {
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
 
         $javascript = <<<END
@@ -1919,7 +2008,13 @@ END;
         return $javascript;
     }
 
-    function getFinalImportJavascript() {
+    /**
+     * Get script for get final import
+     *
+     * @return String $javascript
+     */
+    function getFinalImportJavascript()
+    {
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
 
         $javascript = <<<END
@@ -2206,7 +2301,13 @@ END;
         return $javascript;
     }
     
-    function dropdownToggle() {
+    /**
+     * Get script for dropdown toggle
+     *
+     * @return String $javascript
+     */
+    function dropdownToggle()
+    {
         $javascript = <<<endl
 (function() {
     var

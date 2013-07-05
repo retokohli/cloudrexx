@@ -1,15 +1,15 @@
 <?php
 /**
  * Library Class CRM
- *
  * CrmLibrary class
- *
- * @copyright	CONTREXX CMS
- * @author		SoftSolutions4U Development Team <info@softsolutions4u.com>
- * @module		CRM
- * @modulegroup	modules
- * @access		public
- * @version		1.0.0
+ * 
+ * @category   CrmLibrary
+ * @package    Contrexx
+ * @subpackage Module_Crm
+ * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
+ * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @license    trial license
+ * @link       www.contrexx.com
  */
 
 require_once  ASCMS_MODULE_PATH  . '/crm/lib/constants.php';
@@ -19,27 +19,172 @@ require_once CRM_MODULE_LIB_PATH . '/events/EventDispatcher.class.php';
 require_once CRM_MODULE_LIB_PATH . '/events/handlers/InterfaceEventHandler.class.php';
 require_once CRM_MODULE_LIB_PATH . '/events/handlers/DefaultEventHandler.class.php';
 
-class CrmLibrary {
+/**
+ * Library Class CRM
+ * CrmLibrary class
+ *
+ * @category   Sample_Category
+ * @package    Contrexx
+ * @subpackage Module_Crm
+ * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
+ * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @license    trial license
+ * @link       www.contrexx.com
+ */
+class CrmLibrary
+{
+    /**
+    * Csv seperator
+    *
+    * @access private
+    * @var String
+    */
     var $_csvSeparator          = ';';
+
+    /**
+    * Module Name
+    *
+    * @access private
+    * @var string
+    */
     var $moduleName             = 'crm';
+
+    /**
+    * PM Module Name
+    *
+    * @access private
+    * @var string
+    */
     var $pm_moduleName          = 'pm';
+
+    /**
+    * PM Module Status
+    *
+    * @access private
+    * @var boolean
+    */
     var $isPmInstalled          = false;
+
+    /**
+    * Admin Access Id
+    *
+    * @access public
+    * @var integer
+    */
     var $adminAccessId          = 557;
+
+    /**
+    * Staff Access Id
+    *
+    * @access public
+    * @var integer
+    */
     var $staffAccessId          = 556;
+
+    /**
+    * Customer Access Id
+    *
+    * @access public
+    * @var integer
+    */
     var $customerAccessId       = 555;
+
+    /**
+    * Settings value stored in array
+    *
+    * @access public
+    * @var array
+    */
     var $_arrSettings           = array();
+
+    /**
+    * All Countries name take it as array
+    *
+    * @access public
+    * @var array
+    */
     var $countries              = array();
+
+    /**
+    * All customer types take it as array
+    *
+    * @access public
+    * @var array
+    */
     var $customerTypes          = array();
+
+    /**
+    * All Languages take it as array
+    *
+    * @access public
+    * @var array
+    */
     var $_arrLanguages          = array();
+
+    /**
+    * All Memberships take it as array
+    *
+    * @access public
+    * @var array
+    */
     var $_memberShips           = array();
+
+    /**
+    * Email Options
+    *
+    * @access public
+    * @var array
+    */
     var $emailOptions           = array("TXT_CRM_HOME", "TXT_CRM_WORK", "TXT_CRM_OTHERS");
+
+    /**
+    * Phone Options
+    *
+    * @access public
+    * @var array
+    */
     var $phoneOptions           = array("TXT_CRM_HOME", "TXT_CRM_WORK", "TXT_CRM_OTHERS", "TXT_CRM_MOBILE", "TXT_CRM_FAX", "TXT_CRM_DIRECT");
+
+    /**
+    * Website Options
+    *
+    * @access public
+    * @var array
+    */
     var $websiteOptions         = array("TXT_CRM_HOME", "TXT_CRM_WORK", "TXT_CRM_BUSINESS1", "TXT_CRM_BUSINESS2", "TXT_CRM_BUSINESS3", "TXT_CRM_PRIVATE", "TXT_CRM_OTHERS");
+
+    /**
+    * Website Profile Options
+    *
+    * @access public
+    * @var array
+    */
     var $websiteProfileOptions  = array("TXT_CRM_HOME", "TXT_CRM_WORK", "TXT_CRM_OTHERS", "TXT_CRM_BUSINESS1", "TXT_CRM_BUSINESS2", "TXT_CRM_BUSINESS3");
+
+    /**
+    * Social Profile Options
+    *
+    * @access public
+    * @var array
+    */
     var $socialProfileOptions   = array("", "TXT_CRM_SKYPE", "TXT_CRM_TWITTER", "TXT_CRM_LINKEDIN", "TXT_CRM_FACEBOOK", "TXT_CRM_LIVEJOURNAL",
             "TXT_CRM_MYSPACE", "TXT_CRM_GMAIL", "TXT_CRM_BLOGGER", "TXT_CRM_YAHOO", "TXT_CRM_MSN", "TXT_CRM_ICQ", "TXT_CRM_JABBER",
             "TXT_CRM_AIM");
+
+    /**
+    * Address Values
+    *
+    * @access public
+    * @var array
+    */
     var $addressValues          = array("","address", "city", "state", "zip", "country", "type");
+
+    /**
+    * Address Types
+    *
+    * @access public
+    * @var array
+    */
     var $addressTypes           = array("TXT_CRM_HOME", "TXT_CRM_DELIVERY", "TXT_CRM_OFFICE", "TXT_CRM_BILLING", "TXT_CRM_OTHERS", "TXT_CRM_WORK");
 
     /**
@@ -49,18 +194,57 @@ class CrmLibrary {
      * @var string
      */
     var $_statusMessage = '';
+
+    /**
+     * Status Ok message
+     *
+     * @access private
+     * @var string
+     */
     var $_strOkMessage  = '';
+
+    /**
+     * Status Error message
+     *
+     * @access private
+     * @var string
+     */
     var $_strErrMessage  = '';
+
+    /**
+     * Support Case Status
+     *
+     * @access private
+     * @var array
+     */
     var $supportCaseStatus = array(
             0 => 'Open',
             1 => 'Pending',
             2 => 'Closed'
     );
 
+    /**
+     * object for loading class
+     *
+     * @access protected
+     * @var object
+     */
     protected $load;
+
+    /**
+     * Class Object
+     *
+     * @access protected
+     * @var object
+     */
     protected static $instance;
 
-    public static function init() {
+
+    /**
+     * Initialize a class
+     */
+    public static function init()
+    {
         if(is_null(self::$instance)) {
             $class = __CLASS__;
             self::$instance = new $class;
@@ -69,13 +253,25 @@ class CrmLibrary {
         return self::$instance;
     }
 
-    function  __construct() {
+    /**
+     * constructor
+     */
+    function  __construct()
+    {
         $this->load          = new loader();
         $this->_arrLanguages = $this->createLanguageArray();
         $this->isPmInstalled = contrexx_isModuleActive($this->pm_moduleName);
     }
 
-    function getSettings() {
+    /**
+     * Get the Settings value from the DB
+     *
+     * @global ADO Connection $objDatabase
+     *
+     * @return array Setting values
+     */
+    function getSettings()
+    {
         global $objDatabase;
 
         if (!empty($this->_arrSettings)) {
@@ -98,10 +294,12 @@ class CrmLibrary {
     /**
      * Creates an array containing all frontend-languages. Example: $arrValue[$langId]['short'] or $arrValue[$langId]['long']
      *
-     * @global  ADONewConnection
-     * @return  array       $arrReturn
+     * @global  ADONewConnection $objDatabase
+     * 
+     * @return  array $arrReturn
      */
-    function createLanguageArray() {
+    function createLanguageArray()
+    {
         global $objDatabase;
 
         $arrReturn = array();
@@ -123,8 +321,16 @@ class CrmLibrary {
         return $arrReturn;
     }
 
-    function _usortByMultipleKeys($key, $direction=SORT_ASC) {
-
+    /**
+     * Usort for multiple key values
+     *
+     * @param Integer $key       key values
+     * @param String  $direction sorting order
+     *
+     * @return integer
+     */
+    function _usortByMultipleKeys($key, $direction=SORT_ASC)
+    {
         if ($direction == 0) {
             $direction = SORT_ASC;
         } else if ($direction == 1) {
@@ -165,7 +371,17 @@ class CrmLibrary {
                 };
     }
 
-    function saveTaskTypes($id = 0) {
+    /**
+     *  Save Task Type values to DB
+     *
+     * @param Integer $id task type id
+     * 
+     * @global ADO Connection $objDatabase
+     *
+     * @return null
+     */
+    function saveTaskTypes($id = 0)
+    {
         global $objDatabase;
 
         $name       = isset($_POST['name']) ? contrexx_input2db($_POST['name']) : '';
@@ -187,7 +403,16 @@ class CrmLibrary {
         $objDatabase->Execute($query);
     }
 
-    function showTaskTypes() {
+    /**
+     *  Show all the Task Types
+     *
+     * @global Array          $_ARRAYLANG
+     * @global ADO Connection $objDatabase
+     *
+     * @return null
+     */
+    function showTaskTypes()
+    {
         global $_ARRAYLANG, $objDatabase;
 
         $objTpl = $this->_objTpl;
@@ -234,8 +459,18 @@ class CrmLibrary {
         }
     }
 
-    /* @var $objResult <object> */
-    function getModifyTaskTypes($id = 0) {
+    /**
+     * Get Modify Task type values From DB
+     *
+     * @param Integer $id Task type id
+     *
+     * @global ADO Connection $objDatabase
+     * @global Array          $_ARRAYLANG
+     *
+     * @return null
+     */
+    function getModifyTaskTypes($id = 0)
+    {
         global $objDatabase, $_ARRAYLANG;
 
         $objTpl = $this->_objTpl;
@@ -273,7 +508,19 @@ class CrmLibrary {
         ));
     }
 
-    function taskTypeDropDown($objTpl, $selectedType = 0) {
+    /**
+     * Get Tasktype Dropdown
+     *
+     * @param Template Object $objTpl
+     * @param Integer         $selectedType
+     *
+     * @global ADO Connection $objDatabase
+     * @global Array          $_ARRAYLANG
+     *
+     * @return null
+     */
+    function taskTypeDropDown($objTpl, $selectedType = 0)
+    {
         global $objDatabase, $_ARRAYLANG;
 
         $objResult = $objDatabase->Execute("SELECT id,name FROM ".DBPREFIX."module_{$this->moduleName}_task_types WHERE status=1 ORDER BY sorting");
@@ -297,7 +544,15 @@ class CrmLibrary {
         }
     }
 
-    function getCustomerTypes() {
+    /**
+     * Get Customer Types From DB
+     *
+     * @global ADO Connection $objDatabase
+     *
+     * @return Integer
+     */
+    function getCustomerTypes()
+    {
         global $objDatabase;
 
         if (!empty($this->customerTypes)) return $this->customerTypes;
@@ -314,6 +569,18 @@ class CrmLibrary {
 
     }
 
+    /**
+     * Get Customertype Dropdown From DB
+     *
+     * @param Template Object $objTpl
+     * @param Integer         $selectedId
+     * @param String          $block
+     * @param Array           $options
+     *
+     * @global Array $_ARRAYLANG
+     *
+     * @return null
+     */
     function getCustomerTypeDropDown($objTpl, $selectedId = 0, $block = "customerTypes", $options = array()) {
         global $_ARRAYLANG;
 
@@ -339,7 +606,20 @@ class CrmLibrary {
 
     }
 
-    function getCustomerCurrencyDropDown($objTpl, $selectedId = 0, $block = "currency") {
+    /**
+     * Get Customer's Currency Dropdown From DB
+     *
+     * @param Template Object $objTpl
+     * @param Integer         $selectedId
+     * @param String          $block
+     *
+     * @global Array $_ARRAYLANG
+     * @global ADO Connection $objDatabase
+     *
+     * @return null
+     */
+    function getCustomerCurrencyDropDown($objTpl, $selectedId = 0, $block = "currency")
+    {
         global $_ARRAYLANG, $objDatabase;
 
         $objResultCurrency = $objDatabase->Execute('SELECT   id,name,pos,active
@@ -360,7 +640,21 @@ class CrmLibrary {
         }
     }
 
-    function getIndustryTypeDropDown($objTpl, $selectedId = 0, $block = "industryType") {
+    /**
+     * Get Industry Type Dropdown From DB
+     *
+     * @param Template Object $objTpl
+     * @param Integer         $selectedId
+     * @param String          $block
+     *
+     * @global Array          $_ARRAYLANG
+     * @global ADO Connection $objDatabase
+     * @global Array          $_LANGID
+     *
+     * @return null
+     */
+    function getIndustryTypeDropDown($objTpl, $selectedId = 0, $block = "industryType")
+    {
         global $_ARRAYLANG, $objDatabase, $_LANGID;
 
         $objResultIndustryType = $objDatabase->Execute("SELECT Intype.id,
@@ -382,7 +676,15 @@ class CrmLibrary {
         }
     }
 
-    function parseContacts($input) {
+    /**
+     * Parse the contacts
+     *
+     * @param Array $input
+     *
+     * @return Array
+     */
+    function parseContacts($input)
+    {
 
         foreach ($input as $key => $value) {
             $splitKeys = explode("_", $key);
@@ -411,7 +713,17 @@ class CrmLibrary {
         return $result;
     }
 
-    function getContactAddressCountry($objTpl, $selectedCountry, $block = "crmCountry") {
+    /**
+     * Get the contact Address Country value From DB
+     *
+     * @param Template Object $objTpl
+     * @param Integer         $selectedCountry
+     * @param String          $block
+     *
+     * @return null
+     */
+    function getContactAddressCountry($objTpl, $selectedCountry, $block = "crmCountry")
+    {
         $countryArr = $this->getCountry();
 
         foreach ($countryArr as $value) {
@@ -424,7 +736,15 @@ class CrmLibrary {
         }
     }
 
-    function getCountry() {
+    /**
+     * Get Country value from DB
+     *
+     * @global ADO Connection $objDatabase
+     *
+     * @return Array
+     */
+    function getCountry()
+    {
         global $objDatabase;
 
         if (!empty($this->countries)) return $this->countries;
@@ -440,7 +760,19 @@ class CrmLibrary {
         return $this->countries;
     }
 
-    function getContactAddrTypeCountry($objTpl, $selectedType, $block = "addressType") {
+    /**
+     * Get Contact Address Type Country value
+     *
+     * @param Template Object $objTpl
+     * @param Integer         $selectedType
+     * @param String          $block
+     *
+     * @global Array $_ARRAYLANG
+     *
+     * @return null
+     */
+    function getContactAddrTypeCountry($objTpl, $selectedType, $block = "addressType")
+    {
         global $_ARRAYLANG;
 
         foreach ($this->addressTypes as $key => $value) {
@@ -455,7 +787,18 @@ class CrmLibrary {
 
     }
 
-    function updateCustomerContacts($contacts, $customerId) {
+    /**
+     * Update Customer Contacts
+     *
+     * @param Array   $contacts
+     * @param Integer $customerId
+     *
+     * @global ADO Connection $objDatabase
+     *
+     * @return null
+     */
+    function updateCustomerContacts($contacts, $customerId)
+    {
         global $objDatabase;
 
         // Reset the contacts
@@ -468,7 +811,18 @@ class CrmLibrary {
         }
     }
 
-    function updateCustomerMemberships($memberShips, $customerId) {
+    /**
+     * Update Customer Memberships
+     *
+     * @param Array   $memberShips
+     * @param Integer $customerId
+     *
+     * @global ADO Connection $objDatabase
+     *
+     * @return null
+     */
+    function updateCustomerMemberships($memberShips, $customerId)
+    {
         global $objDatabase;
 
         $objDatabase->Execute("DELETE FROM `".DBPREFIX."module_{$this->moduleName}_customer_membership` WHERE contact_id = $customerId");
@@ -480,13 +834,35 @@ class CrmLibrary {
         }
     }
 
-    function unlinkContact($contactId) {
+    /**
+     * Unlink the contact
+     *
+     * @param Integer $contactId
+     *
+     * @global ADO Connection $objDatabase
+     *
+     * @return null
+     */
+    function unlinkContact($contactId)
+    {
         global $objDatabase;
         $objDatabase->Execute("UPDATE `".DBPREFIX."module_".$this->moduleName."_contacts` SET `contact_customer` = 0
                                                                        WHERE  id = '".intval($contactId)."'");
     }
 
-    function validateCustomer($customerName = '', $customerId ='', $id = 0) {
+    /**
+     *  Validate the Customer
+     *
+     * @param String  $customerName
+     * @param Integer $customerId
+     * @param Integer $id
+     *
+     * @global ADO Connection $objDatabase
+     *
+     * @return boolean
+     */
+    function validateCustomer($customerName = '', $customerId ='', $id = 0)
+    {
         global $objDatabase;
 
         $customerName = contrexx_input2db(trim($customerName));
@@ -506,7 +882,16 @@ class CrmLibrary {
 
     }
 
-    function formattedWebsite($url = '', $urlProfile = 0) {
+    /**
+     * Formatting the website
+     *
+     * @param String  $url
+     * @param Integer $urlProfile
+     *
+     * @return string
+     */
+    function formattedWebsite($url = '', $urlProfile = 0)
+    {
         switch ($urlProfile) {
             // linkedIn
             case 3:
@@ -543,7 +928,18 @@ class CrmLibrary {
         return $formattedValue;
     }
 
-    function getSuccessRate($selectedRate = 0, $block = "sRate") {
+    /**
+     * Get Success Rate
+     *
+     * @param Integer $selectedRate
+     * @param String  $block
+     *
+     * @global ADO Connection $objDatabase
+     *
+     * @return null
+     */
+    function getSuccessRate($selectedRate = 0, $block = "sRate")
+    {
         global  $objDatabase;
         $objRates = $objDatabase->Execute("SELECT id, label,rate
                                                 FROM `".DBPREFIX."module_{$this->moduleName}_success_rate` ORDER BY sorting ASC");
@@ -563,7 +959,18 @@ class CrmLibrary {
 
     }
 
-    function getDealsStages($selectedStage = 0, $block = "dealsStages") {
+    /**
+     * Get Deals Stages
+     *
+     * @param Integer $selectedStage
+     * @param String  $block
+     *
+     * @global ADO Connection $objDatabase
+     *
+     * @return null
+     */
+    function getDealsStages($selectedStage = 0, $block = "dealsStages")
+    {
         global  $objDatabase;
 
         $objRates = $objDatabase->Execute("SELECT id, label,stage
@@ -584,7 +991,19 @@ class CrmLibrary {
 
     }
 
-        public function _getDomainNameId($websiteId, $cusId, $domainName) {
+    /**
+     * Get Domain name Id
+     *
+     * @param Integer $websiteId  website id
+     * @param Integer $cusId      customer id
+     * @param String  $domainName domain name
+     *
+     * @global ADO Connection $objDatabase
+     *
+     * @return Integer
+     */
+    public function _getDomainNameId($websiteId, $cusId, $domainName)
+    {
         global $objDatabase;
 
         if (empty($domainName)) {
@@ -615,7 +1034,19 @@ class CrmLibrary {
         }
     }
 
-    function activateSuccessRate($successEntrys, $deactivate = false) {
+    /**
+     * Success Rate Status Change
+     *
+     * @param Array   $successEntrys success entry ids
+     * @param Boolean $deactivate    status
+     *
+     * @global ADO Connection $objDatabase
+     * @global Array          $_ARRAYLANG
+     *
+     * @return null
+     */
+    function activateSuccessRate($successEntrys, $deactivate = false)
+    {
         global $objDatabase,$_ARRAYLANG;
 
         if (!empty($successEntrys) && is_array($successEntrys)) {
@@ -639,7 +1070,18 @@ class CrmLibrary {
         }
     }
 
-    function saveSortingSuccessRate($successEntrySorting) {
+    /**
+     * Success Rate sorting function
+     *
+     * @param Array $successEntrySorting sorting value in array
+     *
+     * @global ADO Connection $objDatabase
+     * @global Array          $_ARRAYLANG
+     *
+     * @return null
+     */
+    function saveSortingSuccessRate($successEntrySorting)
+    {
         global $objDatabase,$_ARRAYLANG;
 
         if (!empty($successEntrySorting) && is_array($successEntrySorting)) {
@@ -656,7 +1098,17 @@ class CrmLibrary {
         }
     }
 
-    function deleteSuccessRates($successEntries) {
+    /**
+     * Delete Multiple Success rate records
+     *
+     * @param Array $successEntries Success entry ids
+     *
+     * @global ADO Connection $objDatabase
+     *
+     * @return null
+     */
+    function deleteSuccessRates($successEntries)
+    {
         global $objDatabase;
 
         if (!empty($successEntries) && is_array($successEntries)) {
@@ -669,7 +1121,15 @@ class CrmLibrary {
         }
     }
 
-    function deleteSuccessRate() {
+    /**
+     * Delete SuccessRate record
+     *
+     * @global ADO Connection $objDatabase
+     *
+     * @return null
+     */
+    function deleteSuccessRate()
+    {
         global $objDatabase;
 
         $id     = (int) $_GET['id'];
@@ -679,7 +1139,19 @@ class CrmLibrary {
 
     }
 
-    function activateIndustryType($industryEntrys, $deactivate = false) {
+    /**
+     * Industry type Change Status
+     *
+     * @param Array   $industryEntrys entry ids
+     * @param Boolean $deactivate     status
+     *
+     * @global ADO Connection $objDatabase
+     * @global Array          $_ARRAYLANG
+     *
+     * @return null
+     */
+    function activateIndustryType($industryEntrys, $deactivate = false)
+    {
         global $objDatabase,$_ARRAYLANG;
 
         if (!empty($industryEntrys) && is_array($industryEntrys)) {
@@ -704,7 +1176,18 @@ class CrmLibrary {
         }
     }
 
-    function saveSortingIndustryType($industryEntrySorting) {
+    /**
+     * Industry type sorting function
+     *
+     * @param Array $industryEntrySorting entries id
+     *
+     * @global ADO Connection $objDatabase
+     * @global Array          $_ARRAYLANG
+     *
+     * @return null
+     */
+    function saveSortingIndustryType($industryEntrySorting)
+    {
         global $objDatabase,$_ARRAYLANG;
 
         if (!empty($industryEntrySorting) && is_array($industryEntrySorting)) {
@@ -721,7 +1204,18 @@ class CrmLibrary {
         }
     }
 
-    function deleteIndustryTypes($indusEntries) {
+    /**
+     * Delete Multiple Industry types record
+     *
+     * @param Array $indusEntries
+     *
+     * @global ADO Connection $objDatabase
+     * @global Array          $_ARRAYLANG
+     *
+     * @return null
+     */
+    function deleteIndustryTypes($indusEntries)
+    {
         global $objDatabase, $_ARRAYLANG;
 
         if (!empty($indusEntries) && is_array($indusEntries)) {
@@ -734,7 +1228,15 @@ class CrmLibrary {
         }
     }
 
-    function deleteIndustryType() {
+    /**
+     * Delete Industry type
+     *
+     * @global ADO Connection $objDatabase
+     *
+     * @return null
+     */
+    function deleteIndustryType()
+    {
         global $objDatabase;
 
         $id     = (int) $_GET['id'];
@@ -744,7 +1246,19 @@ class CrmLibrary {
 
     }
 
-    function activateMembership($entries, $deactivate = false) {
+    /**
+     * Change Membership Status
+     *
+     * @param Array   $entries    entries id
+     * @param Boolean $deactivate Status
+     *
+     * @global ADO Connection $objDatabase
+     * @global Array          $_ARRAYLANG
+     *
+     * @return null
+     */
+    function activateMembership($entries, $deactivate = false)
+    {
         global $objDatabase,$_ARRAYLANG;
 
         if (!empty($entries) && is_array($entries)) {
@@ -769,7 +1283,18 @@ class CrmLibrary {
         }
     }
 
-    function saveSortingMembership($entriesSorting) {
+    /**
+     * Membership Sorting functionality
+     *
+     * @param Array $entriesSorting entries ids
+     *
+     * @global ADO Connection $objDatabase
+     * @global Array          $_ARRAYLANG
+     *
+     * @return null
+     */
+    function saveSortingMembership($entriesSorting)
+    {
         global $objDatabase,$_ARRAYLANG;
 
         if (!empty($entriesSorting) && is_array($entriesSorting)) {
@@ -789,7 +1314,18 @@ class CrmLibrary {
         }
     }
 
-    function deleteMemberships($entries) {
+    /**
+     * Delete Multiple Membership Records
+     *
+     * @param Array $entries entry id
+     *
+     * @global ADO Connection $objDatabase
+     * @global Array          $_ARRAYLANG
+     *
+     * @return null
+     */
+    function deleteMemberships($entries)
+    {
         global $objDatabase, $_ARRAYLANG;
 
         if (!empty($entries) && is_array($entries)) {
@@ -811,7 +1347,15 @@ class CrmLibrary {
 
     }
 
-    function deleteMembership() {
+    /**
+     * delete Membership
+     *
+     * @global ADO Connection $objDatabase
+     *
+     * @return null
+     */
+    function deleteMembership()
+    {
         global $objDatabase;
 
         $id     = (int) $_GET['id'];
@@ -823,7 +1367,19 @@ class CrmLibrary {
 
     }
 
-    function activateStage($successEntrys, $deactivate = false) {
+    /**
+     * change stage status
+     *
+     * @param Array   $successEntrys entry ids
+     * @param Boolean $deactivate    status
+     *
+     * @global ADO Connection $objDatabase
+     * @global Array          $_ARRAYLANG
+     *
+     * @return null
+     */
+    function activateStage($successEntrys, $deactivate = false)
+    {
         global $objDatabase,$_ARRAYLANG;
 
         if (!empty($successEntrys) && is_array($successEntrys)) {
@@ -847,7 +1403,18 @@ class CrmLibrary {
         }
     }
 
-    function saveStageSorting($successEntrySorting) {
+    /**
+     * save sorting stage
+     *
+     * @param Array $successEntrySorting entry ids
+     *
+     * @global ADO Connection $objDatabase
+     * @global Array          $_ARRAYLANG
+     *
+     * @return null
+     */
+    function saveStageSorting($successEntrySorting)
+    {
         global $objDatabase, $_ARRAYLANG;
 
         if (!empty($successEntrySorting) && is_array($successEntrySorting)) {
@@ -865,7 +1432,18 @@ class CrmLibrary {
         }
     }
 
-    function deleteStages($successEntries) {
+    /**
+     * Delete Multiple Stages
+     *
+     * @param Array $successEntries entries ids
+     *
+     * @global ADO Connection $objDatabase
+     * @global Array          $_ARRAYLANG
+     *
+     * @return null
+     */
+    function deleteStages($successEntries)
+    {
         global $objDatabase, $_ARRAYLANG;
 
         if (!empty($successEntries) && is_array($successEntries)) {
@@ -878,7 +1456,15 @@ class CrmLibrary {
         }
     }
 
-    function deleteStage() {
+    /**
+     * Delete stage record
+     *
+     * @global ADO Connection $objDatabase
+     *
+     * @return null
+     */
+    function deleteStage()
+    {
         global $objDatabase;
 
         $id     = (int) $_GET['id'];
@@ -888,7 +1474,18 @@ class CrmLibrary {
 
     }
 
-    function deleteDeals($dealsEntries, $deleteProjects = false) {
+    /**
+     * Delete Multiple Deals
+     *
+     * @param Array   $dealsEntries   entry ids
+     * @param Boolean $deleteProjects status
+     *
+     * @global ADO Connection $objDatabase
+     *
+     * @return null
+     */
+    function deleteDeals($dealsEntries, $deleteProjects = false)
+    {
         global $objDatabase;
 
         if (!empty($dealsEntries) && is_array($dealsEntries)) {
@@ -920,6 +1517,15 @@ class CrmLibrary {
         csrf::header("location:".ASCMS_ADMIN_WEB_PATH."/index.php?cmd=".$this->moduleName."&act=deals&mes=$message");
     }
 
+    /**
+     * Delete Deal record
+     *
+     * @param Boolean $deleteProjects record status
+     *
+     * @global ADO Connection $objDatabase
+     *
+     * @return null
+     */
     function deleteDeal($deleteProjects = false) {
         global $objDatabase;
 
@@ -945,10 +1551,15 @@ class CrmLibrary {
 
     /**
      * Populates the Contrexx user Filter Drop Down
-     * @param $block String The name of the template block to parse
-     * @param $selectedId Integer The ID of the selected user
+     * 
+     * @param String  $block      The name of the template block to parse
+     * @param Integer $selectedId The ID of the selected user
+     * @param Integer $groupId    Resource froup id
+     *
+     * @return null
      */
-    function _getResourceDropDown($block= 'members', $selectedId=0, $groupId = 0) {
+    function _getResourceDropDown($block= 'members', $selectedId=0, $groupId = 0)
+    {
         $resources = $this->getResources($groupId);
         foreach ($resources as $resource) {
             $selected = $selectedId ==  $resource['id'] ? 'selected="selected"' : '';
@@ -961,7 +1572,17 @@ class CrmLibrary {
         }
     }
 
-    function getResources($groupId) {
+    /**
+     * Get Resource data's
+     *
+     * @param Integer $groupId resource group id
+     *
+     * @global ADO Connection $objDatabase
+     *
+     * @return boolean
+     */
+    function getResources($groupId)
+    {
         global $objDatabase;
         static $resources = array();
 
@@ -996,6 +1617,15 @@ class CrmLibrary {
         return false;
     }
 
+    /**
+     * Get Data source Dropdown
+     *
+     * @param Template Object $objTpl     template object
+     * @param String          $block      block name
+     * @param Integer         $selectedId Default value id
+     *
+     * @return null
+     */
     function getDatasourceDropDown($objTpl, $block= 'datasource', $selectedId = 0) {
         $datasources = $this->getCrmDatasource();
 
@@ -1011,7 +1641,15 @@ class CrmLibrary {
         }
     }
 
-    function getCrmDatasource() {
+    /**
+     * Get Crm data Source
+     *
+     * @global ADO Connection $objDatabase
+     *
+     * @return String
+     */
+    function getCrmDatasource()
+    {
         global $objDatabase;
 
         static $datasource = array();
@@ -1032,7 +1670,18 @@ class CrmLibrary {
         return $datasource;
     }
 
-    function  getMemberships($active = true) {
+    /**
+     * Get Membership details From DB
+     *
+     * @param Boolean $active membership status
+     *
+     * @global ADO Connection $objDatabase
+     * @global Array          $_LANGID
+     *
+     * @return Array
+     */
+    function  getMemberships($active = true)
+    {
         global $objDatabase, $_LANGID;
 
         $status = ($active) ? ' AND status = 1' : '';
@@ -1054,7 +1703,21 @@ class CrmLibrary {
         return $memberships;
     }
 
-    function listIndustryTypes($objTpl, $intView, $intIndustryId=null, $arrParentIds=null) {
+    /**
+     * List the industry types
+     *
+     * @param Template Object $objTpl
+     * @param Integer         $intView
+     * @param Integer         $intIndustryId industry id
+     * @param Array           $arrParentIds  parent ids
+     *
+     * @global Array          $_ARRAYLANG
+     * @global ADO Connection $objDatabase
+     *
+     * @return String
+     */
+    function listIndustryTypes($objTpl, $intView, $intIndustryId=null, $arrParentIds=null)
+    {
         global $_ARRAYLANG, $objDatabase;
 
         if (!isset($this->model_industry_types))
@@ -1141,7 +1804,18 @@ class CrmLibrary {
         }
     }
 
-    function getMembershipDropdown($objTpl, $memberShips, $block = "assignedGroup", $selected = array()) {
+    /**
+     * Get Membership dropdown
+     *
+     * @param Template Object $objTpl      Template object
+     * @param Array           $memberShips membership ids
+     * @param String          $block       Block name
+     * @param Array           $selected    Default membership ids
+     *
+     * @return null
+     */
+    function getMembershipDropdown($objTpl, $memberShips, $block = "assignedGroup", $selected = array())
+    {
 
         if (!is_array($selected)) {
             return ;
@@ -1159,7 +1833,17 @@ class CrmLibrary {
         }
     }
 
-    function getOverviewMembershipDropdown($objTpl, $modelMembership, $selected = 0, $block = "memberships", $options = array()) {
+    /**
+     * Get membership dropdown for overview page
+     *
+     * @param Template Object $objTpl          Template object
+     * @param Object          $modelMembership
+     * @param Array           $options
+     *
+     * @return null
+     */
+    function getOverviewMembershipDropdown($objTpl, $modelMembership, $selected = 0, $block = "memberships", $options = array())
+    {
         $data = array(
                 'status = 1'
         );
@@ -1182,7 +1866,17 @@ class CrmLibrary {
         
     }
 
-    function addUser($email, $password, $sendLoginDetails = false) {
+    /**
+     * Add User in the time of adding a customer based on the account settings
+     *
+     * @param String  $email            user email id
+     * @param String  $password         user password
+     * @param Boolean $sendLoginDetails status
+     *
+     * @return boolean
+     */
+    function addUser($email, $password, $sendLoginDetails = false)
+    {
         global $objDatabase, $_CORELANG;
 
         $settings = $this->getSettings();
@@ -1264,7 +1958,9 @@ class CrmLibrary {
      * Example: <p> http://www.contrexx.com </p> will be
      * <p> <a href="http://www.contrexx.com" rel="nofollow"> http://www.contrexx.com </a> </p>
      *
-     * @return  string       $html
+     * @param String $html
+     *
+     * @return string $html
      */
     function makeLinksInTheContent($html)
     {
@@ -1274,7 +1970,14 @@ class CrmLibrary {
 
         return($html);
     }
-    
+
+    /**
+     * Adding Crm Contact
+     *
+     * @param Array $arrFormData form data's
+     *
+     * @return null
+     */
     function addCrmContact($arrFormData = array())
     {
         global $objDatabase;
@@ -1411,9 +2114,14 @@ class CrmLibrary {
     /**
      * notify the staffs regarding the account modification of a contact
      *
+     * @param Integer $customerId    customer id
+     * @param String  $customer_name customer name
+     *
      * @access public
      * @global object $objTemplate
-     * @global array $_ARRAYLANG
+     * @global array  $_ARRAYLANG
+     *
+     * @return null
      */
     public function notifyStaffOnContactAccModification($customerId = 0, $customer_name = '')
     {
@@ -1442,9 +2150,11 @@ class CrmLibrary {
      * Escape a value that it could be inserted into a csv file.
      *
      * @param string $value
+      * 
      * @return string
      */
-    function _escapeCsvValue($value) {
+    function _escapeCsvValue($value)
+    {
 
         $csvSeparator = $this->_csvSeparator;
         $value = in_array(strtolower(CONTREXX_CHARSET), array('utf8', 'utf-8')) ? utf8_decode($value) : $value;
@@ -1459,9 +2169,10 @@ class CrmLibrary {
 
     /**
      * Returns true if the given $username is valid
-     * @param   string    $username
+     *
+     * @param string $username
+     *
      * @return  boolean
-     * @static
      */
     protected function isValidUsername($username)
     {
@@ -1482,10 +2193,12 @@ class CrmLibrary {
      * exists already.
      * If non-empty, the given User ID is excluded from the search, so the
      * User does not match herself.
-     * @param   string    $username   The username to test
-     * @param   integer   $id         The optional current User ID
-     * @return  boolean               True if the username is available,
-     *                                false otherwise
+     * 
+     * @param string  $username The username to test
+     * @param integer $id       The optional current User ID
+     * 
+     * @return boolean True if the username is available,
+     *                 false otherwise
      */
     protected function isUniqueUsername($email, $id=0)
     {
@@ -1504,9 +2217,11 @@ class CrmLibrary {
      *
      * Returns true or false for task edit and delete permission.
      *           
-     * @param   integer   $added_user The addeduser of the task
-     * @return  boolean               True if the user has the access,
-     *                                false otherwise
+     * @param Integer $added_user    The addeduser of the task
+     * @param Integer $assigned_user responsible user
+     * 
+     * @return boolean True if the user has the access,
+     *                 false otherwise
      */
     protected function getTaskPermission($added_user, $assigned_user)
     {
@@ -1542,8 +2257,11 @@ class CrmLibrary {
     /**
      * get the count of entries
      *
+     * @param String $query
+     * 
      * @global array $_ARRAYLANG
      * @global object $objDatabase
+     * 
      * @return true
      */
     function countRecordEntries($query)
@@ -1559,8 +2277,12 @@ class CrmLibrary {
     /**
      * Counts all existing entries in the database.
      *
+     * @param String $table table name
+     * @param String $where condition
+     *
      * @global  ADONewConnection
-     * @return  integer     number of entries in the database
+     * 
+     * @return integer number of entries in the database
      */
     function countEntries($table, $where=null)
     {
@@ -1575,8 +2297,11 @@ class CrmLibrary {
     /**
      * Counts all existing entries in the database.
      *
-     * @global  ADONewConnection
-     * @return  integer     number of entries in the database
+     * @param String $table table name
+     *
+     * @global ADONewConnection
+     * 
+     * @return integer number of entries in the database
      */
     function countEntriesOfJoin($table)
     {
@@ -1591,8 +2316,13 @@ class CrmLibrary {
     /**
      * Default PM Calendar Month Page
      *
+     * @param String $URI            url
+     * @param String $paramName      parameter name
+     * @param String $selectedLetter Selected letter
+     *
      * @global array $_ARRAYLANG
      * @global object $objDatabase
+     * 
      * @return true
      */
     function parseLetterIndexList($URI, $paramName, $selectedLetter)
@@ -1635,6 +2365,7 @@ class CrmLibrary {
      * Returns the allowed maximum element per page. Can be used for paging.
      *
      * @global  array
+     * 
      * @return  integer     allowed maximum of elements per page.
      */
     function getPagingLimit()
@@ -1657,16 +2388,45 @@ class CrmLibrary {
 
 }
 
-
-// Loader will access class singleton and set object
+/**
+ * Library Loader Class CRM
+ * Loader will access class singleton and set object
+ *
+ * @category   Sample_Category
+ * @package    Contrexx
+ * @subpackage Module_Crm
+ * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
+ * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @license    trial license
+ * @link       www.contrexx.com
+ */
 class loader {
-    function model($model_name, $class) {
+    /**
+     * Load the model under the library files
+     *
+     * @param String $model_name model name
+     * @param String $class      Class name
+     *
+     * @return object
+     */
+    function model($model_name, $class)
+    {
         require(CRM_MODULE_LIB_PATH.'models/'.$model_name.'.php');
         $class::init()->$model_name = new $model_name;
         return $class::init()->$model_name;
     }
 
-    function controller($controller_name, $class, $objTpl) {
+    /**
+     * Load the controller under the library files
+     *
+     * @param String          $controller_name controller name
+     * @param String          $class           Class name
+     * @param Template Object $objTpl          Template object
+     *
+     * @return object
+     */
+    function controller($controller_name, $class, $objTpl)
+    {
         require(CRM_MODULE_LIB_PATH.'controllers/'.$controller_name.'.class.php');
         $class::init()->$controller_name = new $controller_name($objTpl);
         return $class::init()->$controller_name;

@@ -10,7 +10,6 @@
  * @license    trial license
  * @link       www.contrexx.com
  */
-// DBG::activate();
 require_once ASCMS_MODULE_PATH.'/crm/lib/crmLib.class.php';
 
 require_once CRM_MODULE_LIB_PATH.'/javascript.class.php';
@@ -30,7 +29,12 @@ require_once CRM_MODULE_LIB_PATH.'/Csv_bv.class.php';
 
 class CrmManager extends CrmLibrary
 {
-    // Template object
+    /**
+     * Template object
+     *
+     * @access private
+     * @var string
+     */
     var $_objTpl;
 
     /**
@@ -53,6 +57,12 @@ class CrmManager extends CrmLibrary
      */
     var $objJs = '';
 
+    /**
+     * Function Action Name
+     *
+     * @access private
+     * @var string
+     */
     public $act = '';
 
     /**

@@ -25,6 +25,12 @@
 
 class crmInterface extends CrmLibrary
 {
+    /**
+     * delimiter
+     *
+     * @access private
+     * @var array
+     */
     private $_delimiter = array(
                             array(
                                 'title'=>'Semicolon',
@@ -42,6 +48,12 @@ class crmInterface extends CrmLibrary
                                 'placeholder' => 'TXT_CRM_COLON'
                             ),
                           );
+    /**
+     * enclosure
+     *
+     * @access private
+     * @var array
+     */
     private $_enclosure = array(
                             array(
                                 'title'=>'Double quote',
@@ -58,8 +70,9 @@ class crmInterface extends CrmLibrary
 
     /**
      * Template object
-     *     
-     * @param object
+     *
+     * @access public
+     * @var object
      */
     public $_objTpl;
 
@@ -157,6 +170,7 @@ class crmInterface extends CrmLibrary
 
     /**
      * used to fetch the csv data
+     * 
      * @return csvdata
      */
     function csvImport()
@@ -213,7 +227,13 @@ class crmInterface extends CrmLibrary
         exit();
     }
 
-    function getCsvRecord() {
+    /**
+     * Get the CSV Record
+     *
+     * @return null
+     */
+    function getCsvRecord()
+    {
         global $_ARRAYLANG, $objDatabase;
 
         $json = array();
@@ -239,8 +259,17 @@ class crmInterface extends CrmLibrary
         echo json_encode($json);
         exit();
     }
-    
-    function uploadCSV($name, $path) {
+
+    /**
+     * Upload a Csv File
+     *
+     * @param String $name File name
+     * @param String $path uploading file path
+     *
+     * @return String
+     */
+    function uploadCSV($name, $path)
+    {
         //check file array
         if (isset($_FILES) && !empty($_FILES)) {
             //get file info
@@ -309,7 +338,8 @@ class crmInterface extends CrmLibrary
      *
      * @return all contacts in csv format
      */
-    function csvExport() {
+    function csvExport()
+    {
         global $_ARRAYLANG,$objDatabase, $_LANGID;
 
         $process = isset ($_GET['process']) ? trim($_GET['process']) : '';
@@ -511,7 +541,6 @@ class crmInterface extends CrmLibrary
                         print $this->_escapeCsvValue($objResult->fields['username']).$this->_csvSeparator;
                         break;
                 }
-//                print $this->_escapeCsvValue($objResult->fields['customer_website']).$this->_csvSeparator;
 
                 $result = array();
                 // Get emails and phones
@@ -596,7 +625,8 @@ class crmInterface extends CrmLibrary
      *
      * @return all fields can be imported
      */
-    function getImportOptions() {
+    function getImportOptions()
+    {
         global $_ARRAYLANG;
         
         $headerCsv = array(
@@ -880,7 +910,16 @@ class crmInterface extends CrmLibrary
 //        echo json_encode($json);
         exit();
     }
-    
+
+    /**
+     * Check the argument and save the field values to corresponding DB
+     * 
+     * @param String $tableName Table name
+     * @param Array  $values    Conditions
+     * @param Array  $fields    Field values
+     *
+     * @return null
+     */
     function checkRecordStoreTODB($tableName = '', $values = array(), $fields = array())
     {
         global $objDatabase;
@@ -896,6 +935,13 @@ class crmInterface extends CrmLibrary
         }
     }
 
+    /**
+     * Get Language Id ny name
+     *
+     * @param String $language Language name
+     *
+     * @return Integer
+     */
     function getLanguageIdByName($language)
     {
         global $objDatabase;
@@ -914,6 +960,13 @@ class crmInterface extends CrmLibrary
         return (int) $objResult->fields['id'];
     }
 
+    /**
+     * Get Customer Type id by name
+     * 
+     * @param String $customerType customertype name
+     *
+     * @return Integer
+     */
     function getCustomerTypeIdByName($customerType)
     {
         global $objDatabase;
@@ -923,6 +976,13 @@ class crmInterface extends CrmLibrary
         return (int) $objResult->fields['id'];
     }
 
+    /**
+     * Get currency id by name
+     *
+     * @param String $currency currency name
+     *
+     * @return Integer
+     */
     function getCurrencyIdByName($currency)
     {
         global $objDatabase;
@@ -932,6 +992,13 @@ class crmInterface extends CrmLibrary
         return (int) $objResult->fields['id'];
     }
 
+    /**
+     * Get industry type id by name
+     *
+     * @param String $industrytype industry type name
+     * 
+     * @return Integer
+     */
     function getIndustryTypeIdByName($industrytype)
     {
         global $objDatabase;
@@ -946,6 +1013,16 @@ class crmInterface extends CrmLibrary
         return (int) $objResult->fields['id'];
     }
 
+    /**
+     * Check Contact exists or not
+     *
+     * @param String  $customer_name customer name
+     * @param String  $family_name   family name
+     * @param String  $emails        email ids
+     * @param Integer $contact_type  Contact type
+     *
+     * @return Integer
+     */
     function checkContactExists($customer_name, $family_name, $emails, $contact_type)
     {
         global $objDatabase;
@@ -968,6 +1045,11 @@ class crmInterface extends CrmLibrary
         
     }
 
+    /**
+     * Get file import result
+     *
+     * @return null
+     */
     function getFileImportProgress()
     {
         $file = isset($_GET['file']) ? contrexx_input2raw($_GET['file']) : '';
