@@ -1,15 +1,66 @@
 <?php
+/**
+ * IndustryType Class CRM
+ *
+ * @category   IndustryType
+ * @package    Contrexx
+ * @subpackage Module_Crm
+ * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
+ * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @license    trial license
+ * @link       www.contrexx.com
+ */
 
-class IndustryType {
+/**
+ * IndustryType Class CRM
+ *
+ * @category   IndustryType
+ * @package    Contrexx
+ * @subpackage Module_Crm
+ * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
+ * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @license    trial license
+ * @link       www.contrexx.com
+ */
 
+class IndustryType
+{
+    /**
+    * Module Name
+    *
+    * @access private
+    * @var string
+    */
     private $moduleName = "crm";
+
+    /**
+    * Module Name
+    *
+    * @access public
+    * @var array
+    */
     public $arrIndustryTypes;
 
-    function  __construct() {
+    /**
+     * Constructor
+     */
+    function  __construct()
+    {
         $this->arrIndustryTypes = $this->getIndustryTypes();
     }
 
-    function getIndustryTypes($intIndustryId=null, $intParentId=null, $status = false) {
+    /**
+     * Get Industry types
+     *
+     * @param Integer $intIndustryId industry id
+     * @param Integer $intParentId   parent id
+     * @param Boolean $status        status
+     * 
+     *
+     * @return array
+     */
+    function getIndustryTypes($intIndustryId=null, $intParentId=null, $status = false)
+    {
         global $_ARRAYLANG, $objDatabase, $_LANGID;
 
         $arrIndustries = array();
@@ -68,11 +119,28 @@ class IndustryType {
         return $arrIndustries;
     }
 
-    function  __set($name,  $value) {
+    /**
+     * Set the variable if new
+     * 
+     * @param String $name  variable name
+     * @param String $value variable value
+     *
+     * @return null
+     */
+    function  __set($name,  $value)
+    {
         $this->{$name} = $value;
     }
 
-    function  __get($name) {
+    /**
+     * Get the variable value
+     * 
+     * @param String $name variable name
+     *
+     * @return String
+     */
+    function  __get($name)
+    {
         return $this->{$name};
     }
 }

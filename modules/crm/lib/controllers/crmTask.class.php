@@ -32,6 +32,12 @@ class crmTask extends CrmLibrary
      */
     public $_objTpl;
 
+    /**
+     * sort fields
+     *
+     * @access protected
+     * @var array
+     */
     protected $_sortFields = array(
         array(
           'name'   => 'TXT_CRM_TASK_RECENTLY_ADDED',
@@ -423,10 +429,7 @@ class crmTask extends CrmLibrary
     /**
      * used to change task status if valid
      *
-     * used to change task status if valid
-     *
-     * @param   integer   $task_id
-     * @return  json      status about the task
+     * @return json status about the task
      */
     public function changeTaskStatus()
     {

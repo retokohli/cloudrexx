@@ -1,17 +1,27 @@
 <?php
 /**
-* Class CRM
-*
-* Crm class
-*
-* @copyright	CONTREXX CMS
-* @author		SoftSolutions4U Development Team <info@softsolutions4u.com>
-* @module		CRM
-* @modulegroup	modules
-* @access		public
-* @version		1.0.0
-*/
+ * Index Class CRM
+ *
+ * @category   Sample_Category
+ * @package    Contrexx
+ * @subpackage Module_Crm
+ * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
+ * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @license    trial license
+ * @link       www.contrexx.com
+ */
 
+/**
+ * Index Class CRM
+ *
+ * @category   Sample_Category
+ * @package    Contrexx
+ * @subpackage Module_Crm
+ * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
+ * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @license    trial license
+ * @link       www.contrexx.com
+ */
 class Crm
 {
 	/**
@@ -21,10 +31,19 @@ class Crm
 	* @var object
 	*/
 	var $_objTpl;
-    var $moduleName = 'crm';
+
+	/**
+	* Module Name
+	*
+	* @access private
+	* @var object
+	*/
+        var $moduleName = 'crm';
 	
 	/**
 	* Constructor
+         *
+         * @param string $pageContent page content
 	*/
 	function Crm($pageContent)
 	{
@@ -35,6 +54,8 @@ class Crm
 	/**
 	* PHP5 constructor
 	*
+        * @param string $pageContent page content
+        *
 	* @global object $objTemplate
 	* @global array $_ARRAYLANG
 	*/

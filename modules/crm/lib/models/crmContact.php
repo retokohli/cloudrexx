@@ -1,10 +1,50 @@
 <?php
+/**
+ * crmContact Class CRM
+ *
+ * @category   crmContact
+ * @package    Contrexx
+ * @subpackage Module_Crm
+ * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
+ * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @license    trial license
+ * @link       www.contrexx.com
+ */
 
-class crmContact {
+/**
+ * crmContact Class CRM
+ *
+ * @category   crmContact
+ * @package    Contrexx
+ * @subpackage Module_Crm
+ * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
+ * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @license    trial license
+ * @link       www.contrexx.com
+ */
+
+class crmContact
+{
     
+    /**
+    * Module Name
+    *
+    * @access protected
+    * @var string
+    */
     protected $moduleName = "crm";
-    
-    function load($id = null) {
+
+    /**
+     * Load the record
+     *
+     * @param Integer $id record id
+     *
+     * @global ADO Connection $objDatabase
+     *
+     * @return Boolean
+     */
+    function load($id = null)
+    {
         global $objDatabase;
 
         $this->id = $id;
@@ -52,7 +92,13 @@ class crmContact {
         return FALSE;
     }
 
-    function getCustomerDetails() {
+    /**
+     * Get customer Details
+     *
+     * @return array
+     */
+    function getCustomerDetails()
+    {
         global $objDatabase, $_LANGID;
         
         $query = "SELECT   c.id,
@@ -105,7 +151,15 @@ class crmContact {
         return $customerDetail;
     }
 
-    function save() {
+    /**
+     * Save a record
+     * 
+     * @global ADO Connection $objDatabase
+     * 
+     * @return Boolean
+     */
+    function save()
+    {
         global $objDatabase;
 
         $fields = array(
@@ -144,15 +198,36 @@ class crmContact {
         return false;
     }
     
-    function  __set($name,  $value) {
+    /**
+     * Set the variable if new
+     *
+     * @param String $name  variable name
+     * @param String $value variable value
+     *
+     * @return null
+     */
+    function  __set($name,  $value)
+    {
         $this->{$name} = $value;
     }
 
-    function  __get($name) {        
+    /**
+     * Get the variable value
+     *
+     * @param String $name variable name
+     *
+     * @return String
+     */
+    function  __get($name)
+    {
         return $this->{$name};
     }
 
-    function clean() {
+    /**
+     * Reset the variable
+     */
+    function clean()
+    {
         $this->id               = 0;
         $this->contactType      = 0;
         $this->customerId       = '';

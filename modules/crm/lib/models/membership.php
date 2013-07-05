@@ -1,11 +1,55 @@
 <?php
+/**
+ * Membership Class CRM
+ *
+ * @category   Membership
+ * @package    Contrexx
+ * @subpackage Module_Crm
+ * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
+ * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @license    trial license
+ * @link       www.contrexx.com
+ */
+
+/**
+ * Membership Class CRM
+ *
+ * @category   Membership
+ * @package    Contrexx
+ * @subpackage Module_Crm
+ * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
+ * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @license    trial license
+ * @link       www.contrexx.com
+ */
 
 class membership {
 
+    /**
+    * Module Name
+    *
+    * @access private
+    * @var string
+    */
     private $moduleName = 'crm';
+
+    /**
+    * Table Name
+    *
+    * @access private
+    * @var string
+    */
     private $table_name;
 
-    function findAllByLang($data = array()) {
+    /**
+     * find all the membership by language
+     *
+     * @param array $data conditions
+     * 
+     * @return array
+     */
+    function findAllByLang($data = array())
+    {
         global $objDatabase, $_LANGID;
 
         $condition = '';
