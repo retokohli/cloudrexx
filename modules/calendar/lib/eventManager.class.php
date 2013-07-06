@@ -937,12 +937,12 @@ class CalendarEventManager extends CalendarLibrary
             } else {
                 return false;
             }
-        } else {                                                
-            require_once ASCMS_MODULE_PATH . '/calendar/lib/httpconnection/httpconnection.class.php'; 
+        } else {
+            require_once ASCMS_LIBRARY_PATH.'/PEAR/HTTP/Request2.php';
             
             if(substr($url,0,7) == 'http://') {
                 $url = substr($url,7); 
-            } 
+            }
             
             $url = explode('/',$url);     
             $offset = array();
@@ -960,23 +960,19 @@ class CalendarEventManager extends CalendarLibrary
             if(substr($offset,-1) != '/') {  
                 $offset = $offset.'/';  
             }         
-                                                                                                                      
-            $http = new httpconnection($domain);   
-            $data = $http->get($offset.'modules/calendar/lib/webservice/soap.server.class.php'); 
-                                 
-            
-            if(!empty($data)) {     
-                if($data['head']['code'] == '404') {
-                    unset($http);  
-                    return false;     
+
+            try {
+                $request  = new HTTP_Request2($domain.$offset.'modules/calendar/lib/webservice/soap.server.class.php');
+                $response = $request->send();
+                if (404 == $response->getStatus()) {
+                    return false;
                 } else {
-                    unset($http);  
-                    return true;     
-                }  
-            } else {            
-                unset($http); 
-                return false;  
-            }         
+                    return true;
+                }
+            } catch (Exception $e) {
+                DBG::msg($e->getMessage());
+                return false;
+            }
         }
     }
 
