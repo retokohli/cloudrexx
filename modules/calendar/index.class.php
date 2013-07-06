@@ -1,38 +1,118 @@
 <?php
 /**
- * Calendar
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation <info@comvation.com>
- * @version     $Id: index.inc.php,v 1.00 $
- * @package     contrexx
- * @subpackage  module_calendar
+ * Calendar 
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
  */
 
 
 /**
- * CalendarAdmin
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation <info@comvation.com>
- * @version     $Id: index.inc.php,v 1.00 $
- * @package     contrexx
- * @subpackage  module_calendar
+ * Calendar
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
  */
 class Calendar extends CalendarLibrary
 {
+    /**
+     * Event manager object
+     *
+     * @var object
+     */
     private $objEventManager;
+    
+    /**
+     * Captcha Error
+     *
+     * @var string
+     */
     private $captchaError = '';
 
+    /**
+     * Start date
+     * 
+     * Unix timestamp
+     *
+     * @var integer
+     */
     private $startDate;
+    
+    /**
+     * End date 
+     * Unix timestamp
+     *
+     * @var integer
+     */
     private $endDate;
+    
+    /**
+     * Category id
+     *
+     * @var integer
+     */
     private $categoryId;
+    
+    /**
+     * Search term
+     *
+     * @var string
+     */
     private $searchTerm;
+    
+    /**
+     * Need authorization
+     *
+     * @var boolean 
+     */    
     private $needAuth;
+    
+    /**
+     * Start position
+     *
+     * @var integer
+     */
     private $startPos;
+    
+    /**
+     * Number of events per  page
+     *
+     * @var integer
+     */
     private $numEvents;
+    
+    /**
+     * Author name
+     *
+     * @var string
+     */
     private $author;
+    
+    /**
+     * Sort direction
+     *
+     * @var string
+     */
     private $sortDirection = 'ASC';
 
+    /**
+     * APge Title
+     *
+     * @var string
+     */
     public $pageTitle;
+    
+    /**
+     * meta title
+     *
+     * @var string
+     */
     public $metaTitle;
 
     /**
@@ -54,6 +134,11 @@ class Calendar extends CalendarLibrary
         $this->pageContent = $pageContent;
     }
 
+    /**
+     * Performs the calendar page
+     * 
+     * @return null
+     */
     function getCalendarPage()
     {
         self::loadEventManager();
@@ -109,6 +194,11 @@ class Calendar extends CalendarLibrary
         return $this->_objTpl->get();
     }
 
+    /**
+     * Loads the event manager
+     * 
+     * @return null
+     */
     function loadEventManager()
     {
         // get startdate
@@ -195,6 +285,11 @@ class Calendar extends CalendarLibrary
         }
     }
 
+    /**
+     * performs the overview page
+     * 
+     * @return null
+     */    
     function overview()
     {
         global $_ARRAYLANG, $_CORELANG;
@@ -252,6 +347,11 @@ class Calendar extends CalendarLibrary
         $this->objEventManager->showEventList($this->_objTpl);
     }
 
+    /**
+     * performs the my events page
+     * 
+     * @return null
+     */    
     function myEvents()
     {
         global $_ARRAYLANG, $_CORELANG;
@@ -276,6 +376,13 @@ class Calendar extends CalendarLibrary
         $this->objEventManager->showEventList($this->_objTpl);
     }
 
+    /**
+     * Add / Edit Event
+     * 
+     * @param integer $eventId Event id
+     * 
+     * @return null
+     */    
     function modifyEvent($eventId = null)
     {
         global $_ARRAYLANG, $_CORELANG, $_LANGID;
@@ -477,7 +584,11 @@ EOF;
 
     }
 
-
+    /**
+     * Performs the Event details page
+     * 
+     * @return null
+     */    
     function showEvent()
     {
         global $_ARRAYLANG, $_CORELANG, $_LANGID;
@@ -507,6 +618,11 @@ EOF;
         $this->objEventManager->showEvent($this->_objTpl, intval($_GET['id']), intval($_GET['date']));
     }
 
+    /**
+     * performs the registratio page
+     * 
+     * @return null
+     */    
     function showRegistrationForm()
     {
         global $_ARRAYLANG, $_CORELANG;
@@ -637,6 +753,11 @@ EOF;
         }
     }
 
+    /**
+     * set the placeholders for the category view
+     * 
+     * @return null
+     */    
     function showCategoryView()
     {
         global $_ARRAYLANG, $_CORELANG;
@@ -684,6 +805,13 @@ EOF;
         }
     }
 
+    /**
+     * cehcek captcha error
+     * 
+     * @param string $input user input
+     * 
+     * @return null
+     */    
     function checkCaptcha($input)
     {
         global $_ARRAYLANG;
@@ -700,6 +828,11 @@ EOF;
         return $status;
     }
 
+    /**
+     * Display the success page
+     * 
+     * @return null
+     */    
     function showSuccessPage() {
         $this->_objTpl->setTemplate($this->pageContent, true, true);
         if($_REQUEST["handler"] == "yellowpay") {

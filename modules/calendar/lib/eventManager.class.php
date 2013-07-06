@@ -1,37 +1,186 @@
 <?php
-
 /**
- * Calendar Class Event
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @version     1.0.0
- * @package     contrexx
- * @subpackage  module_calendar
- * @todo        Edit PHP DocBlocks!
+ * Calendar 
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
  */
 
+
+/**
+ * Calendar Class EventManager
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
+ */
 class CalendarEventManager extends CalendarLibrary
 {   
+    /**
+     * Start date
+     *
+     * @access private
+     * @var integer 
+     */
     private $startDate;
+    
+    /**
+     * End date
+     *
+     * @access private
+     * @var integer 
+     */
     private $endDate;
+    
+    /**
+     * Date
+     *
+     * @access private
+     * @var string 
+     */
     private $date;
+    
+    /**
+     * Seprator date time
+     *
+     * @access private
+     * @var string 
+     */
     private $sepDateTime;
+    
+    /**
+     * Time
+     * 
+     * @access private
+     * @var string
+     */
     private $time;
+    
+    /**
+     * Clock
+     *
+     * @access private
+     * @var string
+     */
     private $clock;
+    
+    /**
+     * Category id
+     *
+     * @access private
+     * @var integer
+     */
     private $categoryId;
+    
+    /**
+     * show series
+     * 
+     * @access private
+     * @var boolean
+     */
     private $showSeries;
+    
+    /**
+     * Search term
+     *
+     * @access private
+     * @var string
+     */
     private $searchTerm;
+    
+    /**
+     * Need authorization
+     *
+     * @access private
+     * @var boolean 
+     */
     private $needAuth;
+    
+    /**
+     * Only active
+     *
+     * @access public
+     * @var boolean 
+     */
     private $onlyActive;
+    
+    /**
+     * Start position
+     *
+     * @access private
+     * @var integer
+     */
     private $startPos;
+    
+    /**
+     * Num Events
+     *
+     * @access private
+     * @var integer
+     */
     private $numEvents;
+    
+    /**
+     * Sort Direction
+     *
+     * @access private
+     * @var string
+     */
     private $sortDirection;
+    
+    /**
+     * Only confirmed
+     *
+     * @access private
+     * @var boolean
+     */
     private $onlyConfirmed;
+    
+    /**
+     * Author name
+     *
+     * @access private
+     * @var string
+     */
     private $author;
     
+    /**
+     * Event list
+     *
+     * @access private
+     * @var array
+     */
     public $eventList = array();
+    
+    /**
+     * Event count
+     *
+     * @access private
+     * @var integer
+     */
     public $countEvents; 
     
+    /**
+     * Loads the event manager configuration
+     * 
+     * @param integer $startDate     Start date Unix timestamp
+     * @param integer $endDate       End date timestamp
+     * @param integer $categoryId    Category Id
+     * @param string  $searchTerm    Search Term
+     * @param boolean $showSeries    Show Series
+     * @param boolean $needAuth      Need authorization
+     * @param boolean $onlyActive    Only active Events
+     * @param integer $startPos      Start position
+     * @param integer $numEvents     Number of events
+     * @param string  $sortDirection Sort direction, possible values ASC, DESC
+     * @param boolean $onlyConfirmed only confirmed Entries
+     * @param string  $author        author name
+     */
     function __construct($startDate=null,$endDate=null,$categoryId=null,$searchTerm=null,$showSeries=true,$needAuth=false,$onlyActive=false,$startPos=0,$numEvents='n',$sortDirection='ASC',$onlyConfirmed=true,$author=null){
         $this->startDate = intval($startDate);
         $this->endDate = intval($endDate);
@@ -47,6 +196,11 @@ class CalendarEventManager extends CalendarLibrary
         $this->author = $author;                  
     }
     
+    /**
+     * Get's list of event and assign into $this->eventList
+     * 
+     * @return null
+     */
     function getEventList() {
         global $objDatabase, $_ARRAYLANG, $_LANGID, $objInit; 
         
@@ -162,7 +316,12 @@ class CalendarEventManager extends CalendarLibrary
             $this->eventList = array_slice($this->eventList, $this->startPos, $this->numEvents);    
         }
     }
-            
+         
+    /**
+     * Import Events
+     * 
+     * @return null
+     */
     function _importEvents() 
     {      
         global $objDatabase, $objInit, $_LANGID, $_CONFIG;               
@@ -242,6 +401,13 @@ class CalendarEventManager extends CalendarLibrary
         }     
     }
     
+    /**
+     * Clears the empty events
+     * 
+     * Empty events will be found if event title is empty
+     * 
+     * @return null
+     */
     function _clearEmptyEvents() { 
          foreach($this->eventList as $key => $objEvent) {
              if(empty($objEvent->title)) {
@@ -250,7 +416,16 @@ class CalendarEventManager extends CalendarLibrary
          }
     }
    
-   
+    /**
+     * Checks the event for adding it into eventlist
+     * 
+     * This will used the check the whether the gievn event object is valid to 
+     * add into event list
+     * 
+     * @param object $objEvent Event object
+     * 
+     * @return boolean true if the event is valid, false oterwise
+     */
     function _addToEventList($objEvent) {
        if($this->startDate == 0) {
             if($objEvent->endDate < $this->endDate) {
@@ -267,12 +442,23 @@ class CalendarEventManager extends CalendarLibrary
         }
     }
     
-    
+    /**
+     * Sort the event list
+     * 
+     * @return null
+     */
     function _sortEventList(){
         usort($this->eventList, array(__CLASS__, "cmp"));
     }
 
-
+    /**
+     * Compare function
+     * 
+     * @param array $a first array
+     * @param array $b second array
+     * 
+     * @return bool TRUE on success or FALSE on failure.
+     */
     function cmp($a, $b)
     {
         if ($a->startDate == $b->startDate) {
@@ -286,6 +472,14 @@ class CalendarEventManager extends CalendarLibrary
         }
     }
     
+    /**
+     * Get the event using calendar event class and assign it into $this->eventList
+     * 
+     * @param integer $eventId        Event id
+     * @param integer $eventStartDate Unix timestamp of start date
+     * 
+     * @return null
+     */
     function getEvent($eventId, $eventStartDate) {
         global $objInit;
         
@@ -305,6 +499,14 @@ class CalendarEventManager extends CalendarLibrary
         sort($this->eventList);
     }
     
+    /**
+     * Import events
+     * 
+     * @param integer $eventId        Event id
+     * @param integer $eventStartDate Unix timestamp of start date
+     * 
+     * @return null
+     */
     function getExternalEvent($eventId, $eventStartDate) {
         global $objInit;
         
@@ -319,6 +521,15 @@ class CalendarEventManager extends CalendarLibrary
         sort($this->eventList);
     }
     
+    /**
+     * Sets the placeholders used for the event
+     * 
+     * @param object  $objTpl         Template object
+     * @param integer $eventId        Event Id
+     * @param integer $eventStartDate Description
+     * 
+     * @return null
+     */
     function showEvent($objTpl, $eventId, $eventStartDate) {   
         global $objInit, $_ARRAYLANG, $_LANGID, $_CONFIG;
         
@@ -493,6 +704,14 @@ class CalendarEventManager extends CalendarLibrary
         }
     }
     
+    /**
+     * Sets the placeholders used for the event list view
+     * 
+     * @param object  $objTpl Template object
+     * @param integer $type   Event type
+     * 
+     * @return null
+     */
     function showEventList($objTpl, $type='') {
         global $objInit, $_ARRAYLANG, $_LANGID;
         
@@ -654,6 +873,11 @@ class CalendarEventManager extends CalendarLibrary
         //}
     }
 
+    /**
+     * Returns the events with date
+     * 
+     * @return array Events list
+     */
     function getEventsWithDate() {
         $arrEvents = array();
         foreach ($this->eventList as $objEvent) {
@@ -667,6 +891,13 @@ class CalendarEventManager extends CalendarLibrary
         return $arrEvents;
     }
     
+    /**
+     * Returns the Event detail page link
+     * 
+     * @param object $objEvent Event object
+     * 
+     * @return string link for the detail page
+     */
     function _getDetailLink($objEvent)
     {
         $identifier     = '&amp;id='.intval($objEvent->id);
@@ -683,6 +914,13 @@ class CalendarEventManager extends CalendarLibrary
         return $link;
     }
     
+    /**
+     * Find the url exists or not
+     * 
+     * @param string $url url
+     * 
+     * @return boolean true on url exists, false otherwise
+     */
     function urlfind($url){
         if (!ini_get('allow_url_fopen')) {     
             ini_set('allow_url_fopen', 'On');
@@ -742,7 +980,13 @@ class CalendarEventManager extends CalendarLibrary
         }
     }
 
-    
+    /**
+     * _setNextSeriesElement
+     * 
+     * @param object $objEvent Event object
+     * 
+     * @return null
+     */
     function _setNextSeriesElement($objEvent) {  
         $objCloneEvent = clone $objEvent;
         
@@ -1013,7 +1257,15 @@ class CalendarEventManager extends CalendarLibrary
         }
     }
     
-    
+    /**
+     * Return Coorinates
+     *      
+     * @param string $street  Street addres
+     * @param string $zipcode postal code
+     * @param string $city    Name of the city
+     * 
+     * @return boolean true or false
+     */
     function _getCoorinates($street,$zipcode,$city) {
         global $_CONFIG;
         
@@ -1045,7 +1297,22 @@ class CalendarEventManager extends CalendarLibrary
         return $arrCoordinates;
     }
 
-    //show date and time by user settings > single day view > start-/endtime separated by start-/enddate
+    /**
+     * show date and time by user settings > single day view > start-/endtime separated by start-/enddate
+     *      
+     * @param object  $objEvent          Event object
+     * @param boolean $showStartDate     true to show start date, false to hide
+     * @param boolean $showEndDate       true to show clock, false to hide
+     * @param string  $separatorDate     Date separator
+     * @param integer $showTimeType      Event time type
+     * @param boolean $showStartTime     true to show start time, false to hide
+     * @param boolean $showEndTime       true to show end time, false to hide
+     * @param string  $separatorDateTime Date time separator
+     * @param string  $separatorTime     Time separator
+     * @param boolean $showClock         true to show clock, false to hide
+     * 
+     * @return null
+     */
     function getSingleDateBlock($objEvent, $showStartDate, $showEndDate, $separatorDate, $showTimeType, $showStartTime, $showEndTime, $separatorDateTime, $separatorTime, $showClock) {
         global $_ARRAYLANG;
         
@@ -1089,7 +1356,17 @@ class CalendarEventManager extends CalendarLibrary
         }
     }
 
-    //show date and time by user settings > several day view
+    /**
+     * show date and time by user settings > several day view
+     *      
+     * @param object  $objEvent             Event object
+     * @param string  $separatorDateTime    Date time separator
+     * @param string  $separatorSeveralDays SeveralDays separator
+     * @param boolean $showClock            true to show clock, false to hide
+     * @param integer $part                 Part of the multi date event
+     * 
+     * @return null
+     */
     function getMultiDateBlock($objEvent, $separatorDateTime, $separatorSeveralDays, $showClock, $part) {
         global $_ARRAYLANG;
 
