@@ -1,29 +1,79 @@
 <?php
 /**
- * Calendar Class Host
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @version     1.0.0
- * @package     contrexx
- * @subpackage  module_calendar
- * @todo        Edit PHP DocBlocks!
+ * Calendar 
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
  */
 
+
+/**
+ * Calendar Class CalendarForm
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
+ */
 class CalendarForm extends CalendarLibrary
 {
+    /**
+     * Form id
+     *
+     * @var integer
+     */
     public $id;    
+    
+    /**
+     * Title
+     *
+     * @var string
+     */
     public $title;            
+    
+    /**
+     * Status
+     *
+     * @var boolean
+     */
     public $status;
+    
+    /**
+     * Sort order
+     *
+     * @var integer
+     */
     public $sort;
+    
+    /**
+     * Input fields
+     *
+     * @var array
+     */
     public $inputfields = array();
     
-    
+    /**
+     * Form constructor
+     * 
+     * Loads the form attributes by the given id
+     * 
+     * @param integer $id form id
+     */
     function __construct($id=null){
         if($id != null) {
             self::get($id);
         }
     }
     
+    /**
+     * Loads the form attributes
+     *      
+     * @param integer $formId Form id
+     */
     function get($formId) {
         global $objDatabase, $_LANGID;  
         
@@ -97,6 +147,11 @@ class CalendarForm extends CalendarLibrary
         }
     }
     
+    /**
+     * Copy the form and returns the new or copied form id
+     *      
+     * @return integer new form id
+     */
     function copy() { 
         global $objDatabase, $_LANGID;
                                        
@@ -171,6 +226,13 @@ class CalendarForm extends CalendarLibrary
         return $newFormId;
     }
     
+    /**
+     * Save the form data's into database
+     *      
+     * @param array $data posted data from the user
+     * 
+     * @return boolean true on success false otherwise
+     */
     function save($data) {
         global $objDatabase, $_LANGID; 
         
@@ -215,7 +277,13 @@ class CalendarForm extends CalendarLibrary
         return true;
     }
     
-    
+    /**
+     * save the form input fields
+     *      
+     * @param array $data
+     * 
+     * @return boolean true on success false otherwise
+     */
     function saveInputfields($data) {
         global $objDatabase, $_LANGID;    
                 
@@ -296,6 +364,11 @@ class CalendarForm extends CalendarLibrary
         return true;
     }        
     
+    /**
+     * Delete the form
+     *      
+     * @return boolean true on success false otherwise
+     */
     function delete(){
         global $objDatabase;
         
@@ -311,7 +384,11 @@ class CalendarForm extends CalendarLibrary
         }
     }   
     
-    
+    /**
+     * Switch status of the form     
+     * 
+     * @return boolean true on success false otherwise
+     */
     function switchStatus(){
         global $objDatabase;
         
@@ -335,7 +412,13 @@ class CalendarForm extends CalendarLibrary
         }
     }
              
-    
+    /**
+     * Save the form sort order
+     *      
+     * @param integer $order form sorting order
+     * 
+     * @return boolean true on success false otherwise
+     */
     function saveOrder($order) {
         global $objDatabase, $_LANGID;    
                   
@@ -353,7 +436,11 @@ class CalendarForm extends CalendarLibrary
     }
     
     
-    
+    /**
+     * Return's the max input id     
+     * 
+     * @return integer last input field id, false on error state
+     */
     function getLastInputfieldId(){
         global $objDatabase;
         

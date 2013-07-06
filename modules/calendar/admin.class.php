@@ -1,21 +1,23 @@
 <?php
 /**
- * Calendar
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation <info@comvation.com>
- * @version     $Id: index.inc.php,v 1.00 $
- * @package     contrexx
- * @subpackage  module_calendar
+ * Calendar 
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
  */
 
 
 /**
  * CalendarAdmin
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation <info@comvation.com>
- * @version     $Id: index.inc.php,v 1.00 $
- * @package     contrexx
- * @subpackage  module_calendar
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
  */
 class CalendarManager extends CalendarLibrary
 {
@@ -99,6 +101,11 @@ class CalendarManager extends CalendarLibrary
         ));
     }
     
+    /**
+     * Perform the overview page functionalities
+     * 
+     * @return null
+     */
     function showOverview(){
         global $objDatabase, $_ARRAYLANG, $_CORELANG;
         
@@ -273,7 +280,13 @@ class CalendarManager extends CalendarLibrary
     }
     
     
-    
+    /**
+     * Add / Edit of the Event
+     *      
+     * @param integer $eventId Event id
+     * 
+     * @return null
+     */
     function modifyEvent($eventId){
         global $objDatabase, $_ARRAYLANG, $_CORELANG, $_LANGID;
         
@@ -847,7 +860,11 @@ class CalendarManager extends CalendarLibrary
     }
     
     
-    
+    /**
+     * Category overview 
+     *      
+     * @return null
+     */
     function showCategories(){
         global $objDatabase, $_ARRAYLANG, $_CORELANG;
         
@@ -958,7 +975,13 @@ class CalendarManager extends CalendarLibrary
     }
     
     
-    
+    /**
+     * Add / Edit  of the category
+     *      
+     * @param type $categoryId
+     * 
+     * @return null
+     */
     function modifyCategory($categoryId){
         global $objDatabase, $_ARRAYLANG, $_CORELANG, $_LANGID;
         
@@ -1045,7 +1068,11 @@ class CalendarManager extends CalendarLibrary
     }
     
     
-    
+    /**
+     * Performs the settings menu based on the $_GET request
+     * 
+     * @return null     
+     */
     function showSettings() {
         global $objDatabase, $_ARRAYLANG, $_CORELANG;
         
@@ -1100,7 +1127,14 @@ class CalendarManager extends CalendarLibrary
         $this->_objTpl->parse('settings_content');
     }
     
-    
+    /**
+     * Export the registered userd of the given event
+     *      
+     * @param integer $eventId          Event id
+     * @param integer $registrationType Registration type
+     * 
+     * @return mixed csv file with registered users list
+     */
     function exportRegistrations($eventId, $registrationType) {
         global $_ARRAYLANG, $_LANGID;
         
@@ -1225,6 +1259,13 @@ class CalendarManager extends CalendarLibrary
        }
     }
     
+    /**
+     * Perform the event registration
+     *      
+     * @param integer $eventId Event id
+     * 
+     * @return null
+     */
     function showEventRegistrations($eventId)
     {
         global $objDatabase, $_ARRAYLANG;
@@ -1316,6 +1357,12 @@ class CalendarManager extends CalendarLibrary
         $objRegistrationManager->showRegistrationList($this->_objTpl);
     }
     
+    /**
+     * Add / Edit registration
+     *      
+     * @param integer $eventId Event id
+     * @param integer $regId   Rgistration id
+     */
     function modifyRegistration($eventId, $regId)
     {
         global $objDatabase, $_ARRAYLANG;
@@ -1382,6 +1429,13 @@ class CalendarManager extends CalendarLibrary
         ));
     }
     
+    /**
+     * Returns the escaped value for processing csv
+     * 
+     * @param string $value string to be send to the csv
+     * 
+     * @return string escaped value for csv
+     */
     function escapeCsvValue($value)
     {             
         $valueModified = stripslashes($value);                                                           

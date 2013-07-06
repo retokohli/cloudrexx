@@ -1,16 +1,30 @@
 <?php
 /**
+ * Calendar 
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
+ */
+
+
+/**
  * Calendar Class Payment
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @version     1.0.0
- * @package     contrexx
- * @subpackage  module_calendar
- * @todo        Edit PHP DocBlocks!
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
  */
 class CalendarPayment {
     /**
      * Returns the HTML code for the Yellowpay payment method.
+     * 
+     * @param array $data post data from the user
+     * 
      * @return  string  HTML code
      */
     function _yellowpay($data = array())
