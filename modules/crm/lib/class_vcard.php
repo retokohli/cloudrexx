@@ -1,22 +1,86 @@
 <?php
-/*
-* Filename.......: class_vcard.php
-* Author.........: Troy Wolf [troy@troywolf.com]
-* Last Modified..: 2005/07/14 13:30:00
-* Description....: A class to generate vCards for contact data.
-*/
-class vcard {
+/**
+ * vcard Class CRM
+ * A class to generate vCards for contact data.
+ *
+ * @category   vcard
+ * @package    Contrexx
+ * @subpackage Module_Crm
+ * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
+ * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @license    trial license
+ * @link       www.contrexx.com
+ */
+
+/**
+ * vcard Class CRM
+ * A class to generate vCards for contact data.
+ *
+ * @category   vcard
+ * @package    Contrexx
+ * @subpackage Module_Crm
+ * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
+ * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @license    trial license
+ * @link       www.contrexx.com
+ */
+class vcard
+{
+  /**
+  * log
+  *
+  * @access private
+  * @var String
+  */
   var $log;
-  var $data;  //array of this vcard's contact data
-  var $filename; //filename for download file naming
-  var $class; //PUBLIC, PRIVATE, CONFIDENTIAL
+  
+  /**
+  * array of this vcard's contact data
+  *
+  * @access private
+  * @var array
+  */
+  var $data;  
+
+  /**
+  * filename for download file naming
+  *
+  * @access private
+  * @var String
+  */
+  var $filename; 
+
+  /**
+  * PUBLIC, PRIVATE, CONFIDENTIAL
+  *
+  * @access private
+  * @var String
+  */
+  var $class; 
+
+  /**
+  * revision_date
+  *
+  * @access private
+  * @var String
+  */
   var $revision_date;
+
+  /**
+  * card
+  *
+  * @access private
+  * @var String
+  */
   var $card;
 
-  /*
-  The class constructor. You can set some defaults here if desired.
-  */
-  function vcard() {
+  /**
+   * The class constructor. You can set some defaults here if desired.
+   *
+   * @return boolean
+   */
+  function vcard()
+  {
     $this->log = "New vcard() called<br />";
     $this->data = array(
       "display_name"=>null
@@ -67,11 +131,11 @@ class vcard {
     return true;
   }
 
-  /*
-  build() method checks all the values, builds appropriate defaults for
-  missing values, generates the vcard data string.
-  */
-  function build() {
+  /**
+   * build() method checks all the values, builds appropriate defaults for missing values, generates the vcard data string.
+   */
+  function build()
+  {
     $this->log .= "vcard build() called<br />";
     /*
     For many of the values, if they are not passed in, we set defaults or
@@ -167,7 +231,13 @@ class vcard {
   /*
   download() method streams the vcard to the browser client.
   */
-  function download() {
+  /**
+   * download() method streams the vcard to the browser client.
+   *
+   * @return boolean
+   */
+  function download()
+  {
     $this->log .= "vcard download() called<br />";
     if (!$this->card) { $this->build(); }
     if (!$this->filename) { $this->filename = trim($this->data['display_name']); }

@@ -66,6 +66,12 @@ class crmInterface extends CrmLibrary
                                 'placeholder' => 'TXT_CRM_SINGLE_QUOTE'
                             ),
                           );
+    /**
+     * media path
+     *
+     * @access private
+     * @var string
+     */
     private $_mediaPath = '';
 
     /**
@@ -951,6 +957,13 @@ class crmInterface extends CrmLibrary
         return (int) $objResult->fields['id'];
     }
 
+    /**
+     * Get Customer Id ny name
+     *
+     * @param String $company Company name
+     *
+     * @return Integer
+     */
     function getCustomerIdByName($company)
     {
         global $objDatabase;

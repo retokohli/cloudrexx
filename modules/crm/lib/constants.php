@@ -1,4 +1,10 @@
 <?php
+/**
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @package     contrexx
+ * @subpackage  config
+ * @todo        Edit PHP DocBlocks!
+ */
 
 define('CRM_MODULE_LIB_PATH', ASCMS_MODULE_PATH.'/crm/lib/');
 define('CRM_ACCESS_PROFILE_IMG_WEB_PATH', ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/crm/profile');
