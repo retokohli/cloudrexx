@@ -1,4 +1,14 @@
-<?php                              
+<?php
+/**
+ * Calendar 
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
+ */
+
 $protocol = (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] == 'on') ? 'https://' : 'http://';  
 $uri = $_SERVER['HTTP_HOST'].dirname($_SERVER['PHP_SELF']);
 
@@ -11,12 +21,36 @@ $options = array('uri' => $protocol.$uri);
 $SOAPServer = new SoapServer(null, $options);
 $SOAPServer->setClass('CalendarWebserviceServer');
 $SOAPServer->handle();  
-                                                                                             
+                    
+/**
+ * Calendar Class CalendarWebserviceServer
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
+ */
 class CalendarWebserviceServer
 {                    
-    private $dirPath; 
+    /**
+     * Directory path
+     *
+     * @access private
+     * @var string
+     */
+    private $dirPath;
+    
+    /**
+     * Table prefix
+     *
+     * @var string
+     */
     private $tablePrefix;
     
+    /**
+     * CalendarWebserviceServer Constructor
+     */
     public function __construct() {    
                 
         $this->dirPath = str_replace("/modules/calendar/lib/webservice","", dirname($_SERVER['SCRIPT_FILENAME']));  
@@ -28,7 +62,15 @@ class CalendarWebserviceServer
         
         $this->tablePrefix = $_DBCONFIG['tablePrefix']; 
     }      
-    
+        
+    /**
+     * verify the host name, if its exists returns the host data
+     * 
+     * @param string $foreignHost host name
+     * @param string $foreignKey  reference Key
+     * 
+     * @return mixed host details on success, false otherwise
+     */
     public function verifyHost($foreignHost,$foreignKey) {   
         if(substr($foreignHost,0,7) == 'http://') {
             $foreignHost = substr($foreignHost,7);
@@ -53,7 +95,22 @@ class CalendarWebserviceServer
             return false;
         }                     
     }
-    
+        
+    /**
+     * Get the event list
+     * 
+     * @param integer $start_date                     Start date
+     * @param integer $end_date                       End date
+     * @param boolean $auth                           Authorization
+     * @param string  $term                           search term
+     * @param integer $langId                         Language id
+     * @param integer $hostId                         Foreign Host id
+     * @param integer $foreignHostId                  Host id
+     * @param boolean $showEventsOnlyInActiveLanguage get event only active 
+     *                                                frontend language
+     * 
+     * @return \CalendarWebserviceEvent Event list object
+     */
     public function getEventList($start_date, $end_date, $auth, $term, $langId, $hostId, $foreignHostId, $showEventsOnlyInActiveLanguage) 
     { 
         $needAuth_where = ($auth == false ? ' AND event.access=0' : ''); 
@@ -119,64 +176,393 @@ class CalendarWebserviceServer
     } 
              
     
-    
+    /**
+     * sagHallo
+     * 
+     * @param string  $begruessung input string
+     * 
+     * @return string Hallo with given string
+     */
     public function sagHallo($begruessung) { 
         return 'Hallo ' . $begruessung.': Dini Mueter!!'; 
     }
     
+    /**
+     * addiere
+     * 
+     * @param integer $a number value
+     * @param integer $b number value
+     * 
+     * @return integer sum of the numbers
+     */
     public function addiere($a, $b) { 
         return $a + $b + $a; 
     }  
 }
 
-
+/**
+ * Calendar Class CalendarWebserviceEvent
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
+ */
 class CalendarWebserviceEvent
 {
-    public $id;            
-    public $type;    
-    public $hostId;       
+    /**
+     * Event id
+     * 
+     * @access public
+     * @var integer 
+     */
+    public $id;
+    
+    /**
+     * Event Type
+     * 
+     * @access public
+     * @var integer 
+     */
+    public $type;
+    
+    /**
+     * Event host id
+     *
+     * @access public
+     * @var string
+     */    
+    public $hostId;    
+    
+    /**
+     * Event title
+     *
+     * @var string 
+     * @access public
+     */
     public $title;
+    
+    /**
+     * Event Picture
+     * 
+     * @access public
+     * @var string 
+     */
     public $pic;
+    
+    /**
+     * Event attachment file name
+     *  
+     * @access public
+     * @var string 
+     */
     public $attach;
+    
+    /** 
+     * Event Start date timestamp
+     * 
+     * @access public
+     * @var integer
+     */
     public $startDate;
+    
+    /**
+     * Event enddate timestamp 
+     * 
+     * @access public
+     * @var integer
+     */
     public $endDate;
+    
+    /**
+     * Event show start date on list view
+     * 
+     * @access public
+     * @var boolean
+     */
     public $showStartDateList;
+    
+    /**
+     * Event show End date on list view
+     * 
+     * @access public
+     * @var boolean
+     */
     public $showEndDateList;
+    
+    /**
+     * Event show start time on list view
+     * 
+     * @access public
+     * @var boolean
+     */
     public $showStartTimeList;
+    
+    /**
+     * Event show End time on list view
+     * 
+     * @access public
+     * @var boolean
+     */
     public $showEndTimeList;
+    
+    /**
+     * Event time type on list view
+     * 
+     * @access public
+     * @var integer
+     */
     public $showTimeTypeList;
+    
+    /**
+     * Event show start date on detail view
+     * 
+     * @access public
+     * @var boolean
+     */
     public $showStartDateDetail;
+    
+    /**
+     * Event show end date on detail view
+     * 
+     * @access public
+     * @var boolean
+     */
     public $showEndDateDetail;
+    
+    /**
+     * Event show start time on detail view
+     * 
+     * @access public
+     * @var boolean
+     */
     public $showStartTimeDetail;
+    
+    /**
+     * Event show end time on detail view
+     * 
+     * @access public
+     * @var boolean
+     */
     public $showEndTimeDetail;
+    
+    /**
+     * Event time type on detail view
+     * 
+     * @access public
+     * @var integer
+     */
     public $showTimeTypeDetail;
+    
+    /**
+     * Event priority
+     * 
+     * @access public
+     * @var integer
+     */
     public $priority;
+    
+    /**
+     * Event show end date on detail view
+     * 
+     * @access public
+     * @var boolean
+     */
     public $access;
+    
+    /**
+     * Event description
+     * 
+     * @access public
+     * @var string
+     */
     public $description;
+    
+    /**
+     * Event place
+     * 
+     * @access public
+     * @var string
+     */
     public $place;
+    
+    /**
+     * Event status
+     * 
+     * @access public
+     * @var integer
+     */
     public $status;
+    
+    /**
+     * Event category id
+     *
+     * @access public
+     * @var integer 
+     */
     public $catId;
+    
+    /**
+     * Event series status
+     *
+     * @access public
+     * @var integer 
+     */
     public $seriesStatus;
+    
+    /**
+     * Event series data
+     *
+     * @access public
+     * @var array
+     */
     public $seriesData = array();
+    
+    /**
+     * Event languages to show
+     *
+     * @access public
+     * @var array 
+     */
     public $showIn;
+    
+    /**
+     * Avaliable languages
+     *
+     * @access public
+     * @var array
+     */
     public $availableLang;
-    public $map;    
+    
+    /**
+     * Event map status
+     *
+     * @access public
+     * @var integer 
+     */
+    public $map;
+    
+    /**
+     * Event invited group
+     *
+     * @access public
+     * @var array
+     */
     public $invitedGroups = array();
+    
+    /**
+     * Event invited mail
+     *
+     * @access public
+     * @var array
+     */
     public $invitedMails = array();
+    
+    /**
+     * is Event invitation sent
+     *
+     * @access public
+     * @var boolean
+     */
     public $invitationSent;
+    
+    /**
+     * Event status of registration
+     *
+     * @access public
+     * @var boolean
+     */
     public $registration;
+    
+    /**
+     * Event number of subscriber
+     *
+     * @access public
+     * @var integer
+     */
     public $numSubscriber;
+    
+    /**
+     * Event notification the event
+     *
+     * @access public
+     * @var string
+     */
     public $notificationTo;
+    
+    /**
+     * Event related websites
+     *
+     * @access public
+     * @var array
+     */
     public $relatedHosts = array();
-    public $arrData = array();   
-    public $external = true;    
+    /**
+     * Event data
+     *
+     * @access public
+     * @var array
+     */
+    public $arrData = array();
+    
+    /**
+     * External
+     *
+     * @access public
+     * @var boolean
+     */
+    public $external = false;
+    
+    /**
+     * showEventsOnlyInActiveLanguage
+     * 
+     * @var boolean get event only active frontend language     
+     */
     public $showEventsOnlyInActiveLanguage = 1;    
     
+    /**
+     * Language id
+     *
+     * @access private
+     * @var integer language id
+     */
     private $langId; 
-    private $dirPath;   
-    private $tablePrefix;         
+    
+    /**
+     * Directory path
+     *
+     * @access private
+     * @var string
+     */
+    private $dirPath;
+    
+    /**
+     * Table prefix
+     *
+     * @access private
+     * @var string
+     */
+    private $tablePrefix;
+    
+    /**
+     * Character Encoding format from config
+     * 
+     * @access private
+     * @var string Character Encoding
+     */
     private $coreCharacterEncoding;         
     
+    /**
+     * Constructor
+     * 
+     * Loads the event object of given id     
+     * 
+     * @param integer $id                             Event id
+     * @param integer $langId                         Language id
+     * @param boolean $showEventsOnlyInActiveLanguage get event only active 
+     *                                                frontend language
+     */
     public function __construct($id=null, $langId=null, $showEventsOnlyInActiveLanguage){  
         $this->dirPath = str_replace("/modules/calendar/lib/webservice","", dirname($_SERVER['SCRIPT_FILENAME']));  
         include($this->dirPath.'/config/configuration.php');
@@ -196,6 +582,14 @@ class CalendarWebserviceEvent
         }   
     }
     
+    /**
+     * Load the requested event by id
+     * 
+     * @param integer $eventId        Event Id     
+     * @param integer $langId         Language id
+     * 
+     * @return null 
+     */    
     private function get($eventId, $langId) {
         include($this->dirPath . '/config/configuration.php');      
         
@@ -338,15 +732,33 @@ class CalendarWebserviceEvent
         }                           
     }
     
+    /**
+     * set the event start date
+     * 
+     * @param integer $value start date
+     * 
+     * @return null
+     */    
     public function setStartDate($value){
         $this->startDate = intval($value);
     }
     
+    /**
+     * set the event end date
+     * 
+     * @param integer $value End date
+     * 
+     * @return null
+     */    
     public function setEndDate($value){
         $this->endDate = intval($value);
     }
     
-    
+    /**
+     * gets the data for the event
+     * 
+     * @return null
+     */    
     private function getData() 
     {                                                                 
         $activeLangs = explode(",", $this->showIn);
