@@ -1,10 +1,12 @@
 <?php
 /**
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Comvation Development Team <info@comvation.com>
- * @access      public
- * @package     contrexx
- * @subpackage  module_calendar
+ * Calendar Language variables
+ * 
+ * @package    contrexx
+ * @subpackage module_calendar
+ * @author     Comvation <info@comvation.com>
+ * @copyright  CONTREXX CMS - COMVATION AG
+ * @version    1.00
  */
 $_ARRAYLANG['TXT_CALENDAR_DATE'] = "Dato";
 $_ARRAYLANG['TXT_CALENDAR_STYLE_MODIFIED'] = "Indstillingerne blev ændret med scces.";
