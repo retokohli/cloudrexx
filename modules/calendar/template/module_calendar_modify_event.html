@@ -1,8 +1,46 @@
 <!-- START module_calendar_modify_event.html -->
+<style type="text/css">
+    #seriesExeptionsList > div {
+        float: left;
+        width: 100%;
+        margin-bottom: 5px;
+    }
+</style>
 <script language="JavaScript" type="text/javascript">
-    var $J = jQuery.noConflict();
-
+    var modifyEvent = {
+      // elm => jquery object
+      _handleSeriesEventRowDisplay : function(elm){
+        if (elm.is(":checked")) {
+            $J('.series-event-row').show();
+            showOrHide();
+        } else {
+            $J('.series-event-row').hide();
+        }
+      }
+    };
+    $J(function(){
+       $J('[name="seriesStatus"]').click(function(){
+          modifyEvent._handleSeriesEventRowDisplay($J(this));
+       });
+       modifyEvent._handleSeriesEventRowDisplay($J('[name="seriesStatus"]'));       
+    });
+        
     cx.ready(function() {
+        var options = {
+            dateFormat: '{CALENDAR_EVENT_DATE_FORMAT}',
+            timeFormat: 'hh:mm',
+            onSelect: function(dateText, inst) {
+                startDateTime = jQuery(".startDate").datetimepicker("getDate").getTime() / 1000;
+                endDateTime   = jQuery(".endDate").datetimepicker("getDate").getTime() / 1000;                
+    
+                if (startDateTime > endDateTime) {
+                    jQuery(".endDate").datetimepicker('setDate', jQuery(".startDate").val());
+                }
+            },
+            showSecond: false
+        };
+        jQuery('input[name=startDate]').datetimepicker(options);
+        jQuery('input[name=endDate]').datetimepicker(options);
         refreshDatePickers();
     });
 
@@ -231,8 +269,7 @@
             $J('seriesMaskWeekly').css('display', 'none');
             $J('seriesMaskMonthly').css('display', 'none');
         }
-        
-        refreshDatePickers();
+                
     }  
     
     function checkRegistration()
@@ -323,7 +360,7 @@
     }
     
     var lastExeptionId = {CALENDAR_SERIES_LAST_EXEPTION_ID};
-    var blankExeption = '<div id="exeption_EXEPTION_ID"><input type="text" name="seriesExeptions[]" value="" id="DPC_editEXEPTION_ID_DD.MM.YYYY" style="width: 129px;" />&nbsp;<a href="#" onclick="deleteExeption(EXEPTION_ID);" title="{TXT_CALENDAR_DELETE}"><img style="vertical-align: middle;" src="images/icons/delete.gif" alt="{TXT_CALENDAR_DELETE}" width="17" border="0" height="17"></a></div>';
+    var blankExeption = '<div id="exeption_EXEPTION_ID"><input type="text" name="seriesExeptions[]" value="" id="DPC_editEXEPTION_ID_DD.MM.YYYY" class="event_date" style="width: 129px;" />&nbsp;<a href="#" onclick="deleteExeption(EXEPTION_ID);" title="{TXT_CALENDAR_DELETE}"><img style="vertical-align: middle;" src="images/icons/delete.gif" alt="{TXT_CALENDAR_DELETE}" width="17" border="0" height="17"></a></div>';
     
     function appendExeption(){
         lastExeptionId = lastExeptionId + 1;
@@ -339,26 +376,15 @@
     }
 
     function deleteExeption(exeptionId){
-        $J('#exeption_'+exeptionId).fadeOut("slow", function(){ $J('#exeption_'+exeptionId).remove(); refreshDatePickers();});
+        $J('#exeption_'+exeptionId).fadeOut("slow", function(){ $J('#exeption_'+exeptionId).remove();});
     }
         
-    function refreshDatePickers(tmp){
-        console.log(tmp + ": refreshDatePickers");
+    function refreshDatePickers(tmp){   
         var options = {
-            dateFormat: '{CALENDAR_EVENT_DATE_FORMAT}',
-            timeFormat: 'hh:mm',
-            onSelect: function(dateText, inst) {
-                startDateTime = jQuery(".startDate").datetimepicker("getDate").getTime() / 1000;
-                endDateTime   = jQuery(".endDate").datetimepicker("getDate").getTime() / 1000;                
-    
-                if (startDateTime > endDateTime) {
-                    jQuery(".endDate").datetimepicker('setDate', jQuery(".startDate").val());
-                }
-            },
-            showSecond: false
-        };
-        jQuery('input[name=startDate]').datetimepicker(options);
-        jQuery('input[name=endDate]').datetimepicker(options);
+            dateFormat: '{CALENDAR_EVENT_DATE_FORMAT}',            
+        };        
+        jQuery('.event_date').datepicker(options);
+        
     }
 </script>      
 
@@ -366,10 +392,10 @@
 <form action="index.php?cmd={CALENDAR_MODULE_NAME}&act=modify_event" id="formModifyEvent" name="formModifyEvent" method="post" onsubmit="selectAll(document.formModifyEvent.elements['selectedGroups[]']); {CALENDAR_EVENT_ONSUBMIT_PUBLICATIONS} return formCheck();">
     <input type="hidden" name="id" value="{CALENDAR_EVENT_ID}" />
     <ul id="tabmenu">
-        <li><a id="eventTab_event" class="active" href="javascript:{}" onclick="selectTab('event'); refreshDatePickers();" title="{TXT_CALENDAR_EVENT}">{TXT_CALENDAR_EVENT}</a></li>
+        <li><a id="eventTab_event" class="active" href="javascript:{}" onclick="selectTab('event');" title="{TXT_CALENDAR_EVENT}">{TXT_CALENDAR_EVENT}</a></li>
         <li><a id="eventTab_details" href="javascript:{}" onclick="selectTab('details');refreshEditors();" title="{TXT_CALENDAR_EVENT_DETAILS}" >{TXT_CALENDAR_EVENT_DETAILS}</a></li>
         <li><a id="eventTab_invite" href="javascript:{}" onclick="selectTab('invite'); checkRegistration();" title="{TXT_CALENDAR_EVENT_INVITE}" >{TXT_CALENDAR_EVENT_INVITE}</a></li>
-        <li><a id="eventTab_series" href="javascript:{}" onclick="selectTab('series');  showOrHide(); refreshDatePickers();" title="{TXT_CALENDAR_EVENT_SERIES}" >{TXT_CALENDAR_EVENT_SERIES}</a></li>
+        <li><a id="eventTab_series" href="javascript:{}" onclick="selectTab('series');" title="{TXT_CALENDAR_EVENT_SERIES}" >{TXT_CALENDAR_EVENT_SERIES}</a></li>
         <!-- BEGIN eventPublicateMenu -->
         <li><a id="eventTab_publicate" href="javascript:{}" onclick="selectTab('publicate')" title="{TXT_CALENDAR_EVENT_PUBLICATE}">{TXT_CALENDAR_EVENT_PUBLICATE}</a></li>
         <!-- END eventPublicateMenu -->        
@@ -703,13 +729,13 @@
                 <th colspan="2"><b>{TXT_CALENDAR_EVENT_SERIES}</b></th>
             </tr>
             <tr class="row1">
-                <td valign="top" width="180">Srientyp</td>
+                <td valign="top" width="180">{TXT_CALENDAR_EVENT_SERIES_TYPE}</td>
                 <td>
-                    <label><input type="checkbox" name='seriesStatus' value="1" {CALENDAR_EVENT_SERIES_STATUS}/>&nbsp;{TXT_CALENDAR_ACTIVATE}</label>
+                    <label><input type="checkbox" name='seriesStatus' value="1" {CALENDAR_EVENT_SERIES_STATUS}/>&nbsp;{TXT_CALENDAR_YES}</label>
                 </td>
             </tr>
-            <tr class="row2">
-                <td valign="top">Serienmuster</td>
+            <tr class="row2 series-event-row">
+                <td valign="top">{TXT_CALENDAR_EVENT_SERIES_PATTERN}</td>
                 <td valign="middle">
                     <select name="seriesType" id="seriesTypeSelect" style="width: 252px;" onchange="showOrHide();">
                         <option value="1" {CALENDAR_SERIES_PATTERN_DAILY}>{TXT_CALENDAR_SERIES_PATTERN_DAILY}</option>
@@ -720,7 +746,7 @@
            </tr>
         </table>
 
-        <div id="seriesMaskDaily" style="display:block">
+        <div class="series-event-row" id="seriesMaskDaily" style="display:block">
             <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
                 <tr class="row1">
                     <td valign="middle" width="180"><br /></td>
@@ -731,7 +757,7 @@
                 </tr>
             </table>
         </div>     
-        <div id="seriesMaskWeekly" style="display:none">
+        <div class="series-event-row" id="seriesMaskWeekly" style="display:none">
             <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
                 <tr class="row1">
                     <td valign="middle" width="180"><br /></td>
@@ -748,26 +774,26 @@
                 </tr>
             </table>
         </div>   
-        <div id="seriesMaskMonthly" style="display:none">
+        <div class="series-event-row" id="seriesMaskMonthly" style="display:none">
             <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
                 <tr class="row1">
                     <td valign="middle" width="180"><br /></td>
                     <td valign="middle">
-                        <label><input type="radio" name='seriesMonthly' value="1" {CALENDAR_SERIES_PATTERN_MONTHLY_1}/>&nbsp;{TXT_CALENDAR_AT}&nbsp;</label><input type="text" name='seriesMonthlyDay' maxlength="3" value="{CALENDAR_SERIES_PATTERN_MONTHLY_DAY}" style="width: 20px;" />.&nbsp;{TXT_CALENDAR_DAYS_DAY}&nbsp;{TXT_CALENDAR_EVERY_1}&nbsp;<input type="text" name='seriesMonthlyMonth_1' maxlength="3" value="{CALENDAR_SERIES_PATTERN_MONTHLY_MONTH_1}" style="width: 20px;" />.&nbsp;{TXT_CALENDAR_MONTHS}<br />
+                        <label><input type="radio" name='seriesMonthly' value="1" {CALENDAR_SERIES_PATTERN_MONTHLY_1}/>&nbsp;{TXT_CALENDAR_AT}&nbsp;</label><input type="text" name='seriesMonthlyDay' maxlength="3" value="{CALENDAR_SERIES_PATTERN_MONTHLY_DAY}" style="width: 20px;" />&nbsp;{TXT_CALENDAR_DAYS_DAY}.&nbsp;{TXT_CALENDAR_EVERY_1}&nbsp;<input type="text" name='seriesMonthlyMonth_1' maxlength="3" value="{CALENDAR_SERIES_PATTERN_MONTHLY_MONTH_1}" style="width: 20px;" />&nbsp;{TXT_CALENDAR_MONTHS}.<br />
                         <label><input type="radio" name='seriesMonthly' value="2" {CALENDAR_SERIES_PATTERN_MONTHLY_2}/>&nbsp;{TXT_CALENDAR_AT}&nbsp;</label><select name="seriesMonthlyDayCount" style="width: 75px;">{CALENDAR_EVENT_SERIES_PATTERN_MONTHLY_COUNT}</select>&nbsp;<select name="seriesMonthlyWeekday" style="width: 109px;">{CALENDAR_EVENT_SERIES_PATTERN_MONTHLY_WEEKDAY}</select>&nbsp;{TXT_CALENDAR_EVERY_1}&nbsp;<input type="text" name='seriesMonthlyMonth_2' maxlength="3" value="{CALENDAR_SERIES_PATTERN_MONTHLY_MONTH_2}" style="width: 20px;" />.&nbsp;{TXT_CALENDAR_MONTHS}
                     </td>
                 </tr>
             </table>
         </div>
 
-        <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+        <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist series-event-row">
             <tr class="row2">
-                <td valign="top" width="180">Ausnahmen</td>
+                <td valign="top" width="180">{TXT_CALENDAR_EVENT_SERIES_EXCEPTIONS}</td>
                 <td valign="top">
                     <div id="seriesExeptionsList">
                         <!-- BEGIN eventExeptions -->
                         <div id="exeption_{CALENDAR_SERIES_EXEPTION_ID}">
-                            <input type="text" name="seriesExeptions[]" value="{CALENDAR_SERIES_EXEPTION_DATE}" id="{CALENDAR_SERIES_EXEPTION_INPUT_ID}" style="width: 129px;" />&nbsp;<a href="#" onclick="deleteExeption({CALENDAR_SERIES_EXEPTION_ID});" title="{TXT_CALENDAR_DELETE}"><img style="vertical-align: middle;" src="images/icons/delete.gif" alt="{TXT_CALENDAR_DELETE}" width="17" border="0" height="17"></a>
+                            <input type="text" name="seriesExeptions[]" value="{CALENDAR_SERIES_EXEPTION_DATE}" id="{CALENDAR_SERIES_EXEPTION_INPUT_ID}" class="event_date" style="width: 129px;" />&nbsp;<a href="#" onclick="deleteExeption({CALENDAR_SERIES_EXEPTION_ID});" title="{TXT_CALENDAR_DELETE}"><img style="vertical-align: middle;" src="images/icons/delete.gif" alt="{TXT_CALENDAR_DELETE}" width="17" border="0" height="17"></a>
                         </div>
                         <!-- END eventExeptions -->
                     </div>
@@ -778,10 +804,10 @@
                 <td valign="top">{TXT_CALENDAR_SERIES_PATTERN_DURANCE}</td>
                 <td valign="middle">
                     <label><input type="radio" name='seriesDouranceType' value="1" {CALENDAR_SERIES_PATTERN_DOURANCE_1}/>&nbsp;{TXT_CALENDAR_SERIES_PATTERN_NO_ENDDATE}</label><br />
-                    <label><input type="radio" name='seriesDouranceType' value="2" {CALENDAR_SERIES_PATTERN_DOURANCE_2}/>&nbsp;{TXT_CALENDAR_SERIES_PATTERN_ENDS_AFTER}&nbsp;<label>
+                    <label style="width: 100px;float:left;"><input type="radio" name='seriesDouranceType' value="2" {CALENDAR_SERIES_PATTERN_DOURANCE_2}/>&nbsp;{TXT_CALENDAR_SERIES_PATTERN_ENDS_AFTER}&nbsp;</label>
                     <input type="text" name='seriesDouranceEvents' maxlength="3" value="{CALENDAR_SERIES_PATTERN_ENDS_EVENTS}" style="width: 20px;" />&nbsp;{TXT_CALENDAR_SERIES_PATTERN_APPONTMENTS}<br />
-                    <label><input type="radio" name='seriesDouranceType' onclick="refreshDatePickers();" value="3" {CALENDAR_SERIES_PATTERN_DOURANCE_3}/>&nbsp;{TXT_CALENDAR_SERIES_PATTERN_ENDS}&nbsp;</label>
-                    <input type="text" name="seriesDouranceDate"  id="{CALENDAR_SERIES_PATTERN_ENDS_INPUT_ID}" style="width: 140px;" value="{CALENDAR_SERIES_PATTERN_ENDS_DATE}" />      
+                    <label style="width: 100px;float:left;"><input type="radio" name='seriesDouranceType' value="3" {CALENDAR_SERIES_PATTERN_DOURANCE_3}/>&nbsp;{TXT_CALENDAR_SERIES_PATTERN_ENDS}&nbsp;</label>
+                    <input type="text" name="seriesDouranceDate"  id="{CALENDAR_SERIES_PATTERN_ENDS_INPUT_ID}" class="event_date" style="width: 140px;" value="{CALENDAR_SERIES_PATTERN_ENDS_DATE}" />      
                 </td>
             </tr>
         </table>

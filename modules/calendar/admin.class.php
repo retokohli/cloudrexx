@@ -384,7 +384,11 @@ class CalendarManager extends CalendarLibrary
             'TXT_'.$this->moduleLangVar.'_EVENT_DETAILS'                    => $_ARRAYLANG['TXT_CALENDAR_EVENT_DETAILS'],
             'TXT_'.$this->moduleLangVar.'_EVENT_INVITE'                     => $_ARRAYLANG['TXT_CALENDAR_EVENT_INVITE'],
             'TXT_'.$this->moduleLangVar.'_EVENT_SERIES'                     => $_ARRAYLANG['TXT_CALENDAR_EVENT_SERIES'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_SERIES_TYPE'                => $_ARRAYLANG['TXT_CALENDAR_EVENT_SERIES_TYPE'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_SERIES_PATTERN'             => $_ARRAYLANG['TXT_CALENDAR_EVENT_SERIES_PATTERN'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_SERIES_EXCEPTIONS'          => $_ARRAYLANG['TXT_CALENDAR_EVENT_SERIES_EXCEPTIONS'],
             'TXT_'.$this->moduleLangVar.'_EVENT_PUBLICATE'                  => $_ARRAYLANG['TXT_CALENDAR_EVENT_PUBLICATE'],
+            'TXT_'.$this->moduleLangVar.'_YES'                              => $_ARRAYLANG['TXT_CALENDAR_YES'],
             'TXT_'.$this->moduleLangVar.'_NEXT'                             => $_ARRAYLANG['TXT_CALENDAR_NEXT'],
             'TXT_'.$this->moduleLangVar.'_BACK'                             => $_ARRAYLANG['TXT_CALENDAR_STEP_BACK'],
             'TXT_'.$this->moduleLangVar.'_EVENT_PRIORITY'                   => $_ARRAYLANG['TXT_CALENDAR_EVENT_PRIORITY'],
@@ -599,6 +603,12 @@ class CalendarManager extends CalendarLibrary
         $lastExeptionId = 4;
         $seriesStatus = $objEvent->seriesStatus == 1 ? 'checked="checked"' : '';
         
+        $seriesPatternDailyDays   = 1;
+        $seriesPatternWeeklyWeeks = 1;
+        $seriesPatternMonthlyDay  = 1;
+        $seriesPatternMonthl1     = 1;
+        $seriesPatternMonthl2     = 1;
+        $seriesPatternEndsEvents  = 5;
         if($eventId != 0 && $objEvent->seriesStatus == 1) {
             $seriesPatternDaily = $objEvent->seriesData['seriesType'] == 1 ? 'selected="selected"' : '';
             $seriesPatternWeekly = $objEvent->seriesData['seriesType'] == 2 ? 'selected="selected"' : '';
@@ -609,7 +619,7 @@ class CalendarManager extends CalendarLibrary
                 $seriesPatternDaily1 = $objEvent->seriesData['seriesPatternType'] == 1 ? 'checked="checked"' : '';
                 $seriesPatternDaily2 = $objEvent->seriesData['seriesPatternType'] == 2 ? 'checked="checked"' : '';
                 
-                $seriesPatternDailyDays = $objEvent->seriesData['seriesPatternType'] == 1 ? $objEvent->seriesData['seriesPatternDay'] : '';
+                $seriesPatternDailyDays = $objEvent->seriesData['seriesPatternType'] == 1 ? $objEvent->seriesData['seriesPatternDay'] : 1;
             }
             
             //weekly
@@ -645,7 +655,7 @@ class CalendarManager extends CalendarLibrary
             $seriesPatternDourance2 = $objEvent->seriesData['seriesPatternDouranceType'] == 2 ? 'checked="checked"' : '';
             $seriesPatternDourance3 = $objEvent->seriesData['seriesPatternDouranceType'] == 3 ? 'checked="checked"' : '';
             
-            $seriesPatternEndsEvents = $objEvent->seriesData['seriesPatternDouranceType'] == 2 ? $objEvent->seriesData['seriesPatternEnd'] : '';
+            $seriesPatternEndsEvents = $objEvent->seriesData['seriesPatternDouranceType'] == 2 ? $objEvent->seriesData['seriesPatternEnd'] : 5;
             $seriesPatternEndsDate   = $objEvent->seriesData['seriesPatternDouranceType'] == 3 ? date($dateFomat, $objEvent->seriesData['seriesPatternEnd']) : '';
             
             
