@@ -1838,6 +1838,8 @@ class CrmLibrary
      *
      * @param Template Object $objTpl          Template object
      * @param Object          $modelMembership
+     * @param Integer         $selected
+     * @param String          $block
      * @param Array           $options
      *
      * @return null
@@ -2194,8 +2196,8 @@ class CrmLibrary
      * If non-empty, the given User ID is excluded from the search, so the
      * User does not match herself.
      * 
-     * @param string  $username The username to test
-     * @param integer $id       The optional current User ID
+     * @param string  $email The email to test
+     * @param integer $id    The optional current User ID
      * 
      * @return boolean True if the username is available,
      *                 false otherwise

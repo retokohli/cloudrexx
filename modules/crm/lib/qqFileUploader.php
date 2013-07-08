@@ -1,25 +1,102 @@
 <?php
+/**
+ * qqFileUploader Class CRM
+ *
+ * @category   qqFileUploader
+ * @package    Contrexx
+ * @subpackage Module_Crm
+ * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
+ * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @license    trial license
+ * @link       www.contrexx.com
+ */
 
-class qqFileUploader {
+/**
+ * qqFileUploader Class CRM
+ *
+ * @category   qqFileUploader
+ * @package    Contrexx
+ * @subpackage Module_Crm
+ * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
+ * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @license    trial license
+ * @link       www.contrexx.com
+ */
 
+class qqFileUploader
+{
+
+    /**
+    * Allowed Extensions
+    *
+    * @access public
+    * @var array
+    */
     public $allowedExtensions = array();
+
+    /**
+    * Size limit
+    *
+    * @access public
+    * @var String
+    */
     public $sizeLimit = null;
+
+    /**
+    * Input name
+    *
+    * @access public
+    * @var String
+    */
     public $inputName = 'qqfile';
+
+    /**
+    * Chunks Folder
+    *
+    * @access public
+    * @var String
+    */
     public $chunksFolder = 'chunks';
 
-    public $chunksCleanupProbability = 0.001; // Once in 1000 requests on avg
-    public $chunksExpireIn = 604800; // One week
+    /**
+    * chunks Cleanup Probability
+    * Once in 1000 requests on avg
+    *
+    * @access public
+    * @var numeric
+    */
+    public $chunksCleanupProbability = 0.001; 
 
+    /**
+    * chunks Expire In
+    * One week
+    *
+    * @access public
+    * @var Integer
+    */
+    public $chunksExpireIn = 604800; 
+
+    /**
+    * Upload name
+    *
+    * @access protected
+    * @var String
+    */
     protected $uploadName;
 
-    function __construct(){
+    /**
+     * constructor
+     */
+    function __construct()
+    {
         $this->sizeLimit = $this->toBytes(ini_get('upload_max_filesize'));
     }
 
     /**
      * Get the original filename
      */
-    public function getName(){
+    public function getName()
+    {
         if (isset($_REQUEST['qqfilename']))
             return $_REQUEST['qqfilename'];
 
@@ -30,11 +107,16 @@ class qqFileUploader {
     /**
      * Get the name of the uploaded file
      */
-    public function getUploadName(){
+    public function getUploadName()
+    {
         return $this->uploadName;
     }
 
-    public function getThumbName() {
+    /**
+     * Get the name of the thumb file
+     */
+    public function getThumbName()
+    {
         $this->createThumbnailOfImage($this->uploadName);
     }
 
@@ -43,7 +125,8 @@ class qqFileUploader {
      * @param string $uploadDirectory Target directory.
      * @param string $name Overwrites the name of the file.
      */
-    public function handleUpload($uploadDirectory, $name = null){
+    public function handleUpload($uploadDirectory, $name = null)
+    {
 
         if (is_writable($this->chunksFolder) &&
             1 == mt_rand(1, 1/$this->chunksCleanupProbability)){
@@ -229,7 +312,8 @@ class qqFileUploader {
      * Deletes all file parts in the chunks folder for files uploaded
      * more than chunksExpireIn seconds ago
      */
-    protected function cleanupChunks(){
+    protected function cleanupChunks()
+    {
         foreach (scandir($this->chunksFolder) as $item){
             if ($item == "." || $item == "..")
                 continue;
@@ -249,7 +333,8 @@ class qqFileUploader {
      * Removes a directory and all files contained inside
      * @param string $dir
      */
-    protected function removeDir($dir){
+    protected function removeDir($dir)
+    {
         foreach (scandir($dir) as $item){
             if ($item == "." || $item == "..")
                 continue;
@@ -263,7 +348,8 @@ class qqFileUploader {
      * Converts a given size with units to bytes.
      * @param string $str
      */
-    protected function toBytes($str){
+    protected function toBytes($str)
+    {
         $val = trim($str);
         $last = strtolower($str[strlen($str)-1]);
         switch($last) {
@@ -274,6 +360,13 @@ class qqFileUploader {
         return $val;
     }
 
+    /**
+     * Create thumbnail of image
+     * 
+     * @param String $imageName
+     * 
+     * @return String
+     */
     protected function createThumbnailOfImage($imageName)
     {
 //               DBG::activate();
@@ -302,7 +395,16 @@ class qqFileUploader {
         
     }
 
-    function download($file_directory, $file_name = '') {
+    /**
+     * download
+     * 
+     * @param String $file_directory
+     * @param String $file_name
+     *
+     * @return null
+     */
+    function download($file_directory, $file_name = '')
+    {
         
         $file_path = $file_directory.$file_name;
         
@@ -324,7 +426,15 @@ class qqFileUploader {
         }
     }
 
-    protected function get_file_type($file_path) {
+    /**
+     * Get file type
+     * 
+     * @param String $file_path
+     *
+     * @return String
+     */
+    protected function get_file_type($file_path)
+    {
         switch (strtolower(pathinfo($file_path, PATHINFO_EXTENSION))) {
             case 'jpeg':
             case 'jpg':
@@ -338,7 +448,16 @@ class qqFileUploader {
         }
     }
 
-    protected function get_file_size($file_path, $clear_stat_cache = false) {
+    /**
+     * Get file size
+     *
+     * @param String  $file_path
+     * @param boolean $clear_stat_cache
+     *
+     * @return Numeric
+     */
+    protected function get_file_size($file_path, $clear_stat_cache = false)
+    {
         if ($clear_stat_cache) {
             clearstatcache(true, $file_path);
         }
@@ -346,20 +465,41 @@ class qqFileUploader {
 
     }
 
-    // Fix for overflowing signed 32 bit integers,
-    // works for sizes up to 2^32-1 bytes (4 GiB - 1):
-    protected function fix_integer_overflow($size) {
+    /**
+     * Fix for overflowing signed 32 bit integers,
+     * works for sizes up to 2^32-1 bytes (4 GiB - 1):
+     * 
+     * @param Integer $size
+     *
+     * @return Integer
+     */
+    protected function fix_integer_overflow($size)
+    {
         if ($size < 0) {
             $size += 2.0 * (PHP_INT_MAX + 1);
         }
         return $size;
     }
-    
-    protected function header($str) {
+
+    /**
+     * header
+     * 
+     * @param String $str
+     */
+    protected function header($str)
+    {
         header($str);
     }
 
-    protected function readfile($file_path) {
+    /**
+     * Read the file
+     * 
+     * @param String $file_path
+     * 
+     * @return String
+     */
+    protected function readfile($file_path)
+    {
         return readfile($file_path);
     }
 }

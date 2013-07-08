@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Read and write CSV files
  * @package     contrexx
@@ -155,13 +154,16 @@ class Csv_bv
         return $arr_row;
     }
 
-
     /**
-      * Writes the array to the CSV file
-      * @access public
-      * @return array of fields
-      * @static
-      */
+     * Writes the array to the CSV file
+     * 
+     * @param String $filename
+     * @param Array $arrCsv
+     *
+     * @access public
+     * @return array of fields
+     * @static
+     */
     function write($filename, $arrCsv)
     {
         if (empty($filename) || !is_array($arrCsv)) return false;
@@ -217,6 +219,8 @@ class Csv_bv
       *
       * Called by array_walk().
       * Spaces and tabs are removed (\s and \t).
+      *
+      * @param Address $item
       * @access private
       */
     function ArrayTrim(&$item)
@@ -229,6 +233,8 @@ class Csv_bv
       * Escape the quote character
       *
       * Called by array_walk()
+      *
+      * @param Address $item
       * @access private
       */
     function ArrayRemoveEscape(&$item)
