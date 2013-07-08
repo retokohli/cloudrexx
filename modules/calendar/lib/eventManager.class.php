@@ -922,7 +922,7 @@ class CalendarEventManager extends CalendarLibrary
      * @return boolean true on url exists, false otherwise
      */
     function urlfind($url){
-        if (!ini_get('allow_url_fopen')) {     
+        if (!ini_get('allow_url_fopen')) {
             ini_set('allow_url_fopen', 'On');
         } 
         
@@ -938,38 +938,15 @@ class CalendarEventManager extends CalendarLibrary
                 return false;
             }
         } else {
-            require_once ASCMS_LIBRARY_PATH.'/PEAR/HTTP/Request2.php';
-            
-            if(substr($url,0,7) == 'http://') {
-                $url = substr($url,7); 
-            }
-            
-            $url = explode('/',$url);     
-            $offset = array();
-            
-            foreach($url as $key => $dir) {
-                if($key == 0) {
-                    $domain = $dir;
-                } else {
-                    $offset[] = $dir;
-                }
-            }
-            
-            $offset = join("/", $offset);
-            
-            if(substr($offset,-1) != '/') {  
-                $offset = $offset.'/';  
-            }         
-
             try {
-                $request  = new HTTP_Request2($domain.$offset.'modules/calendar/lib/webservice/soap.server.class.php');
+                $request  = new HTTP_Request2($url.'modules/calendar/lib/webservice/soap.server.class.php');
                 $response = $request->send();
                 if (404 == $response->getStatus()) {
                     return false;
                 } else {
                     return true;
                 }
-            } catch (Exception $e) {
+            } catch (Exception $e) {                
                 DBG::msg($e->getMessage());
                 return false;
             }

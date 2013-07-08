@@ -360,70 +360,68 @@ class CalendarMailManager extends CalendarLibrary {
             if(is_array($this->mailList[$langId]['default_recipient'])) {
                 $recipients = array_merge($recipients, $this->mailList[$langId]['default_recipient']);       
             }     
-            
-            if (@include_once ASCMS_LIBRARY_PATH.'/phpmailer/class.phpmailer.php') {
-                $objMail = new phpmailer();
+                        
+            $objMail = new phpmailer();
 
-                if ($_CONFIG['coreSmtpServer'] > 0 && @include_once ASCMS_CORE_PATH.'/SmtpSettings.class.php') {
-                    $arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer']);
-                    if ($arrSmtp !== false) {
-                        $objMail->IsSMTP();
-                        $objMail->Host = $arrSmtp['hostname'];
-                        $objMail->Port = $arrSmtp['port'];
-                        $objMail->SMTPAuth = true;
-                        $objMail->Username = $arrSmtp['username'];
-                        $objMail->Password = $arrSmtp['password'];
-                    }
+            if ($_CONFIG['coreSmtpServer'] > 0) {
+                $arrSmtp = SmtpSettings::getSmtpAccount($_CONFIG['coreSmtpServer']);
+                if ($arrSmtp !== false) {
+                    $objMail->IsSMTP();
+                    $objMail->Host = $arrSmtp['hostname'];
+                    $objMail->Port = $arrSmtp['port'];
+                    $objMail->SMTPAuth = true;
+                    $objMail->Username = $arrSmtp['username'];
+                    $objMail->Password = $arrSmtp['password'];
                 }
+            }
 
-                $objMail->CharSet = CONTREXX_CHARSET;
-                $objMail->From = $_CONFIG['coreAdminEmail'];
-                $objMail->FromName = $_CONFIG['coreGlobalPageTitle'];
-                $objMail->AddReplyTo($_CONFIG['coreAdminEmail']); 
+            $objMail->CharSet = CONTREXX_CHARSET;
+            $objMail->From = $_CONFIG['coreAdminEmail'];
+            $objMail->FromName = $_CONFIG['coreGlobalPageTitle'];
+            $objMail->AddReplyTo($_CONFIG['coreAdminEmail']); 
 
-                foreach ($recipients as $mailAdress => $langId) {
-                    if(!empty($mailAdress)) {        
-                        if($this->mailList[$langId]['mail']->title == '') { 
-                            $langId = 0;    
-                        } 
-                        
-                        if ($objUser = FWUser::getFWUserObject()->objUser->getUsers($filter = array('email' => $mailAdress, 'is_active' => true))) {
-                            $userNick = $objUser->getUsername();
-                            $userFirstname = $objUser->getProfileAttribute('firstname');
-                            $userLastname = $objUser->getProfileAttribute('lastname');  
-                            
-                        }
-                            
-                        $mailTitle = $this->mailList[$langId]['mail']->title;
-                        $mailContentText = !empty($this->mailList[$langId]['mail']->content_text) ? $this->mailList[$langId]['mail']->content_text : strip_tags($this->mailList[$langId]['mail']->content_html);
-                        $mailContentHtml = !empty($this->mailList[$langId]['mail']->content_html) ? $this->mailList[$langId]['mail']->content_html : $this->mailList[$langId]['mail']->content_text;
-                        $replaceContent = array($regType, $eventTitle, $eventStart, $eventEnd, $eventLink, $regLink, $userNick, $userFirstname, $userLastname, $domain, $date);
-                        
-                        for ($x = 0; $x < 11; $x++) {
-                            $mailTitle       = str_replace($placeholder[$x], html_entity_decode($replaceContent[$x], ENT_QUOTES, CONTREXX_CHARSET), $mailTitle);                                                                           
-                            $mailContentText = str_replace($placeholder[$x], html_entity_decode($replaceContent[$x], ENT_QUOTES, CONTREXX_CHARSET), $mailContentText);                                                                           
-                            $mailContentHtml = str_replace($placeholder[$x], $replaceContent[$x], $mailContentHtml);
-                        }    
-                        
-                        $mailTitle       = str_replace($regSearch, html_entity_decode($regReplace, ENT_QUOTES, CONTREXX_CHARSET), $mailTitle);                                                                           
-                        $mailContentText = str_replace($regSearch, html_entity_decode($regReplace, ENT_QUOTES, CONTREXX_CHARSET), $mailContentText);                                                                           
-                        $mailContentHtml = str_replace($regSearch, $regReplace, $mailContentHtml);
-                        
-                        $mailContentText = str_replace('[[REGISTRATION_DATA]]', $registrationDataText, $mailContentText);                                                                           
-                        $mailContentHtml = str_replace('[[REGISTRATION_DATA]]', $registrationDataHtml, $mailContentHtml);
+            foreach ($recipients as $mailAdress => $langId) {
+                if(!empty($mailAdress)) {        
+                    if($this->mailList[$langId]['mail']->title == '') { 
+                        $langId = 0;    
+                    } 
 
-                       /* echo "send to: ".$mailAdress."<br />";
-                        echo "send title: ".$mailTitle."<br />";*/
-                        
-                        $objMail->Subject = $mailTitle;
-                        $objMail->Body = $mailContentHtml;
-                        $objMail->AltBody = $mailContentText; 
-                        $objMail->AddAddress($mailAdress);   
-                        $objMail->Send();
-                        $objMail->ClearAddresses();
+                    if ($objUser = FWUser::getFWUserObject()->objUser->getUsers($filter = array('email' => $mailAdress, 'is_active' => true))) {
+                        $userNick = $objUser->getUsername();
+                        $userFirstname = $objUser->getProfileAttribute('firstname');
+                        $userLastname = $objUser->getProfileAttribute('lastname');  
+
                     }
-                }                      
-            } 
+
+                    $mailTitle = $this->mailList[$langId]['mail']->title;
+                    $mailContentText = !empty($this->mailList[$langId]['mail']->content_text) ? $this->mailList[$langId]['mail']->content_text : strip_tags($this->mailList[$langId]['mail']->content_html);
+                    $mailContentHtml = !empty($this->mailList[$langId]['mail']->content_html) ? $this->mailList[$langId]['mail']->content_html : $this->mailList[$langId]['mail']->content_text;
+                    $replaceContent = array($regType, $eventTitle, $eventStart, $eventEnd, $eventLink, $regLink, $userNick, $userFirstname, $userLastname, $domain, $date);
+
+                    for ($x = 0; $x < 11; $x++) {
+                        $mailTitle       = str_replace($placeholder[$x], html_entity_decode($replaceContent[$x], ENT_QUOTES, CONTREXX_CHARSET), $mailTitle);                                                                           
+                        $mailContentText = str_replace($placeholder[$x], html_entity_decode($replaceContent[$x], ENT_QUOTES, CONTREXX_CHARSET), $mailContentText);                                                                           
+                        $mailContentHtml = str_replace($placeholder[$x], $replaceContent[$x], $mailContentHtml);
+                    }    
+
+                    $mailTitle       = str_replace($regSearch, html_entity_decode($regReplace, ENT_QUOTES, CONTREXX_CHARSET), $mailTitle);                                                                           
+                    $mailContentText = str_replace($regSearch, html_entity_decode($regReplace, ENT_QUOTES, CONTREXX_CHARSET), $mailContentText);                                                                           
+                    $mailContentHtml = str_replace($regSearch, $regReplace, $mailContentHtml);
+
+                    $mailContentText = str_replace('[[REGISTRATION_DATA]]', $registrationDataText, $mailContentText);                                                                           
+                    $mailContentHtml = str_replace('[[REGISTRATION_DATA]]', $registrationDataHtml, $mailContentHtml);
+
+                   /* echo "send to: ".$mailAdress."<br />";
+                    echo "send title: ".$mailTitle."<br />";*/
+
+                    $objMail->Subject = $mailTitle;
+                    $objMail->Body = $mailContentHtml;
+                    $objMail->AltBody = $mailContentText; 
+                    $objMail->AddAddress($mailAdress);   
+                    $objMail->Send();
+                    $objMail->ClearAddresses();
+                }
+            }            
         }
     }
 }
