@@ -387,6 +387,8 @@ class Calendar extends CalendarLibrary
     {
         global $_ARRAYLANG, $_CORELANG, $_LANGID;
         JS::activate('cx');
+        JS::registerJS('modules/calendar/View/Script/Frontend.js');
+        
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
         if(isset($_POST['submitFormModifyEvent'])) {
@@ -457,56 +459,6 @@ cx.ready(function() {
     jQuery('input[name=endDate]').datetimepicker(options);
 });
 
-function formCheck()
-{
-    var status = true;
-    var elm = new Array(3)
-
-    //elm[0] = document.getElementById('title_$_LANGID');
-    elm[0] = document.getElementById('$startDateInputId');
-    elm[1] = document.getElementById('$endDateInputId');
-    elm[2] = document.getElementById('category');
-
-
-    for(i=0; i < elm.length; i++) {
-        if(elm[i].value == '') {
-            elm[i].style.border = "#ff0000 1px solid";
-            document.getElementById('errorMessage').style.display = 'block';
-            status = false;
-        } else {
-            elm[i].style.borderColor = '';
-        }
-    }
-
-    var pattern = /^showIn/;
-    var reg = new RegExp(pattern);
-
-    for (i = 0; i < document.formModifyEvent.elements.length; ++i) {
-        var elm = document.formModifyEvent.elements[i];
-
-        if (elm.name.match(reg)) {
-            var langId = elm.value;
-            if (elm.checked) {
-                var elmTitle = document.getElementById('title_' + langId);
-                if(elmTitle.value == '') {
-                    elmTitle.style.border = "#ff0000 1px solid";
-                    document.getElementById('errorMessage').style.display = 'block';
-                    status = false;
-                } else {
-                    elmTitle.style.borderColor = '';
-                }
-            }
-        }
-    }
-
-    if(status) {
-        return true;
-    } else {
-        return false;
-    }
-}
-
-
 </script>
 EOF;
 
@@ -540,6 +492,7 @@ EOF;
             'TXT_'.$this->moduleLangVar.'_EVENT_PICTURE'            => $_ARRAYLANG['TXT_CALENDAR_EVENT_PICTURE'],
             'TXT_'.$this->moduleLangVar.'_EVENT_CATEGORY'           => $_ARRAYLANG['TXT_CALENDAR_CAT'] ,
             'TXT_'.$this->moduleLangVar.'_EVENT_DESCRIPTION'        => $_ARRAYLANG['TXT_CALENDAR_EVENT_DESCRIPTION'],
+            'TXT_'.$this->moduleLangVar.'_PLEASE_CHECK_INPUT'       => $_ARRAYLANG['TXT_CALENDAR_PLEASE_CHECK_INPUT'],
 
             $this->moduleLangVar.'_EVENT_START_DATE'                => $eventId != 0 ? date(parent::getDateFormat()." H:i", $objEvent->startDate) : date(parent::getDateFormat()." H:i"),
             $this->moduleLangVar.'_EVENT_END_DATE'                  => $eventId != 0 ? date(parent::getDateFormat()." H:i", $objEvent->endDate) : date(parent::getDateFormat()." H:i"),

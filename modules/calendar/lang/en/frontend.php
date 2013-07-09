@@ -148,3 +148,4 @@ $_ARRAYLANG['TXT_CALENDAR_MAP'] = "View map";
 
 $_ARRAYLANG['TXT_CALENDAR_SAME_AS_CONTACT'] = "same information as contact";
 $_ARRAYLANG['TXT_CALENDAR_DEVIATES_FROM_CONTACT'] = "differs from the contact";
+$_ARRAYLANG['TXT_CALENDAR_PLEASE_CHECK_INPUT'] = "Please check your input";
