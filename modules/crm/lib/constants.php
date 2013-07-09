@@ -1,5 +1,7 @@
 <?php
 /**
+ * Define constants
+ *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @package     contrexx
  * @subpackage  config
