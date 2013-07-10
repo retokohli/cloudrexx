@@ -49,33 +49,47 @@ class Cache extends cacheLib
             return;
         }
 
-        if ($_CONFIG['cacheEnabled'] == 'on' && (!isset($_REQUEST['caching']) || $_REQUEST['caching'] != '0')) {
-            $this->boolIsEnabled = true;
-
-            // check the cache directory
-            if (!is_dir(ASCMS_CACHE_PATH)) {
-                \Cx\Lib\FileSystem\FileSystem::make_folder(ASCMS_CACHE_PATH);
-            }
-            if (!is_writable(ASCMS_CACHE_PATH)) {
-                \Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_CACHE_PATH);
-            }
-            $this->strCachePath = ASCMS_CACHE_PATH . '/';
-
-            $this->intCachingTime = intval($_CONFIG['cacheExpiration']);
-
-            // Use data of $_GET and $_POST to uniquely identify a request.
-            // Important: You must not use $_REQUEST instead. $_REQUEST also contains
-            //            the data of $_COOKIE. Whereas the cookie information might
-            //            change in each request, which might break the caching-
-            //            system.
-            $request = array_merge_recursive($_GET, $_POST);
-            ksort($request);
-            $this->arrPageContent = array(
-                'url' => $_SERVER['REQUEST_URI'],
-                'request' => $request,
-            );
-            $this->strCacheFilename = md5(serialize($this->arrPageContent));
+        if ($_CONFIG['cacheEnabled'] == 'off') {
+            $this->boolIsEnabled = false;
+            return;
         }
+
+        if (isset($_REQUEST['caching']) && $_REQUEST['caching'] == '0') {
+            $this->boolIsEnabled = false;
+            return;
+        }
+
+// TODO: Reimplement - see #1205
+        /*if ($this->isException()) {
+            $this->boolIsEnabled = false;
+            return;
+        }*/
+
+        $this->boolIsEnabled = true;
+
+        // check the cache directory
+        if (!is_dir(ASCMS_CACHE_PATH)) {
+            \Cx\Lib\FileSystem\FileSystem::make_folder(ASCMS_CACHE_PATH);
+        }
+        if (!is_writable(ASCMS_CACHE_PATH)) {
+            \Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_CACHE_PATH);
+        }
+        $this->strCachePath = ASCMS_CACHE_PATH . '/';
+
+        $this->intCachingTime = intval($_CONFIG['cacheExpiration']);
+
+        // Use data of $_GET and $_POST to uniquely identify a request.
+        // Important: You must not use $_REQUEST instead. $_REQUEST also contains
+        //            the data of $_COOKIE. Whereas the cookie information might
+        //            change in each request, which might break the caching-
+        //            system.
+        $request = array_merge_recursive($_GET, $_POST);
+        ksort($request);
+        $this->arrPageContent = array(
+            'url' => $_SERVER['REQUEST_URI'],
+            'request' => $request,
+        );
+        $this->strCacheFilename = md5(serialize($this->arrPageContent));
     }
 
 
@@ -110,12 +124,16 @@ class Cache extends cacheLib
      */
     public function endCache($page)
     {
-        if (!$this->boolIsEnabled || (session_id() != '' && FWUser::getFWUserObject()->objUser->login())) {
+        if (!$this->boolIsEnabled) {
+            return null;
+        }
+        if (session_id() != '' && \FWUser::getFWUserObject()->objUser->login()) {
             return null;
         }
         if (!$page->getCaching()) {
             return null;
         }
+
         $strCacheContents = ob_get_contents();
         ob_end_flush();
         $handleFile = $this->strCachePath . $this->strCacheFilename . "_" . $page->getId();
@@ -129,6 +147,7 @@ class Cache extends cacheLib
      *
      * @global     array        $_EXCEPTIONS
      * @return     boolean        true: Site has been found in exception list
+     * @todo    Reimplement! Use for restricting caching-option in CM - see #1205
      */
     public function isException()
     {
