@@ -153,7 +153,11 @@ class FileBrowser {
     }
 
     function _getPath() {
-        $path = "";
+        $path = (isset($_REQUEST['type']) && $_REQUEST['type'] == 'files')
+                && isset($_SESSION['fileBrowser']['path'])
+                ? $_SESSION['fileBrowser']['path'] 
+                : "";
+        
         if (isset($_REQUEST['path']) && !stristr($_REQUEST['path'], '..')) {
             $path = $_REQUEST['path'];
         }
@@ -161,7 +165,11 @@ class FileBrowser {
         if ($pos === false || $pos != (strlen($path)-1)) {
             $path .= "/";
         }
-
+        // update path in session if type equals to files
+        if (isset($_REQUEST['type']) && $_REQUEST['type'] == 'files') {
+            $_SESSION['fileBrowser']['path'] = $path;
+        }
+        
         return $path;
     }
 
