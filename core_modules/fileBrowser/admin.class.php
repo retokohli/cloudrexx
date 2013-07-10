@@ -111,12 +111,12 @@ class FileBrowser {
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
-        $this->_iconPath = ASCMS_CORE_MODULE_WEB_PATH.'/fileBrowser/View/Media/';
-        $this->_path = $this->_getPath();
+        $this->_iconPath = ASCMS_CORE_MODULE_WEB_PATH.'/fileBrowser/View/Media/';        
         $this->_setFrontendLanguageId();
-        $this->_mediaType = $this->_getMediaType();
+        $this->_mediaType = $this->_getMediaType();        
         $this->_mediaMode = $this->_getMediaMode();
-
+        $this->_path      = $this->_getPath();
+        
         $this->checkMakeDir();
         $this->_initFiles();
     }
@@ -153,7 +153,7 @@ class FileBrowser {
     }
 
     function _getPath() {
-        $path = (isset($_REQUEST['type']) && $_REQUEST['type'] == 'files')
+        $path = ($this->_mediaType == 'files')
                 && isset($_SESSION['fileBrowser']['path'])
                 ? $_SESSION['fileBrowser']['path'] 
                 : "";
@@ -166,7 +166,7 @@ class FileBrowser {
             $path .= "/";
         }
         // update path in session if type equals to files
-        if (isset($_REQUEST['type']) && $_REQUEST['type'] == 'files') {
+        if ($this->_mediaType == 'files') {
             $_SESSION['fileBrowser']['path'] = $path;
         }
         
