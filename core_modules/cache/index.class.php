@@ -107,6 +107,9 @@ class Cache extends cacheLib
         if (!$this->boolIsEnabled || session_id() != '') {
             return null;
         }
+        if (!$page->getCaching()) {
+            return null;
+        }
         $strCacheContents = ob_get_contents();
         ob_end_flush();
         $handleFile = $this->strCachePath . $this->strCacheFilename . "_" . $page->getId();
