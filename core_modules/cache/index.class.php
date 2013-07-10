@@ -63,10 +63,16 @@ class Cache extends cacheLib
 
             $this->intCachingTime = intval($_CONFIG['cacheExpiration']);
 
-            ksort($_REQUEST);
+            // Use data of $_GET and $_POST to uniquely identify a request.
+            // Important: You must not use $_REQUEST instead. $_REQUEST also contains
+            //            the data of $_COOKIE. Whereas the cookie information might
+            //            change in each request, which might break the caching-
+            //            system.
+            $request = array_merge_recursive($_GET, $_POST);
+            ksort($request);
             $this->arrPageContent = array(
                 'url' => $_SERVER['REQUEST_URI'],
-                'request' => $_REQUEST,
+                'request' => $request,
             );
             $this->strCacheFilename = md5(serialize($this->arrPageContent));
         }
@@ -104,7 +110,7 @@ class Cache extends cacheLib
      */
     public function endCache($page)
     {
-        if (!$this->boolIsEnabled || session_id() != '') {
+        if (!$this->boolIsEnabled || (session_id() != '' && FWUser::getFWUserObject()->objUser->login())) {
             return null;
         }
         if (!$page->getCaching()) {
