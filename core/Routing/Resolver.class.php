@@ -151,11 +151,11 @@ class Resolver {
             //try to find the language in the url
             $extractedLanguage = \FWLanguage::getLanguageIdByCode($this->url->getLangDir());
             $activeLanguages = \FWLanguage::getActiveFrontendLanguages();
-            if (!in_array($extractedLanguage, array_keys($activeLanguages))) {
-                $this->lang = \FWLanguage::getDefaultLangId();
+            if (!$extractedLanguage) {
                 $this->redirectToCorrectLanguageDir();
             }
-            if (!$extractedLanguage) {
+            if (!in_array($extractedLanguage, array_keys($activeLanguages))) {
+                $this->lang = \FWLanguage::getDefaultLangId();
                 $this->redirectToCorrectLanguageDir();
             }
             //only set langid according to url if the user has not explicitly requested a language change.
