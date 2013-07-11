@@ -63,8 +63,14 @@ define('FRONTEND_LANG_ID', 1);
 require_once(dirname(__FILE__).'/config/configuration.php');
 
 // Config files
-$incSettingsStatus = include_once(dirname(UPDATE_PATH) . '/config/settings.php');
 require_once(dirname(UPDATE_PATH) . '/config/configuration.php');
+
+fixPaths($_PATHCONFIG['ascms_root'], $_PATHCONFIG['ascms_root_offset']);
+$_PATHCONFIG['ascms_installation_root'] = $_PATHCONFIG['ascms_root'];
+$_PATHCONFIG['ascms_installation_offset'] = $_PATHCONFIG['ascms_root_offset'];
+
+$incSettingsStatus = include_once(dirname(UPDATE_PATH) . '/config/settings.php');
+$incSettingsStatus = include_once(dirname(UPDATE_PATH) . '/config/set_constants.php');
 
 if (!isset($_CONFIG['useCustomizings'])) {
     $_CONFIG['useCustomizings'] = 'off';
@@ -150,3 +156,37 @@ JS::findJavascripts($output);
 $output = str_replace('javascript_inserting_here', JS::getCode(), $output);
 
 die($output);
+
+function fixPaths(&$documentRoot, &$rootOffset) {
+    // calculate correct offset path
+    // turning '/myoffset/somefile.php' into '/myoffset'
+    $rootOffset = '';
+    $directories = explode('/', $_SERVER['SCRIPT_NAME']);
+    for ($i = 0; $i < count($directories) - 1; $i++) {
+        if ($directories[$i] !== '') {
+            $rootOffset .= '/'.$directories[$i];
+        }
+    }
+
+    // fix wrong offset if another file than index.php was requested
+    // turning '/myoffset/core_module/somemodule' into '/myoffset'
+    $fileRoot = dirname(dirname(dirname(dirname(__FILE__))));
+    $nonOffset = preg_replace('#' . $fileRoot . '#', '', $_SERVER['SCRIPT_FILENAME']);
+    $nonOffsetParts = explode('/', $nonOffset);
+    end($nonOffsetParts);
+    unset($nonOffsetParts[key($nonOffsetParts)]);
+    $nonOffset = implode('/', $nonOffsetParts);
+    $rootOffset = preg_replace('#' . $nonOffset . '#', '', $rootOffset);
+
+    // calculate correct document root
+    // turning '/var/www/myoffset' into '/var/www'
+    $documentRoot = '';
+    $arrMatches = array();
+    $scriptPath = str_replace('\\', '/', dirname(dirname(__FILE__)));
+    if (preg_match("/(.*)(?:\/[\d\D]*){2}$/", $scriptPath, $arrMatches) == 1) {
+        $scriptPath = $arrMatches[1];
+    }
+    if (preg_match("#(.*)".preg_replace(array('#\\\#', '#\^#', '#\$#', '#\.#', '#\[#', '#\]#', '#\|#', '#\(#', '#\)#', '#\?#', '#\*#', '#\+#', '#\{#', '#\}#'), '\\\\$0', $rootOffset)."#", $scriptPath, $arrMatches) == 1) {
+        $documentRoot = $arrMatches[1];
+    }
+}

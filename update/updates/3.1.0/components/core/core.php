@@ -1664,6 +1664,7 @@ function _writeNewConfigurationFile()
 
     $configurationTpl = <<<CONFIG_TPL
 <?php
+global \$_DBCONFIG, \$_PATHCONFIG, \$_FTPCONFIG, \$_CONFIG;
 /**
 * @exclude
 *
@@ -1700,8 +1701,8 @@ define('CONTEXX_INSTALLED', true);
 * Site path specific configuration
 * -------------------------------------------------------------------------
 */
-\$_PATHCONFIG['ascms_root'] = '{$_PATHCONFIG['ascms_root']}';
-\$_PATHCONFIG['ascms_root_offset'] = '{$_PATHCONFIG['ascms_root_offset']}'; // example: '/cms';
+\$_PATHCONFIG['ascms_root'] = '';
+\$_PATHCONFIG['ascms_root_offset'] = ''; // example: '/cms';
 
 /**
 * -------------------------------------------------------------------------
@@ -1722,24 +1723,7 @@ define('CONTEXX_INSTALLED', true);
 * -------------------------------------------------------------------------
 */
 // Set character encoding
-\$_CONFIG['coreCharacterEncoding'] = '{$charset}'; // example 'UTF-8'
-@ini_set('default_charset', \$_CONFIG['coreCharacterEncoding']);
-
-// Set output url seperator
-@ini_set('arg_separator.output', '&amp;');
-
-// Set url rewriter tags
-@ini_set('url_rewriter.tags', 'a=href,area=href,frame=src,iframe=src,input=src,form=,fieldset=');
-
-// Set timezone
-@ini_set('date.timezone', \$_CONFIG['timezone']);
-
-/**
-* -------------------------------------------------------------------------
-* Set constants
-* -------------------------------------------------------------------------
-*/
-require_once dirname(__FILE__).'/set_constants.php';
+\$_CONFIG['coreCharacterEncoding'] = 'UTF-8'; // example 'UTF-8'
 
 CONFIG_TPL
 ;
