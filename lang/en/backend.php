@@ -1589,6 +1589,8 @@ $_ARRAYLANG['TXT_CORE_CM_VALIDATION_FAIL'] = 'Please fill in all required fields
 $_ARRAYLANG['TXT_CORE_CM_COPY_FAILED'] = 'Copying failed';
 $_ARRAYLANG['TXT_CORE_CM_COPY_OF_PAGE'] = 'Copy';
 $_ARRAYLANG['TXT_CORE_CM_COPY_N_OF_PAGE'] = 'Copy %s';
+$_ARRAYLANG['TXT_CORE_CM_HISTORY_ENTRIES'] = 'Entries';
+$_ARRAYLANG['TXT_CORE_CM_HISTORY_HIDE_DRAFTS'] = 'Hide drafts';
 
 // upload
 $_ARRAYLANG['TXT_CORE_UPLOAD_MORE'] = "Upload more";

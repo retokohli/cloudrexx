@@ -2276,13 +2276,19 @@ cx.cm.loadHistory = function(id, pos) {
         pos = 0;
     }
     
+    var hideDrafts = "";
+    console.log(jQuery("#hideDrafts").length);
+    if (jQuery("#hideDrafts").length && !jQuery("#hideDrafts").is(":checked")) {
+        hideDrafts = "&hideDrafts=off";
+    }
+    
     jQuery("#page_history").html("<div class=\"historyInit\"><img src=\"../lib/javascript/jquery/jstree/themes/default/throbber.gif\" alt=\"Loading...\" /></div>");
     pageId = (id != undefined) ? parseInt(id) : parseInt(jQuery('#pageId').val());
     if (isNaN(pageId) || (pageId == 0)) {
         return;
     }
     
-    jQuery('#page_history').load('index.php?cmd=jsondata&object=page&act=getHistoryTable&page='+pageId+'&pos='+pos, function() {
+    jQuery('#page_history').load('index.php?cmd=jsondata&object=page&act=getHistoryTable&page='+pageId+'&pos='+pos+hideDrafts, function() {
         jQuery("#history_paging").find("a").each(function(index, el) {
             el = jQuery(el);
             var pos;
@@ -2296,6 +2302,9 @@ cx.cm.loadHistory = function(id, pos) {
             cx.cm.loadHistory(id, jQuery(this).data("pos"));
         });
         cx.cm.updateHistoryTableHighlighting();
+        jQuery("#hideDrafts").change(function() {
+            cx.cm.loadHistory(id, pos);
+        });
     });
 };
 

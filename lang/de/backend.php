@@ -1664,6 +1664,8 @@ $_ARRAYLANG['TXT_CORE_CM_VALIDATION_FAIL'] = 'Bitte füllen Sie alle erforderlic
 $_ARRAYLANG['TXT_CORE_CM_COPY_FAILED'] = 'Kopieren fehlgeschlagen';
 $_ARRAYLANG['TXT_CORE_CM_COPY_OF_PAGE'] = 'Kopie';
 $_ARRAYLANG['TXT_CORE_CM_COPY_N_OF_PAGE'] = '%s. Kopie';
+$_ARRAYLANG['TXT_CORE_CM_HISTORY_ENTRIES'] = 'Einträge';
+$_ARRAYLANG['TXT_CORE_CM_HISTORY_HIDE_DRAFTS'] = 'Entwürfe ausblenden';
 
 // core login
 $_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Sicherheitscode";
