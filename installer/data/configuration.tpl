@@ -34,8 +34,8 @@ $_DBCONFIG['timezone'] = $_CONFIG['timezone']; // Timezone
 * Site path specific configuration
 * -------------------------------------------------------------------------
 */
-$_PATHCONFIG['ascms_root'] = '%PATH_ROOT%';
-$_PATHCONFIG['ascms_root_offset'] = '%PATH_ROOT_OFFSET%'; // example: '/cms';
+$_PATHCONFIG['ascms_root'] = '';
+$_PATHCONFIG['ascms_root_offset'] = ''; // example: '/cms';
 
 /**
 * -------------------------------------------------------------------------
@@ -57,21 +57,3 @@ $_FTPCONFIG['path'] = '%FTP_PATH%'; // Ftp path to cms (must not include ascms_r
 */
 // Set character encoding
 $_CONFIG['coreCharacterEncoding'] = '%CHARSET%'; // example 'UTF-8'
-@ini_set('default_charset', $_CONFIG['coreCharacterEncoding']);
-
-// Set output url seperator
-@ini_set('arg_separator.output', '&amp;');
-
-// Set url rewriter tags
-@ini_set('url_rewriter.tags', 'a=href,area=href,frame=src,iframe=src,input=src,form=,fieldset=');
-
-// Set timezone
-@ini_set('date.timezone', $_CONFIG['timezone']);
-
-/**
-* -------------------------------------------------------------------------
-* Set constants
-* -------------------------------------------------------------------------
-*/
-require_once dirname(__FILE__).'/set_constants.php';
-

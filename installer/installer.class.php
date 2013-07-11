@@ -1898,8 +1898,9 @@ class Installer
             // We might have some overhead, since versioncheck.php does more or less the same again
             $documentRoot = dirname($basePath);
             require_once($documentRoot.'/core/Env.class.php');               // needed for FileSystem
-            require_once($documentRoot.'/config/settings.php');              // needed for configuration.php
             require_once($documentRoot.'/config/configuration.php');         // needed for API
+            require_once($documentRoot.'/config/settings.php');              // needed for configuration.php
+            require_once($documentRoot.'/config/set_constants.php');         // needed for configuration.php
             require_once($documentRoot.'/core/ClassLoader/ClassLoader.class.php');
 
             $customizing = null;
