@@ -362,12 +362,12 @@ namespace Cx\Core\Core\Controller {
             // fix wrong offset if another file than index.php was requested
             // turning '/myoffset/core_module/somemodule' into '/myoffset'
             $fileRoot = dirname(dirname(dirname(dirname(__FILE__))));
-            $nonOffset = preg_replace('#' . $fileRoot . '#', '', $_SERVER['SCRIPT_FILENAME']);
+            $nonOffset = preg_replace('#' . preg_quote($fileRoot) . '#', '', realpath($_SERVER['SCRIPT_FILENAME']));
             $nonOffsetParts = explode('/', $nonOffset);
             end($nonOffsetParts);
             unset($nonOffsetParts[key($nonOffsetParts)]);
             $nonOffset = implode('/', $nonOffsetParts);
-            $rootOffset = preg_replace('#' . $nonOffset . '#', '', $rootOffset);
+            $rootOffset = preg_replace('#' . preg_quote($nonOffset) . '#', '', $rootOffset);
 
             // calculate correct document root
             // turning '/var/www/myoffset' into '/var/www'
@@ -377,7 +377,7 @@ namespace Cx\Core\Core\Controller {
             if (preg_match("/(.*)(?:\/[\d\D]*){2}$/", $scriptPath, $arrMatches) == 1) {
                 $scriptPath = $arrMatches[1];
             }
-            if (preg_match("#(.*)".preg_replace(array('#\\\#', '#\^#', '#\$#', '#\.#', '#\[#', '#\]#', '#\|#', '#\(#', '#\)#', '#\?#', '#\*#', '#\+#', '#\{#', '#\}#'), '\\\\$0', $rootOffset)."#", $scriptPath, $arrMatches) == 1) {
+            if (preg_match("#(.*)". preg_quote($rootOffset) ."#", $scriptPath, $arrMatches) == 1) {
                 $documentRoot = $arrMatches[1];
             }
         }
