@@ -26,6 +26,11 @@ namespace Cx\Core\Html;
  */
 class Sigma extends \HTML_Template_Sigma {
     
+    public function __construct($root = '', $cacheRoot = '') {
+        parent::__construct($root, $cacheRoot);
+        $this->setErrorHandling(PEAR_ERROR_DIE);
+    }
+    
     /**
      * Reads the file and returns its content
      *

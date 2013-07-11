@@ -120,6 +120,7 @@ abstract class SystemComponentBackendController extends Controller {
         
         // finish
         $actTemplate->setVariable($_ARRAYLANG);
+        \CSRF::add_placeholder($actTemplate);
         $page->setContent($actTemplate->get());
         $cachedRoot = $this->cx->getTemplate()->getRoot();
         $this->cx->getTemplate()->setRoot(ASCMS_CORE_PATH . '/Core/View/Template');
