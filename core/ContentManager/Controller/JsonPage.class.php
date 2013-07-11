@@ -355,8 +355,6 @@ class JsonPage implements JsonAdapter {
             }
             $page->setEditingStatus('');
             $this->messages[] = $_CORELANG['TXT_CORE_SAVED'];
-            // TODO: Define what log data we want to keep in a case like this.
-            //       Make adjustments, if necessary.
         } else {
             // User clicked save [as draft], so let's do that.
             $updatingDraft = $page->getEditingStatus() != '' ? true : false;
@@ -383,14 +381,11 @@ class JsonPage implements JsonAdapter {
             // order to get a clean set of logEntries.
             $this->em->flush();
             $logEntries = $this->logRepo->getLogEntries($page);
-            // $logEntries holds an array of Gedmo LogEntries, the most recent one listed first.
-            // We need the editing status of the page.
-            $logData = $logEntries[1]->getData();
-            $logData['editingStatus'] = $page->getEditingStatus();
-            $logEntries[1]->setData($logData);
 
             // Revert to the published version.
+            $cachedEditingStatus = $page->getEditingStatus();
             $this->logRepo->revert($page, $logEntries[1]->getVersion());
+            $page->setEditingStatus($cachedEditingStatus);
             
             switch ($action) {
                 case 'activate':
@@ -427,10 +422,14 @@ class JsonPage implements JsonAdapter {
                 $this->em->flush();
 
                 $logEntries = $this->logRepo->getLogEntries($page);
+                $currentLog = $logEntries[1];
+                $currentLogData = $currentLog->getData();
+                $currentLogData['editingStatus'] = $page->getEditingStatus();
+                $currentLog->setData($currentLogData);
+                $this->em->persist($currentLog);
+                
                 $liveUpdateLog = $logEntries[2];
-                $draftUpdateLog = $logEntries[3];
                 $this->em->remove($logEntries[2]);
-                $this->em->remove($logEntries[3]);
             }
         }
         
@@ -846,74 +845,89 @@ class JsonPage implements JsonAdapter {
         $rowId = 0;
 
         foreach ($logs as $index => $log){
-            // check whether the next data is a draft, if it is go ahead
-            if (isset($logs[$index + 1])) {
-                $data = $log->getData();
-                $nextData = $logs[$index + 1]->getData();
-                if (isset($nextData['editingStatus']) && ($nextData['editingStatus'] == 'hasDraft' || $nextData['editingStatus'] == 'hasDraftWaiting')) {
-                    if (!isset($data['editingStatus']) || ($data['editingStatus'] != 'hasDraft' && $data['editingStatus'] != 'hasDraftWaiting')) {
-                        continue;
-                    }
-                }
-            }
 
             // check whether the current index is between the range which should be displayed
             if ($row < $offset || $row >= ($numberOfEntries + $offset)) {
-                $logCount++;
                 $row++;
+                $logCount++;
                 continue;
             }
 
-            $logCount++;
-            $row++;
-
             try {
-                $data = $log->getData();
-                if (!isset($data['editingStatus']) || ($data['editingStatus'] != 'hasDraft' && $data['editingStatus'] != 'hasDraftWaiting')) {
-                    $pageHasDraft = false;
-                } else {
-                    $pageHasDraft = true;
-                }
                 $version = $log->getVersion();
                 $user = json_decode($log->getUsername());
                 $username = $user->{'name'};
                 $this->logRepo->revert($page, $version);
                 $page->setUpdatedAt($log->getLoggedAt());
+            
+                $hideDrafts = !isset($params['get']['hideDrafts']) || $params['get']['hideDrafts'] == 'on';
 
-                $this->addHistoryEntries($page, $username, $table, ++$rowId, $version, $langDir . '/' . $path, $pageHasDraft);
+                $editingStatus = $page->getEditingStatus();
+                if ($logCount != 0 && $hideDrafts && $editingStatus != '') {
+                    continue;
+                }
+
+                $row++;
+                $logCount++;
+
+                
+                $this->addHistoryEntries($page, $username, $table, $rowId, $version, $langDir . '/' . $path);
+                $rowId++;
 
             } catch (\Gedmo\Exception\UnexpectedValueException $e) {
                 
             }
         }
         // Add paging widget:
-        $paging = '<div id="history_paging">' . getPaging($logCount, $offset, '?cmd=content&page=' . $page->getId() . '&tab=history', 'Einträge', true, $numberOfEntries) . '</div>';
+        $paging = '<div id="history_paging">' . getPaging($logCount, $offset, '?cmd=content&page=' . $page->getId() . '&tab=history', $_CORELANG['TXT_CORE_CM_HISTORY_ENTRIES'], true, $numberOfEntries) . '</div>';
+        
+        $hideDraftsHtml = '<input type="checkbox" name="hideDrafts" value="on" id="hideDrafts"' . ($hideDrafts ? ' checked="checked"' : '') . ' /><label for="hideDrafts">' . $_CORELANG['TXT_CORE_CM_HISTORY_HIDE_DRAFTS'] . '</label>';
 
         //(VI) render
-        die($table->toHtml() . $paging);
+        die($table->toHtml() . $paging . $hideDraftsHtml);
     }
 
-    private function addHistoryEntries($page, $username, $table, $row, $version = '', $path = '', $pageHasDraft = true) {
+    private function addHistoryEntries($page, $username, $table, $row, $version = '', $path = '') {
         global $_ARRAYLANG;
 
         $dateString  = $page->getUpdatedAt()->format(ASCMS_DATE_FORMAT_DATETIME);
         $historyLink = ASCMS_PATH_OFFSET . '/' . $path . '?history=' . $version;
         $tableStyle  = '';
 
-        if ($row == 1) {
-            //$tableStyle  = 'style="display: none;"';
-            if ($pageHasDraft) {
-                $dateString .= ' (' . $_ARRAYLANG['TXT_CORE_DRAFT'] . ')';
-            }
-        }
+        $editingStatus = $page->getEditingStatus();
         
         $functions  = '<a id="preview_'.$version.'" class="historyPreview" href="' . $historyLink . '" target="_blank" '.$tableStyle.'>' . $_ARRAYLANG['TXT_CORE_PREVIEW'] . '</a>';
         $functions .= '<a id="load_'.$version.'" class="historyLoad" href="javascript:loadHistoryVersion('.$version.')" '.$tableStyle.'>' . $_ARRAYLANG['TXT_CORE_LOAD'] . '</a>';
         
+        /**
+         * @todo This is a copy from JsonNode, move this snippet to its own method
+         */
+        if ($page->isActive()) {
+            if ($editingStatus == 'hasDraft') {
+                $publishingStatus = 'published draft';
+            } else if ($editingStatus == 'hasDraftWaiting') {
+                $publishingStatus = 'published draft waiting';
+            } else {
+                $publishingStatus = 'published';
+            }
+        } else {
+            if ($editingStatus == 'hasDraft') {
+                $publishingStatus = 'unpublished draft';
+            } else if ($editingStatus == 'hasDraftWaiting') {
+                $publishingStatus = 'unpublished draft waiting';
+            } else {
+                $publishingStatus = 'unpublished';
+            }
+        }
+        if ($page->isBackendProtected() &&
+                !\Permission::checkAccess($page->getBackendAccessId(), 'dynamic', true)) {
+            $publishingStatus .= ' locked';
+        }
         $table->setCellContents($row, 0, $dateString);
-        $table->setCellContents($row, 1, $page->getTitle());
+        $table->setCellContents($row, 1, '<div class="jstree-icon publishing ' . $publishingStatus . '" /><div class="name">' . $page->getTitle() . '</div>');
         $table->setCellContents($row, 2, $username);
         $table->setCellContents($row, 3, $functions);
+        return true;
     }
 
     /**

@@ -437,7 +437,8 @@ h1{ font-size: 20px }
     color: #757575;
 }
 
-#site-tree .jstree-icon {
+#site-tree .jstree-icon,
+#page_history .jstree-icon {
     float: left;
     margin-top: 6px;
     cursor: pointer;
@@ -445,11 +446,16 @@ h1{ font-size: 20px }
     clear: none;
 }
 
+#page_history .jstree-icon {
+    cursor: auto;
+}
+
 *+html .jstree-default .jstree-closed > ins {
     bottom: 3px;
 }
 
-#site-tree .name {
+#site-tree .name,
+#page_history .name {
     float: left;
     overflow: hidden;
 }
@@ -480,45 +486,57 @@ h1{ font-size: 20px }
     margin-top: 7px;
 }
 
-#site-tree .publishing {
+#site-tree .publishing,
+#page_history .publishing {
     width: 13px;
     height: 14px;
     background-image: url('../Media/PublishingUnlocked.png');
     background-position: -34px -5px;
     margin-top: 8px;
 }
-#site-tree .publishing.locked {
+#site-tree .publishing.locked,
+#page_history .publishing.locked {
     background-image: url('../Media/PublishingLocked.png');
     background-position: -33px -4px;
 }
-#site-tree .publishing.draft {
+#site-tree .publishing.draft,
+#page_history .publishing.draft {
     background-position: -34px -34px;
 }
-#site-tree .publishing.draft.locked {
+#site-tree .publishing.draft.locked,
+#page_history .publishing.draft.locked {
     background-position: -33px -33px;
 }
-#site-tree .publishing.draft.waiting {
+#site-tree .publishing.draft.waiting,
+#page_history .publishing.draft.waiting {
     background-position: -34px -63px;
 }
-#site-tree .publishing.draft.waiting.locked {
+#site-tree .publishing.draft.waiting.locked,
+#page_history .publishing.draft.waiting.locked {
     background-position: -33px -62px;
 }
-#site-tree .publishing.unpublished {
+#site-tree .publishing.unpublished,
+#page_history .publishing.unpublished {
     background-position: -5px -5px;
 }
-#site-tree .publishing.unpublished.locked {
+#site-tree .publishing.unpublished.locked,
+#page_history .publishing.unpublished.locked {
     background-position: -4px -4px;
 }
-#site-tree .publishing.unpublished.draft {
+#site-tree .publishing.unpublished.draft,
+#page_history .publishing.unpublished.draft {
     background-position: -5px -34px;
 }
-#site-tree .publishing.unpublished.draft.locked {
+#site-tree .publishing.unpublished.draft.locked,
+#page_history .publishing.unpublished.draft.locked {
     background-position: -4px -33px;
 }
-#site-tree .publishing.unpublished.draft.waiting {
+#site-tree .publishing.unpublished.draft.waiting,
+#page_history .publishing.unpublished.draft.waiting {
     background-position: -5px -63px; 
 }
-#site-tree .publishing.unpublished.draft.waiting.locked {
+#site-tree .publishing.unpublished.draft.waiting.locked,
+#page_history .publishing.unpublished.draft.waiting.locked {
     background-position: -4px -62px; 
 }
 
