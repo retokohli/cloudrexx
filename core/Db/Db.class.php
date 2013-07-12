@@ -114,7 +114,7 @@ namespace Cx\Core\Db {
             $offsetString = ($offset > 0 ? '+' : '-').($offsetHours < 10 ? '0' : '').$offsetHours.':'.($offsetMinutes < 10 ? '0' : '').$offsetMinutes;
 
             $this->pdo = new \PDO(
-                'mysql:dbname=' . $_DBCONFIG['database'] . ';charset=' . $_DBCONFIG['charset'] . ';host='.$_DBCONFIG['host'],
+                'mysql:dbname=' . $_DBCONFIG['database'] . ';charset=' . $_DBCONFIG['charset'] . ';host=' . preg_replace('/:/', ';port=', $_DBCONFIG['host']),
                 $_DBCONFIG['user'],
                 $_DBCONFIG['password'],
                 array(
