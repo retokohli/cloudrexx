@@ -1661,6 +1661,7 @@ $_ARRAYLANG['TXT_CORE_CM_ACCESS_CHANGE_DENIED'] = 'Sie haben nicht genügend Rec
 $_ARRAYLANG['TXT_CORE_CM_PUBLISH_DENIED'] = 'Sie haben nicht genügend Rechte, um Seiten zu veröffentlichen.';
 $_ARRAYLANG['TXT_CORE_CM_COPY_DENIED'] = 'Sie haben nicht genügend Rechte, um Seiten zu kopieren.';
 $_ARRAYLANG['TXT_CORE_CM_VALIDATION_FAIL'] = 'Bitte füllen Sie alle erforderlichen Felder aus';
+$_ARRAYLANG['TXT_CORE_CM_HOME_FAIL'] = 'Pro Sprache ist nur eine Seite mit Anwendung "home" zulässig';
 $_ARRAYLANG['TXT_CORE_CM_COPY_FAILED'] = 'Kopieren fehlgeschlagen';
 $_ARRAYLANG['TXT_CORE_CM_COPY_OF_PAGE'] = 'Kopie';
 $_ARRAYLANG['TXT_CORE_CM_COPY_N_OF_PAGE'] = '%s. Kopie';

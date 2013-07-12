@@ -1586,6 +1586,7 @@ $_ARRAYLANG['TXT_CORE_CM_ACCESS_CHANGE_DENIED'] = "You don't have enough rights 
 $_ARRAYLANG['TXT_CORE_CM_PUBLISH_DENIED'] = "You don't have enough rights to publish pages.";
 $_ARRAYLANG['TXT_CORE_CM_COPY_DENIED'] = 'You don\'t have enough rights to copy pages.';
 $_ARRAYLANG['TXT_CORE_CM_VALIDATION_FAIL'] = 'Please fill in all required fields';
+$_ARRAYLANG['TXT_CORE_CM_HOME_FAIL'] = 'Only one page with application "home" is allowed per language';
 $_ARRAYLANG['TXT_CORE_CM_COPY_FAILED'] = 'Copying failed';
 $_ARRAYLANG['TXT_CORE_CM_COPY_OF_PAGE'] = 'Copy';
 $_ARRAYLANG['TXT_CORE_CM_COPY_N_OF_PAGE'] = 'Copy %s';
