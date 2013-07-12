@@ -1012,6 +1012,13 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
       );
       })*/
     .bind("move_node.jstree", function (e, data) {
+        // The following lines fix #1359, replace pseudocode {} in if:
+        //if ({node has no children}) {
+        //    data.rslt.o.removeClass("jstree-closed").addClass("jstree-leaf");
+        //}
+        // If a children has nodes can be read from jsTree data using
+        //cx.cm.getTree().jstree("get_json");
+        // But in CM, this triggers "Cannot convert 't.children("ins").get(0)' to object"
         data.rslt.o.each(function (i) {
             jQuery.ajax({
                 async : false,
