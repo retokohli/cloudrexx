@@ -284,7 +284,7 @@ class CSRF {
             $form .= self::parseRequestParametersForForm($key, $value);
         }
         $csrfContinue = 'javascript:sendData();';
-        $csrfAbort = 'index.php?cmd='.$_GET['cmd'];
+        $csrfAbort = 'index.php' . (isset($_GET['cmd']) ? '?cmd='.$_GET['cmd'] : '');
         $_CORELANG['TXT_CSRF_DESCR'] = str_replace('%1$s', $csrfContinue, $_CORELANG['TXT_CSRF_DESCR']);
         $_CORELANG['TXT_CSRF_DESCR'] = str_replace('%2$s', $csrfAbort, $_CORELANG['TXT_CSRF_DESCR']);
         $action = $_SERVER['REQUEST_URI'];
