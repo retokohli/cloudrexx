@@ -771,36 +771,9 @@ cx.cm = function(target) {
             jQuery("#preview").attr("href", previewTarget + "?pagePreview=1");
         }
     });
-
-    var homeCheck = function() {
-        var module = jQuery("select#page_application");
-        var cmd = jQuery("input#page_application_area");
-        var home = jQuery("ins.jstree-icon.page.home");
-        
-        module.removeClass("warning");
-        cmd.removeClass("warning");
-        
-        if (!home.length) {
-            return;
-        }
-        
-        // there is a content with module home and no cmd
-        // is it us?
-        var pageId = jQuery("#pageId").val();
-        var homeId = home.parent().attr("id");
-        if (pageId == homeId) {
-            return;
-        }
-        
-        if (module.val() == "home") {
-            if (cmd.val() == "") {
-                module.addClass("warning");
-                cmd.addClass("warning");
-            }
-        }
-    }
-    jQuery("select#page_application").change(homeCheck);
-    jQuery("input#page_application_area").keyup(homeCheck);
+    
+    jQuery("select#page_application").change(cx.cm.homeCheck);
+    jQuery("input#page_application_area").keyup(cx.cm.homeCheck);
     // prevent enter key from opening fileBrowser
     jQuery("#content-manager input").keydown(function(event) {
         if (event.keyCode == 13) {
@@ -833,6 +806,55 @@ cx.cm = function(target) {
         }
     });
 };
+
+cx.cm.homeCheck = function(addClasses) {
+    var module = jQuery("select#page_application");
+    var cmd = jQuery("input#page_application_area");
+    var home = jQuery("ins.jstree-icon.page.home");
+
+    module.removeClass("warning");
+    cmd.removeClass("warning");
+
+    if (module.val() != "home" || cmd.val() != "") {
+        if (cmd.val() == "") {
+            return false;
+        }
+    }
+
+    if (!home.length) {
+        return false;
+    }
+
+    // there is a content with module home and no cmd
+    // is it us?
+    var pageId = jQuery("#pageId").val();
+    var found = false;
+    jQuery.each(home, function(index, el) {
+        // only pages with same language
+        var homeLang = jQuery(el).parent().attr("class");
+        if (homeLang != cx.cm.getCurrentLang()) {
+            return true;
+        }
+
+        // exclude same page
+        var homeId = jQuery(el).parent().attr("id");
+        if (pageId == homeId) {
+            return true;
+        }
+
+        found = true;
+    });
+
+    if (!found) {
+        return false;
+    }
+
+    if (addClasses) {
+        module.addClass("warning");
+        cmd.addClass("warning");
+    }
+    return true;
+}
 
 cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
     var langPreset;
@@ -1541,16 +1563,34 @@ cx.cm.resizeEditorHeight = function() {
 
 cx.cm.validateFields = function() {
     var error = false;
+    var errorMessage = cx.variables.get('TXT_CORE_CM_VALIDATION_FAIL', 'contentmanager/lang');
+    var firstError = true;
     var fields = [jQuery("#page_name"), jQuery("#page_title")];
     jQuery.each(fields, function(index, el) {
         el.removeClass("warning");
         if (el.val() == "") {
             error = true;
             el.addClass("warning");
+            
+            if (firstError) {
+                var tabName = el.closest(".ui-tabs-panel").attr("id");
+                cx.cm.selectTab(tabName.substr(5));
+            }
+            firstError = false;
         }
     });
+    if (cx.cm.homeCheck(true)) {
+        error = true;
+        if (firstError) {
+            errorMessage = cx.variables.get('TXT_CORE_CM_HOME_FAIL', 'contentmanager/lang');
+            
+            var tabName = jQuery("#page_application").closest(".ui-tabs-panel").attr("id");
+            cx.cm.selectTab(tabName.substr(5));
+        }
+        firstError = false;
+    }
     if (error) {
-        cx.tools.StatusMessage.showMessage(cx.variables.get('TXT_CORE_CM_VALIDATION_FAIL', 'contentmanager/lang'), 'error', 10000);
+        cx.tools.StatusMessage.showMessage(errorMessage, 'error', 10000);
     }
     return !error;
 }
