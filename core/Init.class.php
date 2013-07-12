@@ -666,20 +666,10 @@ class InitCMS
 
         $path = $this->arrModulePath[$module].$this->arrLang[$langId]['lang'].'/'.$mode.'.php';
         
-        $customizingPath = preg_replace('#'.ASCMS_PATH.ASCMS_PATH_OFFSET.'#', ASCMS_CUSTOMIZING_PATH, $path);
-        if ($_CONFIG['useCustomizings'] == 'on' && file_exists($customizingPath)) {
-            $path = $customizingPath;
-        }
-        
         if (!file_exists($path)) {
             $path = '';
             $langId = $mode == 'backend' ? $this->getBackendDefaultLangId() : $this->getFrontendDefaultLangId();
             $path = $this->arrModulePath[$module].$this->arrLang[$langId]['lang'].'/'.$mode.'.php';
-
-            $customizingPath = preg_replace('#'.ASCMS_PATH.ASCMS_PATH_OFFSET.'#', ASCMS_CUSTOMIZING_PATH, $path);
-            if ($_CONFIG['useCustomizings'] == 'on' && file_exists($customizingPath)) {
-                $path = $customizingPath;
-            }
 
             if (!file_exists($path)) {
                 $path = '';
@@ -699,7 +689,12 @@ class InitCMS
     {
         global $_ARRAYLANG;
         
-        require(\Env::get('ClassLoader')->getFilePath($path));
+        $isCustomized = false;
+        $customizedPath = \Env::get('ClassLoader')->getFilePath($path, $isCustomized);
+        require $path;
+        if ($isCustomized) {
+            require $customizedPath;
+        }
         
         return $_ARRAYLANG;
     }
