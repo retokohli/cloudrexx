@@ -151,17 +151,19 @@ class ClassLoader {
         return true;
     }
     
-    public function getFilePath($file) {
+    public function getFilePath($file, &$isCustomized = false) {
         $file = preg_replace('#\\\\#', '/', $file);
         $regex = preg_replace('#([\(\)])#', '\\\\$1', ASCMS_PATH.ASCMS_PATH_OFFSET);
         $file = preg_replace('#'.$regex.'#', '', $file);
         
         // load class from customizing folder
         if ($this->customizingPath && file_exists($this->customizingPath.$file)) {
+            $isCustomized = true;
             return $this->customizingPath.$file;
         
         // load class from basepath
         } else if (file_exists($this->basePath.$file)) {
+            $isCustomized = false;
             return $this->basePath.$file;
         }
         return false;
