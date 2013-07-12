@@ -1023,6 +1023,11 @@ class LegacyComponentHandler {
                     },*/
                 ),
                 'load' => array(
+                    'imprint' => function() {},
+                    'agb' => function() {},
+                    'ids' => function() {},
+                    'privacy' => function() {},
+                    
                     'access' => function() {
                         global $cl, $_CORELANG, $objTemplate, $objAccess, $page_metatitle;
                         
@@ -1206,10 +1211,6 @@ class LegacyComponentHandler {
                         $contactObj = new \Contact(\Env::get('cx')->getPage()->getContent());
                         \Env::get('cx')->getPage()->setContent($contactObj->getContactPage());
                         $moduleStyleFile = ASCMS_CORE_MODULE_WEB_PATH.'/contact/frontend_style.css';
-                    },
-
-                    'ids' => function() {
-                        // nothing to do
                     },
 
                     'sitemap' => function() {
