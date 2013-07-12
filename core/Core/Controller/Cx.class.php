@@ -509,7 +509,9 @@ namespace Cx\Core\Core\Controller {
              */
             $this->cl->loadFile(ASCMS_CORE_PATH.'/API.php');
             // Temporary fix until all GET operation requests will be replaced by POSTs
-            \CSRF::setFrontendMode();
+            if ($this->mode != self::MODE_BACKEND) {
+                \CSRF::setFrontendMode();
+            }
             
             $this->db = new \Cx\Core\Db\Db($this);
             $objDatabase = $this->db->getAdoDb();
