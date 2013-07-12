@@ -153,10 +153,16 @@ class FileBrowser {
     }
 
     function _getPath() {
-        $path = ($this->_mediaType == 'files')
-                && isset($_SESSION['fileBrowser']['path'])
-                ? $_SESSION['fileBrowser']['path'] 
-                : "";
+        
+        if (!isset($_SESSION['fileBrowser']['path'])) {
+            $_SESSION['fileBrowser']['path'] = array();
+        }
+        
+        $path =    $this->_mediaType != 'webpages'
+                && array_key_exists($this->_mediaType, $this->mediaTypePaths)
+                && isset($_SESSION['fileBrowser']['path'][$this->_mediaType])
+                ?  $_SESSION['fileBrowser']['path'][$this->_mediaType] 
+                :  "";
         
         if (isset($_REQUEST['path']) && !stristr($_REQUEST['path'], '..')) {
             $path = $_REQUEST['path'];
@@ -166,8 +172,10 @@ class FileBrowser {
             $path .= "/";
         }
         // update path in session if type equals to files
-        if ($this->_mediaType == 'files') {
-            $_SESSION['fileBrowser']['path'] = $path;
+        if (    $this->_mediaType != 'webpages' 
+             && array_key_exists($this->_mediaType, $this->mediaTypePaths)
+           ) {
+            $_SESSION['fileBrowser']['path'][$this->_mediaType] = $path;
         }
         
         return $path;
