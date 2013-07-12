@@ -1642,12 +1642,6 @@ class LegacyComponentHandler {
                             \CSRF::header('location: '.$_POST['redirect']);
                         }
                     },
-                    'Csrf' => function() {
-                        // CSRF code needs to be even in the login form. otherwise, we
-                        // could not do a super-generic check later.. NOTE: do NOT move
-                        // this above the "new cmsSession" line!
-                        \CSRF::add_code();
-                    },
                     'License' => function() {
                         global $license, $_CONFIG, $objDatabase, $objTemplate;
                         
@@ -1736,8 +1730,10 @@ class LegacyComponentHandler {
                         * Core language data
                         * @ignore
                         */
-                        $_CORELANG = $objInit->loadLanguageData('core');
-                        \Env::set('coreLang', $_CORELANG);
+                        // Corelang might be initialized by CSRF already...
+                        if (!is_array($_CORELANG) || !count($_CORELANG)) {
+                            $_CORELANG = $objInit->loadLanguageData('core');
+                        }
                         
                         /**
                         * Module specific language data
@@ -1748,7 +1744,12 @@ class LegacyComponentHandler {
                         \Env::set('lang', $_ARRAYLANG);
                     },
                     'Csrf' => function() {
-                        global $plainCmd;
+                        global $plainCmd, $cmd, $objInit, $_CORELANG;
+                        
+                        // CSRF code needs to be even in the login form. otherwise, we
+                        // could not do a super-generic check later.. NOTE: do NOT move
+                        // this above the "new cmsSession" line!
+                        \CSRF::add_code();
                         
                         // CSRF protection.
                         // Note that we only do the check as long as there's no
@@ -1760,7 +1761,13 @@ class LegacyComponentHandler {
                         // The CSRF code needn't to be checked in the login module
                         // because the user isn't logged in at this point.
                         // TODO: Why is upload excluded? The CSRF check doesn't take place in the upload module!
-                        if (!empty($plainCmd) and !in_array($plainCmd, array('fileBrowser', 'upload', 'login'))) {
+                        if (!empty($plainCmd) && !empty($cmd) and !in_array($plainCmd, array('fileBrowser', 'upload', 'login'))) {
+                            // Since language initialization in in the same hook as this
+                            // and we cannot define the order of module-processing,
+                            // we need to check if language is already initialized:
+                            if (!is_array($_CORELANG) || !count($_CORELANG)) {
+                                $_CORELANG = $objInit->loadLanguageData('core');
+                            }
                             \CSRF::check_code();
                         }
                     },
