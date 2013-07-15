@@ -1244,7 +1244,7 @@ class newsManager extends newsLibrary {
                 'NEWS_MODIFY_ACCESS_DISPLAY'                => 'none'
             ));
 
-            $this->_objTpl->parse('news_permission_tab');
+            $this->_objTpl->touchBlock('news_permission_tab');
         } else {
             $this->_objTpl->hideBlock('news_permission_tab');
         }
@@ -1673,7 +1673,7 @@ class newsManager extends newsLibrary {
                     'NEWS_MODIFY_ACCESS_DISPLAY'                => $objResult->fields['backend_access_id'] ? '' : 'none',
                 ));
 
-                $this->_objTpl->parse('news_permission_tab');
+                $this->_objTpl->touchBlock('news_permission_tab');
             } else {
                 $this->_objTpl->hideBlock('news_permission_tab');
             }
