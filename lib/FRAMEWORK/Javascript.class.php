@@ -590,10 +590,15 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             if (array_search($file, self::$registeredJsFiles) !== false)
                 continue;
             self::$registeredJsFiles[] = $file;
-            $path = self::$offset;
-            if ($_CONFIG['useCustomizings'] == 'on' && file_exists(ASCMS_CUSTOMIZING_PATH.'/'.$file)) {
-                $path .= preg_replace('#'.ASCMS_DOCUMENT_ROOT.'/#', '', ASCMS_CUSTOMIZING_PATH) . '/';
+            $path = '';
+
+            if (!preg_match('#^https?://#', $file)) {
+                $path = self::$offset;
+                if ($_CONFIG['useCustomizings'] == 'on' && file_exists(ASCMS_CUSTOMIZING_PATH.'/'.$file)) {
+                    $path .= preg_replace('#'.ASCMS_DOCUMENT_ROOT.'/#', '', ASCMS_CUSTOMIZING_PATH) . '/';
+                }
             }
+
             $path .= $file;
             $code .= "<script type=\"text/javascript\" src=\"".$path."\"></script>\n\t";
         }
