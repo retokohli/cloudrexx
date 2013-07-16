@@ -2324,7 +2324,6 @@ cx.cm.loadHistory = function(id, pos) {
     }
     
     var hideDrafts = "";
-    console.log(jQuery("#hideDrafts").length);
     if (jQuery("#hideDrafts").length && !jQuery("#hideDrafts").is(":checked")) {
         hideDrafts = "&hideDrafts=off";
     }

@@ -825,26 +825,26 @@ class JsonPage implements JsonAdapter {
         $table = new \BackendTable(array('width' => '100%'));
         $table->setAutoGrow(true);
 
-        $table->setHeaderContents(0, 0, 'Date', array('width' => '130px'));
-        $table->setHeaderContents(0, 1, 'Title');
-        $table->setHeaderContents(0, 2, 'Author');
-        //make sure those are th's too
-        $table->setHeaderContents(0, 3, $_CORELANG['TXT_FUNCTIONS'], array('style' => 'text-align: right;'));
+        $hideDrafts = !isset($params['get']['hideDrafts']) || $params['get']['hideDrafts'] == 'on';
+        $hideDraftsHtml = '<input type="checkbox" name="hideDrafts" value="on" id="hideDrafts"' . ($hideDrafts ? ' checked="checked"' : '') . ' /><label for="hideDrafts">' . $_CORELANG['TXT_CORE_CM_HISTORY_HIDE_DRAFTS'] . '</label>';
+
+        $table->setHeaderContents(0, 0, $_CORELANG['TXT_WORKFLOW'], array('width' => '130px', 'colspan' => '3'));
+        $table->setHeaderContents(0, 3, $hideDraftsHtml, array('style' => 'text-align: right;', 'class' => 'hideDrafts'));
 
         //(III) collect page informations - path, virtual language directory
         $path         = $this->pageRepo->getPath($page);
         $langDir      = \FWLanguage::getLanguageCodeById($page->getLang());
         $logs         = $this->logRepo->getLogEntries($page);
-        
+
         //(V) add the history entries
         // Paging:
         $offset = !empty($params['get']['pos']) ? $params['get']['pos'] : 0;
         $numberOfEntries = !empty($params['get']['limit']) ? $params['get']['limit'] : $_CONFIG['corePagingLimit'];
         $logCount = 0;
         $row = 0;
-        $rowId = 0;
+        $rowId = 1;
 
-        foreach ($logs as $index => $log){
+        foreach ($logs as $log){
 
             // check whether the current index is between the range which should be displayed
             if ($row < $offset || $row >= ($numberOfEntries + $offset)) {
@@ -859,8 +859,6 @@ class JsonPage implements JsonAdapter {
                 $username = $user->{'name'};
                 $this->logRepo->revert($page, $version);
                 $page->setUpdatedAt($log->getLoggedAt());
-            
-                $hideDrafts = !isset($params['get']['hideDrafts']) || $params['get']['hideDrafts'] == 'on';
 
                 $editingStatus = $page->getEditingStatus();
                 if ($logCount != 0 && $hideDrafts && $editingStatus != '') {
@@ -880,11 +878,9 @@ class JsonPage implements JsonAdapter {
         }
         // Add paging widget:
         $paging = '<div id="history_paging">' . getPaging($logCount, $offset, '?cmd=content&page=' . $page->getId() . '&tab=history', $_CORELANG['TXT_CORE_CM_HISTORY_ENTRIES'], true, $numberOfEntries) . '</div>';
-        
-        $hideDraftsHtml = '<input type="checkbox" name="hideDrafts" value="on" id="hideDrafts"' . ($hideDrafts ? ' checked="checked"' : '') . ' /><label for="hideDrafts">' . $_CORELANG['TXT_CORE_CM_HISTORY_HIDE_DRAFTS'] . '</label>';
 
         //(VI) render
-        die($table->toHtml() . $paging . $hideDraftsHtml);
+        die($table->toHtml() . $paging);
     }
 
     private function addHistoryEntries($page, $username, $table, $row, $version = '', $path = '') {
