@@ -158,8 +158,8 @@
     display: block;
     position: absolute;
     top: 45px;
-    left: -531px;
-    width: 550px;
+    left: -561px;
+    width: 580px;
     background: #fff;
     padding: 5px;
     color: #000;
@@ -207,7 +207,6 @@
 }
 
 #fe_metanavigation .fe_anchor label {
-    display: block;
     width: 170px;
     float: left;
     padding: 11px 0 0 0;
@@ -398,20 +397,29 @@
     margin-right: 10px;
 }
 
-#fe_state_icon.publishing {
+#fe_toolbar .publishing {
     width: 13px;
     height: 14px;
-    background: url('../Media/PublishingUnlocked.png') no-repeat -34px -5px;
+    background: url('../Media/PublishingUnlocked.png') -34px -5px;
+    margin-top: 6px;
 }
 
-#fe_state_icon.publishing-draft {
-    width: 13px;
-    height: 14px;
-    background: url('../Media/PublishingUnlocked.png') no-repeat -34px -34px;
+#fe_toolbar #fe_history .publishing {
+    margin-top: 1px;
+    margin-right: 4px;
+    float: left;
 }
 
-#fe_state_icon.publishing-waiting {
-    width: 13px;
-    height: 14px;
-    background: url('../Media/PublishingUnlocked.png') no-repeat -34px -63px;
+#fe_toolbar .publishing.draft {
+    background-position: -34px -34px;
+}
+
+#fe_toolbar .publishing.draft.waiting {
+    background-position: -34px -63px;
+}
+
+#fe_metanavigation .hideDrafts input,
+#fe_metanavigation .hideDrafts label {
+    float: none;
+    width: auto;
 }

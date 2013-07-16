@@ -1024,6 +1024,16 @@ div.date img{
     margin: 0;
 }
 
+#page .hideDrafts input,
+#page .hideDrafts label {
+    float: none;
+}
+
+#page_history .publishing {
+    margin-top: 4px;
+    margin-right: 4px;
+}
+
 #page input[type="text"] {
     width: 566px;
 }

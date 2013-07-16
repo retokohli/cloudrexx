@@ -528,13 +528,13 @@ cx.fe.loadPageData = function(historyId, putTheData, callback) {
             // add icon on the right side of the publish and stop button
             cx.jQuery("#fe_state_icon")
                 .removeClass("publishing")
-                .removeClass("publishing-draft")
-                .removeClass("publishing-draft-waiting");
+                .removeClass("draft")
+                .removeClass("waiting");
             if (cx.fe.pageHasDraft()) {
-                cx.jQuery("#fe_state_icon").addClass("publishing-draft");
+                cx.jQuery("#fe_state_icon").addClass("publishing").addClass("draft");
                 cx.jQuery("#fe_state_text").html(cx.fe.langVars.TXT_FRONTEND_EDITING_DRAFT);
             } else if(cx.fe.pageHasDraftWaiting()) {
-                cx.jQuery("#fe_state_icon").addClass("publishing-waiting");
+                cx.jQuery("#fe_state_icon").addClass("publishing").addClass("waiting");
                 cx.jQuery("#fe_state_text").html(cx.fe.langVars.TXT_FRONTEND_EDITING_DRAFT);
             } else {
                 cx.jQuery("#fe_state_icon").addClass("publishing");
@@ -760,11 +760,16 @@ cx.fe.history.load = function(pos) {
         pos = 0;
     }
 
+    var hideDrafts = "";
+    if (cx.jQuery("#hideDrafts").length && !cx.jQuery("#hideDrafts").is(":checked")) {
+        hideDrafts = "&hideDrafts=off";
+    }
+
     cx.jQuery("#fe_history .fe_box").html(
         "<div class=\"historyInit\"><img src=\"" + cx.variables.get("basePath", "contrexx") + "/lib/javascript/jquery/jstree/themes/default/throbber.gif\" alt=\"Loading...\" /></div>"
     );
     cx.jQuery("#fe_history .fe_box").load(
-        cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=jsondata&object=page&act=getHistoryTable&page=" + cx.fe.page.id + "&pos=" + pos + "&limit=10",
+        cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=jsondata&object=page&act=getHistoryTable&page=" + cx.fe.page.id + "&pos=" + pos + "&limit=10" + hideDrafts,
         function() {
             cx.jQuery("#history_paging").find("a").each(function(index, el) {
                 el = cx.jQuery(el);
@@ -780,6 +785,9 @@ cx.fe.history.load = function(pos) {
                     cx.fe.history.load(cx.jQuery(this).data("pos"));
                 });
             cx.fe.history.updateHighlighting();
+            cx.jQuery("#hideDrafts").change(function() {
+                cx.fe.history.load(pos);
+            });
         }
     );
 };
