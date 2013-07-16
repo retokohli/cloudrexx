@@ -119,6 +119,10 @@
     padding-left: 21px;
 }
 
+#fe_metanavigation .fe_anchor.fe_toggle {
+    display: none;
+}
+
 #fe_history {
     background: url("../Media/toolbar-history.png") no-repeat;
 }
@@ -240,6 +244,8 @@
 #fe_content.fe_outline,
 #fe_title.fe_outline {
     outline: 1px #0873bb dashed;
+    *border: 1px #0873bb dashed;
+    *margin: -1px;
 }
 
 
@@ -377,6 +383,7 @@
     float: left;
     background: #fff;
     margin-top: 5px;
+    height: 26px;
     border: 1px solid #BBBBBB;
 }
 
