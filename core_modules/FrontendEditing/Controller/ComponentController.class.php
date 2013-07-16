@@ -36,12 +36,20 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     {
         global $_CONFIG;
 
-        if ($this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND || !$this->cx->getPage()) {
+        // check frontend editing status in settings and don't show frontend editing on mobile phone
+        if ($_CONFIG['frontendEditingStatus'] != 'on') {
             return false;
         }
 
-        // check frontend editing status in settings and don't show frontend editing on mobile phone
-        if ($_CONFIG['frontendEditingStatus'] != 'on') {
+        // get current request`s parameters
+        $requestParams = $this->cx->getRequest()->getParamArray();
+
+        // check whether the contrexx is in frontend mode, a content page exists and it is no pagePreview
+        if (
+            $this->cx->getMode() != \Cx\Core\Core\Controller\Cx::MODE_FRONTEND ||
+            !$this->cx->getPage() ||
+            isset($requestParams['pagePreview'])
+        ) {
             return false;
         }
 

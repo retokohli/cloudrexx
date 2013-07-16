@@ -6,7 +6,7 @@
     top: 0;
     width: 100%;
     height: 53px;
-    background: #0873bb url("../../../../../cadmin/template/ascms/images/gradient.jpg") left top repeat-y;
+    background: #0873bb url("../../../../cadmin/template/ascms/images/gradient.jpg") left top repeat-y;
     -moz-box-shadow: 0px 0 9px #0c8ccd;
     -webkit-box-shadow: 0px 0 9px #0c8ccd;
     box-shadow: 0px 0 9px #0c8ccd;
@@ -18,7 +18,7 @@
     top: 14px;
     width: 137px;
     height: 25px;
-    background: url("../../../../../cadmin/template/ascms/images/login_contrexx_logo.png") no-repeat;
+    background: url("../../../../cadmin/template/ascms/images/login_contrexx_logo.png") no-repeat;
     outline: 0;
 }
 
@@ -61,7 +61,7 @@
 
 #fe_toolbar_actions .fe_button {
     float: left;
-    background: #dadada url("../../../../../cadmin/template/ascms/images/button_bg.png") repeat-x scroll left top;
+    background: #dadada url("../../../../cadmin/template/ascms/images/button_bg.png") repeat-x scroll left top;
     border: 1px solid #BBBBBB;
     color: #444444;
     margin-top: 5px;
@@ -104,7 +104,7 @@
 
 #fe_metanavigation #fe_license-upgrade {
     padding-left: 18px;
-    background: url("../../../../../cadmin/template/ascms/images/metanavigation_upgrade.png") no-repeat;
+    background: url("../../../../cadmin/template/ascms/images/metanavigation_upgrade.png") no-repeat;
 }
 
 #fe_metanavigation .fe_anchor {
@@ -138,16 +138,16 @@
 
 #fe_metanavigation a.backend {
     padding-left: 21px;
-    background: url("../../../../../cadmin/template/ascms/images/frontend_icon.png") no-repeat;
+    background: url("../../../../cadmin/template/ascms/images/frontend_icon.png") no-repeat;
 }
 
 #fe_metanavigation a.profile {
-    background: url("../../../../../cadmin/template/ascms/images/profile_icon.png") no-repeat;
+    background: url("../../../../cadmin/template/ascms/images/profile_icon.png") no-repeat;
 }
 
 #fe_metanavigation a.logout {
     padding-left: 16px;
-    background: url("../../../../../cadmin/template/ascms/images/logout_icon.png") no-repeat;
+    background: url("../../../../cadmin/template/ascms/images/logout_icon.png") no-repeat;
 }
 
 #fe_metanavigation .fe_anchor .fe_box {
