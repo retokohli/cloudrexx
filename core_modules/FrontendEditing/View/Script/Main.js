@@ -59,7 +59,6 @@ cx.fe = function() {
 
     // add the toolbar, hide the anchors and hide the action buttons
     cx.fe.toolbar();
-    cx.fe.toolbar.hideAnchors();
 
     // hide state icon
     cx.jQuery("#fe_state_wrapper").hide();
@@ -293,6 +292,8 @@ cx.fe.toolbar = function() {
     // init the admin menu anchor and box
     // not used for contrexx 3.1
 //    cx.fe.adminmenu();
+
+    cx.fe.toolbar.hideAnchors();
 };
 
 /**
@@ -306,7 +307,6 @@ cx.fe.toolbar.hide = function() {
     if (!toolbarOffset) {
         toolbarOffset = 0;
     }
-    cx.jQuery("#workbenchWarning").css('position', 'fixed').css('top', '0');
 
     // do the css
     cx.jQuery("#fe_toolbar").css("top", "-" + (parseInt(cx.jQuery("#fe_toolbar").height()) - toolbarOffset) + "px");
@@ -330,7 +330,6 @@ cx.fe.toolbar.show = function() {
     if (!toolbarOffset) {
         toolbarOffset = 0;
     }
-    cx.jQuery("#workbenchWarning").css('position', 'fixed').css('top', '0');
     
     cx.jQuery("body").css("padding-top", (parseInt(cx.jQuery("#fe_toolbar").height()) + toolbarOffset) + "px");
     cx.jQuery("#fe_toolbar").css({
