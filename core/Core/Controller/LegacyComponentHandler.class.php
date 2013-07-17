@@ -113,6 +113,17 @@ class LegacyComponentHandler {
                             \FWCaptcha::getInstance()->getPage();
                         }
                     },
+                    'Uploader' => function() {
+                        global $url, $sessionObj;
+                        
+                        $params = $url->getParamArray();
+                        if (isset($params['section']) && $params['section'] == 'upload') {
+                            if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new \cmsSession();
+                            $objUploadModule = new \Upload();
+                            $objUploadModule->getPage();
+                            //execution never reaches this point
+                        }
+                    },
                 ),
                 'postResolve' => array(
                     'ComponentHandler' => function() {
@@ -182,18 +193,6 @@ class LegacyComponentHandler {
                     },
                 ),
                 'preContentLoad' => array(
-                    'Uploader' => function() {
-                        global $section, $sessionObj, $cl, $_CORELANG, $objUploadModule;
-
-                        if ($section == 'upload') {//handle uploads separately, since they have no content
-                            $sessionObj = new \cmsSession();
-                            if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/upload/index.class.php'))
-                                die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                            $objUploadModule = new Upload();
-                            $objUploadModule->getPage();
-                            //execution never reaches this point
-                        }
-                    },
                     'JsonData' => function() {
                         global $section, $json, $adapter, $method, $arguments;
 
