@@ -27,23 +27,11 @@
  */
 class Navigation
 {
-    public $langId;
-    public $data = array();
-    public $table = array();
-    public $tree = array();
-    public $parents = array();
-    public $pageId;
-    public $styleNameActive = 'active';
-    public $styleNameNormal = 'inactive';
-    public $separator = ' > ';
-    public $spacer = '&nbsp;';
-    public $levelInfo = 'down';
-    public $subNavSign = '&nbsp;&raquo;';
-    public $subNavTag = '<ul id="menubuilder%s" class="menu">{SUB_MENU}</ul>';
-    public $_cssPrefix = 'menu_level_';
-    public $_objTpl;
-    public $topLevelPageId;
-    public $_menuIndex = 0;
+    private $langId;
+    private $pageId;
+    private $separator = ' > ';
+    private $subNavTag = '<ul id="menubuilder%s" class="menu">{SUB_MENU}</ul>';
+    private $_objTpl;
 
     protected $page = null;
 
@@ -54,7 +42,7 @@ class Navigation
     * @param     integer  $pageId
     * @param Cx\Core\ContentManager\Model\Entity\Page $page
     */
-    function __construct($pageId, $page)
+    public function __construct($pageId, $page)
     {
         global $_LANGID;
 
@@ -62,7 +50,6 @@ class Navigation
         $this->pageId = $pageId;
         $this->page = $page;
     }
-
 
 
     public function getSubnavigation($templateContent, $license, $boolShop=false)
@@ -146,7 +133,7 @@ class Navigation
      * Get trail
      * @return    string     The trail with links
      */
-    function getTrail()
+    public function getTrail()
     {
         $lang = $this->page->getLang();
         $node = $this->page->getNode()->getParent();
@@ -168,7 +155,7 @@ class Navigation
      * @param boolean $langNameContraction
      * @return string 
      */
-    function getFrontendLangNavigation($page, $pageUrl, $langNameContraction = false)
+    public function getFrontendLangNavigation($page, $pageUrl, $langNameContraction = false)
     {
         $activeLanguages = \FWLanguage::getActiveFrontendLanguages();
         $node = $page->getNode();
@@ -190,6 +177,7 @@ class Navigation
 
         return implode('', $langNavigation);
     }
+
 
     /**
      * Sets the language placeholders in the provided template
@@ -219,3 +207,4 @@ class Navigation
         $objTemplate->setVariable($placeholders);
     }
 }
+
