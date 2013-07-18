@@ -1461,16 +1461,6 @@ class LegacyComponentHandler {
                         \Env::get('cx')->getPage()->setContent($objU2u->getPage($page_metatitle, \Env::get('cx')->getPage()->getTitle()));
                     },
 
-                    'auction' => function() {
-                        global $cl, $_CORELANG, $objTemplate;
-                        
-                        /** @ignore */
-                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/auction/index.class.php'))
-                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $auction = new \Auction(\Env::get('cx')->getPage()->getContent());
-                        \Env::get('cx')->getPage()->setContent($auction->getPage());
-                    },
-
                     'downloads' => function() {
                         global $cl, $_CORELANG, $objTemplate, $page_metatitle;
                         
@@ -2297,16 +2287,6 @@ class LegacyComponentHandler {
                         $subMenuTitle = $_CORELANG['TXT_PARTNERS_MODULE'];
                         $objPartner = new \PartnersAdmin();
                         $objPartner->getPage();
-                    },
-                    'auction' => function() {
-                        global $cl, $_CORELANG, $subMenuTitle;
-
-                        \Permission::checkAccess(143, 'static');
-                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/auction/admin.class.php'))
-                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $subMenuTitle = $_CORELANG['TXT_AUCTION_TITLE'];
-                        $objAuction = new \Auction();
-                        $objAuction->getPage();
                     },
                     'upload' => function() {
                         global $cl, $_CORELANG;
