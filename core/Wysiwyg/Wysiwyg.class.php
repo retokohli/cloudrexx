@@ -17,98 +17,197 @@ namespace Cx\Core\Wysiwyg;
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Thomas Daeppen <thomas.daeppen@comvation.com>
  * @author      Michael Räss <michael.raess@comvation.com>
- * @version     2.0.0
+ * @author      Ueli Kramer <ueli.kramer@comvation.com>
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  core_wysiwyg
  */
 
 class Wysiwyg
 {
+    /**
+     * options for the different types of wysiwyg editors
+     * @var array the types which are available for contrexx wysiwyg editors
+     */
+    private $types = array(
+        'small' => array(
+            'toolbar' => 'Small',
+            'width' => '100%',
+            'height' => 200,
+            'extraPlugins' => array(),
+        ),
+        'full' => array(
+            'toolbar' => 'Full',
+            'width' => '100%',
+            'height' => 450,
+            'extraPlugins' => array(),
+        ),
+        'bbcode' => array(
+            'toolbar' => 'BBCode',
+            'width' => '100%',
+            'height' => 200,
+            'extraPlugins' => array('bbcode'),
+        ),
+    );
+
+    /**
+     * @var string the value for the textarea html attribute "name"
+     */
     private $name;
+    /**
+     * @var string the value for the textarea html attribute "value"
+     */
     private $value;
-    private $mode;
-    private $languageId;
-    private $absoluteUris;
-    
-    public function __construct($name, $value = '', $mode = '', $languageId = null, $absoluteUris = false)
+    /**
+     * @var string the type of wysiwyg editor
+     */
+    private $type;
+    /**
+     * @var int the language id of current language
+     */
+    private $langId;
+    /**
+     * @var array array of extra plugins added for the wysiwyg editor
+     */
+    private $extraPlugins;
+
+    /**
+     * Initialize WYSIWYG editor
+     *
+     * @param string $name the name content for name attribute
+     * @param string $value content for value attribute
+     * @param string $type the type of editor to use: possible types are small, full, bbcode
+     * @param null|int $langId the language id
+     * @param array $extraPlugins extra plugins to activate
+     */
+    public function __construct($name, $value = '', $type = 'small', $langId = null, $extraPlugins = array())
     {
-        $this->name         = $name;
-        $this->value        = $value;
-        $this->mode         = $mode;
-        $this->languageId   = $languageId;
-        $this->absoluteUris = $absoluteUris;
+        $this->name = $name;
+        $this->value = $value;
+        $this->type = strtolower($type);
+        $this->langId = $langId ? intval($langId) : FRONTEND_LANG_ID;
+        $this->extraPlugins = $extraPlugins;
     }
-    
+
+    /**
+     * Get the html source code for the wysiwyg editor
+     *
+     * @return string
+     */
+    public function getSourceCode() {
+        \JS::activate('ckeditor');
+        \JS::activate('jquery');
+
+        $configPath = ASCMS_PATH_OFFSET.substr(\Env::get('ClassLoader')->getFilePath(ASCMS_CORE_PATH.'/Wysiwyg/ckeditor.config.js.php'), strlen(ASCMS_DOCUMENT_ROOT));
+        $options = array(
+            "customConfig: CKEDITOR.getUrl('".$configPath."?langId=".$this->langId."')",
+            "width: '" . $this->types[$this->type]['width'] . "'",
+            "height: '" . $this->types[$this->type]['height'] . "'",
+            "toolbar: '" . $this->types[$this->type]['toolbar'] . "'"
+        );
+
+        $extraPlugins = array_merge($this->extraPlugins, $this->types[$this->type]['extraPlugins']);
+        if (!empty($extraPlugins)) {
+            $options[] = "extraPlugins: '" . implode(',', $extraPlugins) . "'";
+        }
+
+        $onReady = "CKEDITOR.replace('".$this->name."', { %s });";
+        \JS::registerCode('
+            $J(function(){
+                '.sprintf($onReady, implode(",\r\n", $options)).'
+            });
+        ');
+
+        return '<textarea name="'.$this->name.'" style="width: 100%; height: ' . $this->types[$this->type]['height'] . 'px">'.$this->value.'</textarea>';
+    }
+
+    /**
+     * Alias for the method getSourceCode()
+     *
+     * @return string
+     */
     public function __toString()
     {
-        if ($this->mode != 'html') {
-            \JS::activate('ckeditor');
-            \JS::activate('jquery');
+        return $this->getSourceCode();
+    }
 
-            $configPath = ASCMS_PATH_OFFSET.substr(\Env::get('ClassLoader')->getFilePath(ASCMS_CORE_PATH.'/Wysiwyg/ckeditor.config.js.php'), strlen(ASCMS_DOCUMENT_ROOT));
-            $arrCKEditorOptions = array(
-                "customConfig: CKEDITOR.getUrl('".$configPath."?langId=".$this->languageId."&absoluteURIs=".$this->absoluteUris."')"
-            );
-            $onReady = array("
-                CKEDITOR.replace('".$this->name."', {
-                    %s
-                });
-            ");
-            $arrCKEditorGlobalOptions = array();
-    
-            switch ($this->mode) {
-                case 'forum':
-                    $arrCKEditorOptions[] = "width: '96%'";
-                    $arrCKEditorOptions[] = "height: 200";
-                    $arrCKEditorOptions[] = "toolbar: 'BBCode'";
-                    $arrCKEditorOptions[] = "resize_minWidth: '96%'";
-                    $arrCKEditorOptions[] = "resize_maxWidth: '96%'";
-                    $onReady[] = '
-                        CKEDITOR.on("instanceReady", function(event){
-                            $J("#cke_message").css({marginLeft:"0px"});
-                        });
-                    ';
-                    break;
-    
-                case 'shop':
-                    $arrCKEditorOptions[] = "width: '100%'";
-                    $arrCKEditorOptions[] = "height: 200";
-                    $arrCKEditorOptions[] = "toolbar: 'Full'";
-                    break;
-    
-                case 'news':
-                    $arrCKEditorOptions[] = "width: '100%'";
-                    $arrCKEditorOptions[] = "height: 350";
-                    $arrCKEditorOptions[] = "toolbar: 'Small'";
-                    break;
-    
-                case 'teaser':
-                    $arrCKEditorOptions[] = "width: '100%'";
-                    $arrCKEditorOptions[] = "height: 100";
-                    $arrCKEditorOptions[] = "toolbar: 'Small'";
-                    break;
-    
-                default:
-                    $arrCKEditorOptions[] = "width: '100%'";
-                    $arrCKEditorOptions[] = "height: 450";
-                    $arrCKEditorOptions[] = "toolbar: 'Full'";
-                    break;
-            }
+    /**
+     * @param int $langId
+     */
+    public function setLangId($langId)
+    {
+        $this->langId = $langId;
+    }
 
-            if ($this->mode != 'forum') {
-                $this->mode = "CKEDITOR.config.extraPlugins = 'bbcode';";
-            }
+    /**
+     * @return int
+     */
+    public function getLangId()
+    {
+        return $this->langId;
+    }
 
-            $onReady[0] = sprintf($onReady[0], implode(",\n", $arrCKEditorOptions));
-    
-            \JS::registerCode('
-                $J(function(){
-                    '.implode("\n", $arrCKEditorGlobalOptions).'
-                    '.implode("\n", $onReady).'
-                });
-            ');
-        }
-    
-        return '<textarea name="'.$this->name.'" style="width: 100%; height: 450px;">'.$this->value.'</textarea>';
+    /**
+     * @param string $name
+     */
+    public function setName($name)
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName()
+    {
+        return $this->name;
+    }
+
+    /**
+     * @param string $type
+     */
+    public function setType($type)
+    {
+        $this->type = strtolower($type);
+    }
+
+    /**
+     * @return string
+     */
+    public function getType()
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $value
+     */
+    public function setValue($value)
+    {
+        $this->value = $value;
+    }
+
+    /**
+     * @return string
+     */
+    public function getValue()
+    {
+        return $this->value;
+    }
+
+    /**
+     * @param array $extraPlugins
+     */
+    public function setExtraPlugins($extraPlugins)
+    {
+        $this->extraPlugins = $extraPlugins;
+    }
+
+    /**
+     * @return array
+     */
+    public function getExtraPlugins()
+    {
+        return $this->extraPlugins;
     }
 }

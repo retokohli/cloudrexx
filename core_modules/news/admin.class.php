@@ -1165,7 +1165,7 @@ class newsManager extends newsLibrary {
             'TXT_NEWS_MODIFY_SELECTED_ACCESS_DESC'  => $_ARRAYLANG['TXT_NEWS_MODIFY_SELECTED_ACCESS_DESC']
          ));        
          $this->_objTpl->setVariable(array(
-            'NEWS_TEXT_PREVIEW'             => new \Cx\Core\Wysiwyg\Wysiwyg('newsText', !empty($locales['text'][FWLanguage::getDefaultLangId()]) ? $locales['text'][FWLanguage::getDefaultLangId()] : ''),
+            'NEWS_TEXT_PREVIEW'             => new \Cx\Core\Wysiwyg\Wysiwyg('newsText', !empty($locales['text'][FWLanguage::getDefaultLangId()]) ? $locales['text'][FWLanguage::getDefaultLangId()] : '', 'full'),
             'NEWS_REDIRECT'                 => contrexx_raw2xhtml($newsredirect),
             'NEWS_FORM_ACTION'              => 'add',
             'NEWS_STORED_FORM_ACTION'       => 'add', 
@@ -1605,7 +1605,7 @@ class newsManager extends newsLibrary {
             $this->_objTpl->setVariable(array(
                 'NEWS_ID'                       => (($copy) ? '' : $id),
                 'NEWS_STORED_ID'                => (($copy) ? '' : $id),
-                'NEWS_TEXT_PREVIEW'             => new \Cx\Core\Wysiwyg\Wysiwyg('newsText', $newsText),
+                'NEWS_TEXT_PREVIEW'             => new \Cx\Core\Wysiwyg\Wysiwyg('newsText', $newsText, 'full'),
                 'NEWS_REDIRECT'                 => contrexx_raw2xhtml($objResult->fields['redirect']),
                 'NEWS_SOURCE'                   => contrexx_raw2xhtml($objResult->fields['source']),
                 'NEWS_URL1'                     => contrexx_raw2xhtml($objResult->fields['url1']),
@@ -3866,7 +3866,7 @@ class newsManager extends newsLibrary {
         $this->_objTpl->setVariable(array(
             'NEWS_TEASER_FRAME_TPL_ID'              => $templateId,
             'NEWS_TEASER_FRAME_TPL_DESCRIPTION'     => htmlentities($templateDescription, ENT_QUOTES, CONTREXX_CHARSET),
-            'NEWS_TEASER_FRAME_TEMPLATE_WYSIWYG'    => $sourceCode ? new \Cx\Core\Wysiwyg\Wysiwyg('teaserFrameTplHtml', $templateHtml, 'html') : new \Cx\Core\Wysiwyg\Wysiwyg('teaserFrameTplHtml', $templateHtml),
+            'NEWS_TEASER_FRAME_TEMPLATE_WYSIWYG'    => $sourceCode ? '<textarea name="teaserFrameTplHtml" style="width: 100%; height: 450px;">' . $templateHtml . '</textarea>' : new \Cx\Core\Wysiwyg\Wysiwyg('teaserFrameTplHtml', $templateHtml, 'full'),
             'NEWS_TEASER_FRAME_TPL_SOURCE_CHECKED'  => $sourceCode ? 'checked="checked"' : '',
             'NEWS_TEASER_TITLE_TXT'                 => $templateId != 0 ? $_ARRAYLANG['TXT_EDIT_BOX_TEMPLATE'] : $_ARRAYLANG['TXT_ADD_BOX_TEMPLATE']
         ));

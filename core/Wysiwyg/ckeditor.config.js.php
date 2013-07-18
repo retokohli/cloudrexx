@@ -16,15 +16,12 @@ $CSRF = '&'.CSRF::key().'='.CSRF::code();
 
 
 $langId = !empty($_GET['langId']) ? $_GET['langId'] : null;
-$absoluteURIs = !empty($_GET['absoluteURIs']) ? $_GET['absoluteURIs'] : null;
 
 //'&' must not be htmlentities, used in javascript
 $defaultBrowser   = ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX
-                   .'?cmd=fileBrowser&standalone=true&langId='.$langId
-                   .'&absoluteURIs='.$absoluteURIs.$CSRF;
+                   .'?cmd=fileBrowser&standalone=true&langId='.$langId.$CSRF;
 $linkBrowser      = ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX
-                   .'?cmd=fileBrowser&standalone=true&langId='.$langId
-                   .'&absoluteURIs='.$absoluteURIs.'&type=webpages'.$CSRF;
+                   .'?cmd=fileBrowser&standalone=true&langId='.$langId.'&type=webpages'.$CSRF;
 
 $defaultTemplateFilePath = substr(\Env::get('ClassLoader')->getFilePath('/lib/ckeditor/plugins/templates/templates/default.js'), strlen(ASCMS_PATH));
 
@@ -53,7 +50,7 @@ CKEDITOR.editorConfig = function( config )
     config.toolbar_Full = [
         ['Source','-','Templates'],
         ['Cut','Copy','Paste','PasteText','PasteFromWord','-','Scayt'],
-        ['Undo','Redo','-','Replace','-','SelectAll','RemoveFormat'],
+        ['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
         ['Bold','Italic','Underline','Strike','-','Subscript','Superscript'],
         ['NumberedList','BulletedList','-','Outdent','Indent', 'Blockquote'],
         ['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
@@ -68,13 +65,12 @@ CKEDITOR.editorConfig = function( config )
     ];
 
     config.toolbar_Small = [
-        ['Preview'],
-        ['Cut','Copy','Paste','PasteText','PasteFromWord','-','Print','Scayt'],
+        ['Cut','Copy','Paste','PasteText','PasteFromWord','-','Scayt'],
         ['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
         ['Bold','Italic','Underline','StrikeThrough','-','Subscript','Superscript'],
         ['OrderedList','UnorderedList','-','Outdent','Indent'],
         ['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
-        ['Table','HorizontalRule','Smiley','SpecialChar']
+        ['Image','Table','HorizontalRule','Smiley','SpecialChar']
     ];
 
     config.toolbar_BBCode = [

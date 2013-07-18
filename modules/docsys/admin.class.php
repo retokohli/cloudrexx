@@ -207,7 +207,7 @@ class docSysManager extends docSysLibrary
             'TXT_DOCSYS_CONTENT' => $_ARRAYLANG['TXT_CONTENT'],
         ));
         $this->_objTpl->setVariable(array(
-            'DOCSYS_TEXT' => new \Cx\Core\Wysiwyg\Wysiwyg('docSysText'),
+            'DOCSYS_TEXT' => new \Cx\Core\Wysiwyg\Wysiwyg('docSysText', null, 'full'),
             'DOCSYS_FORM_ACTION' => "add",
             'DOCSYS_STORED_FORM_ACTION' => "add",
             'DOCSYS_STATUS' => "checked='checked'",
@@ -330,7 +330,7 @@ class docSysManager extends docSysLibrary
                 'DOCSYS_AUTHOR' => stripslashes(htmlspecialchars($objResult->fields['author'],
                         ENT_QUOTES, CONTREXX_CHARSET)),
                 'DOCSYS_TEXT' => new \Cx\Core\Wysiwyg\Wysiwyg('docSysText',
-                    $docSysText),
+                    $docSysText, 'full'),
                 'DOCSYS_SOURCE' => $objResult->fields['source'],
                 'DOCSYS_URL1' => $objResult->fields['url1'],
                 'DOCSYS_URL2' => $objResult->fields['url2'],

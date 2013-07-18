@@ -330,12 +330,12 @@ class eGov extends eGovLibrary
         $this->objTemplate->setGlobalVariable($_ARRAYLANG);
         $this->objTemplate->setVariable(array(
             'TXT_ACTION_TITLE' => $this->_pageTitle,
-            'PRODUCT_FORM_DESC' => new \Cx\Core\Wysiwyg\Wysiwyg('contactFormDesc', eGovLibrary::GetProduktValue("product_desc", $product_id), 'shop'),
+            'PRODUCT_FORM_DESC' => new \Cx\Core\Wysiwyg\Wysiwyg('contactFormDesc', eGovLibrary::GetProduktValue("product_desc", $product_id), 'full'),
             'PRODUCT_FORM_QUANTITY' => eGovLibrary::GetProduktValue("product_quantity", $product_id),
             'PRODUCT_FORM_NAME' => eGovLibrary::GetProduktValue('product_name', $product_id),
             'PRODUCT_FORM_EMAIL' => $TargetEmail,
             'PRODUCT_FORM_TARGET_URL' => eGovLibrary::GetProduktValue("product_target_url", $product_id),
-            'PRODUCT_FORM_TARGET_MESSAGE' => new \Cx\Core\Wysiwyg\Wysiwyg('productFormTargetMessage', eGovLibrary::GetProduktValue("product_message", $product_id), 'shop'),
+            'PRODUCT_FORM_TARGET_MESSAGE' => new \Cx\Core\Wysiwyg\Wysiwyg('productFormTargetMessage', eGovLibrary::GetProduktValue("product_message", $product_id), 'full'),
             'PRODUCT_FORM_PRICE' => eGovLibrary::GetProduktValue("product_price", $product_id),
             'PRODUCT_ID' => $product_id,
             'EGOV_JS_SUBMIT_FUNCTION' => $jsSubmitFunction,

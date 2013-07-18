@@ -331,7 +331,7 @@ class Blog extends BlogLibrary  {
 
                 //Determine the desired editor
                 if ($this->_arrSettings['blog_comments_editor'] == 'wysiwyg') {
-                    $strEditor = new \Cx\Core\Wysiwyg\Wysiwyg('frmAddComment_Comment', $strComment, 'news');
+                    $strEditor = new \Cx\Core\Wysiwyg\Wysiwyg('frmAddComment_Comment', $strComment, 'bbcode');
                 } else {
                     $strEditor = '<textarea name="frmAddComment_Comment" rows="12" cols="80" class="blogCommentTextarea">'.$strComment.'</textarea>';
                 }

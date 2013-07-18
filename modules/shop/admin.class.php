@@ -2067,9 +2067,9 @@ if ($test === NULL) {
             'SHOP_VAT_MENUOPTIONS' => Vat::getMenuoptions(
                 $objProduct->vat_id(), true),
             'SHOP_SHORT_DESCRIPTION' => new \Cx\Core\Wysiwyg\Wysiwyg(
-                'short', $objProduct->short(), 'shop'),
+                'short', $objProduct->short()),
             'SHOP_DESCRIPTION' => new \Cx\Core\Wysiwyg\Wysiwyg(
-                'long', $objProduct->long(), 'shop'),
+                'long', $objProduct->long(), 'full'),
             'SHOP_STOCK' => $objProduct->stock(),
             'SHOP_MANUFACTURER_URL' => contrexx_raw2xhtml($objProduct->uri()),
 // TODO: Any attributes for the datepicker input?

@@ -442,7 +442,7 @@ class popupManager extends popupLibrary
             'POPUP_ID'                                => $popupId,
             'POPUP_MODIFY_TITLE'                    => $pageTitle,
             'POPUP_NAME'                            => htmlentities($popupName, ENT_QUOTES, CONTREXX_CHARSET),
-            'POPUP_CONTENT'                            => new \Cx\Core\Wysiwyg\Wysiwyg('popupContent', $popupContent),
+            'POPUP_CONTENT'                            => new \Cx\Core\Wysiwyg\Wysiwyg('popupContent', $popupContent, 'full'),
             'POPUP_TYPE_WINDOW'                        => $popopTypeWindow,
             'POPUP_TYPE_LAYER'                        => $popopTypeLayer,
             'POPUP_TYPE_LIGHTBOX'                    => $popopTypeThickBox,

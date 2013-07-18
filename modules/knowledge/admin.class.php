@@ -1096,7 +1096,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
                     "ANSWER_PREVIEW"        => new \Cx\Core\Wysiwyg\Wysiwyg('answer_preview',
                                                isset($article['content'][$langId]) ?
                                                $article['content'][$langId]['answer']
-                                               : ''),
+                                               : '', 'full'),
                    "KNOWLEDGE_ANSWER_LANG"  => $langId
                 ));
             }

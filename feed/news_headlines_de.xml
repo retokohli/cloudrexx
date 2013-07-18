@@ -2,19 +2,37 @@
 <rss version="2.0">
 	<channel>
 		<title>Contrexx WCMS</title>
-		<link>http://localhost/index.php?section=news</link>
-		<description>Informationen rund um das Contrexx Open Source CMS</description>
+		<link>http://staging.contrexxlabs.com/contrexx/trunk/de/index.php?section=news</link>
+		<description>Informationen rund um das Contrexx WCMS</description>
 		<language>de</language>
-		<copyright>Copyright 2009, http://localhost</copyright>
+		<copyright>Copyright 2013, http://staging.contrexxlabs.com</copyright>
 		<webMaster>info@example.com</webMaster>
-		<lastBuildDate>Mon, 05 May 2008 18:49:22 +0200</lastBuildDate>
-		<generator>Contrexx® Web Content Management System</generator>
+		<lastBuildDate>Thu, 18 Jul 2013 12:54:37 +0200</lastBuildDate>
+		<generator>Contrexx</generator>
 		<docs>http://blogs.law.harvard.edu/tech/rss</docs>
 		<item>
-			<title>Neue Webseite mit modernster Technologie online! </title>
-			<link>http://localhost/index.php?section=news&amp;cmd=details&amp;newsid=1&amp;teaserId=</link>
-			<category domain="http://localhost/index.php?section=news&amp;category=1">Presse</category>
-			<pubDate>Mon, 05 May 2008 18:49:22 +0200</pubDate>
+			<title>test</title>
+			<link>http://staging.contrexxlabs.com/contrexx/trunk/de/index.php?section=news&amp;cmd=details&amp;newsid=6&amp;teaserId=</link>
+			<category domain="http://staging.contrexxlabs.com/contrexx/trunk/de/index.php?section=news&amp;category=1">Kundennews</category>
+			<pubDate>Thu, 18 Jul 2013 12:54:37 +0200</pubDate>
+		</item>
+		<item>
+			<title>MaxMuster AG begrüsst neue Mitarbeiterin</title>
+			<link>http://staging.contrexxlabs.com/contrexx/trunk/de/index.php?section=news&amp;cmd=details&amp;newsid=5&amp;teaserId=</link>
+			<category domain="http://staging.contrexxlabs.com/contrexx/trunk/de/index.php?section=news&amp;category=1">Kundennews</category>
+			<pubDate>Sat, 29 Sep 2012 16:52:00 +0200</pubDate>
+		</item>
+		<item>
+			<title>Wir haben ein Contrexx CMS</title>
+			<link>http://staging.contrexxlabs.com/contrexx/trunk/de/index.php?section=news&amp;cmd=details&amp;newsid=4&amp;teaserId=</link>
+			<category domain="http://staging.contrexxlabs.com/contrexx/trunk/de/index.php?section=news&amp;category=1">Kundennews</category>
+			<pubDate>Fri, 28 Sep 2012 13:35:00 +0200</pubDate>
+		</item>
+		<item>
+			<title>Neue Webseite online</title>
+			<link>http://staging.contrexxlabs.com/contrexx/trunk/de/index.php?section=news&amp;cmd=details&amp;newsid=1&amp;teaserId=</link>
+			<category domain="http://staging.contrexxlabs.com/contrexx/trunk/de/index.php?section=news&amp;category=1">Kundennews</category>
+			<pubDate>Thu, 27 Sep 2012 22:00:00 +0200</pubDate>
 		</item>
 	</channel>
 </rss>

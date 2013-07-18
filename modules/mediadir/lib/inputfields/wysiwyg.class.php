@@ -113,14 +113,14 @@ class mediaDirectoryInputfieldWysiwyg extends mediaDirectoryLibrary implements i
                         } else {
                             $minimize = "";
                         }
-                        $strInputfield .=  new \Cx\Core\Wysiwyg\Wysiwyg($this->moduleName.'Inputfield['.$intId.']['.$intLangId.']', $arrValue[$intLangId], 'mediadir').'&nbsp;'.$arrLang['name'].'<a href="javascript:ExpandMinimize(\''.$intId.'\');">&nbsp;'.$minimize.'</a><br />';
+                        $strInputfield .=  new \Cx\Core\Wysiwyg\Wysiwyg($this->moduleName.'Inputfield['.$intId.']['.$intLangId.']', $arrValue[$intLangId]).'&nbsp;'.$arrLang['name'].'<a href="javascript:ExpandMinimize(\''.$intId.'\');">&nbsp;'.$minimize.'</a><br />';
                     }
                     $strInputfield .= '<textarea name="'.$this->moduleName.'Inputfield['.$intId.'][old]" style="display: none;" onfocus="this.select();" />'.$arrValue[0].'</textarea>';
                     $strInputfield .= '</span>';
                 } else {
                     //$strInputfield = '<textarea name="'.$this->moduleName.'Inputfield['.$intId.'][0]" id="'.$this->moduleName.'Inputfield_'.$intId.'_0" class="'.$this->moduleName.'InputfieldTextarea" onfocus="this.select();" />'.$arrValue[0].'</textarea>';
                     //$strInputfield = '<span id="'.$this->moduleName.'Inputfield_'.$intId.'_Minimized" style="display: block; float: left;" class="'.$this->moduleName.'GroupMultilang"><textarea name="'.$this->moduleName.'Inputfield['.$intId.'][0]" id="'.$this->moduleName.'Inputfield_'.$intId.'_0" class="'.$this->moduleName.'InputfieldTextarea '.$strInfoClass.'" '.$arrInfoValue[0].' onfocus="this.select();" />'.$arrValue[0].'</textarea>&nbsp;<a href="javascript:ExpandMinimize(\''.$intId.'\');">'.$_ARRAYLANG['TXT_MEDIADIR_MORE'].'&nbsp;&raquo;</a></span>';
-                    $strInputfield = '<span class="editorFix"><span id="'.$this->moduleName.'Inputfield_'.$intId.'_Minimized" style="display: block;" class="'.$this->moduleName.'GroupMultilang">'.new \Cx\Core\Wysiwyg\Wysiwyg($this->moduleName.'Inputfield['.$intId.'][0]', $arrValue[0], 'mediadir').'&nbsp;<a href="javascript:ExpandMinimize(\''.$intId.'\');">'.$_ARRAYLANG['TXT_MEDIADIR_MORE'].'&nbsp;&raquo;</a></span>';
+                    $strInputfield = '<span class="editorFix"><span id="'.$this->moduleName.'Inputfield_'.$intId.'_Minimized" style="display: block;" class="'.$this->moduleName.'GroupMultilang">'.new \Cx\Core\Wysiwyg\Wysiwyg($this->moduleName.'Inputfield['.$intId.'][0]', $arrValue[0]).'&nbsp;<a href="javascript:ExpandMinimize(\''.$intId.'\');">'.$_ARRAYLANG['TXT_MEDIADIR_MORE'].'&nbsp;&raquo;</a></span>';
 
                     $strInputfield .= '<span id="'.$this->moduleName.'Inputfield_'.$intId.'_Expanded" style="display: none;" class="'.$this->moduleName.'GroupMultilang">';
                     foreach ($this->arrFrontendLanguages as $key => $arrLang) {
@@ -134,7 +134,7 @@ class mediaDirectoryInputfieldWysiwyg extends mediaDirectoryLibrary implements i
 
                         //$strInputfield .= '<textarea name="'.$this->moduleName.'Inputfield['.$intId.']['.$intLangId.']" id="'.$this->moduleName.'Inputfield_'.$intId.'_'.$intLangId.'" class="'.$this->moduleName.'InputfieldTextarea '.$strInfoClass.'" '.$arrInfoValue[$intLangId].' onfocus="this.select();" />'.$arrValue[$intLangId].'</textarea>&nbsp;'.$arrLang['name'].'<a href="javascript:ExpandMinimize(\''.$intId.'\');">&nbsp;'.$minimize.'</a><br />';
 
-                        $strInputfield .=  new \Cx\Core\Wysiwyg\Wysiwyg($this->moduleName.'Inputfield['.$intId.']['.$intLangId.']', $arrValue[$intLangId], 'mediadir').'&nbsp;'.$arrLang['name'].'<a href="javascript:ExpandMinimize(\''.$intId.'\');">&nbsp;'.$minimize.'</a><br />';
+                        $strInputfield .=  new \Cx\Core\Wysiwyg\Wysiwyg($this->moduleName.'Inputfield['.$intId.']['.$intLangId.']', $arrValue[$intLangId]).'&nbsp;'.$arrLang['name'].'<a href="javascript:ExpandMinimize(\''.$intId.'\');">&nbsp;'.$minimize.'</a><br />';
                     }
                     $strInputfield .= '<textarea name="'.$this->moduleName.'Inputfield['.$intId.'][old]" style="display: none;" onfocus="this.select();" />'.$arrValue[0].'</textarea>';
                     $strInputfield .= '</span></span>';

@@ -404,7 +404,7 @@ class crmTask extends CrmLibrary
                 'CRM_DUE_DATE'          => contrexx_raw2xhtml($duedate),
                 'CRM_CUSTOMER_ID'       => intval($customer),
                 'CRM_CUSTOMER_NAME'     => contrexx_raw2xhtml($customerName),
-                'CRM_TASK_DESC'         => new \Cx\Core\Wysiwyg\Wysiwyg('description', contrexx_raw2xhtml($description), 'pm_small'),
+                'CRM_TASK_DESC'         => new \Cx\Core\Wysiwyg\Wysiwyg('description', contrexx_raw2xhtml($description)),
                 'CRM_BACK_LINK'         => base64_decode($redirect),
 
                 'TXT_CRM_ADD_TASK'             => empty($id)? $_ARRAYLANG['TXT_CRM_ADD_TASK'] : $_ARRAYLANG['TXT_CRM_EDITTASK'],
