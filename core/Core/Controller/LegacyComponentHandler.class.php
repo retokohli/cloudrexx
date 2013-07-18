@@ -2367,13 +2367,13 @@ class LegacyComponentHandler {
                         $objMediaDirectory->getPage();
                     },
                     'search' => function() {
-                        global $cl, $_CORELANG, $subMenuTitle, $objTemplate, $objDatabase, $license, $objInit, $act;
+                        global $cl, $_CORELANG, $subMenuTitle, $objTemplate, $license, $act;
 
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/search/admin.class.php')) {
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         }
                         $subMenuTitle = $_CORELANG['TXT_SEARCH'];
-                        $objSearch    = new \Cx\Core\Search\SearchManager($act, $objTemplate, $objDatabase, $objInit, $license);
+                        $objSearch    = new \Cx\Core\Search\SearchManager($act, $objTemplate, $license);
                         $objSearch->getPage();
                     },
                     'checkout' => function() {

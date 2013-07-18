@@ -5,7 +5,8 @@
  * 
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
- * @version     1.0.0
+ * @author      Ueli Kramer <ueli.kramer@comvation.com>
+ * @version     1.1.0
  * @package     contrexx
  * @subpackage  coremodule_search
  */
@@ -18,12 +19,13 @@ require ASCMS_CORE_PATH . '/Module.class.php';
  * 
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
+ * @author      Ueli Kramer <ueli.kramer@comvation.com>
  * @access      public
- * @version     1.0.0
+ * @version     1.1.0
  * @package     contrexx
  * @subpackage  coremodule_search
  */
-class SearchManager extends \Module
+class SearchManager
 {
     /**
      * Doctrine entity manager
@@ -31,36 +33,6 @@ class SearchManager extends \Module
      * @access private
      */
     private $em = null;
-    /**
-     * Database connection
-     * @var    object
-     * @access private
-     */
-    private $db = null;
-    /**
-     * InitCMS
-     * @var    object
-     * @access private
-     */
-    private $init = null;
-    /**
-     * Page repository
-     * @var    object
-     * @access private
-     */
-    private $pageRepo = null;
-    /**
-     * Node repository
-     * @var    object
-     * @access private
-     */
-    private $nodeRepo = null;
-    /**
-     * Log repository
-     * @var    object
-     * @access private
-     */
-    private $logRepo = null;
     /**
      * Search term
      * @var    string
@@ -74,43 +46,47 @@ class SearchManager extends \Module
      */
     private $pos = 0;
     /**
+     * License object
      * @var \Cx\Core_Modules\License\License
      */
     private $license = null;
-    
+    /**
+     * Template object
+     * @var \Cx\Core\Html\Sigma $template
+     */
+    private $template = null;
+
     /**
      * Constructor
+     *
+     * @param string $act
+     * @param \Cx\Core\Html\Sigma $tpl
+     * @param \Cx\Core_Modules\License\License $license
      */
-    function __construct($act, $tpl, $db, $init, $license)
+    public function __construct(&$act, \Cx\Core\Html\Sigma $tpl, \Cx\Core_Modules\License\License $license)
     {
-        parent::__construct($act, $tpl);
+        global $_ARRAYLANG;
         $this->defaultAct = 'getSearchResults';
         
         $this->em       = \Env::em();
-        $this->db       = $db;
         $this->act      = $act;
-        $this->tpl      = $tpl;
-        $this->init     = $init;
+        $this->template = $tpl;
         $this->license  = $license;
-        
-        $this->pageRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-        $this->nodeRepo = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
-        $this->logRepo  = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry');
-        
+
         $this->term     = !empty($_GET['term']) ? contrexx_input2raw($_GET['term']) : '';
         $this->pos      = !empty($_GET['pos'])  ? contrexx_input2raw($_GET['pos'])  : 0;
-        
-        $this->setNavigation();
-    }
-    
-    private function setNavigation()
-    {
-        global $_ARRAYLANG;
-        
+
         $this->template->setVariable(array(
             'CONTENT_TITLE'      => $_ARRAYLANG['TXT_OVERVIEW'],
             'CONTENT_NAVIGATION' => '<a href="index.php?cmd=search" class="active">'.$_ARRAYLANG['TXT_OVERVIEW'].'</a>',
         ));
+    }
+
+    /**
+     * Parse page
+     */
+    public function getPage() {
+        $this->getSearchResults();
     }
     
     /**
@@ -127,9 +103,12 @@ class SearchManager extends \Module
         if (!empty($this->term)) {
             $pages      = $this->getSearchedPages();
             $countPages = $this->countSearchedPages();
+
+            usort($pages, array($this, 'sortPages'));
             
             if ($countPages > 0) {
-                $paging = getPaging($countPages, $this->pos, '&amp;cmd=search', '', true);
+                $parameter = '';
+                $paging = \Paging::get($parameter, '', $countPages, 0, true, null, 'pos');
                 
                 $this->template->setVariable(array(
                     'TXT_SEARCH_RESULTS_COMMENT' => sprintf($_ARRAYLANG['TXT_SEARCH_RESULTS_COMMENT'], $this->term, $countPages),
@@ -139,7 +118,7 @@ class SearchManager extends \Module
                     'TXT_SEARCH_LANG'            => $_ARRAYLANG['TXT_LANGUAGE'],
                     'SEARCH_PAGING'              => $paging,
                 ));
-                
+
                 foreach ($pages as $page) {
                     // used for alias pages, because they have no language
                     if ($page->getLang() == "") {
@@ -155,10 +134,16 @@ class SearchManager extends \Module
 
                     $aliasLanguages = implode(', ', $languages);
 
+                    $originalPage = $page;
+                    if ($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS) {
+                        $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+                        $originalPage = $pageRepo->getTargetPage($page);
+                    }
+
                     $this->template->setVariable(array(
-                        'SEARCH_RESULT_ID'            => $page->getId(),
-                        'SEARCH_RESULT_TITLE'         => $page->getTitle(),
-                        'SEARCH_RESULT_CONTENT_TITLE' => $page->getContentTitle(),
+                        'SEARCH_RESULT_ID'            => $originalPage->getId(),
+                        'SEARCH_RESULT_TITLE'         => $originalPage->getTitle(),
+                        'SEARCH_RESULT_CONTENT_TITLE' => $originalPage->getContentTitle(),
                         'SEARCH_RESULT_SLUG'          => substr($page->getPath(), 1),
                         'SEARCH_RESULT_LANG'          => $aliasLanguages,
                         'SEARCH_RESULT_FRONTEND_LINK' => \Cx\Core\Routing\Url::fromPage($page),
@@ -187,15 +172,32 @@ class SearchManager extends \Module
     private function getSearchQueryBuilder()
     {
         $qb = $this->em->createQueryBuilder();
-        $qb->select('p')
-            ->from('Cx\Core\ContentManager\Model\Entity\Page', 'p')
+        // build query
+        $qb->from('Cx\Core\ContentManager\Model\Entity\Page', 'p')
             ->where(
                 $qb->expr()->andX(
                     $qb->expr()->orX(
                         $qb->expr()->like('p.slug', ':searchTerm'),
                         $qb->expr()->like('p.title', ':searchTerm'),
-                        $qb->expr()->like('p.contentTitle', ':searchTerm')
+                        $qb->expr()->like('p.contentTitle', ':searchTerm'),
+
+                        // search for content pages which have search term in content
+                        $qb->expr()->andX(
+                            $qb->expr()->like('p.content', ':searchTerm'),
+                            'p.type = \'' . \Cx\Core\ContentManager\Model\Entity\Page::TYPE_CONTENT . '\''
+                        ),
+
+                        // search for application pages which have the search term as module name or cmd
+                        $qb->expr()->andX(
+                            $qb->expr()->orX(
+                                $qb->expr()->like('p.module', ':searchTerm'),
+                                $qb->expr()->like('p.cmd', ':searchTerm')
+                            ),
+                            'p.type = \'' . \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION . '\''
+                        )
                     ),
+
+                    // only show module pages which are legal components
                     $qb->expr()->orX(
                         'p.module = \'\'',
                         'p.module IS NULL',
@@ -204,6 +206,7 @@ class SearchManager extends \Module
                             $this->license->getLegalComponentsList()
                         )
                     ),
+
                     $qb->expr()->orX(
                         $qb->expr()->in(
                             'p.lang',
@@ -214,7 +217,8 @@ class SearchManager extends \Module
                     )
                 )
             )
-            ->setParameter('searchTerm', '%'.$this->term.'%');
+            ->setParameter('searchTerm', '%'.$this->term.'%')
+            ->orderBy('p.title');
         
         return $qb;
     }
@@ -227,27 +231,52 @@ class SearchManager extends \Module
     private function getSearchedPages()
     {
         global $_CONFIG;
-        
-        $qb = $this->getSearchQueryBuilder();
-        $qb->setFirstResult($this->pos)->setMaxResults($_CONFIG['corePagingLimit']);
-        $pages = $qb->getQuery()->getResult();
-        
+        // select the whole page object
+        $pages = $this->getSearchQueryBuilder()->select('p')->setFirstResult($this->pos)->setMaxResults($_CONFIG['corePagingLimit'])->getQuery()->getResult();
         return $pages;
     }
     
     /**
-     * Counts the searched pages.
+     * Get amount of pages with search term in slug, title, content title, module name, command name or content
      * 
-     * @return  int  $countPages
+     * @return int $countPages
      */
     private function countSearchedPages()
     {
-        $qb = $this->getSearchQueryBuilder();
-        $pages = $qb->getQuery()->getResult();
-        $countPages = count($pages);
-        
-        return $countPages;
+        // only select the count
+        return $this->getSearchQueryBuilder()->select('count(p.id)')->getQuery()->getSingleScalarResult();
+    }
+
+    /**
+     * sort function
+     *
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $pageA
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $pageB
+     * @return int
+     */
+    private function sortPages($pageA, $pageB) {
+        $pageATermOnlyInContent = (
+            preg_match('#(' . $this->term . ')#i', $pageA->getContent()) &&
+            !preg_match('#(' . $this->term . ')#i', $pageA->getTitle()) &&
+            !preg_match('#(' . $this->term . ')#i', $pageA->getContentTitle()) &&
+            !preg_match('#(' . $this->term . ')#i', $pageA->getSlug()) &&
+            !preg_match('#(' . $this->term . ')#i', $pageA->getModule()) &&
+            !preg_match('#(' . $this->term . ')#i', $pageA->getCmd())
+        );
+        $pageBTermOnlyInContent = (
+            preg_match('#(' . $this->term . ')#i', $pageB->getContent()) &&
+            !preg_match('#(' . $this->term . ')#i', $pageB->getTitle()) &&
+            !preg_match('#(' . $this->term . ')#i', $pageB->getContentTitle()) &&
+            !preg_match('#(' . $this->term . ')#i', $pageB->getSlug()) &&
+            !preg_match('#(' . $this->term . ')#i', $pageB->getModule()) &&
+            !preg_match('#(' . $this->term . ')#i', $pageB->getCmd())
+        );
+        if($pageATermOnlyInContent == $pageBTermOnlyInContent) {
+            return 0;
+        }
+        if ($pageATermOnlyInContent && !$pageBTermOnlyInContent) {
+            return 1;
+        }
+        return -1;
     }
 }
-
-?>
