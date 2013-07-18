@@ -1441,16 +1441,6 @@ class LegacyComponentHandler {
                         \Env::get('cx')->getPage()->setContent($objSupport->getPage());
                     },
 
-                    'partners' => function() {
-                        global $cl, $_CORELANG, $objTemplate;
-                        
-                        /** @ignore */
-                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/partners/index.class.php'))
-                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objPartners = new \PartnersFrontend(\Env::get('cx')->getPage()->getContent());
-                        \Env::get('cx')->getPage()->setContent($objPartners->getPage());
-                    },
-
                     'u2u' => function() {
                         global $cl, $_CORELANG, $objTemplate;
                         
@@ -2277,16 +2267,6 @@ class LegacyComponentHandler {
                         $subMenuTitle = $_CORELANG['TXT_U2U_MODULE'];
                         $objU2u = new \u2uAdmin();
                         $objU2u->getPage();
-                    },
-                    'partners' => function() {
-                        global $cl, $_CORELANG, $subMenuTitle;
-
-                        \Permission::checkAccess(140, 'static');
-                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/partners/admin.class.php'))
-                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $subMenuTitle = $_CORELANG['TXT_PARTNERS_MODULE'];
-                        $objPartner = new \PartnersAdmin();
-                        $objPartner->getPage();
                     },
                     'upload' => function() {
                         global $cl, $_CORELANG;

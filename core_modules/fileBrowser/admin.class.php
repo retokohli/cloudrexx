@@ -49,7 +49,6 @@ class FileBrowser {
         'calendar'  => 'TXT_CALENDAR',
         'podcast'   => 'TXT_FILEBROWSER_PODCAST',
         'blog'      => 'TXT_FILEBROWSER_BLOG',
-        'partners'  => 'TXT_PARTNERS_MODULE',
     );
     private $mediaTypePaths = array(
         'files' => array(
@@ -93,9 +92,6 @@ class FileBrowser {
         ),
         'blog' => array(
             ASCMS_BLOG_IMAGES_PATH, ASCMS_BLOG_IMAGES_WEB_PATH,
-        ),
-        'partners' => array(
-            ASCMS_PARTNERS_IMAGES_PATH, ASCMS_PARTNERS_IMAGES_WEB_PATH,
         ),
     );
     public $highlightedFiles     = array(); // added files

@@ -243,7 +243,6 @@ class adminMenu
                                     case 'calendar':
                                     case 'podcast':
                                     case 'blog':
-                                    case 'partners':
                                         $requestedArchive = 'content';
                                         break;
                                     case 'themes':

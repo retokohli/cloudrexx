@@ -93,7 +93,6 @@ class MediaManager extends MediaLibrary
                                     ASCMS_DOWNLOADS_IMAGES_PATH.DIRECTORY_SEPARATOR,
                                     ASCMS_GALLERY_PATH.DIRECTORY_SEPARATOR,
                                     ASCMS_MEDIADIR_IMAGES_PATH.DIRECTORY_SEPARATOR,
-                                    ASCMS_PARTNERS_IMAGES_PATH.DIRECTORY_SEPARATOR,
                                     ASCMS_PODCAST_IMAGES_PATH.DIRECTORY_SEPARATOR);
 
         $this->arrWebPaths  = array('archive1'     => ASCMS_MEDIA1_WEB_PATH . '/',
@@ -112,7 +111,6 @@ class MediaManager extends MediaLibrary
                                     'downloads'    => ASCMS_DOWNLOADS_IMAGES_WEB_PATH . '/',
                                     'gallery'      => ASCMS_GALLERY_WEB_PATH . '/',
                                     'mediadir'     => ASCMS_MEDIADIR_IMAGES_WEB_PATH . '/',
-                                    'partners'     => ASCMS_PARTNERS_IMAGES_WEB_PATH . '/',
                                     'podcast'      => ASCMS_PODCAST_IMAGES_WEB_PATH . '/');
         $moduleMatchTable = array(
                                     'archive1'     => 'media1',
@@ -196,7 +194,6 @@ class MediaManager extends MediaLibrary
             case 'downloads':
             case 'gallery':
             case 'mediadir':
-            case 'partners':
             case 'podcast':
             case 'shop':
                 $objTemplate->setVariable('CONTENT_NAVIGATION', '
@@ -364,7 +361,6 @@ class MediaManager extends MediaLibrary
             case 'downloads':
             case 'gallery':
             case 'mediadir':
-            case 'partners':
             case 'podcast':
             case 'shop':
                 
@@ -378,7 +374,6 @@ class MediaManager extends MediaLibrary
                     'calendar' => 'TXT_CALENDAR',
                     'podcast' => 'TXT_PODCAST',
                     'blog' => 'TXT_BLOG_MODULE',
-                    'partners' => 'TXT_PARTNERS_MODULE',
                 );
                 $moduleMatchTable = array(
                     'attach' => 'core',
