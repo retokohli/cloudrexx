@@ -1291,17 +1291,6 @@ class LegacyComponentHandler {
                         }
                     },
 
-                    'reservation' => function() {
-                        global $cl, $_CORELANG, $objTemplate, $moduleStyleFile;
-                        
-                        /** @ignore */
-                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/reservation/index.class.php'))
-                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                            $objReservationModule = new \reservations(\Env::get('cx')->getPage()->getContent());
-                        \Env::get('cx')->getPage()->setContent($objReservationModule->getPage());
-                        $moduleStyleFile = ASCMS_MODULE_WEB_PATH.'/reservation/frontend_style.css';
-                    },
-
                     'directory' => function() {
                         global $cl, $_CORELANG, $objTemplate, $page_metatitle;
                         
@@ -1408,22 +1397,6 @@ class LegacyComponentHandler {
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $objEgov = new \eGov(\Env::get('cx')->getPage()->getContent());
                         \Env::get('cx')->getPage()->setContent($objEgov->getPage());
-                    },
-
-                    'support' => function() {
-                        global $cl, $_CORELANG, $objTemplate;
-                        
-                        /**
-                        * Support System Module
-                        * @author  Reto Kohli <reto.kohli@comvation.com>
-                        * @since   1.2.0
-                        * @version 0.0.1 alpha
-                        */
-                        /** @ignore */
-                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/support/index.class.php'))
-                            die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objSupport = new \support(\Env::get('cx')->getPage()->getContent());
-                        \Env::get('cx')->getPage()->setContent($objSupport->getPage());
                     },
 
                     'u2u' => function() {
@@ -2112,15 +2085,6 @@ class LegacyComponentHandler {
                         $objCalendar = new \calendarManager();
                         $objCalendar->getCalendarPage();
                     },
-                    'reservation' => function() {
-                        global $cl, $_CORELANG, $subMenuTitle;
-
-                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/reservation/admin.class.php'))
-                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $subMenuTitle = $_CORELANG['TXT_RESERVATION_MODULE'];
-                        $objReservationModule = new reservationManager();
-                        $objReservationModule->getPage();
-                    },
                     'recommend' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
                         
@@ -2200,18 +2164,6 @@ class LegacyComponentHandler {
                         $subMenuTitle = $_CORELANG['TXT_PODCAST'];
                         $objPodcast = new \podcastManager();
                         $objPodcast->getPage();
-                    },
-                    'support' => function() {
-                        global $cl, $_CORELANG, $subMenuTitle;
-
-                        // TODO: Assign a proper access ID to the support module
-                        //Permission::checkAccess(??, 'static');
-                        \Permission::checkAccess(87, 'static');
-                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/support/admin.class.php'))
-                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $subMenuTitle = $_CORELANG['TXT_SUPPORT_SYSTEM'];
-                        $objSupport = new \Support();
-                        $objSupport->getPage();
                     },
                     'blog' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
