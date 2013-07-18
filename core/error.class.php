@@ -65,7 +65,6 @@ class error
      */
     function errorHandling()
     {
-        global $_CORELANG;
         $this->_objTpl->setTemplate($this->pageContent);
 
         if (!isset($_REQUEST['id'])) {
@@ -83,6 +82,8 @@ class error
             $errorMsg = "Not found";
             break;
         }
+
+        \header($_SERVER['SERVER_PROTOCOL'] . ' ' . $errorNo . ' ' . $errorMsg);
 
         /*
         100 Continue
@@ -131,4 +132,3 @@ class error
         return $this->_objTpl->get();
     }
 }
-?>
