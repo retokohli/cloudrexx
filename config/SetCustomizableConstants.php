@@ -114,8 +114,6 @@ define('ASCMS_MODEL_PROXIES_PATH',          ASCMS_MODEL_PATH.'/proxies');
 // Like this, only one path needs to be defined for each purpose,
 // the new File class methods will prepend ASCMS_PATH themselves
 // when needed.
-define('ASCMS_HOTELCARD_IMAGES_FOLDER',     ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/hotelcard');
-
 define('ASCMS_MEDIADIR_IMAGES_WEB_PATH',    ASCMS_INSTANCE_OFFSET.ASCMS_IMAGES_FOLDER.'/mediadir');
 define('ASCMS_MEDIADIR_IMAGES_PATH',        ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.ASCMS_IMAGES_FOLDER.'/mediadir');
 
