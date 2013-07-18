@@ -101,7 +101,6 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\Controller
 
         // get necessary objects
         $objInit = \Env::get('init');
-        $license = $this->cx->getLicense();
         $page = $this->cx->getPage();
 
         // init component template object
@@ -110,10 +109,6 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\Controller
 
         // add div for toolbar after starting body tag
         $componentTemplate->loadTemplateFile('Toolbar.html');
-        $componentTemplate->setVariable(array(
-            'TXT_UPGRADE' => $_ARRAYLANG['TXT_FRONTEND_EDITING_TOOLBAR_UPGRADE'],
-            'LINK_LICENSE' => ASCMS_PATH_OFFSET . '/cadmin/index.php?cmd=license',
-        ));
 
         // @author: Michael Ritter
         // not used for contrexx 3.1
@@ -152,14 +147,6 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\Controller
             'LINK_PROFILE' => ASCMS_PATH_OFFSET . '/cadmin/index.php?cmd=access&amp;act=user&amp;tpl=modify&amp;id=' . $objUser->getId(),
             'LINK_CM' => ASCMS_PATH_OFFSET . '/cadmin/index.php?cmd=content&amp;page=' . $page->getId() . '&amp;tab=content',
         ));
-
-        if ($componentTemplate->blockExists('upgradable')) {
-            if ($license->isUpgradable()) {
-                $componentTemplate->parse('upgradable');
-            } else {
-                $componentTemplate->hideBlock('upgradable');
-            }
-        }
         $objTemplate->_blocks['__global__'] = preg_replace('/<body[^>]*>/', '\\0' . $componentTemplate->get(), $objTemplate->_blocks['__global__']);
     }
 
