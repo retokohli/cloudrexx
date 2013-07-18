@@ -65,7 +65,6 @@ class error
      */
     function errorHandling()
     {
-        global $_CORELANG;
         $this->_objTpl->setTemplate($this->pageContent);
 
         if (!isset($_REQUEST['id'])) {
@@ -73,16 +72,18 @@ class error
         }
 
         switch ($_REQUEST['id']){
-        case '404':
-            $errorNo = 404;
-            $errorMsg = "Not found";
-            break;
+            case '404':
+                $errorNo = 404;
+                $errorMsg = "Not found";
+                break;
 
-        default:
-            $errorNo = 404;
-            $errorMsg = "Not found";
-            break;
+            default:
+                $errorNo = 404;
+                $errorMsg = "Not found";
+                break;
         }
+
+        \header($_SERVER['SERVER_PROTOCOL'] . ' ' . $errorNo . ' ' . $errorMsg);
 
         /*
         100 Continue
@@ -131,4 +132,3 @@ class error
         return $this->_objTpl->get();
     }
 }
-?>
