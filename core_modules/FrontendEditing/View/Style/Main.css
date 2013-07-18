@@ -418,6 +418,30 @@
     background-position: -34px -63px;
 }
 
+#fe_toolbar .publishing.unpublished {
+    background-position: -5px -5px;
+}
+
+#fe_toolbar .publishing.unpublished.locked {
+    background-position: -4px -4px;
+}
+
+#fe_toolbar .publishing.unpublished.draft {
+    background-position: -5px -34px;
+}
+
+#fe_toolbar .publishing.unpublished.draft.locked {
+    background-position: -4px -33px;
+}
+
+#fe_toolbar .publishing.unpublished.draft.waiting {
+    background-position: -5px -63px;
+}
+
+#fe_toolbar .publishing.unpublished.draft.waiting.locked {
+    background-position: -4px -62px;
+}
+
 #fe_metanavigation .hideDrafts input,
 #fe_metanavigation .hideDrafts label {
     float: none;
