@@ -38,6 +38,7 @@ CKEDITOR.editorConfig = function( config )
     config.enterMode = CKEDITOR.ENTER_BR;
     config.shiftEnterMode = CKEDITOR.ENTER_P;
     config.startupOutlineBlocks = true;
+    config.allowedContent = true;
 
     config.tabSpaces = 4;
 
@@ -47,8 +48,8 @@ CKEDITOR.editorConfig = function( config )
 
     config.templates_files = [ '<?php echo $defaultTemplateFilePath; ?>' ];
 
-    config.toolbar_Full = [
-        ['Source','-','Templates'],
+    config.toolbar_Full = config.toolbar_Small = [
+        ['Source','-','NewPage','Templates'],
         ['Cut','Copy','Paste','PasteText','PasteFromWord','-','Scayt'],
         ['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
         ['Bold','Italic','Underline','Strike','-','Subscript','Superscript'],
@@ -60,22 +61,13 @@ CKEDITOR.editorConfig = function( config )
         ['TextColor','BGColor'],
         ['ShowBlocks'],
         ['Maximize'],
-        ['Div','CreateDiv'],
-        ['Form','Checkbox','Radio','Textfield','Textarea','Select','Button','Imagebutton','Hiddenfield']
-    ];
-
-    config.toolbar_Small = [
-        ['Cut','Copy','Paste','PasteText','PasteFromWord','-','Scayt'],
-        ['Undo','Redo','-','Find','Replace','-','SelectAll','RemoveFormat'],
-        ['Bold','Italic','Underline','StrikeThrough','-','Subscript','Superscript'],
-        ['OrderedList','UnorderedList','-','Outdent','Indent'],
-        ['JustifyLeft','JustifyCenter','JustifyRight','JustifyBlock'],
-        ['Image','Table','HorizontalRule','Smiley','SpecialChar']
+        ['Div','CreateDiv']
     ];
 
     config.toolbar_BBCode = [
-        ['Source'],
-        ['Bold','Italic','Underline','StrikeThrough','-','Link','Unlink', 'SpecialChar'],
+        ['Source','-','NewPage'],
+        ['Undo','Redo','-','Replace','-','SelectAll','RemoveFormat'],
+        ['Bold','Italic','Underline','Link','Unlink','SpecialChar'],
     ];
 
     config.toolbar_FrontendEditingContent = [
