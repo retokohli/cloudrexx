@@ -416,7 +416,7 @@ class Forum extends ForumLibrary {
         $content = !empty($_REQUEST['thread_message']) ? contrexx_stripslashes($_REQUEST['thread_message']) : '';
 
         if($this->_arrSettings['wysiwyg_editor'] == 1) { //IF WYSIWIG enabled..
-            $strMessageInputHTML = new \Cx\Core\Wysiwyg\Wysiwyg('thread_message', $content, 'forum', $_LANGID);
+            $strMessageInputHTML = new \Cx\Core\Wysiwyg\Wysiwyg('thread_message', $content, 'bbcode');
         }else{ //plain textarea
             $strMessageInputHTML = '<textarea style="width: 400px; height: 150px;" rows="5" cols="10" name="thread_message">'.htmlentities($content, ENT_QUOTES, CONTREXX_CHARSET).'</textarea>';
         }
@@ -700,7 +700,7 @@ class Forum extends ForumLibrary {
         $firstPost = current($arrPosts);
 
         if($this->_arrSettings['wysiwyg_editor'] == 1) { //IF WYSIWIG enabled..
-            $strMessageInputHTML = new \Cx\Core\Wysiwyg\Wysiwyg('message', $content, 'forum');
+            $strMessageInputHTML = new \Cx\Core\Wysiwyg\Wysiwyg('message', $content, 'bbcode');
         }else{ //plain textarea
             $strMessageInputHTML = '<textarea style="width: 400px; height: 150px;" rows="5" cols="10" name="message">'.$content.'</textarea>';
         }

@@ -1208,7 +1208,7 @@ class DataAdmin extends DataLibrary {
                     'DIV_CATEGORIES_1'    =>    $arrCategoriesContent[0],
                     'DIV_CATEGORIES_2'    =>    $arrCategoriesContent[1],
                     'DIV_CATEGORIES_3'    =>    $arrCategoriesContent[2],
-                    'DIV_CONTENT'        =>    new \Cx\Core\Wysiwyg\Wysiwyg('frmEditEntry_Content_'.$intLanguageId, ''),
+                    'DIV_CONTENT'        =>    new \Cx\Core\Wysiwyg\Wysiwyg('frmEditEntry_Content_'.$intLanguageId, null, 'full'),
                     'DIV_PLACEHOLDER'   =>  "DETAIL_".$autoIncrement
                 ));
                 $this->_objTpl->parse('showLanguageDivs');
@@ -1540,7 +1540,7 @@ class DataAdmin extends DataLibrary {
                         'DIV_CATEGORIES_1'    =>    $arrCategoriesContent[0],
                         'DIV_CATEGORIES_2'    =>    $arrCategoriesContent[1],
                         'DIV_CATEGORIES_3'    =>    $arrCategoriesContent[2],
-                        'DIV_CONTENT'        =>    new \Cx\Core\Wysiwyg\Wysiwyg('frmEditEntry_Content_'.$intLanguageId, $arrEntries[$intEntryId]['translation'][$intLanguageId]['content']),
+                        'DIV_CONTENT'        =>    new \Cx\Core\Wysiwyg\Wysiwyg('frmEditEntry_Content_'.$intLanguageId, $arrEntries[$intEntryId]['translation'][$intLanguageId]['content'], 'full'),
                         'DIV_PLACEHOLDER'   =>  $arrEntries[$intEntryId]['placeholder'],
                         'DIV_ATTACHMENT'    =>  $arrEntries[$intEntryId]['translation'][$intLanguageId]['attachment'],
                         'DIV_ATTACHMENT_DESC'    =>  $arrEntries[$intEntryId]['translation'][$intLanguageId]['attachment_desc'],

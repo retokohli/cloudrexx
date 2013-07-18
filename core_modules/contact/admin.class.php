@@ -994,9 +994,9 @@ class ContactManager extends ContactLib
             'CONTACT_FORM_EMAIL'                            => contrexx_raw2xhtml($emails),
             'CONTACT_JS_SUBMIT_FUNCTION'                    => $jsSubmitFunction,
             'FORM_COPY'                                     => intval($copy),
-            'CONTACT_FORM_TEXT'                             => new \Cx\Core\Wysiwyg\Wysiwyg('contactFormTextEditor', '', 'shop'),
-            'CONTACT_FORM_FEEDBACK'                         => new \Cx\Core\Wysiwyg\Wysiwyg('contactFormFeedbackEditor', '', 'shop'),
-            'CONTACT_MAIL_TEMPLATE'                         => new \Cx\Core\Wysiwyg\Wysiwyg('contactMailTemplateEditor', '', 'shop'),
+            'CONTACT_FORM_TEXT'                             => new \Cx\Core\Wysiwyg\Wysiwyg('contactFormTextEditor'),
+            'CONTACT_FORM_FEEDBACK'                         => new \Cx\Core\Wysiwyg\Wysiwyg('contactFormFeedbackEditor'),
+            'CONTACT_MAIL_TEMPLATE'                         => new \Cx\Core\Wysiwyg\Wysiwyg('contactMailTemplateEditor', '', 'full'),
 
             'TXT_CONTACT_FORM_FIELDS'                       => $_ARRAYLANG['TXT_CONTACT_FORM_FIELDS'],
             'TXT_CONTACT_DELETE'                            => $_ARRAYLANG['TXT_CONTACT_DELETE'],

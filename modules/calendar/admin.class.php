@@ -858,7 +858,7 @@ class CalendarManager extends CalendarLibrary
                 'TXT_'.$this->moduleLangVar.'_EVENT_DESCRIPTION'        => $_ARRAYLANG['TXT_CALENDAR_EVENT_DESCRIPTION'],
                 'TXT_'.$this->moduleLangVar.'_EVENT_REDIRECT'           => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_REDIRECT'],
                 $this->moduleLangVar.'_EVENT_TAB_DISPLAY'               => $arrLang['is_default'] == 'true' ? 'block' : 'none',
-                $this->moduleLangVar.'_EVENT_DESCRIPTION'               => new \Cx\Core\Wysiwyg\Wysiwyg('description['.$arrLang['id'].']', !empty($objEvent->arrData['description'][$arrLang['id']]) ? $objEvent->arrData['description'][$arrLang['id']] : $objEvent->description),
+                $this->moduleLangVar.'_EVENT_DESCRIPTION'               => new \Cx\Core\Wysiwyg\Wysiwyg('description['.$arrLang['id'].']', !empty($objEvent->arrData['description'][$arrLang['id']]) ? $objEvent->arrData['description'][$arrLang['id']] : $objEvent->description, 'full'),
                 $this->moduleLangVar.'_EVENT_REDIRECT'                  => !empty($objEvent->arrData['redirect'][$arrLang['id']]) ? $objEvent->arrData['redirect'][$arrLang['id']] : $objEvent->arrData['redirect'][$_LANGID],   
                 $this->moduleLangVar.'_EVENT_TYPE_EVENT_DISPLAY'        => $objEvent->type == 0 ? 'block' : 'none',   
                 $this->moduleLangVar.'_EVENT_TYPE_REDIRECT_DISPLAY'     => $objEvent->type == 1 ? 'block' : 'none',     
