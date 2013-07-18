@@ -1754,7 +1754,7 @@ class User extends User_Profile
         global $_CORELANG;
 
         if (FWValidator::isEmail($this->email)) {
-            if ($this->isUniqueEmail($this->email, $this->id)) {
+            if (self::isUniqueEmail($this->email, $this->id)) {
                 return true;
             } else {
                 $this->error_msg[] = $_CORELANG['TXT_ACCESS_EMAIL_ALREADY_USED'];
@@ -2170,8 +2170,9 @@ class User extends User_Profile
      * @param   string    $email
      * @param   integer   $id
      * @return  boolean
+     * @static
      */
-    private function isUniqueEmail($email, $id=0)
+    private static function isUniqueEmail($email, $id=0)
     {
         global $objDatabase;
 
@@ -2196,8 +2197,9 @@ class User extends User_Profile
      * @param   integer   $id         The optional current User ID
      * @return  boolean               True if the username is available,
      *                                false otherwise
+     * @static
      */
-    protected function isUniqueUsername($username, $id=0)
+    protected static function isUniqueUsername($username, $id=0)
     {
         global $objDatabase;
 
