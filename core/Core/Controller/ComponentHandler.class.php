@@ -66,7 +66,6 @@ class ComponentHandler {
         'Block',
         'Data',
         'Teasers',
-        'Popup',
         'Knowledge',
         'Calendar',
         'News',

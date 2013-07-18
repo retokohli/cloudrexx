@@ -406,21 +406,6 @@ class LegacyComponentHandler {
                             }
                         }
                     },
-                    'Popup' => function() {
-                        global $themesPages, $cl, $objPopup, $page;
-
-                        // Set popups
-                        if (preg_match('/{POPUP_JS_FUNCTION}/', $themesPages['index'])) {
-                            /** @ignore */
-                            if ($cl->loadFile(ASCMS_MODULE_PATH.'/popup/index.class.php')) {
-                                $objPopup = new popup();
-                                if (preg_match('/{POPUP}/', $themesPages['index'])) {
-                                    $objPopup->setPopup($themesPages['index'], $page->getNode()->getId());
-                                }
-                                $objPopup->_setJS($themesPages['index']);
-                            }
-                        }
-                    },
                     'News' => function() {
                         global $modulespath, $headlinesNewsPlaceholder, $themesPages, $page_template,
                                 $newsHeadlinesObj, $homeHeadlines, $topNewsPlaceholder, $homeTopNews;
@@ -2185,16 +2170,6 @@ class LegacyComponentHandler {
                         $subMenuTitle = $_CORELANG['TXT_BLOCK_SYSTEM'];
                         $objBlock = new \blockManager();
                         $objBlock->getPage();
-                    },
-                    'popup' => function() {
-                        global $cl, $_CORELANG, $subMenuTitle;
-
-                        \Permission::checkAccess(117, 'static');
-                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/popup/admin.class.php'))
-                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $subMenuTitle = $_CORELANG['TXT_POPUP_SYSTEM'];
-                        $objPopup = new \popupManager();
-                        $objPopup->getPage();
                     },
                     'market' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
