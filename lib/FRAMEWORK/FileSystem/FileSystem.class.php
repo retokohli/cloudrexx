@@ -510,7 +510,7 @@ class FileSystem
         $tmp_path = $_FILES[$upload_field_name]['tmp_name'];
         $file_name = $_FILES[$upload_field_name]['name'];
         if (   $accepted_types
-            && !Filetype::matchMimetypes($file_name, $accepted_types)) {
+            && !\Filetype::matchMimetypes($file_name, $accepted_types)) {
 //DBG::log("File::upload_file_http(): Error: Found no matching MIME type for extension ($file_name)<br />");
             self::$error = self::ERROR_INVALID_FILETYPE;
             return false;
