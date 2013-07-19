@@ -62,23 +62,7 @@ class CalendarLibrary
      * @var string 
      */
     public $moduleLangVar  = "CALENDAR";
-    
-    /**
-     * module image upload physical path
-     *
-     * @access public
-     * @var string 
-     */
-    public $uploadImgPath = '';
-    
-    /**
-     * module uploaded image web path
-     *
-     * @access public
-     * @var string 
-     */
-    public $uploadImgWebPath = '';
-    
+        
     /**
      * Error message
      *
@@ -136,9 +120,6 @@ class CalendarLibrary
     function __construct($tplPath){                                                                      
         $this->_objTpl = new HTML_Template_Sigma($tplPath);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);    
-        
-    	$this->uploadImgPath = ASCMS_PATH.ASCMS_IMAGE_PATH.'/'.$this->moduleName.'/';
-        $this->uploadImgWebPath = ASCMS_IMAGE_PATH.'/'.$this->moduleName.'/';
         
         $this->_objTpl->setGlobalVariable(array(
             $this->moduleLangVar.'_MODULE_NAME'  => $this->moduleName,
@@ -651,5 +632,57 @@ EOF;
 
             $datePicker = $datePicker->showMonth();
         }
+    }
+    
+    /**
+     * generates an unique id for each form and user.
+     * 
+     * @see Calendar::$submissionId
+     * 
+     * @return null
+     */
+    protected function handleUniqueId() {
+        global $sessionObj;
+        if (!isset($sessionObj)) $sessionObj = new cmsSession();
+        
+        $id = 0;
+        if(isset($_REQUEST['unique_id'])) { //an id is specified - we're handling a page reload
+            $id = intval($_REQUEST['unique_id']);
+        }
+        else { //generate a new id
+            if(!isset($_SESSION['calendar_last_id']))
+                $_SESSION['calendar_last_id'] = 0;
+            $id = ++$_SESSION['calendar_last_id'];
+        }
+        $this->_objTpl->setVariable($this->moduleLangVar.'_UNIQUE_ID', $id);
+        $this->submissionId = $id;
+    }
+    
+    /**
+     * Gets the temporary upload location for files.
+     * 
+     * @param integer $submissionId     
+     * 
+     * @throws Exeception
+     * 
+     * @return array('path','webpath', 'dirname')
+     */
+    public static function getTemporaryUploadPath($submissionId) {
+        global $sessionObj;
+
+        if (!isset($sessionObj)) $sessionObj = new cmsSession();
+        
+        $tempPath = $sessionObj->getTempPath();
+        $tempWebPath = $sessionObj->getWebTempPath();
+        if($tempPath === false || $tempWebPath === false)
+            throw new Exception('could not get temporary session folder');
+
+        $dirname = 'event_files_'.$submissionId;
+        $result = array(
+            $tempPath,
+            $tempWebPath,
+            $dirname
+        );
+        return $result;
     }
 }
