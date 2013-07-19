@@ -744,6 +744,10 @@ class ContactManager extends ContactLib
 
         $arrActiveSystemFrontendLanguages = FWLanguage::getActiveFrontendLanguages();
 
+        if (count($arrActiveSystemFrontendLanguages) == 1) {
+            $this->_objTpl->setVariable('CONTACT_LANGUAGE_TABS_DISPLAY', 'display: none');
+        }
+
         if (isset($this->arrForms[$formId])) {
             // editing
             $actionTitle = $_ARRAYLANG['TXT_CONTACT_MODIFY_CONTACT_FORM'];
