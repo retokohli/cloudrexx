@@ -645,6 +645,9 @@ cx.cm = function(target) {
         if (!cx.cm.validateFields()) {
             return false;
         }
+        if (CKEDITOR.instances.cm_ckeditor != null) {
+            jQuery('#cm_ckeditor').val(CKEDITOR.instances.cm_ckeditor.getData());
+        }
         jQuery.ajax({
             type: 'post',
             url:  'index.php?cmd=jsondata&object=page&act=setPagePreview',
