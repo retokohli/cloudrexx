@@ -398,6 +398,22 @@ class CalendarEvent extends CalendarLibrary
     public $hostId = "local";
     
     /**
+     * module image upload physical path
+     *
+     * @access public
+     * @var string 
+     */
+    public $uploadImgPath = '';
+    
+    /**
+     * module uploaded image web path
+     *
+     * @access public
+     * @var string 
+     */
+    public $uploadImgWebPath = '';
+    
+    /**
      * Constructor
      * 
      * Loads the event object of given id
@@ -409,6 +425,9 @@ class CalendarEvent extends CalendarLibrary
         if($id != null) {
             self::get($id);
         }
+        
+        $this->uploadImgPath    = ASCMS_PATH.ASCMS_IMAGE_PATH.'/'.$this->moduleName.'/';
+        $this->uploadImgWebPath = ASCMS_IMAGE_PATH.'/'.$this->moduleName.'/';
         
         parent::getSettings();
     }
@@ -799,56 +818,25 @@ class CalendarEvent extends CalendarLibrary
 
         
         //frontend picture upload & thumbnail creation
-        if($objInit->mode == 'frontend') { 
-            if(!empty($_FILES['pictureUpload']['type'])) {              
-                $objFile = new File();
-                $arrImageInfo = pathinfo($pic);
-                $imageName    = $arrImageInfo['basename'];
-
-                //delete thumb
-                if (file_exists(ASCMS_PATH.$pic.".thumb")) {
-                    $objFile->delFile(ASCMS_CALENDAR_IMAGES_PATH, ASCMS_CALENDAR_IMAGES_WEB_PATH, '/'.$imageName.".thumb");
-                }
-
-                //delete image
-                if (file_exists(ASCMS_PATH.$strPathImage)) {
-                    $objFile->delFile(ASCMS_CALENDAR_IMAGES_PATH, ASCMS_CALENDAR_IMAGES_WEB_PATH, '/'.$imageName);
-                }
-                
-                $tmpImage   = $_FILES['pictureUpload']['tmp_name'];
-                $imageName  = $_FILES['pictureUpload']['name'];
-                $imageType  = $_FILES['pictureUpload']['type'];
-                $imageSize  = $_FILES['pictureUpload']['size'];
-
-                if ($imageName != "") {
-                    //get extension
-                    $arrImageInfo   = pathinfo($imageName);
-                    $imageExtension = !empty($arrImageInfo['extension']) ? '.'.$arrImageInfo['extension'] : '';
-                    $imageBasename  = $arrImageInfo['filename'];
-                    $randomSum      = rand(10, 99);                  
-                    
-                    //check filename
-                    if (file_exists(ASCMS_CALENDAR_IMAGES_PATH.'/'.$imageName)) {
-                        $imageName = $imageBasename.'_'.time().$imageExtension;
+        if($objInit->mode == 'frontend') {            
+            if(!empty($_FILES['pictureUpload']) && $_FILES['pictureUpload']['error'] == 0) {
+                $unique_id = intval($_REQUEST['unique_id']);
+            
+                if (!empty($unique_id)) {
+                    $objFile = new File();
+                    //delete thumb
+                    if (file_exists("{$this->uploadImgPath}$pic.thumb")) {
+                        $objFile->delFile($this->uploadImgPath, $this->uploadImgWebPath, "/$pic.thumb");
                     }
 
-                    //upload file
-                    if (move_uploaded_file($tmpImage, ASCMS_CALENDAR_IMAGES_PATH.'/'.$imageName)) {    
-                        $objFile = new File();
-                        $objFile->setChmod(ASCMS_CALENDAR_IMAGES_PATH, ASCMS_CALENDAR_IMAGES_WEB_PATH, $imageName);
-                                                           
-                        $objImage = new ImageManager();
-                        $objImage->_createThumb(ASCMS_CALENDAR_IMAGES_PATH.'/', ASCMS_CALENDAR_IMAGES_WEB_PATH.'/', $imageName, 180);
-
-                        $pic =  contrexx_addslashes(ASCMS_CALENDAR_IMAGES_WEB_PATH.'/'.$imageName);
-                    } else {
-                        $pic = '';
+                    //delete image
+                    if (file_exists("{$this->uploadImgPath}$pic")) {
+                        $objFile->delFile($this->uploadImgPath, $this->uploadImgWebPath, "/$pic");
                     }
-                } else {
-                    $pic = ''; 
-                }  
-            }
-        }   
+                    $pic = $this->_handleUpload($unique_id); 
+                }
+            }                        
+        }
         
         $seriesStatus = intval($data['seriesStatus']); 
         
@@ -1286,5 +1274,48 @@ class CalendarEvent extends CalendarLibrary
         }
     }
 
+   
+    /**
+     * Handle the calendar image upload
+     * 
+     * @param string $id unique form id
+     * 
+     * @return string image path
+     */
+    function _handleUpload($id)
+    {
+        $tup              = self::getTemporaryUploadPath($id);
+        $tmpUploadDir     = ASCMS_PATH.$tup[1].'/'.$tup[2].'/'; //all the files uploaded are in here                       
+        $depositionTarget = $this->uploadImgPath; //target folder
+
+        //move all files
+        if(!File::exists($tmpUploadDir))
+            throw new Exception("could not find temporary upload directory '$tmpUploadDir'");
+
+        $h = opendir($tmpUploadDir);
+        if ($h) {
+            while(false !== ($f = readdir($h))) {
+                if($f != '..' && $f != '.') {
+                    //do not overwrite existing files.
+                    $prefix = '';
+                    while (file_exists($depositionTarget.$prefix.$f)) {
+                        if (empty($prefix)) {
+                            $prefix = 0;
+                        }
+                        $prefix ++;
+                    }
+
+                    File::move($tmpUploadDir.$f, $depositionTarget.$prefix.$f, false);
+                    $imageName = $prefix.$f;
+                    $objImage = new ImageManager();
+                    $objImage->_createThumb($this->uploadImgPath, $this->uploadImgWebPath, $imageName, 180);
+
+                    $pic = contrexx_input2raw($this->uploadImgWebPath.$imageName);
+                }
+            }    
+        }
+                
+        return $pic;
+    }
 
 }

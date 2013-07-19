@@ -116,6 +116,14 @@ class Calendar extends CalendarLibrary
     public $metaTitle;
 
     /**
+     * An id unique per form submission and user.
+     * This means an user can submit the same form twice at the same time,
+     * and the form gets a different submission id for each submit.
+     * @var integer
+     */
+    protected $submissionId = 0;
+    
+    /**
      * Constructor
      * 
      * @global array $_ARRAYLANG
@@ -390,7 +398,8 @@ class Calendar extends CalendarLibrary
         JS::registerJS('modules/calendar/View/Script/Frontend.js');
         
         $this->_objTpl->setTemplate($this->pageContent, true, true);
-
+               
+        $showFrom = true;
         if(isset($_POST['submitFormModifyEvent'])) {
             $objEvent = new CalendarEvent();
 
@@ -403,6 +412,7 @@ class Calendar extends CalendarLibrary
             $arrData['showIn'][0] = $_LANGID;
 
             if($objEvent->save($arrData)) {
+                $showFrom = false;
                 $this->_objTpl->hideBlock('calendarEventModifyForm');
                 $this->_objTpl->touchBlock('calendarEventOkMessage');
                 
@@ -411,6 +421,11 @@ class Calendar extends CalendarLibrary
             } else {
                 $this->_objTpl->touchBlock('calendarEventErrMessage');
             }
+        }
+        
+        if ($showFrom) {
+            $this->handleUniqueId();
+            $this->initUploader();
         }
 
         if($eventId != null) {
@@ -471,8 +486,8 @@ EOF;
 
         $objCategoryManager = new CalendarCategoryManager(true);
         $objCategoryManager->getCategoryList();
-
-        $this->_objTpl->setVariable(array(
+        
+$this->_objTpl->setVariable(array(
             'TXT_'.$this->moduleLangVar.'_EVENT'                    =>  $_ARRAYLANG['TXT_CALENDAR_EVENT'],
             'TXT_'.$this->moduleLangVar.'_EVENT_DETAILS'            =>  $_ARRAYLANG['TXT_CALENDAR_EVENT_DETAILS'],
             'TXT_'.$this->moduleLangVar.'_SAVE'                     => $_ARRAYLANG['TXT_CALENDAR_SAVE'],
@@ -818,4 +833,190 @@ EOF;
             return;
         }
     }
+        
+    /**
+     * Inits the uploader when displaying a form.
+     * 
+     * @throws Exception
+     * 
+     * @return null
+     */
+    protected function initUploader() {
+        try {
+            //init the uploader
+            JS::activate('cx'); //the uploader needs the framework
+            $f = UploadFactory::getInstance();
+            
+            /**
+            * Name of the upload instance
+            */
+            $uploaderInstanceName = 'exposed_combo_uploader';
+
+            /**
+            * jQuery selector of the HTML-element where the upload folder-widget shall be put in
+            */
+            $uploaderFolderWidgetContainer = '#calendarForm_uploadWidget';
+
+
+
+            //retrieve temporary location for uploaded files
+            $tup = self::getTemporaryUploadPath($this->submissionId);
+
+            //create the folder
+            if (!File::make_folder($tup[1].'/'.$tup[2])) {
+                throw new Exception("Could not create temporary upload directory '".$tup[0].'/'.$tup[2]."'");
+            }
+
+            if (!\Cx\Lib\FileSystem\FileSystem::makeWritable($tup[1].'/'.$tup[2])) {
+                //some hosters have problems with ftp and file system sync.
+                //this is a workaround that seems to somehow show php that
+                //the directory was created. clearstatcache() sadly doesn't
+                //work in those cases.
+                @closedir(@opendir($tup[0]));
+
+                if (!\Cx\Lib\FileSystem\FileSystem::makeWritable($tup[1].'/'.$tup[2])) {
+                    throw new Exception("Could not chmod temporary upload directory '".$tup[0].'/'.$tup[2]."'");
+                }
+            }
+            
+            //initialize the widget displaying the folder contents
+            $folderWidget = $f->newFolderWidget($tup[0].'/'.$tup[2]);
+            
+            
+            $uploader = $f->newUploader('exposedCombo');
+            $uploader->setJsInstanceName($uploaderInstanceName);
+            $uploader->setFinishedCallback(array(ASCMS_MODULE_PATH.'/calendar/index.class.php','Calendar','uploadFinished'));
+            $uploader->setData($this->submissionId);
+
+            // Code for the click event on the upload input
+            $extendedFileInputCode = '
+            <script type="text/javascript">
+            cx.include(
+            ["core_modules/contact/js/extendedFileInput.js"],
+            function() {
+            var ef = new ExtendedFileInput({
+            field: $J("#pictureUpload")
+            });
+            }
+            )
+            </script>
+            ';
+            $this->_objTpl->setVariable(array(
+                $this->moduleLangVar.'_UPLOADER_CODE'      => $uploader->getXHtml(),
+                $this->moduleLangVar.'_FILE_INPUT_CODE'    => $extendedFileInputCode,
+                $this->moduleLangVar.'_UPLOAD_WIDGET_CODE' => $folderWidget->getXHtml($uploaderFolderWidgetContainer, 'uploadWidget'),
+            ));            
+        }
+        catch (Exception $e) {
+            $this->_objTpl->setVariable('UPLOADER_CODE','<!-- failed initializing uploader, exception '.get_class($e).' with message "'.$e->getMessage().'" -->');
+        }
+    }
+
+    /**
+     * Uploader callback function
+     * 
+     * @param string  $tempPath    Temp path
+     * @param string  $tempWebPath Temp webpath
+     * @param string  $data        post data
+     * @param integer $uploadId    upload id
+     * @param array   $fileInfos   file infos
+     * 
+     * @return array path and webpath
+     */
+    public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response) {
+        global $objDatabase, $_ARRAYLANG, $_CONFIG, $objInit;
+        
+        $lang     = $objInit->loadLanguageData('calendar');
+        $tup      = self::getTemporaryUploadPath($uploadId);
+        $path     = $tup[0].'/'.$tup[2];
+        $webPath  = $tup[1].'/'.$tup[2];
+        $arrFiles = array();
+        
+        //get allowed file types
+        $arrAllowedFileTypes = array();
+        if (imagetypes() & IMG_GIF) { $arrAllowedFileTypes[] = 'gif'; }
+        if (imagetypes() & IMG_JPG) { $arrAllowedFileTypes[] = 'jpg'; $arrAllowedFileTypes[] = 'jpeg'; }
+        if (imagetypes() & IMG_PNG) { $arrAllowedFileTypes[] = 'png'; }
+
+        $h = opendir($tempPath);
+        if ($h) {            
+            
+            while(false != ($file = readdir($h))) {
+
+                $info = pathinfo($file);                
+
+                //skip . and ..
+                if($file == '.' || $file == '..') { continue; }
+                
+                //delete unwanted files
+                if(!in_array(strtolower($info['extension']), $arrAllowedFileTypes)) {                    
+                    $response->addMessage(UploadResponse::STATUS_ERROR, 'Error', $file);
+                   @unlink($tempPath.'/'.$file);
+                    continue;
+                }   
+                
+                
+//                //check if file needs to be renamed.. Its not needed now 
+//                //because we are going unlink all files in the target folder
+//                $newName = self::cleanFileName($file);
+//                if (file_exists($path.'/'.$newName)) {
+//                    $info     = pathinfo($newName);
+//                    $exte     = $info['extension'];
+//                    $exte     = (!empty($exte)) ? '.'.$exte : '';
+//                    $part1    = $info['filename'];
+//                    $newName = $part1.'_'.time().$exte;
+//                    
+//                    rename($tempPath.'/'.$file, $tempPath.'/'.$newName);
+//                    $file = $newName;
+//                }
+                
+                $arrFiles[] = $file;
+            }
+            closedir($h);
+            
+        }
+        
+        // Delete existing files because we need only one file to upload
+        if (!empty($arrFiles)) {
+            $h = opendir($path);
+            if ($h) {
+                while(false != ($file = readdir($h))) {
+                    //skip . and ..
+                    if($file == '.' || $file == '..') { continue; }
+                    @unlink($path.'/'.$file);
+                }
+            }
+        }
+        
+        return array($path, $webPath);
+    }
+        
+    protected static function cleanFileName($string) {        
+        //contrexx file name policies
+        $string = FWValidator::getCleanFileName($string);
+
+        //media library special changes; code depends on those
+        // replace $change with ''
+        $change = array('+');
+        // replace $signs1 with $signs
+        $signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
+        $signs2 = array('_', 'ae', 'oe', 'ue', 'c');
+
+        foreach ($change as $str) {
+            $string = str_replace($str, '_', $string);
+        }
+        for ($x = 0; $x < count($signs1); $x++) {
+            $string = str_replace($signs1[$x], $signs2[$x], $string);
+        }
+        $string = str_replace('__', '_', $string);
+        if (strlen($string) > 60) {
+            $info       = pathinfo($string);
+            $stringExt  = $info['extension'];
+
+            $stringName = substr($string, 0, strlen($string) - (strlen($stringExt) + 1));
+            $stringName = substr($stringName, 0, 60 - (strlen($stringExt) + 1));
+            $string     = $stringName.'.'.$stringExt;
+        }
+        return $string;
+    }    
 }
