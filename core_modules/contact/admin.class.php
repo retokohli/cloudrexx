@@ -506,19 +506,28 @@ class ContactManager extends ContactLib
         $this->_objTpl->loadTemplateFile('module_contact_forms_overview.html');
         $this->_pageTitle = $_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS'];
 
+        $uri = Html::getRelativeUri_entities();
+        $objSorting = new Sorting($uri,
+            array(
+                'latestEntry' => $_ARRAYLANG['TXT_CONTACT_LATEST_ENTRY'],
+                'id' => $_ARRAYLANG['TXT_CONTACT_ID'],
+                'name' => $_ARRAYLANG['TXT_CONTACT_NAME'],
+                'numberOfEntries' => $_ARRAYLANG['TXT_CONTACT_NUMBER_OF_ENTRIES'],
+            ), false, 'order_forms');
+
         $this->_objTpl->setVariable(array(
                 'TXT_CONTACT_CONFIRM_DELETE_FORM'           => $_ARRAYLANG['TXT_CONTACT_CONFIRM_DELETE_FORM'],
                 'TXT_CONTACT_FORM_ENTRIES_WILL_BE_DELETED'  => $_ARRAYLANG['TXT_CONTACT_FORM_ENTRIES_WILL_BE_DELETED'],
                 'TXT_CONTACT_ACTION_IS_IRREVERSIBLE'        => $_ARRAYLANG['TXT_CONTACT_ACTION_IS_IRREVERSIBLE'],
-                'TXT_CONTACT_LATEST_ENTRY'                  => $_ARRAYLANG['TXT_CONTACT_LATEST_ENTRY'],
-                'TXT_CONTACT_NUMBER_OF_ENTRIES'             => $_ARRAYLANG['TXT_CONTACT_NUMBER_OF_ENTRIES'],
                 'TXT_CONTACT_CONTACT_FORMS'                 => $_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS'],
-                'TXT_CONTACT_ID'                            => $_ARRAYLANG['TXT_CONTACT_ID'],
-                'TXT_CONTACT_NAME'                          => $_ARRAYLANG['TXT_CONTACT_NAME'],
+                'TXT_CONTACT_LANGUAGE'                      => $_ARRAYLANG['TXT_CONTACT_LANGUAGE'],
                 'TXT_CONTACT_FUNCTIONS'                     => $_ARRAYLANG['TXT_CONTACT_FUNCTIONS'],
                 'TXT_CONTACT_ADD_NEW_CONTACT_FORM'          => $_ARRAYLANG['TXT_CONTACT_ADD_NEW_CONTACT_FORM'],
                 'TXT_CONTACT_CONFIRM_DELETE_CONTENT_SITE'   => $_ARRAYLANG['TXT_CONTACT_CONFIRM_DELETE_CONTENT_SITE'],
-                'TXT_CONTACT_LANGUAGE'                      => $_ARRAYLANG['TXT_CONTACT_LANGUAGE']
+                'TXT_CONTACT_ID'                            => $objSorting->getHeaderForField('id'),
+                'TXT_CONTACT_NAME'                          => $objSorting->getHeaderForField('name'),
+                'TXT_CONTACT_LATEST_ENTRY'                  => $objSorting->getHeaderForField('latestEntry'),
+                'TXT_CONTACT_NUMBER_OF_ENTRIES'             => $objSorting->getHeaderForField('numberOfEntries'),
         ));
 
         $this->_objTpl->setGlobalVariable(array(
@@ -529,7 +538,9 @@ class ContactManager extends ContactLib
                 'TXT_CONTACT_GET_CSV'                       => $_ARRAYLANG['TXT_CONTACT_GET_CSV'],
                 'TXT_CONTACT_DOWNLOAD'                      => $_ARRAYLANG['TXT_CONTACT_DOWNLOAD']
         ));
-        
+
+        $this->initContactForms($objSorting->getOrder());
+
         $rowNr = 0;
         if (is_array($this->arrForms)) {
             foreach ($this->arrForms as $formId => $arrForm) {
