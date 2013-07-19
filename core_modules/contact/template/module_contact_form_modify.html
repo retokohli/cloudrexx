@@ -266,6 +266,7 @@
         $J(copy).find('div').each(function(key, elem) {
             var className = $J(elem).attr('class');
             var id = $J(elem).attr('id');
+            var cssClass = $J(elem).attr('class');
             // do the class too
             if (typeof(className) != 'undefined') {
                 $J(elem).attr('class', className.replace(/^(.*?)_(\d+)$/, "$1_" + formFieldNumber));
@@ -273,6 +274,10 @@
             // do the id too
             if (typeof(id) != 'undefined') {
                 $J(elem).attr('id', id.replace(/^(.*?)_(\d+)_(\d+)?$/, "$1_" + formFieldNumber + "_$3"));
+            }
+            // do the class too
+            if (typeof(cssClass) != 'undefined') {
+                $J(elem).attr('class', cssClass.replace(/(.*?)_(\d+)(.*?)/, "$1_" + formFieldNumber + "$3"));
             }
         });
 
