@@ -65,25 +65,34 @@ class ContactLib
 
     /**
      * Read the contact forms
+     * @param null|string $order the order for the sql query (comes from Sorting class)
      */
-    function initContactForms()
+    function initContactForms($order = null)
     {
         global $objDatabase;
         
         $this->arrForms = array();
 
+        if ($order) {
+            $order = ' ORDER BY ' . $order;
+        }
         // load form meta information
-        $query = 'SELECT `id`,
-                         `mails`,
-                         `showForm`,
-                         `use_captcha`,
-                         `use_custom_style`,
-                         `save_data_in_crm`,
-                         `send_copy`,
-                         `use_email_of_sender`,
-                         `html_mail`,
-                         `send_attachment`
-                    FROM `'.DBPREFIX.'module_contact_form`';
+        $query = 'SELECT `f`.`id`,
+                         `f`.`mails`,
+                         `f`.`showForm`,
+                         `f`.`use_captcha`,
+                         `f`.`use_custom_style`,
+                         `f`.`save_data_in_crm`,
+                         `f`.`send_copy`,
+                         `f`.`use_email_of_sender`,
+                         `f`.`html_mail`,
+                         `f`.`send_attachment`,
+                         (SELECT COUNT(`id`) FROM `'.DBPREFIX.'module_contact_form_data` AS `d` WHERE `d`.`id_form` = `f`.`id`)  AS `numberOfEntries`,
+                         (SELECT MAX(`time`) FROM `'.DBPREFIX.'module_contact_form_data` AS `d` WHERE `d`.`id_form` = `f`.`id`) AS `latestEntry`
+                    FROM `'.DBPREFIX.'module_contact_form` AS `f`
+                    LEFT JOIN `'.DBPREFIX.'module_contact_form_lang` AS `l`
+                        ON `f`.`id` = `l`.`formID`
+                    WHERE `l`.`langID` = ' . FRONTEND_LANG_ID . ' ' . $order;
         $objResult = $objDatabase->Execute($query);
         if ($objResult) {
             while (!$objResult->EOF) {
