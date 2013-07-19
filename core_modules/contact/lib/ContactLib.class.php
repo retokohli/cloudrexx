@@ -1114,7 +1114,6 @@ class ContactLib
     function deleteFormEntry($id)
     {
         global $objDatabase;
-\DBG::activate();
         //let's search for uploaded files left.
         $rs = $objDatabase->Execute("SELECT `d`.`id_form`, `sd`.`formvalue`
                                      FROM `".DBPREFIX."module_contact_form_data` AS `d`
