@@ -830,8 +830,7 @@ class ContactLib
 
         $res = $objDatabase->Execute($query);
         if ($res !== false) {
-            $this->_deleteFormFieldsByFormId($id);
-            $this->_deleteFormDataByFormId($id);
+            $this->_deleteFormFieldsAndDataByFormId($id);
             $this->_deleteFormRecipients($id);
             $this->initContactForms();
 
@@ -1079,73 +1078,53 @@ class ContactLib
         $objDatabase->execute($query);
     }
 
-
-    function _deleteFormField($id)
-    {
-        global $objDatabase;
-
-        $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_contact_form_field WHERE id=".$id);
-    }
-
     /**
-     * Delete form fields
+     * Delete form fields and data
      *
      * @author      Comvation AG <info@comvation.com>
      * @param       int $id
      */
-    private function _deleteFormFieldsByFormId($id)
+    private function _deleteFormFieldsAndDataByFormId($id)
     {
         global $objDatabase;
 
         $query = "
             DELETE
-                `l`
+                `f`, `l`, `sd`, `d`
             FROM
                 `".DBPREFIX."module_contact_form_field_lang`    AS `l`
             LEFT JOIN
                 `".DBPREFIX."module_contact_form_field`         AS `f`
             ON
                 `l`.`fieldID` = `f`.`id`
+            LEFT JOIN
+                `".DBPREFIX."module_contact_form_submit_data` AS `sd`
+            ON
+                `f`.`id` = `sd`.`id_field`
+            LEFT JOIN
+                `".DBPREFIX."module_contact_form_data` AS  `d`
+            ON
+                `f`.`id_form` = `d`.`id_form`
             WHERE
                 `f`.`id_form` = ".$id;
 
-        $objDatabase->Execute($query);
-
-        $query = "
-            DELETE FROM
-                ".DBPREFIX."module_contact_form_field
-            WHERE
-                id_form = ".$id;
-
-        $objDatabase->Execute($query);
-    }
-
-    /**
-     * Delete form data
-     *
-     * @author      Comvation AG <info@comvation.com>
-     * @param       int $id
-     */
-    private function _deleteFormDataByFormId($id)
-    {
-        global $objDatabase;
-
-        $query = "
-            DELETE FROM
-                `".DBPREFIX."module_contact_form_data`
-            WHERE
-                `id_form` = ".$id;
         $objDatabase->Execute($query);
     }
 
     function deleteFormEntry($id)
     {
         global $objDatabase;
-
+\DBG::activate();
         //let's search for uploaded files left.
-        $rs = $objDatabase->Execute("SELECT id_form, data FROM ".DBPREFIX."module_contact_form_data WHERE id=".$id);
+        $rs = $objDatabase->Execute("SELECT `d`.`id_form`, `sd`.`formvalue`
+                                     FROM `".DBPREFIX."module_contact_form_data` AS `d`
+                                        LEFT JOIN
+                                            `".DBPREFIX."module_contact_form_submit_data` AS `sd`
+                                        ON
+                                            `d`.`id` = `sd`.`id_entry`
+                                        WHERE `d`.`id`=".$id);
         if(!$rs->EOF) {
-            $data = $rs->fields['data'];
+            $data = $rs->fields['formvalue'];
             $formId = $rs->fields['id_form'];
 
             //get all form data into arrData
@@ -1164,7 +1143,6 @@ class ContactLib
                 if($arrField['type'] == 'file') {
                     //...and delete the files if yes:
                     $val = $arrData[$arrField['name']];
-                    $arrFiles;
                     if(substr($val,0,1) == '*') {
                         //new style entry, multiple files
                         $arrFiles = explode('*',substr($val,1));
@@ -1181,12 +1159,18 @@ class ContactLib
                 }
             }
         }
-        $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_contact_form_data WHERE id=".$id);
+        $objDatabase->Execute("DELETE `d`, `sd` FROM
+                                `".DBPREFIX."module_contact_form_data` AS `d`
+                               LEFT JOIN
+                                `".DBPREFIX."module_contact_form_submit_data` AS `sd`
+                               ON
+                                `d`.`id` = `sd`.`id_entry`
+                               WHERE `d`.`id`=".$id);
     }
 
     function getFormEntries($formId, &$arrCols, $pagingPos, &$paging, $limit = true)
     {
-        global $objDatabase, $_CONFIG;
+        global $objDatabase, $_CONFIG, $_ARRAYLANG;
 
         $arrEntries = array();
         $arrCols    = array();
