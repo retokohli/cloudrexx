@@ -297,7 +297,7 @@ namespace Cx\Core\Core\Controller {
                 $_PATHCONFIG['ascms_installation_root'] = $_PATHCONFIG['ascms_root'];
                 $_PATHCONFIG['ascms_installation_offset'] = $_PATHCONFIG['ascms_root_offset'];
             }
-            
+
             /**
              * User configuration settings
              *
@@ -711,7 +711,8 @@ namespace Cx\Core\Core\Controller {
          */
         protected function resolve() {
             $this->resolver = new \Cx\Core\Routing\Resolver($this->getRequest(), null, $this->getDb()->getEntityManager(), null, null);
-            
+            $this->resolver->getURL()->setMode($this->mode);
+
             if ($this->mode == self::MODE_FRONTEND) {
                 $this->resolvedPage = $this->resolver->resolve();
                 
