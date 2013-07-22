@@ -520,7 +520,7 @@ class Contact extends ContactLib
             $tup = self::getTemporaryUploadPath($this->submissionId);
 
             //create the folder
-            if (!File::make_folder($tup[1].'/'.$tup[2])) {
+            if (!\Cx\Lib\FileSystem\FileSystem::make_folder($tup[1].'/'.$tup[2])) {
                 throw new ContactException("Could not create temporary upload directory '".$tup[0].'/'.$tup[2]."'");
             }
 
@@ -764,7 +764,7 @@ class Contact extends ContactLib
             }
 
             //move all files
-            if(!File::exists($tmpUploadDir))
+            if(!\Cx\Lib\FileSystem\FileSystem::exists($tmpUploadDir))
                 throw new ContactException("could not find temporary upload directory '$tmpUploadDir'");
 
             $h = opendir(ASCMS_PATH.$tmpUploadDir);
@@ -780,7 +780,7 @@ class Contact extends ContactLib
                     }
                     
                     if($move)
-                        File::move($tmpUploadDir.$f,ASCMS_PATH_OFFSET.'/'.$depositionTarget.$prefix.$f, false);
+                        \Cx\Lib\FileSystem\File($tmpUploadDir.$f)->move(ASCMS_PATH_OFFSET.'/'.$depositionTarget.$prefix.$f, false);                        
                     $arrFiles[] = array(
                         'name'  => $f,
                         'path'  => $depositionTarget.$prefix.$f,
