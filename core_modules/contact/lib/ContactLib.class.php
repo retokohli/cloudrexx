@@ -1162,7 +1162,7 @@ class ContactLib
                   
                     //nice, we have all the files. delete them.
                     foreach($arrFiles as $file) {
-                        @unlink(ASCMS_DOCUMENT_ROOT.$file);
+                        \Cx\Lib\FileSystem\FileSystem::delete_file(ASCMS_DOCUMENT_ROOT.$file);
                     }
                 }
             }
