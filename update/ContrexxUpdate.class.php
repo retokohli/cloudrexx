@@ -399,6 +399,7 @@ class ContrexxUpdate
 
     private function showInfoAboutLicense()
     {
+        global $_CONFIG;
         if (isset($_POST['updateNext'])) {
             if (empty($_POST['update_license_info'])) {
                 $_SESSION['contrexx_update']['license_info'] = false;
@@ -407,7 +408,7 @@ class ContrexxUpdate
             }
         }
 
-        if (isset($_POST['updateNext']) && (!empty($_POST['update_license_info']))) {
+        if ((isset($_POST['updateNext']) && (!empty($_POST['update_license_info']))) || !$this->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
             $_SESSION['contrexx_update']['license_info'] = true;
             
             $this->setNextStep();
