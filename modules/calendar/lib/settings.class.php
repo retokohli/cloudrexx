@@ -859,7 +859,7 @@ class CalendarSettings extends CalendarLibrary
                 $arrOptions = array();
                 if(!empty($options)) {
                     $arrOptions = explode(",",$options);
-                    $arrValue = split(',', $value);
+                    $arrValue = explode(',', $value);
                     foreach ($arrOptions as $key => $label) {
                         $checked = in_array($key, $arrValue) ? 'checked="checked"' : '';
                         $output .= '<label><input type="checkbox" '.$checked.' value="'.$key.'" name="settings['.$name.'][]" />&nbsp;'.$_ARRAYLANG[$label].'</label>&nbsp;&nbsp;&nbsp;';

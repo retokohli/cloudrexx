@@ -329,7 +329,7 @@ class MemberDirManager extends MemberDirLibrary
         }
         $select .= '</select>';
 
-        $names = split(';', $_ARRAYLANG['TXT_FIELD_DEFAULT_NAMES']);
+        $names = explode(';', $_ARRAYLANG['TXT_FIELD_DEFAULT_NAMES']);
 
         $this->_objTpl->setVariable(array(
             'TXT_PIC_UPLOAD'                => $_ARRAYLANG['TXT_PIC_UPLOAD'],
@@ -624,7 +624,7 @@ class MemberDirManager extends MemberDirLibrary
                 $this->statusMessage = $_ARRAYLANG['TXT_DATABASE_READ_ERROR'];
             }
         } else {
-            $arrFieldNames = split(';', $_ARRAYLANG['TXT_FIELD_DEFAULT_NAMES']);
+            $arrFieldNames = explode(';', $_ARRAYLANG['TXT_FIELD_DEFAULT_NAMES']);
 
             foreach ($arrFieldNames as $fieldId => $fieldName) {
                 $this->_objTpl->setVariable(array(

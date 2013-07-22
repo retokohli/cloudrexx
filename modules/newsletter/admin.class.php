@@ -4338,7 +4338,7 @@ $WhereStatement = '';
 
                     $NLine = chr(13).chr(10);
                     $EmailList = str_replace(array(']','[',"\t","\n","\r"), ' ', $_REQUEST["Emails"]);
-                    $EmailArray = split("[ '\",;:<>".$NLine."]", contrexx_stripslashes($EmailList));
+                    $EmailArray = explode("[ '\",;:<>".$NLine."]", contrexx_stripslashes($EmailList));
                     $EmailCount = 0;
                     $arrBadEmails = array();
                     $ExistEmails = 0;

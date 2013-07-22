@@ -206,7 +206,7 @@ class CalendarRegistrationManager extends CalendarLibrary
         
         $i = 0;
 
-        $paymentMethods = split(',', $_ARRAYLANG["TXT_PAYMENT_METHODS"]);
+        $paymentMethods = explode(',', $_ARRAYLANG["TXT_PAYMENT_METHODS"]);
 
         foreach ($this->registrationList as $objRegistration) {
             $checkbox = '<input type="checkbox" name="selectedRegistrationId[]" id="selectedRegistrationId" value="'.$objRegistration->id.'" />';

@@ -92,7 +92,7 @@ class Search {
         while (false !== ($file = readdir($dir))) {
             if (preg_match("/^[a-z]+\.php$/i", $file)) {
                 include($this->interfacesPath."/".$file);
-                list($name) = split("\.", $file);
+                list($name) = explode("\.", $file);
                 $this->interfaces[] = new $name;
             }
         }

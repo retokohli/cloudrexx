@@ -2956,7 +2956,7 @@ $strFileNew = '';
     {
         global $objDatabase,$_ARRAYLANG,$_CONFIG;
 
-        $arrId = split(',',$_POST['settingsAllImagesIds']);
+        $arrId = explode(',',$_POST['settingsAllImagesIds']);
 
         if ($_POST['settingsFilename'] != 1) { // update the filenames
             foreach ($_POST as $strKey => $strValue)

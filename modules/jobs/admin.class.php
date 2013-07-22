@@ -650,7 +650,7 @@ class jobsManager extends jobsLibrary
         else
             $work_start = $_POST['work_start'];
         //start 'n' end
-        $dateparts         = split("-", $work_start);
+        $dateparts         = explode("-", $work_start);
         $work_start        = mktime(00, 00,00, $dateparts[1], $dateparts[2], $dateparts[0]);
 
         $catId = intval($_POST['jobsCat']);
@@ -922,7 +922,7 @@ class jobsManager extends jobsLibrary
         else
             $work_start = $_POST['work_start'];
         //start 'n' end
-        $dateparts         = split("-", $work_start);
+        $dateparts         = explode("-", $work_start);
         $work_start        = mktime(00, 00,00, $dateparts[1], $dateparts[2], $dateparts[0]);
 
         $cat = intval($_POST['jobsCat']);
