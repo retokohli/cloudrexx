@@ -632,6 +632,12 @@ class AccessLib
             $placeholderUC.'_ID'        => $accountAttributePrefix.$attributeId
         );
 
+        $arrSettings = User_Setting::getSettings();
+        if (!$arrSettings['use_usernames']['status'] && $attributeId == 'username') {
+            // display email address if usernames are deactivated
+            $attributeId = 'email';
+        }
+
         $value = $arrPlaceholders[$placeholderUC.'_VALUE'] = isset($value) ? $value : (isset($this->arrAccountAttributes[$attributeId]['value']) ? $objUser->{$this->arrAccountAttributes[$attributeId]['value']}() : '');
 
         switch ($this->arrAccountAttributes[$attributeId]['type']) {
@@ -665,7 +671,6 @@ class AccessLib
         }
 
         $this->_objTpl->setVariable($arrPlaceholders);
-        $arrSettings = User_Setting::getSettings();
         if ($this->_objTpl->blockExists($accountAttributePrefix.$attributeId)) {
             if ($arrSettings['use_usernames']['status'] || $attributeId != 'username') {
                 $this->_objTpl->parse($accountAttributePrefix.$attributeId);
