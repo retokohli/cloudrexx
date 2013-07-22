@@ -171,8 +171,6 @@ class u2u extends u2uLibrary
                 'TXT_U2U_ENTER_NAME'                 =>  $_ARRAYLANG['TXT_U2U_ENTER_NAME']
             ));
 
-
-
           $buddyNames=$this->_getBuddyNames($id);
           foreach($buddyNames as $buddyKey => $buddyValue) {
                 if($id!=$buddyValue) {
@@ -433,11 +431,8 @@ class u2u extends u2uLibrary
         global $_ARRAYLANG, $objDatabase,$_CORELANG;
 
         if (!empty($_REQUEST['id'])) {
-            $objFWUser = FWUser::getFWUserObject();
-            $id=intval($_REQUEST['id']);
-            $selUserName='SELECT username FROM '.DBPREFIX.'access_users WHERE id = "'.$id.'"';
-            $objResult = $objDatabase->Execute($selUserName);
-            $_ARRAYLANG["u2u_message_user_name"]=$objResult->fields['username'];
+            $userName = $this->_getName($_REQUEST['id']);
+            $_ARRAYLANG["u2u_message_user_name"] = $userName['username'];
             $this->_objTpl->setVariable(array(
                 'TXT_RECEPIENT'                 => $_ARRAYLANG["u2u_message_user_name"]
             ));
@@ -635,14 +630,14 @@ class u2u extends u2uLibrary
                 ));
                 $errorMessage = true;
             } else {
-                for($i=0;$i<count($arrayRecepients);$i++) {
-                    $ID = $this->getUserID($arrayRecepients[$i]);
+                foreach ($arrayRecepients as $user) {
+                    $ID = $this->getUserID($user);
                     if(empty($ID)) {
-                        $errorString=str_replace("[userName]",$arrayRecepients[$i],$_ARRAYLANG['TXT_U2U_ENTRY_ADD_ERROR_EMAIL']);
+                        $errorString=str_replace("[userName]",$user,$_ARRAYLANG['TXT_U2U_ENTRY_ADD_ERROR_EMAIL']);
                         $this->arrStatusMsg['error'][] = $errorString;
                         $errorMessage = true;
                     } elseif($statusU2UActive==0) {
-                       $errorString=str_replace("[userName]",$arrayRecepients[$i],$_ARRAYLANG['TXT_U2U_STATUS_DISABLED_ERROR']);
+                       $errorString=str_replace("[userName]",$user,$_ARRAYLANG['TXT_U2U_STATUS_DISABLED_ERROR']);
                        $this->arrStatusMsg['error'][] = $errorString;
                        $errorMessage = true;
                     } else {
