@@ -1289,7 +1289,7 @@ class CalendarEvent extends CalendarLibrary
         $depositionTarget = $this->uploadImgPath; //target folder
 
         //move all files
-        if(!File::exists($tmpUploadDir))
+        if(!\Cx\Lib\FileSystem\FileSystem::exists($tmpUploadDir))
             throw new Exception("could not find temporary upload directory '$tmpUploadDir'");
 
         $h = opendir($tmpUploadDir);
@@ -1305,7 +1305,7 @@ class CalendarEvent extends CalendarLibrary
                         $prefix ++;
                     }
 
-                    File::move($tmpUploadDir.$f, $depositionTarget.$prefix.$f, false);
+                    \Cx\Lib\FileSystem\File($tmpUploadDir.$f)->move($depositionTarget.$prefix.$f, false);
                     $imageName = $prefix.$f;
                     $objImage = new ImageManager();
                     $objImage->_createThumb($this->uploadImgPath, $this->uploadImgWebPath, $imageName, 180);

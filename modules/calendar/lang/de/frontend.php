@@ -149,4 +149,5 @@ $_ARRAYLANG['TXT_CALENDAR_MAP'] = "Karte anzeigen";
 $_ARRAYLANG['TXT_CALENDAR_SAME_AS_CONTACT'] = "gleiche Angaben wie Kontaktadresse";
 $_ARRAYLANG['TXT_CALENDAR_DEVIATES_FROM_CONTACT'] = "weicht von der Kontaktadresse ab";
 $_ARRAYLANG['TXT_CALENDAR_PLEASE_CHECK_INPUT'] = "Bitte überprüfen sie ihre Eingabe";
+$_ARRAYLANG['TXT_CALENDAR_IMAGE_UPLOAD_ERROR'] = "The selected extesion is not allowed";
 ?>
