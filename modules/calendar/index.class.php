@@ -863,7 +863,7 @@ $this->_objTpl->setVariable(array(
             $tup = self::getTemporaryUploadPath($this->submissionId);
 
             //create the folder
-            if (!File::make_folder($tup[1].'/'.$tup[2])) {
+            if (!\Cx\Lib\FileSystem\FileSystem::make_folder($tup[1].'/'.$tup[2])) {
                 throw new Exception("Could not create temporary upload directory '".$tup[0].'/'.$tup[2]."'");
             }
 
@@ -949,26 +949,15 @@ $this->_objTpl->setVariable(array(
                 if($file == '.' || $file == '..') { continue; }
                 
                 //delete unwanted files
-                if(!in_array(strtolower($info['extension']), $arrAllowedFileTypes)) {                    
-                    $response->addMessage(UploadResponse::STATUS_ERROR, 'Error', $file);
-                   @unlink($tempPath.'/'.$file);
+                if(!in_array(strtolower($info['extension']), $arrAllowedFileTypes)) {                                     
+                    $response->addMessage(
+                        UploadResponse::STATUS_ERROR,
+                        $lang["TXT_{$this->moduleLangVar}_IMAGE_UPLOAD_ERROR"],
+                        $file
+                    );
+                    \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath.'/'.$file);
                     continue;
                 }   
-                
-                
-//                //check if file needs to be renamed.. Its not needed now 
-//                //because we are going unlink all files in the target folder
-//                $newName = self::cleanFileName($file);
-//                if (file_exists($path.'/'.$newName)) {
-//                    $info     = pathinfo($newName);
-//                    $exte     = $info['extension'];
-//                    $exte     = (!empty($exte)) ? '.'.$exte : '';
-//                    $part1    = $info['filename'];
-//                    $newName = $part1.'_'.time().$exte;
-//                    
-//                    rename($tempPath.'/'.$file, $tempPath.'/'.$newName);
-//                    $file = $newName;
-//                }
                 
                 $arrFiles[] = $file;
             }
@@ -983,7 +972,7 @@ $this->_objTpl->setVariable(array(
                 while(false != ($file = readdir($h))) {
                     //skip . and ..
                     if($file == '.' || $file == '..') { continue; }
-                    @unlink($path.'/'.$file);
+                    \Cx\Lib\FileSystem\FileSystem::delete_file($path.'/'.$file);
                 }
             }
         }
