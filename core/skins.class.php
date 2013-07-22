@@ -165,6 +165,17 @@ class skins
         $this->oldTable = DBPREFIX."themes";
         //\Cx\Lib\FileSystem\FileSystem::makeWritable($this->webPath);
     }
+
+
+    /**
+     * checks whether this contrexx has the possibility to use multi language mode
+     * @return bool is this contrexx in multi language mode
+     */
+    private function isInLanguageFullMode() {
+        global $_CONFIG, $objDatabase;
+        return \Cx\Core_Modules\License\License::getCached($_CONFIG, $objDatabase)->isInLegalComponents("fulllanguage");
+    }
+
     private function setNavigation()
     {
         global $objTemplate, $_CORELANG;
@@ -819,7 +830,7 @@ class skins
             $this->strOkMessage = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
         }
         $objResult = $objDatabase->Execute('
-            SELECT   `id`, `lang`, `name`, `frontend`, `themesid`, `mobile_themes_id`, `print_themes_id`, `pdf_themes_id`, `app_themes_id`
+            SELECT   `id`, `lang`, `name`, `frontend`, `themesid`, `mobile_themes_id`, `print_themes_id`, `pdf_themes_id`, `app_themes_id`, `is_default`
             FROM     `'.DBPREFIX.'languages`
             WHERE    `frontend` = 1
             ORDER BY `id`
@@ -827,6 +838,11 @@ class skins
 
         if ($objResult !== false) {
             while (!$objResult->EOF) {
+                if (!$this->isInLanguageFullMode() && $objResult->fields['is_default'] == "false") {
+                    $objResult->MoveNext();
+                    continue;
+                }
+
                 if (($i % 2) == 0) {
                     $class="row1";
                 } else {
