@@ -818,11 +818,13 @@ class CalendarEvent extends CalendarLibrary
 
         
         //frontend picture upload & thumbnail creation
-        if($objInit->mode == 'frontend') {            
-            if(!empty($_FILES['pictureUpload']) && $_FILES['pictureUpload']['error'] == 0) {
-                $unique_id = intval($_REQUEST['unique_id']);
+        if($objInit->mode == 'frontend') {
+            $unique_id = intval($_REQUEST['unique_id']);
             
-                if (!empty($unique_id)) {
+            if (!empty($unique_id)) {
+                $picture = $this->_handleUpload($unique_id);
+
+                if (!empty($picture)) {
                     $objFile = new File();
                     //delete thumb
                     if (file_exists("{$this->uploadImgPath}$pic.thumb")) {
@@ -833,9 +835,10 @@ class CalendarEvent extends CalendarLibrary
                     if (file_exists("{$this->uploadImgPath}$pic")) {
                         $objFile->delFile($this->uploadImgPath, $this->uploadImgWebPath, "/$pic");
                     }
-                    $pic = $this->_handleUpload($unique_id); 
+
+                    $pic = $picture;
                 }
-            }                        
+            }
         }
         
         $seriesStatus = intval($data['seriesStatus']); 
@@ -1287,6 +1290,7 @@ class CalendarEvent extends CalendarLibrary
         $tup              = self::getTemporaryUploadPath($id);
         $tmpUploadDir     = ASCMS_PATH.$tup[1].'/'.$tup[2].'/'; //all the files uploaded are in here                       
         $depositionTarget = $this->uploadImgPath; //target folder
+        $pic              = '';
 
         //move all files
         if(!\Cx\Lib\FileSystem\FileSystem::exists($tmpUploadDir))
@@ -1305,7 +1309,9 @@ class CalendarEvent extends CalendarLibrary
                         $prefix ++;
                     }
 
-                    \Cx\Lib\FileSystem\File($tmpUploadDir.$f)->move($depositionTarget.$prefix.$f, false);
+                    $objFile = new \Cx\Lib\FileSystem\File($tmpUploadDir.$f);
+                    $objFile->move($depositionTarget.$prefix.$f, false);
+                    
                     $imageName = $prefix.$f;
                     $objImage = new ImageManager();
                     $objImage->_createThumb($this->uploadImgPath, $this->uploadImgWebPath, $imageName, 180);
