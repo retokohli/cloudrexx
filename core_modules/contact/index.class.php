@@ -779,8 +779,11 @@ class Contact extends ContactLib
                         $prefix ++;
                     }
                     
-                    if($move)
-                        \Cx\Lib\FileSystem\File($tmpUploadDir.$f)->move(ASCMS_PATH_OFFSET.'/'.$depositionTarget.$prefix.$f, false);                        
+                    if($move) {
+                        $objFile = new \Cx\Lib\FileSystem\File($tmpUploadDir.$f);
+                        $objFile->move(ASCMS_PATH_OFFSET.'/'.$depositionTarget.$prefix.$f, false);
+                    }
+                        
                     $arrFiles[] = array(
                         'name'  => $f,
                         'path'  => $depositionTarget.$prefix.$f,
