@@ -38,7 +38,7 @@ class DefaultEventHandler implements EventHandler
     /**
      * Event handler
      * 
-     * @param Event $event
+     * @param Event $event calling event
      *
      * @return boolean
      */

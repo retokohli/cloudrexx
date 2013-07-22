@@ -59,9 +59,9 @@ class Event
     /**
      * Constructor
      *
-     * @param String $name
-     * @param String $context
-     * @param String $info
+     * @param String $name    event name
+     * @param String $context event context
+     * @param String $info    event info
      *
      * @return null
      */
@@ -75,7 +75,9 @@ class Event
     /**
      * Set Context
      * 
-     * @param String $context
+     * @param String $context event context
+     *
+     * @return null
      */
     public function setContext($context)
     {
@@ -95,7 +97,9 @@ class Event
     /**
      * Set information
      *
-     * @param String $info
+     * @param String $info event info
+     *
+     * @return null
      */
     public function setInfo($info)
     {
@@ -114,6 +118,8 @@ class Event
 
     /**
      * Cancel status
+     *
+     * @return null
      */
     function cancel()
     {
@@ -133,7 +139,9 @@ class Event
     /**
      * Set name
      * 
-     * @param String $name
+     * @param String $name set event name
+     *
+     * @return null
      */
     public function setName($name)
     {

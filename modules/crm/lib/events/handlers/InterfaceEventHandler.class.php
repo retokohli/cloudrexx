@@ -27,7 +27,9 @@ interface EventHandler
     /**
      * Event handler
      * 
-     * @param Event $event
+     * @param Event $event event name
+     *
+     * @return null
      */
     function handleEvent(Event $event);
 }

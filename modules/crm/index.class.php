@@ -2,7 +2,7 @@
 /**
  * Index Class CRM
  *
- * @category   Sample_Category
+ * @category   Crm
  * @package    Contrexx
  * @subpackage Module_Crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
@@ -14,7 +14,7 @@
 /**
  * Index Class CRM
  *
- * @category   Sample_Category
+ * @category   Crm
  * @package    Contrexx
  * @subpackage Module_Crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>

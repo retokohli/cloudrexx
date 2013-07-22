@@ -23,7 +23,8 @@
  * @link       www.contrexx.com
  */
 
-class membership {
+class membership
+{
 
     /**
     * Module Name
@@ -54,7 +55,7 @@ class membership {
 
         $condition = '';
         if (!empty($data)) {
-            $condition = "AND ".implode("AND ",$data);
+            $condition = "AND ".implode("AND ", $data);
         }
         $objResult = $objDatabase->Execute("SELECT membership.*,
                                                    memberLoc.value

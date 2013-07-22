@@ -2,10 +2,13 @@
 /**
  * Define constants
  *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @package     contrexx
- * @subpackage  config
- * @todo        Edit PHP DocBlocks!
+ * @category   Constants
+ * @package    Contrexx
+ * @subpackage Module_Crm
+ * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
+ * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @license    trial license
+ * @link       www.contrexx.com
  */
 
 define('CRM_MODULE_LIB_PATH', ASCMS_MODULE_PATH.'/crm/lib/');

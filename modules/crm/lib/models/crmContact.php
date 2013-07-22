@@ -2,7 +2,7 @@
 /**
  * crmContact Class CRM
  *
- * @category   crmContact
+ * @category   CrmContact
  * @package    Contrexx
  * @subpackage Module_Crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
@@ -14,7 +14,7 @@
 /**
  * crmContact Class CRM
  *
- * @category   crmContact
+ * @category   CrmContact
  * @package    Contrexx
  * @subpackage Module_Crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
@@ -65,7 +65,7 @@ class crmContact
                              ON (c.`id` = p.`contact_id` AND p.`is_primary` = '1')
                          WHERE c.`id` = {$this->id}";
             $objResult = $objDatabase->Execute($query);
-            if (FALSE != $objResult) {
+            if (false != $objResult) {
                 $this->contactType      = $objResult->fields['contact_type'];                
                 $this->customerId       = $objResult->fields['customer_id'];
                 $this->customerType     = $objResult->fields['customer_type'];
@@ -87,9 +87,9 @@ class crmContact
                 $this->phone            = $objResult->fields['phone'];
                 $this->added_date       = $objResult->fields['added_date'];                
             }
-            return TRUE;
+            return true;
         }
-        return FALSE;
+        return false;
     }
 
     /**
@@ -177,7 +177,7 @@ class crmContact
             'contact_type'      => isset ($this->contactType) ? (int) $this->contactType : '',
             'user_account'      => isset ($this->account_id) ? (int) $this->account_id : '',
             'gender'            => isset ($this->contact_gender) ? (int) $this->contact_gender : '',
-            'profile_picture'   => array ( 'val' => isset ($this->profile_picture) && !empty($this->profile_picture) ? $this->profile_picture : NULL, 'omitEmpty' => true)
+            'profile_picture'   => array ( 'val' => isset ($this->profile_picture) && !empty($this->profile_picture) ? $this->profile_picture : null, 'omitEmpty' => true)
         );
 
         if (!isset($this->id) || empty ($this->id)) {
@@ -206,7 +206,7 @@ class crmContact
      *
      * @return null
      */
-    function  __set($name,  $value)
+    function __set($name,  $value)
     {
         $this->{$name} = $value;
     }
@@ -218,13 +218,15 @@ class crmContact
      *
      * @return String
      */
-    function  __get($name)
+    function __get($name)
     {
         return $this->{$name};
     }
 
     /**
      * Reset the variable
+     *
+     * @return null
      */
     function clean()
     {

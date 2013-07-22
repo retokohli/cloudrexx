@@ -23,7 +23,7 @@ require_once CRM_MODULE_LIB_PATH . '/events/handlers/DefaultEventHandler.class.p
  * Library Class CRM
  * CrmLibrary class
  *
- * @category   Sample_Category
+ * @category   CrmLibrary
  * @package    Contrexx
  * @subpackage Module_Crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
@@ -242,10 +242,12 @@ class CrmLibrary
 
     /**
      * Initialize a class
+     *
+     * @return object
      */
     public static function init()
     {
-        if(is_null(self::$instance)) {
+        if (is_null(self::$instance)) {
             $class = __CLASS__;
             self::$instance = new $class;
         }
@@ -256,7 +258,7 @@ class CrmLibrary
     /**
      * constructor
      */
-    function  __construct()
+    function __construct()
     {
         $this->load          = new loader();
         $this->_arrLanguages = $this->createLanguageArray();
@@ -313,7 +315,7 @@ class CrmLibrary
                                         ');
         while (!$objResult->EOF) {
             $arrReturn[$objResult->fields['id']] = array(   'short' =>  stripslashes($objResult->fields['lang']),
-                    'long'  =>  htmlentities(stripslashes($objResult->fields['name']),ENT_QUOTES, CONTREXX_CHARSET)
+                    'long'  =>  htmlentities(stripslashes($objResult->fields['name']), ENT_QUOTES, CONTREXX_CHARSET)
             );
             $objResult->MoveNext();
         }
@@ -341,34 +343,34 @@ class CrmLibrary
         if (!in_array($direction, $sortFlags)) {
             throw new InvalidArgumentException('Sort flag only accepts SORT_ASC or SORT_DESC');
         }
-        return function($a, $b) use ($key, $direction, $sortFlags) {
-                    if (!is_array($key)) { //just one key and sort direction
-                        if (!isset($a[$key]) || !isset($b[$key])) {
-//                    throw new Exception('Attempting to sort on non-existent keys');
-                        }
-                        if ($a[$key] == $b[$key]) {
-                            return 0;
-                        }
-                        return ($direction==SORT_ASC xor strtolower($a[$key]) < strtolower($b[$key])) ? 1 : -1;
-                    } else { //using multiple keys for sort and sub-sort
-                        foreach ($key as $subKey => $subAsc) {
-                            //array can come as 'sort_key'=>SORT_ASC|SORT_DESC or just 'sort_key', so need to detect which
-                            if (!in_array($subAsc, $sortFlags)) {
-                                $subKey = $subAsc;
-                                $subAsc = $direction;
-                            }
-                            //just like above, except 'continue' in place of return 0
-                            if (!isset($a->$subKey) || !isset($b->$subKey)) {
-                                throw new Exception('Attempting to sort on non-existent keys');
-                            }
-                            if ($a->$subKey == $b->$subKey) {
-                                continue;
-                            }
-                            return ($subAsc==SORT_ASC xor $a->$subKey < $b->$subKey) ? 1 : -1;
-                        }
-                        return 0;
+        return function ($a, $b) use ($key, $direction, $sortFlags) {
+            if (!is_array($key)) { //just one key and sort direction
+                if (!isset($a[$key]) || !isset($b[$key])) {
+//                  throw new Exception('Attempting to sort on non-existent keys');
+                }
+                if ($a[$key] == $b[$key]) {
+                    return 0;
+                }
+                return ($direction==SORT_ASC xor strtolower($a[$key]) < strtolower($b[$key])) ? 1 : -1;
+            } else { //using multiple keys for sort and sub-sort
+                foreach ($key as $subKey => $subAsc) {
+                    //array can come as 'sort_key'=>SORT_ASC|SORT_DESC or just 'sort_key', so need to detect which
+                    if (!in_array($subAsc, $sortFlags)) {
+                        $subKey = $subAsc;
+                        $subAsc = $direction;
                     }
-                };
+                    //just like above, except 'continue' in place of return 0
+                    if (!isset($a->$subKey) || !isset($b->$subKey)) {
+                        throw new Exception('Attempting to sort on non-existent keys');
+                    }
+                    if ($a->$subKey == $b->$subKey) {
+                        continue;
+                    }
+                    return ($subAsc==SORT_ASC xor $a->$subKey < $b->$subKey) ? 1 : -1;
+                }
+                return 0;
+            }
+        };
     }
 
     /**
@@ -420,7 +422,7 @@ class CrmLibrary
 
         $objResult = $objDatabase->Execute("SELECT * FROM `".DBPREFIX."module_{$this->moduleName}_task_types` ORDER BY `sorting`");
 
-        if(isset($_GET['sortf']) && isset($_GET['sorto'])) {
+        if (isset($_GET['sortf']) && isset($_GET['sorto'])) {
             $sortf = ($_GET['sortf'] == 1)? 'name':'sorting';
             $sorto = ($_GET['sorto'] == 'ASC')? 'DESC' : 'ASC';
             $query = "SELECT * FROM `".DBPREFIX."module_{$this->moduleName}_task_types` ORDER BY $sortf $sorto";
@@ -436,7 +438,7 @@ class CrmLibrary
 
         if ($objResult) {
             $row = "row2";
-            while(!$objResult->EOF) {
+            while (!$objResult->EOF) {
                 $status = ($objResult->fields['status']) ? "led_green.gif" : "led_red.gif";
                 
                 if ($objResult->fields['system_defined']) {
@@ -482,7 +484,7 @@ class CrmLibrary
         $description= isset($_POST['description']) && $id ? $_POST['description'] : '';
 
         if ($id) {
-            $objResult = $objDatabase->SelectLimit("SELECT * FROM `".DBPREFIX."module_{$this->moduleName}_task_types` WHERE id = $id" ,1);
+            $objResult = $objDatabase->SelectLimit("SELECT * FROM `".DBPREFIX."module_{$this->moduleName}_task_types` WHERE id = $id", 1);
 
             $name       = $objResult->fields['name'];
             $active     = ($objResult->fields['status']) ? 1 : 0;
@@ -511,8 +513,8 @@ class CrmLibrary
     /**
      * Get Tasktype Dropdown
      *
-     * @param Template Object $objTpl
-     * @param Integer         $selectedType
+     * @param Object  $objTpl
+     * @param Integer $selectedType
      *
      * @global ADO Connection $objDatabase
      * @global Array          $_ARRAYLANG
@@ -525,7 +527,7 @@ class CrmLibrary
 
         $objResult = $objDatabase->Execute("SELECT id,name FROM ".DBPREFIX."module_{$this->moduleName}_task_types WHERE status=1 ORDER BY sorting");
         $first     = true;
-        while(!$objResult->EOF) {
+        while (!$objResult->EOF) {
             $selected = $selectedType == $objResult->fields['id'] ? "selected" : '';
             if ($first || $selectedType == $objResult->fields['id']) {
                 $objTpl->setVariable(array(
@@ -559,7 +561,7 @@ class CrmLibrary
 
         $objResult = $objDatabase->Execute('SELECT id,label FROM  '.DBPREFIX.'module_'.$this->moduleName.'_customer_types WHERE  active!="0" ORDER BY pos,label');
 
-        while(!$objResult->EOF) {
+        while (!$objResult->EOF) {
             $this->customerTypes[$objResult->fields['id']] = array(
                     'id'    => $objResult->fields['id'],
                     'label' => $objResult->fields['label']
@@ -572,10 +574,10 @@ class CrmLibrary
     /**
      * Get Customertype Dropdown From DB
      *
-     * @param Template Object $objTpl
-     * @param Integer         $selectedId
-     * @param String          $block
-     * @param Array           $options
+     * @param Object  $objTpl
+     * @param Integer $selectedId
+     * @param String  $block
+     * @param Array   $options
      *
      * @global Array $_ARRAYLANG
      *
@@ -626,7 +628,7 @@ class CrmLibrary
                                                 FROM     '.DBPREFIX.'module_'.$this->moduleName.'_currency
                                                 WHERE    active!="0"
                                                 ORDER BY pos,name');
-        while(!$objResultCurrency->EOF) {
+        while (!$objResultCurrency->EOF) {
             //$selected = ($selectedId$contactObj->getCustomerCurrency() == $objResultCurrency->fields['id']) ? "selected" : '';
             $selected = ($selectedId == $objResultCurrency->fields['id']) ? "selected" : '';
 
@@ -643,9 +645,9 @@ class CrmLibrary
     /**
      * Get Industry Type Dropdown From DB
      *
-     * @param Template Object $objTpl
-     * @param Integer         $selectedId
-     * @param String          $block
+     * @param Object  $objTpl
+     * @param Integer $selectedId
+     * @param String  $block
      *
      * @global Array          $_ARRAYLANG
      * @global ADO Connection $objDatabase
@@ -663,7 +665,7 @@ class CrmLibrary
                                                          LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_industry_type_local` AS Inloc
                                                             ON Intype.id = Inloc.entry_id
                                                          WHERE Inloc.lang_id = ".$_LANGID." AND Intype.status = 1 ORDER BY sorting ASC ");
-        while(!$objResultIndustryType->EOF) {
+        while (!$objResultIndustryType->EOF) {
             $selected = ($selectedId == $objResultIndustryType->fields['id']) ? "selected" : '';
 
             $objTpl->setVariable(array(
@@ -679,7 +681,7 @@ class CrmLibrary
     /**
      * Parse the contacts
      *
-     * @param Array $input
+     * @param Array $input input value
      *
      * @return Array
      */
@@ -689,24 +691,24 @@ class CrmLibrary
         foreach ($input as $key => $value) {
             $splitKeys = explode("_", $key);
             switch ($splitKeys[0]) {
-                case 'contactemail':
-                case 'contactphone':
+            case 'contactemail':
+            case 'contactphone':
                     $result[$splitKeys[0]][] = array('type' => $splitKeys[2], 'primary' => $splitKeys[3], 'value' => $value);
-                    break;
-                case 'contactwebsite':
-                case 'contactsocial':
+                break;
+            case 'contactwebsite':
+            case 'contactsocial':
                     $result[$splitKeys[0]][$splitKeys[1]] = array('profile' => $splitKeys[2], 'primary' => $splitKeys[3], 'value' => $value);
-                    break;
-                case 'website':
+                break;
+            case 'website':
                     $result['contactwebsite'][$splitKeys[1]]['id'] = $value;
-                    break;
-                case 'contactAddress':
-                    if ($this->addressValues[$splitKeys[2]] == "address") $result[$splitKeys[0]][$splitKeys[1]]["primary"] = $splitKeys[3];
+                break;
+            case 'contactAddress':
+                if ($this->addressValues[$splitKeys[2]] == "address") $result[$splitKeys[0]][$splitKeys[1]]["primary"] = $splitKeys[3];
                     $result[$splitKeys[0]][$splitKeys[1]][$this->addressValues[$splitKeys[2]]] = $value;
-                    break;
-                default:
-                    $result[$key]            = $value;
-                    break;
+                break;
+            default:
+                    $result[$key] = $value;
+                break;
             }
         }
 
@@ -752,7 +754,7 @@ class CrmLibrary
         // Selecting the Country Name from the Database
         $objResult =   $objDatabase->Execute('SELECT  iso_code_2,id,name FROM '.DBPREFIX.'lib_country ORDER BY id' );
 
-        while(!$objResult->EOF) {
+        while (!$objResult->EOF) {
             $this->countries[$objResult->fields['id']] = array("id" => $objResult->fields['id'], "name" => $objResult->fields['name'], "iso_code_2" => $objResult->fields['iso_code_2']);
 
             $objResult->MoveNext();
@@ -893,37 +895,37 @@ class CrmLibrary
     function formattedWebsite($url = '', $urlProfile = 0)
     {
         switch ($urlProfile) {
-            // linkedIn
-            case 3:
+        // linkedIn
+        case 3:
                 $formattedValue = "<a href='http://".preg_replace("`^http://`is", "", urldecode($url))."'>".urldecode($url)."</a>";
-                break;
-            // skype
-            case 1:
+            break;
+        // skype
+        case 1:
                 $formattedValue = "<a href='skype:".contrexx_raw2xhtml($url)."?chat'>".contrexx_raw2xhtml($url)."</a>";
-                break;
-            // livejournal, myspace, bologger, jabber,aim
-            case 5:case 6:case 8: case 12: case 13:
+            break;
+        // livejournal, myspace, bologger, jabber,aim
+        case 5:case 6:case 8: case 12: case 13:
                 $formattedValue = contrexx_raw2xhtml($url);
-                break;
-            // gmail, yahoo, msn (mail)
-            case 7:case 9:case 10:
+            break;
+        // gmail, yahoo, msn (mail)
+        case 7:case 9:case 10:
                 $formattedValue = "<a href='mailto:".contrexx_raw2xhtml($url)."'>".contrexx_raw2xhtml($url)."</a>";
-                break;
-            // twitter
-            case 2:
+            break;
+        // twitter
+        case 2:
                 $formattedValue = "<a href='http://twitter.com/".contrexx_raw2xhtml($url)."'>".contrexx_raw2xhtml($url)."</a>";
-                break;
-            // facebook
-            case 4:
+            break;
+        // facebook
+        case 4:
                 $formattedValue = "<a href='http://facebook.com/".contrexx_raw2xhtml($url)."'>".contrexx_raw2xhtml($url)."</a>";
-                break;
-            // icq
-            case 11:
+            break;
+        // icq
+        case 11:
                 $formattedValue = "<a href='http://icq.com/people/".contrexx_raw2xhtml($url)."'>".contrexx_raw2xhtml($url)."</a>";
-                break;
-            default:
+            break;
+        default:
                 $formattedValue = "<a href='http://".preg_replace("`^http://`is", "", urldecode($url))."'>".urldecode($url)."</a>";
-                break;
+            break;
         }
         return $formattedValue;
     }
@@ -1051,7 +1053,7 @@ class CrmLibrary
 
         if (!empty($successEntrys) && is_array($successEntrys)) {
 
-            $ids = implode(',',$successEntrys);
+            $ids = implode(',', $successEntrys);
             $setValue = $deactivate ? 0 : 1;
 
             $query = "UPDATE `".DBPREFIX."module_".$this->moduleName."_success_rate` SET `status` = CASE id ";
@@ -1086,7 +1088,7 @@ class CrmLibrary
 
         if (!empty($successEntrySorting) && is_array($successEntrySorting)) {
 
-            $ids = implode(',',array_keys($successEntrySorting));
+            $ids = implode(',', array_keys($successEntrySorting));
 
             $query = "UPDATE `".DBPREFIX."module_".$this->moduleName."_success_rate` SET `sort` = CASE id ";
             foreach ($successEntrySorting as $idValue => $value ) {
@@ -1113,7 +1115,7 @@ class CrmLibrary
 
         if (!empty($successEntries) && is_array($successEntries)) {
 
-            $ids = implode(',',$successEntries);
+            $ids = implode(',', $successEntries);
 
             $query = "DELETE FROM `".DBPREFIX."module_".$this->moduleName."_success_rate` WHERE id IN ($ids)";
             $objResult = $objDatabase->Execute($query);
@@ -1156,7 +1158,7 @@ class CrmLibrary
 
         if (!empty($industryEntrys) && is_array($industryEntrys)) {
 
-            $ids = implode(',',$industryEntrys);
+            $ids = implode(',', $industryEntrys);
             $setValue = $deactivate ? 0 : 1;
 
             $query = "UPDATE `".DBPREFIX."module_".$this->moduleName."_industry_types` SET `status` = CASE id ";
@@ -1192,7 +1194,7 @@ class CrmLibrary
 
         if (!empty($industryEntrySorting) && is_array($industryEntrySorting)) {
 
-            $ids = implode(',',array_keys($industryEntrySorting));
+            $ids = implode(',', array_keys($industryEntrySorting));
 
             $query = "UPDATE `".DBPREFIX."module_".$this->moduleName."_industry_types` SET `sorting` = CASE id ";
             foreach ($industryEntrySorting as $idValue => $value ) {
@@ -1220,7 +1222,7 @@ class CrmLibrary
 
         if (!empty($indusEntries) && is_array($indusEntries)) {
 
-            $ids = implode(',',$indusEntries);
+            $ids = implode(',', $indusEntries);
 
             $query = "DELETE FROM `".DBPREFIX."module_".$this->moduleName."_industry_types` WHERE id IN ($ids)";
             $objResult = $objDatabase->Execute($query);
@@ -1263,7 +1265,7 @@ class CrmLibrary
 
         if (!empty($entries) && is_array($entries)) {
 
-            $ids = implode(',',$entries);
+            $ids = implode(',', $entries);
             $setValue = $deactivate ? 0 : 1;
 
             $query = "UPDATE `".DBPREFIX."module_".$this->moduleName."_memberships` SET `status` = CASE id ";
@@ -1299,7 +1301,7 @@ class CrmLibrary
 
         if (!empty($entriesSorting) && is_array($entriesSorting)) {
 
-            $ids = implode(',',array_keys($entriesSorting));
+            $ids = implode(',', array_keys($entriesSorting));
 
             $query = "UPDATE `".DBPREFIX."module_".$this->moduleName."_memberships` SET `sorting` = CASE id ";
             foreach ($entriesSorting as $idValue => $value ) {
@@ -1330,7 +1332,7 @@ class CrmLibrary
 
         if (!empty($entries) && is_array($entries)) {
 
-            $ids = implode(',',$entries);
+            $ids = implode(',', $entries);
 
             $query = "DELETE m.*, ml.* FROM `".DBPREFIX."module_{$this->moduleName}_memberships` AS m
                                    LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_membership_local` AS ml
@@ -1384,7 +1386,7 @@ class CrmLibrary
 
         if (!empty($successEntrys) && is_array($successEntrys)) {
 
-            $ids = implode(',',$successEntrys);
+            $ids = implode(',', $successEntrys);
             $setValue = $deactivate ? 0 : 1;
 
             $query = "UPDATE `".DBPREFIX."module_".$this->moduleName."_stages` SET `status` = CASE id ";
@@ -1419,7 +1421,7 @@ class CrmLibrary
 
         if (!empty($successEntrySorting) && is_array($successEntrySorting)) {
 
-            $ids = implode(',',array_keys($successEntrySorting));
+            $ids = implode(',', array_keys($successEntrySorting));
 
             $query = "UPDATE `".DBPREFIX."module_".$this->moduleName."_stages` SET `sorting` = CASE id ";
             foreach ($successEntrySorting as $idValue => $value ) {
@@ -1448,7 +1450,7 @@ class CrmLibrary
 
         if (!empty($successEntries) && is_array($successEntries)) {
 
-            $ids = implode(',',$successEntries);
+            $ids = implode(',', $successEntries);
 
             $query = "DELETE FROM `".DBPREFIX."module_".$this->moduleName."_stages` WHERE id IN ($ids)";
             $objResult = $objDatabase->Execute($query);
@@ -1490,16 +1492,16 @@ class CrmLibrary
 
         if (!empty($dealsEntries) && is_array($dealsEntries)) {
 
-            $ids = implode(',',$dealsEntries);
+            $ids = implode(',', $dealsEntries);
 
             // cahnge project to deleted status if pm module integrated
-            if($deleteProjects) {
+            if ($deleteProjects) {
                 $deletedStatusId = $objDatabase->getOne("SELECT projectstatus_id FROM ".DBPREFIX."module_".$this->pm_moduleName."_project_status WHERE deleted = 1");
                 $objProjects     = $objDatabase->Execute("SELECT project_id FROM `".DBPREFIX."module_".$this->moduleName."_deals` WHERE id IN ($ids)");
 
                 $projectToBeDeleted = array();
                 if ($objProjects) {
-                    while(!$objProjects->EOF) {
+                    while (!$objProjects->EOF) {
                         $projectToBeDeleted[] = (int) $objProjects->fields['project_id'];
                         $objProjects->MoveNext();
                     }
@@ -1526,13 +1528,14 @@ class CrmLibrary
      *
      * @return null
      */
-    function deleteDeal($deleteProjects = false) {
+    function deleteDeal($deleteProjects = false)
+    {
         global $objDatabase;
 
         $id     = (int) $_GET['id'];
 
         // cahnge project to deleted status if pm module integrated
-        if($deleteProjects) {
+        if ($deleteProjects) {
             $deletedStatusId = $objDatabase->getOne("SELECT projectstatus_id FROM ".DBPREFIX."module_".$this->pm_moduleName."_project_status WHERE deleted = 1");
             $objProjects     = $objDatabase->Execute("SELECT project_id FROM `".DBPREFIX."module_".$this->moduleName."_deals` WHERE id = $id");
 
@@ -1626,7 +1629,8 @@ class CrmLibrary
      *
      * @return null
      */
-    function getDatasourceDropDown($objTpl, $block= 'datasource', $selectedId = 0) {
+    function getDatasourceDropDown($objTpl, $block= 'datasource', $selectedId = 0)
+    {
         $datasources = $this->getCrmDatasource();
 
         foreach ($datasources as $id => $datasource) {
@@ -1680,7 +1684,7 @@ class CrmLibrary
      *
      * @return Array
      */
-    function  getMemberships($active = true)
+    function getMemberships($active = true)
     {
         global $objDatabase, $_LANGID;
 
@@ -1725,7 +1729,7 @@ class CrmLibrary
         if (!isset($this->model_industry_types->arrIndustryTypes))
             $this->model_industry_types->arrIndustryTypes = $this->model_industry_types->getIndustryTypes(null, null, true);
 
-        if(!isset($arrParentIds)) {
+        if (!isset($arrParentIds)) {
             $arrIndustries = $this->model_industry_types->arrIndustryTypes;
         } else {
             $arrChildren = $this->model_industry_types->arrIndustryTypes;
@@ -1737,69 +1741,66 @@ class CrmLibrary
         }
 
         switch ($intView) {
-            case 1:
-                //backend overview page
-                foreach ($arrIndustries as $key => $arrIndustry) {
-                    //generate space
-                    $spacer = null;
-                    $intSpacerSize = null;
-                    $intSpacerSize = (count($arrParentIds)*21);
-                    $spacer .= '<img src="images/icons/pixel.gif" border="0" width="'.$intSpacerSize.'" height="11" alt="" />';
+        case 1:
+            //backend overview page
+            foreach ($arrIndustries as $key => $arrIndustry) {
+            //generate space
+                $spacer = null;
+                $intSpacerSize = null;
+                $intSpacerSize = (count($arrParentIds)*21);
+                $spacer .= '<img src="images/icons/pixel.gif" border="0" width="'.$intSpacerSize.'" height="11" alt="" />';
 
-                    //parse variables
-                    $activeImage = ($arrIndustry['status']) ? 'images/icons/led_green.gif' : 'images/icons/led_red.gif';
-                    $objTpl->setVariable(array(
-                            'ENTRY_ID'           => $arrIndustry['id'],
-                            'CRM_SORTING'        => (int) $arrIndustry['sorting'],
-                            'CRM_SUCCESS_STATUS' => $activeImage,
-                            'CRM_INDUSTRY_ICON'  => $spacer,
-                            'CRM_INDUSTRY_NAME'  => contrexx_raw2xhtml($arrIndustry['name'])
-                    ));
-                    $objTpl->parse('industryEntries');
+                //parse variables
+                $activeImage = ($arrIndustry['status']) ? 'images/icons/led_green.gif' : 'images/icons/led_red.gif';
+                $objTpl->setVariable(array(
+                    'ENTRY_ID'           => $arrIndustry['id'],
+                    'CRM_SORTING'        => (int) $arrIndustry['sorting'],
+                    'CRM_SUCCESS_STATUS' => $activeImage,
+                    'CRM_INDUSTRY_ICON'  => $spacer,
+                    'CRM_INDUSTRY_NAME'  => contrexx_raw2xhtml($arrIndustry['name'])
+                ));
+                $objTpl->parse('industryEntries');
 
+                $arrParentIds[] = $arrIndustry['id'];
+
+                //get children
+                if (!empty($arrIndustry['children'])) {
+                    $this->listIndustryTypes($objTpl, 1, $intIndustryId, $arrParentIds);
+                }
+                @array_pop($arrParentIds);
+            }
+            break;
+        case 2: // Industry Drop down menu
+            $strDropdownOptions = '';
+            foreach ($arrIndustries as $key => $arrIndustry) {
+                $spacer = null;
+                $intSpacerSize = null;
+
+                if ($arrIndustry['id'] == $intIndustryId) {
+                    $strSelected = 'selected="selected"';
+                } else {
+                    $strSelected = '';
+                }
+
+                //generate space
+                $intSpacerSize = (count($arrParentIds));
+                for ($i = 0; $i < $intSpacerSize; $i++) {
+                    $spacer .= "----";
+                }
+
+                if ($spacer != null) {
+                    $spacer .= "&nbsp;";
+                }
+
+                $strDropdownOptions .= '<option value="'.$arrIndustry['id'].'" '.(($arrIndustry['status']) ? "" : "style='color:#FF7B7B'").' '.$strSelected.' >'.$spacer.contrexx_raw2xhtml($arrIndustry['name']).'</option>';
+
+                if (!empty($arrIndustry['children'])) {
                     $arrParentIds[] = $arrIndustry['id'];
-
-                    //get children
-                    if(!empty($arrIndustry['children'])){
-                        $this->listIndustryTypes($objTpl, 1, $intIndustryId, $arrParentIds);
-                    }
-
+                    $strDropdownOptions .= $this->listIndustryTypes($objTpl, 2, $intIndustryId, $arrParentIds);
                     @array_pop($arrParentIds);
                 }
-                break;
-            case 2: // Industry Drop down menu
-
-                $strDropdownOptions = '';
-                foreach ($arrIndustries as $key => $arrIndustry) {
-                    $spacer = null;
-                    $intSpacerSize = null;
-
-                    if($arrIndustry['id'] == $intIndustryId) {
-                        $strSelected = 'selected="selected"';
-                    } else {
-                        $strSelected = '';
-                    }
-
-                    //generate space
-                    $intSpacerSize = (count($arrParentIds));
-                    for($i = 0; $i < $intSpacerSize; $i++) {
-                        $spacer .= "----";
-                    }
-
-                    if($spacer != null) {
-                    	$spacer .= "&nbsp;";
-                    }
-
-                    $strDropdownOptions .= '<option value="'.$arrIndustry['id'].'" '.(($arrIndustry['status']) ? "" : "style='color:#FF7B7B'").' '.$strSelected.' >'.$spacer.contrexx_raw2xhtml($arrIndustry['name']).'</option>';
-
-                    if(!empty($arrIndustry['children'])) {
-                        $arrParentIds[] = $arrIndustry['id'];
-                        $strDropdownOptions .= $this->listIndustryTypes($objTpl, 2, $intIndustryId, $arrParentIds);
-                        @array_pop($arrParentIds);
-                    }
-                }
-
-                return $strDropdownOptions;
+            }
+            return $strDropdownOptions;
             break;
         }
     }
@@ -2338,15 +2339,15 @@ class CrmLibrary
 
             foreach ($arrLetters as $letter) {
                 switch ($letter) {
-                    case 48:
+                case 48:
                         $parsedLetter = '#';
-                        break;
-                    case '':
+                    break;
+                case '':
                         $parsedLetter = $_CORELANG['TXT_ACCESS_ALL'];
-                        break;
-                    default:
+                    break;
+                default:
                         $parsedLetter = chr($letter);
-                        break;
+                    break;
                 }
 
                 if ($letter == '' && $selectedLetter == '' || chr($letter) == $selectedLetter) {

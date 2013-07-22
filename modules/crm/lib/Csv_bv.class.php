@@ -1,18 +1,26 @@
 <?php
 /**
  * Read and write CSV files
- * @package     contrexx
- * @subpackage  module_crm
- * @version     2.1.0
- * @author      Reto Kohli <reto.kohli@comvation.com> (PHP5 and fixes)
+ *
+ * @category   Csv_bv
+ * @package    Contrexx
+ * @subpackage Module_Crm
+ * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
+ * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @license    trial license
+ * @link       www.contrexx.com
  */
 
 /**
- * CSV class for importing and exporting CSV files
- * @package     contrexx
- * @subpackage  module_crm
- * @version     2.1.0
- * @author      Reto Kohli <reto.kohli@comvation.com> (PHP5 and fixes)
+ * Read and write CSV files
+ *
+ * @category   Csv_bv
+ * @package    Contrexx
+ * @subpackage Module_Crm
+ * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
+ * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @license    trial license
+ * @link       www.contrexx.com
  */
 class Csv_bv
 {
