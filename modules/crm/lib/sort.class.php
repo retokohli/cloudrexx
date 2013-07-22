@@ -4,12 +4,13 @@
  *
  * PHP version 5.3 or >
  *
- * @category crmInterface
- * @package  PM_CRM_Tool
- * @author   ss4ugroup <ss4ugroup@softsolutions4u.com>
- * @license  BSD Licence
- * @version  1.0.0
- * @link     http://mycomvation.com/po/cadmin
+ * @category   Sorter
+ * @package    contrexx
+ * @subpackage Module_Crm
+ * @author     ss4ugroup <ss4ugroup@softsolutions4u.com>
+ * @license    BSD Licence
+ * @version    1.0.0
+ * @link       www.contrexx.com
  */
 
 /**
@@ -17,12 +18,13 @@
  *
  * PHP version 5.3 or >
  *
- * @category crmInterface
- * @package  PM_CRM_Tool
- * @author   ss4ugroup <ss4ugroup@softsolutions4u.com>
- * @license  BSD Licence
- * @version  1.0.0
- * @link     http://mycomvation.com/po/cadmin
+ * @category   Sorter
+ * @package    contrexx
+ * @subpackage Module_Crm
+ * @author     ss4ugroup <ss4ugroup@softsolutions4u.com>
+ * @license    BSD Licence
+ * @version    1.0.0
+ * @link       www.contrexx.com
  */
 
 class Sorter

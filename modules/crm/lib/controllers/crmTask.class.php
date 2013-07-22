@@ -4,23 +4,25 @@
  *
  * PHP version 5.3 or >
  *
- * @category crmTask
- * @package  PM_CRM_Tool
- * @author   ss4ugroup <ss4ugroup@softsolutions4u.com>
- * @license  BSD Licence
- * @version  1.0.0
- * @link     http://mycomvation.com/po/cadmin
+ * @category   CrmTask
+ * @package    Contrexx
+ * @subpackage Module_Crm
+ * @author     ss4ugroup <ss4ugroup@softsolutions4u.com>
+ * @license    BSD Licence
+ * @version    1.0.0
+ * @link       www.contrexx.com
  */
 
 /**
  * This is the crmTask class file for handling the all functionalities under task menu. 
  *
- * @category crmTask
- * @package  PM_CRM_Tool
- * @author   ss4ugroup <ss4ugroup@softsolutions4u.com>
- * @license  BSD Licence
- * @version  1.0.0
- * @link     http://mycomvation.com/po/cadmin
+ * @category   CrmTask
+ * @package    Contrexx
+ * @subpackage Module_Crm
+ * @author     ss4ugroup <ss4ugroup@softsolutions4u.com>
+ * @license    BSD Licence
+ * @version    1.0.0
+ * @link       www.contrexx.com
  */
 
 class crmTask extends CrmLibrary
@@ -30,7 +32,7 @@ class crmTask extends CrmLibrary
      *
      * @param object
      */
-    public $_objTpl;
+    private $_objTpl;
 
     /**
      * sort fields
@@ -64,9 +66,9 @@ class crmTask extends CrmLibrary
     /**
      * php 5.3 contructor
      *
-     * @param object $objTpl
+     * @param object $objTpl template object
      */
-    function  __construct($objTpl)
+    function __construct($objTpl)
     {
         $this->_objTpl = $objTpl;
     }
@@ -310,10 +312,10 @@ class crmTask extends CrmLibrary
         if (isset($_POST['addtask'])) {
             if (!empty($id)) {
                 if (
-                        $objFWUser->objUser->getAdminStatus() ||
-                        $added_user == $objFWUser->objUser->getId() ||
-                        $assigned_user == $assignedto
-                    ) {
+                    $objFWUser->objUser->getAdminStatus() ||
+                    $added_user == $objFWUser->objUser->getId() ||
+                    $assigned_user == $assignedto
+                ) {
                         $query = "UPDATE ".DBPREFIX."module_{$this->moduleName}_task
                                    SET `task_title`    = '$title',
                                        `task_type_id`  = '$type',
@@ -323,7 +325,7 @@ class crmTask extends CrmLibrary
                                        `description`   = '".contrexx_raw2db($description)."'
                                         WHERE id= '$id'";
                         $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_TASK_UPDATE_MESSAGE'];
-                    } else {
+                } else {
                         $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_TASK_RESPONSIBLE_ERR'];
                     }                
             } else {
@@ -404,7 +406,7 @@ class crmTask extends CrmLibrary
                 'CRM_DUE_DATE'          => contrexx_raw2xhtml($duedate),
                 'CRM_CUSTOMER_ID'       => intval($customer),
                 'CRM_CUSTOMER_NAME'     => contrexx_raw2xhtml($customerName),
-                'CRM_TASK_DESC'         => new \Cx\Core\Wysiwyg\Wysiwyg('description', contrexx_raw2xhtml($description)),
+                'CRM_TASK_DESC'         => new \Cx\Core\Wysiwyg\Wysiwyg('description', contrexx_raw2xhtml($description), 'pm_small'),
                 'CRM_BACK_LINK'         => base64_decode($redirect),
 
                 'TXT_CRM_ADD_TASK'             => empty($id)? $_ARRAYLANG['TXT_CRM_ADD_TASK'] : $_ARRAYLANG['TXT_CRM_EDITTASK'],

@@ -50,6 +50,8 @@ class EventDispatcher
 
     /**
      * Dublicate copy
+     *
+     * @return null
      */
     private function __clone() {}
 
@@ -70,8 +72,10 @@ class EventDispatcher
     /**
      * Add handler
      * 
-     * @param String       $event_name
-     * @param EventHandler $event_handler
+     * @param String       $event_name    event name
+     * @param EventHandler $event_handler event handler
+     *
+     * @return null
      */
     function addHandler($event_name, EventHandler $event_handler)
     {
@@ -81,9 +85,9 @@ class EventDispatcher
     /**
      * Trigger the event
      * 
-     * @param String $event_name
-     * @param String $context
-     * @param String $info
+     * @param String $event_name event name
+     * @param String $context    event context
+     * @param String $info       event info
      *
      * @return boolean
      */
@@ -97,7 +101,7 @@ class EventDispatcher
         $event = new Event($event_name, $context, $info);
 
         /** @var $handler EventHandler */
-        foreach($this->handlers[$event_name] as $handler) {
+        foreach ($this->handlers[$event_name] as $handler) {
             if (!$event->isCancelled()) {
                 $handler->handleEvent($event);
             } else {

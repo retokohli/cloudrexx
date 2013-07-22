@@ -2,7 +2,7 @@
 /**
  * Admin Class CRM
  *
- * @category   Sample_Category
+ * @category   CrmManager
  * @package    Contrexx
  * @subpackage Module_Crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
@@ -18,7 +18,7 @@ require_once CRM_MODULE_LIB_PATH.'/Csv_bv.class.php';
 /**
  * Admin Class CRM
  *
- * @category   Sample_Category
+ * @category   CrmManager
  * @package    Contrexx
  * @subpackage Module_Crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
@@ -44,12 +44,6 @@ class CrmManager extends CrmLibrary
      * @var string
      */
     var $_pageTitle;
-
-    /**
-     * CSV Import class
-     * @var CSVimport
-     */
-    public $objCSVimport;
 
     /**
      *  class Javascript;
@@ -87,8 +81,6 @@ class CrmManager extends CrmLibrary
         global $objTemplate, $_ARRAYLANG, $objJs;
         parent::__construct();
         $objJs = new Javascript();
-        $this->objCSVimport = new CSVimport();
-        // $objJs = new Javascript();
 
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/'.$this->moduleName.'/template');
         CSRF::add_placeholder($this->_objTpl);
@@ -850,9 +842,9 @@ class CrmManager extends CrmLibrary
                             'CRM_CONTACT_EMAIL'         => contrexx_raw2xhtml($objResult->fields['email']),
                             'CRM_ADDED_DATE'            => contrexx_raw2xhtml($objResult->fields['added_date']),
                             'CRM_ACTIVITIES_COUNT'      => $objResult->fields['activities'],
-                            'CRM_CONTACT_NOTES_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id={$objResult->fields['id']}#ui-tabs-1' title=''>{$_ARRAYLANG['TXT_CRM_COMMENT_TITLE']} ({$notesCount})</a>",
-                            'CRM_CONTACT_TASK_COUNT'    => "<a href='./index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id={$objResult->fields['id']}#ui-tabs-2' title=''>{$_ARRAYLANG['TXT_CRM_TASKS']} ({$tasksCount})</a>",
-                            'CRM_CONTACT_DEALS_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id={$objResult->fields['id']}#ui-tabs-$opLinkId' title=''>{$_ARRAYLANG['TXT_CRM_OPPORTUNITY']} ({$dealsCount})</a>",
+                            'CRM_CONTACT_NOTES_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id={$objResult->fields['id']}#notes' title=''>{$_ARRAYLANG['TXT_CRM_COMMENT_TITLE']} ({$notesCount})</a>",
+                            'CRM_CONTACT_TASK_COUNT'    => "<a href='./index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id={$objResult->fields['id']}#tasks' title=''>{$_ARRAYLANG['TXT_CRM_TASKS']} ({$tasksCount})</a>",
+                            'CRM_CONTACT_DEALS_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id={$objResult->fields['id']}#deals' title=''>{$_ARRAYLANG['TXT_CRM_OPPORTUNITY']} ({$dealsCount})</a>",
                             'CRM_CONTACT_ADDED_NEW'     => strtotime($today) == strtotime($objResult->fields['added_date']) ? '<img src="../images/modules/crm/new.png" alt="new" />' : '',
                             'CRM_ROW_CLASS'             => $row = ($row == "row2") ? "row1" : "row2",
                             'CRM_CONTACT_PROFILE_IMAGE' => !empty($objResult->fields['profile_picture']) ? contrexx_raw2xhtml($objResult->fields['profile_picture'])."_40X40.thumb" : 'profile_person_small.png',
@@ -1181,7 +1173,7 @@ class CrmManager extends CrmLibrary
                                 'CRM_CONTACT_ADDED'  => $objContacts->fields['added_date'],
                                 'CRM_CONTACT_TYPE'   => $objContacts->fields['label'],
                                 'ROW_CLASS'          => $row = ($row == 'row2') ? 'row1': 'row2',
-                                'CRM_CONTACTS_PROFILE_IMAGE'     => !empty($objContacts->fields['profile_picture']) ? contrexx_raw2xhtml($objContacts->fields['profile_picture'])."_40X40.thumb" : 'profile_company_small.png',
+                                'CRM_CONTACTS_PROFILE_IMAGE'     => !empty($objContacts->fields['profile_picture']) ? contrexx_raw2xhtml($objContacts->fields['profile_picture'])."_40X40.thumb" : 'profile_person_small.png',
                                 'CONTACT_REDIRECT_LINK' => '&redirect='.base64_encode("&act=customers&tpl=showcustdetail&id=$contactId"),
                         ));
                         $this->_objTpl->parse('customerContacts');
@@ -2654,7 +2646,7 @@ END;
         $noteDate       = isset($_POST['date']) ? contrexx_input2raw($_POST['date']) : date('Y-m-d');
         $projectid      = isset($_REQUEST['projectid']) ? (int) $_REQUEST['projectid'] : 0;
         $redirect       = isset($_REQUEST['redirect']) ? $_REQUEST['redirect'] : base64_encode("./index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id={$customerId}");
-
+        
         $description    = isset($_POST['customer_comment']) ? $_POST['customer_comment'] : '';
 
         $userid     = $objFWUser->objUser->getId();
@@ -2713,6 +2705,12 @@ END;
                     $noteType    = $objResult->fields['notes_type'];
                     $noteDate    = $objResult->fields['date'];
                 }
+            } else if (empty($id)) {
+                $noteTypeId = isset ($_GET['notes_type']) ? (int) $_GET['notes_type'] : '';
+                if (!empty ($noteTypeId)) {
+                    $noteTypeName = $objDatabase->Execute("SELECT id,name FROM ".DBPREFIX."module_".$this->moduleName."_notes WHERE status=1 AND id = $noteTypeId");
+                    $noteType     = $noteTypeName->fields['name'];
+                }
             }
 
             $objResult = $objDatabase->Execute("SELECT id,name FROM ".DBPREFIX."module_".$this->moduleName."_notes WHERE status=1 ORDER BY pos");
@@ -2732,7 +2730,7 @@ END;
                 'CRM_NOTES_TYPE'            => ($noteTypeId) ? contrexx_raw2xhtml($noteType) : $_ARRAYLANG['TXT_CRM_TASK_SELECTNOTES'],
                 'CRM_NOTES_DATE'            => contrexx_raw2xhtml($noteDate),
                 'CRM_CUSTOMER_ID'           => $customerId,
-                'CRM_COMMENT_DESCRIPTION'   =>  new \Cx\Core\Wysiwyg\Wysiwyg('customer_comment', contrexx_raw2xhtml($description))
+                'CRM_COMMENT_DESCRIPTION'   =>  new \Cx\Core\Wysiwyg\Wysiwyg('customer_comment', contrexx_raw2xhtml($description), 'pm_fullpage')
             ));
         } else {
             $this->_strErrMessage = "Customer should not be empty";
@@ -2746,7 +2744,7 @@ END;
             'TXT_CRM_SAVE'                  => $_ARRAYLANG['TXT_CRM_SAVE'],
             'TXT_CRM_BACK'                  => $_ARRAYLANG['TXT_CRM_BACK'],
             'TXT_CRM_DUE_DATE'              => $_ARRAYLANG['TXT_CRM_DUE_DATE'],
-            'TXT_CRM_BACK_LINK'             => base64_decode($redirect)
+            'TXT_CRM_BACK_LINK'             => isset ($_GET['notes_type']) ? "./index.php?cmd=pm&act=projects&tpl=projectdetails&projectid=$projectid" : base64_decode($redirect)
         ));
     }
 
@@ -4561,7 +4559,7 @@ END;
             $objPmLib->getProjectPriorityDropdown($objTpl, $projectFileds['priority']);
 
             $objTpl->setvariable(array(
-                    'PROJECT_BILLING_INFO'              => new \Cx\Core\Wysiwyg\Wysiwyg('billing_info', contrexx_raw2xhtml($projectFileds['bill_info'])),
+                    'PROJECT_BILLING_INFO'              => new \Cx\Core\Wysiwyg\Wysiwyg('billing_info', contrexx_raw2xhtml($projectFileds['bill_info']), 'pm_fullpage'),
                     'PROJECT_INVOICETYPE_PROJECT'       => ($projectFileds['invoice_type'] == 3) ? 'checked=checked' : '',
                     'PROJECT_INVOICETYPE_COLLECTIVE'    => ($projectFileds['invoice_type'] == 2) ? 'checked=checked' : '',
                     'PROJECT_INVOICETYPE_INTERNAL'      => ($projectFileds['invoice_type'] == 1) ? 'checked=checked' : '',
@@ -4619,7 +4617,7 @@ END;
                 'DEALS_DUE_DATE'                => contrexx_raw2xhtml($fields['due_date']),
                 'CRM_REDIRECT_LINK'             => $redirect,
                 'CRM_BACK_LINK'                 => base64_decode($redirect),
-                'CRM_DEALS_DESCRIPTION'         => new \Cx\Core\Wysiwyg\Wysiwyg('description', contrexx_raw2xhtml($fields['description'])),
+                'CRM_DEALS_DESCRIPTION'         => new \Cx\Core\Wysiwyg\Wysiwyg('description', contrexx_raw2xhtml($fields['description']), 'pm_small'),
                 'TXT_CRM_DEALS_TITLE'           => $_ARRAYLANG['TXT_CRM_DEALS_TITLE'],
                 'TXT_CRM_SELECT_MEMBER_NAME'        => $_ARRAYLANG['TXT_CRM_SELECT_MEMBER_NAME'],
                 'CRM_MODIFY_DEAL_DESCRIPTION'   => $_ARRAYLANG['TXT_CRM_DESCRIPTION'],

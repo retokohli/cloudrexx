@@ -28,10 +28,10 @@ class IndustryType
     /**
     * Module Name
     *
-    * @access private
+    * @access public
     * @var string
     */
-    private $moduleName = "crm";
+    public $moduleName = "crm";
 
     /**
     * Module Name
@@ -44,7 +44,7 @@ class IndustryType
     /**
      * Constructor
      */
-    function  __construct()
+    function __construct()
     {
         $this->arrIndustryTypes = $this->getIndustryTypes();
     }
@@ -55,7 +55,6 @@ class IndustryType
      * @param Integer $intIndustryId industry id
      * @param Integer $intParentId   parent id
      * @param Boolean $status        status
-     * 
      *
      * @return array
      */
@@ -77,12 +76,11 @@ class IndustryType
             }            
         }
 
-        if($status) {
+        if ($status) {
             $whereActive = "AND (Intype.status = '1') ";
         } else {
-			$whereActive = '';
+            $whereActive = '';
 	}
-
         $sortOrder = 'ORDER BY sorting ASC';
 
         $objIndustries = $objDatabase->Execute("SELECT Intype.id,
@@ -127,7 +125,7 @@ class IndustryType
      *
      * @return null
      */
-    function  __set($name,  $value)
+    function __set($name,  $value)
     {
         $this->{$name} = $value;
     }
@@ -139,7 +137,7 @@ class IndustryType
      *
      * @return String
      */
-    function  __get($name)
+    function __get($name)
     {
         return $this->{$name};
     }

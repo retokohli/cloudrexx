@@ -4,23 +4,25 @@
  *
  * PHP version 5.3 or >
  *
- * @category crmInterface
- * @package  PM_CRM_Tool
- * @author   ss4ugroup <ss4ugroup@softsolutions4u.com>
- * @license  BSD Licence
- * @version  1.0.0
- * @link     http://mycomvation.com/po/cadmin
+ * @category   CrmInterface
+ * @package    Contrexx
+ * @subpackage Module_Crm
+ * @author     ss4ugroup <ss4ugroup@softsolutions4u.com>
+ * @license    BSD Licence
+ * @version    1.0.0
+ * @link       www.contrexx.com
  */
 
 /**
  * This is the crmInterface class file for handling the all functionalities under interface menu.
  *
- * @category crmInterface
- * @package  PM_CRM_Tool
- * @author   ss4ugroup <ss4ugroup@softsolutions4u.com>
- * @license  BSD Licence
- * @version  1.0.0
- * @link     http://mycomvation.com/po/cadmin
+ * @category   CrmInterface
+ * @package    Contrexx
+ * @subpackage Module_Crm
+ * @author     ss4ugroup <ss4ugroup@softsolutions4u.com>
+ * @license    BSD Licence
+ * @version    1.0.0
+ * @link       www.contrexx.com
  */
 
 class crmInterface extends CrmLibrary
@@ -77,17 +79,17 @@ class crmInterface extends CrmLibrary
     /**
      * Template object
      *
-     * @access public
+     * @access private
      * @var object
      */
-    public $_objTpl;
+    private $_objTpl;
 
     /**
      * php 5.3 contructor
      *
-     * @param object $objTpl
+     * @param object $objTpl template object
      */
-    function  __construct($objTpl)
+    function __construct($objTpl)
     {
         $this->_objTpl = $objTpl;
         $this->_mediaPath = ASCMS_MEDIA_PATH.'/crm';
@@ -171,7 +173,6 @@ class crmInterface extends CrmLibrary
             'TXT_CRM_IMPORT_NAME'                   => $_ARRAYLANG['TXT_CRM_IMPORT_NAME'],
             'TXT_CRM_EXPORT_NAME'                   => $_ARRAYLANG['TXT_CRM_EXPORT_NAME']
         ));
-        
     }
 
     /**
@@ -350,21 +351,21 @@ class crmInterface extends CrmLibrary
 
         $process = isset ($_GET['process']) ? trim($_GET['process']) : '';
         switch ($process) {
-            case '1':
+        case '1':
                 $activeWhere = " WHERE c.contact_type = 1";
-                break;
-            case '2':
+            break;
+        case '2':
                 $activeWhere = " WHERE c.contact_type = 2";
-                break;
-            case 'active':
+            break;
+        case 'active':
                 $activeWhere = " WHERE c.status = 1";
-                break;
-            default:
+            break;
+        default:
                 $activeWhere = '';
-                break;
+            break;
         }
         
-       $query = "SELECT
+        $query = "SELECT
                            c.id,                           
                            c.customer_id,
                            c.customer_name,
@@ -404,53 +405,53 @@ class crmInterface extends CrmLibrary
         $objResult = $objDatabase->Execute($query);
 
         switch ($process){
-            case '1':
-                $headerCsv = array(
-                    $_ARRAYLANG['TXT_CRM_CONTACT_TYPE'],
-                    $_ARRAYLANG['TXT_CRM_TITLE_COMPANY_NAME'],
-                    $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERID'],
-                    $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERTYPE'],
-                    $_ARRAYLANG['TXT_CRM_INDUSTRY_TYPE'],
-                    $_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP'],
-                    $_ARRAYLANG['TXT_CRM_TITLE_CURRENCY'],
-                    $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMER_ADDEDBY']
-                );
-                break;
-            case '2':
-                $headerCsv = array(
-                    $_ARRAYLANG['TXT_CRM_CONTACT_TYPE'],
-                    $_ARRAYLANG['TXT_CRM_CONTACT_NAME'],
-                    $_ARRAYLANG['TXT_CRM_FAMILY_NAME'],
-                    $_ARRAYLANG['TXT_CRM_GENDER'],
-                    $_ARRAYLANG['TXT_CRM_ROLE'],
-                    $_ARRAYLANG['TXT_CRM_TITLE_COMPANY_NAME'],
-                    $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERID'],
-                    $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERTYPE'],
-                    $_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP'],
-                    $_ARRAYLANG['TXT_CRM_TITLE_CURRENCY'],
-                    $_ARRAYLANG['TXT_CRM_TITLE_LANGUAGE'],
-                    $_ARRAYLANG['TXT_CRM_ACCOUNT_EMAIL'],
-                    $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMER_ADDEDBY']
-                );
-                break;
-            default:
-                $headerCsv = array(
-                    $_ARRAYLANG['TXT_CRM_CONTACT_TYPE'],
-                    $_ARRAYLANG['TXT_CRM_CONTACT_NAME'],
-                    $_ARRAYLANG['TXT_CRM_FAMILY_NAME'],
-                    $_ARRAYLANG['TXT_CRM_GENDER'],
-                    $_ARRAYLANG['TXT_CRM_ROLE'],
-                    $_ARRAYLANG['TXT_CRM_TITLE_COMPANY_NAME'],
-                    $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERID'],
-                    $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERTYPE'],
-                    $_ARRAYLANG['TXT_CRM_INDUSTRY_TYPE'],
-                    $_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP'],
-                    $_ARRAYLANG['TXT_CRM_TITLE_CURRENCY'],
-                    $_ARRAYLANG['TXT_CRM_TITLE_LANGUAGE'],
-                    $_ARRAYLANG['TXT_CRM_ACCOUNT_EMAIL'],
-                    $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMER_ADDEDBY']
-                );
-                break;
+        case '1':
+            $headerCsv = array(
+                $_ARRAYLANG['TXT_CRM_CONTACT_TYPE'],
+                $_ARRAYLANG['TXT_CRM_TITLE_COMPANY_NAME'],
+                $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERID'],
+                $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERTYPE'],
+                $_ARRAYLANG['TXT_CRM_INDUSTRY_TYPE'],
+                $_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP'],
+                $_ARRAYLANG['TXT_CRM_TITLE_CURRENCY'],
+                $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMER_ADDEDBY']
+            );
+            break;
+        case '2':
+            $headerCsv = array(
+                $_ARRAYLANG['TXT_CRM_CONTACT_TYPE'],
+                $_ARRAYLANG['TXT_CRM_CONTACT_NAME'],
+                $_ARRAYLANG['TXT_CRM_FAMILY_NAME'],
+                $_ARRAYLANG['TXT_CRM_GENDER'],
+                $_ARRAYLANG['TXT_CRM_ROLE'],
+                $_ARRAYLANG['TXT_CRM_TITLE_COMPANY_NAME'],
+                $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERID'],
+                $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERTYPE'],
+                $_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP'],
+                $_ARRAYLANG['TXT_CRM_TITLE_CURRENCY'],
+                $_ARRAYLANG['TXT_CRM_TITLE_LANGUAGE'],
+                $_ARRAYLANG['TXT_CRM_ACCOUNT_EMAIL'],
+                $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMER_ADDEDBY']
+            );
+            break;
+        default:
+            $headerCsv = array(
+                $_ARRAYLANG['TXT_CRM_CONTACT_TYPE'],
+                $_ARRAYLANG['TXT_CRM_CONTACT_NAME'],
+                $_ARRAYLANG['TXT_CRM_FAMILY_NAME'],
+                $_ARRAYLANG['TXT_CRM_GENDER'],
+                $_ARRAYLANG['TXT_CRM_ROLE'],
+                $_ARRAYLANG['TXT_CRM_TITLE_COMPANY_NAME'],
+                $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERID'],
+                $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMERTYPE'],
+                $_ARRAYLANG['TXT_CRM_INDUSTRY_TYPE'],
+                $_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP'],
+                $_ARRAYLANG['TXT_CRM_TITLE_CURRENCY'],
+                $_ARRAYLANG['TXT_CRM_TITLE_LANGUAGE'],
+                $_ARRAYLANG['TXT_CRM_ACCOUNT_EMAIL'],
+                $_ARRAYLANG['TXT_CRM_TITLE_CUSTOMER_ADDEDBY']
+            );
+            break;
         }
 
         foreach ($this->emailOptions as $emailValue) {
@@ -485,9 +486,9 @@ class crmInterface extends CrmLibrary
         }        
         print ("\r\n");
 
-        if($objResult) {
+        if ($objResult) {
             $membership = array();
-            while(!$objResult->EOF) {
+            while (!$objResult->EOF) {
                 $query = "SELECT c.id,
                                  memloc.value As value
                                  FROM `".DBPREFIX."module_{$this->moduleName}_contacts` As c
@@ -503,9 +504,8 @@ class crmInterface extends CrmLibrary
                 }
                 $membership = implode(', ', $membership);
                 $gender = ($objResult->fields['gender'] == 1) ? $_ARRAYLANG['TXT_CRM_GENDER_FEMALE'] : ($objResult->fields['gender'] == 2) ? $_ARRAYLANG['TXT_CRM_GENDER_MALE'] : '' ;
-                switch ($process)
-                {
-                    case '1':
+                switch ($process) {
+                case '1':
                         print ($objResult->fields['contact_type'] == 1 ? 'Company' : 'Person').$this->_csvSeparator;
                         print ($objResult->fields['contact_type'] == 2 ? $this->_escapeCsvValue($objResult->fields['contactCustomer']) : $this->_escapeCsvValue($objResult->fields['customer_name'])).$this->_csvSeparator;
                         print $this->_escapeCsvValue($objResult->fields['customer_id']).$this->_csvSeparator;
@@ -514,8 +514,8 @@ class crmInterface extends CrmLibrary
                         print $this->_escapeCsvValue($membership).$this->_csvSeparator;
                         print $this->_escapeCsvValue($objResult->fields['currency']).$this->_csvSeparator;
                         print $this->_escapeCsvValue($objResult->fields['username']).$this->_csvSeparator;
-                        break;
-                    case '2':
+                    break;
+                case '2':
                         print ($objResult->fields['contact_type'] == 1 ? 'Company' : 'Person').$this->_csvSeparator;
                         print ($objResult->fields['contact_type'] == 1 ? '' : $this->_escapeCsvValue($objResult->fields['customer_name'])).$this->_csvSeparator;
                         print ($objResult->fields['contact_type'] == 1 ? '' : $this->_escapeCsvValue($objResult->fields['contact_familyname'])).$this->_csvSeparator;
@@ -529,8 +529,8 @@ class crmInterface extends CrmLibrary
                         print $this->_escapeCsvValue($objResult->fields['language']).$this->_csvSeparator;
                         print $this->_escapeCsvValue($objResult->fields['email']).$this->_csvSeparator;
                         print $this->_escapeCsvValue($objResult->fields['username']).$this->_csvSeparator;
-                        break;
-                    default:
+                    break;
+                default:
                         print ($objResult->fields['contact_type'] == 1 ? 'Company' : 'Person').$this->_csvSeparator;
                         print ($objResult->fields['contact_type'] == 1 ? '' : $this->_escapeCsvValue($objResult->fields['customer_name'])).$this->_csvSeparator;
                         print ($objResult->fields['contact_type'] == 1 ? '' : $this->_escapeCsvValue($objResult->fields['contact_familyname'])).$this->_csvSeparator;
@@ -545,42 +545,42 @@ class crmInterface extends CrmLibrary
                         print $this->_escapeCsvValue($objResult->fields['language']).$this->_csvSeparator;
                         print $this->_escapeCsvValue($objResult->fields['email']).$this->_csvSeparator;
                         print $this->_escapeCsvValue($objResult->fields['username']).$this->_csvSeparator;
-                        break;
+                    break;
                 }
 
                 $result = array();
                 // Get emails and phones
                 $objEmails = $objDatabase->Execute("SELECT * FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_emails` WHERE contact_id = {$objResult->fields['id']} ORDER BY id ASC");
                 if ($objEmails) {
-                    while(!$objEmails->EOF) {
+                    while (!$objEmails->EOF) {
                         $result['contactemail'][$objEmails->fields['email_type']] = $objEmails->fields['email'];
                         $objEmails->MoveNext();
                     }
                 }
                 $objPhone = $objDatabase->Execute("SELECT * FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_phone` WHERE contact_id = {$objResult->fields['id']} ORDER BY id ASC");
                 if ($objPhone) {
-                    while(!$objPhone->EOF) {
+                    while (!$objPhone->EOF) {
                         $result['contactphone'][$objPhone->fields['phone_type']] = $objPhone->fields['phone'];
                         $objPhone->MoveNext();
                     }
                 }
                 $objWebsite = $objDatabase->Execute("SELECT * FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_websites` WHERE contact_id = {$objResult->fields['id']} ORDER BY id ASC");
                 if ($objWebsite) {
-                    while(!$objWebsite->EOF) {
+                    while (!$objWebsite->EOF) {
                         $result['contactwebsite'][$objWebsite->fields['url_profile']] = urldecode($objWebsite->fields['url']);
                         $objWebsite->MoveNext();
                     }
                 }
                 $objSocial = $objDatabase->Execute("SELECT * FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_social_network` WHERE contact_id = {$objResult->fields['id']} ORDER BY id ASC");
                 if ($objSocial) {
-                    while(!$objSocial->EOF) {
+                    while (!$objSocial->EOF) {
                         $result['contactsocial'][$objSocial->fields['url_profile']] = urldecode($objSocial->fields['url']);
                         $objSocial->MoveNext();
                     }
                 }
                 $objAddress = $objDatabase->Execute("SELECT * FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_address` WHERE contact_id = {$objResult->fields['id']} ORDER BY id ASC");
                 if ($objAddress) {
-                    while(!$objAddress->EOF) {
+                    while (!$objAddress->EOF) {
                         $result['contactAddress'][$objAddress->fields['Address_Type']] = array(
                                                                                             1 => $objAddress->fields['address'],
                                                                                             2 => $objAddress->fields['city'],
@@ -614,7 +614,7 @@ class crmInterface extends CrmLibrary
                     }
                 }
                 
-                $description = str_replace("&nbsp;"," ",strip_tags(html_entity_decode($objResult->fields['notes'], ENT_QUOTES, CONTREXX_CHARSET)));
+                $description = str_replace("&nbsp;", " ", strip_tags(html_entity_decode($objResult->fields['notes'], ENT_QUOTES, CONTREXX_CHARSET)));
                 print $this->_escapeCsvValue(html_entity_decode($description, ENT_QUOTES, CONTREXX_CHARSET)).$this->_csvSeparator;
 
                 print ("\r\n");
@@ -764,8 +764,8 @@ class crmInterface extends CrmLibrary
                         if (in_array($duplicate, array(0, 1))) {
                             $emails = array();
                             foreach ($this->emailOptions as $key => $emailValue) {                                
-                                if(isset(${"customer_email_$key"})) {
-                                    if(!empty($line[${"customer_email_$key"}]) && filter_var($line[${"customer_email_$key"}], FILTER_VALIDATE_EMAIL)) {
+                                if (isset(${"customer_email_$key"})) {
+                                    if (!empty($line[${"customer_email_$key"}]) && filter_var($line[${"customer_email_$key"}], FILTER_VALIDATE_EMAIL)) {
                                         $emails[] = $line[${"customer_email_$key"}];
                                     }
                                 }
@@ -775,21 +775,20 @@ class crmInterface extends CrmLibrary
 
                         $skip = false;
                         switch ($duplicate) {
-                            case 0:
-                                if (empty ($existingUser)) {
-                                    $this->contact->save();
-                                } else {
-                                    $skip = true;
-                                }
-                                break;
-                            case 1:
-                                if (!empty ($existingUser)) {
-                                    $this->contact->id = $existingUser;
-                                }                                
-                            case 2:
+                        case 0:
+                            if (empty ($existingUser)) {
                                 $this->contact->save();
-                                break;
-
+                            } else {
+                                $skip = true;
+                            }
+                            break;
+                        case 1:
+                            if (!empty ($existingUser)) {
+                                $this->contact->id = $existingUser;
+                            }                                
+                        case 2:
+                                $this->contact->save();
+                            break;
                         }
 
                         if (!$skip) {
@@ -799,8 +798,8 @@ class crmInterface extends CrmLibrary
                             // insert Emails
                             $first  = true;
                             foreach ($this->emailOptions as $key => $emailValue) {
-                                if(isset(${"customer_email_$key"})) {
-                                    if(!empty($line[${"customer_email_$key"}]) && filter_var($line[${"customer_email_$key"}], FILTER_VALIDATE_EMAIL)) {
+                                if (isset(${"customer_email_$key"})) {
+                                    if (!empty($line[${"customer_email_$key"}]) && filter_var($line[${"customer_email_$key"}], FILTER_VALIDATE_EMAIL)) {
                                         $tableName = "module_{$this->moduleName}_customer_contact_emails";
                                         $fields   = array(
                                             'email'         => contrexx_input2db($line[${"customer_email_$key"}]),
@@ -818,8 +817,8 @@ class crmInterface extends CrmLibrary
                             // insert Phone
                             $first  = true;
                             foreach ($this->phoneOptions as $key => $phoneValue) {
-                                if(isset(${"customer_phone_$key"})) {
-                                    if(!empty($line[${"customer_phone_$key"}])) {
+                                if (isset(${"customer_phone_$key"})) {
+                                    if (!empty($line[${"customer_phone_$key"}])) {
                                         $tableName = "module_{$this->moduleName}_customer_contact_phone";
                                         $fields    = array(
                                             'phone'         => contrexx_input2db($line[${"customer_phone_$key"}]),
@@ -913,7 +912,6 @@ class crmInterface extends CrmLibrary
             echo $json['error'] = $_ARRAYLANG['TXT_CRM_CHOOSE_NAME_ERROR'];
         }
 
-//        echo json_encode($json);
         exit();
     }
 
@@ -1041,7 +1039,7 @@ class crmInterface extends CrmLibrary
         global $objDatabase;
 
         $whereEmails = !empty($emails) 
-                      ? " AND e.email IN (".implode(' , ', array_map(function($el){ return "'$el'"; }, contrexx_raw2db($emails))).")"
+                      ? " AND e.email IN (".implode(' , ', array_map(function ($el){ return "'$el'"; }, contrexx_raw2db($emails))).")"
                       : '';
         $query = "SELECT
                         DISTINCT c.`id`

@@ -4,23 +4,25 @@
  *
  * PHP version 5.3 or >
  *
- * @category Settings
- * @package  PM_CRM_Tool
- * @author   ss4ugroup <ss4ugroup@softsolutions4u.com>
- * @license  BSD Licence
- * @version  1.0.0
- * @link     http://mycomvation.com/po/cadmin
+ * @category   Settings
+ * @package    Contrexx
+ * @subpackage Module_Crm
+ * @author     ss4ugroup <ss4ugroup@softsolutions4u.com>
+ * @license    BSD Licence
+ * @version    1.0.0
+ * @link       www.contrexx.com
  */
 
 /**
  * This is the settings class file for handling the all functionalities under settings menu.
  *
- * @category Settings
- * @package  PM_CRM_Tool
- * @author   ss4ugroup <ss4ugroup@softsolutions4u.com>
- * @license  BSD Licence
- * @version  1.0.0
- * @link     http://mycomvation.com/po/cadmin
+ * @category   Settings
+ * @package    Contrexx
+ * @subpackage Module_Crm
+ * @author     ss4ugroup <ss4ugroup@softsolutions4u.com>
+ * @license    BSD Licence
+ * @version    1.0.0
+ * @link       www.contrexx.com
  */
 
 class Settings extends CrmLibrary
@@ -36,9 +38,9 @@ class Settings extends CrmLibrary
     /**
      * php 5.3 contructor
      *
-     * @param object $objTpl
+     * @param object $objTpl template object
      */
-    function  __construct($objTpl)
+    function __construct($objTpl)
     {
         $this->_objTpl = $objTpl;
         parent::__construct();
@@ -386,7 +388,7 @@ class Settings extends CrmLibrary
             switch ($fn) {
             case 'editcurrency':
                 $this->editCurrency();
-            break;
+                break;
             }
             return;
         }
@@ -506,7 +508,7 @@ class Settings extends CrmLibrary
         // Hourly rate
         $hrlyRate  = array();
         $objResult = $objDatabase->Execute('SELECT id,label FROM  '.DBPREFIX.'module_'.$this->moduleName.'_customer_types WHERE  active!="0" ORDER BY pos,label');
-        while(!$objResult->EOF) {
+        while (!$objResult->EOF) {
             $this->_objTpl->setVariable(array(
                 'CRM_CUSTOMER_TYPE'     => contrexx_raw2xhtml($objResult->fields['label']),
                 'CRM_CUSTOMERTYPE_ID'   => (int) $objResult->fields['id'],
@@ -726,7 +728,7 @@ class Settings extends CrmLibrary
             case 'editTaskType':
                 Permission::checkAccess($this->staffAccessId, 'static');
                 $this->editTaskType();
-            break;
+                break;
             }
             return;
         }
