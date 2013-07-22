@@ -2379,12 +2379,8 @@ alert("change: ID mismatch: "+id);
      */
     static function getRelativeUri()
     {
-        return
-            CONTREXX_DIRECTORY_INDEX.'?'.
-            (empty($_SERVER['QUERY_STRING'])
-              ? '' : $_SERVER['QUERY_STRING']
-//              .'&'.CSRF::param()
-            );
+        $url = clone \Env::get('Resolver')->getUrl();
+        return $url->__toString();
     }
 
 
