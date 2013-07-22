@@ -1545,27 +1545,26 @@ class newsletter extends NewsletterLib
      * @author      Stefan Heinemann <sh@adfinis.com>
      * @param       int $mailID
      * @param       array $groups
+     * @param       string $mailSentDate sent date
      */
-    private function setMailGroups($mailID, $groups, $mailSendDate) {
+    private function setMailGroups($mailID, $groups, $mailSentDate) {
         global $objDatabase;
 
         if ($mailSentDate > 0) {
             return false;
-        }        
-        
-        $query = sprintf('
-            REPLACE INTO
-                `%smodule_newsletter_rel_usergroup_newsletter`
-                (`newsletter`, `userGroup`)
-            VALUES
-                (%s, ?)
-            ',
-            DBPREFIX,
-            $mailID);
-        $stmt = $objDatabase->prepare($query);
+        }
 
         foreach ($groups as $group) {
-            $objDatabase->Execute($stmt, array(intval($group)));
+            $objDatabase->Execute(
+                sprintf('
+                    REPLACE INTO
+                        `%smodule_newsletter_rel_usergroup_newsletter`
+                        (`newsletter`, `userGroup`)
+                    VALUES
+                        (%s, %s)
+                    ', DBPREFIX, $mailID, intval($group)
+                )
+            );
         }
         if (count($groups) > 0) {
             $delString = implode(',', $groups);

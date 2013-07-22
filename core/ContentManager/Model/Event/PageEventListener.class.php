@@ -179,7 +179,7 @@ class PageEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         $oldAutoIncrement = $result->fields['oldAutoIncrement'] + 1;
         $result = $database->Execute("SHOW TABLE STATUS LIKE '" . DBPREFIX . "content_page'");
         if ($result !== false && $result->fields['Auto_increment'] < $oldAutoIncrement) {
-            $database->Execute("ALTER TABLE `" . DBPREFIX . "content_page` AUTO_INCREMENT = ?", array($oldAutoIncrement));
+            $database->Execute("ALTER TABLE `" . DBPREFIX . "content_page` AUTO_INCREMENT = '" . contrexx_raw2db($oldAutoIncrement) . "'");
         }
     }
 

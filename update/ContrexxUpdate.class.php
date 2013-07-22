@@ -1094,7 +1094,7 @@ class ContrexxUpdate
         try {
             $arrTables = $this->objDatabase->MetaTables('TABLES');
             if (in_array(DBPREFIX.'access_settings', $arrTables)) {
-                $objUseUsernameSetting = $this->objDatabase->SelectLimit("SELECT `status` FROM `".DBPREFIX."access_settings` WHERE `key` = ?", 1, -1, array('use_usernames'));
+                $objUseUsernameSetting = $this->objDatabase->SelectLimit("SELECT `status` FROM `".DBPREFIX."access_settings` WHERE `key` = 'use_usernames'", 1, -1);
                 if ($objUseUsernameSetting !== false &&
                     $objUseUsernameSetting->RecordCount() > 0 &&
                     !$objUseUsernameSetting->fields['status']
@@ -1104,7 +1104,7 @@ class ContrexxUpdate
             }
         } catch (Exception $e) {}
 
-        $objAuth = $this->objDatabase->SelectLimit("SELECT `id`, `email` FROM `".DBPREFIX."access_users` WHERE ".$whereField." = ? AND `password` = ? AND `is_admin` = 1 AND `active` = 1", 1, -1, array($user, $pass));
+        $objAuth = $this->objDatabase->SelectLimit("SELECT `id`, `email` FROM `".DBPREFIX."access_users` WHERE ".$whereField." = '" . contrexx_input2db($user) .  "' AND `password` = '" . contrexx_input2db($pass) . "' AND `is_admin` = 1 AND `active` = 1", 1, -1);
         if ($objAuth !== false && $objAuth->RecordCount() == 1) {
             global $sessionObj;
 

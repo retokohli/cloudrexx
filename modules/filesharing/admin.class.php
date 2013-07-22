@@ -41,17 +41,17 @@ class FilesharingAdmin extends FilesharingLib
     {
         global $_ARRAYLANG, $objDatabase;
         $file = str_replace(ASCMS_PATH_OFFSET, '', $_GET["path"]) . $_GET["file"];
-        $objResult = $objDatabase->Execute("SELECT `id`, `file`, `source`, `hash`, `check`, `expiration_date` FROM " . DBPREFIX . "module_filesharing WHERE `source` = ?", array($file));
+        $objResult = $objDatabase->Execute("SELECT `id`, `file`, `source`, `hash`, `check`, `expiration_date` FROM " . DBPREFIX . "module_filesharing WHERE `source` = '" . contrexx_raw2db($file) . "'");
 
         $existing = $objResult !== false && $objResult->RecordCount() > 0;
         if ($_GET["switch"]) {
             if ($existing) {
-                $objDatabase->Execute("DELETE FROM " . DBPREFIX . "module_filesharing WHERE `source` = ?", array($file));
+                $objDatabase->Execute("DELETE FROM " . DBPREFIX . "module_filesharing WHERE `source` = '" . contrexx_raw2db($file) . "'");
             } else {
                 $hash = FilesharingLib::createHash();
                 $check = FilesharingLib::createCheck($hash);
                 $source = str_replace(ASCMS_PATH_OFFSET, '', $_GET["path"]) . $_GET["file"];
-                $objDatabase->Execute("INSERT INTO " . DBPREFIX . "module_filesharing (`file`, `source`, `hash`, `check`) VALUES (?, ?, ?, ?)", array($source, $source, $hash, $check));
+                $objDatabase->Execute("INSERT INTO " . DBPREFIX . "module_filesharing (`file`, `source`, `hash`, `check`) VALUES ('" . contrexx_raw2db($source) .  "', '" . contrexx_raw2db($source) . "', '" . contrexx_raw2db($hash) . "', '" . contrexx_raw2db($check) . "')");
             }
 
             $existing = !$existing;
@@ -81,11 +81,11 @@ class FilesharingAdmin extends FilesharingLib
             if ($_POST["expiration"]) {
                 $objDatabase->Execute("UPDATE " . DBPREFIX . "module_filesharing SET `expiration_date` = NULL WHERE `id` = " . $objResult->fields["id"]);
             } else {
-                $objDatabase->Execute("UPDATE " . DBPREFIX . "module_filesharing SET `expiration_date` = ? WHERE `id` = " . $objResult->fields["id"], array(date('Y-m-d H:i:s', strtotime($_POST["expirationDate"]))));
+                $objDatabase->Execute("UPDATE " . DBPREFIX . "module_filesharing SET `expiration_date` = '" . date('Y-m-d H:i:s', strtotime($_POST["expirationDate"])) . "' WHERE `id` = " . $objResult->fields["id"]);
             }
         }
 
-        $objResult = $objDatabase->Execute("SELECT `id`, `hash`, `check`, `expiration_date` FROM " . DBPREFIX . "module_filesharing WHERE `source` = ?", array($file));
+        $objResult = $objDatabase->Execute("SELECT `id`, `hash`, `check`, `expiration_date` FROM " . DBPREFIX . "module_filesharing WHERE `source` = '" . contrexx_raw2db($file) . "'");
 
         $this->_objTpl->setVariable(array(
             'FORM_ACTION' => 'index.php?cmd=media&amp;archive=filesharing&amp;act=filesharing&amp;path=' . $_GET["path"] . '&amp;file=' . $_GET["file"],
@@ -244,11 +244,10 @@ class FilesharingAdmin extends FilesharingLib
             $objMailTemplate = $objDatabase->Execute("SELECT `subject`, `content` FROM " . DBPREFIX . "module_filesharing_mail_template WHERE `lang_id` = ?", array($lang));
 
             $content = str_replace(array('{', '}'), array('[[', ']]'), contrexx_input2db($inputs["content"]));
-            $data = array(contrexx_input2db($inputs["subject"]), $content, $lang);
             if ($objMailTemplate === false or $objMailTemplate->RecordCount() == 0) {
-                $objDatabase->Execute("INSERT INTO " . DBPREFIX . "module_filesharing_mail_template (`subject`, `content`, `lang_id`) VALUES (?, ?, ?)", $data);
+                $objDatabase->Execute("INSERT INTO " . DBPREFIX . "module_filesharing_mail_template (`subject`, `content`, `lang_id`) VALUES ('" . contrexx_input2db($inputs["subject"]) . "', '" . contrexx_raw2db($content) . "', '" . contrexx_raw2db($lang) . "')");
             } else {
-                $objDatabase->Execute("UPDATE " . DBPREFIX . "module_filesharing_mail_template SET `subject` = ?, `content` = ? WHERE `lang_id` = ?", $data);
+                $objDatabase->Execute("UPDATE " . DBPREFIX . "module_filesharing_mail_template SET `subject` = '" . contrexx_input2db($inputs["subject"]) . "', `content` = '" . contrexx_raw2db($content) . "' WHERE `lang_id` = '" . contrexx_raw2db($lang) . "'");
             }
         }
 
