@@ -201,7 +201,6 @@ class DBG
     {
         if (!self::$log_file) return;
         self::$log_file = false;
-        fclose(self::$dbg_fh);
         self::$dbg_fh = null;
         restore_error_handler();
     }
@@ -298,17 +297,21 @@ class DBG
      */
     static function setup($file, $mode='a')
     {
-        if (self::$dbg_fh) fclose(self::$dbg_fh);
         if (self::$log_firephp) return true; //no need to setup ressources, we're using firephp
         $suffix = '';
         /*$nr = 0;
         while (file_exists($file.$suffix)) {
             $suffix = '.'.++$nr;
         }*/
-        self::$dbg_fh = fopen($file.$suffix, $mode);
-        if (self::$dbg_fh) {
-            return true;
-        } else {
+        try {
+            self::$dbg_fh = new \Cx\Lib\FileSystem\File($file.$suffix);
+            self::$dbg_fh->touch();
+            if (self::$dbg_fh->makeWritable()) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             return false;
         }
     }
@@ -643,7 +646,8 @@ class DBG
             && method_exists(self::$firephp, $firephp_action)) {
             self::$firephp->$firephp_action($additional_args, $text);
         } elseif (self::$log_file) {
-            fputs(self::$dbg_fh,
+            self::$dbg_fh->write(
+                self::$dbg_fh->getData() .
 // TODO: Add some flag to enable/disable timestamps
                 date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME).' '.
                 $text."\n");
