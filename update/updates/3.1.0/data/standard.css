@@ -1475,6 +1475,32 @@ div.row2 {
     -o-border-bottom-left-radius: 0;
 }
 
+#shop-product-added-info-wrapper {
+    background: none repeat scroll 0 0 rgba(0, 0, 0, 0.6);
+    float: left;
+    height: 100%;
+    left: 0;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+}
+
+#shop-product-added-info-box {
+    background: none repeat scroll 0 0 #FFFFFF;
+    border: 1px solid #DDDDDD;
+    color: #505050;
+    float: left;
+    font-size: 16px;
+    font-weight: bold;
+    left: 35%;
+    padding: 20px 0;
+    position: fixed;
+    text-align: center;
+    top: 40%;
+    width: 30%;
+}
+
 /***************************************************/
 /* CSS DEFINITIONS FOR E-CARD MODULE               */
 /***************************************************/
