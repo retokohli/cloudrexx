@@ -413,7 +413,7 @@ class NetToolsLib {
         if(ereg("^[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}$", $host))
         {
             // If so, make sure none of the octets are higher than 255!
-            $octets = split(".", $host);
+            $octets = explode(".", $host);
             return ($octets[0] < 256 &&
                 $octets[1] < 256 &&
                 $octets[2] < 256 &&
@@ -621,7 +621,7 @@ class NetToolsLib {
                         // Next will be a referral
                         $lastref = $i;
 
-                        list($this->arrWhoisIps[$i]['server'], $this->arrWhoisIps[$i]['port']) = split(":", $referral, 2);
+                        list($this->arrWhoisIps[$i]['server'], $this->arrWhoisIps[$i]['port']) = explode(":", $referral, 2);
                         $i--;
                     }
                 }

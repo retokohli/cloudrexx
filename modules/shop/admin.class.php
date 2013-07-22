@@ -452,7 +452,7 @@ class Shopmanager extends ShopLibrary
                 foreach ($arrProductDatabaseFieldName as $index => $strFieldIndex) {
                     $value = '';
                     if (strpos($strFieldIndex, ';')) {
-                        $prod2line = split(';', $strFieldIndex);
+                        $prod2line = explode(';', $strFieldIndex);
                         for ($z = 0; $z < count($prod2line); ++$z) {
                             $value .=
                                 $arrFileContent[$x][$arrDatabaseFieldIndex[$prod2line[$z]]].

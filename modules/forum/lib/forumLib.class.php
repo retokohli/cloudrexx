@@ -609,7 +609,7 @@ class ForumLibrary
                 $intKeywordValue = ceil($intKeywordValue * $dblDateFactor); #Include Date (Newer = bigger font)
 
                 //Split tags
-                $arrEntryTags = split(',',$arrEntryValues['keywords']);
+                $arrEntryTags = explode(',',$arrEntryValues['keywords']);
                 foreach($arrEntryTags as $strTag) {
                     $strTag = trim($strTag);
                     if (array_key_exists($strTag,$arrKeywords)) {

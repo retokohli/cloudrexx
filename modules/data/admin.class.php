@@ -1251,7 +1251,7 @@ class DataAdmin extends DataLibrary {
                     // no end
                     $release_time_end = 0;
                 } else {
-                    $endDateParts = split("-", $_POST['release_date_end']);
+                    $endDateParts = explode("-", $_POST['release_date_end']);
                     $hour = intval($_POST['release_hour_end']);
                     $minute = intval($_POST['release_minute_end']);
                     $day = intval($endDateParts[2]);
@@ -1260,7 +1260,7 @@ class DataAdmin extends DataLibrary {
                     $release_time_end = mktime($hour, $minute, 0, $month, $day, $year);
                 }
 
-                $dateParts = split("-", $_POST['release_date']);
+                $dateParts = explode("-", $_POST['release_date']);
                 $hour = intval($_POST['release_hour']);
                 $minute = intval($_POST['release_minute']);
                 $day = intval($dateParts[2]);
@@ -1598,7 +1598,7 @@ class DataAdmin extends DataLibrary {
                     // no end
                     $release_time_end = 0;
                 } else {
-                    $endDateParts = split("-", $_POST['release_date_end']);
+                    $endDateParts = explode("-", $_POST['release_date_end']);
                     $hour = intval($_POST['release_hour_end']);
                     $minute = intval($_POST['release_minute_end']);
                     $day = intval($endDateParts[2]);
@@ -1607,7 +1607,7 @@ class DataAdmin extends DataLibrary {
                     $release_time_end = mktime($hour, $minute, 0, $month, $day, $year);
                 }
 
-                $dateParts = split("-", $_POST['release_date']);
+                $dateParts = explode("-", $_POST['release_date']);
                 $hour = intval($_POST['release_hour']);
                 $minute = intval($_POST['release_minute']);
                 $day = intval($dateParts[2]);

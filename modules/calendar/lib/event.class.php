@@ -929,7 +929,7 @@ class CalendarEvent extends CalendarLibrary
             }
                 
             $seriesPatternDouranceType  = intval($data['seriesDouranceType']);
-            $dateparts                  = split("-", $startDate);
+            $dateparts                  = explode("-", $startDate);
             
             switch($seriesPatternDouranceType) {
                 case 1:

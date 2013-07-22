@@ -119,7 +119,7 @@ class File_HtAccess {
             while ($buffer = fgets($fd, 4096)) {
                 $buffer = trim($buffer);
                 if ($buffer) {
-                    $data = split(' ', $buffer, 2);
+                    $data = explode(' ', $buffer, 2);
                     if (preg_match('/AuthName/i', $data[0])) {
                        $this->setAuthName($data[1]);
 
@@ -139,7 +139,7 @@ class File_HtAccess {
                        $this->setAuthDigestGroupFile($data[1]);
 
                     } elseif (preg_match('/^Require/i', $buffer)) {
-                       $require = split(' ', $data[1]);
+                       $require = explode(' ', $data[1]);
                        $this->addRequire($require);
                     } else {
                        $this->addAdditional($buffer);

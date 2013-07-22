@@ -852,7 +852,7 @@ class Product
         if ($flagDeleteImages) {
             // Heck, most of this should go into the ProductPicture class...
             // Split picture data into single pictures
-            $arrPictures = split(':', $this->pictures);
+            $arrPictures = explode(':', $this->pictures);
             foreach ($arrPictures as $strPicture) {
                 if (empty($strPicture)) continue;
                 // Split picture into name, width, height -- all are base64

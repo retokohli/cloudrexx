@@ -348,7 +348,7 @@ EOF;
 
     /*function saveInputfield($intInputfieldId, $strValue)
     {
-        $strValue = join(',', array_map('intval', split(',', $strValue)));
+        $strValue = join(',', array_map('intval', explode(',', $strValue)));
         return $strValue;
     }*/
     function saveInputfield($intInputfieldId, $arrValue)
