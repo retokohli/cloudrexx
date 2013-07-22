@@ -156,7 +156,15 @@ CODE
             $hash = self::createHash();
             $check = self::createCheck($hash);
 
-            $objDatabase->Execute("INSERT INTO " . DBPREFIX . "module_filesharing (`file`, `source`, `cmd`, `hash`, `check`, `upload_id`) VALUES (?, ?, ?, ?, ?, ?)", array($file, $source, $directory, $hash, $check, $uploadId));
+            $objDatabase->Execute("INSERT INTO " . DBPREFIX . "module_filesharing (`file`, `source`, `cmd`, `hash`, `check`, `upload_id`)
+                                    VALUES (
+                                        '" . contrexx_raw2db($file) . "',
+                                        '" . contrexx_raw2db($source) . "',
+                                        '" . contrexx_raw2db($directory) . "',
+                                        '" . contrexx_raw2db($hash) . "',
+                                        '" . contrexx_raw2db($check) . "',
+                                        '" . intval($uploadId) . "'
+                                    )");
         }
 
         $tempPaths = self::getTemporaryFilePaths($uploadId);
@@ -314,7 +322,7 @@ CODE
         /**
          * get all file ids from the last upload
          */
-        $objResult = $objDatabase->Execute("SELECT `id` FROM " . DBPREFIX . "module_filesharing WHERE `upload_id` = ?", array($uploadId));
+        $objResult = $objDatabase->Execute("SELECT `id` FROM " . DBPREFIX . "module_filesharing WHERE `upload_id` = '" . intval($uploadId) . "'");
         if ($objResult !== false && $objResult->RecordCount() > 0) {
             $files[] = $objResult->fields["id"];
         }

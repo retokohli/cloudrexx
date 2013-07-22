@@ -704,7 +704,7 @@ class skins
         }
 
         //get the folder name from theme name
-        $objResult = \Env::get('db')->Execute("SELECT id, themesname, foldername from `".DBPREFIX."skins` WHERE themesname = ?", array($theme));
+        $objResult = \Env::get('db')->Execute("SELECT id, themesname, foldername from `".DBPREFIX."skins` WHERE themesname = '" . contrexx_raw2db($theme) . "'");
         if ($objResult !== false && $objResult->RecordCount() > 0) {
             $theme = $objResult->fields['foldername'];
         } else {

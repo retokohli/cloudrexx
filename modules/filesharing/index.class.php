@@ -147,7 +147,7 @@ class Filesharing extends FilesharingLib
     private function downloadFile($hash)
     {
         global $objDatabase;
-        $objResult = $objDatabase->SelectLimit("SELECT `file`, `source` FROM " . DBPREFIX . "module_filesharing WHERE `hash` = ?", 1, 0, array($hash));
+        $objResult = $objDatabase->SelectLimit("SELECT `file`, `source` FROM " . DBPREFIX . "module_filesharing WHERE `hash` = '" . contrexx_raw2db($hash) . "'", 1, 0);
         if ($objResult !== false && $objResult->RecordCount() > 0) {
             $fileName = $objResult->fields["file"];
             $filePath = ASCMS_PATH . ASCMS_PATH_OFFSET . $objResult->fields["source"];
@@ -175,7 +175,7 @@ class Filesharing extends FilesharingLib
     private function deleteFile($hash, $check)
     {
         global $objDatabase;
-        $objResult = $objDatabase->SelectLimit("SELECT `id`, `source`, `check` FROM " . DBPREFIX . "module_filesharing WHERE `hash` = ?", 1, 0, array($hash));
+        $objResult = $objDatabase->SelectLimit("SELECT `id`, `source`, `check` FROM " . DBPREFIX . "module_filesharing WHERE `hash` = '" . contrexx_raw2db($hash) . "'", 1, 0);
         if ($objResult !== false) {
 
             // check whether the check code is the same as in the database
@@ -196,7 +196,7 @@ class Filesharing extends FilesharingLib
     private function loadImage($hash)
     {
         global $objDatabase;
-        $objResult = $objDatabase->SelectLimit("SELECT `source` FROM " . DBPREFIX . "module_filesharing WHERE `hash` = ?", 1, 0, array($hash));
+        $objResult = $objDatabase->SelectLimit("SELECT `source` FROM " . DBPREFIX . "module_filesharing WHERE `hash` = '" . contrexx_raw2db($hash) . "'", 1, 0);
         if ($objResult !== false && $objResult->RecordCount() > 0) {
             $path = ASCMS_PATH_OFFSET . $objResult->fields["source"];
             $info = pathinfo($path);
@@ -232,7 +232,7 @@ class Filesharing extends FilesharingLib
             $cmd = \Env::get("Resolver")->getCmd();
             if ($cmd != "downloads") {
                 $expiration_date = date("Y-m-d H:i:s", time() + $_POST["expiration"]);
-                $objDatabase->Execute("UPDATE " . DBPREFIX . "module_filesharing SET `expiration_date` = ? WHERE `upload_id` = ?", array($expiration_date, $params["uploadId"]));
+                $objDatabase->Execute("UPDATE " . DBPREFIX . "module_filesharing SET `expiration_date` = '" . contrexx_raw2db($expiration_date) . "' WHERE `upload_id` = '" . intval($params["uploadId"]) . "'");
             }
 
             // send the mail to the reciever

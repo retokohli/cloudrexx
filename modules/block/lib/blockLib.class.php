@@ -261,7 +261,7 @@ class blockLibrary
                                     `category` = ?
                                 WHERE `id` = ?", array($global, $direct, $category, $blockId));
 
-        $objDatabase->Execute("DELETE FROM `" . DBPREFIX . "module_block_rel_pages` WHERE `block_id` = ?", array($blockId));
+        $objDatabase->Execute("DELETE FROM `" . DBPREFIX . "module_block_rel_pages` WHERE `block_id` = '" . intval($blockId) . "'");
         if ($global == 2) {
             $this->storePageAssociations($blockId, $globalAssociatedPages, 'global');
         }
@@ -386,7 +386,7 @@ class blockLibrary
         global $objDatabase;
 
         $arrPageIds = array();
-        $objResult = $objDatabase->Execute("SELECT page_id FROM ".DBPREFIX."module_block_rel_pages WHERE block_id=? AND placeholder=?", array($blockId, $placeholder));
+        $objResult = $objDatabase->Execute("SELECT page_id FROM ".DBPREFIX."module_block_rel_pages WHERE block_id = '" . intval($blockId) . "' AND placeholder = '" . contrexx_raw2db($placeholder) . "'");
         if ($objResult !== false) {
             while (!$objResult->EOF) {
                 array_push($arrPageIds, $objResult->fields['page_id']);

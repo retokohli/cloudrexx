@@ -91,7 +91,7 @@ class User_Networks
     {
         global $objDatabase;
         if (!empty($this->networks[$oauth_provider])) {
-            $objDatabase->Execute("DELETE FROM `" . DBPREFIX . "access_user_network` WHERE `user_id` = ? AND `oauth_provider` = ?", array($this->userId, $oauth_provider));
+            $objDatabase->Execute("DELETE FROM `" . DBPREFIX . "access_user_network` WHERE `user_id` = " . intval($this->userId) . " AND `oauth_provider` = '" . contrexx_raw2db($oauth_provider) . "'");
             unset($this->networks[$oauth_provider]);
         }
     }
