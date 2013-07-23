@@ -5,7 +5,7 @@
  * PHP version 5.3 or >
  *
  * @category   CrmTask
- * @package    Contrexx
+ * @package    contrexx
  * @subpackage Module_Crm
  * @author     ss4ugroup <ss4ugroup@softsolutions4u.com>
  * @license    BSD Licence
@@ -17,7 +17,7 @@
  * This is the crmTask class file for handling the all functionalities under task menu. 
  *
  * @category   CrmTask
- * @package    Contrexx
+ * @package    contrexx
  * @subpackage Module_Crm
  * @author     ss4ugroup <ss4ugroup@softsolutions4u.com>
  * @license    BSD Licence
