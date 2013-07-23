@@ -5,7 +5,7 @@
  * 
  * @category   CrmLibrary
  * @package    contrexx
- * @subpackage Module_Crm
+ * @subpackage module_crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
  * @copyright  2012 and CONTREXX CMS - COMVATION AG
  * @license    trial license
@@ -25,7 +25,7 @@ require_once CRM_MODULE_LIB_PATH . '/events/handlers/DefaultEventHandler.class.p
  *
  * @category   CrmLibrary
  * @package    contrexx
- * @subpackage Module_Crm
+ * @subpackage module_crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
  * @copyright  2012 and CONTREXX CMS - COMVATION AG
  * @license    trial license
@@ -2397,7 +2397,7 @@ class CrmLibrary
  *
  * @category   Sample_Category
  * @package    contrexx
- * @subpackage Module_Crm
+ * @subpackage module_crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
  * @copyright  2012 and CONTREXX CMS - COMVATION AG
  * @license    trial license

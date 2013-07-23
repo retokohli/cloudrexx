@@ -6,7 +6,7 @@
  *
  * @category   Sorter
  * @package    contrexx
- * @subpackage Module_Crm
+ * @subpackage module_crm
  * @author     ss4ugroup <ss4ugroup@softsolutions4u.com>
  * @license    BSD Licence
  * @version    1.0.0
@@ -20,7 +20,7 @@
  *
  * @category   Sorter
  * @package    contrexx
- * @subpackage Module_Crm
+ * @subpackage module_crm
  * @author     ss4ugroup <ss4ugroup@softsolutions4u.com>
  * @license    BSD Licence
  * @version    1.0.0
