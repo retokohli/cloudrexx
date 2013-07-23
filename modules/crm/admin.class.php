@@ -2730,7 +2730,7 @@ END;
                 'CRM_NOTES_TYPE'            => ($noteTypeId) ? contrexx_raw2xhtml($noteType) : $_ARRAYLANG['TXT_CRM_TASK_SELECTNOTES'],
                 'CRM_NOTES_DATE'            => contrexx_raw2xhtml($noteDate),
                 'CRM_CUSTOMER_ID'           => $customerId,
-                'CRM_COMMENT_DESCRIPTION'   =>  new \Cx\Core\Wysiwyg\Wysiwyg('customer_comment', contrexx_raw2xhtml($description), 'pm_fullpage')
+                'CRM_COMMENT_DESCRIPTION'   =>  new \Cx\Core\Wysiwyg\Wysiwyg('customer_comment', contrexx_raw2xhtml($description))
             ));
         } else {
             $this->_strErrMessage = "Customer should not be empty";
@@ -4559,7 +4559,7 @@ END;
             $objPmLib->getProjectPriorityDropdown($objTpl, $projectFileds['priority']);
 
             $objTpl->setvariable(array(
-                    'PROJECT_BILLING_INFO'              => new \Cx\Core\Wysiwyg\Wysiwyg('billing_info', contrexx_raw2xhtml($projectFileds['bill_info']), 'pm_fullpage'),
+                    'PROJECT_BILLING_INFO'              => new \Cx\Core\Wysiwyg\Wysiwyg('billing_info', contrexx_raw2xhtml($projectFileds['bill_info'])),
                     'PROJECT_INVOICETYPE_PROJECT'       => ($projectFileds['invoice_type'] == 3) ? 'checked=checked' : '',
                     'PROJECT_INVOICETYPE_COLLECTIVE'    => ($projectFileds['invoice_type'] == 2) ? 'checked=checked' : '',
                     'PROJECT_INVOICETYPE_INTERNAL'      => ($projectFileds['invoice_type'] == 1) ? 'checked=checked' : '',
@@ -4617,7 +4617,7 @@ END;
                 'DEALS_DUE_DATE'                => contrexx_raw2xhtml($fields['due_date']),
                 'CRM_REDIRECT_LINK'             => $redirect,
                 'CRM_BACK_LINK'                 => base64_decode($redirect),
-                'CRM_DEALS_DESCRIPTION'         => new \Cx\Core\Wysiwyg\Wysiwyg('description', contrexx_raw2xhtml($fields['description']), 'pm_small'),
+                'CRM_DEALS_DESCRIPTION'         => new \Cx\Core\Wysiwyg\Wysiwyg('description', contrexx_raw2xhtml($fields['description'])),
                 'TXT_CRM_DEALS_TITLE'           => $_ARRAYLANG['TXT_CRM_DEALS_TITLE'],
                 'TXT_CRM_SELECT_MEMBER_NAME'        => $_ARRAYLANG['TXT_CRM_SELECT_MEMBER_NAME'],
                 'CRM_MODIFY_DEAL_DESCRIPTION'   => $_ARRAYLANG['TXT_CRM_DESCRIPTION'],
