@@ -29,13 +29,6 @@ class Calendar extends CalendarLibrary
     private $objEventManager;
     
     /**
-     * Captcha Error
-     *
-     * @var string
-     */
-    private $captchaError = '';
-
-    /**
      * Start date
      * 
      * Unix timestamp
@@ -151,8 +144,6 @@ class Calendar extends CalendarLibrary
         parent::__construct('.');
         parent::getSettings();
         
-        DBG::deactivate();
-
         $this->pageContent = $pageContent;
     }
 
@@ -190,7 +181,7 @@ class Calendar extends CalendarLibrary
             case 'category':
                 self::showCategoryView();
                 break;
-            case 'add':
+            case 'add':                
                 parent::checkAccess('add_event');
                 self::modifyEvent();
                 break;
@@ -507,7 +498,7 @@ EOF;
 UPLOADER;
             } catch(Exception $e) {
                 \DBG::msg("Error in initializing uploader");
-            }            
+            } 
         }
 
         $this->_objTpl->setGlobalVariable(array(
@@ -637,9 +628,14 @@ $this->_objTpl->setVariable(array(
         $captchaCheck   = true;
 
         if(!$userLogin && isset($_POST['submitRegistration'])) {
-            $captchaCheck =  self::checkCaptcha($_POST['registrationCaptcha']);
+            $captchaCheck =  \FWCaptcha::getInstance()->check();
+            if (!$captchaCheck) {
+                $this->_objTpl->setVariable(array(
+                    'TXT_'.$this->moduleLangVar.'_ERROR' => '<br /><font color="#ff0000">'.$_ARRAYLANG['TXT_CALENDAR_INVALID_CAPTCHA_CODE'].'</font>',
+                ));
+            }
         }
-
+        
         $objEvent = new CalendarEvent(intval($_REQUEST['id']));
         $objRegistrationManager = new CalendarRegistrationManager($objEvent->id,true,false);
         $objRegistrationManager->getRegistrationList();
@@ -679,17 +675,10 @@ $this->_objTpl->setVariable(array(
                 }
 
                 if(!$userLogin) {
-                    $objCaptcha = new Captcha();
-
+                    
                     $this->_objTpl->setVariable(array(
-                        //$this->moduleLangVar.'_CAPTCHA_OFFSET'             => $objCaptcha->getOffset(),
-                        $this->moduleLangVar.'_CAPTCHA_URL'                => $objCaptcha->getUrl(),
-                        $this->moduleLangVar.'_CAPTCHA_ALT'                => $objCaptcha->getAlt(),
-                        $this->moduleLangVar.'_CAPTCHA_ERROR'              => $this->captchaError
-                    ));
-
-                    $this->_objTpl->setVariable(array(
-                        'TXT_'.$this->moduleLangVar.'_CAPTCHA' =>  $_CORELANG['TXT_CAPTCHA'],
+                        'TXT_'.$this->moduleLangVar.'_CAPTCHA' => $_CORELANG['TXT_CAPTCHA'],
+                        $this->moduleLangVar.'_CAPTCHA_CODE'   => \FWCaptcha::getInstance()->getCode(),
                     ));
                     $this->_objTpl->parse('calendarRegistrationCaptcha');
                 } else {
@@ -722,7 +711,7 @@ $this->_objTpl->setVariable(array(
 
                         $this->_objTpl->touchBlock('calendarRegistrationStatus');
                         $this->_objTpl->hideBlock('calendarRegistrationForm');
-                    } else {
+                    } else {                        
                         $this->_objTpl->setVariable(array(
                             'TXT_'.$this->moduleLangVar.'_ERROR' => '<br /><font color="#ff0000">'.$_ARRAYLANG['TXT_CALENDAR_CHECK_REQUIRED'].'</font>',
                         ));
@@ -804,29 +793,6 @@ $this->_objTpl->setVariable(array(
                 $this->_objTpl->parse('categoryList');
             }
         }
-    }
-
-    /**
-     * cehcek captcha error
-     * 
-     * @param string $input user input
-     * 
-     * @return null
-     */    
-    function checkCaptcha($input)
-    {
-        global $_ARRAYLANG;
-
-        $objCaptcha = new Captcha();
-
-        if (!$objCaptcha->check($input)) {
-            $status = false;
-            $this->captchaError = '<br /><font color="#ff0000">'.$_ARRAYLANG['TXT_CALENDAR_INVALID_CAPTCHA_CODE'].'</font>';
-        } else {
-            $status = true;
-        }
-
-        return $status;
     }
 
     /**
@@ -915,6 +881,7 @@ $this->_objTpl->setVariable(array(
             
         } catch (Exception $e) {
             \DBG::msg('<!-- failed initializing uploader -->');
+            throw new Exception("failed initializing uploader");
         }
     }
 
@@ -926,6 +893,7 @@ $this->_objTpl->setVariable(array(
      * @param string  $data        post data
      * @param integer $uploadId    upload id
      * @param array   $fileInfos   file infos
+     * @param object  $response    Upload api response object
      * 
      * @return array path and webpath
      */
@@ -985,33 +953,5 @@ $this->_objTpl->setVariable(array(
         
         return array($path, $webPath);
     }
-        
-    protected static function cleanFileName($string) {        
-        //contrexx file name policies
-        $string = FWValidator::getCleanFileName($string);
-
-        //media library special changes; code depends on those
-        // replace $change with ''
-        $change = array('+');
-        // replace $signs1 with $signs
-        $signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
-        $signs2 = array('_', 'ae', 'oe', 'ue', 'c');
-
-        foreach ($change as $str) {
-            $string = str_replace($str, '_', $string);
-        }
-        for ($x = 0; $x < count($signs1); $x++) {
-            $string = str_replace($signs1[$x], $signs2[$x], $string);
-        }
-        $string = str_replace('__', '_', $string);
-        if (strlen($string) > 60) {
-            $info       = pathinfo($string);
-            $stringExt  = $info['extension'];
-
-            $stringName = substr($string, 0, strlen($string) - (strlen($stringExt) + 1));
-            $stringName = substr($stringName, 0, 60 - (strlen($stringExt) + 1));
-            $string     = $stringName.'.'.$stringExt;
-        }
-        return $string;
-    }    
+ 
 }
