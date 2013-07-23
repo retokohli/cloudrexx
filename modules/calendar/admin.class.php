@@ -37,9 +37,7 @@ class CalendarManager extends CalendarLibrary
     function __construct()
     {
         global $_ARRAYLANG, $objTemplate;
-        
-        DBG::deactivate();
-        
+                
         parent::__construct(ASCMS_MODULE_PATH.'/'.$this->moduleName.'/template');   
         
         $contentNavigation = '<a href="index.php?cmd='.$this->moduleName.'">'.$_ARRAYLANG['TXT_CALENDAR_MENU_OVERVIEW'].' </a>';
