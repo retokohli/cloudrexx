@@ -1313,15 +1313,15 @@ class CalendarEvent extends CalendarLibrary
                     try {
                         $objFile = new \Cx\Lib\FileSystem\File($tmpUploadDir.$f);
                         $objFile->move($depositionTarget.$prefix.$f, false);
-                    } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-                        \DBG::msg($e->getMessage());
-                    }
-                    
-                    $imageName = $prefix.$f;
-                    $objImage = new ImageManager();
-                    $objImage->_createThumb($this->uploadImgPath, $this->uploadImgWebPath, $imageName, 180);
+                        
+                        $imageName = $prefix.$f;
+                        $objImage = new ImageManager();
+                        $objImage->_createThumb($this->uploadImgPath, $this->uploadImgWebPath, $imageName, 180);
 
-                    $pic = contrexx_input2raw($this->uploadImgWebPath.$imageName);
+                        $pic = contrexx_input2raw($this->uploadImgWebPath.$imageName);
+                    } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                        \DBG::msg($e->getMessage());                        
+                    }                    
                 }
             }    
         }
