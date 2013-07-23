@@ -5,7 +5,7 @@
  * PHP version 5.3 or >
  *
  * @category   Settings
- * @package    Contrexx
+ * @package    contrexx
  * @subpackage Module_Crm
  * @author     ss4ugroup <ss4ugroup@softsolutions4u.com>
  * @license    BSD Licence
@@ -17,7 +17,7 @@
  * This is the settings class file for handling the all functionalities under settings menu.
  *
  * @category   Settings
- * @package    Contrexx
+ * @package    contrexx
  * @subpackage Module_Crm
  * @author     ss4ugroup <ss4ugroup@softsolutions4u.com>
  * @license    BSD Licence

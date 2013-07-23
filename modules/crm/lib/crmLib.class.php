@@ -4,7 +4,7 @@
  * CrmLibrary class
  * 
  * @category   CrmLibrary
- * @package    Contrexx
+ * @package    contrexx
  * @subpackage Module_Crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
  * @copyright  2012 and CONTREXX CMS - COMVATION AG
@@ -24,7 +24,7 @@ require_once CRM_MODULE_LIB_PATH . '/events/handlers/DefaultEventHandler.class.p
  * CrmLibrary class
  *
  * @category   CrmLibrary
- * @package    Contrexx
+ * @package    contrexx
  * @subpackage Module_Crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
  * @copyright  2012 and CONTREXX CMS - COMVATION AG
@@ -2396,7 +2396,7 @@ class CrmLibrary
  * Loader will access class singleton and set object
  *
  * @category   Sample_Category
- * @package    Contrexx
+ * @package    contrexx
  * @subpackage Module_Crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
  * @copyright  2012 and CONTREXX CMS - COMVATION AG

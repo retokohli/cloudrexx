@@ -3,7 +3,7 @@
  * Admin Class CRM
  *
  * @category   CrmManager
- * @package    Contrexx
+ * @package    contrexx
  * @subpackage Module_Crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
  * @copyright  2012 and CONTREXX CMS - COMVATION AG
@@ -19,7 +19,7 @@ require_once CRM_MODULE_LIB_PATH.'/Csv_bv.class.php';
  * Admin Class CRM
  *
  * @category   CrmManager
- * @package    Contrexx
+ * @package    contrexx
  * @subpackage Module_Crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
  * @copyright  2012 and CONTREXX CMS - COMVATION AG

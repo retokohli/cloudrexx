@@ -5,7 +5,7 @@
  * PHP version 5.3 or >
  *
  * @category   CrmInterface
- * @package    Contrexx
+ * @package    contrexx
  * @subpackage Module_Crm
  * @author     ss4ugroup <ss4ugroup@softsolutions4u.com>
  * @license    BSD Licence
@@ -17,7 +17,7 @@
  * This is the crmInterface class file for handling the all functionalities under interface menu.
  *
  * @category   CrmInterface
- * @package    Contrexx
+ * @package    contrexx
  * @subpackage Module_Crm
  * @author     ss4ugroup <ss4ugroup@softsolutions4u.com>
  * @license    BSD Licence
@@ -930,7 +930,7 @@ class crmInterface extends CrmLibrary
 
         if (!empty ($tableName) && !empty ($fields)) {
             $objRecordExist = $objDatabase->getOne("SELECT id FROM `".DBPREFIX."{$tableName}` WHERE $values[0] = '".$values[1]."' AND contact_id = {$values[2]}");
-            if ($objRecordExist) {
+            if ($objRecordExist && !empty ($objRecordExist)) {
                 $query = SQL::update($tableName, $fields, array('escape' => true))." WHERE `id` = {$objRecordExist}";
             } else {
                 $query = SQL::insert($tableName, $fields, array('escape' => true));
