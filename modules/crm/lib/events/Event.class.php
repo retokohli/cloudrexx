@@ -4,7 +4,7 @@
  *
  * @category   Event
  * @package    contrexx
- * @subpackage Module_Crm
+ * @subpackage module_crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
  * @copyright  2012 and CONTREXX CMS - COMVATION AG
  * @license    trial license
@@ -16,7 +16,7 @@
  *
  * @category   Event
  * @package    contrexx
- * @subpackage Module_Crm
+ * @subpackage module_crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
  * @copyright  2012 and CONTREXX CMS - COMVATION AG
  * @license    trial license
