@@ -780,8 +780,13 @@ class Contact extends ContactLib
                     }
                     
                     if($move) {
-                        $objFile = new \Cx\Lib\FileSystem\File($tmpUploadDir.$f);
-                        $objFile->move(ASCMS_PATH_OFFSET.'/'.$depositionTarget.$prefix.$f, false);
+                        // move file
+                        try {
+                            $objFile = new \Cx\Lib\FileSystem\File($tmpUploadDir.$f);
+                            $objFile->move(ASCMS_PATH_OFFSET.'/'.$depositionTarget.$prefix.$f, false);
+                        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                            \DBG::msg($e->getMessage());
+                        }
                     }
                         
                     $arrFiles[] = array(
