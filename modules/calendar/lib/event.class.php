@@ -1309,8 +1309,13 @@ class CalendarEvent extends CalendarLibrary
                         $prefix ++;
                     }
 
-                    $objFile = new \Cx\Lib\FileSystem\File($tmpUploadDir.$f);
-                    $objFile->move($depositionTarget.$prefix.$f, false);
+                    // move file
+                    try {
+                        $objFile = new \Cx\Lib\FileSystem\File($tmpUploadDir.$f);
+                        $objFile->move($depositionTarget.$prefix.$f, false);
+                    } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                        \DBG::msg($e->getMessage());
+                    }
                     
                     $imageName = $prefix.$f;
                     $objImage = new ImageManager();

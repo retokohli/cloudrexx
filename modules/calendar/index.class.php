@@ -124,6 +124,20 @@ class Calendar extends CalendarLibrary
     protected $submissionId = 0;
     
     /**
+     * File upload factory folder widget object
+     *
+     * @var object
+     */
+    public $folderWidget;
+    
+    /**
+     * File uploader object
+     *
+     * @var object
+     */
+    public $uploader;
+
+    /**
      * Constructor
      * 
      * @global array $_ARRAYLANG
@@ -423,11 +437,6 @@ class Calendar extends CalendarLibrary
             }
         }
         
-        if ($showFrom) {
-            $this->handleUniqueId();
-            $this->initUploader();
-        }
-
         if($eventId != null) {
             $objEvent = new CalendarEvent($eventId);
             $objEvent->getData();
@@ -476,6 +485,30 @@ cx.ready(function() {
 
 </script>
 EOF;
+        
+        if ($showFrom) {
+            try {
+                $this->handleUniqueId();
+                $this->initUploader();
+            
+                $javascript .= <<< UPLOADER
+{$this->uploader->getXHtml()}
+{$this->folderWidget->getXHtml('#calendarForm_uploadWidget', 'uploadWidget')}
+<script type="text/javascript">    
+        cx.include(
+        ["core_modules/contact/js/extendedFileInput.js"],
+        function() {
+        var ef = new ExtendedFileInput({
+        field: \$J("#pictureUpload")
+        });
+        }
+        )    
+</script>
+UPLOADER;
+            } catch(Exception $e) {
+                \DBG::msg("Error in initializing uploader");
+            }            
+        }
 
         $this->_objTpl->setGlobalVariable(array(
             $this->moduleLangVar.'_EVENT_LANG_ID'               => $_LANGID,
@@ -852,13 +885,6 @@ $this->_objTpl->setVariable(array(
             */
             $uploaderInstanceName = 'exposed_combo_uploader';
 
-            /**
-            * jQuery selector of the HTML-element where the upload folder-widget shall be put in
-            */
-            $uploaderFolderWidgetContainer = '#calendarForm_uploadWidget';
-
-
-
             //retrieve temporary location for uploaded files
             $tup = self::getTemporaryUploadPath($this->submissionId);
 
@@ -880,35 +906,15 @@ $this->_objTpl->setVariable(array(
             }
             
             //initialize the widget displaying the folder contents
-            $folderWidget = $f->newFolderWidget($tup[0].'/'.$tup[2]);
+            $this->folderWidget = $f->newFolderWidget($tup[0].'/'.$tup[2]);
+         
+            $this->uploader = $f->newUploader('exposedCombo');
+            $this->uploader->setJsInstanceName($uploaderInstanceName);
+            $this->uploader->setFinishedCallback(array(ASCMS_MODULE_PATH.'/calendar/index.class.php','Calendar','uploadFinished'));
+            $this->uploader->setData($this->submissionId);
             
-            
-            $uploader = $f->newUploader('exposedCombo');
-            $uploader->setJsInstanceName($uploaderInstanceName);
-            $uploader->setFinishedCallback(array(ASCMS_MODULE_PATH.'/calendar/index.class.php','Calendar','uploadFinished'));
-            $uploader->setData($this->submissionId);
-
-            // Code for the click event on the upload input
-            $extendedFileInputCode = '
-            <script type="text/javascript">
-            cx.include(
-            ["core_modules/contact/js/extendedFileInput.js"],
-            function() {
-            var ef = new ExtendedFileInput({
-            field: $J("#pictureUpload")
-            });
-            }
-            )
-            </script>
-            ';
-            $this->_objTpl->setVariable(array(
-                $this->moduleLangVar.'_UPLOADER_CODE'      => $uploader->getXHtml(),
-                $this->moduleLangVar.'_FILE_INPUT_CODE'    => $extendedFileInputCode,
-                $this->moduleLangVar.'_UPLOAD_WIDGET_CODE' => $folderWidget->getXHtml($uploaderFolderWidgetContainer, 'uploadWidget'),
-            ));            
-        }
-        catch (Exception $e) {
-            $this->_objTpl->setVariable('UPLOADER_CODE','<!-- failed initializing uploader, exception '.get_class($e).' with message "'.$e->getMessage().'" -->');
+        } catch (Exception $e) {
+            \DBG::msg('<!-- failed initializing uploader -->');
         }
     }
 
