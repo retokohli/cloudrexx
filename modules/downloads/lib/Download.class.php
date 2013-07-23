@@ -26,8 +26,31 @@ class Download {
     private $id;
     private $type;
     private $mime_type;
+
+    /**
+     * Source in loaded interface language (LANG_ID)
+     * @var string
+     */
+    private $source;
+
+    /**
+     * Sources of all languages
+     * @var array
+     */
     private $sources;
+
+    /**
+     * Source-name in loaded interface language (LANG_ID)
+     * @var string
+     */
+    private $source_name;
+
+    /**
+     * Sources of all languages
+     * @var array
+     */
     private $source_names;
+
     private $icon;
     private $size;
     private $image;
@@ -47,9 +70,43 @@ class Download {
     private $download_count;
     private $downloads;
     private $categories;
+
+    /**
+     * Name of download in loaded interface language (LANG_ID)
+     * @var string
+     */
+    private $name;
+
+    /**
+     * Names in all languages
+     * @var array
+     */
     private $names;
+
+    /**
+     * Description in loaded interface language (LANG_ID)
+     * @var string
+     */
+    private $description;
+
+    /**
+     * Descriptions in all languages
+     * @var array
+     */
     private $descriptions;
+
+    /**
+     * Metakeys in loaded interface language (LANG_ID)
+     * @var string
+     */
+    private $metakey;
+
+    /**
+     * Metakeys in all languages
+     * @var array
+     */
     private $metakeys;
+
     private $expiration;
     private $validity;
     private $access_groups;
@@ -232,7 +289,9 @@ class Download {
         $this->id = 0;
         $this->type = $this->defaultType;
         $this->mime_type = $this->defaultMimeType;
+        $this->source = '';
         $this->sources = array();
+        $this->source_name = '';
         $this->source_names = array();
         $this->icon = $this->defaultIcon;
         $this->size = 0;
@@ -255,8 +314,11 @@ class Download {
         $this->validity = 0;
         $this->downloads = null;
         $this->categories = null;
+        $this->name = '';
         $this->names = array();
+        $this->description = '';
         $this->descriptions = array();
+        $this->metakey = '';
         $this->metakeys = array();
         $this->EOF = true;
     }
@@ -349,6 +411,11 @@ class Download {
 
     public function getName($langId = LANG_ID)
     {
+        // name of interface language (-> LANG_ID) might be cached in $this->name
+        if ($langId == LANG_ID && isset($this->name)) {
+            return $this->name;
+        }
+
         if (!isset($this->names)) {
             $this->loadLocales();
         }
@@ -362,6 +429,11 @@ class Download {
 
     public function getDescription($langId = LANG_ID)
     {
+        // description of interface language (-> LANG_ID) might be cached in $this->description
+        if ($langId == LANG_ID && isset($this->description)) {
+            return $this->description;
+        }
+
         if (!isset($this->descriptions)) {
             $this->loadLocales();
         }
@@ -370,6 +442,11 @@ class Download {
 
     public function getMetakeys($langId = LANG_ID)
     {
+        // metakeys of interface language (-> LANG_ID) might be cached in $this->metakey
+        if ($langId == LANG_ID && isset($this->metakey)) {
+            return $this->metakey;
+        }
+
         if (!isset($this->metakeys)) {
             $this->loadLocales();
         }
@@ -464,7 +541,9 @@ class Download {
                 $this->id = $id;
                 $this->type = isset($this->arrLoadedDownloads[$id]['type']) ? $this->arrLoadedDownloads[$id]['type'] : $this->defaultType;
                 $this->mime_type = isset($this->arrLoadedDownloads[$id]['mime_type']) ? $this->arrLoadedDownloads[$id]['mime_type'] : $this->defaultMimeType;
+                $this->source = isset($this->arrLoadedDownloads[$id]['source']) ? $this->arrLoadedDownloads[$id]['source'] : '';
                 $this->sources = isset($this->arrLoadedDownloads[$id]['sources']) ? $this->arrLoadedDownloads[$id]['sources'] : '';
+                $this->source_name = isset($this->arrLoadedDownloads[$id]['source_name']) ? $this->arrLoadedDownloads[$id]['source_name'] : '';
                 $this->source_names = isset($this->arrLoadedDownloads[$id]['source_names']) ? $this->arrLoadedDownloads[$id]['source_names'] : '';
                 $this->icon = isset($this->arrLoadedDownloads[$id]['icon']) ? $this->arrLoadedDownloads[$id]['icon'] : $this->defaultIcon;
                 $this->size = isset($this->arrLoadedDownloads[$id]['size']) ? $this->arrLoadedDownloads[$id]['size'] : 0;
@@ -487,11 +566,13 @@ class Download {
                 $this->expiration = isset($this->arrLoadedDownloads[$id]['expiration']) ? $this->arrLoadedDownloads[$id]['expiration'] : 0;
                 $this->validity = isset($this->arrLoadedDownloads[$id]['validity']) ? $this->arrLoadedDownloads[$id]['validity'] : 0;
                 $this->categories = isset($this->arrLoadedDownloads[$id]['categories']) ? $this->arrLoadedDownloads[$id]['categories'] : null;
+                $this->name = isset($this->arrLoadedDownloads[$id]['name']) ? $this->arrLoadedDownloads[$id]['name'] : null;
                 $this->names = isset($this->arrLoadedDownloads[$id]['names']) ? $this->arrLoadedDownloads[$id]['names'] : null;
+                $this->description = isset($this->arrLoadedDownloads[$id]['description']) ? $this->arrLoadedDownloads[$id]['description'] : null;
                 $this->descriptions = isset($this->arrLoadedDownloads[$id]['descriptions']) ? $this->arrLoadedDownloads[$id]['descriptions'] : null;
+                $this->metakey = isset($this->arrLoadedDownloads[$id]['metakey']) ? $this->arrLoadedDownloads[$id]['metakey'] : null;
                 $this->metakeys = isset($this->arrLoadedDownloads[$id]['metakeys']) ? $this->arrLoadedDownloads[$id]['metakeys'] : null;
                 $this->EOF = false;
-                $this->loadLocales();
                 return true;
             }
         } else {
@@ -518,7 +599,7 @@ class Download {
         if ((isset($filter) && is_array($filter) && count($filter)) || !empty($search)) {
             $sqlCondition = $this->getFilteredIdList($filter, $search, $subCategories);
         } elseif (!empty($filter)) {
-            $sqlCondition['tables'] = array('core');
+            $sqlCondition['tables'] = array('core', 'locale');
             $sqlCondition['conditions'] = array('tblD.`id` = '.intval($filter));
             $limit = 1;
         }
@@ -534,9 +615,9 @@ class Download {
             foreach ($arrAttributes as $attribute) {
                 if (isset($this->arrAttributes['core'][$attribute]) && !in_array($attribute, $arrSelectCoreExpressions)) {
                     $arrSelectCoreExpressions[] = $attribute;
-                }/* elseif (isset($this->arrAttributes['locale'][$attribute]) && !in_array($attribute, $arrSelectLocaleExpressions)) {
+                } elseif (isset($this->arrAttributes['locale'][$attribute]) && !in_array($attribute, $arrSelectLocaleExpressions)) {
                     $arrSelectLocaleExpressions[] = $attribute;
-                }*/
+                }
             }
 
             if (!in_array('id', $arrSelectCoreExpressions)) {
@@ -544,13 +625,17 @@ class Download {
             }
         } else {
             $arrSelectCoreExpressions = array_keys($this->arrAttributes['core']);
-            //$arrSelectLocaleExpressions = array_keys($this->arrAttributes['locale']);
+            $arrSelectLocaleExpressions = array_keys($this->arrAttributes['locale']);
+        }
+
+        if (count($arrSelectLocaleExpressions) || $arrQuery['tables']['locale']) {
+            $arrQuery['conditions'][] = 'tblL.`lang_id` = '.LANG_ID;
         }
 
         $query = 'SELECT DISTINCT tblD.`'.implode('`, tblD.`', $arrSelectCoreExpressions).'`'
-            //.(count($arrSelectLocaleExpressions) ? ', tblL.`'.implode('`, tblL.`', $arrSelectLocaleExpressions).'`' : '')
+            .(count($arrSelectLocaleExpressions) ? ', tblL.`'.implode('`, tblL.`', $arrSelectLocaleExpressions).'`' : '')
             .'FROM `'.DBPREFIX.'module_downloads_download` AS tblD'
-            .(/*count($arrSelectLocaleExpressions) || */$arrQuery['tables']['locale'] ? ' INNER JOIN `'.DBPREFIX.'module_downloads_download_locale` AS tblL ON tblL.`download_id` = tblD.`id`' : '')
+            .(count($arrSelectLocaleExpressions) || $arrQuery['tables']['locale'] ? ' INNER JOIN `'.DBPREFIX.'module_downloads_download_locale` AS tblL ON tblL.`download_id` = tblD.`id`' : '')
             .($arrQuery['tables']['category'] ? (
                 ' INNER JOIN `'.DBPREFIX.'module_downloads_rel_download_category` AS tblRC ON tblRC.`download_id` = tblD.`id`')
                 .($this->isFrontendMode ? ' INNER JOIN `'.DBPREFIX.'module_downloads_category` AS tblC ON tblC.`id` = tblRC.`category_id`' : '')
@@ -1384,14 +1469,28 @@ class Download {
 
     public function getSource($langId = LANG_ID)
     {
-        $source = isset($this->sources[$langId]) ? $this->sources[$langId] : '';
-        return $source;
+        // source of interface language (-> LANG_ID) might be cached in $this->source
+        if ($langId == LANG_ID && isset($this->source)) {
+            return $this->source;
+        }
+
+        if (!isset($this->sources)) {
+            $this->loadLocales();
+        }
+        return isset($this->sources[$langId]) ? $this->sources[$langId] : '';
     }
 
     public function getSourceName($langId = LANG_ID)
     {
-        $sourceName = isset($this->source_names[$langId]) ? $this->source_names[$langId] : '';
-        return $this->source_names[$langId];
+        // source-name of interface language (-> LANG_ID) might be cached in $this->source_name
+        if ($langId == LANG_ID && isset($this->source_name)) {
+            return $this->source_name;
+        }
+
+        if (!isset($this->source_names)) {
+            $this->loadLocales();
+        }
+        return isset($this->source_names[$langId]) ? $this->source_names[$langId] : '';
     }
 
     public function getIcon($small = false)
@@ -1584,6 +1683,12 @@ class Download {
                 $this->icon = in_array($extension, $this->arrIcons) ? $extension : $this->defaultIcon;
                 $this->source_names[$langId] = isset($sourceNames[$langId]) ? $sourceNames[$langId] : basename($source);
             }
+
+            // set source of interface language
+            if ($langId == LANG_ID) {
+                $this->source = $source;
+                $this->source_name = $this->source_names[$langId];
+            }
         }
 
         $this->sources = $sources;
@@ -1678,16 +1783,28 @@ class Download {
 
     public function setNames($arrNames)
     {
+        // set name of interface language
+        $this->name = $arrNames[LANG_ID];
+
+        // set names of all languages
         $this->names = $arrNames;
     }
 
     public function setDescriptions($arrDescriptions)
     {
+        // set description of interface language
+        $this->description = $arrDescriptions[LANG_ID];
+
+        // set descriptions of all languages
         $this->descriptions = $arrDescriptions;
     }
 
     public function setMetakeys($arrMetakeys)
     {
+        // set metakey of interface language
+        $this->metakey = $arrMetakeys[LANG_ID];
+
+        // set metakeys of all languages
         $this->metakeys = $arrMetakeys;
     }
 
