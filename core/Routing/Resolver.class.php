@@ -720,6 +720,12 @@ class Resolver {
             $this->resolvePage(true);
             $page->getFallbackContentFrom($this->page);
             $this->page = $page;
+
+            // Important: We must reset the modified $page object here.
+            // Otherwise the EntityManager holds false information about the page.
+            // I.e. type might be 'application' instead of 'fallback'
+            // See bug-report #1536
+            $this->em->refresh($page);
         }
     }
 
