@@ -719,13 +719,23 @@ class Resolver {
             // now lets resolve the page that is referenced by our fallback page
             $this->resolvePage(true);
             $page->getFallbackContentFrom($this->page);
-            $this->page = $page;
+
+            // Important: We must assigne a copy of $page to $this->path here.
+            // Otherwise, the virtual fallback page ($this->page) will also
+            // be reset, when we reset (see next command) the original
+            // requested page $page.
+            $this->page = clone $page;
 
             // Important: We must reset the modified $page object here.
             // Otherwise the EntityManager holds false information about the page.
             // I.e. type might be 'application' instead of 'fallback'
             // See bug-report #1536
             $this->em->refresh($page);
+
+            // Due to the fallback-resolving, the virtual language directory
+            // is currently set to the fallback language. Therefore we must set
+            // it back to the language of the original request.
+            $this->url->setLangDir(\FWLanguage::getLanguageCodeById($page->getLang()));
         }
     }
 
