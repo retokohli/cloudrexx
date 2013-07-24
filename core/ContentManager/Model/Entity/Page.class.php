@@ -1587,7 +1587,7 @@ class Page extends \Cx\Model\Base\EntityBase
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page
      */
     public function getFallbackContentFrom($page) {
-        $this->virtual = true;
+        $this->isVirtual = true;
         $this->content = $page->getContent();
         $this->module = $page->getModule();
         $this->cmd = $page->getCmd();
