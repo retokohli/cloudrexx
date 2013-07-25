@@ -1457,8 +1457,10 @@ function loadMd5SumOfOriginalCxFiles()
         if (!isset($arrMd5SumsOfCxFiles[$file])) {
             $arrMd5SumsOfCxFiles[$file] = array();
         }
-        $arrMd5SumsOfCxFiles[$file]['md5_sum']     = $md5sum;
-        $arrMd5SumsOfCxFiles[$file]['raw_md5_sum'] = $rawMd5Sum;
+        $arrMd5SumsOfCxFiles[$file][] = array(
+            'md5_sum'     => $md5sum,
+            'raw_md5_sum' => $rawMd5Sum
+        );
     }
 
     return true;
@@ -1519,7 +1521,6 @@ function verifyMd5SumOfFile($file, $newFile)
     }
 
     $md5        = md5_file($file);    
-    $rawmd5     = '';
     $cxFilePath = substr($file, strlen(ASCMS_DOCUMENT_ROOT.'/'));
 
     // file did not exist in old version,
@@ -1531,22 +1532,19 @@ function verifyMd5SumOfFile($file, $newFile)
     foreach ($arrMd5SumsOfCxFiles[$cxFilePath] as $validMd5Sum) {
         if ($md5 == $validMd5Sum['md5_sum']) {
             return true;
-        } else {
-            $rawmd5 = md5(preg_replace('/\s/', '', file_get_contents($file)));
-            if ($rawmd5 == $validMd5Sum['raw_md5_sum']) {
-                return true;
-            }
         }
     }
 
-    $md5SumOfNewFile = md5_file($newFile);
-    if ($md5 == $md5SumOfNewFile) {
-        return true;
-    } else {
-        $rawMd5SumOfNewFile = md5(preg_replace('/\s/', '', file_get_contents($newFile)));
-        if ($rawmd5 == $rawMd5SumOfNewFile) {
+    $rawmd5 = md5(preg_replace('/\s/', '', file_get_contents($file)));
+    foreach ($arrMd5SumsOfCxFiles[$cxFilePath] as $validMd5Sum) {
+        if ($rawmd5 == $validMd5Sum['raw_md5_sum']) {
             return true;
         }
+    }
+    
+    $md5SumOfNewFile = md5_file($newFile);    
+    if ($md5 == $md5SumOfNewFile) {
+        return true;
     }
 
     return false;
