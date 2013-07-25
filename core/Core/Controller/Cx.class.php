@@ -1080,6 +1080,11 @@ namespace Cx\Core\Core\Controller {
                 $endcode = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $endcode);
                 \LinkGenerator::parseTemplate($endcode);
 
+                // remove the meta tag X-UA-Compatible if the user agent ist neighter internet explorer nor chromeframe
+                if(!preg_match('/(msie|chromeframe)/i', $_SERVER['HTTP_USER_AGENT'])) {
+                    $endcode = preg_replace('/<meta.*?X-UA-Compatible.*?>/i', '', $endcode);
+                }
+
                 // replace links from before contrexx 3
                 $ls = new \LinkSanitizer(
                     ASCMS_PATH_OFFSET.\Env::get('virtualLanguageDirectory').'/',
