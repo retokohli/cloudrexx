@@ -444,19 +444,31 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
      */
     public static function registerJS($file)
     {
+        // check whether the script has a query string and remove it
+        // this is necessary to check whether the file exists in the filesystem or not
+        $fileName = $file;
+        $queryStringBegin = strpos($fileName, '?');
+        if ($queryStringBegin) {
+            $fileName = substr($fileName, 0, $queryStringBegin);
+        }
+
         // $basename = strtolower(preg_replace("/\.[^\.]+$/", "", basename($file)));
         // we assume, every javascript files ends with .js
-        $basename = strtolower(str_replace(".js", "", basename($file)));
+        $basename = strtolower(str_replace(".js", "", basename($fileName)));
         if (array_search($basename, array_keys(self::$available)) !== false) {
             self::activate($basename);
             return true;
         }
-        if (!preg_match('#^https?://#', $file)) {
-            if (!file_exists(\Env::get('ClassLoader')->getFilePath(($file[0] == '/' ? ASCMS_PATH : ASCMS_DOCUMENT_ROOT.'/').$file))) {
-                self::$error .= "The file ".$file." doesn't exist\n";
+
+        // if it is an local javascript file
+        if (!preg_match('#^https?://#', $fileName)) {
+            if (!file_exists(\Env::get('ClassLoader')->getFilePath(($fileName[0] == '/' ? ASCMS_PATH : ASCMS_DOCUMENT_ROOT.'/').$fileName))) {
+                self::$error .= "The file ".$fileName." doesn't exist\n";
                 return false;
             }
         }
+
+        // add original file name with query string to custom javascripts array
         if (array_search($file, self::$customJS) === false) {
             self::$customJS[] = $file;
         }
