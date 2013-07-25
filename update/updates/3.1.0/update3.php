@@ -32,6 +32,8 @@ if ($objResultRc1->fields['target'] != '_blank') {
     $version = 'sp2';
 } elseif ($_CONFIG['coreCmsVersion'] == '3.0.3') {
     $version = 'sp3';
+} elseif ($_CONFIG['coreCmsVersion'] == '3.0.4') {
+    $version = 'sp4';
 } else {
     // nothing to do
     return true;
@@ -742,13 +744,18 @@ $updatesSp3ToSp4 = array(
     'ALTER IGNORE TABLE `' . DBPREFIX . 'access_group_static_ids` ADD PRIMARY KEY ( `access_id` , `group_id` )',
 );
 
-$updatesRc1ToSp4    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4);
-$updatesRc2ToSp4    = array_merge($updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4);
-$updatesStableToSp4 = array_merge($updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4);
-$updatesHotfixToSp4 = array_merge($updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4);
-$updatesSp1ToSp4    = array_merge($updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4);
-$updatesSp2ToSp4    = array_merge($updatesSp2ToSp3, $updatesSp3ToSp4);
-$updatesSp3ToSp4    = $updatesSp3ToSp4;
+$updatesSp4To301 = array(
+
+);
+
+$updatesRc1ToSp4    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To301);
+$updatesRc2ToSp4    = array_merge($updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To301);
+$updatesStableToSp4 = array_merge($updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To301);
+$updatesHotfixToSp4 = array_merge($updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To301);
+$updatesSp1ToSp4    = array_merge($updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To301);
+$updatesSp2ToSp4    = array_merge($updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To301);
+$updatesSp3ToSp4    = array_merge($updatesSp3ToSp4, $updatesSp4To301);
+$updatesSp4To301    = $updatesSp4To301;
 
 if ($version == 'rc1') {
     $updates = $updatesRc1ToSp4;
@@ -762,8 +769,10 @@ if ($version == 'rc1') {
     $updates = $updatesSp1ToSp4;
 } elseif ($version == 'sp2') {
     $updates = $updatesSp2ToSp4;
-} else {
+} elseif ($version == 'sp3') {
     $updates = $updatesSp3ToSp4;
+} else {
+    $updates = $updatesSp4To301;
 }
 
 foreach ($updates as $update) {
@@ -1130,6 +1139,9 @@ try {
 } catch (\Cx\Lib\UpdateException $e) {
     return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
 }
+
+// fix tree
+\Env::em()->getRepository('Cx\Core\ContentManager\Model\Node')->recover();
 
 require(dirname(__FILE__).'/config.inc.php');
 \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'settings` SET `setvalue` = \'' . $arrUpdate['cmsVersion'] . '\' WHERE `setname` = \'coreCmsVersion\'');
