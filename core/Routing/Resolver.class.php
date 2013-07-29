@@ -734,8 +734,10 @@ class Resolver {
 
             // Due to the fallback-resolving, the virtual language directory
             // is currently set to the fallback language. Therefore we must set
-            // it back to the language of the original request.
+            // it back to the language of the original request. Same also applies
+            // to $this->lang, which was used to resolv the fallback page(s).
             $this->url->setLangDir(\FWLanguage::getLanguageCodeById($page->getLang()));
+            $this->lang = $page->getLang();
         }
     }
 
