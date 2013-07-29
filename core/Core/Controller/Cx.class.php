@@ -358,7 +358,7 @@ namespace Cx\Core\Core\Controller {
             // turning '/myoffset/core_module/somemodule' into '/myoffset'
             $fileRoot = dirname(dirname(dirname(dirname(__FILE__))));
             $nonOffset = preg_replace('#' . preg_quote($fileRoot) . '#', '', realpath($_SERVER['SCRIPT_FILENAME']));
-            $nonOffsetParts = explode('/', $nonOffset);
+            $nonOffsetParts = preg_split('#[/\\\\]#', $nonOffset);
             end($nonOffsetParts);
             unset($nonOffsetParts[key($nonOffsetParts)]);
             $nonOffset = implode('/', $nonOffsetParts);
@@ -750,7 +750,7 @@ namespace Cx\Core\Core\Controller {
          */
         protected function resolve() {
             $this->resolver = new \Cx\Core\Routing\Resolver($this->getRequest(), null, $this->getDb()->getEntityManager(), null, null);
-            $this->resolver->getURL()->setMode($this->mode);
+            $this->request->setMode($this->mode);
 
             if ($this->mode == self::MODE_FRONTEND) {
                 $this->resolvedPage = $this->resolver->resolve();
