@@ -107,7 +107,7 @@ class SearchManager
             usort($pages, array($this, 'sortPages'));
             
             if ($countPages > 0) {
-                $parameter = '';
+                $parameter = '&cmd=search' . (empty($this->term) ? '' : '&term=' . contrexx_raw2encodedUrl($this->term));
                 $paging = \Paging::get($parameter, '', $countPages, 0, true, null, 'pos');
                 
                 $this->template->setVariable(array(

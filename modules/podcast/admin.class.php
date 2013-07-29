@@ -219,7 +219,7 @@ class podcastManager extends podcastLib
         $mediaCount = &$this->_getMediaCount($categoryId);
 
         if ($mediaCount > $_CONFIG['corePagingLimit']) {
-            $paging = getPaging($mediaCount, $pos, '&amp;cmd=podcast&amp;categoryId='.$categoryId, $_ARRAYLANG['TXT_PODCAST_MEDIA']);
+            $paging = getPaging($mediaCount, $pos, '&cmd=podcast&categoryId='.$categoryId, $_ARRAYLANG['TXT_PODCAST_MEDIA']);
             $this->_objTpl->setVariable('PODCAST_PAGING', $paging."<br /><br />\n");
         }
 
@@ -348,7 +348,7 @@ class podcastManager extends podcastLib
 
         if ($categoryCount > $_CONFIG['corePagingLimit']) {
             $pos = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
-            $paging = getPaging($categoryCount, $pos, '&amp;cmd=podcast&amp;act=categories', $_ARRAYLANG['TXT_PODCAST_CATEGORIES']);
+            $paging = getPaging($categoryCount, $pos, '&cmd=podcast&act=categories', $_ARRAYLANG['TXT_PODCAST_CATEGORIES']);
             $this->_objTpl->setVariable('PODCAST_PAGING', $paging."<br /><br />\n");
         }
 
@@ -527,7 +527,7 @@ class podcastManager extends podcastLib
         $limitPos = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
 
         if (($templateCount = &$this->_getTemplateCount()) > $_CONFIG['corePagingLimit']) {
-            $paging = getPaging($templateCount, $limitPos, '&amp;cmd=podcast&amp;act=templates', $_ARRAYLANG['TXT_PODCAST_TEMPLATES']);
+            $paging = getPaging($templateCount, $limitPos, '&cmd=podcast&act=templates', $_ARRAYLANG['TXT_PODCAST_TEMPLATES']);
 
             $this->_objTpl->setVariable('PODCAST_PAGING', $paging."<br /><br />\n");
         }

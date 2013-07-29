@@ -179,9 +179,9 @@ class logmanager
         $count = $objResult->RecordCount();
 
         if(!empty($term)) {
-            $paging = getPaging($count, $pos, "&cmd=log&amp;term=$term", "<b>".$_CORELANG['TXT_LOG_ENTRIES']."</b>", true);
+            $paging = getPaging($count, $pos, "&cmd=log&term=$term", "<b>".$_CORELANG['TXT_LOG_ENTRIES']."</b>", true);
         } else {
-            $paging = getPaging($count, $pos, "&amp;cmd=log", "<b>".$_CORELANG['TXT_LOG_ENTRIES']."</b>", true);
+            $paging = getPaging($count, $pos, "&cmd=log", "<b>".$_CORELANG['TXT_LOG_ENTRIES']."</b>", true);
         }
 
         $objResult = $objDatabase->SelectLimit($q, $_CONFIG['corePagingLimit'], $pos);

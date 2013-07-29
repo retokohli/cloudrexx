@@ -365,7 +365,7 @@ class jobs extends jobsLibrary
         $objResult = $objDatabase->Execute($query);
         $count = $objResult->RecordCount();
         if ($count > intval($_CONFIG['corePagingLimit'])) {
-            $paging = getPaging($count, $pos, "&amp;section=jobs&amp;catid=".$selectedId."&amp;locid=".$location, $_ARRAYLANG['TXT_DOCUMENTS'], true);
+            $paging = getPaging($count, $pos, "&section=jobs&catid=".$selectedId."&locid=".$location, $_ARRAYLANG['TXT_DOCUMENTS'], true);
         }
         $this->_objTpl->setVariable("JOBS_PAGING", $paging);
         $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos) ;

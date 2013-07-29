@@ -224,7 +224,7 @@ class CheckoutManager extends CheckoutLibrary {
             }
 
             if ($pagingCount > $_CONFIG['corePagingLimit']) {
-                $this->objTemplate->setVariable('CHECKOUT_PAGING', getPaging($pagingCount, $pagingPosition, "&amp;cmd=checkout", $_ARRAYLANG['TXT_CHECKOUT_TRANSACTIONS']));
+                $this->objTemplate->setVariable('CHECKOUT_PAGING', getPaging($pagingCount, $pagingPosition, "&cmd=checkout", $_ARRAYLANG['TXT_CHECKOUT_TRANSACTIONS']));
             }
 
             $this->objTemplate->parse('transactions');

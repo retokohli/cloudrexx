@@ -378,7 +378,7 @@ class feedManager extends feedLibrary
                     } else {
                         $pos = 0;
                     }
-                    $paging = $_ARRAYLANG['TXT_FEED_NEWS_MESSAGES'].' '.getPaging(count($arrNewsMLDocuments), $pos, "&amp;cmd=feed&amp;act=newsML&tpl=details&providerId=".$providerId, $_ARRAYLANG['TXT_NEWS_MESSAGES'],true);
+                    $paging = $_ARRAYLANG['TXT_FEED_NEWS_MESSAGES'].' '.getPaging(count($arrNewsMLDocuments), $pos, "&cmd=feed&act=newsML&tpl=details&providerId=".$providerId, $_ARRAYLANG['TXT_NEWS_MESSAGES'],true);
                 } else {
                     $pos = 0;
                 }

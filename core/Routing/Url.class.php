@@ -282,6 +282,14 @@ class Url {
     }
 
     /**
+     * Remove all params from path
+     */
+    public function removeAllParams() {
+        $path = explode('?', $this->path);
+        $this->path = $path[0];
+    }
+
+    /**
      * Write parameters to path.
      *
      * @access  private

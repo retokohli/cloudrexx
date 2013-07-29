@@ -156,7 +156,7 @@ class Forum extends ForumLibrary {
         }
 
         if($count > $_CONFIG['corePagingLimit']){
-            $paging = getPaging($count, $pos, '&amp;section=forum&amp;cmd=searchTags&amp;term='.$term, $_ARRAYLANG['TXT_FORUM_OVERVIEW_THREADS']);
+            $paging = getPaging($count, $pos, '&section=forum&cmd=searchTags&term='.$term, $_ARRAYLANG['TXT_FORUM_OVERVIEW_THREADS']);
             $this->_objTpl->setVariable('FORUM_SEARCH_PAGING', $paging);
         }
     }
@@ -503,7 +503,7 @@ class Forum extends ForumLibrary {
                 $this->_objTpl->parse('forumThreads');
             }
             $this->_objTpl->setVariable(array(
-                'FORUM_THREADS_PAGING'    =>    getPaging($this->_threadCount, $pos, '&amp;section=forum&amp;cmd=board&amp;id='.$intForumId, $_ARRAYLANG['TXT_FORUM_THREAD'], true, $this->_arrSettings['thread_paging']),
+                'FORUM_THREADS_PAGING'    =>    getPaging($this->_threadCount, $pos, '&section=forum&cmd=board&id='.$intForumId, $_ARRAYLANG['TXT_FORUM_THREAD'], true, $this->_arrSettings['thread_paging']),
             ));
             $this->_objTpl->hideBlock('forumNoThreads');
         } else {
@@ -744,7 +744,7 @@ class Forum extends ForumLibrary {
             'FORUM_CAPTCHA_CODE'                    =>    FWCaptcha::getInstance()->getCode(),
             'FORUM_THREAD_ID'                       =>    $intThreadId,
             'FORUM_CATEGORY_ID'                     =>    $intCatId,
-            'FORUM_POSTS_PAGING'                    =>    getPaging($this->_postCount, $pos, '&amp;section=forum&amp;cmd=thread&amp;id='.$intThreadId, $_ARRAYLANG['TXT_FORUM_OVERVIEW_POSTINGS'], true, $this->_arrSettings['posting_paging']),
+            'FORUM_POSTS_PAGING'                    =>    getPaging($this->_postCount, $pos, '&section=forum&cmd=thread&id='.$intThreadId, $_ARRAYLANG['TXT_FORUM_OVERVIEW_POSTINGS'], true, $this->_arrSettings['posting_paging']),
         ));
 
         if ($objFWUser->objUser->login()) {
@@ -1400,7 +1400,7 @@ class Forum extends ForumLibrary {
                     }
                 }
                 $this->_objTpl->setVariable(array(
-                    'FORUM_THREADS_PAGING'            =>    getPaging($this->_threadCount, $pos, '&section=forum&amp;cmd=board&amp;id='.$intCatId, $_ARRAYLANG['TXT_FORUM_OVERVIEW_THREADS'], true, $this->_arrSettings['thread_paging']),
+                    'FORUM_THREADS_PAGING'            =>    getPaging($this->_threadCount, $pos, '&section=forum&cmd=board&id='.$intCatId, $_ARRAYLANG['TXT_FORUM_OVERVIEW_THREADS'], true, $this->_arrSettings['thread_paging']),
                 ));
             } else {
                 $this->_objTpl->setVariable('TXT_THREADS_NONE', $_ARRAYLANG['TXT_FORUM_THREADS_NONE']);

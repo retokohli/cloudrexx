@@ -91,7 +91,7 @@ class Guestbook extends GuestbookLibrary {
                     WHERE         " . ($this->arrSettings['guestbook_only_lang_entries'] ? "lang_id='$this->langId' AND " : '') . "status = 1";
         $objResult = $objDatabase->Execute($query);
         $count = $objResult->RecordCount();
-        $paging = getPaging($count, $pos, "&amp;section=guestbook", "<b>" . $_ARRAYLANG['TXT_GUESTBOOK_ENTRIES'] . "</b>", false);
+        $paging = getPaging($count, $pos, "&section=guestbook", "<b>" . $_ARRAYLANG['TXT_GUESTBOOK_ENTRIES'] . "</b>", false);
         /** end paging * */
         $this->_objTpl->setVariable("GUESTBOOK_PAGING", $paging);
         $this->_objTpl->setVariable("GUESTBOOK_TOTAL_ENTRIES", $count);

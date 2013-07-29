@@ -1819,11 +1819,11 @@ EOF;
         global $_CONFIG, $objDatabase, $_ARRAYLANG;
 
         if (isset($catId)) {
-            $catIdSort = "&amp;cid=".$catId;
+            $catIdSort = "&cat=".$catId;
         }
 
-        if (isset($catId)) {
-            $levelIdSort = "&amp;lid=".$levelId;
+        if (isset($levelId)) {
+            $levelIdSort = "&level=".$levelId;
         }
 
         // initialize variables
@@ -1908,7 +1908,7 @@ EOF;
         $objResult      = $objDatabase->Execute($query);
         $count          = $objResult->RecordCount();
         $pos            = intval($_GET['pos']);
-        $paging         = getPaging($count, $pos, "&amp;cmd=directory&amp;act=files&amp;term=".$term.$catIdSort.$levelIdSort, "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true, $pagingLimit);
+        $paging         = getPaging($count, $pos, "&cmd=directory&act=files&term=".$term.$catIdSort.$levelIdSort, "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true, $pagingLimit);
         ////// paging end /////////
 
         $objResult = $objDatabase->SelectLimit($query, $pagingLimit, $pos);
@@ -2214,7 +2214,7 @@ EOF;
           $pos = 0;
         }
         if ($count>intval($_CONFIG['corePagingLimit'])) {
-            $paging = getPaging($count, $pos, "&amp;cmd=directory&amp;act=confirm", "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true);
+            $paging = getPaging($count, $pos, "&cmd=directory&act=confirm", "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true);
         }
         ////// paging end /////////
 

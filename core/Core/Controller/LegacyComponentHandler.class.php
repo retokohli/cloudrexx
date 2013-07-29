@@ -1182,7 +1182,7 @@ class LegacyComponentHandler {
                     },
 
                     'search' => function() {
-                        global $cl, $_CORELANG, $objTemplate, $pos;
+                        global $cl, $_CORELANG, $objTemplate, $pos, $license;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/search/index.class.php'))

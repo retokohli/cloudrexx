@@ -532,11 +532,11 @@ $this->arrRows[2] = '';
         global $objDatabase, $_ARRAYLANG;
 
         if (isset($cid)) {
-            $catLink = "&amp;cid=".$cid;
+            $catLink = "&cid=".$cid;
         }
 
         if (isset($lid)) {
-            $levelLink = "&amp;lid=".$lid;
+            $levelLink = "&lid=".$lid;
         }
 
         if ($this->settings['sortOrder']['value'] == 1) {
@@ -571,7 +571,7 @@ $this->arrRows[2] = '';
         $objResult = $objDatabase->Execute($query);
         $count = $objResult->RecordCount();
         $pos = (isset($_GET['pos']) ? intval($_GET['pos']) : 0);
-        $paging = getPaging($count, $pos, "&amp;section=directory".$levelLink.$catLink, "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true, $pagingLimit);
+        $paging = getPaging($count, $pos, "&section=directory".$levelLink.$catLink, "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true, $pagingLimit);
         ////// paging end /////////
 
         $objResult = $objDatabase->SelectLimit($query, $pagingLimit, $pos);
@@ -1554,7 +1554,7 @@ $this->arrRows[2] = '';
         $pagingLimit = intval($this->settings['pagingLimit']['value']);
         $count = $objCount->fields['entryCount'];
         $pos = intval($_GET['pos']);
-        $paging = getPaging($count, $pos, "&amp;section=directory&amp;cmd=myfeeds", "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true, $pagingLimit);
+        $paging = getPaging($count, $pos, "&section=directory&cmd=myfeeds", "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true, $pagingLimit);
         ////// paging end /////////
 
         if ($count < $pagingLimit) {
@@ -1879,7 +1879,7 @@ $this->arrRows[2] = '';
 // TODO: $term is not defined, possibly $searchTerm?
 // TODO: $check is not defined
 //            $paging = getPaging($count, $pos, "&amp;section=directory&amp;cmd=search&amp;term=".$term."&amp;check=".$check.$searchTermExp, "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true, $pagingLimit);
-            $paging = getPaging($count, $pos, "&amp;section=directory&amp;cmd=search&amp;term=".$searchTerm.$searchTermExp."&amp;check=".$_GET['check'], "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true, $pagingLimit);
+            $paging = getPaging($count, $pos, "&section=directory&cmd=search&term=".$searchTerm.$searchTermExp."&check=".$_GET['check'], "<b>".$_ARRAYLANG['TXT_DIRECTORY_FEEDS']."</b>", true, $pagingLimit);
             ////// paging end /////////
             $objResult = $objDatabase->SelectLimit($query, $pagingLimit, $pos);
 

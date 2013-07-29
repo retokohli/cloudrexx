@@ -99,7 +99,7 @@ class Blog extends BlogLibrary  {
 // TODO: Never used
 //        $intCount             = $this->countEntries();
         $intPerPage         = intval($this->_arrSettings['blog_block_messages']);
-        $strPagingSource    = getPaging($this->countEntries(), $intPos, '&amp;section=blog', '<b>'.$_ARRAYLANG['TXT_BLOG_FRONTEND_SEARCH_RESULTS'].'</b>', false, $intPerPage);
+        $strPagingSource    = getPaging($this->countEntries(), $intPos, '&section=blog', '<b>'.$_ARRAYLANG['TXT_BLOG_FRONTEND_SEARCH_RESULTS'].'</b>', false, $intPerPage);
         $this->_objTpl->setVariable('BLOG_ENTRIES_PAGING', $strPagingSource);
         /* End Paging -------------------------------------- */
 

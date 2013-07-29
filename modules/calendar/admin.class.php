@@ -270,7 +270,7 @@ class CalendarManager extends CalendarLibrary
           
 
             $this->_objTpl->setVariable(array(
-                $this->moduleLangVar.'_PAGING' =>  getPaging($objEventManager->countEvents, $startPos, "&amp;cmd=".$this->moduleName.$pagingCategory.$pagingTerm, "<b>".$_ARRAYLANG['TXT_CALENDAR_EVENTS']."</b>", true, $this->arrSettings['numPaging']),
+                $this->moduleLangVar.'_PAGING' =>  getPaging($objEventManager->countEvents, $startPos, "&cmd=".$this->moduleName.$pagingCategory.$pagingTerm, "<b>".$_ARRAYLANG['TXT_CALENDAR_EVENTS']."</b>", true, $this->arrSettings['numPaging']),
             ));
         }   
                                              

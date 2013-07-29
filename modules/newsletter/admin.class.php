@@ -1268,7 +1268,7 @@ class newsletter extends NewsletterLib
             if ($rowNr > 0) {
                 $this->_objTpl->touchBlock("newsletter_list_multiAction");
 //                if ($mailCount > $_CONFIG['corePagingLimit']) {
-                $paging = getPaging($mailCount, $pos, "&amp;cmd=newsletter&amp;act=mails", "", false, $_CONFIG['corePagingLimit']);
+                $paging = getPaging($mailCount, $pos, "&cmd=newsletter&act=mails", "", false, $_CONFIG['corePagingLimit']);
 //                }
                 $this->_objTpl->setVariable('NEWSLETTER_MAILS_PAGING', "<br />".$paging."<br />");
             } else {
@@ -5791,7 +5791,7 @@ function MultiAction() {
                 $rowNr++;
             }
             if ($rowNr > 0) {
-                $paging = getPaging($linkCount, $pos, ("&amp;cmd=newsletter&amp;act=feedback&amp;email_id=".$mailId), "", false, $_CONFIG['corePagingLimit']);
+                $paging = getPaging($linkCount, $pos, ("&cmd=newsletter&act=feedback&email_id=".$mailId), "", false, $_CONFIG['corePagingLimit']);
                 $this->_objTpl->setVariable('NEWSLETTER_LINKS_PAGING', "<br />".$paging."<br />");
             }
         }
@@ -5982,7 +5982,7 @@ function MultiAction() {
                 $rowNr++;
             }
             if ($rowNr > 0) {
-                $paging = getPaging($arrNewsletterData['count'], $pos, ("&amp;cmd=newsletter&amp;act=feedback&amp;link_id=".$linkId), "", false, $_CONFIG['corePagingLimit']);
+                $paging = getPaging($arrNewsletterData['count'], $pos, ("&cmd=newsletter&act=feedback&link_id=".$linkId), "", false, $_CONFIG['corePagingLimit']);
                 $this->_objTpl->setVariable('NEWSLETTER_RECIPIENTS_PAGING', "<br />".$paging."<br />");
             }
         }
@@ -6083,7 +6083,7 @@ function MultiAction() {
                 $rowNr++;
             }
             if ($rowNr > 0) {
-                $paging = getPaging($linkCount, $pos, ("&amp;cmd=newsletter&amp;act=feedback&amp;link_id=".$linkId."&amp;recipient_id=".$recipientId."&amp;recipient_type=".$recipientType), "", false, $_CONFIG['corePagingLimit']);
+                $paging = getPaging($linkCount, $pos, ("&cmd=newsletter&act=feedback&link_id=".$linkId."&recipient_id=".$recipientId."&recipient_type=".$recipientType), "", false, $_CONFIG['corePagingLimit']);
                 $this->_objTpl->setVariable('NEWSLETTER_LINKS_PAGING', "<br />".$paging."<br />");
             } else {
                 $this->_objTpl->setVariable('NEWSLETTER_USER_NO_FEEDBACK', $_ARRAYLANG['TXT_NEWSLETTER_USER_NO_FEEDBACK']);
@@ -6182,7 +6182,7 @@ function MultiAction() {
                 $rowNr++;
             }
             if ($rowNr > 0) {
-                $paging = getPaging($linkCount, $pos, ("&amp;cmd=newsletter&amp;act=users&amp;tpl=feedback&amp;id=".$recipientId), "", false, $_CONFIG['corePagingLimit']);
+                $paging = getPaging($linkCount, $pos, ("&cmd=newsletter&act=users&tpl=feedback&id=".$recipientId), "", false, $_CONFIG['corePagingLimit']);
                 $this->_objTpl->setVariable('NEWSLETTER_LINKS_PAGING', "<br />".$paging."<br />");
             } else {
                 $this->_objTpl->setVariable('NEWSLETTER_USER_NO_FEEDBACK', $_ARRAYLANG['TXT_NEWSLETTER_USER_NO_FEEDBACK']);

@@ -76,7 +76,7 @@ class downloads extends DownloadsLibrary
         }
 
         if ($cmd) {
-            $this->moduleParamsHtml .= '&amp;cmd='.htmlentities($cmd, ENT_QUOTES, CONTREXX_CHARSET);
+            $this->moduleParamsHtml .= '&cmd='.htmlentities($cmd, ENT_QUOTES, CONTREXX_CHARSET);
             $this->moduleParamsJs .= '&cmd='.htmlspecialchars($cmd, ENT_QUOTES, CONTREXX_CHARSET);
         }
 
@@ -1035,7 +1035,7 @@ JS_CODE;
 
             $downloadCount = $objDownload->getFilteredSearchDownloadCount();
             if ($downloadCount > $_CONFIG['corePagingLimit']) {
-                $this->objTemplate->setVariable('DOWNLOADS_FILE_PAGING', getPaging($downloadCount, $limitOffset, '&amp;'.substr($this->moduleParamsHtml, 1).'&amp;category='.$objCategory->getId().'&amp;downloads_search_keyword='.htmlspecialchars($this->searchKeyword), "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>"));
+                $this->objTemplate->setVariable('DOWNLOADS_FILE_PAGING', getPaging($downloadCount, $limitOffset, '&'.substr($this->moduleParamsHtml, 1).'&category='.$objCategory->getId().'&downloads_search_keyword='.htmlspecialchars($this->searchKeyword), "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>"));
             }
 
             $this->objTemplate->setVariable(array(
