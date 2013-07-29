@@ -132,7 +132,7 @@ class CalendarCategory extends CalendarLibrary
         }
         
         //get category host(s)
-        $query = "SELECT `name`,`id` 
+        $query = "SELECT `title`,`id` 
                     FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_host
                    WHERE cat_id = '".intval($this->id)."'
                      AND confirmed = '1'";
@@ -141,7 +141,7 @@ class CalendarCategory extends CalendarLibrary
         
         if ($objResult !== false) {
             while (!$objResult->EOF) {
-                $this->arrData['hosts'][intval($objResult->fields['id'])] = htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET);
+                $this->arrData['hosts'][intval($objResult->fields['id'])] = htmlentities($objResult->fields['title'], ENT_QUOTES, CONTREXX_CHARSET);
                 $objResult->MoveNext();
             }
         }
