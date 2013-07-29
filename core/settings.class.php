@@ -312,6 +312,16 @@ class settingsManager
             'SETTINGS_ADVANCED_UPLOAD_FRONTEND_ON'      => ($arrSettings['advancedUploadFrontend'] == 'on') ? 'checked="checked"' : '',
             'SETTINGS_ADVANCED_UPLOAD_FRONTEND_OFF'     => ($arrSettings['advancedUploadFrontend'] == 'off') ? 'checked="checked"' : ''
         ));
+
+        $objTemplate->setVariable(array(
+            'TXT_SETTINGS_PROTOCOL_HTTPS_HELP'          => $_CORELANG['TXT_SETTINGS_PROTOCOL_HTTPS_HELP'],
+            'TXT_SETTINGS_PROTOCOL_HTTPS_BACKEND'       => $_CORELANG['TXT_SETTINGS_PROTOCOL_HTTPS_BACKEND'],
+            'TXT_SETTINGS_PROTOCOL_HTTPS_FRONTEND'      => $_CORELANG['TXT_SETTINGS_PROTOCOL_HTTPS_FRONTEND'],
+            'SETTINGS_PROTOCOL_HTTPS_BACKEND_ON'        => ($arrSettings['protocolHttpsBackend'] == 'on') ? 'checked="checked"' : '',
+            'SETTINGS_PROTOCOL_HTTPS_BACKEND_OFF'       => ($arrSettings['protocolHttpsBackend'] == 'off') ? 'checked="checked"' : '',
+            'SETTINGS_PROTOCOL_HTTPS_FRONTEND_ON'       => ($arrSettings['protocolHttpsFrontend'] == 'on') ? 'checked="checked"' : '',
+            'SETTINGS_PROTOCOL_HTTPS_FRONTEND_OFF'      => ($arrSettings['protocolHttpsFrontend'] == 'off') ? 'checked="checked"' : ''
+        ));
         
         $this->setDebuggingVariables($objTemplate);
     }
@@ -417,11 +427,55 @@ class settingsManager
                 case 89:
                     $value = ($value == 'on') ? 'on' : 'off';
                     break;
+                case 57:
+                    if ($_CONFIG['protocolHttpsFrontend'] != $value) {
+                        $checkHttps = true;
+                    }
+                    break;
+                case 58:
+                    if ($_CONFIG['protocolHttpsBackend'] != $value) {
+                        $checkHttps = true;
+                    }
+                    break;
             }
 
             $objDatabase->Execute(' UPDATE `'.DBPREFIX.'settings`
                                     SET `setvalue` = "'.contrexx_input2db($value).'"
                                     WHERE `setid` = '.intval($id));
+        }
+
+        if (isset($checkHttps)) {
+            try {
+                // create request to port 443 (https), to check whether the request works or not
+                $request     = new \HTTP_Request2('https://' . $_CONFIG['domainUrl'] . ASCMS_INSTANCE_OFFSET);
+
+                // ignore ssl issues
+                // otherwise, contrexx does not activate 'https' when the server doesn't have an ssl certificate installed
+                $request->setConfig(array(
+                    'ssl_verify_peer' => false,
+                ));
+
+                // send the request
+                // if this does not work, because there is no ssl support, an exception is thrown
+                $objResponse = $request->send();
+
+                // get the status code from the request
+                $status = $objResponse->getStatus();
+                if (in_array($status, array(500))) {
+                    // https is not available, 500 server error feedback
+                    $httpsNotPossible = true;
+                }
+            } catch (\HTTP_Request2_Exception $e) {
+                // https is not available, exception thrown
+                $httpsNotPossible = true;
+            }
+
+            if (isset($httpsNotPossible)) {
+                // reset settings to default when the https request failed
+                $objDatabase->Execute(' UPDATE `'.DBPREFIX.'settings`
+                                        SET `setvalue` = "off"
+                                        WHERE `setid` IN (57,58) ');
+            }
         }
 
         if (isset($_POST['debugging'])) {

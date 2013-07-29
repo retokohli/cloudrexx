@@ -142,6 +142,16 @@ function _updateSettings()
 			'setvalue'	=> 'on',
 			'setmodule'	=> 1
 		),
+        57 => array(
+            'setname'   => 'protocolHttpsFrontend',
+            'setvalue'  => 'off',
+            'setmodule' => 1
+        ),
+        58 => array(
+            'setname'   => 'protocolHttpsBackend',
+            'setvalue'  => 'off',
+            'setmodule' => 1
+        ),
 		60	=> array(
 			'setname'	=> 'forumHomeContent',
 			'setvalue'	=> '0',
@@ -396,7 +406,7 @@ function _updateSettings()
 			'setname'	=> 'licenseSuccessfulUpdate',
 			'setvalue'	=> '0',
 			'setmodule'	=> 66
-		)
+		),
 	);
 
     $arrSettingsByName = array();

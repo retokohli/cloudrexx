@@ -324,11 +324,6 @@ namespace Cx\Core\Core\Controller {
              */
             require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/config/set_constants.php';
 
-            // Check if system is running
-            if ($_CONFIG['systemStatus'] != 'on' && $this->mode == self::MODE_FRONTEND) {
-                throw new \Exception('System disabled by config');
-            }
-
             // Check if the system is installed
             if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
                 \CSRF::header('Location: ../installer/index.php');
@@ -419,14 +414,31 @@ namespace Cx\Core\Core\Controller {
                     break;
             }
             $this->mode = $mode;
+            if ($this->request) {
+                $this->request->setMode($this->mode);
+            }
         }
 
         /**
          * Early initializations. Tries to enable APC and increase RAM size
          */
         protected function preInit() {
+            $this->checkSystemState();
             $this->tryToEnableApc();
             $this->tryToSetMemoryLimit();
+            $this->adjustProtocol();
+        }
+
+        /**
+         * Check whether the system is running
+         * @throws \Exception
+         */
+        protected function checkSystemState() {
+            global $_CONFIG;
+            // Check if system is running
+            if ($_CONFIG['systemStatus'] != 'on' && $this->mode == self::MODE_FRONTEND) {
+                throw new \Exception('System disabled by config');
+            }
         }
 
         /**
@@ -470,6 +482,33 @@ namespace Cx\Core\Core\Controller {
                 if ($this->memoryLimit < 48) {
                     ini_set('memory_limit', '48M');
                 }
+            }
+        }
+
+        /**
+         * Adjust the protocol to https if https is activated for the current area (frontend|backend)
+         */
+        protected function adjustProtocol() {
+            global $_CONFIG;
+            // check whether contrexx have to redirect to the correct protocol
+            $newProtocol = null;
+            if ($this->mode == self::MODE_FRONTEND) {
+                if ($_CONFIG['protocolHttpsFrontend'] == 'on' && empty($_SERVER['HTTPS'])) {
+                    $newProtocol = 'https';
+                } elseif ($_CONFIG['protocolHttpsFrontend'] == 'off' && !empty($_SERVER['HTTPS'])) {
+                    $newProtocol = 'http';
+                }
+            } elseif ($this->mode == self::MODE_BACKEND) {
+                if ($_CONFIG['protocolHttpsBackend'] == 'on' && empty($_SERVER['HTTPS'])) {
+                    $newProtocol = 'https';
+                } elseif ($_CONFIG['protocolHttpsBackend'] == 'off' && !empty($_SERVER['HTTPS'])) {
+                    $newProtocol = 'http';
+                }
+            }
+
+            if ($newProtocol) {
+                \header($_SERVER['SERVER_PROTOCOL'] . ' 301 Moved Permanently');
+                \header('Location: ' . $newProtocol . '://' . $_CONFIG['domainUrl'] . $_SERVER['REQUEST_URI']);
             }
         }
 

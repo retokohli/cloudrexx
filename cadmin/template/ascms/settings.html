@@ -70,8 +70,16 @@ function toggleDebuggingFlags(show) {
             <tr class="row2">
                 <td>{TXT_ADVANCED_UPLOAD_STATUS_FRONTEND}&nbsp;</td>
                 <td>
-                    <input type="radio" name="setvalue[73]" id="setvalue_73_on" value="on" {SETTINGS_ADVANCED_UPLOAD_FRONTEND_ON} /><label for="setvalue_70_on">{TXT_RADIO_ON}</label>&nbsp;
-                    <input type="radio" name="setvalue[73]" id="setvalue_73_off" value="off" {SETTINGS_ADVANCED_UPLOAD_FRONTEND_OFF} /><label for="setvalue_70_off">{TXT_RADIO_OFF}</label>&nbsp;
+                    <input type="radio" name="setvalue[73]" id="setvalue_73_on" value="on" {SETTINGS_ADVANCED_UPLOAD_FRONTEND_ON} /><label for="setvalue_73_on">{TXT_RADIO_ON}</label>&nbsp;
+                    <input type="radio" name="setvalue[73]" id="setvalue_73_off" value="off" {SETTINGS_ADVANCED_UPLOAD_FRONTEND_OFF} /><label for="setvalue_73_off">{TXT_RADIO_OFF}</label>&nbsp;
+                </td>
+            </tr>
+            <tr class="row1">
+                <td>{TXT_SETTINGS_PROTOCOL_HTTPS_FRONTEND}&nbsp;</td>
+                <td>
+                    <input type="radio" name="setvalue[57]" id="setvalue_57_off" value="off" {SETTINGS_PROTOCOL_HTTPS_FRONTEND_OFF} /><label for="setvalue_57_off">http</label>&nbsp;
+                    <input type="radio" name="setvalue[57]" id="setvalue_57_on" value="on" {SETTINGS_PROTOCOL_HTTPS_FRONTEND_ON} /><label for="setvalue_57_on">https</label>&nbsp;
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SETTINGS_PROTOCOL_HTTPS_HELP}</span>
                 </td>
             </tr>
         </table>
@@ -126,6 +134,14 @@ function toggleDebuggingFlags(show) {
             <tr class="row2" style="line-height: 22px;">
                 <td>{TXT_CORE_TIMEZONE}</td>
                 <td><select name="setvalue[87]" style="width: 459px;">{SETTINGS_TIMEZONE_OPTIONS}</select></td>
+            </tr>
+            <tr class="row1">
+                <td>{TXT_SETTINGS_PROTOCOL_HTTPS_BACKEND}&nbsp;</td>
+                <td>
+                    <input type="radio" name="setvalue[58]" id="setvalue_58_off" value="off" {SETTINGS_PROTOCOL_HTTPS_BACKEND_OFF} /><label for="setvalue_58_off">http</label>&nbsp;
+                    <input type="radio" name="setvalue[58]" id="setvalue_58_on" value="on" {SETTINGS_PROTOCOL_HTTPS_BACKEND_ON} /><label for="setvalue_58_on">https</label>&nbsp;
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SETTINGS_PROTOCOL_HTTPS_HELP}</span>
+                </td>
             </tr>
         </table>
     </div>
