@@ -63,7 +63,7 @@ class Page extends \Cx\Model\Base\EntityBase
                 # module name
                 ([A-Z1-9]+)
                 # module cmd (optional)
-                (?U)(?:_(\w+))?
+                (?U)(?:_(-\w+))?
             )
             # Language-id (optional)
             (?-U)(?:_(\d+))?
