@@ -745,7 +745,9 @@ $updatesSp3ToSp4 = array(
 );
 
 $updatesSp4To301 = array(
-
+    "INSERT IGNORE INTO `" . DBPREFIX . "settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES
+    (57, 'protocolHttpsFrontend', 'off', 1),
+    (58, 'protocolHttpsBackend', 'off', 1)"
 );
 
 $updatesRc1ToSp4    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To301);
