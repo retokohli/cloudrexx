@@ -27,7 +27,7 @@ global $_PATHCONFIG;
 /**
  * Load config for this instance
  */
-include_once dirname(__FILE__).'/config/configuration.php';
+include_once dirname(dirname(dirname(__FILE__))).'/config/configuration.php';
 
 /**
  * Debug level, see lib/FRAMEWORK/DBG/DBG.php
@@ -43,11 +43,11 @@ include_once dirname(__FILE__).'/config/configuration.php';
  * Calling these methods without specifying a debug level
  * will either activate or deactivate all levels.
  */
-require_once dirname(__FILE__).'/lib/FRAMEWORK/DBG/DBG.php';
+require_once dirname(dirname(dirname(__FILE__))).'/lib/FRAMEWORK/DBG/DBG.php';
 
 /**
  * If you activate debugging here, it will be activated everywhere (even in cronjobs, since they should base on this too)
  */
 //\DBG::activate(DBG_PHP);
 
-require_once(dirname(__FILE__).'/core/Core/Controller/Cx.class.php');
+require_once dirname(dirname(dirname(__FILE__))).'/core/Core/Controller/Cx.class.php';
