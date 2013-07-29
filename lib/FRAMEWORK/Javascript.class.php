@@ -172,9 +172,8 @@ jQuery(document).ready(function(){
 // TODO: remove & replace by cx call
         'jqueryui'     => array(
             'jsfiles'       => array(
-                // these files are loaded by ui.js via contrexxJs.js (cx)
-                //'lib/javascript/jquery/ui/jquery-ui-1.8.7.custom.min.js',
-                //'lib/javascript/jquery/ui/jquery-ui-timepicker-addon.js',
+                'lib/javascript/jquery/ui/jquery-ui-1.8.7.custom.min.js',
+                'lib/javascript/jquery/ui/jquery-ui-timepicker-addon.js',
             ),
             'cssfiles'      => array(
                 'lib/javascript/jquery/ui/css/jquery-ui.css'
