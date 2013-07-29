@@ -330,6 +330,11 @@ class Resolver {
                             }
                         }
         
+        // this is the case for standalone and backend requests
+        if (!$this->page) {
+            return null;
+        }
+        
         $this->page->setVirtual();
         
         // check for further URL parts to resolve
