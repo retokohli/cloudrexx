@@ -351,7 +351,7 @@ class LicenseCommunicator {
                         jQuery("#jsstatemessage").show();
                         if (reloadManager && ' . ($sm->isWritable() ? 'true' : 'false') . ' && data.status != "ERROR") {
                             setTimeout(function() {
-                                window.location.href = window.location.protocol + "//" + window.location.host + window.location.pathname;
+                                window.location.href = window.location.href;
                             }, 1500);
                         }
                     }
