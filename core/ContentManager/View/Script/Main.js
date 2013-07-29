@@ -819,9 +819,7 @@ cx.cm.homeCheck = function(addClasses) {
     cmd.removeClass("warning");
 
     if (module.val() != "home" || cmd.val() != "") {
-//        if (cmd.val() == "") {
-            return false;
-//        }
+        return false;
     }
 
     if (!home.length) {
