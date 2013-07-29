@@ -200,7 +200,7 @@ class AliasAdmin extends aliasLib
             $this->_objTpl->hideBlock('alias_no_data');
 
             if ($this->_getAliasesCount($showLegacyPagealiases) > count($arrAliases)) {
-                $this->_objTpl->setVariable('ALIAS_PAGING', '<br />'.getPaging($this->_getAliasesCount($showLegacyPagealiases), !empty($_GET['pos']) ? intval($_GET['pos']) : 0, '?cmd=alias', $_ARRAYLANG['TXT_ALIAS_ALIASES']));
+                $this->_objTpl->setVariable('ALIAS_PAGING', '<br />'.getPaging($this->_getAliasesCount($showLegacyPagealiases), !empty($_GET['pos']) ? intval($_GET['pos']) : 0, '&cmd=alias&legacyPages=' . ($showLegacyPagealiases ? 1 : 0), $_ARRAYLANG['TXT_ALIAS_ALIASES']));
             }
         } else {
             $this->_objTpl->setVariable('TXT_ALIAS_NO_ALIASES_MSG', $_ARRAYLANG['TXT_ALIAS_NO_ALIASES_MSG']);

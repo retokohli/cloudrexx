@@ -499,7 +499,7 @@ class newsManager extends newsLibrary {
             }
             
             if ($count>intval($_CONFIG['corePagingLimit'])) {
-                $paging = getPaging($count, $pos, '&amp;cmd=news&amp;show=archive', $_ARRAYLANG['TXT_NEWS_MESSAGES'],true);
+                $paging = getPaging($count, $pos, '&cmd=news&show=archive&monthFilter=' . contrexx_input2xhtml($_GET['monthFilter']), $_ARRAYLANG['TXT_NEWS_MESSAGES'],true);
             }
             $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
             

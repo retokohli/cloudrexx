@@ -189,7 +189,7 @@ EOF;
             $mediaCount = &$this->_getMediaCount($categoryId, true);
 
             if ($mediaCount > $_CONFIG['corePagingLimit']) {
-                $paging = getPaging($mediaCount, $pos, '&amp;section=podcast&amp;cid='.$categoryId, $_ARRAYLANG['TXT_PODCAST_MEDIA']);
+                $paging = getPaging($mediaCount, $pos, '&section=podcast&cid='.$categoryId, $_ARRAYLANG['TXT_PODCAST_MEDIA']);
                 $this->_objTpl->setVariable('PODCAST_PAGING', $paging);
             }
         }

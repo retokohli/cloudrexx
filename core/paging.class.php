@@ -77,7 +77,10 @@ class Paging
             $corr_value = $numof_rows % $results_per_page;
         }
 
-        $requestUrl = \Env::get('Resolver')->getUrl();
+        // remove all parameters otherwise the url object has parameters like &act=add
+        $requestUrl = clone \Env::get('Resolver')->getUrl();
+        $requestUrl->removeAllParams();
+
         $firstUrl = clone $requestUrl;
         $firstUrl->setParams($uri_parameter);
         $firstUrl->setParam($parameter_name, 0);

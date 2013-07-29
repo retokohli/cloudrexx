@@ -292,7 +292,7 @@ class BlogAdmin extends BlogLibrary {
 
             //Show paging if needed
             if ($this->countCategories() > $this->getPagingLimit()) {
-                $strPaging = getPaging($this->countCategories(), $intPagingPosition, '&amp;cmd=blog&amp;act=manageCategory', '<strong>'.$_ARRAYLANG['TXT_BLOG_ENTRY_ADD_CATEGORIES'].'</strong>', true, $this->getPagingLimit());
+                $strPaging = getPaging($this->countCategories(), $intPagingPosition, '&cmd=blog&act=manageCategory', '<strong>'.$_ARRAYLANG['TXT_BLOG_ENTRY_ADD_CATEGORIES'].'</strong>', true, $this->getPagingLimit());
                 $this->_objTpl->setVariable('OVERVIEW_PAGING', $strPaging);
             }
         } else {
@@ -630,7 +630,7 @@ class BlogAdmin extends BlogLibrary {
 
             //Show paging if needed
             if ($this->countEntries() > $this->getPagingLimit()) {
-                $strPaging = getPaging($this->countEntries(), $intPagingPosition, '&amp;cmd=blog', '<strong>'.$_ARRAYLANG['TXT_BLOG_ENTRY_MANAGE_PAGING'].'</strong>', true, $this->getPagingLimit());
+                $strPaging = getPaging($this->countEntries(), $intPagingPosition, '&cmd=blog', '<strong>'.$_ARRAYLANG['TXT_BLOG_ENTRY_MANAGE_PAGING'].'</strong>', true, $this->getPagingLimit());
                 $this->_objTpl->setVariable('ENTRIES_PAGING', $strPaging);
             }
         } else {

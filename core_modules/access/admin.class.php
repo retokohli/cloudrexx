@@ -444,7 +444,7 @@ class AccessManager extends AccessLib
         }
 
         if ($objGroup->getGroupCount() > $_CONFIG['corePagingLimit']) {
-            $this->_objTpl->setVariable('ACCESS_GROUP_PAGING', getPaging($objGroup->getGroupCount($filter), $limitOffset, '&amp;cmd=access&amp;act=group&amp;sort='.$orderDirection.'&amp;by='.$orderBy.'&amp;group_type_filter='.$groupTypeFilter, $_ARRAYLANG['TXT_ACCESS_GROUPS']));
+            $this->_objTpl->setVariable('ACCESS_GROUP_PAGING', getPaging($objGroup->getGroupCount($filter), $limitOffset, '&cmd=access&act=group&sort='.$orderDirection.'&by='.$orderBy.'&group_type_filter='.$groupTypeFilter, $_ARRAYLANG['TXT_ACCESS_GROUPS']));
         }
 
         $this->_objTpl->parse('module_access_group_list');
@@ -991,7 +991,7 @@ class AccessManager extends AccessLib
         if ($userCount > 0 && ($objUser = $objFWUser->objUser->getUsers($userFilter, $search, $arrOrder, null, $_CONFIG['corePagingLimit'], $limitOffset)) && $userCount = $objUser->getFilteredSearchUserCount()) {
 
             if ($userCount > $_CONFIG['corePagingLimit']) {
-                $this->_objTpl->setVariable('ACCESS_USER_PAGING', getPaging($userCount, $limitOffset, "&amp;cmd=access&amp;act=user&amp;groupId=".$groupId."&amp;sort=".htmlspecialchars($orderDirection)."&amp;by=".htmlspecialchars($orderBy)."&amp;search=".urlencode(urlencode(implode(' ',$search)))."&amp;username_filter=".$usernameFilter."&amp;user_status_filter=".$userStatusFilter."&amp;user_role_filter=".$userRoleFilter, "<b>".$_ARRAYLANG['TXT_ACCESS_USER']."</b>"));
+                $this->_objTpl->setVariable('ACCESS_USER_PAGING', getPaging($userCount, $limitOffset, "&cmd=access&act=user&groupId=".$groupId."&sort=".htmlspecialchars($orderDirection)."&by=".htmlspecialchars($orderBy)."&search=".urlencode(urlencode(implode(' ',$search)))."&username_filter=".$usernameFilter."&user_status_filter=".$userStatusFilter."&user_role_filter=".$userRoleFilter, "<b>".$_ARRAYLANG['TXT_ACCESS_USER']."</b>"));
             }
 
             $this->_objTpl->setVariable(array(

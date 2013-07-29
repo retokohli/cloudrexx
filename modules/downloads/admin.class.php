@@ -397,9 +397,9 @@ class downloads extends DownloadsLibrary
             // parse paging
             $groupCount = $objGroup->getFilteredSearchGroupCount();
             if ($groupCount > $_CONFIG['corePagingLimit']) {
-                $pagingLink = "&amp;cmd=downloads&amp;act=groups"
-                    ."&amp;group_sort=".htmlspecialchars($groupOrderDirection)
-                    ."&amp;group_by=".htmlspecialchars($groupOrderBy);
+                $pagingLink = "&cmd=downloads&act=groups"
+                    ."&group_sort=".htmlspecialchars($groupOrderDirection)
+                    ."&group_by=".htmlspecialchars($groupOrderBy);
                 $this->objTemplate->setVariable('DOWNLOADS_GROUP_PAGING', getPaging($groupCount, $groupLimitOffset, $pagingLink, "<b>".$_ARRAYLANG['TXT_DOWNLOADS_GROUPS']."</b>"));
             }
 
@@ -961,7 +961,7 @@ class downloads extends DownloadsLibrary
 
         $downloadCount = $objDownload->getFilteredSearchDownloadCount();
         if ($downloadCount > $_CONFIG['corePagingLimit']) {
-            $this->objTemplate->setVariable('DOWNLOADS_DOWNLOAD_PAGING', getPaging($downloadCount, $limitOffset, "&amp;cmd=downloads&amp;sort=".htmlspecialchars($orderDirection)."&amp;by=".htmlspecialchars($orderBy), "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>"));
+            $this->objTemplate->setVariable('DOWNLOADS_DOWNLOAD_PAGING', getPaging($downloadCount, $limitOffset, "&cmd=downloads&sort=".htmlspecialchars($orderDirection)."&by=".htmlspecialchars($orderBy), "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>"));
         }
 
 
@@ -2056,12 +2056,12 @@ class downloads extends DownloadsLibrary
             // parse paging
             $categoryCount = $objSubcategory->getFilteredSearchCategoryCount();
             if ($categoryCount > $_CONFIG['corePagingLimit']) {
-                $pagingLink = "&amp;cmd=downloads&amp;act=categories&amp;parent_id=".$objCategory->getId()
-                    ."&amp;category_sort=".htmlspecialchars($categoryOrderDirection)
-                    ."&amp;category_by=".htmlspecialchars($categoryOrderBy)
-                    ."&amp;download_sort=".htmlspecialchars($downloadOrderDirection)
-                    ."&amp;download_by=".htmlspecialchars($downloadOrderBy)
-                    ."&amp;download_pos=".$downloadLimitOffset;
+                $pagingLink = "&cmd=downloads&act=categories&parent_id=".$objCategory->getId()
+                    ."&category_sort=".htmlspecialchars($categoryOrderDirection)
+                    ."&category_by=".htmlspecialchars($categoryOrderBy)
+                    ."&download_sort=".htmlspecialchars($downloadOrderDirection)
+                    ."&download_by=".htmlspecialchars($downloadOrderBy)
+                    ."&download_pos=".$downloadLimitOffset;
                 $this->objTemplate->setVariable('DOWNLOADS_CATEGORY_PAGING', getPaging($categoryCount, $categoryLimitOffset, $pagingLink, "<b>".$_ARRAYLANG['TXT_DOWNLOADS_CATEGORIES']."</b>"));
             }
 
@@ -2537,12 +2537,12 @@ class downloads extends DownloadsLibrary
             // parse paging
             $downloadCount = $objDownload->getFilteredSearchDownloadCount();
             if ($downloadCount > $_CONFIG['corePagingLimit']) {
-                $pagingLink = "&amp;cmd=downloads&amp;act=categories&amp;parent_id=".$objCategory->getId()
-                    ."&amp;category_sort=".htmlspecialchars($categoryOrderDirection)
-                    ."&amp;category_by=".htmlspecialchars($categoryOrderBy)
-                    ."&amp;download_sort=".htmlspecialchars($downloadOrderDirection)
-                    ."&amp;download_by=".htmlspecialchars($downloadOrderBy)
-                    ."&amp;category_pos=".$categoryLimitOffset;
+                $pagingLink = "&cmd=downloads&act=categories&parent_id=".$objCategory->getId()
+                    ."&category_sort=".htmlspecialchars($categoryOrderDirection)
+                    ."&category_by=".htmlspecialchars($categoryOrderBy)
+                    ."&download_sort=".htmlspecialchars($downloadOrderDirection)
+                    ."&download_by=".htmlspecialchars($downloadOrderBy)
+                    ."&category_pos=".$categoryLimitOffset;
                 $this->objTemplate->setVariable('DOWNLOADS_DOWNLOAD_PAGING', getPaging($downloadCount, $downloadLimitOffset, $pagingLink, "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>").'<br />');
             }
 

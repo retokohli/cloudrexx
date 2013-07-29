@@ -178,7 +178,7 @@ class votingmanager
 
         if ($count > $_CONFIG['corePagingLimit']) {
             $pos = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
-            $paging = getPaging($count, $pos, '&amp;cmd=voting&amp;act=detail&amp;id='.$systemId, ' E-Mails');
+            $paging = getPaging($count, $pos, '&cmd=voting&act=detail&id='.$systemId, ' E-Mails');
             $this->_objTpl->setVariable('VOTING_PAGING', '<br /><br />'.$paging."<br /><br />\n");
         }
 

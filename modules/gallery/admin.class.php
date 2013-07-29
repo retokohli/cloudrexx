@@ -1366,7 +1366,7 @@ class galleryManager extends GalleryLibrary
         $objCount = $objDatabase->SelectLimit('SELECT count(id) AS picCount '.$selectQuery, 1);
         $pos = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
         if ($objCount !== false && $objCount->fields['picCount'] > $_CONFIG['corePagingLimit']) {
-            $this->_objTpl->setVariable('GALLERY_PAGING', '<br />'.getPaging($objCount->fields['picCount'], $pos, '&amp;cmd=gallery&amp;act=cat_details&amp;id='.$intCatId, 'bilder'));
+            $this->_objTpl->setVariable('GALLERY_PAGING', '<br />'.getPaging($objCount->fields['picCount'], $pos, '&cmd=gallery&act=cat_details&id='.$intCatId, 'bilder'));
         }
         $objResult = $objDatabase->SelectLimit('SELECT         id '.$selectQuery, $_CONFIG['corePagingLimit'], $pos);
 
@@ -1834,7 +1834,7 @@ class galleryManager extends GalleryLibrary
                                             'VOTING_AVERAGE'    =>    number_format(@round($intMark / $intTotal,1),1,'.','\'')
                                         ));
         /** start paging **/
-        $strPaging = getPaging($objResult->RecordCount(), intval($_GET['pos']),'&amp;cmd=gallery&amp;act=edit_picture&amp;active=voting&amp;id='.intval($_GET['id']), '<b>'.$_ARRAYLANG['TXT_TAB_VOTES'].'</b>', true);
+        $strPaging = getPaging($objResult->RecordCount(), intval($_GET['pos']),'&cmd=gallery&act=edit_picture&active=voting&id='.intval($_GET['id']), '<b>'.$_ARRAYLANG['TXT_TAB_VOTES'].'</b>', true);
         $this->_objTpl->setVariable('VOTING_PAGING', $strPaging);
         /** end paging **/
         $objResult = $objDatabase->SelectLimit('SELECT        id,

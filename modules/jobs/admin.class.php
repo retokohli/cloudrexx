@@ -232,7 +232,7 @@ class jobsManager extends jobsLibrary
         $objResult = $objDatabase->Execute($query);
         $count = $objResult->RecordCount();
         $pos = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
-        $paging = ($count>intval($_CONFIG['corePagingLimit'])) ? getPaging($count, $pos, "&amp;cmd=jobs&location=".$location."&category=".$category."&", $_ARRAYLANG['TXT_DOCUMENTS '],true) : "";
+        $paging = ($count>intval($_CONFIG['corePagingLimit'])) ? getPaging($count, $pos, "&cmd=jobs&location=".$location."&category=".$category."&", $_ARRAYLANG['TXT_DOCUMENTS '],true) : "";
         $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'],$pos);
         if (!$objResult || $objResult->EOF) {
             $this->_objTpl->hideBlock('row');

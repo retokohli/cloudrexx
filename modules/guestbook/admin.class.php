@@ -393,7 +393,7 @@ class GuestbookManager extends GuestbookLibrary
         $count = $objResult->RecordCount();
 // TODO: $_ARRAYLANG['TXT_GUESTBOOK_ENTRIES'] does not exist
 //        $paging = getPaging($count, $pos, "&amp;cmd=guestbook", "<b>".$_ARRAYLANG['TXT_GUESTBOOK_ENTRIES']."</b>", true);
-        $paging = getPaging($count, $pos, "&amp;cmd=guestbook", '', true);
+        $paging = getPaging($count, $pos, "&cmd=guestbook", '', true);
 
         $this->_objTpl->setVariable("GUESTBOOK_PAGING", $paging);
         /** end paging **/

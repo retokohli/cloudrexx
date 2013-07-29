@@ -341,7 +341,7 @@ class u2u extends u2uLibrary
         $selQuery='SELECT user_id,buddies_id from '.DBPREFIX.'module_u2u_address_list WHERE user_id='.$id.'';
         $objResult=$objDatabase->Execute($selQuery);
         $count = $objResult->RecordCount();
-        $paging = getPaging($count, $pos, "&amp;section=u2u&amp;cmd=buddiesList", "<b>".$_ARRAYLANG['TXT_ADDRESS_BOOK_PAGING']."</b>", true);
+        $paging = getPaging($count, $pos, "&section=u2u&cmd=buddiesList", "<b>".$_ARRAYLANG['TXT_ADDRESS_BOOK_PAGING']."</b>", true);
         $selQuery='SELECT user_id,buddies_id from '.DBPREFIX.'module_u2u_address_list WHERE user_id='.$id.'';
         $objResult=$objDatabase->SelectLimit($selQuery, $_CONFIG['corePagingLimit'], $pos);
 

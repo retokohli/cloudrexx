@@ -364,7 +364,7 @@ class Market extends marketLibrary
         $objResult = $objDatabase->Execute($query);
         $count = $objResult->RecordCount();
         if ($count > $this->settings['paging']) {
-            $paging = getPaging($count, $pos, "&amp;section=market&amp;id=".$catId.$typePaging.$sortPaging.$wayPaging, "<b>Inserate</b>", true, $this->settings['paging']);
+            $paging = getPaging($count, $pos, "&section=market&id=".$catId.$typePaging.$sortPaging.$wayPaging, "<b>Inserate</b>", true, $this->settings['paging']);
         }
 
         $this->_objTpl->setVariable('SEARCH_PAGING', $paging);
@@ -1231,7 +1231,7 @@ class Market extends marketLibrary
             $objResult = $objDatabase->Execute($query);
             $count = $objResult->RecordCount();
             if ($count > $this->settings['paging']) {
-                $paging = getPaging($count, $pos, "&amp;section=market&amp;cmd=search".$searchTermExp."&amp;sort=".$sort."&amp;way=".$way, "<b>Inserate</b>", true, $this->settings['paging']);
+                $paging = getPaging($count, $pos, "&section=market&cmd=search".$searchTermExp."&sort=".$sort."&way=".$way, "<b>Inserate</b>", true, $this->settings['paging']);
             }
             $this->_objTpl->setVariable('SEARCH_PAGING', $paging);
             $objResult = $objDatabase->SelectLimit($query, $this->settings['paging'], $pos);

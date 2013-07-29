@@ -923,24 +923,24 @@ class news extends newsLibrary {
         $objResult = $objDatabase->Execute($query);
         $count = $objResult->RecordCount();
         if (!empty($_REQUEST['category'])) {
-            $category = '&amp;category='.$selected_cat;
+            $category = '&category='.$selected_cat;
         }
 
         $type = '';
         if (!empty($_REQUEST['type'])) {
-            $type = '&amp;type='.$selected_type;
+            $type = '&type='.$selected_type;
         }
 
         if (!empty($_REQUEST['cmd'])) {
             if ($_REQUEST['cmd'] == $selected_cat) {
-                $category = '&amp;cmd='.$_REQUEST['cmd'];
+                $category = '&cmd='.$_REQUEST['cmd'];
             } else {
-                $category .= '&amp;cmd='.$_REQUEST['cmd'];
+                $category .= '&cmd='.$_REQUEST['cmd'];
             }
         }
 
         if ($count>intval($_CONFIG['corePagingLimit'])) {
-            $paging = getPaging($count, $pos, ''.$category.$type, $_ARRAYLANG['TXT_NEWS_MESSAGES'], true);
+            $paging = getPaging($count, $pos, '&section=news'.$category.$type, $_ARRAYLANG['TXT_NEWS_MESSAGES'], true);
         }
         $this->_objTpl->setVariable('NEWS_PAGING', $paging);
         $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);
@@ -1171,7 +1171,7 @@ class news extends newsLibrary {
         $objResult = $objDatabase->Execute($query);
         $count = $objResult->RecordCount();
         if ($count>intval($_CONFIG['corePagingLimit'])) {
-            $paging = getPaging($count, $pos, '', $_ARRAYLANG['TXT_NEWS_MESSAGES'], true);
+            $paging = getPaging($count, $pos, '&section=news&cmd=topnews', $_ARRAYLANG['TXT_NEWS_MESSAGES'], true);
         }
         $this->_objTpl->setVariable('NEWS_PAGING', $paging);
         $objResult = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pos);

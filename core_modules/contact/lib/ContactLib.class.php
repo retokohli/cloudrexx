@@ -1190,7 +1190,7 @@ class ContactLib
 
         $count = $objEntry->RecordCount();
         if ($limit && $count > intval($_CONFIG['corePagingLimit'])) {
-            $paging   = getPaging($count, $pagingPos, "&amp;cmd=contact&amp;act=forms&amp;tpl=entries&amp;formId=".$formId, $_ARRAYLANG['TXT_CONTACT_FORM_ENTRIES']);
+            $paging   = getPaging($count, $pagingPos, "&cmd=contact&act=forms&tpl=entries&formId=".$formId, $_ARRAYLANG['TXT_CONTACT_FORM_ENTRIES']);
             $objEntry = $objDatabase->SelectLimit($query, $_CONFIG['corePagingLimit'], $pagingPos);
         }
 
