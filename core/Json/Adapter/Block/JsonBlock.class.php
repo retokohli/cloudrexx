@@ -64,7 +64,12 @@ class JsonBlock implements JsonAdapter {
         $blocks = $blockLib->getBlocks();
         $data = array();
         foreach ($blocks as $id=>$block) {
-            $data[$id] = $block['name'];
+            $data[$id] = array(
+                'id' => $block['id'],
+                'name' => $block['name'],
+                'disabled' => $block['global'] == 1,
+                'selected' => $block['global'] == 1,
+            );
         }
         return $data;
     }

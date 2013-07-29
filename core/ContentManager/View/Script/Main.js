@@ -65,6 +65,23 @@ var arrayContains = function(array, value) {
     return false;
 };
 
+var fillBlockSelect = function(select, data) {
+    select.empty();
+    jQuery.each(data.groups, function(group, id) {
+        var selected = arrayContains(data.assignedGroups, group);
+        var option = jQuery('<option></option>');
+        option.html(id.name);
+        option.val(group);
+        if (selected || id.selected)
+            option.attr('selected','selected');
+        if (id.disabled)
+            option.attr('disabled','disabled');
+
+        option.appendTo(select);
+    });
+    initMultiSelect(select);
+};
+
 var fillSelect = function(select, data) {
     select.empty();
     jQuery.each(data.groups, function(group, id) {
@@ -77,7 +94,10 @@ var fillSelect = function(select, data) {
 
         option.appendTo(select);
     });
+    initMultiSelect(select);
+};
 
+var initMultiSelect = function(select) {
     select.multiselect2side({
         selectedPosition: 'right',
         moveOptions: false,
@@ -85,6 +105,15 @@ var fillSelect = function(select, data) {
         labeldx: '',
         autoSort: true,
         autoSortAvailable: true
+    });
+
+    // workaround for multiselect bug, disabled options are also moved to other select after click on removeAll()
+    var allSel = select.next().children(".ms2side__select").children("select");
+    var	leftSel = allSel.eq(0);
+    var	rightSel = allSel.eq(1);
+    leftSel.change(function() {
+        // move all disabled options from left to right select
+        leftSel.children('option[disabled]').remove().appendTo(rightSel);
     });
 };
 
@@ -2191,7 +2220,7 @@ cx.cm.resetEditView = function() {
     cx.cm.loadAccess(jQuery.parseJSON(cx.variables.get('cleanAccessData', 'contentmanager')).data);
     // (re-)load block data into multiselect
     var data = {"groups": jQuery.parseJSON(cx.variables.get('availableBlocks', 'contentmanager')).data,"assignedGroups": []};
-    fillSelect(jQuery('#pageBlocks'), data);
+    fillBlockSelect(jQuery('#pageBlocks'), data);
     // hide refuse button by default
     jQuery('#page input#refuse').hide();
 
@@ -2509,7 +2538,7 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
     cx.cm.loadAccess(page.accessData);
 
     var data = {"groups": jQuery.parseJSON(cx.variables.get('availableBlocks', 'contentmanager')).data,"assignedGroups": page.assignedBlocks};
-    fillSelect(jQuery('#pageBlocks'), data);
+    fillBlockSelect(jQuery('#pageBlocks'), data);
 
     /*                'editingStatus' =>  $page->getEditingStatus(),
                 'display'       =>  $page->getDisplay(),
