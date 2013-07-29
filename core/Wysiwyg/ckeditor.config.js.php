@@ -7,7 +7,7 @@ if (strpos(dirname(__FILE__), 'customizing') === false) {
     $contrexx_path = dirname(dirname(dirname(dirname(__FILE__))));
 }
 
-require_once($contrexx_path . '/init.php');
+require_once($contrexx_path . '/core/Core/init.php');
 init('minimal');
 
 $sessionObj = new cmsSession();

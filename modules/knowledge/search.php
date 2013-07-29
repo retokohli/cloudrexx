@@ -21,7 +21,7 @@
  */
 
 global $objDatabase;
-require_once dirname(__FILE__).'/../../init.php';
+require_once dirname(__FILE__).'/../../core/Core/init.php';
 $cx = init('minimal');
 $objDatabase = $cx->getDb()->getAdoDb();
 

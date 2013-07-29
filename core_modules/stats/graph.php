@@ -396,7 +396,7 @@ error_reporting(0);
  */
 
 global $objDatabase, $objInit, $_ARRAYLANG, $adminPage;
-require_once dirname(__FILE__).'/../../init.php';
+require_once dirname(__FILE__).'/../../core/Core/init.php';
 $cx = init('minimal');
 include ASCMS_LIBRARY_PATH.'/ykcee/ykcee.php';
 $objDatabase = $cx->getDb()->getAdoDb();

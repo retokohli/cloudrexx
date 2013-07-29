@@ -8,7 +8,7 @@
 
 $rootDir = dirname(dirname(__DIR__));
 
-include($rootDir . '/init.php');
+include($rootDir . '/core/Core/init.php');
 
 // Uncomment the following line if you want to debug workbench commandline script
 //\DBG::activate(DBG_PHP);
