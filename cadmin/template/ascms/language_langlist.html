@@ -148,7 +148,12 @@ function showActionDialog(action, fromLang, toLang, yesAction, checkboxText) {
         yesAction();
     };
     buttons[noOption] = function() {jQuery(this).dialog("close");}
-    var content = "<p>" + cx.variables.get(action + "Text", "language/lang").replace("%1", fromLang).replace("%2", toLang);
+    var content = "<p>" + cx.variables.get(action + "Text", "language/lang");
+    if (action == 'link') {
+        content = content.replace("%1", toLang).replace("%2", fromLang);
+    } else {
+        content = content.replace("%1", fromLang).replace("%2", toLang);
+    }
     if (checkboxText) {
         content += "<br /><br /><input type=\"checkbox\" id=\"really\" class=\"really\" value=\"true\" /> <label for=\"really\" class=\"really\">" + checkboxText + "</label>";
     }
