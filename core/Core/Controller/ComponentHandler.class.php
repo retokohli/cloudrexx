@@ -54,7 +54,7 @@ class ComponentHandler {
         'Session',
         'FwUser',
         
-        'Uploader',
+        'Upload',
         'Captcha',
         'FrontendEditing',
         'JsonData',

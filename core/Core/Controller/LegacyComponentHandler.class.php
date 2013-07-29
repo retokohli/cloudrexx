@@ -113,19 +113,25 @@ class LegacyComponentHandler {
                             \FWCaptcha::getInstance()->getPage();
                         }
                     },
-                    'Uploader' => function() {
+                    'Upload' => function() {
+                        global $isRegularPageRequest;
+                        
+                        if (isset($_REQUEST['section']) && $_REQUEST['section'] == 'upload') {
+                            $_REQUEST['standalone'] = 'true';
+                        }
+                    }
+                ),
+                'postResolve' => array(
+                    'Upload' => function() {
                         global $url, $sessionObj;
                         
-                        $params = $url->getParamArray();
-                        if (isset($params['section']) && $params['section'] == 'upload') {
+                        if (isset($_REQUEST['section']) && $_REQUEST['section'] == 'upload') {
                             if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new \cmsSession();
                             $objUploadModule = new \Upload();
                             $objUploadModule->getPage();
                             //execution never reaches this point
                         }
                     },
-                ),
-                'postResolve' => array(
                     'ComponentHandler' => function() {
                         global $arrMatch, $plainCmd, $cmd;
                         
