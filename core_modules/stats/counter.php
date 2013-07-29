@@ -17,7 +17,7 @@ ini_set('display_errors', 0);
  * Includes
  */
 global $objDatabase, $objDb;
-require_once dirname(__FILE__).'/../../init.php';
+require_once dirname(__FILE__).'/../../core/Core/init.php';
 $cx = init('minimal');
 $objDatabase = $cx->getDb()->getAdoDb();
 $objDb = $objDatabase;
