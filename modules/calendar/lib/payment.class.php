@@ -30,16 +30,22 @@ class CalendarPayment {
     function _yellowpay($data = array())
     {
         global $_ARRAYLANG;
-        $objSettings = new CalendarSettings();
-        $arrCalendarData = $objSettings->getYellowpaySettings();
+        $objSettings         = new CalendarSettings();
+        $arrCalendarSettings = $objSettings->getYellowpaySettings();
 
-        $arrCalendarData = array_merge($arrCalendarData, $data);
-
-        $language = FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID);
-        $language = strtolower($language).'_'.strtoupper($language);
-        $yellowpayForm = Yellowpay::getForm(
-            $arrCalendarData, $_ARRAYLANG['TXT_ORDER_NOW']
+        $arrOrder = array(
+            'ORDERID'   => $data['orderID'],
+            'AMOUNT'    => $data['amount'],
+            'CURRENCY'  => $data['currency'],
+            'PARAMPLUS' => "section=calendar&handler=yellowpay",
         );
+        $settings = array();
+        $settings['postfinance_shop_id']['value']            = $arrCalendarSettings['paymentYellowpayPspid'];
+        $settings['postfinance_hash_signature_in']['value']  = $arrCalendarSettings['paymentYellowpayShaIn'];
+        $settings['postfinance_authorization_type']['value'] = $arrCalendarSettings['paymentYellowpayAuthorization'] == 1 ? 'SAL' : 'RES';
+        $settings['postfinance_use_testserver']['value']     = $arrCalendarSettings['paymentTestserver'];
+
+        $yellowpayForm = Yellowpay::getForm('calendar', $arrOrder, $_ARRAYLANG['TXT_CALENDAR_START_PAYMENT'], false, $settings);
         if (_PAYMENT_DEBUG && Yellowpay::$arrError) {
             $strError =
                 '<font color="red"><b>'.
