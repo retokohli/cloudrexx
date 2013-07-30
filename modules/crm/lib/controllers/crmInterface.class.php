@@ -376,12 +376,12 @@ class crmInterface extends CrmLibrary
                            c.contact_role,
                            c.notes,
                            c.gender,
+                           c.customer_addedby,
+                           c.user_account,
                            con.customer_name AS contactCustomer,
                            t.label AS cType,
                            Inloc.value AS industryType,
                            lang.name AS language,
-                           u.username,
-                           user.email,
                            cur.name AS currency
                        FROM `".DBPREFIX."module_{$this->moduleName}_contacts` AS c
                        LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_contacts` AS con
@@ -396,10 +396,6 @@ class crmInterface extends CrmLibrary
                          ON cur.id = c.customer_currency
                        LEFT JOIN `".DBPREFIX."languages` AS lang
                          ON lang.id = c.contact_language
-                       LEFT JOIN `".DBPREFIX."access_users` AS u
-                         ON u.id = c.customer_addedby
-                       LEFT JOIN `".DBPREFIX."access_users` AS user
-                         ON user.id = c.user_account
                          ".$activeWhere."
                          order by c.id desc"; 
         $objResult = $objDatabase->Execute($query);
@@ -513,7 +509,7 @@ class crmInterface extends CrmLibrary
                         print $this->_escapeCsvValue($objResult->fields['industryType']).$this->_csvSeparator;
                         print $this->_escapeCsvValue($membership).$this->_csvSeparator;
                         print $this->_escapeCsvValue($objResult->fields['currency']).$this->_csvSeparator;
-                        print $this->_escapeCsvValue($objResult->fields['username']).$this->_csvSeparator;
+                        print $this->_escapeCsvValue($this->getUserName($objResult->fields['customer_addedby'])).$this->_csvSeparator;
                     break;
                 case '2':
                         print ($objResult->fields['contact_type'] == 1 ? 'Company' : 'Person').$this->_csvSeparator;
@@ -527,8 +523,8 @@ class crmInterface extends CrmLibrary
                         print $this->_escapeCsvValue($membership).$this->_csvSeparator;
                         print $this->_escapeCsvValue($objResult->fields['currency']).$this->_csvSeparator;
                         print $this->_escapeCsvValue($objResult->fields['language']).$this->_csvSeparator;
-                        print $this->_escapeCsvValue($objResult->fields['email']).$this->_csvSeparator;
-                        print $this->_escapeCsvValue($objResult->fields['username']).$this->_csvSeparator;
+                        print $this->_escapeCsvValue($this->getEmail($objResult->fields['user_account'])).$this->_csvSeparator;
+                        print $this->_escapeCsvValue($this->getUserName($objResult->fields['customer_addedby'])).$this->_csvSeparator;
                     break;
                 default:
                         print ($objResult->fields['contact_type'] == 1 ? 'Company' : 'Person').$this->_csvSeparator;
@@ -543,8 +539,8 @@ class crmInterface extends CrmLibrary
                         print $this->_escapeCsvValue($membership).$this->_csvSeparator;
                         print $this->_escapeCsvValue($objResult->fields['currency']).$this->_csvSeparator;
                         print $this->_escapeCsvValue($objResult->fields['language']).$this->_csvSeparator;
-                        print $this->_escapeCsvValue($objResult->fields['email']).$this->_csvSeparator;
-                        print $this->_escapeCsvValue($objResult->fields['username']).$this->_csvSeparator;
+                        print $this->_escapeCsvValue($this->getEmail($objResult->fields['user_account'])).$this->_csvSeparator;
+                        print $this->_escapeCsvValue($this->getUserName($objResult->fields['customer_addedby'])).$this->_csvSeparator;
                     break;
                 }
 

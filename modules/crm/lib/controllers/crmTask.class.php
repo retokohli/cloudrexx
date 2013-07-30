@@ -121,14 +121,11 @@ class crmTask extends CrmLibrary
                                c.customer_name,
                                c.contact_familyname,
                                t.due_date,
-                               contrexxuser.username AS responsible,
                                t.description,
                                c.id AS customer_id
                             FROM ".DBPREFIX."module_{$this->moduleName}_task as t
                             LEFT JOIN ".DBPREFIX."module_{$this->moduleName}_task_types as tt
                             ON (t.task_type_id=tt.id)
-                            LEFT JOIN ".DBPREFIX."access_users AS contrexxuser
-                            ON contrexxuser.id = t.assigned_to
                             LEFT JOIN ".DBPREFIX."module_{$this->moduleName}_contacts as c
                             ON (t.customer_id = c.id) $filterCondition";
 
@@ -179,7 +176,7 @@ class crmTask extends CrmLibrary
                             'TXT_STATUS'            => (int) $objResult->fields['task_status'],
                             'CRM_TASK_TYPE_ACTIVE'  => $objResult->fields['task_status'] == 1 ? 'led_green.gif':'led_red.gif',
                             'TXT_ROW'               => $row = ($row == 'row2')? 'row1':'row2',
-                            'CRM_ADDEDBY'           => contrexx_raw2xhtml($objResult->fields['responsible']),
+                            'CRM_ADDEDBY'           => contrexx_raw2xhtml($this->getUserName($objResult->fields['assigned_to'])),
                             'CRM_TASK_CUSTOMER_ID'  => (int) $objResult->fields['customer_id'],
                             'TXT_CRM_IMAGE_EDIT'    => $_ARRAYLANG['TXT_CRM_IMAGE_EDIT'],
                             'TXT_CRM_IMAGE_DELETE'  => $_ARRAYLANG['TXT_CRM_IMAGE_DELETE'],
@@ -470,14 +467,11 @@ class crmTask extends CrmLibrary
                                c.customer_name,
                                c.contact_familyname,
                                t.due_date,
-                               contrexxuser.username AS responsible,
                                t.description,
                                c.id AS customer_id
                             FROM ".DBPREFIX."module_{$this->moduleName}_task as t
                             LEFT JOIN ".DBPREFIX."module_{$this->moduleName}_task_types as tt
                             ON (t.task_type_id=tt.id)
-                            LEFT JOIN ".DBPREFIX."access_users AS contrexxuser
-                            ON contrexxuser.id = t.assigned_to
                             LEFT JOIN ".DBPREFIX."module_{$this->moduleName}_contacts as c
                             ON (t.customer_id = c.id) WHERE t.id = $id";
 
@@ -493,7 +487,7 @@ class crmTask extends CrmLibrary
                             'dueDate'      => contrexx_raw2xhtml(date('h:i A Y-m-d', strtotime($objResult->fields['due_date']))),
                             'customerId'   => (int) $objResult->fields['customer_id'],
                             'customerName' => contrexx_raw2xhtml($objResult->fields['customer_name']." ".$objResult->fields['contact_familyname']),
-                            'addedBy'      => contrexx_raw2xhtml($objResult->fields['responsible']),
+                            'addedBy'      => contrexx_raw2xhtml($this->getUserName($objResult->fields['assigned_to'])),
                             'taskClass'    => $objResult->fields['task_status'] == 1 || strtotime($objResult->fields['due_date']) > $now ? '' : 'task_expired',
                             'Update'       => $task_status_update_permission,
                             'Edit'         => $task_edit_permission,
@@ -540,6 +534,27 @@ class crmTask extends CrmLibrary
             
             $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_TASK_DELETE_MESSAGE'];            
             csrf::header("Location:index.php?cmd={$this->moduleName}".base64_decode($redirect));
+        }
+    }
+
+    /**
+     * Get username
+     *
+     * @param Integer $userId
+     *
+     * @return String
+     */
+    function getUserName($userId)
+    {
+        if (!empty ($userId)) {
+            $objFWUser  = FWUser::getFWUserObject();
+            $objUser    = $objFWUser->objUser->getUser($userId);
+            $userName   = $objUser->getRealUsername();
+            if ($userName) {
+                return $userName;
+            } else {
+                return $objUser->getUsername();
+            }
         }
     }
 
