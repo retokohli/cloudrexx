@@ -237,10 +237,12 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         'cx' => array(
             'jsfiles' => array(
                 'lib/javascript/cx/contrexxJs.js',
+                'lib/javascript/jquery/tools/jquery.tools.min.js',
                 'lib/javascript/cx/contrexxJs-tools.js',
                 'lib/javascript/jquery/jquery.includeMany-1.2.2.js' //to dynamically include javascript files
             ),
             'dependencies' => array('jquery', 'md5'),
+            'lazyDependencies' => array('jqueryui'),
             //we insert the specialCode for the Contrexx-API later in getCode()
         ),
         'jstree' => array(
@@ -528,13 +530,33 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
 // TODO: Unused
 //        $jsfiles = array();
 //        $specialcode = array();
+        $lazyLoadingFiles = array();
         $retstring  = '';
         if (count(self::$active) > 0) {
+            // check for lazy dependencies, if there are lazy dependencies, activate cx
+            // cx provides the lazy loading mechanism
+            foreach (self::$active as $name) {
+                $data = self::$available[$name];
+                if (!empty($data['lazyDependencies']) && $name != 'cx') {
+                    JS::activate('cx');
+                    break;
+                }
+            }
+
             foreach (self::$active as $name) {
                 $data = self::$available[$name];
                 if (!isset($data['jsfiles'])) {
                     self::$error = "A JS entry should at least contain one js file...";
                     return false;
+                }
+                // add lazy loading files to array
+                if (!empty($data['lazyDependencies'])) {
+                    foreach ($data['lazyDependencies'] as $dependency) {
+                        if (!in_array($dependency, self::$active)) {
+                            // if the lazy dependency is not activated so far
+                            $lazyLoadingFiles = array_merge($lazyLoadingFiles, self::$available[$dependency]['jsfiles']);
+                        }
+                    }
                 }
                 $retstring .= self::makeJSFiles($data['jsfiles']);
                 if (!empty($data['cssfiles'])) {
@@ -546,13 +568,18 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 if (isset($data['makecallback'])) {
                     self::$data['makecallback']();
                 }
-                // Special case contrexx-API: fetch specialcode if activated
-                if ($name == 'cx') {
-                    $retstring .= self::makeSpecialCode(
-                        array(ContrexxJavascript::getInstance()->initJs()));
-                }
             }
         }
+
+        // set cx.variables with lazy loading file paths
+        ContrexxJavascript::getInstance()->setVariable('lazyLoadingFiles', $lazyLoadingFiles, 'contrexx');
+
+        // Special case contrexx-API: fetch specialcode if activated
+        if (in_array('cx', self::$active)) {
+            $retstring .= self::makeSpecialCode(
+                array(ContrexxJavascript::getInstance()->initJs()));
+        }
+
         $retstring .= self::makeJSFiles(self::$customJS);
         $retstring .= self::makeCSSFiles($cssfiles);
         $retstring .= self::makeCSSFiles(self::$customCSS);
