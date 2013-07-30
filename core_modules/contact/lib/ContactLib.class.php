@@ -1486,29 +1486,5 @@ JS_isRequiredSelect;
 JS_misc;
         return $code;
     }
-
-// TODO: The uploader code must not be inserted into the sourcecode of the content page
-//       Instead is must be dynamically loaded into the content page whenever the
-//       requested content page contains a file uploade field.
-    protected function getUploaderSourceCode() {
-        $source = <<<EOS
-{UPLOAD_WIDGET_CODE}
-{UPLOADER_CODE}
-<script>
-    cx.include(
-        [
-            'core_modules/contact/js/extendedFileInput.js'
-        ],
-        function() {
-            var ef = new ExtendedFileInput({
-               field:  \$J('#contactFormField_upload')
-            });
-        }
-    );
-</script>
-EOS;
-
-        return $source;
-    }
 }
 ?>

@@ -1864,7 +1864,6 @@ class ContactManager extends ContactLib
                 case 'file':
                     $sourcecode[] = '<div class="contactFormUpload"><div class="contactFormClass_uploadWidget" id="contactFormField_uploadWidget"></div>';
                     $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormField_upload" type="file" name="contactFormField_upload" disabled="disabled"/></div>';
-                    $hasFileInput = true;
                     //$sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="file" name="contactFormField_'.$fieldId.'" />';
                     break;
                 
@@ -1982,9 +1981,6 @@ class ContactManager extends ContactLib
 
         $sourcecode[] = $preview ? $this->_getJsSourceCode($id, $arrFields, $preview, $show) : "{CONTACT_JAVASCRIPT}";
 
-        if($hasFileInput)
-            $sourcecode[] = $this->getUploaderSourceCode();
-
         if ($show) {
             $sourcecode = preg_replace('/\{([A-Z0-9_-]+)\}/', '[[\\1]]', $sourcecode);
         }
@@ -2002,7 +1998,7 @@ class ContactManager extends ContactLib
         $rowNr         = 0;
         $langId        = $arrEntry['langId'];
         
-        $sourcecode .= '<table border="0" class="adminlist" cellpadding="3" cellspacing="0" width="100%">';
+        $sourcecode = '<table border="0" class="adminlist" cellpadding="3" cellspacing="0" width="100%">';
 
         foreach ($arrEntry['data'] as $fieldId => $arrData) {
 

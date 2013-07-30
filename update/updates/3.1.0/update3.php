@@ -969,7 +969,9 @@ if ($version == 'rc1' || $version == 'rc2'
             )
         );
     }
+}
 
+if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
     // contact core_module
     // update the content pages
     $em = \Env::em();
@@ -992,7 +994,6 @@ if ($version == 'rc1' || $version == 'rc2'
         }
     }
     $em->flush();
-
 }
 
 if (   !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')
