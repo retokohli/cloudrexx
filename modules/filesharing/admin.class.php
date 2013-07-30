@@ -149,7 +149,7 @@ class FilesharingAdmin extends FilesharingLib
          */
         $arrActiveSystemFrontendLanguages = FWLanguage::getActiveFrontendLanguages();
         foreach ($arrActiveSystemFrontendLanguages as $activeLang) {
-            $objMailTemplate = $objDatabase->Execute("SELECT `subject`, `content` FROM " . DBPREFIX . "module_filesharing_mail_template WHERE `lang_id` = ?", array($activeLang["id"]));
+            $objMailTemplate = $objDatabase->Execute("SELECT `subject`, `content` FROM " . DBPREFIX . "module_filesharing_mail_template WHERE `lang_id` = " . intval($activeLang["id"]));
             if ($objMailTemplate !== false) {
                 $content = str_replace(array('{', '}'), array('[[', ']]'), $objMailTemplate->fields["content"]);
                 $this->_objTpl->setVariable(array(
@@ -241,7 +241,7 @@ class FilesharingAdmin extends FilesharingLib
          * save mailtemplates
          */
         foreach ($_POST["filesharingMail"] as $lang => $inputs) {
-            $objMailTemplate = $objDatabase->Execute("SELECT `subject`, `content` FROM " . DBPREFIX . "module_filesharing_mail_template WHERE `lang_id` = ?", array($lang));
+            $objMailTemplate = $objDatabase->Execute("SELECT `subject`, `content` FROM " . DBPREFIX . "module_filesharing_mail_template WHERE `lang_id` = " . intval($lang));
 
             $content = str_replace(array('{', '}'), array('[[', ']]'), contrexx_input2db($inputs["content"]));
             if ($objMailTemplate === false or $objMailTemplate->RecordCount() == 0) {

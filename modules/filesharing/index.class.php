@@ -181,7 +181,7 @@ class Filesharing extends FilesharingLib
             // check whether the check code is the same as in the database
             if ($objResult->fields["check"] == $check) {
                 \Cx\Lib\FileSystem\FileSystem::delete_file(ASCMS_PATH . ASCMS_PATH_OFFSET . $objResult->fields["source"]);
-                $objDatabase->Execute("DELETE FROM " . DBPREFIX . "module_filesharing WHERE `id` = ?", array($objResult->fields["id"]));
+                $objDatabase->Execute("DELETE FROM " . DBPREFIX . "module_filesharing WHERE `id` = " . intval($objResult->fields["id"]));
             }
         }
     }
@@ -244,7 +244,7 @@ class Filesharing extends FilesharingLib
             parent::sendMail($params["uploadId"], null, $_CONFIG['coreAdminEmail'], $_POST["message"]);
 
             // reset the upload id so the uploads are invisible now
-            $objDatabase->Execute("UPDATE " . DBPREFIX . "module_filesharing SET `upload_id` = NULL WHERE `upload_id` = ?", array($params["uploadId"]));
+            $objDatabase->Execute("UPDATE " . DBPREFIX . "module_filesharing SET `upload_id` = NULL WHERE `upload_id` = " . intval($params["uploadId"]));
             $this->getFileList();
         } else {
             $this->getForm();
@@ -379,7 +379,7 @@ class Filesharing extends FilesharingLib
         $tup = FilesharingLib::getTemporaryFilePaths($uploadId);
 
         // loop through the uploaded files
-        $objResult = $objDatabase->Execute("SELECT `id`, `file`, `source`, `hash`, `check` FROM " . DBPREFIX . "module_filesharing WHERE `upload_id` = ?", array($uploadId));
+        $objResult = $objDatabase->Execute("SELECT `id`, `file`, `source`, `hash`, `check` FROM " . DBPREFIX . "module_filesharing WHERE `upload_id` = " . intval($uploadId));
         if ($objResult !== false && $objResult->RecordCount() > 0) {
             while (!$objResult->EOF) {
                 $filePath = explode("/", $objResult->fields["source"]);

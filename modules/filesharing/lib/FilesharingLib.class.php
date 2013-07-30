@@ -234,7 +234,7 @@ CODE
     public static function getDeleteLink($fileId)
     {
         global $objDatabase;
-        $objResult = $objDatabase->SelectLimit("SELECT `cmd`, `hash`, `check` FROM " . DBPREFIX . "module_filesharing WHERE `id` = ?", 1, 0, array($fileId));
+        $objResult = $objDatabase->SelectLimit("SELECT `cmd`, `hash`, `check` FROM " . DBPREFIX . "module_filesharing WHERE `id` = " . intval($fileId), 1, 0);
 
 
         if ($objResult !== false) {
@@ -263,7 +263,7 @@ CODE
         global $objDatabase;
         $fileSource = str_replace(ASCMS_PATH_OFFSET, '', $fileSource);
         if ($fileSource != NULL) {
-            $objResult = $objDatabase->SelectLimit("SELECT `id` FROM " . DBPREFIX . "module_filesharing WHERE `source` = ?", 1, -1, array($fileSource));
+            $objResult = $objDatabase->SelectLimit("SELECT `id` FROM " . DBPREFIX . "module_filesharing WHERE `source` = '" . contrexx_raw2db($fileSource) . "'", 1, -1);
             if ($objResult !== false && $objResult->RecordCount() > 0) {
                 $fileId = $objResult->fields["id"];
             }
@@ -303,7 +303,7 @@ CODE
             }
         }
         // delete all expired or not existing files
-        $objDatabase->Execute("DELETE FROM " . DBPREFIX . "module_filesharing WHERE `id` IN (?)", array(implode(',', $arrToDelete)));
+        $objDatabase->Execute("DELETE FROM " . DBPREFIX . "module_filesharing WHERE `id` IN (" . implode(',', $arrToDelete) . ")");
     }
 
     /**
@@ -334,7 +334,7 @@ CODE
         /**
          * init mail data. Mail template, Mailsubject and PhpMailer
          */
-        $objMail = $objDatabase->SelectLimit("SELECT `subject`, `content` FROM " . DBPREFIX . "module_filesharing_mail_template WHERE `lang_id` = ?", 1, -1, array(FRONTEND_LANG_ID));
+        $objMail = $objDatabase->SelectLimit("SELECT `subject`, `content` FROM " . DBPREFIX . "module_filesharing_mail_template WHERE `lang_id` = " . FRONTEND_LANG_ID, 1, -1);
         $content = str_replace(array(']]', '[['), array('}', '{'), $objMail->fields["content"]);
 
         if (empty($subject))
