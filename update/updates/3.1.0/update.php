@@ -16,7 +16,7 @@ function executeContrexxUpdate() {
     $viewUpdateTable = array(
         // E-Mail Marketing
         'newsletter'    => array (
-            'version'       => '3.0.1.0',
+            'version'       => '3.1.0.0',
             'dependencies'    => array (
                 'forms',
             ),
