@@ -759,8 +759,8 @@ class Contact extends ContactLib
                 $folderName .= $suffix;
                 
                 //try to make the folder and change target accordingly on success
-                if(\Cx\Lib\FileSystem\FileSystem::make_folder(ASCMS_PATH_OFFSET.'/'.$depositionTarget.$folderName)) {
-                    \Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_PATH_OFFSET.'/'.$depositionTarget.$folderName);
+                if(\Cx\Lib\FileSystem\FileSystem::make_folder(ASCMS_PATH.ASCMS_PATH_OFFSET.'/'.$depositionTarget.$folderName)) {
+                    \Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_PATH.ASCMS_PATH_OFFSET.'/'.$depositionTarget.$folderName);
                     $depositionTarget .= $folderName.'/';
                 }
                 $this->depositionTarget = $depositionTarget;
@@ -790,7 +790,7 @@ class Contact extends ContactLib
                         // move file
                         try {
                             $objFile = new \Cx\Lib\FileSystem\File($tmpUploadDir.$f);
-                            $objFile->move(ASCMS_PATH_OFFSET.'/'.$depositionTarget.$prefix.$f, false);
+                            $objFile->move(ASCMS_PATH.ASCMS_PATH_OFFSET.'/'.$depositionTarget.$prefix.$f, false);
                         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
                             \DBG::msg($e->getMessage());
                         }
