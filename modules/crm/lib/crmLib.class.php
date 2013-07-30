@@ -1585,7 +1585,7 @@ class CrmLibrary
      * @return boolean
      */
     function getResources($groupId)
-    {
+    { 
         global $objDatabase;
         static $resources = array();
 
@@ -1596,24 +1596,19 @@ class CrmLibrary
             return false;
         }
 
-        $query = "SELECT u.id,
-                         u.username,
-                         u.email
-                  FROM ".DBPREFIX."access_rel_user_group As g
-                    LEFT JOIN ".DBPREFIX."access_users u ON u.id = g.user_id
-                  WHERE u.active = 1 AND g.group_id = '".$groupId."'
-                  ORDER BY u.username";
+        $objFWUser  = FWUser::getFWUserObject();
+        $objUsers   = $objFWUser->objUser->getUsers($filter = array('group_id' => $groupId));
 
-        $result = $objDatabase->execute($query);
-
-        if (false !== $result) {
-            while (!$result->EOF) {
+        if (false !== $objUsers) {
+            while (!$objUsers->EOF) {
+                $userName    = $objUsers->getRealUsername();
+                $userName    = !empty ($userName) ? $userName : $objUsers->getUsername();
                 $resources[] = array(
-                        'id'       => $result->fields['id'],
-                        'username' => $result->fields['username'],
-                        'email'    => $result->fields['email'],
+                    'id'       => $objUsers->getId(),
+                    'username' => $userName,
+                    'email'    => $objUsers->getEmail(),
                 );
-                $result->moveNext();
+                $objUsers->next();
             }
             return $resources;
         }
@@ -1891,12 +1886,10 @@ class CrmLibrary
 
         $modify = isset($this->contact->id) && !empty($this->contact->id);
         $accountId = 0;
-        $objResult = $objDatabase->Execute("
-                                        SELECT `id`
-                                          FROM ".DBPREFIX."access_users
-                                         WHERE email='".addslashes($email)."'");
-        if ($objResult && $objResult->RecordCount()) {
-            $accountId = $objResult->fields['id'];
+        $objUsers = $objFWUser->objUser->getUsers($filter = array('email' => addslashes($email)));
+        
+        if ($objUsers) {
+            $accountId = $objUsers->getId();
         }
 
         if ($modify) {
@@ -1986,6 +1979,7 @@ class CrmLibrary
         global $objDatabase;
 
         $this->contact = $this->load->model('crmContact', __CLASS__);
+        $objFWUser = FWUser::getFWUserObject();
 
         $fieldValues = array();
         foreach ($arrFormData['fields'] as $key => $value) {
@@ -1995,10 +1989,7 @@ class CrmLibrary
         }
         
         if (!empty ($fieldValues['access_email'])) {
-            $objEmail = $objDatabase->Execute("
-                                        SELECT `id`
-                                          FROM ".DBPREFIX."access_users
-                                         WHERE email='".contrexx_input2db($fieldValues['access_email'])."'");
+            $objEmail = $objFWUser->objUser->getUsers($filter = array('email' => contrexx_input2db($fieldValues['access_email'])));
 
             if (!empty ($fieldValues['access_gender'])) {
                 $gender            = '';
@@ -2023,8 +2014,8 @@ class CrmLibrary
             $this->contact->contactType    = 2;
             $this->contact->datasource     = 2;
 
-            if ($objEmail && $objEmail->RecordCount()) {
-                $accountId = $objEmail->fields['id'];
+            if ($objEmail) {
+                $accountId = $objEmail->getId();
                 $userExists = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE user_account = {$accountId}", 1);
 
                 if ($userExists && $userExists->RecordCount() == 0) {
@@ -2205,14 +2196,23 @@ class CrmLibrary
      */
     protected function isUniqueUsername($email, $id=0)
     {
-        global $objDatabase;
+        global $objDatabase, $_ARRAYLANG;
 
-        $objResult = $objDatabase->SelectLimit("
-                                            SELECT id
-                                              FROM ".DBPREFIX."access_users
-                                             WHERE email='".addslashes($email)."'
-                                               AND id != $id", 1);
-        return intval($objResult->fields['id']);
+        $objFWUser = FWUser::getFWUserObject();
+        $objResult = $objFWUser->objUser->isUniqueEmail($email, $id);
+        if (!$objResult) {
+            $objEmail = $objFWUser->objUser->getUsers($filter = array('email' => addslashes($email)));
+            if ($objEmail) {
+                $accountId = $objEmail->getId();
+                if ($accountId != $id) {
+                    $error = $_ARRAYLANG['TXT_CRM_ERROR_EMAIL_USED_BY_OTHER_PERSON'];
+                } else {
+                    $error = $_ARRAYLANG['TXT_CRM_USER_EMAIL_ALERT'];
+                }
+                return $error;
+            }
+        }
+        return false;
     }
 
     /**
@@ -2255,6 +2255,48 @@ class CrmLibrary
         }
 
         return array($task_edit_permission, $task_delete_permission, $task_status_update_permission);
+    }
+
+    /**
+     * Get username
+     *
+     * @param Integer $userId
+     *
+     * @return String
+     */
+    function getUserName($userId)
+    {
+        if (!empty ($userId)) {
+            $objFWUser  = FWUser::getFWUserObject();
+            $objUser    = $objFWUser->objUser->getUser($userId);
+            $userName   = $objUser->getRealUsername();
+            if ($userName) {
+                return $userName;
+            } else {
+                return $objUser->getUsername();
+            }
+        }
+    }
+
+    /**
+     * Get username
+     *
+     * @param Integer $userId
+     *
+     * @return String
+     */
+    function getEmail($userId)
+    {
+        if (!empty ($userId)) {
+            $objFWUser  = FWUser::getFWUserObject();
+            $objUser    = $objFWUser->objUser->getUser($userId);
+            $email      = $objUser->getEmail();
+            if ($email) {
+                return $email;
+            }
+            
+            return false;
+        }
     }
 
     /**

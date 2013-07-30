@@ -1046,23 +1046,24 @@ class Settings extends CrmLibrary
                 $objLanguages->MoveNext();
             }
         }
-
-        $objUserGroup = $objDatabase->Execute("SELECT `group_id`, `group_name` FROM ".DBPREFIX."access_user_groups WHERE is_active = 1");
-        if ($objUserGroup) {
-            while (!$objUserGroup->EOF) {
+        
+        $objFWUser      = FWUser::getFWUserObject();
+        $objGroupIds    = $objFWUser->objGroup->getGroups($filter = array('is_active' => true));
+        if ($objGroupIds) {
+            while (!$objGroupIds->EOF) {
                 $objTpl->setVariable(array(
-                        'CRM_GROUP_NAME'            => contrexx_raw2xhtml($objUserGroup->fields['group_name']),
-                        'CRM_GROUP_VALUE'           => (int) $objUserGroup->fields['group_id'],
-                        'CRM_USER_GROUP_SELECTED'   => $settings['default_user_group'] == $objUserGroup->fields['group_id'] ? "selected='selected'" : ''
+                        'CRM_GROUP_NAME'            => contrexx_raw2xhtml($objGroupIds->getName()),
+                        'CRM_GROUP_VALUE'           => (int) $objGroupIds->getId(),
+                        'CRM_USER_GROUP_SELECTED'   => $settings['default_user_group'] == $objGroupIds->getId() ? "selected='selected'" : ''
                 ));
                 $objTpl->parse("userGroup");
                 $objTpl->setVariable(array(
-                        'CRM_GROUP_NAME'            => contrexx_raw2xhtml($objUserGroup->fields['group_name']),
-                        'CRM_GROUP_VALUE'           => (int) $objUserGroup->fields['group_id'],
-                        'CRM_USER_GROUP_SELECTED'   => $settings['emp_default_user_group'] == $objUserGroup->fields['group_id'] ? "selected='selected'" : ''
+                        'CRM_GROUP_NAME'            => contrexx_raw2xhtml($objGroupIds->getName()),
+                        'CRM_GROUP_VALUE'           => (int) $objGroupIds->getId(),
+                        'CRM_USER_GROUP_SELECTED'   => $settings['emp_default_user_group'] == $objGroupIds->getId() ? "selected='selected'" : ''
                 ));
                 $objTpl->parse("empUserGroup");
-                $objUserGroup->MoveNext();
+                $objGroupIds->next();
             }
         }
 

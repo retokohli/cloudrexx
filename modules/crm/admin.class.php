@@ -138,7 +138,7 @@ class CrmManager extends CrmLibrary
         if (!isset($_GET['act'])) {
             $_GET['act']='';
         }
-
+        
         switch ($_GET['act']) {
         case 'customersearch':
                 $this->getCustomerSearch();
@@ -367,7 +367,7 @@ class CrmManager extends CrmLibrary
         global $_ARRAYLANG, $objDatabase, $wysiwygEditor, $FCKeditorBasePath ,$objJs;
 
         JS::activate("cx");
-
+        
         $json = array();
         $this->_objTpl->loadTemplateFile('module_'.$this->moduleName.'_customer_notes_history.html');
         $this->_objTpl->setGlobalVariable(array(
@@ -393,16 +393,12 @@ class CrmManager extends CrmLibrary
                                                         added_date,
                                                         date,
                                                         notes.name AS notes,
-                                                        contrexxuser.username AS username,
-                                                        UpUser.username AS updatedUser,
-                                                        comment.updated_on
+                                                        comment.updated_on,
+                                                        comment.user_id,
+                                                        comment.updated_by
                                                     FROM ".DBPREFIX."module_".$this->moduleName."_customer_comment AS comment
                                                     LEFT JOIN ".DBPREFIX."module_".$this->moduleName."_notes AS notes
                                                        ON comment.notes_type_id = notes.id
-                                                    LEFT JOIN ".DBPREFIX."access_users AS contrexxuser
-                                                            ON contrexxuser.id = comment.user_id
-                                                    LEFT JOIN ".DBPREFIX."access_users AS UpUser
-                                                            ON UpUser.id = comment.updated_by
                                                     WHERE customer_id = '$custId' $filter_note_id ORDER BY added_date DESC LIMIT $intPage, $intPerpage");
             if ($objComment->RecordCount() == 0 && $_GET['ajax'] == true) {
                 $json['msg'] = '0';
@@ -426,8 +422,8 @@ class CrmManager extends CrmLibrary
                         'CRM_COMMENT_DATE'            => contrexx_raw2xhtml($objComment->fields['date']),
                         'CRM_NOTES_TYPE'              => contrexx_raw2xhtml($objComment->fields['notes']),
                         'CRM_NOTES_TYPE_ID'           => intval($objComment->fields['notes_type_id']),
-                        'CRM_ADDED_USER'              => contrexx_raw2xhtml($objComment->fields['username']),
-                        'CRM_UPDATED_USER'            => contrexx_raw2xhtml($objComment->fields['updatedUser']),
+                        'CRM_ADDED_USER'              => $this->getUserName($objComment->fields['user_id']),
+                        'CRM_UPDATED_USER'            => $this->getUserName($objComment->fields['updated_by']),
                         'TXT_CRM_COMMENT_DESCRIPTION' => $this->stripOnlyTags($objComment->fields['comment'], '<script><iframe>', $stripContent = false),
                         'TXT_CRM_IMAGE_EDIT'          => $_ARRAYLANG['TXT_CRM_IMAGE_EDIT'],
                         'TXT_CRM_IMAGE_DELETE'        => $_ARRAYLANG['TXT_CRM_IMAGE_DELETE'],
@@ -2114,8 +2110,10 @@ END;
                     $values[] = "('".contrexx_input2db($value['value'])."', '".(int) $value['type']."', '".(int) $value['primary']."', '".$this->contact->id."')";
                 }
 
-                $query .= implode(",", $values);
-                $objDatabase->Execute($query);
+                if (is_array($values) && !empty ($values)) {
+                    $query .= implode(",", $values);
+                    $objDatabase->Execute($query);
+                }
 
                 // insert Phone
                 $objDatabase->Execute("DELETE FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_phone` WHERE `contact_id` = {$this->contact->id}");
@@ -2127,8 +2125,10 @@ END;
                     $values[] = "('".contrexx_input2db($value['value'])."', '".(int) $value['type']."', '".(int) $value['primary']."', '".$this->contact->id."')";
                 }
 
-                $query .= implode(",", $values);
-                $objDatabase->Execute($query);
+                if (is_array($values) && !empty ($values)) {
+                    $query .= implode(",", $values);
+                    $objDatabase->Execute($query);
+                }
 
                 // insert Website
                 $assignedWebsites = array();
@@ -2194,9 +2194,11 @@ END;
                     $values[] = "('".contrexx_input2db($value['address'])."', '".contrexx_input2db($value['city'])."', '".contrexx_input2db($value['state'])."', '".contrexx_input2db($value['zip'])."', '".contrexx_input2db($value['country'])."', '".intval($value['type'])."', '".intval($value['primary'])."', '".$this->contact->id."')";
                 }
 
-                $query .= implode(",", $values);
-
-                $objDatabase->Execute($query);
+                if (is_array($values) && !empty ($values)) {
+                    $query .= implode(",", $values);
+                    $objDatabase->Execute($query);
+                }
+                
                 $ChckCount = 0;
                 if (!empty($id)) {
                     $contactId = $this->contact->contact_customer;
@@ -3656,14 +3658,11 @@ END;
                            c.customer_name,
                            c.contact_familyname,
                            t.due_date,
-                           contrexxuser.username,
                            t.description,
                            c.id AS customer_id
                     FROM ".DBPREFIX."module_{$this->moduleName}_task as t
                     LEFT JOIN ".DBPREFIX."module_{$this->moduleName}_task_types as tt
                         ON (t.task_type_id=tt.id)
-                    LEFT JOIN ".DBPREFIX."access_users AS contrexxuser
-                            ON contrexxuser.id = t.assigned_to
                     LEFT JOIN ".DBPREFIX."module_{$this->moduleName}_contacts as c
                         ON t.customer_id = c.id WHERE c.id = $contactId ORDER BY t.id DESC LIMIT $intPage, $intPerpage ";
 
@@ -3700,7 +3699,7 @@ END;
                             'TXT_STATUS'            => (int) $objResult->fields['task_status'],
                             'CRM_TASK_TYPE_ACTIVE'  => $objResult->fields['task_status'] == 1 ? 'led_green.gif':'led_red.gif',
                             'TXT_ROW'               => $row = ($row == 'row2')? 'row1':'row2',
-                            'CRM_ADDEDBY'           => contrexx_raw2xhtml($objResult->fields['username']),
+                            'CRM_ADDEDBY'           => $this->getUserName($objResult->fields['assigned_to']),
                             'CRM_TASK_CUSTOMER_ID'  => (int) $objResult->fields['customer_id'],
                             'TXT_CRM_IMAGE_EDIT'    => $_ARRAYLANG['TXT_CRM_IMAGE_EDIT'],
                             'TXT_CRM_IMAGE_DELETE'  => $_ARRAYLANG['TXT_CRM_IMAGE_DELETE'],
@@ -3785,13 +3784,13 @@ END;
                                          pro.`name`,
                                          pro.`domain`,
                                          pro.`status`,
+                                         pro.`assigned_to`,
                                          pro.`project_type_id`,
                                          cusWeb.`url`,
                                          pro.`quoted_price`,
                                          pro.`target_date`,
                                          pstatus.`name` AS proStatus,
                                          pstatus.`active` AS proActive,
-                                         users.`username`,
                                          cus.`customer_name`,
                                          cus.`contact_familyname`,
                                          cus.`contact_type`,
@@ -3803,8 +3802,6 @@ END;
                                       ON pro.`customer_id` = cus.`id`
                                   LEFT JOIN `'.DBPREFIX.'module_'.$this->moduleName.'_currency` AS curr
                                       ON cus.`customer_currency` = curr.`id`
-                                  LEFT JOIN `'.DBPREFIX.'access_users` AS users
-                                      ON pro.`assigned_to` = users.`id`
                                   LEFT JOIN `'.DBPREFIX.'module_'.$this->moduleName.'_customer_contact_websites` AS cusWeb
                                       ON pro.`domain` = cusWeb.`id`
                                   WHERE '. $whereCustomer .' ORDER BY pro.`id` DESC LIMIT '.$intPage.','. $intPerpage;
@@ -3837,7 +3834,7 @@ END;
                     'CRM_PROJECT_NAME'         => "<a href='index.php?cmd={$this->pm_moduleName}&act=projectdetails&".CSRF::param()."&projectid={$objProjectResult->fields['id']}'>".urldecode($objProjectResult->fields['url'])." - ".contrexx_raw2xhtml($objProjectResult->fields['name'])."</a>",
                     'CRM_PROJECT_QUOTED_PRICE' => contrexx_raw2xhtml($objProjectResult->fields['quoted_price']).' '.contrexx_raw2xhtml($objProjectResult->fields['currency']),
                     'CRM_PROJECT_STATUS'       => contrexx_raw2xhtml($objProjectResult->fields['proStatus']),
-                    'CRM_PROJECT_RESPONSIBLE'  => contrexx_raw2xhtml($objProjectResult->fields['username']),
+                    'CRM_PROJECT_RESPONSIBLE'  => $this->getUserName($objProjectResult->fields['assigned_to']),
                     'CRM_PROJECT_TARGET_DATE'  => $objProjectResult->fields['target_date'],
                     'ENTRY_ROWCLASS'           => $row = ($row == 'row1') ? 'row2' : 'row1',
                     'TXT_COMPANY_NAME'         => $company,
@@ -3915,15 +3912,12 @@ END;
                                d.quote_number,
                                d.assigned_to,
                                d.due_date,
-                               d.project_id,
-                               u.username
+                               d.project_id
                             FROM ".DBPREFIX."module_{$this->moduleName}_deals AS d
                                 LEFT JOIN ".DBPREFIX."module_{$this->moduleName}_contacts AS c
                             ON d.customer = c.id
                                 LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_customer_contact_websites` AS web
                             ON d.website = web.id
-                                LEFT JOIN `".DBPREFIX."access_users` AS u
-                            ON u.id = d.assigned_to
                                 WHERE d.`customer` = ".(int) $custId ." ORDER BY d.`id` DESC LIMIT $intPage, $intPerpage";
 
         $objDealsResult = $objDatabase->Execute($dealsResult);
@@ -3942,7 +3936,7 @@ END;
         $row = 'row2';
         while (!$objDealsResult->EOF) {
             $title = $allowPm ? "<a href='./index.php?cmd={$this->pm_moduleName}&act=projectdetails&projectid={$objDealsResult->fields['project_id']}&".CSRF::param()."'>".contrexx_raw2xhtml($objDealsResult->fields['title'])."</a>" : contrexx_raw2xhtml($objDealsResult->fields['title']);
-            $userName = $allowPm ? "<a href='./index.php?cmd={$this->pm_moduleName}&act=resourcedetails&id={$objDealsResult->fields['assigned_to']}&".CSRF::param()."'>".contrexx_raw2xhtml($objDealsResult->fields['username'])."</a>" : contrexx_raw2xhtml($objDealsResult->fields['username']);
+            $userName = $allowPm ? "<a href='./index.php?cmd={$this->pm_moduleName}&act=resourcedetails&id={$objDealsResult->fields['assigned_to']}&".CSRF::param()."'>".contrexx_raw2xhtml($this->getUserName($objDealsResult->fields['assigned_to']))."</a>" : contrexx_raw2xhtml($this->getUserName($objDealsResult->fields['assigned_to']));
             $this->_objTpl->setVariable(array(
                     'ENTRY_ID'              => (int) $objDealsResult->fields['id'],
                     'CRM_DEALS_TITLE'       => $title,
@@ -4024,10 +4018,8 @@ END;
         $query = "SELECT doc.id,
                          doc.document_name,
                          doc.uploaded_date,
-                         contrexxuser.username
+                         doc.added_by
                     FROM ".DBPREFIX."module_{$this->moduleName}_customer_documents as doc
-                    LEFT JOIN ".DBPREFIX."access_users AS contrexxuser
-                            ON contrexxuser.id = doc.added_by
                     WHERE doc.contact_id = $contactId ORDER BY doc.id DESC LIMIT $intPage, $intPerpage ";
 
         $objResult = $objDatabase->Execute($query);
@@ -4071,7 +4063,7 @@ END;
                 $objTpl->setVariable(array(
                     'CRM_DOCUMENT_ID'   => (int) $objResult->fields['id'],
                     'CRM_DOCUMENT_NAME' => contrexx_raw2xhtml($objResult->fields['document_name']),
-                    'CRM_ADDED_BY'      => contrexx_raw2xhtml($objResult->fields['username']),
+                    'CRM_ADDED_BY'      => contrexx_raw2xhtml($this->getUserName($objResult->fields['added_by'])),
                     'CRM_ADDED_DATE'    => contrexx_raw2xhtml(date('Y-m-d h:i A', strtotime($objResult->fields['uploaded_date']))),
                     'CRM_FILE_TYPE'     => $fileTypeClass
                 ));
@@ -4244,15 +4236,12 @@ END;
                        c.contact_familyname,
                        d.quote_number,
                        d.assigned_to,
-                       d.due_date,
-                       u.username
+                       d.due_date
             FROM ".DBPREFIX."module_{$this->moduleName}_deals AS d
                 LEFT JOIN ".DBPREFIX."module_{$this->moduleName}_contacts AS c
             ON d.customer = c.id
                 LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_customer_contact_websites` AS web
             ON d.website = web.id
-                LEFT JOIN `".DBPREFIX."access_users` AS u
-            ON u.id = d.assigned_to
                 $filter
             ORDER BY $sortf $sorto";
         $objResult = $objDatabase->Execute($query);
@@ -4285,13 +4274,13 @@ END;
                         'ENTRY_ID'              => (int) $objResult->fields['id'],
                         'CRM_DEALS_TITLE'       => contrexx_raw2xhtml($objResult->fields['title']),
                         'CRM_CONTACT_NAME'      => "<a href='./index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id={$objResult->fields['customer']}' title='details'>".contrexx_raw2xhtml($objResult->fields['customer_name']." ".$objResult->fields['contact_familyname']).'</a>',
-                        'CRM_DEALS_CONTACT_NAME'=> contrexx_raw2xhtml($objResult->fields['username']),
+                        'CRM_DEALS_CONTACT_NAME'=> contrexx_raw2xhtml($this->getUserName($objResult->fields['assigned_to'])),
                         'CRM_DEALS_DUE_DATE'    => contrexx_raw2xhtml($objResult->fields['due_date']),
                         'CRM_DEALS_QUOTED_PRICE'=> contrexx_raw2xhtml($objResult->fields['quoted_price']),
                         'ROW_CLASS'             => $row = ($row == "row2") ? "row1" : 'row2',
                         'CRM_REDIRECT_LINK'     => '&redirect='.base64_encode("&act=deals{$searchLink}{$sortLink}{$pageLink}"),
-                        'TXT_CRM_IMAGE_EDIT'        =>  $_ARRAYLANG['TXT_EDIT'],
-                        'TXT_CRM_IMAGE_DELETE'      =>  $_ARRAYLANG['TXT_DELETE'],
+                        'TXT_CRM_IMAGE_EDIT'    => $_ARRAYLANG['TXT_EDIT'],
+                        'TXT_CRM_IMAGE_DELETE'  => $_ARRAYLANG['TXT_DELETE'],
                 ));
                 $objTpl->parse("dealsEntries");
                 $objResult->MoveNext();
@@ -5330,15 +5319,10 @@ END;
                 $userId = $objDatabase->getOne("SELECT `user_account` FROM `". DBPREFIX ."module_{$this->moduleName}_contacts` WHERE `id` = $customerId");
             }
 
-            $accountId = $this->isUniqueUsername($term, $userId);
+            $jsonError = $this->isUniqueUsername($term, $userId);
 
-            if ($accountId) {
-                $objCount = $objDatabase->Execute("SELECT `user_account` FROM `". DBPREFIX ."module_{$this->moduleName}_contacts` WHERE `user_account` = $accountId");
-                if ($objCount->RecordCount() && $userId != $objCount->fields['user_account']) {
-                    $json['error'] = $_ARRAYLANG['TXT_CRM_ERROR_EMAIL_USED_BY_OTHER_PERSON'];
-                } else {
-                    $json['error'] = $_ARRAYLANG['TXT_CRM_USER_EMAIL_ALERT'];
-                }
+            if ($jsonError) {
+                $json['error']   = $jsonError;
             } else {
                 $json['success'] = 'Available';
 

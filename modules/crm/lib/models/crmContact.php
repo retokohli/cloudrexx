@@ -54,11 +54,9 @@ class crmContact
                              c.customer_currency, c.contact_familyname,
                              c.contact_role, c.contact_customer, c.contact_language,
                              c.notes, c.contact_type,c.user_account,c.added_date,c.industry_type,                             
-                             u.username AS resource,e.email,p.phone, c.datasource,
+                             e.email,p.phone, c.datasource,
                              c.gender,c.profile_picture
                          FROM `".DBPREFIX."module_{$this->moduleName}_contacts` AS c
-                         LEFT JOIN ".DBPREFIX."access_users u
-                             ON c.`customer_addedby` = u.`id`
                          LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_customer_contact_emails` as e
                              ON (c.`id` = e.`contact_id` AND e.`is_primary` = '1')
                          LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_customer_contact_phone` as p
@@ -120,7 +118,6 @@ class crmContact
                            c.gender,
                            con.customer_name AS contactCustomer,                           
                            t.label AS cType,
-                           u.username AS added_user,
                            lang.name AS language,
                            curr.name AS currency,
                            c.profile_picture
@@ -135,8 +132,6 @@ class crmContact
                          ON idn.entry_id = i.id AND lang_id = {$_LANGID}
                        LEFT JOIN ".DBPREFIX."module_{$this->moduleName}_currency AS curr
                          ON c.customer_currency = curr.id
-                       LEFT JOIN ".DBPREFIX."access_users AS u
-                         ON c.customer_addedby = u.id
                        LEFT JOIN ".DBPREFIX."languages AS lang
                          ON c.contact_language = lang.id
                        WHERE c.id = {$this->id}";
