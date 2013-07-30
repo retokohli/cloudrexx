@@ -1597,6 +1597,8 @@ class CrmLibrary
         }
 
         $objFWUser  = FWUser::getFWUserObject();
+        //for settings default mode as backend then only get the users details under the group
+        $objFWUser->setMode(true);
         $objUsers   = $objFWUser->objUser->getUsers($filter = array('group_id' => $groupId));
 
         if (false !== $objUsers) {
@@ -2122,8 +2124,9 @@ class CrmLibrary
         global $objDatabase, $_ARRAYLANG;
 
         if (empty($customerId)) return false;
-
-        $resources = $this->getResources($this->_arrSettings['emp_default_user_group']);
+        
+        $settings = $this->getSettings();
+        $resources = $this->getResources($settings['emp_default_user_group']); 
         $emails    = array();
         foreach ($resources as $key => $value) {
             $emails[]    = $value['email'];
