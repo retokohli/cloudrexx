@@ -303,16 +303,25 @@ class DBG
         while (file_exists($file.$suffix)) {
             $suffix = '.'.++$nr;
         }*/
-        try {
-            self::$dbg_fh = new \Cx\Lib\FileSystem\File($file.$suffix);
-            self::$dbg_fh->touch();
-            if (self::$dbg_fh->makeWritable()) {
+        if (class_exists('\Cx\Lib\FileSystem\File')) {
+            try {
+                self::$dbg_fh = new \Cx\Lib\FileSystem\File($file.$suffix);
+                self::$dbg_fh->touch();
+                if (self::$dbg_fh->makeWritable()) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                return false;
+            }
+        } else {
+            self::$dbg_fh = fopen($file.$suffix, $mode);
+            if (self::$dbg_fh) {
                 return true;
             } else {
                 return false;
             }
-        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-            return false;
         }
     }
 
@@ -646,11 +655,17 @@ class DBG
             && method_exists(self::$firephp, $firephp_action)) {
             self::$firephp->$firephp_action($additional_args, $text);
         } elseif (self::$log_file) {
-            self::$dbg_fh->write(
-                self::$dbg_fh->getData() .
-// TODO: Add some flag to enable/disable timestamps
-                date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME).' '.
-                $text."\n");
+            if (self::$dbg_fh instanceof \Cx\Lib\FileSystem\File) {
+                self::$dbg_fh->write(
+                    self::$dbg_fh->getData() .
+    // TODO: Add some flag to enable/disable timestamps
+                    date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME).' '.
+                    $text."\n");
+            } else {
+                fputs(self::$dbg_fh,
+                    date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME).' '.
+                    $text."\n");
+            }
         } else {
             echo $text.'<br />';
             // force log message output
