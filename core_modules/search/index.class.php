@@ -51,9 +51,6 @@ function search_getSearchPage($pos, $page_content, $license)
 			$queryPodcast = search_searchQuery("podcast",$term);
 			$queryPodcastCategory = search_searchQuery("podcastCategory", $term);
 		}
-		if (contrexx_isModuleActive('shop')) {
-			$queryshop = search_searchQuery("shop",$term);
-		}
 		if (contrexx_isModuleActive('gallery')) {
 			$queryGalleryCats = search_searchQuery("gallery_cats",$term);
 			$queryGalleryPics = search_searchQuery("gallery_pics",$term);
@@ -72,6 +69,18 @@ function search_getSearchPage($pos, $page_content, $license)
 		if (contrexx_isModuleActive('forum')) {
 			$queryForum = search_searchQuery("forum", $term);
 		}
+        if (contrexx_isModuleActive('shop')) {
+            $arrayShopProducts = array();
+            $arrayShopResults = Products::getByShopParams($count, 0, null, null, null, $term);
+            foreach ($arrayShopResults as $Product) {
+                $arrayShopProducts[] = array(
+                    'Title' => $Product->name(),
+                    'Content' => $Product->short(),
+                    'Link' => (string) \Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'details', FRONTEND_LANG_ID,
+                                            array('productId' => $Product->id())),
+                );
+            }
+        }
     }
 
     //Prm: Query,Section,Cmd,PageVar
@@ -82,7 +91,6 @@ function search_getSearchPage($pos, $page_content, $license)
     
     $arrayNews=search_getResultArray($querynews,"news","details","newsid=",$term);
     $arrayDocsys = array();
-    $arrayShopProducts = array();
     $arrayPodcastMedia = array();
     $arrayPodcastCategory = array();
     $arrayGalleryCats = array();
@@ -101,9 +109,6 @@ function search_getSearchPage($pos, $page_content, $license)
     if (!empty($queryPodcast)) {
        	$arrayPodcastMedia=search_getResultArray($queryPodcast,"podcast","","id=",$term);
        	$arrayPodcastCategory = search_getResultArray($queryPodcastCategory,"podcast","","cid=",$term);
-    }
-    if (!empty($queryshop)) {
-        $arrayShopProducts=search_getResultArray($queryshop,"shop","","productId=",$term);
     }
     if (!empty($queryGalleryCats)) {
     	$arrayGalleryCats = search_getResultArray($queryGalleryCats,"gallery","showCat","cid=",$term);
@@ -161,7 +166,7 @@ function search_getSearchPage($pos, $page_content, $license)
         $arraySearchOut = array_slice($arraySearchResults, $pos, $_CONFIG['corePagingLimit']);
 
         foreach($arraySearchOut as $kk => $details){
-            $objTpl->setVariable('COUNT_MATCH', $_ARRAYLANG['TXT_RELEVANCE'].' '.$details['Score'].'%');
+            $objTpl->setVariable('COUNT_MATCH', $details['Score'] ? $_ARRAYLANG['TXT_RELEVANCE'].' '.$details['Score'].'%' : '');
             $objTpl->setVariable('LINK', '<b><a href="'.contrexx_raw2xhtml($details['Link']).'" title="'.contrexx_raw2xhtml($details['Title']).'">'.contrexx_raw2xhtml($details['Title']).'</a></b>');
             $objTpl->setVariable('SHORT_CONTENT', strip_tags($details['Content']).' ...');
             $objTpl->parse('search_result');
@@ -241,17 +246,6 @@ function search_searchQuery($section, $searchTerm)
         				AND tblLang.category_id=tblCat.id
         				AND tblLang.lang_id=".$_LANGID;
         	break;
-
-        case "shop":
-             $query="SELECT id,
-                            title,
-		                    description AS content,
-                      MATCH (description,title) AGAINST ('%".htmlentities($searchTerm, ENT_QUOTES, CONTREXX_CHARSET)."%') AS score
-                       FROM ".DBPREFIX."module_shop_products
-                      WHERE description LIKE ('%".htmlentities($searchTerm, ENT_QUOTES, CONTREXX_CHARSET)."%')
-                         OR title LIKE ('%$searchTerm%')
-                        AND status =1";
-            break;
 
 		case "gallery_cats":
 			$query = "SELECT tblLang.gallery_id, tblLang.value AS title,
