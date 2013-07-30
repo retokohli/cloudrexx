@@ -387,10 +387,17 @@ abstract class Uploader
     protected function getUploadPath($type)
     {
         $uploadPath = '';
-        if($this->isBackendRequest)
+        if ($this->isBackendRequest) {
             $uploadPath = ASCMS_ADMIN_WEB_PATH.'/index.php?cmd=upload&act=upload';
-        else
-            $uploadPath =   ASCMS_PATH_OFFSET.'/?section=upload&cmd=upload';
+        } else {
+            $url = clone \Env::get('cx')->getRequest();
+            $url->removeAllParams();
+            $url->setParams(array(
+                'section' => 'upload',
+                'cmd' => 'upload',
+            ));
+            $uploadPath = (string) $url;
+        }
         $uploadPath .= '&uploadId='.$this->uploadId.'&uploadType='.$type;
         return $uploadPath;
     }
