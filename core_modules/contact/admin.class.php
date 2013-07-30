@@ -536,6 +536,8 @@ class ContactManager extends ContactLib
                 'TXT_CONTACT_SHOW_SOURCECODE'               => $_ARRAYLANG['TXT_CONTACT_SHOW_SOURCECODE'],
                 'TXT_CONTACT_USE_AS_TEMPLATE'               => $_ARRAYLANG['TXT_CONTACT_USE_AS_TEMPLATE'],
                 'TXT_CONTACT_GET_CSV'                       => $_ARRAYLANG['TXT_CONTACT_GET_CSV'],
+                'TXT_CONTACT_CSV_TOOLTIP'                   => $_ARRAYLANG['TXT_CONTACT_CSV_TOOLTIP'],
+                'TXT_CONTACT_XLS_TOOLTIP'                   => $_ARRAYLANG['TXT_CONTACT_XLS_TOOLTIP'],
                 'TXT_CONTACT_DOWNLOAD'                      => $_ARRAYLANG['TXT_CONTACT_DOWNLOAD']
         ));
 

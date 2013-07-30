@@ -1106,6 +1106,13 @@ table.adminlist td.nowrap {
 }
 
 /* icons */
+.icon-16x16 {
+    float: none;
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+}
+
 .icon-info {
     float: none;
     display: inline-block;
@@ -1150,6 +1157,11 @@ table.adminlist td.nowrap {
 
 
 /* jquery tools tooltip */
+.tooltip-wrapper {
+    position: relative;
+    display: inline-block;
+}
+
 .tooltip-message {
     display: none;
     float: left;
