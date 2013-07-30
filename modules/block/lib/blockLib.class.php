@@ -453,7 +453,7 @@ class blockLibrary
     function _setBlocksForPageId($pageId, $blockIds) {
         global $objDatabase;
 
-        $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_rel_pages WHERE page_id = ? AND placeholder = ?", array($pageId, 'global'));
+        $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_block_rel_pages WHERE page_id = " . intval($pageId) . " AND placeholder = 'global'");
 
         $values = array();
         foreach ($blockIds as $blockId) {
@@ -464,7 +464,7 @@ class blockLibrary
             }
             // if the block was not global till now, make it global
             if ($block['global'] == 0) {
-                $objDatabase->Execute("UPDATE `" . DBPREFIX . "module_block_blocks` SET `global` = 2 WHERE `id` = ?", array($blockId));
+                $objDatabase->Execute("UPDATE `" . DBPREFIX . "module_block_blocks` SET `global` = 2 WHERE `id` = " . intval($blockId));
             }
             $values[] = '
                 (
