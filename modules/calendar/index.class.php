@@ -697,10 +697,9 @@ $this->_objTpl->setVariable(array(
                             $status = $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFULLY_ADDED'];
                             if($_POST["paymentMethod"] == 2) {
                                 $objRegistration->get($objRegistration->id);
-                                $objEvent = new CalendarEvent($objRegistration->eventId);
+                                $objEvent = new CalendarEvent($objRegistration->eventId);                                
                                 parent::getSettings();
-                                $amount = $objEvent->price * $objRegistration->fields[7]["value"];
-                                $amount = (int)$amount*100;
+                                $amount  = (int) $objEvent->price * 100;
                                 $status .= CalendarPayment::_yellowpay(array("orderID" => $objRegistration->id, "amount" => $amount, "currency" => $this->arrSettings["paymentCurrency"], "language" => "DE"));
                             }
                         }
@@ -803,30 +802,37 @@ $this->_objTpl->setVariable(array(
     function showSuccessPage() {
         $this->_objTpl->setTemplate($this->pageContent, true, true);
         if($_REQUEST["handler"] == "yellowpay") {
-            switch($_REQUEST["result"]) {
-                case 2:
-                    // fehler aufgetreten
-                    $objRegistration = new CalendarRegistration(null);
-                    $objRegistration->delete($_REQUEST["orderID"]);
-                    $this->_objTpl->touchBlock("cancelMessage");
-                    break;
-                case 1:
-                    // erfolgreich
-                    $objRegistration = new CalendarRegistration(null);
-                    $objRegistration->get($_REQUEST["orderID"]);
-                    $objRegistration->setPayed(1);
-                    $this->_objTpl->touchBlock("successMessage");
-                    break;
-                case 0:
-                    // abgebrochen
-                    $objRegistration = new CalendarRegistration(null);
-                    $objRegistration->delete($_REQUEST["orderID"]);
-                    $this->_objTpl->touchBlock("cancelMessage");
-                    break;
-                default:
-                    CSRF::header("Location: index.php?section=".$this->moduleName);
-                    break;
-            }
+            $orderId = Yellowpay::getOrderId();
+            parent::getSettings();
+            if (Yellowpay::checkin($this->arrSettings["paymentYellowpayShaOut"])) {
+                switch($_REQUEST["result"]) {
+                    case 2:
+                        // fehler aufgetreten
+                        $objRegistration = new CalendarRegistration(null);
+                        $objRegistration->delete($orderId);
+                        $this->_objTpl->touchBlock("cancelMessage");
+                        break;
+                    case 1:
+                        // erfolgreich
+                        $objRegistration = new CalendarRegistration(null);
+                        $objRegistration->get($orderId);
+                        $objRegistration->setPayed(1);
+                        $this->_objTpl->touchBlock("successMessage");
+                        break;
+                    case 0:
+                        // abgebrochen
+                        $objRegistration = new CalendarRegistration(null);
+                        $objRegistration->delete($orderId);
+                        $this->_objTpl->touchBlock("cancelMessage");
+                        break;
+                    default:
+                        CSRF::header("Location: index.php?section=".$this->moduleName);
+                        break;
+                }
+            } else {
+                CSRF::header("Location: index.php?section=".$this->moduleName);
+                return;
+            }            
         } else {
             CSRF::header("Location: index.php?section=".$this->moduleName);
             return;

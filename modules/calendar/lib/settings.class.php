@@ -892,13 +892,11 @@ class CalendarSettings extends CalendarLibrary
     }
 
     /**
-     * Return's the yellowpay settings by name
-     *      
-     * @param string $name yellowpay settings name
+     * Return's the yellowpay settings     
      * 
      * @return array yellowpay settings
      */
-    function getYellowpaySettings($name = false) {
+    function getYellowpaySettings() {
         global $objDatabase;
         if(!$this->yellowPaySettings) {
             $query = "SELECT  id,name,title,value,info,type,options,special
@@ -915,14 +913,7 @@ class CalendarSettings extends CalendarLibrary
             }
         }
 
-        if(!$name) {
-            $yellowPaySettings = array();
-            $yellowPaySettings["PSPID"] = $this->yellowPaySettings["paymentYellowpayPspid"];
-            $yellowPaySettings["SHASign"] = $this->yellowPaySettings["paymentYellowpayShaOut"];
-        } else {
-            return $this->yellowPaySettings[$name];
-        }
-        return $yellowPaySettings;
+        return $this->yellowPaySettings;
 
     }
     
