@@ -2090,6 +2090,27 @@ cx.cm.getNodeId = function(pageId) {
 }
 
 /**
+ * Returns the contact formId for the given pageId
+ * @param int pageId ID of a page
+ * @returns int FormId or null
+ */
+cx.cm.getcontactFormId = function(pageId) {
+    if (!pageId || pageId == 0) {
+        return null;
+    }
+    var page = jQuery("a#" + pageId);
+    if (!page || !page.length) {        
+        return null;
+    }    
+    
+    formId = 0;
+    module = jQuery.trim(jQuery.parseJSON(page.attr("data-href")).module);
+    formId = module.split(" ")[1];
+    
+    return formId;
+}
+
+/**
  * Returns the element on which we use .jstree
  * @return object jQuery object
  */
@@ -2320,6 +2341,12 @@ cx.cm.showEditModeWindow = function(cmdName, pageId) {
 
     var editModeLayoutLink = "cx.cm.hideEditModeWindow(); cx.cm.loadPage(" + pageId + ", null, null, 'content'); return false;";
     var editModeModuleLink = "index.php?cmd=" + cmdName + "&csrf=" + csrf;
+    
+    // Redirect to edit page of the contact form if module is contact
+    if (cmdName == 'contact') {
+        var contactFormId  = cx.cm.getcontactFormId(pageId);
+        editModeModuleLink = "index.php?cmd=" + cmdName + "&act=forms&tpl=edit&formId=" + contactFormId + "&csrf=" + csrf;
+    }
     
     content = content.replace(/\%1/g, editModeLayoutLink);
     content = content.replace(/\%2/g, editModeModuleLink);
