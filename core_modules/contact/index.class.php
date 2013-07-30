@@ -138,7 +138,6 @@ class Contact extends ContactLib
             'TXT_NEW_ENTRY_ERORR'   => $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'],
             'TXT_CONTACT_SUBMIT'    => $_ARRAYLANG['TXT_CONTACT_SUBMIT'],
             'TXT_CONTACT_RESET'     => $_ARRAYLANG['TXT_CONTACT_RESET'],
-            'CONTACT_JAVASCRIPT'    => $this->_getJsSourceCode($formId, $arrFields)
         ));
 
         if ($this->objTemplate->blockExists('contact_form')) {
@@ -447,9 +446,6 @@ class Contact extends ContactLib
                     }
                 } else { //found errors while validating
                     $this->setCaptcha($useCaptcha);
-                    if ($this->hasFileField) { //initUploader costs a lot. only do it if we need it
-                        $this->initUploader();
-                    }
                     return $this->_showError();
                 }
 
@@ -466,10 +462,9 @@ class Contact extends ContactLib
                 $this->objTemplate->touchBlock('formText');
             }
             $this->setCaptcha($useCaptcha);
-            if($this->hasFileField) {
-                $this->initUploader();
-            }
         }
+
+        $this->objTemplate->setVariable('CONTACT_JAVASCRIPT', $this->_getJsSourceCode($formId, $arrFields) . ($this->hasFileField ? $this->initUploader() : ''));
         
         return $this->objTemplate->get();
     }
@@ -544,11 +539,23 @@ class Contact extends ContactLib
             $uploader->setFinishedCallback(array(ASCMS_CORE_MODULE_PATH.'/contact/index.class.php','Contact','uploadFinished'));
             $uploader->setData($this->submissionId);
 
-            $this->objTemplate->setVariable('UPLOADER_CODE',$uploader->getXHtml());
-            $this->objTemplate->setVariable('UPLOAD_WIDGET_CODE',$folderWidget->getXHtml($uploaderFolderWidgetContainer, 'uploadWidget'));
+            return  $uploader->getXHtml().
+                    $folderWidget->getXHtml($uploaderFolderWidgetContainer, 'uploadWidget')."
+                    <script>
+                        cx.include(
+                            [
+                                'core_modules/contact/js/extendedFileInput.js'
+                            ],
+                            function() {
+                                var ef = new ExtendedFileInput({
+                                   field:  \$J('#contactFormField_upload')
+                                });
+                            }
+                        );
+                    </script>";
         }
         catch (Exception $e) {
-            $this->objTemplate->setVariable('UPLOADER_CODE','<!-- failed initializing uploader, exception '.get_class($e).' with message "'.$e->getMessage().'" -->');
+            return '<!-- failed initializing uploader, exception '.get_class($e).' with message "'.$e->getMessage().'" -->';
         }
     }
 
