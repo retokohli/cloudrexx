@@ -529,7 +529,7 @@ class docSysManager extends docSysLibrary
                 intval($arrDate[3]), intval($arrDate[5]),
                 intval($arrDate[4]), intval($arrDate[6]));
         }
-        if (!$objDatabase->Execute("
+        if ($objDatabase->Execute("
             INSERT INTO " . DBPREFIX . "module_docsys" . MODULE_INDEX . " (
                 `date`, `title`, `author`, `text`, `source`,
                 `url1`, `url2`, `lang`, `startdate`, `enddate`,
