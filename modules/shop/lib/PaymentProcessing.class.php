@@ -242,21 +242,21 @@ class PaymentProcessing
         // @since 3.0.5: Names are now lowercase, i.e. "internal" instead of "Internal"
         switch (self::getPaymentProcessorName()) {
             case 'internal':
-                HTTP::redirect(
+                \CSRF::redirect(
                     Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'success').
                     '?result=1&handler=internal');
             case 'internal_lsv':
-                HTTP::redirect(
+                \CSRF::redirect(
                     Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'success').
                     '?result=1&handler=internal');
             case 'internal_creditcard':
                 // Not implemented
-                HTTP::redirect(
+                \CSRF::redirect(
                     Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'success').
                     '?result=1&handler=internal');
             case 'internal_debit':
                 // Not implemented
-                HTTP::redirect(
+                \CSRF::redirect(
                     Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'success').
                     '?result=1&handler=internal');
             case 'saferpay':

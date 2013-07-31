@@ -1900,7 +1900,7 @@ if ($test === NULL) {
             Message::error(sprintf(
                 $_ARRAYLANG['TXT_SHOP_CATEGORY_ERROR_UPDATING'], $category_id));
         }
-        HTTP::redirect('index.php?cmd=shop&act=categories');
+        \CSRF::redirect('index.php?cmd=shop&act=categories');
     }
 
 
@@ -2357,13 +2357,13 @@ if ($test === NULL) {
 
         switch ($_POST['afterStoreAction']) {
           case 'newEmpty':
-            HTTP::redirect(
+            \CSRF::redirect(
                 'index.php?cmd=shop'.MODULE_INDEX.'&act=products&tpl=manage');
           case 'newTemplate':
-            HTTP::redirect('index.php?cmd=shop'.MODULE_INDEX.
+            \CSRF::redirect('index.php?cmd=shop'.MODULE_INDEX.
                 '&act=products&tpl=manage&id='.$objProduct->id().'&new=1');
         }
-        HTTP::redirect('index.php?cmd=shop'.MODULE_INDEX.'&act=products');
+        \CSRF::redirect('index.php?cmd=shop'.MODULE_INDEX.'&act=products');
         // Never reached
         return true;
     }
@@ -2457,7 +2457,7 @@ if ($test === NULL) {
             Message::ok($_ARRAYLANG['TXT_ORDER_DELETED']);
         }
 // TODO: Add error message
-        HTTP::redirect('index.php?cmd=shop&act=orders');
+        \CSRF::redirect('index.php?cmd=shop&act=orders');
     }
 
 
@@ -2619,7 +2619,7 @@ if ($test === NULL) {
             Message::error(sprintf(
                 $_ARRAYLANG['TXT_SHOP_ERROR_CUSTOMER_UPDATING'], $customer_id));
         }
-        HTTP::redirect('index.php?cmd=shop&act=customers');
+        \CSRF::redirect('index.php?cmd=shop&act=customers');
     }
 
 
