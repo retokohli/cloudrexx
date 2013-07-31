@@ -435,6 +435,23 @@ DBG::log($error);
             'AMOUNT' => intval($_SESSION['shop']['grand_total_price']*100),
             'CURRENCY' => Currency::getActiveCurrencyCode(),
             'PARAMPLUS' => 'section=shop'.MODULE_INDEX.'&cmd=success&handler=yellowpay',
+// Custom code for adding more Customer data to the form.
+// Enable as needed.
+            // COM          Order description
+            // CN           Customer name. Will be pre-initialized (but still editable) in the cardholder name field of the credit card details.
+//            'CN' => $_SESSION['shop']['firstname'].' '.$_SESSION['shop']['lastname'],
+            // EMAIL        Customer's e-mail address
+//            'EMAIL' => $_SESSION['shop']['email'],
+            // owneraddress Customer's street name and number
+//            'owneraddress' => $_SESSION['shop']['address'],
+            // ownerZIP     Customer's ZIP code
+//            'ownerZIP' => $_SESSION['shop']['zip'],
+            // ownertown    Customer's town/city name
+//            'ownertown' => $_SESSION['shop']['city'],
+            // ownercty     Customer's country
+//            'ownercty' => Country::getNameById($_SESSION['shop']['countryId']),
+            // ownertelno   Customer's telephone number
+//            'ownertelno' => $_SESSION['shop']['phone'],
         );
         $return = Yellowpay::getForm('shop'.MODULE_INDEX, $arrShopOrder, $_ARRAYLANG['TXT_ORDER_NOW']);
         if (_PAYMENT_DEBUG && Yellowpay::$arrError) {

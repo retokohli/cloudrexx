@@ -525,7 +525,7 @@ class Cart
 //DBG::log("Cart::update(): PRODUCT; Coupon available: $coupon_code, Product ID {$product['id']}");
 //DBG::log("Cart::update(): Loop 2: Product: ".var_export($product, true));
                     $discount_amount = $objCoupon->getDiscountAmount(
-                        $product['price']);
+                        $product['price'], $customer_id);
                     if (   $objCoupon->discount_amount() > 0
                         && ($total_discount_amount + $discount_amount)
                             > $objCoupon->discount_amount()) {
@@ -562,7 +562,8 @@ class Cart
             $objCoupon = Coupon::available(
                 $coupon_code, $total_price, $customer_id, 0, $payment_id);
             if ($objCoupon) {
-                $discount_amount = $objCoupon->getDiscountAmount($total_price);
+                $discount_amount = $objCoupon->getDiscountAmount(
+                    $total_price, $customer_id);
                 $total_discount_amount = $discount_amount;
 //DBG::log("Cart::update(): GLOBAL; Coupon available: $coupon_code");
 //DBG::log("Cart::update(): GLOBAL; total price $total_price, discount_amount $discount_amount, total discount $total_discount_amount");

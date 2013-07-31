@@ -135,8 +135,8 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
      */
     static function getPage($template)
     {
-//DBG::activate(DBG_ERROR_FIREPHP|DBG_LOG);
-//DBG::activate(DBG_LOG_FILE);
+//\DBG::activate(DBG_ERROR_FIREPHP|DBG_LOG);
+//\DBG::activate(DBG_LOG_FILE);
         self::init();
         self::$defaultImage = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.ShopLibrary::noPictureName;
         // PEAR Sigma template
@@ -252,6 +252,21 @@ die("Failed to get Customer for ID $customer_id");
 //                DBG::log(MailTemplate::send($arrMailTemplate) ? "Sent successfully" : "Sending FAILED!");
 //                DBG::deactivate(DBG_LOG_FILE);
                 break;
+
+            case 'testAttachment':
+                MailTemplate::send(array(
+                    'from' => 'reto.kohli@comvation.com',
+                    'to' => 'reto.kohli@comvation.com',
+                    'subject' => 'Test Attachment',
+                    'message' => 'Test',
+                    'attachments' => array(
+                        0 => 'images/content/banner/qualidator.gif',
+                        'images/content/banner/itnews.gif' =>
+                            'Schönes Bild',
+                    ),
+                ));
+                die("Done!");
+
             case 'pricelist':
                 self::send_pricelist();
                 break;
@@ -336,7 +351,8 @@ die("Failed to get Customer for ID $customer_id");
                 $loginInfo = self::$objCustomer->company().'<br />';
             } else {
                 $loginInfo =
-                    self::$objCustomer->gender().' '.
+                    $_ARRAYLANG['TXT_SHOP_'.
+                        strtoupper(self::$objCustomer->gender())].' '.
                     self::$objCustomer->lastname().'<br />';
             }
             $loginStatus = $_ARRAYLANG['TXT_LOGGED_IN_AS'];
@@ -621,7 +637,7 @@ die("Failed to update the Cart!");
         // Necessary, otherwise no successive orders are possible
         $_SESSION['shop']['order_id'] = $_SESSION['shop']['order_id_checkin'] =
             NULL;
-// TODO: TEST ONLY, to not clear the cart: return;
+// TEST ONLY, to not clear the cart: return;
         Cart::destroy();
         // In case you want to flush everything, including the Customer:
         if ($full) {
@@ -685,7 +701,10 @@ die("Failed to update the Cart!");
                 }
             } else {
                 // VAT is excluded
-                if (Vat::is_home_country()) {
+// When the VAT is excluded, but enabled for foreign countries,
+// it must be added nonetheless!
+// Otherwise, you would expect it to be disabled for that case.
+//                if (Vat::is_home_country()) {
                     // home country equals shop country; add VAT.
                     // the VAT on the products has already been calculated and set in the cart.
                     // now we add the default VAT to the shipping and payment cost.
@@ -702,16 +721,16 @@ die("Failed to update the Cart!");
                         + $_SESSION['shop']['vat_price']);
                     $_SESSION['shop']['vat_products_txt'] = $_ARRAYLANG['TXT_TAX_EXCLUDED'];
                     $_SESSION['shop']['vat_grand_txt'] = $_ARRAYLANG['TXT_TAX_INCLUDED'];
-                } else {
-                    // foreign country; do not add VAT
-                    $_SESSION['shop']['vat_price'] = '0.00';
-                    $_SESSION['shop']['grand_total_price'] = Currency::formatPrice(
-                          Cart::get_price()
-                        + $_SESSION['shop']['payment_price']
-                        + $_SESSION['shop']['shipment_price']);
-                    $_SESSION['shop']['vat_products_txt'] = $_ARRAYLANG['TXT_TAX_EXCLUDED'];
-                    $_SESSION['shop']['vat_grand_txt'] = $_ARRAYLANG['TXT_TAX_EXCLUDED'];
-                }
+//                } else {
+//                    // foreign country; do not add VAT
+//                    $_SESSION['shop']['vat_price'] = '0.00';
+//                    $_SESSION['shop']['grand_total_price'] = Currency::formatPrice(
+//                          Cart::get_price()
+//                        + $_SESSION['shop']['payment_price']
+//                        + $_SESSION['shop']['shipment_price']);
+//                    $_SESSION['shop']['vat_products_txt'] = $_ARRAYLANG['TXT_TAX_EXCLUDED'];
+//                    $_SESSION['shop']['vat_grand_txt'] = $_ARRAYLANG['TXT_TAX_EXCLUDED'];
+//                }
             }
         } else {
             // VAT is disabled
@@ -986,17 +1005,20 @@ die("Failed to update the Cart!");
             return true;
         }
         if ($objCategory) {
-            self::$objTemplate->setVariable(array(
-                // Old, kept for convenience
-                'SHOP_CATEGORY_CURRENT_NAME' =>
-                    contrexx_raw2xhtml($objCategory->name()),
-                // New (3.0.0)
-                'SHOP_PRODUCTS_IN_CATEGORY' => sprintf(
-                    $_ARRAYLANG['TXT_SHOP_PRODUCTS_IN_CATEGORY'],
-                    contrexx_raw2xhtml($objCategory->name())),
-            ));
+        // Only indicate the category name when there are products
+            if ($count) {
+                self::$objTemplate->setVariable(array(
+                    // Old, kept for convenience
+                    'SHOP_CATEGORY_CURRENT_NAME' =>
+                        contrexx_raw2xhtml($objCategory->name()),
+                    // New (3.0.0)
+                    'SHOP_PRODUCTS_IN_CATEGORY' => sprintf(
+                        $_ARRAYLANG['TXT_SHOP_PRODUCTS_IN_CATEGORY'],
+                        contrexx_raw2xhtml($objCategory->name())),
+                ));
+            }
         } else {
-// TODO: There are other cases of flag combinations that are not individually
+// TODO: There are other cases of flag combinations that are not indivuidually
 // handled here yet.
             if ($term == '') {
                 if ($flagSpecialoffer == Products::DEFAULT_VIEW_DISCOUNTS) {
@@ -1531,6 +1553,7 @@ die("Failed to update the Cart!");
                             '" style="width:180px;">'."\n".
                             // If there is only one option to choose from,
                             // why bother the customer at all?
+// NOTE: To always prepend the default "please choose" option, comment the condition
                             (count($arrOptions) > 1
                                 ? '<option value="0">'.
                                   $objAttribute->getName().'&nbsp;'.
@@ -1835,7 +1858,39 @@ die("Failed to update the Cart!");
         JS::activate('shadowbox');
         JS::activate('jquery');
         ContrexxJavascript::getInstance()->setVariable("url", (String)\Cx\Core\Routing\URL::fromModuleAndCMd('shop'.MODULE_INDEX, 'cart', FRONTEND_LANG_ID, array('remoteJs' => 'addProduct')), 'shop/cart');
-        JS::registerCode("
+        JS::registerCode(
+// Update prices with options included
+// TODO Also consider Customer type (reseller, final customer)
+/*jQuery(function() {
+  jQuery('select[name^=productOption]').change(function() {
+    var product_id = jQuery(this).attr('id').split('-')[1];
+    var options = new Array();
+    var form = jQuery(this).parents('form');
+    form.find('select[name^=productOption]')
+    .each(function(i, el) {
+      options.push(jQuery(this).val());
+//console.log('option index ' + i + ', element ' + el.toString());
+    });
+    jQuery.getJSON(
+      'index.php?section=jsondata',
+      {
+        object: 'shop',
+        act: 'getPriceByAttribute',
+        product_id: product_id,
+        options: options
+      },
+    function(data) {
+      var normalprice = data.data.normalprice;
+      var discountprice = data.data.discountprice;
+      jQuery(form).find('div.price span[itemprop=\'price\']')
+      .html('<s>' + normalprice + '</s>');
+      jQuery(form).find('div.price span.discount span[itemprop=\'price\']')
+      .html('<s>' + discountprice + '</s>');
+    }
+    );
+  });
+});*/
+"
 // Obsolete
 function viewPicture(picture,features)
 {
@@ -1891,7 +1946,7 @@ function checkProductOption(objForm, productId, strAttributeIds)
     var attribute_id = arrAttributeIds[i];
 
     // See if there is a hidden field marking the Attribute as mandatory
-    element_mandatory = \$J('#productOption-'+productId+'-'+attribute_id);
+    element_mandatory = jQuery('#productOption-'+productId+'-'+attribute_id);
     if (!element_mandatory.length) {
       continue;
     }
@@ -1901,13 +1956,13 @@ function checkProductOption(objForm, productId, strAttributeIds)
     // 5 (mandatory text), 7 (mandatory file).
     option_name = element_mandatory.val();
     // get options from form
-    elements_option = \$J('[id^=\"productOption-'+productId+'-'+attribute_id+'-\"]');
+    elements_option = jQuery('[id^=\"productOption-'+productId+'-'+attribute_id+'-\"]');
     if (!elements_option.length) {
       continue;
     }
     var is_valid_element = false;
     // Verify value according to the 'attributeVerification' regex
-    var re_verify = \$J('#attributeVerification-'+productId+'-'+attribute_id);
+    var re_verify = jQuery('#attributeVerification-'+productId+'-'+attribute_id);
     var elType = null;
     elements_option.each(function(index, element) {
       elType = element.type;
@@ -2066,7 +2121,7 @@ function shopUpdateCart(data, textStatus, jqXHR)
         "<\\/li><\\/ul>');
       return;
     }
-  cart = '';
+    cart = '';
     jQuery.each(objCart.items, function(n, i) {
       cartProduct = cartProductsTpl.replace('[[SHOP_JS_PRODUCT_QUANTITY]]', i.quantity);
       cartProduct = cartProduct.replace('[[SHOP_JS_PRODUCT_TITLE]]', i.title+i.options_cart);
@@ -2101,12 +2156,12 @@ function showCart(html)
   cart.html(html).show();
 }
 
-\$J(document).ready(function(\$J) {
+jQuery(function() {
   //hideCart();
   showCart('<ul><li class=\"loading\">".
     contrexx_raw2xhtml($_ARRAYLANG['TXT_SHOP_CART_IS_LOADING']).
     "<\\/li><\\/ul>');
-  \$J.ajax(cx.variables.get('url', 'shop/cart')
+  jQuery.ajax(cx.variables.get('url', 'shop/cart')
     +'&r='+Math.random(), {
     dataType: 'json',
     success: shopUpdateCart,
@@ -3399,7 +3454,7 @@ die("Shop::processRedirect(): This method is obsolete!");
                 $password = (empty($_SESSION['shop']['password'])
                     ? User::make_password()
                     : $_SESSION['shop']['password']);
-//DBG::log("Password: $password (session: {$_SESSION['shop']['password']})");
+//\DBG::log("Password: $password (session: {$_SESSION['shop']['password']})");
                 if (!self::$objCustomer->password($password)) {
                     Message::error($_ARRAYLANG['TXT_INVALID_PASSWORD']);
                     \CSRF::redirect(Cx\Core\Routing\Url::fromModuleAndCmd(
@@ -3453,6 +3508,7 @@ die("Shop::processRedirect(): This method is obsolete!");
 //DBG::log("Shop::process(): Customer is a Reseller (ID $usergroup_id) already: ".var_export(self::$objCustomer->getAssociatedGroupIds(), true));
         }
         // Insert or update the customer
+//\DBG::log("Shop::process(): Storing Customer: ".var_export(self::$objCustomer, true));
         if (!self::$objCustomer->store()) {
             return Message::error($_ARRAYLANG['TXT_SHOP_CUSTOMER_ERROR_STORING']);
         }

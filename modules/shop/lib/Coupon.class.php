@@ -375,6 +375,11 @@ DBG::log("Coupon::get($code): ERROR: Query failed");
             Message::information($_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_ALREADY']);
             return null;
         }
+        // Deduct amounts already redeemed
+        if (   $objCoupon->discount_amount
+            && $objCoupon->getUsedAmount($customer_id) >= $objCoupon->discount_amount) {
+            return null;
+        }
         // Unlimited uses
         if ($objCoupon->uses > 1e9) return $objCoupon;
         // Deduct the number of times the Coupon has been redeemed already:
@@ -487,7 +492,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
      * Redeem the given coupon code
      *
      * Updates the database, if applicable.
-     * Mind that you *MUST* decide which amount(Order or Product) to provide:
+     * Mind that you *MUST* decide which amount (Order or Product) to provide:
      *  - the Product amount if the Coupon has a non-empty Product ID, or
      *  - the Order amount otherwise
      * Provide a zero $uses count (but not null!) when you are storing the
@@ -1330,22 +1335,27 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
 
     /**
      * Returns the discount amount resulting from applying this Coupon
-     * to the given amount
      *
      * This Coupon may contain either a discount rate or amount.
      * The rate has precedence and is thus applied in case both are set
      * (although this should never happen).
      * If neither is greater than zero, returns 0 (zero).  This also should
-     * never happen.  Go figure.
-     * @param   float   $amount   The amount
-     * @return  string            The applicable discount amount
+     * never happen.
+     * If the Coupon has an amount, the sum of all previous redemptions
+     * is subtracted first, and the remainder is returned.
+     * Note that the value returned is never greater than $amount.
+     * @param   float   $amount         The amount
+     * @param   integer $customer_id    The Customer ID
+     * @return  string                  The applicable discount amount
      */
-    function getDiscountAmount($amount)
+    function getDiscountAmount($amount, $customer_id=NULL)
     {
         if ($this->discount_rate)
             return Currency::formatPrice($amount * $this->discount_rate / 100);
+        $amount_available = max(0,
+            $this->discount_amount - $this->getUsedAmount($customer_id));
         return Currency::formatPrice(
-            min($amount, $this->discount_amount));
+            min($amount, $amount_available));
     }
 
 

@@ -97,7 +97,7 @@ class Customer extends User
     {
         if (isset($password)) {
             // plain!
-            if (!$this->setPassword($password, $password)) return null;
+            if (!$this->setPassword($password)) return null;
         }
         // md5!
         return $this->password;
