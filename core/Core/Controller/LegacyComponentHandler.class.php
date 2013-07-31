@@ -1715,6 +1715,7 @@ class LegacyComponentHandler {
                             // and we cannot define the order of module-processing,
                             // we need to check if language is already initialized:
                             if (!is_array($_CORELANG) || !count($_CORELANG)) {
+                                $objInit->_initBackendLanguage();
                                 $_CORELANG = $objInit->loadLanguageData('core');
                             }
                             \CSRF::check_code();
