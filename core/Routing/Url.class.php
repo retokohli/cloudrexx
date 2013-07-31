@@ -505,6 +505,48 @@ class Url {
 
         return static::fromPage($page, $parameters, $protocol);
     }
+    
+    /**
+     * This returns an Url object for an absolute or relative url or an Url object
+     * @author Michael Ritter <michael.ritter@comvation.com>
+     * @todo This method does what the constructor of a clean Url class should do!
+     * @param mixed $url Url object or absolute or relative url as string
+     * @return \Cx\Core\Routing\self|\Cx\Core\Routing\Url Url object representing $url
+     */
+    public static function fromMagic($url) {
+        // if an Url object is provided, return
+        if (is_object($url) && $url instanceof self) {
+            return $url;
+        }
+        
+        $matches = array();
+        preg_match('#http(s)?://#', $url, $matches);
+        
+        // relative URL
+        if (!count($matches)) {
+            
+            $absoluteUrl = $_SERVER['HTTP_REFERER'];
+            preg_match('#(http(?:s)?://)((?:[^/]*))([/$](?:.*)/)?#', $absoluteUrl, $matches);
+            
+            // starting with a /?
+            if (substr($url, 0, 1) == '/') {
+                $url = $matches[1] . $matches[2] . $url;
+            } else {
+                $url = $matches[1] . $matches[2] . $matches[3] . $url;
+            }
+            $url = new static($url);
+            // disable virtual language dir
+            $url->setMode('backend');
+            return $url;
+            
+        // absolute URL
+        } else {
+            $url = new static($url);
+            // disable virtual language dir
+            $url->setMode('backend');
+            return $url;
+        }
+    }
 
     /**
      * Returns an Url object pointing to the documentRoot of the website
