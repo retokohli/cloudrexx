@@ -9,7 +9,6 @@
  * @subpackage  module_shop
  */
 
-
 /**
  * Shop Order Helpers
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -256,12 +255,16 @@ class Orders
             : Cx\Core\Routing\Url::fromModuleAndCmd(
                 'shop', 'history', NULL));
 //DBG::log("Orders::view_list(): URI: $uri");
+// TODO: Better use a redirect after doing stuff!
         Html::stripUriParam($uri, 'act');
         Html::stripUriParam($uri, 'searchterm');
         Html::stripUriParam($uri, 'listletter');
         Html::stripUriParam($uri, 'customer_type');
         Html::stripUriParam($uri, 'status');
         Html::stripUriParam($uri, 'show_pending_orders');
+        Html::stripUriParam($uri, 'order_id');
+        Html::stripUriParam($uri, 'changeOrderStatus');
+        Html::stripUriParam($uri, 'sendMail');
         if (!is_array($filter)) {
             $filter = array();
         }
@@ -382,11 +385,12 @@ if (!$limit) {
         $tries = 2;
         $arrOrders = null;
 //\DBG::activate(DBG_DB_FIREPHP);
-        while (--$tries && empty($arrOrders)) {
+        while ($tries-- && $count == 0) {
             $arrOrders = self::getArray(
                 $count, $objSorting->getOrder(), $filter,
                 Paging::getPosition(), $limit);
-            if (empty($arrOrders)) Paging::reset();
+            if ($count > 0) break;
+            Paging::reset();
         }
 //DBG::deactivate(DBG_DB);
 //\DBG::log("Orders: ".count($arrOrders));
@@ -1254,20 +1258,13 @@ if (!$limit) {
         // stored with the Order, but not redeemed yet.  This is done
         // in this method, but only if $create_accounts is true.
         $coupon_code = NULL;
-//        $discount_amount = 0;
-//        $coupon_rate =
         $coupon_amount = 0;
         $objCoupon = Coupon::getByOrderId($order_id);
         if ($objCoupon) {
             $coupon_code = $objCoupon->code();
-            $coupon_amount = $objCoupon->getUsedAmount(
-                $customer_id, $order_id);
-//            $coupon_rate = $objCoupon->discount_rate();
-//DBG::log("Orders::getSubstitutionArray(): Coupon $coupon_code, rate $coupon_rate, amount $coupon_amount");
         }
         $orderItemCount = 0;
         $total_item_price = 0;
-//        $total_discount = 0;
         // Suppress Coupon messages (see Coupon::available())
         Message::save();
         foreach ($arrItems as $item) {
@@ -1422,9 +1419,15 @@ if (!$limit) {
                         $item_price*$quantity, $customer_id, $product_id,
                         $payment_id);
                     if ($objCoupon) {
-                        $objCoupon->redeem($order_id, $customer_id,
-                            $item_price*$quantity);
+                        $coupon_code = NULL;
+                        $coupon_amount = $objCoupon->getDiscountAmount(
+                            $item_price, $customer_id);
+                        if ($create_accounts) {
+                            $objCoupon->redeem($order_id, $customer_id,
+                                $item_price*$quantity);
+                        }
                     }
+//\DBG::log("Orders::getSubstitutionArray(): Got Product Coupon $coupon_code");
                 }
             }
             if (empty($arrSubstitution['ORDER_ITEM']))
@@ -1435,23 +1438,31 @@ if (!$limit) {
             sprintf('% 9.2f', $total_item_price);
         $arrSubstitution['ORDER_ITEM_COUNT'] = sprintf('% 4u', $orderItemCount);
         // Redeem the *global* Coupon, if possible for the Order
-        if ($coupon_code && $create_accounts) {
+        if ($coupon_code) {
             $objCoupon = Coupon::available($coupon_code,
                 $total_item_price, $customer_id, null, $payment_id);
             if ($objCoupon) {
-                $objCoupon->redeem($order_id, $customer_id, $total_item_price);
+                $coupon_amount = $objCoupon->getDiscountAmount(
+                    $total_item_price, $customer_id);
+                if ($create_accounts) {
+                    $objCoupon->redeem($order_id, $customer_id, $total_item_price);
+                }
             }
         }
         Message::restore();
         // Fill in the Coupon block with proper discount and amount
+        if ($objCoupon) {
+            $coupon_code = $objCoupon->code();
+//\DBG::log("Orders::getSubstitutionArray(): Coupon $coupon_code, amount $coupon_amount");
+        }
         if ($coupon_amount) {
-//DBG::log("Orders::getSubstitutionArray(): Got Order Coupon ".$objCouponOrder->code());
+//\DBG::log("Orders::getSubstitutionArray(): Got Order Coupon $coupon_code");
             $arrSubstitution['DISCOUNT_COUPON'][] = array(
                 'DISCOUNT_COUPON_CODE' => sprintf('%-40s', $coupon_code),
                 'DISCOUNT_COUPON_AMOUNT' => sprintf('% 9.2f', -$coupon_amount),
             );
         } else {
-//DBG::log("Orders::getSubstitutionArray(): No Coupon for Order ID $order_id");
+//\DBG::log("Orders::getSubstitutionArray(): No Coupon for Order ID $order_id");
         }
         Products::deactivate_soldout();
         if (Vat::isEnabled()) {

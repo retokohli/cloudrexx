@@ -150,6 +150,45 @@ class Products
             $count = 0;
             return false;
         }
+        list($querySelect, $queryCount, $queryTail, $queryOrder) =
+            self::getQueryParts(
+                $product_id, $category_id, $manufacturer_id, $pattern,
+                $flagSpecialoffer, $flagLastFive, $orderSetting,
+                $flagIsReseller, $flagShowInactive);
+        $limit = ($count > 0
+            ? $count
+            : (!empty($_CONFIG['corePagingLimit'])
+                ? $_CONFIG['corePagingLimit'] : 10));
+        $count = 0;
+//DBG::activate(DBG_ADODB);
+        $objResult = $objDatabase->SelectLimit(
+            $querySelect.$queryTail.$queryOrder, $limit, $offset);
+        if (!$objResult) return Product::errorHandler();
+//DBG::deactivate(DBG_ADODB);
+        $arrProduct = array();
+        while (!$objResult->EOF) {
+            $product_id = $objResult->fields['id'];
+            $objProduct = Product::getById($product_id);
+            if ($objProduct)
+                $arrProduct[$product_id] = $objProduct;
+            $objResult->MoveNext();
+        }
+        $objResult = $objDatabase->Execute($queryCount.$queryTail);
+        if (!$objResult) return false;
+        $count = $objResult->fields['numof_products'];
+//DBG::log("Products::getByShopParams(): Set count to $count");
+        return $arrProduct;
+    }
+
+
+    public static function getQueryParts(
+        $product_id=null, $category_id=null,
+        $manufacturer_id=null, $pattern=null,
+        $flagSpecialoffer=false, $flagLastFive=false,
+        $orderSetting='',
+        $flagIsReseller=null,
+        $flagShowInactive=false)
+    {
         if (empty($orderSetting)) $orderSetting = self::$arrProductOrder[1];
         // The name and code fields may be used for sorting.
         // Include them in the field list in order to introduce the alias
@@ -190,10 +229,6 @@ class Products
             $orderSetting = self::$arrProductOrder[1];
         $queryOrder = ' ORDER BY '.$orderSetting;
 
-        $limit = ($count > 0
-            ? $count
-            : (!empty($_CONFIG['corePagingLimit'])
-                ? $_CONFIG['corePagingLimit'] : 10));
         $querySpecialOffer = '';
         if (   $flagLastFive
             || $flagSpecialoffer === self::DEFAULT_VIEW_LASTFIVE) {
@@ -211,6 +246,10 @@ class Products
                   : ($flagSpecialoffer === self::DEFAULT_VIEW_MARKED
                       ? " AND `product`.`flags` LIKE '%__SHOWONSTARTPAGE__%'" : '')
                 );
+            // Limit by Product ID (unused by getByShopParameters()!
+            if ($product_id > 0) {
+                $queryWhere .= ' AND `product`.`id`='.$product_id;
+            }
             // Limit Products by Manufacturer ID, if any
             if ($manufacturer_id > 0) {
                 $queryJoin .= '
@@ -240,9 +279,17 @@ class Products
                         'uri' => Product::TEXT_URI,
                     )
                 );
-                $querySelect .= ', '.$arrSqlPattern['field'];
+                $pattern = contrexx_raw2db($pattern);
+// TODO: This is prolly somewhat slow.  Could we use an "index" of sorts?
+                $querySelect .=
+                    ', '.$arrSqlPattern['field'].
+                    ', MATCH ('.$arrSql['alias']['name'].')'.
+                    " AGAINST ('%$pattern%') AS `score1`".
+                    ', MATCH ('.$arrSqlPattern['alias']['short'].')'.
+                    " AGAINST ('%$pattern%') AS `score2`".
+                    ', MATCH ('.$arrSqlPattern['alias']['long'].')'.
+                    " AGAINST ('%$pattern%') AS `score3`";
                 $queryJoin .= $arrSqlPattern['join'];
-                $pattern = addslashes($pattern);
                 $queryWhere .= "
                     AND (   `product`.`id` LIKE '%$pattern%'
                          OR ".$arrSql['alias']['name']." LIKE '%$pattern%'
@@ -252,29 +299,9 @@ class Products
                          OR ".$arrSqlPattern['alias']['keys']." LIKE '%$pattern%')";
             }
         }
-        $queryTail =
-            $queryJoin.
-            $queryWhere.
-            $querySpecialOffer;
-        $count = 0;
-//DBG::activate(DBG_ADODB);
-        $objResult = $objDatabase->SelectLimit(
-            $querySelect.$queryTail.$queryOrder, $limit, $offset);
-        if (!$objResult) return Product::errorHandler();
-//DBG::deactivate(DBG_ADODB);
-        $arrProduct = array();
-        while (!$objResult->EOF) {
-            $product_id = $objResult->fields['id'];
-            $objProduct = Product::getById($product_id);
-            if ($objProduct)
-                $arrProduct[$product_id] = $objProduct;
-            $objResult->MoveNext();
-        }
-        $objResult = $objDatabase->Execute($queryCount.$queryTail);
-        if (!$objResult) return false;
-        $count = $objResult->fields['numof_products'];
-//DBG::log("Products::getByShopParams(): Set count to $count");
-        return $arrProduct;
+//\DBG::log("querySelect $querySelect");\DBG::log("queryCount $queryCount");\DBG::log("queryJoin $queryJoin");\DBG::log("queryWhere $queryWhere");\DBG::log("querySpecialOffer $querySpecialOffer");\DBG::log("queryOrder $queryOrder");
+        $queryTail = $queryJoin.$queryWhere.$querySpecialOffer;
+        return array($querySelect, $queryCount, $queryTail, $queryOrder);
     }
 
 
