@@ -262,7 +262,7 @@ die("Failed to get Customer for ID $customer_id");
                     'attachments' => array(
                         0 => 'images/content/banner/qualidator.gif',
                         'images/content/banner/itnews.gif' =>
-                            'Schönes Bild',
+                            'Schï¿½nes Bild',
                     ),
                 ));
                 die("Done!");
@@ -2944,6 +2944,17 @@ die("Shop::processRedirect(): This method is obsolete!");
 
         if (empty($_POST['check'])) return true;
 
+        // if it is the internal_lsv payment processor, store the sent data into
+        // session
+        if (self::processor_name() == 'internal_lsv') {
+            if (!empty($_POST['account_holder']))
+                $_SESSION['shop']['account_holder'] = contrexx_input2raw($_POST['account_holder']);
+            if (!empty($_POST['account_bank']))
+                $_SESSION['shop']['account_bank'] = contrexx_input2raw($_POST['account_bank']);
+            if (!empty($_POST['account_blz']))
+                $_SESSION['shop']['account_blz'] = contrexx_input2raw($_POST['account_blz']);
+        }
+
         $status = true;
         // Payment status is true, if either
         // - the total price (including VAT and shipment) is zero (or less!?), or
@@ -3026,12 +3037,6 @@ die("Shop::processRedirect(): This method is obsolete!");
 //DBG::log("Shop::viewpart_lsv(): Entered");
 
         if (self::processor_name() != 'internal_lsv') return;
-        if (!empty($_POST['account_holder']))
-            $_SESSION['shop']['account_holder'] = $_POST['account_holder'];
-        if (!empty($_POST['account_bank']))
-            $_SESSION['shop']['account_bank'] = $_POST['account_bank'];
-        if (!empty($_POST['account_blz']))
-            $_SESSION['shop']['account_blz'] = $_POST['account_blz'];
         self::$objTemplate->setGlobalVariable($_ARRAYLANG);
         self::$objTemplate->setVariable(array(
             'SHOP_ACCOUNT_HOLDER' => (isset($_SESSION['shop']['account_holder'])
@@ -3667,9 +3672,7 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
         // if the processor is Internal_LSV, and there is account information,
         // store the information.
         if ($processor_name == 'internal_lsv') {
-            if (   empty($_SESSION['shop']['account_holder'])
-                || empty($_SESSION['shop']['account_bank'])
-                || empty($_SESSION['shop']['account_blz'])) {
+            if (!self::lsv_complete()) {
                 // Missing mandatory data; return to payment
                 unset($_SESSION['shop']['order_id']);
                 Message::error($_ARRAYLANG['TXT_ERROR_ACCOUNT_INFORMATION_NOT_AVAILABLE']);
