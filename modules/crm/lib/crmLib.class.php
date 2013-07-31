@@ -1985,9 +1985,9 @@ class CrmLibrary
 
         $fieldValues = array();
         foreach ($arrFormData['fields'] as $key => $value) {
-            $fieldName = $arrFormData['fields'][$key]['special_type'];
-            $fieldValue = $arrFormData['data'][$key];
-            $fieldValues[$fieldName] = $fieldValue;
+            $fieldName = isset ($arrFormData['fields'][$key]['special_type']) ? $arrFormData['fields'][$key]['special_type'] : '';
+            $fieldValue = isset ($arrFormData['data'][$key]) ? $arrFormData['data'][$key] : '';
+            !empty ($fieldName) ? $fieldValues[$fieldName] = $fieldValue : '';
         }
         
         if (!empty ($fieldValues['access_email'])) {
