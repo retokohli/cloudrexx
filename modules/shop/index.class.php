@@ -2217,7 +2217,7 @@ function centerY(height)
     {
         // go to the next step
         if (isset($_POST['continue'])) {
-            HTTP::redirect(
+            \CSRF::redirect(
                 Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'login'));
         }
     }
@@ -2245,25 +2245,25 @@ function centerY(height)
 // TODO: Even though no one can register herself, there still might
 // be registered Customers already!
 //        if (SettingDb::getValue('register') == self::REGISTER_NONE) {
-//            HTTP::redirect(
+//            \CSRF::redirect(
 //                Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'account'));
 //        }
         if (   isset($_POST['baccount'])
             || isset($_POST['bnoaccount'])
             || self::verify_account(true) // Silent, no messages here!
         ) {
-            HTTP::redirect(
+            \CSRF::redirect(
                 Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'account'));
         }
         if (isset($_POST['blogin'])) {
-            HTTP::redirect(
+            \CSRF::redirect(
                 Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'login').
                 '?redirect='.
                 base64_encode(
                     Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'account')));
         }
         if (self::_authenticate()) {
-            HTTP::redirect(
+            \CSRF::redirect(
                 Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'account'));
         }
         $redirect = base64_encode(
@@ -2320,12 +2320,12 @@ die("Shop::processRedirect(): This method is obsolete!");
         if (!empty($redirect)) {
             $decodedRedirect = base64_decode($redirect);
             if (!empty($decodedRedirect)) {
-                HTTP::redirect('index.php?'.$decodedRedirect);
+                \CSRF::redirect('index.php?'.$decodedRedirect);
             }
         }
         // Default: Redirect to the account page
 // TODO: Use the slug
-        HTTP::redirect('index.php?section=shop&cmd=account');
+        \CSRF::redirect('index.php?section=shop&cmd=account');
 */
     }
 
@@ -2653,7 +2653,7 @@ die("Shop::processRedirect(): This method is obsolete!");
     static function _gotoPaymentPage()
     {
         if (Cart::is_empty()) {
-            HTTP::redirect(
+            \CSRF::redirect(
                 Cx\Core\Routing\Url::fromModuleAndCmd('shop', '', '',
                     (intval($_SESSION['shop']['previous_category_id']) > 0
                         ? 'catId='.
@@ -2673,10 +2673,10 @@ die("Shop::processRedirect(): This method is obsolete!");
         $page_repository = Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
         if ($page_repository->findOneByModuleCmdLang(
             'shop', 'payment', FRONTEND_LANG_ID)) {
-            HTTP::redirect(
+            \CSRF::redirect(
                 Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'payment'));
         }
-        HTTP::redirect(
+        \CSRF::redirect(
             Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'confirm'));
     }
 
@@ -2694,7 +2694,7 @@ die("Shop::processRedirect(): This method is obsolete!");
     static function payment()
     {
         if (!self::verifySessionAddress()) {
-            HTTP::redirect(
+            \CSRF::redirect(
                 Cx\Core\Routing\Url::fromModuleAndCmd('shop', ''));
         }
         // Call that first, because the _initPaymentDetails method requires the
@@ -2916,7 +2916,7 @@ die("Shop::processRedirect(): This method is obsolete!");
         }
         if ($status) {
             // Everything is set and valid
-            HTTP::redirect(
+            \CSRF::redirect(
                 Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'confirm'));
         }
         // Something is missing od invalid
@@ -3143,7 +3143,7 @@ die("Shop::processRedirect(): This method is obsolete!");
 
         // If the cart or address is missing, return to the shop
         if (!self::verifySessionAddress()) {
-            HTTP::redirect(
+            \CSRF::redirect(
                 Cx\Core\Routing\Url::fromModuleAndCmd('shop', ''));
         }
         self::$show_currency_navbar = false;
@@ -3302,7 +3302,7 @@ die("Shop::processRedirect(): This method is obsolete!");
         } else {
             // Shipment is required, so
             if (empty($_SESSION['shop']['shipperId'])) {
-                HTTP::redirect(
+                \CSRF::redirect(
                     Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'payment'));
             }
             self::$objTemplate->setVariable(array(
@@ -3356,7 +3356,7 @@ die("Shop::processRedirect(): This method is obsolete!");
                 $_SESSION['shop']['email']);
             if (self::$objCustomer) {
                 Message::error($_ARRAYLANG['TXT_SHOP_CUSTOMER_REGISTERED_EMAIL']);
-                HTTP::redirect(
+                \CSRF::redirect(
                     Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'login').
                     '?redirect='.
                     base64_encode(
@@ -3383,7 +3383,7 @@ die("Shop::processRedirect(): This method is obsolete!");
 //DBG::log("Password: $password (session: {$_SESSION['shop']['password']})");
                 if (!self::$objCustomer->password($password)) {
                     Message::error($_ARRAYLANG['TXT_INVALID_PASSWORD']);
-                    HTTP::redirect(Cx\Core\Routing\Url::fromModuleAndCmd(
+                    \CSRF::redirect(Cx\Core\Routing\Url::fromModuleAndCmd(
                         'shop', 'account'));
                 }
                 self::$objCustomer->active(empty($_SESSION['shop']['dont_register']));
@@ -3408,7 +3408,7 @@ die("Shop::processRedirect(): This method is obsolete!");
         if (empty($usergroup_id)) {
 //DBG::log("Shop::process(): ERROR: Missing reseller group");
             Message::error($_ARRAYLANG['TXT_SHOP_ERROR_USERGROUP_INVALID']);
-            HTTP::redirect(
+            \CSRF::redirect(
                 Cx\Core\Routing\Url::fromModuleAndCmd('shop', ''));
         }
         if (!in_array($usergroup_id, $arrGroups)) {
@@ -3418,7 +3418,7 @@ die("Shop::processRedirect(): This method is obsolete!");
             if (empty($usergroup_id)) {
 //DBG::log("Shop::process(): ERROR: Missing final customer group");
                 Message::error($_ARRAYLANG['TXT_SHOP_ERROR_USERGROUP_INVALID']);
-                HTTP::redirect(
+                \CSRF::redirect(
                     Cx\Core\Routing\Url::fromModuleAndCmd('shop', ''));
             }
             if (!in_array($usergroup_id, $arrGroups)) {
@@ -3598,7 +3598,7 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
                 // Missing mandatory data; return to payment
                 unset($_SESSION['shop']['order_id']);
                 Message::error($_ARRAYLANG['TXT_ERROR_ACCOUNT_INFORMATION_NOT_AVAILABLE']);
-                HTTP::redirect(
+                \CSRF::redirect(
                     Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'payment'));
             }
             $query = "
@@ -3615,7 +3615,7 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
                 // Return to payment
                 unset($_SESSION['shop']['order_id']);
                 Message::error($_ARRAYLANG['TXT_ERROR_INSERTING_ACCOUNT_INFORMATION']);
-                HTTP::redirect(
+                \CSRF::redirect(
                     Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'payment'));
             }
         }
@@ -3777,7 +3777,7 @@ DBG::log("Shop::process(): ERROR: Failed to store global Coupon");
         global $_ARRAYLANG;
 
         if (!self::$objCustomer) {
-            HTTP::redirect(
+            \CSRF::redirect(
                 Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'login').
                 '?redirect='.base64_encode(
                     Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'changepass')));

@@ -458,7 +458,7 @@ class Customer extends User
         $usergroup_id = SettingDb::getValue('usergroup_id_customer');
         if (!$usergroup_id) {
             Message::error($_ARRAYLANG['TXT_SHOP_ERROR_USERGROUP_INVALID']);
-            HTTP::redirect(CONTREXX_DIRECTORY_INDEX.'?section=shop');
+            \CSRF::redirect(CONTREXX_DIRECTORY_INDEX.'?section=shop');
         }
         $objUser = FWUser::getFWUserObject()->objUser;
         $objUser = $objUser->getUsers(array(
