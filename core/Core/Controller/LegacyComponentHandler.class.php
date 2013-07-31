@@ -1025,6 +1025,7 @@ class LegacyComponentHandler {
                         if ($page_metatitle = \Shop::getPageTitle()) {
                             \Env::get('cx')->getPage()->setTitle($page_metatitle);
                             \Env::get('cx')->getPage()->setContentTitle($page_metatitle);
+                            \Env::get('cx')->getPage()->setMetaTitle($page_metatitle);
                         }
                     },
 
