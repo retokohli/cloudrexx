@@ -1024,6 +1024,7 @@ class LegacyComponentHandler {
                         // show product title if the user is on the product details page
                         if ($page_metatitle = \Shop::getPageTitle()) {
                             \Env::get('cx')->getPage()->setTitle($page_metatitle);
+                            \Env::get('cx')->getPage()->setContentTitle($page_metatitle);
                         }
                     },
 
@@ -1041,6 +1042,7 @@ class LegacyComponentHandler {
                         if ($teaser !== null) //news details, else getTeaser would return null
                             $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags(html_entity_decode($teaser, ENT_QUOTES, CONTREXX_CHARSET))));
                         \Env::get('cx')->getPage()->setTitle($newsObj->newsTitle);
+                        \Env::get('cx')->getPage()->setContentTitle($newsObj->newsTitle);
                         $page_metatitle = $newsObj->newsTitle;
                     },
 
@@ -1147,6 +1149,7 @@ class LegacyComponentHandler {
                         \Env::get('cx')->getPage()->setContent($docSysObj->getDocSysPage());
                         $docSysObj->getPageTitle(\Env::get('cx')->getPage()->getTitle());
                         \Env::get('cx')->getPage()->setTitle($docSysObj->docSysTitle);
+                        \Env::get('cx')->getPage()->setContentTitle($docSysObj->docSysTitle);
                         $page_metatitle = $docSysObj->docSysTitle;
                     },
 
@@ -1214,6 +1217,7 @@ class LegacyComponentHandler {
                         $topGalleryName = $objGallery->getTopGalleryName();
                         if ($topGalleryName) {
                             \Env::get('cx')->getPage()->setTitle($topGalleryName);
+                            \Env::get('cx')->getPage()->setContentTitle($topGalleryName);
                             $page_metatitle = $topGalleryName;
                         }
                     },
@@ -1247,6 +1251,7 @@ class LegacyComponentHandler {
                         \Env::get('cx')->getPage()->setContent($objImmo->getPage());
                         if (!empty($_GET['cmd']) && $_GET['cmd'] == 'showObj') {
                             \Env::get('cx')->getPage()->setTitle($objImmo->getPageTitle(\Env::get('cx')->getPage()->getTitle()));
+                            \Env::get('cx')->getPage()->setContentTitle($objImmo->getPageTitle(\Env::get('cx')->getPage()->getTitle()));
                             $page_metatitle = \Env::get('cx')->getPage()->getTitle();
                         }
                     },
@@ -1263,6 +1268,7 @@ class LegacyComponentHandler {
                         if ($objCalendar->pageTitle) {
                             $page_metatitle = $objCalendar->pageTitle;
                             \Env::get('cx')->getPage()->setTitle($objCalendar->pageTitle);
+                            \Env::get('cx')->getPage()->setContentTitle($objCalendar->pageTitle);
                         }
                     },
 
@@ -1278,6 +1284,7 @@ class LegacyComponentHandler {
                         if (!empty($directory_pagetitle)) {
                             $page_metatitle = $directory_pagetitle;
                             \Env::get('cx')->getPage()->setTitle($directory_pagetitle);
+                            \Env::get('cx')->getPage()->setContentTitle($directory_pagetitle);
                         }
                         if ($_GET['cmd'] == 'detail' && isset($_GET['id'])) {
                             $objTemplate->setVariable(array(
@@ -1337,6 +1344,7 @@ class LegacyComponentHandler {
                         \Env::get('cx')->getPage()->setContent($objKnowledge->getPage());
                         if (!empty($objKnowledge->pageTitle)) {
                             \Env::get('cx')->getPage()->setTitle($objKnowledge->pageTitle);
+                            \Env::get('cx')->getPage()->setContentTitle($objKnowledge->pageTitle);
                             $page_metatitle = $objKnowledge->pageTitle;
                         }
                     },
@@ -1351,6 +1359,8 @@ class LegacyComponentHandler {
                         \Env::get('cx')->getPage()->setContent($jobsObj->getJobsPage());
                         $jobsObj->getPageTitle(\Env::get('cx')->getPage()->getTitle());
                         \Env::get('cx')->getPage()->setTitle($jobsObj->jobsTitle);
+                        \Env::get('cx')->getPage()->setContentTitle($jobsObj->jobsTitle);
+                        \Env::get('cx')->getPage()->setMetaTitle($jobsObj->jobsTitle);
                         $page_metatitle = $jobsObj->jobsTitle;
                     },
 
@@ -1396,6 +1406,7 @@ class LegacyComponentHandler {
                         if ($downloads_pagetitle) {
                             $page_metatitle = $downloads_pagetitle;
                             \Env::get('cx')->getPage()->setTitle($downloads_pagetitle);
+                            \Env::get('cx')->getPage()->setContentTitle($downloads_pagetitle);
                         }
                     },
 
@@ -1409,6 +1420,7 @@ class LegacyComponentHandler {
                         \Env::get('cx')->getPage()->setContent($objPrintshopModule->getPage());
                         $page_metatitle .= ' '.$objPrintshopModule->getPageTitle();
                         \Env::get('cx')->getPage()->setTitle('');
+                        \Env::get('cx')->getPage()->setContentTitle('');
                     },
 
                     'mediadir' => function() {
@@ -1423,6 +1435,7 @@ class LegacyComponentHandler {
                         \Env::get('cx')->getPage()->setContent($objMediaDirectory->getPage());
                         if ($objMediaDirectory->getPageTitle() != '') {
                             \Env::get('cx')->getPage()->setTitle($objMediaDirectory->getPageTitle());
+                            \Env::get('cx')->getPage()->setContentTitle($objMediaDirectory->getPageTitle());
                         }
                         if ($objMediaDirectory->getMetaTitle() != '') {
                             $page_metatitle = $objMediaDirectory->getMetaTitle();
