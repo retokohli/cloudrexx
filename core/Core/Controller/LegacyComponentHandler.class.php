@@ -1044,6 +1044,7 @@ class LegacyComponentHandler {
                             $page->setMetadesc(contrexx_raw2xhtml(contrexx_strip_tags(html_entity_decode($teaser, ENT_QUOTES, CONTREXX_CHARSET))));
                         \Env::get('cx')->getPage()->setTitle($newsObj->newsTitle);
                         \Env::get('cx')->getPage()->setContentTitle($newsObj->newsTitle);
+                        \Env::get('cx')->getPage()->setMetaTitle($newsObj->newsTitle);
                         $page_metatitle = $newsObj->newsTitle;
                     },
 
@@ -1151,6 +1152,7 @@ class LegacyComponentHandler {
                         $docSysObj->getPageTitle(\Env::get('cx')->getPage()->getTitle());
                         \Env::get('cx')->getPage()->setTitle($docSysObj->docSysTitle);
                         \Env::get('cx')->getPage()->setContentTitle($docSysObj->docSysTitle);
+                        \Env::get('cx')->getPage()->setMetaTitle($docSysObj->docSysTitle);
                         $page_metatitle = $docSysObj->docSysTitle;
                     },
 
@@ -1219,6 +1221,7 @@ class LegacyComponentHandler {
                         if ($topGalleryName) {
                             \Env::get('cx')->getPage()->setTitle($topGalleryName);
                             \Env::get('cx')->getPage()->setContentTitle($topGalleryName);
+                            \Env::get('cx')->getPage()->setMetaTitle($topGalleryName);
                             $page_metatitle = $topGalleryName;
                         }
                     },
@@ -1253,6 +1256,7 @@ class LegacyComponentHandler {
                         if (!empty($_GET['cmd']) && $_GET['cmd'] == 'showObj') {
                             \Env::get('cx')->getPage()->setTitle($objImmo->getPageTitle(\Env::get('cx')->getPage()->getTitle()));
                             \Env::get('cx')->getPage()->setContentTitle($objImmo->getPageTitle(\Env::get('cx')->getPage()->getTitle()));
+                            \Env::get('cx')->getPage()->setMetaTitle($objImmo->getPageTitle(\Env::get('cx')->getPage()->getTitle()));
                             $page_metatitle = \Env::get('cx')->getPage()->getTitle();
                         }
                     },
@@ -1270,6 +1274,7 @@ class LegacyComponentHandler {
                             $page_metatitle = $objCalendar->pageTitle;
                             \Env::get('cx')->getPage()->setTitle($objCalendar->pageTitle);
                             \Env::get('cx')->getPage()->setContentTitle($objCalendar->pageTitle);
+                            \Env::get('cx')->getPage()->setMetaTitle($objCalendar->pageTitle);
                         }
                     },
 
@@ -1286,6 +1291,7 @@ class LegacyComponentHandler {
                             $page_metatitle = $directory_pagetitle;
                             \Env::get('cx')->getPage()->setTitle($directory_pagetitle);
                             \Env::get('cx')->getPage()->setContentTitle($directory_pagetitle);
+                            \Env::get('cx')->getPage()->setMetaTitle($directory_pagetitle);
                         }
                         if ($_GET['cmd'] == 'detail' && isset($_GET['id'])) {
                             $objTemplate->setVariable(array(
@@ -1346,6 +1352,7 @@ class LegacyComponentHandler {
                         if (!empty($objKnowledge->pageTitle)) {
                             \Env::get('cx')->getPage()->setTitle($objKnowledge->pageTitle);
                             \Env::get('cx')->getPage()->setContentTitle($objKnowledge->pageTitle);
+                            \Env::get('cx')->getPage()->setMetaTitle($objKnowledge->pageTitle);
                             $page_metatitle = $objKnowledge->pageTitle;
                         }
                     },
@@ -1408,6 +1415,7 @@ class LegacyComponentHandler {
                             $page_metatitle = $downloads_pagetitle;
                             \Env::get('cx')->getPage()->setTitle($downloads_pagetitle);
                             \Env::get('cx')->getPage()->setContentTitle($downloads_pagetitle);
+                            \Env::get('cx')->getPage()->setMetaTitle($downloads_pagetitle);
                         }
                     },
 
@@ -1422,6 +1430,7 @@ class LegacyComponentHandler {
                         $page_metatitle .= ' '.$objPrintshopModule->getPageTitle();
                         \Env::get('cx')->getPage()->setTitle('');
                         \Env::get('cx')->getPage()->setContentTitle('');
+                        \Env::get('cx')->getPage()->setMetaTitle('');
                     },
 
                     'mediadir' => function() {
@@ -1437,6 +1446,7 @@ class LegacyComponentHandler {
                         if ($objMediaDirectory->getPageTitle() != '') {
                             \Env::get('cx')->getPage()->setTitle($objMediaDirectory->getPageTitle());
                             \Env::get('cx')->getPage()->setContentTitle($objMediaDirectory->getPageTitle());
+                            \Env::get('cx')->getPage()->setMetaTitle($objMediaDirectory->getPageTitle());
                         }
                         if ($objMediaDirectory->getMetaTitle() != '') {
                             $page_metatitle = $objMediaDirectory->getMetaTitle();
