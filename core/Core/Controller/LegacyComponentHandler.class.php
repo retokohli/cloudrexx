@@ -1050,12 +1050,17 @@ class LegacyComponentHandler {
                     },
 
                     'shop' => function() {
-                        global $cl, $_CORELANG, $objTemplate, $_ARRAYLANG, $objInit, $plainSection;
+                        global $cl, $_CORELANG;
                         
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/shop/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         \Env::get('cx')->getPage()->setContent(\Shop::getPage(\Env::get('cx')->getPage()->getContent()));
+
+                        // show product title if the user is on the product details page
+                        if ($page_metatitle = \Shop::getPageTitle()) {
+                            \Env::get('cx')->getPage()->setTitle($page_metatitle);
+                        }
                     },
 
                     'news' => function() {

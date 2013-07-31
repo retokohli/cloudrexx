@@ -65,6 +65,12 @@ class Shop extends ShopLibrary
      */
     private static $initialized = false;
 
+    /**
+     * The current page's title
+     * If the user is on the detail page, show the product name
+     * @var null|string
+     */
+    protected static $pageTitle = null;
 
     /**
      * Initialize
@@ -277,6 +283,16 @@ die("Failed to get Customer for ID $customer_id");
         return self::$objTemplate->get();
     }
 
+    /**
+     * Returns the product name if the user is on the product details page
+     * @return string|null the page title to show
+     */
+    public static function getPageTitle() {
+        if (isset(self::$pageTitle)) {
+            return contrexx_raw2xhtml(self::$pageTitle);
+        }
+        return null;
+    }
 
     /**
      * Sets up the Shop Navbar content and returns it as a string
@@ -1019,6 +1035,9 @@ die("Failed to update the Cart!");
         $formId = 0;
         $arrDefaultImageSize = $arrSize = null;
         foreach ($arrProduct as $objProduct) {
+            if (!empty($product_id)) {
+                self::$pageTitle = $objProduct->name();
+            }
             $id = $objProduct->id();
             $productSubmitFunction = '';
             $arrPictures = Products::get_image_array_from_base64($objProduct->pictures());
