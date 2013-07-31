@@ -592,6 +592,7 @@ $_ARRAYLANG['TXT_SHOP_INVALID_CATEGORY_ID'] = "Invalid category ID %s";
 $_ARRAYLANG['TXT_SHOP_INVALID_CUSTOMER_ID'] = "Invalid customer ID %1\$u";
 $_ARRAYLANG['TXT_SHOP_INVALID_PRODUCT_ID'] = "Invalid product ID %s";
 $_ARRAYLANG['TXT_SHOP_KEYWORDS'] = "Key words";
+$_ARRAYLANG['TXT_SHOP_KEYWORDS_TOOLTIP'] = "The key words are included for the shop search. Seperate them with a comma.";
 $_ARRAYLANG['TXT_SHOP_LASTNAME'] = "Last name";
 $_ARRAYLANG['TXT_SHOP_LOGIN_DATA'] = "List of user names and passwords for one or more protected downloads";
 $_ARRAYLANG['TXT_SHOP_MANUFACTURER'] = "Manufacturer";
