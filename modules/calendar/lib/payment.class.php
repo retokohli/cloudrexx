@@ -34,15 +34,15 @@ class CalendarPayment {
         $arrCalendarSettings = $objSettings->getYellowpaySettings();
 
         $arrOrder = array(
-            'ORDERID'   => $data['orderID'],
+            'ORDERID'   => $data['orderID'],            
             'AMOUNT'    => $data['amount'],
             'CURRENCY'  => $data['currency'],
-            'PARAMPLUS' => "section=calendar&handler=yellowpay",
+            'PARAMPLUS' => "section=calendar&cmd=success&handler=yellowpay",
         );
         $settings = array();
         $settings['postfinance_shop_id']['value']            = $arrCalendarSettings['paymentYellowpayPspid'];
         $settings['postfinance_hash_signature_in']['value']  = $arrCalendarSettings['paymentYellowpayShaIn'];
-        $settings['postfinance_authorization_type']['value'] = $arrCalendarSettings['paymentYellowpayAuthorization'] == 1 ? 'SAL' : 'RES';
+        $settings['postfinance_authorization_type']['value'] = $arrCalendarSettings['paymentYellowpayAuthorization'] == 0 ? 'SAL' : 'RES';
         $settings['postfinance_use_testserver']['value']     = $arrCalendarSettings['paymentTestserver'];
 
         $yellowpayForm = Yellowpay::getForm('calendar', $arrOrder, $_ARRAYLANG['TXT_CALENDAR_START_PAYMENT'], false, $settings);
