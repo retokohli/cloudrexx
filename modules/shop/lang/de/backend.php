@@ -593,6 +593,7 @@ $_ARRAYLANG['TXT_SHOP_INVALID_CATEGORY_ID'] = "Ungültige Rubrik ID %s!";
 $_ARRAYLANG['TXT_SHOP_INVALID_CUSTOMER_ID'] = "Ungültige Kunden ID %1\$u";
 $_ARRAYLANG['TXT_SHOP_INVALID_PRODUCT_ID'] = "Ungültige Produkt ID %s!";
 $_ARRAYLANG['TXT_SHOP_KEYWORDS'] = "Suchbegriffe";
+$_ARRAYLANG['TXT_SHOP_KEYWORDS_TOOLTIP'] = "Die Suchbegriffe werden bei der Suche im Shop miteinbezogen. Trennen Sie die Suchbegriffe mit Kommas.";
 $_ARRAYLANG['TXT_SHOP_LASTNAME'] = "Nachname";
 $_ARRAYLANG['TXT_SHOP_LOGIN_DATA'] = "Liste aller Zugangsdaten (Benutzername und Passwort) für mehrere geschützte Downloads";
 $_ARRAYLANG['TXT_SHOP_MANUFACTURER'] = "Hersteller";
