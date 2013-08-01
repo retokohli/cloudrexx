@@ -805,7 +805,7 @@ $this->_objTpl->setVariable(array(
             $orderId = Yellowpay::getOrderId();
             parent::getSettings();
             if (Yellowpay::checkin($this->arrSettings["paymentYellowpayShaOut"])) {
-                switch($_REQUEST["result"]) {
+                switch(abs($_REQUEST["result"])) {
                     case 2:
                         // fehler aufgetreten
                         $objRegistration = new CalendarRegistration(null);
