@@ -27,10 +27,10 @@ class LegacyClassLoader {
     private $subBytes = 0;
     private $mapTable = array();
 
-    public function __construct() {
+    public function __construct($classLoader) {
         self::$instance = $this;
-        if (file_exists(ASCMS_TEMP_PATH.'/legacyClassCache.tmp')) {
-            $this->mapTable = unserialize(file_get_contents(ASCMS_TEMP_PATH.'/legacyClassCache.tmp'));
+        if (file_exists($classLoader->getFilePath(ASCMS_TEMP_PATH.'/legacyClassCache.tmp'))) {
+            $this->mapTable = unserialize(file_get_contents($classLoader->getFilePath(ASCMS_TEMP_PATH.'/legacyClassCache.tmp')));
         }
     }
 
