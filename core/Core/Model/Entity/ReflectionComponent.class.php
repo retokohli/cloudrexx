@@ -6,6 +6,8 @@
 
 namespace Cx\Core\Core\Model\Entity;
 
+class ReflectionComponentException extends \Exception {}
+
 /**
  * Represents an abstraction of a component
  * @author Michael Ritter <michael.ritter@comvation.com>
@@ -31,9 +33,16 @@ class ReflectionComponent {
     protected $componentType = null;
     
     /**
+     * Fully qualified filename for/of the package file
+     * @var string ZIP package filename
+     */
+    protected $packageFile = null;
+    
+    /**
      * Two different ways to instanciate this are supported:
      * 1. Supply an instance of \Cx\Core\Core\Model\Entity\Component
-     * 2. Supply a component name and type
+     * 2. Supply a install package zip filename
+     * 3. Supply a component name and type
      * @param mixed $arg1 Either an instance of \Cx\Core\Core\Model\Entity\Component or the name of a component
      * @param string $arg2 (only if a component name was supplied as $arg1) Component type (one of core_module, module, core, lib)
      */
@@ -42,12 +51,42 @@ class ReflectionComponent {
             $this->componentName = $arg1->getName();
             $this->componentType = $arg1->getType();
             return;
+        }
+        $arg1Parts = explode('.', $arg1);
+		if (file_exists($arg1) && end($arg1Parts) == 'zip') {
+            // clean up tmp dir
+            \Cx\Lib\FileSystem\FileSystem::delete_folder(ASCMS_TEMP_PATH . '/appcache', true);
+        
+            // Uncompress package using PCLZip
+            $file = new \PclZip($arg1);
+            $list = $file->extract(PCLZIP_OPT_PATH, ASCMS_TEMP_PATH . '/appcache');
+            
+            // Check for meta.yml, if none: throw Exception
+            if (!file_exists(ASCMS_TEMP_PATH . '/appcache/meta.yml')) {
+                throw new ReflectionComponentException('This ain\'t no package file: "' . $arg1 . '"');
+            }
+            
+            // Read meta info
+            $metaTypes = array('core'=>'core', 'core_module'=>'system', 'module'=>'application', 'lib'=>'other');
+            $yaml = new \Symfony\Component\Yaml\Yaml();
+            $content = file_get_contents(ASCMS_TEMP_PATH . '/appcache/meta.yml');
+            $meta = $yaml->load($content);
+            $type = array_search($meta['DlcInfo']['type'], $metaTypes);
+            if (!$type) {
+                $type = 'lib';
+            }
+            
+            // initialize ReflectionComponent
+            $this->packageFile = $arg1;
+            $this->componentName = $meta['DlcInfo']['name'];
+            $this->componentType = $type;
+            return;
         } else if (is_string($arg1) && $arg2 && in_array($arg2, self::$componentTypes)) {
             $this->componentName = $arg1;
             $this->componentType = $arg2;
             return;
         }
-        throw new \BadMethodCallException('Pass a component or specify a component name and type');
+        throw new \BadMethodCallException('Pass a component or zip package filename or specify a component name and type');
     }
     
     /**
@@ -139,6 +178,80 @@ class ReflectionComponent {
     }
     
     /**
+     * Installs this component from a zip file (if available)
+     * @todo DB stuff (structure and data)
+     * @todo check dependency versions
+     */
+    public function install() {
+        // Check (not already installed (different version), all dependencies installed)
+        if (!$this->packageFile) {
+            throw new SystemComponentException('Package file not available');
+        }
+        if (!file_exists(ASCMS_TEMP_PATH . '/appcache/meta.yml')) {
+            throw new ReflectionComponentException('Invalid package file');
+        }
+        if ($this->exists()) {
+            throw new SystemComponentException('Component is already installed');
+        }
+        
+        // Read meta file
+        $yaml = new \Symfony\Component\Yaml\Yaml();
+        $content = file_get_contents(ASCMS_TEMP_PATH . '/appcache/meta.yml');
+        $meta = $yaml->load($content);
+        
+        // Check dependencies
+        foreach ($meta['DlcInfo']['dependencies'] as $dependencyInfo) {
+            $dependency = new static($dependencyInfo['name'], $dependencyInfo['type']);
+            if (!$dependency->exists()) {
+                throw new SystemComponentException('Dependency "' . $dependency->getName() . '" not met');
+            }
+        }
+        
+        // Copy ZIP contents
+        $filesystem = new \Cx\Lib\FileSystem\FileSystem();
+        $filesystem->copyDir(
+            ASCMS_TEMP_PATH . '/appcache',
+            ASCMS_TEMP_WEB_PATH . '/appcache',
+            'files',
+            ASCMS_DOCUMENT_ROOT,
+            ASCMS_PATH_OFFSET,
+            '',
+            true
+        );        
+        
+        // Activate (if type is system or application)
+        if ($this->componentType != 'core' && $this->componentType != 'core_module' && $this->componentType != 'module') {
+            return;
+        }
+        
+        // Copy ZIP contents (also copy meta.yml into component folder if type is system or application)
+        try {
+            $objFile = new \Cx\Lib\FileSystem\File(ASCMS_TEMP_PATH . '/appcache/meta.yml');
+            $objFile->copy($this->getDirectory(false) . '/meta.yml');
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            \DBG::msg($e->getMessage());
+        }
+        
+        // init DB structure from doctrine yaml files
+        // load DB data from /data yaml files
+        
+        // Activate this component
+        $this->activate();
+    }
+    
+    /**
+     * Create zip install package for this component
+     * @param string $path Path to store zip file at
+     */
+    public function pack($path) {
+        // Create temp working folder
+        // Copy contents to folder
+        // Create data files
+        // Create meta.yml
+        // Compress
+    }
+    
+    /**
      * Creates this component using a skeleton
      */
     public function create() {
@@ -177,7 +290,58 @@ class ReflectionComponent {
     }
     
     /**
+     * List dependencies from this component to other parts of the system
+     * @todo List files for matches
+     * @todo Make this work for legacy components too
+     * @return array Returns an array like array({dependency}=>{number_of_times_used})
+     */
+    public function getDependencies() {
+        if ($this->isLegacy()) {
+            return array('unknown');
+        }
+        $dependencies = array();
+        
+        $directoryIterator = new \RecursiveDirectoryIterator($this->getDirectory());
+        $iterator = new \RecursiveIteratorIterator($directoryIterator);
+        $files = new \RegexIterator($iterator, '/^.+\.php$/i', \RegexIterator::GET_MATCH);
+        
+        // recursive foreach .php file
+        $componentNs = SystemComponent::getBaseNamespaceForType($this->componentType) . '\\' . $this->componentName;
+        $matches = array();
+        foreach($files as $file) {
+            $file = current($file);
+            // search for namespaces other than Component's
+            
+            $objFile = new \Cx\Lib\FileSystem\File($file);
+            $content = $objFile->getData();
+            
+            preg_match_all('/(?:[A-Za-z_]+)?\\\\[A-Za-z_\\\\]+/', $content, $matches);
+            foreach ($matches[0] as $match) {
+                if (substr($match, 0, 1) != '\\') {
+                    $match = '\\' . $match;
+                }
+                $matchBaseNs = substr($match, 0, strlen('\\' . $componentNs));
+                if ($matchBaseNs != '\\' . $componentNs && strlen($match) > 2) {
+                    if (preg_match('/\\\\r\\\\n/', $match)) {
+                        continue;
+                    }
+                    if (preg_match('/\\\\(?:Doctrine|Gedmo)/', $match)) {
+                        $match = '\\Doctrine\\...';
+                    }
+                    $dependencies[] = preg_replace('/\\\\\\\\/', '\\', $match);
+                }
+            }
+        }
+        
+        $dependencies = array_count_values($dependencies);
+        arsort($dependencies);
+        return $dependencies;
+    }
+    
+    /**
      * This adds all necessary DB entries in order to activate this component (if they do not exist)
+     * @todo Backend navigation entry (from meta.yml)
+     * @todo Pages (from meta.yml)
      */
     public function activate() {
         if (!$this->exists()) {
