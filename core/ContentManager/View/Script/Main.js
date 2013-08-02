@@ -230,6 +230,7 @@ cx.ready(function() {
             cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + jQuery('#loading').html() + "</div>");
             jQuery("#site-tree").hide();
             // get complete tree
+            cx.trigger("loadingStart", "contentmanager", {});
             jQuery.ajax({
                 url: "?cmd=jsondata&object=node&act=getTree&recursive=true",
                 dataType: 'json',
@@ -246,6 +247,7 @@ cx.ready(function() {
                     }
                     // add tree data to jstree (replace tree by new one) and open all nodes
                     cx.cm.createJsTree(jQuery("#site-tree"), response.data.tree, response.data.nodeLevels, true);
+                    cx.trigger("loadingEnd", "contentmanager", {});
                 }
             });
         } else {
@@ -286,6 +288,7 @@ cx.ready(function() {
                 } else {
                     offset = "";
                 }
+                cx.trigger("loadingStart", "contentmanager", {});
                 jQuery.ajax({
                     type: 'POST',
                     url:  'index.php?cmd=jsondata&object='+object+'&act=multiple'+act+recursive+offset,
@@ -309,6 +312,7 @@ cx.ready(function() {
                                 cx.cm.loadPage(json.data.id, undefined, undefined, undefined, false);
                             }
                         }
+                        cx.trigger("loadingEnd", "contentmanager", {});
                     }
                 });
             };
@@ -553,6 +557,7 @@ cx.cm = function(target) {
         if (cx.cm.editorInUse()) {
             jQuery('#cm_ckeditor').val(CKEDITOR.instances.cm_ckeditor.getData());
         }
+        cx.trigger("loadingStart", "contentmanager", {});
         jQuery.post('index.php?cmd=jsondata&object=page&act=set', 'action=publish&'+jQuery('#cm_page').serialize(), function(response) {
             if (response.data != null) {
                 if (jQuery('#historyConatiner').html() != '') {
@@ -608,6 +613,7 @@ cx.cm = function(target) {
                 }
             }
             cx.tools.StatusMessage.removeAllDialogs();
+            cx.trigger("loadingEnd", "contentmanager", {});
         });
     });
 
@@ -618,6 +624,7 @@ cx.cm = function(target) {
         if (CKEDITOR.instances.cm_ckeditor != null) {
             jQuery('#cm_ckeditor').val(CKEDITOR.instances.cm_ckeditor.getData());
         }
+        cx.trigger("loadingStart", "contentmanager", {});
         jQuery.post('index.php?cmd=jsondata&object=page&act=set', jQuery('#cm_page').serialize(), function(response) {
             if (response.data != null) {
                 if (jQuery('#historyConatiner').html() != '') {
@@ -667,6 +674,7 @@ cx.cm = function(target) {
                     cx.cm.updateTreeEntry(page);
                 }
             }
+            cx.trigger("loadingEnd", "contentmanager", {});
         });
     });
 
@@ -819,6 +827,8 @@ cx.cm = function(target) {
     cx.bind("pagesStatusUpdate", cx.cm.updatePagesIcons, "contentmanager");
     cx.bind("pagesStatusUpdate", cx.cm.updateTranslationsIcons, "contentmanager");
     cx.bind("pagesStatusUpdate", cx.cm.updateActionMenus, "contentmanager");
+    cx.bind("loadingStart", cx.cm.lock, "contentmanager");
+    cx.bind("loadingEnd", cx.cm.unlock, "contentmanager");
 
     cx.cm.resetEditView();
 
@@ -990,6 +1000,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
         eventAdded = true;;
     })
     .bind("create.jstree", function (e, data) {
+        cx.trigger("loadingStart", "contentmanager", {});
         jQuery.post(
             "server.php",
             {
@@ -1005,11 +1016,13 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                 } else {
                     jQuery.jstree.rollback(data.rlbk);
                 }
+                cx.trigger("loadingEnd", "contentmanager", {});
             }
             );
     })
     .bind("remove.jstree", function (e, data) {
         data.rslt.obj.each(function () {
+            cx.trigger("loadingStart", "contentmanager", {});
             jQuery.ajax({
                 async : false,
                 type: 'POST',
@@ -1022,6 +1035,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                     if (!r.status) {
                         data.inst.refresh();
                     }
+                    cx.trigger("loadingEnd", "contentmanager", {});
                 }
             });
         });
@@ -1050,6 +1064,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
         //cx.cm.getTree().jstree("get_json");
         // But in CM, this triggers "Cannot convert 't.children("ins").get(0)' to object"
         data.rslt.o.each(function (i) {
+            cx.trigger("loadingStart", "contentmanager", {});
             jQuery.ajax({
                 async : false,
                 type: 'POST',
@@ -1079,6 +1094,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                             data.inst.refresh(data.inst._get_parent(data.rslt.oc));
                         }
                     }
+                    cx.trigger("loadingEnd", "contentmanager", {});
                 }
             });
         });
@@ -1671,6 +1687,7 @@ cx.cm.performAction = function(action, pageId, nodeId) {
             alert("Unknown action \"" + action + "\"");
             return;
     }
+    cx.trigger("loadingStart", "contentmanager", {});
     jQuery.ajax({
         url: url,
         dataType: "json",
@@ -1713,6 +1730,7 @@ cx.cm.performAction = function(action, pageId, nodeId) {
                     return;
             }
             cx.cm.updateTreeEntry(page);
+            cx.trigger("loadingEnd", "contentmanager", {});
         }
     });
 }
@@ -2422,6 +2440,7 @@ cx.cm.loadPage = function(pageId, nodeId, historyId, selectTab, reloadHistory) {
         reloadHistory = true;
     }
     
+    cx.trigger("loadingStart", "contentmanager", {});
     jQuery.ajax({
         url : url,
         complete : function(response) {
@@ -2435,6 +2454,7 @@ cx.cm.loadPage = function(pageId, nodeId, historyId, selectTab, reloadHistory) {
                 cx.tools.StatusMessage.showMessage(page.message, null, 10000);
             }
             cx.cm.updateHistoryTableHighlighting();
+            cx.trigger("loadingEnd", "contentmanager", {});
         }
     });
 };
@@ -2803,4 +2823,12 @@ cx.cm.slugify = function(string) {
     string = string.replace(/Ü/g, 'Ue');
     string = string.replace(/[^a-zA-Z0-9-_]/g, '');
     return string;
+}
+
+cx.cm.lock = function() {
+    jQuery("#cm-load-lock").show();
+}
+
+cx.cm.unlock = function() {
+    jQuery("#cm-load-lock").hide();
 }
