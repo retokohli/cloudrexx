@@ -35,7 +35,7 @@ class ClassLoader {
         $this->customizingPath = $customizingPath;
         spl_autoload_register(array($this, 'autoload'));
         if ($useLegacyAsFallback) {
-            $this->legacyClassLoader = new LegacyClassLoader();
+            $this->legacyClassLoader = new LegacyClassLoader($this);
         }
     }
     
