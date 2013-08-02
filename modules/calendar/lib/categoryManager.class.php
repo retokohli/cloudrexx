@@ -107,13 +107,14 @@ class CalendarCategoryManager extends CalendarLibrary
         
         $i=0;
         foreach ($this->categoryList as $key => $objCategory) {
-        	$objTpl->setVariable(array(
+            $objTpl->setVariable(array(
                 $this->moduleLangVar.'_CATEGORY_ROW'     => $i%2==0 ? 'row1' : 'row2',
                 $this->moduleLangVar.'_CATEGORY_ID'      => $objCategory->id,
                 $this->moduleLangVar.'_CATEGORY_LED'     => $objCategory->status==0 ? 'red' : 'green',
                 $this->moduleLangVar.'_CATEGORY_STATUS'  => $objCategory->status==0 ? $_ARRAYLANG['TXT_CALENDAR_INACTIVE'] : $_ARRAYLANG['TXT_CALENDAR_ACTIVE'],
                 $this->moduleLangVar.'_CATEGORY_SORT'    => $objCategory->pos,
                 $this->moduleLangVar.'_CATEGORY_TITLE'   => $objCategory->name,
+                $this->moduleLangVar.'_CATEGORY_EVENTS'  => $objCategory->countEntries(),
             ));
             
             $i++;
