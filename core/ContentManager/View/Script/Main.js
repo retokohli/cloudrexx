@@ -1055,14 +1055,12 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
       }
       );
       })*/
+    .bind("prepare_move.jstree", function(e, data) {
+        jQuery(".jstree-leaf").addClass("cm-leaf");
+    })
     .bind("move_node.jstree", function (e, data) {
-        // The following lines fix #1359, replace pseudocode {} in if:
-        //if ({node has no children}) {
-        //    data.rslt.o.removeClass("jstree-closed").addClass("jstree-leaf");
-        //}
-        // If a children has nodes can be read from jsTree data using
-        //cx.cm.getTree().jstree("get_json");
-        // But in CM, this triggers "Cannot convert 't.children("ins").get(0)' to object"
+        // The following line (together with prepare_move event listener) fixes #1359
+        jQuery(".cm-leaf").removeClass("jstree-closed").addClass("jstree-leaf").removeClass("cm-leaf");
         data.rslt.o.each(function (i) {
             cx.trigger("loadingStart", "contentmanager", {});
             jQuery.ajax({
@@ -1084,6 +1082,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                     for (nodeId in r.data.nodeLevels) {
                         jQuery('#node_' + nodeId).children('a').children('.jstree-checkbox').css('left', '-' + ((r.data.nodeLevels[nodeId] * 18) + 20) + 'px');
                     }
+                    cx.trigger("loadingEnd", "contentmanager", {});
                     return true;
                     // TODO: response/reporting/refresh
                     if (!r.status) { 
@@ -1094,7 +1093,6 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                             data.inst.refresh(data.inst._get_parent(data.rslt.oc));
                         }
                     }
-                    cx.trigger("loadingEnd", "contentmanager", {});
                 }
             });
         });
