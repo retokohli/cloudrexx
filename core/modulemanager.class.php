@@ -150,13 +150,22 @@ class modulemanager
 
         $objTemplate->setVariable('MODULE_ACTION', 'edit');
         $arrayInstalledModules = $this->getModules();
-        $query = "
-            SELECT id, name, description_variable,
-                   is_core, is_required, is_active
-              FROM ".DBPREFIX."modules
-             WHERE status='y'
-             ORDER BY is_required DESC, name ASC
-        ";
+        $query = '
+            SELECT
+                m.id,
+                m.name,
+                m.description_variable,
+                m.is_core,
+                m.is_required,
+                m.is_active
+            FROM
+                '.DBPREFIX.'modules AS m
+            WHERE
+                m.status=\'y\'
+            ORDER BY
+                m.is_required DESC,
+                m.name ASC
+        ';
         $i = 0;
         $objResult = $objDatabase->Execute($query);
         if ($objResult) {
@@ -186,7 +195,16 @@ class modulemanager
                 }
                 */
 
-                $objTemplate->setVariable('MODULE_NAME', $objResult->fields['name']);
+                if (isset($_CORELANG['TXT_MODULE_' . strtoupper($objResult->fields['name'])])) {
+                    $literalName = $_CORELANG['TXT_MODULE_' . strtoupper($objResult->fields['name'])];
+                } else if (isset($_CORELANG['TXT_' . strtoupper($objResult->fields['name']) . '_MODULE'])) {
+                    $literalName = $_CORELANG['TXT_' . strtoupper($objResult->fields['name']) . '_MODULE'];
+                } else if (isset($_CORELANG['TXT_' . strtoupper($objResult->fields['name'])])) {
+                    $literalName = $_CORELANG['TXT_' . strtoupper($objResult->fields['name'])];
+                } else {
+                    $literalName = ucfirst($objResult->fields['name']);
+                }
+                $objTemplate->setVariable('MODULE_NAME', $literalName . ' (' . $objResult->fields['name'] . ')');
 
                 // Required Modules
                 if ($objResult->fields['is_required'] == 1) {
