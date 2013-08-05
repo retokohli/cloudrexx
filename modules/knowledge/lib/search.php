@@ -90,9 +90,9 @@ class Search {
 
         // is this a security issue?
         while (false !== ($file = readdir($dir))) {
-            if (preg_match("/^[a-z]+\.php$/i", $file)) {
+            if (preg_match('/^[a-z]+\.php$/i', $file)) {
                 include($this->interfacesPath."/".$file);
-                list($name) = explode("\.", $file);
+                list($name) = explode(".", $file);
                 $this->interfaces[] = new $name;
             }
         }
