@@ -2013,10 +2013,11 @@ class ContactManager extends ContactLib
                             break;
                         case 'file':
                             $arrFiles  = explode('*', $arrData['value']);
+                            $value = '';
                             foreach ($arrFiles as $file) {
                                 $file = contrexx_raw2xhtml($file);
                                 $img  = $this->getFileIcon($file);
-                                $value = '<a href="'.ASCMS_PATH_OFFSET.$file.'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.$img.basename($file).'</a><br />';
+                                $value .= '<a href="'.ASCMS_PATH_OFFSET.$file.'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.$img.basename($file).'</a><br />';
                             }
                             break;
                         case 'recipient':
@@ -2441,7 +2442,7 @@ class ContactManager extends ContactLib
             $icon = '_blank';
         }
         
-        $img = '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/media/'.$icon.'.gif" alt="Attach" border="0" style="position: relative; top: 3px;" />&nbsp;';
+        $img = '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/downloads/'.$icon.'.gif" alt="Attach" border="0" style="position: relative; top: 3px;" />&nbsp;';
         return $img;
     }
 }
