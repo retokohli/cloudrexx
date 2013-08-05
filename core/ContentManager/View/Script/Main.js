@@ -755,6 +755,44 @@ cx.cm = function(target) {
             jQuery("#type_toggle").show();
         }
         cx.cm.resizeEditorHeight();
+        
+        // if we change type from fallback to content or application, we want to
+        // load content from fallback page:
+        var content = jQuery('#cm_ckeditor').val();
+        var isCkEditor = false;
+        if (CKEDITOR.instances.cm_ckeditor != null) {
+            content = CKEDITOR.instances.cm_ckeditor.getData();
+            isCkEditor = true;
+        }
+        if (cx.cm.lastPageType == "fallback" && (jQuery(this).val() == "content" || jQuery(this).val() == "application") && content == "") {
+            var fallbackLanguage = cx.cm.getCurrentLang();
+            while (true) {
+                if (!fallbacks[fallbackLanguage]) {
+                    break;
+                }
+                fallbackLanguage = fallbacks[fallbackLanguage];
+            }
+            var fallbackPageId = jQuery("#" + jQuery("#pageId").val()).parent().children("." + fallbackLanguage).attr("id");
+            cx.trigger("loadingStart", "contentmanager", {});
+            jQuery.ajax({
+                url: "http://localhost/trunk2/cadmin/index.php?cmd=jsondata&object=page&act=get&page=" + fallbackPageId,
+                async: false,
+                success: function(response) {
+                    var fallbackPageType = response.data.type;
+                    if (fallbackPageType != "content" && fallbackPageType != "application") {
+                        return;
+                    }
+                    var fallbackPageContent = response.data.content;
+                    if (isCkEditor) {
+                        CKEDITOR.instances.cm_ckeditor.setData(fallbackPageContent);
+                    } else {
+                        jQuery("#cm_ckeditor").val(fallbackPageContent);
+                    }
+                }
+            });
+            cx.trigger("loadingEnd", "contentmanager", {});
+        }
+        cx.cm.lastPageType = jQuery(this).val();
     });
     jQuery('input[name="page[type]"]:checked').trigger('click');
 
