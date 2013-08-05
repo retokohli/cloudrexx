@@ -149,7 +149,19 @@ class FWLanguage
     /**
      * Return only the languages active in the frontend
      * @author     Stefan Heinemann <sh@adfinis.com>
-     * @return     array
+     * @return     array(
+     *                 array(
+     *                     'id'         => {lang_id},
+     *                     'lang'       => {iso_639-1},
+     *                     'name'       => {name},
+     *                     'charset'    => 'UTF-8',
+     *                     'themesid'   => {theme_id},
+     *                     'frontend'   => {bool},
+     *                     'backend'    => {bool},
+     *                     'is_default' => {bool},
+     *                     'fallback'   => {language_id},
+     *                 )
+     *             )
      */
     public static function getActiveFrontendLanguages()
     {
