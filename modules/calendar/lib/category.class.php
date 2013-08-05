@@ -316,7 +316,7 @@ class CalendarCategory extends CalendarLibrary
      *      
      * @return integer Entry count of the category
      */
-    function countEntries(){
+    function countEntries($getAll = false){
         global $objDatabase;  
         
         // get startdate
@@ -346,6 +346,11 @@ class CalendarCategory extends CalendarLibrary
         }
         
         $searchTerm = !empty($_GET['term']) ? contrexx_addslashes($_GET['term']) : null;
+        
+        // set the start date as null if $getAll is true
+        if ($getAll) {
+            $startDate = null;
+        }
         
         $objEventManager = new CalendarEventManager($startDate,$endDate,$this->id,$searchTerm);
         $objEventManager->getEventList();            
