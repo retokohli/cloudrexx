@@ -129,6 +129,8 @@ class LinkSanitizer {
 
         $query = \Cx\Core\Routing\Url::array2params($query);
 
+        // replace & with &amp; but only & (not followed by amp;)
+        $query = preg_replace('/&(?!amp;)/', '&amp;', $query);
         return $before.$quote.$path.'?'.$query.$quote.$after;
     }
 
