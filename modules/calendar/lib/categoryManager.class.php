@@ -114,7 +114,7 @@ class CalendarCategoryManager extends CalendarLibrary
                 $this->moduleLangVar.'_CATEGORY_STATUS'  => $objCategory->status==0 ? $_ARRAYLANG['TXT_CALENDAR_INACTIVE'] : $_ARRAYLANG['TXT_CALENDAR_ACTIVE'],
                 $this->moduleLangVar.'_CATEGORY_SORT'    => $objCategory->pos,
                 $this->moduleLangVar.'_CATEGORY_TITLE'   => $objCategory->name,
-                $this->moduleLangVar.'_CATEGORY_EVENTS'  => $objCategory->countEntries(),
+                $this->moduleLangVar.'_CATEGORY_EVENTS'  => $objCategory->countEntries(true),
             ));
             
             $i++;
