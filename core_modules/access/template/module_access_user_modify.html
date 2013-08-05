@@ -168,7 +168,10 @@ $J(document).ready(function() {
 			</tr>
 			<tr class="row2">
 				<td>{TXT_ACCESS_ADMINISTRATOR}</td>
-				<td><input type="checkbox" name="access_user_is_admin" id="access_user_is_admin" value="1" {ACCESS_USER_IS_ADMIN} onchange="document.getElementById('access_user_validity_option').style.display = this.checked ? 'none' : ''" /> <label for="access_user_is_admin">{TXT_ACCESS_USER_ADMIN_RIGHTS}</label></td>
+				<td>
+                    <input type="checkbox" name="access_user_is_admin" id="access_user_is_admin" value="1" {ACCESS_USER_IS_ADMIN} onchange="document.getElementById('access_user_validity_option').style.display = this.checked ? 'none' : ''" /> <label for="access_user_is_admin">{TXT_ACCESS_USER_ADMIN_RIGHTS}</label>
+                    <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_ACCESS_USER_ADMIN_RIGHTS_TOOLTIP}</span>
+                </td>
 			</tr>
 			<tr class="row1" style="display:{CSS_DISPLAY_STATUS};">
 				<td>{TXT_ACCESS_STATUS}</td>
