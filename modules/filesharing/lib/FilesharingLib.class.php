@@ -303,7 +303,9 @@ CODE
             }
         }
         // delete all expired or not existing files
-        $objDatabase->Execute("DELETE FROM " . DBPREFIX . "module_filesharing WHERE `id` IN (" . implode(',', $arrToDelete) . ")");
+        if(!empty($arrToDelete)) {
+            $objDatabase->Execute("DELETE FROM " . DBPREFIX . "module_filesharing WHERE `id` IN (" . implode(',', $arrToDelete) . ")");
+        }
     }
 
     /**
