@@ -138,6 +138,8 @@ class PageEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
      * @throws PageEventListenerException
      */
     protected function checkValidPersistingOperation($pageRepo, $page) {
+        global $_CORELANG;
+        
         if ($page instanceof Page) {
             if ($page->isVirtual()) {
                 throw new PageEventListenerException('Tried to persist Page "'.$page->getTitle().'" with id "'.$page->getId().'". This Page is virtual and cannot be stored in the DB.');
@@ -158,6 +160,20 @@ class PageEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                         && current($home)->getId() != $page->getId())
                 ) {
                     throw new PageEventListenerException('Tried to persist Page "'.$page->getTitle().'" with id "'.$page->getId().'". Only one page with module "home" and no cmd is allowed.');
+                    
+                    // the following is not necessary, since a nice error message
+                    // is display by javascript.
+                    // find the other page to display a better error message:
+                    if (current($home)->getId() == $page->getId()) {
+                        $home = end($home);
+                    } else {
+                        $home = current($home);
+                    }
+                    throw new PageEventListenerException(sprintf($_CORELANG['TXT_CORE_CM_HOME_FAIL'], $home->getId(), $home->getPath()));
+                    
+                    //SQLSTATE[23000]: Integrity constraint violation: 1062 Duplicate entry '1-110-Cx\Model\ContentManager\Page' for key 'log_class_unique_version_idx'
+                    
+                    //'Tried to persist Page "'.$page->getTitle().'" with id "'.$page->getId().'". Only one page with module "home" and no cmd is allowed.');
                 }
             }
         }

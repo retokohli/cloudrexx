@@ -397,6 +397,7 @@ cx.ready(function() {
     
     var data = jQuery.parseJSON(cx.variables.get("tree-data", "contentmanager/tree"));
     cx.cm.actions = data.data.actions;
+    cx.cm.hasHome = data.data.hasHome;
     cx.cm.createJsTree(jQuery("#site-tree"), data.data.tree, data.data.nodeLevels);
 
     jQuery(".chzn-select").chosen().change(function() {
@@ -592,6 +593,7 @@ cx.cm = function(target) {
                             page.visibility.type = "application";
                         } else {
                             page.visibility.type = "home";
+                            cx.cm.hasHome[cx.cm.getCurrentLang()] = true;
                         }
                         page.visibility.fallback = false;
                         break;
@@ -654,6 +656,7 @@ cx.cm = function(target) {
                             page.visibility.type = "application";
                         } else {
                             page.visibility.type = "home";
+                            cx.cm.hasHome[cx.cm.getCurrentLang()] = true;
                         }
                         page.visibility.fallback = false;
                         break;
@@ -890,40 +893,17 @@ cx.cm = function(target) {
 cx.cm.homeCheck = function(addClasses) {
     var module = jQuery("select#page_application");
     var cmd = jQuery("input#page_application_area");
-    var home = jQuery("ins.jstree-icon.page.home");
 
     module.removeClass("warning");
     cmd.removeClass("warning");
 
+    // this is no home page
     if (module.val() != "home" || cmd.val() != "") {
         return false;
     }
-
-    if (!home.length) {
-        return false;
-    }
-
-    // there is a content with module home and no cmd
-    // is it us?
-    var pageId = jQuery("#pageId").val();
-    var found = false;
-    jQuery.each(home, function(index, el) {
-        // only pages with same language
-        var homeLang = jQuery(el).parent().attr("class");
-        if (homeLang != cx.cm.getCurrentLang()) {
-            return true;
-        }
-
-        // exclude same page
-        var homeId = jQuery(el).parent().attr("id");
-        if (pageId == homeId) {
-            return true;
-        }
-
-        found = true;
-    });
-
-    if (!found) {
+    
+    // there is no home for this language yet
+    if (!cx.cm.hasHome[cx.cm.getCurrentLang()]) {
         return false;
     }
 
@@ -986,6 +966,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                     for (nodeId in response.data.nodeLevels) {
                         nodeLevels[nodeId] = response.data.nodeLevels[nodeId];
                     }
+                    cx.cm.hasHome = response.data.hasHome;
                     return response.data.tree;
                 }/*,
                                    // the `data` function is executed in the instance's scope

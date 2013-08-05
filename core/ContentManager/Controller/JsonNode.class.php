@@ -564,6 +564,15 @@ class JsonNode implements JsonAdapter {
         }
         $output['tree']       = $tree;
         $output['nodeLevels'] = $nodeLevels;
+        $output['hasHome']    = array();
+        foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
+            $page = $this->pageRepo->findOneBy(array(
+                'module' => 'home',
+                'cmd' => '',
+                'lang' => $lang['id'],
+            ));
+            $output['hasHome'][$lang['lang']] = (boolean) $page;
+        }
         
         return($output);
     }
