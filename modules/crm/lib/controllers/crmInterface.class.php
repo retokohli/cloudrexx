@@ -82,7 +82,7 @@ class crmInterface extends CrmLibrary
      * @access private
      * @var object
      */
-    private $_objTpl;
+    public $_objTpl;
 
     /**
      * php 5.3 contructor

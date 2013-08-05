@@ -32,7 +32,7 @@ class crmTask extends CrmLibrary
      *
      * @param object
      */
-    private $_objTpl;
+    public $_objTpl;
 
     /**
      * sort fields
