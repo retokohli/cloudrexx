@@ -17,7 +17,7 @@ $_ARRAYLANG["TXT_FILESHARING_FILE_NAME"] = "Dateiname";
 $_ARRAYLANG["TXT_FILESHARING_DOWNLOAD_LINK"] = "Downloadlink";
 $_ARRAYLANG["TXT_FILESHARING_DELETE_LINK"] = "Löschlink";
 $_ARRAYLANG["TXT_FILESHARING_MORE"] = "Mehr";
-$_ARRAYLANG["TXT_FILESHARING_NEW_UPLOAD"] = "Starte neuen Download";
+$_ARRAYLANG["TXT_FILESHARING_NEW_UPLOAD"] = "Starte neuen Upload";
 $_ARRAYLANG["TXT_FILESHARING_EXPIRATION_DATES"] = array(
     '1d'  => '1 Tag',
     '10d' => '10 Tage',
@@ -32,4 +32,5 @@ $_ARRAYLANG["TXT_FILESHARING_TERMS_OF_SERVICE"] = "allgemeinen Geschäftsbedingu
 $_ARRAYLANG["TXT_FILESHARING_I_ACCEPT"] = "zu";
 $_ARRAYLANG["TXT_FILESHARING_FILES"] = "Dateien";
 $_ARRAYLANG["TXT_FILESHARING_NO_ACCESS"] = "Sie sind nicht dazu berechtigt, diese Seite zu verwenden.";
+$_ARRAYLANG["TXT_FILESHARING_CONFIRM_DELETE"] = "Datei unwiderruflich löschen";
 ?>

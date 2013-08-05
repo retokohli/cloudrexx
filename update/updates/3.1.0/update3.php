@@ -1143,6 +1143,31 @@ try {
     return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
 }
 
+// update filesharing page, add confirm deletion view
+$search = array(
+    '/.*/ms',
+);
+$callback = function($matches) {
+    $newHtmlCode = <<<HTMLCODE
+    <!-- BEGIN confirm_delete -->
+    <form action="[[FORM_ACTION]]" class="fileshareForm" id="contactForm" method="[[FORM_METHOD]]" style="float: left;">
+        <p>
+            <label>[[TXT_FILESHARING_FILE_NAME]]</label>[[FILESHARING_FILE_NAME]]
+        </p>
+        <p>
+            <input name="delete" type="submit" value="[[TXT_FILESHARING_CONFIRM_DELETE]]" />
+        </p>
+    </form>
+    <!-- END confirm_delete -->
+HTMLCODE;
+    if (!preg_match('/<!--\s+BEGIN\s+confirm_delete\s+-->.*<!--\s+END\s+confirm_delete\s+-->/ms', $matches[0])) {
+        return str_replace('<!-- END upload_form -->', $newHtmlCode, $matches[0]);
+    } else {
+        return $matches[0];
+    }
+};
+\Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'filesharing', 'cmd' => ''), $search, $callback, array('content'), '3.1.0');
+
 // fix tree
 \Env::em()->getRepository('Cx\Core\ContentManager\Model\Node')->recover();
 

@@ -88,7 +88,7 @@ class Filesharing extends FilesharingLib
      * get the page
      *
      * @return string html code of the page
-     * @access public
+     * @throws FilesharingException
      */
     public function getPage()
     {
@@ -106,7 +106,7 @@ class Filesharing extends FilesharingLib
             default:
                 try {
                     if (!empty($hash) && !empty($check)) {
-                        $this->deleteFile($hash, $check);
+                        $fileDeleted = $this->deleteFile($hash, $check);
                     } elseif (!empty($hash)) {
                         $this->downloadFile($hash);
                     } else {
@@ -128,7 +128,11 @@ class Filesharing extends FilesharingLib
                             break;
                     }
                 }
-                $this->uploadPage();
+
+                // don't show for delete page
+                if (empty($hash) || (isset($fileDeleted) && $fileDeleted)) {
+                    $this->uploadPage();
+                }
                 break;
         }
         
@@ -141,8 +145,7 @@ class Filesharing extends FilesharingLib
      * download a file by hash
      *
      * @param string $hash the hash code of the file which should be downloaded
-     *
-     * @access private
+     * @throws FilesharingException
      */
     private function downloadFile($hash)
     {
@@ -156,6 +159,7 @@ class Filesharing extends FilesharingLib
 
             ob_end_clean();
             header("Pragma: public");
+            header("Content-Type: application/octet-stream");
             header("Content-Disposition: attachment; filename=\"" . $fileName . "\"");
             readfile($filePath);
             die();
@@ -169,20 +173,56 @@ class Filesharing extends FilesharingLib
      *
      * @param string $hash the hash code of the file which should be deleted
      * @param string $check the check code of the file which should be deleted
-     *
-     * @access private
+     * @return bool delete already successful (true), confirmation form is shown (false)
      */
     private function deleteFile($hash, $check)
     {
         global $objDatabase;
-        $objResult = $objDatabase->SelectLimit("SELECT `id`, `source`, `check` FROM " . DBPREFIX . "module_filesharing WHERE `hash` = '" . contrexx_raw2db($hash) . "'", 1, 0);
-        if ($objResult !== false) {
-
+        $objResult = $objDatabase->SelectLimit("SELECT `id`, `file`, `source`, `check` FROM " . DBPREFIX . "module_filesharing WHERE `hash` = '" . contrexx_raw2db($hash) . "'", 1, 0);
+        if ($objResult === false || $objResult->RecordCount() == 0) {
+            // no file exists with this hash
+            return true;
+        }
+        if (!isset($_POST['delete']) && $_POST['delete'] == false) {
+            // user didn't yet confirm delete action
+            $this->showDeleteConfirmation($objResult->fields);
+            return false;
+        }
+        if ($objResult->fields["check"] == $check) {
             // check whether the check code is the same as in the database
-            if ($objResult->fields["check"] == $check) {
-                \Cx\Lib\FileSystem\FileSystem::delete_file(ASCMS_PATH . ASCMS_PATH_OFFSET . $objResult->fields["source"]);
-                $objDatabase->Execute("DELETE FROM " . DBPREFIX . "module_filesharing WHERE `id` = " . intval($objResult->fields["id"]));
-            }
+            \Cx\Lib\FileSystem\FileSystem::delete_file(ASCMS_PATH . ASCMS_PATH_OFFSET . $objResult->fields["source"]);
+            $objDatabase->Execute("DELETE FROM " . DBPREFIX . "module_filesharing WHERE `id` = " . intval($objResult->fields["id"]));
+        }
+        return true;
+    }
+
+    /**
+     * Show the delete confirmation form view
+     *
+     * @param array $file file data (source, filename, id, check)
+     */
+    protected function showDeleteConfirmation($file) {
+        global $_ARRAYLANG;
+        $this->objTemplate->setVariable(
+            array(
+                "FORM_ACTION" => (string) clone \Env::get("Resolver")->getUrl(),
+                "FORM_METHOD" => "POST",
+
+                'FILESHARING_FILE_NAME' => contrexx_raw2xhtml($file['file']),
+
+                'TXT_FILESHARING_FILE_NAME' => $_ARRAYLANG['TXT_FILESHARING_FILE_NAME'],
+                'TXT_FILESHARING_CONFIRM_DELETE' => $_ARRAYLANG['TXT_FILESHARING_CONFIRM_DELETE'],
+            )
+        );
+
+        if($this->objTemplate->blockExists('confirm_delete')) {
+            $this->objTemplate->parse("confirm_delete");
+        }
+        if($this->objTemplate->blockExists('upload_form')) {
+            $this->objTemplate->hideBlock("upload_form");
+        }
+        if($this->objTemplate->blockExists('uploaded')) {
+            $this->objTemplate->hideBlock("uploaded");
         }
     }
 
@@ -274,9 +314,16 @@ class Filesharing extends FilesharingLib
 
         if ($permissionNeeded == 'off' || (is_numeric($permissionNeeded) && !Permission::checkAccess($permissionNeeded, 'dynamic'))) {
             $this->objTemplate->setVariable('FILESHARING_NO_ACCESS', $_ARRAYLANG['TXT_FILESHARING_NO_ACCESS']);
-            $this->objTemplate->parse('no_access');
-            $this->objTemplate->hideBlock('upload_form');
-            $this->objTemplate->hideBlock('uploaded');
+
+            if($this->objTemplate->parse('no_access')) {
+                $this->objTemplate->parse('no_access');
+            }
+            if($this->objTemplate->blockExists('upload_form')) {
+                $this->objTemplate->hideBlock('upload_form');
+            }
+            if($this->objTemplate->blockExists('uploaded')) {
+                $this->objTemplate->hideBlock('uploaded');
+            }
         } else {
             // parse the upload form
 
@@ -314,8 +361,12 @@ class Filesharing extends FilesharingLib
                 'TXT_FILESHARING_FILES' => $_ARRAYLANG['TXT_FILESHARING_FILES'],
             ));
 
-            $this->objTemplate->touchBlock("upload_form");
-            $this->objTemplate->hideBlock("uploaded");
+            if($this->objTemplate->blockExists('upload_form')) {
+                $this->objTemplate->touchBlock("upload_form");
+            }
+            if($this->objTemplate->blockExists('uploaded')) {
+                $this->objTemplate->hideBlock("uploaded");
+            }
         }
     }
 
@@ -351,14 +402,22 @@ class Filesharing extends FilesharingLib
             ));
 
             if ($file["image"] === false) {
-                $this->objTemplate->hideBlock("image");
+                if($this->objTemplate->blockExists('image')) {
+                    $this->objTemplate->hideBlock("image");
+                }
             }
 
-            $this->objTemplate->parse("filesharing_file");
+            if($this->objTemplate->blockExists('filesharing_file')) {
+                $this->objTemplate->parse("filesharing_file");
+            }
         }
 
-        $this->objTemplate->touchBlock("uploaded");
-        $this->objTemplate->hideBlock("upload_form");
+        if($this->objTemplate->blockExists('uploaded')) {
+            $this->objTemplate->touchBlock("uploaded");
+        }
+        if($this->objTemplate->blockExists('upload_form')) {
+            $this->objTemplate->hideBlock("upload_form");
+        }
     }
 
     /**
