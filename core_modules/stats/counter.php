@@ -653,10 +653,13 @@ class counter
                 WHERE `pageId` = '.$this->pageId.' AND ((`sid` != "'.$this->md5Id.'") OR (`timestamp` <= '.($this->currentTime - $this->arrConfig['reload_block_time']['value']).'))
             ');
             if ($objDb->Affected_Rows() == 0) {
-                $objDb->Execute('
-                    INSERT INTO `'.DBPREFIX.'stats_requests` (`sid`, `pageId`, `page`, `timestamp`, `visits`, `pageTitle`)
-                    VALUES ("'.$this->md5Id.'", '.$this->pageId.', "'.substr('/'.$url->getLangDir().'/'.$url->getPath(), 0, 255).'", '.$this->currentTime.', 1, "'.$page->getTitle().'")
-                ');
+                // this is allowed to fail if page was visited with same sid
+                try {
+                    $objDb->Execute('
+                        INSERT INTO `'.DBPREFIX.'stats_requests` (`sid`, `pageId`, `page`, `timestamp`, `visits`, `pageTitle`)
+                        VALUES ("'.$this->md5Id.'", '.$this->pageId.', "'.substr('/'.$url->getLangDir().'/'.$url->getPath(), 0, 255).'", '.$this->currentTime.', 1, "'.$page->getTitle().'")
+                    ');
+                } catch (\PDOException $e) {}
             }
         }
         $this->_makeStatistics(DBPREFIX.'stats_requests_summary');
