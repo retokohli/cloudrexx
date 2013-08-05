@@ -1011,7 +1011,7 @@ class Product
                 weight=$this->weight,
                 flags='".addslashes($this->flags)."',
                 usergroup_ids=".($this->usergroup_ids
-                    ? $this->usergroup_ids : 'NULL').",
+                    ? "'".$this->usergroup_ids."'" : 'NULL').",
                 group_id=".($this->group_id
                     ? $this->group_id : 'NULL').",
                 article_id=".($this->article_id
