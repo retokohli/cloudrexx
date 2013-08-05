@@ -176,7 +176,11 @@ class Calendar extends CalendarLibrary
                 self::showRegistrationForm();
                 break;
             case 'boxes':
-                echo "boxes";
+                if (isset($_GET['act']) && $_GET['act'] == "list") {
+                    self::boxesEventList();
+                } else {
+                    self::showThreeBoxes();
+                }                
                 break;
             case 'category':
                 self::showCategoryView();
@@ -255,7 +259,7 @@ class Calendar extends CalendarLibrary
             $this->startDate = mktime(0, 0, 0, $month, $day, $year);
             $this->endDate = mktime(23, 59, 59, $month, $day, $year);
         }
-
+        
         $this->searchTerm = !empty($_GET['term']) ? contrexx_addslashes($_GET['term']) : null;
         $this->categoryId = !empty($_GET['catid']) ? intval($_GET['catid']) : null;
 
@@ -960,4 +964,69 @@ $this->_objTpl->setVariable(array(
         return array($path, $webPath);
     }
  
+    /**
+     * Performs the box view
+     * 
+     * @return null
+     */
+    function showThreeBoxes()
+    {
+        global $_ARRAYLANG;
+        
+        $this->_objTpl->setTemplate($this->pageContent);
+        
+        $this->objEventManager->calendarBoxUrl         = Cx\Core\Routing\Url::fromModuleAndCmd('calendar', 'boxes')->toString()."?act=list";
+        $this->objEventManager->calendarBoxMonthNavUrl = Cx\Core\Routing\Url::fromModuleAndCmd('calendar', 'boxes')->toString();
+        
+        if (empty($_GET['catid'])) {
+            $catid = 0;
+        } else {
+            $catid = $_GET['catid'];
+        }
+
+        if (isset($_GET['yearID']) && isset($_GET['monthID']) &&  isset($_GET['dayID'])) {
+            $day   = $_GET['dayID'];
+            $month = $_GET['monthID'];
+            $year  = $_GET['yearID'];
+        } elseif (isset($_GET['yearID']) && isset($_GET['monthID']) && !isset($_GET['dayID'])) {
+            $day   = 0;
+            $month = $_GET['monthID'];
+            $year  = $_GET['yearID'];
+        } elseif (isset($_GET['yearID']) && !isset($_GET['monthID']) && !isset($_GET['dayID'])) {
+            $day    = 0;
+            $month  = 0;
+            $year   = $_GET['yearID'];
+        } else {
+            $day   = date("d");
+            $month = date("m");
+            $year  = date("Y");
+        }
+                
+        $calendarbox = $this->objEventManager->getBoxes(3, $year, $month, $day, $catid);
+
+        $objCategoryManager = new CalendarCategoryManager(true);
+        $objCategoryManager->getCategoryList();
+
+        $this->_objTpl->setVariable(array(
+            "TXT_{$this->moduleLangVar}_ALL_CAT" => $_ARRAYLANG['TXT_CALENDAR_ALL_CAT'],
+            "{$this->moduleLangVar}_BOX"	 => $calendarbox,
+            "{$this->moduleLangVar}_JAVA_SCRIPT" => $this->objEventManager->getCalendarBoxJS(),
+            "{$this->moduleLangVar}_CATEGORIES"	 => $objCategoryManager->getCategoryDropdown($catid, 1),            
+        ));        
+    }
+    
+    /**
+     * Performs the list box view
+     * 
+     * @return null
+     */
+    function boxesEventList()
+    {            
+        $this->_objTpl->setTemplate($this->pageContent);
+
+        $this->_objTpl->hideBlock("boxes");
+
+        $this->objEventManager->showEventList($this->_objTpl);
+        
+    }
 }

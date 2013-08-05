@@ -293,8 +293,8 @@ class CalendarEventManager extends CalendarLibrary
                 } else {
                     $this->eventList[] = $objEvent;
                 }
-
-                if (count($this->eventList) > $this->numEvents && $objInit->mode == 'frontend') {
+                
+                if ($this->numEvents != 'n' && count($this->eventList) > $this->numEvents && $objInit->mode == 'frontend') {
                      break;
                 } else {
                      $objResult->MoveNext();
@@ -1370,4 +1370,141 @@ class CalendarEventManager extends CalendarLibrary
         }
     }
 
+    /**
+     * Returns the calendar boxes
+     *      
+     * @param  integer $boxes  Number of boxes
+     * @param  year    $year   Year
+     * @param  integer $month  month
+     * @param  integer $day    day
+     * @param  integer $catid  category id
+     * 
+     * @return string  calendar boxes
+     */
+    function getBoxes($boxes, $year, $month=0, $day=0, $catid=0)
+    {
+        global $_ARRAYLANG, $objInit;
+
+        if ($catid != 0 && !empty($catid)) {
+            $url_cat = "&amp;catid=$catid";
+        } else {
+            $url_cat = "";
+        }
+
+        $url = htmlentities($this->calendarBoxUrl, ENT_QUOTES, CONTREXX_CHARSET).$url_cat;
+
+        $firstblock = true;
+        $month      = intval($month);
+        $year       = intval($year);
+        $day        = intval($day);
+        $monthnames = explode(",", $_ARRAYLANG['TXT_CALENDAR_MONTH_ARRAY']);
+        $daynames   = explode(',', $_ARRAYLANG['TXT_CALENDAR_DAY_ARRAY']);
+        $calenderBoxes = '';
+        for ($i=0; $i<$boxes; $i++) {
+            $cal = new activeCalendar($year, $month, $day);
+            $cal->setMonthNames($monthnames);
+            $cal->setDayNames($daynames);
+
+            if ($firstblock) {
+                $cal->enableMonthNav($url);
+            } else {
+                // This is necessary for the modification of the linkname
+                // The modification makes a link on the monthname
+                $cal->urlNav=$url;
+            }
+
+            // for seperate variable for the month links
+            if (!empty($this->calendarBoxMonthNavUrl)) {
+                $cal->urlMonthNav = htmlentities($this->calendarBoxMonthNavUrl, ENT_QUOTES, CONTREXX_CHARSET);
+            }
+
+            //load events
+            foreach ($this->eventList as $objEvent) {
+                
+                if ($objEvent->access && $objInit->mode == 'frontend' && !Permission::checkAccess(116, 'static', true)) {
+                    continue;
+                }
+                $startdate     = $objEvent->startDate;
+                $enddate       = $objEvent->endDate;
+                $eventYear     = date("Y", $startdate);
+                $eventMonth    = date("m", $startdate);
+                $eventDay      = date("d", $startdate);
+                $eventEndDay   = date("d", $enddate);
+                $eventEndMonth = date("m", $enddate);
+
+                // do only something when the event is in the current month
+                if ($eventMonth <= $month && $eventEndMonth >= $month) {
+                    // if the event is longer than one day but every day is in the same month
+                    if ($eventEndDay > $eventDay && $eventMonth == $eventEndMonth) {
+                        $curday = $eventDay;
+                        while ($curday <= $eventEndDay) {
+                            $eventurl = $url."&amp;yearID=$eventYear&amp;monthID=$month&amp;dayID=$curday".$url_cat;
+                            $cal->setEvent("$eventYear", "$eventMonth", "$curday", false, $eventurl);
+                            $curday++;
+                        }
+                    } elseif ($eventEndMonth > $eventMonth) {
+                        if ($eventMonth == $month) {
+                            // Show the part of the event in the starting month
+                            $curday = $eventDay;
+                            while ($curday <= 31) {
+                                $eventurl = $url."&amp;yearID=$eventYear&amp;monthID=$month&amp;dayID=$curday".$url_cat;
+                                $cal->setEvent("$eventYear", "$eventMonth", "$curday", false, $eventurl);
+                                $curday++;
+                            }
+                        } elseif ($eventEndMonth == $month) {
+                            // show the part of the event in the ending month
+                            $curday = $eventEndDay;
+                            while ($curday > 0) {
+                                $eventurl = $url."&amp;yearID=$eventYear&amp;monthID=$month&amp;dayID=$curday".$url_cat;
+                                $cal->setEvent("$eventYear", "$eventEndMonth", "$curday", false, $eventurl);
+                                $curday--;
+                            }
+                        } elseif ($eventMonth < $month && $eventEndMonth > $month) {
+                            foreach (range(0,31,1) as $curday) {
+                                $eventurl = $url."&amp;yearID=$eventYear&amp;monthID=$month&amp;dayID=$curday".$url_cat;
+                                $cal->setEvent("$eventYear", "$month", "$curday", false, $eventurl);
+                            }
+                        }
+                    } else {
+                        $eventurl = $url."&amp;yearID=$eventYear&amp;monthID=$month&amp;dayID=$eventDay".$url_cat;
+                        $cal->setEvent("$eventYear", "$eventMonth", "$eventDay", false, $eventurl);
+                    }
+                }
+            }
+
+            $calenderBoxes .= $cal->showMonth(false, true);
+            if ($month == 12) {
+                $year++;
+                $month = 1;
+            } else {
+                $month++;
+            }
+            $day = 0;
+            $firstblock = false;
+        }
+        
+        return $calenderBoxes;
+    }
+    
+    /**
+     * Returns the javascript used for the calendar boxes
+     * 
+     * @return string javascript
+     */
+    function getCalendarBoxJS()
+    {
+            return 	'<script type="text/javascript">
+                            /* <![CDATA[ */
+                            function changecat()
+                            {
+                                    var href = window.location.href;
+                                    var catid = $J("#selectcat").val();
+                                    href = href.replace(/&catid=[0-9]+/g, \'\');
+                                    href = href.replace(/&act=search/g, \'\');
+                                    href += "&catid=" + catid;                                    
+                                    window.location.href = href;
+                            }
+                            /* ]]> */
+                            </script>';
+    }    
 }
