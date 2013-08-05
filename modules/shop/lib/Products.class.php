@@ -137,19 +137,19 @@ class Products
             return array();
         }
 // NOTE:
-// This is an optimization, but does not (yet) consider the other parameters.
-        if ($product_id) {
-            // Select single Product by ID
-            $objProduct = Product::getById($product_id);
-            // Inactive Products MUST NOT be shown in the frontend
-            if (   $objProduct
-                && ($flagShowInactive || $objProduct->active())) {
-                $count = 1;
-                return array($objProduct);
-            }
-            $count = 0;
-            return false;
-        }
+// This was an optimization, but does not (yet) consider the other parameters.
+//        if ($product_id) {
+//            // Select single Product by ID
+//            $objProduct = Product::getById($product_id);
+//            // Inactive Products MUST NOT be shown in the frontend
+//            if (   $objProduct
+//                && ($flagShowInactive || $objProduct->active())) {
+//                $count = 1;
+//                return array($objProduct);
+//            }
+//            $count = 0;
+//            return false;
+//        }
         list($querySelect, $queryCount, $queryTail, $queryOrder) =
             self::getQueryParts(
                 $product_id, $category_id, $manufacturer_id, $pattern,
@@ -213,7 +213,16 @@ class Products
                 ? ''
                 : ' AND `product`.`active`=1
                     AND `product`.`stock`>0
-                    AND `category`.`active`=1').
+                    AND `category`.`active`=1
+                    AND (
+                        `product`.`date_start` < CURRENT_DATE()
+                     OR `product`.`date_start` = 0
+                    )
+                    AND (
+                        `product`.`date_end` > CURRENT_DATE()
+                     OR `product`.`date_end` = 0
+                    )'
+            ).
 // TODO: Possibly use
 //                  AND (`product`.`stock_visible`=0 OR `product`.`stock`>0)
 // instead
