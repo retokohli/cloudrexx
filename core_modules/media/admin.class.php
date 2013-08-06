@@ -23,9 +23,7 @@ class MediaManager extends MediaLibrary
 {
     public $_objTpl;                          // var for the template object
     public $pageTitle;                        // var for the title of the active page
-
-    public $iconPath;                         // icon path constant
-    public $iconWebPath;                      // icon webPath constant
+    
     public $arrPaths;                         // array paths
     public $arrWebPaths;                      // array web paths
 
@@ -74,10 +72,7 @@ class MediaManager extends MediaLibrary
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/media/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
-
-        // directory variables
-        $this->iconPath     = ASCMS_CORE_MODULE_PATH.'/media/View/Media/';
-        $this->iconWebPath  = ASCMS_CORE_MODULE_WEB_PATH.'/media/View/Media/';
+        
         $this->arrPaths     = array(ASCMS_MEDIA1_PATH.DIRECTORY_SEPARATOR,
                                     ASCMS_MEDIA2_PATH.DIRECTORY_SEPARATOR,
                                     ASCMS_MEDIA3_PATH.DIRECTORY_SEPARATOR,
@@ -547,7 +542,7 @@ class MediaManager extends MediaLibrary
 
                     $this->_objTpl->setVariable(array(  // file
                         'MEDIA_DIR_TREE_ROW'  => $class,
-                        'MEDIA_FILE_ICON'     => $this->iconWebPath.$dirTree[$key]['icon'][$x].'.png',
+                        'MEDIA_FILE_ICON'     => self::_getIconWebPath().$dirTree[$key]['icon'][$x].'.png',
                         'MEDIA_FILE_NAME'     => $fileName,
                         'MEDIA_FILE_SIZE'     => $this->_formatSize($dirTree[$key]['size'][$x]),
                         'MEDIA_FILE_TYPE'     => $this->_formatType($dirTree[$key]['type'][$x]),
@@ -774,7 +769,7 @@ class MediaManager extends MediaLibrary
 
             // edit name
             $this->_objTpl->setVariable(array(
-                'MEDIA_FILE_ICON'     => $this->iconWebPath.$icon.'.png',
+                'MEDIA_FILE_ICON'     => self::_getIconWebPath().$icon.'.png',
                 'MEDIA_ORGFILE_NAME'  => $fileName
             ));
             $this->_objTpl->parse('mediaFile');
@@ -847,7 +842,7 @@ class MediaManager extends MediaLibrary
 
             // Icon, file & extension name
             $this->_objTpl->setVariable(array(
-                'MEDIA_FILE_ICON' => $this->iconWebPath.$icon.'.png',
+                'MEDIA_FILE_ICON' => self::_getIconWebPath().$icon.'.png',
                 'MEDIA_FILE_DIR'  => $this->webPath,
                 'MEDIA_FILE_NAME' => $fileName,
                 'MEDIA_FILE_EXT'  => $fileExt,
