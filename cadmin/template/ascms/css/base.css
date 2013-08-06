@@ -1089,6 +1089,10 @@ table.adminlist td.nowrap {
 
 /* Icon representing a URL (module shop, Coupon) */
 .icon_url {
+  float: left;
+  width: 14px;
+  height: 16px;
+  margin-top: 3px;
   background-image: url(../../../images/icons/link.gif);
   background-position: left top;
   background-repeat: no-repeat;
@@ -1099,10 +1103,8 @@ table.adminlist td.nowrap {
    URL icon.  Usually contains an input text field (module shop, Coupon) */
 .layer_url {
   display: none;
-  position: absolute;
-  right: 70px;
-  top: 80px;
-  overflow: auto;
+  float: none;
+  margin-left: 20px;
 }
 
 /* icons */
