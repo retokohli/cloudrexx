@@ -290,6 +290,7 @@ class CalendarManager extends CalendarLibrary
         
         $this->_objTpl->loadTemplateFile('module_calendar_modify_event.html');
 
+        JS::activate("jqueryui");
         parent::getSettings();
         parent::getFrontendLanguages();
         if(isset($_POST['submitModifyEvent'])) {
