@@ -2015,7 +2015,7 @@ class ContactManager extends ContactLib
                             $arrFiles  = explode('*', $arrData['value']);
                             $value = '';
                             foreach ($arrFiles as $file) {
-                                $file = contrexx_raw2xhtml($file);
+                                $file = contrexx_raw2xhtml($file);                                
                                 $img  = $this->getFileIcon($file);
                                 $value .= '<a href="'.ASCMS_PATH_OFFSET.$file.'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.$img.basename($file).'</a><br />';
                             }
@@ -2435,14 +2435,9 @@ class ContactManager extends ContactLib
      */
     private function getFileIcon($file)
     {
-        if (is_file(ASCMS_DOCUMENT_ROOT.$file)) {
-            $info = pathinfo($file);
-            $icon = strtolower($info['extension']);
-        } else {
-            $icon = '_blank';
-        }
+        $icon = MediaLibrary::_getIcon(ASCMS_DOCUMENT_ROOT.$file);
         
-        $img = '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/downloads/'.$icon.'.gif" alt="Attach" border="0" style="position: relative; top: 3px;" />&nbsp;';
+        $img = '<img src="'.MediaLibrary::_getIconWebPath().$icon.'.png" alt="Attach" border="0" style="position: relative; top: 3px;" />&nbsp;';
         return $img;
     }
 }
