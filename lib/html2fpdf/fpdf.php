@@ -1375,7 +1375,9 @@ function Image($file,$x,$y,$w=0,$h=0,$type='',$link='',$paint=true,$isNoImageHan
 		}
 		$type=strtolower($type);
 		$mqr=get_magic_quotes_runtime();
-		set_magic_quotes_runtime(0);
+                if ($mqr) {
+                    set_magic_quotes_runtime(0);
+                }
 
 		// bug thumbnails (shjop-modul)
 
@@ -1408,7 +1410,9 @@ function Image($file,$x,$y,$w=0,$h=0,$type='',$link='',$paint=true,$isNoImageHan
             return $this->showNoImage($file, $x, $y, $w, $h, $type, $link, $paint, $isNoImageHandler);
         }
 
-		set_magic_quotes_runtime($mqr);
+                if ($mqr) {
+                    set_magic_quotes_runtime($mqr);
+                }
 		$info['i']=count($this->images)+1;
 		$this->images[$file]=$info;
 	}
@@ -1846,7 +1850,9 @@ function _putfonts()
 		$this->_out('endobj');
 	}
 	$mqr=get_magic_quotes_runtime();
-	set_magic_quotes_runtime(0);
+        if ($mqr) {
+            set_magic_quotes_runtime(0);
+        }
 	foreach($this->FontFiles as $file=>$info)
 	{
 		//Font file embedding
@@ -1869,7 +1875,9 @@ function _putfonts()
 		fclose($f);
 		$this->_out('endobj');
 	}
-	set_magic_quotes_runtime($mqr);
+        if ($mqr) {
+            set_magic_quotes_runtime($mqr);
+        }
 	foreach($this->fonts as $k=>$font)
 	{
 		//Font objects
