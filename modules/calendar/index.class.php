@@ -129,6 +129,13 @@ class Calendar extends CalendarLibrary
      * @var object
      */
     public $uploader;
+    
+    /**
+     * Event Box count
+     * 
+     * @var integer
+     */
+    public $boxCount = 3;
 
     /**
      * Constructor
@@ -229,10 +236,7 @@ class Calendar extends CalendarLibrary
             $startMonth = isset($_GET['month']) ? $_GET['month'] : date("m", mktime());
             $startYear  = isset($_GET['year']) ? $_GET['year'] : date("Y", mktime());
 
-            $startDay = $_GET['cmd'] == 'boxes' ? 1 : $startDay;
-
             $this->startDate = mktime(0, 0, 0, $startMonth, $startDay, $startYear);
-
         }
 
         // get enddate
@@ -252,7 +256,27 @@ class Calendar extends CalendarLibrary
 
 
         // get datepicker-time
-        if($_REQUEST["yearID"] || $_REQUEST["monthID"] || $_REQUEST["dayID"]) {
+        if (isset($_GET['cmd']) && $_GET['cmd'] == 'boxes') {
+            $year  = isset($_REQUEST["yearID"]) ? (int) $_REQUEST["yearID"] : date('Y');
+            $month = isset($_REQUEST["monthID"]) ? (int) $_REQUEST["monthID"] : date('m');
+            $day   = isset($_REQUEST["dayID"]) ? (int) $_REQUEST["dayID"] : date('d');
+            
+            $dateObj = new DateTime("{$year}-{$month}-{$day}");
+            
+            $dateObj->modify("first day of this month");
+            $dateObj->setTime(0, 0, 0);
+            $this->startDate = $dateObj->getTimestamp();
+            
+            // add months for the list view(month view)
+            if (isset($_GET['act']) && $_GET['act'] != "list" && empty($_REQUEST["dayID"])) {
+                $dateObj->modify("+{$this->boxCount} months");
+            }
+            
+            $dateObj->modify("last day of this month");
+            $dateObj->setTime(23, 59, 59);
+            $this->endDate = $dateObj->getTimestamp();
+            
+        } elseif ($_REQUEST["yearID"] || $_REQUEST["monthID"] || $_REQUEST["dayID"]) {
             $year = $_REQUEST["yearID"] ? $_REQUEST["yearID"] : date('Y', mktime());
             $month = $_REQUEST["monthID"] ? $_REQUEST["monthID"] : date('m', mktime());
             $day = $_REQUEST["dayID"] ? $_REQUEST["dayID"] : date('d', mktime());
@@ -1002,7 +1026,7 @@ $this->_objTpl->setVariable(array(
             $year  = date("Y");
         }
                 
-        $calendarbox = $this->objEventManager->getBoxes(3, $year, $month, $day, $catid);
+        $calendarbox = $this->objEventManager->getBoxes($this->boxCount, $year, $month, $day, $catid);
 
         $objCategoryManager = new CalendarCategoryManager(true);
         $objCategoryManager->getCategoryList();
