@@ -17,7 +17,7 @@ $_ARRAYLANG['TXT_IMPORTANT_HYPERLINKS'] = "Wichtige Hyperlinks";
 $_ARRAYLANG['TXT_NEWS_SOURCE'] = "Quelle";
 $_ARRAYLANG['TXT_LAST_UPDATE'] = "Letzte Aktualisierung";
 $_ARRAYLANG['TXT_PERFORM'] = "Ausführen";
-$_ARRAYLANG['TXT_NO_NEWS_FOUND'] = "Es wurden keine Newsmeldungen gefunden";
+$_ARRAYLANG['TXT_NEWS_NO_NEWS_FOUND'] = "Es wurden keine Newsmeldungen gefunden";
 $_ARRAYLANG['TXT_NEWS_FEED_TITLE'] = "News Feed Titel";
 $_ARRAYLANG['TXT_NEWS_FEED_DESCRIPTION'] = "News Feed Beschreibung";
 $_ARRAYLANG['TXT_SUBMIT_NEWS'] = "Newsmeldung anmelden";
@@ -38,4 +38,3 @@ $_ARRAYLANG['TXT_NEWS_COMMENT'] = "Comment";
 $_ARRAYLANG['TXT_NEWS_ADD'] = "Add";
 $_ARRAYLANG['TXT_NEWS_REDIRECT_INSTRUCTION'] = "The following link takes you to the message:";
 $_ARRAYLANG['TXT_NEWS_COMMENTS_NONE_EXISTING'] = "No comments yet.";
-?>
