@@ -311,6 +311,7 @@ class modulemanager
                         $parcat = $nodeRepo->getRoot();
                     }
                     $this->arrayInstalledModules[$module_name] = true;
+                    $sourceMode = (!empty($objResult->fields['expertmode']) && ($objResult->fields['expertmode'] == 'y')) ? true : false;
                     
                     // create node
                     $newnode = new \Cx\Core\ContentManager\Model\Entity\Node();
@@ -333,6 +334,7 @@ class modulemanager
                                 $module_name,
                                 $objResult->fields['cmd'],
                                 !$root && $objResult->fields['displaystatus'],
+                                $sourceMode,
                                 $objResult->fields['content']
                             );
                         } else {
@@ -344,6 +346,7 @@ class modulemanager
                                 $module_name,
                                 $objResult->fields['cmd'],
                                 !$root && $objResult->fields['displaystatus'],
+                                $sourceMode,
                                 ''
                             );
                         }
@@ -361,7 +364,7 @@ class modulemanager
         return true;
     }
 
-    private function createPage($parentNode, $lang, $title, $type, $module, $cmd, $display, $content) {
+    private function createPage($parentNode, $lang, $title, $type, $module, $cmd, $display, $sourceMode, $content) {
         $page = new \Cx\Core\ContentManager\Model\Entity\Page();
         $page->setNode($parentNode);
         $page->setNodeIdShadowed($parentNode->getId());
@@ -372,6 +375,7 @@ class modulemanager
         $page->setCmd($cmd);
         $page->setActive(true);
         $page->setDisplay($display); // pages on root level are not active
+        $page->setSourceMode($sourceMode);
         $page->setContent($content);
         $page->setMetatitle($title);
         $page->setMetadesc($title);
