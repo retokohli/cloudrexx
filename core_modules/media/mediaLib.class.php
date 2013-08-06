@@ -77,7 +77,7 @@ class MediaLibrary
         $colBody = imagecolorallocate($img, 255, 255, 255);
         ImageFilledRectangle($img, 0, 0, $width, 20, $colBody);
         $colFont = imagecolorallocate($img, 0, 0, 0);
-        imagettftext($img, 10, 0, 5, 15, $colFont, $this->iconPath.'arial.ttf', $size);
+        imagettftext($img, 10, 0, 5, 15, $colFont, self::_getIconPath().'arial.ttf', $size);
 
         header("Content-type: image/jpeg");
         imagejpeg($img, '', 100);
@@ -572,7 +572,7 @@ class MediaLibrary
             $colBody = imagecolorallocate($img, 255, 255, 255);
             ImageFilledRectangle($img, 0, 0, 100, 50, $colBody);
             $colFont = imagecolorallocate($img, 0, 0, 0);
-            imagettftext($img, 10, 0, 18, 29, $colFont, $this->iconPath.'arial.ttf', 'no preview');
+            imagettftext($img, 10, 0, 18, 29, $colFont, self::_getIconPath().'arial.ttf', 'no preview');
             imagerectangle($img, 0, 0, 99, 49, $colFont);
             imagejpeg($img, $thumb_name, $this->thumbQuality);
         }
@@ -756,7 +756,7 @@ class MediaLibrary
 
 
     // gets the icon for the file
-    function _getIcon($file)
+    public static function _getIcon($file)
     {
         $icon = '';
         if (is_file($file)) {
@@ -803,13 +803,33 @@ class MediaLibrary
         if (is_dir($file)) {
             $icon = 'Folder';
         }
-        if (!file_exists($this->iconPath.$icon.'.png') or !isset($icon)) {
+        
+        if (!file_exists(self::_getIconPath().$icon.'.png') or !isset($icon)) {
             $icon = '_blank';
         }
         return $icon;
     }
+    
+    /**
+     * Returns icon's absolute path
+     * 
+     * @return string
+     */
+    public static function _getIconPath()
+    {
+        return ASCMS_CORE_MODULE_PATH.'/media/View/Media/';
+    }
 
-
+    /**
+     * Returns icon's web path
+     * 
+     * @return string 
+     */
+    public static function _getIconWebPath()
+    {
+        return ASCMS_CORE_MODULE_WEB_PATH.'/media/View/Media/';        
+    }        
+    
     // gets the filesize
     function _getSize($file)
     {
