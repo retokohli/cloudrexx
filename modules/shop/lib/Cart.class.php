@@ -550,6 +550,7 @@ class Cart
             // - If it's disabled, it's set to zero.
             $vat_amount = Vat::amount($product['vat_rate'],
                 $product['price']
+              - $product['discount_amount']
             );
             $total_vat_amount += $vat_amount;
             self::$products[$cart_id]['vat_amount'] =
