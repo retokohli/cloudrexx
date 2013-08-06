@@ -297,9 +297,11 @@ class CalendarManager extends CalendarLibrary
         	$objEvent = new CalendarEvent();
 	        
 	        if($objEvent->save($_POST)) {
-	        	$this->okMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_SUCCESSFULLY_SAVED'];
+                    $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_SUCCESSFULLY_SAVED'];
+                    $this->showOverview();
+                    return;
 	        } else {
-                $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_SAVED']; 
+                    $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_SAVED']; 
 	        }
             
             if($this->arrSettings['rssFeedStatus'] == 1) {
