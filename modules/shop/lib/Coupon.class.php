@@ -1116,7 +1116,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
                         '?section=shop'.MODULE_INDEX.
                         '&coupon_code='.$objCoupon->code, false,
                         'readonly="readonly"'.
-                        ' style="width: 420px;"'.
+                        ' style="width: 200px;"'.
                         ' onfocus="this.select();"'.
                         ' onblur="jQuery(\'#'.$coupon_uri_id.'\').hide();"'
                     ).'</div>',

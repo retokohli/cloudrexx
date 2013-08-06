@@ -210,7 +210,7 @@ jQuery(function($) {
   }).change();
   $(".icon_url").bind("click", function() {
     $(this).parents("tr").first().find(".layer_url").
-      css("display", "table-cell").find("input").focus();
+      css("display", "block").find("input").focus();
   });
   $("#coupon_type-1").click(function() {
     change_type("rate")
