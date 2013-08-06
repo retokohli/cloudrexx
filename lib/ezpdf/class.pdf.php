@@ -1231,7 +1231,7 @@ function output($debug=0){
   $this->checkAllHere();
 
   $xref=array();
-  $content="%PDF-1.3\n%âãÏÓ\n";
+  $content="%PDF-1.3\n%ï¿½ï¿½ï¿½ï¿½\n";
 //  $content="%PDF-1.3\n";
   $pos=strlen($content);
   foreach($this->objects as $k=>$v){
@@ -1511,9 +1511,13 @@ function selectFont($fontName,$encoding='',$set=1){
         // simple utility to convert them from pfa to pfb.
         $fp = fopen($fbfile,'rb');
         $tmp = get_magic_quotes_runtime();
-        set_magic_quotes_runtime(0);
+        if ($tmp) {
+            set_magic_quotes_runtime(0);
+        }
         $data = fread($fp,filesize($fbfile));
-        set_magic_quotes_runtime($tmp);
+        if ($tmp) {
+            set_magic_quotes_runtime($tmp);
+        }
         fclose($fp);
 
         // create the font descriptor
@@ -2638,7 +2642,9 @@ function addPngFromFile($file,$x,$y,$w=0,$h=0){
   // read in a png file, interpret it, then add to the system
   $error=0;
   $tmp = get_magic_quotes_runtime();
-  set_magic_quotes_runtime(0);
+  if ($tmp) {
+      set_magic_quotes_runtime(0);
+  }
   $fp = @fopen($file,'rb');
   if ($fp){
     $data='';
@@ -2650,7 +2656,9 @@ function addPngFromFile($file,$x,$y,$w=0,$h=0){
     $error = 1;
     $errormsg = 'trouble opening file: '.$file;
   }
-  set_magic_quotes_runtime($tmp);
+  if ($tmp) {
+      set_magic_quotes_runtime($tmp);
+  }
   
   if (!$error){
     $header = chr(137).chr(80).chr(78).chr(71).chr(13).chr(10).chr(26).chr(10);
@@ -2853,9 +2861,13 @@ function addJpegFromFile($img,$x,$y,$w=0,$h=0){
   $fp=fopen($img,'rb');
 
   $tmp = get_magic_quotes_runtime();
-  set_magic_quotes_runtime(0);
+  if ($tmp) {
+      set_magic_quotes_runtime(0);
+  }
   $data = fread($fp,filesize($img));
-  set_magic_quotes_runtime($tmp);
+  if ($tmp) {
+      set_magic_quotes_runtime($tmp);
+  }
   
   fclose($fp);
 
@@ -2904,7 +2916,9 @@ function addImage(&$img,$x,$y,$w=0,$h=0,$quality=75){
   $fp=fopen($tmpName,'rb');
 
   $tmp = get_magic_quotes_runtime();
-  set_magic_quotes_runtime(0);
+  if ($tmp) {
+      set_magic_quotes_runtime(0);
+  }
   $fp = @fopen($tmpName,'rb');
   if ($fp){
     $data='';
@@ -2917,7 +2931,9 @@ function addImage(&$img,$x,$y,$w=0,$h=0,$quality=75){
     $errormsg = 'trouble opening file';
   }
 //  $data = fread($fp,filesize($tmpName));
-  set_magic_quotes_runtime($tmp);
+  if ($tmp) {
+      set_magic_quotes_runtime($tmp);
+  }
 //  fclose($fp);
   unlink($tmpName);
   $this->addJpegImage_common($data,$x,$y,$w,$h,$imageWidth,$imageHeight);
