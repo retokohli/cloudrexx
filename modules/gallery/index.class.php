@@ -113,7 +113,7 @@ class Gallery
      */
     function showPictureNoPop($intPicId)
     {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG;
+        global $objDatabase, $_ARRAYLANG, $_CONFIG, $_CORELANG;
 
         $arrPictures = array();
         $intPicId    = intval($intPicId);
@@ -331,6 +331,11 @@ class Gallery
                 'TXT_COMMENTS_ADD_TEXT'     => $_ARRAYLANG['TXT_COMMENTS_ADD_TEXT'],
                 'TXT_COMMENTS_ADD_SUBMIT'   => $_ARRAYLANG['TXT_COMMENTS_ADD_SUBMIT'],
             ));
+
+//            $this->_objTpl->setVariable(array(
+//                'TXT_COMMENTS_ADD_CAPTCHA'   => $_CORELANG['TXT_CORE_CAPTCHA'],
+//                'GALLERY_COMMENTS_ADD_CAPTCHA_CODE'  => \FWCaptcha::getInstance()->getCode(),
+//            ));
 
             if ($objResult->RecordCount() == 0) { // no comments, hide the block
                 $this->_objTpl->hideBlock('showComments');
@@ -1176,12 +1181,13 @@ END;
 
         $intPicId    = intval($_POST['frmGalComAdd_PicId']);
         $categoryId = $this->getCategoryId($intPicId);
-        $boolComment = $this->categoryAllowsComments($categoryId);;
+        $boolComment = $this->categoryAllowsComments($categoryId);
 
         if (
             checkForSpider() ||
             $this->arrSettings['show_comments'] == 'off' ||
-            !$boolComment
+            !$boolComment /*||
+            !\FWCaptcha::getInstance()->check()*/
         ) {
             return;
         }
