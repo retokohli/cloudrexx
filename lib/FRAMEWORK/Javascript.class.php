@@ -556,6 +556,9 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                             // if the lazy dependency is not activated so far
                             $lazyLoadingFiles = array_merge($lazyLoadingFiles, self::$available[$dependency]['jsfiles']);
                         }
+                        if (!empty(self::$available[$dependency]['cssfiles'])) {
+                            $cssfiles = array_merge($cssfiles, self::$available[$dependency]['cssfiles']);
+                        }
                     }
                 }
                 $retstring .= self::makeJSFiles($data['jsfiles']);
