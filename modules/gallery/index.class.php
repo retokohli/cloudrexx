@@ -144,11 +144,8 @@ class Gallery
 // Never used
 //        $strCategoryComment = $objResult->fields['value'];
 
-        $objResult = $objDatabase->Execute(
-            "SELECT comment, voting ".
-            "FROM ".DBPREFIX."module_gallery_categories WHERE id=$intCatId");
-        $boolComment = $objResult->fields['comment'];
-        $boolVoting = $objResult->fields['voting'];
+        $boolComment = $this->categoryAllowsComments($intCatId);
+        $boolVoting = $this->categoryAllowsVoting($intCatId);
 
         // get picture informations
         $objResult = $objDatabase->Execute(
@@ -1178,6 +1175,17 @@ END;
         global $objDatabase, $objCache;
 
         $intPicId    = intval($_POST['frmGalComAdd_PicId']);
+        $categoryId = $this->getCategoryId($intPicId);
+        $boolComment = $this->categoryAllowsComments($categoryId);;
+
+        if (
+            checkForSpider() ||
+            $this->arrSettings['show_comments'] == 'off' ||
+            !$boolComment
+        ) {
+            return;
+        }
+
         $strName     = htmlspecialchars(strip_tags($_POST['frmGalComAdd_Name']), ENT_QUOTES, CONTREXX_CHARSET);
         $strEmail    = $_POST['frmGalComAdd_Email'];
         $strWWW        = htmlspecialchars(strip_tags($_POST['frmGalComAdd_Homepage']), ENT_QUOTES, CONTREXX_CHARSET);
@@ -1197,8 +1205,7 @@ END;
             $strEmail = htmlspecialchars(strip_tags($strEmail), ENT_QUOTES, CONTREXX_CHARSET);
         }
 
-        if ($this->arrSettings['show_comments'] == 'on' &&
-            $intPicId != 0 &&
+        if ($intPicId != 0 &&
             !empty($strName) &&
             !empty($strComment))
         {
@@ -1222,11 +1229,18 @@ END;
     {
         global $objDatabase, $objCache;
 
-        if (checkForSpider()) {
+        $intPicId = intval($intPicId);
+        $categoryId = $this->getCategoryId($intPicId);
+        $boolVoting = $this->categoryAllowsVoting($categoryId);
+
+        if (
+            checkForSpider() ||
+            $this->arrSettings['show_voting'] == 'off' ||
+            !$boolVoting
+        ) {
             return;
         }
 
-        $intPicId = intval($intPicId);
         $intMark = intval($intMark);
         $strMd5 = md5($_SERVER['REMOTE_ADDR'].$_SERVER['HTTP_USER_AGENT']);
 
@@ -1244,8 +1258,7 @@ END;
             $boolIpCheck = true;
         }
 
-        if ($this->arrSettings['show_voting'] == 'on' &&
-            $intPicId != 0    &&
+        if ($intPicId != 0    &&
             $intMark >= 1     &&
             $intMark <= 10    &&
             $boolIpCheck    &&
@@ -1258,6 +1271,34 @@ END;
 
             $objCache->deleteAllFiles();
         }
+    }
+
+    /**
+     * Are comments activated for the given category
+     *
+     * @param int $categoryId the category id
+     * @return bool comments are activated
+     */
+    protected function categoryAllowsComments($categoryId) {
+        global $objDatabase;
+        $objResult = $objDatabase->Execute(
+            "SELECT `comment` FROM `".DBPREFIX."module_gallery_categories` WHERE id=" . intval($categoryId)
+        );
+        return $objResult->fields['comment'];
+    }
+
+    /**
+     * Are comments activated for the given category
+     *
+     * @param int $categoryId the category id
+     * @return bool comments are activated
+     */
+    protected function categoryAllowsVoting($categoryId) {
+        global $objDatabase;
+        $objResult = $objDatabase->Execute(
+            "SELECT `voting` FROM `".DBPREFIX."module_gallery_categories` WHERE id=" . intval($categoryId)
+        );
+        return $objResult->fields['voting'];
     }
 
     /**
