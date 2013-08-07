@@ -57,6 +57,20 @@ class settingsManager
         );
     }
 
+    /**
+     * Check whether the configuration in the configurations file is correct or not
+     * This method displays a warning message on top of the page when the ftp connection failed or the configuration
+     * is disabled
+     */
+    protected function checkFtpAccess() {
+        global $objTemplate, $_CORELANG;
+        // if ftp access is not activated or not possible to connect (not correct credentials)
+        if(!\Cx\Lib\FileSystem\FileSystem::init()) {
+            $objTemplate->setVariable('TXT_SETTING_FTP_CONFIG_WARNING', sprintf($_CORELANG['TXT_SETTING_FTP_CONFIG_WARNING'], ASCMS_DOCUMENT_ROOT . '/config/configuration.php'));
+            $objTemplate->parse('settings_ftp_config_warning');
+        }
+    }
+
     private function checkWritePermissions()
     {
         global $_CORELANG;
@@ -162,6 +176,10 @@ class settingsManager
         JS::activate('jquery');
 
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'settings', 'settings.html');
+
+        // check whether the ftp configurations are correct or not
+        $this->checkFtpAccess();
+
         $this->strPageTitle = $_CORELANG['TXT_SYSTEM_SETTINGS'];
 
         $objResult = $objDatabase->Execute('SELECT setid,

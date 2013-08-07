@@ -1621,3 +1621,5 @@ $_ARRAYLANG['TXT_WORKBENCH_MODULE_DESCRIPTION'] = 'Development Tools';
 
 $_ARRAYLANG['TXT_MAINTENANCE_MODULE_NAME'] = 'Maintenance centre';
 $_ARRAYLANG['TXT_MAINTENANCE_MODULE_DESCRIPTION'] = 'Shows pending maintenance tasks and performs them';
+
+$_ARRAYLANG['TXT_SETTING_FTP_CONFIG_WARNING'] = 'There are wrong ftp credentials defined in the configurations file (%s) or the ftp connection is disabled. If you don\'t fix this issue, contrexx probably doesn\'t have access to upload or edit files and folders!';

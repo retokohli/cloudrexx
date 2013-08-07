@@ -1701,3 +1701,5 @@ $_ARRAYLANG['TXT_WORKBENCH_MODULE_DESCRIPTION'] = 'Entwicklertools';
 
 $_ARRAYLANG['TXT_MAINTENANCE_MODULE_NAME'] = 'Wartungscenter';
 $_ARRAYLANG['TXT_MAINTENANCE_MODULE_DESCRIPTION'] = 'Zeigt anstehende Wartungsarbeiten an und führt diese durch';
+
+$_ARRAYLANG['TXT_SETTING_FTP_CONFIG_WARNING'] = 'Es wurde in der Konfigurationsdatei (%s) eine ungültige oder keine FTP-Verbindung konfiguriert. Dadurch können Probleme beim Hochladen oder Bearbeiten von Dateien und Verzeichnissen auftreten!';
