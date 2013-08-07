@@ -1163,7 +1163,7 @@ class LegacyComponentHandler {
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/search/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $pos = (isset($_GET['pos'])) ? intval($_GET['pos']) : '';
-                        \Env::get('cx')->getPage()->setContent(search_getSearchPage($pos, \Env::get('cx')->getPage()->getContent(), $license));
+                        \Env::get('cx')->getPage()->setContent(\Search::getPage($pos, \Env::get('cx')->getPage()->getContent(), $license));
                         unset($pos);
                     },
 

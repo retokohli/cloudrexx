@@ -147,7 +147,7 @@ class PageRepository extends EntityRepository {
      * @param   string  $module
      * @param   string  $cmd
      * @param   int     $lang
-     * @return  mixed   \Cx\Core\ContentManager\Model\Entity\Page if a page was found, otherwise NULL
+     * @return  null|\Cx\Core\ContentManager\Model\Entity\Page returns the page object or null
      */
     private function lookupPageFromModuleAndCmdByFallbackLanguage($module, $cmd, $lang)
     {
@@ -858,37 +858,24 @@ class PageRepository extends EntityRepository {
         $pages   = $qb->getQuery()->getResult();
         $config  = \Env::get('config');
         $results = array();
-
         foreach($pages as $page) {
             $isNotVisible  = ($config['searchVisibleContentOnly'] == 'on') && !$page->isVisible();
             $hasPageAccess = true;
             if ($config['coreListProtectedPages'] == 'off' && $page->isFrontendProtected()) {
                 $hasPageAccess = \Permission::checkAccess($page->getFrontendAccessId(), 'dynamic', true);
             }
-            
             if (!$page->isActive() || $isNotVisible || !$hasPageAccess) {
                 continue;
             }
-
-            $searchcontent = trim(stripslashes(strip_tags($page->getContent(), '<script>')));
-            $searchcontent = preg_replace(
-                array(
-                    '/\{[a-z0-9_]+\}/',
-                    '/\[\[[a-z0-9_]+\]\]/',
-                    '/\<script\>.?\<\/script\>/',
-                    '/<!--\s+(BEGIN|END)\s+[a-z0-9_]+\s+-->/'
-                ),
-                '',
-                $searchcontent);
-            
+// TODO: Add proper score with MATCH () AGAINST () or similar
             $results[] = array(
                 'Score' => 100,
                 'Title' => $page->getTitle(),
-                'Content' => substr($searchcontent,0, $config['searchDescriptionLength']),
+                'Content' => \Search::shortenSearchContent(
+                    $page->getContent(), $config['searchDescriptionLength']),
                 'Link' => $this->getPath($page)
             );
         }
-
         return $results;
     }
 

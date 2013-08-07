@@ -167,7 +167,7 @@ class SearchManager
      * Gets the search query builder.
      * Searches for slug, title and content title by the given search term.
      * 
-     * @return  QueryBuilder  $qb
+     * @return  \Doctrine\ORM\QueryBuilder  $qb
      */
     private function getSearchQueryBuilder()
     {
