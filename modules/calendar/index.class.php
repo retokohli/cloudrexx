@@ -336,7 +336,7 @@ class Calendar extends CalendarLibrary
         global $_ARRAYLANG, $_CORELANG;
 
         $this->_objTpl->setTemplate($this->pageContent, true, true);
-        JS::activate("jqueryui");
+        
         parent::getSettings();
 
         //check datepicker plugin
@@ -428,7 +428,7 @@ class Calendar extends CalendarLibrary
     {
         global $_ARRAYLANG, $_CORELANG, $_LANGID;
         JS::activate('cx');
-        JS::activate("jqueryui");
+        
         JS::registerJS('modules/calendar/View/Script/Frontend.js');
         
         $this->_objTpl->setTemplate($this->pageContent, true, true);
