@@ -140,8 +140,12 @@
     {
         var pattern = /^showIn/;
         var reg = new RegExp(pattern);
-        var firstLang = false;       
+        var firstLang = true;       
         var type = document.getElementById('type').value;   
+        
+        if (langCount(reg) == 0) {
+            $J("input[name*=showIn]:first").attr("checked", "checked");
+        }
         
         for (i = 0; i < document.formModifyEvent.elements.length; ++i) {
             var elm = document.formModifyEvent.elements[i];
@@ -166,16 +170,22 @@
 
                 if (elm.checked) {
                     tab1.style.display = 'inline';
-                    tab2.style.display = 'inline'; 
-                
-                    firstLang = true       
-                } else {
-                    if (langCount(reg) >= 1) {
-                        tab1.style.display = 'none';
-                        tab2.style.display = 'none';     
+                    tab2.style.display = 'inline';
+                    
+                    if(firstLang) {
+                        tab1body.style.display = 'block';
+                        tab2body.style.display = 'block'; 
+                        firstLang = false   
                     } else {
-                        elm.checked = true;    
+                        tab1body.style.display = 'none';
+                        tab2body.style.display = 'none'; 
                     }
+                } else {
+                    tab1.style.display = 'none';
+                    tab2.style.display = 'none';
+                    
+                    tab1body.style.display = 'none';
+                    tab2body.style.display = 'none'; 
                 }  
                 
                 /*if(firstLang) {
