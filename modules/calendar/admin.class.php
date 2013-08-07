@@ -372,6 +372,18 @@ class CalendarManager extends CalendarLibrary
             $endDateInputId = "endDate";
             $seriesPatternEndsInputId = "seriesDouranceDate";                                                   
         }
+                
+        if (empty($eventId)) {
+            $startDate = new DateTime("NOW");
+            $startMin  = (int) $startDate->format('i');
+            // Adjust the time to next half hour
+            if (!in_array($startMin, array(0, 30))) {
+                $minAdj = (60 - $startMin) > 30 ? (30 - $startMin) : (60 - $startMin);
+                $startDate->setTime($startDate->format('H'), $startDate->format('i') + $minAdj, 00);
+            }
+            $endDate   = clone $startDate;
+            $endDate->modify("+30 mins");
+        }
         
         //parse globals  
         $this->_objTpl->setGlobalVariable(array(
@@ -473,8 +485,8 @@ class CalendarManager extends CalendarLibrary
             
             $this->moduleLangVar.'_EVENT_TYPE_EVENT'                        => $eventId != 0 ? ($objEvent->type == 0 ? 'selected="selected"' : '') : '',      
             $this->moduleLangVar.'_EVENT_TYPE_REDIRECT'                     => $eventId != 0 ? ($objEvent->type == 1 ? 'selected="selected"' : '') : '',
-            $this->moduleLangVar.'_EVENT_START_DATE'                        => $eventId != 0 ? date("$dateFomat H:i", $objEvent->startDate) : date("$dateFomat H:i"),
-            $this->moduleLangVar.'_EVENT_END_DATE'                          => $eventId != 0 ? date("$dateFomat H:i", $objEvent->endDate) : date("$dateFomat H:i"),
+            $this->moduleLangVar.'_EVENT_START_DATE'                        => $eventId != 0 ? date("$dateFomat H:i", $objEvent->startDate) : $startDate->format("$dateFomat H:i"),
+            $this->moduleLangVar.'_EVENT_END_DATE'                          => $eventId != 0 ? date("$dateFomat H:i", $objEvent->endDate) : $endDate->format("$dateFomat H:i"),
             $this->moduleLangVar.'_EVENT_PRICE'                             => $eventId != 0 ? $objEvent->price : '',
             $this->moduleLangVar.'_EVENT_LINK'                              => $eventId != 0 ? $objEvent->link : '',
             $this->moduleLangVar.'_EVENT_PICTURE'                           => $eventId != 0 ? $objEvent->pic : '',
