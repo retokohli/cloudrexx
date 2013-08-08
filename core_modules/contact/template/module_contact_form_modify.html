@@ -791,12 +791,12 @@
     </div>
     
     <div class="tabContainer">
-        <br/>
+        <br/><br />
         <ul id="tabmenu">
             <li><a class="active" onclick="superTab(this, 'values')" title="{TXT_CONTACT_FORM_VALUE}">{TXT_CONTACT_FORM_VALUES}</a></li>
             <li><a onclick="superTab(this, 'notification')" title="{TXT_CONTACT_FORM_NOTIFICATION}">{TXT_CONTACT_FORM_NOTIFICATION}</a></li>
-            <li><a onclick="superTab(this, 'settings')" title="{TXT_ADVANCED_SETTINGS}">{TXT_ADVANCED_SETTINGS}</a></li>
             <li><a onclick="superTab(this, 'feedback')" title="{TXT_CONTACT_FEEDBACK}">{TXT_CONTACT_FEEDBACK}</a></li>
+            <li><a onclick="superTab(this, 'settings')" title="{TXT_ADVANCED_SETTINGS}">{TXT_ADVANCED_SETTINGS}</a></li>
         </ul>
     </div>
     <div class="tabs" id="tab_values">
@@ -917,7 +917,6 @@
                         <tr class="row2 reset">
                             <td>{CONTACT_FORM_TEXT}</td>
                         </tr>
-                        <tr><td><br/></td></tr>
                     </table>
                 </td>
             </tr>
@@ -979,6 +978,17 @@
         </table>
     </div>
 
+    <div id="tab_feedback" class="tabs" style="display:none;">
+        <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
+            <tr>
+                <th>{TXT_CONTACT_FEEDBACK}</th>
+            </tr>
+            <tr class="row1 reset" style="height:20px;">
+                <td>{CONTACT_FORM_FEEDBACK}</td>
+            </tr>
+        </table>
+    </div>
+
     <div id="tab_settings" class="tabs" style="display:none;">
         <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
             <tr>
@@ -1002,17 +1012,6 @@
                     <input type="radio" name="contactFormUseCrmModule" value="1" id="contactFormUseCrmModule_1" {CONTACT_FORM_USE_CRMMODULE_YES} /><label for="contactFormUseCrmModule_1">{TXT_CONTACT_YES}</label>
                     <input type="radio" name="contactFormUseCrmModule" value="0" id="contactFormUseCrmModule_0" {CONTACT_FORM_USE_CRMMODULE_NO} /><label for="contactFormUseCrmModule_0">{TXT_CONTACT_NO}</label>
                 </td>
-            </tr>
-        </table>
-    </div>
-
-    <div id="tab_feedback" class="tabs" style="display:none;">
-        <table border="0" cellpadding="3" cellspacing="0" class="adminlist" width="100%">
-            <tr>
-                <th>{TXT_CONTACT_FEEDBACK}</th>
-            </tr>
-            <tr class="row1 reset" style="height:20px;">
-                <td>{CONTACT_FORM_FEEDBACK}</td>
             </tr>
         </table>
     </div>
