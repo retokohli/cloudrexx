@@ -225,6 +225,9 @@ class cmsSession
 
         $aVal = addslashes( $aVal );
         $query = "UPDATE ".DBPREFIX."sessions SET datavalue = '".$aVal."', lastupdated = '".time()."' WHERE sessionid = '".$aKey."'";
+        if (!class_exists('DBG')) {
+            $this->_objDb->debug = 0;
+        }
         $this->_objDb->Execute($query);
         return true;
     }
