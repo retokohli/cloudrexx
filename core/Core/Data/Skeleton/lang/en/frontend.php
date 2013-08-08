@@ -3,6 +3,11 @@
  * This is the english language file for frontend mode.
  * This file is included by Contrexx and all entries are set as placeholder
  * values for frontent page template by SystemComponentFrontendController
+ *
+ * @copyright   CONTREXX CMS - Comvation AG Thun
+ * @author      Michael Ritter <michael.ritter@comvation.com>
+ * @package     contrexx
+ * @subpackage  modules_skeleton
  */
 
 global $_ARRAYLANG;

@@ -3,7 +3,12 @@
  * Backend controller to create a default backend view.
  *
  * Create a subclass of this in order to create a normal backend view
- * @author Michael Ritter <michael.ritter@comvation.com>
+ *
+ * @copyright   Comvation AG
+ * @author      Michael Ritter <michael.ritter@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_core
+ * @version     3.1.0
  */
 
 namespace Cx\Core\Core\Model\Entity;
@@ -12,7 +17,12 @@ namespace Cx\Core\Core\Model\Entity;
  * Backend controller to create a default backend view.
  *
  * Create a subclass of this in order to create a normal backend view
- * @author Michael Ritter <michael.ritter@comvation.com>
+ *
+ * @copyright   Comvation AG
+ * @author      Michael Ritter <michael.ritter@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_core
+ * @version     3.1.0
  */
 abstract class SystemComponentBackendController extends Controller {
     

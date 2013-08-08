@@ -1,19 +1,35 @@
 <?php
 /**
  * A system component (aka "module", "core_module" or "core component")
- * @author Michael Ritter <michael.ritter@comvation.com>
+ *
+ * @copyright   Comvation AG
+ * @author      Michael Ritter <michael.ritter@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_core
+ * @version     3.1.0
  */
 
 namespace Cx\Core\Core\Model\Entity;
 
 /**
  * Thrown for illegal component types
+ *
+ * @copyright   Comvation AG
+ * @author      Michael Ritter <michael.ritter@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_core
+ * @version     3.1.0
  */
 class SystemComponentException extends \Exception {}
 
 /**
  * A system component (aka "module", "core_module" or "core component")
- * @author Michael Ritter <michael.ritter@comvation.com>
+ *
+ * @copyright   Comvation AG
+ * @author      Michael Ritter <michael.ritter@comvation.com>
+ * @package     contrexx
+ * @subpackage  core
+ * @version     3.1.0
  */
 class SystemComponent
 {
@@ -117,12 +133,12 @@ class SystemComponent
         $ns .= '\\' . $this->getName();
         return $ns;
     }
-    
+
     /**
      * Returns the type folder (relative to document root)
      * @param string $type Component type name
+     * @throws SystemComponentException
      * @return string Component type folder relative to document root
-     * @throws CommandException For non-existing type
      */
     public static function getPathForType($type) {
         switch ($type) {
@@ -143,12 +159,12 @@ class SystemComponent
                 break;
         }
     }
-    
+
     /**
      * Returns the namespace for a component type
      * @param string $type Component type name
+     * @throws SystemComponentException
      * @return string Namespace
-     * @throws CommandException For non-existing type
      */
     public static function getBaseNamespaceForType($type) {
         switch ($type) {

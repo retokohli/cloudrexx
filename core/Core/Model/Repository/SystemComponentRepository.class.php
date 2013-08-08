@@ -1,9 +1,14 @@
 <?php
 /**
  * Repository for SystemComponents
- * 
+ *
  * This decorates SystemComponents with SystemComponentController class
- * @author Michael Ritter <michael.ritter@comvation.com>
+ *
+ * @copyright   Comvation AG
+ * @author      Michael Ritter <michael.ritter@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_core
+ * @version     3.1.0
  */
 
 namespace Cx\Core\Core\Model\Repository;
@@ -12,7 +17,12 @@ namespace Cx\Core\Core\Model\Repository;
  * Repository for SystemComponents
  * 
  * This decorates SystemComponents with SystemComponentController class
- * @author Michael Ritter <michael.ritter@comvation.com>
+ *
+ * @copyright   Comvation AG
+ * @author      Michael Ritter <michael.ritter@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_core
+ * @version     3.1.0
  */
 class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
 {
@@ -42,7 +52,7 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
      * Finds an entity by its primary key / identifier.
      * 
      * Overwritten in order to decorate result
-     * @param $id The identifier.
+     * @param int $id The identifier.
      * @param int $lockMode
      * @param int $lockVersion
      * @return \Cx\Core\Core\Model\Entity\SystemComponentController The entity.

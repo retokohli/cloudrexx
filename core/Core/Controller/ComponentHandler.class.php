@@ -4,21 +4,40 @@
  * Handles all components, including legacy ones.
  * 
  * This is a wrapper class for SystemComponentRepository and LegacyComponentHandler
- * @author Michael Ritter <michael.ritter@comvation.com>
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Michael Ritter <michael.ritter@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_core
+ * @link        http://www.contrexx.com/ contrexx homepage
+ * @since       v3.1.0
  */
 
 namespace Cx\Core\Core\Controller;
 
 /**
- * ComponentHandler is thrown for legacy components without an exception in LegacyComponentHandler
+ * ComponentException is thrown for legacy components without an exception in LegacyComponentHandler
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Michael Ritter <michael.ritter@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_core
+ * @link        http://www.contrexx.com/ contrexx homepage
+ * @since       v3.1.0
  */
 class ComponentException extends \Exception {}
 
 /**
  * Handles all components, including legacy ones.
- * 
+ *
  * This is a wrapper class for SystemComponentRepository and LegacyComponentHandler
- * @author Michael Ritter <michael.ritter@comvation.com>
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Michael Ritter <michael.ritter@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_core
+ * @link        http://www.contrexx.com/ contrexx homepage
+ * @since       v3.1.0
  */
 class ComponentHandler {
     
