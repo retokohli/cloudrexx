@@ -33,18 +33,20 @@ $_CONFIG['frontendEditingStatus']     = "off";
 $_CONFIG['googleAnalyticsTrackingId'] = "";
 $_CONFIG['googleMapsAPIKey']          = "";
 $_CONFIG['installationId']            = "";
-$_CONFIG['languageDetection']         = "off";
+$_CONFIG['languageDetection']         = "on";
 $_CONFIG['lastAccessId']              = 382;
 $_CONFIG['licenseKey']                = "";
 $_CONFIG['passwordComplexity']        = "on";
+$_CONFIG['protocolHttpsBackend']      = "off";
+$_CONFIG['protocolHttpsFrontend']     = "off";
 $_CONFIG['searchVisibleContentOnly']  = "on";
 $_CONFIG['sessionLifeTime']           = 3600;
 $_CONFIG['sessionLifeTimeRememberMe'] = 1209600;
 $_CONFIG['spamKeywords']              = "sex, viagra";
 $_CONFIG['systemStatus']              = "on";
-$_CONFIG['timezone']                  = 'Europe/Zurich';
-$_CONFIG['xmlSitemapStatus']          = "on";
+$_CONFIG['timezone']                  = "Europe/Zurich";
 $_CONFIG['useCustomizings']           = "on";
+$_CONFIG['xmlSitemapStatus']          = "on";
 
 /**
 * -------------------------------------------------------------------------
@@ -123,13 +125,6 @@ $_CONFIG['podcastHomeContent']        = 1;
 
 /**
 * -------------------------------------------------------------------------
-* Alias
-* -------------------------------------------------------------------------
-*/
-$_CONFIG['aliasStatus']               = "";
-
-/**
-* -------------------------------------------------------------------------
 * Data
 * -------------------------------------------------------------------------
 */
@@ -178,3 +173,5 @@ $_CONFIG['licenseSuccessfulUpdate']   = 0;
 $_CONFIG['licenseUpdateInterval']     = 24;
 $_CONFIG['licenseValidTo']            = 0;
 $_CONFIG['upgradeUrl']                = "http://license.contrexx.com/";
+
+?>
