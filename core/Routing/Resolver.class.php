@@ -445,7 +445,7 @@ class Resolver {
 
             //(I) see what the model has for us
             $result = $this->pageRepo->getPagesAtPath($this->url->getLangDir().'/'.$path, null, $this->lang, false, \Cx\Core\ContentManager\Model\Repository\PageRepository::SEARCH_MODE_PAGES_ONLY);
-            if ($this->pagePreview) {
+            if (isset($result['page']) && $result['page'] && $this->pagePreview) {
                 if (empty($this->sessionPage)) {
                     if (\Permission::checkAccess(6, 'static', true)) {
                         $result['page']->setActive(true);
