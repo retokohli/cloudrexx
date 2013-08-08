@@ -13,8 +13,12 @@
  * 
  * Checks PHP version, loads debugger and initial config, checks if installed
  * and loads the Contrexx class
- * @version 3.1.0
- * @author Michael Ritter <michael.ritter@comvation.com>
+ *
+ * @copyright   Comvation AG
+ * @author      Michael Ritter <michael.ritter@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_core
+ * @version     3.1.0
  */
 
 // Check php version (5.3 or newer is required)

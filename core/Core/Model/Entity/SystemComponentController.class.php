@@ -4,7 +4,12 @@
  * 
  * Decorator for SystemComponent
  * Every component needs a SystemComponentController for initialization
- * @author Michael Ritter <michael.ritter@comvation.com>
+ *
+ * @copyright   Comvation AG
+ * @author      Michael Ritter <michael.ritter@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_core
+ * @version     3.1.0
  */
 
 namespace Cx\Core\Core\Model\Entity;
@@ -14,7 +19,12 @@ namespace Cx\Core\Core\Model\Entity;
  * 
  * Decorator for SystemComponent
  * Every component needs a SystemComponentController for initialization
- * @author Michael Ritter <michael.ritter@comvation.com>
+ *
+ * @copyright   Comvation AG
+ * @author      Michael Ritter <michael.ritter@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_core
+ * @version     3.1.0
  */
 class SystemComponentController extends Controller {
     /**
@@ -25,7 +35,7 @@ class SystemComponentController extends Controller {
     
     /**
      * Decorated SystemComponent
-     * @var Cx\Core\Core\Model\Entity\SystemComponent
+     * @var \Cx\Core\Core\Model\Entity\SystemComponent
      */
     protected $systemComponent;
     

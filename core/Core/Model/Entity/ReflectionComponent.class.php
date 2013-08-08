@@ -1,16 +1,35 @@
 <?php
 /**
  * Represents an abstraction of a component
- * @author Michael Ritter <michael.ritter@comvation.com>
+ *
+ * @copyright   Comvation AG
+ * @author      Michael Ritter <michael.ritter@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_core
+ * @version     3.1.0
  */
 
 namespace Cx\Core\Core\Model\Entity;
 
+/**
+ * ReflectionComponentException
+ *
+ * @copyright   Comvation AG
+ * @author      Michael Ritter <michael.ritter@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_core
+ * @version     3.1.0
+ */
 class ReflectionComponentException extends \Exception {}
 
 /**
  * Represents an abstraction of a component
- * @author Michael Ritter <michael.ritter@comvation.com>
+ *
+ * @copyright   Comvation AG
+ * @author      Michael Ritter <michael.ritter@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_core
+ * @version     3.1.0
  */
 class ReflectionComponent {
     /**
@@ -37,14 +56,16 @@ class ReflectionComponent {
      * @var string ZIP package filename
      */
     protected $packageFile = null;
-    
+
     /**
      * Two different ways to instanciate this are supported:
      * 1. Supply an instance of \Cx\Core\Core\Model\Entity\Component
      * 2. Supply a install package zip filename
      * 3. Supply a component name and type
      * @param mixed $arg1 Either an instance of \Cx\Core\Core\Model\Entity\Component or the name of a component
-     * @param string $arg2 (only if a component name was supplied as $arg1) Component type (one of core_module, module, core, lib)
+     * @param string|null $arg2 (only if a component name was supplied as $arg1) Component type (one of core_module, module, core, lib)
+     * @throws ReflectionComponentException
+     * @throws \BadMethodCallException
      */
     public function __construct($arg1, $arg2 = null) {
         if (is_a($arg1, 'Cx\Core\Core\Model\Entity\SystemComponent')) {
@@ -572,9 +593,10 @@ class ReflectionComponent {
             $em->flush();
         }
     }
-    
+
     /**
      * Loads pages from module repository
+     * @param int $moduleId the module id
      * @return boolean True on success, false if no pages found in repo
      */
     protected function loadPagesFromModuleRepository($moduleId) {
@@ -797,6 +819,7 @@ class ReflectionComponent {
      * Fix the namespace of all files of this component
      * @param string $oldBaseNs Base namespace of old component
      * @param string $baseDir Directory in which the recursive replace should be done
+     * @return bool
      * @todo Test references update in DB
      */
     public function fixNamespaces($oldBaseNs, $baseDir) {

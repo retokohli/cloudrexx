@@ -1,14 +1,22 @@
 <?php
 /**
  * Specific BackendController for this Component. Use this to easily create a backend view
- * @author Michael Ritter <michael.ritter@comvation.com>
+ *
+ * @copyright   Comvation AG
+ * @author      Michael Ritter <michael.ritter@comvation.com>
+ * @package     contrexx
+ * @subpackage  modules_skeleton
  */
 
 namespace Cx\Modules\Skeleton\Controller;
 
 /**
  * Specific BackendController for this Component. Use this to easily create a backend view
- * @author Michael Ritter <michael.ritter@comvation.com>
+ *
+ * @copyright   Comvation AG
+ * @author      Michael Ritter <michael.ritter@comvation.com>
+ * @package     contrexx
+ * @subpackage  modules_skeleton
  */
 class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController {
     
