@@ -747,7 +747,20 @@ $updatesSp3ToSp4 = array(
 $updatesSp4To301 = array(
     "INSERT IGNORE INTO `" . DBPREFIX . "settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES
     (57, 'protocolHttpsFrontend', 'off', 1),
-    (58, 'protocolHttpsBackend', 'off', 1)"
+    (58, 'protocolHttpsBackend', 'off', 1)",
+    array (
+        'table' => DBPREFIX.'core_text',
+        'structure' => array(
+            'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'primary' => true),
+            'lang_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'primary' => true, 'after' => 'id'),
+            'section' => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => '', 'primary' => true, 'after' => 'lang_id'),
+            'key' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'primary' => 32, 'after' => 'section'),
+            'text' => array('type' => 'text', 'after' => 'key'),
+        ),
+        'keys' => array(
+            'text' => array('fields' => array('text'), 'type' => 'FULLTEXT'),
+        ),
+    ),
 );
 
 $updatesRc1ToSp4    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To301);
@@ -895,10 +908,10 @@ while (!$result->EOF) {
 // fix fallback pages
 if ($version == 'rc1') {
     $em = \Env::em();
-    $pageRepo = $em->getRepository('Cx\Model\ContentManager\Page');
+    $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
 
     $fallbackPages = $pageRepo->findBy(array(
-        'type' => \Cx\Model\ContentManager\Page::TYPE_FALLBACK,
+        'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK,
     ));
 
     foreach ($fallbackPages as $page) {

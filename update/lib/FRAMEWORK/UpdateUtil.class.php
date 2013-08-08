@@ -685,7 +685,11 @@ class UpdateUtil
 //            } else
             if ($is_primary) {
                 // Like "'type' => 'INT(10)', 'primary' => true, ..."
-                $primaries[] = $name;
+                $key = '';
+                if (is_numeric($is_primary)) {
+                    $key = '(' . intval($is_primary) . ')';
+                }
+                $primaries[] = $name . $key;
             }
         }
         return $primaries;
