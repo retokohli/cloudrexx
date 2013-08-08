@@ -175,6 +175,9 @@
                     if(firstLang) {
                         tab1body.style.display = 'block';
                         tab2body.style.display = 'block'; 
+                        $J(".language_tab li a").removeClass('active').addClass("inactive");
+                        $J('#eventTitleTab_' + langId + '_title').addClass("active");
+                        $J('#eventDescTab_' + langId + '_desc').addClass("active");
                         firstLang = false   
                     } else {
                         tab1body.style.display = 'none';
@@ -460,7 +463,7 @@
                 </td>
             </tr>
         </table>        
-        <ul id="tabmenu" style="{CALENDAR_HIDE_ON_SINGLE_LANG} margin-top: 15px;">
+        <ul id="tabmenu" class="language_tab" style="{CALENDAR_HIDE_ON_SINGLE_LANG} margin-top: 15px;">
             <!-- BEGIN eventTabMenuTitleTab -->
             <li><a id="eventTitleTab_{CALENDAR_EVENT_LANG_ID}_title" class="{CALENDAR_EVENT_TAB_CLASS}" href="javascript:{}" onclick="selectTab('{CALENDAR_EVENT_LANG_ID}_title')" title="" hidefocus="">{TXT_CALENDAR_EVENT_LANG_NAME}</a></li>
             <!-- END eventTabMenuTitleTab -->
@@ -602,7 +605,7 @@
                 </td>
             </tr> 
         </table>        
-        <ul id="tabmenu" style="{CALENDAR_HIDE_ON_SINGLE_LANG} margin-top: 15px;">
+        <ul id="tabmenu" class="language_tab" style="{CALENDAR_HIDE_ON_SINGLE_LANG} margin-top: 15px;">
             <!-- BEGIN eventTabMenuDescTab -->
             <li><a id="eventDescTab_{CALENDAR_EVENT_LANG_ID}_desc" class="{CALENDAR_EVENT_TAB_CLASS}" href="javascript:{}" onclick="selectTab('{CALENDAR_EVENT_LANG_ID}_desc');refreshEditors()" title="">{TXT_CALENDAR_EVENT_LANG_NAME}</a></li>
             <!-- END eventTabMenuDescTab -->
