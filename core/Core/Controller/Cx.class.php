@@ -27,16 +27,6 @@ namespace {
     }
 }
 
-/**
- * Main script for Contrexx
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
- * @subpackage  core_core
- * @link        http://www.contrexx.com/ contrexx homepage
- * @since       v3.1.0
- */
-
 namespace Cx\Core\Core\Controller {
 
     /**
