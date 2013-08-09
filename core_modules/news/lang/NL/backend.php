@@ -52,7 +52,6 @@ $_ARRAYLANG['TXT_ID'] = "ID";
 $_ARRAYLANG['TXT_ACCEPT_CHANGES'] = "Veranderingen doorvoeren";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'] = "De selectie verwijderen?";
 $_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK'] = "Deze actie kan de werking van het systeem beïnvloeden!";
-$_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE'] = "De catogerie kan niet verwijderd worden! Verwijder eerst alle subgroepen in de categorie.";
 $_ARRAYLANG['TXT_PERFORM'] = "Uitvoeren";
 $_ARRAYLANG['TXT_DELETE'] = "Verwijderen";
 $_ARRAYLANG['TXT_NEWS_SETTINGS_SAVED'] = "De instellingen zijn opgeslagen!";

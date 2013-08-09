@@ -29,6 +29,7 @@ class newsHeadlines extends newsLibrary
 
     function __construct($pageContent)
     {
+        parent::__construct();
         $this->getSettings();
         $this->_pageContent = $pageContent;
         $this->_objTemplate = new \Cx\Core\Html\Sigma('.');
@@ -78,6 +79,7 @@ class newsHeadlines extends newsLibrary
                        tblN.publisher_id,
                        tblN.author,
                        tblN.author_id,
+                       tblN.catid,
                        tblL.text NOT REGEXP '^(<br type=\"_moz\" />)?\$' AS newscontent,
                        tblL.title AS title, 
                        tblL.teaser_text
@@ -107,7 +109,7 @@ class newsHeadlines extends newsLibrary
                 $newsUrl    = empty($objResult->fields['redirect'])
                                 ? (empty($objResult->fields['newscontent'])
                                     ? ''
-                                    : \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'details', FRONTEND_LANG_ID, array('newsid' => $newsid)))
+                                    : \Cx\Core\Routing\Url::fromModuleAndCmd('news', $this->findCmdById('details', $objResult->fields['catid']), FRONTEND_LANG_ID, array('newsid' => $newsid)))
                                 : $objResult->fields['redirect'];
                 $htmlLink   = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml($newstitle), 'headlineLink');
                 $htmlLinkTitle  = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml($newstitle));

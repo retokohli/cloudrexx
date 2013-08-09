@@ -30,6 +30,7 @@ class newsTop extends newsLibrary
 
     function __construct($pageContent)
     {
+        parent::__construct();
         $this->getSettings();
         $this->_pageContent = $pageContent;
         $this->_objTemplate = new \Cx\Core\Html\Sigma('.');
@@ -80,6 +81,7 @@ class newsTop extends newsLibrary
                        tblN.publisher_id,
                        tblN.author,
                        tblN.author_id,
+                       tblN.catid,
                        tblL.title AS title, 
                        tblL.teaser_text
                   FROM ".DBPREFIX."module_news AS tblN
@@ -108,7 +110,7 @@ class newsTop extends newsLibrary
                 $author     = FWUser::getParsedUserTitle($objResult->fields['author_id'], $objResult->fields['author']);
                 $publisher  = FWUser::getParsedUserTitle($objResult->fields['publisher_id'], $objResult->fields['publisher']);
                 $newsUrl    = empty($objResult->fields['redirect'])
-                                ? \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'details', FRONTEND_LANG_ID, array('newsid' => $newsid))
+                                ? \Cx\Core\Routing\Url::fromModuleAndCmd('news', $this->findCmdById('details', $objResult->fields['catid']), FRONTEND_LANG_ID, array('newsid' => $newsid))
                                 : $objResult->fields['redirect'];
                 $htmlLink   = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml($newstitle));
 

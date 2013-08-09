@@ -52,7 +52,6 @@ $_ARRAYLANG['TXT_ID'] = "ID";
 $_ARRAYLANG['TXT_ACCEPT_CHANGES'] = "Overtag ændringer";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'] = "Vil du virkeligt slette dataene?";
 $_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK'] = "Denne aktion kan have indflydelse på systemfunktionaliteten!";
-$_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE'] = "Kategorien kunne ikke slettes! Slet venligst først alle undergrupper";
 $_ARRAYLANG['TXT_PERFORM'] = "Udfør";
 $_ARRAYLANG['TXT_DELETE'] = "Slet";
 $_ARRAYLANG['TXT_NEWS_SETTINGS_SAVED'] = "Indstillingerne er blevet gemt";

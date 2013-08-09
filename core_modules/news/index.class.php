@@ -44,6 +44,8 @@ class news extends newsLibrary {
      */
     public function __construct($pageContent)
     {
+        parent::__construct();
+
         $this->getSettings();
 
         $this->_objTpl = new \Cx\Core\Html\Sigma();
@@ -80,7 +82,13 @@ class news extends newsLibrary {
              return $this->getTopNews();
             break;
         default:
-            return $this->getHeadlines();
+            if (substr($_REQUEST['cmd'], 0, 7) == 'details') {
+                return $this->getDetails();
+            } elseif (substr($_REQUEST['cmd'], 0, 7) == 'archive') {
+                return $this->getArchive();
+            } else {
+                return $this->getHeadlines();
+            }
             break;
         }
     }
@@ -97,13 +105,6 @@ class news extends newsLibrary {
     {
         global $_CONFIG, $objDatabase, $_ARRAYLANG;
 
-        $paging     = '';
-        $pos        = 0;
-        $i          = 0;
-
-        if (isset($_GET['pos'])) {
-            $pos = intval($_GET['pos']);
-        }
 
         $newsid = intval($_GET['newsid']);
 
@@ -320,7 +321,7 @@ class news extends newsLibrary {
         }
 
         $objDatabase->Execute(' DELETE FROM `'.DBPREFIX.'module_news_stats_view`
-                                WHERE `time` < '.date_format(date_sub(date_create('now'), date_interval_create_from_date_string(intval($this->arrSettings['news_top_days']).' days')), 'Y-m-d H:i:s'));
+                                WHERE `time` < "'.date_format(date_sub(date_create('now'), date_interval_create_from_date_string(intval($this->arrSettings['news_top_days']).' days')), 'Y-m-d H:i:s').'"');
         
         $uniqueUserId = $objCounter->getUniqueUserId();
 
@@ -578,7 +579,8 @@ class news extends newsLibrary {
                             nl.title            AS newstitle,
                             nl.text NOT REGEXP \'^(<br type="_moz" />)?$\' AS newscontent,
                             nl.teaser_text,
-                            nc.name             AS name
+                            nc.name             AS name,
+                            nc.category_id      AS cat
                 FROM        '.DBPREFIX.'module_news AS n
                 INNER JOIN  '.DBPREFIX.'module_news_locale AS nl ON nl.news_id = n.id
                 INNER JOIN  '.DBPREFIX.'module_news_categories_locale AS nc ON nc.category_id=n.catid
@@ -614,7 +616,7 @@ class news extends newsLibrary {
             $newsUrl        = empty($objResult->fields['redirect'])
                                 ? (empty($objResult->fields['newscontent'])
                                     ? ''
-                                    : \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'details', FRONTEND_LANG_ID, array('newsid' => $newsid)))
+                                    : \Cx\Core\Routing\Url::fromModuleAndCmd('news', $this->findCmdById('details', $objResult->fields['cat']), FRONTEND_LANG_ID, array('newsid' => $newsid)))
                                 : $objResult->fields['redirect'];
 
             $htmlLink       = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml('['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]'));
@@ -747,45 +749,63 @@ class news extends newsLibrary {
     private function getHeadlines() {
         global $_CONFIG, $objDatabase, $_ARRAYLANG;
 
-        $selected_cat      = '';
-        $selected_type     = '';
-        $selectedPublisher = '';
-        $selectedAuthor    = '';
-        $newsfilter        = '';
-        $paging            = '';
-        $pos               = 0;
-        $i                 = 0;
+        $newsCategories  = array();
+        $menuCategories  = array();
+        $selectedCat        = '';
+        $selectedType       = '';
+        $selectedPublisher  = '';
+        $selectedAuthor     = '';
+        $newsfilter         = '';
+        $paging             = '';
+        $pos                = 0;
+        $i                  = 0;
 
         if (isset($_GET['pos'])) {
             $pos = intval($_GET['pos']);
         }
 
-        if (!empty($_REQUEST['category']) || (($_REQUEST['category'] = intval($_REQUEST['cmd'])) > 0)) {
-            $newsfilter .= ' AND (';
-            $boolFirst = true;
-
-            $arrCategories = explode(',',$_REQUEST['category']);
-
-            if (count($arrCategories) == 1) {
-                $selected_cat = intval($arrCategories[0]);
+        if (!empty($_REQUEST['cmd'])) {
+            $categories = explode(',', $_REQUEST['cmd']);
+            if ((count($categories) == 1) && $this->categoryExists($categories[0])) {
+                $selectedCat = $categories[0];
             }
+            $menuCategories = $this->getCatIdsFromNestedSetArray($this->getNestedSetCategories($categories));
+            if ($this->_objTpl->placeholderExists('NEWS_CMD')) {
+                $this->_objTpl->setVariable('NEWS_CMD', $_REQUEST['cmd']);
+            }
+        }
 
-            foreach ($arrCategories as $intCategoryId) {
-                if (!$boolFirst) {
+        if (!empty($_REQUEST['category'])) {
+            $categories = explode(',', $_REQUEST['category']);
+            if ((count($categories) == 1) && $this->categoryExists($categories[0])) {
+                $selectedCat = intval($categories[0]);
+            }
+            $newsCategories = $categories;
+        } else if (!empty($menuCategories)) {
+            $newsCategories = $menuCategories;
+        } else {
+            $newsCategories[] = $this->nestedSetRootId;
+        }
+        $newsCategories = $this->getCatIdsFromNestedSetArray($this->getNestedSetCategories($newsCategories));
+
+        if (!empty($newsCategories)) {
+            $newsfilter .= ' AND (';
+            $first = true;
+            foreach ($newsCategories as $category) {
+                if (!$first) {
                     $newsfilter .= 'OR ';
                 }
-
-                $newsfilter .= 'n.catid='.intval($intCategoryId).' ';
-                $boolFirst = false;
+                $newsfilter .= 'n.catid='.intval($category).' ';
+                $first = false;
             }
             $newsfilter .= ')';
         }
 
         if ($this->_objTpl->placeholderExists('NEWS_CAT_DROPDOWNMENU')) {
-            $catMenu    =  '<select onchange="this.form.submit()" name="category">'."\n";
-            $catMenu    .= '<option value="" selected="selected">'.$_ARRAYLANG['TXT_CATEGORY'].'</option>'."\n";
-            $catMenu    .= $this->getCategoryMenu($selected_cat)."\n";
-            $catMenu    .= '</select>'."\n";
+            $catMenu =  '<select onchange="this.form.submit()" name="category">'."\n";
+            $catMenu .= '<option value="">'.$_ARRAYLANG['TXT_CATEGORY'].'</option>'."\n";
+            $catMenu .= $this->getCategoryMenu((!empty($menuCategories) ? $menuCategories : array()), $selectedCat)."\n";
+            $catMenu .= '</select>'."\n";
             $this->_objTpl->setVariable('NEWS_CAT_DROPDOWNMENU', $catMenu);
         }
 
@@ -797,7 +817,7 @@ class news extends newsLibrary {
                 $arrTypes = explode(',',$_REQUEST['type']);
 
                 if (count($arrTypes) == 1) {
-                    $selected_type = intval($arrTypes[0]);
+                    $selectedType = intval($arrTypes[0]);
                 }
 
                 foreach ($arrTypes as $intTypeId) {
@@ -814,7 +834,7 @@ class news extends newsLibrary {
             if ($this->_objTpl->placeholderExists('NEWS_TYPE_DROPDOWNMENU')) {
                 $typeMenu    =  '<select onchange="this.form.submit()" name="type">'."\n";
                 $typeMenu    .= '<option value="" selected="selected">'.$_ARRAYLANG['TXT_TYPE'].'</option>'."\n";
-                $typeMenu    .= $this->getTypeMenu($selected_type)."\n";
+                $typeMenu    .= $this->getTypeMenu($selectedType)."\n";
                 $typeMenu    .= '</select>'."\n";
                 $this->_objTpl->setVariable('NEWS_TYPE_DROPDOWNMENU', $typeMenu);
             }
@@ -844,7 +864,7 @@ class news extends newsLibrary {
         if ($this->_objTpl->placeholderExists('NEWS_PUBLISHER_DROPDOWNMENU')) {
             $publisherMenu    = '<select onchange="window.location=\''.\Cx\Core\Routing\Url::fromModuleAndCmd('news', intval($_REQUEST['cmd'])).'&amp;publisher=\'+this.value" name="publisher">'."\n";
             $publisherMenu   .= '<option value="" selected="selected">'.$_ARRAYLANG['TXT_NEWS_PUBLISHER'].'</option>'."\n";
-            $publisherMenu   .= $this->getPublisherMenu($selectedPublisher, $selected_cat)."\n";
+            $publisherMenu   .= $this->getPublisherMenu($selectedPublisher, $selectedCat)."\n";
             $publisherMenu   .= '</select>'."\n";
             $this->_objTpl->setVariable('NEWS_PUBLISHER_DROPDOWNMENU', $publisherMenu);
         }
@@ -901,7 +921,8 @@ class news extends newsLibrary {
                                 nl.title            AS newstitle,
                                 nl.text NOT REGEXP \'^(<br type="_moz" />)?$\' AS newscontent,
                                 nl.teaser_text,
-                                nc.name             AS name
+                                nc.name             AS name,
+                                nc.category_id      AS cat
                     FROM        '.DBPREFIX.'module_news AS n
                     INNER JOIN  '.DBPREFIX.'module_news_locale AS nl ON nl.news_id = n.id
                     INNER JOIN  '.DBPREFIX.'module_news_categories_locale AS nc ON nc.category_id=n.catid
@@ -922,21 +943,18 @@ class news extends newsLibrary {
         /***start paging ****/
         $objResult = $objDatabase->Execute($query);
         $count = $objResult->RecordCount();
+
+        $category = '';
+        if (!empty($_REQUEST['cmd'])) {
+            $category .= '&cmd='.$_REQUEST['cmd'];
+        }
         if (!empty($_REQUEST['category'])) {
-            $category = '&category='.$selected_cat;
+            $category .= '&category='.$_REQUEST['category'];
         }
 
         $type = '';
         if (!empty($_REQUEST['type'])) {
-            $type = '&type='.$selected_type;
-        }
-
-        if (!empty($_REQUEST['cmd'])) {
-            if ($_REQUEST['cmd'] == $selected_cat) {
-                $category = '&cmd='.$_REQUEST['cmd'];
-            } else {
-                $category .= '&cmd='.$_REQUEST['cmd'];
-            }
+            $type = '&type='.$selectedType;
         }
 
         if ($count>intval($_CONFIG['corePagingLimit'])) {
@@ -954,7 +972,7 @@ class news extends newsLibrary {
                 $newsUrl        = empty($objResult->fields['redirect'])
                                     ? (empty($objResult->fields['newscontent'])
                                         ? ''
-                                        : \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'details', FRONTEND_LANG_ID, array('newsid' => $newsid)))
+                                        : \Cx\Core\Routing\Url::fromModuleAndCmd('news', $this->findCmdById('details', $objResult->fields['cat']), FRONTEND_LANG_ID, array('newsid' => $newsid)))
                                     : $objResult->fields['redirect'];
 
                 $htmlLink       = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml('['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]'));
@@ -1149,7 +1167,8 @@ class news extends newsLibrary {
                                 nl.title            AS newstitle,
                                 nl.text NOT REGEXP \'^(<br type="_moz" />)?$\' AS newscontent,
                                 nl.teaser_text,
-                                nc.name             AS name
+                                nc.name             AS name,
+                                nc.category_id      AS cat
                     FROM        '.DBPREFIX.'module_news AS n
                     INNER JOIN  '.DBPREFIX.'module_news_locale AS nl ON nl.news_id = n.id
                     INNER JOIN  '.DBPREFIX.'module_news_categories_locale AS nc ON nc.category_id=n.catid
@@ -1184,7 +1203,7 @@ class news extends newsLibrary {
                 $newsUrl        = empty($objResult->fields['redirect'])
                                     ? (empty($objResult->fields['newscontent'])
                                         ? ''
-                                        : \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'details', FRONTEND_LANG_ID, array('newsid' => $newsid)))
+                                        : \Cx\Core\Routing\Url::fromModuleAndCmd('news', $this->findCmdById('details', $objResult->fields['cat']), FRONTEND_LANG_ID, array('newsid' => $newsid)))
                                     : $objResult->fields['redirect'];
 
                 $htmlLink       = self::parseLink($newsUrl, $newstitle, contrexx_raw2xhtml('['.$_ARRAYLANG['TXT_NEWS_MORE'].'...]'));
@@ -1505,7 +1524,7 @@ JSCODE;
             'TXT_CAPTCHA'               => $_ARRAYLANG['TXT_CAPTCHA'],
             'TXT_TYPE'                  => $_ARRAYLANG['TXT_TYPE'],
             'NEWS_TEXT'                 => new \Cx\Core\Wysiwyg\Wysiwyg('newsText', $data['newsText'], 'bbcode'),
-            'NEWS_CAT_MENU'             => $this->getCategoryMenu($data['newsCat']),
+            'NEWS_CAT_MENU'             => $this->getCategoryMenu($this->nestedSetRootId, $data['newsCat']),
             'NEWS_TYPE_MENU'            => ($this->arrSettings['news_use_types'] == 1 ? $this->getTypeMenu($data['newsType']) : ''),
             'NEWS_TITLE'                => contrexx_raw2xhtml($data['newsTitle']),
             'NEWS_SOURCE'               => contrexx_raw2xhtml($data['newsSource']),
@@ -1977,30 +1996,52 @@ RSS2JSCODE;
      * Get a list of all news messages sorted by year and month.
      *
      * @access  private
-     * @return  string  parsed content
+     * @return  string      parsed content
      */
     private function getArchive()
     {
         global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
         $objFWUser = FWUser::getFWUserObject();
+        $categories = '';
+        $categoryFilter = '';
+
+        if ($categories = substr($_REQUEST['cmd'], 7)) {
+            $categories = $this->getCatIdsFromNestedSetArray($this->getNestedSetCategories(explode(',', $categories)));
+        }
+
+        if (!empty($categories)) {
+            $categoryFilter .= ' AND (';
+            $first = true;
+            foreach ($categories as $category) {
+                if (!$first) {
+                    $categoryFilter .= 'OR ';
+                }
+                $categoryFilter .= 'n.catid='.intval($category).' ';
+                $first = false;
+            }
+            $categoryFilter .= ')';
+        }
 
         $query = "SELECT            n.id             AS id,
                                     n.date           AS date,
                                     n.changelog      AS changelog,
                                     n.redirect       AS newsredirect,
-                                    nl.title         AS newstitle
+                                    nl.title         AS newstitle,
+                                    n.catid          AS cat
                             FROM    ".DBPREFIX."module_news AS n LEFT JOIN  ".DBPREFIX."module_news_locale AS nl ON nl.news_id = n.id
                             WHERE   n.validated = '1'
                                     AND n.status = 1
                                     AND nl.lang_id = ".FRONTEND_LANG_ID."
                                     AND nl.is_active=1
+                                    ".$categoryFilter."
                                     " .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? (
                                     ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?
                                         " AND (frontend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") OR userid = ".$objFWUser->objUser->getId().") "
                                         :   " AND frontend_access_id=0 ")
                                     :   '')
                             ."ORDER BY date DESC";
+
         $objResult = $objDatabase->Execute($query);
 
         if ($objResult !== false) {
@@ -2036,7 +2077,7 @@ RSS2JSCODE;
                 foreach ($value['news'] as $news) {
                     $this->_objTpl->setVariable(array(
                         'NEWS_ARCHIVE_LINK_TITLE'   => contrexx_raw2xhtml($news['newstitle']),
-                        'NEWS_ARCHIVE_LINK_URL'     => empty($news['newsredirect']) ? \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'details', FRONTEND_LANG_ID, array('newsid' => $news['id'])) : $news['newsredirect'],
+                        'NEWS_ARCHIVE_LINK_URL'     => empty($news['newsredirect']) ? \Cx\Core\Routing\Url::fromModuleAndCmd('news', $this->findCmdById('details', $news['cat']), FRONTEND_LANG_ID, array('newsid' => $news['id'])) : $news['newsredirect'],
                     ));
                     $this->_objTpl->parse('news_archive_link');
                 }

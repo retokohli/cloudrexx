@@ -22,6 +22,58 @@
 class newsLibrary
 {
     /**
+    * NestedSet object
+    *
+    * @access   protected
+    * @var      DB_NestedSet
+    */
+    protected $objNestedSet;
+
+    /**
+    * Id of the nested set root node
+    *
+    * @access   protected
+    * @var      integer
+    */
+    protected $nestedSetRootId;
+
+    /**
+     * Initializes the NestedSet object
+     * which is needed to manage the news categories.
+     *
+     * @access  public
+     */
+    public function __construct()
+    {
+        global $objDatabase;
+
+        //nestedSet setup
+        $arrTableStructure = array(
+            'catid'     => 'id',
+            'parent_id' => 'rootid',
+            'left_id'   => 'l',
+            'right_id'  => 'r',
+            'sorting'   => 'norder',
+            'level'     => 'level',
+        );
+        $objNs = new DB_NestedSet($arrTableStructure);
+        $this->objNestedSet = $objNs->factory('ADODB', $objDatabase, $arrTableStructure);
+        $this->objNestedSet->setAttr(array(
+            'node_table'    => DBPREFIX.'module_news_categories',
+            'lock_table'    => DBPREFIX.'module_news_categories_locks',
+        ));
+
+        if (count($rootNodes = $this->objNestedSet->getRootNodes()) > 0) {
+            foreach ($rootNodes as $rootNode) {
+                $this->nestedSetRootId = $rootNode->id;
+                break;
+            }
+        } else {
+            $this->nestedSetRootId = $this->objNestedSet->createRootNode(array(), false, false);
+        }
+    }
+
+    /**
      * Gets the categorie option menu string
      *
      * @global    ADONewConnection
@@ -49,23 +101,134 @@ class newsLibrary
         }
     }
 
-
-    function getCategoryMenu($selectedOption='')
+    /**
+     * Generates the category menu.
+     *
+     * @access  protected
+     * @param   array or integer    $categories         categories which have to be listed
+     * @param   integer             $selectedCategory   selected category
+     * @return  string              $options            html options
+     */
+    protected function getCategoryMenu($categories, $selectedCategory = 0)
     {
         global $objDatabase;
 
-        $strMenu = "";
-        $query = "SELECT category_id, name FROM ".DBPREFIX."module_news_categories_locale WHERE lang_id=".FRONTEND_LANG_ID." ORDER BY name";
-        $objResult = $objDatabase->Execute($query);
-        while (!$objResult->EOF) {
-            $selected = $objResult->fields['category_id'] == $selectedOption ? "selected" : "";
-            $strMenu .="<option value=\"".$objResult->fields['category_id']."\" $selected>".contrexx_raw2xhtml($objResult->fields['name'])."</option>\n";
-            $objResult->MoveNext();
+        if (empty($categories)) {
+            $categories = array($this->nestedSetRootId);
+        } else if (!is_array($categories)) {
+            $categories = array(intval($categories));
         }
 
-        return $strMenu;
+        $nestedSetCategories = $this->sortNestedSetArray($this->getNestedSetCategories($categories));
+
+        $levels = array();
+        foreach($nestedSetCategories as $category) {
+            $levels[] = $category['level'];
+        }
+        $level = min($levels);
+
+        $categoriesLang = $this->getCategoriesLangData();
+        $options = '';
+        foreach ($nestedSetCategories as $category) {
+            $selected = $category['id'] == $selectedCategory ? 'selected="selected"' : '';
+            $options .= '<option value="'.$category['id'].'" '.$selected.'>'.str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', ($category['level'] - $level)).contrexx_raw2xhtml($categoriesLang[$category['id']][FRONTEND_LANG_ID]).'</option>';
+        }
+
+        return $options;
     }
 
+    /**
+     * Returns an array containing the nested set information 
+     * for the passed categories and their subcategories 
+     * (ordered by their left id).
+     *
+     * @access  protected
+     * @param   array or integer    $categories
+     * @return  array                               nested set information
+     */
+    protected function getNestedSetCategories($categories) {
+        if (!is_array($categories)) {
+            $categories = array(intval($categories));
+        }
+
+        $nestedSetCategories = array();
+        foreach ($categories as $category) {
+            if ($this->categoryExists($category)) {
+                if ($category != $this->nestedSetRootId) {
+                    $nestedSetCategories[$category] = $this->objNestedSet->pickNode($category, true);
+                }
+                if ($nodes = $this->objNestedSet->getSubBranch($category, true)) {
+                    $nestedSetCategories = $nestedSetCategories + $nodes;
+                }
+            }
+        }
+
+        return $this->sortNestedSetArray($nestedSetCategories);
+    }
+
+    /**
+     * Returns the category ids of a nested set array.
+     *
+     * @access  protected
+     * @param   array           $nestedSet
+     * @return  array           $categories
+     */
+    protected function getCatIdsFromNestedSetArray($nestedSet) {
+        $categories = array();
+        if (is_array($nestedSet)) {
+            foreach ($nestedSet as $node) {
+                $categories[] = $node['id'];
+            }
+        }
+        return $categories;
+    }
+
+    /**
+     * Checks whether the passed category exists.
+     *
+     * @access  protected
+     * @param   integer         $category
+     * @return  boolean
+     */
+    protected function categoryExists($category) {
+        if ($this->objNestedSet->pickNode($category)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Sorts the given nested set array by the left id.
+     *
+     * @access  protected
+     * @param   array           $array
+     * @return  array           $array
+     */
+    protected function sortNestedSetArray($array) {
+        if (is_array($array)) {
+            usort($array, array($this, 'compareNestedSetLeftIds'));
+        }
+        return $array;
+    }
+
+    /**
+     * Compares the left id of two nested set nodes.
+     *
+     * @access  private
+     * @param   array       $a
+     * @param   array       $b
+     * @return  integer
+     */
+    private function compareNestedSetLeftIds($a, $b) {
+        $a = intval($a['l']);
+        $b = intval($b['l']);
+
+        if ($a == $b) {
+            return 0;
+        }
+
+        return $a > $b ? 1 : -1;
+    }
 
     function getTypeMenu($selectedOption='')
     {
@@ -599,5 +762,75 @@ class newsLibrary
 
         return sprintf($htmlLinkTag, contrexx_raw2xhtml($href), contrexx_raw2xhtml($title), $innerHtml);
     }
+
+    /**
+     * Searches for cmds having the passed id and 
+     * returns the cmd of the result set having the lowest length.
+     *
+     * @access  protected
+     * @param   string      $cmdName
+     * @param   integer     $cmdId
+     * @param   string      $cmdSeparator
+     * @param   string      $module
+     * @param   integer     $lang
+     * @return  string      $cmd
+     */
+    protected function findCmdById($cmdName, $cmdId, $cmdSeparator=',', $module='news', $lang=FRONTEND_LANG_ID)
+    {
+        $qb = \Env::get('em')->createQueryBuilder();
+        $qb ->select('p', 'LENGTH(p.cmd) AS length')
+            ->from('\Cx\Core\ContentManager\Model\Entity\Page', 'p')
+            ->where($qb->expr()->andX(
+                $qb->expr()->orX(
+                    $qb->expr()->eq('p.cmd', ':cmd1'),
+                    $qb->expr()->like('p.cmd', ':cmd2'),
+                    $qb->expr()->like('p.cmd', ':cmd3'),
+                    $qb->expr()->like('p.cmd', ':cmd4')
+                ),
+                $qb->expr()->eq('p.type', ':type'),
+                $qb->expr()->eq('p.lang', ':lang'),
+                $qb->expr()->eq('p.module', ':module')
+            ))
+            ->orderBy('length', 'ASC')
+            ->setMaxResults(1)
+            ->setParameters(array(
+                'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
+                'cmd1' => $cmdName.$cmdId,
+                'cmd2' => $cmdName.$cmdId.$cmdSeparator.'%',
+                'cmd3' => $cmdName.'%'.$cmdSeparator.$cmdId.$cmdSeparator.'%',
+                'cmd4' => $cmdName.'%'.$cmdSeparator.$cmdId,
+                'lang' => $lang,
+                'module' => $module,
+            ));
+        $page = $qb->getQuery()->getResult();
+
+        if (!empty($page[0][0])) {
+            // a page having the given id in cmd was found
+            return $page[0][0]->getCmd();
+        } else {
+            // check if there's a cmd of a parent category
+            if (($parentCategory = $this->getParentCatId($cmdId)) && ($cmd = $this->findCmdById($cmdName, $parentCategory))) {
+                return $cmd;
+            }
+            if ($page = \Env::get('em')->getRepository('\Cx\Core\ContentManager\Model\Entity\Page')->findOneByModuleCmdLang($module, $cmdName, $lang)) {
+                // a page having the given cmd name without id was found
+                return $page->getCmd();
+            }
+            return '';
+        }
+    }
+
+    /**
+     * Returns the parent category id of passed category.
+     *
+     * @access  protected
+     * @param   integer                 $category
+     * @return  integer or boolean      $cmd
+     */
+    protected function getParentCatId($category) {
+        if (($parent = $this->objNestedSet->getParent($category)) && ($parent->id != $this->nestedSetRootId)) {
+            return $parent->id;
+        }
+        return false;
+    }
 }
-?>

@@ -145,16 +145,6 @@ class newsManager extends newsLibrary {
     */
     var $_objTeaser;
 
-    /**
-    * PHP4 Constructor
-    *
-    * @access public
-    */
-    function newsManager()
-    {
-        $this->__construct();
-    }
-
     private $act = '';
     
     /**
@@ -165,6 +155,8 @@ class newsManager extends newsLibrary {
     function __construct()
     {
         global  $_ARRAYLANG, $objInit, $objTemplate, $_CONFIG;
+
+        parent::__construct();
 
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/news/template');
         CSRF::add_placeholder($this->_objTpl);
@@ -508,6 +500,7 @@ class newsManager extends newsLibrary {
             while (!$objResult->EOF) {
                 $objLangResult = $objDatabase->Execute('SELECT nl.title as title,
                          nl.lang_id as langid,
+                         ncl.category_id as catid,
                          ncl.name AS catname,
                          ntl.name AS typename
                          FROM '.DBPREFIX.'module_news_locale AS nl
@@ -522,7 +515,8 @@ class newsManager extends newsLibrary {
                       'status'             => $objResult->fields['status'],
                       'validated'          => $objResult->fields['validated'],
                       'frontend_access_id' => $objResult->fields['frontend_access_id'],
-                      'userid'             => $objResult->fields['userid']
+                      'userid'             => $objResult->fields['userid'],
+                      'catid'              => $objResult->fields['catid']
                     );
                     while (!$objLangResult->EOF) {
                         $arrNews[$objResult->fields['id']]['lang'][$objLangResult->fields['langid']] = array(
@@ -606,7 +600,7 @@ class newsManager extends newsLibrary {
                 if ($news['status'] == true) {
                     $this->_objTpl->setVariable(array (
                         'TXT_NEWS_PREVIEW' => $_ARRAYLANG['TXT_NEWS_PREVIEW'],
-                        'NEWS_PREVIEW_LINK_HREF' => \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'details', reset($langIds), array('newsid' => $newsId)),
+                        'NEWS_PREVIEW_LINK_HREF' => \Cx\Core\Routing\Url::fromModuleAndCmd('news', $this->findCmdById('details', $news['catid']), reset($langIds), array('newsid' => $newsId)),
                     ));
                     $this->_objTpl->touchBlock('news_preview');
                 } else {
@@ -1163,7 +1157,7 @@ class newsManager extends newsLibrary {
             'TXT_NEWS_READ_SELECTED_ACCESS_DESC'    => $_ARRAYLANG['TXT_NEWS_READ_SELECTED_ACCESS_DESC'],
             'TXT_NEWS_MODIFY_ALL_ACCESS_DESC'       => $_ARRAYLANG['TXT_NEWS_MODIFY_ALL_ACCESS_DESC'],
             'TXT_NEWS_MODIFY_SELECTED_ACCESS_DESC'  => $_ARRAYLANG['TXT_NEWS_MODIFY_SELECTED_ACCESS_DESC']
-         ));        
+         ));
          $this->_objTpl->setVariable(array(
             'NEWS_TEXT_PREVIEW'             => new \Cx\Core\Wysiwyg\Wysiwyg('newsText', !empty($locales['text'][FWLanguage::getDefaultLangId()]) ? $locales['text'][FWLanguage::getDefaultLangId()] : '', 'full'),
             'NEWS_REDIRECT'                 => contrexx_raw2xhtml($newsredirect),
@@ -1175,7 +1169,7 @@ class newsManager extends newsLibrary {
             'NEWS_PUBLISHER_ID'             => '0',
             'NEWS_AUTHOR_ID'                => '0',
             'NEWS_TOP_TITLE'                => $_ARRAYLANG['TXT_CREATE_NEWS'],
-            'NEWS_CAT_MENU'                 => $this->getCategoryMenu($newscat),
+            'NEWS_CAT_MENU'                 => $this->getCategoryMenu($this->nestedSetRootId, $newscat),
             'NEWS_STARTDATE'                => isset($startDate) ? $this->valueFromDate($startDate) : '',
             'NEWS_ENDDATE'                  => isset($endDate) ? $this->valueFromDate($endDate): '',
             'NEWS_DATE'                     => date('Y-m-d H:i:s'),
@@ -1704,7 +1698,7 @@ class newsManager extends newsLibrary {
             $this->_objTpl->setVariable('NEWS_HEADLINES_TEASERS_TXT', $_ARRAYLANG['TXT_HEADLINES']);
         }
 
-        $this->_objTpl->setVariable('NEWS_CAT_MENU',$this->getCategoryMenu($newsCat));
+        $this->_objTpl->setVariable('NEWS_CAT_MENU',$this->getCategoryMenu($this->nestedSetRootId, $newsCat));
 
         $news_type_menu = '';
         if($this->arrSettings['news_use_types'] == 1) {
@@ -2428,19 +2422,19 @@ class newsManager extends newsLibrary {
 
     /**
      * Add or edit the news categories
-     * @global    ADONewConnection
-     * @global    array
-     * @param     string     $pageContent
+     *
+     * @access  private
      */
-    function manageCategories()
+    private function manageCategories()
     {
         global $objDatabase, $_ARRAYLANG;
 
-        $this->_objTpl->loadTemplateFile('module_news_category.html',true,true);
+        $this->_objTpl->loadTemplateFile('module_news_category.html', true, true);
         $this->pageTitle = $_ARRAYLANG['TXT_CATEGORY_MANAGER'];
 
         $this->_objTpl->setVariable(array(
             'TXT_ADD_NEW_CATEGORY'                       => $_ARRAYLANG['TXT_ADD_NEW_CATEGORY'],
+            'TXT_NEWS_NEW_CATEGORY'                      => $_ARRAYLANG['TXT_NEWS_NEW_CATEGORY'],
             'TXT_NAME'                                   => $_ARRAYLANG['TXT_NAME'],
             'TXT_ADD'                                    => $_ARRAYLANG['TXT_ADD'],
             'TXT_CATEGORY_LIST'                          => $_ARRAYLANG['TXT_CATEGORY_LIST'],
@@ -2460,22 +2454,22 @@ class newsManager extends newsLibrary {
         // Add a new category
         if (isset($_POST['addCat']) && ($_POST['addCat']==true)) {
             $catName = contrexx_input2db(trim($_POST['newCategorieName']));
+            $catParentId = !empty($_POST['newCategorieParentId']) ? intval($_POST['newCategorieParentId']) : $this->nestedSetRootId;
 
-            if(empty($catName)){
+            if (empty($catName)) {
                 $this->strErrMessage = $_ARRAYLANG['TXT_NEWS_CATEGORY_ADD_ERROR_EMPTY'];
-            }
-            else {
+            } else {
                 $status = true;
-                if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_news_categories () VALUES ()") === false) {
+
+               if (!$catId = $this->objNestedSet->createSubNode($catParentId, array())) {
                     $status = false;
                 } else {
-                    $catId = $objDatabase->Insert_ID();
-                    if ($objDatabase->Execute("INSERT INTO ".DBPREFIX."module_news_categories_locale
-                                                           (lang_id, category_id, name)
-                                                           SELECT id, '$catId', '$catName' FROM ".DBPREFIX."languages") === false) {
+                    if ($objDatabase->Execute('INSERT INTO `'.DBPREFIX.'module_news_categories_locale` (`lang_id`, `category_id`, `name`)
+                                               SELECT `id`, "'.$catId.'", "'.$catName.'" FROM `'.DBPREFIX.'languages`') === false) {
                         $status = false;
                     }
                 }
+
                 if ($status) {
                     $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_ADDED_SUCCESSFUL'];
                 } else {
@@ -2484,8 +2478,8 @@ class newsManager extends newsLibrary {
             }
         }
 
-        // Modify a new category
-        if (isset($_POST['modCat']) && ($_POST['modCat']==true)) {
+        // Modify a category
+        if (isset($_POST['modCat']) && ($_POST['modCat'] == true)) {
             if ($this->storeCategoriesLocales($_POST['newsCatName'])) {
                 $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
             } else {
@@ -2493,66 +2487,62 @@ class newsManager extends newsLibrary {
             }
         }
 
-        $objResult = $objDatabase->Execute("SELECT category_id
-                      FROM ".DBPREFIX."module_news_categories_locale
-                  GROUP BY category_id
-                  ORDER BY category_id asc");
-
+        // List all categories
         $arrLanguages = \FWLanguage::getActiveFrontendLanguages();
-        $catLangData = $this->getCategoriesLangData();
+        $arrCatLangData = $this->getCategoriesLangData();
 
         $i=0;
-        if ($objResult !== false) {
-            while (!$objResult->EOF) {
+        if (count($nodes = $this->objNestedSet->getSubBranch($this->nestedSetRootId, true)) > 0) {
+            $nodes = $this->sortNestedSetArray($nodes);
+            foreach ($nodes as $node) {
                 $cssStyle = (($i++ % 2) == 0) ? 'row2' : 'row1';
                 foreach ($arrLanguages as $langId => $arrLanguage) {
                     $this->_objTpl->setVariable(array(
                         'NEWS_CAT_LANG_NAME'   => contrexx_raw2xhtml($arrLanguage['name']),
-                        'NEWS_CAT_NAME_VALUE'  => contrexx_raw2xhtml($catLangData[$objResult->fields['category_id']][$langId]),
+                        'NEWS_CAT_NAME_VALUE'  => contrexx_raw2xhtml($arrCatLangData[$node['id']][$langId]),
                         'NEWS_CAT_LANG_ID'     => $langId,
-                        'NEWS_CAT_ID'          => $objResult->fields['category_id'],
+                        'NEWS_CAT_ID'          => $node['id'],
+                        'NEWS_LEVEL_SPACING'   => ($node['level']*20)-(2*20),
                     ));
                     $this->_objTpl->parse('category_name_list');
                 }
 
                 $this->_objTpl->setVariable(array(
                     'NEWS_ROWCLASS' => $cssStyle,
-                    'NEWS_CAT_ID'   => $objResult->fields['category_id'],
-                    'NEWS_CAT_NAME' => contrexx_raw2xhtml($catLangData[$objResult->fields['category_id']][FWLanguage::getDefaultLangId()])
+                    'NEWS_CAT_ID'   => $node['id'],
+                    'NEWS_CAT_NAME' => contrexx_raw2xhtml($arrCatLangData[$node['id']][FWLanguage::getDefaultLangId()])
                 ));
                 $this->_objTpl->parse('newsRow');
-
-                $objResult->MoveNext();
             };
         }
+
+        $this->_objTpl->setVariable(array(
+            'NEWS_CATEGORIES' => $this->getCategoryMenu(),
+        ));
     }
 
 
     /**
-     * Delete the news categories
-     * @global    ADONewConnection
-     * @global    array
-     * @param     string     $pageContent
+     * Delete a category
+     *
+     * @access  private
      */
-    function deleteCat()
+    private function deleteCat()
     {
         global $objDatabase, $_ARRAYLANG;
 
         if (isset($_GET['catId'])) {
-            $catId=intval($_GET['catId']);
+            $catId = intval($_GET['catId']);
             $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_news WHERE catid=".$catId);
 
             if ($objResult !== false) {
-                if (!$objResult->EOF) {
-                     $this->strErrMessage = $_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE'];
-                }
-                else {
-                    if ($objDatabase->Execute(
-                                             "DELETE tblC, tblL
-                                              FROM ".DBPREFIX."module_news_categories AS tblC
-                                              INNER JOIN ".DBPREFIX."module_news_categories_locale AS tblL ON tblL.category_id=tblC.catid
-                                              WHERE tblC.catid=".$catId
-                                              ) !== false
+                if (count($this->objNestedSet->getSubBranch($catId, true)) > 0) {
+                    $this->strErrMessage = $_ARRAYLANG['TXT_NEWS_CATEGORY_NOT_DELETED_BECAUSE_OF_SUBCATEGORIES'];
+                } elseif (!$objResult->EOF) {
+                    $this->strErrMessage = $_ARRAYLANG['TXT_NEWS_CATEGORY_NOT_DELETED_BECAUSE_OF_ENTRIES'];
+                } else {
+                    if ($objDatabase->Execute('DELETE FROM `'.DBPREFIX.'module_news_categories_locale` WHERE `category_id`='.$catId) !== false &&
+                        $this->objNestedSet->deleteNode($catId) !== false
                     ) {
                         $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
                     } else {
@@ -2592,7 +2582,7 @@ class newsManager extends newsLibrary {
 
         $this->_objTpl->setGlobalVariable(array(
             'TXT_DELETE'            => $_ARRAYLANG['TXT_DELETE'],
-            'TXT_NEWS_EXTENDED' => $_ARRAYLANG['TXT_NEWS_EXTENDED']
+            'TXT_NEWS_EXTENDED'     => $_ARRAYLANG['TXT_NEWS_EXTENDED']
         ));
 
         // Add a new type
@@ -2786,14 +2776,14 @@ class newsManager extends newsLibrary {
                         }
                         $objRSSWriter->channelWebMaster = $_CONFIG['coreAdminEmail'];
 
-                        $itemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.FWLanguage::getLanguageParameter($LangId, 'lang').'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;cmd=details&amp;newsid=';
+                        $itemLink = 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.FWLanguage::getLanguageParameter($LangId, 'lang').'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;cmd=';
                         
                         // create rss feed
                         $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_'.FWLanguage::getLanguageParameter($LangId, 'lang').'.xml';
                         foreach ($arrNews as $newsId => $arrNewsItem) {
                             $objRSSWriter->addItem(
                                 contrexx_raw2xml($arrNewsItem['title']),
-                                (empty($arrNewsItem['redirect'])) ? ($itemLink.$newsId.(isset($arrNewsItem['teaser_frames'][0]) ? '&amp;teaserId='.$arrNewsItem['teaser_frames'][0] : '')) : htmlspecialchars($arrNewsItem['redirect'], ENT_QUOTES, CONTREXX_CHARSET),
+                                (empty($arrNewsItem['redirect'])) ? ($itemLink.$this->findCmdById('details', $arrNewsItem['categoryId']).'&amp;newsid='.$newsId.(isset($arrNewsItem['teaser_frames'][0]) ? '&amp;teaserId='.$arrNewsItem['teaser_frames'][0] : '')) : htmlspecialchars($arrNewsItem['redirect'], ENT_QUOTES, CONTREXX_CHARSET),
                                 contrexx_raw2xml($arrNewsItem['text']),
                                 '',
                                 array('domain' => 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.FWLanguage::getLanguageParameter($LangId, 'lang').'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;category='.$arrNewsItem['categoryId'], 'title' => contrexx_raw2xml($arrNewsItem['category'])),

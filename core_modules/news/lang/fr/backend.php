@@ -52,7 +52,6 @@ $_ARRAYLANG['TXT_ID'] = "ID";
 $_ARRAYLANG['TXT_ACCEPT_CHANGES'] = "Enregistrer modifications";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'] = "Voulez-vous vraiment supprimer cet élément?";
 $_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK'] = "Cette opération peut altérer les fonctionnalités du système!";
-$_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE'] = "Impossible de supprimer la catégorie! Veuillez tout d'abord supprimer tous les sous-catégories";
 $_ARRAYLANG['TXT_PERFORM'] = "Exécuter";
 $_ARRAYLANG['TXT_DELETE'] = "Supprimer";
 $_ARRAYLANG['TXT_NEWS_SETTINGS_SAVED'] = "Paramètres enregistrés";
