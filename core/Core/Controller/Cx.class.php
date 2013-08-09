@@ -332,7 +332,7 @@ namespace Cx\Core\Core\Controller {
 
             // Check if the system is installed
             if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
-                \CSRF::header('Location: ../installer/index.php');
+                \CSRF::header('Location: http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'].'installer/index.php');
                 exit;
             } else if ($incSettingsStatus === false) {
                 die('System halted: Unable to load basic configuration!');
@@ -343,7 +343,7 @@ namespace Cx\Core\Core\Controller {
                 $this->customizingPath = ASCMS_CUSTOMIZING_PATH;
             }
         }
-        
+
         /**
          * Sets the parameters to the correct path values
          * @param string $documentRoot Document root for this vHost
