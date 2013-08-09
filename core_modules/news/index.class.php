@@ -1037,14 +1037,27 @@ class news extends newsLibrary {
                 $i++;
                 $objResult->MoveNext();
             }
+            if ($this->_objTpl->blockExists('news_list')) {
+                $this->_objTpl->parse('news_list');
+            }
+            if ($this->_objTpl->blockExists('news_menu')) {
+                $this->_objTpl->parse('news_menu');
+            }
+            if ($this->_objTpl->blockExists('news_status_message')) {
+                $this->_objTpl->hideBlock('news_status_message');
+            }
         } else {
-            $this->_objTpl->setVariable(array(
-                'NEWS_DATE'     => '',
-                'NEWS_LINK'     => $_ARRAYLANG['TXT_NEWS_NO_NEWS_FOUND'],
-                'NEWS_CATEGORY' => '',
-                'NEWS_TYPE' => '',
-            ));
-            $this->_objTpl->parse('newsrow');
+            $this->_objTpl->setVariable('TXT_NEWS_NO_NEWS_FOUND', $_ARRAYLANG['TXT_NEWS_NO_NEWS_FOUND']);
+
+            if ($this->_objTpl->blockExists('news_status_message')) {
+                $this->_objTpl->parse('news_status_message');
+            }
+            if ($this->_objTpl->blockExists('news_menu')) {
+                $this->_objTpl->hideblock('news_menu');
+            }
+            if ($this->_objTpl->blockExists('news_list')) {
+                $this->_objTpl->hideBlock('news_list');
+            }
         }
         return $this->_objTpl->get();
     }
@@ -1259,14 +1272,29 @@ class news extends newsLibrary {
                 $i++;
                 $objResult->MoveNext();
             }
+            if ($this->_objTpl->blockExists('news_list')) {
+                $this->_objTpl->parse('news_list');
+            }
+            if ($this->_objTpl->blockExists('news_menu')) {
+                $this->_objTpl->parse('news_menu');
+            }
+            if ($this->_objTpl->blockExists('news_status_message')) {
+                $this->_objTpl->hideBlock('news_status_message');
+            }
         } else {
-            $this->_objTpl->setVariable(array(
-                'NEWS_DATE'     => '',
-                'NEWS_LINK'     => $_ARRAYLANG['TXT_NEWS_NO_NEWS_FOUND'],
-                'NEWS_TEXT' => ''
-            ));
-            $this->_objTpl->parse('newsrow');
+            $this->_objTpl->setVariable('TXT_NEWS_NO_NEWS_FOUND', $_ARRAYLANG['TXT_NEWS_NO_NEWS_FOUND']);
+
+            if ($this->_objTpl->blockExists('news_status_message')) {
+                $this->_objTpl->parse('news_status_message');
+            }
+            if ($this->_objTpl->blockExists('news_menu')) {
+                $this->_objTpl->hideblock('news_menu');
+            }
+            if ($this->_objTpl->blockExists('news_list')) {
+                $this->_objTpl->hideBlock('news_list');
+            }
         }
+
         return $this->_objTpl->get();
     }
 
@@ -2058,14 +2086,7 @@ RSS2JSCODE;
             }
         }
 
-        if (empty($monthlyStats)) {
-            $this->_objTpl->setVariable('TXT_NEWS_NO_NEWS_FOUND', $_ARRAYLANG['TXT_NEWS_NO_NEWS_FOUND']);
-            $this->_objTpl->parse('news_no_news_found');
-            $this->_objTpl->hideBlock('news_archive_months_list');
-            $this->_objTpl->hideBlock('news_archive_month_list');
-        } else {
-            $this->_objTpl->hideBlock('news_no_news_found');
-
+        if (!empty($monthlyStats)) {
             foreach ($monthlyStats as $key => $value) {
                 $this->_objTpl->setVariable(array(
                     'NEWS_ARCHIVE_MONTH_KEY'    => $key,
@@ -2090,7 +2111,19 @@ RSS2JSCODE;
 
             $this->_objTpl->parse('news_archive_months_list');
             $this->_objTpl->parse('news_archive_month_list');
+            if ($this->_objTpl->blockExists('news_status_message')) {
+                $this->_objTpl->hideBlock('news_status_message');
+            }
+        } else {
+            $this->_objTpl->setVariable('TXT_NEWS_NO_NEWS_FOUND', $_ARRAYLANG['TXT_NEWS_NO_NEWS_FOUND']);
+
+            if ($this->_objTpl->blockExists('news_status_message')) {
+                $this->_objTpl->parse('news_status_message');
+            }
+                $this->_objTpl->hideblock('news_archive_months_list');
+                $this->_objTpl->hideBlock('news_status_message');
         }
+        
 
         return $this->_objTpl->get();
     }
