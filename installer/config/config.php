@@ -42,6 +42,8 @@ define('ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME',  'Y-m-d H:i:s');
 if (!empty($_SESSION['installer']['config']['documentRoot'])) {
     define('ASCMS_PATH', $_SESSION['installer']['config']['documentRoot']);
     define('ASCMS_PATH_OFFSET', $_SESSION['installer']['config']['offsetPath']);
+    define('ASCMS_INSTANCE_PATH', $_SESSION['installer']['config']['documentRoot']);
+    define('ASCMS_INSTANCE_OFFSET', $_SESSION['installer']['config']['offsetPath']);
     define('ASCMS_DOCUMENT_ROOT', ASCMS_PATH.ASCMS_PATH_OFFSET);
 }
 
@@ -114,12 +116,21 @@ $arrDatabaseTables = array(
     'module_block_blocks',
     'module_block_rel_pages',
     'module_block_settings',
-    'module_calendar',
-    'module_calendar_categories',
-    'module_calendar_form_data',
-    'module_calendar_form_fields',
-    'module_calendar_registrations',
+    'module_calendar_category',
+    'module_calendar_category_name',
+    'module_calendar_event',
+    'module_calendar_event_field',
+    'module_calendar_host',
+    'module_calendar_mail',
+    'module_calendar_mail_action',
+    'module_calendar_registration',
+    'module_calendar_registration_form',
+    'module_calendar_registration_form_field',
+    'module_calendar_registration_form_field_name',
+    'module_calendar_registration_form_field_value',
+    'module_calendar_rel_event_host',
     'module_calendar_settings',
+    'module_calendar_settings_section',
     'module_calendar_style',
     'module_contact_form',
     'module_contact_form_data',

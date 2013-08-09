@@ -9,7 +9,10 @@
 
 namespace Cx\Core\Db;
 
-\Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH . '/adodb/drivers/adodb-pdo.inc.php');
+// if classloader is not available, load this file yourself
+if (\Env::get('ClassLoader')) {
+    \Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH . '/adodb/drivers/adodb-pdo.inc.php');
+}
 
 /**
  * This class is needed in order to make AdoDB use an existing PDO connection
