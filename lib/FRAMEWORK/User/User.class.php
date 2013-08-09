@@ -312,7 +312,7 @@ class User extends User_Profile
      *                                if true, false otherwise
      * @return  boolean               True on success, false otherwise
      */
-    public function auth($username, $password, $backend = false, $captchaCheckResult)
+    public function auth($username, $password, $backend = false, $captchaCheckResult = false)
     {
         global $objDatabase;
 
