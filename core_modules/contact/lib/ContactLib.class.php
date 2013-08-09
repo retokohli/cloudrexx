@@ -1363,9 +1363,9 @@ function checkAllFields() {
             var folderWidget = cx.instances.get('uploadWidget', 'folderWidget');
             if(required && folderWidget.isEmpty()) {
                 isOk = false;
-                \$J([name=contactFormField_upload]).css('border', '1px solid red');
+                \$J('[name=contactFormField_upload]').css('border', '1px solid red');
             } else {
-                \$J([name=contactFormField_upload]).attr('style', '');
+                \$J('[name=contactFormField_upload]').attr('style', '');
             }
         } else if (type == 'select' || type == 'country' || type == 'access_country' || type == 'access_title' || type == 'access_gender') {
             if (!isRequiredSelect(fields[field][1], field)) {
