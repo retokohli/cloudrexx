@@ -3021,8 +3021,19 @@ SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_news_categories` (
   `catid` int(2) unsigned NOT NULL auto_increment,
+  `parent_id` int(11) NOT NULL,
+  `left_id` int(11) NOT NULL,
+  `right_id` int(11) NOT NULL,
+  `sorting` int(11) NOT NULL,
+  `level` int(11) NOT NULL,
   PRIMARY KEY  (`catid`)
 ) ENGINE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_news_categories_catid` (
+  `id` int(11) NOT NULL
+) ENGINE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -3032,6 +3043,14 @@ CREATE TABLE `contrexx_module_news_categories_locale` (
   `name` varchar(100) NOT NULL default '',
   PRIMARY KEY  (`category_id`,`lang_id`),
   FULLTEXT KEY `name` (`name`)
+) ENGINE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_news_categories_locks` (
+  `lockId` varchar(32) NOT NULL,
+  `lockTable` varchar(32) NOT NULL,
+  `lockStamp` bigint(11) NOT NULL
 ) ENGINE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
