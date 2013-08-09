@@ -31,7 +31,13 @@ global $_PATHCONFIG;
 /**
  * Load config for this instance
  */
-include_once dirname(dirname(dirname(__FILE__))).'/config/configuration.php';
+$configFilePath = dirname(dirname(dirname(__FILE__))).'/config/configuration.php';
+if (file_exists($configFilePath)) {
+    include_once $configFilePath;
+} else {
+    \header('Location: http://' . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI']. 'installer/index.php');
+    exit;
+}
 
 /**
  * Debug level, see lib/FRAMEWORK/DBG/DBG.php
