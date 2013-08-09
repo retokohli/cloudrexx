@@ -27,7 +27,12 @@ function updateLangName(input)
       </th>
     </tr>
     <tr>
-      <td> {TXT_NAME}: 
+      <td>
+        <select name="newCategorieParentId" style="margin-right: 10px;">
+            <option value="0" selected="selected">{TXT_NEWS_NEW_CATEGORY}</option>
+            {NEWS_CATEGORIES}
+        </select>
+        {TXT_NAME}: 
         <input type="text" name="newCategorieName" size="40" maxlength="250" />&nbsp; 
         <input type="submit" name="submit" value="{TXT_ADD}" />
       </td>
@@ -49,7 +54,7 @@ function updateLangName(input)
     <!-- BEGIN newsRow -->
       <tr class="{NEWS_ROWCLASS}"> 
         <td nowrap="nowrap" valign="top"><div align="left">{NEWS_CAT_ID}</div></td>
-        <td nowrap="nowrap"> 
+        <td nowrap="nowrap" style="padding-left: {NEWS_LEVEL_SPACING}px">
           <input type="text" value="{NEWS_CAT_NAME}" size="40" maxlength="250" onchange="updateLangName(this);" /> <a href="#" onclick="toggleCatName(this);" title="{TXT_NEWS_EXTENDED}">{TXT_NEWS_EXTENDED} &raquo;</a>
           <div class="category_name_lang_div" style="display:none;">
                     <!-- BEGIN category_name_list -->

@@ -52,7 +52,6 @@ $_ARRAYLANG['TXT_ID'] = "ID";
 $_ARRAYLANG['TXT_ACCEPT_CHANGES'] = "Aceptar Cambios";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'] = "\¿Realmente desea eliminar los datos?";
 $_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK'] = "\¡Esta acci&oacute;n puede tener influencia en el funcionamiento del sistema!";
-$_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE'] = "Esta categor&iacute;a no pudo ser eliminadas. \¡Por favor, elimina todos las subcategor&iacute;as primero!";
 $_ARRAYLANG['TXT_PERFORM'] = "Mantenimiento";
 $_ARRAYLANG['TXT_DELETE'] = "Eliminar";
 $_ARRAYLANG['TXT_NEWS_SETTINGS_SAVED'] = "Las propiedades se han guardado correctamente";

@@ -51,6 +51,7 @@ class Teasers extends newsLibrary
     */
     function __construct($administrate = false)
     {
+        parent::__construct();
         $this->administrate = $administrate;
 
         $this->_objTpl = new \Cx\Core\Html\Sigma('.');
@@ -89,7 +90,8 @@ class Teasers extends newsLibrary
                    tblL.title,
                    tblL.text AS teaser_full_text,
                    tblL.teaser_text,
-                   tblC.name AS category_name
+                   tblC.name AS category_name,
+                   tblC.category_id AS category_id
               FROM ".DBPREFIX."module_news AS tblN
              INNER JOIN ".DBPREFIX."module_news_locale AS tblL ON tblL.news_id=tblN.id
              INNER JOIN ".DBPREFIX."module_news_categories_locale AS tblC ON tblC.category_id=tblN.catid
@@ -98,7 +100,7 @@ class Teasers extends newsLibrary
               ($this->administrate == false
                 ? " AND tblN.validated='1'
                     AND tblN.status='1'
-		            AND tblL.is_active=1	
+                    AND tblL.is_active=1
                     AND (tblN.startdate<='".date('Y-m-d H:i:s').
                     "' OR tblN.startdate='0000-00-00 00:00:00') AND (tblN.enddate>='".
                     date('Y-m-d H:i:s')."' OR tblN.enddate='0000-00-00 00:00:00')"
@@ -161,6 +163,7 @@ class Teasers extends newsLibrary
                     'redirect'          => $objResult->fields['redirect'],
                     'ext_url'           => $extUrl,
                     'category'          => $objResult->fields['category_name'],
+                    'category_id'       => $objResult->fields['category_id'],
                     'teaser_full_text'  => $objResult->fields['teaser_full_text'],
                     'teaser_text'       => $objResult->fields['teaser_text'],
                     'teaser_show_link'  => $objResult->fields['teaser_show_link'],
@@ -291,7 +294,7 @@ class Teasers extends newsLibrary
                             $teaserBlockCode = str_replace(
                                 '{TEASER_URL}', 
                                 empty($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect'])
-                                    ? \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'details', FRONTEND_LANG_ID, array('newsid' => $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['id'], 'teaserId' => $this->arrTeaserFrames[$id]['id']))
+                                    ? \Cx\Core\Routing\Url::fromModuleAndCmd('news', $this->findCmdById('details', $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['category_id']), FRONTEND_LANG_ID, array('newsid' => $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['id'], 'teaserId' => $this->arrTeaserFrames[$id]['id']))
                                     : $this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect'], $teaserBlockCode
                             );
                             $teaserBlockCode = str_replace('{TEASER_URL_TARGET}', empty($this->arrTeasers[$this->arrFrameTeaserIds[$id][$nr]]['redirect']) ? '_self' : '_blank', $teaserBlockCode);

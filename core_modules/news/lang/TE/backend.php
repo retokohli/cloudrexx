@@ -52,7 +52,6 @@ $_ARRAYLANG['TXT_ID'] = "ID";
 $_ARRAYLANG['TXT_ACCEPT_CHANGES'] = "Accept Changes";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'] = "Do you really want to delete the data record?";
 $_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK'] = "This action can have influence on the functionallity of the system!";
-$_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE'] = "This category could not be deletet! Please delete all the subgroups first!";
 $_ARRAYLANG['TXT_PERFORM'] = "Perform";
 $_ARRAYLANG['TXT_DELETE'] = "Delete";
 $_ARRAYLANG['TXT_NEWS_SETTINGS_SAVED'] = "The Settings has been saved";

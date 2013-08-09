@@ -52,7 +52,6 @@ $_ARRAYLANG['TXT_ID'] = "ID";
 $_ARRAYLANG['TXT_ACCEPT_CHANGES'] = "Подтвердить изменения";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'] = "Действительно удалить набор данных?";
 $_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK'] = "Это действие может повредить функциональности системы!";
-$_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE'] = "Эта категория не может быть удалена! Удалите сначала вложенные группы.";
 $_ARRAYLANG['TXT_PERFORM'] = "Экспорт";
 $_ARRAYLANG['TXT_DELETE'] = "Удалить";
 $_ARRAYLANG['TXT_NEWS_SETTINGS_SAVED'] = "Установки сохранены";

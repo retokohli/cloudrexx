@@ -52,7 +52,6 @@ $_ARRAYLANG['TXT_ID'] = "ID";
 $_ARRAYLANG['TXT_ACCEPT_CHANGES'] = "Änderungen übernehmen";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'] = "Datensatz wirklich löschen?";
 $_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK'] = "Diese Aktion kann die Systemfunktionalität beinflussen!";
-$_ARRAYLANG['TXT_CATEGORY_NOT_DELETED_BECAUSE_IN_USE'] = "Die Kategorie konnte nicht gelöscht werden! Bitte löschen Sie zuerst alle Untergruppen.";
 $_ARRAYLANG['TXT_PERFORM'] = "Ausführen";
 $_ARRAYLANG['TXT_DELETE'] = "Löschen";
 $_ARRAYLANG['TXT_NEWS_SETTINGS_SAVED'] = "Die Einstellungen wurden gespeichert";
