@@ -2120,8 +2120,8 @@ RSS2JSCODE;
             if ($this->_objTpl->blockExists('news_status_message')) {
                 $this->_objTpl->parse('news_status_message');
             }
-                $this->_objTpl->hideblock('news_archive_months_list');
-                $this->_objTpl->hideBlock('news_status_message');
+            $this->_objTpl->hideblock('news_archive_months_list');
+            $this->_objTpl->hideBlock('news_archive_month_list');
         }
         
 
