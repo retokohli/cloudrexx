@@ -1311,7 +1311,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                 try {
                     if (info != null) {
                         jQuery(e).children('span.module.' + lang).text(info.module);
-                        jQuery(e).children('a.preview.' + lang).attr('href', '../' + lang + info.path + '?pagePreview=1');
+                        jQuery(e).children('a.preview.' + lang).attr('href', "#");
                         jQuery(e).find('span.lastupdate.' + lang + ' .date').text(info.lastupdate);
                         jQuery(e).find('span.lastupdate.' + lang + ' .user.tp-value').text(cx.variables.get('TXT_CORE_CM_LAST_MODIFIED', 'contentmanager/lang/tooltip') + ' ' + (info.user != '' ? '„'+info.user+'“'  : '“'));
                     }
@@ -1319,6 +1319,12 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                     jQuery(e).children('a.preview.' + lang).css('display', 'none');
                 }
             });
+        });
+        
+        jQuery("a.preview").click(function() {
+            var pageId = jQuery(this).parent().parent().children("a." + cx.cm.getCurrentLang()).attr("id");
+            var path = "../" + cx.cm.getCurrentLang() + cx.cm.getPagePath(pageId) + "?pagePreview=1";
+            jQuery(this).attr("href", path);
         });
 
         jQuery('.jstree li, .actions-expanded').live('mouseleave', function(event) {
@@ -2842,10 +2848,50 @@ cx.cm.slugify = function(string) {
     return string;
 }
 
+/**
+ * Locks the ContentManager in order to prevent user input
+ */
 cx.cm.lock = function() {
     jQuery("#cm-load-lock").show();
 }
 
+/**
+ * Unlocks the ContentManager in order to allow user input
+ */
 cx.cm.unlock = function() {
     jQuery("#cm-load-lock").hide();
+}
+
+/**
+ * Returns the id of the parent page or undefined if none
+ */
+cx.cm.getParentPageId = function(pageId) {
+    return jQuery("#" + pageId).
+        parent().                               // node
+        parent().                               // <ul>
+        parent().                               // parent node
+        children("." + cx.cm.getCurrentLang()). // parent page
+        attr("id");
+}
+
+/**
+ * Returns the slug for the given page id
+ */
+cx.cm.getPageSlug = function(pageId) {
+    return jQuery("#" + pageId).
+        data().
+        href.
+        slug;
+}
+
+/**
+ * Returns recursive path for page id
+ */
+cx.cm.getPagePath = function(pageId) {
+    var path = "";
+    while (pageId) {
+        path = "/" + cx.cm.getPageSlug(pageId) + path;
+        pageId = cx.cm.getParentPageId(pageId);
+    }
+    return path;
 }
