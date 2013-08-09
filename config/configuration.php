@@ -46,7 +46,6 @@ $_PATHCONFIG['ascms_installation_offset'] = $_PATHCONFIG['ascms_root_offset']; /
 * -------------------------------------------------------------------------
 */
 $_FTPCONFIG['is_activated'] = false; // Ftp support true or false
-$_FTPCONFIG['use_passive'] = false;    // Use passive ftp mode
 $_FTPCONFIG['host']    = 'localhost';// This is normally set to localhost
 $_FTPCONFIG['port'] = 21; // Ftp remote port
 $_FTPCONFIG['username'] = ''; // Ftp login username

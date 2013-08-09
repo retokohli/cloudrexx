@@ -21,6 +21,18 @@ require_once(ASCMS_FRAMEWORK_PATH.'/FileSystem/FileSystem.class.php');
  */
 
 /**
+ * Factory callback for AdoDB NewConnection
+ * @deprecated Use Doctrine!
+ * @return \Cx\Core\Db\CustomAdodbPdo 
+ */
+function cxupdateAdodbPdoConnectionFactory() {
+    require_once '..'.DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'adodb'.DIRECTORY_SEPARATOR.'drivers'.DIRECTORY_SEPARATOR.'adodb-pdo.inc.php';
+    require_once '..'.DIRECTORY_SEPARATOR.'core'.DIRECTORY_SEPARATOR.'Db'.DIRECTORY_SEPARATOR.'CustomAdodbPdo.class.php';
+    $obj = new \Cx\Core\Db\CustomAdodbPdo(CommonFunctions::$pdo);
+    return $obj;
+}
+
+/**
  * Install Wizard Controller
  *
  * The Install Wizard
@@ -33,6 +45,7 @@ require_once(ASCMS_FRAMEWORK_PATH.'/FileSystem/FileSystem.class.php');
  */
 class CommonFunctions
 {
+    public static $pdo = null;
     var $defaultLanguage;
     var $detectedLanguage;
     var $adoDbPath;
@@ -147,7 +160,7 @@ class CommonFunctions
     * @return   mixed   object $objDb on success, false on failure
     */
     function _getDbObject(&$statusMsg, $useDb = true) {
-        global $objDb, $_ARRLANG, $dbType, $useUtf8;
+        global $objDb, $_ARRLANG, $dbType, $useUtf8, $ADODB_FETCH_MODE, $ADODB_NEWCONNECTION;
 
         if (isset($objDb)) {
             return $objDb;
@@ -155,8 +168,16 @@ class CommonFunctions
             // open db connection
             require_once $this->adoDbPath;
 
-            $objDb = ADONewConnection($dbType);
-            @$objDb->Connect($_SESSION['installer']['config']['dbHostname'], $_SESSION['installer']['config']['dbUsername'], $_SESSION['installer']['config']['dbPassword'], ($useDb ? $_SESSION['installer']['config']['dbDatabaseName'] : null));
+                self::$pdo = new \PDO(
+                    'mysql:host='.$_SESSION['installer']['config']['dbHostname'] . ($useDb ? ';dbname=' . $_SESSION['installer']['config']['dbDatabaseName'] : ''),
+                    $_SESSION['installer']['config']['dbUsername'],
+                    $_SESSION['installer']['config']['dbPassword']
+                );
+            self::$pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT);
+            $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+            $ADODB_NEWCONNECTION = 'cxupdateAdodbPdoConnectionFactory';
+
+            $objDb = ADONewConnection('pdo');
 
             $errorNo = $objDb->ErrorNo();
             if ($errorNo != 0) {
@@ -598,12 +619,24 @@ class CommonFunctions
     }
 
     function checkDbConnection($host, $user, $password) {
-        global $_ARRLANG, $dbType, $requiredMySQLVersion;
+        global $_ARRLANG, $dbType, $requiredMySQLVersion, $ADODB_FETCH_MODE, $ADODB_NEWCONNECTION;
 
         require_once $this->adoDbPath;
 
-        $db = ADONewConnection($dbType);
-        @$db->NConnect($host, $user, $password);
+        try {
+            self::$pdo = new \PDO(
+                'mysql:host='.$host,
+                $user,
+                $password
+            );
+        } catch (\Exception $e) {
+            return $_ARRLANG['TXT_CANNOT_CONNECT_TO_DB_SERVER']."<i>&nbsp;(".$e->getMessage().")</i><br />";
+        }
+        self::$pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT);
+        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+        $ADODB_NEWCONNECTION = 'cxupdateAdodbPdoConnectionFactory';
+
+        $db = ADONewConnection('pdo');
 
         $errorNr = $db->ErrorNo();
         $arrServerInfo = $db->ServerInfo();
@@ -622,12 +655,24 @@ class CommonFunctions
     }
 
     function existDatabase($host, $user, $password, $database) {
-        global $_ARRLANG, $dbType;
+        global $_ARRLANG, $dbType, $ADODB_FETCH_MODE, $ADODB_NEWCONNECTION;
 
         require_once $this->adoDbPath;
 
-        $db = ADONewConnection($dbType);
-        @$db->Connect($host, $user, $password, $database);
+        try {
+            self::$pdo = new \PDO(
+                'mysql:host='.$host . ';dbname=' . $database,
+                $user,
+                $password
+            );
+        } catch (\PDOException $e) {
+            return false;
+        }
+        self::$pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT);
+        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+        $ADODB_NEWCONNECTION = 'cxupdateAdodbPdoConnectionFactory';
+
+        $db = ADONewConnection('pdo');
 
         $errorNr = $db->ErrorNo();
 
@@ -908,8 +953,8 @@ class CommonFunctions
 
         //MySQL
         $str = str_replace(
-            array("%DB_HOST%", "%DB_NAME%", "%DB_USER%", "%DB_PASSWORD%", "%DB_TABLE_PREFIX%", "%DB_CHARSET%"),
-            array($_SESSION['installer']['config']['dbHostname'], $_SESSION['installer']['config']['dbDatabaseName'], $_SESSION['installer']['config']['dbUsername'], $_SESSION['installer']['config']['dbPassword'], $_SESSION['installer']['config']['dbTablePrefix'], !empty($_SESSION['installer']['config']['dbCollation']) ? 'utf8' : ''),
+            array("%DB_HOST%", "%DB_NAME%", "%DB_USER%", "%DB_PASSWORD%", "%DB_TABLE_PREFIX%", "%DB_CHARSET%", "%DB_COLLATION%", "%DB_TIMEZONE%"),
+            array($_SESSION['installer']['config']['dbHostname'], $_SESSION['installer']['config']['dbDatabaseName'], $_SESSION['installer']['config']['dbUsername'], $_SESSION['installer']['config']['dbPassword'], $_SESSION['installer']['config']['dbTablePrefix'], 'utf8', $_SESSION['installer']['config']['dbCollation'], $_SESSION['installer']['config']['timezone']),
             $str
         );
 
@@ -971,14 +1016,22 @@ class CommonFunctions
     }
 
     function createDatabase() {
-        global $_ARRLANG, $dbType, $useUtf8;
+        global $_ARRLANG, $dbType, $useUtf8, $ADODB_FETCH_MODE, $ADODB_NEWCONNECTION;
 
         require_once $this->adoDbPath;
 
         $result = "";
 
-        $db = ADONewConnection($dbType);
-        @$db->Connect($_SESSION['installer']['config']['dbHostname'], $_SESSION['installer']['config']['dbUsername'], $_SESSION['installer']['config']['dbPassword']);
+        self::$pdo = new \PDO(
+            'mysql:host='.$_SESSION['installer']['config']['dbHostname'],
+            $_SESSION['installer']['config']['dbUsername'],
+            $_SESSION['installer']['config']['dbPassword']
+        );
+        self::$pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT);
+        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+        $ADODB_NEWCONNECTION = 'cxupdateAdodbPdoConnectionFactory';
+
+        $db = ADONewConnection('pdo');
 
         $arrServerInfo = $db->ServerInfo();
 
@@ -994,14 +1047,22 @@ class CommonFunctions
 
     function setDatabaseCharset()
     {
-        global $_ARRLANG, $dbType, $useUtf8;
+        global $_ARRLANG, $dbType, $useUtf8, $ADODB_FETCH_MODE, $ADODB_NEWCONNECTION;
 
         require_once $this->adoDbPath;
 
         $result = "";
 
-        $db = ADONewConnection($dbType);
-        @$db->Connect($_SESSION['installer']['config']['dbHostname'], $_SESSION['installer']['config']['dbUsername'], $_SESSION['installer']['config']['dbPassword']);
+        self::$pdo = new \PDO(
+            'mysql:host='.$_SESSION['installer']['config']['dbHostname'],
+            $_SESSION['installer']['config']['dbUsername'],
+            $_SESSION['installer']['config']['dbPassword']
+        );
+        self::$pdo->setAttribute(\PDO::ATTR_ERRMODE, \PDO::ERRMODE_SILENT);
+        $ADODB_FETCH_MODE = ADODB_FETCH_ASSOC;
+        $ADODB_NEWCONNECTION = 'cxupdateAdodbPdoConnectionFactory';
+
+        $db = ADONewConnection('pdo');
 
         $result = @$db->Execute("ALTER DATABASE `".$_SESSION['installer']['config']['dbDatabaseName']."` DEFAULT CHARACTER SET utf8 COLLATE ".$_SESSION['installer']['config']['dbCollation']);
 
@@ -1092,10 +1153,10 @@ class CommonFunctions
         if ($objDb === false) {
             return $statusMsg;
         } else {
-            $result = $objDb->Execute($objDb->metaTablesSQL);
+            $result = $objDb->Execute('SHOW TABLES');//$objDb->metaTablesSQL);
             if ($result) {
                 while ($arrResult = $result->FetchRow()) {
-                    array_push($arrTables, $arrResult[0]);
+                    array_push($arrTables, current($arrResult));
                 }
             }
         }
