@@ -173,7 +173,7 @@ class mediaDirectoryLibrary
                                 $objEntries = new mediaDirectoryEntry();
                                 $objEntries->getEntries(null, null, null, null, null, null, null, null, 'n', $intUserId);
 
-                                if($strMaxEntries <= intval(count($objEntries->arrEntries)) && $strMaxEntries !== 'n') {
+                                if($strMaxEntries <= intval(count($objEntries->arrEntries)) && $strMaxEntries !== 'n' && $this->arrSettings['settingsAddEntriesOnlyCommunity'] == 1) {
                                     $strStatus = 'redirect';
                                 }
 
@@ -201,7 +201,7 @@ class mediaDirectoryLibrary
                                 }
 
                                 //check from type
-                                if(!$bolFormAllowed && $intSelectedFormId != 0) {
+                                if(!$bolFormAllowed && $intSelectedFormId != 0 && $this->arrSettings['settingsAddEntriesOnlyCommunity'] == 1) {
                                     $strStatus = 'no_access';
                                 }
                             } else {
