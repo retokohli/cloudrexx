@@ -69,6 +69,11 @@ class newsLibrary
                 break;
             }
         } else {
+            // create first entry of sequence table for NestedSet
+            $objResult = $objDatabase->SelectLimit("SELECT `id` FROM `".DBPREFIX."module_news_categories_catid`", 1);
+            if ($objResult->RecordCount() == 0) {
+                $objDatabase->Execute("INSERT INTO `".DBPREFIX."module_news_categories_catid` VALUES (1)");
+            }
             $this->nestedSetRootId = $this->objNestedSet->createRootNode(array(), false, false);
         }
     }
