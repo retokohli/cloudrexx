@@ -1491,30 +1491,36 @@ class galleryManager extends GalleryLibrary
                     return;
                 }
 
-                $imageNameChopped = substr($strOutputName, 0, strrpos($strOutputName, '.'));
+                // remove last part (file name ending) if any
+                $imageNameParts = explode('.', $strOutputName);
+                if (count($imageNameParts) > 1) {
+                    end($imageNameParts);
+                    unset($imageNameParts[key($imageNameParts)]);
+                    $strOutputName = implode('.', $imageNameParts);
+                }
 
                 $this->_objTpl->setVariable(array(
-                    'IMAGES_ID'                     =>    $intOutputId,
-                    'IMAGES_THUMB_PATH'             =>    $strOutputThumbpath,
-                    'IMAGE_ORIG_PATH'               =>    $strOutputOrigpath,
-                    'IMAGES_ACTIVE_ICON'            =>    $outputActiveIcon,
-                    'IMAGES_CATIMG_ICON'            =>    $outputCatimgIcon,
+                    'IMAGES_ID'                     =>    contrexx_raw2xhtml($intOutputId),
+                    'IMAGES_THUMB_PATH'             =>    contrexx_raw2encodedUrl($strOutputThumbpath),
+                    'IMAGE_ORIG_PATH'               =>    contrexx_raw2encodedUrl($strOutputOrigpath),
+                    'IMAGES_ACTIVE_ICON'            =>    contrexx_raw2xhtml($outputActiveIcon),
+                    'IMAGES_CATIMG_ICON'            =>    contrexx_raw2xhtml($outputCatimgIcon),
                     'IMAGES_HIDE_LINKICON_S'        =>    $outputLinkIconS,
                     'IMAGES_HIDE_LINKICON_E'        =>    $outputLinkIconE,
-                    'IMAGES_NAME'                   =>    $imageNameChopped,
-                    'IMAGES_LASTEDIT'               =>    $strOutputLastedit,
-                    'IMAGES_ORIG_RESO'              =>    $strOutputOrigReso,
-                    'IMAGES_ORIG_WIDTH'             =>    $strOutputOrigWidth,
-                    'IMAGES_ORIG_HEIGHT'            =>    $strOutputOrigHeight,
-                    'IMAGES_ORIG_SIZE'              =>    $strOutputOrigSize,
-                    'IMAGES_THUMB_RESO'             =>    $strOutputThumbReso,
-                    'IMAGES_THUMB_SIZE'             =>    $strOutputThumbSize,
-                    'IMAGES_TYPE_METHOD'            =>    $strOutputTypeMethod,
-                    'IMAGES_TYPE_SIZE'              =>    $strOutputTypeSize,
-                    'IMAGES_SORTING'                =>    $strOutputSorting,
-                    'IMAGES_COMMENT_COUNT'          =>    $strOutputCommentCount,
-                    'IMAGES_VOTING_COUNT'           =>    $strOutputVotingCount,
-                    'IMAGES_VOTING_AVERAGE'         =>    $outputVotingAverage
+                    'IMAGES_NAME'                   =>    contrexx_raw2xhtml($strOutputName),
+                    'IMAGES_LASTEDIT'               =>    contrexx_raw2xhtml($strOutputLastedit),
+                    'IMAGES_ORIG_RESO'              =>    contrexx_raw2xhtml($strOutputOrigReso),
+                    'IMAGES_ORIG_WIDTH'             =>    contrexx_raw2xhtml($strOutputOrigWidth),
+                    'IMAGES_ORIG_HEIGHT'            =>    contrexx_raw2xhtml($strOutputOrigHeight),
+                    'IMAGES_ORIG_SIZE'              =>    contrexx_raw2xhtml($strOutputOrigSize),
+                    'IMAGES_THUMB_RESO'             =>    contrexx_raw2xhtml($strOutputThumbReso),
+                    'IMAGES_THUMB_SIZE'             =>    contrexx_raw2xhtml($strOutputThumbSize),
+                    'IMAGES_TYPE_METHOD'            =>    contrexx_raw2xhtml($strOutputTypeMethod),
+                    'IMAGES_TYPE_SIZE'              =>    contrexx_raw2xhtml($strOutputTypeSize),
+                    'IMAGES_SORTING'                =>    contrexx_raw2xhtml($strOutputSorting),
+                    'IMAGES_COMMENT_COUNT'          =>    contrexx_raw2xhtml($strOutputCommentCount),
+                    'IMAGES_VOTING_COUNT'           =>    contrexx_raw2xhtml($strOutputVotingCount),
+                    'IMAGES_VOTING_AVERAGE'         =>    contrexx_raw2xhtml($outputVotingAverage),
                 ));
                 $this->_objTpl->parseCurrentBlock();
             }
@@ -2353,7 +2359,7 @@ class galleryManager extends GalleryLibrary
         $query = '    INSERT
                                 INTO    '.DBPREFIX.'module_gallery_pictures
                                 SET     link="",
-                                        path="'.$strImagePath.'",
+                                        path="'.contrexx_raw2db($strImagePath).'",
                                         lastedit="'.time().'",
                                         quality="'.$objGallery->arrSettings['standard_quality'].'",
                                         size_type="'.$objGallery->arrSettings['standard_size_type'].'",
@@ -2366,7 +2372,7 @@ class galleryManager extends GalleryLibrary
         $objResult = $objDatabase->Execute('INSERT INTO '.DBPREFIX.'module_gallery_language_pics
                                                (picture_id, lang_id, name)
                                             SELECT
-                                               '.$intPictureId.', id, "'.$imageName.'"
+                                               '.$intPictureId.', id, "'.contrexx_raw2db($imageName).'"
                                             FROM '.DBPREFIX.'languages');
     }
 
@@ -2711,7 +2717,7 @@ class galleryManager extends GalleryLibrary
                     $arrFileInfo = getimagesize($this->strImagePath.$objResult->fields['path']);
 
                     $arrImageCounter[$objResult->fields['id']]                 = $objResult->fields['id'];
-                    $arrImageInfo[$objResult->fields['id']]['name']         = $arrNames[$objResult->fields['id']][$objFWUser->objUser->getFrontendLanguage()];
+                    $arrImageInfo[$objResult->fields['id']]['name']         = contrexx_raw2xhtml($arrNames[$objResult->fields['id']][$objFWUser->objUser->getFrontendLanguage()]);
                     $arrImageInfo[$objResult->fields['id']]['random_path']     = $this->strThumbnailWebPath.'temp_'.rand().'_'.$objResult->fields['path'];
                     $arrImageInfo[$objResult->fields['id']]['uploadtime']     = date('d.m.Y',$objResult->fields['lastedit']);
                     $arrImageInfo[$objResult->fields['id']]['size_o']         = round(filesize($this->strImagePath.$objResult->fields['path'])/1024,2);
@@ -2864,7 +2870,7 @@ class galleryManager extends GalleryLibrary
             $objDatabase->Execute('    UPDATE     '.DBPREFIX.'module_gallery_pictures
                                     SET     catid='.intval($_POST['validate_category']).',
                                             status="'.$intInsertStatus.'",
-                                            name="'.$_POST['validate_name'].'",
+                                            name="'.contrexx_raw2db($_POST['validate_name']).'",
                                             size_type="'.addslashes($_POST['validate_thumb_size_selection']).'",
                                             size_proz='.intval($_POST['validate_thumb_size']).',
                                             size_abs_h='.intval($_POST['validate_thumb_size_abs_height']).',
@@ -3342,7 +3348,7 @@ $strFileNew = '';
             if ($strName != '.' && $strName != '..') {
                 if (is_file($this->strImportPath . $strName) && $o < $this->intMaxEntries) {
                     $arrFileInfo=getimagesize($this->strImportPath.$strName);
-                    $this->importFiles['name'][] = $strName;
+                    $this->importFiles['name'][] = contrexx_raw2xhtml($strName);
                     $this->importFiles['size'][] = $this->_getSize($this->strImportPath.$strName);
                     $this->importFiles['type'][] = $this->_getType($this->strImportPath.$strName);
                     $this->importFiles['typeEnabled'][] = $arrFileInfo[2];
@@ -3482,7 +3488,6 @@ $strFileNew = '';
     function importFromFolder()
     {
         foreach($_POST['formSelected'] as $strPicName) {
-            $strPicName = get_magic_quotes_gpc() ? strip_tags($strPicName) : addslashes(strip_tags($strPicName));
             $this->movePicture($strPicName);
         }
     }
