@@ -158,6 +158,10 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
         Vat::is_reseller(self::$objCustomer && self::$objCustomer->is_reseller());
         // The coupon code may be set when entering the Shop already
         if (isset($_REQUEST['coupon_code'])) {
+            global $sessionObj;
+            if (!$sessionObj) {
+                $sessionObj = new \cmsSession();
+            }
             $_SESSION['shop']['coupon_code'] =
                 trim(strip_tags(contrexx_input2raw($_REQUEST['coupon_code'])));
 //DBG::log("Coupon Code: Set to ".$_SESSION['shop']['coupon_code']);
