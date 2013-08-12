@@ -145,6 +145,7 @@ $arrDatabaseTables = array(
     'ids',
     'languages',
     'log',
+    'component',
     'modules',
     'module_repository',
     'sessions',
