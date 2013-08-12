@@ -2495,42 +2495,52 @@ class newsManager extends newsLibrary {
         }
 
         // Modify a category
-        if (isset($_POST['modCat']) && ($_POST['modCat'] == true)) {
-            $newSorting = $_POST['newsCatSorting'];
-            asort($newSorting);
-            foreach($newSorting as $catId => $catSort) {
-                $this->objNestedSet->moveTree($catId, $this->objNestedSet->getParent($catId)->id, NESE_MOVE_BELOW);
-            }
-            if ($this->storeCategoriesLocales($_POST['newsCatName'])) {
-                $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
-            } else {
-                $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
-            }
-        }
+        // not used anymore due to new modify view for categories
+//        if (isset($_POST['modCat']) && ($_POST['modCat'] == true)) {
+//            $newSorting = $_POST['newsCatSorting'];
+//            asort($newSorting);
+//            foreach($newSorting as $catId => $catSort) {
+//                $this->objNestedSet->moveTree($catId, $this->objNestedSet->getParent($catId)->id, NESE_MOVE_BELOW);
+//            }
+//            if ($this->storeCategoriesLocales($_POST['newsCatName'])) {
+//                $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
+//            } else {
+//                $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
+//            }
+//        }
 
         // List all categories
         $arrLanguages = \FWLanguage::getActiveFrontendLanguages();
         $arrCatLangData = $this->getCategoriesLangData();
+        $firstLevel = 2;
+        $levelSpacingLeft = 20;
 
         $i=0;
         if (count($nodes = $this->objNestedSet->getSubBranch($this->nestedSetRootId, true)) > 0) {
             $nodes = $this->sortNestedSetArray($nodes);
             foreach ($nodes as $node) {
                 $cssStyle = (($i++ % 2) == 0) ? 'row2' : 'row1';
-                foreach ($arrLanguages as $langId => $arrLanguage) {
-                    $this->_objTpl->setVariable(array(
-                        'NEWS_CAT_LANG_NAME'   => contrexx_raw2xhtml($arrLanguage['name']),
-                        'NEWS_CAT_NAME_VALUE'  => contrexx_raw2xhtml($arrCatLangData[$node['id']][$langId]),
-                        'NEWS_CAT_LANG_ID'     => $langId,
-                        'NEWS_CAT_ID'          => $node['id'],
-                        'NEWS_LEVEL_SPACING'   => ($node['level']*20)-(2*20),
-                    ));
-                    $this->_objTpl->parse('category_name_list');
-                }
+//                foreach ($arrLanguages as $langId => $arrLanguage) {
+//                    $this->_objTpl->setVariable(array(
+//                        'NEWS_CAT_LANG_NAME'   => contrexx_raw2xhtml($arrLanguage['name']),
+//                        'NEWS_CAT_NAME_VALUE'  => contrexx_raw2xhtml($arrCatLangData[$node['id']][$langId]),
+//                        'NEWS_CAT_LANG_ID'     => $langId,
+//                        'NEWS_CAT_ID'          => $node['id'],
+//                        'NEWS_LEVEL_SPACING'   => ($node['level']*20)-(2*20),
+//                    ));
+//                    $this->_objTpl->parse('category_name_list');
+//                }
 
+                $level = $node['level']-$firstLevel;
+                if(count($this->objNestedSet->getParents($node['id'])) > 1) {
+                    $this->_objTpl->touchBlock('categoryHasParent');
+                } else {
+                    $this->_objTpl->hideBlock('categoryHasParent');
+                }
                 $this->_objTpl->setVariable(array(
                     'NEWS_ROWCLASS' => $cssStyle,
                     'NEWS_CAT_ID'   => $node['id'],
+                    'NEWS_LEVEL_SPACING'   => $level*$levelSpacingLeft,
                     'NEWS_CAT_NAME' => contrexx_raw2xhtml($arrCatLangData[$node['id']][FWLanguage::getDefaultLangId()]),
                     'NEWS_CAT_SORT' => $node['norder'],
                 ));
