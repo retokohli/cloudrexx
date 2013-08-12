@@ -688,7 +688,7 @@ $this->_objTpl->setVariable(array(
                 $objFormManager->showForm($this->_objTpl,intval($objEvent->registrationForm), 2, $arrNumSeating);
                 
 
-                if ($this->arrSettings['paymentStatus'] == '1' && $objEvent->ticketSales && ($this->arrSettings['paymentBillStatus'] == '1' || $this->arrSettings['paymentYellowpayStatus'] == '1')) {
+                /* if ($this->arrSettings['paymentStatus'] == '1' && $objEvent->ticketSales && ($this->arrSettings['paymentBillStatus'] == '1' || $this->arrSettings['paymentYellowpayStatus'] == '1')) {
                     $paymentMethods  = '<select class="calendarSelect" name="paymentMethod">';
                     $paymentMethods .= $this->arrSettings['paymentBillStatus'] == '1' || $objEvent->price == 0 ? '<option value="1">'.$_ARRAYLANG['TXT_CALENDAR_PAYMENT_BILL'].'</option>'  : '';
                     $paymentMethods .= $this->arrSettings['paymentYellowpayStatus'] == '1' && $objEvent->price > 0 ? '<option value="2">'.$_ARRAYLANG['TXT_CALENDAR_PAYMENT_YELLOWPAY'].'</option>' : '';
@@ -701,7 +701,7 @@ $this->_objTpl->setVariable(array(
                     $this->_objTpl->parse('calendarRegistrationPayment');
                 } else {
                     $this->_objTpl->hideBlock('calendarRegistrationPayment');
-                }
+                } */
 
                 if(!$userLogin) {
                     
@@ -724,13 +724,13 @@ $this->_objTpl->setVariable(array(
                             $status =$_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFULLY_ADDED_SIGNOFF'];
                         } else {
                             $status = $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFULLY_ADDED'];
-                            if($_POST["paymentMethod"] == 2) {
+                            /* if($_POST["paymentMethod"] == 2) {
                                 $objRegistration->get($objRegistration->id);
                                 $objEvent = new CalendarEvent($objRegistration->eventId);                                
                                 parent::getSettings();
                                 $amount  = (int) $objEvent->price * 100;
                                 $status .= CalendarPayment::_yellowpay(array("orderID" => $objRegistration->id, "amount" => $amount, "currency" => $this->arrSettings["paymentCurrency"], "language" => "DE"));
-                            }
+                            } */
                         }
                         $this->_objTpl->setVariable(array(
                             $this->moduleLangVar.'_LINK_BACK' =>  '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'">'.$_ARRAYLANG['TXT_CALENDAR_BACK'].'</a>',
