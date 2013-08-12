@@ -61,7 +61,11 @@ class newsTop extends newsLibrary
         $i = 0;
 
         $this->_objTemplate->setTemplate($this->_pageContent,true,true);
-        $this->_objTemplate->setCurrentBlock('newsrow');
+        if ($this->_objTemplate->blockExists('newsrow')) {
+            $this->_objTemplate->setCurrentBlock('newsrow');
+        } else {
+            return null;
+        }
 
         $newsLimit = intval($this->arrSettings['news_top_limit']);
         if ($newsLimit>50) { //limit to a maximum of 50 news

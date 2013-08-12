@@ -419,7 +419,7 @@ class LegacyComponentHandler {
                                 || strpos($themesPages['sidebar'], $topNewsPlaceholder) !== false
                                 || strpos($page_template, $topNewsPlaceholder) !== false)
                         ) {
-                            $newsTopObj = new newsTop($themesPages['top_news']);
+                            $newsTopObj = new \newsTop($themesPages['top_news']);
                             $homeTopNews = $newsTopObj->getHomeTopNews();
                             \Env::get('cx')->getPage()->setContent(str_replace($topNewsPlaceholder, $homeTopNews, \Env::get('cx')->getPage()->getContent()));
                             $themesPages['index']   = str_replace($topNewsPlaceholder, $homeTopNews, $themesPages['index']);
