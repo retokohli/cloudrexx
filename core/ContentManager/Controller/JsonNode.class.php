@@ -571,7 +571,7 @@ class JsonNode implements JsonAdapter {
                 'cmd' => '',
                 'lang' => $lang['id'],
             ));
-            $output['hasHome'][$lang['lang']] = (boolean) $page;
+            $output['hasHome'][$lang['lang']] = ($page ? $page->getId() : false);
         }
         
         return($output);
