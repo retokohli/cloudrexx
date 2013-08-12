@@ -72,7 +72,7 @@ class newsLibrary
             // create first entry of sequence table for NestedSet
             $objResult = $objDatabase->SelectLimit("SELECT `id` FROM `".DBPREFIX."module_news_categories_catid`", 1);
             if ($objResult->RecordCount() == 0) {
-                $objDatabase->Execute("INSERT INTO `".DBPREFIX."module_news_categories_catid` VALUES (1)");
+                $objDatabase->Execute("INSERT INTO `".DBPREFIX."module_news_categories_catid` VALUES (0)");
             }
             $this->nestedSetRootId = $this->objNestedSet->createRootNode(array(), false, false);
         }
@@ -112,9 +112,10 @@ class newsLibrary
      * @access  protected
      * @param   array or integer    $categories         categories which have to be listed
      * @param   integer             $selectedCategory   selected category
+     * @param   array               $hiddenCategories   the categories which shouldn't be shown as option
      * @return  string              $options            html options
      */
-    protected function getCategoryMenu($categories, $selectedCategory = 0)
+    protected function getCategoryMenu($categories, $selectedCategory = 0, $hiddenCategories = array())
     {
         global $objDatabase;
 
@@ -135,6 +136,9 @@ class newsLibrary
         $categoriesLang = $this->getCategoriesLangData();
         $options = '';
         foreach ($nestedSetCategories as $category) {
+            if(in_array($category['id'], $hiddenCategories)) {
+                continue;
+            }
             $selected = $category['id'] == $selectedCategory ? 'selected="selected"' : '';
             $options .= '<option value="'.$category['id'].'" '.$selected.'>'.str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', ($category['level'] - $level)).contrexx_raw2xhtml($categoriesLang[$category['id']][FRONTEND_LANG_ID]).'</option>';
         }

@@ -255,6 +255,10 @@ class newsManager extends newsLibrary {
                 $this->manageCategories();
                 break;
 
+            case 'modifycat':
+                $this->modifyCategory($_GET['id']);
+                break;
+
             case 'delcat':
                 $this->deleteCat();
                 $this->manageCategories();
@@ -2439,6 +2443,7 @@ class newsManager extends newsLibrary {
             'TXT_ADD'                                    => $_ARRAYLANG['TXT_ADD'],
             'TXT_CATEGORY_LIST'                          => $_ARRAYLANG['TXT_CATEGORY_LIST'],
             'TXT_ID'                                     => $_ARRAYLANG['TXT_ID'],
+            'TXT_NEWS_CATEGORY_ORDER'                    => $_ARRAYLANG['TXT_NEWS_CATEGORY_ORDER'],
             'TXT_ACTION'                                 => $_ARRAYLANG['TXT_ACTION'],
             'TXT_ACCEPT_CHANGES'                         => $_ARRAYLANG['TXT_ACCEPT_CHANGES'],
             'TXT_CONFIRM_DELETE_DATA'                    => $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'],
@@ -2447,6 +2452,7 @@ class newsManager extends newsLibrary {
         ));
 
         $this->_objTpl->setGlobalVariable(array(
+            'TXT_EDIT'              => $_ARRAYLANG['TXT_EDIT'],
             'TXT_DELETE'            => $_ARRAYLANG['TXT_DELETE'],
             'TXT_NEWS_EXTENDED' => $_ARRAYLANG['TXT_NEWS_EXTENDED']
         ));
@@ -2461,7 +2467,17 @@ class newsManager extends newsLibrary {
             } else {
                 $status = true;
 
-               if (!$catId = $this->objNestedSet->createSubNode($catParentId, array())) {
+                // set new auto increment for sequence table for nested set
+                // if you find another way that the sequence table does not update ID while moving node, so change this code
+                $objResult = $objDatabase->SelectLimit("SELECT MAX(`catid`) AS `maxId` FROM `".DBPREFIX."module_news_categories`", 1);
+                if ($objResult !== false) {
+                    $objResult2 = $objDatabase->Execute("SELECT `id` FROM `" . DBPREFIX . "module_news_categories_catid`");
+                    if ($objResult2 !== false && $objResult2->fields['id'] > $objResult->fields['maxId']) {
+                        $objDatabase->Execute("UPDATE `" . DBPREFIX . "module_news_categories_catid` SET `id` = '" . contrexx_raw2db($objResult->fields['maxId']) . "'");
+                    }
+                }
+
+                if (!$catId = $this->objNestedSet->createSubNode($catParentId, array())) {
                     $status = false;
                 } else {
                     if ($objDatabase->Execute('INSERT INTO `'.DBPREFIX.'module_news_categories_locale` (`lang_id`, `category_id`, `name`)
@@ -2480,6 +2496,11 @@ class newsManager extends newsLibrary {
 
         // Modify a category
         if (isset($_POST['modCat']) && ($_POST['modCat'] == true)) {
+            $newSorting = $_POST['newsCatSorting'];
+            asort($newSorting);
+            foreach($newSorting as $catId => $catSort) {
+                $this->objNestedSet->moveTree($catId, $this->objNestedSet->getParent($catId)->id, NESE_MOVE_BELOW);
+            }
             if ($this->storeCategoriesLocales($_POST['newsCatName'])) {
                 $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
             } else {
@@ -2510,7 +2531,8 @@ class newsManager extends newsLibrary {
                 $this->_objTpl->setVariable(array(
                     'NEWS_ROWCLASS' => $cssStyle,
                     'NEWS_CAT_ID'   => $node['id'],
-                    'NEWS_CAT_NAME' => contrexx_raw2xhtml($arrCatLangData[$node['id']][FWLanguage::getDefaultLangId()])
+                    'NEWS_CAT_NAME' => contrexx_raw2xhtml($arrCatLangData[$node['id']][FWLanguage::getDefaultLangId()]),
+                    'NEWS_CAT_SORT' => $node['norder'],
                 ));
                 $this->_objTpl->parse('newsRow');
             };
@@ -2518,6 +2540,101 @@ class newsManager extends newsLibrary {
 
         $this->_objTpl->setVariable(array(
             'NEWS_CATEGORIES' => $this->getCategoryMenu(),
+        ));
+    }
+
+    /**
+     * @param int $id
+     */
+    protected function modifyCategory($id = null) {
+        global $objDatabase, $_ARRAYLANG;
+        $manageCategoriesLink = 'index.php?cmd=news&act=newscat';
+
+        // cast input id to integer and check whether the id is zero or not
+        $id = intval($id);
+        if ($id == 0) {
+            \CSRF::redirect($manageCategoriesLink);
+            exit;
+        }
+
+        // check whether the category exists or not
+        $objResult = $objDatabase->SelectLimit("SELECT `catid`, `parent_id` FROM `".DBPREFIX."module_news_categories` WHERE `catid` = " . $id);
+        if ($objResult->RecordCount() == 0) {
+            \CSRF::redirect($manageCategoriesLink);
+            exit;
+        }
+
+        // load template
+        $this->_objTpl->loadTemplateFile('module_news_category_modify.html', true, true);
+        $this->pageTitle = $_ARRAYLANG['TXT_EDIT_CATEGORY'];
+
+        // validate form inputs and save the changes
+        if(isset($_POST['submit'])) {
+            if(!isset($_POST['newsCatParentId']) || $_POST['newsCatParentId'] == $id) {
+            } else {
+                $catParentId = intval($_POST['newsCatParentId']);
+                if($catParentId == 0) {
+                    $catParentId = $this->nestedSetRootId;
+                }
+                if($this->objNestedSet->getParent($id)->id != $catParentId) {
+                    // move the node under the parent node id
+                    $this->objNestedSet->moveTree($id, $catParentId, NESE_MOVE_BELOW);
+                }
+            }
+
+            // write the new locale data to database
+            $status = $this->storeCategoriesLocales($_POST['newsCatName']);
+            if(!$status) {
+                \Message::error($_ARRAYLANG['TXT_DATABASE_QUERY_ERROR']);
+            } else {
+                \Message::ok($_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL']);
+            }
+        }
+
+        // get language data from categories
+        $categories = $this->getCategoriesLangData();
+        $categoryLangData = $categories[$id];
+
+        // get languages which are active
+        $arrLanguages = \FWLanguage::getActiveFrontendLanguages();
+
+        // parse category name list for each activated frontend language
+        foreach($arrLanguages as $langId => $languageName) {
+            $this->_objTpl->setVariable(array(
+                'NEWS_CAT_LANG_ID' => $langId,
+                'NEWS_CAT_NAME_VALUE' => contrexx_raw2xhtml($categoryLangData[$langId]),
+                'NEWS_CAT_LANG_NAME' => $languageName['name'],
+            ));
+            $this->_objTpl->parse('category_name_list');
+        }
+
+        // get parent category from this category
+        $parentCategoryNode = $this->objNestedSet->getParent($id);
+
+        // set global variables
+        $this->_objTpl->setGlobalVariable(array(
+            'NEWS_CAT_ID' => $id,
+            'NEWS_CAT_NAME' => $categoryLangData[FRONTEND_LANG_ID],
+        ));
+
+        // set variables
+        $childrenNodes = $this->objNestedSet->getChildren($id, true);
+        $childrenNodeIds = array();
+        foreach($childrenNodes as $childrenNode) {
+            $childrenNodeIds[] = $childrenNode['id'];
+        }
+        $this->_objTpl->setVariable(array(
+            'NEWS_CAT_CATEGORIES' => $this->getCategoryMenu($this->nestedSetRootId, $parentCategoryNode->id, array_merge(array($id), $childrenNodeIds)),
+        ));
+
+        // set language variables
+        $this->_objTpl->setVariable(array(
+            'TXT_SAVE' => $_ARRAYLANG['TXT_SAVE'],
+            'TXT_NAME' => $_ARRAYLANG['TXT_NAME'],
+            'TXT_EDIT_CATEGORY' => $_ARRAYLANG['TXT_EDIT_CATEGORY'],
+            'TXT_NEWS_EXTENDED' => $_ARRAYLANG['TXT_NEWS_EXTENDED'],
+            'TXT_NEWS_PARENT_CATEGORY' => $_ARRAYLANG['TXT_NEWS_PARENT_CATEGORY'],
+            'TXT_NEWS_NEW_MAIN_CATEGORY' => $_ARRAYLANG['TXT_NEWS_NEW_MAIN_CATEGORY'],
         ));
     }
 

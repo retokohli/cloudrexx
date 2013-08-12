@@ -44,16 +44,18 @@ function updateLangName(input)
   <input type="hidden" name="modCat" value="true" />
   <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
     <tr> 
-      <th colspan="3">{TXT_CATEGORY_LIST}</th>
+      <th colspan="4">{TXT_CATEGORY_LIST}</th>
     </tr>
     <tr class="row2"> 
       <td nowrap="nowrap"><b>{TXT_ID}</b></td>
+      <td nowrap="nowrap"><b>{TXT_NEWS_CATEGORY_ORDER}</b></td>
       <td width="100%"><b>{TXT_NAME}</b></td>
       <td width="13%"><div align="right"><b>{TXT_ACTION}</b></div></td>
     </tr>
     <!-- BEGIN newsRow -->
       <tr class="{NEWS_ROWCLASS}"> 
         <td nowrap="nowrap" valign="top"><div align="left">{NEWS_CAT_ID}</div></td>
+        <td><input maxlength="5" size="1" value="{NEWS_CAT_SORT}" name="newsCatSorting[{NEWS_CAT_ID}]" /></td>
         <td nowrap="nowrap" style="padding-left: {NEWS_LEVEL_SPACING}px">
           <input type="text" value="{NEWS_CAT_NAME}" size="40" maxlength="250" onchange="updateLangName(this);" /> <a href="#" onclick="toggleCatName(this);" title="{TXT_NEWS_EXTENDED}">{TXT_NEWS_EXTENDED} &raquo;</a>
           <div class="category_name_lang_div" style="display:none;">
@@ -63,7 +65,10 @@ function updateLangName(input)
                     </div>
         </td>
         <td width="13%" valign="top"> 
-          <div align="right"><a href="javascript:deleteCategorie('{NEWS_CAT_ID}')" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a></div>
+          <div align="right">
+              <a title="{TXT_EDIT}" href="index.php?cmd=news&act=modifycat&id={NEWS_CAT_ID}"><img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" /></a>
+              <a href="javascript:deleteCategorie('{NEWS_CAT_ID}')" title="{TXT_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" /></a>
+          </div>
         </td>
       </tr>
     <!-- END newsRow -->
