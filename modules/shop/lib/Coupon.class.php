@@ -28,6 +28,12 @@
 class Coupon
 {
     const USES_UNLIMITED = 1e10;
+    
+    /**
+     * This ensures that only one error message per type is shown
+     * @var array
+     */
+    protected static $hasMessage = array();
 
     /**
      * The Coupon code
@@ -311,6 +317,18 @@ DBG::log("Coupon::get($code): ERROR: Query failed");
         $objCoupon->used = $objCoupon->getUsedCount();
         return $objCoupon;
     }
+    
+    /**
+     * This ensures that for every message type, only the first one is shown
+     * @todo Move this behavior to Message class
+     * @param string $type Type name
+     * @return boolean Whether we already had such a message or not
+     */
+    protected static function hasMessage($type) {
+        $hasMessage = (isset(self::$hasMessage[$type]) && self::$hasMessage[$type]);
+        self::$hasMessage[$type] = true;
+        return $hasMessage;
+    }
 
 
     /**
@@ -353,26 +371,34 @@ DBG::log("Coupon::get($code): ERROR: Query failed");
         if ($objCoupon->product_id != intval($product_id)) {
 //DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Wrong Product ID, need ".$objCoupon->product_id);
             if ($objCoupon->product_id) {
-                Message::information($_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_FOR_THIS_PRODUCT']);
+                if (!self::hasMessage('TXT_SHOP_COUPON_UNAVAILABLE_FOR_THIS_PRODUCT')) {
+                    Message::information($_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_FOR_THIS_PRODUCT']);
+                }
             }
             return null;
         }
         if ($objCoupon->payment_id
          && $objCoupon->payment_id != intval($payment_id)) {
 //DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Wrong Payment ID");
-            Message::information($_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_FOR_THIS_PAYMENT']);
+            if (!self::hasMessage('TXT_SHOP_COUPON_UNAVAILABLE_FOR_THIS_PAYMENT')) {
+                Message::information($_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_FOR_THIS_PAYMENT']);
+            }
             return null;
         }
         if ($objCoupon->start_time
          && $objCoupon->start_time > time()) {
 //DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Not valid yet");
-            Message::information($_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_YET']);
+            if (!self::hasMessage('TXT_SHOP_COUPON_UNAVAILABLE_YET')) {
+                Message::information($_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_YET']);
+            }
             return null;
         }
         if ($objCoupon->end_time
          && $objCoupon->end_time < time()) {
 //DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): No longer valid");
-            Message::information($_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_ALREADY']);
+            if (!self::hasMessage('TXT_SHOP_COUPON_UNAVAILABLE_ALREADY')) {
+                Message::information($_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_ALREADY']);
+            }
             return null;
         }
         // Deduct amounts already redeemed
@@ -392,14 +418,18 @@ DBG::log("Coupon::get($code): ERROR: Query failed");
                 ? $customer_id : null)));
         if ($objCoupon->uses <= 0) {
 //DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Fully redeemed");
-            Message::information($_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_CAUSE_USED_UP']);
+            if (!self::hasMessage('TXT_SHOP_COUPON_UNAVAILABLE_CAUSE_USED_UP')) {
+                Message::information($_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_CAUSE_USED_UP']);
+            }
             return null;
         }
         if ($objCoupon->minimum_amount > floatval($order_amount)) {
 //DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Order amount too low");
-            Message::information(sprintf(
-                $_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_FOR_AMOUNT'],
-                $objCoupon->minimum_amount, Currency::getActiveCurrencyCode()));
+            if (!self::hasMessage('TXT_SHOP_COUPON_UNAVAILABLE_FOR_AMOUNT')) {
+                Message::information(sprintf(
+                    $_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_FOR_AMOUNT'],
+                    $objCoupon->minimum_amount, Currency::getActiveCurrencyCode()));
+            }
             return null;
         }
 //DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Found ".(var_export($objCoupon, true)));
