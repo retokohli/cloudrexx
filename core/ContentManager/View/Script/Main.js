@@ -906,8 +906,7 @@ cx.cm.homeCheck = function(addClasses, pageId) {
     if (!cx.cm.hasHome[cx.cm.getCurrentLang()]) {
         return false;
     }
-    console.log(pageId);
-    console.log(cx.cm.hasHome[cx.cm.getCurrentLang()]);
+    
     // is the page not the current page?
     if (pageId && cx.cm.hasHome[cx.cm.getCurrentLang()] == pageId) {
         return false;
@@ -1745,7 +1744,6 @@ cx.cm.performAction = function(action, pageId, nodeId) {
                     break;
                 case "copy":
                     cx.cm.createJsTree();
-                    return;
                     break;
                 case "delete":
                     page.deleted = true;
