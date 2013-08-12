@@ -1,4 +1,7 @@
 <!-- START module_crm_interface.html -->
+{UPLOADER_CODE}
+{FILE_INPUT_CODE}
+{FOLDER_WIDGET_CODE}
 <div id="subnavbar_level2">
     <ul>
         <li><a class="active" href="./index.php?cmd={MODULE_NAME}&amp;act=settings&amp;tpl=interface&amp;subTpl=import" title="{TXT_CRM_IMPORT_NAME}">{TXT_CRM_IMPORT_NAME}</a></li>
@@ -54,6 +57,7 @@
                     <tr class="row2">
                         <td style="width: 15%;">&nbsp;</td>
                         <td>
+                            <div id="uploadWidget"></div>
                             <span class="choose-image-text"><a class="choose-image import-button" href="javascript:void(0);">{TXT_CRM_CHOOSE_CSV}</a></span>
                             <span class="choose-image-content" style="display:none;"><span class="file-text"></span>&nbsp;&nbsp;<a class="choose-image" href="javascript:void(0);">{TXT_CRM_CHANGE}</a></span>
                             <input type="file" name="importfile" id="importfile" />

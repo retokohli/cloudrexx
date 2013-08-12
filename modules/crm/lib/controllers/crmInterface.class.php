@@ -83,6 +83,27 @@ class crmInterface extends CrmLibrary
      * @var object
      */
     public $_objTpl;
+    /**
+     * An id unique per form submission and user.
+     * This means an user can submit the same form twice at the same time,
+     * and the form gets a different submission id for each submit.
+     * @var integer
+     */
+    protected $submissionId = 0;
+
+    /**
+     * File upload factory folder widget object
+     *
+     * @var object
+     */
+    public $folderWidget;
+
+    /**
+     * File uploader object
+     *
+     * @var object
+     */
+    public $uploader;
 
     /**
      * php 5.3 contructor
@@ -105,6 +126,7 @@ class crmInterface extends CrmLibrary
     {
         global $_ARRAYLANG, $objDatabase;
 
+        JS::activate('cx');
         JS::activate('jqueryui');
         JS::registerCSS('lib/javascript/crm/css/main.css');        
         JS::registerJS('lib/javascript/crm/contactexport.js');
@@ -131,7 +153,37 @@ class crmInterface extends CrmLibrary
                 'CRM_ENCLOSURE_TITLE' => $_ARRAYLANG[$value['placeholder']]
             ));
             $objTpl->parse('crm_enclosure');
+        } 
+            try {
+                if(!isset($_SESSION['interface_last_id']))
+                    $_SESSION['interface_last_id'] = 0;
+                $id = ++$_SESSION['interface_last_id'];
+                $this->submissionId = $id;
+                $this->initUploader();
+
+                $javascript .= <<< UPLOADER
+{$this->uploader->getXHtml()}
+{$this->folderWidget->getXHtml('#uploadWidget', 'uploadWidget')}
+<script type="text/javascript">
+        cx.include(
+        ["core_modules/contact/js/extendedFileInput.js"],
+        function() {
+        var ef = new ExtendedFileInput({
+        field: \$J("#importfile")
+        });
         }
+        )
+</script>
+UPLOADER;
+            } catch(Exception $e) {
+                \DBG::msg("Error in initializing uploader");
+            }
+        // Add uploader and folder widget code
+        $objTpl->setVariable(array(
+//            'UPLOADER_CODE'      => $uploader->getXHtml(),
+            'FILE_INPUT_CODE'    => $javascript,
+//            'FOLDER_WIDGET_CODE' => $folderWidget->getXHtml($uploaderFolderWidgetContainer, 'uploadWidget'),
+        ));
         
         $objTpl->setVariable(array(
             'TXT_CRM_TITLE_IMPORT_CONTACTS'         => $_ARRAYLANG['TXT_CRM_TITLE_IMPORT_CONTACTS'],
@@ -175,6 +227,85 @@ class crmInterface extends CrmLibrary
         ));
     }
 
+    /**
+     * Inits the uploader when displaying a form.
+     *
+     * @throws Exception
+     *
+     * @return null
+     */
+    protected function initUploader() {
+        try {
+            //init the uploader
+            JS::activate('cx'); //the uploader needs the framework
+            $f = UploadFactory::getInstance();
+
+            /**
+            * Name of the upload instance
+            */
+            $uploaderInstanceName = 'exposed_combo_uploader';
+
+            //retrieve temporary location for uploaded files
+            $tup = self::getTemporaryUploadPath($this->submissionId);
+
+            //create the folder
+            if (!\Cx\Lib\FileSystem\FileSystem::make_folder($tup[1].'/'.$tup[2])) {
+                throw new Exception("Could not create temporary upload directory '".$tup[0].'/'.$tup[2]."'");
+            }
+
+            if (!\Cx\Lib\FileSystem\FileSystem::makeWritable($tup[1].'/'.$tup[2])) {
+                //some hosters have problems with ftp and file system sync.
+                //this is a workaround that seems to somehow show php that
+                //the directory was created. clearstatcache() sadly doesn't
+                //work in those cases.
+                @closedir(@opendir($tup[0]));
+
+                if (!\Cx\Lib\FileSystem\FileSystem::makeWritable($tup[1].'/'.$tup[2])) {
+                    throw new Exception("Could not chmod temporary upload directory '".$tup[0].'/'.$tup[2]."'");
+                }
+            }
+
+            //initialize the widget displaying the folder contents
+            $this->folderWidget = $f->newFolderWidget($tup[0].'/'.$tup[2]);
+
+            $this->uploader = $f->newUploader('exposedCombo');
+            $this->uploader->setJsInstanceName($uploaderInstanceName);
+            $this->uploader->setFinishedCallback(array(ASCMS_MODULE_PATH.'/crm/admin.class.php','CrmManager','uploadFinished'));
+            $this->uploader->setData($this->submissionId);
+
+        } catch (Exception $e) {
+            \DBG::msg('<!-- failed initializing uploader -->');
+            throw new Exception("failed initializing uploader");
+        }
+    }
+    
+    /**
+     * Gets the temporary upload location for files.
+     *
+     * @param integer $submissionId
+     *
+     * @throws Exeception
+     *
+     * @return array('path','webpath', 'dirname')
+     */
+    public static function getTemporaryUploadPath($submissionId) {
+        global $sessionObj;
+
+        if (!isset($sessionObj)) $sessionObj = new cmsSession();
+
+        $tempPath = $sessionObj->getTempPath();
+        $tempWebPath = $sessionObj->getWebTempPath();
+        if($tempPath === false || $tempWebPath === false)
+            throw new Exception('could not get temporary session folder');
+
+        $dirname = 'event_files_'.$submissionId;
+        $result = array(
+            $tempPath,
+            $tempWebPath,
+            $dirname
+        );
+        return $result;
+    }
     /**
      * used to fetch the csv data
      * 
