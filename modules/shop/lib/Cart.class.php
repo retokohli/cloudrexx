@@ -513,6 +513,7 @@ class Cart
         }
         // Loop 2: Calculate Coupon discounts and VAT
         $objCoupon = null;
+        $hasCoupon = false;
         $discount_amount = 0;
         foreach (self::$products as $cart_id => &$product) {
             $discount_amount = 0;
@@ -522,6 +523,7 @@ class Cart
                     $coupon_code, $total_price, $customer_id,
                     $product['id'], $payment_id);
                 if ($objCoupon) {
+                    $hasCoupon = true;
 //DBG::log("Cart::update(): PRODUCT; Coupon available: $coupon_code, Product ID {$product['id']}");
 //DBG::log("Cart::update(): Loop 2: Product: ".var_export($product, true));
                     $discount_amount = $objCoupon->getDiscountAmount(
@@ -563,6 +565,7 @@ class Cart
             $objCoupon = Coupon::available(
                 $coupon_code, $total_price, $customer_id, 0, $payment_id);
             if ($objCoupon) {
+                $hasCoupon = true;
                 $discount_amount = $objCoupon->getDiscountAmount(
                     $total_price, $customer_id);
                 $total_discount_amount = $discount_amount;
@@ -574,6 +577,9 @@ class Cart
 //DBG::log("Cart::update(): Got Coupon ".var_export($objCoupon, true));
             $total_price -= $discount_amount;
 //DBG::log("Cart::update(): COUPON; total price $total_price, discount_amount $discount_amount, total discount $total_discount_amount");
+        }
+        if ($hasCoupon) {
+            Message::clear();
         }
 
         $_SESSION['shop']['cart']['total_discount_amount'] =

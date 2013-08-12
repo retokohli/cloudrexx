@@ -460,7 +460,7 @@ $_ARRAYLANG['TXT_SHOP_OPTION_LONG_FORMAT'] = "%1\$s&nbsp;(%2\$01.2f&nbsp;%4\$s)"
 $_ARRAYLANG['TXT_SHOP_OPTION_LONG_FORMAT_JOINER'] = ", ";
 $_ARRAYLANG['TXT_SHOP_CONFIRM_DELETE_PRODUCT'] = "Wollen Sie diesen Artikel wirklich aus dem Warenkorb entfernen?";
 // 20130523
-$_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_FOR_THIS_PRODUCT'] = "Der eingegebene Gutscheincode ist für dieses Produkt nicht gültig";
+$_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_FOR_THIS_PRODUCT'] = "Der eingegebene Gutscheincode ist für diese Produkte nicht gültig";
 $_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_FOR_THIS_PAYMENT'] = "Der eingegebene Gutscheincode ist für diese Bezahlmethode nicht gültig";
 $_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_YET'] = "Der eingegebene Gutscheincode ist noch nicht gültig";
 $_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_ALREADY'] = "Der eingegebene Gutscheincode ist nicht mehr gültig";
