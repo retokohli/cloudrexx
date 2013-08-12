@@ -16,15 +16,29 @@
         } else {
             $J('.series-event-row').hide();
         }
+      },
+      _handleAllDayEvent : function(elm){        
+        jQuery(".startDate").data('dateTime', jQuery(".startDate").datetimepicker("getDate").getTime());
+        jQuery(".endDate").data('dateTime', jQuery(".endDate").datetimepicker("getDate").getTime());
+        if (elm.is(":checked")) {
+           jQuery( ".startDate, .endDate" ).datetimepicker('disableTimepicker');
+        } else {
+           jQuery(".startDate, .endDate").datetimepicker('enableTimepicker');
+        }
+        jQuery(".startDate").datepicker('setDate', new Date(jQuery(".startDate").data('dateTime')));
+        jQuery(".endDate").datepicker('setDate', new Date(jQuery(".endDate").data('dateTime')));
       }
     };
     $J(function(){
        $J('[name="seriesStatus"]').click(function(){
           modifyEvent._handleSeriesEventRowDisplay($J(this));
        });
-       modifyEvent._handleSeriesEventRowDisplay($J('[name="seriesStatus"]'));       
+       modifyEvent._handleSeriesEventRowDisplay($J('[name="seriesStatus"]'));    
+       $J(".all_day").click(function(){
+           modifyEvent._handleAllDayEvent($J(this));
+       });
     });
-        
+
     cx.ready(function() {
         var options = {
             dateFormat: '{CALENDAR_EVENT_DATE_FORMAT}',
@@ -40,7 +54,8 @@
             showSecond: false
         };
         jQuery('input[name=startDate]').datetimepicker(options);
-        jQuery('input[name=endDate]').datetimepicker(options);
+        jQuery('input[name=endDate]').datetimepicker(options);        
+        modifyEvent._handleAllDayEvent($J(".all_day"));
         refreshDatePickers();
     });
 
@@ -152,8 +167,8 @@
 
             if (elm.name.match(reg)) {   
                 var langId = elm.value; 
-                var tab1 =  document.getElementById('eventTitleTab_' + langId + '_title');
-                var tab1body =  document.getElementById(langId + '_title');    
+                var tab1 =  document.getElementById('eventLocationTab_' + langId + '_location');
+                var tab1body =  document.getElementById(langId + '_location');    
                 var tab2 =  document.getElementById('eventDescTab_' + langId + '_desc');
                 var tab2body =  document.getElementById(langId + '_desc');                  
                 
@@ -176,7 +191,7 @@
                         tab1body.style.display = 'block';
                         tab2body.style.display = 'block'; 
                         $J(".language_tab li a").removeClass('active').addClass("inactive");
-                        $J('#eventTitleTab_' + langId + '_title').addClass("active");
+                        $J('#eventLocationTab_' + langId + '_location').addClass("active");
                         $J('#eventDescTab_' + langId + '_desc').addClass("active");
                         firstLang = false   
                     } else {
@@ -404,9 +419,24 @@
 
 <form action="index.php?cmd={CALENDAR_MODULE_NAME}&act=modify_event" id="formModifyEvent" name="formModifyEvent" method="post" onsubmit="selectAll(document.formModifyEvent.elements['selectedGroups[]']); {CALENDAR_EVENT_ONSUBMIT_PUBLICATIONS} return formCheck();">
     <input type="hidden" name="id" value="{CALENDAR_EVENT_ID}" />
+    <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" style="{CALENDAR_HIDE_ON_SINGLE_LANG}">
+        <tr>
+            <th colspan="2">{TXT_CALENDAR_LANGUAGE}</th>
+        </tr>
+        <tr class="row1">
+            <td width="180" valign="top">{TXT_CALENDAR_EVENT_SHOW_IN}</td>
+            <td colspan="2">
+                <!-- BEGIN eventShowIn -->
+                <label><input name="showIn[]" id="showIn_{CALENDAR_EVENT_LANG_ID}" value="{CALENDAR_EVENT_LANG_ID}" type="checkbox" {CALENDAR_EVENT_LANG_CHECKED} onchange="langCheck();" />&nbsp;{TXT_CALENDAR_EVENT_LANG_NAME}&nbsp;&nbsp;&nbsp;</label>
+                <!-- END eventShowIn -->
+            </td>
+        </tr>
+    </table>
+    <br/>
     <ul id="tabmenu">
-        <li><a id="eventTab_event" class="active" href="javascript:{}" onclick="selectTab('event');" title="{TXT_CALENDAR_EVENT}">{TXT_CALENDAR_EVENT}</a></li>
-        <li><a id="eventTab_details" href="javascript:{}" onclick="selectTab('details');refreshEditors();" title="{TXT_CALENDAR_EVENT_DETAILS}" >{TXT_CALENDAR_EVENT_DETAILS}</a></li>
+        <li><a id="eventTab_event" class="active" href="javascript:{}" onclick="selectTab('event');refreshEditors();" title="{TXT_CALENDAR_BASIC_DATA}">{TXT_CALENDAR_BASIC_DATA}</a></li>
+        <li><a id="eventTab_location" href="javascript:{}" onclick="selectTab('location');" title="{TXT_CALENDAR_EVENT_LOCATION}">{TXT_CALENDAR_EVENT_LOCATION}</a></li>
+        <li><a id="eventTab_details" href="javascript:{}" onclick="selectTab('details');" title="{TXT_CALENDAR_ADDITIONAL_OPTIONS}" >{TXT_CALENDAR_ADDITIONAL_OPTIONS}</a></li>
         <li><a id="eventTab_invite" href="javascript:{}" onclick="selectTab('invite'); checkRegistration();" title="{TXT_CALENDAR_EVENT_INVITE}" >{TXT_CALENDAR_EVENT_INVITE}</a></li>
         <li><a id="eventTab_series" href="javascript:{}" onclick="selectTab('series');" title="{TXT_CALENDAR_EVENT_SERIES}" >{TXT_CALENDAR_EVENT_SERIES}</a></li>
         <!-- BEGIN eventPublicateMenu -->
@@ -416,20 +446,13 @@
     <div id="event" class="eventTab" style="display:block;">
         <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
             <tr>
-                <th colspan="3"><b>{TXT_CALENDAR_EVENT}</b></th>
-            </tr>
-            <tr class="row1" style="{CALENDAR_HIDE_ON_SINGLE_LANG}">
-                <td width="180" valign="top">{TXT_CALENDAR_EVENT_SHOW_IN}</td>
-                <td colspan="2">
-                    <!-- BEGIN eventShowIn -->
-                    <label><input name="showIn[]" id="showIn_{CALENDAR_EVENT_LANG_ID}" value="{CALENDAR_EVENT_LANG_ID}" type="checkbox" {CALENDAR_EVENT_LANG_CHECKED} onchange="langCheck();" />&nbsp;{TXT_CALENDAR_EVENT_LANG_NAME}&nbsp;&nbsp;&nbsp;</label>
-                    <!-- END eventShowIn -->
-                </td>
-            </tr>
+                <th colspan="3"><b>{TXT_CALENDAR_BASIC_DATA}</b></th>
+            </tr>            
             <tr class="row2">
                 <td width="180"  valign="top">{TXT_CALENDAR_EVENT_START} <font color="#ff0000">*</font></td>
                 <td colspan="2">
                     <input type="text"  name="startDate" class="startDate" id="{CALENDAR_EVENT_START_DATE_INPUT_ID}" value="{CALENDAR_EVENT_START_DATE}" style="width: 250px;" />
+                    &nbsp;<label><input type="checkbox" class="all_day" name="all_day" {CALENDAR_EVENT_ALL_DAY} value="1" /> {TXT_CALENDAR_EVENT_ALL_DAY} </label>
                 </td>
             </tr>
             <tr class="row1">
@@ -438,51 +461,93 @@
                     <input type="text" name="endDate" class="endDate" id="{CALENDAR_EVENT_END_DATE_INPUT_ID}" value="{CALENDAR_EVENT_END_DATE}" style="width: 250px;" />
                 </td>
             </tr>
-             <tr class="row2">
-                <td>{TXT_CALENDAR_SHOW_TIME_TYPE}</td>
-                <td colspan="2"><input name="showDateSettings" id="showDateSettings" value="1" type="checkbox" onchange="showSelection();" {CALENDAR_USE_CUSTOM_DATE_DISPLAY} /></td>
-            </tr>
-            <tr class="row1" style="height: 30px !important;" id="listformat">
-                <td style="height: 30px !important;">{TXT_CALENDAR_LIST}</td>
-                <td width="250" style="height: 30px !important;">
-                    <label><input name="showStartDateList" id="showStartDateList" value="{CALENDAR_START_DATE_VALUE_LIST}" type="checkbox" {CALENDAR_START_DATE_CHECKED_LIST} />&nbsp;{TXT_CALENDAR_SHOW_START_DATE}&nbsp;&nbsp;</label>
-                    <label><input name="showEndDateList" id="showEndDateList" value="{CALENDAR_END_DATE_VALUE_LIST}" type="checkbox" {CALENDAR_END_DATE_CHECKED_LIST} />&nbsp;{TXT_CALENDAR_SHOW_END_DATE}&nbsp;&nbsp;</label>
-                </td>
-                <td style="height: 30px !important;">
-                    {CALENDAR_SHOW_TIME_TYPE_DROPDOWN_LIST}&nbsp;<span id="timeSelectionContentList"><label><input name="showStartTimeList" id="showStartTimeList" value="{CALENDAR_START_TIME_VALUE_LIST} " type="checkbox" {CALENDAR_START_TIME_CHECKED_LIST} />&nbsp;{TXT_CALENDAR_SHOW_START_TIME}&nbsp;&nbsp;</label><label><input name="showEndTimeList" id="showEndTimeList" value="{CALENDAR_END_TIME_VALUE_LIST}" type="checkbox" {CALENDAR_END_TIME_CHECKED_LIST} />&nbsp;{TXT_CALENDAR_SHOW_END_TIME}</label></span>
+            <tr class="row2">
+                <td valign="top">{TXT_CALENDAR_EVENT_CATEGORY} <font color="#ff0000">*</font></td>
+                <td>
+                    <select id="category" name="category" style="width: 252px">
+                        {CALENDAR_EVENT_CATEGORIES}
+                    </select>
                 </td>
             </tr>
-            <tr class="row2" style="height: 30px !important;" id="detailformat">
-                <td style="height: 30px !important;">{TXT_CALENDAR_DETAIL}</td>
-                <td width="250" style="height: 30px !important;">
-                    <label><input name="showStartDateDetail" id="showStartDateDetail" value="{CALENDAR_START_DATE_VALUE_DETAIL}" type="checkbox" {CALENDAR_START_DATE_CHECKED_DETAIL} />&nbsp;{TXT_CALENDAR_SHOW_START_DATE}&nbsp;&nbsp;</label>
-                    <label><input name="showEndDateDetail" id="showEndDateDetail" value="{CALENDAR_END_DATE_VALUE_DETAIL}" type="checkbox" {CALENDAR_END_DATE_CHECKED_DETAIL} />&nbsp;{TXT_CALENDAR_SHOW_END_DATE}&nbsp;&nbsp;</label>
+            <tr class="row1">
+                <td valign="top">{TXT_CALENDAR_EVENT_TYPE}</td>
+                <td>    
+                    <select id="type" name="type" style="width: 252px" onchange="langCheck();">
+                        <option value="0" {CALENDAR_EVENT_TYPE_EVENT}>{TXT_CALENDAR_EVENT_TYPE_EVENT}</option>
+                        <option value="1" {CALENDAR_EVENT_TYPE_REDIRECT}>{TXT_CALENDAR_EVENT_TYPE_REDIRECT}</option>                                                                            
+                    </select>                                                              
                 </td>
-                <td style="height: 30px !important;">
-                    {CALENDAR_SHOW_TIME_TYPE_DROPDOWN_DETAIL}&nbsp;<span id="timeSelectionContentDetail"><label><input name="showStartTimeDetail" id="showStartTimeDetail" value="{CALENDAR_START_TIME_VALUE_DETAIL} " type="checkbox" {CALENDAR_START_TIME_CHECKED_DETAIL} />&nbsp;{TXT_CALENDAR_SHOW_START_TIME}&nbsp;&nbsp;</label><label><input name="showEndTimeDetail" id="showEndTimeDetail" value="{CALENDAR_END_TIME_VALUE_DETAIL}" type="checkbox" {CALENDAR_END_TIME_CHECKED_DETAIL} />&nbsp;{TXT_CALENDAR_SHOW_END_TIME}</label></span>
-                </td>
-            </tr>
-        </table>        
+            </tr>            
+        </table>
         <ul id="tabmenu" class="language_tab" style="{CALENDAR_HIDE_ON_SINGLE_LANG} margin-top: 15px;">
-            <!-- BEGIN eventTabMenuTitleTab -->
-            <li><a id="eventTitleTab_{CALENDAR_EVENT_LANG_ID}_title" class="{CALENDAR_EVENT_TAB_CLASS}" href="javascript:{}" onclick="selectTab('{CALENDAR_EVENT_LANG_ID}_title')" title="" hidefocus="">{TXT_CALENDAR_EVENT_LANG_NAME}</a></li>
-            <!-- END eventTabMenuTitleTab -->
-        </ul>        
+            <!-- BEGIN eventTabMenuDescTab -->
+            <li><a id="eventDescTab_{CALENDAR_EVENT_LANG_ID}_desc" class="{CALENDAR_EVENT_TAB_CLASS}" href="javascript:{}" onclick="selectTab('{CALENDAR_EVENT_LANG_ID}_desc');refreshEditors()" title="">{TXT_CALENDAR_EVENT_LANG_NAME}</a></li>
+            <!-- END eventTabMenuDescTab -->
+        </ul>
+        <!-- BEGIN eventDescTab -->
+        <div id="{CALENDAR_EVENT_LANG_ID}_desc" class="eventDescTab" style="display: {CALENDAR_EVENT_TAB_DISPLAY};" >            
+            <div id="{CALENDAR_EVENT_LANG_ID}_typeEvent" style="display: {CALENDAR_EVENT_TYPE_EVENT_DISPLAY};" > 
+                <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+                    <tr style="{CALENDAR_HIDE_ON_SINGLE_LANG}">                            
+                        <th colspan="2">{TXT_CALENDAR_EVENT_LANG_NAME}</th>
+                    </tr>
+                    <tr class="row1">
+                        <td width="180"  valign="top">{TXT_CALENDAR_EVENT_TITLE} <font color="#ff0000">*</font></td>
+                        <td>
+                             <input id="title_{CALENDAR_EVENT_LANG_ID}" name="title[{CALENDAR_EVENT_LANG_ID}]" type="text" style="width: 250px" value="{CALENDAR_EVENT_TITLE}" />
+                        </td>
+                    </tr>
+                    <tr class="row1">
+                        <td width="180"  valign="top">{TXT_CALENDAR_EVENT_DESCRIPTION}</td>
+                        <td>
+                             {CALENDAR_EVENT_DESCRIPTION}                                                                                                         
+                        </td>
+                    </tr>
+                </table>
+            </div>   
+            <div id="{CALENDAR_EVENT_LANG_ID}_typeRedirect" style="display: {CALENDAR_EVENT_TYPE_REDIRECT_DISPLAY};" > 
+                <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+                    <tr>                            
+                        <th colspan="2">{TXT_CALENDAR_EVENT_LANG_NAME}</th>
+                    </tr>    
+                    <tr class="row1">
+                        <td width="180"  valign="top">{TXT_CALENDAR_EVENT_TYPE_REDIRECT}</td>
+                        <td>
+                             <input type="text" style="width: 250px;" name="redirect[{CALENDAR_EVENT_LANG_ID}]" value="{CALENDAR_EVENT_REDIRECT}" id="eventRedirect" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('eventRedirect', 'link')" />                                                                                                      
+                        </td>
+                    </tr>
+                </table>
+            </div> 
+        </div>            
+        <!-- END eventDescTab -->                                      
+        <br />
+        <input type="button" onclick="location.href='index.php?cmd=calendar&{CALENDAR_CSRF}';" value="{TXT_CALENDAR_CANCEL}" />
+        &nbsp;<input type="button" onclick="selectTab('location');" value="{TXT_CALENDAR_NEXT}" />
+        &nbsp;<input type="submit" name="submitModifyEvent"  value="{TXT_CALENDAR_SAVE}" />
+    </div>
+    <div id="location" class="eventTab" style="display:none;">
+        <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+            <tr>
+                <th><b>{TXT_CALENDAR_EVENT_LOCATION}</b></th>
+            </tr>
+        </table>
+        <div style="{CALENDAR_HIDE_ON_SINGLE_LANG}">
+            <ul id="tabmenu" class="language_tab" style="{CALENDAR_HIDE_ON_SINGLE_LANG} margin-top: 15px;">
+                <!-- BEGIN eventTabMenuTitleTab -->
+                <li><a id="eventLocationTab_{CALENDAR_EVENT_LANG_ID}_location" class="{CALENDAR_EVENT_TAB_CLASS}" href="javascript:{}" onclick="selectTab('{CALENDAR_EVENT_LANG_ID}_location')" title="" hidefocus="">{TXT_CALENDAR_EVENT_LANG_NAME}</a></li>
+                <!-- END eventTabMenuTitleTab -->
+            </ul>
+            <br />
+        </div>
         
         <!-- BEGIN eventTitleTab -->
-        <div id="{CALENDAR_EVENT_LANG_ID}_title" class="eventTitleTab" style="display: {CALENDAR_EVENT_TAB_DISPLAY};" >
+        <div id="{CALENDAR_EVENT_LANG_ID}_location" class="eventLocationTab" style="display: {CALENDAR_EVENT_TAB_DISPLAY};" >
             <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
                 <tr style="{CALENDAR_HIDE_ON_SINGLE_LANG}">                    
                     <th colspan="2">{TXT_CALENDAR_EVENT_LANG_NAME}</th>
-                </tr>
-                <tr class="row1">
-                    <td width="180"  valign="top">{TXT_CALENDAR_EVENT_TITLE} <font color="#ff0000">*</font></td>
-                    <td>
-                         <input id="title_{CALENDAR_EVENT_LANG_ID}" name="title[{CALENDAR_EVENT_LANG_ID}]" type="text" style="width: 250px" value="{CALENDAR_EVENT_TITLE}" />
-                    </td>
-                </tr>
+                </tr>                
                 <tr class="row2">
-                    <td valign="top">{TXT_CALENDAR_EVENT_PLACE}</td>
+                    <td width="180" valign="top">{TXT_CALENDAR_EVENT_PLACE}</td>
                     <td>
                         <!-- BEGIN eventPlaceInput -->
                         <input name="place[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_PLACE}" style="width: 250px" />&nbsp;<a id="eventPlaceMoreLink_{CALENDAR_EVENT_LANG_SHORTCUT}" href="javascript:ExpandMinimize('eventPlaceMore_{CALENDAR_EVENT_LANG_SHORTCUT}', 'eventPlaceMoreLink_{CALENDAR_EVENT_LANG_SHORTCUT}')">&raquo; {TXT_CALENDAR_EXPAND}</a>
@@ -532,8 +597,46 @@
             </div>
         </div>
         <!-- END eventTitleTab -->
-        <br />
-        <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">        
+        <br/>
+        <input type="button" onclick="location.href='index.php?cmd=calendar&{CALENDAR_CSRF}';" value="{TXT_CALENDAR_CANCEL}" />
+        &nbsp;<input type="button" onclick="selectTab('details');" value="{TXT_CALENDAR_NEXT}" />
+        &nbsp;<input type="submit" name="submitModifyEvent"  value="{TXT_CALENDAR_SAVE}" />
+    </div>
+    <div id="details" class="eventTab" style="display:none;">
+        <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+            <tr>
+                <th colspan="3"><b>{TXT_CALENDAR_ADDITIONAL_OPTIONS}</b></th>
+            </tr>
+<!--            <tr class="row1">
+                <td width="180" valign="top">{TXT_CALENDAR_EVENT_PRICE}</td>
+                <td>
+                    <input type="text" name="price" value="{CALENDAR_EVENT_PRICE}" id="eventPrice" style="width: 250px;" />&nbsp;{CALENDAR_EVENT_CURRENCY}
+                </td>
+            </tr>    -->
+            <tr class="row2">
+                <td>{TXT_CALENDAR_SHOW_TIME_TYPE}</td>
+                <td colspan="2"><input name="showDateSettings" id="showDateSettings" value="1" type="checkbox" onchange="showSelection();" {CALENDAR_USE_CUSTOM_DATE_DISPLAY} /></td>
+            </tr>
+            <tr class="row1" style="height: 30px !important;" id="listformat">
+                <td style="height: 30px !important;">{TXT_CALENDAR_LIST}</td>
+                <td width="250" style="height: 30px !important;">
+                    <label><input name="showStartDateList" id="showStartDateList" value="{CALENDAR_START_DATE_VALUE_LIST}" type="checkbox" {CALENDAR_START_DATE_CHECKED_LIST} />&nbsp;{TXT_CALENDAR_SHOW_START_DATE}&nbsp;&nbsp;</label>
+                    <label><input name="showEndDateList" id="showEndDateList" value="{CALENDAR_END_DATE_VALUE_LIST}" type="checkbox" {CALENDAR_END_DATE_CHECKED_LIST} />&nbsp;{TXT_CALENDAR_SHOW_END_DATE}&nbsp;&nbsp;</label>
+                </td>
+                <td style="height: 30px !important;">
+                    {CALENDAR_SHOW_TIME_TYPE_DROPDOWN_LIST}&nbsp;<span id="timeSelectionContentList"><label><input name="showStartTimeList" id="showStartTimeList" value="{CALENDAR_START_TIME_VALUE_LIST} " type="checkbox" {CALENDAR_START_TIME_CHECKED_LIST} />&nbsp;{TXT_CALENDAR_SHOW_START_TIME}&nbsp;&nbsp;</label><label><input name="showEndTimeList" id="showEndTimeList" value="{CALENDAR_END_TIME_VALUE_LIST}" type="checkbox" {CALENDAR_END_TIME_CHECKED_LIST} />&nbsp;{TXT_CALENDAR_SHOW_END_TIME}</label></span>
+                </td>
+            </tr>
+            <tr class="row2" style="height: 30px !important;" id="detailformat">
+                <td style="height: 30px !important;">{TXT_CALENDAR_DETAIL}</td>
+                <td width="250" style="height: 30px !important;">
+                    <label><input name="showStartDateDetail" id="showStartDateDetail" value="{CALENDAR_START_DATE_VALUE_DETAIL}" type="checkbox" {CALENDAR_START_DATE_CHECKED_DETAIL} />&nbsp;{TXT_CALENDAR_SHOW_START_DATE}&nbsp;&nbsp;</label>
+                    <label><input name="showEndDateDetail" id="showEndDateDetail" value="{CALENDAR_END_DATE_VALUE_DETAIL}" type="checkbox" {CALENDAR_END_DATE_CHECKED_DETAIL} />&nbsp;{TXT_CALENDAR_SHOW_END_DATE}&nbsp;&nbsp;</label>
+                </td>
+                <td style="height: 30px !important;">
+                    {CALENDAR_SHOW_TIME_TYPE_DROPDOWN_DETAIL}&nbsp;<span id="timeSelectionContentDetail"><label><input name="showStartTimeDetail" id="showStartTimeDetail" value="{CALENDAR_START_TIME_VALUE_DETAIL} " type="checkbox" {CALENDAR_START_TIME_CHECKED_DETAIL} />&nbsp;{TXT_CALENDAR_SHOW_START_TIME}&nbsp;&nbsp;</label><label><input name="showEndTimeDetail" id="showEndTimeDetail" value="{CALENDAR_END_TIME_VALUE_DETAIL}" type="checkbox" {CALENDAR_END_TIME_CHECKED_DETAIL} />&nbsp;{TXT_CALENDAR_SHOW_END_TIME}</label></span>
+                </td>
+            </tr>
             <tr class="row1">
                 <td style="border-top: 1px solid #DDE4FF;" width="180"  valign="top">{TXT_CALENDAR_EVENT_ACCESS}</td>
                 <td style="border-top: 1px solid #DDE4FF;">
@@ -553,22 +656,7 @@
                         <!-- END eventPriority -->
                     </select>
                 </td>
-            </tr>    
-        </table>
-        <br />
-        <input type="button" onclick="location.href='index.php?cmd=calendar&{CALENDAR_CSRF}';" value="{TXT_CALENDAR_CANCEL}" />&nbsp;<input type="button" onclick="selectTab('details');" value="{TXT_CALENDAR_NEXT}" />
-    </div>
-    <div id="details" class="eventTab" style="display:none;">
-        <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
-            <tr>
-                <th colspan="2"><b>{TXT_CALENDAR_EVENT_DETAILS}</b></th>
             </tr>
-<!--            <tr class="row1">
-                <td width="180" valign="top">{TXT_CALENDAR_EVENT_PRICE}</td>
-                <td>
-                    <input type="text" name="price" value="{CALENDAR_EVENT_PRICE}" id="eventPrice" style="width: 250px;" />&nbsp;{CALENDAR_EVENT_CURRENCY}
-                </td>
-            </tr>    -->
             <tr class="row2">
                 <td width="180" valign="top">{TXT_CALENDAR_EVENT_LINK}</td>
                 <td>
@@ -586,63 +674,12 @@
                 <td>
                     <input type="text" name="attachment" value="{CALENDAR_EVENT_ATTACHMENT}" id="eventAttachment" style="width: 250px;" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('eventAttachment', 'image')" />
                 </td>
-            </tr>
-            <tr class="row1">
-                <td valign="top">{TXT_CALENDAR_EVENT_CATEGORY} <font color="#ff0000">*</font></td>
-                <td>
-                    <select id="category" name="category" style="width: 252px">
-                        {CALENDAR_EVENT_CATEGORIES}
-                    </select>
-                </td>
-            </tr>    
-            <tr class="row2">
-                <td valign="top">{TXT_CALENDAR_EVENT_TYPE}</td>
-                <td>    
-                    <select id="type" name="type" style="width: 252px" onchange="langCheck();">
-                        <option value="0" {CALENDAR_EVENT_TYPE_EVENT}>{TXT_CALENDAR_EVENT_TYPE_EVENT}</option>
-                        <option value="1" {CALENDAR_EVENT_TYPE_REDIRECT}>{TXT_CALENDAR_EVENT_TYPE_REDIRECT}</option>                                                                            
-                    </select>                                                              
-                </td>
-            </tr> 
-        </table>        
-        <ul id="tabmenu" class="language_tab" style="{CALENDAR_HIDE_ON_SINGLE_LANG} margin-top: 15px;">
-            <!-- BEGIN eventTabMenuDescTab -->
-            <li><a id="eventDescTab_{CALENDAR_EVENT_LANG_ID}_desc" class="{CALENDAR_EVENT_TAB_CLASS}" href="javascript:{}" onclick="selectTab('{CALENDAR_EVENT_LANG_ID}_desc');refreshEditors()" title="">{TXT_CALENDAR_EVENT_LANG_NAME}</a></li>
-            <!-- END eventTabMenuDescTab -->
-        </ul>
-        <!-- BEGIN eventDescTab -->
-        <div id="{CALENDAR_EVENT_LANG_ID}_desc" class="eventDescTab" style="display: {CALENDAR_EVENT_TAB_DISPLAY};" >
-            <div id="{CALENDAR_EVENT_LANG_ID}_typeEvent" style="display: {CALENDAR_EVENT_TYPE_EVENT_DISPLAY};" > 
-                <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
-                    <tr style="{CALENDAR_HIDE_ON_SINGLE_LANG}">                            
-                        <th colspan="2">{TXT_CALENDAR_EVENT_LANG_NAME}</th>
-                    </tr>    
-                    <tr class="row1">
-                        <td width="180"  valign="top">{TXT_CALENDAR_EVENT_DESCRIPTION}</td>
-                        <td>
-                             {CALENDAR_EVENT_DESCRIPTION}                                                                                                         
-                        </td>
-                    </tr>
-                </table>
-            </div>   
-            <div id="{CALENDAR_EVENT_LANG_ID}_typeRedirect" style="display: {CALENDAR_EVENT_TYPE_REDIRECT_DISPLAY};" > 
-                <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
-                    <tr>    
-                        <th><br /></th>
-                        <th>{TXT_CALENDAR_EVENT_LANG_NAME}</th>
-                    </tr>    
-                    <tr class="row1">
-                        <td width="180"  valign="top">{TXT_CALENDAR_EVENT_TYPE_REDIRECT}</td>
-                        <td>
-                             <input type="text" style="width: 250px;" name="redirect[{CALENDAR_EVENT_LANG_ID}]" value="{CALENDAR_EVENT_REDIRECT}" id="eventRedirect" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('eventRedirect', 'link')" />                                                                                                      
-                        </td>
-                    </tr>
-                </table>
-            </div> 
-        </div>            
-        <!-- END eventDescTab -->                      
-        <br />
-        <input type="button" onclick="selectTab('event');" value="{TXT_CALENDAR_BACK}" />&nbsp;<input type="button" onclick="selectTab('invite');" value="{TXT_CALENDAR_NEXT}" />
+            </tr>                             
+        </table>
+        <br/>
+        <input type="button" onclick="location.href='index.php?cmd=calendar&{CALENDAR_CSRF}';" value="{TXT_CALENDAR_CANCEL}" />
+        &nbsp;<input type="button" onclick="selectTab('invite');" value="{TXT_CALENDAR_NEXT}" />
+        &nbsp;<input type="submit" name="submitModifyEvent"  value="{TXT_CALENDAR_SAVE}" />
     </div>
     <div id="invite" class="eventTab" style="display:none;">
         <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
@@ -734,7 +771,9 @@
             </table>
         </div>
         <br />
-        <input type="button" onclick="selectTab('details');" value="{TXT_CALENDAR_BACK}" />&nbsp;<input type="button" onclick="selectTab('series');" value="{TXT_CALENDAR_NEXT}" /> 
+        <input type="button" onclick="location.href='index.php?cmd=calendar&{CALENDAR_CSRF}';" value="{TXT_CALENDAR_CANCEL}" />
+        &nbsp;<input type="button" onclick="selectTab('series');" value="{TXT_CALENDAR_NEXT}" />
+        &nbsp;<input type="submit" name="submitModifyEvent"  value="{TXT_CALENDAR_SAVE}" />
     </div>
     <div id="series" class="eventTab" style="display:none;">
         <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
@@ -825,7 +864,8 @@
             </tr>
         </table>
         <br />
-        <input type="button" onclick="selectTab('invite');" value="{TXT_CALENDAR_BACK}" />&nbsp;  
+        <input type="button" onclick="location.href='index.php?cmd=calendar&{CALENDAR_CSRF}';" value="{TXT_CALENDAR_CANCEL}" />
+        &nbsp;  
         <!-- BEGIN eventSeriesNextButton --> 
         <input type="button" onclick="selectTab('publicate');" value="{TXT_CALENDAR_NEXT}" />  
         <!-- END eventSeriesNextButton -->     
@@ -863,8 +903,8 @@
             </tr>           
         </table>
         <br />
-        <!-- <input type="button" onclick="selectTab('series');" value="{TXT_CALENDAR_BACK}" />&nbsp;<input type="submit" name="submitModifyEvent"  value="{TXT_CALENDAR_SAVE}" />-->
-        <input type="button" onclick="selectTab('invite');" value="{TXT_CALENDAR_BACK}" />&nbsp;<input type="submit" name="submitModifyEvent"  value="{TXT_CALENDAR_SAVE}" />
+        <input type="button" onclick="location.href='index.php?cmd=calendar&{CALENDAR_CSRF}';" value="{TXT_CALENDAR_CANCEL}" />
+        &nbsp;<input type="submit" name="submitModifyEvent"  value="{TXT_CALENDAR_SAVE}" />
     </div>
     <!-- END eventPublicateTab -->  
 </form>
