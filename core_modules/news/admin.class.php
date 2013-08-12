@@ -877,7 +877,7 @@ class newsManager extends newsLibrary {
             $date = $this->dateFromInput($_POST['newsDate']);
         }
         
-        $newsredirect           = !empty($_POST['newsRedirect']) ? contrexx_input2raw($_POST['newsRedirect']) : '';
+        $newsredirect           = !empty($_POST['newsRedirect']) && $_POST['newsTypeRadio'] == 'redirect' ? contrexx_input2raw($_POST['newsRedirect']) : '';
         $newssource             = !empty($_POST['newsSource']) ? FWValidator::getUrl(contrexx_input2raw($_POST['newsSource'])) : '';
         $newsurl1               = !empty($_POST['newsUrl1']) ? FWValidator::getUrl(contrexx_input2raw($_POST['newsUrl1'])) : '';
         $newsurl2               = !empty($_POST['newsUrl2']) ? FWValidator::getUrl(contrexx_input2raw($_POST['newsUrl2'])) : '';
@@ -2057,7 +2057,7 @@ class newsManager extends newsLibrary {
 
             $date = $this->dateFromInput($_POST['newsDate']);
 
-            $redirect   = contrexx_strip_tags($_POST['newsRedirect']);
+            $redirect   = !empty($_POST['newsRedirect']) && $_POST['newsTypeRadio'] == 'redirect' ? contrexx_strip_tags($_POST['newsRedirect']) : '';
 
             $source                 = FWValidator::getUrl(contrexx_strip_tags($_POST['newsSource']));
             $url1                   = FWValidator::getUrl(contrexx_strip_tags($_POST['newsUrl1']));
