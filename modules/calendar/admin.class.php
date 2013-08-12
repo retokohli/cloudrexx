@@ -469,7 +469,12 @@ class CalendarManager extends CalendarLibrary
             'TXT_'.$this->moduleLangVar.'_SHOW_END_TIME'                    => $_ARRAYLANG['TXT_CALENDAR_SHOW_END_TIME'],
             'TXT_'.$this->moduleLangVar.'_LIST'                             => $_ARRAYLANG['TXT_CALENDAR_LIST'],
             'TXT_'.$this->moduleLangVar.'_DETAIL'                           => $_ARRAYLANG['TXT_CALENDAR_DETAIL'],
-
+            'TXT_'.$this->moduleLangVar.'_BASIC_DATA'                       => $_ARRAYLANG['TXT_CALENDAR_BASIC_DATA'],
+            'TXT_'.$this->moduleLangVar.'_LANGUAGE'                         => $_ARRAYLANG['TXT_CALENDAR_LANG'],
+            'TXT_'.$this->moduleLangVar.'_ADDITIONAL_OPTIONS'               => $_ARRAYLANG['TXT_CALENDAR_ADDITIONAL_OPTIONS'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_LOCATION'                   => $_ARRAYLANG['TXT_CALENDAR_EVENT_LOCATION'],            
+            'TXT_'.$this->moduleLangVar.'_EVENT_ALL_DAY'                    => $_ARRAYLANG['TXT_CALENDAR_EVENT_ALL_DAY'],            
+            
             $this->moduleLangVar.'_EVENT_ID'                                => $eventId,
             $this->moduleLangVar.'_EVENT_DEFAULT_LANG_ID'                   => $_LANGID,
             $this->moduleLangVar.'_EVENT_DATE_FORMAT'                       => parent::getDateFormat(1),         
@@ -496,6 +501,7 @@ class CalendarManager extends CalendarLibrary
             $this->moduleLangVar.'_EVENT_NOTIFICATION_TO'                   => $eventId != 0 ? $objEvent->notificationTo : '',
             $this->moduleLangVar.'_EVENT_TICKET_SALES'                      => $eventId != 0 ? ($objEvent->ticketSales ? 'checked="checked"' : '') : '',
             $this->moduleLangVar.'_EVENT_NUM_SEATING'                       => $eventId != 0 ? $objEvent->numSeating : '',
+            $this->moduleLangVar.'_EVENT_ALL_DAY'                           => $eventId != 0 && $objEvent->all_day ? 'checked="checked"' : '',
             $this->moduleLangVar.'_HIDE_ON_SINGLE_LANG'                     => count($this->arrFrontendLanguages) == 1 ? "display: none;" : ""
         ));
         

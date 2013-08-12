@@ -507,6 +507,7 @@ class CalendarEvent extends CalendarLibrary
                          event.series_pattern_end AS series_pattern_end,
                          event.series_pattern_begin AS series_pattern_begin,
                          event.series_pattern_exceptions AS series_pattern_exceptions,
+                         event.all_day,
                          field.title AS title,
                          field.description AS description,
                          field.place AS place
@@ -561,6 +562,7 @@ class CalendarEvent extends CalendarLibrary
                 $this->showStartTimeDetail = intval($objResult->fields['showStartTimeDetail']);
                 $this->showEndTimeDetail = intval($objResult->fields['showEndTimeDetail']);
                 $this->showTimeTypeDetail = intval($objResult->fields['showTimeTypeDetail']);
+                $this->all_day  = intval($objResult->fields['all_day']);;
                 $this->confirmed = intval($objResult->fields['confirmed']);
                 $this->invitationSent = intval($objResult->fields['invitation_sent']);
                 $this->access = intval($objResult->fields['access']);
@@ -724,12 +726,19 @@ class CalendarEvent extends CalendarLibrary
         
         list($endDate, $strEndTime)     = explode(' ', $data['endDate']);
         list($endHour, $endMin)         = explode(':', $strEndTime);
+        
+        if ($data['all_day']) {
+            list($startHour, $startMin) = array(0, 0);
+            list($endHour, $endMin)     = array(23, 59);;
+        }
+        
         //event data
         $id = intval($data['id']);                                                        
-        $type = intval($data['type']);
+        $type = intval($data['type']);        
         $startDate = parent::getDateTimestamp($startDate, intval($startHour), intval($startMin));
         $endDate = parent::getDateTimestamp($endDate, intval($endHour), intval($endMin));
-        $google = intval($data['map'][$_LANGID]);        
+        $google = intval($data['map'][$_LANGID]);   
+        $allDay = isset($data['all_day']) ? 1 : 0;
         
         $useCustomDateDisplay = isset($data['showDateSettings']) ? 1 : 0;
         if($objInit->mode == 'backend') {
@@ -995,7 +1004,8 @@ class CalendarEvent extends CalendarLibrary
                              `series_pattern_type` = '".$seriesPatternType."',
                              `series_pattern_dourance_type` = '".$seriesPatternDouranceType."',
                              `series_pattern_end` = '".$seriesPatternEnd."',
-                             `series_pattern_exceptions` = '".$seriesExeptions."'
+                             `series_pattern_exceptions` = '".$seriesExeptions."',
+                             `all_day`                   = '".$allDay."' 
                        WHERE id = '".$id."'";
         
             $objResult = $objDatabase->Execute($query);
@@ -1039,8 +1049,8 @@ class CalendarEvent extends CalendarLibrary
             }
                         
             $query = "INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_event
-                                  (`type`,`startdate`,`enddate`, `use_custom_date_display`, `showStartDateList`,`showEndDateList`,`showStartTimeList`,`showEndTimeList`,`showTimeTypeList`, `showStartDateDetail`,`showEndDateDetail`,`showStartTimeDetail`,`showEndTimeDetail`,`showTimeTypeDetail`,`google`,`access`,`priority`,`price`,`link`,`pic`,`catid`,`attach`, `place_mediadir_id`, `show_in`,`status`,`confirmed`,`invited_groups`,`invited_mails`,`invitation_sent`,`registration`,`registration_form`,`registration_num`,`registration_notification`,`email_template`,`ticket_sales`,`num_seating`,`author`, `series_status`, `series_type`, `series_pattern_count`, `series_pattern_weekday`, `series_pattern_day`, `series_pattern_week`, `series_pattern_month`, `series_pattern_type`, `series_pattern_dourance_type`, `series_pattern_end`, `series_pattern_exceptions`)
-                           VALUES ('".$type."','".$startDate."','".$endDate."', '".$useCustomDateDisplay."', '".$showStartDateList."', '".$showEndDateList."', '".$showStartTimeList."', '".$showEndTimeList."', '".$showTimeTypeList."', '".$showStartDateDetail."', '".$showEndDateDetail."', '".$showStartTimeDetail."', '".$showEndTimeDetail."', '".$showTimeTypeDetail."', '".$google."','".$access."','".$priority."','".$price."','".$link."','".$pic."','".$catId."','".$attach."','".$placeMediadir."','".$showIn."','".$status."','".$confirmed."','".$invited_groups."','".$invited_mails."', '".$send_invitation."', '".$registration."', '".$registration_form."','".$registration_num."','".$registration_notification."','".$email_template."','".$ticket_sales."','".$num_seating."','".$author."','".$seriesStatus."','".$seriesType."','".$seriesPatternCount."','".$seriesPatternWeekday."','".$seriesPatternDay."','".$seriesPatternWeek."','".$seriesPatternMonth."','".$seriesPatternType."','".$seriesPatternDouranceType."','".$seriesPatternEnd."','".$seriesExeptions."')";
+                                  (`type`,`startdate`,`enddate`, `use_custom_date_display`, `showStartDateList`,`showEndDateList`,`showStartTimeList`,`showEndTimeList`,`showTimeTypeList`, `showStartDateDetail`,`showEndDateDetail`,`showStartTimeDetail`,`showEndTimeDetail`,`showTimeTypeDetail`,`google`,`access`,`priority`,`price`,`link`,`pic`,`catid`,`attach`, `place_mediadir_id`, `show_in`,`status`,`confirmed`,`invited_groups`,`invited_mails`,`invitation_sent`,`registration`,`registration_form`,`registration_num`,`registration_notification`,`email_template`,`ticket_sales`,`num_seating`,`author`, `series_status`, `series_type`, `series_pattern_count`, `series_pattern_weekday`, `series_pattern_day`, `series_pattern_week`, `series_pattern_month`, `series_pattern_type`, `series_pattern_dourance_type`, `series_pattern_end`, `series_pattern_exceptions`, `all_day`)
+                           VALUES ('".$type."','".$startDate."','".$endDate."', '".$useCustomDateDisplay."', '".$showStartDateList."', '".$showEndDateList."', '".$showStartTimeList."', '".$showEndTimeList."', '".$showTimeTypeList."', '".$showStartDateDetail."', '".$showEndDateDetail."', '".$showStartTimeDetail."', '".$showEndTimeDetail."', '".$showTimeTypeDetail."', '".$google."','".$access."','".$priority."','".$price."','".$link."','".$pic."','".$catId."','".$attach."','".$placeMediadir."','".$showIn."','".$status."','".$confirmed."','".$invited_groups."','".$invited_mails."', '".$send_invitation."', '".$registration."', '".$registration_form."','".$registration_num."','".$registration_notification."','".$email_template."','".$ticket_sales."','".$num_seating."','".$author."','".$seriesStatus."','".$seriesType."','".$seriesPatternCount."','".$seriesPatternWeekday."','".$seriesPatternDay."','".$seriesPatternWeek."','".$seriesPatternMonth."','".$seriesPatternType."','".$seriesPatternDouranceType."','".$seriesPatternEnd."','".$seriesExeptions."', '".$allDay."')";
                            
             
             
