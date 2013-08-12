@@ -467,6 +467,7 @@ class InitCMS
         $this->templates['subnavbar2'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar2.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar2.html') : '';
         $this->templates['subnavbar3'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar3.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar3.html') : '';
         $this->templates['sidebar'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/sidebar.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/sidebar.html') : '';
+        $this->templates['top_news'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/top_news.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/top_news.html') : '';
         $this->templates['shopnavbar'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/shopnavbar.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/shopnavbar.html') : '';
         $this->templates['headlines'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines.html') : '';
         $this->templates['javascript'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/javascript.js') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/javascript.js') : '';

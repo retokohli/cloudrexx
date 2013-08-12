@@ -443,28 +443,52 @@
             <th colspan="2">{TXT_PLACEHOLDER_LIST}</th>
         </tr>
         <tr class="row1">
-            <td width="15%">[[TOP_NEWS_DATE]]</td>
+            <td width="15%">[[NEWS_DATE]]</td>
             <td width="85%">{TXT_NEWS_DATE_DESCRIPTION}</td>
         </tr>
         <tr class="row2">
-            <td>[[TOP_NEWS_LINK]]</td>
-            <td>{TXT_NEWS_LINK_DESCRIPTION}</td>
+            <td>[[NEWS_LONG_DATE]]</td>
+            <td>{TXT_NEWS_LONG_DATE_DESCRIPTION}</td>
         </tr>
         <tr class="row1">
-            <td>[[TOP_NEWS_IMAGE_PATH]]</td>
-            <td>{TXT_NEWS_IMAGE_PATH_DESCRIPTION}</td>
-        </tr>
-        <tr class="row2">
-            <td>[[TOP_NEWS_TEXT]]</td>
-            <td>{TXT_NEWS_TEXT_DESCRIPTION}</td>
-        </tr>
-        <tr class="row1">
-            <td>[[TOP_NEWS_AUTHOR]]</td>
+            <td>[[NEWS_AUTHOR]]</td>
             <td>{TXT_NEWS_AUTHOR_DESCRIPTION}</td>
         </tr>
         <tr class="row2">
-            <td>[[TOP_NEWS_ID]]</td>
-            <td>{TXT_NEWS_ID_DESCRIPTION}</td>
+            <td>[[NEWS_LINK]]</td>
+            <td>{TXT_NEWS_LINK_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_LINK_URL]]</td>
+            <td>{TXT_NEWS_LINK_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_CSS]]</td>
+            <td>{TXT_NEWS_CSS_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_IMAGE]]</td>
+            <td>{TXT_NEWS_IMAGE_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_IMAGE_SRC]]</td>
+            <td>{TXT_NEWS_IMAGE_SRC_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_IMAGE_ALT]]</td>
+            <td>{TXT_NEWS_TITLE_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_IMAGE_LINK]]</td>
+            <td>{TXT_NEWS_IMAGE_LINK_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>&lt;-- news_image --&gt;</td>
+            <td>{TXT_NEWS_IMAGE_ROW_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>&lt;!-- newsrow --&gt;</td>
+            <td>{TXT_NEWSROW_DESCRIPTION}</td>
         </tr>
     </table>
     <br />
@@ -475,10 +499,10 @@
         <tr class="row1">
             <td>&lt;ul&gt;<br />
                 &nbsp;&nbsp;&nbsp;&nbsp;&lt;li&gt;{TXT_NEWS_MESSAGES}&lt;/li&gt;<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- BEGIN headlines_row --&gt;</b><br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&gt;<b>[[HEADLINE_LINK]]</b>&lt;/li&gt;<br />
-                &nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- END headlines_row --&gt;</b><br />
-                &nbsp;&nbsp;&nbsp;&nbsp;&lt;li&gt;&lt;a href="index.php?section=news"&gt;{TXT_MORE_NEWS}&lt;/a&gt;&lt;/li&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- BEGIN newsrow --&gt;</b><br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;li&gt;<b>[[NEWS_LINK]]</b>&lt;/li&gt;<br />
+                &nbsp;&nbsp;&nbsp;&nbsp;<b>&lt;!-- END newsrow --&gt;</b><br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;li&gt;&lt;a href="[[NODE_NEWS]]"&gt;{TXT_MORE_NEWS}&lt;/a&gt;&lt;/li&gt;<br />
                 &lt;/ul&gt;<br />
             </td>
         </tr>
