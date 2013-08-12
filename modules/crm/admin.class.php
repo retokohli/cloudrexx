@@ -82,6 +82,7 @@ class CrmManager extends CrmLibrary
         parent::__construct();
         $objJs = new Javascript();
 
+        $this->_mediaPath = ASCMS_MEDIA_PATH.'/crm';
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/'.$this->moduleName.'/template');
         CSRF::add_placeholder($this->_objTpl);
 
@@ -5561,6 +5562,118 @@ END;
 
         echo json_encode($json);
         exit();
+    }
+
+    /**
+     * Uploader callback function
+     *
+     * @param string  $tempPath    Temp path
+     * @param string  $tempWebPath Temp webpath
+     * @param string  $data        post data
+     * @param integer $uploadId    upload id
+     * @param array   $fileInfos   file infos
+     * @param object  $response    Upload api response object
+     *
+     * @return array path and webpath
+     */
+    public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response) {
+        global $objDatabase, $_ARRAYLANG, $_CONFIG, $objInit;
+        
+        $lang     = $objInit->loadLanguageData('crm');
+        $_SESSION['interface_last_id'] = $uploadId;
+        $tup      = self::getTemporaryUploadPath($uploadId);
+        $path     = $tup[0].'/'.$tup[2];
+        $webPath  = $tup[1].'/'.$tup[2];
+        $arrFiles = array();
+        //get allowed file types
+        $arrAllowedFileTypes = array();
+        $arrAllowedFileTypes[] = 'csv';
+        $depositionTarget = ASCMS_MEDIA_PATH.'/crm/'; //target folder
+        $h = opendir($tempPath);
+        if ($h) {
+
+            while(false != ($file = readdir($h))) {
+
+                $info = pathinfo($file);
+
+                if($file != '..' && $file != '.') {
+                    //do not overwrite existing files.
+                    $prefix = '';
+                    while (file_exists($depositionTarget.$prefix.$file)) {
+                        if (empty($prefix)) {
+                            $prefix = 0;
+                        }
+                        $prefix ++;
+                    }
+
+                    // move file
+                    try {
+                        $objFile = new \Cx\Lib\FileSystem\File($tempPath.'/'.$file);
+                        $objFile->move($depositionTarget.$prefix.$file, false);
+                    } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                        \DBG::msg($e->getMessage());
+                    }
+                }
+                //skip . and ..
+                if($file == '.' || $file == '..') { continue; }
+
+                //delete unwanted files
+                if(!in_array(strtolower($info['extension']), $arrAllowedFileTypes)) {
+                    $response->addMessage(
+                        UploadResponse::STATUS_ERROR,
+                        'Please choose a csv to upload',
+                        $file
+                    );
+                    \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath.'/'.$file);
+                    continue;
+                }
+
+                $arrFiles[] = $file;
+            }
+            closedir($h);
+
+        } 
+
+        // Delete existing files because we need only one file to upload
+//        if (!empty($arrFiles)) {
+//            $h = opendir($path);
+//            if ($h) {
+//                while(false != ($file = readdir($h))) {
+//                    //skip . and ..
+//                    if($file == '.' || $file == '..') { continue; }
+//                    \Cx\Lib\FileSystem\FileSystem::delete_file($path.'/'.$file);
+//                }
+//            }
+//        }
+        
+        return array($path, $webPath);
+    }
+    /**
+     * Gets the temporary upload location for files.
+     *
+     * @param integer $submissionId
+     *
+     * @throws Exeception
+     *
+     * @return array('path','webpath', 'dirname')
+     */
+    public static function getTemporaryUploadPath($submissionId) {
+        global $sessionObj;
+
+        if (!isset($sessionObj)) $sessionObj = new cmsSession();
+
+        $tempPath = $sessionObj->getTempPath();
+        $tempWebPath = $sessionObj->getWebTempPath();
+        if($tempPath === false || $tempWebPath === false)
+            throw new Exception('could not get temporary session folder');
+
+        $dirname = 'event_files_'.$submissionId;
+        $result = array(
+            $tempPath,
+            $tempWebPath,
+            $dirname
+        );
+        return $result;
     }
 
      /**
