@@ -538,7 +538,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             // this should be here because the cx variable have to be set before cx is initialized
             foreach (self::$active as $name) {
                 $data = self::$available[$name];
-                if (!empty($data['lazyDependencies']) && $name != 'cx') {
+                if (!empty($data['lazyDependencies'])) {
                     foreach ($data['lazyDependencies'] as $dependency) {
                         if (!in_array($dependency, self::$active)) {
                             // if the lazy dependency is not activated so far
