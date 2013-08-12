@@ -952,9 +952,10 @@ class CommonFunctions
          );
 
         //MySQL
+        $arrTimezones = timezone_identifiers_list();
         $str = str_replace(
             array("%DB_HOST%", "%DB_NAME%", "%DB_USER%", "%DB_PASSWORD%", "%DB_TABLE_PREFIX%", "%DB_CHARSET%", "%DB_COLLATION%", "%DB_TIMEZONE%"),
-            array($_SESSION['installer']['config']['dbHostname'], $_SESSION['installer']['config']['dbDatabaseName'], $_SESSION['installer']['config']['dbUsername'], $_SESSION['installer']['config']['dbPassword'], $_SESSION['installer']['config']['dbTablePrefix'], 'utf8', $_SESSION['installer']['config']['dbCollation'], $_SESSION['installer']['config']['timezone']),
+            array($_SESSION['installer']['config']['dbHostname'], $_SESSION['installer']['config']['dbDatabaseName'], $_SESSION['installer']['config']['dbUsername'], $_SESSION['installer']['config']['dbPassword'], $_SESSION['installer']['config']['dbTablePrefix'], 'utf8', $_SESSION['installer']['config']['dbCollation'], $arrTimezones[$_SESSION['installer']['config']['timezone']]),
             $str
         );
 
