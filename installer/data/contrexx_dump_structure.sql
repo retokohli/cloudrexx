@@ -645,6 +645,7 @@ CREATE TABLE `contrexx_module_calendar_event` (
   `status` tinyint(1) NOT NULL default '1',
   `confirmed` tinyint(1) NOT NULL default '1',
   `author` varchar(255) NOT NULL,
+  `all_day` tinyint(1) NOT NULL default '0',
   PRIMARY KEY  (`id`),
   KEY `fk_contrexx_module_calendar_notes_contrexx_module_calendar_ca1` (`catid`)
 ) ENGINE=MyISAM ;
