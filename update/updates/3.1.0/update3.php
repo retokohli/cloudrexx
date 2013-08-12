@@ -1181,6 +1181,93 @@ HTMLCODE;
 };
 \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'filesharing', 'cmd' => ''), $search, $callback, array('content'), '3.1.0');
 
+if(   !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.4')
+    && $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
+    try {
+        /************************************************
+        * EXTENSION:    Categories as NestedSet         *
+        * ADDED:        Contrexx v3.1.0                 *
+        ************************************************/
+        $nestedSetRootId = null;
+        $count = null;
+        $leftAndRight = 2;
+        $sorting = 1;
+        $level = 2;
+
+        // add nested set columns
+        \Cx\Lib\UpdateUtil::sql('
+            ALTER TABLE  `'.DBPREFIX.'module_news_categories` ADD  `parent_id` INT( 11 ) NOT NULL AFTER  `catid`,
+                ADD  `left_id` INT( 11 ) NOT NULL AFTER  `parent_id`,
+                ADD  `right_id` INT( 11 ) NOT NULL AFTER  `left_id`,
+                ADD  `sorting` INT( 11 ) NOT NULL AFTER  `right_id`,
+                ADD  `level` INT( 11 ) NOT NULL AFTER  `sorting`
+        ');
+
+        // add nested set root node and select its id
+        $objResultRoot = \Cx\Lib\UpdateUtil::sql('INSERT INTO `'.DBPREFIX.'module_news_categories` (`catid`, `parent_id`, `left_id`, `right_id`, `sorting`, `level`) VALUES (0, 0, 0, 0, 0, 0)');
+        if ($objResultRoot) {
+            $nestedSetRootId = $objDatabase->Insert_ID();
+        }
+
+        // count categories
+        $objResultCount = \Cx\Lib\UpdateUtil::sql('SELECT count(`catid`) AS count FROM `'.DBPREFIX.'module_news_categories`');
+        if ($objResultCount && !$objResultCount->EOF) {
+            $count = $objResultCount->fields['count'];
+        }
+
+        // add nested set information to root node
+        \Cx\Lib\UpdateUtil::sql('
+            UPDATE `'.DBPREFIX.'module_news_categories` SET
+            `parent_id` = '.$nestedSetRootId.',
+            `left_id` = 1,
+            `right_id` = '.($count*2).',
+            `sorting` = 1,
+            `level` = 1
+            WHERE `catid` = '.$nestedSetRootId.'
+        ');
+
+        // add nested set information to all categories
+        $objResultCatSelect = \Cx\Lib\UpdateUtil::sql('SELECT `catid` FROM `'.DBPREFIX.'module_news_categories` ORDER BY `catid` ASC');
+        if ($objResultCatSelect) {
+            while (!$objResultCatSelect->EOF) {
+                $catId = $objResultCatSelect->fields['catid'];
+                if ($catId != $nestedSetRootId) {
+                    \Cx\Lib\UpdateUtil::sql('
+                        UPDATE `'.DBPREFIX.'module_news_categories` SET
+                        `parent_id` = '.$nestedSetRootId.',
+                        `left_id` = '.$leftAndRight++.',
+                        `right_id` = '.$leftAndRight++.',
+                        `sorting` = '.$sorting++.',
+                        `level` = '.$level.'
+                        WHERE `catid` = '.$catId.'
+                    ');
+                }
+                $objResultCatSelect->MoveNext();
+            }
+        }
+
+        // add new tables
+        \Cx\Lib\UpdateUtil::sql('
+            CREATE TABLE IF NOT EXISTS `'.DBPREFIX.'module_news_categories_locks` (
+              `lockId` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+              `lockTable` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
+              `lockStamp` bigint(11) NOT NULL
+            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
+        ');
+        \Cx\Lib\UpdateUtil::sql('
+            CREATE TABLE IF NOT EXISTS `'.DBPREFIX.'module_news_categories_catid` (
+              `id` int(11) NOT NULL
+            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
+        ');
+
+        // insert id of last added category
+        \Cx\Lib\UpdateUtil::sql('INSERT INTO `'.DBPREFIX.'module_news_categories_catid` (`id`) VALUES ('.$nestedSetRootId.')');
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+}
+
+
 // fix tree
 \Env::em()->getRepository('Cx\Core\ContentManager\Model\Node')->recover();
 
