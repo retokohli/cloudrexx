@@ -593,7 +593,7 @@ cx.cm = function(target) {
                             page.visibility.type = "application";
                         } else {
                             page.visibility.type = "home";
-                            cx.cm.hasHome[cx.cm.getCurrentLang()] = true;
+                            cx.cm.hasHome[cx.cm.getCurrentLang()] = response.data.id;
                         }
                         page.visibility.fallback = false;
                         break;
@@ -656,7 +656,7 @@ cx.cm = function(target) {
                             page.visibility.type = "application";
                         } else {
                             page.visibility.type = "home";
-                            cx.cm.hasHome[cx.cm.getCurrentLang()] = true;
+                            cx.cm.hasHome[cx.cm.getCurrentLang()] = response.data.id;
                         }
                         page.visibility.fallback = false;
                         break;
@@ -853,8 +853,8 @@ cx.cm = function(target) {
         }
     });
     
-    jQuery("select#page_application").change(cx.cm.homeCheck);
-    jQuery("input#page_application_area").keyup(cx.cm.homeCheck);
+    jQuery("select#page_application").change(cx.cm.homeCheck, jQuery("#pageId").val());
+    jQuery("input#page_application_area").keyup(cx.cm.homeCheck, jQuery("#pageId").val());
     // prevent enter key from opening fileBrowser
     jQuery("#content-manager input").keydown(function(event) {
         if (event.keyCode == 13) {
@@ -890,7 +890,7 @@ cx.cm = function(target) {
     });
 };
 
-cx.cm.homeCheck = function(addClasses) {
+cx.cm.homeCheck = function(addClasses, pageId) {
     var module = jQuery("select#page_application");
     var cmd = jQuery("input#page_application_area");
 
@@ -904,6 +904,12 @@ cx.cm.homeCheck = function(addClasses) {
     
     // there is no home for this language yet
     if (!cx.cm.hasHome[cx.cm.getCurrentLang()]) {
+        return false;
+    }
+    console.log(pageId);
+    console.log(cx.cm.hasHome[cx.cm.getCurrentLang()]);
+    // is the page not the current page?
+    if (pageId && cx.cm.hasHome[cx.cm.getCurrentLang()] == pageId) {
         return false;
     }
 
@@ -1655,7 +1661,7 @@ cx.cm.validateFields = function() {
             firstError = false;
         }
     });
-    if (cx.cm.homeCheck(true)) {
+    if (cx.cm.homeCheck(true, jQuery("#pageId").val())) {
         error = true;
         if (firstError) {
             errorMessage = cx.variables.get('TXT_CORE_CM_HOME_FAIL', 'contentmanager/lang');
