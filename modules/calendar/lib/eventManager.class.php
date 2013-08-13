@@ -645,7 +645,7 @@ class CalendarEventManager extends CalendarLibrary
             }
             
             if($objEvent->arrData['place'][$_LANGID] == '' && $objEvent->arrData['place_street'][$_LANGID] == '' && $objEvent->arrData['place_zip'][$_LANGID] == '' && $objEvent->arrData['place_city'][$_LANGID] == '' && $objEvent->arrData['place_country'][$_LANGID] == '' && $objEvent->map == 0) {
-                $objTpl->hideBlock('calendarEventAdress');  
+                $objTpl->hideBlock('calendarEventAddress');  
             } else {
                 if($objEvent->map == 1) { 
                     $googleCoordinates = self::_getCoorinates($objEvent->arrData['place_street'][$_LANGID], $objEvent->arrData['place_zip'][$_LANGID], $objEvent->arrData['place_city'][$_LANGID]);
@@ -680,7 +680,20 @@ class CalendarEventManager extends CalendarLibrary
                     $this->moduleLangVar.'_EVENT_MAP'             => $googleMap,
                 ));    
                 
-                $objTpl->parse('calendarEventAdress'); 
+                $objTpl->parse('calendarEventAddress'); 
+            }
+            
+            if($objEvent->arrData['org_name'][$_LANGID] == '' && $objEvent->arrData['org_street'][$_LANGID] == '' && $objEvent->arrData['org_zip'][$_LANGID] == '' && $objEvent->arrData['org_city'][$_LANGID] == '') {
+                $objTpl->hideBlock('calendarEventHost');  
+            } else {
+                $objTpl->setVariable(array(
+                    $this->moduleLangVar.'_EVENT_ORGANIZER_NAME'   => $objEvent->arrData['org_name'][$_LANGID],
+                    $this->moduleLangVar.'_EVENT_ORGANIZER_STREET' => $objEvent->arrData['org_street'][$_LANGID],
+                    $this->moduleLangVar.'_EVENT_ORGANIZER_ZIP'    => $objEvent->arrData['org_zip'][$_LANGID],
+                    $this->moduleLangVar.'_EVENT_ORGANIZER_CITY'   => $objEvent->arrData['org_city'][$_LANGID],
+                ));    
+                
+                $objTpl->parse('calendarEventHost');
             }
              
             if(($objEvent->registration == 1) && (mktime() <= $objEvent->startDate)) {  
