@@ -28,6 +28,14 @@ class CalendarManager extends CalendarLibrary
      * @var string 
      */
     var $_pageTitle;
+    
+    /**
+     * Action Name
+     *
+     * @access public
+     * @var string
+     */
+    public $act = '';
 
     /**
      * Constructor   -> Create the module-menu and an internal template-object
@@ -38,12 +46,14 @@ class CalendarManager extends CalendarLibrary
     {
         global $_ARRAYLANG, $objTemplate;
                 
-        parent::__construct(ASCMS_MODULE_PATH.'/'.$this->moduleName.'/template');   
+        parent::__construct(ASCMS_MODULE_PATH.'/'.$this->moduleName.'/template');  
         
-        $contentNavigation = '<a href="index.php?cmd='.$this->moduleName.'">'.$_ARRAYLANG['TXT_CALENDAR_MENU_OVERVIEW'].' </a>';
-        $contentNavigation .= Permission::checkAccess(164, 'static', true) ? '<a href="index.php?cmd='.$this->moduleName.'&amp;act=modify_event">'.$_ARRAYLANG['TXT_CALENDAR_NEW_EVENT'].' </a>' : '';              
-        $contentNavigation .= Permission::checkAccess(165, 'static', true) ? '<a href="index.php?cmd='.$this->moduleName.'&amp;act=categories">'.$_ARRAYLANG['TXT_CALENDAR_CATEGORIES'].' </a>' : '';                
-        $contentNavigation .= Permission::checkAccess(166, 'static', true) ? '<a href="index.php?cmd='.$this->moduleName.'&amp;act=settings">'.$_ARRAYLANG['TXT_CALENDAR_MENU_SETTINGS'].' </a>' : '';             
+        $this->act = $_REQUEST['act'];
+        
+        $contentNavigation = '<a href="index.php?cmd='.$this->moduleName.'" class="'.($this->act == '' ? 'active' : '').'">'.$_ARRAYLANG['TXT_CALENDAR_MENU_OVERVIEW'].' </a>';
+        $contentNavigation .= Permission::checkAccess(164, 'static', true) ? '<a href="index.php?cmd='.$this->moduleName.'&amp;act=modify_event" class="'.($this->act == 'modify_event' ? 'active' : '').'">'.$_ARRAYLANG['TXT_CALENDAR_NEW_EVENT'].' </a>' : '';              
+        $contentNavigation .= Permission::checkAccess(165, 'static', true) ? '<a href="index.php?cmd='.$this->moduleName.'&amp;act=categories" class="'.($this->act == 'categories' ? 'active' : '').'">'.$_ARRAYLANG['TXT_CALENDAR_CATEGORIES'].' </a>' : '';                
+        $contentNavigation .= Permission::checkAccess(166, 'static', true) ? '<a href="index.php?cmd='.$this->moduleName.'&amp;act=settings" class="'.($this->act == 'settings' ? 'active' : '').'">'.$_ARRAYLANG['TXT_CALENDAR_MENU_SETTINGS'].' </a>' : '';             
         
         $objTemplate->setVariable("CONTENT_NAVIGATION", $contentNavigation);
     }
