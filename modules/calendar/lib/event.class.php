@@ -674,7 +674,11 @@ class CalendarEvent extends CalendarLibrary
                              field.place_zip AS place_zip, 
                              field.place_city AS place_city, 
                              field.place_country AS place_country, 
-                                 field.description AS description,
+                             field.org_name AS org_name, 
+                             field.org_street AS org_street, 
+                             field.org_zip AS org_zip, 
+                             field.org_city AS org_city, 
+                             field.description AS description,
                              field.redirect AS redirect                                 
                         FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_event_field AS field
                        WHERE field.event_id = '".intval($this->id)."'
@@ -691,12 +695,16 @@ class CalendarEvent extends CalendarLibrary
                         $this->arrData['place_zip'][$langId] = htmlentities(stripslashes($objResult->fields['place_zip']), ENT_QUOTES, CONTREXX_CHARSET);
                         $this->arrData['place_city'][$langId] = htmlentities(stripslashes($objResult->fields['place_city']), ENT_QUOTES, CONTREXX_CHARSET);
                         $this->arrData['place_country'][$langId] = htmlentities(stripslashes($objResult->fields['place_country']), ENT_QUOTES, CONTREXX_CHARSET);
+                        $this->arrData['org_name'][$langId] = contrexx_raw2xhtml($objResult->fields['org_name']);
+                        $this->arrData['org_street'][$langId] = contrexx_raw2xhtml($objResult->fields['org_street']);
+                        $this->arrData['org_zip'][$langId] = contrexx_raw2xhtml($objResult->fields['org_zip']);
+                        $this->arrData['org_city'][$langId] = contrexx_raw2xhtml($objResult->fields['org_city']);
                         $this->arrData['description'][$langId] = stripslashes($objResult->fields['description']);
                         $this->arrData['redirect'][$langId] = htmlentities(stripslashes($objResult->fields['redirect']), ENT_QUOTES, CONTREXX_CHARSET);                         
                         $objResult->MoveNext();
                 }
             }
-        }                        
+        }        
     }     
     
     /**
@@ -1075,6 +1083,10 @@ class CalendarEvent extends CalendarLibrary
                 $description = contrexx_addslashes($data['description'][$langId]);
                 $redirect = contrexx_addslashes($data['redirect'][$langId]);  
         
+                $orgName   = contrexx_input2db($data['organizerName'][$langId]);
+                $orgStreet = contrexx_input2db($data['organizerStreet'][$langId]);
+                $orgZip    = contrexx_input2db($data['organizerZip'][$langId]);
+                $orgCity   = contrexx_input2db($data['organizerCity'][$langId]);
                 if($type == 0) {
                     $redirect = '';        
                 } else {
@@ -1082,8 +1094,9 @@ class CalendarEvent extends CalendarLibrary
                 } 
                 
                 $query = "INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_event_field
-                                      (`event_id`,`lang_id`,`title`,`place`,`place_street`,`place_zip`,`place_city`,`place_country`,`description`,`redirect`) 
-                               VALUES ('".intval($id)."','".intval($langId)."','".$title."','".$place."','".$street."','".$zip."','".$city."','".$country."','".$description."','".$redirect."')";
+                            (`event_id`,`lang_id`,`title`,`place`,`place_street`,`place_zip`,`place_city`,`place_country`,`description`,`redirect`, `org_name`, `org_street`, `org_zip`, `org_city`)
+                          VALUES 
+                            ('".intval($id)."','".intval($langId)."','".$title."','".$place."','".$street."','".$zip."','".$city."','".$country."','".$description."','".$redirect."', '".$orgName."', '".$orgStreet."', '".$orgZip."', '".$orgCity."')";
                                
                 $objResult = $objDatabase->Execute($query); 
                 
