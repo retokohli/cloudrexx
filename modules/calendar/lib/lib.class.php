@@ -324,30 +324,9 @@ class CalendarLibrary
      * @return null
      */
     function getFrontendLanguages()
-    {
-        global $_ARRAYLANG, $_CORELANG, $objDatabase;
-
-        $arrLanguages = array();
-
-        $objLanguages = $objDatabase->Execute("SELECT id,lang,name,frontend,is_default FROM ".DBPREFIX."languages WHERE frontend = '1' ORDER BY is_default ASC");
-        if ($objLanguages !== false) {
-            while (!$objLanguages->EOF) {
-                $arrData = array();
-
-                $arrData['id'] = intval($objLanguages->fields['id']);
-                $arrData['lang'] = htmlspecialchars($objLanguages->fields['lang'], ENT_QUOTES, CONTREXX_CHARSET);
-                $arrData['name'] = htmlspecialchars($objLanguages->fields['name'], ENT_QUOTES, CONTREXX_CHARSET);
-                $arrData['frontend'] = intval($objLanguages->fields['frontend']);
-                $arrData['is_default'] = htmlspecialchars($objLanguages->fields['is_default'], ENT_QUOTES, CONTREXX_CHARSET);
-
-                $arrLanguages[intval($objLanguages->fields['id'])] = $arrData;
-
-                $objLanguages->MoveNext();
-            }
-        }
-
+    {        
         // return $arrLanguages;
-        $this->arrFrontendLanguages = $arrLanguages;
+        $this->arrFrontendLanguages = \FWLanguage::getActiveFrontendLanguages();
     }
     
     /**

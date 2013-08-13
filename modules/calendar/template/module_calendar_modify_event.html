@@ -265,16 +265,6 @@
         }
     }
 
-    function ExpandMinimize(toggle, opener){  
-        elm1 = document.getElementById(toggle);
-        elm1.style.display = (elm1.style.display=='none') ? 'block' : 'none';
-
-        if(opener != '') {
-            elm2 = document.getElementById(opener);
-            elm2.style.display = (elm2.style.display=='none') ? 'inline' : 'none';
-        }
-    }
-    
     function showOrHide()
     {                                                                                             
         var seriesMaskSelect  = $J('#seriesTypeSelect').val();
@@ -489,7 +479,7 @@
             <div id="{CALENDAR_EVENT_LANG_ID}_typeEvent" style="display: {CALENDAR_EVENT_TYPE_EVENT_DISPLAY};" > 
                 <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
                     <tr style="{CALENDAR_HIDE_ON_SINGLE_LANG}">                            
-                        <th colspan="2">{TXT_CALENDAR_EVENT_LANG_NAME}</th>
+                        <th colspan="2">{TXT_CALENDAR_EVENT}</th>
                     </tr>
                     <tr class="row1">
                         <td width="180"  valign="top">{TXT_CALENDAR_EVENT_TITLE} <font color="#ff0000">*</font></td>
@@ -546,11 +536,14 @@
                 <tr style="{CALENDAR_HIDE_ON_SINGLE_LANG}">                    
                     <th colspan="2">{TXT_CALENDAR_EVENT_LANG_NAME}</th>
                 </tr>                
+                <tr class="row3">
+                    <td colspan="2">{TXT_CALENDAR_EVENT_PLACE}</td>
+                </tr>
                 <tr class="row2">
                     <td width="180" valign="top">{TXT_CALENDAR_EVENT_PLACE}</td>
                     <td>
                         <!-- BEGIN eventPlaceInput -->
-                        <input name="place[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_PLACE}" style="width: 250px" />&nbsp;<a id="eventPlaceMoreLink_{CALENDAR_EVENT_LANG_SHORTCUT}" href="javascript:ExpandMinimize('eventPlaceMore_{CALENDAR_EVENT_LANG_SHORTCUT}', 'eventPlaceMoreLink_{CALENDAR_EVENT_LANG_SHORTCUT}')">&raquo; {TXT_CALENDAR_EXPAND}</a>
+                        <input name="place[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_PLACE}" style="width: 250px" />
                         <!-- END eventPlaceInput -->
                         
                         <!-- BEGIN eventPlaceSelect -->
@@ -561,7 +554,7 @@
                     </td>
                 </tr>
             </table>
-            <div id="eventPlaceMore_{CALENDAR_EVENT_LANG_SHORTCUT}" style="display: none;" >
+            <div id="eventPlaceMore_{CALENDAR_EVENT_LANG_SHORTCUT}" >
                 <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
                     <tr class="row1">
                         <td width="180"  valign="top">{TXT_CALENDAR_EVENT_STREET}</td>
@@ -584,13 +577,45 @@
                     <tr class="row2">
                         <td valign="top">{TXT_CALENDAR_EVENT_COUNTRY}</td>
                         <td>
-                             <input name="country[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_COUNTRY}" style="width: 250px" />&nbsp;<a href="javascript:ExpandMinimize('eventPlaceMore_{CALENDAR_EVENT_LANG_SHORTCUT}', 'eventPlaceMoreLink_{CALENDAR_EVENT_LANG_SHORTCUT}')">&laquo; {TXT_CALENDAR_MINIMIZE}</a>
+                             <input name="country[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_COUNTRY}" style="width: 250px" />
                         </td>
                     </tr>
                     <tr class="row1">
                         <td valign="top">{TXT_CALENDAR_EVENT_MAP}</td>
                         <td>
                             <label><input name="map[{CALENDAR_EVENT_LANG_ID}]" value="1" type="checkbox" {CALENDAR_EVENT_MAP}/> {TXT_CALENDAR_EVENT_USE_GOOGLEMAPS}</label>
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <br/>
+            <div id="eventHost_{CALENDAR_EVENT_LANG_SHORTCUT}">
+                <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+                    <tr class="row3">
+                        <td colspan="2">{TXT_CALENDAR_EVENT_HOST}</td>                        
+                    </tr>
+                    <tr class="row1">
+                        <td width="180"  valign="top">{TXT_CALENDAR_EVENT_NAME}</td>
+                        <td>
+                             <input name="organizerName[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_ORGANIZER_NAME}" style="width: 250px" />
+                        </td>
+                    </tr>
+                    <tr class="row2">
+                        <td valign="top">{TXT_CALENDAR_EVENT_STREET}</td>
+                        <td>
+                             <input name="organizerStreet[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_ORGANIZER_STREET}" style="width: 250px" />
+                        </td>
+                    </tr>
+                    <tr class="row1">
+                        <td valign="top">{TXT_CALENDAR_EVENT_ZIP}</td>
+                        <td>
+                             <input name="organizerZip[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_ORGANIZER_ZIP}" style="width: 250px" />
+                        </td>
+                    </tr>
+                    <tr class="row2">
+                        <td valign="top">{TXT_CALENDAR_EVENT_CITY}</td>
+                        <td>
+                             <input name="organizerCity[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_ORGANIZER_CITY}" style="width: 250px" />
                         </td>
                     </tr>
                 </table>
