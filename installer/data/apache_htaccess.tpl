@@ -1,5 +1,5 @@
     # This is ASCMS_PATH_OFFSET, i.e.
-    RewriteBase   /trunk2
+    RewriteBase   %PATH_ROOT_OFFSET%
 
     # Resolve language specific sitemap.xml
     RewriteRule ^(\w+)\/sitemap.xml$ sitemap_$1.xml [L,NC]
