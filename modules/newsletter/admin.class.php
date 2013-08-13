@@ -143,10 +143,6 @@ class newsletter extends NewsletterLib
                 Permission::checkAccess(171, 'static');
                 $this->_sendMail();
                 break;
-            case "newsletter":
-                Permission::checkAccess(152, 'static');
-                $this->newsletterOverview();
-                break;
             case "news":
                 Permission::checkAccess(175, 'static');
                 $this->_getNewsPage();
@@ -4525,22 +4521,6 @@ $WhereStatement = '';
         } else {
             self::$strErrMessage = $_ARRAYLANG['TXT_DATABASE_ERROR'] . $objDatabase->ErrorMsg();
         }
-    }
-
-
-    function newsletterOverview()
-    {
-        global $objDatabase, $_ARRAYLANG;
-
-        $this->_pageTitle = $_ARRAYLANG['TXT_NEWSLETTER'];
-        $this->_objTpl->loadTemplateFile('newsletter_newsletter.html');
-        $this->_objTpl->setVariable(array(
-            'TXT_TITLE' => $_ARRAYLANG['TXT_ACTION'],
-            'TXT_NEWSLETTER_EDIT' => $_ARRAYLANG['TXT_NEWSLETTER_EDIT'],
-            'TXT_NEWSLETTER_NEW' => $_ARRAYLANG['TXT_NEWSLETTER_NEW'],
-            'TXT_SEND_NEWSLETTER' => $_ARRAYLANG['TXT_SEND_NEWSLETTER'],
-            'TXT_NEWSLETTER_EDIT_SEND' => $_ARRAYLANG["TXT_NEWSLETTER_EDIT_SEND"],
-        ));
     }
 
 
