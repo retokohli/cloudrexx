@@ -81,7 +81,7 @@ class CrmManager extends CrmLibrary
         global $objTemplate, $_ARRAYLANG, $objJs;
         parent::__construct();
         $objJs = new Javascript();
-
+        
         $this->_mediaPath = ASCMS_MEDIA_PATH.'/crm';
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/'.$this->moduleName.'/template');
         CSRF::add_placeholder($this->_objTpl);
@@ -242,6 +242,12 @@ class CrmManager extends CrmLibrary
             break;
         case 'deleteCustomerTypes':
                 $this->deleteCustomerTypes();
+            break;
+        case 'moveDocument':
+                $this->moveDocumentToTarget();
+            break;
+        case 'getImportFilename':
+                $this->getImportFilename();
             break;
         case 'export':
                 $this->csvExport();
@@ -950,6 +956,8 @@ class CrmManager extends CrmLibrary
         }
 
         if ($contactId) {
+            //For document Upload
+            $this->initDocUploader($contactId);
             $this->contact = $this->load->model('crmContact', __CLASS__);
             $this->contact->load($contactId);
             $custDetails = $this->contact->getCustomerDetails();
@@ -5579,22 +5587,50 @@ END;
     public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response) {
         global $objDatabase, $_ARRAYLANG, $_CONFIG, $objInit;
         
-        $lang     = $objInit->loadLanguageData('crm');
-        $_SESSION['interface_last_id'] = $uploadId;
-        $tup      = self::getTemporaryUploadPath($uploadId);
-        $path     = $tup[0].'/'.$tup[2];
-        $webPath  = $tup[1].'/'.$tup[2];
         $arrFiles = array();
         //get allowed file types
         $arrAllowedFileTypes = array();
         $arrAllowedFileTypes[] = 'csv';
         $depositionTarget = ASCMS_MEDIA_PATH.'/crm/'; //target folder
+        $fileName = $_POST['name'];
+        if (!empty ($fileName)) {
+            list($file, $ext) = split('[.]', $fileName);
+            if ($ext == 'csv') {
+                $_SESSION['importFilename'] = $fileName;
+            }
+        }
         $h = opendir($tempPath);
         if ($h) {
 
             while(false != ($file = readdir($h))) {
 
                 $info = pathinfo($file);
+                
+                //skip . and ..
+                if($file == '.' || $file == '..') { continue; }
+
+                //delete unwanted files
+                $sizeLimit = 10485760;
+                $size = filesize($tempPath.'/'.$file);
+                if ($size > $sizeLimit) {
+                    $response->addMessage(
+                        UploadResponse::STATUS_ERROR,
+                        "Server error. Increase post_max_size and upload_max_filesize to $size.",
+                        $file
+                    );
+                    \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath.'/'.$file);
+                    continue;
+                }
+                
+                if(!in_array(strtolower($info['extension']), $arrAllowedFileTypes)) {
+                    $response->addMessage(
+                        UploadResponse::STATUS_ERROR,
+                        'Please choose a csv to upload',
+                        $file
+                    );
+                    \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath.'/'.$file);
+                    continue;
+                }
 
                 if($file != '..' && $file != '.') {
                     //do not overwrite existing files.
@@ -5609,73 +5645,152 @@ END;
                     // move file
                     try {
                         $objFile = new \Cx\Lib\FileSystem\File($tempPath.'/'.$file);
-                        $objFile->move($depositionTarget.$prefix.$file, false);
+                        $objFile->copy($depositionTarget.$prefix.$file, false);
                     } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
                         \DBG::msg($e->getMessage());
                     }
                 }
+
+                $arrFiles[] = $file;
+            }
+            closedir($h);
+        }
+
+        return array($tempPath, $tempWebPath);
+    }
+    
+    /**
+     * init the pl uploader which is directly included in the webpage
+     *
+     * @return integer the uploader id
+     */
+    protected function initDocUploader($customerId)
+    {
+        $comboUp = UploadFactory::getInstance()->newUploader('exposedCombo');
+        $comboUp->setFinishedCallback(array(ASCMS_MODULE_PATH.'/crm/admin.class.php','CrmManager','docUploadFinished'));
+        //set instance name to combo_uploader so we are able to catch the instance with js
+        $comboUp->setJsInstanceName('exposed_combo_uploader');
+        $comboUp->setData($customerId);
+        $this->_objTpl->setVariable(array(
+              'COMBO_UPLOADER_CODE' => $comboUp->getXHtml(true)
+        ));
+    }
+    
+    /**
+     * the upload is finished
+     * rewrite the names
+     * write the uploaded files to the database
+     *
+     * @static
+     * @param string $tempPath the temporary file path
+     * @param string $tempWebPath the temporary file path which is accessable by web browser
+     * @param array $data the data which are attached by uploader init method
+     * @param integer $uploadId the upload id
+     * @param $fileInfos
+     * @param $response
+     * @return array the target paths
+     */
+    public static function docUploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response)
+    {
+
+        global $objDatabase, $objFWUser;
+        
+        //get allowed file types
+        $arrAllowedFileTypes = array();
+        if (imagetypes() & IMG_GIF) { $arrAllowedFileTypes[] = 'gif'; }
+        if (imagetypes() & IMG_JPG) { $arrAllowedFileTypes[] = 'jpg'; $arrAllowedFileTypes[] = 'jpeg'; }
+        if (imagetypes() & IMG_PNG) { $arrAllowedFileTypes[] = 'png'; }
+        //allowed extensions
+        $arrAllowedFileTypes[] = 'doc';
+        $arrAllowedFileTypes[] = 'docx';
+        $arrAllowedFileTypes[] = 'pdf';
+        $arrAllowedFileTypes[] = 'txt';
+        $arrAllowedFileTypes[] = 'csv';
+        $arrAllowedFileTypes[] = 'xls';
+        
+        $depositionTarget = ASCMS_MEDIA_PATH.'/crm/'; //target folder
+        $h = opendir($tempPath);
+        if ($h) {
+
+            while(false != ($file = readdir($h))) {
+
+                $info = pathinfo($file);
+
                 //skip . and ..
                 if($file == '.' || $file == '..') { continue; }
 
                 //delete unwanted files
+                $sizeLimit = 2097152;
+                $size = filesize($tempPath.'/'.$file);
+                if ($size > $sizeLimit) {
+                    $response->addMessage(
+                        UploadResponse::STATUS_ERROR,
+                        "Server error. Increase post_max_size and upload_max_filesize to $size.",
+                        $file
+                    );
+                    \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath.'/'.$file);
+                    continue;
+                }
+                
                 if(!in_array(strtolower($info['extension']), $arrAllowedFileTypes)) {
                     $response->addMessage(
                         UploadResponse::STATUS_ERROR,
-                        'Please choose a csv to upload',
+                        "$file has an invalid extension. Valid extension(s): jpeg, png, gif, jpg, doc, docx, pdf, txt, csv, xls.",
                         $file
                     );
                     \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath.'/'.$file);
                     continue;
                 }
 
+                if($file != '..' && $file != '.') {
+                    //do not overwrite existing files.
+                    $prefix = '';
+                    while (file_exists($depositionTarget.$prefix.$file)) {
+                        if (empty($prefix)) {
+                            $prefix = 0;
+                        }
+                        $prefix ++;
+                    }
+
+                    // move file
+                    try {
+                        $objFile = new \Cx\Lib\FileSystem\File($tempPath.'/'.$file);
+                        $objFile->copy($depositionTarget.$prefix.$file, false);
+                        // write the uploaded files into database
+                        $fields = array(
+                            'document_name' => trim($prefix.$file),
+                            'added_by'      => $objFWUser->objUser->getId(),
+                            'uploaded_date' => date('Y-m-d H:i:s'),
+                            'contact_id'    => $data
+                        );
+                        $sql = SQL::insert("module_crm_customer_documents", $fields, array('escape' => true));
+                        $objDatabase->Execute($sql);
+                    } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                        \DBG::msg($e->getMessage());
+                    }
+                }
+                
                 $arrFiles[] = $file;
             }
             closedir($h);
+        }
 
-        } 
-
-        // Delete existing files because we need only one file to upload
-//        if (!empty($arrFiles)) {
-//            $h = opendir($path);
-//            if ($h) {
-//                while(false != ($file = readdir($h))) {
-//                    //skip . and ..
-//                    if($file == '.' || $file == '..') { continue; }
-//                    \Cx\Lib\FileSystem\FileSystem::delete_file($path.'/'.$file);
-//                }
-//            }
-//        }
-        
-        return array($path, $webPath);
-    }
-    /**
-     * Gets the temporary upload location for files.
-     *
-     * @param integer $submissionId
-     *
-     * @throws Exeception
-     *
-     * @return array('path','webpath', 'dirname')
-     */
-    public static function getTemporaryUploadPath($submissionId) {
-        global $sessionObj;
-
-        if (!isset($sessionObj)) $sessionObj = new cmsSession();
-
-        $tempPath = $sessionObj->getTempPath();
-        $tempWebPath = $sessionObj->getWebTempPath();
-        if($tempPath === false || $tempWebPath === false)
-            throw new Exception('could not get temporary session folder');
-
-        $dirname = 'event_files_'.$submissionId;
-        $result = array(
-            $tempPath,
-            $tempWebPath,
-            $dirname
-        );
-        return $result;
+        // return web- and filesystem path. files will be moved there.
+        return array($tempPath, $tempWebPath);
     }
 
+    function getImportFilename()
+    {
+        if (isset ($_SESSION['importFilename'])) {
+            $fileName = $_SESSION['importFilename'];
+            unset ($_SESSION['importFilename']);
+        }
+        if (!empty ($fileName)) {
+            $result[] = array('fileName' => $fileName);
+        }
+        echo json_encode($result);
+        exit();
+    }
      /**
      * upload customer files
      *

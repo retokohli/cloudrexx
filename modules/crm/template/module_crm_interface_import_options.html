@@ -1,7 +1,27 @@
 <!-- START module_crm_interface.html -->
-{UPLOADER_CODE}
-{FILE_INPUT_CODE}
-{FOLDER_WIDGET_CODE}
+{COMBO_UPLOADER_CODE}
+<script type="text/javascript">
+	cx.ready(function() {
+		var uploader = cx.instances.get('exposed_combo_uploader','uploader');
+		uploader.dialog().bind('close',function(){
+                    $J.getJSON( '{REDIRECT_URL}', function( data ) {
+                        $J.each(data, function(key, val) {
+                            var file = val.fileName;
+                            if ($J.trim(file) != '') {
+                                $J('#fileName').val(file);
+                                var filename = file.replace(/^.*[\\\/]/, '');
+
+                                $J('.choose-image-content .file-text').html(filename);
+                                $J('.choose-image-text').fadeOut(function(){
+                                $J('.choose-image-content').fadeIn();
+                                });
+                                $J('#start_upload').removeClass('disabled');
+                            }
+                        });
+                    });
+		});
+	},true);
+</script>
 <div id="subnavbar_level2">
     <ul>
         <li><a class="active" href="./index.php?cmd={MODULE_NAME}&amp;act=settings&amp;tpl=interface&amp;subTpl=import" title="{TXT_CRM_IMPORT_NAME}">{TXT_CRM_IMPORT_NAME}</a></li>
@@ -57,10 +77,9 @@
                     <tr class="row2">
                         <td style="width: 15%;">&nbsp;</td>
                         <td>
-                            <div id="uploadWidget"></div>
-                            <span class="choose-image-text"><a class="choose-image import-button" href="javascript:void(0);">{TXT_CRM_CHOOSE_CSV}</a></span>
+                            <span class="choose-image-text"><a id="exposedComboUploaderStarter" class="import-button" href="javascript:void(0);">{TXT_CRM_CHOOSE_CSV}</a></span>
                             <span class="choose-image-content" style="display:none;"><span class="file-text"></span>&nbsp;&nbsp;<a class="choose-image" href="javascript:void(0);">{TXT_CRM_CHANGE}</a></span>
-                            <input type="file" name="importfile" id="importfile" />
+                            <input type="hidden" id="fileName" name="fileName" value="" />
                         </td>
                     </tr>
                     <tr><td colspan="2">&nbsp;</td></tr>

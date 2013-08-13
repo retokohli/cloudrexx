@@ -273,7 +273,7 @@
         });
     });
     $J(".add-document").live('click', function(){
-        $J( "#file-upload" ).dialog( "open" );
+        $J( "#documentFile" ).trigger( "click" );
     });
     $J(".delete_document").live('click', function(){
         if(confirm('{TXT_CRM_CONFIRM_DELETE_ENTRY}')) {
@@ -395,6 +395,10 @@
     .detailsList .add-map {
         margin-left: 130px;
         position: absolute;
+    }
+    input#documentFile {
+        position: absolute;
+        left: -5000px;
     }
 </style>
 <div id="subnavbar_level2">
@@ -830,7 +834,7 @@
             </tbody>
         </table>
         <br>
-        <input type="button" class="add-document" value="{TXT_CRM_ADD_DOCUMENTS}" />
+        <input type="button" id="exposedComboUploaderStarter" value="{TXT_CRM_ADD_DOCUMENTS}" />
     </div>
 </div>
 <!-- show_sub_tabs -->
@@ -868,3 +872,39 @@
     </p>
     <div id="jquery-wrapped-fine-uploader"></div>
 </div>
+{COMBO_UPLOADER_CODE}
+<script type="text/javascript">
+	cx.ready(function() {
+		var uploader = cx.instances.get('exposed_combo_uploader','uploader');
+		uploader.dialog().bind('close',function(){
+                            $J("#documents table tbody").html('');
+                            tabIndex = $J( "#tabs" ).tabs('option', 'selected');
+                            $J("#tabs").tabs('load', tabIndex);
+                            tabLinks['documents'].page = 0;
+                            tabLinks['documents'].new_req = true;
+                            $J('.crm_details_tabs').scroll();
+		});
+	},true);
+</script>
+<!--<script type="text/javascript">
+	cx.ready(function() {
+		var uploader = cx.instances.get('exposed_combo_uploader','uploader');
+		uploader.dialog().bind('close',function(){
+                    alert('success');
+                    $J.ajax({
+                        url : '{REDIRECT_URL}',
+                        type : 'post',
+                        data : '&uploadId={DOC_UPLOADID}',
+                        success: function(json) {
+                            $J("#documents table tbody").html('');
+                            tabIndex = $J( "#tabs" ).tabs('option', 'selected');
+                            $J("#tabs").tabs('load', tabIndex);
+                            tabLinks['documents'].page = 0;
+                            tabLinks['documents'].new_req = true;
+                            $J('.crm_details_tabs').scroll();
+                        }
+                    });
+		});
+	},true);
+</script>
+-->
