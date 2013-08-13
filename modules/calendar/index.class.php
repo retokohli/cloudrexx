@@ -625,6 +625,7 @@ $this->_objTpl->setVariable(array(
             'TXT_'.$this->moduleLangVar.'_OPTIONS'           =>  $_ARRAYLANG['TXT_CALENDAR_OPTIONS'],
             'TXT_'.$this->moduleLangVar.'_CATEGORY'          =>  $_ARRAYLANG['TXT_CALENDAR_CAT'],
             'TXT_'.$this->moduleLangVar.'_PLACE'             =>  $_ARRAYLANG['TXT_CALENDAR_PLACE'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_HOST'        =>  $_ARRAYLANG['TXT_CALENDAR_EVENT_HOST'],
             'TXT_'.$this->moduleLangVar.'_PRIORITY'          =>  $_ARRAYLANG['TXT_CALENDAR_PRIORITY'],
             'TXT_'.$this->moduleLangVar.'_START'             =>  $_ARRAYLANG['TXT_CALENDAR_START'],
             'TXT_'.$this->moduleLangVar.'_END'               =>  $_ARRAYLANG['TXT_CALENDAR_END'],

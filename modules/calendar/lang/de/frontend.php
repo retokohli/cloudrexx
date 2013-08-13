@@ -151,3 +151,4 @@ $_ARRAYLANG['TXT_CALENDAR_DEVIATES_FROM_CONTACT'] = "weicht von der Kontaktadres
 $_ARRAYLANG['TXT_CALENDAR_PLEASE_CHECK_INPUT'] = "Bitte überprüfen sie ihre Eingabe";
 $_ARRAYLANG['TXT_CALENDAR_IMAGE_UPLOAD_ERROR'] = "The selected extesion is not allowed";
 $_ARRAYLANG['TXT_CALENDAR_START_PAYMENT'] = "Zahlungsvorgang starten";
+$_ARRAYLANG['TXT_CALENDAR_EVENT_HOST']  = "Host";
