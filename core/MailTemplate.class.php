@@ -1121,8 +1121,8 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
                         '&amp;userFrontendLangId='.$lang_id.'"'.
                     ' title="'.$title.'">'.
                     '<img src="images/icons/'.
-                    ($available ? 'edit' : 'newdoc').'.gif"'.
-                    ' width="15" height="15" alt="'.$title.'" border="0" /></a>';
+                    ($available ? 'edit.gif' : 'add.png').'"'.
+                    ' width="16" height="16" alt="'.$title.'" border="0" /></a>';
                 $objTemplateLocal->setVariable('MAILTEMPLATE_LANGUAGE', $icon);
                 $objTemplateLocal->parse('core_mailtemplate_language_column');
             }
