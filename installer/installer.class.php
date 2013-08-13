@@ -1897,35 +1897,9 @@ class Installer
             // the license section template
             // We might have some overhead, since versioncheck.php does more or less the same again
             $documentRoot = dirname($basePath);
-            require_once($documentRoot.'/core/Env.class.php');               // needed for FileSystem
-            require_once($documentRoot.'/config/configuration.php');         // needed for API
-            require_once($documentRoot.'/config/settings.php');              // needed for configuration.php
-            require_once($documentRoot.'/config/set_constants.php');         // needed for configuration.php
-            require_once($documentRoot.'/core/ClassLoader/ClassLoader.class.php');
-
-            $customizing = null;
-            if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
-            // TODO: webinstaller check: has ASCMS_CUSTOMIZING_PATH already been defined in the installation process?
-                $customizing = ASCMS_CUSTOMIZING_PATH;
-            }
-            $cl = new \Cx\Core\ClassLoader\ClassLoader($documentRoot, true, $customizing);
-            \Env::set('ClassLoader', $cl);
-
-            require_once($documentRoot.'/core/API.php');                             // needed for getDatabaseObject()
-            require_once($documentRoot.'/lib/FRAMEWORK/User/User_Setting_Mail.class.php');
-            require_once($documentRoot.'/lib/FRAMEWORK/User/User_Setting.class.php');
-            require_once($documentRoot.'/lib/FRAMEWORK/User/User_Profile_Attribute.class.php');
-            require_once($documentRoot.'/lib/FRAMEWORK/User/User_Profile.class.php');
-            require_once($documentRoot.'/lib/FRAMEWORK/User/UserGroup.class.php');
-            require_once($documentRoot.'/lib/FRAMEWORK/User/User.class.php');
-            require_once($documentRoot.'/lib/FRAMEWORK/FWUser.class.php');
-            require_once($documentRoot.'/lib/PEAR/HTTP/Request2.php');
-            require_once($documentRoot.'/lib/FRAMEWORK/DBG/DBG.php');
-            require_once($documentRoot.'/core/Init.class.php');
-            require_once($documentRoot.'/core/settings.class.php');
-            require_once($documentRoot.'/core/session.class.php');
-            $objDatabase = getDatabaseObject($strErrMessage, true);
-            $objInit = new InitCMS('backend', null);
+            require_once($documentRoot.'/core/Core/init.php');
+            init('minimal');
+            
             if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new cmsSession();
 
             $userId = 1;
