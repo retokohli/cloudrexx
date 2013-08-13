@@ -76,10 +76,6 @@ class CalendarManager extends CalendarLibrary
                 Permission::checkAccess(165, 'static');
                 $this->showCategories();
                 break;
-            case 'modify_category':
-                Permission::checkAccess(165, 'static');
-                $this->modifyCategory(intval($_GET['id']));
-                break;
             case 'modify_event':
                 Permission::checkAccess(164, 'static');
                 $this->modifyEvent(intval($_GET['id']));
@@ -911,7 +907,15 @@ class CalendarManager extends CalendarLibrary
      */
     function showCategories(){
         global $objDatabase, $_ARRAYLANG, $_CORELANG;
-        
+                    
+        if (isset($_GET['tpl'])) {
+            switch ($_GET['tpl']) {
+                case 'modify_category':
+                    $this->modifyCategory(intval($_GET['id']));
+                    break;
+            }
+            return;
+        }
         if(isset($_POST['submitModifyCategory'])) {
             $objCategory = new CalendarCategory(intval($_POST['id']));
             if($objCategory->save($_POST)) {
