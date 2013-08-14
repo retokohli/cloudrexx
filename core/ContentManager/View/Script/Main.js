@@ -838,8 +838,8 @@ cx.cm = function(target) {
             var fields = [
                 "page_title",
                 "page_metatitle",
-                "page_metadesc",
-                "page_metakeys",
+                //"page_metadesc",
+                //"page_metakeys",
                 "page_slug"
             ];
             jQuery.each(fields, function(index, el) {
