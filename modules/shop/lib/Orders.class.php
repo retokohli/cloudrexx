@@ -570,7 +570,6 @@ if (!$limit) {
         // so that Order date < $end_date!
         $end_date = date(ASCMS_DATE_FORMAT_INTERNATIONAL_DATETIME,
             mktime(0, 0, 0, $end_month+1, 1, $end_year));
-
         $selectedStat = (isset($_REQUEST['selectstats'])
                 ? intval($_REQUEST['selectstats']) : 0);
         if ($selectedStat == 2) {
@@ -768,7 +767,7 @@ if (!$limit) {
             }
         }
 
-        $query = "
+        $query_currency = "
             SELECT currency_id, sum,
                    DATE_FORMAT(date_time, '%m') AS month,
                    DATE_FORMAT(date_time, '%Y') AS year
@@ -776,19 +775,19 @@ if (!$limit) {
              WHERE status=".Order::STATUS_CONFIRMED."
                 OR status=".Order::STATUS_COMPLETED."
              ORDER BY date_time DESC";
-        $objResult = $objDatabase->Execute($query);
+        $objResult = $objDatabase->Execute($query_currency);
         if (!$objResult) {
             return Order::errorHandler();
         }
         $totalSoldProducts = 0;
-        $query = "
+        $query_totalproducts = "
             SELECT sum(A.quantity) AS shopTotalSoldProducts
               FROM ".DBPREFIX."module_shop".MODULE_INDEX."_order_items AS A,
                    ".DBPREFIX."module_shop".MODULE_INDEX."_orders AS B
              WHERE A.order_id=B.id
                AND (   B.status=".Order::STATUS_CONFIRMED."
                     OR B.status=".Order::STATUS_COMPLETED.")";
-        $objResult = $objDatabase->SelectLimit($query, 1);
+        $objResult = $objDatabase->SelectLimit($query_totalproducts, 1);
         if ($objResult) {
             if (!$objResult->EOF) {
                 $totalSoldProducts = $objResult->fields['shopTotalSoldProducts'];
@@ -800,6 +799,7 @@ if (!$limit) {
         $bestMonthSum = 0;
         $bestMonthDate = '';
         $arrShopMonthSum = array();
+        $objResult = $objDatabase->Execute($query);
         while (!$objResult->EOF) {
             $orderSum = Currency::getDefaultCurrencyPrice($objResult->fields['sum']);
             if (!isset($arrShopMonthSum[$objResult->fields['year']][$objResult->fields['month']])) {
