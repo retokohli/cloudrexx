@@ -218,6 +218,13 @@ class cmsSession
 
     function cmsSessionWrite( $aKey, $aVal )
     {
+        // We must deactivate the debugging of the database here,
+        // because at this stage the database driver used in DBG
+        // has been deconstructed already. So logging an SQL
+        // statement at this point will most likely throw a
+        // FATAL error.
+        \DBG::deactivate(DBG_DB);
+
         // Don't write session data to databse.
         // This is used to prevent an unwanted session overwrite by a continuous
         // script request (javascript) that only checks for a certain event to happen.
