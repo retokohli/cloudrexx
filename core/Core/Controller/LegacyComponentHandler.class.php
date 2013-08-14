@@ -432,7 +432,7 @@ class LegacyComponentHandler {
                                 $calHeadlinesObj, $calHeadlines, $cl;
 
                         // Get Calendar Events
-                        $modulespath = ASCMS_MODULE_PATH.'/calendar/headlines.class.php';
+                        $modulespath = ASCMS_MODULE_PATH.'/calendar/lib/headlines.class.php';
                         $eventsPlaceholder = '{EVENTS_FILE}';
                         if (   MODULE_INDEX < 2
                             && $_CONFIG['calendarheadlines']
