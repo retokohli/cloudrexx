@@ -190,12 +190,12 @@ class PageEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         $database = \Env::get('db');
         $result = $database->Execute("SELECT MAX(CONVERT(`object_id`, UNSIGNED)) AS `oldAutoIncrement`
                                         FROM `" . DBPREFIX . "log_entry`
-                                        WHERE `object_class` = 'Cx\\\\Core\\\\ContentManager\\\\Model\\\\Doctrine\\\\Entity\\\\Page'");
+                                        WHERE `object_class` = 'Cx\\\\Core\\\\ContentManager\\\\Model\\\\Entity\\\\Page'");
         if ($result === false) return;
         $oldAutoIncrement = $result->fields['oldAutoIncrement'] + 1;
         $result = $database->Execute("SHOW TABLE STATUS LIKE '" . DBPREFIX . "content_page'");
         if ($result !== false && $result->fields['Auto_increment'] < $oldAutoIncrement) {
-            $database->Execute("ALTER TABLE `" . DBPREFIX . "content_page` AUTO_INCREMENT = '" . contrexx_raw2db($oldAutoIncrement) . "'");
+            $result = $database->Execute("ALTER TABLE `" . DBPREFIX . "content_page` AUTO_INCREMENT = " . contrexx_raw2db($oldAutoIncrement));
         }
     }
 
