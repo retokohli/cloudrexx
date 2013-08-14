@@ -178,7 +178,7 @@ class AliasAdmin extends aliasLib
                         if ($targetPage) {
                             $target = $targetPage->getTitle();
                             $targetURL = $this->_getURL($targetPage);
-                            $target_title = $target . " (" . $targetURL . ")";
+                            $target_title = $target . " (" . $targetURL . $page->getTargetQueryString() . ")";
                         }
                     } else {
                         $target = $page->getTarget();
@@ -279,8 +279,15 @@ class AliasAdmin extends aliasLib
                 if (count($aliases) || count($newaliases)) {
                     $error = false;
 
-                    if (($aliasId === 0) && ($newtype == 'local')) {
-                        $newtarget = substr($newtarget, 0, -2) . '_' . FRONTEND_LANG_ID . ']]';
+                    if ($newtype == 'local') {
+                        $placeholder = \Cx\Core\Routing\NodePlaceholder::fromPlaceholder($newtarget);
+                        // when creating a new alias
+                        //if (($aliasId === 0) && !$placeholder->hasLang()) {
+                            // make sure language is specified in placeholder
+                            $placeholder->setLang(FRONTEND_LANG_ID);
+                        //}
+                        // force usage of node ID
+                        $newtarget = $placeholder->getPlaceholder(true);
                     }
 
                     foreach ($aliases as $id=>$slug) {
