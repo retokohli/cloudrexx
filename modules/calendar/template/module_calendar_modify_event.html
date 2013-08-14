@@ -415,7 +415,7 @@
         </tr>
         <tr class="row1">
             <td width="180" valign="top">{TXT_CALENDAR_EVENT_SHOW_IN}</td>
-            <td colspan="2">
+            <td>
                 <!-- BEGIN eventShowIn -->
                 <label><input name="showIn[]" id="showIn_{CALENDAR_EVENT_LANG_ID}" value="{CALENDAR_EVENT_LANG_ID}" type="checkbox" {CALENDAR_EVENT_LANG_CHECKED} onchange="langCheck();" />&nbsp;{TXT_CALENDAR_EVENT_LANG_NAME}&nbsp;&nbsp;&nbsp;</label>
                 <!-- END eventShowIn -->
@@ -440,14 +440,14 @@
             </tr>            
             <tr class="row2">
                 <td width="180"  valign="top">{TXT_CALENDAR_EVENT_START} <font color="#ff0000">*</font></td>
-                <td colspan="2">
+                <td >
                     <input type="text"  name="startDate" class="startDate" id="{CALENDAR_EVENT_START_DATE_INPUT_ID}" value="{CALENDAR_EVENT_START_DATE}" style="width: 250px;" />
                     &nbsp;<label><input type="checkbox" class="all_day" name="all_day" {CALENDAR_EVENT_ALL_DAY} value="1" /> {TXT_CALENDAR_EVENT_ALL_DAY} </label>
                 </td>
             </tr>
             <tr class="row1">
                 <td valign="top">{TXT_CALENDAR_EVENT_END} <font color="#ff0000">*</font></td>
-                <td colspan="2">
+                <td>
                     <input type="text" name="endDate" class="endDate" id="{CALENDAR_EVENT_END_DATE_INPUT_ID}" value="{CALENDAR_EVENT_END_DATE}" style="width: 250px;" />
                 </td>
             </tr>
@@ -664,7 +664,7 @@
             </tr>
             <tr class="row1">
                 <td style="border-top: 1px solid #DDE4FF;" width="180"  valign="top">{TXT_CALENDAR_EVENT_ACCESS}</td>
-                <td style="border-top: 1px solid #DDE4FF;">
+                <td style="border-top: 1px solid #DDE4FF;" colspan="2">
                     <select name="access" style="width: 252px">
                         <!-- BEGIN eventAccess -->
                         <option value="{CALENDAR_EVENT_ACCESS}" {CALENDAR_EVENT_ACCESS_SELECT}>{CALENDAR_EVENT_ACCESS_NAME}</option>
@@ -674,7 +674,7 @@
             </tr> 
             <tr class="row2">
                 <td width="180"  valign="top">{TXT_CALENDAR_EVENT_PRIORITY}</td>
-                <td>
+                <td colspan="2">
                     <select name="priority" style="width: 252px">
                         <!-- BEGIN eventPriority -->
                         <option value="{CALENDAR_EVENT_PRIORITY}" {CALENDAR_EVENT_PRIORITY_SELECT}>{CALENDAR_EVENT_PRIORITY_NAME}</option>
@@ -684,19 +684,19 @@
             </tr>
             <tr class="row2">
                 <td width="180" valign="top">{TXT_CALENDAR_EVENT_LINK}</td>
-                <td>
+                <td colspan="2">
                     <input type="text" name="link" value="{CALENDAR_EVENT_LINK}" id="eventLink" style="width: 250px;" />
                 </td>
             </tr>             
             <tr class="row1">
                 <td width="180" valign="top">{TXT_CALENDAR_EVENT_PICTURE}</td>
-                <td>
+                <td colspan="2">
                     <input type="text" name="picture" value="{CALENDAR_EVENT_PICTURE}" id="eventPicture" style="width: 250px;" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('eventPicture', 'image')" />
                 </td>
             </tr>
             <tr class="row2">
                 <td valign="top">{TXT_CALENDAR_EVENT_ATTACHMENT}</td>
-                <td>
+                <td colspan="2">
                     <input type="text" name="attachment" value="{CALENDAR_EVENT_ATTACHMENT}" id="eventAttachment" style="width: 250px;" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('eventAttachment', 'image')" />
                 </td>
             </tr>                             
