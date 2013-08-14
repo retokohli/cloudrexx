@@ -221,8 +221,6 @@ class crmInterface extends CrmLibrary
                 ++$importedLines;
                 $line = $objCsv->NextLine();
             }
-            $json['data']['contactHeader'] = array_map('utf8_encode', $json['data']['contactHeader']);
-            $json['data']['contactFields'] = array_map('utf8_encode', $json['data']['contactFields']);
             $json['data']       = base64_encode(json_encode($json['data']));
             $json['contactData']= base64_encode(json_encode($json['contactData']));
             $json['totalRows']  = $importedLines - 1;
@@ -261,7 +259,6 @@ class crmInterface extends CrmLibrary
             ++$importedLines;
             $line = $objCsv->NextLine();
         }
-        $json['contactData'][$currentRow] = array_map('utf8_encode', $json['contactData'][$currentRow]);
         $json['contactData']= base64_encode(json_encode($json['contactData']));
         echo json_encode($json);
         exit();
@@ -715,7 +712,6 @@ class crmInterface extends CrmLibrary
                 session_start();
                 $_SESSION[$fileName]['totalRows'] = $totalLines;
                 if (!$first || !$csvIgnoreFirst) { 
-                    $line = array_map('utf8_encode', $line); 
                     $this->contact->clean();
                     $this->contact->contactType = !empty($line[$firstname]) || !empty($line[$lastname])
                                                  ? 2
