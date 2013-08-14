@@ -45,60 +45,50 @@ class Page extends \Cx\Model\Base\EntityBase
     /**
      * Prefex used in placeholders for Node-Urls:
      * [[ NODE_(<node_id>|<module>[_<cmd>])[_<lang_id>] ]]
+     * @deprecated Use NodePlaceholder::... directly instead
      */
-    const PLACEHOLDER_PREFIX = 'NODE_';
+    const PLACEHOLDER_PREFIX = \Cx\Core\Routing\NodePlaceholder::PLACEHOLDER_PREFIX;
 
     /**
      * Regular expression to match a node-url in placeholder notation
+     * @deprecated Use NodePlaceholder::... directly instead
      */
-    const NODE_URL_PCRE = '(
-        # placeholder prefix
-        NODE_
-        (?:
-            (?:
-                # REFERENCE BY NODE-ID
-                # node-id
-                (\d+)
-            |   # REFERENCE BY MODULE & CMD
-                # module name
-                ([A-Z1-9]+)
-                # module cmd (optional)
-                (?U)(?:_([-\w]+))?
-            )
-            # Language-id (optional)
-            (?-U)(?:_(\d+))?
-        )
-     )';
+    const NODE_URL_PCRE = \Cx\Core\Routing\NodePlaceholder::NODE_URL_PCRE;
 
     /**
      * Node Url regular expression back reference
      * index for the whole placeholder
+     * @deprecated Use NodePlaceholder::... directly instead
      */
-    const NODE_URL_PLACEHOLDER = 1;
+    const NODE_URL_PLACEHOLDER = \Cx\Core\Routing\NodePlaceholder::NODE_URL_PLACEHOLDER;
 
     /**
      * Node Url regular expression back reference
      * index for the node id
+     * @deprecated Use NodePlaceholder::... directly instead
      */
-    const NODE_URL_NODE_ID = 2;
+    const NODE_URL_NODE_ID = \Cx\Core\Routing\NodePlaceholder::NODE_URL_NODE_ID;
 
     /**
      * Node Url regular expression back reference
      * index for the module
+     * @deprecated Use NodePlaceholder::... directly instead
      */
-    const NODE_URL_MODULE = 3;
+    const NODE_URL_MODULE = \Cx\Core\Routing\NodePlaceholder::NODE_URL_MODULE;
 
     /**
      * Node Url regular expression back reference
      * index for the module cmd
+     * @deprecated Use NodePlaceholder::... directly instead
      */
-    const NODE_URL_CMD = 4;
+    const NODE_URL_CMD = \Cx\Core\Routing\NodePlaceholder::NODE_URL_CMD;
 
     /**
      * Node Url regular expression back reference
      * index for the language id
+     * @deprecated Use NodePlaceholder::... directly instead
      */
-    const NODE_URL_LANG_ID = 5;
+    const NODE_URL_LANG_ID = \Cx\Core\Routing\NodePlaceholder::NODE_URL_LANG_ID;
     
     /**
      * @var integer $id
