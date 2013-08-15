@@ -809,12 +809,108 @@ class User extends User_Profile
 
     /**
      * Returns a User object according to the given criteria
-     * @param   array   $filter
-     * @param   string  $search
-     * @param   array   $arrSort
-     * @param   array   $arrAttributes
-     * @param   integer $limit
-     * @param   integer $offset
+     *
+     * @param   mixed   $filter An integer or array defining a filter to apply on the lookup.
+     *                          $filter can be an integer, where its value is treated as the ID of a user account.
+     *                          This will cause the method to return the user account specified by that ID.
+     *                          Addtitionally, $filter can be an array specifing a complex set
+     *                          of <em>filter conditions</em>. Each key-value pair represents a <em>user-account's attribute</em>
+     *                          and its <em>filter condition</em> to apply to. Depending on the attribute's type,
+     *                          the filter condition must be either an integer or a string. It is also
+     *                          possible to define a <em>complex filter condition</em>. This is done by defining an array
+     *                          containing a list of conditions to apply to. Each key-value pair represents the
+     *                          <em>condition operator</em> and the <em>condition expression</em> of the condition.
+     *                          Allowed <em>condition operators</em> are for <em>user-account attributes</em> of type
+     *                          <em>Integer</em>: =, <, > and for attributes of type <em>String</em>: !=, <, >, REGEXP
+     * <h5>Fetch user with ID 3</h5>
+     * <pre class="brush: php">$objUser = \User::getUsers(3);</pre>
+     * <br>
+     * <h5>Fetch all users who's firstname contains the string 'nicole'</h5>
+     * <pre class="brush: php">
+     * $filter = array(
+     *      'firstname' => '%nicole%',
+     * );
+     * $objUser = \User::getUsers($filter);
+     * </pre>
+     * <br>
+     * <h5>Fetch all users whose lastname starts with one of the following letters (case insensitive): a, b, c, e</h5>
+     * <pre class="brush: php">
+     * $filter = array(
+     *      'lastname' => array(
+     *          'a%',
+     *          'b%',
+     *          'c%',
+     *          'e%',
+     *      )
+     * );
+     * $objUser = \User::getUsers($filter);
+     * </pre>
+     * <br>
+     * <h5>This does the same as the preview example but is written in a different notation</h5>
+     * <pre class="brush: php">
+     * $filter = array(
+     *      'lastname' => array(
+     * array(
+     *              '>'  => 'a',
+     *              '<'  => 'e%'
+     *              '!=' => 'd%'
+     *          ),
+     *          'LIKE'   => 'e%'
+     *      )
+     * );
+     * $objUser = \User::getUsers($filter);
+     * </pre>
+     * <br>
+     * <h5>Fetch all active users that have been signed in within the last hour</h5>
+     * <pre class="brush: php">
+     * array(
+     *      'is_active' => 1,
+     *      'last_auth' => array(
+     *          '>' => time()-3600
+     *      )
+     * );
+     * $objUser = \User::getUsers($filter);
+     * </pre>
+     * @param   string  $search        The optional parameter $search can be used to do a fulltext search on the user accounts.
+     *                                 $search is an array whereas its key-value pairs represent a user-account's attribute
+     *                                 and its search pattern to apply to. If multiple search conditions are set, only one
+     *                                 of the search conditions must match on a user to get included in the result.
+     * <h5>Fetch users that contain the literal <em>nicole</em> in their <em>firstname</em> or <em>smith</em> in their <em>lastname</em></h5>
+     * <pre class="brush: php">
+     * array(
+     *      'firstname' => 'nicole',
+     *      'lastname'  => 'smith',
+     * );
+     * $objUser = \User::getUsers(null, $search);
+     * </pre>
+     *
+     * @param   array   $arrSort       Normally, the users are ordered by their ID. Optionally the order can be specified by
+     *                                 an array. Whereas each key-value pair represents the user-account's attribute and its
+     *                                 order direction (asc/desc) to order the result by.
+     * <h5>Order the users first by their active-status and then by their firstname</h5>
+     * <pre class="brush: php">
+     * $arrSort = array(
+     *     'is_active' => 'desc',
+     *     'firstname' => 'asc',
+     * );
+     * $objUser = \User::getUsers(null, null, $arrSort);
+     * </pre>
+     * @param   array   $arrAttributes Normally, all user-account data is loaded from the database. The optional parameter
+     *                                 $arrAttributes can be used to limit the data that is loaded from the database by explicitly
+     *                                 specifying which user-account attributes should be loaded from the database.
+     *                                 $arrAttributes is an array containing a list of user-account attributes to be loaded.
+     * <h5>Load all user-account data (default)</h5>
+     * <pre class="brush: php">
+     * $objUser = \User::getUsers();
+     * </pre>
+     * <br>
+     * <h5>Load only user-account data <em>firstname</em> and <em>lastname</em> from database</h5>
+     * <pre class="brush: php">
+     * $arrAttributes = array('firstname', 'lastname')
+     * $objUser = \User::getUsers(null, null, null, $arrAttributes);
+     * </pre>
+     * @param   integer $limit The maximal number of Users to load from the database. If not set, all matched users will be loaded.
+     * @param   integer $offset The optional parameter $offset can be used to specify the number of found records to skip in the result set.
      * @return  User
      */
     public function getUsers(
