@@ -1181,8 +1181,7 @@ HTMLCODE;
 };
 \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'filesharing', 'cmd' => ''), $search, $callback, array('content'), '3.1.0');
 
-if(   !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.4')
-    && $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
+if($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
     try {
         /************************************************
         * EXTENSION:    Categories as NestedSet         *
@@ -1262,6 +1261,20 @@ if(   !$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.4')
 
         // insert id of last added category
         \Cx\Lib\UpdateUtil::sql('INSERT INTO `'.DBPREFIX.'module_news_categories_catid` (`id`) VALUES ('.$nestedSetRootId.')');
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+}
+
+/***************************************
+ *
+ * STRICT_TRANS_TABLES ISSUE FIX FOR PROFILE TABLE
+ *
+ **************************************/
+if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
+    try {
+        \Cx\Lib\UpdateUtil::sql("ALTER TABLE `".DBPREFIX."access_user_profile` CHANGE `interests` `interests` TEXT NULL");
+        \Cx\Lib\UpdateUtil::sql("ALTER TABLE `".DBPREFIX."access_user_profile` CHANGE `signature` `signature` TEXT NULL");
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }

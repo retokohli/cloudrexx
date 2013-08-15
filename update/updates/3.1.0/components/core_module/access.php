@@ -875,7 +875,21 @@ function _accessUpdate()
         }
     }
 
-	/************************************************
+    /***************************************
+     *
+     * STRICT_TRANS_TABLES ISSUE FIX FOR PROFILE TABLE
+     *
+     **************************************/
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
+        try {
+            \Cx\Lib\UpdateUtil::sql("ALTER TABLE `".DBPREFIX."access_user_profile` CHANGE `interests` `interests` TEXT NULL");
+            \Cx\Lib\UpdateUtil::sql("ALTER TABLE `".DBPREFIX."access_user_profile` CHANGE `signature` `signature` TEXT NULL");
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+    }
+
+    /************************************************
 	* BUGFIX:	Set write access to the upload dir  *
 	************************************************/
     // This is obsolete due to the new \Cx\Lib\FileSystem
