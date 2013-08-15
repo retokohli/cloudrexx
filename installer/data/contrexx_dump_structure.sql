@@ -133,8 +133,8 @@ CREATE TABLE `contrexx_access_user_profile` (
   `birthday` varchar(11) default NULL,
   `website` varchar(255) NOT NULL default '',
   `profession` varchar(150) NOT NULL default '',
-  `interests` text NOT NULL,
-  `signature` text NOT NULL,
+  `interests` text,
+  `signature` text,
   `picture` varchar(255) NOT NULL default '',
   PRIMARY KEY  (`user_id`),
   KEY `profile` (`firstname`(100),`lastname`(100),`company`(50))
