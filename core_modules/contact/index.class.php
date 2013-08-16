@@ -1262,6 +1262,9 @@ class Contact extends ContactLib
             $senderName = $_CONFIG['coreGlobalPageTitle'];
         }
 
+        // a recipient mail address which has been picked by sender
+        $chosenMailRecipient = null;
+
         // fill the html and plaintext body with the submitted form data
         foreach ($arrFormData['fields'] as $fieldId => $arrField) {
             if($fieldId == 'unique_id') //generated for uploader. no interesting mail content.
@@ -1305,6 +1308,7 @@ class Contact extends ContactLib
 // TODO: check for XSS
                     $plaintextValue = $arrRecipients[$arrFormData['data'][$fieldId]]['lang'][FRONTEND_LANG_ID];
                     $htmlValue = $plaintextValue;
+                    $chosenMailRecipient = $arrRecipients[$arrFormData['data'][$fieldId]]['email'];
                     break;
 
                 case 'textarea':
@@ -1354,7 +1358,7 @@ class Contact extends ContactLib
             $tabCount = $maxlength - strlen($fieldLabel);
             $tabs     = ($tabCount == 0) ? 1 : $tabCount +1;
 
-// TODO: what is this all about?
+// TODO: what is this all about? - $value is undefined
             if($arrFormData['fields'][$fieldId]['type'] == 'recipient'){
                 $value  = $arrRecipients[$value]['lang'][FRONTEND_LANG_ID];
             }
@@ -1432,15 +1436,11 @@ class Contact extends ContactLib
                 }
             }
 
-// TODO: review recipient stuff
-            $arrRecipients = $this->getRecipients(intval($_GET['cmd']));
-            if (!empty($arrFormData['data']['contactFormField_recipient'])) {
-                foreach (explode(',', $arrRecipients[intval($arrFormData['data']['contactFormField_recipient'])]['email']) as $sendTo) {
-                     if (!empty($sendTo)) {
-                        $objMail->AddAddress($sendTo);
-                        $objMail->Send();
-                        $objMail->ClearAddresses();
-                    }
+            if ($chosenMailRecipient !== null) {
+                if (!empty($chosenMailRecipient)) {
+                    $objMail->AddAddress($chosenMailRecipient);
+                    $objMail->Send();
+                    $objMail->ClearAddresses();
                 }
             } else {
                 foreach ($arrFormData['emails'] as $sendTo) {
