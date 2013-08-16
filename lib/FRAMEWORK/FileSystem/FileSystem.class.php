@@ -78,6 +78,12 @@ class FileSystem
     const ERROR_INVALID_FILETYPE      = 201;
     const ERROR_FILESIZE_TOO_BIG      = 202;
     const ERROR_MISSING_ARGUMENT      = 301;
+
+    /**
+     * Define some constants which are relevant for the filename
+     */
+    const MAX_FILENAME_LENGTH = 255;
+    const DOT_LENGTH = 1;
     // Add more as needed.  Don't forget to add core language entries, like
     // $_ARRAYLANG['TXT_CORE_FILE_ERROR_#'] = "Oh my, an error!";
     // where # is the error number.
@@ -358,12 +364,12 @@ class FileSystem
         }
         $string = str_replace('__', '_', $string);
 
-        if (strlen($string) > 40) {
+        if (strlen($string) > self::MAX_FILENAME_LENGTH) {
             $info       = pathinfo($string);
             $stringExt  = $info['extension'];
 
-            $stringName = substr($string, 0, strlen($string) - (strlen($stringExt) + 1));
-            $stringName = substr($stringName, 0, 40 - (strlen($stringExt) + 1));
+            $stringName = substr($string, 0, strlen($string) - (strlen($stringExt) + self::DOT_LENGTH));
+            $stringName = substr($stringName, 0, self::MAX_FILENAME_LENGTH - (strlen($stringExt) + self::DOT_LENGTH));
             $string     = $stringName . '.' . $stringExt;
         }
 
