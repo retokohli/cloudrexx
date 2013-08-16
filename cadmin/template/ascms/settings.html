@@ -56,6 +56,13 @@ function toggleDebuggingFlags(show) {
                     <input type="text" name="setvalue[53]" value="{SETTINGS_DOMAIN_URL}" size="70" maxlength="250" />
                     <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_DOMAIN_URL_HELP}</span>
             </tr>
+            <tr class="row1">
+                <td>{TXT_SETTINGS_FORCE_DOMAIN_URL}&nbsp;</td>
+                <td>
+                    <input type="checkbox" name="setvalue[59]" value="on" {SETTINGS_FORCE_DOMAIN_URL_ON}/>&nbsp;
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SETTINGS_FORCE_DOMAIN_URL_HELP}</span>
+                </td>
+            </tr>
             <tr class="row2">
                 <td>{TXT_CORE_LIST_PROTECTED_PAGES}&nbsp;</td>
                 <td>
@@ -142,8 +149,8 @@ function toggleDebuggingFlags(show) {
             <tr class="row1">
                 <td>{TXT_SETTINGS_PROTOCOL_HTTPS_BACKEND}&nbsp;</td>
                 <td>
-                    <input type="radio" name="setvalue[58]" id="setvalue_58_off" value="off" {SETTINGS_PROTOCOL_HTTPS_BACKEND_OFF} /><label for="setvalue_58_off">http</label>&nbsp;
-                    <input type="radio" name="setvalue[58]" id="setvalue_58_on" value="on" {SETTINGS_PROTOCOL_HTTPS_BACKEND_ON} /><label for="setvalue_58_on">https</label>&nbsp;
+                    <input type="radio" name="setvalue[58]" id="setvalue_58_off" value="off" {SETTINGS_PROTOCOL_HTTPS_BACKEND_OFF} /><label for="setvalue_58_off">HTTP</label>&nbsp;
+                    <input type="radio" name="setvalue[58]" id="setvalue_58_on" value="on" {SETTINGS_PROTOCOL_HTTPS_BACKEND_ON} /><label for="setvalue_58_on">HTTPS</label>&nbsp;
                     <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SETTINGS_PROTOCOL_HTTPS_HELP}</span>
                 </td>
             </tr>

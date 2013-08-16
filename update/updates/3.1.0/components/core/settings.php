@@ -152,6 +152,11 @@ function _updateSettings()
             'setvalue'  => 'off',
             'setmodule' => 1
         ),
+        59 => array(
+            'setname'   => 'forceDomainUrl',
+            'setvalue'  => 'off',
+            'setmodule' => 1
+        ),
 		60	=> array(
 			'setname'	=> 'forumHomeContent',
 			'setvalue'	=> '0',

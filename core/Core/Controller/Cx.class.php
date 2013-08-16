@@ -432,6 +432,7 @@ namespace Cx\Core\Core\Controller {
             $this->checkSystemState();
             $this->tryToEnableApc();
             $this->tryToSetMemoryLimit();
+            $this->checkDomainUrl();
             $this->adjustProtocol();
         }
 
@@ -492,6 +493,24 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
+         * Check whether the requested url is correct or not
+         * there is a settings option in the general settings section of contrexx which allows
+         * to force the domain url which is provided
+         */
+        protected function checkDomainUrl() {
+            global $_CONFIG;
+            if ($_CONFIG['forceDomainUrl'] == 'off') {
+                return;
+            }
+            if ($_SERVER['HTTP_HOST'] != $_CONFIG['domainUrl']) {
+                $protocol = empty($_SERVER['HTTPS']) ? 'http' : 'https';
+                \header($_SERVER['SERVER_PROTOCOL'] . ' 301 Moved Permanently');
+                \header('Location: ' . $protocol . '://' . $_CONFIG['domainUrl'] . $_SERVER['REQUEST_URI']);
+                exit;
+            }
+        }
+
+        /**
          * Adjust the protocol to https if https is activated for the current area (frontend|backend)
          */
         protected function adjustProtocol() {
@@ -515,6 +534,7 @@ namespace Cx\Core\Core\Controller {
             if ($newProtocol) {
                 \header($_SERVER['SERVER_PROTOCOL'] . ' 301 Moved Permanently');
                 \header('Location: ' . $newProtocol . '://' . $_CONFIG['domainUrl'] . $_SERVER['REQUEST_URI']);
+                exit;
             }
         }
 

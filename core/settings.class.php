@@ -340,6 +340,12 @@ class settingsManager
             'SETTINGS_PROTOCOL_HTTPS_FRONTEND_ON'       => ($arrSettings['protocolHttpsFrontend'] == 'on') ? 'checked="checked"' : '',
             'SETTINGS_PROTOCOL_HTTPS_FRONTEND_OFF'      => ($arrSettings['protocolHttpsFrontend'] == 'off') ? 'checked="checked"' : ''
         ));
+
+        $objTemplate->setVariable(array(
+            'TXT_SETTINGS_FORCE_DOMAIN_URL_HELP'        => $_CORELANG['TXT_SETTINGS_FORCE_DOMAIN_URL_HELP'],
+            'TXT_SETTINGS_FORCE_DOMAIN_URL'             => $_CORELANG['TXT_SETTINGS_FORCE_DOMAIN_URL'],
+            'SETTINGS_FORCE_DOMAIN_URL_ON'              => ($arrSettings['forceDomainUrl'] == 'on') ? 'checked="checked"' : '',
+        ));
         
         $this->setDebuggingVariables($objTemplate);
     }
@@ -408,11 +414,15 @@ class settingsManager
      */
     function updateSettings()
     {
-        global $objDatabase, $_CORELANG, $_CONFIG;
+        global $objDatabase, $_CORELANG, $_CONFIG, $objTemplate;
 
         if (isset($_POST['setvalue'][87]) && !in_array((!empty($_POST['setvalue'][87]) ? $_POST['setvalue'][87] : ''), timezone_identifiers_list())) {
             $this->strErrMessage[] = $_CORELANG['TXT_CORE_TIMEZONE_INVALID'];
             return;
+        }
+
+        if (!isset($_POST['setvalue'][59])) {
+            $_POST['setvalue'][59] = 'off';
         }
 
         foreach ($_POST['setvalue'] as $id => $value) {
@@ -453,6 +463,36 @@ class settingsManager
                 case 58:
                     if ($_CONFIG['protocolHttpsBackend'] != $value) {
                         $checkHttps = true;
+                    }
+                    break;
+                case 59:
+                    if ($_CONFIG['forceDomainUrl'] != $value) {
+                        try {
+                            $useHttps = $_CONFIG['protocolHttpsFrontend'];
+                            $protocol = 'http';
+                            if ($useHttps == 'on') {
+                                $protocol = 'https';
+                            }
+                            // create request to port 443 (https), to check whether the request works or not
+                            $request     = new \HTTP_Request2($protocol . '://' . $_CONFIG['domainUrl'] . ASCMS_INSTANCE_OFFSET);
+
+                            // ignore ssl issues
+                            $request->setConfig(array(
+                                'ssl_verify_peer' => false,
+                            ));
+
+                            // send the request
+                            $objResponse = $request->send();
+
+                            // get the status code from the request
+                            $status = $objResponse->getStatus();
+                            if (in_array($status, array(500))) {
+                                $forceDomainUrlNotPossible = true;
+                            }
+                        } catch (\HTTP_Request2_Exception $e) {
+                            $forceDomainUrlNotPossible = true;
+                        }
+                        $value = ($value == 'on' && !isset($forceDomainUrlNotPossible)) ? 'on' : 'off';
                     }
                     break;
             }
