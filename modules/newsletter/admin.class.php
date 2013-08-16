@@ -5507,7 +5507,7 @@ function MultiAction() {
         $ReturnVar = '<select name="'.$name.'"'.(!empty($attrs) ? ' '.$attrs : '').'>
         <option value="selectcategory">'.$_ARRAYLANG['TXT_NEWSLETTER_SELECT_CATEGORY'].'</option>
         <option value="">'.$_ARRAYLANG['TXT_NEWSLETTER_ALL'].'</option>';
-        $queryCS         = "SELECT id, name FROM ".DBPREFIX."module_newsletter_category";
+        $queryCS         = "SELECT id, name FROM ".DBPREFIX."module_newsletter_category ORDER BY name";
         $objResultCS     = $objDatabase->Execute($queryCS);
         if ($objResultCS !== false) {
             $CategorysFounded = 1;
