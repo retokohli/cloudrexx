@@ -499,7 +499,7 @@ namespace Cx\Core\Core\Controller {
          */
         protected function checkDomainUrl() {
             global $_CONFIG;
-            if ($_CONFIG['forceDomainUrl'] == 'off') {
+            if (!isset($_CONFIG['forceDomainUrl']) || $_CONFIG['forceDomainUrl'] == 'off') {
                 return;
             }
             if ($_SERVER['HTTP_HOST'] != $_CONFIG['domainUrl']) {
