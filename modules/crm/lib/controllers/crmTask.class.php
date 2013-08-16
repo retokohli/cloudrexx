@@ -213,7 +213,7 @@ class crmTask extends CrmLibrary
             $objtpl->parse('sort_fields');
         }
 
-        $sortIcons = array('../images/modules/crm/Actions-view-sort-ascending-icon.png', '../images/modules/crm/Actions-view-sort-descending-icon.png');
+        $sortIcons = array('../modules/crm/view/media/Actions-view-sort-ascending-icon.png', '../modules/crm/view/media/Actions-view-sort-descending-icon.png');
         $objtpl->setGlobalVariable(array(
                 'TXT_SEARCH_VALUE'              => contrexx_raw2xhtml($filterTaskTitle),
                 'CRM_TASK_SORT_ORDER'           => $sortOrder,
