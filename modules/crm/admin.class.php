@@ -817,7 +817,7 @@ class CrmManager extends CrmLibrary
                             'CRM_CONTACT_NOTES_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id={$objResult->fields['id']}#notes' title=''>{$_ARRAYLANG['TXT_CRM_COMMENT_TITLE']} ({$notesCount})</a>",
                             'CRM_CONTACT_TASK_COUNT'    => "<a href='./index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id={$objResult->fields['id']}#tasks' title=''>{$_ARRAYLANG['TXT_CRM_TASKS']} ({$tasksCount})</a>",
                             'CRM_CONTACT_DEALS_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id={$objResult->fields['id']}#deals' title=''>{$_ARRAYLANG['TXT_CRM_OPPORTUNITY']} ({$dealsCount})</a>",
-                            'CRM_CONTACT_ADDED_NEW'     => strtotime($today) == strtotime($objResult->fields['added_date']) ? '<img src="../images/modules/crm/new.png" alt="new" />' : '',
+                            'CRM_CONTACT_ADDED_NEW'     => strtotime($today) == strtotime($objResult->fields['added_date']) ? '<img src="../modules/crm/view/media/new.png" alt="new" />' : '',
                             'CRM_ROW_CLASS'             => $row = ($row == "row2") ? "row1" : "row2",
                             'CRM_CONTACT_PROFILE_IMAGE' => !empty($objResult->fields['profile_picture']) ? contrexx_raw2xhtml($objResult->fields['profile_picture'])."_40X40.thumb" : 'profile_company_small.png',
                     ));
@@ -848,7 +848,7 @@ class CrmManager extends CrmLibrary
                             'CRM_CONTACT_NOTES_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id={$objResult->fields['id']}#notes' title=''>{$_ARRAYLANG['TXT_CRM_COMMENT_TITLE']} ({$notesCount})</a>",
                             'CRM_CONTACT_TASK_COUNT'    => "<a href='./index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id={$objResult->fields['id']}#tasks' title=''>{$_ARRAYLANG['TXT_CRM_TASKS']} ({$tasksCount})</a>",
                             'CRM_CONTACT_DEALS_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id={$objResult->fields['id']}#deals' title=''>{$_ARRAYLANG['TXT_CRM_OPPORTUNITY']} ({$dealsCount})</a>",
-                            'CRM_CONTACT_ADDED_NEW'     => strtotime($today) == strtotime($objResult->fields['added_date']) ? '<img src="../images/modules/crm/new.png" alt="new" />' : '',
+                            'CRM_CONTACT_ADDED_NEW'     => strtotime($today) == strtotime($objResult->fields['added_date']) ? '<img src="../modules/crm/view/media/new.png" alt="new" />' : '',
                             'CRM_ROW_CLASS'             => $row = ($row == "row2") ? "row1" : "row2",
                             'CRM_CONTACT_PROFILE_IMAGE' => !empty($objResult->fields['profile_picture']) ? contrexx_raw2xhtml($objResult->fields['profile_picture'])."_40X40.thumb" : 'profile_person_small.png',
                     ));
