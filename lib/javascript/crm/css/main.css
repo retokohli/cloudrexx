@@ -151,29 +151,29 @@ table#mapCSVColumn tbody tr td.not_match {background-color: whiteSmoke;}
     background: url('../../../../cadmin/images/icons/appointment.png') no-repeat 10px 7px  transparent;
 }
 .taskTypeItem {
-    background-image: url('../../../../images/modules/crm/task_default.png');
+    background-image: url('../../../../modules/crm/view/media/task_default.png');
     background-repeat: no-repeat;
     background-position: 2px 3px;
     background-color: #fff;
 }
 .task_type_overview {
-    background-image: url('../../../../images/modules/crm/task_default.png');
+    background-image: url('../../../../modules/crm/view/media/task_default.png');
     background-repeat: no-repeat;
     background-position: 2px 3px;
     background-color: transparent;
     padding-left: 30px;
 }
-.taskTypeItem_8 {background-image: url('../../../../images/modules/crm/task_call.png');}
-.taskTypeItem_9 {background-image: url('../../../../images/modules/crm/task_demo.png');}
-.taskTypeItem_10 {background-image: url('../../../../images/modules/crm/task_email.png');}
-.taskTypeItem_11 {background-image: url('../../../../images/modules/crm/task_fax.png');}
-.taskTypeItem_12 {background-image: url('../../../../images/modules/crm/task_follow_up.png');}
-.taskTypeItem_13 {background-image: url('../../../../images/modules/crm/task_lunch.png');}
-.taskTypeItem_14 {background-image: url('../../../../images/modules/crm/task_meeting.png');}
-.taskTypeItem_15 {background-image: url('../../../../images/modules/crm/task_default.png');}
-.taskTypeItem_16 {background-image: url('../../../../images/modules/crm/task_ship.png');}
-.taskTypeItem_17 {background-image: url('../../../../images/modules/crm/task_social_networks.png');}
-.taskTypeItem_18 {background-image: url('../../../../images/modules/crm/task_thank_you.png');}
+.taskTypeItem_8 {background-image: url('../../../../modules/crm/view/media/task_call.png');}
+.taskTypeItem_9 {background-image: url('../../../../modules/crm/view/media/task_demo.png');}
+.taskTypeItem_10 {background-image: url('../../../../modules/crm/view/media/task_email.png');}
+.taskTypeItem_11 {background-image: url('../../../../modules/crm/view/media/task_fax.png');}
+.taskTypeItem_12 {background-image: url('../../../../modules/crm/view/media/task_follow_up.png');}
+.taskTypeItem_13 {background-image: url('../../../../modules/crm/view/media/task_lunch.png');}
+.taskTypeItem_14 {background-image: url('../../../../modules/crm/view/media/task_meeting.png');}
+.taskTypeItem_15 {background-image: url('../../../../modules/crm/view/media/task_default.png');}
+.taskTypeItem_16 {background-image: url('../../../../modules/crm/view/media/task_ship.png');}
+.taskTypeItem_17 {background-image: url('../../../../modules/crm/view/media/task_social_networks.png');}
+.taskTypeItem_18 {background-image: url('../../../../modules/crm/view/media/task_thank_you.png');}
 .taskStatusLink a {float: left;width: 23px;}
 #task_overview tr.task_expired {
     background-color: #ffe7e7 !important;    
@@ -316,11 +316,11 @@ table#general-info tr td:first-child {
     padding-left: 30px;
 
 }
-.document-txt{background: url('../../../../images/modules/crm/txt.png') no-repeat;}
-.document-img{background: url('../../../../images/modules/crm/img.png') no-repeat;}
-.document-csv{background: url('../../../../images/modules/crm/csv.png') no-repeat;}
-.document-doc{background: url('../../../../images/modules/crm/doc.png') no-repeat;}
-.document-docx{background: url('../../../../images/modules/crm/docx.png') no-repeat;}
-.document-pdf{background: url('../../../../images/modules/crm/pdf.png') no-repeat;}
-.document-xls{background: url('../../../../images/modules/crm/xls.png') no-repeat;}
+.document-txt{background: url('../../../../modules/crm/view/media/txt.png') no-repeat;}
+.document-img{background: url('../../../../modules/crm/view/media/img.png') no-repeat;}
+.document-csv{background: url('../../../../modules/crm/view/media/csv.png') no-repeat;}
+.document-doc{background: url('../../../../modules/crm/view/media/doc.png') no-repeat;}
+.document-docx{background: url('../../../../modules/crm/view/media/docx.png') no-repeat;}
+.document-pdf{background: url('../../../../modules/crm/view/media/pdf.png') no-repeat;}
+.document-xls{background: url('../../../../modules/crm/view/media/xls.png') no-repeat;}
 .nowrap {white-space: nowrap;}
