@@ -107,8 +107,8 @@ class crmInterface extends CrmLibrary
 
         JS::activate('cx');
         JS::activate('jqueryui');
-        JS::registerCSS('lib/javascript/crm/css/main.css');        
-        JS::registerJS('lib/javascript/crm/contactexport.js');
+        JS::registerCSS('modules/crm/View/Style/main.css');
+        JS::registerJS('modules/crm/View/Script/contactexport.js');
         JS::registerJS('lib/javascript/jquery.form.js');
         JS::registerJS('lib/javascript/jquery.tmpl.min.js');
         JS::registerJS('lib/javascript/jquery.base64.js');

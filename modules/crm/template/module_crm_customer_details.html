@@ -850,7 +850,7 @@
             <input type="hidden" name="customer_id" value="{ENTRY_ID}" />
             <input type="submit" name="save-photo" style="position: absolute;left: -10000px;" />
         </form>
-        <div class="action-progress-1" style="display:none;"><img src="../modules/crm/view/media/loader.gif" width="121" style="padding-top: 5px;" alt="Uploading...."/>Uploading....</div>
+        <div class="action-progress-1" style="display:none;"><img src="../modules/crm/View/Media/loader.gif" width="121" style="padding-top: 5px;" alt="Uploading...."/>Uploading....</div>
     </div>
     <div>
         <h4>{TXT_CRM_PROFILE_PHOTO_TITLE2}</h4>
@@ -862,7 +862,7 @@
             <img src="{CRM_ACCESS_PROFILE_IMG_WEB_PATH}/profile_person_small.png" onclick="setDefaultImage('profile_person_big.png', {ENTRY_ID})" width="40" height="60" alt="Profile" />
             <!-- END person_default_image -->
         </div>
-        <div class="action-progress-2" style="display:none;"><img src="../modules/crm/view/media/loader.gif" width="121" style="padding-top: 5px;" alt="Uploading...."/>Uploading....</div>
+        <div class="action-progress-2" style="display:none;"><img src="../modules/crm/View/Media/loader.gif" width="121" style="padding-top: 5px;" alt="Uploading...."/>Uploading....</div>
     </div>
 </div>
 <div id="file-upload" title="{TXT_CRM_DOCUMENT_UPLOAD}">
@@ -886,25 +886,3 @@
 		});
 	},true);
 </script>
-<!--<script type="text/javascript">
-	cx.ready(function() {
-		var uploader = cx.instances.get('exposed_combo_uploader','uploader');
-		uploader.dialog().bind('close',function(){
-                    alert('success');
-                    $J.ajax({
-                        url : '{REDIRECT_URL}',
-                        type : 'post',
-                        data : '&uploadId={DOC_UPLOADID}',
-                        success: function(json) {
-                            $J("#documents table tbody").html('');
-                            tabIndex = $J( "#tabs" ).tabs('option', 'selected');
-                            $J("#tabs").tabs('load', tabIndex);
-                            tabLinks['documents'].page = 0;
-                            tabLinks['documents'].new_req = true;
-                            $J('.crm_details_tabs').scroll();
-                        }
-                    });
-		});
-	},true);
-</script>
--->

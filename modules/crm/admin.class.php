@@ -500,10 +500,10 @@ class CrmManager extends CrmLibrary
 
         JS::activate("cx");
         JS::activate("jqueryui");
-        JS::registerJS("lib/javascript/crm/main.js");
-        JS::registerJS("lib/javascript/crm/customerTooltip.js");
-        JS::registerCSS("lib/javascript/crm/css/customerTooltip.css");
-        JS::registerCSS("lib/javascript/crm/css/main.css");
+        JS::registerJS("modules/crm/View/Script/main.js");
+        JS::registerJS("modules/crm/View/Script/customerTooltip.js");
+        JS::registerCSS("modules/crm/View/Style/customerTooltip.css");
+        JS::registerCSS("modules/crm/View/Style/main.css");
 
         $this->_objTpl->loadTemplateFile('module_'.$this->moduleName.'_customer_overview.html');
 
@@ -817,7 +817,7 @@ class CrmManager extends CrmLibrary
                             'CRM_CONTACT_NOTES_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id={$objResult->fields['id']}#notes' title=''>{$_ARRAYLANG['TXT_CRM_COMMENT_TITLE']} ({$notesCount})</a>",
                             'CRM_CONTACT_TASK_COUNT'    => "<a href='./index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id={$objResult->fields['id']}#tasks' title=''>{$_ARRAYLANG['TXT_CRM_TASKS']} ({$tasksCount})</a>",
                             'CRM_CONTACT_DEALS_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id={$objResult->fields['id']}#deals' title=''>{$_ARRAYLANG['TXT_CRM_OPPORTUNITY']} ({$dealsCount})</a>",
-                            'CRM_CONTACT_ADDED_NEW'     => strtotime($today) == strtotime($objResult->fields['added_date']) ? '<img src="../modules/crm/view/media/new.png" alt="new" />' : '',
+                            'CRM_CONTACT_ADDED_NEW'     => strtotime($today) == strtotime($objResult->fields['added_date']) ? '<img src="../modules/crm/View/Media/new.png" alt="new" />' : '',
                             'CRM_ROW_CLASS'             => $row = ($row == "row2") ? "row1" : "row2",
                             'CRM_CONTACT_PROFILE_IMAGE' => !empty($objResult->fields['profile_picture']) ? contrexx_raw2xhtml($objResult->fields['profile_picture'])."_40X40.thumb" : 'profile_company_small.png',
                     ));
@@ -848,7 +848,7 @@ class CrmManager extends CrmLibrary
                             'CRM_CONTACT_NOTES_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id={$objResult->fields['id']}#notes' title=''>{$_ARRAYLANG['TXT_CRM_COMMENT_TITLE']} ({$notesCount})</a>",
                             'CRM_CONTACT_TASK_COUNT'    => "<a href='./index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id={$objResult->fields['id']}#tasks' title=''>{$_ARRAYLANG['TXT_CRM_TASKS']} ({$tasksCount})</a>",
                             'CRM_CONTACT_DEALS_COUNT'   => "<a href='./index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id={$objResult->fields['id']}#deals' title=''>{$_ARRAYLANG['TXT_CRM_OPPORTUNITY']} ({$dealsCount})</a>",
-                            'CRM_CONTACT_ADDED_NEW'     => strtotime($today) == strtotime($objResult->fields['added_date']) ? '<img src="../modules/crm/view/media/new.png" alt="new" />' : '',
+                            'CRM_CONTACT_ADDED_NEW'     => strtotime($today) == strtotime($objResult->fields['added_date']) ? '<img src="../modules/crm/View/Media/new.png" alt="new" />' : '',
                             'CRM_ROW_CLASS'             => $row = ($row == "row2") ? "row1" : "row2",
                             'CRM_CONTACT_PROFILE_IMAGE' => !empty($objResult->fields['profile_picture']) ? contrexx_raw2xhtml($objResult->fields['profile_picture'])."_40X40.thumb" : 'profile_person_small.png',
                     ));
@@ -875,13 +875,13 @@ class CrmManager extends CrmLibrary
 
         JS::activate("cx");
         JS::activate("jqueryui");
-        JS::registerJS("lib/javascript/crm/main.js");
+        JS::registerJS("modules/crm/View/Script/main.js");
         JS::registerJS("lib/javascript/jquery.ui.tabs.js");
-        JS::registerJS("lib/javascript/crm/customerTooltip.js");
+        JS::registerJS("modules/crm/View/Script/customerTooltip.js");
         JS::registerJS("lib/javascript/jquery.form.js");
-        JS::registerCSS("lib/javascript/crm/css/main.css");
-        JS::registerCSS("lib/javascript/crm/css/customerTooltip.css");
-        JS::registerJS("lib/javascript/crm/jquery-scrolltofixed.js");
+        JS::registerCSS("modules/crm/View/Style/main.css");
+        JS::registerCSS("modules/crm/View/Style/customerTooltip.css");
+        JS::registerJS("modules/crm/View/Script/jquery-scrolltofixed.js");
         JS::registerCSS("lib/javascript/crm/fineuploader/fineuploader-3.3.1.css");
         JS::registerJS("lib/javascript/crm/fineuploader/jquery.fineuploader-3.3.1.min.js");
 
@@ -1989,10 +1989,10 @@ END;
 
         JS::activate("jquery");
         JS::activate("jqueryui");
-        JS::registerJS("lib/javascript/crm/main.js");
-        JS::registerJS("lib/javascript/crm/contact.js");
-        JS::registerCSS("lib/javascript/crm/css/main.css");
-        JS::registerCSS("lib/javascript/crm/css/contact.css");
+        JS::registerJS("modules/crm/View/Script/main.js");
+        JS::registerJS("modules/crm/View/Script/contact.js");
+        JS::registerCSS("modules/crm/View/Style/main.css");
+        JS::registerCSS("modules/crm/View/Style/contact.css");
         JS::registerCSS("lib/javascript/chosen/chosen.css");
         JS::registerJS("lib/javascript/chosen/chosen.jquery.js");
 
@@ -2647,8 +2647,8 @@ END;
         global $objDatabase, $_ARRAYLANG;
 
         JS::activate('jqueryui');
-        JS::registerJS('lib/javascript/crm/main.js');
-        JS::registerCSS('lib/javascript/crm/css/main.css');
+        JS::registerJS('modules/crm/View/Script/main.js');
+        JS::registerCSS('modules/crm/View/Style/main.css');
         $objFWUser  = FWUser::getFWUserObject();
 
         $id             = isset($_GET['id']) ? (int) $_GET['id'] : 0;
@@ -4064,6 +4064,8 @@ END;
                     break;
                 case 'xls':
                         $fileTypeClass = 'document-xls';
+                case 'xlsx':
+                        $fileTypeClass = 'document-xls';
                     break;
                 case 'docx':
                         $fileTypeClass = 'document-docx';
@@ -4342,8 +4344,8 @@ END;
 
         JS::activate('cx');
         JS::activate('jqueryui');
-        JS::registerCSS("lib/javascript/crm/css/main.css");
-        JS::registerCSS("lib/javascript/crm/css/contact.css");
+        JS::registerCSS("modules/crm/View/Style/main.css");
+        JS::registerCSS("modules/crm/View/Style/contact.css");
 
         $redirect     = $_REQUEST['redirect'] ? $_REQUEST['redirect'] : base64_encode('&act=deals');
         $objTpl = $this->_objTpl;
@@ -5695,19 +5697,6 @@ END;
 
         global $objDatabase, $objFWUser;
         
-        //get allowed file types
-        $arrAllowedFileTypes = array();
-        if (imagetypes() & IMG_GIF) { $arrAllowedFileTypes[] = 'gif'; }
-        if (imagetypes() & IMG_JPG) { $arrAllowedFileTypes[] = 'jpg'; $arrAllowedFileTypes[] = 'jpeg'; }
-        if (imagetypes() & IMG_PNG) { $arrAllowedFileTypes[] = 'png'; }
-        //allowed extensions
-        $arrAllowedFileTypes[] = 'doc';
-        $arrAllowedFileTypes[] = 'docx';
-        $arrAllowedFileTypes[] = 'pdf';
-        $arrAllowedFileTypes[] = 'txt';
-        $arrAllowedFileTypes[] = 'csv';
-        $arrAllowedFileTypes[] = 'xls';
-        
         $depositionTarget = ASCMS_MEDIA_PATH.'/crm/'; //target folder
         $h = opendir($tempPath);
         if ($h) {
@@ -5718,29 +5707,6 @@ END;
 
                 //skip . and ..
                 if($file == '.' || $file == '..') { continue; }
-
-                //delete unwanted files
-                $sizeLimit = 2097152;
-                $size = filesize($tempPath.'/'.$file);
-                if ($size > $sizeLimit) {
-                    $response->addMessage(
-                        UploadResponse::STATUS_ERROR,
-                        "Server error. Increase post_max_size and upload_max_filesize to $size.",
-                        $file
-                    );
-                    \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath.'/'.$file);
-                    continue;
-                }
-                
-                if(!in_array(strtolower($info['extension']), $arrAllowedFileTypes)) {
-                    $response->addMessage(
-                        UploadResponse::STATUS_ERROR,
-                        "$file has an invalid extension. Valid extension(s): jpeg, png, gif, jpg, doc, docx, pdf, txt, csv, xls.",
-                        $file
-                    );
-                    \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath.'/'.$file);
-                    continue;
-                }
 
                 if($file != '..' && $file != '.') {
                     //do not overwrite existing files.
