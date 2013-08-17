@@ -2432,8 +2432,8 @@ class CrmLibrary
     {
         JS::activate('cx');
         JS::activate('jqueryui');
-        JS::registerJS("lib/javascript/crm/main.js");
-        JS::registerCSS("lib/javascript/crm/css/main.css");
+        JS::registerJS("modules/crm/View/Script/main.js");
+        JS::registerCSS("modules/crm/View/Style/main.css");
     }
 
 }

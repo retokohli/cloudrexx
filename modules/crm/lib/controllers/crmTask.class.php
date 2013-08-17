@@ -213,7 +213,7 @@ class crmTask extends CrmLibrary
             $objtpl->parse('sort_fields');
         }
 
-        $sortIcons = array('../modules/crm/view/media/Actions-view-sort-ascending-icon.png', '../modules/crm/view/media/Actions-view-sort-descending-icon.png');
+        $sortIcons = array('../modules/crm/View/Media/Actions-view-sort-ascending-icon.png', '../modules/crm/View/Media/Actions-view-sort-descending-icon.png');
         $objtpl->setGlobalVariable(array(
                 'TXT_SEARCH_VALUE'              => contrexx_raw2xhtml($filterTaskTitle),
                 'CRM_TASK_SORT_ORDER'           => $sortOrder,
@@ -264,7 +264,7 @@ class crmTask extends CrmLibrary
     {
         global $_ARRAYLANG,$objDatabase,$objJs,$objFWUser;
         
-        JS::registerCSS("lib/javascript/crm/css/contact.css");
+        JS::registerCSS("modules/crm/View/Style/contact.css");
 
         $objtpl = $this->_objTpl;
         $_SESSION['pageTitle'] = empty($_GET['id']) ? $_ARRAYLANG['TXT_CRM_ADDTASK'] : $_ARRAYLANG['TXT_CRM_EDITTASK'];
