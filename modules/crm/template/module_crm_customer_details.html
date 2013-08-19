@@ -39,6 +39,7 @@
             }
         });
     }
+    $J("#doc_uploader").hide();
     function deleteEntry(entryId){
         if(confirm('{TXT_CRM_CONFIRM_DELETE_ENTRY}'))
             window.location.replace("?cmd={MODULE_NAME}&{CSRF_PARAM}&act=deleteCustomers&id="+entryId);
@@ -257,7 +258,7 @@
         });
 
         $J( ".change-photo" ).click(function() {
-            $J( "#profile-photo" ).dialog( "open" );
+            $J( "#exposedComboUploaderStarter" ).trigger( "click" );
         });
         $J('#jquery-wrapped-fine-uploader').fineUploader({
             request: {
@@ -445,6 +446,7 @@
             <td style="width: 150px;text-align:left; padding-left: 0px; padding-top: 10px;">
                 <div id="profile-image"><img src="{CRM_ACCESS_PROFILE_IMG_WEB_PATH}/{CRM_CONTACT_PROFILE_IMAGE}" alt="Profile" /></div>
                 <div ><a class="change-photo" href="javascript:void(0);">{TXT_CRM_CHANGE_PHOTO}</a></div>
+                <div id="exposedComboUploaderStarter"></div>
             </td>
             <td>
                 <table class="adminlist" width="100%" cellpadding="4" cellspacing="0">
@@ -872,6 +874,25 @@
     </p>
     <div id="jquery-wrapped-fine-uploader"></div>
 </div>
+<!-- Start Profile Photo Upload -->
+{COMBO_UPLOADER_CODE1}
+<script type="text/javascript">
+	cx.ready(function() {
+		var uploader = cx.instances.get('exposed_combo_uploader','uploader');
+		uploader.dialog().bind('close', function(){
+                    $J.getJSON( '{REDIRECT_URL}', function( data ) {
+                        $J.each(data, function(key, val) {
+                            var file = val.fileName;
+                            if ($J.trim(file) != '') {
+                                $J('#profile-image').html('<img src="{CRM_ACCESS_PROFILE_IMG_WEB_PATH}/'+file+'.thumb" alt="image" />');
+                            }
+                        });
+                    });
+		});
+	},true);
+</script>
+<!-- End Profile Photo Upload -->
+<!-- Start Document Upload -->
 {COMBO_UPLOADER_CODE}
 <script type="text/javascript">
 	cx.ready(function() {
@@ -886,3 +907,4 @@
 		});
 	},true);
 </script>
+<!-- End Document Upload -->
