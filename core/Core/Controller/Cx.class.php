@@ -23,7 +23,7 @@ namespace {
      * @return \Cx\Core\Core\Controller\Cx Instance of Contrexx
      */
     function init($mode = null) {
-        return new \Cx\Core\Core\Controller\Cx($mode);
+        return \Cx\Core\Core\Controller\Cx::instanciate($mode);
     }
 }
 
@@ -71,6 +71,14 @@ namespace Cx\Core\Core\Controller {
          * This mode is BETA at this time
          */
         const MODE_MINIMAL = 'minimal';
+        
+        /**
+         * Holds references to all currently loaded Cx instances
+         * 
+         * The first one is the normally used one, all others are special.
+         * @var array
+         */
+        protected static $instances = array();
         
         /**
          * Parsing star time
@@ -163,6 +171,27 @@ namespace Cx\Core\Core\Controller {
          */
         protected $eventManager = null;
         
+        /**
+         * This creates instances of this class
+         * 
+         * Normally the first instance is returned. This method is necessary
+         * because of special cases like license update in installer, which has
+         * to initialize Cx in order to perform a user login and then including
+         * versioncheck.php, which load Cx for standalone operation.
+         * @param string $mode (optional) One of the modes listed in constants above
+         * @param boolean $forceNew (optional) Wheter to force a new instance or not, default false
+         * @return \Cx\Core\Core\Controller\Cx Instance of this class 
+         */
+        public static function instanciate($mode = null, $forceNew = false) {
+            if (count(self::$instances) && !$forceNew) {
+                reset(self::$instances);
+                return current(self::$instances);
+            }
+            $instance = new static($mode);
+            self::$instances[] = $instance;
+            return $instance;
+        }
+        
         /* STAGE 2: __construct(), early initializations */
         
         /**
@@ -170,7 +199,7 @@ namespace Cx\Core\Core\Controller {
          * This does everything related to Contrexx.
          * @param string $mode (optional) Use constants, one of self::MODE_[FRONTEND|BACKEND|CLI|MINIMAL]
          */
-        public function __construct($mode = null) {
+        protected function __construct($mode = null) {
             try {
                 /**
                  * This starts time measurement
@@ -283,6 +312,25 @@ namespace Cx\Core\Core\Controller {
         protected function loadConfig() {
             global $_CONFIG, $_PATHCONFIG, $_DBCONFIG;
             
+            /**
+             * Handle multisite installations
+             * CUSTOMIZING from ppay.com
+             */
+            /*require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/core_modules/MultiSite/Model/Repository/InstanceRepository.class.php';
+            require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/core/Component/Model/Entity/EntityBase.class.php';
+            require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/core_modules/MultiSite/Model/Entity/Instance.class.php';
+            $multiSiteRepo = new \Cx\Core_Modules\MultiSite\Model\Repository\InstanceRepository();
+            $subdomain = current(explode('.', $_SERVER['HTTP_HOST']));
+            foreach ($multiSiteRepo->findAll('/var/www/trunk2/instances') as $instance) {
+                if ($subdomain == strtolower($instance->getName())) {
+                    require_once '/var/www/trunk2/instances/'.$instance->getName().'/config/configuration.php';
+                    break;
+                }
+            }*/
+            /**
+             * End CUSTOMIZING
+             */
+
             /**
              * Should we overwrite path configuration?
              */
@@ -496,6 +544,10 @@ namespace Cx\Core\Core\Controller {
          * @return mixed
          */
         protected function adjustRequest() {
+            if ($this->mode == self::MODE_MINIMAL || $this->mode == self::MODE_CLI) {
+                return;
+            }
+            
             $domain = $this->checkDomainUrl();
             $protocol = $this->adjustProtocol();
 
@@ -543,24 +595,21 @@ namespace Cx\Core\Core\Controller {
          */
         protected function adjustProtocol() {
             global $_CONFIG;
-            // check whether contrexx have to redirect to the correct protocol
-            $newProtocol = null;
-            if ($this->mode == self::MODE_FRONTEND) {
-                if ($_CONFIG['protocolHttpsFrontend'] == 'on' && empty($_SERVER['HTTPS'])) {
-                    $newProtocol = 'https';
-                } elseif ($_CONFIG['protocolHttpsFrontend'] == 'off' && !empty($_SERVER['HTTPS'])) {
-                    $newProtocol = 'http';
-                }
-            } elseif ($this->mode == self::MODE_BACKEND) {
-                if ($_CONFIG['protocolHttpsBackend'] == 'on' && empty($_SERVER['HTTPS'])) {
-                    $newProtocol = 'https';
-                } elseif ($_CONFIG['protocolHttpsBackend'] == 'off' && !empty($_SERVER['HTTPS'])) {
-                    $newProtocol = 'http';
-                }
+            // check whether Contrexx has to redirect to the correct protocol
+            
+            $configOption = 'forceProtocolFrontend';
+            if ($this->mode == self::MODE_BACKEND) {
+                $configOption = 'forceProtocolBackend';
             }
-
-            if ($newProtocol) {
-                return $newProtocol;
+            
+            if (!isset($_CONFIG[$configOption]) || $_CONFIG[$configOption] == 'none') {
+                return null;
+            }
+            
+            if ($_CONFIG[$configOption] == 'https' && empty($_SERVER['HTTPS'])) {
+                return 'https';
+            } else if ($_CONFIG[$configOption] == 'http' && !empty($_SERVER['HTTPS'])) {
+                return 'http';
             }
             return null;
         }
@@ -745,8 +794,6 @@ namespace Cx\Core\Core\Controller {
                 case 1:
                     // Request URL
                     $url = $this->request;
-                    // Get instance of FWUser object
-                    $objFWUser = $this->getUser();
                     // populate template
                     $objTemplate = $this->template;
                     // populate classloader
@@ -980,7 +1027,7 @@ namespace Cx\Core\Core\Controller {
                 'CHARSET'                        => \Env::get('init')->getFrontendLangCharset(),
                 'TITLE'                          => $this->resolvedPage->getTitle(),
                 'METATITLE'                      => $this->resolvedPage->getMetatitle(),
-                'NAVTITLE'                       => contrexx_raw2xhtml($this->resolvedPage->getTitle()),
+                'NAVTITLE'                       => $this->resolvedPage->getTitle(),
                 'GLOBAL_TITLE'                   => $_CONFIG['coreGlobalPageTitle'],
                 'DOMAIN_URL'                     => $_CONFIG['domainUrl'],
                 'PATH_OFFSET'                    => ASCMS_PATH_OFFSET,

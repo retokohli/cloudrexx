@@ -746,8 +746,8 @@ $updatesSp3ToSp4 = array(
 
 $updatesSp4To301 = array(
     "INSERT IGNORE INTO `" . DBPREFIX . "settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES
-    (57, 'protocolHttpsFrontend', 'off', 1),
-    (58, 'protocolHttpsBackend', 'off', 1),
+    (57, 'forceProtocolFrontend', 'none', 1),
+    (58, 'forceProtocolBackend', 'none', 1),
     (59, 'forceDomainUrl', 'off', 1)",
     array (
         'table' => DBPREFIX.'core_text',
