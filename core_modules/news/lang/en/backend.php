@@ -9,7 +9,7 @@
 $_ARRAYLANG['TXT_DELETE_MARKED'] = "Delete marked";
 $_ARRAYLANG['TXT_NEWS_MANAGER'] = "News manager";
 $_ARRAYLANG['TXT_CREATE_NEWS'] = "Add News";
-$_ARRAYLANG['TXT_CATEGORY_MANAGER'] = "Category Manager";
+$_ARRAYLANG['TXT_CATEGORY_MANAGER'] = "Categories";
 $_ARRAYLANG['TXT_EDIT_CATEGORY'] = "Modify category";
 $_ARRAYLANG['TXT_NEWS_PARENT_CATEGORY'] = "Parent category";
 $_ARRAYLANG['TXT_NEWS_NEW_MAIN_CATEGORY'] = "As main category";
