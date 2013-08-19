@@ -674,10 +674,13 @@ class CalendarEvent extends CalendarLibrary
                              field.place_zip AS place_zip, 
                              field.place_city AS place_city, 
                              field.place_country AS place_country, 
+                             field.place_link AS place_link, 
                              field.org_name AS org_name, 
                              field.org_street AS org_street, 
                              field.org_zip AS org_zip, 
                              field.org_city AS org_city, 
+                             field.org_link AS org_link, 
+                             field.org_email AS org_email, 
                              field.description AS description,
                              field.redirect AS redirect                                 
                         FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_event_field AS field
@@ -695,10 +698,13 @@ class CalendarEvent extends CalendarLibrary
                         $this->arrData['place_zip'][$langId] = htmlentities(stripslashes($objResult->fields['place_zip']), ENT_QUOTES, CONTREXX_CHARSET);
                         $this->arrData['place_city'][$langId] = htmlentities(stripslashes($objResult->fields['place_city']), ENT_QUOTES, CONTREXX_CHARSET);
                         $this->arrData['place_country'][$langId] = htmlentities(stripslashes($objResult->fields['place_country']), ENT_QUOTES, CONTREXX_CHARSET);
+                        $this->arrData['place_link'][$langId] = contrexx_raw2xhtml($objResult->fields['place_link']);
                         $this->arrData['org_name'][$langId] = contrexx_raw2xhtml($objResult->fields['org_name']);
                         $this->arrData['org_street'][$langId] = contrexx_raw2xhtml($objResult->fields['org_street']);
                         $this->arrData['org_zip'][$langId] = contrexx_raw2xhtml($objResult->fields['org_zip']);
                         $this->arrData['org_city'][$langId] = contrexx_raw2xhtml($objResult->fields['org_city']);
+                        $this->arrData['org_link'][$langId] = contrexx_raw2xhtml($objResult->fields['org_link']);
+                        $this->arrData['org_email'][$langId] = contrexx_raw2xhtml($objResult->fields['org_email']);
                         $this->arrData['description'][$langId] = stripslashes($objResult->fields['description']);
                         $this->arrData['redirect'][$langId] = htmlentities(stripslashes($objResult->fields['redirect']), ENT_QUOTES, CONTREXX_CHARSET);                         
                         $objResult->MoveNext();
@@ -1079,7 +1085,8 @@ class CalendarEvent extends CalendarLibrary
                 $street = contrexx_addslashes(contrexx_strip_tags($data['street'][$langId]));
                 $zip = contrexx_addslashes(contrexx_strip_tags($data['zip'][$langId]));
                 $city = contrexx_addslashes(contrexx_strip_tags($data['city'][$langId]));
-                $country = contrexx_addslashes(contrexx_strip_tags($data['country'][$langId]));                
+                $country = contrexx_addslashes(contrexx_strip_tags($data['country'][$langId])); 
+                $placeLink = contrexx_input2db($data['placeLink'][$langId]);
                 $description = contrexx_addslashes($data['description'][$langId]);
                 $redirect = contrexx_addslashes($data['redirect'][$langId]);  
         
@@ -1087,16 +1094,29 @@ class CalendarEvent extends CalendarLibrary
                 $orgStreet = contrexx_input2db($data['organizerStreet'][$langId]);
                 $orgZip    = contrexx_input2db($data['organizerZip'][$langId]);
                 $orgCity   = contrexx_input2db($data['organizerCity'][$langId]);
+                $orgLink   = contrexx_input2db($data['organizerLink'][$langId]);
+                $orgEmail  = contrexx_input2db($data['organizerEmail'][$langId]);
                 if($type == 0) {
                     $redirect = '';        
                 } else {
                     $description = '';
                 } 
+                if (!empty($placeLink)) {
+                    if (!preg_match('%^(?:ftp|http|https):\/\/%', $placeLink)) {
+                        $placeLink = "http://".$placeLink;
+                    }
+                }
+
+                if (!empty($orgLink)) {
+                    if (!preg_match('%^(?:ftp|http|https):\/\/%', $orgLink)) {
+                        $orgLink = "http://".$orgLink;
+                    }
+                }
                 
                 $query = "INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_event_field
-                            (`event_id`,`lang_id`,`title`,`place`,`place_street`,`place_zip`,`place_city`,`place_country`,`description`,`redirect`, `org_name`, `org_street`, `org_zip`, `org_city`)
+                            (`event_id`,`lang_id`,`title`,`place`,`place_street`,`place_zip`,`place_city`,`place_country`, `place_link`, `description`,`redirect`, `org_name`, `org_street`, `org_zip`, `org_city`, `org_link`, `org_email`)
                           VALUES 
-                            ('".intval($id)."','".intval($langId)."','".$title."','".$place."','".$street."','".$zip."','".$city."','".$country."','".$description."','".$redirect."', '".$orgName."', '".$orgStreet."', '".$orgZip."', '".$orgCity."')";
+                            ('".intval($id)."','".intval($langId)."','".$title."','".$place."','".$street."','".$zip."','".$city."','".$country."','".$placeLink."','".$description."','".$redirect."', '".$orgName."', '".$orgStreet."', '".$orgZip."', '".$orgCity."', '".$orgLink."', '".$orgEmail."')";
                                
                 $objResult = $objDatabase->Execute($query); 
                 

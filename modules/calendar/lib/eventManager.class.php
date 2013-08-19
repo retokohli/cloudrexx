@@ -677,6 +677,8 @@ class CalendarEventManager extends CalendarLibrary
                     $this->moduleLangVar.'_EVENT_ZIP'             => $objEvent->arrData['place_zip'][$_LANGID],
                     $this->moduleLangVar.'_EVENT_CITY'            => $objEvent->arrData['place_city'][$_LANGID],
                     $this->moduleLangVar.'_EVENT_COUNTRY'         => $objEvent->arrData['place_country'][$_LANGID],                                                  
+                    $this->moduleLangVar.'_EVENT_LINK'            => $objEvent->arrData['place_country'][$_LANGID] != '' ? "<a href='".$objEvent->arrData['place_country'][$_LANGID]."' target='_blank' >".$objEvent->arrData['place_country'][$_LANGID]."</a>" : "",
+                    $this->moduleLangVar.'_EVENT_LINK_SOURCE'     => $objEvent->arrData['place_country'][$_LANGID],
                     $this->moduleLangVar.'_EVENT_MAP'             => $googleMap,
                 ));    
                 
@@ -687,10 +689,13 @@ class CalendarEventManager extends CalendarLibrary
                 $objTpl->hideBlock('calendarEventHost');  
             } else {
                 $objTpl->setVariable(array(
-                    $this->moduleLangVar.'_EVENT_ORGANIZER_NAME'   => $objEvent->arrData['org_name'][$_LANGID],
-                    $this->moduleLangVar.'_EVENT_ORGANIZER_STREET' => $objEvent->arrData['org_street'][$_LANGID],
-                    $this->moduleLangVar.'_EVENT_ORGANIZER_ZIP'    => $objEvent->arrData['org_zip'][$_LANGID],
-                    $this->moduleLangVar.'_EVENT_ORGANIZER_CITY'   => $objEvent->arrData['org_city'][$_LANGID],
+                    $this->moduleLangVar.'_EVENT_HOST'         => $objEvent->arrData['org_name'][$_LANGID],
+                    $this->moduleLangVar.'_EVENT_HOST_ADDRESS' => $objEvent->arrData['org_street'][$_LANGID],
+                    $this->moduleLangVar.'_EVENT_HOST_ZIP'     => $objEvent->arrData['org_zip'][$_LANGID],
+                    $this->moduleLangVar.'_EVENT_HOST_CITY'    => $objEvent->arrData['org_city'][$_LANGID],
+                    $this->moduleLangVar.'_EVENT_HOST_LINK'    => $objEvent->arrData['org_link'][$_LANGID] != '' ? "<a href='".$objEvent->arrData['org_link'][$_LANGID]."' target='_blank' >".$objEvent->arrData['org_link'][$_LANGID]."</a>" : "",
+                    $this->moduleLangVar.'_EVENT_HOST_LINK_SOURCE' => $objEvent->arrData['org_link'][$_LANGID],
+                    $this->moduleLangVar.'_EVENT_HOST_EMAIL'   => $objEvent->arrData['org_email'][$_LANGID],
                 ));    
                 
                 $objTpl->parse('calendarEventHost');
