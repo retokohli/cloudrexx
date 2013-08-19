@@ -1348,6 +1348,12 @@ JS_CODE;
                 exit;
             }
 
+            // check access to download-file
+            if (!$this->hasUserAccessToCategoriesOfDownload($objDownload)) {
+                Permission::noAccess(base64_encode($objInit->getPageUri()));
+            }
+
+            // check access to download-file
             if (// download is protected
                 $objDownload->getAccessId()
                 // the user isn't a admin
@@ -1369,6 +1375,55 @@ JS_CODE;
                 CSRF::header('Location: '.$objDownload->getSource());
             }
         }
+    }
+
+    /**
+     * Check if currently authenticated user has read access to any
+     * of a perticular download's associated categories.
+     *
+     * @param   Download The download-object of which the access to its
+     *                   associated categories shall be checked.
+     * @return  boolean  Returns TRUE, if the currently authenticated user
+     *                   has read access to at least one of the download's
+     *                   associated categories.
+     */
+    public function hasUserAccessToCategoriesOfDownload($objDownload)
+    {
+        // user is DAM admin (or superuser)
+        if (Permission::checkAccess(142, 'static', true)) {
+            return true;
+        }
+
+        $arrCategoryIds = $objDownload->getAssociatedCategoryIds();
+        $filter = array(
+            'is_active'     => true,
+            'id'            => $arrCategoryIds,
+            // read_access_id = 0 refers to unprotected categories
+            'read_access_id'=> array(0), 
+        );
+        $objUser = FWUser::getFWUserObject()->objUser;
+        if ($objUser->login()) {
+            $filter['read_access_id'] = array_merge($filter['read_access_id'], $objUser->getDynamicPermissionIds());
+        }
+        $objCategory = Category::getCategories($filter, null, null, null, $limit = 1);
+
+        if (!$objCategory->EOF) {
+            return true;
+        }
+
+        if ($objUser->login()) {
+            // In case the user is logged in, but has no access to any of the
+            // download's associated categories, check if any of those categories
+            // are owned by the user. If so, we will grant the access to the download anyway.
+            unset($filter['read_access_id']);
+            $filter['owner_id'] = $objUser->getId();
+            $objCategory = Category::getCategories($filter, null, null, null, $limit = 1);
+            if (!$objCategory->EOF) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 
