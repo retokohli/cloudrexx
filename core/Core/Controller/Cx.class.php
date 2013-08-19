@@ -73,6 +73,26 @@ namespace Cx\Core\Core\Controller {
         const MODE_MINIMAL = 'minimal';
         
         /**
+         * Alternative PHP Cache extension
+         */
+        const CACHE_ENGINE_APC = 'apc';
+        
+        /**
+         * memcache(d) extension
+         */
+        const CACHE_ENGINE_MEMCACHE = 'memcache';
+        
+        /**
+         * xcache extension
+         */
+        const CACHE_ENGINE_XCACHE = 'xcache';
+        
+        /**
+         * No caching engine available
+         */
+        const CACHE_ENGINE_NONE = null;
+        
+        /**
          * Holds references to all currently loaded Cx instances
          * 
          * The first one is the normally used one, all others are special.
@@ -153,12 +173,6 @@ namespace Cx\Core\Core\Controller {
         protected $license = null;
         
         /**
-         * Wheter APC is enabled or not
-         * @var bool
-         */
-        protected $apcEnabled = false;
-        
-        /**
          * Contrexx toolbox
          * @todo Update FWSystem
          * @var \FWSystem
@@ -170,6 +184,12 @@ namespace Cx\Core\Core\Controller {
          * @var \Cx\Core\Event\Controller\EventManager
          */
         protected $eventManager = null;
+        
+        /**
+         * Used cache engine
+         * @var string|null Cache engine name, null for none
+         */
+        protected $cacheEngine = self::CACHE_ENGINE_NONE;
         
         /**
          * This creates instances of this class
@@ -479,7 +499,7 @@ namespace Cx\Core\Core\Controller {
          */
         protected function preInit() {
             $this->checkSystemState();
-            $this->tryToEnableApc();
+            $this->tryToEnableCaching();
             $this->tryToSetMemoryLimit();
             $this->adjustRequest();
         }
@@ -497,19 +517,38 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
-         * This tries to enable Alternate PHP Cache
+         * This tries to enable any known caching engine
          */
-        protected function tryToEnableApc() {
-            $this->apcEnabled = false;
+        protected function tryToEnableCaching() {
+            // APC
             if (extension_loaded('apc')) {
                 if (ini_get('apc.enabled')) {
                     $this->apcEnabled = true;
+                    $this->cacheEngine = self::CACHE_ENGINE_APC;
                 } else {
                     ini_set('apc.enabled', 1);
                     if (ini_get('apc.enabled')) {
                         $this->apcEnabled = true;
+                        $this->cacheEngine = self::CACHE_ENGINE_APC;
                     }
                 }
+            
+            // Memcache
+            } else if (extension_loaded('memcache')) {
+                $memcache = new \Memcache();
+                if (@$memcache->connect('127.0.0.1')) {
+                    \Env::set('memcache', $memcache);
+                    $this->cacheEngine = self::CACHE_ENGINE_MEMCACHE;
+                }
+            }
+            
+            // XCache
+            if (
+                $this->cacheEngine == self::CACHE_ENGINE_NONE &&
+                extension_loaded('xcache') &&
+                ini_get('xcache.size') > 0
+            ) {
+                $this->cacheEngine = self::CACHE_ENGINE_XCACHE;
             }
 
             // Disable eAccelerator if active
@@ -1357,11 +1396,11 @@ namespace Cx\Core\Core\Controller {
         }
         
         /**
-         * Tells wheter APC is enabled or not
-         * @return boolean True if APC is enabled, false otherwise
+         * Returns the name of the used cache engine or null if none
+         * @return string|null Cache engine name
          */
-        public function isApcEnabled() {
-            return $this->apcEnabled;
+        public function getCacheEngine() {
+            return $this->cacheEngine;
         }
         
         /**

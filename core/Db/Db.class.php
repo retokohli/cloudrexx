@@ -190,11 +190,23 @@ namespace Cx\Core\Db {
 
             $config = new \Doctrine\ORM\Configuration();
 
-            if ($this->cx->isApcEnabled()) {
-                $cache = new \Doctrine\Common\Cache\ApcCache();
-            } else {
-                $cache = new \Doctrine\Common\Cache\ArrayCache();
+            switch ($this->cx->getCacheEngine()) {
+                case \Cx\Core\Core\Controller\Cx::CACHE_ENGINE_APC:
+                    $cache = new \Doctrine\Common\Cache\ApcCache();
+                    break;
+                case \Cx\Core\Core\Controller\Cx::CACHE_ENGINE_MEMCACHE:
+                    $cache = new \Doctrine\Common\Cache\MemcacheCache();
+                    $memcache = \Env::get('memcache');
+                    $cache->setMemcache($memcache);
+                    break;
+                case \Cx\Core\Core\Controller\Cx::CACHE_ENGINE_XCACHE:
+                    $cache = new \Doctrine\Common\Cache\XcacheCache();
+                    break;
+                default:
+                    $cache = new \Doctrine\Common\Cache\ArrayCache();
+                    break;
             }
+            
             $config->setResultCacheImpl($cache);
             $config->setMetadataCacheImpl($cache);
             $config->setQueryCacheImpl($cache);
