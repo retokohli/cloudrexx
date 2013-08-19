@@ -957,7 +957,10 @@ class CrmManager extends CrmLibrary
 
         if ($contactId) {
             //For document Upload
-            $this->initDocUploader($contactId);
+//            $this->initDocUploader($contactId);
+            //For Profile Photo Upload
+            $this->initProPhotoUploader($contactId);
+
             $this->contact = $this->load->model('crmContact', __CLASS__);
             $this->contact->load($contactId);
             $custDetails = $this->contact->getCustomerDetails();
@@ -5677,6 +5680,25 @@ END;
               'COMBO_UPLOADER_CODE' => $comboUp->getXHtml(true)
         ));
     }
+
+    /**
+     * init the pl uploader which is directly included in the webpage
+     *
+     * @return integer the uploader id
+     */
+    protected function initProPhotoUploader($customerId)
+    { //DBG::activate();
+        $comboUp = UploadFactory::getInstance()->newUploader('exposedCombo');
+        $comboUp->setFinishedCallback(array(ASCMS_MODULE_PATH.'/crm/admin.class.php','CrmManager','proPhotoUploadFinished'));
+        //set instance name to combo_uploader so we are able to catch the instance with js
+        $comboUp->setJsInstanceName('exposed_combo_uploader');
+        $comboUp->setData($customerId);
+        $redirectUrl = CSRF::enhanceURI('index.php?cmd=crm&act=getImportFilename&custId='.$customerId);
+        $this->_objTpl->setVariable(array(
+            'COMBO_UPLOADER_CODE1' => $comboUp->getXHtml(true),
+            'REDIRECT_URL'         => $redirectUrl
+            ));
+    }
     
     /**
      * the upload is finished
@@ -5744,13 +5766,109 @@ END;
         // return web- and filesystem path. files will be moved there.
         return array($tempPath, $tempWebPath);
     }
+    /**
+     * the upload is finished
+     * rewrite the names
+     * write the uploaded files to the database
+     *
+     * @static
+     * @param string $tempPath the temporary file path
+     * @param string $tempWebPath the temporary file path which is accessable by web browser
+     * @param array $data the data which are attached by uploader init method
+     * @param integer $uploadId the upload id
+     * @param $fileInfos
+     * @param $response
+     * @return array the target paths
+     */
+    public static function proPhotoUploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response)
+    {
+
+        global $objDatabase, $objFWUser;
+
+        $depositionTarget = CRM_ACCESS_PROFILE_IMG_PATH.'/'; //target folder
+        $h = opendir($tempPath);
+        if ($h) {
+
+            while(false != ($file = readdir($h))) {
+
+                $info = pathinfo($file);
+
+                //skip . and ..
+                if($file == '.' || $file == '..') { continue; }
+
+                if($file != '..' && $file != '.') {
+                    //do not overwrite existing files.
+                    $prefix = '';
+                    while (file_exists($depositionTarget.$prefix.$file)) {
+                        if (empty($prefix)) {
+                            $prefix = 0;
+                        }
+                        $prefix ++;
+                    }
+
+                    // move file
+                    try {
+                        $objFile = new \Cx\Lib\FileSystem\File($tempPath.'/'.$file);
+                        $objFile->copy($depositionTarget.$prefix.$file, false);
+                        
+                        // create thumbnail
+                        if (empty($objImage)) {
+                            $objImage = new ImageManager();
+                        }
+                        $imageName = trim($prefix.$file);
+                        $objImage->_createThumbWhq(
+                            CRM_ACCESS_PROFILE_IMG_PATH.'/',
+                            CRM_ACCESS_PROFILE_IMG_WEB_PATH.'/',
+                            $imageName,
+                            40,
+                            40,
+                            70,
+                            '_40X40.thumb'
+                        );
+
+                        $objImage->_createThumbWhq(
+                            CRM_ACCESS_PROFILE_IMG_PATH.'/',
+                            CRM_ACCESS_PROFILE_IMG_WEB_PATH.'/',
+                            $imageName,
+                            121,
+                            160,
+                            70
+                        );
+                        
+                        // write the uploaded files into database
+                        $fields = array(
+                            'profile_picture' => $imageName
+                        );
+                        $sql = SQL::update("module_crm_contacts", $fields, array('escape' => true))." WHERE `id` = {$data}";
+                        $objDatabase->Execute($sql);
+                    } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                        \DBG::msg($e->getMessage());
+                    }
+                }
+
+                $arrFiles[] = $file;
+            }
+            closedir($h);
+        }
+
+        // return web- and filesystem path. files will be moved there.
+        return array($tempPath, $tempWebPath);
+    }
 
     function getImportFilename()
     {
+        global $objDatabase;
+
         if (isset ($_SESSION['importFilename'])) {
             $fileName = $_SESSION['importFilename'];
             unset ($_SESSION['importFilename']);
         }
+
+        if (isset ($_REQUEST['custId']) && !empty($_REQUEST['custId'])) {
+            $id = (int) $_REQUEST['custId'];
+            $fileName = $objDatabase->getOne("SELECT profile_picture FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE id = '".$id."'");
+        }
+        
         if (!empty ($fileName)) {
             $result[] = array('fileName' => $fileName);
         }
