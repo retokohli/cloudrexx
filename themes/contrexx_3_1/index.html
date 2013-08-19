@@ -71,6 +71,9 @@
                 <form id="search-form" action="{NODE_SEARCH}" method="get">
                     <input id="search-input" type="text" name="term" value="Suchen" onclick="this.value=''" onblur="this.value='Suchen'" />
                 </form>
+                <ul id="language-navigation">
+                    <li id="select-language">{LANGUAGE_NAVBAR_SHORT}</li>
+                </ul>
 
                 <nav id="metanavigation">
                     <ul>
@@ -82,7 +85,6 @@
                         <li class="first"><a href="{NODE_ACCESS_SETTINGS_PROFILE}">Angemeldet als {ACCESS_USER_USERNAME}</a></li>
                         <li><a href="{LOGOUT_URL}">Logout</a></li>
                         <!-- END access_logged_in -->
-                        <li id="select-language">{LANGUAGE_NAVBAR_SHORT}</li>
                     </ul>
                 </nav>
             </div>
