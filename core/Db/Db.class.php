@@ -100,7 +100,7 @@ namespace Cx\Core\Db {
          * @global array $_CONFIG Configuration
          * @return \PDO PDO connection
          */
-        protected function getPdoConnection() {
+        public function getPdoConnection() {
             global $_DBCONFIG, $_CONFIG;
 
             if ($this->pdo) {
