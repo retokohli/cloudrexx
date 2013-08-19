@@ -115,7 +115,7 @@ class serverSettings
         $objTemplate->setVariable(array(
             'ADMIN_CMS_NAME'           => htmlentities($_CONFIG['coreCmsName'], ENT_QUOTES, CONTREXX_CHARSET),
             'ADMIN_CMS_VERSION'        => str_replace(' Service Pack 0', '', preg_replace('#^(\d+\.\d+)\.(\d+)$#', '$1 Service Pack $2', $_CONFIG['coreCmsVersion'])),
-            'MYADMIN_DB_VERSION'       => @mysql_get_server_info(),
+            'MYADMIN_DB_VERSION'       => \Env::get('cx')->getDb()->getPdoConnection()->getAttribute(\PDO::ATTR_SERVER_VERSION),
             'MYADMIN_PHP_VERSION'      => @phpversion(),
             'MYADMIN_WEBSERVER'        => $this->getServerSoftware(),
             'MYADMIN_PHP_BUILDON'      => @php_uname(),
