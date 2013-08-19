@@ -353,6 +353,12 @@ class JsonPage implements JsonAdapter {
             if ($page->getEditingStatus() == 'hasDraftWaiting') {
                 $reload = true;
             }
+            
+            if ($page->getEditingStatus() != '') {
+                $logEntries = $this->logRepo->getLogEntries($page);
+                $this->em->remove($logEntries[0]);
+            }
+            
             $page->setEditingStatus('');
             $this->messages[] = $_CORELANG['TXT_CORE_SAVED'];
         } else {
@@ -478,9 +484,12 @@ class JsonPage implements JsonAdapter {
         
         $this->em->flush();
         
+        // this fixes log version number skipping
+        $this->em->clear();
+        $logs = $this->logRepo->getLogEntries($page);
+        $this->em->persist($logs[0]);
+        
         if ($updatingDraft) {
-            $this->em->clear();
-            $logs = $this->logRepo->getLogEntries($page);
             $data = $logs[1]->getData();
             if (!empty($action) && $draftUpdateLog) {
                 $data = $draftUpdateLog->getData();
@@ -852,7 +861,7 @@ class JsonPage implements JsonAdapter {
                 $logCount++;
                 continue;
             }
-
+            
             try {
                 $version = $log->getVersion();
                 $user = json_decode($log->getUsername());
@@ -861,6 +870,12 @@ class JsonPage implements JsonAdapter {
                 $page->setUpdatedAt($log->getLoggedAt());
 
                 $editingStatus = $page->getEditingStatus();
+                
+                if (!$hideDrafts && $row == 0 && $editingStatus != '') {
+                    $row++;
+                    continue;
+                }
+
                 if ($logCount != 0 && $hideDrafts && $editingStatus != '') {
                     continue;
                 }
