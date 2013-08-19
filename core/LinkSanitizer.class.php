@@ -50,6 +50,9 @@ class LinkSanitizer {
 
             # but only those who's values don't start with a slash..
             (?=[^\/])
+            
+            # ..and neither start with ../ (references to files outside the Contrexx directory are ignored)
+            (?!\.\.\/)
 
             # ..and neither start with a protocol (http:, ftp:, javascript:, mailto:, etc)
             (?![a-zA-Z]+:)
