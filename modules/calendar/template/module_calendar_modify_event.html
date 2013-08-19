@@ -581,6 +581,12 @@
                         </td>
                     </tr>
                     <tr class="row1">
+                        <td valign="top">{TXT_CALENDAR_EVENT_LINK}</td>
+                        <td>
+                             <input name="placeLink[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_LINK}" style="width: 250px" />
+                        </td>
+                    </tr>
+                    <tr class="row2">
                         <td valign="top">{TXT_CALENDAR_EVENT_MAP}</td>
                         <td>
                             <label><input name="map[{CALENDAR_EVENT_LANG_ID}]" value="1" type="checkbox" {CALENDAR_EVENT_MAP}/> {TXT_CALENDAR_EVENT_USE_GOOGLEMAPS}</label>
@@ -597,25 +603,37 @@
                     <tr class="row1">
                         <td width="180"  valign="top">{TXT_CALENDAR_EVENT_NAME}</td>
                         <td>
-                             <input name="organizerName[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_ORGANIZER_NAME}" style="width: 250px" />
+                             <input name="organizerName[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_HOST}" style="width: 250px" />
                         </td>
                     </tr>
                     <tr class="row2">
                         <td valign="top">{TXT_CALENDAR_EVENT_STREET}</td>
                         <td>
-                             <input name="organizerStreet[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_ORGANIZER_STREET}" style="width: 250px" />
+                             <input name="organizerStreet[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_HOST_ADDRESS}" style="width: 250px" />
                         </td>
                     </tr>
                     <tr class="row1">
                         <td valign="top">{TXT_CALENDAR_EVENT_ZIP}</td>
                         <td>
-                             <input name="organizerZip[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_ORGANIZER_ZIP}" style="width: 250px" />
+                             <input name="organizerZip[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_HOST_ZIP}" style="width: 250px" />
                         </td>
                     </tr>
                     <tr class="row2">
                         <td valign="top">{TXT_CALENDAR_EVENT_CITY}</td>
                         <td>
-                             <input name="organizerCity[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_ORGANIZER_CITY}" style="width: 250px" />
+                             <input name="organizerCity[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_HOST_CITY}" style="width: 250px" />
+                        </td>
+                    </tr>
+                    <tr class="row1">
+                        <td valign="top">{TXT_CALENDAR_EVENT_LINK}</td>
+                        <td>
+                             <input name="organizerLink[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_HOST_LINK}" style="width: 250px" />
+                        </td>
+                    </tr>
+                    <tr class="row2">
+                        <td valign="top">{TXT_CALENDAR_EVENT_EMAIL}</td>
+                        <td>
+                             <input name="organizerEmail[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_HOST_EMAIL}" style="width: 250px" />
                         </td>
                     </tr>
                 </table>

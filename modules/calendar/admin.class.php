@@ -471,6 +471,7 @@ class CalendarManager extends CalendarLibrary
             'TXT_'.$this->moduleLangVar.'_EVENT_ALL_DAY'                    => $_ARRAYLANG['TXT_CALENDAR_EVENT_ALL_DAY'],            
             'TXT_'.$this->moduleLangVar.'_EVENT_NAME'                       => $_ARRAYLANG['TXT_CALENDAR_EVENT_NAME'],            
             'TXT_'.$this->moduleLangVar.'_EVENT_HOST'                       => $_ARRAYLANG['TXT_CALENDAR_EVENT_HOST'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_EMAIL'                      => $_ARRAYLANG['TXT_CALENDAR_EVENT_EMAIL'],
             
             $this->moduleLangVar.'_EVENT_ID'                                => $eventId,
             $this->moduleLangVar.'_EVENT_DEFAULT_LANG_ID'                   => $_LANGID,
@@ -823,11 +824,14 @@ class CalendarManager extends CalendarLibrary
                 $this->moduleLangVar.'_EVENT_ZIP'           => !empty($objEvent->arrData['place_zip'][$arrLang['id']]) ? $objEvent->arrData['place_zip'][$arrLang['id']] : $objEvent->arrData['place_zip'][$_LANGID],
                 $this->moduleLangVar.'_EVENT_CITY'          => !empty($objEvent->arrData['place_city'][$arrLang['id']]) ? $objEvent->arrData['place_city'][$arrLang['id']] : $objEvent->arrData['place_city'][$_LANGID],
                 $this->moduleLangVar.'_EVENT_COUNTRY'       => !empty($objEvent->arrData['place_country'][$arrLang['id']]) ? $objEvent->arrData['place_country'][$arrLang['id']] : $objEvent->arrData['place_country'][$_LANGID],
+                $this->moduleLangVar.'_EVENT_LINK'          => !empty($objEvent->arrData['place_link'][$arrLang['id']]) ? $objEvent->arrData['place_link'][$arrLang['id']] : $objEvent->arrData['place_link'][$_LANGID],
                 $this->moduleLangVar.'_EVENT_MAP'           => $objEvent->map == 1 ? 'checked="checked"' : '',    
-                $this->moduleLangVar.'_EVENT_ORGANIZER_NAME'   => !empty($objEvent->arrData['org_name'][$arrLang['id']]) ? $objEvent->arrData['org_name'][$arrLang['id']] : $objEvent->arrData['org_name'][$_LANGID],
-                $this->moduleLangVar.'_EVENT_ORGANIZER_STREET' => !empty($objEvent->arrData['org_street'][$arrLang['id']]) ? $objEvent->arrData['org_street'][$arrLang['id']] : $objEvent->arrData['org_street'][$_LANGID],
-                $this->moduleLangVar.'_EVENT_ORGANIZER_ZIP'    => !empty($objEvent->arrData['org_zip'][$arrLang['id']]) ? $objEvent->arrData['org_zip'][$arrLang['id']] : $objEvent->arrData['org_zip'][$_LANGID],
-                $this->moduleLangVar.'_EVENT_ORGANIZER_CITY'   => !empty($objEvent->arrData['org_city'][$arrLang['id']]) ? $objEvent->arrData['org_city'][$arrLang['id']] : $objEvent->arrData['org_city'][$_LANGID],
+                $this->moduleLangVar.'_EVENT_HOST'          => !empty($objEvent->arrData['org_name'][$arrLang['id']]) ? $objEvent->arrData['org_name'][$arrLang['id']] : $objEvent->arrData['org_name'][$_LANGID],
+                $this->moduleLangVar.'_EVENT_HOST_ADDRESS'  => !empty($objEvent->arrData['org_street'][$arrLang['id']]) ? $objEvent->arrData['org_street'][$arrLang['id']] : $objEvent->arrData['org_street'][$_LANGID],
+                $this->moduleLangVar.'_EVENT_HOST_ZIP'      => !empty($objEvent->arrData['org_zip'][$arrLang['id']]) ? $objEvent->arrData['org_zip'][$arrLang['id']] : $objEvent->arrData['org_zip'][$_LANGID],
+                $this->moduleLangVar.'_EVENT_HOST_CITY'     => !empty($objEvent->arrData['org_city'][$arrLang['id']]) ? $objEvent->arrData['org_city'][$arrLang['id']] : $objEvent->arrData['org_city'][$_LANGID],
+                $this->moduleLangVar.'_EVENT_HOST_LINK'     => !empty($objEvent->arrData['org_link'][$arrLang['id']]) ? $objEvent->arrData['org_link'][$arrLang['id']] : $objEvent->arrData['org_link'][$_LANGID],
+                $this->moduleLangVar.'_EVENT_HOST_EMAIL'    => !empty($objEvent->arrData['org_email'][$arrLang['id']]) ? $objEvent->arrData['org_email'][$arrLang['id']] : $objEvent->arrData['org_email'][$_LANGID],
 	        ));
 	        
             //parse placeSelect
