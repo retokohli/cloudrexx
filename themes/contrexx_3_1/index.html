@@ -67,10 +67,21 @@
         <header id="header">
             <div class="inner clearfix">
                 <a id="logo" href="{NODE_HOME}">&nbsp;</a>
+
+                <form id="search-form" action="{NODE_SEARCH}" method="get">
+                    <input id="search-input" type="text" name="term" value="Suchen" onclick="this.value=''" onblur="this.value='Suchen'" />
+                </form>
+
                 <nav id="metanavigation">
                     <ul>
-                        <li class="first"><a href="{NODE_CONTACT_10}">Kontakt</a></li>
-                        <li><a href="{NODE_SITEMAP}">Inhaltsverzeichnis</a></li>
+                        <!-- BEGIN access_logged_out -->
+                        <li class="first"><a href="{NODE_LOGIN}">Login</a></li>
+                        <li><a href="{NODE_ACCESS_SIGNUP}">Registrieren</a></li>
+                        <!-- END access_logged_out -->
+                        <!-- BEGIN access_logged_in -->
+                        <li class="first"><a href="{NODE_ACCESS_SETTINGS_PROFILE}">Angemeldet als {ACCESS_USER_USERNAME}</a></li>
+                        <li><a href="{LOGOUT_URL}">Logout</a></li>
+                        <!-- END access_logged_in -->
                         <li id="select-language">{LANGUAGE_NAVBAR_SHORT}</li>
                     </ul>
                 </nav>
@@ -109,6 +120,7 @@
                         <ul class="horizontal-list">
                             <li><a href="{NODE_CONTACT_10}">Kontakt</a></li>
                             <li><a href="{NODE_PRIVACY}">Rechtliche Hinweise</a></li>
+                            <li><a href="{NODE_SITEMAP}">Inhaltsverzeichnis</a></li>
                             <li><a href="{NODE_IMPRINT}">Impressum</a></li>
                             <li class="last">{LOGIN_URL}</li>
                         </ul>

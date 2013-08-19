@@ -21,10 +21,30 @@
     background: url('images/logo.png') no-repeat;
 }
 
+#search-form {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: 12px 0 0 0;
+}
+
+#search-form #search-input {
+    float: left;
+    width: 120px;
+    padding: 4px 30px 5px 10px;
+    margin: 0;
+    border-radius: 6px;
+    -moz-border-radius: 6px;
+    -webkit-border-radius: 6px;
+    -o-border-radius: 6px;
+    border: 1px solid #E5E5E5;
+    background: #FFFFFF url('images/search-glass.png') no-repeat 138px center;
+}
+
 #metanavigation {
     position: absolute;
     right: 0;
-    top: 23px;
+    top: 48px;
     font-family: 'Ubuntu';
 }
 
@@ -173,30 +193,6 @@
     font-size: 14px;
     font-weight: normal;
     background: none;
-}
-
-#navigation li#navigation-search {
-    position: absolute;
-    top: 0;
-    right: 0;
-    padding: 12px 15px 0 0;
-}
-
-#navigation li#navigation-search:hover {
-    background: none;
-}
-
-#navigation li#navigation-search #search-input {
-    float: left;
-    width: 120px;
-    padding: 4px 30px 5px 10px;
-    margin: 0;
-    border-radius: 6px;
-    -moz-border-radius: 6px;
-    -webkit-border-radius: 6px;
-    -o-border-radius: 6px;
-    border: 1px solid #E5E5E5;
-    background: #FFFFFF url('images/search-glass.png') no-repeat 138px center;
 }
 
 #content-wrapper {
