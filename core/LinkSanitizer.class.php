@@ -45,13 +45,13 @@ class LinkSanitizer {
                 \s+(src|href|action)\s*=\s*['\"]
                 |
                 # or match all CSS @import statements
-                @import\s+url\s*\(                             
+                @import\s+url\s*\(
             )
 
             # but only those who's values don't start with a slash..
             (?=[^\/])
             
-            # ..and neither start with ../ (references to files outside the Contrexx directory are ignored)
+            # ..and neither start with ..\/ (references to files outside the Contrexx directory are ignored)
             (?!\.\.\/)
 
             # ..and neither start with a protocol (http:, ftp:, javascript:, mailto:, etc)
