@@ -701,6 +701,10 @@ class User extends User_Profile
 
     public function getFrontendLanguage()
     {
+        if (!$this->frontend_language) {
+            global $_LANGID;
+            $this->frontend_language = $_LANGID;
+        }
         return $this->frontend_language;
     }
 
