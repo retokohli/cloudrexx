@@ -309,7 +309,7 @@ class CSRF {
         $tpl->loadTemplateFile('csrfprotection.html');
         $form = '';
         foreach ($data as $key => $value) {
-            if ($key == self::$formkey || $key == 'amp;'.self::$formkey) {
+            if ($key == self::$formkey || $key == 'amp;'.self::$formkey || $key == '__cap') {
                 continue;
             }
             // There *MUST NOT* be any form element with a name attribute
