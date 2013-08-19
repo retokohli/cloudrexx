@@ -335,10 +335,15 @@ class settingsManager
             'TXT_SETTINGS_PROTOCOL_HTTPS_HELP'          => $_CORELANG['TXT_SETTINGS_PROTOCOL_HTTPS_HELP'],
             'TXT_SETTINGS_PROTOCOL_HTTPS_BACKEND'       => $_CORELANG['TXT_SETTINGS_PROTOCOL_HTTPS_BACKEND'],
             'TXT_SETTINGS_PROTOCOL_HTTPS_FRONTEND'      => $_CORELANG['TXT_SETTINGS_PROTOCOL_HTTPS_FRONTEND'],
-            'SETTINGS_PROTOCOL_HTTPS_BACKEND_ON'        => ($arrSettings['protocolHttpsBackend'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_PROTOCOL_HTTPS_BACKEND_OFF'       => ($arrSettings['protocolHttpsBackend'] == 'off') ? 'checked="checked"' : '',
-            'SETTINGS_PROTOCOL_HTTPS_FRONTEND_ON'       => ($arrSettings['protocolHttpsFrontend'] == 'on') ? 'checked="checked"' : '',
-            'SETTINGS_PROTOCOL_HTTPS_FRONTEND_OFF'      => ($arrSettings['protocolHttpsFrontend'] == 'off') ? 'checked="checked"' : ''
+            'TXT_FORCE_PROTOCOL_NONE'                   => $_CORELANG['TXT_SETTINGS_FORCE_PROTOCOL_NONE'],
+            'TXT_FORCE_PROTOCOL_HTTP'                   => $_CORELANG['TXT_SETTINGS_FORCE_PROTOCOL_HTTP'],
+            'TXT_FORCE_PROTOCOL_HTTPS'                  => $_CORELANG['TXT_SETTINGS_FORCE_PROTOCOL_HTTPS'],
+            'SETTINGS_FORCE_PROTOCOL_FRONTEND_NONE'     => (substr($arrSettings['forceProtocolFrontend'], 0, 4) != 'http' ? ' selected="selected"' : ''),
+            'SETTINGS_FORCE_PROTOCOL_FRONTEND_HTTP'     => ($arrSettings['forceProtocolFrontend'] == 'http' ? ' selected="selected"' : ''),
+            'SETTINGS_FORCE_PROTOCOL_FRONTEND_HTTPS'    => ($arrSettings['forceProtocolFrontend'] == 'https' ? ' selected="selected"' : ''),
+            'SETTINGS_FORCE_PROTOCOL_BACKEND_NONE'     => (substr($arrSettings['forceProtocolBackend'], 0, 4) != 'http' ? ' selected="selected"' : ''),
+            'SETTINGS_FORCE_PROTOCOL_BACKEND_HTTP'     => ($arrSettings['forceProtocolBackend'] == 'http' ? ' selected="selected"' : ''),
+            'SETTINGS_FORCE_PROTOCOL_BACKEND_HTTPS'    => ($arrSettings['forceProtocolBackend'] == 'https' ? ' selected="selected"' : ''),
         ));
 
         $objTemplate->setVariable(array(
@@ -425,6 +430,7 @@ class settingsManager
             $_POST['setvalue'][59] = 'off';
         }
 
+        $checkHttps = false;
         foreach ($_POST['setvalue'] as $id => $value) {
             switch (intval($id)) {
                 case 53:
@@ -456,12 +462,12 @@ class settingsManager
                     $value = ($value == 'on') ? 'on' : 'off';
                     break;
                 case 57:
-                    if ($_CONFIG['protocolHttpsFrontend'] != $value) {
+                    if ($_CONFIG['forceProtocolFrontend'] != $value) {
                         $checkHttps = true;
                     }
                     break;
                 case 58:
-                    if ($_CONFIG['protocolHttpsBackend'] != $value) {
+                    if ($_CONFIG['forceProtocolBackend'] != $value) {
                         $checkHttps = true;
                     }
                     break;
@@ -470,7 +476,7 @@ class settingsManager
                         try {
                             $useHttps = $_CONFIG['protocolHttpsFrontend'];
                             $protocol = 'http';
-                            if ($useHttps == 'on') {
+                            if ($useHttps == 'https') {
                                 $protocol = 'https';
                             }
                             // create request to port 443 (https), to check whether the request works or not
@@ -502,7 +508,8 @@ class settingsManager
                                     WHERE `setid` = '.intval($id));
         }
 
-        if (isset($checkHttps)) {
+        if ($checkHttps) {
+            $httpsPossible = true;
             try {
                 // create request to port 443 (https), to check whether the request works or not
                 $request     = new \HTTP_Request2('https://' . $_CONFIG['domainUrl'] . ASCMS_INSTANCE_OFFSET);
@@ -521,18 +528,24 @@ class settingsManager
                 $status = $objResponse->getStatus();
                 if (in_array($status, array(500))) {
                     // https is not available, 500 server error feedback
-                    $httpsNotPossible = true;
+                    $httpsPossible = false;
                 }
             } catch (\HTTP_Request2_Exception $e) {
                 // https is not available, exception thrown
-                $httpsNotPossible = true;
+                $httpsPossible = false;
             }
 
-            if (isset($httpsNotPossible)) {
+            if (!$httpsPossible) {
                 // reset settings to default when the https request failed
-                $objDatabase->Execute(' UPDATE `'.DBPREFIX.'settings`
-                                        SET `setvalue` = "off"
-                                        WHERE `setid` IN (57,58) ');
+                $objDatabase->Execute('
+                    UPDATE
+                        `'.DBPREFIX.'settings`
+                    SET
+                        `setvalue` = \'none\'
+                    WHERE
+                        `setid` IN (57,58)
+                        AND `setvalue` LIKE \'https\'
+                ');
             }
         }
 
