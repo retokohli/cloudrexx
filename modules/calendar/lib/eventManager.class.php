@@ -302,9 +302,9 @@ class CalendarEventManager extends CalendarLibrary
             }
         }
         
-        if($this->arrSettings['publicationStatus'] == 1) {
+        /* if($this->arrSettings['publicationStatus'] == 1) {
             self::_importEvents();  
-        }
+        } */
         
         self::_clearEmptyEvents();  
         self::_sortEventList();

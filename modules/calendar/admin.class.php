@@ -743,19 +743,19 @@ class CalendarManager extends CalendarLibrary
             $this->moduleLangVar.'_EVENT_SELECTED_HOSTS'      => $selectetHosts,
         ));                
         
-        if($this->arrSettings['publicationStatus'] == 1 && !empty($objHostManager->hostList)) { 
+        /*if($this->arrSettings['publicationStatus'] == 1 && !empty($objHostManager->hostList)) { 
             $onsubmitPublications = "selectAll(document.formModifyEvent.elements['selectedHosts[]']);"; 
             $this->_objTpl->touchBlock('eventPublicateMenu');    
             $this->_objTpl->touchBlock('eventSeriesNextButton'); 
             $this->_objTpl->hideBlock('eventSeriesSaveButton');
             $this->_objTpl->touchBlock('eventPublicateTab');
-        } else {
+        } else { */
             $onsubmitPublications = "";   
             $this->_objTpl->hideBlock('eventPublicateMenu');   
             $this->_objTpl->hideBlock('eventSeriesNextButton');
             $this->_objTpl->touchBlock('eventSeriesSaveButton');
             $this->_objTpl->hideBlock('eventPublicateTab');
-        }   
+        /* } */   
         
         //parse ivited groups   
         parent::getCommunityGroups();       
@@ -1069,7 +1069,7 @@ class CalendarManager extends CalendarLibrary
             $this->_objTpl->hideBlock('categoryNameExpand');
         }
         
-        if($this->arrSettings['publicationStatus'] == 1) {
+        /* if($this->arrSettings['publicationStatus'] == 1) {
             $objHostManager = new CalendarHostManager(null,true);
             $objHostManager->getHostList();
             
@@ -1089,9 +1089,9 @@ class CalendarManager extends CalendarLibrary
             ));
             
             $this->_objTpl->parse('hostSelector');
-        } else {
+        } else { */
             $this->_objTpl->hideBlock('hostSelector');
-        }
+        /* } */
     }
     
     
@@ -1119,12 +1119,12 @@ class CalendarManager extends CalendarLibrary
         $objSettings = new CalendarSettings();
         
         switch ($_GET['tpl']) {
-            case 'hosts':
+            /* case 'hosts':
                 $objSettings->hosts($this->_objTpl);
                 break;
             case 'modify_host':
                 $objSettings->modifyHost($this->_objTpl, intval($_GET['id']));
-                break;
+                break; */
             case 'mails':
                 $objSettings->mails($this->_objTpl);
                 break;
@@ -1137,9 +1137,9 @@ class CalendarManager extends CalendarLibrary
             case 'modify_form':
                 $objSettings->modifyForm($this->_objTpl, intval($_GET['id']));
                 break;
-            case 'payment':
+            /* case 'payment':
                 $objSettings->payment($this->_objTpl);
-                break;
+                break; */
             case 'date':
                 $objSettings->dateDisplay($this->_objTpl);
                 break;

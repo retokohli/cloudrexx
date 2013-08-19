@@ -318,11 +318,11 @@ class Calendar extends CalendarLibrary
         if($_GET['cmd'] != 'detail') {
             $this->objEventManager->getEventList();  
         } else { 
-            if($_GET['external'] == 1 && $this->arrSettings['publicationStatus'] == 1) {
+            /* if($_GET['external'] == 1 && $this->arrSettings['publicationStatus'] == 1) {
                 $this->objEventManager->getExternalEvent(intval($_GET['id']), intval($_GET['date'])); 
-            } else {
+            } else { */
                 $this->objEventManager->getEvent(intval($_GET['id']), intval($_GET['date'])); 
-            }
+            /* } */
         }
     }
 
