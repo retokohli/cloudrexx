@@ -338,19 +338,23 @@ class Calendar extends CalendarLibrary
         $this->_objTpl->setTemplate($this->pageContent, true, true);
         
         parent::getSettings();
+        
+        $dateFormat = parent::getDateFormat(1);
+        
+        $javascript = <<< EOF
+<script language="JavaScript" type="text/javascript">
 
-        //check datepicker plugin
-        if($this->arrSettings['useDatepicker'] == 1) {
-            $startDateInputId = "DPC_edit1_".parent::getDateFormat(1);
-            $endDateInputId = "DPC_edit2_".parent::getDateFormat(1);
+cx.ready(function() {
+    var options = {
+        dateFormat: '$dateFormat',        
+        timeFormat: 'hh:mm'
+    };
+    jQuery('input[name=from]').datepicker(options);
+    jQuery('input[name=till]').datepicker(options);
+});
 
-            parent::loadDatePicker($datePicker, $this->categoryId);
-        } else {
-            $startDateInputId = "startDate";
-            $endDateInputId = "endDate";
-            $datePicker = "datePicker";
-        }
-
+</script>
+EOF;
         $objCategoryManager = new CalendarCategoryManager(true);
         $objCategoryManager->getCategoryList();
 
@@ -365,10 +369,8 @@ class Calendar extends CalendarLibrary
             $this->moduleLangVar.'_SEARCH_TERM' =>  $_GET['term'],
             $this->moduleLangVar.'_SEARCH_FROM' =>  $_GET['from'],
             $this->moduleLangVar.'_SEARCH_TILL' =>  $_GET['till'],
-            $this->moduleLangVar.'_SEARCH_CATEGORIES' =>  $objCategoryManager->getCategoryDropdown(intval($_GET['catid']), 1)  ,
-            $this->moduleLangVar.'_SEARCH_START_DATE_INPUT_ID'               => $startDateInputId,
-            $this->moduleLangVar.'_SEARCH_END_DATE_INPUT_ID'                 => $endDateInputId,
-            $this->moduleLangVar.'_DATEPICKER' => $datePicker
+            $this->moduleLangVar.'_SEARCH_CATEGORIES' =>  $objCategoryManager->getCategoryDropdown(intval($_GET['catid']), 1),
+            $this->moduleLangVar.'_JAVASCRIPT'  => $javascript
         ));
         
         if($this->objEventManager->countEvents > $this->arrSettings['numPaging'] && (isset($_GET['search']) || $_GET['cmd'] == 'list' || $_GET['cmd'] == 'eventlist' || $_GET['cmd'] == 'archive')) {
@@ -464,15 +466,6 @@ class Calendar extends CalendarLibrary
 
         $dateFormat = parent::getDateFormat(1);
 
-        //check datepicker plugin
-        if($this->arrSettings['useDatepicker'] == 1) {
-            $startDateInputId = "DPC_edit1_".parent::getDateFormat(1);
-            $endDateInputId = "DPC_edit2_".parent::getDateFormat(1);
-        } else {
-            $startDateInputId = "startDate";
-            $endDateInputId = "endDate";
-        }
-
         $javascript = <<< EOF
 <script language="JavaScript" type="text/javascript">
 
@@ -532,9 +525,7 @@ UPLOADER;
 
         $this->_objTpl->setGlobalVariable(array(
             $this->moduleLangVar.'_EVENT_LANG_ID'               => $_LANGID,
-            $this->moduleLangVar.'_JAVASCRIPT'                  => $javascript,
-            $this->moduleLangVar.'_EVENT_START_DATE_INPUT_ID'   => $startDateInputId,
-            $this->moduleLangVar.'_EVENT_END_DATE_INPUT_ID'     => $endDateInputId,
+            $this->moduleLangVar.'_JAVASCRIPT'                  => $javascript,            
         ));
 
         $objCategoryManager = new CalendarCategoryManager(true);
