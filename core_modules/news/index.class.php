@@ -200,9 +200,8 @@ class news extends newsLibrary {
             $newsLastUpdate = $_ARRAYLANG['TXT_LAST_UPDATE'].'<br />'.date(ASCMS_DATE_FORMAT,$objResult->fields['changelog']);
         }
 
-        $newstitle = contrexx_raw2xhtml($objResult->fields['title']);
-// TODO: check if this makes actually sence to first convert the title to XHTML and afterwards to strip any HTML tags. Check what happens with $this->newsTitle later
-        $this->newsTitle = strip_tags($newstitle);
+        $this->newsTitle = $objResult->fields['title'];
+        $newstitle = $this->newsTitle;
         $newsTeaser = nl2br($objResult->fields['teaser_text']);
         LinkGenerator::parseTemplate($newsTeaser);
 
