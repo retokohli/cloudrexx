@@ -88,8 +88,11 @@ function toggleDebuggingFlags(show) {
             <tr class="row1">
                 <td>{TXT_SETTINGS_PROTOCOL_HTTPS_FRONTEND}&nbsp;</td>
                 <td>
-                    <input type="radio" name="setvalue[57]" id="setvalue_57_off" value="off" {SETTINGS_PROTOCOL_HTTPS_FRONTEND_OFF} /><label for="setvalue_57_off">HTTP</label>&nbsp;
-                    <input type="radio" name="setvalue[57]" id="setvalue_57_on" value="on" {SETTINGS_PROTOCOL_HTTPS_FRONTEND_ON} /><label for="setvalue_57_on">HTTPS</label>&nbsp;
+                    <select name="setvalue[57]" id="setvalue_57">
+                        <option value="none"{SETTINGS_FORCE_PROTOCOL_FRONTEND_NONE}>{TXT_FORCE_PROTOCOL_NONE}</option>
+                        <option value="http"{SETTINGS_FORCE_PROTOCOL_FRONTEND_HTTP}>{TXT_FORCE_PROTOCOL_HTTP}</option>
+                        <option value="https"{SETTINGS_FORCE_PROTOCOL_FRONTEND_HTTPS}>{TXT_FORCE_PROTOCOL_HTTPS}</option>
+                    </select>
                     <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SETTINGS_PROTOCOL_HTTPS_HELP}</span>
                 </td>
             </tr>
@@ -149,8 +152,11 @@ function toggleDebuggingFlags(show) {
             <tr class="row1">
                 <td>{TXT_SETTINGS_PROTOCOL_HTTPS_BACKEND}&nbsp;</td>
                 <td>
-                    <input type="radio" name="setvalue[58]" id="setvalue_58_off" value="off" {SETTINGS_PROTOCOL_HTTPS_BACKEND_OFF} /><label for="setvalue_58_off">HTTP</label>&nbsp;
-                    <input type="radio" name="setvalue[58]" id="setvalue_58_on" value="on" {SETTINGS_PROTOCOL_HTTPS_BACKEND_ON} /><label for="setvalue_58_on">HTTPS</label>&nbsp;
+                    <select name="setvalue[58]" id="setvalue_58">
+                        <option value="none"{SETTINGS_FORCE_PROTOCOL_BACKEND_NONE}>{TXT_FORCE_PROTOCOL_NONE}</option>
+                        <option value="http"{SETTINGS_FORCE_PROTOCOL_BACKEND_HTTP}>{TXT_FORCE_PROTOCOL_HTTP}</option>
+                        <option value="https"{SETTINGS_FORCE_PROTOCOL_BACKEND_HTTPS}>{TXT_FORCE_PROTOCOL_HTTPS}</option>
+                    </select>
                     <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SETTINGS_PROTOCOL_HTTPS_HELP}</span>
                 </td>
             </tr>
