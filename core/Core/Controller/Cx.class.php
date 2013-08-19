@@ -1075,7 +1075,7 @@ namespace Cx\Core\Core\Controller {
                 'METAKEYS'                       => contrexx_raw2xhtml($this->resolvedPage->getMetakeys()),
                 'METADESC'                       => contrexx_raw2xhtml($this->resolvedPage->getMetadesc()),
                 'METAROBOTS'                     => contrexx_raw2xhtml($this->resolvedPage->getMetarobots()),
-                'CONTENT_TITLE'                  => contrexx_raw2xhtml($this->resolvedPage->getContentTitle()),
+                'CONTENT_TITLE'                  => $this->resolvedPage->getContentTitle(),
                 'CONTENT_TEXT'                   => $this->resolvedPage->getContent(),
                 'CSS_NAME'                       => contrexx_raw2xhtml($this->resolvedPage->getCssName()),
                 'STANDARD_URL'                   => \Env::get('init')->getUriBy('smallscreen', 0),
