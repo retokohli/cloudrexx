@@ -825,6 +825,7 @@ class CalendarManager extends CalendarLibrary
                 $this->moduleLangVar.'_EVENT_CITY'          => !empty($objEvent->arrData['place_city'][$arrLang['id']]) ? $objEvent->arrData['place_city'][$arrLang['id']] : $objEvent->arrData['place_city'][$_LANGID],
                 $this->moduleLangVar.'_EVENT_COUNTRY'       => !empty($objEvent->arrData['place_country'][$arrLang['id']]) ? $objEvent->arrData['place_country'][$arrLang['id']] : $objEvent->arrData['place_country'][$_LANGID],
                 $this->moduleLangVar.'_EVENT_LINK'          => !empty($objEvent->arrData['place_link'][$arrLang['id']]) ? $objEvent->arrData['place_link'][$arrLang['id']] : $objEvent->arrData['place_link'][$_LANGID],
+                $this->moduleLangVar.'_PLACE_MAP_SOURCE'    => !empty($objEvent->arrData['place_map'][$arrLang['id']]) ? $objEvent->arrData['place_map'][$arrLang['id']] : $objEvent->arrData['place_map'][$_LANGID],    
                 $this->moduleLangVar.'_EVENT_MAP'           => $objEvent->map == 1 ? 'checked="checked"' : '',    
                 $this->moduleLangVar.'_EVENT_HOST'          => !empty($objEvent->arrData['org_name'][$arrLang['id']]) ? $objEvent->arrData['org_name'][$arrLang['id']] : $objEvent->arrData['org_name'][$_LANGID],
                 $this->moduleLangVar.'_EVENT_HOST_ADDRESS'  => !empty($objEvent->arrData['org_street'][$arrLang['id']]) ? $objEvent->arrData['org_street'][$arrLang['id']] : $objEvent->arrData['org_street'][$_LANGID],

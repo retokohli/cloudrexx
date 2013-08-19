@@ -864,6 +864,12 @@ class CalendarEvent extends CalendarLibrary
                     $pic = $picture;
                 }
             }
+        } else {
+            // create thumb if not exists
+            if (!file_exists(ASCMS_PATH."$pic.thumb")) {
+                $objImage = new ImageManager();
+                $objImage->_createThumb($this->uploadImgPath, '', $pic, 180);
+            }
         }
         
         $seriesStatus = intval($data['seriesStatus']); 

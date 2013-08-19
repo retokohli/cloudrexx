@@ -644,7 +644,7 @@ class CalendarEventManager extends CalendarLibrary
                 }
             }
             
-            if($objEvent->arrData['place'][$_LANGID] == '' && $objEvent->arrData['place_street'][$_LANGID] == '' && $objEvent->arrData['place_zip'][$_LANGID] == '' && $objEvent->arrData['place_city'][$_LANGID] == '' && $objEvent->arrData['place_country'][$_LANGID] == '' && $objEvent->map == 0) {
+            if($objEvent->arrData['place'][$_LANGID] == '' && $objEvent->arrData['place_street'][$_LANGID] == '' && $objEvent->arrData['place_zip'][$_LANGID] == '' && $objEvent->arrData['place_city'][$_LANGID] == '' && $objEvent->arrData['place_country'][$_LANGID] == '') {
                 $objTpl->hideBlock('calendarEventAddress');  
             } else {
                 /* if($objEvent->map == 1) { 
@@ -685,9 +685,9 @@ class CalendarEventManager extends CalendarLibrary
                     $this->moduleLangVar.'_EVENT_LOCATION_COUNTRY'=> $objEvent->arrData['place_country'][$_LANGID],                                                  
                     $this->moduleLangVar.'_EVENT_LINK'            => $objEvent->arrData['place_country'][$_LANGID] != '' ? "<a href='".$objEvent->arrData['place_country'][$_LANGID]."' target='_blank' >".$objEvent->arrData['place_country'][$_LANGID]."</a>" : "",
                     $this->moduleLangVar.'_EVENT_LINK_SOURCE'     => $objEvent->arrData['place_country'][$_LANGID],
-                    $this->moduleLangVar.'_PLACE_MAP_LINK'        => $objEvent->arrData['place_map'][$_LANGID] != '' ? '<a href="'.$objEvent->arrData['place_map'][$_LANGID].'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false">'.$_ARRAYLANG['TXT_CALENDAR_MAP'].'</a>' : "",
-                    $this->moduleLangVar.'_PLACE_MAP_THUMBNAIL'   => $objEvent->arrData['place_map'][$_LANGID] != '' ? '<a href="'.$objEvent->arrData['place_map'][$_LANGID].'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false"><img src="'.$map_thumb_name.'" border="0" alt="'.$objEvent->arrData['place_map'][$_LANGID].'" /></a>' : "",
-                    $this->moduleLangVar.'_PLACE_MAP_SOURCE'      => $objEvent->arrData['place_map'][$_LANGID],
+                    $this->moduleLangVar.'_EVENT_LOCATION_MAP_LINK'        => $objEvent->arrData['place_map'][$_LANGID] != '' ? '<a href="'.$objEvent->arrData['place_map'][$_LANGID].'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false">'.$_ARRAYLANG['TXT_CALENDAR_MAP'].'</a>' : "",
+                    $this->moduleLangVar.'_EVENT_LOCATION_MAP_THUMBNAIL'   => $objEvent->arrData['place_map'][$_LANGID] != '' ? '<a href="'.$objEvent->arrData['place_map'][$_LANGID].'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false"><img src="'.$map_thumb_name.'" border="0" alt="'.$objEvent->arrData['place_map'][$_LANGID].'" /></a>' : "",
+                    $this->moduleLangVar.'_EVENT_LOCATION_MAP_SOURCE'      => $objEvent->arrData['place_map'][$_LANGID],
                     //$this->moduleLangVar.'_EVENT_MAP'             => $googleMap,
                 ));
                 
@@ -781,6 +781,7 @@ class CalendarEventManager extends CalendarLibrary
                         break;
                 }                
                 
+                $picThumb = file_exists(ASCMS_PATH."{$objEvent->pic}.thumb") ? "{$objEvent->pic}.thumb" : ($objEvent->pic != '' ? $objEvent->pic : '');
                 $objTpl->setVariable(array(
                     $this->moduleLangVar.'_EVENT_ROW'            => $i%2==0 ? 'row1' : 'row2',
                     $this->moduleLangVar.'_EVENT_LED'            => $objEvent->status==0 ? 'red' : 'green',
@@ -788,7 +789,7 @@ class CalendarEventManager extends CalendarLibrary
                     $this->moduleLangVar.'_EVENT_ID'             => $objEvent->id,
                     $this->moduleLangVar.'_EVENT_TITLE'          => $objEvent->title,                                                         
                     $this->moduleLangVar.'_EVENT_PICTURE'        => $objEvent->pic != '' ? '<img src="'.$objEvent->pic.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',                                                          
-                    $this->moduleLangVar.'_EVENT_THUMBNAIL'      => $objEvent->pic != '' ? '<img src="'.$objEvent->pic.'.thumb" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',                                                               
+                    $this->moduleLangVar.'_EVENT_THUMBNAIL'      => $objEvent->pic != '' ? '<img src="'.$picThumb.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',                                                               
                     $this->moduleLangVar.'_EVENT_PRIORITY'       => $priority,                                                           
                     $this->moduleLangVar.'_EVENT_PRIORITY_IMG'   => $priorityImg, 
                     $this->moduleLangVar.'_EVENT_PLACE'          => $objEvent->place,
