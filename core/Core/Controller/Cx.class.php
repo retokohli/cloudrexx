@@ -432,8 +432,7 @@ namespace Cx\Core\Core\Controller {
             $this->checkSystemState();
             $this->tryToEnableApc();
             $this->tryToSetMemoryLimit();
-            $this->checkDomainUrl();
-            $this->adjustProtocol();
+            $this->adjustRequest();
         }
 
         /**
@@ -493,25 +492,54 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
+         * Check whether the user accessed the correct domain url and protocol
+         * @return mixed
+         */
+        protected function adjustRequest() {
+            $domain = $this->checkDomainUrl();
+            $protocol = $this->adjustProtocol();
+
+            // protocol and domain is correct, no redirect
+            if ($protocol === null && $domain === null) {
+                return null;
+            }
+
+            // protocol is correct, use the current protocol for redirect
+            if ($protocol === null) {
+                $protocol = empty($_SERVER['HTTPS']) ? 'http' : 'https';
+            }
+
+            // domain is correct, use the current domain for redirect
+            if ($domain === null) {
+                $domain = $_SERVER['HTTP_HOST'];
+            }
+
+            // redirect to correct domain and protocol
+            \header($_SERVER['SERVER_PROTOCOL'] . ' 301 Moved Permanently');
+            \header('Location: ' . $protocol . '://' . $domain . $_SERVER['REQUEST_URI']);
+            exit;
+        }
+
+        /**
          * Check whether the requested url is correct or not
          * there is a settings option in the general settings section of contrexx which allows
          * to force the domain url which is provided
+         * @return null|string the correct domain url
          */
         protected function checkDomainUrl() {
             global $_CONFIG;
             if (!isset($_CONFIG['forceDomainUrl']) || $_CONFIG['forceDomainUrl'] == 'off') {
-                return;
+                return null;
             }
             if ($_SERVER['HTTP_HOST'] != $_CONFIG['domainUrl']) {
-                $protocol = empty($_SERVER['HTTPS']) ? 'http' : 'https';
-                \header($_SERVER['SERVER_PROTOCOL'] . ' 301 Moved Permanently');
-                \header('Location: ' . $protocol . '://' . $_CONFIG['domainUrl'] . $_SERVER['REQUEST_URI']);
-                exit;
+                return $_CONFIG['domainUrl'];
             }
+            return null;
         }
 
         /**
          * Adjust the protocol to https if https is activated for the current area (frontend|backend)
+         * @return null|string the correct protocol
          */
         protected function adjustProtocol() {
             global $_CONFIG;
@@ -532,10 +560,9 @@ namespace Cx\Core\Core\Controller {
             }
 
             if ($newProtocol) {
-                \header($_SERVER['SERVER_PROTOCOL'] . ' 301 Moved Permanently');
-                \header('Location: ' . $newProtocol . '://' . $_CONFIG['domainUrl'] . $_SERVER['REQUEST_URI']);
-                exit;
+                return $newProtocol;
             }
+            return null;
         }
 
         /**
