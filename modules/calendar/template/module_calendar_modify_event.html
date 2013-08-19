@@ -60,6 +60,10 @@
     });
 
     function SetUrl(url, width, height, alt) {
+    console.log(insertBox);
+    console.log(url);
+    console.log(fileType);
+    
         switch (fileType) {
             case 'image':
             case 'webpages':    
@@ -589,7 +593,8 @@
                     <tr class="row2">
                         <td valign="top">{TXT_CALENDAR_EVENT_MAP}</td>
                         <td>
-                            <label><input name="map[{CALENDAR_EVENT_LANG_ID}]" value="1" type="checkbox" {CALENDAR_EVENT_MAP}/> {TXT_CALENDAR_EVENT_USE_GOOGLEMAPS}</label>
+                            <input type="text" name="placeMap[{CALENDAR_EVENT_LANG_ID}]" id="inputPlaceMap_{CALENDAR_EVENT_LANG_ID}" style="width: 250px;" value="{CALENDAR_PLACE_MAP_SOURCE}" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('inputPlaceMap_{CALENDAR_EVENT_LANG_ID}', 'image')" />
+                            <!--<label><input name="map[{CALENDAR_EVENT_LANG_ID}]" value="1" type="checkbox" {CALENDAR_EVENT_MAP}/> {TXT_CALENDAR_EVENT_USE_GOOGLEMAPS}</label>-->
                         </td>
                     </tr>
                 </table>

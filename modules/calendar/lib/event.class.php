@@ -571,13 +571,13 @@ class CalendarEvent extends CalendarLibrary
                 $this->priority = intval($objResult->fields['priority']);
                 $this->description = $objResult->fields['description'];
                 
-                if($this->arrSettings['placeData'] == 1) {
+                /* if($this->arrSettings['placeData'] == 1) {
                     $objMediadirEntry = new mediaDirectoryEntry();
                     $objMediadirEntry->getEntries(intval($objResult->fields['place_mediadir_id'])); 
                     $this->place = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=mediadir&amp;cmd=detail&amp;eid='.intval($objResult->fields['place_mediadir_id']).'">'.$objMediadirEntry->arrEntries[$objResult->fields['place_mediadir_id']]['entryFields'][0].'</a>';   
-                } else {
+                } else { */
                     $this->place = htmlentities(stripslashes($objResult->fields['place']), ENT_QUOTES, CONTREXX_CHARSET);     
-                }    
+                /* } */
                 
                 $this->showIn = htmlentities($objResult->fields['show_in'], ENT_QUOTES, CONTREXX_CHARSET);
                 $this->availableLang = intval($langId);
@@ -675,6 +675,7 @@ class CalendarEvent extends CalendarLibrary
                              field.place_city AS place_city, 
                              field.place_country AS place_country, 
                              field.place_link AS place_link, 
+                             field.place_map AS place_map, 
                              field.org_name AS org_name, 
                              field.org_street AS org_street, 
                              field.org_zip AS org_zip, 
@@ -699,6 +700,7 @@ class CalendarEvent extends CalendarLibrary
                         $this->arrData['place_city'][$langId] = htmlentities(stripslashes($objResult->fields['place_city']), ENT_QUOTES, CONTREXX_CHARSET);
                         $this->arrData['place_country'][$langId] = htmlentities(stripslashes($objResult->fields['place_country']), ENT_QUOTES, CONTREXX_CHARSET);
                         $this->arrData['place_link'][$langId] = contrexx_raw2xhtml($objResult->fields['place_link']);
+                        $this->arrData['place_map'][$langId] = contrexx_raw2xhtml($objResult->fields['place_map']);
                         $this->arrData['org_name'][$langId] = contrexx_raw2xhtml($objResult->fields['org_name']);
                         $this->arrData['org_street'][$langId] = contrexx_raw2xhtml($objResult->fields['org_street']);
                         $this->arrData['org_zip'][$langId] = contrexx_raw2xhtml($objResult->fields['org_zip']);
@@ -1089,6 +1091,7 @@ class CalendarEvent extends CalendarLibrary
                 $placeLink = contrexx_input2db($data['placeLink'][$langId]);
                 $description = contrexx_addslashes($data['description'][$langId]);
                 $redirect = contrexx_addslashes($data['redirect'][$langId]);  
+                $placeMap = contrexx_input2db($data['placeMap'][$langId]); 
         
                 $orgName   = contrexx_input2db($data['organizerName'][$langId]);
                 $orgStreet = contrexx_input2db($data['organizerStreet'][$langId]);
@@ -1114,9 +1117,9 @@ class CalendarEvent extends CalendarLibrary
                 }
                 
                 $query = "INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_event_field
-                            (`event_id`,`lang_id`,`title`,`place`,`place_street`,`place_zip`,`place_city`,`place_country`, `place_link`, `description`,`redirect`, `org_name`, `org_street`, `org_zip`, `org_city`, `org_link`, `org_email`)
+                            (`event_id`,`lang_id`,`title`,`place`,`place_street`,`place_zip`,`place_city`,`place_country`, `place_link`, `place_map`, `description`,`redirect`, `org_name`, `org_street`, `org_zip`, `org_city`, `org_link`, `org_email`)
                           VALUES 
-                            ('".intval($id)."','".intval($langId)."','".$title."','".$place."','".$street."','".$zip."','".$city."','".$country."','".$placeLink."','".$description."','".$redirect."', '".$orgName."', '".$orgStreet."', '".$orgZip."', '".$orgCity."', '".$orgLink."', '".$orgEmail."')";
+                            ('".intval($id)."','".intval($langId)."','".$title."','".$place."','".$street."','".$zip."','".$city."','".$country."','".$placeLink."','".$placeMap."','".$description."','".$redirect."', '".$orgName."', '".$orgStreet."', '".$orgZip."', '".$orgCity."', '".$orgLink."', '".$orgEmail."')";
                                
                 $objResult = $objDatabase->Execute($query); 
                 
