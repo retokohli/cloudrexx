@@ -97,8 +97,8 @@
         var elm = new Array(3) 
         
         //elm[0] = document.getElementById('title_{CALENDAR_EVENT_DEFAULT_LANG_ID}');
-        elm[0] = document.getElementById('{CALENDAR_EVENT_START_DATE_INPUT_ID}');
-        elm[1] = document.getElementById('{CALENDAR_EVENT_END_DATE_INPUT_ID}');
+        elm[0] = document.getElementById('startDate');
+        elm[1] = document.getElementById('endDate');
         elm[2] = document.getElementById('category');
 
         
@@ -441,14 +441,14 @@
             <tr class="row2">
                 <td width="180"  valign="top">{TXT_CALENDAR_EVENT_START} <font color="#ff0000">*</font></td>
                 <td >
-                    <input type="text"  name="startDate" class="startDate" id="{CALENDAR_EVENT_START_DATE_INPUT_ID}" value="{CALENDAR_EVENT_START_DATE}" style="width: 250px;" />
+                    <input type="text"  name="startDate" class="startDate" id="startDate" value="{CALENDAR_EVENT_START_DATE}" style="width: 250px;" />
                     &nbsp;<label><input type="checkbox" class="all_day" name="all_day" {CALENDAR_EVENT_ALL_DAY} value="1" /> {TXT_CALENDAR_EVENT_ALL_DAY} </label>
                 </td>
             </tr>
             <tr class="row1">
                 <td valign="top">{TXT_CALENDAR_EVENT_END} <font color="#ff0000">*</font></td>
                 <td>
-                    <input type="text" name="endDate" class="endDate" id="{CALENDAR_EVENT_END_DATE_INPUT_ID}" value="{CALENDAR_EVENT_END_DATE}" style="width: 250px;" />
+                    <input type="text" name="endDate" class="endDate" id="endDate" value="{CALENDAR_EVENT_END_DATE}" style="width: 250px;" />
                 </td>
             </tr>
             <tr class="row2">
@@ -870,7 +870,7 @@
                     <div id="seriesExeptionsList">
                         <!-- BEGIN eventExeptions -->
                         <div id="exeption_{CALENDAR_SERIES_EXEPTION_ID}">
-                            <input type="text" name="seriesExeptions[]" value="{CALENDAR_SERIES_EXEPTION_DATE}" id="{CALENDAR_SERIES_EXEPTION_INPUT_ID}" class="event_date" style="width: 129px;" />&nbsp;<a href="#" onclick="deleteExeption({CALENDAR_SERIES_EXEPTION_ID});" title="{TXT_CALENDAR_DELETE}"><img style="vertical-align: middle;" src="images/icons/delete.gif" alt="{TXT_CALENDAR_DELETE}" width="17" border="0" height="17"></a>
+                            <input type="text" name="seriesExeptions[]" value="{CALENDAR_SERIES_EXEPTION_DATE}" class="event_date" style="width: 129px;" />&nbsp;<a href="#" onclick="deleteExeption({CALENDAR_SERIES_EXEPTION_ID});" title="{TXT_CALENDAR_DELETE}"><img style="vertical-align: middle;" src="images/icons/delete.gif" alt="{TXT_CALENDAR_DELETE}" width="17" border="0" height="17"></a>
                         </div>
                         <!-- END eventExeptions -->
                     </div>

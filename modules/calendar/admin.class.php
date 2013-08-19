@@ -366,18 +366,7 @@ class CalendarManager extends CalendarLibrary
             $selectedCount = $value == $objEvent->seriesData['seriesPatternCount'] ? 'selected="selected"' : '';  
             $count .= '<option value="'.$value.'" '.$selectedCount.'>'.$name.'</option>';
         }
-        
-        //check datepicker plugin
-        if($this->arrSettings['useDatepicker'] == 1) {
-            $startDateInputId = "DPC_edit1_".parent::getDateFormat(1);
-            $endDateInputId = "DPC_edit2_".parent::getDateFormat(1);  
-            $seriesPatternEndsInputId = "DPC_edit3_".parent::getDateFormat(1);  
-        } else {
-            $startDateInputId = "startDate";
-            $endDateInputId = "endDate";
-            $seriesPatternEndsInputId = "seriesDouranceDate";                                                   
-        }
-                
+                        
         if (empty($eventId)) {
             $startDate = new DateTime("NOW");
             $startMin  = (int) $startDate->format('i');
@@ -485,9 +474,7 @@ class CalendarManager extends CalendarLibrary
             
             $this->moduleLangVar.'_EVENT_ID'                                => $eventId,
             $this->moduleLangVar.'_EVENT_DEFAULT_LANG_ID'                   => $_LANGID,
-            $this->moduleLangVar.'_EVENT_DATE_FORMAT'                       => parent::getDateFormat(1),         
-            $this->moduleLangVar.'_EVENT_START_DATE_INPUT_ID'               => $startDateInputId,
-            $this->moduleLangVar.'_EVENT_END_DATE_INPUT_ID'                 => $endDateInputId,
+            $this->moduleLangVar.'_EVENT_DATE_FORMAT'                       => parent::getDateFormat(1),            
             $this->moduleLangVar.'_EVENT_CURRENCY'                          => $this->arrSettings['paymentCurrency'],
             $this->moduleLangVar.'_EVENT_CATEGORIES'                        => $objCategoryManager->getCategoryDropdown(intval($objEvent->catId), 2),
             $this->moduleLangVar.'_EVENT_SERIES_PATTERN_MONTHLY_COUNT'      => $count,
@@ -689,17 +676,9 @@ class CalendarManager extends CalendarLibrary
             foreach ($objEvent->seriesData['seriesPatternExceptions'] as $key => $seriesExceptionDate) {     
                 $exeptionId = $lastExeptionId;
                 
-                if($this->arrSettings['useDatepicker'] == 1) {
-                    $seriesExeptionInputId = "DPC_edit".$exeptionId."_".parent::getDateFormat(1);  
-                } else {
-                    $seriesExeptionInputId = "seriesExeption_".$exeptionId;                                                   
-                }
-                
-                
                 if($seriesExceptionDate != null) {
                     $this->_objTpl->setVariable(array(
-                        $this->moduleLangVar.'_SERIES_EXEPTION_ID'          => $exeptionId,
-                        $this->moduleLangVar.'_SERIES_EXEPTION_INPUT_ID'    => $seriesExeptionInputId,
+                        $this->moduleLangVar.'_SERIES_EXEPTION_ID'          => $exeptionId,                        
                         $this->moduleLangVar.'_SERIES_EXEPTION_DATE'        => date($dateFomat, $seriesExceptionDate),
                     ));  
                     
