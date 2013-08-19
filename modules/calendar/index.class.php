@@ -572,7 +572,7 @@ $this->_objTpl->setVariable(array(
         ));
         
         //parse placeSelect
-        if ($this->arrSettings['placeData'] != 0) {
+        /*if ($this->arrSettings['placeData'] != 0) {
             $objMediadirEntries = new mediaDirectoryEntry();
             $objMediadirEntries->getEntries(null,null,null,null,null,null,true,0,'n',null,null,intval($this->arrSettings['placeData']));
 
@@ -589,10 +589,10 @@ $this->_objTpl->setVariable(array(
 
             $this->_objTpl->hideBlock('eventPlaceInput');
             $this->_objTpl->parse('eventPlaceSelect');
-        } else {
+        } else { */
             $this->_objTpl->touchBlock('eventPlaceInput');
             $this->_objTpl->hideBlock('eventPlaceSelect');
-        }
+        /* } */
 
     }
 

@@ -647,7 +647,7 @@ class CalendarEventManager extends CalendarLibrary
             if($objEvent->arrData['place'][$_LANGID] == '' && $objEvent->arrData['place_street'][$_LANGID] == '' && $objEvent->arrData['place_zip'][$_LANGID] == '' && $objEvent->arrData['place_city'][$_LANGID] == '' && $objEvent->arrData['place_country'][$_LANGID] == '' && $objEvent->map == 0) {
                 $objTpl->hideBlock('calendarEventAddress');  
             } else {
-                if($objEvent->map == 1) { 
+                /* if($objEvent->map == 1) { 
                     $googleCoordinates = self::_getCoorinates($objEvent->arrData['place_street'][$_LANGID], $objEvent->arrData['place_zip'][$_LANGID], $objEvent->arrData['place_city'][$_LANGID]);
                     if($googleCoordinates != false) {
                         $lat = $googleCoordinates[0];
@@ -669,18 +669,27 @@ class CalendarEventManager extends CalendarLibrary
                     }
                 } else {
                     $googleMap = '';
-                }
+                } */
                 
+                //place map
+                $arrInfo   = getimagesize(ASCMS_PATH.$objEvent->arrData['place_map'][$_LANGID]);
+                $picWidth  = $arrInfo[0]+20;
+                $picHeight = $arrInfo[1]+20;
+                
+                $map_thumb_name = ImageManager::getThumbnailFilename($objEvent->arrData['place_map'][$_LANGID]);                
                 $objTpl->setVariable(array(                                                          
                     $this->moduleLangVar.'_EVENT_PLACE'           => $objEvent->place,
-                    $this->moduleLangVar.'_EVENT_STREET_NR'       => $objEvent->arrData['place_street'][$_LANGID],
-                    $this->moduleLangVar.'_EVENT_ZIP'             => $objEvent->arrData['place_zip'][$_LANGID],
-                    $this->moduleLangVar.'_EVENT_CITY'            => $objEvent->arrData['place_city'][$_LANGID],
-                    $this->moduleLangVar.'_EVENT_COUNTRY'         => $objEvent->arrData['place_country'][$_LANGID],                                                  
+                    $this->moduleLangVar.'_EVENT_LOCATION_ADDRESS'=> $objEvent->arrData['place_street'][$_LANGID],
+                    $this->moduleLangVar.'_EVENT_LOCATION_ZIP'    => $objEvent->arrData['place_zip'][$_LANGID],
+                    $this->moduleLangVar.'_EVENT_LOCATION_CITY'   => $objEvent->arrData['place_city'][$_LANGID],
+                    $this->moduleLangVar.'_EVENT_LOCATION_COUNTRY'=> $objEvent->arrData['place_country'][$_LANGID],                                                  
                     $this->moduleLangVar.'_EVENT_LINK'            => $objEvent->arrData['place_country'][$_LANGID] != '' ? "<a href='".$objEvent->arrData['place_country'][$_LANGID]."' target='_blank' >".$objEvent->arrData['place_country'][$_LANGID]."</a>" : "",
                     $this->moduleLangVar.'_EVENT_LINK_SOURCE'     => $objEvent->arrData['place_country'][$_LANGID],
-                    $this->moduleLangVar.'_EVENT_MAP'             => $googleMap,
-                ));    
+                    $this->moduleLangVar.'_PLACE_MAP_LINK'        => $objEvent->arrData['place_map'][$_LANGID] != '' ? '<a href="'.$objEvent->arrData['place_map'][$_LANGID].'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false">'.$_ARRAYLANG['TXT_CALENDAR_MAP'].'</a>' : "",
+                    $this->moduleLangVar.'_PLACE_MAP_THUMBNAIL'   => $objEvent->arrData['place_map'][$_LANGID] != '' ? '<a href="'.$objEvent->arrData['place_map'][$_LANGID].'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false"><img src="'.$map_thumb_name.'" border="0" alt="'.$objEvent->arrData['place_map'][$_LANGID].'" /></a>' : "",
+                    $this->moduleLangVar.'_PLACE_MAP_SOURCE'      => $objEvent->arrData['place_map'][$_LANGID],
+                    //$this->moduleLangVar.'_EVENT_MAP'             => $googleMap,
+                ));
                 
                 $objTpl->parse('calendarEventAddress'); 
             }
