@@ -66,11 +66,12 @@ class ComponentHandler {
      * @var array
      */
     private $components = array(
-        'License',
         'Resolver',
         'Security',
         'Cache',
         'Session',
+        'Language', // Backend only
+        'License',
         'FwUser',
         
         'Upload',
@@ -103,7 +104,6 @@ class ComponentHandler {
         'Js',
         'ComponentHandler',
         'Csrf',
-        'Language',
         'Message',
     );
     

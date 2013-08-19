@@ -1540,57 +1540,6 @@ class LegacyComponentHandler {
                         // @todo this is never used in Cx Init
                         //$intAccessIdOffset = intval(MODULE_INDEX)*1000;
                     },
-                    'FwUser' => function() {
-                        global $objFWUser, $plainCmd, $isRegularPageRequest,
-                                $objUser, $firstname, $lastname, $objTemplate;
-                        
-                        $objFWUser = \FWUser::getFWUserObject();
-
-                        /* authentification */
-                        $loggedIn = $objFWUser->objUser->login(true); //check if the user is already logged in
-                        if (!empty($_POST) && !$loggedIn && 
-                                (
-                                    (!isset($_GET['cmd']) || $_GET['cmd'] !== 'login') &&
-                                    (!isset($_GET['act']) || $_GET['act'] !== 'resetpw')
-                                )) { //not logged in already - do captcha and password checks
-                            $objFWUser->checkAuth();
-                        }
-
-                        // User only gets the backend if he's logged in
-                        if (!$objFWUser->objUser->login(true)) {
-                            $plainCmd = 'login';
-                            // If the user isn't logged in, the login mask will be showed.
-                            // This mask has its own template handling.
-                            // So we don't need to load any templates in the index.php.
-                            $isRegularPageRequest = false;
-                        } else {
-                            $userData = array(
-                                'id'   => \FWUser::getFWUserObject()->objUser->getId(),
-                                'name' => \FWUser::getFWUserObject()->objUser->getUsername(),
-                            );
-                            \Env::get('cx')->getDb()->setUsername(json_encode($userData));
-                        }
-                        
-                        $objUser = \FWUser::getFWUserObject()->objUser;
-                        $firstname = $objUser->getProfileAttribute('firstname');
-                        $lastname = $objUser->getProfileAttribute('lastname');
-
-                        if (!empty($firstname) && !empty($lastname)) {
-                            $txtProfile = $firstname.' '.$lastname;
-                        } else {
-                            $txtProfile = $objUser->getUsername();
-                        }
-                        
-                        $objTemplate->setVariable(array(
-                            'TXT_PROFILE'               => $txtProfile,
-                            'USER_ID'                   => $objFWUser->objUser->getId(),
-                        ));
-                        
-                        
-                        if (isset($_POST['redirect']) && preg_match('/\.php/', $_POST['redirect'])) {
-                            \CSRF::header('location: '.$_POST['redirect']);
-                        }
-                    },
                     'License' => function() {
                         global $license, $_CONFIG, $objDatabase, $objTemplate;
                         
@@ -1691,6 +1640,57 @@ class LegacyComponentHandler {
                         $_ARRAYLANG = $objInit->loadLanguageData($plainCmd);
                         $_ARRAYLANG = array_merge($_ARRAYLANG, $_CORELANG);
                         \Env::set('lang', $_ARRAYLANG);
+                    },
+                    'FwUser' => function() {
+                        global $objFWUser, $plainCmd, $isRegularPageRequest,
+                                $objUser, $firstname, $lastname, $objTemplate;
+                        
+                        $objFWUser = \FWUser::getFWUserObject();
+
+                        /* authentification */
+                        $loggedIn = $objFWUser->objUser->login(true); //check if the user is already logged in
+                        if (!empty($_POST) && !$loggedIn && 
+                                (
+                                    (!isset($_GET['cmd']) || $_GET['cmd'] !== 'login') &&
+                                    (!isset($_GET['act']) || $_GET['act'] !== 'resetpw')
+                                )) { //not logged in already - do captcha and password checks
+                            $objFWUser->checkAuth();
+                        }
+
+                        // User only gets the backend if he's logged in
+                        if (!$objFWUser->objUser->login(true)) {
+                            $plainCmd = 'login';
+                            // If the user isn't logged in, the login mask will be showed.
+                            // This mask has its own template handling.
+                            // So we don't need to load any templates in the index.php.
+                            $isRegularPageRequest = false;
+                        } else {
+                            $userData = array(
+                                'id'   => \FWUser::getFWUserObject()->objUser->getId(),
+                                'name' => \FWUser::getFWUserObject()->objUser->getUsername(),
+                            );
+                            \Env::get('cx')->getDb()->setUsername(json_encode($userData));
+                        }
+                        
+                        $objUser = \FWUser::getFWUserObject()->objUser;
+                        $firstname = $objUser->getProfileAttribute('firstname');
+                        $lastname = $objUser->getProfileAttribute('lastname');
+
+                        if (!empty($firstname) && !empty($lastname)) {
+                            $txtProfile = $firstname.' '.$lastname;
+                        } else {
+                            $txtProfile = $objUser->getUsername();
+                        }
+                        
+                        $objTemplate->setVariable(array(
+                            'TXT_PROFILE'               => $txtProfile,
+                            'USER_ID'                   => $objFWUser->objUser->getId(),
+                        ));
+                        
+                        
+                        if (isset($_POST['redirect']) && preg_match('/\.php/', $_POST['redirect'])) {
+                            \CSRF::header('location: '.$_POST['redirect']);
+                        }
                     },
                     'Csrf' => function() {
                         global $plainCmd, $cmd, $objInit, $_CORELANG;
