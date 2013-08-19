@@ -80,7 +80,7 @@ function getDatabaseObject(&$errorMsg, $newInstance = false)
         if (($index = array_search('STRICT_TRANS_TABLES', $sqlModes)) !== false) {
             unset($sqlModes[$index]);
         }
-        $objDb->Execute('SET sql_mode = \'' . implode(', ', $sqlModes) . '\'');
+        $objDb->Execute('SET sql_mode = \'' . implode(',', $sqlModes) . '\'');
 
         if (empty($_DBCONFIG['charset']) || $objDb->Execute('SET NAMES '.$_DBCONFIG['charset']) && $objDb) {
             if ($newInstance) {
