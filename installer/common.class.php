@@ -215,7 +215,7 @@ class CommonFunctions
                 if (($index = array_search('STRICT_TRANS_TABLES', $sqlModes)) !== false) {
                     unset($sqlModes[$index]);
                 }
-                $objDb->Execute('SET sql_mode = \'' . implode(', ', $sqlModes) . '\'');
+                $objDb->Execute('SET sql_mode = \'' . implode(',', $sqlModes) . '\'');
 
                 if (($mysqlServerVersion = $this->getMySQLServerVersion()) !== false && !$this->_isNewerVersion($mysqlServerVersion, '4.1')) {
                     if ($objDb->Execute('SET CHARACTER SET '.($useUtf8 ? 'utf8' : 'latin1')) !== false) {
