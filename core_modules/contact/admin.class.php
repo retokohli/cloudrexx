@@ -456,7 +456,7 @@ class ContactManager extends ContactLib
                                     foreach($arrFiles as $file) {
                                         $file = contrexx_raw2xhtml($file);
                                         $img  = $this->getFileIcon($file);
-                                        $value .= '<a href="'.ASCMS_PATH_OFFSET.$file.'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.$img.basename($file).'</a><br />';
+                                        $value .= '<a href="'.ASCMS_PATH_OFFSET.$file.'" style="white-space:nowrap;" target="_blank" onclick="return confirm(\''.str_replace("\n", '\n', $_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE']).'\')">'.$img.basename($file).'</a><br />';
                                     }
                                 }
                             } elseif (isset($arrFormFields[$col]) && $arrFormFields[$col]['type'] == 'recipient') {
@@ -2017,7 +2017,7 @@ class ContactManager extends ContactLib
                             foreach ($arrFiles as $file) {
                                 $file = contrexx_raw2xhtml($file);                                
                                 $img  = $this->getFileIcon($file);
-                                $value .= '<a href="'.ASCMS_PATH_OFFSET.$file.'" target="_blank" onclick="return confirm(\''.$_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE'].'\')">'.$img.basename($file).'</a><br />';
+                                $value .= '<a href="'.ASCMS_PATH_OFFSET.$file.'" target="_blank" onclick="return confirm(\''.str_replace("\n", '\n', $_ARRAYLANG['TXT_CONTACT_CONFIRM_OPEN_UPLOADED_FILE']).'\')">'.$img.basename($file).'</a><br />';
                             }
                             break;
                         case 'recipient':
