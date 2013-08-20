@@ -225,7 +225,7 @@ class CalendarManager extends CalendarLibrary
             'TXT_'.$this->moduleLangVar.'_REGISTRATIONS'            => $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS'],
             'TXT_'.$this->moduleLangVar.'_WAITLIST'                 => $_ARRAYLANG['TXT_CALENDAR_WAITLIST'],
             'TXT_'.$this->moduleLangVar.'_ACTION'                   => $_ARRAYLANG['TXT_CALENDAR_ACTION'],
-            'TXT_'.$this->moduleLangVar.'_EXPORT'                   => $_ARRAYLANG['TXT_CALENDAR_EXPORT'],
+            'TXT_'.$this->moduleLangVar.'_EXPORT_ICAL_FORMAT'       => $_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_FORMAT'],
             'TXT_'.$this->moduleLangVar.'_EDIT'                     => $_ARRAYLANG['TXT_CALENDAR_EDIT'],
             'TXT_'.$this->moduleLangVar.'_DELETE'                   => $_ARRAYLANG['TXT_CALENDAR_DELETE'],
             'TXT_'.$this->moduleLangVar.'_LANGUAGES'                => $_ARRAYLANG['TXT_CALENDAR_LANGUAGES'],
