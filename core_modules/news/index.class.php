@@ -226,6 +226,10 @@ class news extends newsLibrary {
             if ($this->_objTpl->blockExists('news_comments_count')) {
                 $this->_objTpl->hideBlock('news_comments_count');
             }
+        }        
+
+        if ($this->arrSettings['news_use_teaser_text'] != '1' && $this->_objTpl->blockExists('news_use_teaser_text')) {
+            $this->_objTpl->hideBlock('news_use_teaser_text');
         }
 
         // parse author
@@ -1560,6 +1564,10 @@ JSCODE;
             'NEWS_TEASER_TEXT'          => contrexx_raw2xhtml($data['newsTeaserText']),
             'NEWS_REDIRECT'             => contrexx_raw2xhtml($data['newsRedirect']),
         ));
+        
+        if ($this->arrSettings['news_use_teaser_text'] != '1' && $this->_objTpl->blockExists('news_use_teaser_text')) {
+            $this->_objTpl->hideBlock('news_use_teaser_text');
+        }
 
         if (FWUser::getFWUserObject()->objUser->login()) {
             if ($this->_objTpl->blockExists('news_submit_form_captcha')) {
