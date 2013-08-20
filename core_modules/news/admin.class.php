@@ -1089,6 +1089,10 @@ class newsManager extends newsLibrary {
             $this->_objTpl->setVariable('NEWS_LANG_TAB_DISPLAY_STYLE', 'none');
             $this->_objTpl->hideBlock('news_language_checkboxes');
         }
+        
+        if ($this->arrSettings['news_use_teaser_text'] != 1) {
+            $this->_objTpl->hideBlock('news_use_teaser_text');
+        }
 
         $catrow = 'row2';
         $news_type_menu = '';
@@ -3015,6 +3019,7 @@ class newsManager extends newsLibrary {
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".$newsCommentsNotification."' WHERE name='news_comments_notification'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".(!empty($_POST['newsCommentsTimeout']) ? abs(intval($_POST['newsCommentsTimeout'])) : 30)."' WHERE name='news_comments_timeout'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".!empty($_POST['newsUseTop'])."' WHERE name='news_use_top'");
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".!empty($_POST['newsUseTeaserText'])."' WHERE name = 'news_use_teaser_text'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".!empty($_POST['newsUseTypes'])."' WHERE name = 'news_use_types'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".!empty($_POST['newsUseTop'])."' WHERE name='news_use_top'");
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".(!empty($_POST['newsTopDays']) ? intval($_POST['newsTopDays']) : 10)."' WHERE name = 'news_top_days'");
@@ -3207,6 +3212,7 @@ class newsManager extends newsLibrary {
             'NEWS_ACTIVATE_SUBMITTED_NEWS'          => $this->arrSettings['news_activate_submitted_news'] == '1' ? 'checked="checked"' : '',
             'NEWS_USE_TEASERS_CHECKED'              => $_CONFIG['newsTeasersStatus'] == '1' ? 'checked="checked"' : '',
             'NEWS_USE_TEASERS_CONFIGURATION_DISPLAY'=> $_CONFIG['newsTeasersStatus'] == '1' ? '' : 'none',
+            'NEWS_USE_TEASER_TEXT_CHECKED'          => $this->arrSettings['news_use_teaser_text'] == '1' ? 'checked="checked"' : '',
             'NEWS_USE_TYPES_CHECKED'                => $this->arrSettings['news_use_types'] == '1' ? 'checked="checked"' : '',
             'TXT_STORE'                             => $_ARRAYLANG['TXT_STORE'],
             'TXT_NAME'                              => $_ARRAYLANG['TXT_NAME'],
@@ -3224,6 +3230,7 @@ class newsManager extends newsLibrary {
             'TXT_ALLOW_ONLY_MEMBERS_SUBMIT_NEWS'    => $_ARRAYLANG['TXT_ALLOW_ONLY_MEMBERS_SUBMIT_NEWS'],
             'TXT_AUTO_ACTIVATE_SUBMITTED_NEWS'      => $_ARRAYLANG['TXT_AUTO_ACTIVATE_SUBMITTED_NEWS'],
             'TXT_USE_TEASERS'                       => $_ARRAYLANG['TXT_USE_TEASERS'],
+            'TXT_USE_TEASER_TEXT'                   => $_ARRAYLANG['TXT_USE_TEASER_TEXT'],
             'TXT_USE_TYPES'                         => $_ARRAYLANG['TXT_USE_TYPES'],
             'TXT_NOTIFY_GROUP'                      => $_ARRAYLANG['TXT_NOTIFY_GROUP'],
             'TXT_NOTIFY_USER'                       => $_ARRAYLANG['TXT_NOTIFY_USER'],
