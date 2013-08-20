@@ -152,7 +152,7 @@ class ShopSettings
         // New in V3.0.4 or V3.1.0
         if (!SettingDb::set('numof_products_per_page_backend',
             intval($_POST['numof_products_per_page_backend']))) {
-            SettingDb::add('numof_products_per_page_frontend',
+            SettingDb::add('numof_products_per_page_backend',
                 intval($_POST['numof_products_per_page_backend']), 53,
                 SettingDb::TYPE_TEXT, null, 'config');
         };
