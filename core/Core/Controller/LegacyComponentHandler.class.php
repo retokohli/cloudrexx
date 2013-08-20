@@ -394,19 +394,27 @@ class LegacyComponentHandler {
 
                         // Get Headlines
                         $modulespath = ASCMS_CORE_MODULE_PATH.'/news/lib/headlines.class.php';
-                        $headlinesNewsPlaceholder = '{HEADLINES_FILE}';
-                        if (   file_exists($modulespath)
-                            && (   strpos(\Env::get('cx')->getPage()->getContent(), $headlinesNewsPlaceholder) !== false
-                                || strpos($themesPages['index'], $headlinesNewsPlaceholder) !== false
-                                || strpos($themesPages['sidebar'], $headlinesNewsPlaceholder) !== false
-                                || strpos($page_template, $headlinesNewsPlaceholder) !== false)
-                        ) {
-                            $newsHeadlinesObj = new \newsHeadlines($themesPages['headlines']);
-                            $homeHeadlines = $newsHeadlinesObj->getHomeHeadlines();
-                            \Env::get('cx')->getPage()->setContent(str_replace($headlinesNewsPlaceholder, $homeHeadlines, \Env::get('cx')->getPage()->getContent()));
-                            $themesPages['index']   = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $themesPages['index']);
-                            $themesPages['sidebar'] = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $themesPages['sidebar']);
-                            $page_template          = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $page_template);
+                        if (file_exists($modulespath)) {
+                            for ($i = 0; $i < 5; $i++) {
+                                $visibleI = '';
+                                if ($i > 0) {
+                                    $visibleI = (string) $i;
+                                }
+                                $headlinesNewsPlaceholder = '{HEADLINES' . $visibleI . '_FILE}';
+                                if (
+                                    strpos(\Env::get('cx')->getPage()->getContent(), $headlinesNewsPlaceholder) !== false
+                                    || strpos($themesPages['index'], $headlinesNewsPlaceholder) !== false
+                                    || strpos($themesPages['sidebar'], $headlinesNewsPlaceholder) !== false
+                                    || strpos($page_template, $headlinesNewsPlaceholder) !== false
+                                ) {
+                                    $newsHeadlinesObj = new \newsHeadlines($themesPages['headlines' . $visibleI]);
+                                    $homeHeadlines = $newsHeadlinesObj->getHomeHeadlines();
+                                    \Env::get('cx')->getPage()->setContent(str_replace($headlinesNewsPlaceholder, $homeHeadlines, \Env::get('cx')->getPage()->getContent()));
+                                    $themesPages['index']   = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $themesPages['index']);
+                                    $themesPages['sidebar'] = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $themesPages['sidebar']);
+                                    $page_template          = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $page_template);
+                                }
+                            }
                         }
 
 
@@ -1047,7 +1055,7 @@ class LegacyComponentHandler {
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/news/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $newsObj= new \news(\Env::get('cx')->getPage()->getContent());
+                        $newsObj = new \news(\Env::get('cx')->getPage()->getContent());
                         \Env::get('cx')->getPage()->setContent($newsObj->getNewsPage());
                         $newsObj->getPageTitle(\Env::get('cx')->getPage()->getTitle());
                         // Set the meta page description to the teaser text if displaying news details
