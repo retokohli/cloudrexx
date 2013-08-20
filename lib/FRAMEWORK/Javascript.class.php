@@ -354,6 +354,8 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
      * @param string
      * @static
      * @access public
+     * @todo Setting the offset path could be done automatically. Implement such an algorithm
+     *       and remove this method.
      */
     public static function setOffset($offset)
     {
