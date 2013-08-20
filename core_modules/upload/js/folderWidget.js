@@ -4,52 +4,63 @@ var FolderWidget = function(options) {
     var refreshUrl = options.refreshUrl; //the url to get fresh folder data from
     var deleteUrl = options.deleteUrl; //the url used to send a delete request for a file
     var files = []; //the files in target folder
-    var $ = $J; //jquery at $ locally
+    var fieldId = options.fieldId;
+    var $ = jQuery; //jquery at $ locally
 
     var refresh = function() {
         $.getJSON(
             refreshUrl,
-            {
-                folderWidgetId: id
-            },
+            {folderWidgetId: id },
             function(json) {
-                container.empty();
-                var ul = $J('<ul></ul>');
-                files = json;
-                $.each(files, function(index, file) {
-                    var span = $J('<span></span>').html(file);
-                    var li = $J('<li></li>').append(span);
-                    var del = $J(' &nbsp; <a></a>');
-                    del.html('delete');
-                    del.addClass('deleteIcon');
-                    del.attr('href','');
-                    del.bind('click', function() {
-                        var fileElement = li;
-                        var fileName = file;
-                        $.get(deleteUrl,
-                            {
-                                file: file,
-                                folderWidgetId: id
-                            },
-                            function() {                               
-                                fileElement.remove(); //remove the li elem representing the file
-                                //remove the file from our local files array
-                                //this makes sure isEmpty() doesn't lie 
-                                for(index in files) {
-                                    var file = files[index];
-                                    if(file == fileName)
-                                        files.splice(index, 1);
-                                }
-                            });
-                        return false;
-                    });
-                    del.appendTo(li);
-                    li.appendTo(ul);
-                });
-                ul.appendTo(container);
+                setFiles(json);
+                list();
             }
         );
     };
+
+    var setFiles = function(passedFiles) {
+        files = passedFiles;
+    }
+
+    var list = function() {
+        // clear folder widget
+        container.empty();
+
+        // folder is empty -> stop
+        if (isEmpty()) {
+            return;
+        }
+
+        // list files
+        var ul = $('<ul></ul>').appendTo(container);
+        $.each(files, function(i, file) {
+            var li = $('<li></li>');
+            var span = $('<span></span>').html(file);
+            var del = $(' &nbsp; <a></a>');
+            del.addClass('deleteIcon');
+            del.attr('href','');
+            del.bind('click', function() {
+                if (deleteUrl) {
+                    $.get(deleteUrl, {
+                            file: file,
+                            folderWidgetId: id
+                        },
+                        function() {                               
+                            li.remove();
+                        }
+                    );
+                } else {
+                    $('<input type="hidden" name="deleteMedia['+fieldId+'][]" value="'+file+'" />').appendTo($(container.parents('form')));
+                    li.remove();
+                }
+                return false;
+            });
+
+            span.appendTo(li);
+            del.appendTo(li);
+            li.appendTo(ul);
+        });
+    }
 
     //load the files
     refresh();
@@ -60,6 +71,8 @@ var FolderWidget = function(options) {
 
     return {
         refresh: refresh,
-        isEmpty: isEmpty
+        isEmpty: isEmpty,
+        setFiles: setFiles,
+        list:    list
     };
 };

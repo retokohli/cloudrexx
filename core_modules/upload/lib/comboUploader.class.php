@@ -60,6 +60,10 @@ class ComboUploader extends Uploader
         JS::registerJS('core_modules/upload/js/uploaders/combo/combo.js');
         JS::registerCSS('core_modules/upload/css/uploaders/combo/combo.css');
 
+        \JS::registerJS('core_modules/upload/js/uploaders/pl/plupload.full.js');
+        \JS::registerJS('core_modules/upload/js/uploaders/pl/jquery.plupload.queue.js');
+        \JS::registerCSS('core_modules/upload/css/uploaders/pl/plupload.queue.css');
+
         $formUploader = UploadFactory::getInstance()->newUploader('form',$this->uploadId);
 
         //i18n of uploader descriptions
@@ -108,6 +112,8 @@ class ComboUploader extends Uploader
              'TXT_CORE_FILES_UPLOADED' => $_CORELANG['TXT_CORE_FILES_UPLOADED'],
              'TXT_CORE_FILES_NOT_UPLOADED' => $_CORELANG['TXT_CORE_FILES_NOT_UPLOADED']
         ));
+
+        $tpl->setVariable('UPLOADER_CODE', $formUploader->getXHtml());
 
         //see Uploader::handleInstanceBusiness
         $this->handleInstanceBusiness($tpl,'cu');

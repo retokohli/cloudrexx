@@ -7,11 +7,11 @@
     <script type="text/javascript">
     {CXJS_INIT_JS}
     cx.include('core_modules/upload/css/uploaders/form/form.css', function() {
-        var form = new FormUploader($J('#form_uploader'));
+        var form = new FormUploader({UPLOAD_ID});
     });
     </script>
 
-    <div id="form_uploader">
+    <div id="form_uploader_{UPLOAD_ID}" class="form_uploader">
       <form action="{UPLOAD_URL}" method="post" enctype="multipart/form-data">
         <input type="hidden" name="MAX_FILE_SIZE" value="{MAX_FILE_SIZE}" />
         <div class="files">

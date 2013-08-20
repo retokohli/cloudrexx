@@ -1,5 +1,5 @@
 <script type="text/javascript">
-var init = function() {    
+var initPlUpload = function() {    
     plupload.addI18n({
         'Select files' : '{SELECT_FILES}',
         'Add files to the upload queue and click the start button.' : '{ADD_INSTRUCTIONS}',
@@ -13,12 +13,13 @@ var init = function() {
 });
 
     // Setup flash version
-    var uploader = $J("#flash_uploader").pluploadQueue({
+    var uploader = $J("#flash_uploader_{UPLOAD_ID}").pluploadQueue({
         // General settings
         runtimes : 'flash',
         url : '{UPLOAD_URL}',
+// TODO: add configuration option to set max-file size
         max_file_size : '200mb',
-        chunk_size : '2mb',
+        chunk_size : '{UPLOAD_CHUNK_LENGTH}',
         unique_names : false,
  
 /*        // Resize images on clientside if we can
@@ -32,7 +33,7 @@ var init = function() {
         ],*/
  
         // Flash settings
-        flash_swf_url : '{FLASH_URL}'
+        flash_swf_url : '{UPLOAD_FLASH_URL}'
     });
     var settings = uploader.pluploadQueue().settings;
     var baseUrl = settings.url;
@@ -46,15 +47,15 @@ var init = function() {
     });
 }; 
 
-//load plUploader ressources, then init
-cx.include(['core_modules/upload/js/uploaders/pl/plupload.full.js','core_modules/upload/js/uploaders/pl/jquery.plupload.queue.js','core_modules/upload/css/uploaders/pl/plupload.queue.css'], init);
+cx.ready(initPlUpload);
 </script>
 
 <style type="text/css">
 /*this reverts base.css settings of contrexx*/
+#flash_uploader_{UPLOAD_ID} object, 
 #flash_uploader object {
     background-color: transparent;
     border: none;
 }
 </style>
-<div id="flash_uploader">you need flash to use the uploader.</div>
+<div id="flash_uploader_{UPLOAD_ID}">you need flash to use the uploader.</div>
