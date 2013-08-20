@@ -8,13 +8,14 @@
  */
 $_ARRAYLANG['TXT_DELETE_MARKED'] = "Markierte löschen";
 $_ARRAYLANG['TXT_NEWS_MANAGER'] = "News Manager";
-$_ARRAYLANG['TXT_CREATE_NEWS'] = "News erstellen";
+$_ARRAYLANG['TXT_CREATE_NEWS'] = "Hinzufügen";
 $_ARRAYLANG['TXT_CATEGORY_MANAGER'] = "Rubriken";
 $_ARRAYLANG['TXT_EDIT_CATEGORY'] = "Rubrik bearbeiten";
 $_ARRAYLANG['TXT_NEWS_PARENT_CATEGORY'] = "Oberrubriken";
 $_ARRAYLANG['TXT_NEWS_NEW_MAIN_CATEGORY'] = "Als Hauptrubrik";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_ORDER'] = "Reihenfolge";
 $_ARRAYLANG['TXT_EDIT_NEWS_MESSAGE'] = "Newsmeldungen bearbeiten";
+$_ARRAYLANG['TXT_EDIT_NEWS_ID'] = 'News ID eingeben';
 $_ARRAYLANG['TXT_ARCHIVE'] = "Archiv";
 $_ARRAYLANG['TXT_DATE'] = "Datum";
 $_ARRAYLANG['TXT_TITLE'] = "Titel";
@@ -249,7 +250,7 @@ $_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_TIMEOUT_HELP'] = "Definieren Sie die Zei
 $_ARRAYLANG['TXT_NEWS_COMMENTS_STATUS'] = "Kommentar (de-)aktivieren";
 $_ARRAYLANG['TXT_NEWS_COMMENT_ACTIVATE'] = "Aktivieren";
 $_ARRAYLANG['TXT_NEWS_COMMENT_DEACTIVATE'] = "Deaktivieren";
-$_ARRAYLANG['TXT_NEWS_COMMENTS'] = "Kommentare";
+$_ARRAYLANG['TXT_NEWS_COMMENTS'] = "Kommentar";
 $_ARRAYLANG['TXT_NEWS_DEFAULT_TEASERS'] = "Standard Teasers";
 $_ARRAYLANG['TXT_NEWS_DEFAULT_TEASERS_HELP'] = "Wählen Sie hier jene Teasers aus, welche bei der Erfassung einer Newsmeldung standardmässig vorselektiert werden sollen.";
 $_ARRAYLANG['TXT_NEWS_EXTENDED'] = "Erweitert";

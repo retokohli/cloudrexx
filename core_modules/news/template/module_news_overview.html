@@ -20,6 +20,20 @@ function deletePages(form)
   }
 }
 
+function addPlaceholder(object, placeholder) {
+    var el = jQuery(object);
+    if (el.val() == "") {
+        el.val(placeholder);
+    }
+}
+
+function removePlaceholder(object, placeholder) {
+    var el = jQuery(object);
+    if (el.val() == placeholder) {
+        el.val("");
+    }
+}
+
 $J(function(){
   $J("#monthFilter").change(function(){
     window.location.replace("index.php?cmd=news&{CSRF_PARAM}&monthFilter=" + $J(this).val());
@@ -36,8 +50,7 @@ $J(function(){
   <tr class="row1">
     <td>
       <form name="form2" method="post" action="index.php?cmd=news&amp;act=edit">
-        {TXT_EDIT_NEWS_ID}:
-        <input type="text" name="newsId" size="5" maxlength="5" />
+          <input type="text" name="newsId" id="editNewsId" onblur="javascript:addPlaceholder(this, '{TXT_EDIT_NEWS_ID}')" onfocus="javascript:removePlaceholder(this, '{TXT_EDIT_NEWS_ID}')" value="{TXT_EDIT_NEWS_ID}" />
       </form>
     </td>
   </tr>
@@ -74,11 +87,11 @@ $J(function(){
         <!-- BEGIN news_type_label -->
         <td valign="top" nowrap="nowrap" width="10%"> <b>{TXT_NEWS_TYPE}</b></td>
         <!-- END news_type_label -->
-      <td valign="top" nowrap="nowrap" width="5%"> <b>{TXT_USER}</b></td>
+      <td valign="top" nowrap="nowrap" width="12%"> <b>{TXT_USER}</b></td>
         <!-- BEGIN news_comments_label -->
-      <td valign="top" nowrap="nowrap" width="5%"> <b>{TXT_NEWS_COMMENTS}</b></td>
+      <td valign="top" nowrap="nowrap" width="6%"> <b>{TXT_NEWS_COMMENTS}</b></td>
         <!-- END news_comments_label -->
-      <td valign="top" nowrap="nowrap" width="5%"> <b>{TXT_LAST_EDIT}</b></td>
+      <td valign="top" nowrap="nowrap" width="10%"> <b>{TXT_LAST_EDIT}</b></td>
       <td valign="top" nowrap="nowrap" width="4%"><div align="right"><b>{TXT_ACTION}</b></div></td>
     </tr>
     <!-- BEGIN newsrow -->
@@ -101,7 +114,7 @@ $J(function(){
         <!-- END news_type_data -->
         <td nowrap="nowrap">{NEWS_USER}&nbsp;</td>
         <!-- BEGIN news_comments_data -->
-        <td nowrap="nowrap"><a href="index.php?cmd=news&amp;act=comments&amp;newsId={NEWS_ID}" title="{TXT_NEWS_COMMENTS}">{NEWS_COMMENTS_COUNT}&nbsp;{TXT_NEWS_COMMENTS}</a></td>
+        <td nowrap="nowrap" style="text-align: center;"><a href="index.php?cmd=news&amp;act=comments&amp;newsId={NEWS_ID}" title="{TXT_NEWS_COMMENTS}">{NEWS_COMMENTS_COUNT}</a></td>
         <!-- END news_comments_data -->
         <td nowrap="nowrap">{NEWS_CHANGELOG}&nbsp;</td>
         <td nowrap="nowrap">

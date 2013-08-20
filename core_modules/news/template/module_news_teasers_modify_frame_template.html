@@ -5,7 +5,7 @@
 </ul>
 <!-- start newsTeasers1 div -->
 <div id="newsTeasers1" class="frameTemplateTab" style="display:block">
-<form action="index.php?cmd=news&amp;act=teasers&amp;tpl=updateFrameTemplate&amp;templateId={NEWS_TEASER_FRAME_TPL_ID}" method="post">
+<form action="index.php?cmd=news&amp;act=settings&amp;tpl=teasers&amp;tpl2=updateFrameTemplate&amp;templateId={NEWS_TEASER_FRAME_TPL_ID}" method="post">
     <table class="adminlist" cellspacing="0" cellpadding="3" width="100%" border="0">
         <tr>
             <th colspan="2">{NEWS_TEASER_TITLE_TXT}</th>
@@ -15,7 +15,7 @@
             <td width="85%"><input type="text" name="teaserFrameTplDescription" style="width:300px;" maxlength="100" value="{NEWS_TEASER_FRAME_TPL_DESCRIPTION}" /></td>
         </tr>
         <tr class="row2 reset">
-            <td colspan="2">{NEWS_TEASER_FRAME_TEMPLATE_WYSIWYG}<br /><input type="checkbox" {NEWS_TEASER_FRAME_TPL_SOURCE_CHECKED} value="1" name="teaserFrameTplSource" id="teaserFrameTplSource" onclick="window.location.replace('index.php?cmd=news&{CSRF_PARAM}&amp;act=teasers&amp;tpl=editFrameTemplate&amp;templateId={NEWS_TEASER_FRAME_TPL_ID}&amp;source='+Number(this.checked))" /><label for="teaserFrameTplSource">{TXT_SOURCE_CODE_MODE}</label></td>
+            <td colspan="2">{NEWS_TEASER_FRAME_TEMPLATE_WYSIWYG}<br /><input type="checkbox" {NEWS_TEASER_FRAME_TPL_SOURCE_CHECKED} value="1" name="teaserFrameTplSource" id="teaserFrameTplSource" onclick="window.location.replace('index.php?cmd=news&{CSRF_PARAM}&amp;act=settings&amp;tpl=teasers&amp;tpl2=editFrameTemplate&amp;templateId={NEWS_TEASER_FRAME_TPL_ID}&amp;source='+Number(this.checked))" /><label for="teaserFrameTplSource">{TXT_SOURCE_CODE_MODE}</label></td>
         </tr>
     </table>
     <br />

@@ -3,7 +3,7 @@
 <!--
 	function confirmDeleteTeaser()
 	{
-		if (confirm('TXT_Möchten Sie diesen Teaser wirklich entfehrnen?')) {
+		if (confirm('TXT_MÃ¶chten Sie diesen Teaser wirklich entfernen?')) {
 			return true;
 		} else {
 			return false;
@@ -12,7 +12,7 @@
 	
 	function confirmDeleteFrame()
 	{
-		if (confirm('TXT_Möchten Sie diesen Teaser Rahmen wirklick löschen?')) {
+		if (confirm('TXT_MÃ¶chten Sie diesen Teaser Rahmen wirklick lÃ¶schen?')) {
 			return true;
 		} else {
 			return false;
@@ -20,7 +20,7 @@
 	}
 // -->
 </script>
-<form action="index.php?cmd=news&amp;act=teasers&amp;tpl=frames" method="post">
+<form action="index.php?cmd=news&amp;act=settings&amp;tpl=teasers&amp;tpl2=frames" method="post">
 	<table class="adminlist" cellspacing="0" cellpadding="3" width="100%" border="0">
 		<tr class="row1">
 			<th>TXT_Teaser Frame Vorschau</th>
@@ -28,6 +28,6 @@
 	</table>
 	{NEWS_TEASER_FRAME}
 	<br />
-	<input type="submit" name="cancel" value="TXT_Zurück" />
+	<input type="submit" name="cancel" value="TXT_ZurÃ¼ck" />
 </form>
 <!-- END module_news_teasers_show_frame.html -->
