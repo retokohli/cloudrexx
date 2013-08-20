@@ -1235,7 +1235,7 @@ class CalendarEventManager extends CalendarLibrary
             case 2:
                 $objCloneEvent->seriesData['seriesPatternEnd'] = $objCloneEvent->seriesData['seriesPatternEnd']-1;
                 
-                if($objCloneEvent->seriesData['seriesPatternEnd'] > 0) {
+                if($objCloneEvent->seriesData['seriesPatternEnd'] > 1) {
                     $getNextEvent = true;
                 } else {
                     $getNextEvent = false;

@@ -21,12 +21,23 @@
         jQuery(".startDate").data('dateTime', jQuery(".startDate").datetimepicker("getDate").getTime());
         jQuery(".endDate").data('dateTime', jQuery(".endDate").datetimepicker("getDate").getTime());
         if (elm.is(":checked")) {
+            // hack to disable timepicker, its not working if we disable time picker before it showing atleast once.
+           jQuery( ".startDate, .endDate" ).datetimepicker( "show" );
+           jQuery( ".startDate, .endDate" ).datetimepicker( "hide" );
            jQuery( ".startDate, .endDate" ).datetimepicker('disableTimepicker');
         } else {
            jQuery(".startDate, .endDate").datetimepicker('enableTimepicker');
         }
         jQuery(".startDate").datepicker('setDate', new Date(jQuery(".startDate").data('dateTime')));
         jQuery(".endDate").datepicker('setDate', new Date(jQuery(".endDate").data('dateTime')));
+      },
+      _isNumber : function(evt) {
+        evt = (evt) ? evt : window.event;
+        var charCode = (evt.which) ? evt.which : evt.keyCode;
+        if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+            return false;
+        }
+        return true;
       }
     };
     $J(function(){
@@ -36,6 +47,16 @@
        modifyEvent._handleSeriesEventRowDisplay($J('[name="seriesStatus"]'));    
        $J(".all_day").click(function(){
            modifyEvent._handleAllDayEvent($J(this));
+       });
+       $J("#seriesDailyDays").keyup(function(){
+         if (parseInt($J(this).val()) < 1) {
+             $J(this).val('1');
+         }
+       });
+       $J("#seriesDailyDays").blur(function(){
+         if ($J(this).val() == '') {
+             $J(this).val('1');
+         }
        });
     });
 
@@ -853,7 +874,7 @@
                 <tr class="row1">
                     <td valign="middle" width="180"><br /></td>
                     <td valign="middle">
-                        <label><input type="radio" name='seriesDaily'  value="1" {CALENDAR_SERIES_PATTERN_DAILY_1}/>&nbsp;{TXT_CALENDAR_ALL}&nbsp;</label><input type="text" name='seriesDailyDays' maxlength="3" value="{CALENDAR_SERIES_PATTERN_DAILY_DAYS}" style="width: 20px;" />&nbsp;{TXT_CALENDAR_DAYS}&nbsp;&nbsp;<br />
+                        <label><input type="radio" name='seriesDaily'  value="1" {CALENDAR_SERIES_PATTERN_DAILY_1}/>&nbsp;{TXT_CALENDAR_ALL}&nbsp;</label><input type="text" name='seriesDailyDays' id="seriesDailyDays" maxlength="3" value="{CALENDAR_SERIES_PATTERN_DAILY_DAYS}" style="width: 20px;" onkeypress="return modifyEvent._isNumber(event);" />&nbsp;{TXT_CALENDAR_DAYS}&nbsp;&nbsp;<br />
                         <label><input type="radio" name='seriesDaily' value="2" {CALENDAR_SERIES_PATTERN_DAILY_2} />&nbsp;{TXT_CALENDAR_EVERY_2} {TXT_CALENDAR_DAYS_WORKDAY}&nbsp;&nbsp;</label>
                     </td>
                 </tr>
@@ -907,7 +928,7 @@
                 <td valign="middle">
                     <label><input type="radio" name='seriesDouranceType' value="1" {CALENDAR_SERIES_PATTERN_DOURANCE_1}/>&nbsp;{TXT_CALENDAR_SERIES_PATTERN_NO_ENDDATE}</label><br />
                     <label style="width: 100px;float:left;"><input type="radio" name='seriesDouranceType' value="2" {CALENDAR_SERIES_PATTERN_DOURANCE_2}/>&nbsp;{TXT_CALENDAR_SERIES_PATTERN_ENDS_AFTER}&nbsp;</label>
-                    <input type="text" name='seriesDouranceEvents' maxlength="3" value="{CALENDAR_SERIES_PATTERN_ENDS_EVENTS}" style="width: 20px;" />&nbsp;{TXT_CALENDAR_SERIES_PATTERN_APPONTMENTS}<br />
+                    <input type="text" name='seriesDouranceEvents' maxlength="3" value="{CALENDAR_SERIES_PATTERN_ENDS_EVENTS}" style="width: 20px;" onkeypress="return modifyEvent._isNumber(event);" />&nbsp;{TXT_CALENDAR_SERIES_PATTERN_APPONTMENTS}<br />
                     <label style="width: 100px;float:left;"><input type="radio" name='seriesDouranceType' value="3" {CALENDAR_SERIES_PATTERN_DOURANCE_3}/>&nbsp;{TXT_CALENDAR_SERIES_PATTERN_ENDS}&nbsp;</label>
                     <input type="text" name="seriesDouranceDate"  id="{CALENDAR_SERIES_PATTERN_ENDS_INPUT_ID}" class="event_date" style="width: 140px;" value="{CALENDAR_SERIES_PATTERN_ENDS_DATE}" />      
                 </td>
