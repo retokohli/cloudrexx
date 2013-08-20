@@ -5,7 +5,7 @@ function newsDeleteTicker(id, name)
 {
 	strMsg = '{TXT_NEWS_CONFIRM_DELETE_TICKER}';
 	if (confirm(strMsg.replace('%s', name)+'\n{TXT_NEWS_ACTION_IS_IRREVERSIBLE}')) {
-		window.location.href = 'index.php?cmd=news&{CSRF_PARAM}&act=ticker&tpl=delete&id='+id;
+		window.location.href = 'index.php?cmd=news&{CSRF_PARAM}&act=settings&tpl=ticker&tpl2=delete&id='+id;
 	}
 }
 
@@ -43,7 +43,7 @@ function newsDeleteTickers(action) {
 				<td width="50%">{NEWS_TICKER_CONTENT}</td>
 				<td width="5%" style="text-align:center;">{NEWS_TICKER_CHARSET}</td>
 				<td width="5%" style="text-align:right;">
-					<a href="index.php?cmd=news&amp;act=ticker&amp;tpl=modify&amp;id={NEWS_TICKER_ID}&amp;pos={NEWS_TICKER_POS}" title="{TXT_NEWS_MODIFY_TICKER}"><img src="images/icons/edit.gif" width="16" height="16" border="0" alt="{TXT_NEWS_MODIFY_TICKER}" /></a>
+					<a href="index.php?cmd=news&amp;act=settings&amp;tpl=ticker&amp;tpl2=modify&amp;id={NEWS_TICKER_ID}&amp;pos={NEWS_TICKER_POS}" title="{TXT_NEWS_MODIFY_TICKER}"><img src="images/icons/edit.gif" width="16" height="16" border="0" alt="{TXT_NEWS_MODIFY_TICKER}" /></a>
 					<a href="javascript:newsDeleteTicker({NEWS_TICKER_ID},'{NEWS_TICKER_NAME}')" title="{NEWS_DELETE_TICKER_TXT}"><img src="images/icons/delete.gif" width="17" height="17" border="0" alt="{NEWS_DELETE_TICKER_TXT}" /></a>
 				</td>
 			</tr>

@@ -2,12 +2,12 @@
 <script type="text/javascript">
 <!--
 function loadTeaserFrameTemplate() {
-  document.getElementById('newsTeasersFrameForm').action = "index.php?cmd=news&act=teasers&tpl=updateFrame&frameId={NEWS_TEASER_FRAME_ID}";
+  document.getElementById('newsTeasersFrameForm').action = "index.php?cmd=news&act=settings&tpl=teasers&tpl2=updateFrame&frameId={NEWS_TEASER_FRAME_ID}";
   document.getElementById('newsTeasersFrameForm').submit();
 }
 //-->
 </script>
-<form action="index.php?cmd=news&amp;act=teasers&amp;tpl=updateFrame&amp;frameId={NEWS_TEASER_FRAME_ID}" id="newsTeasersFrameForm" method="post">
+<form action="index.php?cmd=news&amp;act=settings&amp;tpl=teasers&amp;tpl2=updateFrame&amp;frameId={NEWS_TEASER_FRAME_ID}" id="newsTeasersFrameForm" method="post">
   <table class="adminlist" cellspacing="0" cellpadding="3" width="100%" border="0">
     <tr>
       <th colspan="2" valign="top">{NEWS_TEASER_TITLE_TXT}</th>
@@ -25,6 +25,6 @@ function loadTeaserFrameTemplate() {
   </table>
   {NEWS_TEASER_FRAME_PREVIEW}
   <br />
-  <input type="button" name="cancel" onclick="window.location.replace('index.php?cmd=news&{CSRF_PARAM}&act=teasers&tpl=frames')" value="{TXT_CANCEL}" />&nbsp;<input type="submit" name="saveTeaserFrame" value="{TXT_SAVE}" />
+  <input type="button" name="cancel" onclick="window.location.replace('index.php?cmd=news&{CSRF_PARAM}&act=settings&tpl=teasers&tpl2=frames')" value="{TXT_CANCEL}" />&nbsp;<input type="submit" name="saveTeaserFrame" value="{TXT_SAVE}" />
 </form>
 <!-- END module_news_teasers_modify_frame.html -->

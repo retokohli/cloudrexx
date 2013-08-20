@@ -22,16 +22,16 @@ function confirmDeleteFrame() {
   </tr>
   <!-- BEGIN news_teaser_frames_list -->
     <tr class="{NEWS_TEASER_FRAME_ROW_CLASS}">
-      <td width="15%"><a href="index.php?cmd=news&amp;act=teasers&amp;tpl=editFrame&amp;frameId={NEWS_TEASER_FRAME_ID}" title="{TXT_SHOW_TEASER_BOX}">{NEWS_TEASER_FRAME_NAME}</a></td>
+      <td width="15%"><a href="index.php?cmd=news&amp;act=settings&amp;tpl=teasers&amp;tpl2=editFrame&amp;frameId={NEWS_TEASER_FRAME_ID}" title="{TXT_SHOW_TEASER_BOX}">{NEWS_TEASER_FRAME_NAME}</a></td>
       <td width="30%">{NEWS_TEASER_FRAME_TEMPLATE_PLACEHOLDER}</td>
-      <td width="50%"><a href="index.php?cmd=news&amp;act=teasers&amp;tpl=editFrameTemplate&amp;templateId={NEWS_TEASER_FRAME_TPL_ID}" title="{TXT_EDIT_BOX_TEMPLATE}">{NEWS_TEASER_FRAME_TPL_NAME}</a></td>
+      <td width="50%"><a href="index.php?cmd=news&amp;act=settings&amp;tpl=teasers&amp;tpl2=editFrameTemplate&amp;templateId={NEWS_TEASER_FRAME_TPL_ID}" title="{TXT_EDIT_BOX_TEMPLATE}">{NEWS_TEASER_FRAME_TPL_NAME}</a></td>
       <td width="5%" style="text-align: right;">
-        <a href="index.php?cmd=news&amp;act=teasers&amp;tpl=editFrame&amp;frameId={NEWS_TEASER_FRAME_ID}" title="{TXT_EDIT_TEASER_BOX}"><img src="images/icons/edit.gif" alt="{TXT_EDIT_TEASER_BOX}" width="16" height="16" border="0" /></a>
-        <a href="index.php?cmd=news&amp;act=teasers&amp;tpl=deleteFrame&amp;id={NEWS_TEASER_FRAME_ID}" onclick="return confirmDeleteFrame()" title="{TXT_DELETE_TEASER_BOX}"><img src="images/icons/delete.gif" alt="{TXT_DELETE_TEASER_BOX}" width="17" height="17" border="0" /></a>
+        <a href="index.php?cmd=news&amp;act=settings&amp;tpl=teasers&amp;tpl2=editFrame&amp;frameId={NEWS_TEASER_FRAME_ID}" title="{TXT_EDIT_TEASER_BOX}"><img src="images/icons/edit.gif" alt="{TXT_EDIT_TEASER_BOX}" width="16" height="16" border="0" /></a>
+        <a href="index.php?cmd=news&amp;act=settings&amp;tpl=teasers&amp;tpl2=deleteFrame&amp;id={NEWS_TEASER_FRAME_ID}" onclick="return confirmDeleteFrame()" title="{TXT_DELETE_TEASER_BOX}"><img src="images/icons/delete.gif" alt="{TXT_DELETE_TEASER_BOX}" width="17" height="17" border="0" /></a>
       </td>
     </tr>
   <!-- END news_teaser_frames_list -->
 </table>
 <br />
-<input type="button" onclick="window.location.replace('index.php?cmd=news&{CSRF_PARAM}&act=teasers&tpl=editFrame')" value="{TXT_ADD_BOX}" />
+<input type="button" onclick="window.location.replace('index.php?cmd=news&{CSRF_PARAM}&act=settings&tpl=teasers&tpl2=editFrame')" value="{TXT_ADD_BOX}" />
 <!-- END module_news_teasers.html -->

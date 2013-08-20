@@ -181,9 +181,9 @@ class newsManager extends newsLibrary {
             <a href='index.php?cmd=news&amp;act=add' class='".($this->act == 'add' ? 'active' : '')."'>".$_ARRAYLANG['TXT_CREATE_NEWS']."</a>
             <a href='index.php?cmd=news&amp;act=newscat' class='".($this->act == 'newscat' ? 'active' : '')."'>".$_ARRAYLANG['TXT_CATEGORY_MANAGER']."</a>
             ".($this->arrSettings['news_use_types'] == '1' ? "<a href='index.php?cmd=news&amp;act=newstype' class='".($this->act == 'newstype' ? 'active' : '')."'>".$_ARRAYLANG['TXT_TYPES_MANAGER']."</a>" : "")."
-            <a href='index.php?cmd=news&amp;act=ticker' class='".($this->act == 'ticker' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWS_NEWSTICKER']."</a>
-            ".($_CONFIG['newsTeasersStatus'] == '1' ? "<a href='index.php?cmd=news&amp;act=teasers' class='".($this->act == 'teasers' ? 'active' : '')."'>".$_ARRAYLANG['TXT_TEASERS']."</a>" : "")."
             <a href='index.php?cmd=news&amp;act=settings' class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWS_SETTINGS']."</a>");   
+            //<a href='index.php?cmd=news&amp;act=ticker' class='".($this->act == 'ticker' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWS_NEWSTICKER']."</a>
+            //".($_CONFIG['newsTeasersStatus'] == '1' ? "<a href='index.php?cmd=news&amp;act=teasers' class='".($this->act == 'teasers' ? 'active' : '')."'>".$_ARRAYLANG['TXT_TEASERS']."</a>" : "")."
     }
 
     /**
@@ -295,14 +295,6 @@ class newsManager extends newsLibrary {
                 $this->rss();
                 break;
 
-            case 'ticker':
-                $this->_ticker();
-                break;
-
-            case 'teasers':
-                $this->_teasers();
-                break;
-
             case 'access_user':
                 $this->access_user();
                 break;
@@ -385,7 +377,7 @@ class newsManager extends newsLibrary {
 
         $this->_objTpl->setVariable(array(
             'TXT_EDIT_NEWS_MESSAGE'      => $_ARRAYLANG['TXT_EDIT_NEWS_MESSAGE'],
-            'TXT_EDIT_NEWS_ID'           => $_ARRAYLANG['TXT_EDIT_NEWS_MESSAGE'],
+            'TXT_EDIT_NEWS_ID'           => $_ARRAYLANG['TXT_EDIT_NEWS_ID'],
             'TXT_ID'                     => $_ARRAYLANG['TXT_ID'],
             'TXT_DATE'                   => $_ARRAYLANG['TXT_DATE'],
             'TXT_TITLE'                  => $_ARRAYLANG['TXT_TITLE'],
@@ -416,7 +408,7 @@ class newsManager extends newsLibrary {
             'TXT_EDIT'                      => $_ARRAYLANG['TXT_EDIT'],
             'TXT_COPY'                      => $_ARRAYLANG['TXT_COPY'],
             'TXT_DELETE'                    => $_ARRAYLANG['TXT_DELETE'],
-            'TXT_NEWS_COMMENTS'               => $_ARRAYLANG['TXT_NEWS_COMMENTS'],
+            'TXT_NEWS_COMMENTS'             => $_ARRAYLANG['TXT_NEWS_COMMENTS'],
             'TXT_NEWS_MESSAGE_PROTECTED'    => $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTED'],
             'TXT_NEWS_READ_ALL_ACCESS_DESC' => $_ARRAYLANG['TXT_NEWS_READ_ALL_ACCESS_DESC']
         ));
@@ -3087,14 +3079,21 @@ class newsManager extends newsLibrary {
      */
     function settings()
     {
-        global $_CORELANG;
+        global $_CORELANG, $_ARRAYLANG, $_CONFIG;
 
         $this->pageTitle = $_CORELANG['TXT_CORE_SETTINGS'];
         $this->_objTpl->loadTemplateFile('module_news_settings.html', true, true);
         $this->_objTpl->setVariable(array(
-            'TXT_CORE_GENERAL'      => $_CORELANG['TXT_CORE_GENERAL'],
-            'TXT_CORE_PLACEHOLDERS' => $_CORELANG['TXT_CORE_PLACEHOLDERS'],
+            'TXT_CORE_GENERAL'          => $_CORELANG['TXT_CORE_GENERAL'],
+            'TXT_CORE_PLACEHOLDERS'     => $_CORELANG['TXT_CORE_PLACEHOLDERS'],
+            'TXT_NEWS_NEWSTICKER'       => $_ARRAYLANG['TXT_NEWS_NEWSTICKER'],
+            'TXT_NEWS_CREATE_TICKER'    => $_ARRAYLANG['TXT_NEWS_CREATE_TICKER'],
+            'TXT_TEASER_TEASER_BOXES'   => $_ARRAYLANG['TXT_TEASER_TEASER_BOXES'],
+            'TXT_TEASER_BOX_TEMPLATES'  => $_ARRAYLANG['TXT_TEASER_BOX_TEMPLATES'],
         ));
+        if ($_CONFIG['newsTeasersStatus'] != '1') {
+            $this->_objTpl->hideBlock('module_news_teaser');
+        }
 
         switch (!empty($_GET['tpl']) ? $_GET['tpl'] : '') {
             case 'general':
@@ -3102,6 +3101,20 @@ class newsManager extends newsLibrary {
                 break;
             case 'placeholders':
                 $this->settingsPlaceholders();
+                break;
+            case 'ticker':
+                $this->_ticker();
+                break;
+            case 'addticker':
+                $_REQUEST['tpl2'] = 'modify';
+                $this->_ticker();
+                break;
+            case 'teasers':
+                $this->_teasers();
+                break;
+            case 'teasertemplates':
+                $_REQUEST['tpl2'] = 'frameTemplates';
+                $this->_teasers();
                 break;
             default:
                 $this->settingsGeneral();
@@ -3455,14 +3468,14 @@ class newsManager extends newsLibrary {
     {
         global $_ARRAYLANG;
 
-        $this->_objTpl->loadTemplatefile('module_news_ticker.html');
+        $this->_objTpl->addBlockfile('NEWS_SETTINGS_CONTENT', 'settings_content', 'module_news_ticker.html');
 
         $this->_objTpl->setVariable(array(
             'TXT_NEWS_OVERVIEW'         => $_ARRAYLANG['TXT_NEWS_OVERVIEW'],
             'TXT_NEWS_CREATE_TICKER'    => $_ARRAYLANG['TXT_NEWS_CREATE_TICKER']
         ));
 
-        $tpl = !empty($_REQUEST['tpl']) ? $_REQUEST['tpl'] : '';
+        $tpl = !empty($_REQUEST['tpl2']) ? $_REQUEST['tpl2'] : '';
         switch ($tpl) {
             case 'modify':
                 $this->_modifyTicker();
@@ -3814,18 +3827,18 @@ class newsManager extends newsLibrary {
 
         $this->_objTeaser = new Teasers(true);
 
-        $this->_objTpl->loadTemplateFile('module_news_teasers.html');
+        $this->_objTpl->addBlockfile('NEWS_SETTINGS_CONTENT', 'settings_content', 'module_news_teasers.html');
 
         $this->_objTpl->setGlobalVariable(array(
             'TXT_TEASER_TEASER_BOXES'       => $_ARRAYLANG['TXT_TEASER_TEASER_BOXES'],
             'TXT_TEASER_BOX_TEMPLATES'      => $_ARRAYLANG['TXT_TEASER_BOX_TEMPLATES']
         ));
 
-        if (!isset($_REQUEST['tpl'])) {
-            $_REQUEST['tpl'] = '';
+        if (!isset($_REQUEST['tpl2'])) {
+            $_REQUEST['tpl2'] = '';
         }
 
-        switch ($_REQUEST['tpl']) {
+        switch ($_REQUEST['tpl2']) {
         case 'teasers':
             $this->_showTeasers();
             break;
