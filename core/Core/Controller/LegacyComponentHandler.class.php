@@ -407,8 +407,13 @@ class LegacyComponentHandler {
                                     || strpos($themesPages['sidebar'], $headlinesNewsPlaceholder) !== false
                                     || strpos($page_template, $headlinesNewsPlaceholder) !== false
                                 ) {
+                                    $category = 0;
+                                    $matches = array();
+                                    if (preg_match('/\{CATEGORY_([0-9]+)\}/', trim($themesPages['headlines' . $visibleI]), $matches)) {
+                                        $category = $matches[1];
+                                    }
                                     $newsHeadlinesObj = new \newsHeadlines($themesPages['headlines' . $visibleI]);
-                                    $homeHeadlines = $newsHeadlinesObj->getHomeHeadlines();
+                                    $homeHeadlines = $newsHeadlinesObj->getHomeHeadlines($category);
                                     \Env::get('cx')->getPage()->setContent(str_replace($headlinesNewsPlaceholder, $homeHeadlines, \Env::get('cx')->getPage()->getContent()));
                                     $themesPages['index']   = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $themesPages['index']);
                                     $themesPages['sidebar'] = str_replace($headlinesNewsPlaceholder, $homeHeadlines, $themesPages['sidebar']);
