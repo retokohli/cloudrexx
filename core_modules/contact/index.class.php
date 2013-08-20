@@ -133,6 +133,7 @@ class Contact extends ContactLib
         $isLoggedin = $this->setProfileData();
         $useCaptcha = !$isLoggedin && $this->getContactFormCaptchaStatus($formId);
         $this->handleUniqueId();
+        $uploaderCode = '';
         
         $this->objTemplate->setVariable(array(
             'TXT_NEW_ENTRY_ERORR'   => $_ARRAYLANG['TXT_NEW_ENTRY_ERORR'],
@@ -247,7 +248,7 @@ class Contact extends ContactLib
                 $fieldType = ($arrField['type'] != 'special') ? $arrField['type'] : $arrField['special_type'];
                 switch ($fieldType) {
                     case 'checkbox':
-                        if ($arrField['lang'][$_LANGID]['value'] == 1 || $_POST['contactFormField_' . $fieldId] == 1) {
+                        if ($arrField['lang'][$_LANGID]['value'] == 1 || !empty($_POST['contactFormField_' . $fieldId])) {
                             $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'checked="checked"');
                         }
                         break;
@@ -397,7 +398,14 @@ class Contact extends ContactLib
 
                     case 'file':
                         $this->hasFileField = true;
-                        //break intentionally left out here.
+                        $uploaderCode .= $this->initUploader($fieldId, true);
+                        break;
+
+                    case 'multi_file':
+                        $this->hasFileField = true;
+                        $uploaderCode .= $this->initUploader($fieldId, false);
+                        break;
+
                     default:
                         /*
                          * Set default field value through User profile attribute
@@ -464,7 +472,7 @@ class Contact extends ContactLib
             $this->setCaptcha($useCaptcha);
         }
 
-        $this->objTemplate->setVariable('CONTACT_JAVASCRIPT', $this->_getJsSourceCode($formId, $arrFields) . ($this->hasFileField ? $this->initUploader() : ''));
+        $this->objTemplate->setVariable('CONTACT_JAVASCRIPT', $this->_getJsSourceCode($formId, $arrFields) . $uploaderCode);
         
         return $this->objTemplate->get();
     }
@@ -493,7 +501,7 @@ class Contact extends ContactLib
     /**
      * Inits the uploader when displaying a contact form.
      */
-    protected function initUploader() {
+    protected function initUploader($fieldId, $restrictUpload2SingleFile = true) {
         try {
             //init the uploader
             JS::activate('cx'); //the uploader needs the framework
@@ -502,17 +510,27 @@ class Contact extends ContactLib
             /**
             * Name of the upload instance
             */
-            $uploaderInstanceName = 'exposed_combo_uploader';
+            $uploaderInstanceName = 'exposed_combo_uploader_'.$fieldId;
 
             /**
             * jQuery selector of the HTML-element where the upload folder-widget shall be put in
             */
-            $uploaderFolderWidgetContainer = '#contactFormField_uploadWidget';
+            $uploaderFolderWidgetContainer = '#contactFormField_uploadWidget_'.$fieldId;
+            $uploaderWidgetName = 'uploadWidget'.$fieldId;
 
+            $uploader = $f->newUploader('exposedCombo', 0, $restrictUpload2SingleFile);
+            $uploadId = $uploader->getUploadId();
+
+            //set instance name so we are able to catch the instance with js
+            $uploader->setJsInstanceName($uploaderInstanceName);
+
+            // specifies the function to call when upload is finished. must be a static function
+            $uploader->setFinishedCallback(array(ASCMS_CORE_MODULE_PATH.'/contact/index.class.php','Contact','uploadFinished'));
+            $uploader->setData(array('submissionId' => $this->submissionId, 'fieldId' => $fieldId, 'singlefile' => $restrictUpload2SingleFile));
 
 
             //retrieve temporary location for uploaded files
-            $tup = self::getTemporaryUploadPath($this->submissionId);
+            $tup = self::getTemporaryUploadPath($this->submissionId, $fieldId);
 
             //create the folder
             if (!\Cx\Lib\FileSystem\FileSystem::make_folder($tup[1].'/'.$tup[2])) {
@@ -530,29 +548,27 @@ class Contact extends ContactLib
                     throw new ContactException("Could not chmod temporary upload directory '".$tup[0].'/'.$tup[2]."'");
                 }
             }
-            //initialize the widget displaying the folder contents
-            $folderWidget = $f->newFolderWidget($tup[0].'/'.$tup[2]);
-            
-            
-            $uploader = $f->newUploader('exposedCombo');
-            $uploader->setJsInstanceName($uploaderInstanceName);
-            $uploader->setFinishedCallback(array(ASCMS_CORE_MODULE_PATH.'/contact/index.class.php','Contact','uploadFinished'));
-            $uploader->setData($this->submissionId);
 
-            return  $uploader->getXHtml().
-                    $folderWidget->getXHtml($uploaderFolderWidgetContainer, 'uploadWidget')."
-                    <script>
-                        cx.include(
-                            [
-                                'core_modules/contact/js/extendedFileInput.js'
-                            ],
-                            function() {
-                                var ef = new ExtendedFileInput({
-                                   field:  \$J('#contactFormField_upload')
-                                });
-                            }
-                        );
-                    </script>";
+            //initialize the widget displaying the folder contents
+            $folderWidget = $f->newFolderWidget($tup[0].'/'.$tup[2], $uploaderInstanceName);
+
+            $strInputfield = $folderWidget->getXHtml($uploaderFolderWidgetContainer, $uploaderWidgetName);
+            $strInputfield .= $uploader->getXHtml();
+
+            JS::registerJS('core_modules/upload/js/uploaders/exposedCombo/extendedFileInput.js');
+
+            $strInputfield .= <<<CODE
+            <script type="text/javascript">
+            cx.ready(function() {
+                    var ef = new ExtendedFileInput({
+                            field:  jQuery('#contactFormFieldId_$fieldId'),
+                            instance: '$uploaderInstanceName',
+                            widget: '$uploaderWidgetName'
+                    });
+            });
+            </script>
+CODE;
+            return $strInputfield;
         }
         catch (Exception $e) {
             return '<!-- failed initializing uploader, exception '.get_class($e).' with message "'.$e->getMessage().'" -->';
@@ -722,84 +738,90 @@ class Contact extends ContactLib
             if(!$this->hasFileField) //nothing to do for us, no files
                 return array();
                 
-            $id = intval($_REQUEST['unique_id']);
-            $tup = self::getTemporaryUploadPath($id);
-            $tmpUploadDir = $tup[1].'/'.$tup[2].'/'; //all the files uploaded are in here
             $arrFiles = array(); //we'll collect name => path of all files here and return this
-
-            $depositionTarget = ""; //target folder
-
-            //on the first call, _uploadFiles is called with move=false.
-            //this is done in order to get an array of the moved files' names, but
-            //the files are left in place.
-            //the second call is done with move=true - here we finally move the
-            //files.
-            //
-            //the target folder is created in the first call, because if we can't
-            //create the folder, the target path is left pointing at the path
-            //specified by $arrSettings['fileUploadDepositionPath'].
-            //
-            //to remember the target folder for the second call, it is stored in
-            //$this->depositionTarget.
-            if(!$move) { //first call - create folder
-                //determine where form uploads are stored
-                $arrSettings = $this->getSettings();
-                $depositionTarget = $arrSettings['fileUploadDepositionPath'].'/';
-
-                //find an unique folder name for the uploaded files
-                $folderName = date("Ymd");
-                $suffix = "";
-                if(file_exists(ASCMS_DOCUMENT_ROOT.$depositionTarget.$folderName)) {
-                    $suffix = 1;
-                    while(file_exists(ASCMS_DOCUMENT_ROOT.$depositionTarget.$folderName.'-'.$suffix))
-                        $suffix++;
-
-                    $suffix = '-'.$suffix;
+            foreach ($arrFields as $fieldId => $arrField) {
+                // skip non-upload fields
+                if (!in_array($arrField['type'], array('file', 'multi_file'))) {
+                    continue;
                 }
-                $folderName .= $suffix;
-                
-                //try to make the folder and change target accordingly on success
-                if(\Cx\Lib\FileSystem\FileSystem::make_folder(ASCMS_PATH.ASCMS_PATH_OFFSET.'/'.$depositionTarget.$folderName)) {
-                    \Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_PATH.ASCMS_PATH_OFFSET.'/'.$depositionTarget.$folderName);
-                    $depositionTarget .= $folderName.'/';
-                }
-                $this->depositionTarget = $depositionTarget;
-            }
-            else //second call - restore remembered target
-            {
-                $depositionTarget = $this->depositionTarget;
-            }
 
-            //move all files
-            if(!\Cx\Lib\FileSystem\FileSystem::exists($tmpUploadDir))
-                throw new ContactException("could not find temporary upload directory '$tmpUploadDir'");
+                $tup = self::getTemporaryUploadPath($this->submissionId, $fieldId);
+                $tmpUploadDir = $tup[1].'/'.$tup[2].'/'; //all the files uploaded are in here
 
-            $h = opendir(ASCMS_PATH.$tmpUploadDir);
-            while(false !== ($f = readdir($h))) {
-                if($f != '..' && $f != '.') {
-                    //do not overwrite existing files.
-                    $prefix = '';
-                    while (file_exists(ASCMS_DOCUMENT_ROOT.$depositionTarget.$prefix.$f)) {
-                        if (empty($prefix)) {
-                            $prefix = 0;
-                        }
-                        $prefix ++;
+                $depositionTarget = ""; //target folder
+
+                //on the first call, _uploadFiles is called with move=false.
+                //this is done in order to get an array of the moved files' names, but
+                //the files are left in place.
+                //the second call is done with move=true - here we finally move the
+                //files.
+                //
+                //the target folder is created in the first call, because if we can't
+                //create the folder, the target path is left pointing at the path
+                //specified by $arrSettings['fileUploadDepositionPath'].
+                //
+                //to remember the target folder for the second call, it is stored in
+                //$this->depositionTarget.
+                if(!$move) { //first call - create folder
+                    //determine where form uploads are stored
+                    $arrSettings = $this->getSettings();
+                    $depositionTarget = $arrSettings['fileUploadDepositionPath'].'/';
+
+                    //find an unique folder name for the uploaded files
+                    $folderName = date("Ymd").'_'.$fieldId;
+                    $suffix = "";
+                    if(file_exists(ASCMS_DOCUMENT_ROOT.$depositionTarget.$folderName)) {
+                        $suffix = 1;
+                        while(file_exists(ASCMS_DOCUMENT_ROOT.$depositionTarget.$folderName.'-'.$suffix))
+                            $suffix++;
+
+                        $suffix = '-'.$suffix;
                     }
+                    $folderName .= $suffix;
                     
-                    if($move) {
-                        // move file
-                        try {
-                            $objFile = new \Cx\Lib\FileSystem\File($tmpUploadDir.$f);
-                            $objFile->move(ASCMS_PATH.ASCMS_PATH_OFFSET.'/'.$depositionTarget.$prefix.$f, false);
-                        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-                            \DBG::msg($e->getMessage());
-                        }
+                    //try to make the folder and change target accordingly on success
+                    if(\Cx\Lib\FileSystem\FileSystem::make_folder(ASCMS_PATH.ASCMS_PATH_OFFSET.'/'.$depositionTarget.$folderName)) {
+                        \Cx\Lib\FileSystem\FileSystem::makeWritable(ASCMS_PATH.ASCMS_PATH_OFFSET.'/'.$depositionTarget.$folderName);
+                        $depositionTarget .= $folderName.'/';
                     }
+                    $this->depositionTarget[$fieldId] = $depositionTarget;
+                }
+                else //second call - restore remembered target
+                {
+                    $depositionTarget = $this->depositionTarget[$fieldId];
+                }
+
+                //move all files
+                if(!\Cx\Lib\FileSystem\FileSystem::exists($tmpUploadDir))
+                    throw new ContactException("could not find temporary upload directory '$tmpUploadDir'");
+
+                $h = opendir(ASCMS_PATH.$tmpUploadDir);
+                while(false !== ($f = readdir($h))) {
+                    if($f != '..' && $f != '.') {
+                        //do not overwrite existing files.
+                        $prefix = '';
+                        while (file_exists(ASCMS_DOCUMENT_ROOT.$depositionTarget.$prefix.$f)) {
+                            if (empty($prefix)) {
+                                $prefix = 0;
+                            }
+                            $prefix ++;
+                        }
                         
-                    $arrFiles[] = array(
-                        'name'  => $f,
-                        'path'  => $depositionTarget.$prefix.$f,
-                    );
+                        if($move) {
+                            // move file
+                            try {
+                                $objFile = new \Cx\Lib\FileSystem\File($tmpUploadDir.$f);
+                                $objFile->move(ASCMS_DOCUMENT_ROOT.$depositionTarget.$prefix.$f, false);
+                            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                                \DBG::msg($e->getMessage());
+                            }
+                        }
+                            
+                        $arrFiles[$fieldId][] = array(
+                            'name'  => $f,
+                            'path'  => $depositionTarget.$prefix.$f,
+                        );
+                    }
                 }
             }
             //cleanup
@@ -979,9 +1001,10 @@ class Contact extends ContactLib
                         break;
 
                     case 'file':
+                    case 'multi_file':
                         if(!$this->legacyMode && $isRequired) {
                             //check if the user has uploaded any files
-                            $tup = self::getTemporaryUploadPath($this->submissionId);
+                            $tup = self::getTemporaryUploadPath($this->submissionId, $fieldId);
                             $path = $tup[0].'/'.$tup[2];
                             if(count(@scandir($path)) == 2) { //only . and .. present, directory is empty
                                 //no uploaded files in a mandatory field - no good.
@@ -990,6 +1013,8 @@ class Contact extends ContactLib
                             // we need to use a 'continue 2' here to first break out of the switch and then move over to the next iteration of the foreach loop
                             continue 2;
                         }
+
+                        // this is used for legacyMode
                         $value = isset($arrFields['uploadedFiles'][$fieldId]) ? $arrFields['uploadedFiles'][$fieldId] : '';
                         break;
 
@@ -1103,17 +1128,28 @@ class Contact extends ContactLib
         }
 
         $lastInsertId = $objDatabase->insert_id();
-        $hasFiles = false;
-        $fileFieldId = 0;
-        $fileFieldName = null;
         foreach ($arrFormData['fields'] as $key => $arrField) {
             $value = '';
 
-            if ($arrField['type'] == 'file' ) {
-                $hasFiles = true;
-                $fileFieldId = $key;
-                $fileFieldName = $arrField['lang'][$_LANGID]['name'];
-                continue;
+            if ($arrField['type'] == 'file' || $arrField['type'] == 'multi_file') {
+                if($key === 0)
+                    throw new ContactException('could not find file field for form with id ' . $arrFormData['id']);
+
+                if ($this->legacyMode) { //store files according to their inputs name
+// TODO: check legacyMode
+                    $arrDBEntry = array();
+                    foreach ($arrFormData['uploadedFiles'] as $key => $file) {
+                        $arrDbEntry[] = base64_encode($key).",".base64_encode(contrexx_strip_tags($file));
+                    }
+                    $value = implode(';', $arrDbEntry);
+                } elseif (isset($arrFormData['uploadedFiles'][$key]) && count($arrFormData['uploadedFiles'][$key]) > 0) { //assign all files uploaded to the uploader fields name
+                    $arrTmp = array();
+                    foreach ($arrFormData['uploadedFiles'][$key] as $file) {
+                        $arrTmp[] = $file['path'];
+                    }
+                    // a * in front of the file names marks a 'new style' entry
+                    $value = implode('*', $arrTmp);
+                }
             } else {
                 if (isset($arrFormData['data'][$key])) {
                     $value = $arrFormData['data'][$key];
@@ -1129,41 +1165,6 @@ class Contact extends ContactLib
                                          '".contrexx_raw2db($arrField['lang'][$_LANGID]['name'])."',
                                          '".contrexx_raw2db($value)."')");
             }
-        }
-
-        if($hasFiles) {
-            if($fileFieldId === 0)
-                throw new ContactException('could not find file field for form with id ' . $arrFormData['id']);
-
-            $fileData = null;
-            if($this->legacyMode) { //store files according to their inputs name
-                $arrDBEntry = array();
-                foreach ($arrFormData['uploadedFiles'] as $key => $file) {
-                    $arrDbEntry[] = base64_encode($key).",".base64_encode(contrexx_strip_tags($file));
-                }
-                $fileData = implode(';', $arrDbEntry);
-            }
-            else if(count($arrFormData['uploadedFiles']) > 0) { //assign all files uploaded to the uploader fields name
-                $arrTmp = array();
-                foreach ($arrFormData['uploadedFiles'] as $file) {
-                    $arrTmp[] = $file['path'];
-                }
-                //a * in front of the file names marks a 'new style' entry
-                $files = implode('*', $arrTmp);
-
-                $fileData = $files;
-            }
-
-            if($fileData) {
-                $objDatabase->Execute("INSERT INTO ".DBPREFIX."module_contact_form_submit_data
-                                    (`id_entry`, `id_field`, `formlabel`, `formvalue`)
-                                    VALUES
-                                    (".$lastInsertId.",
-                                     ".$fileFieldId.",
-                                     '".contrexx_raw2db($fileFieldName)."',
-                                     '".contrexx_raw2db($fileData)."')");
-            }
-
         }
 
         return true;
@@ -1285,20 +1286,21 @@ class Contact extends ContactLib
                     break;
 
                 case 'file':
-                    //if (isset($arrFormData['uploadedFiles'][$fieldId])) {
-                    $htmlValue = "<ul>";
+                case 'multi_file':
+                    $htmlValue = "";
                     $plaintextValue = "";
-                    if (isset($arrFormData['uploadedFiles'])) {
-                        foreach ($arrFormData['uploadedFiles'] as $file) {
+                    if (isset($arrFormData['uploadedFiles'][$fieldId])) {
+                        $htmlValue = "<ul>";
+                        foreach ($arrFormData['uploadedFiles'][$fieldId] as $file) {
                             $htmlValue .= "<li><a href='".ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.contrexx_raw2xhtml($file['path'])."' >".contrexx_raw2xhtml($file['name'])."</a></li>";
                             $plaintextValue  .= ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$file['path']."\r\n";
                         }
+                        $htmlValue .= "</ul>";
                     }
-                    $htmlValue .= "</ul>";
                     break;
 
                 case 'checkbox':
-                    $plaintextValue = $arrFormData['data'][$fieldId] == 1
+                    $plaintextValue = !empty($arrFormData['data'][$fieldId])
                                         ? $_ARRAYLANG['TXT_CONTACT_YES']
                                         : $_ARRAYLANG['TXT_CONTACT_NO'];
                     $htmlValue = $plaintextValue;
@@ -1431,8 +1433,10 @@ class Contact extends ContactLib
 
             // attach submitted files to email
             if (count($arrFormData['uploadedFiles']) > 0 && $arrFormData['sendAttachment'] == 1) {
-                foreach ($arrFormData['uploadedFiles'] as $file) {
-                    $objMail->AddAttachment(ASCMS_DOCUMENT_ROOT.$file['path'], $file['name']);
+                foreach ($arrFormData['uploadedFiles'] as $arrFilesOfField) {
+                    foreach ($arrFilesOfField as $file) {
+                        $objMail->AddAttachment(ASCMS_DOCUMENT_ROOT.$file['path'], $file['name']);
+                    }
                 }
             }
 
@@ -1578,7 +1582,7 @@ class Contact extends ContactLib
      * @return array('path','webpath', 'dirname')
      * @throws ContactException
      */
-    protected static function getTemporaryUploadPath($submissionId) {
+    protected static function getTemporaryUploadPath($submissionId, $fieldId) {
         global $sessionObj;
 
         if (!isset($sessionObj)) $sessionObj = new cmsSession();
@@ -1588,7 +1592,7 @@ class Contact extends ContactLib
         if($tempPath === false || $tempWebPath === false)
             throw new ContactException('could not get temporary session folder');
 
-        $dirname = 'contact_files_'.$submissionId;
+        $dirname = 'contact_files_'.$submissionId.'_'.$fieldId;
         $result = array(
             $tempPath,
             $tempWebPath,
@@ -1599,8 +1603,43 @@ class Contact extends ContactLib
 
     //Uploader callback
     public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos) {
-        $tup = self::getTemporaryUploadPath($data);
+        $tup = self::getTemporaryUploadPath($data['submissionId'], $data['fieldId']);
+
+        // in case uploader has been restricted to only allow one single file to be
+        // uploaded, we'll have to clean up any previously uploaded files
+        if ($data['singlefile']) {
+            if (count($fileInfos['originalFileNames'])) {
+                // new files have been uploaded -> remove existing files
+                $contactUploadDestinationPath = $tup[0] . '/' . $tup[2];
+
+                if ($dh = opendir($contactUploadDestinationPath)) {
+                    while (($uploadedFile = readdir($dh)) !== false) {
+                        if ($uploadedFile == '..' || $uploadedFile == '.') {
+                            continue;
+                        }
+
+                        \Cx\Lib\FileSystem\FileSystem::delete_file($contactUploadDestinationPath.'/'.$uploadedFile);
+                    }
+                    closedir($dh);
+                }
+            }
+
+            // remove additional files, in case more than one file has been uploaded
+            if (count($fileInfos['originalFileNames']) > 1) {
+                $firstUploadedFile = array_shift($fileInfos['originalFileNames']);
+                if ($dh = opendir($tempPath)) {
+                    while (($uploadedFile = readdir($dh)) !== false) {
+                        if ($uploadedFile == '..' || $uploadedFile == '.' || $uploadedFile == $firstUploadedFile) {
+                            continue;
+                        }
+
+                        \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath.'/'.$uploadedFile);
+                    }
+                    closedir($dh);
+                }
+            }
+        }
+
         return array($tup[0].'/'.$tup[2],$tup[1].'/'.$tup[2]);
     }
 }
-

@@ -1253,6 +1253,7 @@ class ContactLib
             ');
 
             $fileFieldId = 0;
+// TODO: what is with legacyMode uploads??
             if (!$this->legacyMode) {
                 $rs = $objDatabase->SelectLimit('
                     SELECT `id`
@@ -1358,14 +1359,14 @@ function checkAllFields() {
             } else {
                 \$J('#contactFormFieldId_'+field).css('outline', '');
             }
-        } else if (type == 'file') {
+        } else if (type == 'file' || type == 'multi_file') {
             var required = fields[field][1];
-            var folderWidget = cx.instances.get('uploadWidget', 'folderWidget');
+            var folderWidget = cx.instances.get('uploadWidget' + field, 'upload/folderWidget');
             if(required && folderWidget.isEmpty()) {
                 isOk = false;
-                \$J('[name=contactFormField_upload]').css('border', '1px solid red');
+                \$J('#contactFormFieldId_'+field).css('outline', '1px solid red');
             } else {
-                \$J('[name=contactFormField_upload]').attr('style', '');
+                \$J('#contactFormFieldId_'+field).css('outline', '');
             }
         } else if (type == 'select' || type == 'country' || type == 'access_country' || type == 'access_title' || type == 'access_gender') {
             if (!isRequiredSelect(fields[field][1], field)) {
