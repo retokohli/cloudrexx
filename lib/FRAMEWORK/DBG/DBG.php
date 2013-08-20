@@ -747,7 +747,7 @@ function DBG_log_adodb($msg)
     }
 
     $msg = trim(html_entity_decode(strip_tags($msg), ENT_QUOTES, CONTREXX_CHARSET));
-    $sql = preg_replace('#^\(mysql\):\s*#', '', $msg);
+    $sql = preg_replace('#^\([^\)]+\):\s*#', '', $msg);
     DBG::logSQL($sql);
 }
 
