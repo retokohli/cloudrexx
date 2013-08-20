@@ -109,9 +109,9 @@ var ComboUploader = function(theConfig) {
 
         //initialize correct player
         if(playerEnabled('pl') && browserRuntimes.flash) //flashy enough for pluploader
-            curType = 'pl';
+            switchUploader('pl');
         else if(playerEnabled('jump') && browserRuntimes.java)//try java if not
-            curType = 'jump';
+            switchUploader('jump');
     }
     else { //only a single player, most likely advanced uploading was disabled
         div.find('.advancedLink:first').remove(); //remove advanced link

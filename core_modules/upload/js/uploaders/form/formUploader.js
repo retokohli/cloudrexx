@@ -1,5 +1,5 @@
-var FormUploader = function(uploaderDiv) {
-    var div = $J(uploaderDiv);
+var FormUploader = function(uploaderId) {
+    var div = $J('#form_uploader_' + uploaderId);
 
     var bindDelete = function(fileDiv) {
         fileDiv.find('.delete:first').bind('click',function(event) {
@@ -13,7 +13,7 @@ var FormUploader = function(uploaderDiv) {
 
     var add = function() {
         //take first file entry to make a copy
-        var file = uploaderDiv.find('.file:first').clone();
+        var file = div.find('.file:first').clone();
         //clear selected file
         file.find('input[type=file]:first').attr('value','');
         //append the div

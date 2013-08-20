@@ -78,10 +78,11 @@ class JumpUploader extends Uploader
       }
       $l10nPath .= '&lang='.$langCode;
 
-      $tpl->setVariable('CHUNK_LENGTH', FWSystem::getMaxUploadFileSize()-1000);
-      $tpl->setVariable('APPLET_URL', $appletPath);
-      $tpl->setVariable('LANG_URL', $l10nPath);
+      $tpl->setVariable('UPLOAD_CHUNK_LENGTH', FWSystem::getMaxUploadFileSize()-1000);
+      $tpl->setVariable('UPLOAD_APPLET_URL', $appletPath);
+      $tpl->setVariable('UPLOAD_LANG_URL', $l10nPath);
       $tpl->setVariable('UPLOAD_URL', $uploadPath);
+      $tpl->setVariable('UPLOAD_ID', $this->uploadId);
       
       return $tpl->get();
     }

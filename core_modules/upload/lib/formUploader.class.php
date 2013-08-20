@@ -128,6 +128,7 @@ class FormUploader extends Uploader
         $tpl->setVariable('CXJS_INIT_JS', ContrexxJavascript::getInstance()->initJs());
 		$tpl->setVariable('UPLOAD_FORM_ADD', $_CORELANG['UPLOAD_FORM_ADD']);
 		$tpl->setVariable('UPLOAD', $_CORELANG['UPLOAD']);
+		$tpl->setVariable('UPLOAD_ID', $this->uploadId);
         
         $tpl->setVariable('MAX_FILE_SIZE', FWSystem::getMaxUploadFileSize()-1000);
         

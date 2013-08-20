@@ -54,6 +54,8 @@ class FolderWidget {
      */
     public function getXhtml($containerSelector, $instanceName)
     {
+        \JS::registerJS('core_modules/upload/js/folderWidget.js');
+
         $tpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/upload/template/');
         $tpl->setErrorHandling(PEAR_ERROR_DIE);
         

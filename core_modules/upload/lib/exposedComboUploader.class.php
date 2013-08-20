@@ -26,6 +26,9 @@ class ExposedComboUploader extends ComboUploader
     public function getXHtml(){
         global $_CORELANG;
 
+        \JS::registerCSS('core_modules/upload/css/uploaders/exposedCombo/exposedCombo.css');
+        \JS::registerJS('core_modules/upload/js/uploaders/exposedCombo/exposedCombo.js');
+
         //back up instance name, we're going to set a temporary name for the combo uploader
         $instanceNameBak = $this->jsInstanceName;
         $this->jsInstanceName = 'exposedCombo_comboUploader_'.$this->uploadId;

@@ -76,8 +76,10 @@ class PlUploader extends Uploader
       $tpl->setErrorHandling(PEAR_ERROR_DIE);
       
       $tpl->loadTemplateFile('pl.html');
-      $tpl->setVariable('FLASH_URL', ASCMS_CORE_MODULE_WEB_PATH.'/upload/ressources/uploaders/pl/plupload.flash.swf');
+      $tpl->setVariable('UPLOAD_FLASH_URL', ASCMS_CORE_MODULE_WEB_PATH.'/upload/ressources/uploaders/pl/plupload.flash.swf');
+      $tpl->setVariable('UPLOAD_CHUNK_LENGTH', \FWSystem::getLiteralSizeFormat(\FWSystem::getMaxUploadFileSize()-1000));
       $tpl->setVariable('UPLOAD_URL', $uploadPath);
+      $tpl->setVariable('UPLOAD_ID', $this->uploadId);
       
       //I18N
       $tpl->setVariable(array(
