@@ -135,7 +135,7 @@ class adminMenu
      */
     private function getMenu()
     {
-        global $_CORELANG, $objTemplate;
+        global $_CORELANG, $objTemplate, $_CONFIG;
 
         $objTemplate->addBlockfile('NAVIGATION_OUTPUT', 'navigation_output', 'index_navigation.html');
 
@@ -195,6 +195,14 @@ class adminMenu
                         }
 
                         switch ($linkCmd) {
+                            case 'news':
+                                $news = new newsManager();
+                                if ($linkCmdSection == 'act=newstype' && $news->arrSettings['news_use_types'] != '1') {
+                                    continue 2;
+                                } else if ($linkCmdSection == 'act=teasers' && $_CONFIG['newsTeasersStatus'] != '1') {
+                                    continue 2;
+                                }
+                                break;
                             case 'content';
                                 if (   $this->activeCmd == 'content'
                                     && (   empty($_REQUEST['act']) && !empty($linkCmdSection)

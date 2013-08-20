@@ -172,8 +172,12 @@ class newsManager extends newsLibrary {
     {
         global $objTemplate, $_ARRAYLANG,$_CONFIG;
         
+        if ($this->act == 'manager') {
+            $this->act = '';
+        }
+        
         $objTemplate->setVariable("CONTENT_NAVIGATION","
-            <a href='index.php?cmd=news' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWS_MANAGER']."</a>
+            <a href='index.php?cmd=news&amp;act=manager' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWS_MANAGER']."</a>
             <a href='index.php?cmd=news&amp;act=add' class='".($this->act == 'add' ? 'active' : '')."'>".$_ARRAYLANG['TXT_CREATE_NEWS']."</a>
             <a href='index.php?cmd=news&amp;act=newscat' class='".($this->act == 'newscat' ? 'active' : '')."'>".$_ARRAYLANG['TXT_CATEGORY_MANAGER']."</a>
             ".($this->arrSettings['news_use_types'] == '1' ? "<a href='index.php?cmd=news&amp;act=newstype' class='".($this->act == 'newstype' ? 'active' : '')."'>".$_ARRAYLANG['TXT_TYPES_MANAGER']."</a>" : "")."
