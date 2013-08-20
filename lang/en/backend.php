@@ -1628,3 +1628,11 @@ $_ARRAYLANG['TXT_MAINTENANCE_MODULE_NAME'] = 'Maintenance centre';
 $_ARRAYLANG['TXT_MAINTENANCE_MODULE_DESCRIPTION'] = 'Shows pending maintenance tasks and performs them';
 
 $_ARRAYLANG['TXT_SETTING_FTP_CONFIG_WARNING'] = 'There are wrong ftp credentials defined in the configurations file (%s) or the ftp connection is disabled. If you don\'t fix this issue, contrexx probably doesn\'t have access to upload or edit files and folders!';
+
+$_ARRAYLANG['TXT_CORE_MODULE_NEWS_MANAGER'] = 'News Manager';
+$_ARRAYLANG['TXT_CORE_MODULE_NEWS_CREATE'] = 'Add News';
+$_ARRAYLANG['TXT_CORE_MODULE_NEWS_CATEGORIES'] = 'Categories';
+$_ARRAYLANG['TXT_CORE_MODULE_NEWS_TYPES'] = 'Types';
+$_ARRAYLANG['TXT_CORE_MODULE_NEWS_TICKER'] = 'Newsticker';
+$_ARRAYLANG['TXT_CORE_MODULE_NEWS_TEASERS'] = 'Teasers';
+$_ARRAYLANG['TXT_CORE_MODULE_NEWS_SETTINGS'] = 'Settings';
