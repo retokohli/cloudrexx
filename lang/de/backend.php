@@ -1710,7 +1710,7 @@ $_ARRAYLANG['TXT_MAINTENANCE_MODULE_DESCRIPTION'] = 'Zeigt anstehende Wartungsar
 $_ARRAYLANG['TXT_SETTING_FTP_CONFIG_WARNING'] = 'Es wurde in der Konfigurationsdatei (%s) eine ungültige oder keine FTP-Verbindung konfiguriert. Dadurch können Probleme beim Hochladen oder Bearbeiten von Dateien und Verzeichnissen auftreten!';
 
 $_ARRAYLANG['TXT_CORE_MODULE_NEWS_MANAGER'] = 'News Manager';
-$_ARRAYLANG['TXT_CORE_MODULE_NEWS_CREATE'] = 'News erstellen';
+$_ARRAYLANG['TXT_CORE_MODULE_NEWS_CREATE'] = 'Hinzufügen';
 $_ARRAYLANG['TXT_CORE_MODULE_NEWS_CATEGORIES'] = 'Rubriken';
 $_ARRAYLANG['TXT_CORE_MODULE_NEWS_TYPES'] = 'Typen';
 $_ARRAYLANG['TXT_CORE_MODULE_NEWS_TICKER'] = 'Newsticker';

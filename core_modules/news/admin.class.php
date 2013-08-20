@@ -3745,6 +3745,7 @@ class newsManager extends newsLibrary {
                 'TXT_NEWS_UNCHECK_ALL'                  => $_ARRAYLANG['TXT_NEWS_UNCHECK_ALL'],
                 'TXT_NEWS_WITH_SELECTED'                => $_ARRAYLANG['TXT_NEWS_WITH_SELECTED'],
                 'TXT_NEWS_DELETE'                       => $_ARRAYLANG['TXT_NEWS_DELETE'],
+                'TXT_NEWS_CREATE_TICKER'                => $_ARRAYLANG['TXT_NEWS_CREATE_TICKER'],
                 'TXT_NEWS_CONFIRM_DELETE_TICKERS_MSG'   => $_ARRAYLANG['TXT_NEWS_CONFIRM_DELETE_TICKERS_MSG']
             ));
 
