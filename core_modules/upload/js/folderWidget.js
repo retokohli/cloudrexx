@@ -6,6 +6,7 @@ var FolderWidget = function(options) {
     var files = []; //the files in target folder
     var fieldId = options.fieldId;
     var $ = jQuery; //jquery at $ locally
+    var restrictUpload2SingleFile = Boolean(cx.variables.get('restrictUpload2SingleFile', 'upload/widget_' + id)); // whether one or mutli file upload is in use
 
     var refresh = function() {
         $.getJSON(
@@ -32,7 +33,9 @@ var FolderWidget = function(options) {
         }
 
         // list files
-        var ul = $('<ul></ul>').appendTo(container);
+        if (!restrictUpload2SingleFile) {
+            var ul = $('<ul></ul>').appendTo(container);
+        }
         $.each(files, function(i, file) {
             var li = $('<li></li>');
             var span = $('<span></span>').html(file);
@@ -46,19 +49,32 @@ var FolderWidget = function(options) {
                             folderWidgetId: id
                         },
                         function() {                               
-                            li.remove();
+                            if (restrictUpload2SingleFile) {
+                                container.empty();
+                            } else {
+                                li.remove();
+                            }
                         }
                     );
                 } else {
                     $('<input type="hidden" name="deleteMedia['+fieldId+'][]" value="'+file+'" />').appendTo($(container.parents('form')));
-                    li.remove();
+                    if (restrictUpload2SingleFile) {
+                        container.empty();
+                    } else {
+                        li.remove();
+                    }
                 }
                 return false;
             });
 
-            span.appendTo(li);
-            del.appendTo(li);
-            li.appendTo(ul);
+            if (restrictUpload2SingleFile) {
+                span.appendTo(container);
+                del.appendTo(container);
+            } else {
+                span.appendTo(li);
+                del.appendTo(li);
+                li.appendTo(ul);
+            }
         });
     }
 

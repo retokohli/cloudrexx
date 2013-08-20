@@ -12,6 +12,9 @@ var initPlUpload = function() {
         'Drag files here.' : '{DRAG_FILES_HERE}'
 });
 
+    // upload/restrictUpload2SingleFile might not be set and must therefore be cast into Boolean
+    var restrictUpload2SingleFile = Boolean(cx.variables.get('restrictUpload2SingleFile', 'upload/widget_{UPLOAD_ID}'));
+
     // Setup flash version
     var uploader = $J("#flash_uploader_{UPLOAD_ID}").pluploadQueue({
         // General settings
@@ -33,7 +36,9 @@ var initPlUpload = function() {
         ],*/
  
         // Flash settings
-        flash_swf_url : '{UPLOAD_FLASH_URL}'
+        flash_swf_url : '{UPLOAD_FLASH_URL}',
+        multi_selection: !restrictUpload2SingleFile,
+        multiple_queues : !restrictUpload2SingleFile
     });
     var settings = uploader.pluploadQueue().settings;
     var baseUrl = settings.url;
@@ -45,6 +50,17 @@ var initPlUpload = function() {
     uploader.pluploadQueue().bind('QueueChanged', function(up){
         setUrl(up.files.length);
     });
+
+    // prevent user from selecting more than one file in non-multi-file-upload-mode
+    if (restrictUpload2SingleFile) {
+        uploader.pluploadQueue().bind('FilesAdded', function(up, files) {
+            plupload.each(files, function(file) {
+                if (up.files.length > 1) {
+                    up.removeFile(file);
+                }
+            });
+        });
+    }
 }; 
 
 cx.ready(initPlUpload);

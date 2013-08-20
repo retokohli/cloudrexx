@@ -194,8 +194,12 @@ class UploadFactory
      * Creates a new uploader.
      * @param string $type e.g. 'pl'
      * @param integer $id the upload id. optional.
+     * @param boolean $restrictUpload2SingleFile This optional parameter can be used to
+     *                                           restrict the upload-process to only allow
+     *                                           one single file to be uploaded. Defaults
+     *                                           to FALSE.
      */
-    public function newUploader($type, $id=0) {
+    public function newUploader($type, $id=0, $restrictUpload2SingleFile = false) {
         $theUploader = $this->uploaderFromType($type);
         if(!$theUploader) //invalid $type
             return null;
@@ -211,6 +215,9 @@ class UploadFactory
         else {
             $theUploader->setUploadId($id);
             $this->setRedirectUrl($theUploader, $id);
+        }
+        if ($restrictUpload2SingleFile) {
+            $theUploader->restrictUpload2SingleFile();
         }
 
         return $theUploader;

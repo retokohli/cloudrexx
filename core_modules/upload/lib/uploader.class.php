@@ -65,6 +65,15 @@ abstract class Uploader
     protected $redirectUrl = null;
 
     /**
+     * Set up uploader to only allow one single file to be uploaded
+     */
+    public function restrictUpload2SingleFile()
+    {
+        // limit upload to 1 file at a time
+        \ContrexxJavascript::getInstance()->setVariable('restrictUpload2SingleFile', true, "upload/widget_$this->uploadId");
+    }
+
+    /**
      * @param boolean $backend whether this is a backend request or not
      */
     public function __construct($backend)
