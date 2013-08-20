@@ -210,7 +210,7 @@ class CalendarManager extends CalendarLibrary
         
         $this->_objTpl->setGlobalVariable(array(
             'TXT_'.$this->moduleLangVar.'_OVERVIEW'                 => $this->_pageTitle,
-            'TXT_'.$this->moduleLangVar.'_FUNCTIONS'                => $_ARRAYLANG['TXT_CALENDAR_FUNCTIONS'],
+            'TXT_'.$this->moduleLangVar.'_FILTER'                   => $_ARRAYLANG['TXT_CALENDAR_FILTER'],
             'TXT_'.$this->moduleLangVar.'_CONFIRMLIST'              => $_ARRAYLANG['TXT_CALENDAR_CONFIRMLIST'],
             'TXT_SEARCH'                                            => $_CORELANG['TXT_USER_SEARCH'],
             'TXT_'.$this->moduleLangVar.'_SEARCH'                   => $_CORELANG['TXT_USER_SEARCH'],

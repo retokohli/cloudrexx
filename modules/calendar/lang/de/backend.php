@@ -574,3 +574,4 @@ $_ARRAYLANG['TXT_CALENDAR_EVENT_NAME']  = "Name";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_HOST']  = "Gastgeber";
 $_ARRAYLANG['TXT_CALENDAR_EVENT_EMAIL']  = "E-Mail";
 $_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_FORMAT'] = "Veranstaltungsinformationen herunterladen (iCal-Format)";
+$_ARRAYLANG['TXT_CALENDAR_FILTER'] = "Filter";

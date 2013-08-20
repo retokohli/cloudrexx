@@ -74,10 +74,9 @@ function selectMultiAction()
         <td valign="top">
             <table style="width: 100%; border-spacing: 0px;" class="adminlist" cellspacing="0" cellpadding="3">
                 <tr>
-                    <th colspan="2">{TXT_CALENDAR_FUNCTIONS}</th>
+                    <th>{TXT_CALENDAR_FILTER}</th>
                 </tr>
-                <tr class="row1">
-                    <td style="width: 67px">{TXT_CALENDAR_SEARCH}</td>
+                <tr class="row1">                    
                     <td>
                         <form action="index.php?cmd={CALENDAR_MODULE_NAME}" method="post" name="formEventSearch">
                             <input type="text" name="term" value="{TXT_CALENDAR_KEYWORD}"  style="width: 200px;"  onclick="this.value=''" />&nbsp;<select style="width: 200px;" name="categoryId" >{CALENDAR_CATEGORIES}</select>&nbsp;<input type="submit" value="{TXT_SEARCH}" name="search" />
