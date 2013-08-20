@@ -442,8 +442,18 @@ class ContactManager extends ContactLib
                     $colNr  = 0;
                     $langId = $arrEntry['langId'];
                     foreach ($arrCols as $col) {
+                        $value = '';
                         if ($colNr == $maxFields) {
-                            break;
+                            // check if field is an upload-fields that contains uploaded data
+                            if (   isset($arrEntry['data'][$col]) 
+                                && isset($arrFormFields[$col])
+                                && in_array($arrFormFields[$col]['type'], array('file', 'multi_file'))
+                                && !empty($arrEntry['data'][$col])
+                            ) {
+                                //show attach icon if any files have been submitted
+                                $this->_objTpl->touchBlock('contact_form_entry_attach');
+                            }
+                            continue;
                         }
 
                         if (isset($arrEntry['data'][$col])) {
