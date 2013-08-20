@@ -868,7 +868,7 @@ class CalendarEvent extends CalendarLibrary
             // create thumb if not exists
             if (!file_exists(ASCMS_PATH."$pic.thumb")) {
                 $objImage = new ImageManager();
-                $objImage->_createThumb($this->uploadImgPath, '', $pic, 180);
+                $objImage->_createThumb(dirname(ASCMS_PATH."$pic")."/", '', basename($pic), 180);                
             }
         }
         
@@ -1120,6 +1120,11 @@ class CalendarEvent extends CalendarLibrary
                     if (!preg_match('%^(?:ftp|http|https):\/\/%', $orgLink)) {
                         $orgLink = "http://".$orgLink;
                     }
+                }                
+                // create thumb if not exists
+                if (!file_exists(ASCMS_PATH."$placeMap.thumb")) {                    
+                    $objImage = new ImageManager();
+                    $objImage->_createThumb(dirname(ASCMS_PATH."$placeMap")."/", '', basename($placeMap), 180);
                 }
                 
                 $query = "INSERT INTO ".DBPREFIX."module_".$this->moduleTablePrefix."_event_field
