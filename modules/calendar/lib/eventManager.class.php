@@ -575,6 +575,7 @@ class CalendarEventManager extends CalendarLibrary
                 $_LANGID = $objEvent->availableLang;       
             }            
 
+            $picThumb = file_exists(ASCMS_PATH.$objEvent->pic.".thumb") ? $objEvent->pic.".thumb" : $objEvent->pic;
             $objTpl->setVariable(array(
                 $this->moduleLangVar.'_EVENT_ID'                => $objEvent->id,
                 $this->moduleLangVar.'_EVENT_START_DATE'        => date(parent::getDateFormat(), $objEvent->startDate),
@@ -584,7 +585,7 @@ class CalendarEventManager extends CalendarLibrary
                 $this->moduleLangVar.'_EVENT_TITLE'             => $objEvent->title,                                                      
                 $this->moduleLangVar.'_EVENT_ATTACHMENT'        => $objEvent->attach != '' ? '<a href="'.$hostUri.$objEvent->attach.'" target="_blank" >'.$attachName.'</a>' : '',                             
                 $this->moduleLangVar.'_EVENT_PICTURE'           => $objEvent->pic != '' ? '<img src="'.$hostUri.$objEvent->pic.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',                                                          
-                $this->moduleLangVar.'_EVENT_THUMBNAIL'         => $objEvent->pic != '' ? '<img src="'.$hostUri.$objEvent->pic.'.thumb" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',   
+                $this->moduleLangVar.'_EVENT_THUMBNAIL'         => $picThumb != '' ? '<img src="'.$hostUri.$picThumb.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',   
                 $this->moduleLangVar.'_EVENT_DESCRIPTION'       => $objEvent->description,                                                           
                 $this->moduleLangVar.'_EVENT_PRIORITY'          => $priority,                                                           
                 $this->moduleLangVar.'_EVENT_PRIORITY_IMG'      => $priorityImg,                                                           
@@ -676,7 +677,7 @@ class CalendarEventManager extends CalendarLibrary
                 $picWidth  = $arrInfo[0]+20;
                 $picHeight = $arrInfo[1]+20;
                 
-                $map_thumb_name = ImageManager::getThumbnailFilename($objEvent->arrData['place_map'][$_LANGID]);                
+                $map_thumb_name = file_exists(ASCMS_PATH.$objEvent->arrData['place_map'][$_LANGID].".thumb") ? $objEvent->arrData['place_map'][$_LANGID].".thumb" : $objEvent->arrData['place_map'][$_LANGID];
                 $objTpl->setVariable(array(                                                          
                     $this->moduleLangVar.'_EVENT_PLACE'           => $objEvent->place,
                     $this->moduleLangVar.'_EVENT_LOCATION_ADDRESS'=> $objEvent->arrData['place_street'][$_LANGID],
