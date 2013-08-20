@@ -470,6 +470,9 @@ class InitCMS
         $this->templates['top_news'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/top_news.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/top_news.html') : '';
         $this->templates['shopnavbar'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/shopnavbar.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/shopnavbar.html') : '';
         $this->templates['headlines'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines.html') : '';
+        $this->templates['headlines2'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines2.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines2.html') : '';
+        $this->templates['headlines3'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines3.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines3.html') : '';
+        $this->templates['headlines4'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines4.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines4.html') : '';
         $this->templates['javascript'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/javascript.js') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/javascript.js') : '';
         //$this->templates['style'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/style.css') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/style.css') : '';
         $this->templates['buildin_style'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/buildin_style.css') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/buildin_style.css') : '';
