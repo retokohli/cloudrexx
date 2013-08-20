@@ -1646,11 +1646,11 @@ class ContactManager extends ContactLib
         case 'label':
         case 'recipient':
         case 'horizontalLine':
+        case 'file':
             $menu = '';
             break;
 
         case 'text':
-        case 'file':
         case 'password':
         case 'textarea':
         default:
