@@ -1678,16 +1678,23 @@ class skins
                     'THEMES_SELECTED_PAGENAME' => $themesPage,
                     'THEMES_FULL_PATH'         => $this->webPath.$themes.'/'.$themesPage,
                     'CONTENT_HTML'             => $contenthtml,                    
-                ));
+                ));                
                 if ($fileIsImage) {
                     $objTemplate->touchBlock('template_image');
                     $objTemplate->hideBlock('template_content');
+                    $objTemplate->hideBlock('file_actions_top');
+                    $objTemplate->hideBlock('file_actions_bottom');
                 } else {
+                    $objTemplate->touchBlock('file_actions_top');
+                    $objTemplate->touchBlock('file_actions_bottom');
                     $objTemplate->touchBlock('template_content');
                     $objTemplate->hideBlock('template_image');
                 }
                 //return $fileContent;
             }
+        } else {
+            $objTemplate->hideBlock('file_actions_top');
+            $objTemplate->hideBlock('file_actions_bottom');
         }
     }
 

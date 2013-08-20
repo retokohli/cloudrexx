@@ -76,9 +76,12 @@
                     <tr>
                         <th width="100%"><!--{TXT_FILE_EDITOR}--><b>{THEMES_FULL_PATH}</b></th>
                         <th align="right" nowrap>
+                            <!-- BEGIN file_actions_top -->
                             <input onClick="javascript:this.form.content.focus(); this.form.content.select();" type=button value='{TXT_SELECT_ALL}' />
                             <input type="reset" value='{TXT_RESET}' name="Reset" />
-                            <input type="submit" value='{TXT_STORE}' name="Submit" />	</th>
+                            <input type="submit" value='{TXT_STORE}' name="Submit" />	
+                            <!-- END file_actions_top -->
+                        </th>
                     </tr>
                     <tr class="row1">
                         <td colspan="2">
@@ -93,10 +96,13 @@
                         </td>
                     </tr>
                 </table>
-                <div align="right"><br />
+                <div align="right">
+                    <!-- BEGIN file_actions_bottom -->
+                    <br />
                     <input onClick="javascript:this.form.content.focus(); this.form.content.select();" type=button value='{TXT_SELECT_ALL}' />
                     <input type="reset" value='{TXT_RESET}' name="Reset" />
                     <input type="submit" value='{TXT_STORE}' name="Submit" />
+                    <!-- END file_actions_bottom -->
                 </div>
             </form>
         </td>
