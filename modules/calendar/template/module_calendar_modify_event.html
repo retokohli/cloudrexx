@@ -479,9 +479,8 @@
             <!-- END eventTabMenuDescTab -->
         </ul>
         <!-- BEGIN eventDescTab -->
-        <div id="{CALENDAR_EVENT_LANG_ID}_desc" class="eventDescTab" style="display: {CALENDAR_EVENT_TAB_DISPLAY};" >            
-            <div id="{CALENDAR_EVENT_LANG_ID}_typeEvent" style="display: {CALENDAR_EVENT_TYPE_EVENT_DISPLAY};" > 
-                <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+        <div id="{CALENDAR_EVENT_LANG_ID}_desc" class="eventDescTab" style="display: {CALENDAR_EVENT_TAB_DISPLAY};" >
+            <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
                     <tr style="{CALENDAR_HIDE_ON_SINGLE_LANG}">                            
                         <th colspan="2">{TXT_CALENDAR_EVENT}</th>
                     </tr>
@@ -491,19 +490,21 @@
                              <input id="title_{CALENDAR_EVENT_LANG_ID}" name="title[{CALENDAR_EVENT_LANG_ID}]" type="text" style="width: 250px" value="{CALENDAR_EVENT_TITLE}" />
                         </td>
                     </tr>
+            </table>
+            <div id="{CALENDAR_EVENT_LANG_ID}_typeEvent" style="display: {CALENDAR_EVENT_TYPE_EVENT_DISPLAY};" >
+                <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+                    <tr class="row3">
+                        <td valign="top">{TXT_CALENDAR_EVENT_DESCRIPTION}</td>
+                    </tr>
                     <tr class="row1">
-                        <td width="180"  valign="top">{TXT_CALENDAR_EVENT_DESCRIPTION}</td>
                         <td>
-                             {CALENDAR_EVENT_DESCRIPTION}                                                                                                         
+                             {CALENDAR_EVENT_DESCRIPTION}                                                  
                         </td>
                     </tr>
                 </table>
             </div>   
             <div id="{CALENDAR_EVENT_LANG_ID}_typeRedirect" style="display: {CALENDAR_EVENT_TYPE_REDIRECT_DISPLAY};" > 
-                <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
-                    <tr>                            
-                        <th colspan="2">{TXT_CALENDAR_EVENT_LANG_NAME}</th>
-                    </tr>    
+                <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">                        
                     <tr class="row1">
                         <td width="180"  valign="top">{TXT_CALENDAR_EVENT_TYPE_REDIRECT}</td>
                         <td>
