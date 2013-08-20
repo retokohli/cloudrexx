@@ -88,7 +88,8 @@ class ContactManager extends ContactLib
             'checkboxGroup' => $_ARRAYLANG['TXT_CONTACT_CHECKBOX_GROUP'],
             'country'       => $_ARRAYLANG['TXT_CONTACT_COUNTRY'],
             'date'          => $_ARRAYLANG['TXT_CONTACT_DATE'],
-            'file'          => $_ARRAYLANG['TXT_CONTACT_FILE_UPLOAD'],
+            'file'          => $_ARRAYLANG['TXT_CONTACT_FILE_UPLOAD_SINGLE'],
+            'multi_file'    => $_ARRAYLANG['TXT_CONTACT_FILE_UPLOAD_MULTI'],
             'fieldset'      => $_ARRAYLANG['TXT_CONTACT_FIELDSET'],
             'hidden'        => $_ARRAYLANG['TXT_CONTACT_HIDDEN_FIELD'],
             'horizontalLine'=> $_ARRAYLANG['TXT_CONTACT_HORIZONTAL_LINE'],
@@ -189,7 +190,7 @@ class ContactManager extends ContactLib
         $entryId = isset($_REQUEST['entryId']) ? intval($_REQUEST['entryId']) : 0;
         $formId = isset($_REQUEST['formId']) ? intval($_REQUEST['formId']) : 0;
 
-        $arrEntry = &$this->getFormEntry($entryId);
+        $arrEntry = $this->getFormEntry($entryId);
         if (is_array($arrEntry)) {
 
             $this->_objTpl->loadTemplateFile('module_contact_entries_details.html');
@@ -385,10 +386,10 @@ class ContactManager extends ContactLib
             }
 
             $arrCols = array();
-            $arrEntries = &$this->getFormEntries($formId, $arrCols, $pos, $paging);
+            $arrEntries = $this->getFormEntries($formId, $arrCols, $pos, $paging);
             if (count($arrEntries) > 0) {
-                $arrFormFields = &$this->getFormFields($formId);
-                $arrFormFieldNames = &$this->getFormFieldNames($formId);
+                $arrFormFields = $this->getFormFields($formId);
+                $arrFormFieldNames = $this->getFormFieldNames($formId);
                 
                 $this->_objTpl->setGlobalVariable(array(
                         'TXT_CONTACT_DELETE_ENTRY'              => $_ARRAYLANG['TXT_CONTACT_DELETE_ENTRY'],
@@ -446,7 +447,7 @@ class ContactManager extends ContactLib
                         }
 
                         if (isset($arrEntry['data'][$col])) {
-                            if (isset($arrFormFields[$col]) && $arrFormFields[$col]['type'] == 'file') {
+                            if (isset($arrFormFields[$col]) && in_array($arrFormFields[$col]['type'], array('file', 'multi_file'))) {
                                 $fileData = $arrEntry['data'][$col];
                                 if ($fileData) {
                                     //show attach icon
@@ -477,7 +478,7 @@ class ContactManager extends ContactLib
                         /*
                          * Sets value if checkbox is not selected
                          */
-                        if ($arrFormFields[$arrFormFieldNames[$col]]['type'] == 'checkbox' && $arrEntry['data'][$col] == null) {
+                        if ($arrFormFields[$col]['type'] == 'checkbox' && empty($arrEntry['data'][$col])) {
                             $value = $_ARRAYLANG['TXT_CONTACT_NO'];
                         }
 
@@ -1284,20 +1285,8 @@ class ContactManager extends ContactLib
                 );
             }
 
-            $fileFieldFound = false;
             $formFieldIDs = array();
             foreach ($fields as $field) {
-                if($field['type'] == 'file') {
-                    if(!$fileFieldFound) { //first time running into a file field
-                        $fileFieldFound = true;
-                    }
-                    else { //multiple file fields in this form - we do not want this
-                        $this->_statusMessageErr .= $_ARRAYLANG['TXT_CONTACT_FORM_MULTIPLE_UPLOAD_FIELDS'];
-                        $this->_modifyForm();
-                        return;
-                    }
-                }
-
                 if ($field['editType'] == 'new') {
                     $formFieldIDs[] = $this->addFormField($formId, $field);
                 } else {
@@ -1470,6 +1459,7 @@ class ContactManager extends ContactLib
                 'text',
                 'label',
                 'file',
+                'multi_file',
                 'textarea',
                 'hidden',
                 'radio',
@@ -1528,6 +1518,7 @@ class ContactManager extends ContactLib
                         //case 'label':
                         case 'date':
                         case 'file':
+                        case 'multi_file':
                         case 'fieldset':
                         case 'horizontalLine':
                         case 'password':
@@ -1647,6 +1638,7 @@ class ContactManager extends ContactLib
         case 'recipient':
         case 'horizontalLine':
         case 'file':
+        case 'multi_file':
             $menu = '';
             break;
 
@@ -1862,9 +1854,9 @@ class ContactManager extends ContactLib
                     break;
 
                 case 'file':
-                    $sourcecode[] = '<div class="contactFormUpload"><div class="contactFormClass_uploadWidget" id="contactFormField_uploadWidget"></div>';
-                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormField_upload" type="file" name="contactFormField_upload" disabled="disabled"/></div>';
-                    //$sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="file" name="contactFormField_'.$fieldId.'" />';
+                case 'multi_file':
+                    $sourcecode[] = '<div class="contactFormUpload"><div class="contactFormClass_uploadWidget" id="contactFormField_uploadWidget_'.$fieldId.'"></div>';
+                    $sourcecode[] = '<input class="contactFormClass_'.$arrField['type'].'" id="contactFormFieldId_'.$fieldId.'" type="file" name="contactFormField_'.$fieldId.'" disabled="disabled"/></div>';
                     break;
                 
                 case 'hidden':
@@ -2012,6 +2004,7 @@ class ContactManager extends ContactLib
                             $value = !empty($arrData['value']) ? ' '.$_ARRAYLANG['TXT_CONTACT_YES'] : ' '.$_ARRAYLANG['TXT_CONTACT_NO'];
                             break;
                         case 'file':
+                        case 'multi_file':
                             $arrFiles  = explode('*', $arrData['value']);
                             $value = '';
                             foreach ($arrFiles as $file) {
@@ -2177,6 +2170,7 @@ class ContactManager extends ContactLib
                                 break;
 
                             case 'file':
+                            case 'multi_file':
                                 print $this->_escapeCsvValue(isset($formEntriesValues['data'][$fieldId]['value']) ? ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.$formEntriesValues['data'][$fieldId]['value'] : '');
                                 break;
 
