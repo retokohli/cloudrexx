@@ -48,12 +48,12 @@
        $J(".all_day").click(function(){
            modifyEvent._handleAllDayEvent($J(this));
        });
-       $J("#seriesDailyDays").keyup(function(){
+       $J("#seriesDailyDays, #seriesDouranceEvents").keyup(function(){
          if (parseInt($J(this).val()) < 1) {
              $J(this).val('1');
          }
        });
-       $J("#seriesDailyDays").blur(function(){
+       $J("#seriesDailyDays, #seriesDouranceEvents").blur(function(){
          if ($J(this).val() == '') {
              $J(this).val('1');
          }
@@ -928,7 +928,7 @@
                 <td valign="middle">
                     <label><input type="radio" name='seriesDouranceType' value="1" {CALENDAR_SERIES_PATTERN_DOURANCE_1}/>&nbsp;{TXT_CALENDAR_SERIES_PATTERN_NO_ENDDATE}</label><br />
                     <label style="width: 100px;float:left;"><input type="radio" name='seriesDouranceType' value="2" {CALENDAR_SERIES_PATTERN_DOURANCE_2}/>&nbsp;{TXT_CALENDAR_SERIES_PATTERN_ENDS_AFTER}&nbsp;</label>
-                    <input type="text" name='seriesDouranceEvents' maxlength="3" value="{CALENDAR_SERIES_PATTERN_ENDS_EVENTS}" style="width: 20px;" onkeypress="return modifyEvent._isNumber(event);" />&nbsp;{TXT_CALENDAR_SERIES_PATTERN_APPONTMENTS}<br />
+                    <input type="text" name='seriesDouranceEvents' id="seriesDouranceEvents" maxlength="3" value="{CALENDAR_SERIES_PATTERN_ENDS_EVENTS}" style="width: 20px;" onkeypress="return modifyEvent._isNumber(event);" />&nbsp;{TXT_CALENDAR_SERIES_PATTERN_APPONTMENTS}<br />
                     <label style="width: 100px;float:left;"><input type="radio" name='seriesDouranceType' value="3" {CALENDAR_SERIES_PATTERN_DOURANCE_3}/>&nbsp;{TXT_CALENDAR_SERIES_PATTERN_ENDS}&nbsp;</label>
                     <input type="text" name="seriesDouranceDate"  id="{CALENDAR_SERIES_PATTERN_ENDS_INPUT_ID}" class="event_date" style="width: 140px;" value="{CALENDAR_SERIES_PATTERN_ENDS_DATE}" />      
                 </td>
