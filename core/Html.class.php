@@ -2724,4 +2724,80 @@ function cloneElement(id)
 ';
     }
 
+    
+    /**
+     * Generates code for ContentManager style language state icons
+     * 
+     * For $languageStates you may supply an array in one of these to forms:
+     * 
+     * $languageStates = array(
+     *      {language id} => 'active','inactive','inexistent',
+     * )
+     * 
+     * $languageStates = array(
+     *      {language id} => array(
+     *          'active' => {bool},
+     *          'page' => {page id or object},
+     *      ),
+     * )
+     * 
+     * The latter will be resolved to the first form. The two forms can be mixed.
+     * 
+     * For $link, supply a hyperlink, that may contain %1$d and %2$s which will be
+     * replaced with the language ID and code.
+     * 
+     * @param   array   $languageStates Language states to get icons for
+     * @param   string  $link           Hyperlink for language icons
+     * @return  string                  The HTML code for the elements
+     */
+    public static function getLanguageIcons(&$languageStates, $link) {
+        // resolve second to first form
+        foreach ($languageStates as &$state) {
+            if (is_array($state)) {
+                if (is_object($state['page'])) {
+                    $state = $state['active'] ? 'active' : 'inactive';
+                } else {
+                    $em = \Env::get('cx')->getDb()->getEntityManager();
+                    $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+                    $page = $pageRepo->findOneById($state['page']);
+                    if (!$page) {
+                        $state = 'inexistent';
+                    } else {
+                        $state = $state['active'] ? 'active' : 'inactive';
+                    }
+                }
+            }
+        }
+        
+        // parse icons
+        $content = '<div class="language-icons">';
+        foreach (\FWLanguage::getActiveFrontendLanguages() as $language) {
+            if (isset($languageStates[$language['id']])) {
+                $state = $languageStates[$language['id']];
+            } else {
+                $state = 'inactive';
+            }
+            $parsedLink = sprintf($link, $language['id'], $language['lang']);
+            $content .= self::getLanguageIcon($language['id'], $state, $parsedLink, strtoupper($language['lang']));
+        }
+        return $content . '</div>';
+    }
+    
+    /**
+     * Returns a single language icon
+     * @param   int     $languageId     Language ID
+     * @param   string  $state          One of active,inactive,inexistent
+     * @param   string  $languageLabel  (optional) Label for the icon, default is uppercase language code
+     * @return  string                  The HTML code for the elements
+     */
+    public static function getLanguageIcon($languageId, $state, $link, $languageLabel = '') {
+        if (empty($languageLabel)) {
+            $languageLabel = strtoupper(\FWLanguage::getLanguageCodeById($languageId));
+        }
+        return '<div class="language-icon ' . \FWLanguage::getLanguageCodeById($languageId) . ' ' . $state . '">
+            <a href="' . $link . '">
+                ' . $languageLabel . '
+            </a>
+        </div>';
+    }
 }
