@@ -774,6 +774,10 @@ class CalendarManager extends CalendarLibrary
             $this->moduleLangVar.'_EVENT_ONSUBMIT_PUBLICATIONS'  => $onsubmitPublications,     
         ));
         
+        $forcedLanguage = null;
+        if (isset($_GET['langId']) && in_array(contrexx_input2raw($_GET['langId']), \FWLanguage::getIdArray())) {
+            $forcedLanguage = contrexx_input2raw($_GET['langId']);
+        }
         
         foreach ($this->arrFrontendLanguages as $key => $arrLang) {
             //parse globals
@@ -786,11 +790,21 @@ class CalendarManager extends CalendarLibrary
             //parse "show in" checkboxes
             $arrShowIn = explode(",", $objEvent->showIn);
             
-        	if($eventId != 0) {
-        		$langChecked = in_array($arrLang['id'], $arrShowIn) ? 'checked="checked"' : '';
-        	} else {
-                $langChecked = $arrLang['is_default'] == 'true' ? 'checked="checked"' : '';
-        	}
+            $langChecked = false;
+            if($eventId != 0) {
+                $langChecked = in_array($arrLang['id'], $arrShowIn);
+                if ($forcedLanguage && !$langChecked) {
+                    $langChecked = $forcedLanguage == $arrLang['id'];
+                }
+            } else {
+                $langChecked = $arrLang['is_default'] == 'true';
+            }
+
+            if ($langChecked) {
+                $langChecked = 'checked="checked"';
+            } else {
+                $langChecked =  '';
+            }
         	
             $this->_objTpl->setVariable(array(
                 $this->moduleLangVar.'_EVENT_LANG_CHECKED'  => $langChecked,
@@ -799,8 +813,12 @@ class CalendarManager extends CalendarLibrary
             $this->_objTpl->parse('eventShowIn');
             
         	//parse eventTabMenuTitleTab
+            $defaultLang = $arrLang['is_default'] == 'true';
+            if ($forcedLanguage) {
+                $defaultLang = $forcedLanguage == $arrLang['id'];
+            }
             $this->_objTpl->setVariable(array(
-                $this->moduleLangVar.'_EVENT_TAB_CLASS'  => $arrLang['is_default'] == 'true' ? 'active' : '',
+                $this->moduleLangVar.'_EVENT_TAB_CLASS'  => $defaultLang ? 'active' : '',
             ));
             
             $this->_objTpl->parse('eventTabMenuTitleTab');
@@ -862,7 +880,7 @@ class CalendarManager extends CalendarLibrary
 	        
 	        //parse eventTabMenuDescTab
             $this->_objTpl->setVariable(array(
-                $this->moduleLangVar.'_EVENT_TAB_CLASS'  => $arrLang['is_default'] == 'true' ? 'active' : '',
+                $this->moduleLangVar.'_EVENT_TAB_CLASS'  => $defaultLang ? 'active' : '',
             ));
             
             $this->_objTpl->parse('eventTabMenuDescTab');

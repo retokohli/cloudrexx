@@ -176,7 +176,7 @@
         }     
     }
 
-    function langCheck()
+    function langCheck(noTabChange)
     {
         var pattern = /^showIn/;
         var reg = new RegExp(pattern);
@@ -213,6 +213,7 @@
                     tab2.style.display = 'inline';
                     
                     if(firstLang) {
+                        var activeTab = jQuery(".language_tab li a.active").attr("id");
                         tab1body.style.display = 'block';
                         tab2body.style.display = 'block'; 
                         $J(".language_tab li a").removeClass('active').addClass("inactive");
@@ -240,6 +241,9 @@
                     tab2body.style.display = 'none'; 
                 }  */         
             }
+        }
+        if (activeTab) {
+            selectTab(activeTab.substr(13));
         }
     }
 
@@ -983,7 +987,7 @@
 <div id="errorMessage" style="color: #ff0000; display: none;"><br />{TXT_CALENDAR_PLEASE_CHECK_INPUT}</div>
 
 <script language="JavaScript" type="text/javascript">
-langCheck();
+langCheck(true);
 showSelection();
 showTimeListSelection();
 showTimeDetailSelection();
