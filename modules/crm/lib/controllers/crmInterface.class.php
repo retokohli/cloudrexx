@@ -132,15 +132,12 @@ class crmInterface extends CrmLibrary
                 'CRM_ENCLOSURE_TITLE' => $_ARRAYLANG[$value['placeholder']]
             ));
             $objTpl->parse('crm_enclosure');
-        } 
-        $comboUp = UploadFactory::getInstance()->newUploader('exposedCombo');
-        $comboUp->setFinishedCallback(array(ASCMS_MODULE_PATH.'/crm/admin.class.php','CrmManager','uploadFinished'));
-        //set instance name to combo_uploader so we are able to catch the instance with js
-        $comboUp->setJsInstanceName('exposed_combo_uploader');
+        }
+        $uploaderCode = $this->initUploader(1, true, 'uploadFinished','' , 'import_files_');
         $redirectUrl = CSRF::enhanceURI('index.php?cmd=crm&act=getImportFilename');
         $this->_objTpl->setVariable(array(
-              'COMBO_UPLOADER_CODE' => $comboUp->getXHtml(true),
-			  'REDIRECT_URL'		=> $redirectUrl
+              'COMBO_UPLOADER_CODE' => $uploaderCode,
+	      'REDIRECT_URL'	    => $redirectUrl
         ));
         
         $objTpl->setVariable(array(

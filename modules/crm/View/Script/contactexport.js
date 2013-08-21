@@ -6,7 +6,7 @@ $J(function(){
     var fileUri;
     var refreshIntervalId;
     $J('.choose-image').click(function(){
-        $J('#exposedComboUploaderStarter').trigger('click');
+        $J('#contactFormFieldId_1').trigger('click');
     });
     $J('#importfile').change(function(){
         var file = $J(this).val();
