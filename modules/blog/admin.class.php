@@ -602,13 +602,13 @@ class BlogAdmin extends BlogLibrary {
                 ));
 
                 //Check active languages
-                $strActiveLanguages = '';
+                $langState = array();
                 foreach ($arrEntryValues['translation'] as $intLangId => $arrEntryTranslations) {
                     if ($arrEntryTranslations['is_active'] && key_exists($intLangId,$this->_arrLanguages)) {
-                        $strActiveLanguages .= '['.$this->_arrLanguages[$intLangId]['short'].']&nbsp;&nbsp;';
+                        $langState[$intLangId] = 'active';
                     }
                 }
-                $strActiveLanguages = substr($strActiveLanguages,0,-12);
+                $strActiveLanguages = \Html::getLanguageIcons($langState, 'index.php?cmd=blog&amp;act=editEntry&amp;id=' . $intEntryId . '&amp;langId=%1$d');
 
                 $this->_objTpl->setVariable(array(
                     'ENTRY_ROWCLASS'        =>  ($intRowClass % 2 == 0) ? 'row1' : 'row2',
@@ -851,6 +851,11 @@ class BlogAdmin extends BlogLibrary {
         $arrEntries = $this->createEntryArray();
 
         $intEntryId = intval($intEntryId);
+        
+        $forcedLanguage = null;
+        if (isset($_GET['langId']) && in_array(contrexx_input2raw($_GET['langId']), \FWLanguage::getIdArray())) {
+            $forcedLanguage = contrexx_input2raw($_GET['langId']);
+        }
 
         if ($intEntryId > 0 && key_exists($intEntryId,$arrEntries)) {
             if (count($this->_arrLanguages) > 0) {
@@ -862,15 +867,23 @@ class BlogAdmin extends BlogLibrary {
                 foreach($this->_arrLanguages as $intLanguageId => $arrTranslations) {
 
                     $boolLanguageIsActive = $arrEntries[$intEntryId]['translation'][$intLanguageId]['is_active'];
+                    if (!$boolLanguageIsActive && $forcedLanguage == $intLanguageId) {
+                        $boolLanguageIsActive = true;
+                    }
 
                     $arrLanguages[$intLanguageCounter%3] .= '<input '.(($boolLanguageIsActive) ? 'checked="checked"' : '').' type="checkbox" name="frmEditEntry_Languages[]" value="'.$intLanguageId.'" onclick="switchBoxAndTab(this, \'addEntry_'.$arrTranslations['long'].'\');" />'.$arrTranslations['long'].' ['.$arrTranslations['short'].']<br />';
                     $strJsTabToDiv .= 'arrTabToDiv["addEntry_'.$arrTranslations['long'].'"] = "'.$arrTranslations['long'].'";'."\n";
+                    
+                    $activeTab = $boolFirstLanguage;
+                    if ($forcedLanguage) {
+                        $activeTab = $forcedLanguage == $intLanguageId;
+                    }
 
                     //Parse the TABS at the top of the language-selection
                     $this->_objTpl->setVariable(array(
                         'TABS_LINK_ID'          =>  'addEntry_'.$arrTranslations['long'],
                         'TABS_DIV_ID'           =>  $arrTranslations['long'],
-                        'TABS_CLASS'            =>  ($boolFirstLanguage && $boolLanguageIsActive) ? 'active' : 'inactive',
+                        'TABS_CLASS'            =>  ($activeTab && $boolLanguageIsActive) ? 'active' : 'inactive',
                         'TABS_DISPLAY_STYLE'    =>  ($boolLanguageIsActive) ? 'display: inline;' : 'display: none;',
                         'TABS_NAME'             =>  $arrTranslations['long']
 
