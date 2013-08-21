@@ -2108,7 +2108,109 @@ class CrmLibrary
             }
         }
     }
+    /**
+     * Inits the uploader when displaying a contact form.
+     */
+    function initUploader($fieldId, $restrictUpload2SingleFile = true, $callBackFun = 'uploadFinished', $data, $dir) {
+        try {
+            //init the uploader
+            JS::activate('cx'); //the uploader needs the framework
+            $f = UploadFactory::getInstance();
 
+            /**
+            * Name of the upload instance
+            */
+            $uploaderInstanceName = 'exposed_combo_uploader_'.$fieldId;
+
+            /**
+            * jQuery selector of the HTML-element where the upload folder-widget shall be put in
+            */
+            $uploaderFolderWidgetContainer = '#contactFormField_uploadWidget_'.$fieldId;
+            $uploaderWidgetName = 'uploadWidget'.$fieldId;
+
+            $uploader = $f->newUploader('exposedCombo', 0, $restrictUpload2SingleFile);
+            $uploadId = $uploader->getUploadId();
+
+            //set instance name so we are able to catch the instance with js
+            $uploader->setJsInstanceName($uploaderInstanceName);
+
+            // specifies the function to call when upload is finished. must be a static function
+            $uploader->setFinishedCallback(array(ASCMS_MODULE_PATH.'/crm/admin.class.php', 'CrmManager', $callBackFun));
+            $uploadId = $uploader->getUploadId();
+            $uploader->setData($data);
+
+
+            //retrieve temporary location for uploaded files
+            $tup = self::getTemporaryUploadPath($uploadId, $fieldId, $dir);
+
+            //create the folder
+            if (!\Cx\Lib\FileSystem\FileSystem::make_folder($tup[1].'/'.$tup[2])) {
+                throw new ContactException("Could not create temporary upload directory '".$tup[0].'/'.$tup[2]."'");
+            }
+
+            if (!\Cx\Lib\FileSystem\FileSystem::makeWritable($tup[1].'/'.$tup[2])) {
+                //some hosters have problems with ftp and file system sync.
+                //this is a workaround that seems to somehow show php that
+                //the directory was created. clearstatcache() sadly doesn't
+                //work in those cases.
+                @closedir(@opendir($tup[0]));
+
+                if (!\Cx\Lib\FileSystem\FileSystem::makeWritable($tup[1].'/'.$tup[2])) {
+                    throw new ContactException("Could not chmod temporary upload directory '".$tup[0].'/'.$tup[2]."'");
+                }
+            }
+
+            //initialize the widget displaying the folder contents
+            $folderWidget = $f->newFolderWidget($tup[0].'/'.$tup[2], $uploaderInstanceName);
+
+            $strInputfield = $folderWidget->getXHtml($uploaderFolderWidgetContainer, $uploaderWidgetName);
+            $strInputfield .= $uploader->getXHtml();
+
+            JS::registerJS('core_modules/upload/js/uploaders/exposedCombo/extendedFileInput.js');
+
+            $strInputfield .= <<<CODE
+            <script type="text/javascript">
+            cx.ready(function() {
+                    var ef = new ExtendedFileInput({
+                            field:  jQuery('#contactFormFieldId_$fieldId'),
+                            instance: '$uploaderInstanceName',
+                            widget: '$uploaderWidgetName'
+                    });
+            });
+            </script>
+CODE;
+            return $strInputfield;
+        }
+        catch (Exception $e) {
+            return '<!-- failed initializing uploader, exception '.get_class($e).' with message "'.$e->getMessage().'" -->';
+        }
+    }
+
+    /**
+     * Gets the temporary upload location for files.
+     * @param integer $submissionId
+     * @return array('path','webpath', 'dirname')
+     * @throws ContactException
+     */
+    protected static function getTemporaryUploadPath($submissionId, $fieldId, $dir) {
+        global $sessionObj;
+
+        if (!isset($sessionObj)) $sessionObj = new cmsSession();
+
+        $tempPath = $sessionObj->getTempPath();
+        $tempWebPath = $sessionObj->getWebTempPath();
+        if($tempPath === false || $tempWebPath === false)
+            throw new ContactException('could not get temporary session folder');
+
+        $dirname = $dir.$submissionId.'_'.$fieldId;
+        $result = array(
+            $tempPath,
+            $tempWebPath,
+            $dirname
+        );
+        return $result;
+    }
+    
     /**
      * notify the staffs regarding the account modification of a contact
      *

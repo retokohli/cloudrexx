@@ -882,8 +882,6 @@ class CrmManager extends CrmLibrary
         JS::registerCSS("modules/crm/View/Style/main.css");
         JS::registerCSS("modules/crm/View/Style/customerTooltip.css");
         JS::registerJS("modules/crm/View/Script/jquery-scrolltofixed.js");
-        JS::registerCSS("lib/javascript/crm/fineuploader/fineuploader-3.3.1.css");
-        JS::registerJS("lib/javascript/crm/fineuploader/jquery.fineuploader-3.3.1.min.js");
 
         $objTpl = $this->_objTpl;
         $objTpl->loadTemplateFile('module_'.$this->moduleName.'_customer_details.html');
@@ -956,10 +954,19 @@ class CrmManager extends CrmLibrary
         }
 
         if ($contactId) {
-            //For document Upload
-//            $this->initDocUploader($contactId);
             //For Profile Photo Upload
-            $this->initProPhotoUploader($contactId);
+            $uploaderCode2 = $this->initUploader(2, true, 'proPhotoUploadFinished', $contactId, 'profile_files_');
+            $redirectUrl = CSRF::enhanceURI('index.php?cmd=crm&act=getImportFilename&custId='.$contactId);
+            $this->_objTpl->setVariable(array(
+                'COMBO_UPLOADER_CODE2' => $uploaderCode2,
+                'REDIRECT_URL'         => $redirectUrl
+            ));
+            
+            //For document Upload
+            $uploaderCode3 = $this->initUploader(3, false, 'docUploadFinished', $contactId, 'document_files_');
+            $this->_objTpl->setVariable(array(
+                'COMBO_UPLOADER_CODE3' => $uploaderCode3
+            ));
 
             $this->contact = $this->load->model('crmContact', __CLASS__);
             $this->contact->load($contactId);
@@ -1334,11 +1341,6 @@ class CrmManager extends CrmLibrary
         ($this->isPmInstalled && !empty($settings['allow_pm'])) ? $objTpl->touchBlock("contactsProjectsTab") : $objTpl->hideBlock("contactsProjectsTab");
         ($this->isPmInstalled && !empty($settings['allow_pm'])) ? $objTpl->touchBlock("contactsProjectsTabDetails") : $objTpl->hideBlock("contactsProjectsTabDetails");
         ($custDetails['contact_type'] == 1) ? $objTpl->touchBlock("contactSwitchTab") : $objTpl->hideBlock("contactSwitchTab");
-        if ($custDetails['contact_type'] == 1) {
-            $objTpl->touchBlock("company_default_image");
-        } else {
-            $objTpl->touchBlock("person_default_image");
-        }
 
         $this->_pageTitle = $custDetails['contact_type'] == 1 ? $_ARRAYLANG['TXT_CRM_CUSTOMER_DETAILS'] : $_ARRAYLANG['TXT_CRM_CONTACT_DETAILS'];
     }
@@ -4009,10 +4011,8 @@ END;
                     $this->deleteContactDocument();
                 break;
             case 'download':
-                    include_once CRM_MODULE_LIB_PATH.'/qqFileUploader.php';
                     $fileName    = $this->getContactFileNameById((int) $_GET['id'], (int) $_GET['customer']);
-                    $objUploader = new qqFileUploader();
-                    $objUploader->download(CRM_MEDIA_PATH, $fileName);
+                    $this->download($fileName);
                 break;
             }
             exit();
@@ -4107,6 +4107,16 @@ END;
         $json['content'] = $objTpl->get();
         echo $result = json_encode($json);
         exit();
+    }
+    
+    public function download($file)
+    { 
+        $objHTTPDownload = new HTTP_Download();
+        $objHTTPDownload->setFile(ASCMS_MEDIA_PATH.'/crm/'.$file);
+        $objHTTPDownload->setContentDisposition(HTTP_DOWNLOAD_ATTACHMENT, str_replace('"', '\"', $file));
+        $objHTTPDownload->setContentType();
+        $objHTTPDownload->send('application/force-download');
+        exit;
     }
 
     /**
@@ -5490,94 +5500,6 @@ END;
     }
 
     /**
-     * upload the profile image to the server
-     *
-     * @global array $_ARRAYLANG
-     * @global object $objDatabase
-     * @return true
-     */
-    function uploadProfilePhoto()
-    {
-        global $objDatabase, $_ARRAYLANG;
-
-        $customerId = isset($_POST['customer_id']) ? (int) $_POST['customer_id'] : 0;
-
-        $json = array();
-        if ($customerId) {
-            include_once CRM_MODULE_LIB_PATH.'/qqFileUploader.php';
-
-            $uploader = new qqFileUploader();
-            // Specify the list of valid extensions, ex. array("jpeg", "xml", "bmp")
-            //Taken from http://en.wikipedia.org/wiki/Image_file_formats
-            $uploader->allowedExtensions = array("jpeg", "png", "gif", "jpg");
-
-            // Specify max file size in bytes.
-            $uploader->sizeLimit = 1 * 1024 * 1024;
-
-            // Specify the input name set in the javascript.
-            $uploader->inputName = 'profile-picture';
-
-            // Call handleUpload() with the name of the folder, relative to PHP's getcwd()
-            $result = $uploader->handleUpload(CRM_ACCESS_PROFILE_IMG_PATH, md5(mt_rand()).'_'.$uploader->getName());
-
-            // To save the upload with a specified name, set the second parameter.
-            // $result = $uploader->handleUpload('uploads/', md5(mt_rand()).'_'.$uploader->getName());
-
-            // To return a name used for uploaded file you can use the following line.
-            $result['uploadName'] = $uploader->getUploadName();
-            $result['thumbName']  = $uploader->getThumbName();
-
-            if (empty($result['error'])) {
-                //dbg::activate();
-                $this->contact = $this->load->model('crmContact', __CLASS__);
-                $this->contact->load($customerId);
-                $this->contact->profile_picture = $result['uploadName'];
-                $this->contact->save();
-            }
-
-            header("Content-Type: text/plain");
-            echo json_encode($result);
-            exit();
-        } else {
-            $json['error'] = "Customer Id empty!";
-        }
-
-        echo json_encode($json);
-        exit();
-    }
-
-     /**
-     * update user profile photo
-     *
-     * @global array $_ARRAYLANG
-     * @global object $objDatabase
-     * @return true
-     */
-    function updateProfilePhoto()
-    {
-        global $objDatabase, $_ARRAYLANG;
-
-        $json = array();
-
-        $customer_id = isset($_POST['customer_id']) ? (int) $_POST['customer_id'] : 0;
-        $image_name  = isset($_POST['img_name']) ? contrexx_raw2xhtml($_POST['img_name']) : '';
-
-        if ($customer_id && !empty($image_name)) {
-            $this->contact = $this->load->model('crmContact', __CLASS__);
-            $this->contact->load($customer_id);
-            $this->contact->profile_picture = $image_name;
-            $this->contact->save();
-            $json['success']    = true;
-            $json['img_name']   = $image_name;
-        } else {
-            $json['error'] = "Customer Id empty!";
-        }
-
-        echo json_encode($json);
-        exit();
-    }
-
-    /**
      * Uploader callback function
      *
      * @param string  $tempPath    Temp path
@@ -5664,42 +5586,7 @@ END;
         return array($tempPath, $tempWebPath);
     }
     
-    /**
-     * init the pl uploader which is directly included in the webpage
-     *
-     * @return integer the uploader id
-     */
-    protected function initDocUploader($customerId)
-    {
-        $comboUp = UploadFactory::getInstance()->newUploader('exposedCombo');
-        $comboUp->setFinishedCallback(array(ASCMS_MODULE_PATH.'/crm/admin.class.php','CrmManager','docUploadFinished'));
-        //set instance name to combo_uploader so we are able to catch the instance with js
-        $comboUp->setJsInstanceName('exposed_combo_uploader');
-        $comboUp->setData($customerId);
-        $this->_objTpl->setVariable(array(
-              'COMBO_UPLOADER_CODE' => $comboUp->getXHtml(true)
-        ));
-    }
 
-    /**
-     * init the pl uploader which is directly included in the webpage
-     *
-     * @return integer the uploader id
-     */
-    protected function initProPhotoUploader($customerId)
-    { //DBG::activate();
-        $comboUp = UploadFactory::getInstance()->newUploader('exposedCombo');
-        $comboUp->setFinishedCallback(array(ASCMS_MODULE_PATH.'/crm/admin.class.php','CrmManager','proPhotoUploadFinished'));
-        //set instance name to combo_uploader so we are able to catch the instance with js
-        $comboUp->setJsInstanceName('exposed_combo_uploader');
-        $comboUp->setData($customerId);
-        $redirectUrl = CSRF::enhanceURI('index.php?cmd=crm&act=getImportFilename&custId='.$customerId);
-        $this->_objTpl->setVariable(array(
-            'COMBO_UPLOADER_CODE1' => $comboUp->getXHtml(true),
-            'REDIRECT_URL'         => $redirectUrl
-            ));
-    }
-    
     /**
      * the upload is finished
      * rewrite the names
@@ -5873,59 +5760,6 @@ END;
             $result[] = array('fileName' => $fileName);
         }
         echo json_encode($result);
-        exit();
-    }
-     /**
-     * upload customer files
-     *
-     * @global array $_ARRAYLANG
-     * @global object $objDatabase
-     * @return true
-     */
-    function uploadFiles()
-    {
-        global $objDatabase, $_ARRAYLANG, $objFWUser;
-
-        $customerId = isset($_GET['id']) ? (int) $_GET['id'] : 0;
-
-        $json = array();
-        if ($customerId) {
-            include_once CRM_MODULE_LIB_PATH.'/qqFileUploader.php';
-
-            $uploader = new qqFileUploader();
-            // Specify the list of valid extensions, ex. array("jpeg", "xml", "bmp")
-            //Taken from http://en.wikipedia.org/wiki/Image_file_formats
-            $uploader->allowedExtensions = array("jpeg", "png", "gif", "jpg", "doc", "docx", "pdf", "txt", "csv", "xls");
-
-            // Specify max file size in bytes.
-            $uploader->sizeLimit = 2 * 1024 * 1024;
-
-            // Specify the input name set in the javascript.
-            $uploader->inputName = 'qqfile';
-
-            // Call handleUpload() with the name of the folder, relative to PHP's getcwd()
-            $result = $uploader->handleUpload(CRM_MEDIA_PATH);
-
-            // To return a name used for uploaded file you can use the following line.
-            $result['uploadName'] = $uploader->getUploadName();
-
-            $fields = array(
-                'document_name' => $result['uploadName'],
-                'added_by'      => $objFWUser->objUser->getId(),
-                'uploaded_date' => date('Y-m-d H:i:s'),
-                'contact_id'    => $customerId
-            );
-            $sql = SQL::insert("module_{$this->moduleName}_customer_documents", $fields, array('escape' => true));
-            $objDatabase->Execute($sql);
-
-            header("Content-Type: text/plain");
-            echo json_encode($result);
-            exit();
-        } else {
-            $json['error'] = "Customer Id empty!";
-        }
-
-        echo json_encode($json);
         exit();
     }
 }

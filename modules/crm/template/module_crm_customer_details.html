@@ -1,45 +1,5 @@
 <script src="../cadmin/javascript/jquery.tablesorter.js"></script>
 <script type="text/javascript">
-    function ajaxFileUpload(){
-        $J("#add-new-photo").ajaxSubmit({
-            dataType: 'json',
-            beforeSend : function(){
-                $J(".action-progress-1").show();
-            },
-            success:  function(json) {
-                if (json['success']) {
-                    $J('#profile-image').html('<img src="{CRM_ACCESS_PROFILE_IMG_WEB_PATH}/'+json['uploadName']+'.thumb" alt="image" />');
-                    $J(".action-progress-1").hide();
-                    $J("#profile-picture").val('');
-                    $J( "#profile-photo" ).dialog( "close" );
-                } else {
-                    alert(json['error']);
-                }
-            }
-        });
-        return false;
-    }
-    function setDefaultImage(img_name, customer_id) {
-        $J.ajax({
-            url         : './index.php?cmd={MODULE_NAME}&act=updateProfileImage',
-            type        : 'post',
-            data        : 'img_name='+img_name+'&customer_id='+customer_id,
-            dataType    : 'json',
-            beforeSend  : function(){
-                $J(".action-progress-2").show();
-            },
-            success     :  function(json) {
-                if (json['success']) {
-                    $J('#profile-image').html('<img src="{CRM_ACCESS_PROFILE_IMG_WEB_PATH}/'+json['img_name']+'" alt="image" />');
-                } else {
-                    alert(json['error']);
-                }
-                $J(".action-progress-2").hide();
-                $J( "#profile-photo" ).dialog( "close" );
-            }
-        });
-    }
-    $J("#doc_uploader").hide();
     function deleteEntry(entryId){
         if(confirm('{TXT_CRM_CONFIRM_DELETE_ENTRY}'))
             window.location.replace("?cmd={MODULE_NAME}&{CSRF_PARAM}&act=deleteCustomers&id="+entryId);
@@ -258,23 +218,11 @@
         });
 
         $J( ".change-photo" ).click(function() {
-            $J( "#exposedComboUploaderStarter" ).trigger( "click" );
-        });
-        $J('#jquery-wrapped-fine-uploader').fineUploader({
-            request: {
-                endpoint: './index.php?cmd={MODULE_NAME}&act=fileupload&id={ENTRY_ID}'
-            },
-            text: {
-                uploadButton: '<div class="button blue">upload a file</div>'
-            },
-            validation: {
-                allowedExtensions: ["jpeg", "png", "gif", "jpg", "doc", "docx", "pdf", "txt", "csv", "xls"],
-                sizeLimit: 2097152
-            }
+            $J( "#contactFormFieldId_2" ).trigger( "click" );
         });
     });
     $J(".add-document").live('click', function(){
-        $J( "#documentFile" ).trigger( "click" );
+        $J( "#contactFormFieldId_3" ).trigger( "click" );
     });
     $J(".delete_document").live('click', function(){
         if(confirm('{TXT_CRM_CONFIRM_DELETE_ENTRY}')) {
@@ -397,7 +345,7 @@
         margin-left: 130px;
         position: absolute;
     }
-    input#documentFile {
+    input.contactFormField {
         position: absolute;
         left: -5000px;
     }
@@ -446,7 +394,8 @@
             <td style="width: 150px;text-align:left; padding-left: 0px; padding-top: 10px;">
                 <div id="profile-image"><img src="{CRM_ACCESS_PROFILE_IMG_WEB_PATH}/{CRM_CONTACT_PROFILE_IMAGE}" alt="Profile" /></div>
                 <div ><a class="change-photo" href="javascript:void(0);">{TXT_CRM_CHANGE_PHOTO}</a></div>
-                <div id="exposedComboUploaderStarter"></div>
+                <div id="contactFormField_uploadWidget_2"></div>
+                <input type="file" class="contactFormField" id="contactFormFieldId_2" name="contactFormFieldId_2" value="" />
             </td>
             <td>
                 <table class="adminlist" width="100%" cellpadding="4" cellspacing="0">
@@ -836,49 +785,18 @@
             </tbody>
         </table>
         <br>
-        <input type="button" id="exposedComboUploaderStarter" value="{TXT_CRM_ADD_DOCUMENTS}" />
+        <input type="button" class="add-document" value="{TXT_CRM_ADD_DOCUMENTS}" />
+        <div id="contactFormField_uploadWidget_3"></div>
+        <input type="file" class="contactFormField" id="contactFormFieldId_3" name="contactFormFieldId_3" value="" />
     </div>
 </div>
 <!-- show_sub_tabs -->
 
-<div id="profile-photo" title="{TXT_CRM_PROFILE_PHTO_TITLE}">
-    <h4>{TXT_CRM_PROFILE_PHOTO_TITLE1}</h4>
-    <p>
-        {TXT_CRM_PROFILE_PHOTO_DES}
-    </p>
-    <div class="upload-form">
-        <form id="add-new-photo" action="./index.php?cmd={MODULE_NAME}&act=uploadProfilePhoto" method="post">
-            <input type="file" onchange="ajaxFileUpload();" name="profile-picture" id="profile-picture" value="" />
-            <input type="hidden" name="customer_id" value="{ENTRY_ID}" />
-            <input type="submit" name="save-photo" style="position: absolute;left: -10000px;" />
-        </form>
-        <div class="action-progress-1" style="display:none;"><img src="../modules/crm/View/Media/loader.gif" width="121" style="padding-top: 5px;" alt="Uploading...."/>Uploading....</div>
-    </div>
-    <div>
-        <h4>{TXT_CRM_PROFILE_PHOTO_TITLE2}</h4>
-        <div class="default-images">
-            <!-- BEGIN company_default_image -->
-            <img src="{CRM_ACCESS_PROFILE_IMG_WEB_PATH}/profile_company_small.png" onclick="setDefaultImage('profile_company_big.png', {ENTRY_ID})" width="40" height="60" alt="Profile" />
-            <!-- END company_default_image -->
-            <!-- BEGIN person_default_image -->
-            <img src="{CRM_ACCESS_PROFILE_IMG_WEB_PATH}/profile_person_small.png" onclick="setDefaultImage('profile_person_big.png', {ENTRY_ID})" width="40" height="60" alt="Profile" />
-            <!-- END person_default_image -->
-        </div>
-        <div class="action-progress-2" style="display:none;"><img src="../modules/crm/View/Media/loader.gif" width="121" style="padding-top: 5px;" alt="Uploading...."/>Uploading....</div>
-    </div>
-</div>
-<div id="file-upload" title="{TXT_CRM_DOCUMENT_UPLOAD}">
-    <h4>{TXT_CRM_UPLOAD_FILES}</h4>
-    <p>
-        {TXT_CRM_UPLOAD_FILES_DES}
-    </p>
-    <div id="jquery-wrapped-fine-uploader"></div>
-</div>
 <!-- Start Profile Photo Upload -->
-{COMBO_UPLOADER_CODE1}
+{COMBO_UPLOADER_CODE2}
 <script type="text/javascript">
 	cx.ready(function() {
-		var uploader = cx.instances.get('exposed_combo_uploader','uploader');
+		var uploader = cx.instances.get('exposed_combo_uploader_2','uploader');
 		uploader.dialog().bind('close', function(){
                     $J.getJSON( '{REDIRECT_URL}', function( data ) {
                         $J.each(data, function(key, val) {
@@ -893,10 +811,10 @@
 </script>
 <!-- End Profile Photo Upload -->
 <!-- Start Document Upload -->
-{COMBO_UPLOADER_CODE}
+{COMBO_UPLOADER_CODE3}
 <script type="text/javascript">
 	cx.ready(function() {
-		var uploader = cx.instances.get('exposed_combo_uploader','uploader');
+		var uploader = cx.instances.get('exposed_combo_uploader_3','uploader');
 		uploader.dialog().bind('close',function(){
                             $J("#documents table tbody").html('');
                             tabIndex = $J( "#tabs" ).tabs('option', 'selected');
