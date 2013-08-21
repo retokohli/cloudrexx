@@ -203,6 +203,14 @@ class ForumAdmin extends ForumLibrary {
                 } else {
                     $strLanguages = '-';
                 }
+                $langState = array();
+                if (is_array($arrValues['languages'])) {
+                    foreach ($arrValues['languages'] as $intLangId => $arrTranslations) {
+                        $langState[$intLangId] = 'active';
+                    }
+                }
+                    $strLanguages = \Html::getLanguageIcons($langState, 'index.php?cmd=forum&amp;act=category_edit&amp;id=' . $arrValues['id']);
+
 
                 $this->_objTpl->setVariable(array(
                        'CATEGORY_ROWCLASS'            =>    'row'.($index % 2),
@@ -210,6 +218,7 @@ class ForumAdmin extends ForumLibrary {
                        'CATEGORY_STATUS_ICON'        =>    ($arrValues['status'] == 1) ? 'led_green' : 'led_red',
                        'CATEGORY_TYPE_ICON'        =>    ($arrValues['level'] == 0) ? '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/forum/folder.gif" border="0" alt="'.$arrValues['name'].'" />' : '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/forum/comment.gif" border="0" alt="'.$arrValues['name'].'" />',
                        'FORUM_TOOLTIP_TEXT'        =>    $strLanguages,
+                       'FORUM_LANGUAGES'            =>   $strLanguages,
                        'CATEGORY_SPACER'            =>    '<img src="images/icons/pixel.gif" border="0" width="'.(intval($arrValues['level'])*20).'" height="1" />',
                        'CATEGORY_ORDERID'            =>    $arrValues['order_id'],
                        'CATEGORY_NAME'                =>    $arrValues['name'],
