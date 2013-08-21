@@ -469,15 +469,44 @@ EOF;
         $javascript = <<< EOF
 <script language="JavaScript" type="text/javascript">
 
-function ExpandMinimize(toggle, opener){
-    elm1 = document.getElementById(toggle);
-    elm1.style.display = (elm1.style.display=='none') ? 'block' : 'none';
-
-    if(opener != '') {
-        elm2 = document.getElementById(opener);
-        elm2.style.display = (elm2.style.display=='none') ? 'inline' : 'none';
+var modifyEvent = {
+    // elm => jquery object
+    _handleSeriesEventRowDisplay : function(elm){
+      if (elm.is(":checked")) {
+          \$J('.series-event-row').show();
+          showOrHide();
+      } else {
+          \$J('.series-event-row').hide();
+      }
+    },
+    _handleAllDayEvent : function(elm){        
+      jQuery(".startDate").data('dateTime', jQuery(".startDate").datetimepicker("getDate").getTime());
+      jQuery(".endDate").data('dateTime', jQuery(".endDate").datetimepicker("getDate").getTime());
+      if (elm.is(":checked")) {
+          // hack to disable timepicker, its not working if we disable time picker before it showing atleast once.
+         jQuery( ".startDate, .endDate" ).datetimepicker( "show" );
+         jQuery( ".startDate, .endDate" ).datetimepicker( "hide" );
+         jQuery( ".startDate, .endDate" ).datetimepicker('disableTimepicker');
+      } else {
+         jQuery(".startDate, .endDate").datetimepicker('enableTimepicker');
+      }
+      jQuery(".startDate").datepicker('setDate', new Date(jQuery(".startDate").data('dateTime')));
+      jQuery(".endDate").datepicker('setDate', new Date(jQuery(".endDate").data('dateTime')));
+    },
+    _isNumber : function(evt) {
+      evt = (evt) ? evt : window.event;
+      var charCode = (evt.which) ? evt.which : evt.keyCode;
+      if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+          return false;
+      }
+      return true;
     }
-}
+};
+\$J(function(){
+    \$J(".all_day").click(function(){
+        modifyEvent._handleAllDayEvent(\$J(this));
+    });                
+});
 cx.ready(function() {
     var options = {
         dateFormat: '$dateFormat',        
@@ -494,6 +523,7 @@ cx.ready(function() {
     };
     jQuery('input[name=startDate]').datetimepicker(options);
     jQuery('input[name=endDate]').datetimepicker(options);
+    modifyEvent._handleAllDayEvent(\$J(".all_day"));
 });
 
 </script>
@@ -548,10 +578,14 @@ $this->_objTpl->setVariable(array(
             'TXT_'.$this->moduleLangVar.'_EVENT_MAP'                => $_ARRAYLANG['TXT_CALENDAR_EVENT_MAP'],
             'TXT_'.$this->moduleLangVar.'_EVENT_USE_GOOGLEMAPS'     => $_ARRAYLANG['TXT_CALENDAR_EVENT_USE_GOOGLEMAPS'],
             'TXT_'.$this->moduleLangVar.'_EVENT_LINK'               => $_ARRAYLANG['TXT_CALENDAR_EVENT_LINK'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_EMAIL'              => $_ARRAYLANG['TXT_CALENDAR_EVENT_EMAIL'],
             'TXT_'.$this->moduleLangVar.'_EVENT_PICTURE'            => $_ARRAYLANG['TXT_CALENDAR_EVENT_PICTURE'],
             'TXT_'.$this->moduleLangVar.'_EVENT_CATEGORY'           => $_ARRAYLANG['TXT_CALENDAR_CAT'] ,
             'TXT_'.$this->moduleLangVar.'_EVENT_DESCRIPTION'        => $_ARRAYLANG['TXT_CALENDAR_EVENT_DESCRIPTION'],
             'TXT_'.$this->moduleLangVar.'_PLEASE_CHECK_INPUT'       => $_ARRAYLANG['TXT_CALENDAR_PLEASE_CHECK_INPUT'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_HOST'               => $_ARRAYLANG['TXT_CALENDAR_EVENT_HOST'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_NAME'               => $_ARRAYLANG['TXT_CALENDAR_EVENT_NAME'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_ALL_DAY'            => $_ARRAYLANG['TXT_CALENDAR_EVENT_ALL_DAY'],
 
             $this->moduleLangVar.'_EVENT_START_DATE'                => $eventId != 0 ? date(parent::getDateFormat()." H:i", $objEvent->startDate) : date(parent::getDateFormat()." H:i"),
             $this->moduleLangVar.'_EVENT_END_DATE'                  => $eventId != 0 ? date(parent::getDateFormat()." H:i", $objEvent->endDate) : date(parent::getDateFormat()." H:i"),
@@ -567,8 +601,9 @@ $this->_objTpl->setVariable(array(
             $this->moduleLangVar.'_EVENT_CITY'                      => $objEvent->arrData['place_city'][$_LANGID],
             $this->moduleLangVar.'_EVENT_COUNTRY'                   => $objEvent->arrData['place_country'][$_LANGID],
             $this->moduleLangVar.'_EVENT_MAP'                       => $objEvent->map == 1 ? 'checked="checked"' : '',
-            $this->moduleLangVar.'_EVENT_DESCRIPTION'               => $objEvent->description,
+            $this->moduleLangVar.'_EVENT_DESCRIPTION'               => new \Cx\Core\Wysiwyg\Wysiwyg("description[$_LANGID]", contrexx_raw2xhtml($objEvent->description), 'bbcode'),            
             $this->moduleLangVar.'_EVENT_ID'                        => $eventId,
+            $this->moduleLangVar.'_EVENT_ALL_DAY'                   => $eventId != 0 && $objEvent->all_day ? 'checked="checked"' : '',
         ));
         
         //parse placeSelect
