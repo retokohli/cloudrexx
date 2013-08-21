@@ -2752,18 +2752,18 @@ function cloneElement(id)
      */
     public static function getLanguageIcons(&$languageStates, $link) {
         // resolve second to first form
-        foreach ($languageStates as &$state) {
+        foreach ($languageStates as $langId=>$state) {
             if (is_array($state)) {
                 if (is_object($state['page'])) {
-                    $state = $state['active'] ? 'active' : 'inactive';
+                    $languageStates[$langId] = $state['active'] ? 'active' : 'inactive';
                 } else {
                     $em = \Env::get('cx')->getDb()->getEntityManager();
                     $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
                     $page = $pageRepo->findOneById($state['page']);
                     if (!$page) {
-                        $state = 'inexistent';
+                        $languageStates[$langId] = 'inexistent';
                     } else {
-                        $state = $state['active'] ? 'active' : 'inactive';
+                        $languageStates[$langId] = $state['active'] ? 'active' : 'inactive';
                     }
                 }
             }
