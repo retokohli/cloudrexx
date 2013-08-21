@@ -587,20 +587,16 @@ class newsManager extends newsLibrary {
                     $this->_objTpl->hideBlock('news_type_data');
                 }
 
-                $lang = array();
-                $langIds = array();
-                foreach ($activeFrontendLangIds as $langId) {
-                    if (isset($news['lang'][$langId])) {
-                        $lang[] = \FWLanguage::getLanguageCodeById($langId);
-                        $langIds[] = $langId;
-                    }
+                $langState = array();
+                foreach ($news['lang'] as $langId => $langValues) {
+                    $langState[$langId] = 'active';
                 }
-                $langString = implode(', ',$lang);
+                $langString = \Html::getLanguageIcons($langState, 'index.php?cmd=news&amp;act=edit&amp;newsId=' . $newsId . '&amp;langId=%1$d');
 
                 if ($news['status'] == true) {
                     $this->_objTpl->setVariable(array (
                         'TXT_NEWS_PREVIEW' => $_ARRAYLANG['TXT_NEWS_PREVIEW'],
-                        'NEWS_PREVIEW_LINK_HREF' => \Cx\Core\Routing\Url::fromModuleAndCmd('news', $this->findCmdById('details', $news['catid']), reset($langIds), array('newsid' => $newsId)),
+                        'NEWS_PREVIEW_LINK_HREF' => \Cx\Core\Routing\Url::fromModuleAndCmd('news', $this->findCmdById('details', $news['catid']), '', array('newsid' => $newsId)),
                     ));
                     $this->_objTpl->touchBlock('news_preview');
                 } else {
@@ -752,13 +748,13 @@ class newsManager extends newsLibrary {
                     $selectedInterfaceLanguage = FWLanguage::getDefaultLangId();
                 } else {
                     $selectedInterfaceLanguage = key($news['lang']);
-                } 
-
-                $lang = array();
-                foreach ($news['lang'] as $langId => $langValues) {
-                    $lang[] = FWLanguage::getLanguageCodeById($langId);
                 }
-                $langString = implode(', ',$lang);
+
+                $langState = array();
+                foreach ($news['lang'] as $langId => $langValues) {
+                    $langState[$langId] = 'active';
+                }
+                $langString = \Html::getLanguageIcons($langState, 'index.php?cmd=news&amp;act=edit&amp;newsId=' . $newsId . '&amp;langId=%1$d');
                 
                 $this->_objTpl->setVariable(array(
                     'NEWS_ID'               => $newsId,
@@ -1444,12 +1440,20 @@ class newsManager extends newsLibrary {
             } else {
                 $newsAuthorId = 0;
             }
+            $active_lang        = array();
+            
+            $activeLanguage = null;
+            if (isset($_GET['langId']) && in_array($_GET['langId'], \FWLanguage::getIdArray())) {
+                if (!in_array($_GET['langId'], $active_lang)) {
+                    $active_lang[] = contrexx_input2raw($_GET['langId']);
+                }
+                $activeLanguage = contrexx_input2raw($_GET['langId']);
+            }
             
             if (count($arrLanguages) > 0) {
                 $intLanguageCounter = 0;
                 $arrActiveLang      = array(0 => '', 1 => '', 2 => '');
                 $strJsTabToDiv      = '';
-                $active_lang        = array();
                 
                 $query = "SELECT `lang_id` FROM `".DBPREFIX."module_news_locale`
                                 WHERE `news_id` = ".$newsid."
@@ -1483,11 +1487,15 @@ class newsManager extends newsLibrary {
 
             $first = true;
             
+            if (!$activeLanguage) {
+                $activeLanguage = current($active_lang);
+            }
+            
             foreach ($arrLanguages as $langId => $arrLanguage) {
                 if ($arrLanguage['frontend'] == 1) {
    
                     $isActive = isset($langData[$langId]) && ($langData[$langId]['active'] == 1);                    
-                    $display = ($first && $isActive);
+                    $display = $langId == $activeLanguage;
 
                     // parse tabs
                     $this->_objTpl->setVariable(array(
