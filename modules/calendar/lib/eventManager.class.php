@@ -427,7 +427,7 @@ class CalendarEventManager extends CalendarLibrary
      * @return boolean true if the event is valid, false oterwise
      */
     function _addToEventList($objEvent) {
-       if($this->startDate == 0) {
+        if($this->startDate == 0) {
             if($objEvent->endDate < $this->endDate) {
                 return true;
             } else {
@@ -1222,6 +1222,7 @@ class CalendarEventManager extends CalendarLibrary
             break;
         }
         
+        $isAllowedEvent = true;
         switch($objCloneEvent->seriesData['seriesPatternDouranceType']) {
             case 1:
                 $lastDate = mktime(date("H", $this->startDate), date("i", $this->startDate), date("s", $this->startDate), date("m", $this->startDate), date("d", $this->startDate), date("Y", $this->startDate)+intval($this->arrSettings['maxSeriesEndsYear'])+1);
@@ -1235,11 +1236,13 @@ class CalendarEventManager extends CalendarLibrary
             case 2:
                 $objCloneEvent->seriesData['seriesPatternEnd'] = $objCloneEvent->seriesData['seriesPatternEnd']-1;
                 
-                if($objCloneEvent->seriesData['seriesPatternEnd'] > 1) {
+                if ($objCloneEvent->seriesData['seriesPatternEnd'] > 1) {
                     $getNextEvent = true;
                 } else {
                     $getNextEvent = false;
                 }
+                // If pattern end count is true, then a event will be allowed to add in event list
+                $isAllowedEvent = (boolean) $objCloneEvent->seriesData['seriesPatternEnd']; 
                 break;
             case 3:
                 if($objCloneEvent->startDate <= $objCloneEvent->seriesData['seriesPatternEnd']) {
@@ -1250,7 +1253,10 @@ class CalendarEventManager extends CalendarLibrary
                 break;
         }
         
-        if(!in_array($compareDate, $objCloneEvent->seriesData['seriesPatternExceptions']) && self::_addToEventList($objCloneEvent)) {
+        if (   $isAllowedEvent
+            && !in_array($compareDate, $objCloneEvent->seriesData['seriesPatternExceptions'])
+            && self::_addToEventList($objCloneEvent)
+        ) {
             array_push($this->eventList, $objCloneEvent);    
         }
         
