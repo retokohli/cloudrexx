@@ -752,12 +752,14 @@ class CalendarEventManager extends CalendarLibrary
                 $objCategory = new CalendarCategory(intval($objEvent->catId));   
                 
                 $showIn = explode(",",$objEvent->showIn);
-                $languages = null;
+                
+                $langState = array();
                 foreach ($this->arrFrontendLanguages as $langKey => $arrLang) {
-                    if(in_array($arrLang['id'], $showIn)) {
-                        $languages .= "[".$arrLang['lang']."] ";
+                    if (in_array($arrLang['id'], $showIn)) {
+                        $langState[$langKey] = 'active';
                     }
-                }     
+                }
+                $languages = \Html::getLanguageIcons($langState, 'index.php?cmd=calendar&amp;act=modify_event&amp;id=' . $objEvent->id . '&amp;langId=%1$d');
                 
                 switch ($objEvent->priority) {
                     case 1:
