@@ -5520,12 +5520,6 @@ END;
         $arrAllowedFileTypes[] = 'csv';
         $depositionTarget = ASCMS_MEDIA_PATH.'/crm/'; //target folder
         $fileName = $_POST['name'];
-        if (!empty ($fileName)) {
-            list($file, $ext) = split('[.]', $fileName);
-            if ($ext == 'csv') {
-                $_SESSION['importFilename'] = $fileName;
-            }
-        }
         $h = opendir($tempPath);
         if ($h) {
 
@@ -5573,6 +5567,13 @@ END;
                     try {
                         $objFile = new \Cx\Lib\FileSystem\File($tempPath.'/'.$file);
                         $objFile->copy($depositionTarget.$prefix.$file, false);
+                        $fileName = $prefix.$file;
+                        if (!empty ($fileName)) {
+                            list($file, $ext) = split('[.]', $fileName);
+                            if ($ext == 'csv') {
+                                $_SESSION['importFilename'] = $fileName;
+                            }
+                        }
                     } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
                         \DBG::msg($e->getMessage());
                     }
