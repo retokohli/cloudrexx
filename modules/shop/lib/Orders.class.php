@@ -972,8 +972,8 @@ if (!$limit) {
     {
         global $objDatabase, $_ARRAYLANG;
 
-        if (is_null($handler) && isset($_GET['handler'])) {
-            $handler = contrexx_input2raw($_GET['handler']);
+        if (is_null($handler) && isset($_REQUEST['handler'])) {
+            $handler = contrexx_input2raw($_REQUEST['handler']);
         }
         $order_id = intval($order_id);
         if ($order_id == 0) {
