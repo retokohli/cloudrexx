@@ -4108,7 +4108,14 @@ END;
         echo $result = json_encode($json);
         exit();
     }
-    
+
+    /**
+     * To download a file
+     * 
+     * @param string $file
+     *
+     * @return null
+     */
     public function download($file)
     { 
         $objHTTPDownload = new HTTP_Download();
@@ -5743,6 +5750,13 @@ END;
         return array($tempPath, $tempWebPath);
     }
 
+    /**
+     * get the imported file name
+     * 
+     * @global ADOConnection $objDatabase
+     *
+     * @return null
+     */
     function getImportFilename()
     {
         global $objDatabase;

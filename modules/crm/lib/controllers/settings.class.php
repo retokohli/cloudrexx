@@ -1109,7 +1109,7 @@ class Settings extends CrmLibrary
      */
     function mailTemplates()
     {
-        global $_CORELANG;
+        global $_CORELANG, $_ARRAYLANG;
         
         $_REQUEST['active_tab'] = 1;
         if (   isset($_REQUEST['act'])
@@ -1134,6 +1134,12 @@ class Settings extends CrmLibrary
         
         $result &= SettingDb::show_external(
             $objTemplate,
+            $_ARRAYLANG['TXT_CRM_PLACEHOLDERS'],
+            $this->getCrmModulePlaceHolders()
+        );
+        
+        $result &= SettingDb::show_external(
+            $objTemplate,
             (empty($_REQUEST['key'])
               ? $_CORELANG['TXT_CORE_MAILTEMPLATE_ADD']
               : $_CORELANG['TXT_CORE_MAILTEMPLATE_EDIT']),
@@ -1144,5 +1150,23 @@ class Settings extends CrmLibrary
             'settings_block', $objTemplate->get());
         $this->_objTpl->touchBlock('settings_block');
         
+    }
+    /**
+     * get crm module placeholders
+     *
+     * @return array
+     */
+    function getCrmModulePlaceHolders()
+    {
+        global $_ARRAYLANG;
+
+        $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/'.$this->moduleName.'/template');
+        $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
+        if (!$objTemplate->loadTemplateFile('module_'.$this->moduleName.'_settings_placeholders.html'))
+            die("Failed to load template 'module_'.$this->moduleName.'_settings_placeholders.html'");
+        
+        $objTemplate->setVariable('TXT_CRM_PLACEHOLDERS', $_ARRAYLANG['TXT_CRM_PLACEHOLDERS']);
+
+        return $objTemplate->get();
     }
 }
