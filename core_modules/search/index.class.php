@@ -543,19 +543,11 @@ class Search
      */
     public static function shortenSearchContent($content, $max_length=NULL)
     {
-        $content = html_entity_decode($content, ENT_COMPAT, 'utf-8');
-        $content = preg_replace(
-            array(
-            '/\{[a-z0-9_]+\}/i',
-            '/\[\[[a-z0-9_]+\]\]/i',
-            '/<script.*?<\/script>/is',
-            '/<!--.*?-->/s',
-            ), '', $content);
-        $content = strip_tags($content);
-        // Squash whitespace
-        $content = preg_replace('/[\s\n\r]{2,}/', ' ', $content);
+        $content = contrexx_html2plaintext($content);
+
         // Omit the content when there is no letter in it
         if (!preg_match('/\w/', $content)) return '';
+
         $max_length = intval($max_length);
         if (strlen($content) > $max_length) {
             $content = substr($content, 0, $max_length);
@@ -565,5 +557,4 @@ class Search
         }
         return $content;
     }
-
 }
