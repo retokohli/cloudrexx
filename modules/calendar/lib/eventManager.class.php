@@ -931,18 +931,16 @@ class CalendarEventManager extends CalendarLibrary
      */
     function _getDetailLink($objEvent)
     {
-        $identifier     = '&amp;id='.intval($objEvent->id);
-        $date           = '&amp;date='.intval($objEvent->startDate);
+        $url = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'detail');
+        $url->setParams(array(
+            'id' => $objEvent->id,
+            'date' => intval($objEvent->startDate)
+        ));
         
         if($objEvent->external) {
-            $external           = '&amp;external=1';   
-        } else {
-            $external           = '';   
+            $url->setParam('external', 1);
         }
-        
-        $link     = CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'&amp;cmd=detail'.$identifier.$date.$external;
-        
-        return $link;
+        return (string)$url;
     }
     
     /**
