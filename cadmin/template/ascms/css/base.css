@@ -1458,13 +1458,19 @@ a.cke_dialog_ui_button_ok:hover {
     height: 18px;
     width: 21px;
     line-height: 18px;
-    margin: 6px 7px 6px 0px;
+    margin: 2px 7px 2px 0px;
     opacity: 0.8;
     text-align: center;
 }
 
 .language-icons .language-icon a {
     display: block;
+    color: white;
+}
+
+.language-icons .language-icon a:hover,
+.language-icons .language-icon a:active,
+.language-icons .language-icon a:focus {
     color: white;
 }
 
