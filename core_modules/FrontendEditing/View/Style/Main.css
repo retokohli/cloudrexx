@@ -181,9 +181,16 @@
     line-height: 29px;
 }
 
+#fe_metanavigation .fe_anchor .historyLoad,
+#fe_metanavigation .fe_anchor .historyPreview {
+    width: 0;
+    overflow: hidden;
+}
+
 #fe_metanavigation .fe_anchor .historyLoad {
     float: right;
-    padding: 0 15px 0 20px;
+    padding: 0 0 0 20px;
+    margin-right: 5px;
     background: url("../Media/Restore.png") no-repeat left center;
 }
 

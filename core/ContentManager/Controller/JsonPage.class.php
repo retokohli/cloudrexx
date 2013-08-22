@@ -837,8 +837,8 @@ class JsonPage implements JsonAdapter {
         $hideDrafts = !isset($params['get']['hideDrafts']) || $params['get']['hideDrafts'] == 'on';
         $hideDraftsHtml = '<input type="checkbox" name="hideDrafts" value="on" id="hideDrafts"' . ($hideDrafts ? ' checked="checked"' : '') . ' /><label for="hideDrafts">' . $_CORELANG['TXT_CORE_CM_HISTORY_HIDE_DRAFTS'] . '</label>';
 
-        $table->setHeaderContents(0, 0, $_CORELANG['TXT_WORKFLOW'], array('width' => '130px', 'colspan' => '3'));
-        $table->setHeaderContents(0, 3, $hideDraftsHtml, array('style' => 'text-align: right;', 'class' => 'hideDrafts'));
+        $table->setHeaderContents(0, 0, $_CORELANG['TXT_WORKFLOW'], array('width' => '130px', 'colspan' => '2'));
+        $table->setHeaderContents(0, 2, $hideDraftsHtml, array('style' => 'text-align: right;', 'class' => 'hideDrafts', 'colspan' => '2'));
 
         //(III) collect page informations - path, virtual language directory
         $path         = $this->pageRepo->getPath($page);
@@ -898,7 +898,7 @@ class JsonPage implements JsonAdapter {
         die($table->toHtml() . $paging);
     }
 
-    private function addHistoryEntries($page, $username, $table, $row, $version = '', $path = '') {
+    private function addHistoryEntries($page, $username, \BackendTable $table, $row, $version = '', $path = '') {
         global $_ARRAYLANG;
 
         $dateString  = $page->getUpdatedAt()->format(ASCMS_DATE_FORMAT_DATETIME);
@@ -907,8 +907,8 @@ class JsonPage implements JsonAdapter {
 
         $editingStatus = $page->getEditingStatus();
         
-        $functions  = '<a id="preview_'.$version.'" class="historyPreview" href="' . $historyLink . '" target="_blank" '.$tableStyle.'>' . $_ARRAYLANG['TXT_CORE_PREVIEW'] . '</a>';
-        $functions .= '<a id="load_'.$version.'" class="historyLoad" href="javascript:loadHistoryVersion('.$version.')" '.$tableStyle.'>' . $_ARRAYLANG['TXT_CORE_LOAD'] . '</a>';
+        $functions  = '<a id="preview_'.$version.'" class="historyPreview" title="' . $_ARRAYLANG['TXT_CORE_PREVIEW'] . '" href="' . $historyLink . '" target="_blank" '.$tableStyle.'>' . $_ARRAYLANG['TXT_CORE_PREVIEW'] . '</a>';
+        $functions .= '<a id="load_'.$version.'" class="historyLoad" title="' . $_ARRAYLANG['TXT_CORE_LOAD'] . '" href="javascript:loadHistoryVersion('.$version.')" '.$tableStyle.'>' . $_ARRAYLANG['TXT_CORE_LOAD'] . '</a>';
         
         /**
          * @todo This is a copy from JsonNode, move this snippet to its own method
@@ -934,6 +934,12 @@ class JsonPage implements JsonAdapter {
                 !\Permission::checkAccess($page->getBackendAccessId(), 'dynamic', true)) {
             $publishingStatus .= ' locked';
         }
+
+        // set style
+        $table->setCellAttributes($row, 0, array('style' => 'white-space: nowrap;'));
+        $table->setCellAttributes($row, 1, array('style' => 'white-space: nowrap;'));
+
+        // set content
         $table->setCellContents($row, 0, $dateString);
         $table->setCellContents($row, 1, '<div class="jstree-icon publishing ' . $publishingStatus . '" /><div class="name">' . $page->getTitle() . '</div>');
         $table->setCellContents($row, 2, $username);
