@@ -1,5 +1,8 @@
-<!-- BEGIN calendar_headlines_row -->
-{CALENDAR_EVENT_THUMB}
-{CALENDAR_EVENT_SHORT_COMMENT}
-<a class="more-link" href="{NODE_CALENDAR_EVENT}?id={CALENDAR_EVENT_ID}">Weiter</a>
-<!-- END calendar_headlines_row -->
+<ul id="home-events">
+    <!-- BEGIN calendar_headlines_row -->
+    <li>
+        <a href="{CALENDAR_EVENT_DETAIL_LINK}">{CALENDAR_EVENT_START_DATE}: {CALENDAR_EVENT_TITLE}</a>
+    </li>
+    <!-- END calendar_headlines_row -->
+</ul>
+<a class="more-link" href="{NODE_CALENDAR}">Weitere Events</a>
