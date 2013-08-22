@@ -171,7 +171,7 @@
 }
 
 #navigation li a {
-    float: left;
+    display: block;
     height: 23px;
     padding: 14px 30px 14px 30px;
     color: #FFFFFF;
@@ -193,6 +193,7 @@
 #navigation li.level-2 {
     border-bottom: 1px solid #EEEEEE;
     background: #FFFFFF;
+    width: 100%;
 }
 
 #navigation li.level-2:hover,
@@ -201,7 +202,6 @@
 }
 
 #navigation li.level-2 a {
-    width: 200px;
     padding: 10px 15px 10px 15px;
     color: #323F55;
     font-size: 14px;
@@ -360,12 +360,14 @@
     background: url('images/marker.gif') no-repeat 2px 8px;
 }
 
-#home-headlines {
+#home-headlines,
+#home-events {
     float: left;
     width: 100%;
 }
 
-#home-headlines li {
+#home-headlines li,
+#home-events li {
     float: left;
     width: 100%;
     padding: 8px 0 8px 0;
