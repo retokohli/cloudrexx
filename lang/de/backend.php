@@ -127,7 +127,7 @@ $_ARRAYLANG['TXT_VERSION'] = "Version";
 $_ARRAYLANG['TXT_GROUP_NAME'] = "Name der Gruppe";
 $_ARRAYLANG['TXT_NEW_CATEGORY'] = "Neue Kategorie";
 $_ARRAYLANG['TXT_NEW_PAGE'] = "Neue Seite";
-$_ARRAYLANG['TXT_NEWS_MANAGER'] = "Artikel";
+$_ARRAYLANG['TXT_NEWS_MANAGER'] = "News";
 $_ARRAYLANG['TXT_NEWSLETTER'] = "Newsletter";
 $_ARRAYLANG['TXT_OPEN_ISSUE'] = "Pendent";
 $_ARRAYLANG['TXT_SOURCE_MODE'] = "Quelltext Mode:";
@@ -1709,7 +1709,7 @@ $_ARRAYLANG['TXT_MAINTENANCE_MODULE_DESCRIPTION'] = 'Zeigt anstehende Wartungsar
 
 $_ARRAYLANG['TXT_SETTING_FTP_CONFIG_WARNING'] = 'Es wurde in der Konfigurationsdatei (%s) eine ungültige oder keine FTP-Verbindung konfiguriert. Dadurch können Probleme beim Hochladen oder Bearbeiten von Dateien und Verzeichnissen auftreten!';
 
-$_ARRAYLANG['TXT_CORE_MODULE_NEWS_MANAGER'] = 'News';
+$_ARRAYLANG['TXT_CORE_MODULE_NEWS_MANAGER'] = 'Artikel';
 $_ARRAYLANG['TXT_CORE_MODULE_NEWS_CREATE'] = 'Hinzufügen';
 $_ARRAYLANG['TXT_CORE_MODULE_NEWS_CATEGORIES'] = 'Rubriken';
 $_ARRAYLANG['TXT_CORE_MODULE_NEWS_TYPES'] = 'Typen';

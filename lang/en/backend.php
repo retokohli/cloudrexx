@@ -126,7 +126,7 @@ $_ARRAYLANG['TXT_VERSION'] = "Version";
 $_ARRAYLANG['TXT_GROUP_NAME'] = "Name of the group";
 $_ARRAYLANG['TXT_NEW_CATEGORY'] = "New Category";
 $_ARRAYLANG['TXT_NEW_PAGE'] = "New page";
-$_ARRAYLANG['TXT_NEWS_MANAGER'] = "Articles";
+$_ARRAYLANG['TXT_NEWS_MANAGER'] = "News";
 $_ARRAYLANG['TXT_NEWSLETTER'] = "Newsletter";
 $_ARRAYLANG['TXT_OPEN_ISSUE'] = "Pending";
 $_ARRAYLANG['TXT_SOURCE_MODE'] = "Source code mode:";
@@ -1629,7 +1629,7 @@ $_ARRAYLANG['TXT_MAINTENANCE_MODULE_DESCRIPTION'] = 'Shows pending maintenance t
 
 $_ARRAYLANG['TXT_SETTING_FTP_CONFIG_WARNING'] = 'There are wrong ftp credentials defined in the configurations file (%s) or the ftp connection is disabled. If you don\'t fix this issue, contrexx probably doesn\'t have access to upload or edit files and folders!';
 
-$_ARRAYLANG['TXT_CORE_MODULE_NEWS_MANAGER'] = 'News';
+$_ARRAYLANG['TXT_CORE_MODULE_NEWS_MANAGER'] = 'Articles';
 $_ARRAYLANG['TXT_CORE_MODULE_NEWS_CREATE'] = 'Add';
 $_ARRAYLANG['TXT_CORE_MODULE_NEWS_CATEGORIES'] = 'Categories';
 $_ARRAYLANG['TXT_CORE_MODULE_NEWS_TYPES'] = 'Types';
