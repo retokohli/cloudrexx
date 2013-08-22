@@ -849,50 +849,44 @@ class JsonPage implements JsonAdapter {
         // Paging:
         $offset = !empty($params['get']['pos']) ? $params['get']['pos'] : 0;
         $numberOfEntries = !empty($params['get']['limit']) ? $params['get']['limit'] : $_CONFIG['corePagingLimit'];
-        $logCount = 0;
-        $row = 0;
-        $rowId = 1;
+        $tableRowId = 1;
+        $i = 0;
 
         foreach ($logs as $log){
+            $version = $log->getVersion();
+            $this->logRepo->revert($page, $version);
+
+            // is a log of a draft state
+            if ($page->getEditingStatus() != '') {
+                if ($i != 0 && $hideDrafts) {
+                    // if drafts are hidden, skip them.. but there is an exception: don't hide the current log
+                    continue;
+                }
+                if ($i == 0 && !$hideDrafts) {
+                    // if drafts are not hidden, skip the first log because this log is duplicated
+                    continue;
+                }
+            }
 
             // check whether the current index is between the range which should be displayed
-            if ($row < $offset || $row >= ($numberOfEntries + $offset)) {
-                $row++;
-                $logCount++;
+            if ($i < $offset || $i >= ($numberOfEntries + $offset)) {
+                $i++;
                 continue;
             }
             
             try {
-                $version = $log->getVersion();
-                $user = json_decode($log->getUsername());
-                $username = $user->{'name'};
-                $this->logRepo->revert($page, $version);
                 $page->setUpdatedAt($log->getLoggedAt());
+                $user = json_decode($log->getUsername());
 
-                $editingStatus = $page->getEditingStatus();
-                
-                if (!$hideDrafts && $row == 0 && $editingStatus != '') {
-                    $row++;
-                    continue;
-                }
-
-                if ($logCount != 0 && $hideDrafts && $editingStatus != '') {
-                    continue;
-                }
-
-                $row++;
-                $logCount++;
-
-                
-                $this->addHistoryEntries($page, $username, $table, $rowId, $version, $langDir . '/' . $path);
-                $rowId++;
-
+                $this->addHistoryEntries($page, $user->{'name'}, $table, $tableRowId, $version, $langDir . '/' . $path);
+                $tableRowId++;
             } catch (\Gedmo\Exception\UnexpectedValueException $e) {
-                
+
             }
+            $i++;
         }
         // Add paging widget:
-        $paging = '<div id="history_paging">' . getPaging($logCount, $offset, '?cmd=content&page=' . $page->getId() . '&tab=history', $_CORELANG['TXT_CORE_CM_HISTORY_ENTRIES'], true, $numberOfEntries) . '</div>';
+        $paging = '<div id="history_paging">' . getPaging($i, $offset, '?cmd=content&page=' . $page->getId() . '&tab=history', $_CORELANG['TXT_CORE_CM_HISTORY_ENTRIES'], true, $numberOfEntries) . '</div>';
 
         //(VI) render
         die($table->toHtml() . $paging);
