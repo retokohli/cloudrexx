@@ -523,8 +523,8 @@ DBG::log("Yellowpay Error: $error");
             $result = abs(intval($_GET['result']));
             if ($result == 0 || $result == 2) return false;
         }
-        if (empty($_GET['handler'])) return false;
-        switch ($_GET['handler']) {
+        if (empty($_REQUEST['handler'])) return false;
+        switch ($_REQUEST['handler']) {
             case 'saferpay':
                 $arrShopOrder = array(
                     'ACCOUNTID' => SettingDb::getValue('saferpay_id'));
@@ -625,11 +625,11 @@ DBG::log("PaymentProcessing::checkIn(): WARNING: mobilesolutions: Payment verifi
 
     static function getOrderId()
     {
-        if (empty($_GET['handler'])) {
+        if (empty($_REQUEST['handler'])) {
 //DBG::log("PaymentProcessing::getOrderId(): No handler, fail");
             return false;
         }
-        switch ($_GET['handler']) {
+        switch ($_REQUEST['handler']) {
             case 'saferpay':
                 return Saferpay::getOrderId();
             case 'paypal':
