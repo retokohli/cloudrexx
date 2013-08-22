@@ -150,28 +150,32 @@
 
         /* fluent sidebar */
 
-        var sidebar = $("#sidebar");
-        var sidebarTop = sidebar.offset().top;
+        if ($('#sidebar').length > 0) {
+            var sidebar = $("#sidebar");
+            var sidebarTop = sidebar.offset().top;
 
-        var fluentSidebar = function() {
-            var scrolltop = $(window).scrollTop();
-            if (scrolltop > sidebarTop - 100) {
-                sidebar.stop().animate({
-                    'marginTop': scrolltop - 50
-                });
-            } else {
-                sidebar.stop().animate({
-                    'marginTop': 0
-                });
-            }
-        };
+            var fluentSidebar = function() {
+                var scrolltop = $(window).scrollTop();
+                if (scrolltop > sidebarTop - 100) {
+                    sidebar.stop().animate({
+                        'marginTop': scrolltop - 50
+                    });
+                } else {
+                    sidebar.stop().animate({
+                        'marginTop': 0
+                    });
+                }
+            };
+            fluentSidebar();
+        }
 
         stickyNav();
-        fluentSidebar();
 
         $(window).scroll(function() {
             stickyNav();
-            fluentSidebar();
+            if ($('#sidebar').length > 0) {
+                fluentSidebar();
+            }
         });
     });
 })(jQuery);
