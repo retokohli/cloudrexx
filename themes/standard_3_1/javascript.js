@@ -17,6 +17,27 @@
         } else {
             $('#select-language a').addClass('alone');
         }
+        if ($('#metanavigation .login-toggle').length > 0) {
+            var hideTimeout = null;
+            $('#metanavigation .login-toggle').children('a').click(function(e) {
+                e.preventDefault();
+                if ($(this).next('div').css('display') == 'none') {
+                    $(this).addClass('active');
+                    $(this).next('div').show();
+                } else {
+                    $(this).removeClass('active');
+                    $(this).next('div').hide();
+                }
+            });
+            if ($('#metanavigation .login-toggle').children('div').hover(function() {
+                clearTimeout(hideTimeout);
+            }, function() {
+                hideTimeout = setTimeout(function() {
+                    $('#metanavigation .login-toggle').children('a').removeClass('active');
+                    $('#metanavigation .login-toggle').children('div').hide();
+                }, 2000);
+            }));
+        }
         /* Metanavigation End */
 
         /* Navigation Start */
