@@ -1679,7 +1679,7 @@ $_ARRAYLANG['TXT_CORE_CM_HISTORY_HIDE_DRAFTS'] = 'Entwürfe ausblenden';
 // core login
 $_ARRAYLANG['TXT_CORE_CAPTCHA'] = "Sicherheitscode";
 $_ARRAYLANG['TXT_CORE_CAPTCHA_ENTER_THE_LETTERS_BELOW'] = "Geben Sie die Zahlen und Buchstaben aus dem unten angezeigten Bild ein.";
-$_ARRAYLANG['TXT_CORE_REMEMBER_ME'] = "Angemeldet bleiben";
+$_ARRAYLANG['TXT_CORE_REMEMBER_ME'] = "Merken";
 
 // upload
 $_ARRAYLANG['TXT_CORE_UPLOAD_MORE'] = "Weitere Dateien hochladen";

@@ -169,6 +169,14 @@ a:active {
     background-color: silver;*/
 }
 
+#content_login hr {
+    border-style: solid;
+    border-width: 0px;
+    border-bottom-width: 1px;
+    border-color: #BBBBBB;
+    padding-top: 15px;
+}
+
 #content_login div {
     float: left;
     width: 100%;
@@ -208,15 +216,28 @@ a:active {
 #content_login div a {
     float: left;
     width: auto;
+    color: #BBBBBB;
+}
+
+#content_login a:hover {
+    color: #1A74BD;
 }
 
 #content_login div label {
     float: left;
     width: auto;
+    padding: 3px;
+    padding-left: 0;
 }
 
 #content_login div label[for] {
     cursor: pointer;
+    font-size: 13px;
+}
+
+#content_login div label[for=remember_me] {
+    padding: 2px;
+    font-size: 12px;
 }
 
 #content_login div input {
@@ -239,19 +260,20 @@ a:active {
     border: 1px solid #bbbbbb;
     margin: 3px 0;
     color: #444444;
+    font-size: 16px;
 }
 
 #content_login div input[type=checkbox] {
     float: left;
     width: 13px;
     height: 13px;
-    margin: 0 3px 3px 0;
+    margin: 2px 3px 3px 0;
     padding: 0;
     outline: 0;
 }
 
 #content_login div input[type=checkbox]#remember_me {
-    margin-right: 5px;
+    margin-right: 3px;
 }
 
 #content_login div input[type=submit],
@@ -262,15 +284,30 @@ a:active {
     background: #dadada url(../images/button_bg.png) repeat-x scroll left top;
     padding: 2px 10px;
     border: 1px solid #BBBBBB;
-    margin: 0 5px 0 0;
+    margin: 0 0 0 5px;
     color: #444444;
     text-shadow: 1px 1px #FFFFFF;
+}
+
+#content_login div input[type=submit]:first-child,
+#content_login div input[type=button]:first-child {
+    margin: 0;
+}
+
+#content_login div img {
+    margin-top: 5px;
+    display: block;
+    float: right;
 }
 
 *+html #content_login div input[type=submit],
 *+html #content_login div input[type=button] {/* For IE7 */
     overflow: visible;
     padding: 0 9px 0 9px;
+}
+
+#content_login #login-box-remember-me {
+    padding-top: 2px;
 }
 
 #content_login #captcha #coreCaptchaLabel {

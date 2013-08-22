@@ -202,10 +202,15 @@ class LoginManager {
         }
 
         $this->objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', '/core_modules/login/template/login.html');
+        $frontendLink = ASCMS_INSTANCE_OFFSET;
+        if (empty($frontendLink)) {
+            $frontendLink = '/';
+        }
         $this->objTemplate->setVariable(array(
             'TITLE'                         => $_ARRAYLANG['TXT_LOGIN_LOGIN'],
             'TXT_LOGIN_LOGIN'               => $_ARRAYLANG['TXT_LOGIN_LOGIN'],
-            'TXT_LOGIN_ENTER_A_LOGIN'    => $_ARRAYLANG['TXT_LOGIN_ENTER_A_LOGIN'],
+            'TXT_FRONTEND_LINK'             => $_ARRAYLANG['TXT_FRONTEND_LINK'],
+            'TXT_LOGIN_ENTER_A_LOGIN'       => $_ARRAYLANG['TXT_LOGIN_ENTER_A_LOGIN'],
             'TXT_LOGIN_ENTER_A_PASSWORD'    => $_ARRAYLANG['TXT_LOGIN_ENTER_A_PASSWORD'],
             'TXT_LOGIN_ENTER_CAPTCHA'       => $_ARRAYLANG['TXT_LOGIN_ENTER_CAPTCHA'],
             'TXT_LOGIN_USERNAME'            => $_ARRAYLANG['TXT_LOGIN_USERNAME'],
@@ -213,6 +218,7 @@ class LoginManager {
             'TXT_LOGIN_PASSWORD_LOST'       => $_ARRAYLANG['TXT_LOGIN_PASSWORD_LOST'],
             'TXT_LOGIN_REMEMBER_ME'         => $_CORELANG['TXT_CORE_REMEMBER_ME'],
             'REDIRECT_URL'                  => !empty($_POST['redirect']) ? $_POST['redirect'] : basename(getenv('REQUEST_URI')),
+            'FRONTEND_LINK'                 => $frontendLink,
             'JAVASCRIPT'                    => JS::getCode(),
         ));
 

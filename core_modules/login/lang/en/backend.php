@@ -25,9 +25,10 @@ $_ARRAYLANG['TXT_LOGIN_SET_PASSWORD_TEXT'] = "Please fill in your desired passwo
 $_ARRAYLANG['TXT_LOGIN_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 characters)";
 $_ARRAYLANG['TXT_LOGIN_VERIFY_PASSWORD'] = "Verify Password";
 $_ARRAYLANG['TXT_LOGIN_SET_NEW_PASSWORD'] = "Set new password";
-$_ARRAYLANG['TXT_LOGIN_USERNAME'] = "Login";
+$_ARRAYLANG['TXT_LOGIN_USERNAME'] = "E-nail or username";
 $_ARRAYLANG['TXT_LOGIN_LOST_PASSWORD_MAIL_SENT'] = "An email with further instructions has been sent to %EMAIL%.";
 $_ARRAYLANG['TXT_LOGIN_PASSWORD_CHANGED_SUCCESSFULLY'] = "Your password has benn successfully changed.";
 $_ARRAYLANG['TXT_LOGIN_LOGIN'] = "Login";
 $_ARRAYLANG['TXT_LOGIN_GO_TO_BACKEND'] = "Go to backend";
 $_ARRAYLANG['TXT_LOGIN_NOAUTH_JSON'] = 'Your session has expired.<br /><a href="./index.php" target="_blank">Click here to log in again.</a>';
+$_ARRAYLANG['TXT_FRONTEND_LINK'] = '« Back to website';

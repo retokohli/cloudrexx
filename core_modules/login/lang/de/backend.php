@@ -25,9 +25,10 @@ $_ARRAYLANG['TXT_LOGIN_SET_PASSWORD_TEXT'] = "Geben Sie bitte Ihr gewünschtes P
 $_ARRAYLANG['TXT_LOGIN_PASSWORD_MINIMAL_CHARACTERS'] = "(min. 6 Zeichen)";
 $_ARRAYLANG['TXT_LOGIN_VERIFY_PASSWORD'] = "Passwort bestätigen";
 $_ARRAYLANG['TXT_LOGIN_SET_NEW_PASSWORD'] = "Neues Passwort setzen";
-$_ARRAYLANG['TXT_LOGIN_USERNAME'] = "Login";
+$_ARRAYLANG['TXT_LOGIN_USERNAME'] = "E-Mail oder Benutzername";
 $_ARRAYLANG['TXT_LOGIN_LOST_PASSWORD_MAIL_SENT'] = "Eine E-Mail mit weiteren Anweisungen wurde an %EMAIL% gesendet.";
 $_ARRAYLANG['TXT_LOGIN_PASSWORD_CHANGED_SUCCESSFULLY'] = "Ihr Passwort wurde erfolgreich geändert.";
 $_ARRAYLANG['TXT_LOGIN_LOGIN'] = "Anmelden";
 $_ARRAYLANG['TXT_LOGIN_GO_TO_BACKEND'] = "Weiter zur Administrationsoberfläche";
 $_ARRAYLANG['TXT_LOGIN_NOAUTH_JSON'] = 'Ihre Sitzung ist abgelaufen.<br /><a href="./index.php" target="_blank">Klicken Sie hier um sich erneut anzumelden.</a>';
+$_ARRAYLANG['TXT_FRONTEND_LINK'] = '« Zurück zur Webseite';
