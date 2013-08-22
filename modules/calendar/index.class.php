@@ -115,28 +115,14 @@ class Calendar extends CalendarLibrary
      * @var integer
      */
     protected $submissionId = 0;
-    
-    /**
-     * File upload factory folder widget object
-     *
-     * @var object
-     */
-    public $folderWidget;
-    
-    /**
-     * File uploader object
-     *
-     * @var object
-     */
-    public $uploader;
-    
+        
     /**
      * Event Box count
      * 
      * @var integer
      */
     public $boxCount = 3;
-
+    
     /**
      * Constructor
      * 
@@ -530,23 +516,12 @@ cx.ready(function() {
 EOF;
         
         if ($showFrom) {
-            try {
-                $this->handleUniqueId();
-                $this->initUploader();
-            
+            try {                                
+                JS::registerJS('core_modules/upload/js/uploaders/exposedCombo/extendedFileInput.js');
+                
                 $javascript .= <<< UPLOADER
-{$this->uploader->getXHtml()}
-{$this->folderWidget->getXHtml('#calendarForm_uploadWidget', 'uploadWidget')}
-<script type="text/javascript">    
-        cx.include(
-        ["core_modules/contact/js/extendedFileInput.js"],
-        function() {
-        var ef = new ExtendedFileInput({
-        field: \$J("#pictureUpload")
-        });
-        }
-        )    
-</script>
+                {$this->getUploaderCode($this->handleUniqueId(self::PICTURE_FIELD_KEY), 'pictureUpload')}
+                {$this->getUploaderCode($this->handleUniqueId(self::MAP_FIELD_KEY), 'mapUpload')}
 UPLOADER;
             } catch(Exception $e) {
                 \DBG::msg("Error in initializing uploader");
@@ -600,6 +575,7 @@ $this->_objTpl->setVariable(array(
             $this->moduleLangVar.'_EVENT_ZIP'                       => $objEvent->arrData['place_zip'][$_LANGID],
             $this->moduleLangVar.'_EVENT_CITY'                      => $objEvent->arrData['place_city'][$_LANGID],
             $this->moduleLangVar.'_EVENT_COUNTRY'                   => $objEvent->arrData['place_country'][$_LANGID],
+            $this->moduleLangVar.'_EVENT_PLACE_MAP'                 => $objEvent->arrData['place_map'][$_LANGID],
             $this->moduleLangVar.'_EVENT_MAP'                       => $objEvent->map == 1 ? 'checked="checked"' : '',
             $this->moduleLangVar.'_EVENT_DESCRIPTION'               => new \Cx\Core\Wysiwyg\Wysiwyg("description[$_LANGID]", contrexx_raw2xhtml($objEvent->description), 'bbcode'),            
             $this->moduleLangVar.'_EVENT_ID'                        => $eventId,
@@ -895,26 +871,15 @@ $this->_objTpl->setVariable(array(
         }
     }
         
-    /**
-     * Inits the uploader when displaying a form.
-     * 
-     * @throws Exception
-     * 
-     * @return null
-     */
-    protected function initUploader() {
-        try {
+    protected function getUploaderCode($submissionId, $fieldName, $uploadCallBack = "uploadFinished")
+    {
+        try {                        
             //init the uploader
             JS::activate('cx'); //the uploader needs the framework
             $f = UploadFactory::getInstance();
-            
-            /**
-            * Name of the upload instance
-            */
-            $uploaderInstanceName = 'exposed_combo_uploader';
-
+                                   
             //retrieve temporary location for uploaded files
-            $tup = self::getTemporaryUploadPath($this->submissionId);
+            $tup = self::getTemporaryUploadPath($fieldName, $submissionId);
 
             //create the folder
             if (!\Cx\Lib\FileSystem\FileSystem::make_folder($tup[1].'/'.$tup[2])) {
@@ -933,20 +898,39 @@ $this->_objTpl->setVariable(array(
                 }
             }
             
-            //initialize the widget displaying the folder contents
-            $this->folderWidget = $f->newFolderWidget($tup[0].'/'.$tup[2]);
-         
-            $this->uploader = $f->newUploader('exposedCombo');
-            $this->uploader->setJsInstanceName($uploaderInstanceName);
-            $this->uploader->setFinishedCallback(array(ASCMS_MODULE_PATH.'/calendar/index.class.php','Calendar','uploadFinished'));
-            $this->uploader->setData($this->submissionId);
+            /**
+            * Name of the upload instance
+            */
+            $uploaderInstanceName = "exposed_combo_uploader_{$fieldName}_{$submissionId}";
             
+            //initialize the widget displaying the folder contents
+            $folderWidget = $f->newFolderWidget($tup[0].'/'.$tup[2]);
+         
+            $uploader = $f->newUploader('exposedCombo', $submissionId, true);
+            $uploader->setJsInstanceName($uploaderInstanceName);
+            $uploader->setFinishedCallback(array(ASCMS_MODULE_PATH.'/calendar/index.class.php','Calendar', $uploadCallBack));
+            $uploader->setData(array('submission_id' => $submissionId, 'field_name' => $fieldName));
+            
+            $strJs  = $uploader->getXHtml();
+        $strJs .= $folderWidget->getXHtml("#{$fieldName}_uploadWidget", "uploadWidget".$submissionId);
+            $strJs .= <<<JAVASCRIPT
+<script type="text/javascript">
+    cx.ready(function() {
+            var ef = new ExtendedFileInput({
+                    field:  jQuery('#{$fieldName}'),
+                    instance: '{$uploaderInstanceName}',
+                    widget: 'uploadWidget{$submissionId}'
+            });
+    });
+</script>
+JAVASCRIPT;
+            return $strJs;        
         } catch (Exception $e) {
             \DBG::msg('<!-- failed initializing uploader -->');
             throw new Exception("failed initializing uploader");
         }
     }
-
+    
     /**
      * Uploader callback function
      * 
@@ -960,10 +944,10 @@ $this->_objTpl->setVariable(array(
      * @return array path and webpath
      */
     public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response) {
-        global $objDatabase, $_ARRAYLANG, $_CONFIG, $objInit;
+        global $objInit;
         
         $lang     = $objInit->loadLanguageData('calendar');
-        $tup      = self::getTemporaryUploadPath($uploadId);
+        $tup      = self::getTemporaryUploadPath($data['field_name'], $uploadId);
         $path     = $tup[0].'/'.$tup[2];
         $webPath  = $tup[1].'/'.$tup[2];
         $arrFiles = array();
@@ -1000,7 +984,7 @@ $this->_objTpl->setVariable(array(
             closedir($h);
             
         }
-        
+                
         // Delete existing files because we need only one file to upload
         if (!empty($arrFiles)) {
             $h = opendir($path);
@@ -1015,7 +999,7 @@ $this->_objTpl->setVariable(array(
         
         return array($path, $webPath);
     }
- 
+     
     /**
      * Performs the box view
      * 

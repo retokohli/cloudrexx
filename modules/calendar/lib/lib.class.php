@@ -112,6 +112,20 @@ class CalendarLibrary
     public $arrCommunityGroups = array();    
         
     /**
+     * map field key
+     *
+     * @var string
+     */
+    const MAP_FIELD_KEY     = 'map_id';
+    
+    /**
+     * Picture field key
+     *
+     * @var string
+     */
+    const PICTURE_FIELD_KEY = 'picture_id';
+    
+    /**
      * Assign the template path
      * Sets the Global variable for the calendar module
      * 
@@ -618,35 +632,37 @@ EOF;
      * 
      * @see Calendar::$submissionId
      * 
-     * @return null
+     * @return $id  integer
      */
-    protected function handleUniqueId() {
+    protected function handleUniqueId($key) {
         global $sessionObj;
         if (!isset($sessionObj)) $sessionObj = new cmsSession();
         
         $id = 0;
-        if(isset($_REQUEST['unique_id'])) { //an id is specified - we're handling a page reload
-            $id = intval($_REQUEST['unique_id']);
-        }
-        else { //generate a new id
-            if(!isset($_SESSION['calendar_last_id']))
+        if (isset($_REQUEST[$key])) { //an id is specified - we're handling a page reload
+            $id = intval($_REQUEST[$key]);
+        } else { //generate a new id
+            if (!isset($_SESSION['calendar_last_id']))
                 $_SESSION['calendar_last_id'] = 0;
             $id = ++$_SESSION['calendar_last_id'];
         }
-        $this->_objTpl->setVariable($this->moduleLangVar.'_UNIQUE_ID', $id);
-        $this->submissionId = $id;
+        
+        $this->_objTpl->setVariable("{$this->moduleLangVar}_".  strtoupper($key), $id);   
+        
+        return $id;
     }
     
     /**
      * Gets the temporary upload location for files.
      * 
+     * @param string  $fieldName    Uploader field name and id
      * @param integer $submissionId     
      * 
      * @throws Exeception
      * 
      * @return array('path','webpath', 'dirname')
      */
-    public static function getTemporaryUploadPath($submissionId) {
+    public static function getTemporaryUploadPath($fieldName, $submissionId) {
         global $sessionObj;
 
         if (!isset($sessionObj)) $sessionObj = new cmsSession();
@@ -656,7 +672,7 @@ EOF;
         if($tempPath === false || $tempWebPath === false)
             throw new Exception('could not get temporary session folder');
 
-        $dirname = 'event_files_'.$submissionId;
+        $dirname = "event_files_{$fieldName}_{$submissionId}";
         $result = array(
             $tempPath,
             $tempWebPath,

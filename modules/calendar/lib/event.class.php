@@ -844,10 +844,10 @@ class CalendarEvent extends CalendarLibrary
         
         //frontend picture upload & thumbnail creation
         if($objInit->mode == 'frontend') {
-            $unique_id = intval($_REQUEST['unique_id']);
+            $unique_id = intval($_REQUEST[self::PICTURE_FIELD_KEY]);
             
             if (!empty($unique_id)) {
-                $picture = $this->_handleUpload($unique_id);
+                $picture = $this->_handleUpload('pictureUpload', $unique_id);
 
                 if (!empty($picture)) {
                     $objFile = new File();
@@ -1097,8 +1097,20 @@ class CalendarEvent extends CalendarLibrary
                 $placeLink = contrexx_input2db($data['placeLink'][$langId]);
                 $description = contrexx_addslashes($data['description'][$langId]);
                 $redirect = contrexx_addslashes($data['redirect'][$langId]);  
+                
                 $placeMap = contrexx_input2db($data['placeMap'][$langId]); 
-        
+                if($objInit->mode == 'frontend') {
+                    $unique_id = intval($_REQUEST[self::MAP_FIELD_KEY]);
+
+                    if (!empty($unique_id)) {
+                        $picture = $this->_handleUpload('mapUpload', $unique_id);
+
+                        if (!empty($picture)) {
+                            $placeMap = $picture;
+                        }
+                    }
+                }
+                
                 $orgName   = contrexx_input2db($data['organizerName'][$langId]);
                 $orgStreet = contrexx_input2db($data['organizerStreet'][$langId]);
                 $orgZip    = contrexx_input2db($data['organizerZip'][$langId]);
@@ -1342,9 +1354,9 @@ class CalendarEvent extends CalendarLibrary
      * 
      * @return string image path
      */
-    function _handleUpload($id)
+    function _handleUpload($fieldName, $id)
     {
-        $tup              = self::getTemporaryUploadPath($id);
+        $tup              = self::getTemporaryUploadPath($fieldName, $id);
         $tmpUploadDir     = ASCMS_PATH.$tup[1].'/'.$tup[2].'/'; //all the files uploaded are in here                       
         $depositionTarget = $this->uploadImgPath; //target folder
         $pic              = '';
