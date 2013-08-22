@@ -10,7 +10,7 @@ jQuery(function() {
         dataType: 'json',
         success: shopUpdateCart,
         error: function() {
-            showCart('<ul><li class="not-loaded">' + +cx.variables.get('TXT_SHOP_COULD_NOT_LOAD_CART', 'shop/cart') +
+            showCart('<ul><li class="not-loaded">' + cx.variables.get('TXT_SHOP_COULD_NOT_LOAD_CART', 'shop/cart') +
                 '</li></ul>');
         }
     });
@@ -38,7 +38,7 @@ function shopUpdateCart(data, textStatus, jqXHR) {
         }
         if (objCart.item_count == 0) {
 //console.log('Empty cart!');
-            showCart('<ul><li class="empty">' + +cx.variables.get('TXT_EMPTY_SHOPPING_CART', 'shop/cart') +
+            showCart('<ul><li class="empty">' + cx.variables.get('TXT_EMPTY_SHOPPING_CART', 'shop/cart') +
                 '</li></ul>');
             return;
         }
