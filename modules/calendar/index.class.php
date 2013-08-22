@@ -439,7 +439,7 @@ EOF;
                 $this->_objTpl->touchBlock('calendarEventOkMessage');
                 
                 $objMailManager = new CalendarMailManager();
-                $objMailManager->sendMail($objEvent->id, 4);
+                $objMailManager->sendMail($objEvent->id, CalendarMailManager::MAIL_NOTFY_NEW_APP);
             } else {
                 $this->_objTpl->touchBlock('calendarEventErrMessage');
             }

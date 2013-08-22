@@ -1164,7 +1164,7 @@ class CalendarEvent extends CalendarLibrary
             
         if($send_invitation == 1) {    
              $objMailManager = new CalendarMailManager();           
-             $objMailManager->sendMail(intval($id), 1);
+             $objMailManager->sendMail(intval($id), CalendarMailManager::MAIL_INVITATION);
         }  
         
         return true;
