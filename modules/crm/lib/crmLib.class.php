@@ -2108,8 +2108,17 @@ class CrmLibrary
             }
         }
     }
+
     /**
      * Inits the uploader when displaying a contact form.
+     *
+     * @param Integer $fieldId
+     * @param Boolean $restrictUpload2SingleFile
+     * @param String  $callBackFun
+     * @param Integer $data
+     * @param String  $dir
+     *
+     * @return null
      */
     function initUploader($fieldId, $restrictUpload2SingleFile = true, $callBackFun = 'uploadFinished', $data, $dir) {
         try {
