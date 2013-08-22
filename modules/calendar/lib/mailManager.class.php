@@ -27,6 +27,26 @@ class CalendarMailManager extends CalendarLibrary {
     public $mailList = array();
     
     /**
+     * Mail action Invitation
+     */
+    const MAIL_INVITATION    = 1;
+    
+    /**
+     * Mail Action Confirm registration
+     */
+    const MAIL_CONFIRM_REG   = 2;
+    
+    /**
+     * Mail Action Alert registration
+     */
+    const MAIL_ALERT_REG     = 3;
+    
+    /**
+     * mail action notify new appoinment
+     */
+    const MAIL_NOTFY_NEW_APP = 4;
+
+    /**
      * Constructor
      */
     function __construct()
