@@ -58,15 +58,14 @@
             <!-- END error_message -->
             <div>
                 <div class="error" id="no_username" style="display: none;">{TXT_LOGIN_ENTER_A_LOGIN}</div>
-                <label for="username">{TXT_LOGIN_USERNAME}:</label>
+                <label for="username">{TXT_LOGIN_USERNAME}</label>
                 <input tabindex="1" type="text" name="USERNAME" value="" id="username" />
             </div>
             <div>
                 <div class="error" id="no_password" style="display: none;">{TXT_LOGIN_ENTER_A_PASSWORD}</div>
-                <label for="password">{TXT_LOGIN_PASSWORD}:</label>
+                <label for="password">{TXT_LOGIN_PASSWORD}</label>
                 <input tabindex="2" type="password" name="hash" value="" id="password" />
-                <input type="hidden" name="PASSWORD" value="" /><br />
-                <a tabindex="6" href="index.php?cmd=login&amp;act=lostpw">{TXT_LOGIN_PASSWORD_LOST}</a>
+                <input type="hidden" name="PASSWORD" value="" />
             </div>
             <!-- BEGIN captcha -->
             <div>
@@ -74,11 +73,18 @@
                 {CAPTCHA_CODE}
             </div>
             <!-- END captcha -->
-            <div>
+            <div style="width: auto;" id="login-box-remember-me">
                 <input tabindex="4" type="checkbox" value="1" name="remember_me" id="remember_me" /><label for="remember_me">{TXT_LOGIN_REMEMBER_ME}</label>
             </div>
-            <div>
+            <div style="width: auto; float: right;">
                 <input tabindex="5" type="submit" name="submit_button" value="{TXT_LOGIN_LOGIN}" onclick="if(this.disabled || typeof(this.disabled)=='boolean') this.disabled=true ; form_submitted_test=form_submitted ; form_submitted=true ; form_submitted=(!form_submitted_test || confirm('Are you sure you want to submit this form again?')) ; if(this.disabled || typeof(this.disabled)=='boolean') this.disabled=false ; sub_form='' ; return true" />
+            </div>
+            <hr style="clear: both;" />
+            <div style="width: auto;">
+                <a href="{FRONTEND_LINK}" title="{TXT_FRONTEND_LINK}">{TXT_FRONTEND_LINK}</a>
+            </div>
+            <div style="width: auto; float: right;">
+                <a tabindex="6" href="index.php?cmd=login&amp;act=lostpw">{TXT_LOGIN_PASSWORD_LOST}</a>
             </div>
 
             <script type="text/javascript">
