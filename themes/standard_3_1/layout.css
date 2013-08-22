@@ -57,13 +57,20 @@
 #metanavigation li {
     position: relative;
     float: left;
-    padding: 6px 0 0 15px;
-    margin: 0 0 0 15px;
+}
+
+#metanavigation li>a {
+    display: block;
+    padding: 6px 15px 9px 15px;
     background: url('images/divider.gif') no-repeat left 13px;
 }
 
-#metanavigation li.first {
+#metanavigation li.first a {
     background: none;
+}
+
+#metanavigation li.last a {
+    padding-right: 0;
 }
 
 #metanavigation li * {
@@ -72,6 +79,46 @@
 
 #metanavigation li a:hover {
     color: #0A85C8;
+}
+
+#metanavigation .login-toggle a.active {
+    background: #0A85C8;
+    color: #ffffff;
+    border-radius: 9px 9px 0px 0px;
+}
+
+#metanavigation .login-toggle > div {
+    display: none;
+    z-index: 1000;
+    position: absolute;
+    right: 0;
+    top: 39px;
+    width: 400px;
+    padding: 10px 20px 20px;
+    background: #ffffff;
+    border-bottom: 3px #0A85C8 solid;
+    border-left: 3px #0A85C8 solid;
+    border-right: 3px #0A85C8 solid;
+}
+
+#metanavigation .login-toggle > div form p {
+    padding-left: 100px;
+    width: 270px;
+}
+
+#metanavigation .login-toggle > div form label {
+    width: 90px;
+    margin-left: -100px;
+}
+
+#metanavigation .login-toggle > div form label.remember_me {
+    width: auto;
+    margin-left: 0;
+}
+
+#metanavigation .login-toggle > div form input[type="text"],
+#metanavigation .login-toggle > div form input[type="password"] {
+    width: 270px;
 }
 
 #select-language {

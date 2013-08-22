@@ -78,12 +78,40 @@
                 <nav id="metanavigation">
                     <ul>
                         <!-- BEGIN access_logged_out -->
-                        <li class="first"><a href="{NODE_LOGIN}">Login</a></li>
-                        <li><a href="{NODE_ACCESS_SIGNUP}">Registrieren</a></li>
+                        <li class="first login-toggle"><a href="{NODE_LOGIN}">Login</a>
+
+                            <div>
+                                <h2>Anmelden</h2>
+                                <form method="post" action="{NODE_LOGIN}" name="loginForm">
+                                    <p>
+                                        <label for="USERNAME">Login</label>
+                                        <input id="USERNAME" name="USERNAME" value="" type="text">
+                                    </p>
+                                    <p>
+                                        <label for="PASSWORD">Passwort</label>
+                                        <input id="PASSWORD" name="PASSWORD" value="" type="password">
+                                    </p>
+                                    <p>
+                                        <input type="submit" name="login" value="Anmelden">
+                                        <input type="checkbox" value="1" name="remember_me" class="remember_me"
+                                               id="remember_me">
+                                        <label for="remember_me" class="remember_me">Angemeldet bleiben</label>
+                                    </p>
+                                    <a title="Jetzt kostenlos registrieren" href="{NODE_ACCESS_SIGNUP}" class="register">
+                                        Haben Sie noch keinen Account? Jetzt registrieren
+                                    </a>
+                                    <br>
+                                    <a title="" href="{NODE_LOGIN_LOSTPW}" class="lostpw">
+                                        Passwort vergessen?
+                                    </a>
+                                </form>
+                            </div>
+                        </li>
+                        <li class="last"><a href="{NODE_ACCESS_SIGNUP}">Registrieren</a></li>
                         <!-- END access_logged_out -->
                         <!-- BEGIN access_logged_in -->
                         <li class="first"><a href="{NODE_ACCESS_SETTINGS_PROFILE}">Angemeldet als {ACCESS_USER_USERNAME}</a></li>
-                        <li><a href="{LOGOUT_URL}">Logout</a></li>
+                        <li class="last"><a href="{LOGOUT_URL}">Logout</a></li>
                         <!-- END access_logged_in -->
                     </ul>
                 </nav>
