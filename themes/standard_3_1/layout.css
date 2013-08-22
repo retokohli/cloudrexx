@@ -150,10 +150,10 @@
 #navigation {
     z-index: 5;
     position: relative;
-    width: 1008px;
+    width: 1200px;
     margin: 0 auto;
     height: 51px;
-    padding: 0 192px 0 0;
+    padding: 0;
 }
 
 #navigation * {
