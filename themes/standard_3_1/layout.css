@@ -160,7 +160,7 @@
     z-index: 5;
 }
 
-#navigation li {
+#navigation>li {
     position: relative;
     float: left;
 }
@@ -183,6 +183,7 @@
 #navigation li ul {
     display: none;
     position: absolute;
+    min-width: 100%;
     top: 51px;
     left: 0;
     border-left: 1px solid #EEEEEE;
@@ -193,7 +194,7 @@
 #navigation li.level-2 {
     border-bottom: 1px solid #EEEEEE;
     background: #FFFFFF;
-    width: 100%;
+    min-width: 200px;
 }
 
 #navigation li.level-2:hover,
