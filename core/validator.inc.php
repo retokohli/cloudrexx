@@ -342,3 +342,44 @@ function contrexx_remove_script_tags($raw)
     $result = preg_replace('/<\s*script[^>]*>/is', '', $result);
     return $result;
 }
+
+
+/**
+ * Extracts the plaintext out of a html code
+ *
+ * @param   mixed   $html   The html code as string or an array containing
+ *                          multiple html code strings
+ * @return  mixed           The plaintext of the provided html code
+ */
+function contrexx_html2plaintext($html)
+{
+    if (is_array($html)) {
+        $arr = array();
+        foreach ($html as $i => $_html) {
+            $arr[$i] = contrexx_html2plaintext($_html);
+        }
+        return $arr;
+    }
+
+    // ensure that no html-notations are left in place
+    $html = html_entity_decode($html, ENT_QUOTES, CONTREXX_CHARSET);
+
+    // remove all placeholders, script- and style-tags
+    $html = preg_replace(
+        array(
+            '/\{[a-zA-Z0-9_]+\}/',
+            '/\[\[[a-zA-Z0-9_]+\]\]/',
+            '/<script[^>]+>.*?<\/script>/ms',
+            '/<style[^>]+>.*?<\/style>/ms',
+        ),
+        '',
+        $html);
+
+    // remove all remaining html&php tags
+    $plaintext = strip_tags($html);
+
+    // remove white-space sequences
+    $plaintext = trim(preg_replace('/\s+/ms', ' ', $plaintext));
+
+    return $plaintext;
+}
