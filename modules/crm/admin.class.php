@@ -77,11 +77,11 @@ class CrmManager extends CrmLibrary
      */
     public function __construct()
     {
-        
+
         global $objTemplate, $_ARRAYLANG, $objJs;
         parent::__construct();
         $objJs = new Javascript();
-        
+
         $this->_mediaPath = ASCMS_MEDIA_PATH.'/crm';
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/'.$this->moduleName.'/template');
         CSRF::add_placeholder($this->_objTpl);
@@ -139,7 +139,7 @@ class CrmManager extends CrmLibrary
         if (!isset($_GET['act'])) {
             $_GET['act']='';
         }
-        
+
         switch ($_GET['act']) {
         case 'customersearch':
                 $this->getCustomerSearch();
@@ -285,7 +285,7 @@ class CrmManager extends CrmLibrary
      * check the customer identity
      *
      * @param boolean $return boolean
-     * 
+     *
      * @global array $_ARRAYLANG
      * @global object $objDatabase
      *
@@ -336,10 +336,10 @@ class CrmManager extends CrmLibrary
      * get the contacts of the given customer
      *
      * @param integer $customerId customer id
-     * 
+     *
      * @global array $_ARRAYLANG
      * @global object $objDatabase
-     * 
+     *
      * @return true
      */
     public function getCustomerContacts($customerId)
@@ -374,7 +374,7 @@ class CrmManager extends CrmLibrary
         global $_ARRAYLANG, $objDatabase, $wysiwygEditor, $FCKeditorBasePath ,$objJs;
 
         JS::activate("cx");
-        
+
         $json = array();
         $this->_objTpl->loadTemplateFile('module_'.$this->moduleName.'_customer_notes_history.html');
         $this->_objTpl->setGlobalVariable(array(
@@ -659,7 +659,7 @@ class CrmManager extends CrmLibrary
 
         /* Start Paging ------------------------------------ */
         $intPos             = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
-        $intPerPage         = $this->getPagingLimit(); 
+        $intPerPage         = $this->getPagingLimit();
         $this->_objTpl->setVariable('ENTRIES_PAGING', getPaging($this->countRecordEntries($query), $intPos, "./index.php?cmd={$this->moduleName}&act=customers$searchLink$sortLink", false, true, $intPerPage));
 
         $pageLink           = "&pos=$intPos";
@@ -885,7 +885,7 @@ class CrmManager extends CrmLibrary
 
         $objTpl = $this->_objTpl;
         $objTpl->loadTemplateFile('module_'.$this->moduleName.'_customer_details.html');
-        
+
         $contactId = (int) $_GET['id'];
         $settings  = $this->getSettings();
         $objTpl->setGlobalVariable(array(
@@ -943,7 +943,7 @@ class CrmManager extends CrmLibrary
                 break;
             }
         }
-        
+
         if (isset($_SESSION['TXT_MSG_OK'])) {
             $this->_strOkMessage = $_SESSION['TXT_MSG_OK'];
             unset($_SESSION['TXT_MSG_OK']);
@@ -961,7 +961,7 @@ class CrmManager extends CrmLibrary
                 'COMBO_UPLOADER_CODE2' => $uploaderCode2,
                 'REDIRECT_URL'         => $redirectUrl
             ));
-            
+
             //For document Upload
             $uploaderCode3 = $this->initUploader(3, false, 'docUploadFinished', $contactId, 'document_files_');
             $this->_objTpl->setVariable(array(
@@ -1016,7 +1016,7 @@ class CrmManager extends CrmLibrary
             }
 
             $objWeb   = $objDatabase->Execute("SELECT url, url_profile FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_websites` WHERE contact_id = $contactId ORDER BY is_primary DESC, id ASC");
-            if ($objWeb) { 
+            if ($objWeb) {
                 if ($objWeb->RecordCount()) {
                     $first = true;
                     while (!$objWeb->EOF) {
@@ -1045,7 +1045,7 @@ class CrmManager extends CrmLibrary
             }
 
             $objWebSocial   = $objDatabase->Execute("SELECT url, url_profile FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_social_network` WHERE contact_id = $contactId ORDER BY is_primary DESC, id ASC");
-            if ($objWebSocial) { 
+            if ($objWebSocial) {
                 if ($objWebSocial->RecordCount()) {
                     $first = true;
                     while (!$objWebSocial->EOF) {
@@ -1072,7 +1072,7 @@ class CrmManager extends CrmLibrary
             }
 
             $objAddr  = $objDatabase->Execute("SELECT * FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_address` WHERE contact_id = $contactId ORDER BY is_primary DESC, id ASC");
-            if ($objAddr) { 
+            if ($objAddr) {
                 if ($objAddr->RecordCount()) {
                     $first = true;
                     while (!$objAddr->EOF) {
@@ -1094,7 +1094,7 @@ class CrmManager extends CrmLibrary
                             if ($first)
                                 $addressFirst = $addressFull.$address;
                                 $objTpl->setVariable("CRM_CONTACT_ADDRESS_PRIMARY", (!empty($addressFirst)) ? ($addressFirst) : '');
-                            
+
                             $addressFull .= $address."<span class='description'>(".$_ARRAYLANG[$this->addressTypes[$objAddr->fields['Address_Type']]].")</span><br>";
 
                             $objTpl->setVariable("CRM_CONTACT_ADDRESS", (!empty($addressFull)) ? ($addressFull) : '');
@@ -1987,11 +1987,13 @@ END;
      */
     function _modifyContact()
     {
-        global $_ARRAYLANG, $objDatabase ,$objJs, $objResult, $_LANGID;
+        global $_ARRAYLANG, $objDatabase ,$objJs, $objResult, $_LANGID, $_CORELANG;
 
         /** verify the user redirects to details page **/
         $this->checkCustomerIdentity();
 
+        JS::activate('cx');
+        FWUser::getUserLiveSearch();
         JS::activate("jquery");
         JS::activate("jqueryui");
         JS::registerJS("modules/crm/View/Script/main.js");
@@ -2042,6 +2044,7 @@ END;
         $this->contact->contactType      = $contactType;
         $this->contact->contact_gender   = isset($_POST['contact_gender']) ? (int) $_POST['contact_gender'] : 0;
 
+        $accountUserID                   = (isset($_POST['contactId'])) ? intVal($_POST['contactId']) : 0;
         $accountUserEmail                = (isset($_POST['contact_email'])) ? contrexx_input2raw($_POST['contact_email']) : '';
         $accountUserPassword             = (isset($_POST['contact_password'])) ? contrexx_input2raw($_POST['contact_password']) : '';
         $sendLoginDetails                = isset($_POST['send_account_notification']);
@@ -2103,7 +2106,7 @@ END;
                 $this->contact->customerId   = '';
             }
 
-            if (!$settings['create_user_account'] || ($contactType == 1) || (!empty($accountUserEmail) && $this->addUser($accountUserEmail, $accountUserPassword, $sendLoginDetails)) || !$settings['user_account_mantatory']) {
+            if (!$settings['create_user_account'] || ($contactType == 1) || (!empty($accountUserEmail) && $this->addUser($accountUserEmail, $accountUserPassword, $sendLoginDetails, $result, $accountUserID)) || !$settings['user_account_mantatory']) {
 
                 $this->contact->save();
 
@@ -2212,7 +2215,7 @@ END;
                     $query .= implode(",", $values);
                     $objDatabase->Execute($query);
                 }
-                
+
                 $ChckCount = 0;
                 if (!empty($id)) {
                     $contactId = $this->contact->contact_customer;
@@ -2399,17 +2402,18 @@ END;
                         'CRM_CONTACT_ZIP_NAME'      => "contactAddress_{$Count}_4_{$primary}",
                         'CRM_CONTACT_ZIP_VALUE'     => contrexx_raw2xhtml($address['zip']),
                         'CRM_CONTACT_COUNTRY_NAME'  => "contactAddress_{$Count}_5_{$primary}",
-                        'CRM_CONTACT_COUNTRY_VALUE' => $this->getContactAddressCountry($this->_objTpl, $address['country'], 'crmCountry'),
+                        'CRM_CONTACT_COUNTRY_VALUE' => $this->getContactAddressCountry($this->_objTpl, $address['country'], $contactType == 1 ? "customerCrmCountry" : 'crmCountry'),
                         'CRM_CONTACT_ADDR_TYPE_NAME'  => "contactAddress_{$Count}_6_{$primary}",
-                        'CRM_CONTACT_ADDR_TYPE_VALUE' => $this->getContactAddrTypeCountry($this->_objTpl, $address['type'], 'addressType'),
+                        'CRM_CONTACT_ADDR_TYPE_VALUE' => $this->getContactAddrTypeCountry($this->_objTpl, $address['type'], $contactType == 1 ? "customerAddressType" : 'addressType'),
                         'CRM_CONTACT_ADDRESS_PRIMARY' => ($primary) ? "primary_field_address" : "not_primary_field_address",
                 ));
-                $this->_objTpl->parse("contactAddressContainer");
+                $block = $contactType == 1 ? "customerAddressContainer" : "contactAddressContainer";
+                $this->_objTpl->parse($block);
                 $Count++;
             }
         }
-        $this->getContactAddressCountry($this->_objTpl, 'Schweiz', 'additionalcrmCountry');
-        $this->getContactAddrTypeCountry($this->_objTpl, 2, 'additionaladdressType');
+        $this->getContactAddressCountry($this->_objTpl, 'Schweiz', $contactType == 1 ? "customerAdditionalcrmCountry" : 'additionalcrmCountry');
+        $this->getContactAddrTypeCountry($this->_objTpl, 2, $contactType == 1 ? "customerAdditionaladdressType" : 'additionaladdressType');
 
         // special fields for contacts
         $objResult =   $objDatabase->Execute('SELECT  id,name,lang FROM    '.DBPREFIX.'languages');
@@ -2577,6 +2581,8 @@ END;
                 'TXT_CRM_ADD_NEW_CUSTOMER'    =>    $_ARRAYLANG['TXT_CRM_ADD_NEW_CUSTOMER'],
                 'TXT_CRM_ADD_NEW_CONTACT'     =>    $_ARRAYLANG['TXT_CRM_ADD_NEW_CONTACT'],
                 'TXT_CRM_PROFILE'             =>    $_ARRAYLANG['TXT_CRM_PROFILE'],
+                'TXT_CRM_ACCOUNT'             =>    $_ARRAYLANG['TXT_CRM_ACCOUNT'],
+                'TXT_CORE_SEARCH_USER'        =>    $_ARRAYLANG['TXT_CORE_SEARCH_USER'],
                 'TXT_CRM_ADVANCED_OPTIONS'        =>    $_ARRAYLANG['TXT_CRM_ADVANCED_OPTIONS'],
                 'TXT_CRM_MEMBERSHIP'          =>    $_ARRAYLANG['TXT_CRM_MEMBERSHIP'],
                 'TXT_CRM_ADD_NEW_ACCOUNT'     =>    $_ARRAYLANG['TXT_CRM_ADD_NEW_ACCOUNT'],
@@ -2593,6 +2599,7 @@ END;
             if ($settings['create_user_account']) {
                 $this->_objTpl->touchBlock("contactUserName");
                 $this->_objTpl->touchBlock("contactPassword");
+                $this->_objTpl->touchBlock("show-account-details");
                 if ($this->contact->id) {
                     $this->_objTpl->hideBlock("contactSendNotification");
                 } else {
@@ -2601,6 +2608,7 @@ END;
             } else {
                 $this->_objTpl->hideBlock("contactUserName");
                 $this->_objTpl->hideBlock("contactPassword");
+                $this->_objTpl->hideBlock("show-account-details");
                 $this->_objTpl->touchBlock("emptyContactUserName");
                 $this->_objTpl->touchBlock("emptyContactPassword");
             }
@@ -2662,7 +2670,7 @@ END;
         $noteDate       = isset($_POST['date']) ? contrexx_input2raw($_POST['date']) : date('Y-m-d');
         $projectid      = isset($_REQUEST['projectid']) ? (int) $_REQUEST['projectid'] : 0;
         $redirect       = isset($_REQUEST['redirect']) ? $_REQUEST['redirect'] : base64_encode("./index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id={$customerId}");
-        
+
         $description    = isset($_POST['customer_comment']) ? $_POST['customer_comment'] : '';
 
         $userid     = $objFWUser->objUser->getId();
@@ -2875,7 +2883,7 @@ END;
     function notesOverview()
     {
         global $_CORELANG, $_ARRAYLANG, $objDatabase, $objJs;
-        
+
         $fn = isset ($_REQUEST['fn']) ? $_REQUEST['fn'] : '';
         if (!empty($fn)) {
             switch ($fn) {
@@ -3242,7 +3250,7 @@ END;
      * @param String  $str          name
      * @param tags    $tags         which needs to be strip
      * @param boolean $stripContent stripContent
-     * 
+     *
      * @return string
      */
     function stripOnlyTags($str, $tags, $stripContent=false)
@@ -3834,7 +3842,7 @@ END;
         }
 
         $row = 'row2';
-        while (!$objProjectResult->EOF) {  
+        while (!$objProjectResult->EOF) {
             $contactType = $objProjectResult->fields['contact_type'];
             $company     = contrexx_raw2xhtml($objProjectResult->fields['customer_name']." ".$objProjectResult->fields['contact_familyname']);
             if (($objProjectResult->fields['project_type_id'] == "") || (trim($company) == "") || ($objProjectResult->fields['proStatus'] == "") || ($objProjectResult->fields['proActive'] == 0) || ($objProjectResult->fields['username'] == "")) {
@@ -4111,13 +4119,13 @@ END;
 
     /**
      * To download a file
-     * 
+     *
      * @param string $file
      *
      * @return null
      */
     public function download($file)
-    { 
+    {
         $objHTTPDownload = new HTTP_Download();
         $objHTTPDownload->setFile(ASCMS_MEDIA_PATH.'/crm/'.$file);
         $objHTTPDownload->setContentDisposition(HTTP_DOWNLOAD_ATTACHMENT, str_replace('"', '\"', $file));
@@ -4157,7 +4165,7 @@ END;
      *
      * @param integer $fileId     file id
      * @param integer $customerId customer id
-     * 
+     *
      * @global object $objDatabase
      *
      * @return file name
@@ -5520,7 +5528,7 @@ END;
      */
     public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response) {
         global $objDatabase, $_ARRAYLANG, $_CONFIG, $objInit;
-        
+
         $arrFiles = array();
         //get allowed file types
         $arrAllowedFileTypes = array();
@@ -5533,7 +5541,7 @@ END;
             while(false != ($file = readdir($h))) {
 
                 $info = pathinfo($file);
-                
+
                 //skip . and ..
                 if($file == '.' || $file == '..') { continue; }
 
@@ -5549,7 +5557,7 @@ END;
                     \Cx\Lib\FileSystem\FileSystem::delete_file($tempPath.'/'.$file);
                     continue;
                 }
-                
+
                 if(!in_array(strtolower($info['extension']), $arrAllowedFileTypes)) {
                     $response->addMessage(
                         UploadResponse::STATUS_ERROR,
@@ -5593,7 +5601,7 @@ END;
 
         return array($tempPath, $tempWebPath);
     }
-    
+
 
     /**
      * the upload is finished
@@ -5613,7 +5621,7 @@ END;
     {
 
         global $objDatabase, $objFWUser;
-        
+
         $depositionTarget = ASCMS_MEDIA_PATH.'/crm/'; //target folder
         $h = opendir($tempPath);
         if ($h) {
@@ -5652,7 +5660,7 @@ END;
                         \DBG::msg($e->getMessage());
                     }
                 }
-                
+
                 $arrFiles[] = $file;
             }
             closedir($h);
@@ -5705,7 +5713,7 @@ END;
                     try {
                         $objFile = new \Cx\Lib\FileSystem\File($tempPath.'/'.$file);
                         $objFile->copy($depositionTarget.$prefix.$file, false);
-                        
+
                         // create thumbnail
                         if (empty($objImage)) {
                             $objImage = new ImageManager();
@@ -5729,7 +5737,7 @@ END;
                             160,
                             70
                         );
-                        
+
                         // write the uploaded files into database
                         $fields = array(
                             'profile_picture' => $imageName
@@ -5752,7 +5760,7 @@ END;
 
     /**
      * get the imported file name
-     * 
+     *
      * @global ADOConnection $objDatabase
      *
      * @return null
@@ -5770,7 +5778,7 @@ END;
             $id = (int) $_REQUEST['custId'];
             $fileName = $objDatabase->getOne("SELECT profile_picture FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE id = '".$id."'");
         }
-        
+
         if (!empty ($fileName)) {
             $result[] = array('fileName' => $fileName);
         }

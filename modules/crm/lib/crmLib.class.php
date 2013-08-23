@@ -2,7 +2,7 @@
 /**
  * Library Class CRM
  * CrmLibrary class
- * 
+ *
  * @category   CrmLibrary
  * @package    contrexx
  * @subpackage module_crm
@@ -297,7 +297,7 @@ class CrmLibrary
      * Creates an array containing all frontend-languages. Example: $arrValue[$langId]['short'] or $arrValue[$langId]['long']
      *
      * @global  ADONewConnection $objDatabase
-     * 
+     *
      * @return  array $arrReturn
      */
     function createLanguageArray()
@@ -377,7 +377,7 @@ class CrmLibrary
      *  Save Task Type values to DB
      *
      * @param Integer $id task type id
-     * 
+     *
      * @global ADO Connection $objDatabase
      *
      * @return null
@@ -440,17 +440,17 @@ class CrmLibrary
             $row = "row2";
             while (!$objResult->EOF) {
                 $status = ($objResult->fields['status']) ? "led_green.gif" : "led_red.gif";
-                
+
                 if ($objResult->fields['system_defined']) {
                     $objTpl->hideBlock('delete_icon_block');
                 } else {
                     $objTpl->touchBlock('delete_icon_block');
                 }
-                
+
                 $objTpl->setVariable(array(
                         'CRM_TASK_TYPE_ID'          => (int) $objResult->fields['id'],
                         'CRM_TASK_TYPE_NAME'        => contrexx_raw2xhtml($objResult->fields['name']),
-                        'CRM_TASK_TYPE_SORTING'     => (int) $objResult->fields['sorting'],                        
+                        'CRM_TASK_TYPE_SORTING'     => (int) $objResult->fields['sorting'],
                         'CRM_TASK_TYPE_ACTIVE'      => $status,
                         'ROW_CLASS'                 => $row = ($row == "row2") ? "row1" : "row2",
                         'TXT_ORDER'         => $sorto
@@ -593,7 +593,7 @@ class CrmLibrary
         } else {
             if ($objTpl->blockExists('block_customer_type')) {
                 $objTpl->touchBlock('block_customer_type');
-            }            
+            }
             foreach ($this->customerTypes as $key => $value) {
 
                 $selected = ($value['id'] == $selectedId ) ? 'selected ="selected"' : '';
@@ -1554,7 +1554,7 @@ class CrmLibrary
 
     /**
      * Populates the Contrexx user Filter Drop Down
-     * 
+     *
      * @param String  $block      The name of the template block to parse
      * @param Integer $selectedId The ID of the selected user
      * @param Integer $groupId    Resource froup id
@@ -1585,7 +1585,7 @@ class CrmLibrary
      * @return boolean
      */
     function getResources($groupId)
-    { 
+    {
         global $objDatabase;
         static $resources = array();
 
@@ -1862,8 +1862,8 @@ class CrmLibrary
                 $result->MoveNext();
             }
         }
-        
-        
+
+
     }
 
     /**
@@ -1875,7 +1875,7 @@ class CrmLibrary
      *
      * @return boolean
      */
-    function addUser($email, $password, $sendLoginDetails = false)
+    function addUser($email, $password, $sendLoginDetails = false, $result = array(), $id)
     {
         global $objDatabase, $_CORELANG;
 
@@ -1888,18 +1888,29 @@ class CrmLibrary
 
         $modify = isset($this->contact->id) && !empty($this->contact->id);
         $accountId = 0;
-        $objUsers = $objFWUser->objUser->getUsers($filter = array('email' => addslashes($email)));
-        
+        $objUsers = $objFWUser->objUser->getUsers($filter = array('id' => intval($id)));
+
         if ($objUsers) {
             $accountId = $objUsers->getId();
+            $email     = $objUsers->getEmail();
         }
 
+        if (empty($id)) {
+            $objUsers = $objFWUser->objUser->getUsers($filter = array('email' => addslashes($email)));
+            if ($objUsers) {
+                $accountId = $objUsers->getId();
+            }
+        }
+        
         if ($modify) {
+            $useralExists = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE user_account = {$accountId}", 1);
             $this->contact->account_id = $objDatabase->getOne("SELECT user_account FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE id = {$this->contact->id}");
             if (empty ($this->contact->account_id) && !empty($accountId)) {
                 $objUser = new User($accountId);
             } elseif ((!empty($this->contact->account_id) && $objUser = $objFWUser->objUser->getUser($this->contact->account_id)) === false) {
                 $objUser = new User();
+            } elseif (!empty($accountId) && $useralExists && $useralExists->RecordCount() == 0) {
+                $objUser    = $objFWUser->objUser->getUser($accountId);
             }
         } else {
             if (empty($accountId)){
@@ -1991,7 +2002,7 @@ class CrmLibrary
                 $fieldValues[$fieldName] = $fieldValue;
             }
         }
-        
+
         if (!empty ($fieldValues['access_email'])) {
             $objEmail = $objFWUser->objUser->getUsers($filter = array('email' => contrexx_input2db($fieldValues['access_email'])));
 
@@ -2008,9 +2019,9 @@ class CrmLibrary
                     if ($objAttribute->getName(FRONTEND_LANG_ID) == $fieldValues['access_gender']) {
                         $gender = $attributeId;
                     }
-                }                
+                }
             }
-            
+
             $this->contact->customerName   = !empty ($fieldValues['access_firstname']) ? contrexx_input2raw($fieldValues['access_firstname']) : '';
             $this->contact->family_name    = !empty ($fieldValues['access_lastname']) ? contrexx_input2raw($fieldValues['access_lastname']) : '';
             $this->contact->contact_gender = !empty ($fieldValues['access_gender']) ? ($gender == 'gender_female' ? 1 : ($gender == 'gender_male' ? 2 : '')) : '';
@@ -2075,7 +2086,7 @@ class CrmLibrary
                 if (!empty($fieldValues['access_phone_private'])) {
                     $contactPhone[] = array(
                         'value'   => $fieldValues['access_phone_private'],
-                        'type'    => 0                        
+                        'type'    => 0
                     );
                 }
                 if (!empty($fieldValues['access_phone_mobile'])) {
@@ -2095,7 +2106,7 @@ class CrmLibrary
 
                     $first = true;
                     foreach ($contactPhone as $value) {
-                        $primary = $first ? 1 : 0;                        
+                        $primary = $first ? 1 : 0;
                         $values[] = "('".contrexx_input2db($value['value'])."', '".(int) $value['type']."', '".$primary."', '".$this->contact->id."')";
                         $first = false;
                     }
@@ -2219,7 +2230,7 @@ CODE;
         );
         return $result;
     }
-    
+
     /**
      * notify the staffs regarding the account modification of a contact
      *
@@ -2237,9 +2248,9 @@ CODE;
         global $objDatabase, $_ARRAYLANG;
 
         if (empty($customerId)) return false;
-        
+
         $settings = $this->getSettings();
-        $resources = $this->getResources($settings['emp_default_user_group']); 
+        $resources = $this->getResources($settings['emp_default_user_group']);
         $emails    = array();
         foreach ($resources as $key => $value) {
             $emails[]    = $value['email'];
@@ -2260,7 +2271,7 @@ CODE;
      * Escape a value that it could be inserted into a csv file.
      *
      * @param string $value
-      * 
+      *
      * @return string
      */
     function _escapeCsvValue($value)
@@ -2303,10 +2314,10 @@ CODE;
      * exists already.
      * If non-empty, the given User ID is excluded from the search, so the
      * User does not match herself.
-     * 
+     *
      * @param string  $email The email to test
      * @param integer $id    The optional current User ID
-     * 
+     *
      * @return boolean True if the username is available,
      *                 false otherwise
      */
@@ -2335,20 +2346,20 @@ CODE;
      * Returns true or false for task edit and delete permission
      *
      * Returns true or false for task edit and delete permission.
-     *           
+     *
      * @param Integer $added_user    The addeduser of the task
      * @param Integer $assigned_user responsible user
-     * 
+     *
      * @return boolean True if the user has the access,
      *                 false otherwise
      */
     protected function getTaskPermission($added_user, $assigned_user)
     {
-        
+
         $task_edit_permission          = false;
         $task_delete_permission        = false;
         $task_status_update_permission = false;
-        
+
         $objFWUser              = FWUser::getFWUserObject();
         if ($objFWUser->objUser->login() &&
             (
@@ -2360,7 +2371,7 @@ CODE;
             $task_edit_permission          = true;
             $task_status_update_permission = true;
         }
-        
+
         if ($objFWUser->objUser->login() &&
             (
                 $objFWUser->objUser->getAdminStatus() ||
@@ -2410,7 +2421,7 @@ CODE;
             if ($email) {
                 return $email;
             }
-            
+
             return false;
         }
     }
@@ -2419,10 +2430,10 @@ CODE;
      * get the count of entries
      *
      * @param String $query
-     * 
+     *
      * @global array $_ARRAYLANG
      * @global object $objDatabase
-     * 
+     *
      * @return true
      */
     function countRecordEntries($query)
@@ -2442,7 +2453,7 @@ CODE;
      * @param String $where condition
      *
      * @global  ADONewConnection
-     * 
+     *
      * @return integer number of entries in the database
      */
     function countEntries($table, $where=null)
@@ -2461,7 +2472,7 @@ CODE;
      * @param String $table table name
      *
      * @global ADONewConnection
-     * 
+     *
      * @return integer number of entries in the database
      */
     function countEntriesOfJoin($table)
@@ -2483,7 +2494,7 @@ CODE;
      *
      * @global array $_ARRAYLANG
      * @global object $objDatabase
-     * 
+     *
      * @return true
      */
     function parseLetterIndexList($URI, $paramName, $selectedLetter)
@@ -2521,12 +2532,12 @@ CODE;
             }
         }
     }
-    
+
     /**
      * Returns the allowed maximum element per page. Can be used for paging.
      *
      * @global  array
-     * 
+     *
      * @return  integer     allowed maximum of elements per page.
      */
     function getPagingLimit()
@@ -2534,7 +2545,7 @@ CODE;
         global $_CONFIG;
         return intval($_CONFIG['corePagingLimit']);
     }
-    
+
     /**
      * Registers all css and js to be loaded for crm module
      *

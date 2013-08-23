@@ -20,7 +20,7 @@
     </div>
 </div>
 <div id="SocialCategoriesPanel" class="dropDownDialog">
-    <div class="dropDownContent">                
+    <div class="dropDownContent">
         <a category="1" categoryName="Skype" class="dropDownItem">{TXT_CRM_SKYPE}</a>
         <a category="2" categoryName="Twitter" class="dropDownItem">{TXT_CRM_TWITTER}</a>
         <a category="3" categoryName="LinkedIn" class="dropDownItem">{TXT_CRM_LINKEDIN}</a>
@@ -73,104 +73,90 @@
             <div id="newContact"  style="display:none;background-color: #FFCCCC;border: 1px solid;color: #FF0000;font-size: 12px;line-height: 14px;padding: 5px;"></div>
             <div id="profile" class="contact">
                 <!-- BEGIN contactBlock -->
+                <ul id="tabmenu">
+                    <li><a id="Entries_ShowProfile" class="active" href="javascript:{}" onclick="selectTab('ShowProfile')" title="{TXT_CRM_PROFILE}">{TXT_CRM_PROFILE}</a></li>
+                    <!-- BEGIN show-account-details -->
+                    <li><a id="Entries_ShowAccount" class="inactive" href="javascript:{}" onclick="selectTab('ShowAccount')" title="{TXT_CRM_ACCOUNT}">{TXT_CRM_ACCOUNT}</a></li>
+                    <!-- END show-account-details -->
+                    <li><a id="Entries_ShowAddress" class="inactive" href="javascript:{}" onclick="selectTab('ShowAddress')" title="{TXT_CRM_ADDRESS}">{TXT_CRM_ADDRESS}</a></li>
+                    <li><a id="Entries_ShowDescription" class="inactive" href="javascript:{}" onclick="selectTab('ShowDescription')" title="{TXT_CRM_DESCRIPTION}">{TXT_CRM_DESCRIPTION}</a></li>
+                </ul>
+                <div class="Entries" id="ShowProfile">
                 <table class="adminlist" id="profile-info" cellspacing="0" cellpadding="3" width="100%" border="0">
                     <thead>
-                        <tr><th colspan="4">{TXT_CRM_EDITCUSTOMERCONTACT_TITLE}</th></tr>
-                        <tr class="row3"><td colspan="4"><strong>{TXT_CRM_PROFILE_INFORMATION}</strong></td></tr>
+                            <tr><th colspan="4">{TXT_CRM_PROFILE}</th></tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td style="width:127px;">{TXT_CRM_GENDER}&nbsp;<font color="red">*</font></td>
                             <td style="width:340px;">
-                                <select id="contact_gender" name="contact_gender" style="width: 262px !important;">
+                                    <select tabindex="1" id="contact_gender" name="contact_gender" style="width: 262px !important;">
                                     <option value="" >{TXT_CRM_NOT_SPECIFIED}</option>
                                     <option value="1" {CRM_GENDER_FEMALE_SELECTED}>{TXT_CRM_GENDER_FEMALE}</option>
                                     <option value="2" {CRM_GENDER_MALE_SELECTED}>{TXT_CRM_GENDER_MALE}</option>
                                 </select>
                             </td>
                             <td style="width:127px;">{TXT_CRM_ROLE}</td>
-                            <td><input type="text" id="contact_role" name="contact_role" value="{TXT_CON_ROLE}" style="width: 254px;"  /></td>
+                                <td><input tabindex="6" type="text" id="contact_role" name="contact_role" value="{TXT_CON_ROLE}" style="width: 254px;"  /></td>
                         </tr>
                         <tr class="row1">
                             <td>{TXT_CRM_NAME}&nbsp;<font color="red">*</font></td>
                             <td>
-                                <input type="text" id="companyName" name="companyName" style="width: 254px;"  value="{CRM_COMPANY_NAME}"  />
+                                    <input tabindex="2" type="text" id="companyName" name="companyName" style="width: 254px;"  value="{CRM_COMPANY_NAME}"  />
                             </td>
                             <td>{TXT_CRM_TITLE_LANGUAGE}&nbsp;<font color="red">*</font></td>
                             <td>
-                                <select id="language" name="contact_language" style="width: 262px !important;">
+                                    <select tabindex="7" id="language" name="contact_language" style="width: 262px !important;">
                                     <option value="">--{TXT_CRM_TITLE_SELECT_LANGUAGE}--</option>
                                     <!-- BEGIN showAddtionalContactLanguages -->
                                     <option {TXT_LANG_SELECT} value="{TXT_LANG_ID}">{TXT_LANG_NAME}</option>
                                     <!-- END showAddtionalContactLanguages -->
                                 </select>
                             </td>
-                        </tr>                      
+                        </tr>
                         <tr class="row2">
                             <td>{TXT_CRM_FAMILY_NAME}&nbsp;<font color="red">*</font></td>
-                            <td> <input type="text" id="family_name" name="family_name" value="{TXT_CON_FAMILY}" style="width: 254px;"  /></td>
+                                <td> <input tabindex="3" type="text" id="family_name" name="family_name" value="{TXT_CON_FAMILY}" style="width: 254px;"  /></td>
                             <td><span class="customerTypeRow">{TXT_CRM_CUSTOMERTYPE}&nbsp;<font color="red">*</font></span></td>
                             <td>
-                                <select class="customerTypeRow" name="customer_type" id="customer_type" style="width:262px !important;">
+                                    <select tabindex="8" class="customerTypeRow" name="customer_type" id="customer_type" style="width:262px !important;">
                                     <option value="">--{TXT_CRM_PLEASE_SELECT}--</option>
                                     <!-- BEGIN contactCustomerTypes -->
                                     <option value="{CRM_CUSTOMER_TYPE_ID}" {CRM_CUSTOMER_TYPE_SELECTED}>{CRM_CUSTOMER_TYPE}</option>
                                     <!-- END contactCustomerTypes -->
                                 </select>
                             </td>
-                        </tr>                        
-                        <tr class="row2 contact_user_container">
-                            <!-- BEGIN contactUserName -->
-                            <td>{TXT_CRM_ACCOUNT_EMAIL}&nbsp;{CRM_ACCOUNT_MANTORY}</td>
+                        </tr>
+                            <tr class="row2">
+                                <td>{TXT_COMPANY_NAME}</td>
                             <td>
-                                <input type="text" name="contact_email" autocomplete="off" id="contact_email" style="width: 254px;" value="{CRM_CONTACT_USERNAME}" class="{CRM_ACCOUNT_MANTORY_CLASS}" onKeyUp="typewatch(function(){checkUserNameAvailablity('{CRM_CONTACT_ID}')}, 1000 );" />
+                                    <input type="hidden" id="companyId" name="company" value="{CRM_CONTACT_COMPANY_ID}" />
+                                    <input tabindex="4" type="text" id="company" class="selectCustomer" placeholder="{TXT_CRM_FIND_COMPANY_BY_NAME}" value="{CRM_CONTACT_COMPANY}" style="width: 237px;"  />
+                                    <span class="delete-customer"></span>
                             </td>
-                            <!-- END contactUserName -->
-                            <!-- BEGIN emptyContactUserName -->
-                            <td colspan="2">&nbsp;</td>
-                            <!-- END emptyContactUserName -->
                             <td valign="top">{TXT_CRM_MEMBERSHIP}</td>
                             <td valign="top">
-                                <select data-placeholder="{TXT_CRM_CHOOSE_MEMBERSHIPS}" name="assigned_memberships[]" id="assigned_memberships" size="1" multiple>
+                                    <select tabindex="9" data-placeholder="{TXT_CRM_CHOOSE_MEMBERSHIPS}" name="assigned_memberships[]" id="assigned_memberships" size="1" multiple>
                                     <!-- BEGIN contactMembership -->
                                     <option value="{CRM_MEMBERSHIP_ID}" {CRM_MEMBERSHIP_SELECTED}>{CRM_MEMBERSHIP_VALUE}</option>
                                     <!-- END contactMembership -->
                                 </select>
                             </td>
                         </tr>
-                        <tr class="row1">
-                            <!-- BEGIN contactPassword -->
-                            <td>{TXT_CRM_ACCOUNT_PASSWORD}&nbsp;{CRM_ACCOUNT_MANTORY}</td>
-                            <td>
-                                <input type="password" name="contact_password" autocomplete="off" id="contact_password" class="{CRM_ACCOUNT_MANTORY_CLASS}" style="width: 254px;" value="" />
-                                <!-- BEGIN contactSendNotification -->
-                                <br><input type="checkbox" checked name="send_account_notification" value="1" />&nbsp;{TXT_CRM_SEND_LOGIN_DETAILS}
-                                <!-- END contactSendNotification -->
-                            </td>
-                            <!-- END contactPassword -->
-                            <!-- BEGIN emptyContactPassword -->
-                            <td colspan="2">&nbsp;</td>
-                            <!-- END emptyContactPassword -->
+                            <tr class="row1 customerTypeRow">
+                                <td>{TXT_CRM_CUSTOMERID}&nbsp;<font color="red">*</font></td>
+                                <td><input tabindex="5" type="text" value="{CRM_CUSTOMERID}" style="width: 255px;" name="customerId" id="customerId" /></td>
                             <td><span class="customerTypeRow">{TXT_CRM_CURRENCY}&nbsp;<font color="red">*</font></span></td>
-                            <td><select class="customerTypeRow" name="currency" id="currency" style="width: 262px !important;">
+                                <td><select tabindex="10" class="customerTypeRow" name="currency" id="currency" style="width: 262px !important;">
                                     <option value="">--{TXT_CRM_PLEASE_SELECT}--</option>
                                     <!-- BEGIN contactCurrency -->
                                     <option value="{CRM_CURRENCYID}" {CRM_CURRENCY_SELECTED}>{CRM_CURRENCYNAME}</option>
                                     <!-- END contactCurrency -->
                                 </select>
                             </td>
-                        </tr>                        
-                        <tr class="row1">
-                            <td>{TXT_COMPANY_NAME}</td>
-                            <td colspan="3">
-                                <input type="hidden" id="companyId" name="company" value="{CRM_CONTACT_COMPANY_ID}" />
-                                <input type="text" id="company" class="selectCustomer" placeholder="{TXT_CRM_FIND_COMPANY_BY_NAME}" value="{CRM_CONTACT_COMPANY}" style="width: 237px;"  />
-                                <span class="delete-customer"></span>
-                            </td>                            
-                        </tr>                        
-                        <tr class="row2 customerTypeRow">
-                            <td>{TXT_CRM_CUSTOMERID}&nbsp;<font color="red">*</font></td>
-                            <td><input type="text" value="{CRM_CUSTOMERID}" style="width: 255px;" name="customerId" id="customerId" /></td>                            
+                        </tr>
+                            <tr>
+                                <td colspan="2">&nbsp;</td>
                         </tr>
                         <tr>
                             <td>
@@ -180,7 +166,7 @@
                                 <div class="multiple_input" id="emailContainer">
                                     <div class="email_list_container" style="display: none !important;">
                                         <div class="email_list">
-                                            <input class="mInput" type="text" name="" value="{TXT_SESSION_SECONDARYEMAIL}" />
+                                                <input tabindex="11" class="mInput" type="text" name="" value="{TXT_SESSION_SECONDARYEMAIL}" />
                                             <a onclick="showEmailCategoriesPanel(this);">{TXT_CRM_EMAIL_DEFAULT_OPTION}</a>
                                         </div>
                                         <div class="actions_for_item">
@@ -192,7 +178,7 @@
                                     <!-- BEGIN contactEmailContainer -->
                                     <div class="email_list_container">
                                         <div class="email_list">
-                                            <input class="mInput" type="text" name="{CRM_CONTACT_EMAIL_NAME}" value="{CRM_CONTACT_EMAIL}" />
+                                                <input tabindex="11" class="mInput" type="text" name="{CRM_CONTACT_EMAIL_NAME}" value="{CRM_CONTACT_EMAIL}" />
                                             <a onclick="showEmailCategoriesPanel(this);">{CRM_EMAIL_OPTION}</a>
                                         </div>
                                         <div class="actions_for_item">
@@ -211,7 +197,7 @@
                                 <div class="multiple_input" id="websiteContainer" style="float: left;">
                                     <div class="website_list_container" style="display: none !important;">
                                         <div class="website_list">
-                                            <input class="mInput" type="text" name="" value="" />
+                                                <input tabindex="12" class="mInput" type="text" name="" value="" />
                                             <a onclick="showwebsiteProfilesPanel(this);" class="category">{TXT_CRM_PROFILE_OPTION}</a>
                                         </div>
                                         <div class="actions_for_item">
@@ -223,7 +209,7 @@
                                     <!-- BEGIN contactwebsiteContainer -->
                                     <div class="website_list_container">
                                         <div class="website_list">
-                                            <input class="mInput" type="text" name="{CRM_CONTACT_WEBSITE_NAME}" value="{CRM_CONTACT_WEBSITE}" />                                            
+                                                <input tabindex="12" class="mInput" type="text" name="{CRM_CONTACT_WEBSITE_NAME}" value="{CRM_CONTACT_WEBSITE}" />
                                             <a onclick="showwebsiteProfilesPanel(this);" class="category">{CRM_WEBSITE_PROFILE}</a>
                                         </div>
                                         <div class="actions_for_item">
@@ -243,7 +229,7 @@
                                 <div class="multiple_input" id="socialContainer" style="float: left;">
                                     <div class="social_list_container" style="display: none !important;">
                                         <div class="social_list">
-                                            <input class="mInput" type="text" name="" value="" />
+                                                <input tabindex="13" class="mInput" type="text" name="" value="" />
                                             <a onclick="showsocialProfilesPanel(this);" class="category">{TXT_CRM_SOCIAL_PROFILE_OPTION}</a>
                                         </div>
                                         <div class="actions_for_item">
@@ -255,7 +241,7 @@
                                     <!-- BEGIN contactSocialLinkContainer -->
                                     <div class="social_list_container">
                                         <div class="social_list">
-                                            <input class="mInput" type="text" name="{CRM_CONTACT_SOCIAL_NAME}" value="{CRM_CONTACT_SOCIAL}" />
+                                                <input tabindex="13" class="mInput" type="text" name="{CRM_CONTACT_SOCIAL_NAME}" value="{CRM_CONTACT_SOCIAL}" />
                                             <a onclick="showsocialProfilesPanel(this);" class="category">{CRM_SOCIAL_PROFILE}</a>
                                         </div>
                                         <div class="actions_for_item">
@@ -276,7 +262,7 @@
                                 <div class="multiple_input" id="phoneContainer">
                                     <div class="phone_list_container" style="display: none !important;">
                                         <div class="phone_list">
-                                            <input class="mInput" type="text" name="" value="" />
+                                                <input tabindex="14" class="mInput" type="text" name="" value="" />
                                             <a onclick="showphoneCategoriesPanel(this);" >{TXT_CRM_OPTION}</a>
                                         </div>
                                         <div class="actions_for_item">
@@ -288,7 +274,7 @@
                                     <!-- BEGIN contactPhoneContainer -->
                                     <div class="phone_list_container">
                                         <div class="phone_list">
-                                            <input class="mInput" type="text" name="{CRM_CONTACT_PHONE_NAME}" value="{CRM_CONTACT_PHONE}" />
+                                                <input tabindex="14" class="mInput" type="text" name="{CRM_CONTACT_PHONE_NAME}" value="{CRM_CONTACT_PHONE}" />
                                             <a onclick="showphoneCategoriesPanel(this);">{CRM_PHONE_OPTION}</a>
                                         </div>
                                         <div class="actions_for_item">
@@ -301,8 +287,190 @@
                                 </div>
                             </td>
                         </tr>
-                    </tbody>                   
+                    </tbody>
                 </table>
+                </div>
+                <div class="Entries" id="ShowAccount" style="display:none;">
+                    <table class="adminlist" id="profile-info" cellspacing="0" cellpadding="3" width="100%" border="0">
+                        <thead>
+                            <tr><th colspan="4">{TXT_CRM_ACCOUNT}</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr class="row1 contact_user_container">
+                                <!-- BEGIN contactUserName -->
+                                <td width="200">{TXT_CRM_ACCOUNT_EMAIL}&nbsp;{CRM_ACCOUNT_MANTORY}</td>
+                                <td>
+                                    <input class="live-search-user-id" id="contactId" type="hidden" name="contactId" value="{CRM_CONTACT_ID}" />
+                                    <input class="live-search-user-name" id="contact_email" type="hidden" name="contact_email" value="{CRM_CONTACT_USERNAME}" placeholder="{TXT_CORE_SEARCH_USER}..." style="width: 277px;" />
+                                    <!--<input type="text" name="contact_email" autocomplete="off" id="contact_email" style="width: 254px;" value="{CRM_CONTACT_USERNAME}" class="{CRM_ACCOUNT_MANTORY_CLASS}" onKeyUp="typewatch(function(){checkUserNameAvailablity('{CRM_CONTACT_ID}')}, 1000 );" />-->
+                                </td>
+                                <!-- END contactUserName -->
+                                <!-- BEGIN emptyContactUserName -->
+                                <td colspan="2">&nbsp;</td>
+                                <!-- END emptyContactUserName -->
+                            </tr>
+                            <tr class="row2">
+                                <!-- BEGIN contactPassword -->
+                                <td width="200">{TXT_CRM_ACCOUNT_PASSWORD}&nbsp;{CRM_ACCOUNT_MANTORY}</td>
+                                <td>
+                                    <input type="password" name="contact_password" autocomplete="off" id="contact_password" class="{CRM_ACCOUNT_MANTORY_CLASS}" style="width: 254px;" value="" />
+                                    <!-- BEGIN contactSendNotification -->
+                                    <br><input type="checkbox" checked name="send_account_notification" value="1" />&nbsp;{TXT_CRM_SEND_LOGIN_DETAILS}
+                                    <!-- END contactSendNotification -->
+                                </td>
+                                <!-- END contactPassword -->
+                                <!-- BEGIN emptyContactPassword -->
+                                <td colspan="2">&nbsp;</td>
+                                <!-- END emptyContactPassword -->
+                            </tr>
+                        </tbody>
+                    </table>
+
+                </div>
+                <br />
+                <div class="Entries" id="ShowAddress" style="display:none;">
+                    <table class="adminlist" id="profile-info" cellspacing="0" cellpadding="3" width="100%" border="0">
+                        <thead>
+                            <tr>
+                                <th colspan="2">{TXT_CRM_ADDRESS}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="row2">
+                                <td>
+                                    <div class="multiple_input" id="addressContainer" style="float: left;">
+                                        <div class="address_list_container" style="display: none;">
+                                            <div class="address_list">
+                                                <table class="innerTable" cellspacing="0" cellpadding="0" class="">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td colspan="3">
+                                                                <div class="addressline-1">
+                                                                    <textarea class="contactAddress" placeholder="{TXT_CRM_ADDRESS}" rows="4" cols="0"></textarea>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="addressline-2" colspan="3">
+                                                                <span>
+                                                                    <input placeholder="{TXT_CRM_CITY}" class="contactCity" type="text" value="" />
+                                                                </span>
+
+                                                                <span>
+                                                                    <input placeholder="{TXT_CRM_STATE}" class="contactState " type="text" value=""/>
+                                                                </span>
+
+                                                                <span>
+                                                                    <input class="contactZip " placeholder="{TXT_CRM_ZIP_CODE}" type="text" value="" />
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr >
+                                                            <td class="addressline-3">
+                                                                <div class="crmLeft">
+                                                                    <select class="cCountry" >
+                                                                        <option value="">{TXT_CRM_SELECT_COUNTRY}</option>
+                                                                        <!-- BEGIN additionalcrmCountry -->
+                                                                        <option value="{CRM_COUNTRY}" {CRM_COUNTRY_SELECTED}>{CRM_COUNTRY}</option>
+                                                                        <!-- END additionalcrmCountry -->
+                                                                    </select>
+                                                                </div>
+                                                                <div class="crmLeft">
+                                                                    <select class="contactType">
+                                                                        <!-- BEGIN additionaladdressType -->
+                                                                        <option value="{CRM_ADDRESS_TYPE}" {CRM_ADDRESS_TYPE_SELECTED}>{CRM_ADDRESS_TYPE_NAME}</option>
+                                                                        <!-- END additionaladdressType -->
+                                                                    </select>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="actions_for_item" >
+                                                <a title="Delete" alt="Delete" class="crm_deleteLink_address crm-AddressDelete"></a>
+                                                <a alt="Primary" title="Primary" class="is_primary_address not_primary_field_address crm-AddressPrimary"></a>
+                                                <a alt="Add new address" title="Add new address" class="crm_addNewLink_address crm-AddressAdd"></a>
+                                            </div>
+                                        </div>
+                                        <!-- BEGIN contactAddressContainer -->
+                                        <div class="address_list_container" >
+                                            <div class="address_list">
+                                                <table class="innerTable" cellspacing="0" cellpadding="0" class="">
+                                                    <tbody>
+                                                        <tr>
+                                                            <td>
+                                                                <div class="addressline-1">
+                                                                    <textarea class="contactAddress" name="{CRM_CONTACT_ADDRESS_NAME}" placeholder="{TXT_CRM_ADDRESS}" name="" rows="4" cols="0">{CRM_CONTACT_ADDRESS_VALUE}</textarea>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="addressline-2">
+                                                                <span>
+                                                                    <input style="width: 170px" placeholder="{TXT_CRM_CITY}" class="contactCity" type="text" name="{CRM_CONTACT_CITY_NAME}" value="{CRM_CONTACT_CITY_VALUE}" />
+                                                                </span>
+
+                                                                <span>
+                                                                    <input style="width: 170px" placeholder="{TXT_CRM_STATE}" class="contactState " type="text" name="{CRM_CONTACT_STATE_NAME}" value="{CRM_CONTACT_STATE_VALUE}"/>
+                                                                </span>
+
+                                                                <span>
+                                                                    <input style="width: 149px" placeholder="{TXT_CRM_ZIP_CODE}" class="contactZip" type="text" name="{CRM_CONTACT_ZIP_NAME}" value="{CRM_CONTACT_ZIP_VALUE}" />
+                                                                </span>
+                                                            </td>
+                                                        </tr>
+                                                        <tr >
+                                                            <td class="addressline-3">
+                                                                <div class="crmLeft">
+                                                                    <select name="{CRM_CONTACT_COUNTRY_NAME}" class="cCountry" >
+                                                                        <option value="">{TXT_CRM_SELECT_COUNTRY}</option>
+                                                                        <!-- BEGIN crmCountry -->
+                                                                        <option value="{CRM_COUNTRY}" {CRM_COUNTRY_SELECTED}>{CRM_COUNTRY}</option>
+                                                                        <!-- END crmCountry -->
+                                                                    </select>
+                                                                </div>
+                                                                <div class="crmLeft">
+                                                                    <select name="{CRM_CONTACT_ADDR_TYPE_NAME}" class="contactType">
+                                                                        <!-- BEGIN addressType -->
+                                                                        <option value="{CRM_ADDRESS_TYPE}" {CRM_ADDRESS_TYPE_SELECTED}>{CRM_ADDRESS_TYPE_NAME}</option>
+                                                                        <!-- END addressType -->
+                                                                    </select>
+                                                                </div>
+                                                            </td>
+                                                        </tr>
+                                                    </tbody>
+                                                </table>
+                                            </div>
+                                            <div class="actions_for_item" >
+                                                <a title="Delete" alt="Delete" class="crm_deleteLink_address"></a>
+                                                <a alt="Primary" title="Primary" class="is_primary_address {CRM_CONTACT_ADDRESS_PRIMARY}"></a>
+                                                <a alt="Add new address" title="Add new address" class="crm_addNewLink_address crm-AddressAdd"></a>
+                                            </div>
+                                        </div>
+                                        <!-- END contactAddressContainer -->
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="Entries" id="ShowDescription" style="display:none;">
+                    <table class="adminlist" id="profile-info" cellspacing="0" cellpadding="3" width="100%" border="0">
+                        <thead>
+                            <tr>
+                                <th colspan="2">{TXT_CRM_DESCRIPTION}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr class="row1">
+                                <td>
+                                    <textarea class="notes" name="notes" rows="4" cols="0">{CRM_CONTACT_NOTES}</textarea>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
                 <!-- END contactBlock -->
                 <!-- BEGIN customerBlock -->
                 <table class="adminlist" id="profile-info" cellspacing="0" cellpadding="3" width="100%">
@@ -316,8 +484,8 @@
                         <td style="width:127px;">{TXT_CRM_COMPANY_NAME}&nbsp;<font color="red">*</font></td>
                         <td style="width:340px;"><input type="text" name="companyName" id="companyName" style="width: 255px;"  value="{CRM_COMPANY_NAME}" /></td>
                         <td style="width:127px;">{TXT_CRM_CUSTOMERID}&nbsp;<font color="red">*</font></td>
-                        <td><input type="text" value="{CRM_CUSTOMERID}" style="width: 255px;" name="customerId" id="customerId" /></td>                        
-                    </tr>                    
+                        <td><input type="text" value="{CRM_CUSTOMERID}" style="width: 255px;" name="customerId" id="customerId" /></td>
+                    </tr>
                     <tr class="row2">
                         <td>
                             {TXT_CRM_EMAIL}&nbsp;<font color="red">*</font>
@@ -361,7 +529,7 @@
                                 <!-- END customerTypes -->
                             </select>
                         </td>
-                    </tr>                                       
+                    </tr>
                     <tr class="row1">
                         <td>{TXT_CRM_WEBSITE}</td>
                         <td>
@@ -369,7 +537,7 @@
                                 <div class="website_list_container" style="display: none !important;">
                                     <div class="website_list">
                                         <input class="mInput" type="text" name="" value="" />
-                                        <a onclick="showwebsiteProfilesPanel(this);" class="category">{TXT_CRM_PROFILE_OPTION}</a>                                        
+                                        <a onclick="showwebsiteProfilesPanel(this);" class="category">{TXT_CRM_PROFILE_OPTION}</a>
                                     </div>
                                     <div class="actions_for_item">
                                         <a name="website" title="Delete" class="crm-deleteLink"></a>
@@ -380,8 +548,8 @@
                                 <!-- BEGIN customerwebsiteContainer -->
                                 <div class="website_list_container">
                                     <div class="website_list">
-                                        <input class="mInput" type="text" name="{CRM_CONTACT_WEBSITE_NAME}" value="{CRM_CONTACT_WEBSITE}" />                                        
-                                        <a onclick="showwebsiteProfilesPanel(this);" class="category">{CRM_WEBSITE_PROFILE}</a>                                        
+                                        <input class="mInput" type="text" name="{CRM_CONTACT_WEBSITE_NAME}" value="{CRM_CONTACT_WEBSITE}" />
+                                        <a onclick="showwebsiteProfilesPanel(this);" class="category">{CRM_WEBSITE_PROFILE}</a>
                                     </div>
                                     <div class="actions_for_item">
                                         <a name="website" title="Delete" class="crm-deleteLink"></a>
@@ -482,7 +650,6 @@
                         </td>
                     </tr>
                 </table>
-                <!-- END customerBlock -->                                
                 <br />
                 <table class="adminlist" id="profile-info" cellspacing="0" cellpadding="3" width="100%" border="0">
                     <thead>
@@ -493,7 +660,7 @@
                         </tr>
                     </thead>
                     <tbody style="display: {CRM_ADDRESS_BLOCK_DISPLAY};">
-                        <tr class="row2">                            
+                        <tr class="row2">
                             <td>
                                 <div class="multiple_input" id="addressContainer" style="float: left;">
                                     <div class="address_list_container" style="display: none;">
@@ -527,16 +694,16 @@
                                                             <div class="crmLeft">
                                                                 <select class="cCountry" >
                                                                     <option value="">{TXT_CRM_SELECT_COUNTRY}</option>
-                                                                    <!-- BEGIN additionalcrmCountry -->
+                                                                    <!-- BEGIN customerAdditionalcrmCountry -->
                                                                     <option value="{CRM_COUNTRY}" {CRM_COUNTRY_SELECTED}>{CRM_COUNTRY}</option>
-                                                                    <!-- END additionalcrmCountry -->
+                                                                    <!-- END customerAdditionalcrmCountry -->
                                                                 </select>
                                                             </div>
                                                             <div class="crmLeft">
                                                                 <select class="contactType">
-                                                                    <!-- BEGIN additionaladdressType -->
+                                                                    <!-- BEGIN customerAdditionaladdressType -->
                                                                     <option value="{CRM_ADDRESS_TYPE}" {CRM_ADDRESS_TYPE_SELECTED}>{CRM_ADDRESS_TYPE_NAME}</option>
-                                                                    <!-- END additionaladdressType -->
+                                                                    <!-- END customerAdditionaladdressType -->
                                                                 </select>
                                                             </div>
                                                         </td>
@@ -550,7 +717,7 @@
                                             <a alt="Add new address" title="Add new address" class="crm_addNewLink_address crm-AddressAdd"></a>
                                         </div>
                                     </div>
-                                    <!-- BEGIN contactAddressContainer -->
+                                    <!-- BEGIN customerAddressContainer -->
                                     <div class="address_list_container" >
                                         <div class="address_list">
                                             <table class="innerTable" cellspacing="0" cellpadding="0" class="">
@@ -582,16 +749,16 @@
                                                             <div class="crmLeft">
                                                                 <select name="{CRM_CONTACT_COUNTRY_NAME}" class="cCountry" >
                                                                     <option value="">{TXT_CRM_SELECT_COUNTRY}</option>
-                                                                    <!-- BEGIN crmCountry -->
+                                                                    <!-- BEGIN customerCrmCountry -->
                                                                     <option value="{CRM_COUNTRY}" {CRM_COUNTRY_SELECTED}>{CRM_COUNTRY}</option>
-                                                                    <!-- END crmCountry -->
+                                                                    <!-- END customerCrmCountry -->
                                                                 </select>
-                                                            </div>                                                        
+                                                            </div>
                                                             <div class="crmLeft">
                                                                 <select name="{CRM_CONTACT_ADDR_TYPE_NAME}" class="contactType">
-                                                                    <!-- BEGIN addressType -->
+                                                                    <!-- BEGIN customerAddressType -->
                                                                     <option value="{CRM_ADDRESS_TYPE}" {CRM_ADDRESS_TYPE_SELECTED}>{CRM_ADDRESS_TYPE_NAME}</option>
-                                                                    <!-- END addressType -->
+                                                                    <!-- END customerAddressType -->
                                                                 </select>
                                                             </div>
                                                         </td>
@@ -605,10 +772,10 @@
                                             <a alt="Add new address" title="Add new address" class="crm_addNewLink_address crm-AddressAdd"></a>
                                         </div>
                                     </div>
-                                    <!-- END contactAddressContainer -->
+                                    <!-- END customerAddressContainer -->
                                 </div>
                             </td>
-                        </tr>                        
+                        </tr>
                     </tbody>
                 </table>
                 <br />
@@ -628,6 +795,7 @@
                         </tr>
                     </tbody>
                 </table>
+                <!-- END customerBlock -->
                 <br>
                 <!-- BEGIN customerAdditionalBlock -->
                 <div id="contactsContainer">
@@ -688,7 +856,7 @@
                     </table>
                     <br>
                 </div>
-                <!-- END customerAdditionalBlock -->                
+                <!-- END customerAdditionalBlock -->
             </div>
             <br>
         </div>

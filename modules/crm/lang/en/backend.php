@@ -528,4 +528,5 @@ $_ARRAYLANG['TXT_CRM_RECORD_IMPORT']                = "Imported Records -";
 $_ARRAYLANG['TXT_CRM_RECORD_SKIPPED']               = "Skipped Records -";
 $_ARRAYLANG['TXT_CRM_RECORD_DONE']                  = "Done";
 $_ARRAYLANG['TXT_CRM_LOADING']                      = "Loading ...";
+$_ARRAYLANG['TXT_CRM_ACCOUNT']                      = "Account";
 $_ARRAYLANG['TXT_CRM_PLACEHOLDERS']                 = "Placeholders";
