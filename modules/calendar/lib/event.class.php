@@ -1398,4 +1398,33 @@ class CalendarEvent extends CalendarLibrary
         return $pic;
     }
 
+    /**
+     * Used get the event search query
+     * From global search module.
+     * 
+     * @param mixed $term Search term
+     * 
+     * @return string search query
+     */
+    static function getEventSearchQuery($term)
+    {
+        global $_LANGID;
+        
+        $query = "SELECT event.`id` AS `id`,                         
+                         field.`title` AS `title`,
+                         field.`description` AS content,
+                         field.`place` AS place,
+                         MATCH (field.`title`, field.`description`, field.`place`) AGAINST ('%$term%') AS `score`
+                    FROM ".DBPREFIX."module_calendar_event AS event,
+                         ".DBPREFIX."module_calendar_event_field AS field
+                   WHERE   (event.id = field.event_id AND field.lang_id = '".intval($_LANGID)."')
+                       AND event.status = 1
+                       AND (   field.title LIKE ('%$term%')
+                            OR field.description LIKE ('%$term%')
+                            OR field.place LIKE ('%$term%')
+                           )";
+        
+        return $query;
+    }
+    
 }
