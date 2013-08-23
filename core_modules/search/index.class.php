@@ -341,20 +341,8 @@ class Search
                      WHERE status='1'
                        AND (   name LIKE ('%$term_db%')
                             OR description LIKE ('%$term_db%'))";
-            case 'calendar':
-                return "
-                    SELECT tblE.`id`, tblE.`name` AS title,
-                           tblE.`comment` AS content, tblE.`startdate`,
-                           MATCH (tblE.`name`, tblE.`comment`, tblE.`placeName`) AGAINST ('%$term_db%') AS `score`
-                      FROM `".DBPREFIX."module_calendar` AS tblE
-                     INNER JOIN `".DBPREFIX."module_calendar_categories` AS tblC
-                        ON tblC.`id`=tblE.`catid`
-                     WHERE tblE.`active`='1'
-                       AND tblC.`lang`=".FRONTEND_LANG_ID."
-                       AND tblC.`status`=1
-                       AND (   tblE.`name` LIKE ('%$term_db%')
-                            OR tblE.`comment` LIKE ('%$term_db%')
-                            OR tblE.`placeName` LIKE ('%$term_db%'))";
+            case 'calendar':                
+                return \CalendarEvent::getEventSearchQuery($term_db);
             case 'forum':
                 return "
                     SELECT `thread_id` AS `id`, `subject` AS `title`, `content`,
