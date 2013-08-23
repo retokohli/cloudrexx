@@ -5744,6 +5744,27 @@ END;
                         );
                         $sql = SQL::update("module_crm_contacts", $fields, array('escape' => true))." WHERE `id` = {$data}";
                         $objDatabase->Execute($sql);
+                        $accountId = $objDatabase->getOne("SELECT user_account FROM `".DBPREFIX."module_crm_contacts` WHERE id = {$data}");
+                        if (!empty ($accountId) && !empty ($imageName)) {
+                            $objUser  = $objFWUser->objUser->getUser($accountId);
+                            if (!file_exists(ASCMS_ACCESS_PROFILE_IMG_PATH.'/'.$imageName)) {
+                                $file = CRM_ACCESS_PROFILE_IMG_PATH.'/';
+                                if (($imageName = self::moveUploadedImageInToPlace($objUser, $file.$imageName, $imageName, true)) == true) {
+                                    // create thumbnail
+                                    $objImage = new ImageManager();
+                                    $objImage->_createThumbWhq(
+                                        ASCMS_ACCESS_PROFILE_IMG_PATH.'/',
+                                        ASCMS_ACCESS_PROFILE_IMG_WEB_PATH.'/',
+                                        $imageName,
+                                        80,
+                                        60,
+                                        90
+                                    );
+                                    $objUser->setProfile(array('picture' => array(0 => $imageName)));
+                                    $objUser->store();
+                                }
+                            }
+                        }
                     } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
                         \DBG::msg($e->getMessage());
                     }

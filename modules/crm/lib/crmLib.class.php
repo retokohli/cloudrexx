@@ -1901,7 +1901,7 @@ class CrmLibrary
                 $accountId = $objUsers->getId();
             }
         }
-        
+
         if ($modify) {
             $useralExists = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE user_account = {$accountId}", 1);
             $this->contact->account_id = $objDatabase->getOne("SELECT user_account FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE id = {$this->contact->id}");
@@ -1926,17 +1926,67 @@ class CrmLibrary
             }
         }
 
+        //update/insert additional fields
+        //company
+        if (!empty($result['company'])) {
+            $company = $objDatabase->getOne("SELECT customer_name FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE id = '".$result['company']."'");
+        }
+        //get default website
+        foreach ($result['contactwebsite'] as $value) {
+            if (!empty($value['value']) && $value['primary'] == '1') {
+                $website = contrexx_raw2db($value['value']);
+            }
+        }
+        //get default phone
+        foreach ($result['contactphone'] as $value) {
+            if (!empty($value['value']) && $value['primary'] == '1')
+                $phone = contrexx_input2db($value['value']);
+        }
+        //get default address
+        foreach ($result['contactAddress'] as $value) {
+            if ((!empty($value['address']) || !empty($value['city']) || !empty($value['state']) || !empty($value['zip']) || !empty($value['country'])) && $value['primary'] == '1') {
+                $address = contrexx_input2db($value['address']);
+                $city    = contrexx_input2db($value['city']);
+                $zip     = contrexx_input2db($value['zip']);
+                $country = $objDatabase->getOne("SELECT id FROM `".DBPREFIX."lib_country` WHERE name = '".$value['country']."'");
+            }
+        }
+        $gender = ($this->contact->contact_gender == 1) ? 'gender_female' : ($this->contact->contact_gender == 2 ? 'gender_male' : 'gender_undefined');
+        $setProfileData = array(
+            'firstname'    => array(0 => $this->contact->customerName),
+            'lastname'     => array(0 => $this->contact->family_name),
+            'gender'       => array(0 => $gender),
+            'website'      => array(0 => $website),
+            'company'      => array(0 => $company),
+            'phone_office' => array(0 => $phone),
+            'address'      => array(0 => $address),
+            'city'         => array(0 => $city),
+            'zip'          => array(0 => $zip),
+            'country'      => array(0 => $country)
+        );
+        
+        //set profile picture
+        $picture = $objDatabase->getOne("SELECT profile_picture FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE id = '".$this->contact->id."'");
+        if ($picture && !empty($picture)) {
+            if (!file_exists(ASCMS_ACCESS_PROFILE_IMG_PATH.'/'.$picture)) {
+                $file = CRM_ACCESS_PROFILE_IMG_PATH.'/';
+                if (($picture = self::moveUploadedImageInToPlace($objUser, $file.$picture, $picture, true)) == true) {
+                    // create thumbnail
+                    if (self::createThumbnailOfImage($picture, true) !== false) {
+                        $setProfileData['picture'] = array();
+                        array_push($setProfileData['picture'], $picture);
+                    }
+                }
+            }
+        }
         $objUser->setUsername($email);
         $objUser->setPassword($password);
         $objUser->setEmail($email);
         $objUser->setGroups((array) $settings['default_user_group']);
-        $objUser->setFrontendLanguage($settings['customer_default_language_frontend']);
+        $objUser->setFrontendLanguage($result['contact_language']);
         $objUser->setBackendLanguage($settings['customer_default_language_backend']);
         $objUser->setActiveStatus(true);
-        $objUser->setProfile(array(
-            'firstname'    => array(0 => $this->contact->customerName),
-            'lastname'     => array(0 => $this->contact->family_name),
-        ));
+        $objUser->setProfile($setProfileData);
 
         if (empty($objUser->error_msg) && $objUser->store()) {
             if (empty($this->contact->account_id) && $sendLoginDetails) {
@@ -2120,6 +2170,246 @@ class CrmLibrary
         }
     }
 
+    /**
+     * Adding Crm Contact
+     *
+     * @param Array $arrFormData form data's
+     *
+     * @return null
+     */
+    function setContactPersonProfile($arrFormData = array(), $userAccountId = 0, $frontendLanguage)
+    {
+        global $objDatabase, $_LANGID;
+
+        $this->contact = $this->load->model('crmContact', __CLASS__);
+
+        if (!empty ($userAccountId)) {
+            $userExists = $objDatabase->Execute("SELECT id FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE user_account = {$userAccountId}");
+            if ($userExists && $userExists->RecordCount()) {
+                $id = (int) $userExists->fields['id'];
+                $this->contact->load($id);
+                $this->contact->customerName   = !empty ($arrFormData['firstname'][0]) ? contrexx_input2raw($arrFormData['firstname'][0]) : '';
+                $this->contact->family_name    = !empty ($arrFormData['lastname'][0]) ? contrexx_input2raw($arrFormData['lastname'][0]) : '';
+                $this->contact->contact_language = !empty ($frontendLanguage) ? (int) $frontendLanguage : $_LANGID;
+                $this->contact->contact_gender = !empty ($arrFormData['gender'][0]) ? ($arrFormData['gender'][0] == 'gender_female' ? 1 : ($arrFormData['gender'][0] == 'gender_male' ? 2 : '')) : '';
+
+                $this->contact->contactType    = 2;
+                $this->contact->datasource     = 2;
+                $this->contact->account_id     = $userAccountId;
+
+                //set profile picture
+                if (!empty ($arrFormData['picture'][0])) {
+                    $picture = $arrFormData['picture'][0];
+                    if (!file_exists(CRM_ACCESS_PROFILE_IMG_PATH.'/'.$picture)) {
+                        $file    = ASCMS_ACCESS_PROFILE_IMG_PATH.'/';
+                        $newFile = CRM_ACCESS_PROFILE_IMG_PATH.'/';
+                        if (copy($file.$picture, $newFile.$picture)) {
+                            if ($this->createThumbnailOfPicture($picture)) {
+                                $this->contact->profile_picture = $picture;
+                            }
+                        }
+                    }
+                } else {
+                    $this->contact->profile_picture = 'profile_person_big.png';
+                }
+
+                if ($this->contact->save()) {
+
+                    // insert website
+                    if (!empty ($arrFormData['website'][0])) {
+                        $webExists = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_websites` WHERE is_primary = '1' AND contact_id = '{$this->contact->id}'");
+                        $fields = array(
+                            'url'           => $arrFormData['website'][0],
+                            'url_profile'   => '1',
+                            'is_primary'    => '1',
+                            'contact_id'    => $this->contact->id
+                        );
+                        if ($webExists) {
+                            $query  = SQL::update("module_{$this->moduleName}_customer_contact_websites", $fields, array('escape' => true))." WHERE is_primary = '1' AND `contact_id` = {$this->contact->id}";
+                        } else {
+                            $query  = SQL::insert("module_{$this->moduleName}_customer_contact_websites", $fields, array('escape' => true));
+                        }
+                        $db = $objDatabase->Execute($query);
+                    }
+
+                    //insert address
+                    if (!empty ($arrFormData['address'][0]) || !empty ($arrFormData['city'][0]) || !empty ($arrFormData['zip'][0]) || !empty ($arrFormData['country'][0])) {
+                        $addressExists = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_address` WHERE is_primary = 1 AND contact_id = '{$this->contact->id}'");
+                        if ($addressExists) {
+                            $query = "UPDATE `".DBPREFIX."module_{$this->moduleName}_customer_contact_address` SET
+                                    address      = '". contrexx_input2db($arrFormData['address'][0]) ."',
+                                    city         = '". contrexx_input2db($arrFormData['city'][0]) ."',
+                                    zip          = '". contrexx_input2db($arrFormData['zip'][0]) ."',
+                                    country      = '". $objDatabase->getOne("SELECT name FROM `".DBPREFIX."lib_country` WHERE id = '".$arrFormData['country'][0]."'") ."',
+                                    Address_Type = '2'
+                                 WHERE is_primary   = '1' AND contact_id   = '{$this->contact->id}'";
+                        } else {
+                            $query = "INSERT INTO `".DBPREFIX."module_{$this->moduleName}_customer_contact_address` SET
+                                    address      = '". contrexx_input2db($arrFormData['address'][0]) ."',
+                                    city         = '". contrexx_input2db($arrFormData['city'][0]) ."',
+                                    state        = '". contrexx_input2db($arrFormData['city'][0]) ."',
+                                    zip          = '". contrexx_input2db($arrFormData['zip'][0]) ."',
+                                    country      = '". $objDatabase->getOne("SELECT name FROM `".DBPREFIX."lib_country` WHERE id = '".$arrFormData['country'][0]."'") ."',
+                                    Address_Type = '2',
+                                    is_primary   = '1',
+                                    contact_id   = '{$this->contact->id}'";
+                        }
+                        $objDatabase->Execute($query);
+                    }
+
+                    // insert Phone
+                    $contactPhone = array();
+                    if (!empty($arrFormData['phone_office'][0])) {
+                        $phoneExists = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_phone` WHERE is_primary = '1' AND contact_id = '{$this->contact->id}'");
+                        $fields = array(
+                            'phone'         => $arrFormData['phone_office'][0],
+                            'phone_type'    => '1',
+                            'is_primary'    => '1',
+                            'contact_id'    => $this->contact->id
+                        );
+                        if ($phoneExists) {
+                            $query  = SQL::update("module_{$this->moduleName}_customer_contact_phone", $fields, array('escape' => true))." WHERE is_primary = '1' AND `contact_id` = {$this->contact->id}";
+                        } else {
+                            $query  = SQL::insert("module_{$this->moduleName}_customer_contact_phone", $fields, array('escape' => true));
+                        }
+                        $objDatabase->Execute($query);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * Create thumbnail of image
+     *
+     * @param String  $imageName
+     * @param Boolean $profilePic
+     *
+     * @return String
+     */
+    static function createThumbnailOfImage($imageName, $profilePic=false)
+    {
+        if (empty($objImage)) {
+            $objImage = new ImageManager();
+        }
+
+        return $objImage->_createThumbWhq(
+                ASCMS_ACCESS_PROFILE_IMG_PATH.'/',
+                ASCMS_ACCESS_PROFILE_IMG_WEB_PATH.'/',
+                $imageName,
+                80,
+                60,
+                90
+            );
+    }
+
+    /**
+     * Move uploaded image into respective folder
+     *
+     * @param Object  $objUser
+     * @param String  $tmpImageName
+     * @param String  $name
+     * @param Boolean $profilePic
+     *
+     * @return String
+     */
+    protected static function moveUploadedImageInToPlace($objUser, $tmpImageName, $name, $profilePic = false)
+    {
+        static $objImage, $arrSettings;
+
+        if (empty($objImage)) {
+            $objImage = new ImageManager();
+        }
+        if (empty($arrSettings)) {
+            $arrSettings = array();
+            $arrSettings['profile_thumbnail_pic_width']['value'] = 80;
+            $arrSettings['profile_thumbnail_pic_height']['value'] = 60;
+            $arrSettings['profile_thumbnail_scale_color']['value'] = '';
+            $arrSettings['profile_thumbnail_method']['value'] = '';
+            $arrSettings['max_profile_pic_width']['value'] = 160;
+            $arrSettings['max_profile_pic_height']['value'] = 160;
+        }
+
+        $imageRepo = $profilePic ? ASCMS_ACCESS_PROFILE_IMG_PATH : ASCMS_ACCESS_PHOTO_IMG_PATH;
+        $index = 0;
+        $imageName = $objUser->getId().'_'.$name;
+        while (file_exists($imageRepo.'/'.$imageName)) {
+            $imageName = $objUser->getId().'_'.++$index.'_'.$name;
+        }
+
+        if (!$objImage->loadImage($tmpImageName)) {
+            return false;
+        }
+
+        // resize image if its dimensions are greater than allowed
+        if ($objImage->orgImageWidth > $arrSettings['max_profile_pic_width']['value'] ||
+            $objImage->orgImageHeight > $arrSettings['max_profile_pic_height']['value']
+        ) {
+            $ratioWidth = $arrSettings['max_profile_pic_width']['value'] / $objImage->orgImageWidth;
+            $ratioHeight = $arrSettings['max_profile_pic_height']['value'] / $objImage->orgImageHeight;
+            if ($ratioHeight > $ratioWidth) {
+                $newWidth = $objImage->orgImageWidth * $ratioWidth;
+                $newHeight = $objImage->orgImageHeight * $ratioWidth;
+            } else {
+                $newWidth = $objImage->orgImageWidth * $ratioHeight;
+                $newHeight = $objImage->orgImageHeight * $ratioHeight;
+            }
+
+            if (!$objImage->resizeImage(
+                $newWidth,
+                $newHeight,
+                100
+            )) {
+                return false;
+            }
+
+            // copy image to the image repository
+            if (!$objImage->saveNewImage($imageRepo.'/'.$imageName)) {
+                return false;
+            }
+        } else {
+            if (!copy($tmpImageName, $imageRepo.'/'.$imageName)) {
+                return false;
+            }
+        }
+
+        return $imageName;
+    }
+    
+    /**
+     * Create thumbnail of image
+     *
+     * @param String $imageName
+     *
+     * @return String
+     */
+    protected function createThumbnailOfPicture($imageName)
+    {
+        if (empty($objImage)) {
+            $objImage = new ImageManager();
+        }
+
+        $objImage->_createThumbWhq(
+                CRM_ACCESS_PROFILE_IMG_PATH.'/',
+                CRM_ACCESS_PROFILE_IMG_WEB_PATH.'/',
+                $imageName,
+                40,
+                40,
+                70,
+                '_40X40.thumb'
+            );
+
+        return $objImage->_createThumbWhq(
+                CRM_ACCESS_PROFILE_IMG_PATH.'/',
+                CRM_ACCESS_PROFILE_IMG_WEB_PATH.'/',
+                $imageName,
+                121,
+                160,
+                70
+            );
+
+    }
+    
     /**
      * Inits the uploader when displaying a contact form.
      *
