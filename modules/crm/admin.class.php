@@ -820,6 +820,8 @@ class CrmManager extends CrmLibrary
                             'CRM_CONTACT_ADDED_NEW'     => strtotime($today) == strtotime($objResult->fields['added_date']) ? '<img src="../modules/crm/View/Media/new.png" alt="new" />' : '',
                             'CRM_ROW_CLASS'             => $row = ($row == "row2") ? "row1" : "row2",
                             'CRM_CONTACT_PROFILE_IMAGE' => !empty($objResult->fields['profile_picture']) ? contrexx_raw2xhtml($objResult->fields['profile_picture'])."_40X40.thumb" : 'profile_company_small.png',
+                            'TXT_CRM_IMAGE_EDIT'        => $_ARRAYLANG['TXT_CRM_IMAGE_EDIT'],
+                            'TXT_CRM_IMAGE_DELETE'      => $_ARRAYLANG['TXT_CRM_IMAGE_DELETE']
                     ));
                     $this->_objTpl->parse("showCustomers");
                     $this->_objTpl->hideBlock("showContacts");
@@ -851,6 +853,8 @@ class CrmManager extends CrmLibrary
                             'CRM_CONTACT_ADDED_NEW'     => strtotime($today) == strtotime($objResult->fields['added_date']) ? '<img src="../modules/crm/View/Media/new.png" alt="new" />' : '',
                             'CRM_ROW_CLASS'             => $row = ($row == "row2") ? "row1" : "row2",
                             'CRM_CONTACT_PROFILE_IMAGE' => !empty($objResult->fields['profile_picture']) ? contrexx_raw2xhtml($objResult->fields['profile_picture'])."_40X40.thumb" : 'profile_person_small.png',
+                            'TXT_CRM_IMAGE_EDIT'        => $_ARRAYLANG['TXT_CRM_IMAGE_EDIT'],
+                            'TXT_CRM_IMAGE_DELETE'      => $_ARRAYLANG['TXT_CRM_IMAGE_DELETE']
                     ));
                     $this->_objTpl->parse("showContacts");
                     $this->_objTpl->hideBlock("showCustomers");
@@ -3514,7 +3518,7 @@ END;
      */
     function customerTooltipDetail()
     {
-        global $_ARRAYLANG,$objDatabase,$objJs;
+        global $_ARRAYLANG, $objDatabase, $objJs;
 
         $objtpl  = $this->_objTpl;
         $this->_objTpl->loadTemplateFile('module_'.$this->moduleName.'_customer_tooltip_detail.html');
@@ -3553,6 +3557,7 @@ END;
                     'CUSTOMER_POSTCODE'    => contrexx_raw2xhtml($objResult->fields['zip']),
                     'CRM_CONTACT_COUNTRY'  => contrexx_raw2xhtml($objResult->fields['country']),
                     'CRM_CUSTOMER_ID'      => (int) $objResult->fields['id'],
+                    'TXT_CRM_CONTACT_TOOLTIP_HEAD' => $_ARRAYLANG['TXT_CRM_CONTACT_TOOLTIP_HEAD'],
                     'CSRF_PARAM'           => CSRF::param(),
             ));
         }
