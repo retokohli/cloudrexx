@@ -1189,7 +1189,9 @@ class AccessManager extends AccessLib
                         self::$arrStatusMsg['error'] = array_merge(self::$arrStatusMsg['error'], $upload_res);
                     }
                 }
-
+                require_once ASCMS_MODULE_PATH.'/crm/lib/crmLib.class.php';
+                $objCrmLib = new CrmLibrary();
+                $objCrmLib->setContactPersonProfile($arrProfile, $objUser->getId(), $_POST['access_user_frontend_language']);
                 $objUser->setProfile($arrProfile);
             }
 
