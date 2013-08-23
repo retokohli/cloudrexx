@@ -673,8 +673,9 @@ CREATE TABLE `contrexx_module_calendar_event_field` (
   `description` mediumtext,
   `redirect` varchar(255) NOT NULL,
   KEY `lang_field` (`title`),
-  KEY `fk_contrexx_module_calendar_note_field_contrexx_module_calend1` (`event_id`)
-) ENGINE=InnoDB;
+  KEY `fk_contrexx_module_calendar_note_field_contrexx_module_calend1` (`event_id`),
+  FULLTEXT KEY `eventIndex` (`title`,`place`,`description`)
+) ENGINE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
