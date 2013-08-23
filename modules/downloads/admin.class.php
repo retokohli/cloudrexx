@@ -1617,7 +1617,10 @@ class downloads extends DownloadsLibrary
             }
             $option = '<option value="'.$arrCategories[$i]['id'].'"'.($disabled ? ' disabled="disabled"' : '').'>'.htmlentities($arrCategories[$i]['name'], ENT_QUOTES, CONTREXX_CHARSET).'</option>';
 
-            if (in_array($arrCategories[$i]['id'], $arrAssociatedCategories) || $arrCategories[$i]['id'] == $this->parentCategoryId) {
+            if (   in_array($arrCategories[$i]['id'], $arrAssociatedCategories)
+                   // automatically assign a new download to the currently viewed category
+                || (!$objDownload->getId() && $arrCategories[$i]['id'] == $this->parentCategoryId)
+            ) {
                 $arrAssociatedCategoryOptions[] = $option;
             } else {
                 $arrNotAssociatedCategoryOptions[] = $option;
