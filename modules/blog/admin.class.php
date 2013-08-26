@@ -1347,8 +1347,7 @@ class BlogAdmin extends BlogLibrary {
                         'TXT_IMGALT_DELETE'     =>  $_ARRAYLANG['TXT_BLOG_ENTRY_COMMENTS_DELETE']
                     ));
 
-                    $strComment = stripslashes($objCommentsResult->fields['comment']);
-                    $strComment = strip_tags($strComment);
+                    $strComment = \Cx\Core\Wysiwyg\Wysiwyg::prepareBBCodeForOutput($objCommentsResult->fields['comment']);
                     $strComment = (strlen($strComment) > 60) ? substr($strComment,0,60).' ...' : $strComment;
 
                     $this->_objTpl->setVariable(array(
@@ -1580,7 +1579,7 @@ class BlogAdmin extends BlogLibrary {
                 'COMMENT_USER_WWW'      =>  $strUserWWW.'&nbsp;'.$strUserWWWIcon,
                 'COMMENT_SUBJECT'       =>  htmlentities(stripslashes($objCommentResult->fields['subject']), ENT_QUOTES, CONTREXX_CHARSET),
                 //'COMMENT_CONTENT'     =>  htmlentities(stripslashes($objCommentResult->fields['comment']), ENT_QUOTES, CONTREXX_CHARSET),
-                'COMMENT_CONTENT'       =>  new \Cx\Core\Wysiwyg\Wysiwyg('frmEditComment_Content', stripslashes($objCommentResult->fields['comment']), 'bbcode')
+                'COMMENT_CONTENT'       =>  new \Cx\Core\Wysiwyg\Wysiwyg('frmEditComment_Content', $objCommentResult->fields['comment'], 'bbcode')
             ));
         } else {
             $this->_strErrMessage = $_ARRAYLANG['TXT_BLOG_ENTRY_COMMENTS_EDIT_ERROR'];
