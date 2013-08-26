@@ -24,15 +24,18 @@
         {LOGIN_INCLUDE}
         
         <script type="text/javascript">
-            $J.ajax({
-                url: '{PATH_OFFSET}/images/content/titelbilder/titelbild_{CSS_NAME}.jpg',
-                complete: function (jqXHR) {
-                    var contentType = jqXHR.getResponseHeader('Content-Type');
-                    if ($J.type(contentType) == 'string' && contentType.substring(0, 5) == 'image') {
-                        $J('#page').prepend('<img id="page-header" src="{PATH_OFFSET}/images/content/titelbilder/titelbild_{CSS_NAME}.jpg" alt="Titelbild" />');
+            var cssName = '{CSS_NAME}';
+            if (cssName.length > 0) {
+                $J.ajax({
+                    url: '{PATH_OFFSET}/images/content/titelbilder/titelbild_' + cssName + '.jpg',
+                    complete: function (jqXHR) {
+                        var contentType = jqXHR.getResponseHeader('Content-Type');
+                        if ($J.type(contentType) == 'string' && contentType.substring(0, 5) == 'image') {
+                            $J('#page').prepend('<img id="page-header" src="{PATH_OFFSET}/images/content/titelbilder/titelbild_' + cssName + '.jpg" alt="Titelbild" />');
+                        }
                     }
-                }
-            });
+                });
+            }
         </script>
         
         <script type="text/javascript" src="themes/standard_3_1/modernizr.js"></script>
