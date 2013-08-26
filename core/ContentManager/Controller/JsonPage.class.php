@@ -297,7 +297,7 @@ class JsonPage implements JsonAdapter {
                     break;
             }
             
-            if (($action != 'publish') && ($page->getEditingStatus() == '')) {
+            if (($action != 'publish') && !$page->isDraft()) {
                 $action = 'publish';
             }
         }
@@ -582,11 +582,18 @@ class JsonPage implements JsonAdapter {
                 //$this->messages[] = $_CORELANG['TXT_CORE_ALIAS_CREATION_DENIED'];
             }
         }
+
+        // get version
+        // if it is a draft, don't take the last one
+        $version = $page->getVersion()->getVersion();
+        if ($page->isDraft()) {
+            $version--;
+        }
         
         return array(
             'reload' => $reload,
             'id'     => $page->getId(),
-            'version'=> $page->getVersion()->getVersion(),
+            'version'=> $version,
             'node'   => $page->getNode()->getId(),
             'lang'   => \FWLanguage::getLanguageCodeById($page->getLang()),
         );
@@ -851,22 +858,27 @@ class JsonPage implements JsonAdapter {
         $numberOfEntries = !empty($params['get']['limit']) ? $params['get']['limit'] : $_CONFIG['corePagingLimit'];
         $tableRowId = 1;
         $i = 0;
+        $first = true;
 
         foreach ($logs as $log){
             $version = $log->getVersion();
             $this->logRepo->revert($page, $version);
 
             // is a log of a draft state
-            if ($page->getEditingStatus() != '') {
-                if ($i != 0 && $hideDrafts) {
-                    // if drafts are hidden, skip them.. but there is an exception: don't hide the current log
+            if ($page->isDraft()) {
+                if ($first) {
+                    // skip first draft log
+                    // set flag to false
+                    $first = false;
                     continue;
                 }
-                if ($i == 0 && !$hideDrafts) {
-                    // if drafts are not hidden, skip the first log because this log is duplicated
+                if ($hideDrafts && $i != 0) {
+                    // drafts should be hidden if it is not the first log
                     continue;
                 }
             }
+            // set flag to false
+            $first = false;
 
             // check whether the current index is between the range which should be displayed
             if ($i < $offset || $i >= ($numberOfEntries + $offset)) {

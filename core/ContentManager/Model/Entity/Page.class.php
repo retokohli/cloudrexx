@@ -1849,4 +1849,12 @@ class Page extends \Cx\Model\Base\EntityBase
         $logRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\LogEntry');
         return $logRepo->getLatestLog($this);
     }
+
+    /**
+     * Checks whether the page is a draft or not
+     * @return bool true if the page is currently a draft
+     */
+    public function isDraft() {
+        return $this->getEditingStatus() != '';
+    }
 }
