@@ -2426,8 +2426,12 @@ cx.cm.loadHistory = function(id, pos) {
     }
     
     var hideDrafts = "";
-    if (jQuery("#hideDrafts").length && !jQuery("#hideDrafts").is(":checked")) {
-        hideDrafts = "&hideDrafts=off";
+    if (jQuery("#hideDrafts").length) {
+        if (jQuery("#hideDrafts").is(":checked")) {
+            hideDrafts = "&hideDrafts=on";
+        } else {
+            hideDrafts = "&hideDrafts=off";
+        }
     }
     
     jQuery("#page_history").html("<div class=\"historyInit\"><img src=\"../lib/javascript/jquery/jstree/themes/default/throbber.gif\" alt=\"Loading...\" /></div>");
