@@ -1380,11 +1380,11 @@ class KnowledgeAdmin extends KnowledgeLibrary
            'MAX_RATING'                        => $this->settings->get('max_rating'),
            'BEST_RATED_SIDEBAR_LENGTH'         => $this->settings->get('best_rated_sidebar_length'),
            'BEST_RATED_SIDEBAR_AMOUNT'         => $this->settings->get('best_rated_sidebar_amount'),
-           'BEST_RATED_SIDEBAR_TEMPLATE'       => $this->settings->get('best_rated_sidebar_template'),
+           'BEST_RATED_SIDEBAR_TEMPLATE'       => contrexx_raw2xhtml($this->settings->get('best_rated_sidebar_template')),
            'REPLACE_PLACEHOLDERS_CHECKED'      => ($this->getGlobalSetting()) ? "checked=\"checked\"" : '',
            'MOST_READ_SIDEBAR_LENGTH'          => $this->settings->get('most_read_sidebar_length'),
            'MOST_READ_SIDEBAR_AMOUNT'          => $this->settings->get('most_read_sidebar_amount'),
-           'MOST_READ_SIDEBAR_TEMPLATE'        => $this->settings->get('most_read_sidebar_template'),
+           'MOST_READ_SIDEBAR_TEMPLATE'        => contrexx_raw2xhtml($this->settings->get('most_read_sidebar_template')),
            'MOST_READ_AMOUNT'                  => $this->settings->get('most_read_amount'),
            'BEST_RATED_AMOUNT'                 => $this->settings->get('best_rated_amount')
         ));
