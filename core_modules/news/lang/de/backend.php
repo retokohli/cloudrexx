@@ -19,6 +19,7 @@ $_ARRAYLANG['TXT_EDIT_NEWS_ID'] = 'News ID eingeben';
 $_ARRAYLANG['TXT_ARCHIVE'] = "Archiv";
 $_ARRAYLANG['TXT_DATE'] = "Datum";
 $_ARRAYLANG['TXT_TITLE'] = "Titel";
+$_ARRAYLANG['TXT_VIEW'] = "Ansicht";
 $_ARRAYLANG['TXT_USER'] = "Benutzer";
 $_ARRAYLANG['TXT_LAST_EDIT'] = "Letzte Bearbeitung";
 $_ARRAYLANG['TXT_ACTION'] = "Funktionen";
