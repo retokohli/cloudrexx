@@ -115,7 +115,7 @@ class Search
                 $queryCalendar = self::getQuery('calendar', $term);
                 if (!empty($queryCalendar)) {
                     $arrayCalendar = self::getResultArray(
-                        $queryCalendar, 'calendar', 'event', 'id=0', $term);
+                        $queryCalendar, 'calendar', 'detail', 'id=0', $term);
                 }
             }
             if (contrexx_isModuleActive('forum')) {
