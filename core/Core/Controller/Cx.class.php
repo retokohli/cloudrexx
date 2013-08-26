@@ -1127,8 +1127,8 @@ namespace Cx\Core\Core\Controller {
                                                             fjs.parentNode.insertBefore(js, fjs);
                                                         }(document, \'script\', \'facebook-jssdk\'));
                                                     </script>
-                                                    <div class="fb-like" data-href="http://'.urlencode($_CONFIG['domainUrl'].\Env::get('init')->getCurrentPageUri()).'" data-send="false" data-layout="button_count" data-show-faces="false" data-font="segoe ui"></div>',
-                'GOOGLE_PLUSONE'                 => '<div class="g-plusone" data-href="http://'.urlencode($_CONFIG['domainUrl'].\Env::get('init')->getCurrentPageUri()).'"></div>
+                                                    <div class="fb-like" data-href="http://'.$_CONFIG['domainUrl'].\Env::get('init')->getCurrentPageUri().'" data-send="false" data-layout="button_count" data-show-faces="false" data-font="segoe ui"></div>',
+                'GOOGLE_PLUSONE'                 => '<div class="g-plusone" data-href="http://'.$_CONFIG['domainUrl'].\Env::get('init')->getCurrentPageUri().'"></div>
                                                     <script type="text/javascript">
                                                         window.___gcfg = {lang: \'de\'};
 
