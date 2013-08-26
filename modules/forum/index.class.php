@@ -654,7 +654,7 @@ class Forum extends ForumLibrary {
             $pos = $this->_getEditPos($intPostId, $intThreadId);
             $arrPosts = $this->createPostArray($intThreadId, $pos);
             $arrPosts[$intPostId]['subject'] = !empty($_REQUEST['subject']) ? contrexx_strip_tags($_REQUEST['subject']) : $_ARRAYLANG['TXT_FORUM_NO_SUBJECT'];
-            $arrPosts[$intPostId]['content'] = $this->BBCodeToHTML(contrexx_stripslashes($_REQUEST['message']));
+            $arrPosts[$intPostId]['content'] = \Cx\Core\Wysiwyg\Wysiwyg::prepareBBCodeForDb($_REQUEST['message']);
         }
 
         $userId  = $objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0;
@@ -800,7 +800,7 @@ class Forum extends ForumLibrary {
                 'FORUM_POST_NUMBER'                 => '#'.$arrValues['post_number'],
                 'FORUM_POST_ICON'                   => $arrValues['post_icon'],
                 'FORUM_POST_SUBJECT'                => $arrValues['subject'],
-                'FORUM_POST_MESSAGE'                => addcslashes($arrValues['content'], '\\'),
+                'FORUM_POST_MESSAGE'                => $arrValues['content'],
                 'FORUM_POST_RATING'                 => $strRating,
                 'FORUM_POST_ATTACHMENT_LINK'        => $arrAttachment['webpath'],
                 'FORUM_POST_ATTACHMENT_FILENAME'    => $arrAttachment['name'],
@@ -929,7 +929,7 @@ class Forum extends ForumLibrary {
         }
 
         if(!empty($_REQUEST['preview_new'])){
-            $content = $this->BBCodeToHTML(stripslashes($content));
+            $content = \Cx\Core\Wysiwyg\Wysiwyg::prepareBBCodeForOutput($content);
             if(false !== ($match = $this->_hasBadWords($content))){
                 $this->_objTpl->setVariable('TXT_FORUM_ERROR', sprintf('<br />'.$_ARRAYLANG['TXT_FORUM_BANNED_WORD'], $match[1]));
                 return false;

@@ -552,7 +552,7 @@ class u2u extends u2uLibrary
            }
            
            $errArray = array();
-           $_REQUEST['private_message'] = stripslashes(html_entity_decode($_REQUEST['private_message'], ENT_QUOTES, CONTREXX_CHARSET));
+           $_REQUEST['private_message'] = \Cx\Core\Wysiwyg\Wysiwyg::prepareBBCodeForDb($_REQUEST['private_message']);
         $this->strMessages=$_REQUEST['private_message'];
         /**
         * For display the preview***
@@ -566,7 +566,7 @@ class u2u extends u2uLibrary
             $this->_objTpl->setVariable(array(
                         'TXT_U2U_PREVIEW_MESSAGE'                    => $_ARRAYLANG['TXT_U2U_PREVIEW_MESSAGE'],
                         'TXT_U2U_PREVIEW_HEADER'                     => $_REQUEST['title'],
-                        'TXT_U2U_PREVIEW_SUBJECT'                    => $_REQUEST['private_message'],
+                        'TXT_U2U_PREVIEW_SUBJECT'                    => \Cx\Core\Wysiwyg\Wysiwyg::prepareBBCodeForOutput($_REQUEST['private_message']),
                         'TXT_U2U_PREVIEW_WEBSITE'                    => '',//'http://'.$_CONFIG['domainUrl'],
                         'TXT_RECEPIENT'                              => $recpName,//$_REQUEST['recipients'],
                         'TXT_PRIVATE_MESSAGE_TITLE'                  => $_REQUEST['title'],
@@ -578,7 +578,7 @@ class u2u extends u2uLibrary
                $objFWUser = FWUser::getFWUserObject();
             $arrayRecepient=$this->arrayMerge();
             $arrayRecepients=array_unique($arrayRecepient);
-            $Private_Message=strip_tags($_REQUEST['private_message']);
+            $Private_Message=$_REQUEST['private_message'];
             $settingMaxChars               =  $this->_getMaxCharDetails();
                          $max_chars                     =  $settingMaxChars['max_posting_chars'];
                          $db_settings_max_postings      =  $this->_getMaxPostingDetails();
@@ -644,7 +644,7 @@ class u2u extends u2uLibrary
                         $errArray[0]['receipents_userid']  =  $ID;
                         $errArray[0]['sending_userid']     =  $objFWUser->objUser->getId();
                         $errArray[0]['title']              =  contrexx_addslashes(strip_tags(trim(htmlentities($_REQUEST['title'],ENT_QUOTES,CONTREXX_CHARSET))));
-                        $errArray[0]['private_message']    =  addslashes($_REQUEST['private_message']);
+                        $errArray[0]['private_message']    =  $_REQUEST['private_message'];
                         $this->insertEntryDataMessage($errArray);
                         $this->arrStatusMsg['ok'][]=$_ARRAYLANG['TXT_U2U_ENTRY_ADD_SUCCESS_MESSAGE'];
                         $successVar=1;
@@ -797,7 +797,7 @@ class u2u extends u2uLibrary
             $this->_objTpl->setVariable(array(
                                           'PRIVATE_MESSAGE_ID'                 =>  $messageID,
                                           'PRIVATE_MESSAGE_TITLE'              =>  $arrMessage["message_title"],
-                                          'PRIVATE_MESSAGE_TEXT'               =>  $arrMessage["message"],
+                                          'PRIVATE_MESSAGE_TEXT'               =>  \Cx\Core\Wysiwyg\Wysiwyg::prepareBBCodeForOutput($arrMessage["message"]),
                                           'U2U_USER_JOINED'                    =>  $arrMessage["registerd_date"],
                                           'MESSAGE_AUTHOR_NAME'                =>  $arrMessage["username"],
                                           'MESSAGE_SENT_DATE'                  =>  $arrMessage["date_time"],
@@ -816,7 +816,7 @@ class u2u extends u2uLibrary
         $this->_objTpl->setVariable(array(
                                           'PRIVATE_MESSAGE_ID'                 =>  $messageID,
                                           'PRIVATE_MESSAGE_TITLE'              =>  $arrMessage["message_title"],
-                                          'PRIVATE_MESSAGE_TEXT'               =>  $arrMessage["message"],
+                                          'PRIVATE_MESSAGE_TEXT'               =>  \Cx\Core\Wysiwyg\Wysiwyg::prepareBBCodeForOutput($arrMessage["message"]),
                                           'U2U_USER_JOINED'                    =>  $arrMessage["registerd_date"],
                                           'MESSAGE_AUTHOR_NAME'                =>  $arrMessage["username"],
                                           'MESSAGE_SENT_DATE'                  =>  $arrMessage["date_time"],

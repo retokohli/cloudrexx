@@ -311,7 +311,7 @@ class Blog extends BlogLibrary  {
                         'BLOG_DETAILS_COMMENT_ID'       	=>  $objCommentsResult->fields['comment_id'],
                         'BLOG_DETAILS_COMMENT_TITLE'    	=>  htmlentities(stripslashes($objCommentsResult->fields['subject']), ENT_QUOTES, CONTREXX_CHARSET),
                         'BLOG_DETAILS_COMMENT_POSTED'   	=>  $this->getPostedByString($strUserName, date(ASCMS_DATE_FORMAT,$objCommentsResult->fields['time_created'])),
-                        'BLOG_DETAILS_COMMENT_CONTENT'		=>	contrexx_raw2xhtml($objCommentsResult->fields['comment']),
+                        'BLOG_DETAILS_COMMENT_CONTENT'		=>	\Cx\Core\Wysiwyg\Wysiwyg::prepareBBCodeForOutput($objCommentsResult->fields['comment']),
                         'BLOG_DETAILS_COMMENT_AVATAR'		=>	$strUserAvatar
                     ));
 
@@ -468,16 +468,7 @@ class Blog extends BlogLibrary  {
         //Get general-input
         $intMessageId   = intval($_POST['frmAddComment_MessageId']);
         $strSubject     = contrexx_addslashes(strip_tags($_POST['frmAddComment_Subject']));
-        $strComment     = $_POST['frmAddComment_Comment'];
-
-        //Check for editor
-        if ($this->_arrSettings['blog_comments_editor'] == 'textarea') {
-            $strComment = strip_tags($strComment);
-            $strComment = contrexx_addslashes($strComment);
-        } else {
-            $strComment = html_entity_decode($strComment, ENT_QUOTES, CONTREXX_CHARSET);
-            $strComment = addslashes($strComment);
-        }
+        $strComment     = \Cx\Core\Wysiwyg\Wysiwyg::prepareBBCodeForDb($_POST['frmAddComment_Comment']);
 
         //Get specified-input
         if ($this->_intCurrentUserId == 0) {

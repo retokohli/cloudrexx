@@ -94,7 +94,8 @@ class Wysiwyg
      *
      * @return string
      */
-    public function getSourceCode() {
+    public function getSourceCode()
+    {
         \JS::activate('ckeditor');
         \JS::activate('jquery');
 
@@ -119,6 +120,36 @@ class Wysiwyg
         ');
 
         return '<textarea name="'.$this->name.'" style="width: 100%; height: ' . $this->types[$this->type]['height'] . 'px">'.$this->value.'</textarea>';
+    }
+
+    /**
+     * Get safe BBCode
+     *
+     * @param string $bbcode the unsafe BBCode
+     * @param bool $html return as html code
+     * @return string
+     */
+    public static function prepareBBCodeForDb($bbcode, $html = false)
+    {
+        $bbcode = strip_tags($bbcode);
+        if ($html) {
+            $bbcode = self::prepareBBCodeForOutput($bbcode);
+        }
+        return contrexx_input2db($bbcode);
+    }
+
+    /**
+     * Convert BBCode to HTML
+     *
+     * This code comes from the forum module, feel free to rewrite
+     *
+     * @param string $bbcode the BBCode which should be a html output
+     * @return string the xhtml output
+     */
+    public static function prepareBBCodeForOutput($bbcode)
+    {
+        $BBCodeHandler = new \Cx\Core\Wysiwyg\BBCodeHandler();
+        return $BBCodeHandler->parse($bbcode);
     }
 
     /**

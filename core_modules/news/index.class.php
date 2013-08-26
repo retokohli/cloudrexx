@@ -1747,7 +1747,8 @@ JSCODE;
                     . intval($langId) . ", "
                     . intval($newsId) . ", '"
                     . contrexx_raw2db($title) . "', '"
-                    . contrexx_raw2db($text) . "', '"
+                    // store text [bbcode] as html in database
+                    . \Cx\Core\Wysiwyg\Wysiwyg::prepareBBCodeForDb($text, true) . "', '"
                     . contrexx_raw2db($teaser_text) . "')";
             if (!$objDatabase->Execute($query)) {
                 $status = false;
