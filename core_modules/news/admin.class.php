@@ -381,8 +381,8 @@ class newsManager extends newsLibrary {
             'TXT_ID'                     => $_ARRAYLANG['TXT_ID'],
             'TXT_DATE'                   => $_ARRAYLANG['TXT_DATE'],
             'TXT_TITLE'                  => $_ARRAYLANG['TXT_TITLE'],
+            'TXT_VIEW'                   => $_ARRAYLANG['TXT_VIEW'],
             'TXT_USER'                   => $_ARRAYLANG['TXT_USER'],
-            'TXT_LAST_EDIT'              => $_ARRAYLANG['TXT_LAST_EDIT'],
             'TXT_ACTION'                 => $_ARRAYLANG['TXT_ACTION'],
 // TODO: Not in use yet. From r8465@branches/contrexx_2_1
 //            'TXT_REPUBLISHING'         => $_ARRAYLANG['TXT_REPUBLISHING'],
@@ -408,6 +408,7 @@ class newsManager extends newsLibrary {
             'TXT_EDIT'                      => $_ARRAYLANG['TXT_EDIT'],
             'TXT_COPY'                      => $_ARRAYLANG['TXT_COPY'],
             'TXT_DELETE'                    => $_ARRAYLANG['TXT_DELETE'],
+            'TXT_LAST_EDIT'                 => $_ARRAYLANG['TXT_LAST_EDIT'],
             'TXT_NEWS_COMMENTS'             => $_ARRAYLANG['TXT_NEWS_COMMENTS'],
             'TXT_NEWS_MESSAGE_PROTECTED'    => $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTED'],
             'TXT_NEWS_READ_ALL_ACCESS_DESC' => $_ARRAYLANG['TXT_NEWS_READ_ALL_ACCESS_DESC']
