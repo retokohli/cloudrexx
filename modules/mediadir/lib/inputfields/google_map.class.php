@@ -65,9 +65,9 @@ class mediaDirectoryInputfieldGoogle_map extends mediaDirectoryLibrary implement
                     $strValue  = htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET);
                     $arrValues = explode(',', $strValue);
 
-                    $strValueLon = $arrValues[0];
-                    $strValueLat = $arrValues[1];
-                    $strValueZoom = $arrValues[2];
+                    $strValueLon = empty($arrValues[0]) ? 0 : $arrValues[0];
+                    $strValueLat = empty($arrValues[1]) ? 0 : $arrValues[1];
+                    $strValueZoom = empty($arrValues[2]) ? 0 : $arrValues[2];
                     $strValueKml = $arrValues[3];
 
                     if($strValueKml != null) {
@@ -86,9 +86,9 @@ class mediaDirectoryInputfieldGoogle_map extends mediaDirectoryLibrary implement
                     }
                     $arrValues = explode(',', $strValue);
 
-                    $strValueLon = $arrValues[0];
-                    $strValueLat = $arrValues[1];
-                    $strValueZoom = $arrValues[2];
+                    $strValueLon = empty($arrValues[0]) ? 0 : $arrValues[0];
+                    $strValueLat = empty($arrValues[1]) ? 0 : $arrValues[1];
+                    $strValueZoom = empty($arrValues[2]) ? 0 : $arrValues[2];
                     $strKmlPreview = '';
                 }
 
