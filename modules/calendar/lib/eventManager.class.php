@@ -551,6 +551,13 @@ class CalendarEventManager extends CalendarLibrary
             
             $objCategory = new CalendarCategory($objEvent->catId);     
             
+            if (strlen($objEvent->description) > 100) {
+                $points = '...';
+            } else {
+                $points = '';
+            }
+            $parts= explode("\n", wordwrap($objEvent->description, 100, "\n"));
+
             $attachNamePos  = strrpos($objEvent->attach, '/');
             $attachNamelength = strlen($objEvent->attach);
             $attachName        = substr($objEvent->attach, $attachNamePos+1, $attachNamelength);
@@ -578,15 +585,20 @@ class CalendarEventManager extends CalendarLibrary
             $picThumb = file_exists(ASCMS_PATH.$objEvent->pic.".thumb") ? $objEvent->pic.".thumb" : $objEvent->pic;
             $objTpl->setVariable(array(
                 $this->moduleLangVar.'_EVENT_ID'                => $objEvent->id,
+                $this->moduleLangVar.'_EVENT_START'             => date(parent::getDateFormat()." H:i", $objEvent->startDate),
+                $this->moduleLangVar.'_EVENT_END'               => date(parent::getDateFormat()." H:i", $objEvent->endDate),
                 $this->moduleLangVar.'_EVENT_START_DATE'        => date(parent::getDateFormat(), $objEvent->startDate),
                 $this->moduleLangVar.'_EVENT_START_TIME'        => date("H:i", $objEvent->startDate),  
                 $this->moduleLangVar.'_EVENT_END_DATE'          => date(parent::getDateFormat(), $objEvent->endDate),
                 $this->moduleLangVar.'_EVENT_END_TIME'          => date("H:i", $objEvent->endDate),                                                       
                 $this->moduleLangVar.'_EVENT_TITLE'             => $objEvent->title,                                                      
                 $this->moduleLangVar.'_EVENT_ATTACHMENT'        => $objEvent->attach != '' ? '<a href="'.$hostUri.$objEvent->attach.'" target="_blank" >'.$attachName.'</a>' : '',                             
+                $this->moduleLangVar.'_EVENT_ATTACHMENT_SOURCE' => $objEvent->attach,
                 $this->moduleLangVar.'_EVENT_PICTURE'           => $objEvent->pic != '' ? '<img src="'.$hostUri.$objEvent->pic.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',                                                          
+                $this->moduleLangVar.'_EVENT_PICTURE_SOURCE'    => $objEvent->pic,
                 $this->moduleLangVar.'_EVENT_THUMBNAIL'         => $picThumb != '' ? '<img src="'.$hostUri.$picThumb.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',   
-                $this->moduleLangVar.'_EVENT_DESCRIPTION'       => $objEvent->description,                                                           
+                $this->moduleLangVar.'_EVENT_DESCRIPTION'       => $objEvent->description,    
+                $this->moduleLangVar.'_EVENT_SHORT_DESCRIPTION' => $parts[0].$points,
                 $this->moduleLangVar.'_EVENT_PRIORITY'          => $priority,                                                           
                 $this->moduleLangVar.'_EVENT_PRIORITY_IMG'      => $priorityImg,                                                           
                 $this->moduleLangVar.'_EVENT_CATEGORY'          => $objCategory->name,
@@ -704,8 +716,9 @@ class CalendarEventManager extends CalendarLibrary
                     $this->moduleLangVar.'_EVENT_HOST_ZIP'     => $objEvent->arrData['org_zip'][$_LANGID],
                     $this->moduleLangVar.'_EVENT_HOST_CITY'    => $objEvent->arrData['org_city'][$_LANGID],
                     $this->moduleLangVar.'_EVENT_HOST_LINK'    => $objEvent->arrData['org_link'][$_LANGID] != '' ? "<a href='".$objEvent->arrData['org_link'][$_LANGID]."' target='_blank' >".$objEvent->arrData['org_link'][$_LANGID]."</a>" : "",
-                    $this->moduleLangVar.'_EVENT_HOST_LINK_SOURCE' => $objEvent->arrData['org_link'][$_LANGID],
-                    $this->moduleLangVar.'_EVENT_HOST_EMAIL'   => $objEvent->arrData['org_email'][$_LANGID],
+                    $this->moduleLangVar.'_EVENT_HOST_LINK_SOURCE'  => $objEvent->arrData['org_link'][$_LANGID],
+                    $this->moduleLangVar.'_EVENT_HOST_EMAIL'        => $objEvent->arrData['org_email'][$_LANGID] != '' ? "<a href='mailto:".$objEvent->arrData['org_email'][$_LANGID]."' >".$objEvent->arrData['org_email'][$_LANGID]."</a>" : "",
+                    $this->moduleLangVar.'_EVENT_HOST_EMAIL_SOURCE' => $objEvent->arrData['org_email'][$_LANGID],
                 ));    
                 
                 $objTpl->parse('calendarEventHost');
@@ -784,6 +797,31 @@ class CalendarEventManager extends CalendarLibrary
                         break;
                 }                
                 
+                if (strlen($objEvent->description) > 100) {
+                    $points = '...';
+                } else {
+                    $points = '';
+                }
+                $parts= explode("\n", wordwrap($objEvent->description, 100, "\n"));
+                
+                $attachNamePos    = strrpos($objEvent->attach, '/');
+                $attachNamelength = strlen($objEvent->attach);
+                $attachName       = substr($objEvent->attach, $attachNamePos+1, $attachNamelength);
+
+                if($objEvent->external) {
+                    $objHost = new CalendarHost($objEvent->hostId);    
+
+                    if(substr($objHost->uri,-1) != '/') {   
+                         $hostUri = $objHost->uri.'/';  
+                    } else {         
+                         $hostUri = $objHost->uri; 
+                    }     
+
+                    if(substr($hostUri,0,7) != 'http://') {
+                        $hostUri = "http://".$hostUri;
+                    }                    
+                }
+                
                 $picThumb = file_exists(ASCMS_PATH."{$objEvent->pic}.thumb") ? "{$objEvent->pic}.thumb" : ($objEvent->pic != '' ? $objEvent->pic : '');
                 $objTpl->setVariable(array(
                     $this->moduleLangVar.'_EVENT_ROW'            => $i%2==0 ? 'row1' : 'row2',
@@ -792,11 +830,19 @@ class CalendarEventManager extends CalendarLibrary
                     $this->moduleLangVar.'_EVENT_ID'             => $objEvent->id,
                     $this->moduleLangVar.'_EVENT_TITLE'          => $objEvent->title,                                                         
                     $this->moduleLangVar.'_EVENT_PICTURE'        => $objEvent->pic != '' ? '<img src="'.$objEvent->pic.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',                                                          
+                    $this->moduleLangVar.'_EVENT_PICTURE_SOURCE' => $objEvent->pic,
                     $this->moduleLangVar.'_EVENT_THUMBNAIL'      => $objEvent->pic != '' ? '<img src="'.$picThumb.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',                                                               
                     $this->moduleLangVar.'_EVENT_PRIORITY'       => $priority,                                                           
                     $this->moduleLangVar.'_EVENT_PRIORITY_IMG'   => $priorityImg, 
                     $this->moduleLangVar.'_EVENT_PLACE'          => $objEvent->place,
                     $this->moduleLangVar.'_EVENT_DESCRIPTION'    => $objEvent->description,
+                    $this->moduleLangVar.'_EVENT_SHORT_DESCRIPTION' => $parts[0].$points,
+                    $this->moduleLangVar.'_EVENT_LINK'           => $objEvent->link ? "<a href='".$objEvent->link."' target='_blank' >".$objEvent->link."</a>" : "",
+                    $this->moduleLangVar.'_EVENT_LINK_SOURCE'    => $objEvent->link,
+                    $this->moduleLangVar.'_EVENT_ATTACHMENT'     => $objEvent->attach != '' ? '<a href="'.$hostUri.$objEvent->attach.'" target="_blank" >'.$attachName.'</a>' : '',
+                    $this->moduleLangVar.'_EVENT_ATTACHMENT_SOURCE' => $objEvent->attach,
+                    $this->moduleLangVar.'_EVENT_START'          => date(parent::getDateFormat()." H:i", $objEvent->startDate),
+                    $this->moduleLangVar.'_EVENT_END'            => date(parent::getDateFormat()." H:i", $objEvent->endDate),
                     $this->moduleLangVar.'_EVENT_DATE'           => date(parent::getDateFormat(), $objEvent->startDate),
                     $this->moduleLangVar.'_EVENT_START_DATE'     => date(parent::getDateFormat(), $objEvent->startDate),
                     $this->moduleLangVar.'_EVENT_START_TIME'     => date("H:i", $objEvent->startDate),
@@ -811,6 +857,33 @@ class CalendarEventManager extends CalendarLibrary
                     $this->moduleLangVar.'_EVENT_FREE_PLACES'    => $objEvent->freePlaces,
                 ));              
             
+                $arrInfo   = getimagesize(ASCMS_PATH.$objEvent->arrData['place_map'][$_LANGID]);
+                $picWidth  = $arrInfo[0]+20;
+                $picHeight = $arrInfo[1]+20;
+                
+                $map_thumb_name = file_exists(ASCMS_PATH.$objEvent->arrData['place_map'][$_LANGID].".thumb") ? $objEvent->arrData['place_map'][$_LANGID].".thumb" : $objEvent->arrData['place_map'][$_LANGID];
+                $objTpl->setVariable(array(                                                          
+                    $this->moduleLangVar.'_EVENT_LOCATION_PLACE'         => $objEvent->arrData['place'],
+                    $this->moduleLangVar.'_EVENT_LOCATION_ADDRESS'       => $objEvent->arrData['place_street'][$_LANGID],
+                    $this->moduleLangVar.'_EVENT_LOCATION_ZIP'           => $objEvent->arrData['place_zip'][$_LANGID],
+                    $this->moduleLangVar.'_EVENT_LOCATION_CITY'          => $objEvent->arrData['place_city'][$_LANGID],
+                    $this->moduleLangVar.'_EVENT_LOCATION_COUNTRY'       => $objEvent->arrData['place_country'][$_LANGID],                                                  
+                    $this->moduleLangVar.'_EVENT_LINK'                   => $objEvent->arrData['place_country'][$_LANGID] != '' ? "<a href='".$objEvent->arrData['place_country'][$_LANGID]."' target='_blank' >".$objEvent->arrData['place_country'][$_LANGID]."</a>" : "",
+                    $this->moduleLangVar.'_EVENT_LINK_SOURCE'            => $objEvent->arrData['place_country'][$_LANGID],
+                    $this->moduleLangVar.'_EVENT_LOCATION_MAP_LINK'      => $objEvent->arrData['place_map'][$_LANGID] != '' ? '<a href="'.$objEvent->arrData['place_map'][$_LANGID].'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false">'.$_ARRAYLANG['TXT_CALENDAR_MAP'].'</a>' : "",
+                    $this->moduleLangVar.'_EVENT_LOCATION_MAP_THUMBNAIL' => $objEvent->arrData['place_map'][$_LANGID] != '' ? '<a href="'.$objEvent->arrData['place_map'][$_LANGID].'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false"><img src="'.$map_thumb_name.'" border="0" alt="'.$objEvent->arrData['place_map'][$_LANGID].'" /></a>' : "",
+                    $this->moduleLangVar.'_EVENT_LOCATION_MAP_SOURCE'    => $objEvent->arrData['place_map'][$_LANGID],
+                    
+                    $this->moduleLangVar.'_EVENT_HOST'              => $objEvent->arrData['org_name'][$_LANGID],
+                    $this->moduleLangVar.'_EVENT_HOST_ADDRESS'      => $objEvent->arrData['org_street'][$_LANGID],
+                    $this->moduleLangVar.'_EVENT_HOST_ZIP'          => $objEvent->arrData['org_zip'][$_LANGID],
+                    $this->moduleLangVar.'_EVENT_HOST_CITY'         => $objEvent->arrData['org_city'][$_LANGID],
+                    $this->moduleLangVar.'_EVENT_HOST_LINK'         => $objEvent->arrData['org_link'][$_LANGID] != '' ? "<a href='".$objEvent->arrData['org_link'][$_LANGID]."' target='_blank' >".$objEvent->arrData['org_link'][$_LANGID]."</a>" : "",
+                    $this->moduleLangVar.'_EVENT_HOST_LINK_SOURCE'  => $objEvent->arrData['org_link'][$_LANGID],
+                    $this->moduleLangVar.'_EVENT_HOST_EMAIL'        => $objEvent->arrData['org_email'][$_LANGID] != '' ? "<a href='mailto:".$objEvent->arrData['org_email'][$_LANGID]."' >".$objEvent->arrData['org_email'][$_LANGID]."</a>" : "",
+                    $this->moduleLangVar.'_EVENT_HOST_EMAIL_SOURCE' => $objEvent->arrData['org_email'][$_LANGID],
+                ));
+                
                 if($objInit->mode == 'backend') {
                     $objRegistrationManager = new CalendarRegistrationManager($objEvent->id, true, false);  
                     $objRegistrationManager->getRegistrationList();
