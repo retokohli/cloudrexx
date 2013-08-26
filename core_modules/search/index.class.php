@@ -115,7 +115,7 @@ class Search
                 $queryCalendar = self::getQuery('calendar', $term);
                 if (!empty($queryCalendar)) {
                     $arrayCalendar = self::getResultArray(
-                        $queryCalendar, 'calendar', 'detail', 'id=0', $term);
+                        $queryCalendar, 'calendar', 'detail', 'id=', $term);
                 }
             }
             if (contrexx_isModuleActive('forum')) {
@@ -470,20 +470,10 @@ class Search
                         + $objResult->fields['score3'];
                     break;
                 case 'calendar':
-                    $day =
-                        '&dayID='.date(
-                            'd', intval($objResult->fields['startdate']));
-                    $month =
-                        '&monthID='.date(
-                            'm', intval($objResult->fields['startdate']));
-                    $year =
-                        '&yearID='.date(
-                            'Y', intval($objResult->fields['startdate']));
                     $temp_pagelink =
-                        $pagePath.'?'.
-// TODO: This is set to "id=0" in the function call, so is pointless anyway
-//                        $pagevar.
-                        $day.$month.$year;
+                         $pagePath
+                        .'?'.$pagevar.$objResult->fields['id']
+                        ."&date=".intval($objResult->fields['startdate']);
                     break;
                 case 'news':
                     if (empty($objResult->fields['redirect'])) {

@@ -1410,7 +1410,8 @@ class CalendarEvent extends CalendarLibrary
     {
         global $_LANGID;
         
-        $query = "SELECT event.`id` AS `id`,                         
+        $query = "SELECT event.`id` AS `id`,
+                         event.`startdate`,
                          field.`title` AS `title`,
                          field.`description` AS content,
                          field.`place` AS place,
