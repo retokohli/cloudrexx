@@ -506,11 +506,14 @@ END;
     function getServiceTypeJavascript()
     {
         global $_ARRAYLANG;
-        $TXT_CRM_ENTER_NAME                               =  $_ARRAYLANG['TXT_CRM_ENTER_NAME'];
-        $TXT_ENTER_SUPPORTCASES                       =  $_ARRAYLANG['TXT_ENTER_SUPPORTCASES'];
-        $TXT_ENTER_PRICE                              =  $_ARRAYLANG['TXT_ENTER_PRICE'];
-        $TXT_CRM_ARE_YOU_SURE_TO_DELETE_THE_ENTRY         = $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_TO_DELETE_THE_ENTRY'];
-        $MODULE_NAME                          = $this->moduleName;
+
+        $TXT_CRM_ENTER_NAME                        =  $_ARRAYLANG['TXT_CRM_ENTER_NAME'];
+        $TXT_ENTER_SUPPORTCASES                    =  $_ARRAYLANG['TXT_ENTER_SUPPORTCASES'];
+        $TXT_ENTER_PRICE                           =  $_ARRAYLANG['TXT_ENTER_PRICE'];
+        $TXT_CRM_ARE_YOU_SURE_TO_DELETE_THE_ENTRY  =  $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_TO_DELETE_THE_ENTRY'];
+        $TXT_CRM_SURE_TO_DELETE_SELECTED_ENTRIES   =  $_ARRAYLANG['TXT_CRM_SURE_TO_DELETE_SELECTED_ENTRIES'];
+        $TXT_CRM_NOTHING_SELECTED                  =  $_ARRAYLANG['TXT_CRM_NOTHING_SELECTED'];
+        $MODULE_NAME                               =  $this->moduleName;
         $javascript = <<<END
 
   <script type="text/javascript" src="../lib/javascript/jquery.js"></script>   
@@ -629,14 +632,14 @@ function selectMultiAction() {
              }
 
                if (!hasChecked) {
-                      alert("No item selected for this action");
+                      alert("$TXT_CRM_NOTHING_SELECTED");
                       document.frmShowCustomersEntries.frmShowEntries_MultiAction.value=0;
                       document.frmShowCustomersEntries.frmShowEntries_MultiAction.focus();
                       return false;
                }
                    switch (frmShowEntries_MultiAction.value) {
 			case 'delete':
-				if (confirm('Are you sure you want to detele this entry')) {
+				if (confirm('$TXT_CRM_SURE_TO_DELETE_SELECTED_ENTRIES')) {
 					action='?cmd=$MODULE_NAME&act=deleteServiceType';
 					submit();
 				}
@@ -662,10 +665,12 @@ END;
     function getHostingTypeJavascript()
     {
         global $_ARRAYLANG;
-        $TXT_CRM_ENTER_NAME                         =  $_ARRAYLANG['TXT_CRM_ENTER_NAME'];
-        $TXT_ENTER_PRICE                              =  $_ARRAYLANG['TXT_ENTER_PRICE'];
-        $TXT_CRM_ARE_YOU_SURE_TO_DELETE_THE_ENTRY         = $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_TO_DELETE_THE_ENTRY'];
-        $MODULE_NAME                          = $this->moduleName;
+        $TXT_CRM_ENTER_NAME                        =  $_ARRAYLANG['TXT_CRM_ENTER_NAME'];
+        $TXT_ENTER_PRICE                           =  $_ARRAYLANG['TXT_ENTER_PRICE'];
+        $TXT_CRM_ARE_YOU_SURE_TO_DELETE_THE_ENTRY  =  $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_TO_DELETE_THE_ENTRY'];
+        $TXT_CRM_SURE_TO_DELETE_SELECTED_ENTRIES   =  $_ARRAYLANG['TXT_CRM_SURE_TO_DELETE_SELECTED_ENTRIES'];
+        $TXT_CRM_NOTHING_SELECTED                  =  $_ARRAYLANG['TXT_CRM_NOTHING_SELECTED'];
+        $MODULE_NAME                               =  $this->moduleName;
         $javascript = <<<END
   
  <script type="text/javascript" src="../lib/javascript/jquery.js"></script>   
@@ -783,14 +788,14 @@ function selectMultiAction() {
              }
 
                if (!hasChecked) {
-                      alert("No item selected for this action");
+                      alert("$TXT_CRM_NOTHING_SELECTED");
                       document.frmShowCustomersEntries.frmShowEntries_MultiAction.value=0;
                       document.frmShowCustomersEntries.frmShowEntries_MultiAction.focus();
                       return false;
                }
 switch (frmShowEntries_MultiAction.value) {
 			case 'delete':
-				if (confirm('Are you sure you want to detele this entry')) {
+				if (confirm('$TXT_CRM_SURE_TO_DELETE_SELECTED_ENTRIES')) {
 					action='?cmd=$MODULE_NAME&act=deleteHostingType';
 					submit();
 				}

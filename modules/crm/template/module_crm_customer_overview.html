@@ -4,7 +4,7 @@
     //<![CDATA[[
 
     function deleteEntry(entryId){
-        if(confirm('Are you sure you want to detele this entry'))
+        if(confirm('{TXT_CRM_ARE_YOU_SURE_TO_DELETE_THE_ENTRY}'))
             window.location.replace("?cmd={MODULE_NAME}&{CSRF_PARAM}&act=deleteCustomers&id="+entryId+'{CRM_REDIRECT_LINK}');
     }
  
@@ -20,14 +20,14 @@
                 }
             }
             if (!hasChecked) {
-                alert("No item selected for this action");
+                alert("{TXT_CRM_NOTHING_SELECTED}");
                 document.frmShowCustomersEntries.frmShowEntries_MultiAction.value=0;
                 document.frmShowCustomersEntries.frmShowEntries_MultiAction.focus();
                 return false;
             }
             switch (frmShowEntries_MultiAction.value) {
                 case 'delete':
-                    if (confirm('Are you sure you want to detele this entry')) {
+                    if (confirm('{TXT_CRM_SURE_TO_DELETE_SELECTED_ENTRIES}')) {
                         action='?cmd={MODULE_NAME}&act=deleteCustomers{CRM_REDIRECT_LINK}';
                         submit();
                     }

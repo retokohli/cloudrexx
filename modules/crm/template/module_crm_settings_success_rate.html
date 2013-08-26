@@ -48,11 +48,11 @@
         $J("#multiAction").change(function(){
             
             if ($J(".entrySelection:checked").length <= 0 && $J(this).val() != 0) {
-                alert('No item selected for this action');
+                alert('{TXT_CRM_NOTHING_SELECTED}');
                 return
             }
             if ($J(this).val() == "delete") {
-                if(confirm('Are you Sure Want to delete the Entry')) 
+                if(confirm('{TXT_CRM_SURE_TO_DELETE_SELECTED_ENTRIES}'))
                     $J("#success_entries").submit();
                 else 
                     return;
@@ -64,7 +64,7 @@
         $J(".deleteEntry").click(function(){
             $elm  = $J(this);
             en_id = $J(this).attr('rel').split('_')[1]
-            if (confirm ("Are you sure want to delete the entry!")) {
+            if (confirm ("{TXT_CRM_ARE_YOU_SURE_TO_DELETE_THE_ENTRY}")) {
                 $J.ajax({
                     url     : './index.php?cmd={MODULE_NAME}&act=settings&tpl=successrate&actionType=deletesuccessrate&ajax=1&id='+en_id,
                     type    : 'POST',
