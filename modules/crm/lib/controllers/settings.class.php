@@ -983,6 +983,7 @@ class Settings extends CrmLibrary
         $this->_objTpl->addBlockfile('CRM_SETTINGS_FILE', 'settings_block', 'module_'.$this->moduleName.'_settings_general.html');
         $this->_pageTitle = $_ARRAYLANG['TXT_CRM_SETTINGS'];
         $objTpl = $this->_objTpl;
+        $objFWUser = FWUser::getFWUserObject();
         
         if (isset($_POST['save'])) {
                                     
@@ -1001,6 +1002,20 @@ class Settings extends CrmLibrary
                                           SET `setvalue` = "'.contrexx_input2db($settings_val).'"
                                     WHERE setname = "'.$settings_var.'"';
                 $objDatabase->Execute($updateAllowPm);
+            }
+            if (!empty ($settings['emp_default_user_group'])) {
+                $objDatabase->Execute("DELETE FROM ".DBPREFIX."access_group_static_ids WHERE access_id IN ('".$this->staffAccessId."', '".$this->customerAccessId."')");
+
+                //set staff permission
+                $defEmpAccessId = array($this->customerAccessId, $this->staffAccessId);
+                $objGroup = $objFWUser->objGroup->getGroup(isset($settings['emp_default_user_group']) ? intval($settings['emp_default_user_group']) : 0);
+                $objGroup->setStaticPermissionIds(isset($defEmpAccessId) && is_array($defEmpAccessId) ? $defEmpAccessId : array());
+                $objGroup->store();
+                //set customer permission
+                $defCustAccessId = array($this->customerAccessId);
+                $objGroup = $objFWUser->objGroup->getGroup(isset($settings['default_user_group']) ? intval($settings['default_user_group']) : 0);
+                $objGroup->setStaticPermissionIds(isset($defCustAccessId) && is_array($defCustAccessId) ? $defCustAccessId : array());
+                $objGroup->store();
             }
 
             $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CHANGES_UPDATED_SUCCESSFULLY'];

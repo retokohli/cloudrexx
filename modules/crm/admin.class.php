@@ -261,7 +261,7 @@ class CrmManager extends CrmLibrary
             break;
         case 'customers':
         default:
-            if (Permission::checkAccess($this->staffAccessId, 'static', true)) {
+            if (Permission::checkAccess($this->customerAccessId, 'static', true)) {
                 $this->showCustomers();
             } else {
                 $this->checkCustomerIdentity();
