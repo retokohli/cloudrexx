@@ -13,6 +13,13 @@
         <td width="15%">{TXT_NEWSLETTER_STATUS}</td>
         <td width="85%"><input type="checkbox" value="1" name="newsletter_list_status" id="newsletter_list_status" {NEWSLETTER_LIST_STATUS} /><label for="newsletter_list_status">{TXT_NEWSLETTER_VISIBLE}</label></td>
       </tr>
+      <tr class="row2">
+        <td width="15%">{TXT_NEWSLETTER_NOTIFICATION_SEND_BY_UNSUBSCRIBE}</td>
+        <td width="85%">
+            <input type="text" size="70" value="{NEWSLETTER_NOTIFICATION_MAIL}" name="newsletter_notification_mail" id="newsletter_notification_mail" />
+            <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_NEWSLETTER_SEPARATE_MULTIPLE_VALUES_BY_COMMA}</span>
+        </td>
+      </tr>
     </tbody>
   </table>
   <br />

@@ -655,15 +655,15 @@ class NewsletterLib
      * @return  boolean                 True on success, false otherwise
      * @static
      */
-    static function _addList($listName, $listStatus=false)
+    static function _addList($listName, $listStatus=false, $notificationMail)
     {
         global $objDatabase;
 
         if ($objDatabase->Execute("
             INSERT INTO ".DBPREFIX."module_newsletter_category (
-                `name`, `status`
+                `name`, `status`, `notification_email`
             ) VALUES (
-                '$listName', ".($listStatus ? 1 : 0)."
+                '$listName', ".($listStatus ? 1 : 0).", '".$notificationMail."'
             )")
         ) {
             self::$arrLists = null;
