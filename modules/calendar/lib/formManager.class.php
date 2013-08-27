@@ -287,6 +287,7 @@ class CalendarFormManager extends CalendarLibrary
                         $options = array();
                         $options = explode(',', $arrInputfield['default_value'][$_LANGID]);
                         $inputfield = null;
+						$hide = false;
                         
                         if(isset($_POST['registrationField'][$arrInputfield['id']])) {
                             $value = $_POST['registrationField'][$arrInputfield['id']];
