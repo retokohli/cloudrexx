@@ -577,7 +577,7 @@ $this->_objTpl->setVariable(array(
             $this->moduleLangVar.'_EVENT_COUNTRY'                   => $objEvent->arrData['place_country'][$_LANGID],
             $this->moduleLangVar.'_EVENT_PLACE_MAP'                 => $objEvent->arrData['place_map'][$_LANGID],
             $this->moduleLangVar.'_EVENT_MAP'                       => $objEvent->map == 1 ? 'checked="checked"' : '',
-            $this->moduleLangVar.'_EVENT_DESCRIPTION'               => new \Cx\Core\Wysiwyg\Wysiwyg("description[$_LANGID]", contrexx_raw2xhtml($objEvent->description), 'bbcode'),            
+            $this->moduleLangVar.'_EVENT_DESCRIPTION'               => new \Cx\Core\Wysiwyg\Wysiwyg("description[{$_LANGID}]", contrexx_raw2xhtml($objEvent->description), $eventId != 0 ? 'small' : 'bbcode'),
             $this->moduleLangVar.'_EVENT_ID'                        => $eventId,
             $this->moduleLangVar.'_EVENT_ALL_DAY'                   => $eventId != 0 && $objEvent->all_day ? 'checked="checked"' : '',
         ));
