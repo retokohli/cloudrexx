@@ -176,7 +176,7 @@ class CalendarFormManager extends CalendarLibrary
      * 
      * @return null
      */
-    function showForm($objTpl, $formId, $intView, $arrNumSeating=array()) {
+    function showForm($objTpl, $formId, $intView, $ticketSales=false) {
         global $objDatabase, $objInit, $_ARRAYLANG, $_LANGID;  
         
         if($formId != 0) {
@@ -339,9 +339,9 @@ class CalendarFormManager extends CalendarLibrary
                                 }
                                 break;
                             case 'seating':
-                                if (count($arrNumSeating)>0 && $arrNumSeating[0] != "") {
+                                if ($ticketSales) {
                                     $inputfield = '<select class="calendarSelect" name="registrationField['.$arrInputfield['id'].']">';
-                                    foreach ($arrNumSeating as $intNumSeating) {
+                                    foreach ($options as $intNumSeating) {
                                         $selected    = $intNumSeating == $value ? 'selected="selected"' : '';
                                         $inputfield .= '<option value="'.$intNumSeating.'" '.$selected.'>'.$intNumSeating.'</option>';
                                     }
