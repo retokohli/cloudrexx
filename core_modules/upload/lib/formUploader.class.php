@@ -53,12 +53,11 @@ class FormUploader extends Uploader
                 $originalFileName = $name;
                 // Clean the fileName for security reasons
                 $name = preg_replace('/[^\w\._]+/', '', $name);
-                $sessionKey = 'upload_originalFileNames_'.$this->uploadId;
                 $originalFileNames = array();
-                if(isset($_SESSION[$sessionKey]))
-                    $originalFileNames = $_SESSION[$sessionKey];
+                if(isset($_SESSION['upload']['handlers'][$this->uploadId]['originalFileNames']))
+                    $originalFileNames = $_SESSION['upload']['handlers'][$this->uploadId]['originalFileNames'];
                 $originalFileNames[$name] = $originalFileName;
-                $_SESSION[$sessionKey] = $originalFileNames;
+                $_SESSION['upload']['handlers'][$this->uploadId]['originalFileNames'] = $originalFileNames;
                 //end of TODO-region
                 
                 //move file somewhere we know both the web- and normal path...
@@ -96,6 +95,10 @@ class FormUploader extends Uploader
 
     public function getFrameXHtml() {
 		global $_CORELANG;
+
+        if (!empty($_SESSION['upload']['handlers'][$this->uploadId]['singleFileMode'])) {
+            \ContrexxJavascript::getInstance()->setVariable('restrictUpload2SingleFile', true, "upload/widget_$this->uploadId");
+        }
 	
         //JS / CSS dependencies
         JS::activate('cx');
