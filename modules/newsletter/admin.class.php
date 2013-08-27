@@ -472,17 +472,18 @@ class newsletter extends NewsletterLib
         if (isset($_POST['save'])) {
             $listName = isset($_POST['newsletter_list_name']) ? contrexx_addslashes($_POST['newsletter_list_name']) : '';
             $listStatus = (isset($_POST['newsletter_list_status']) && intval($_POST['newsletter_list_status']) == '1') ? intval($_POST['newsletter_list_status']) : 0;
+            $notificationMail = isset($_POST['newsletter_notification_mail']) ? contrexx_addslashes($_POST['newsletter_notification_mail']) : '';
             if (!empty($listName)) {
                 if ($this->_checkUniqueListName($listId, $listName) !== false) {
                     if ($listId == 0) {
-                        if ($this->_addList($listName, $listStatus) !== false) {
+                        if ($this->_addList($listName, $listStatus, $notificationMail) !== false) {
                             self::$strOkMessage .= sprintf($_ARRAYLANG['TXT_NEWSLETTER_LIST_SUCCESSFULLY_CREATED'], $listName);
                             return $this->_lists();
                         } else {
                             self::$strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWSLETTER_COULD_NOT_CREATE_LIST'], $listName);
                         }
                     } else {
-                        if ($this->_updateList($listId, $listName, $listStatus) !== false) {
+                        if ($this->_updateList($listId, $listName, $listStatus, $notificationMail) !== false) {
                             self::$strOkMessage .= sprintf($_ARRAYLANG['TXT_NEWSLETTER_LIST_SUCCESSFULLY_UPDATED'], $listName);
                             return $this->_lists();
                         } else {
@@ -498,9 +499,11 @@ class newsletter extends NewsletterLib
         } elseif ($listId > 0 && ($arrList = $this->_getList($listId)) !== false) {
             $listName = $arrList['name'];
             $listStatus = $arrList['status'];
+            $notificationMail = $arrList['notification_email'];
         } else {
             $listName = isset($_POST['newsletter_list_name']) ? contrexx_addslashes($_POST['newsletter_list_name']) : '';
             $listStatus = (isset($_POST['newsletter_list_status']) && intval($_POST['newsletter_list_status']) == '1') ? intval($_POST['newsletter_list_status']) : 0;
+            $notificationMail = isset($_POST['newsletter_notification_mail']) ? contrexx_addslashes($_POST['newsletter_notification_mail']) : '';
         }
 
         $this->_objTpl->loadTemplateFile('module_newsletter_list_edit.html');
@@ -510,10 +513,12 @@ class newsletter extends NewsletterLib
             'TXT_NEWSLETTER_NAME' => $_ARRAYLANG['TXT_NEWSLETTER_NAME'],
             'TXT_NEWSLETTER_STATUS' => $_ARRAYLANG['TXT_NEWSLETTER_STATUS'],
             'TXT_NEWSLETTER_VISIBLE' => $_ARRAYLANG['TXT_NEWSLETTER_VISIBLE'],
+            'TXT_NEWSLETTER_NOTIFICATION_SEND_BY_UNSUBSCRIBE' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_SEND_BY_UNSUBSCRIBE'],
+            'TXT_NEWSLETTER_SEPARATE_MULTIPLE_VALUES_BY_COMMA' => $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_TO'],
+            'TXT_ACTIVE' => $_ARRAYLANG['TXT_ACTIVE'],
             'TXT_NEWSLETTER_BACK' => $_ARRAYLANG['TXT_NEWSLETTER_BACK'],
             'TXT_NEWSLETTER_SAVE' => $_ARRAYLANG['TXT_NEWSLETTER_SAVE'],
             'TXT_NEWSLETTER_NOTIFY_ON_UNSUBSCRIBE' => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFY_ON_UNSUBSCRIBE'],
-
         ));
 
         $this->_objTpl->setVariable(array(
@@ -521,19 +526,21 @@ class newsletter extends NewsletterLib
             'NEWSLETTER_LIST_ID' => $listId,
             'NEWSLETTER_LIST_NAME' => htmlentities($listName, ENT_QUOTES, CONTREXX_CHARSET),
             'NEWSLETTER_LIST_STATUS' => $listStatus == 1 ? 'checked="checked"' : '',
+            'NEWSLETTER_NOTIFICATION_MAIL' => $notificationMail,
         ));
         return true;
     }
 
 
-    function _updateList($listId, $listName, $listStatus)
+    function _updateList($listId, $listName, $listStatus, $notificationMail)
     {
         global $objDatabase;
 
         if ($objDatabase->Execute("
             UPDATE ".DBPREFIX."module_newsletter_category
                SET `name`='$listName',
-                   `status`=$listStatus
+                   `status`=$listStatus,
+                   `notification_email`='$notificationMail'
              WHERE id=".intval($listId))) {
             return true;
         }

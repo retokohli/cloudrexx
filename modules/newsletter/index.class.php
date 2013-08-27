@@ -201,7 +201,7 @@ class newsletter extends NewsletterLib
 
         $this->_objTpl->setTemplate($this->pageContent);
         $message = '';
-
+        
         if (($objUser = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_newsletter_user WHERE code='".contrexx_addslashes($_REQUEST['code'])."' AND email='".urldecode(contrexx_addslashes($_REQUEST['mail']))."' AND status='1'", 1)) && $objUser->RecordCount() == 1) {
             $objSystem = $objDatabase->Execute("SELECT `setname`, `setvalue` FROM `".DBPREFIX."module_newsletter_settings`");
             if ($objSystem !== false) {
@@ -815,9 +815,9 @@ class newsletter extends NewsletterLib
                 $arrRecipient['email'] = $objRecipient->fields['email'];
             }
 
-            $objRecipientTitle = $objDatabase->SelectLimit("SELECT salutation FROM ".DBPREFIX."module_newsletter_user_title WHERE id=".$arrRecipient['salutation'], 1);
+            $objRecipientTitle = $objDatabase->SelectLimit("SELECT title FROM ".DBPREFIX."module_newsletter_user_title WHERE id=".$arrRecipient['salutation'], 1);
             if ($objRecipientTitle !== false) {
-                $arrRecipientTitle = $objRecipientTitle->fields['salutation'];
+                $arrRecipientTitle = $objRecipientTitle->fields['title'];
             }
 
             $objNotificationMail = $objDatabase->SelectLimit("SELECT title, content, recipients FROM ".DBPREFIX."module_newsletter_confirm_mail WHERE id='3'", 1);
@@ -826,6 +826,20 @@ class newsletter extends NewsletterLib
                 $txtAction = $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_SUBSCRIBE'];
             } else {
                 $txtAction = $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_UNSUBSCRIBE'];
+                $objNotificationAdressesFromLists = $objDatabase->Execute('SELECT notification_email FROM '.DBPREFIX.'module_newsletter_category AS c 
+                                                                        INNER JOIN '.DBPREFIX.'module_newsletter_rel_user_cat AS r ON r.category = c.id
+                                                                        WHERE r.user = '.contrexx_addslashes($recipientId));
+                $notifyMails = array();
+                if($objNotificationAdressesFromLists !== false) {
+                    while(!$objNotificationAdressesFromLists->EOF) {
+                        foreach(explode(',', $objNotificationAdressesFromLists->fields['notification_email']) as $mail) {
+                            if(!in_array($mail, $notifyMails)) {
+                                array_push($notifyMails, trim($mail));
+                            }
+                        }
+                        $objNotificationAdressesFromLists->MoveNext();
+                    }
+                }
             }
 
             $arrParsedTxts = str_replace(
@@ -863,7 +877,9 @@ class newsletter extends NewsletterLib
             foreach ($arrRecipients as $key => $recipientEmail) {
                 $objMail->AddAddress($recipientEmail);
             }
-
+            foreach($notifyMails as $mail) {
+                $objMail->AddAddress($mail);
+            }
             if ($objMail->Send()) {
                 return true;
             }
