@@ -749,7 +749,8 @@ class CalendarEvent extends CalendarLibrary
         }
         
         //event data
-        $id = intval($data['id']);                                                        
+        $id = intval($data['id']);        
+        $convertBBCode = ($objInit->mode == 'frontend' && empty($id));
         $type = intval($data['type']);        
         $startDate = parent::getDateTimestamp($startDate, intval($startHour), intval($startMin));
         $endDate = parent::getDateTimestamp($endDate, intval($endHour), intval($endMin));
@@ -1096,6 +1097,9 @@ class CalendarEvent extends CalendarLibrary
                 $country = contrexx_addslashes(contrexx_strip_tags($data['country'][$langId])); 
                 $placeLink = contrexx_input2db($data['placeLink'][$langId]);
                 $description = contrexx_addslashes($data['description'][$langId]);
+                if ($convertBBCode) {
+                    $description = \Cx\Core\Wysiwyg\Wysiwyg::prepareBBCodeForDb($data['description'][$langId], true);
+                }
                 $redirect = contrexx_addslashes($data['redirect'][$langId]);  
                 
                 $placeMap = contrexx_input2db($data['placeMap'][$langId]); 
