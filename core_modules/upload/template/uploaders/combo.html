@@ -1,4 +1,4 @@
-<div id="combo_uploader">
+<div id="combo_uploader_{UPLOAD_ID}">
   <div class="uploadView">
     <div class="uploader">
       <!-- uploader specific code will be inserted here -->
@@ -33,7 +33,7 @@
         switchUrl: '{SWITCH_URL}',
         responseUrl: '{RESPONSE_URL}',
         otherUploadersCaption: '{OTHER_UPLOADERS_CAPTION}',
-        div: $J('#combo_uploader')
+        div: $J('#combo_uploader_{UPLOAD_ID}')
       });
       {JS_INSTANCE_CODE}
     });

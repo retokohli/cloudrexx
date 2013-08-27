@@ -89,12 +89,11 @@ class UploadLib
     public function response($uploadId) {
         global $sessionObj;
 
-        $sessionResponseKey = 'upload_response_data_'.$uploadId;
-        if(isset($_SESSION[$sessionResponseKey])) {
-            $r = UploadResponse::fromSession($_SESSION[$sessionResponseKey]);
+        if(isset($_SESSION['upload']['handlers'][$uploadId]['response_data'])) {
+            $r = UploadResponse::fromSession($_SESSION['upload']['handlers'][$uploadId]['response_data']);
             if($r->isUploadFinished()) {
                 echo $r->getJSON();
-                unset($_SESSION[$sessionResponseKey]);
+                unset($_SESSION['upload']['handlers'][$uploadId]['response_data']);
                 die();
             }
         }

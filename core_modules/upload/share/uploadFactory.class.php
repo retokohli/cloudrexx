@@ -169,8 +169,8 @@ class UploadFactory
         //determine the callback on finishing
         $onFinished = null;
         
-        if(isset($_SESSION['upload_callback_'.$id])) {
-            $onFinished = $_SESSION['upload_callback_'.$id];
+        if(isset($_SESSION['upload']['handlers'][$id]['callback'])) {
+            $onFinished = $_SESSION['upload']['handlers'][$id]['callback'];
         }
         else { //no callback found
             throw new UploadFactoryException('No callback specified for id '.$id.'.');
@@ -206,11 +206,11 @@ class UploadFactory
 
         if($id == 0) { //no explicitly specified id; create a new one
             //generate a unique upload id & increment the upload id counter
-            if(!isset($_SESSION['upload_currentid']))
-                $_SESSION['upload_currentid'] = 1;
-            $curId = $_SESSION['upload_currentid'];
+            if(!isset($_SESSION['upload']['currentid']))
+                $_SESSION['upload']['currentid'] = 1;
+            $curId = $_SESSION['upload']['currentid'];
             $theUploader->setUploadId($curId);
-            $_SESSION['upload_currentid'] = $curId + 1;
+            $_SESSION['upload']['currentid'] = $curId + 1;
         }
         else {
             $theUploader->setUploadId($id);
@@ -239,8 +239,8 @@ class UploadFactory
     public function folderWidgetFromRequest()
     {
         $id = intval($_REQUEST['folderWidgetId']);
-        if($id>0 && isset($_SESSION['folder_widget_'.$id.'_path'])) {
-            $path = $_SESSION['folder_widget_'.$id.'_path'];
+        if($id>0 && isset($_SESSION['upload']['folder_widgets'][$id]['path'])) {
+            $path = $_SESSION['upload']['folder_widgets'][$id]['path'];
             return $this->createFolderWidget($path, $id);
         }
         else {
@@ -260,12 +260,12 @@ class UploadFactory
         
         if($id == 0) { //new instance, handle initializing
             $id = 1;
-            if(!isset($_SESSION['folder_widget_current_id']))
-                $_SESSION['folder_widget_current_id'] = 1;
+            if(!isset($_SESSION['upload']['folder_widget_current_id']))
+                $_SESSION['upload']['folder_widget_current_id'] = 1;
             else
-                $id = ++$_SESSION['folder_widget_current_id'];
+                $id = ++$_SESSION['upload']['folder_widget_current_id'];
           
-            $_SESSION['folder_widget_'.$id.'_path'] = $folder;
+            $_SESSION['upload']['folder_widgets'][$id]['path'] = $folder;
             $theWidget->setId($id);
         }
 
@@ -279,10 +279,10 @@ class UploadFactory
      */
     protected function setRedirectUrl($uploader, $uploadId) {
         //some uploads may have a redirect url set
-        $key = 'upload_redirect_url_'.$uploadId;
+        $key = 'redirect_url';
         $redirectUrl = null;
-        if(isset($_SESSION[$key]))
-            $redirectUrl = $_SESSION[$key];
+        if(isset($_SESSION['upload']['handlers'][$uploadId][$key]))
+            $redirectUrl = $_SESSION['upload']['handlers'][$uploadId][$key];
         if($redirectUrl) {
             $uploader->setRedirectUrl($redirectUrl);
         }

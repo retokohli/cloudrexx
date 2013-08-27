@@ -71,6 +71,7 @@ abstract class Uploader
     {
         // limit upload to 1 file at a time
         \ContrexxJavascript::getInstance()->setVariable('restrictUpload2SingleFile', true, "upload/widget_$this->uploadId");
+        $_SESSION['upload']['handlers'][$this->uploadId]['singleFileMode'] = true;
     }
 
     /**
@@ -113,7 +114,7 @@ abstract class Uploader
     {
         $this->callbackData = $callbackData;
         if($updateSession) //write callback to session
-            $_SESSION['upload_callback_'.$this->uploadId] = $this->callbackData = $callbackData;
+            $_SESSION['upload']['handlers'][$this->uploadId]['callback'] = $this->callbackData = $callbackData;
     }
 
     /**
@@ -127,7 +128,7 @@ abstract class Uploader
      */
     public function setRedirectUrl($url, $updateSession = true) {
         if($updateSession)
-            $_SESSION['upload_redirect_url_'.$this->uploadId] = $url;
+            $_SESSION['upload']['handlers'][$this->uploadId]['redirect_url'] = $url;
 
         global $_CONFIG;        
         $this->redirectUrl = /*"http://".$_CONFIG['domainUrl'].*/$url;
@@ -152,8 +153,8 @@ abstract class Uploader
     public function setUploadId($id)
     {
         $this->uploadId = $id;
-        if(isset($_SESSION['upload_callback_'.$this->uploadId]))
-            $this->callbackData = $_SESSION['upload_callback_'.$this->uploadId];
+        if(isset($_SESSION['upload']['handlers'][$this->uploadId]['callback']))
+            $this->callbackData = $_SESSION['upload']['handlers'][$this->uploadId]['callback'];
     }
 
     /**
@@ -217,7 +218,7 @@ abstract class Uploader
     public function setData($data) {
         $this->data = $data;
         //store data to session
-        $_SESSION['upload_data_'.$this->uploadId] = $data;
+        $_SESSION['upload']['handlers'][$this->uploadId]['data'] = $data;
     }
 
     /**
@@ -227,9 +228,9 @@ abstract class Uploader
         if($this->data != null) { //$data is set, this means it's up to date
             return $this->data;
         }
-        else if(isset($_SESSION['upload_data_'.$this->uploadId])) //try to recover data from session
+        else if(isset($_SESSION['upload']['handlers'][$this->uploadId]['data'])) //try to recover data from session
         {
-            $this->data = $_SESSION['upload_data_'.$this->uploadId];
+            $this->data = $_SESSION['upload']['handlers'][$this->uploadId]['data'];
             return $this->data; //cache for future gets
         }
         else { //nothing set yet, return null
@@ -238,7 +239,7 @@ abstract class Uploader
     }
 
     /**
-     * Checks $fileCount against $_SESSION[upload_uploadedCount_id].
+     * Checks $fileCount against $_SESSION[upload][handlers][x][uploadedCount].
      * Takes appropriate action (calls callback if they equal).
      * @param integer $fileCount files in current uploado
      */
@@ -247,18 +248,17 @@ abstract class Uploader
             $this->notifyCallback();
         }
         else {
-            $key = 'upload_uploadedCount_'.$this->uploadId;
-            if(!isset($_SESSION[$key])) { //multiple files, first file
-                $_SESSION[$key] = 1;
+            if(!isset($_SESSION['upload']['handlers'][$this->uploadId]['uploadedCount'])) { //multiple files, first file
+                $_SESSION['upload']['handlers'][$this->uploadId]['uploadedCount'] = 1;
             }
             else {
-                $count = $_SESSION[$key] + 1;
+                $count = $_SESSION['upload']['handlers'][$this->uploadId]['uploadedCount'] + 1;
                 if($count == $fileCount) { //all files uploaded
-                    unset($_SESSION[$key]);
+                    unset($_SESSION['upload']['handlers'][$this->uploadId]['uploadedCount']);
                     $this->notifyCallback();
                 }
                 else {
-                    $_SESSION[$key] = $count;
+                    $_SESSION['upload']['handlers'][$this->uploadId]['uploadedCount'] = $count;
                 }
             }
         }
@@ -290,9 +290,8 @@ abstract class Uploader
         }
 
         $originalFileNames = array();
-        $sessionKey = 'upload_originalFileNames_'.$this->uploadId;
-        if (isset($_SESSION[$sessionKey])) {
-            $originalFileNames = $_SESSION[$sessionKey];
+        if (isset($_SESSION['upload']['handlers'][$this->uploadId]['originalFileNames'])) {
+            $originalFileNames = $_SESSION['upload']['handlers'][$this->uploadId]['originalFileNames'];
         }
         //various file infos are passed via this array
         $fileInfos = array(
@@ -301,21 +300,19 @@ abstract class Uploader
         
         $response = null;
         //the response data.
-        $responseKey = 'upload_response_data_'.$this->uploadId;
-        if(isset($_SESSION[$responseKey]))
-            $response = UploadResponse::fromSession($_SESSION[$responseKey]);
+        if(isset($_SESSION['upload']['handlers'][$this->uploadId]['response_data']))
+            $response = UploadResponse::fromSession($_SESSION['upload']['handlers'][$this->uploadId]['response_data']);
         else
             $response = new UploadResponse();
        
         $ret = call_user_func(array($this->callbackData[1],$this->callbackData[2]),$tempPath,$tempWebPath,$this->getData(), $this->uploadId, $fileInfos, $response);
       
         //clean up session: we do no longer need the array with the original file names
-        unset($_SESSION[$sessionKey]);
+        unset($_SESSION['upload']['handlers'][$this->uploadId]['originalFileNames']);
         //same goes for the data
-        $dataKey = 'upload_data_'.$this->uploadId;
-        //if(isset($_SESSION[$dataKey]))
+        //if(isset($_SESSION['upload']['handlers'][$this->uploadId]['data']))
 // TODO: unset this when closing the uploader dialog, but not before
-//            unset($_SESSION[$dataKey]);
+//            unset($_SESSION['upload']['handlers'][$this->uploadId]['data']);
         
         if (\Cx\Lib\FileSystem\FileSystem::exists($tempWebPath)) {
             //the callback could have returned a path where he wants the files moved to
@@ -358,8 +355,7 @@ abstract class Uploader
         }
 
         $response->uploadFinished();
-        $sessionResponseKey = 'upload_response_data_'.$this->uploadId;
-        $_SESSION[$sessionResponseKey] = $response->toSessionValue();
+        $_SESSION['upload']['handlers'][$this->uploadId]['response_data'] = $response->toSessionValue();
     }
 
     /**
@@ -368,7 +364,7 @@ abstract class Uploader
     protected function cleanupCallbackData() {
         global $sessionObj;
 
-        unset($_SESSION['upload_callback_'.$this->uploadId]);
+        unset($_SESSION['upload']['handlers'][$this->uploadId]['callback']);
         $sessionObj->cleanTempPaths();
     }
 
@@ -451,18 +447,17 @@ abstract class Uploader
 
         //try to retrieve session file name for chunked uploads
         if ($chunk > 0) {
-            if(isset($_SESSION['upload_fileName_'.$this->uploadId]))
-                $fileName = $_SESSION['upload_fileName_'.$this->uploadId];
+            if(isset($_SESSION['upload']['handlers'][$this->uploadId]['fileName']))
+                $fileName = $_SESSION['upload']['handlers'][$this->uploadId]['fileName'];
             else
                 throw new UploaderException('Session lost.');
         }
         else { //first chunk, store original file name in session
-            $sessionKey = 'upload_originalFileNames_'.$this->uploadId;
             $originalFileNames = array();
-            if(isset($_SESSION[$sessionKey]))
-                $originalFileNames = $_SESSION[$sessionKey];
+            if(isset($_SESSION['upload']['handlers'][$this->uploadId]['originalFileNames']))
+                $originalFileNames = $_SESSION['upload']['handlers'][$this->uploadId]['originalFileNames'];
             $originalFileNames[$fileName] = $originalFileName;
-            $_SESSION[$sessionKey] = $originalFileNames;
+            $_SESSION['upload']['handlers'][$this->uploadId]['originalFileNames'] = $originalFileNames;
         }
 
         // Make sure the fileName is unique (for chunked uploads only on first chunk, since we're using the same name)
@@ -478,7 +473,7 @@ abstract class Uploader
             $fileName = $fileName_a . '_' . $count . $fileName_b;
         }
         //$fileName contains now the name we'll use for the whole upload process, so store it.
-        $_SESSION['upload_fileName_'.$this->uploadId] = $fileName;
+        $_SESSION['upload']['handlers'][$this->uploadId]['fileName'] = $fileName;
 
         // Remove old temp files
         if (is_dir($targetDir) && ($dir = opendir($targetDir))) {
@@ -552,13 +547,12 @@ abstract class Uploader
 
         $response = null;
         //the response data.
-        $key = 'upload_response_data_'.$this->uploadId;
-        if(isset($_SESSION[$key]))
-            $response = UploadResponse::fromSession($_SESSION[$key]);
+        if(isset($_SESSION['upload']['handlers'][$this->uploadId]['response_data']))
+            $response = UploadResponse::fromSession($_SESSION['upload']['handlers'][$this->uploadId]['response_data']);
         else
             $response = new UploadResponse();
 
         $response->addMessage(UploadResponse::STATUS_ERROR, $_ARRAYLANG['TXT_CORE_EXTENSION_NOT_ALLOWED'], $fileName);
-        $_SESSION[$key] = $response->toSessionValue();
+        $_SESSION['upload']['handlers'][$this->uploadId]['response_data'] = $response->toSessionValue();
     }
 }
