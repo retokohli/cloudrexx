@@ -687,8 +687,7 @@ $this->_objTpl->setVariable(array(
 
                 $objFormManager = new CalendarFormManager();
                 $objFormManager->getFormList();
-                $arrNumSeating = $objEvent->ticketSales ? $objEvent->arrNumSeating : 0;
-                $objFormManager->showForm($this->_objTpl,intval($objEvent->registrationForm), 2, $arrNumSeating);
+                $objFormManager->showForm($this->_objTpl,intval($objEvent->registrationForm), 2, $objEvent->ticketSales);
                 
 
                 /* if ($this->arrSettings['paymentStatus'] == '1' && $objEvent->ticketSales && ($this->arrSettings['paymentBillStatus'] == '1' || $this->arrSettings['paymentYellowpayStatus'] == '1')) {
