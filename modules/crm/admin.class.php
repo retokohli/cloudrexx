@@ -3154,13 +3154,13 @@ END;
         $id = $_GET['id'];
 
         if (!empty($id)) {
-            $deleteQuery = 'DELETE FROM `'.DBPREFIX.'module_'.$this->moduleName.'_currency` WHERE id = '.$id;
+            $deleteQuery = 'DELETE FROM `'.DBPREFIX.'module_'.$this->moduleName.'_currency` WHERE default_currency != 1 AND id = '.$id;
             $objDatabase->Execute($deleteQuery);
             $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CURRENCY_DELETED_SUCCESSFULLY'];
         } else {
             $deleteIds = $_POST['selectedEntriesId'];
             foreach ($deleteIds as $id) {
-                $deleteQuery = 'DELETE FROM `'.DBPREFIX.'module_'.$this->moduleName.'_currency` WHERE id = '.$id;
+                $deleteQuery = 'DELETE FROM `'.DBPREFIX.'module_'.$this->moduleName.'_currency` WHERE default_currency != 1 AND id = '.$id;
                 $objDatabase->Execute($deleteQuery);
                 $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CURRENCY_DELETED_SUCCESSFULLY'];
             }
