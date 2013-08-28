@@ -1695,7 +1695,7 @@ $_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP']  = "Kundengruppen";
 $_ARRAYLANG['TXT_CRM_TASKS']                   = "Aufgaben";
 $_ARRAYLANG['TXT_CRM_OPPORTUNITY']              = "Verkaufschancen";
 $_ARRAYLANG['TXT_CRM_INTERFACE']               = "Interface";
-$_ARRAYLANG['TXT_CRM_SETTINGS']            = "Einstellungen";
+$_ARRAYLANG['TXT_CRM_SETTINGS']            = "Stammdaten";
 
 $_ARRAYLANG['TXT_TOOLS'] = 'Werkzeuge';
 $_ARRAYLANG['TXT_MODULE_WORKBENCH'] = 'Entwicklertools';
