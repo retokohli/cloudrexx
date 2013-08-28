@@ -407,7 +407,7 @@ $_ARRAYLANG['TXT_CRM_DEACTIVATED'] = "deactivated";
 $_ARRAYLANG['TXT_CRM_ACTIVATED']   = "activated";
 
 /* settings membership */
-$_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP'] = "Customer groups";
+$_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP'] = "Customer Groups";
 $_ARRAYLANG['TXT_CRM_MEMBERSHIP']          = "Customer group";
 $_ARRAYLANG['TXT_CRM_ADD_MEMBERSHIP']          = "Add customer group";
 $_ARRAYLANG['TXT_CRM_EDIT_MEMBERSHIP']         = "Edit customer group";

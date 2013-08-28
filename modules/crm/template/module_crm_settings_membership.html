@@ -9,10 +9,9 @@
         background-color: #D0D0A8;
     }
     .okBox-new {
-        border: #029202 1px solid;
-        color: #006900;
-        background: #B8FD9F;
-        padding: 4px;
+        color: #39950C;
+        background: #DFF0D8;
+        padding: 8px;
         margin-bottom: 5px;
         clear: left;
     }
@@ -61,7 +60,7 @@
             
             if (confirm ("{TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES}")) {
                 $J.ajax({
-                    url     : './index.php?cmd={MODULE_NAME}&act=membership&actionType=deleteMembership&ajax=1&id='+en_id,
+                    url     : './index.php?cmd={MODULE_NAME}&act=settings&tpl=membership&actionType=deleteMembership&ajax=1&id='+en_id,
                     type    : 'POST',
                     success : function(msg){
                         $elm.closest("tr").remove();
@@ -98,7 +97,7 @@
 </script>
     <div id="subnavbar_level2">
         <ul>
-            <li><a href="index.php?cmd={MODULE_NAME}&act=membership&tpl=modify" title="{TXT_CRM_ADD_MEMBERSHIP}">{TXT_CRM_ADD_MEMBERSHIP}</a></li>
+            <li><a href="index.php?cmd={MODULE_NAME}&act=settings&tpl=membership&subTpl=modify" title="{TXT_CRM_ADD_MEMBERSHIP}">{TXT_CRM_ADD_MEMBERSHIP}</a></li>
         </ul>
     </div>
     <br>
@@ -128,15 +127,15 @@
             <tr class="{ROW_CLASS}">
                 <td><input type="checkbox" name="memberEntry[]" class="entrySelection" value="{ENTRY_ID}" /></td>
                 <td>&nbsp;
-                    <a href="index.php?cmd={MODULE_NAME}&ajax=1&act=membership&actionType=changestatus&id={ENTRY_ID}" class="changestatus" ><img src="{CRM_SUCCESS_STATUS}" /></a>
+                    <a href="index.php?cmd={MODULE_NAME}&ajax=1&act=settings&tpl=membership&actionType=changestatus&id={ENTRY_ID}" class="changestatus" ><img src="{CRM_SUCCESS_STATUS}" /></a>
                 </td>
                 <td>&nbsp;&nbsp;<input style="width:25px; text-align:right;" type="text" name="sorting[{ENTRY_ID}]" value="{CRM_SORTING}" /></td>
                 <td>
-                    <a href="index.php?cmd={MODULE_NAME}&act=customer&filter_membership={ENTRY_ID}" title="{CRM_INDUSTRY_NAME}">{CRM_INDUSTRY_NAME} ({CRM_CUSTOMER_COUNT})</a>
+                    <a href="index.php?cmd={MODULE_NAME}&act=customers&filter_membership={ENTRY_ID}" title="{CRM_INDUSTRY_NAME}">{CRM_INDUSTRY_NAME} ({CRM_CUSTOMER_COUNT})</a>
                 </td>
                 <td style="text-align: right;">
                     <div align="right">
-                        <a title="{TXT_CRM_IMAGE_EDIT}" target="_self" rel="entry_{ENTRY_ID}_edit" class="entry_{ENTRY_ID}_edit editEntry" href="index.php?cmd={MODULE_NAME}&act=membership&tpl=modify&id={ENTRY_ID}" ><img border="0" title="{TXT_CRM_IMAGE_EDIT}" alt="{TXT_CRM_IMAGE_EDIT}" src="images/icons/edit.gif" /></a>
+                        <a title="{TXT_CRM_IMAGE_EDIT}" target="_self" rel="entry_{ENTRY_ID}_edit" class="entry_{ENTRY_ID}_edit editEntry" href="index.php?cmd={MODULE_NAME}&act=settings&tpl=membership&subTpl=modify&id={ENTRY_ID}" ><img border="0" title="{TXT_CRM_IMAGE_EDIT}" alt="{TXT_CRM_IMAGE_EDIT}" src="images/icons/edit.gif" /></a>
                         <a title="{TXT_IMAGE_SAVE}" target="_self" style="display: none;" rel="entry_{ENTRY_ID}_save" class="entry_{ENTRY_ID}_save saveEntry" href="javascript:void(0);" ><img border="0" title="{TXT_CRM_IMAGE_EDIT}" alt="{TXT_CRM_IMAGE_EDIT}" src="images/icons/save.png" /></a>
                         <a rel="entry_{ENTRY_ID}_delete" class="entry_{ENTRY_ID}_delete deleteEntry" href="javascript:void(0);" target="_self" title="{TXT_CRM_IMAGE_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_CRM_IMAGE_DELETE}" title="{TXT_CRM_IMAGE_DELETE}" /></a>
                     </div>

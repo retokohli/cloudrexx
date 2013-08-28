@@ -97,9 +97,7 @@ class CrmManager extends CrmLibrary
         }
 
         if (Permission::checkAccess($this->staffAccessId, 'static', true)) {
-            $contentNavigation .= "<a href='index.php?cmd={$this->moduleName}&act=membership' class='".($this->act == 'membership' ? 'active' : '')."' title='{$_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP']}'>{$_ARRAYLANG
-                ['TXT_CRM_CUSTOMER_MEMBERSHIP']}</a>
-             <a href='index.php?cmd={$this->moduleName}&act=task' class='".($this->act == 'task' ? 'active' : '')."' title='{$_ARRAYLANG['TXT_CRM_TASKS']}'>{$_ARRAYLANG
+            $contentNavigation .= "<a href='index.php?cmd={$this->moduleName}&act=task' class='".($this->act == 'task' ? 'active' : '')."' title='{$_ARRAYLANG['TXT_CRM_TASKS']}'>{$_ARRAYLANG
                 ['TXT_CRM_TASKS']}</a>
              <a href='index.php?cmd={$this->moduleName}&act=deals' class='".($this->act == 'deals' ? 'active' : '')."' title='{$_ARRAYLANG['TXT_CRM_OPPORTUNITY']}'>{$_ARRAYLANG
                 ['TXT_CRM_OPPORTUNITY']}</a>";
@@ -223,10 +221,6 @@ class CrmManager extends CrmLibrary
             break;
         case 'managecontact':
                 $this->_modifyContact();
-            break;
-        case 'membership':
-                Permission::checkAccess($this->staffAccessId, 'static');
-                $this->showMembership();
             break;
         case 'deleteCurrency':
                 $this->deleteCurrency();
@@ -1555,6 +1549,9 @@ END;
         case 'interface':
                 $this->showInterface();
             break;
+        case 'membership':
+                $this->showMembership();
+            break;
         case 'customertypes':
                 $this->settingsController->showCustomerSettings();
             break;
@@ -1594,6 +1591,7 @@ END;
                 'TXT_CRM_CUSTOMER_INDUSTRY'      => $_ARRAYLANG['TXT_CRM_CUSTOMER_INDUSTRY'],
                 'TXT_CRM_MAIL_TEMPLATE'          => $_ARRAYLANG['TXT_CRM_MAIL_TEMPLATE'],
                 'TXT_CRM_INTERFACE'              => $_ARRAYLANG['TXT_CRM_INTERFACE'],
+                'TXT_CRM_CUSTOMER_MEMBERSHIP'    => $_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP'],
                 strtoupper($tpl)."_ACTIVE"       => 'active'
         ));
     }
@@ -5003,7 +5001,7 @@ END;
 
         JS::activate("jquery");
 
-        $tpl = isset($_GET['tpl']) ? $_GET['tpl'] : '';
+        $tpl = isset($_GET['subTpl']) ? $_GET['subTpl'] : '';
         if (!empty ($tpl)) {
             switch ($tpl) {
             case 'modify':
@@ -5050,7 +5048,7 @@ END;
         }
 
         $objTpl = $this->_objTpl;
-        $objTpl->loadTemplateFile('module_'.$this->moduleName.'_settings_membership.html');
+        $objTpl->addBlockfile('CRM_SETTINGS_FILE', 'settings_block', 'module_'.$this->moduleName.'_settings_membership.html');
         $this->_pageTitle = $_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP'];
         $objTpl->setGlobalVariable(array(
                 'MODULE_NAME' => $this->moduleName,
@@ -5124,7 +5122,7 @@ END;
 
         JS::activate("jquery");
         $objTpl = $this->_objTpl;
-        $objTpl->loadTemplateFile('module_'.$this->moduleName.'_settings_membership_modify.html');
+        $objTpl->addBlockfile('CRM_SETTINGS_FILE', 'settings_block', 'module_'.$this->moduleName.'_settings_membership_modify.html');
         $objTpl->setGlobalVariable(array(
                 'MODULE_NAME' => $this->moduleName,
                 'TXT_CRM_IMAGE_EDIT' => $_ARRAYLANG['TXT_CRM_IMAGE_EDIT'],
@@ -5181,7 +5179,7 @@ END;
             }
 
             if ($db) {
-                CSRF::header("Location:./?cmd={$this->moduleName}&act=membership");
+                CSRF::header("Location:./?cmd={$this->moduleName}&act=settings&tpl=membership");
                 exit();
             } else {
                 $this->_strErrMessage = "Error in saving Data";
