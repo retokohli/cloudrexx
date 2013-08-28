@@ -3152,17 +3152,26 @@ END;
     {
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
         $id = $_GET['id'];
+        $defaultId = $objDatabase->getOne('SELECT id FROM `'.DBPREFIX.'module_'.$this->moduleName.'_currency` WHERE default_currency = "1"');
 
         if (!empty($id)) {
-            $deleteQuery = 'DELETE FROM `'.DBPREFIX.'module_'.$this->moduleName.'_currency` WHERE default_currency != 1 AND id = '.$id;
-            $objDatabase->Execute($deleteQuery);
-            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CURRENCY_DELETED_SUCCESSFULLY'];
-        } else {
-            $deleteIds = $_POST['selectedEntriesId'];
-            foreach ($deleteIds as $id) {
+            if ($defaultId != $id) {
                 $deleteQuery = 'DELETE FROM `'.DBPREFIX.'module_'.$this->moduleName.'_currency` WHERE default_currency != 1 AND id = '.$id;
                 $objDatabase->Execute($deleteQuery);
                 $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CURRENCY_DELETED_SUCCESSFULLY'];
+            } else {
+                $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_DEFAULT_CURRENCY_ERROR'];
+            }
+        } else {
+            $deleteIds = $_POST['selectedEntriesId'];
+            foreach ($deleteIds as $id) {
+                if ($defaultId != $id) {
+                    $deleteQuery = 'DELETE FROM `'.DBPREFIX.'module_'.$this->moduleName.'_currency` WHERE default_currency != 1 AND id = '.$id;
+                    $objDatabase->Execute($deleteQuery);
+                    $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CURRENCY_DELETED_SUCCESSFULLY'];
+                } else {
+                    $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_DEFAULT_CURRENCY_ERROR'];
+                }
             }
         }
         CSRF::header('location:./index.php?cmd=crm&act=settings&tpl=currency');
