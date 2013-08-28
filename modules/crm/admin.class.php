@@ -228,9 +228,6 @@ class CrmManager extends CrmLibrary
         case 'editcurrency':
                 $this->editCurrency();
             break;
-        case 'currencyChangeStatus':
-                $this->currencyChangeStatus();
-            break;
         case 'noteschangestatus':
                 $this->notesChangeStatus();
             break;
@@ -1554,6 +1551,9 @@ END;
             break;
         case 'customertypes':
                 $this->settingsController->showCustomerSettings();
+            break;
+        case 'currencyChangeStatus':
+                $this->currencyChangeStatus();
             break;
         case 'opstages':
                 $this->showOpportunityStages();
@@ -3172,14 +3172,14 @@ END;
      * @return true
      */
     function currencyChangeStatus()
-    {
+    { 
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
         $status = ($_GET['status'] == 0) ? 1 : 0;
         $id     = intval($_GET['id']);
         if (!empty($id)) {
             $query = 'UPDATE '.DBPREFIX.'module_'.$this->moduleName.'_currency SET active='.$status.' WHERE id = '.$id;
             $objDatabase->Execute($query);
-            $this->_strOkMessage = ($status == 1) ? $_ARRAYLANG['TXT_CRM_ACTIVATED_SUCCESSFULLY'] : $_ARRAYLANG['TXT_CRM_DEACTIVATED_SUCCESSFULLY'];
+            $_SESSION['strOkMessage'] = ($status == 1) ? $_ARRAYLANG['TXT_CRM_ACTIVATED_SUCCESSFULLY'] : $_ARRAYLANG['TXT_CRM_DEACTIVATED_SUCCESSFULLY'];
         }
 
         if ($_REQUEST['type'] == "activate") {
@@ -3190,7 +3190,7 @@ END;
                     $objDatabase->Execute($query);
                 }
             }
-            $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_ACTIVATED_SUCCESSFULLY'];
+            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_ACTIVATED_SUCCESSFULLY'];
         }
         if ($_REQUEST['type'] == "deactivate") {
             $arrStatusNote = $_POST['selectedEntriesId'];
@@ -3200,9 +3200,9 @@ END;
                     $objDatabase->Execute($query);
                 }
             }
-            $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_DEACTIVATED_SUCCESSFULLY'];
+            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_DEACTIVATED_SUCCESSFULLY'];
         }
-
+        CSRF::header("Location: ./index.php?cmd={$this->moduleName}&act=settings&tpl=currency");
         $_GET['tpl'] = 'currency';
         $this->settingsSubmenu();
     }

@@ -436,17 +436,19 @@ class Settings extends CrmLibrary
                              WHERE id = '".intval($_POST['form_id'][$x])."'";
                 $objDatabase->Execute($query);
             }
-            $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_PROJECTSTATUS_SORTING_COMPLETE'];
+            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_PROJECTSTATUS_SORTING_COMPLETE'];
         }
 
         if (isset($_POST['currencyfield_submit'])) {
-
+            
             for ($x = 0; $x < count($_POST['form_id']); $x++) {
+                $default = ($_POST['form_id'][$x] == $_POST['default']) ? 1 : 0;
                 $query = "UPDATE ".DBPREFIX."module_".$this->moduleName."_currency
-                              SET pos = '".intval($_POST['form_pos'][$x])."'
+                              SET pos              = '".intval($_POST['form_pos'][$x])."',
+                                  default_currency = '".intval($default)."'
                              WHERE id = '".intval($_POST['form_id'][$x])."'";
                 $objDatabase->Execute($query);
-                $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_PROJECTSTATUS_SORTING_COMPLETE'];
+                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_PROJECTSTATUS_SORTING_COMPLETE'];
             }
         }
 
@@ -456,8 +458,8 @@ class Settings extends CrmLibrary
         $currencyeOverview   = array();
         $numeric             = array('pos');
         $key                 = 0;
-
-        $objData = $objDatabase->Execute('SELECT id, name, active, pos FROM '.DBPREFIX.'module_'.$this->moduleName.'_currency');
+        
+        $objData = $objDatabase->Execute('SELECT id, name, active, pos, default_currency FROM `'.DBPREFIX.'module_'.$this->moduleName.'_currency`');
 
         $row = "row2";
         if ($objData->fields['id'] == null) {
@@ -474,7 +476,9 @@ class Settings extends CrmLibrary
                         'pos'                      => $objData->fields['pos'],
                         'name'                     => trim($objData->fields['name']),
                         'id'                       => $objData->fields['id'],
-                        'active'                   => $objData->fields['active']);
+                        'active'                   => $objData->fields['active'],
+                        'default'                  => $objData->fields['default_currency']
+                );
 
                 $key++;
                 $objData->MoveNext();
@@ -495,8 +499,9 @@ class Settings extends CrmLibrary
                         'TXT_CURRENCY_ACTIVE_TITLE'    => $activeTitle,
                         'TXT_CURRENCY_POS'             => $currency['pos'],
                         'TXT_CURRENCY_ACTIVE'          => $currency['active'],
-                        'TXT_CRM_IMAGE_EDIT'               => $_ARRAYLANG['TXT_EDIT'],
-                        'TXT_CRM_IMAGE_DELETE'             => $_ARRAYLANG['TXT_DELETE'],
+                        'TXT_CURRENCY_DEFAULT'         => $currency['default'] == '1' ? 'checked' : '',
+                        'TXT_CRM_IMAGE_EDIT'           => $_ARRAYLANG['TXT_EDIT'],
+                        'TXT_CRM_IMAGE_DELETE'         => $_ARRAYLANG['TXT_DELETE'],
                         'ENTRY_ROWCLASS'               => $row = ($row == "row1") ? "row2" : "row1"
 
                 ));
@@ -518,15 +523,18 @@ class Settings extends CrmLibrary
             $objResult->MoveNext();
         }
         
+        $settings = $this->getSettings();
+        $settings['allow_pm'] ? $this->_objTpl->touchBlock("show-rates") : $this->_objTpl->hideBlock("show-rates");
+        
         $this->_objTpl->setVariable(array(
-                'PM_CURRENCY_ORDER_SORT'         => '&sortf=0&sorto='.($sortOrder?0:1),
-                'PM_CURRENCY_NAME_SORT'          => '&sortf=1&sorto='.($sortOrder?0:1),
+                'PM_CURRENCY_ORDER_SORT'             => '&sortf=0&sorto='.($sortOrder?0:1),
+                'PM_CURRENCY_NAME_SORT'              => '&sortf=1&sorto='.($sortOrder?0:1),
                 'TXT_CRM_CURRENCY'                   => $_ARRAYLANG['TXT_CRM_CURRENCY'],
                 'TXT_CRM_ADD_CURRENCY'               => $_ARRAYLANG['TXT_CRM_ADD_CURRENCY'],
                 'TXT_CRM_TITLE_STATUS'               => $_ARRAYLANG['TXT_CRM_TITLE_STATUS'],
                 'TXT_CRM_NAME'                       => $_ARRAYLANG['TXT_CRM_NAME'],
                 'TXT_CRM_SAVE'                       => $_ARRAYLANG['TXT_CRM_SAVE'],
-                'TXT_CRM_NOTES'                     => $_ARRAYLANG['TXT_CRM_NOTES'],
+                'TXT_CRM_NOTES'                      => $_ARRAYLANG['TXT_CRM_NOTES'],
                 'TXT_CRM_SORTING'                    => $_ARRAYLANG['TXT_CRM_SORTING'],
                 'TXT_CRM_SORTING_NUMBER'             => $_ARRAYLANG['TXT_CRM_SORTING_NUMBER'],
                 'TXT_CRM_ACTIVATESELECTED'           => $_ARRAYLANG['TXT_CRM_ACTIVATESELECTED'],
@@ -538,11 +546,12 @@ class Settings extends CrmLibrary
                 'TXT_CRM_DESELECT_ALL'               => $_ARRAYLANG['TXT_CRM_REMOVE_SELECTION'],
                 'TXT_CRM_SELECT_ACTION'              => $_ARRAYLANG['TXT_CRM_SELECT_ACTION'],
                 'TXT_CRM_DELETE_SELECTED'            => $_ARRAYLANG['TXT_CRM_DELETE_SELECTED'],
-                'TXT_CRM_CUSTOMER_TYPES'            => $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPES'],
+                'TXT_CRM_CUSTOMER_TYPES'             => $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPES'],
                 'TXT_CRM_GENERAL'                    => $_ARRAYLANG['TXT_CRM_GENERAL'],
-                'TXT_CRM_CURRENCY_RATES'              => $_ARRAYLANG['TXT_CRM_CURRENCY_RATES'],
-                'TXT_CRM_HOURLY_RATE'                 => $_ARRAYLANG['TXT_CRM_HOURLY_RATE'],
-                'PM_SETTINGS_CURRENCY_JAVASCRIPT' => $objJs->getAddCurrencyJavascript(),
+                'TXT_CRM_CURRENCY_RATES'             => $_ARRAYLANG['TXT_CRM_CURRENCY_RATES'],
+                'TXT_CRM_HOURLY_RATE'                => $_ARRAYLANG['TXT_CRM_HOURLY_RATE'],
+                'TXT_CRM_DEFAULT'                    => $_ARRAYLANG['TXT_CRM_DEFAULT'],
+                'PM_SETTINGS_CURRENCY_JAVASCRIPT'    => $objJs->getAddCurrencyJavascript(),
         ));
     }
 
@@ -614,35 +623,37 @@ class Settings extends CrmLibrary
         }
 
         // Hourly rate
-
-        $objResult = $objDatabase->Execute('SELECT id,label FROM  '.DBPREFIX.'module_'.$this->moduleName.'_customer_types WHERE  active!="0" ORDER BY pos,label');
-        while (!$objResult->EOF) {
-            $this->_objTpl->setVariable(array(
-                'CRM_CUSTOMER_TYPE'     => contrexx_raw2xhtml($objResult->fields['label']),
-                'CRM_CUSTOMERTYPE_ID'   => (int) $objResult->fields['id'],
-                'PM_CURRENCY_HOURLY_RATE'   => !empty($hrlyRate[$objResult->fields['id']]) ? intval($hrlyRate[$objResult->fields['id']]) : 0,
-            ));
-            $this->_objTpl->parse("hourlyRate");
-            $objResult->MoveNext();
+        $settings = $this->getSettings();
+        if ($settings['allow_pm']) {
+            $objResult = $objDatabase->Execute('SELECT id,label FROM  '.DBPREFIX.'module_'.$this->moduleName.'_customer_types WHERE  active!="0" ORDER BY pos,label');
+            while (!$objResult->EOF) {
+                $this->_objTpl->setVariable(array(
+                    'CRM_CUSTOMER_TYPE'     => contrexx_raw2xhtml($objResult->fields['label']),
+                    'CRM_CUSTOMERTYPE_ID'   => (int) $objResult->fields['id'],
+                    'PM_CURRENCY_HOURLY_RATE'   => !empty($hrlyRate[$objResult->fields['id']]) ? intval($hrlyRate[$objResult->fields['id']]) : 0,
+                ));
+                $this->_objTpl->parse("hourlyRate");
+                $objResult->MoveNext();
+            }
         }
-
+        $settings['allow_pm'] ? $this->_objTpl->touchBlock("show-rates") : $this->_objTpl->hideBlock("show-rates");
         $this->_objTpl->setVariable(array(
             'TXT_SORTINGNUMBER'       => (int) $sorting,
             'TXT_CURRENCY_ID'	      => (int) $id,
             'TXT_NAME_VALUE'	      => contrexx_raw2xhtml($label),
             'TXT_ACTIVATED_VALUE'     => $status ? 'checked' : '',
 
-            'TXT_CRM_EDIT_CURRENCY'       => $_ARRAYLANG['TXT_CRM_EDIT_CURRENCY'],
-            'TXT_CRM_NAME'                => $_ARRAYLANG['TXT_CRM_NAME'],
-            'TXT_CRM_FUNCTIONS'           => $_ARRAYLANG['TXT_CRM_FUNCTIONS'],
-            'TXT_CRM_SAVE'                => $_ARRAYLANG['TXT_CRM_SAVE'],
-            'TXT_CRM_SORTING_NUMBER'      => $_ARRAYLANG['TXT_CRM_SORTING_NUMBER'],
-            'TXT_CRM_TITLEACTIVE'         => $_ARRAYLANG['TXT_CRM_TITLEACTIVE'],
-            'TXT_CRM_BACK'                => $_ARRAYLANG['TXT_CRM_BACK'],
-            'TXT_CRM_SELECT_ACTION'       => $_ARRAYLANG['TXT_CRM_SELECT_ACTION'],
-            'TXT_CRM_DELETE_SELECTED'     => $_ARRAYLANG['TXT_CRM_DELETE_SELECTED'],
-            'TXT_CRM_CURRENCY_RATES'              => $_ARRAYLANG['TXT_CRM_CURRENCY_RATES'],
-            'TXT_CRM_HOURLY_RATE'                 => $_ARRAYLANG['TXT_CRM_HOURLY_RATE'],
+            'TXT_CRM_EDIT_CURRENCY'   => $_ARRAYLANG['TXT_CRM_EDIT_CURRENCY'],
+            'TXT_CRM_NAME'            => $_ARRAYLANG['TXT_CRM_NAME'],
+            'TXT_CRM_FUNCTIONS'       => $_ARRAYLANG['TXT_CRM_FUNCTIONS'],
+            'TXT_CRM_SAVE'            => $_ARRAYLANG['TXT_CRM_SAVE'],
+            'TXT_CRM_SORTING_NUMBER'  => $_ARRAYLANG['TXT_CRM_SORTING_NUMBER'],
+            'TXT_CRM_TITLEACTIVE'     => $_ARRAYLANG['TXT_CRM_TITLEACTIVE'],
+            'TXT_CRM_BACK'            => $_ARRAYLANG['TXT_CRM_BACK'],
+            'TXT_CRM_SELECT_ACTION'   => $_ARRAYLANG['TXT_CRM_SELECT_ACTION'],
+            'TXT_CRM_DELETE_SELECTED' => $_ARRAYLANG['TXT_CRM_DELETE_SELECTED'],
+            'TXT_CRM_CURRENCY_RATES'  => $_ARRAYLANG['TXT_CRM_CURRENCY_RATES'],
+            'TXT_CRM_HOURLY_RATE'     => $_ARRAYLANG['TXT_CRM_HOURLY_RATE'],
             'CSRF_PARAM'              => CSRF::param(),
             'CURRENCY_JAVASCRIPT'     => $objJs->getAddCurrencyJavascript()
         ));
