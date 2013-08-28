@@ -1179,11 +1179,11 @@ function selectMultiAction() {
 			default: //do nothing
 		}
                 if(frmShowEntries_MultiAction.value == "activate"){
-		action='index.php?cmd=$MODULE_NAME&act=customerTypeChangeStatus&type=activate';
+		action='index.php?cmd=$MODULE_NAME&act=settings&tpl=customerTypeChangeStatus&type=activate';
 					submit();
                 }
                 if(frmShowEntries_MultiAction.value == "deactivate"){
-				action='index.php?cmd=$MODULE_NAME&act=customerTypeChangeStatus&type=deactivate';
+				action='index.php?cmd=$MODULE_NAME&act=settings&tpl=customerTypeChangeStatus&type=deactivate';
 					submit();
                 }
                 if(frmShowEntries_MultiAction.value == "sort"){

@@ -7,7 +7,7 @@
 $_ARRAYLANG['TXT_CRM_CUSTOMERS']                                         = "Kontakte";
 $_ARRAYLANG['TXT_CRM_CUSTOMER']                                          = "Kunde";
 $_ARRAYLANG['TXT_CRM_PRODUCTS']                                          = "Produkte";
-$_ARRAYLANG['TXT_CRM_SETTINGS']                                          = "Einstellungen";
+$_ARRAYLANG['TXT_CRM_SETTINGS']                                          = "Stammdaten";
 $_ARRAYLANG['TXT_CRM_PROFILE']                                           = "Profil";
 $_ARRAYLANG['TXT_CRM_CUSTOMER_OVERVIEW']                                 = 'Unternehmenübersicht';
 $_ARRAYLANG['TXT_CRM_OVERVIEW']                                          = "Überblick";
@@ -532,3 +532,4 @@ $_ARRAYLANG['TXT_CRM_LOADING']                      = "Loading ...";
 $_ARRAYLANG['TXT_CRM_ACCOUNT']                      = "Account";
 $_ARRAYLANG['TXT_CRM_PLACEHOLDERS']                 = "Placeholders";
 $_ARRAYLANG['TXT_CRM_CONTACT_TOOLTIP_HEAD']         = "Kontakt(e)";
+$_ARRAYLANG['TXT_CRM_DEFAULT_COUNTRY']              = "Vorauswahl für Land";

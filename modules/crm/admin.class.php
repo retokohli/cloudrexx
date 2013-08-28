@@ -209,9 +209,9 @@ class CrmManager extends CrmLibrary
         case 'customersChangeStatus':
                 $this->customersChangeStatus();
             break;
-        case 'customerTypeChangeStatus':
-                $this->customerTypeChangeStatus();
-            break;
+//        case 'customerTypeChangeStatus':
+//                $this->customerTypeChangeStatus();
+//            break;
         case 'mailtemplate_overview':
         case 'mailtemplate_edit':
                 $_GET['tpl'] = 'mail';
@@ -1494,13 +1494,15 @@ END;
      * @return true
      */
     function customerTypeChangeStatus()
-    {
+    { 
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
         $status = ($_GET['status'] == 0) ? 1 : 0;
         $id     = $_GET['id'];
-        $query  = 'UPDATE '.DBPREFIX.'module_'.$this->moduleName.'_customer_types SET active='.$status.' WHERE id = '.$id;
-        $objDatabase->Execute($query);
-        ($status) ?  $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_ACTIVATED_SUCCESSFULLY'] : $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_DEACTIVATED_SUCCESSFULLY'];
+        if (!empty($id)) {
+            $query  = 'UPDATE '.DBPREFIX.'module_'.$this->moduleName.'_customer_types SET active='.$status.' WHERE id = '.$id;
+            $objDatabase->Execute($query);
+            $mes = ($status) ?  'activate' : 'deactivate';
+        }
         if ($_REQUEST['type'] == "activate") {
             $arrStatusNote = $_POST['selectedEntriesId'];
             if ($arrStatusNote != null) {
@@ -1509,7 +1511,7 @@ END;
                     $objDatabase->Execute($query);
                 }
             }
-            $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_ACTIVATED_SUCCESSFULLY'];
+            $mes = 'activate';
         }
         if ($_REQUEST['type'] == "deactivate") {
             $arrStatusNote = $_POST['selectedEntriesId'];
@@ -1519,10 +1521,10 @@ END;
                     $objDatabase->Execute($query);
                 }
             }
-            $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_DEACTIVATED_SUCCESSFULLY'];
+            $mes = 'deactivate';
         }
-        $_GET['tpl'] = 'customertypes';
-        $this->settingsSubmenu();
+        $message = base64_encode($mes);
+        CSRF::header("Location: ./index.php?cmd={$this->moduleName}&act=settings&tpl=customertypes&mes={$message}");
 
     }
 
@@ -1554,6 +1556,9 @@ END;
             break;
         case 'currencyChangeStatus':
                 $this->currencyChangeStatus();
+            break;
+        case 'customerTypeChangeStatus':
+                $this->customerTypeChangeStatus();
             break;
         case 'opstages':
                 $this->showOpportunityStages();
@@ -2325,7 +2330,7 @@ END;
         if (empty($result['contactphone'])) $result['contactphone'][] = array("type" => 1, "primary" => 1, "value" => "");
         if (empty($result['contactwebsite'])) $result['contactwebsite'][] = array("id" => 0, "profile" => ($contactType == 1) ? 3 : 1, "primary" => 1, "value" => "");
         if (empty($result['contactsocial'])) $result['contactsocial'][] = array("id" => 0, "profile" => 4, "primary" => 1, "value" => "");
-        if (empty($result['contactAddress'])) $result['contactAddress'][] = array("address" => '', "city" => '', "state" => '', "zip" => "", "country" => "Schweiz", "type" => 2, "primary" => 1);
+        if (empty($result['contactAddress'])) $result['contactAddress'][] = array("address" => '', "city" => '', "state" => '', "zip" => "", "country" => "", "type" => 2, "primary" => 1);
 
         if (!empty($result['contactemail'])) {
             $Count = 1;
@@ -2420,7 +2425,7 @@ END;
                 $Count++;
             }
         }
-        $this->getContactAddressCountry($this->_objTpl, 'Schweiz', $contactType == 1 ? "customerAdditionalcrmCountry" : 'additionalcrmCountry');
+        $this->getContactAddressCountry($this->_objTpl, '', $contactType == 1 ? "customerAdditionalcrmCountry" : 'additionalcrmCountry');
         $this->getContactAddrTypeCountry($this->_objTpl, 2, $contactType == 1 ? "customerAdditionaladdressType" : 'additionaladdressType');
 
         // special fields for contacts
@@ -5049,7 +5054,7 @@ END;
 
         $objTpl = $this->_objTpl;
         $objTpl->addBlockfile('CRM_SETTINGS_FILE', 'settings_block', 'module_'.$this->moduleName.'_settings_membership.html');
-        $this->_pageTitle = $_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP'];
+        $this->_pageTitle = $_ARRAYLANG['TXT_CRM_SETTINGS'];
         $objTpl->setGlobalVariable(array(
                 'MODULE_NAME' => $this->moduleName,
                 'TXT_CRM_IMAGE_EDIT' => $_ARRAYLANG['TXT_CRM_IMAGE_EDIT'],
@@ -5134,7 +5139,7 @@ END;
         $sorting = isset($_POST['sortingNumber']) ? (int) $_POST['sortingNumber'] : '';
         $status  = isset($_POST['activeStatus']) ? 1 : (empty($_POST) ? 1 : 0);
 
-        $this->_pageTitle = (!empty ($id)) ? $_ARRAYLANG['TXT_CRM_EDIT_MEMBERSHIP'] : $_ARRAYLANG['TXT_CRM_ADD_MEMBERSHIP'];
+        $this->_pageTitle = $_ARRAYLANG['TXT_CRM_SETTINGS'];
 
         $inputField = isset($_POST['Inputfield']) ? $_POST['Inputfield'] : array();
         if (isset ($_POST['save_entry'])) {
