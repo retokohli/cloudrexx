@@ -624,6 +624,10 @@ class CrmLibrary
     {
         global $_ARRAYLANG, $objDatabase;
 
+        if (empty ($selectedId)) {
+            $objDefaultCur = $objDatabase->getOne("SELECT id FROM `".DBPREFIX."module_{$this->moduleName}_currency` WHERE default_currency = 1");
+            $selectedId    = $objDefaultCur;
+        }
         $objResultCurrency = $objDatabase->Execute('SELECT   id,name,pos,active
                                                 FROM     '.DBPREFIX.'module_'.$this->moduleName.'_currency
                                                 WHERE    active!="0"

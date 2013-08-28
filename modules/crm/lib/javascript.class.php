@@ -282,11 +282,11 @@ function selectMultiAction() {
 					submit();
                   }
                 if(frmShowEntries_MultiAction.value == "activate"){
-					action='index.php?cmd=$MODULE_NAME&act=currencyChangeStatus&type=activate&$CSRFPARAM';
+					action='index.php?cmd=$MODULE_NAME&act=settings&tpl=currencyChangeStatus&type=activate&$CSRFPARAM';
 					submit();
                 }
                 if(frmShowEntries_MultiAction.value == "deactivate"){
-					action='index.php?cmd=$MODULE_NAME&act=currencyChangeStatus&type=deactivate&$CSRFPARAM';
+					action='index.php?cmd=$MODULE_NAME&act=settings&tpl=currencyChangeStatus&type=deactivate&$CSRFPARAM';
 					submit();
                 }
 	}
