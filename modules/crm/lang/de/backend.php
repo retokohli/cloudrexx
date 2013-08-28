@@ -534,3 +534,5 @@ $_ARRAYLANG['TXT_CRM_PLACEHOLDERS']                 = "Placeholders";
 $_ARRAYLANG['TXT_CRM_CONTACT_TOOLTIP_HEAD']         = "Kontakt(e)";
 $_ARRAYLANG['TXT_CRM_DEFAULT_COUNTRY']              = "Vorauswahl für Land";
 $_ARRAYLANG['TXT_CRM_DEFAULT_CURRENCY_ERROR']       = "Currency cannot be deleted.";
+$_ARRAYLANG['TXT_CRM_DEFAULT_CURRENCY_STATUS_ERROR']       = "Currency status cannot be changed.";
+
