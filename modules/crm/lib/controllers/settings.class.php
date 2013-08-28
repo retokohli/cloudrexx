@@ -458,7 +458,7 @@ class Settings extends CrmLibrary
                                   default_currency = '".intval($default)."'
                              WHERE id = '".intval($_POST['form_id'][$x])."'";
                 $objDatabase->Execute($query);
-                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_PROJECTSTATUS_SORTING_COMPLETE'];
+                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CHANGES_UPDATED_SUCCESSFULLY'];
             }
         }
 

@@ -3190,10 +3190,15 @@ END;
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
         $status = ($_GET['status'] == 0) ? 1 : 0;
         $id     = intval($_GET['id']);
+        $defaultId = $objDatabase->getOne('SELECT id FROM `'.DBPREFIX.'module_'.$this->moduleName.'_currency` WHERE default_currency = "1"');
         if (!empty($id)) {
-            $query = 'UPDATE '.DBPREFIX.'module_'.$this->moduleName.'_currency SET active='.$status.' WHERE id = '.$id;
-            $objDatabase->Execute($query);
-            $_SESSION['strOkMessage'] = ($status == 1) ? $_ARRAYLANG['TXT_CRM_ACTIVATED_SUCCESSFULLY'] : $_ARRAYLANG['TXT_CRM_DEACTIVATED_SUCCESSFULLY'];
+            if ($defaultId != $id) {
+                $query = 'UPDATE '.DBPREFIX.'module_'.$this->moduleName.'_currency SET active='.$status.' WHERE default_currency != "1" AND id = '.$id;
+                $objDatabase->Execute($query);
+                $_SESSION['strOkMessage'] = ($status == 1) ? $_ARRAYLANG['TXT_CRM_ACTIVATED_SUCCESSFULLY'] : $_ARRAYLANG['TXT_CRM_DEACTIVATED_SUCCESSFULLY'];
+            } else {
+                $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_DEFAULT_CURRENCY_STATUS_ERROR'];
+            }
         }
 
         if ($_REQUEST['type'] == "activate") {
@@ -3210,8 +3215,12 @@ END;
             $arrStatusNote = $_POST['selectedEntriesId'];
             if ($arrStatusNote != null) {
                 foreach ($arrStatusNote as $noteId) {
-                    $query = "UPDATE ".DBPREFIX."module_".$this->moduleName."_currency SET active='0' WHERE id=$noteId";
-                    $objDatabase->Execute($query);
+                    if ($defaultId != $noteId) {
+                        $query = "UPDATE ".DBPREFIX."module_".$this->moduleName."_currency SET active='0' WHERE default_currency != '1' AND id=$noteId";
+                        $objDatabase->Execute($query);
+                    } else {
+                        $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_DEFAULT_CURRENCY_STATUS_ERROR'];
+                    }
                 }
             }
             $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_DEACTIVATED_SUCCESSFULLY'];
