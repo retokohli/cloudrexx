@@ -91,3 +91,47 @@ CKEDITOR.editorConfig = function( config )
         ['Undo','Redo']
     ];
 };
+
+if (<?php
+        if (\FWUser::getFWUserObject()->objUser->login()) {
+            if (\FWUser::getFWUserObject()->objUser->getAdminStatus()) {
+                echo 0;
+            } else {
+                $arrAssociatedGroupIds = \FWUser::getFWUserObject()->objUser->getAssociatedGroupIds();
+                foreach ($arrAssociatedGroupIds as $groupId) {
+                    $objGroup = \FWUser::getFWUserObject()->objGroup->getGroup($groupId);
+                    if ($objGroup) {
+                        if ($objGroup->getType() == 'backend') {
+                            $isBackendGroup = true;
+                            break;
+                        }
+                    }
+                }
+                if ($isBackendGroup) {
+                    echo 0;
+                } else {
+                    echo 1;
+                }
+            }
+        } else {
+            echo 1;
+        }
+    ?>) {
+    CKEDITOR.on('dialogDefinition', function(ev) {
+        var dialogName       = ev.data.name;
+        var dialogDefinition = ev.data.definition;
+
+        if (dialogName == 'link') {
+            dialogDefinition.getContents('info').remove('browse');
+        }
+
+        if (dialogName == 'image') {
+            dialogDefinition.getContents('info').remove('browse');
+            dialogDefinition.getContents('Link').remove('browse');
+        }
+
+        if (dialogName == 'flash') {
+            dialogDefinition.getContents('info').remove('browse');
+        }
+    });
+}
