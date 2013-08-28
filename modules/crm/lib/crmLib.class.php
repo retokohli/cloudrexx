@@ -731,6 +731,11 @@ class CrmLibrary
     function getContactAddressCountry($objTpl, $selectedCountry, $block = "crmCountry")
     {
         $countryArr = $this->getCountry();
+        $settings = $this->getSettings();
+
+        if (empty($selectedCountry)) {
+            $selectedCountry = $countryArr[$settings['default_country_value']]['name'];
+        }
 
         foreach ($countryArr as $value) {
             $selected = ($selectedCountry == contrexx_raw2xhtml($value['name'])) ? "selected" : "";

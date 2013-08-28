@@ -68,6 +68,16 @@ class Settings extends CrmLibrary
             }
             return;
         }
+        $mes = isset ($_GET['mes']) ? base64_decode($_GET['mes']) : '';
+
+        switch ($mes) {
+        case 'activate':
+            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_ACTIVATED_SUCCESSFULLY'];
+            break;
+        case 'deactivate':
+            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_DEACTIVATED_SUCCESSFULLY'];
+            break;
+        }
         
         $this->_objTpl->addBlockfile('CRM_SETTINGS_FILE', 'settings_block', 'module_'.$this->moduleName.'_settings_customers.html');
         $this->_objTpl->setGlobalVariable('MODULE_NAME', $this->moduleName);
@@ -888,7 +898,7 @@ class Settings extends CrmLibrary
             $query .= "END WHERE id IN ($ids)";
             $objResult = $objDatabase->Execute($query);
 
-            $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_TASK_TYPE_STATUS_CHANGED_SUCCESSFULLY'];
+            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_TASK_TYPE_STATUS_CHANGED_SUCCESSFULLY'];
 
         }
     }
@@ -958,7 +968,7 @@ class Settings extends CrmLibrary
             $query = "DELETE FROM `".DBPREFIX."module_".$this->moduleName."_task_types` WHERE id IN ($ids) AND system_defined != 1";
             $objResult = $objDatabase->Execute($query);
 
-            $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_TASK_TYPE_DELETED_SUCCESSFULLY'];
+            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_TASK_TYPE_DELETED_SUCCESSFULLY'];
         }
     }
 
@@ -1006,6 +1016,7 @@ class Settings extends CrmLibrary
                     'default_user_group'                 => isset($_POST['default_user_group']) ? (int) $_POST['default_user_group'] : 0,
                     'emp_default_user_group'             => isset($_POST['emp_default_user_group']) ? (int) $_POST['emp_default_user_group'] : 0,
                     'user_account_mantatory'             => isset($_POST['user_account_mantatory']) ? 1 : 0,
+                    'default_country_value'              => isset ($_POST['default_country_value']) ? (int) $_POST['default_country_value'] : 0
             );
 
             foreach ($settings as $settings_var => $settings_val) {
@@ -1013,20 +1024,6 @@ class Settings extends CrmLibrary
                                           SET `setvalue` = "'.contrexx_input2db($settings_val).'"
                                     WHERE setname = "'.$settings_var.'"';
                 $objDatabase->Execute($updateAllowPm);
-            }
-            if (!empty ($settings['emp_default_user_group'])) {
-                $objDatabase->Execute("DELETE FROM ".DBPREFIX."access_group_static_ids WHERE access_id IN ('".$this->staffAccessId."', '".$this->customerAccessId."')");
-
-                //set staff permission
-                $defEmpAccessId = array($this->customerAccessId, $this->staffAccessId);
-                $objGroup = $objFWUser->objGroup->getGroup(isset($settings['emp_default_user_group']) ? intval($settings['emp_default_user_group']) : 0);
-                $objGroup->setStaticPermissionIds(isset($defEmpAccessId) && is_array($defEmpAccessId) ? $defEmpAccessId : array());
-                $objGroup->store();
-                //set customer permission
-                $defCustAccessId = array($this->customerAccessId);
-                $objGroup = $objFWUser->objGroup->getGroup(isset($settings['default_user_group']) ? intval($settings['default_user_group']) : 0);
-                $objGroup->setStaticPermissionIds(isset($defCustAccessId) && is_array($defCustAccessId) ? $defCustAccessId : array());
-                $objGroup->store();
             }
 
             $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CHANGES_UPDATED_SUCCESSFULLY'];
@@ -1083,16 +1080,25 @@ class Settings extends CrmLibrary
                         'CRM_USER_GROUP_SELECTED'   => $settings['default_user_group'] == $objGroupIds->getId() ? "selected='selected'" : ''
                 ));
                 $objTpl->parse("userGroup");
-                $objTpl->setVariable(array(
-                        'CRM_GROUP_NAME'            => contrexx_raw2xhtml($objGroupIds->getName()),
-                        'CRM_GROUP_VALUE'           => (int) $objGroupIds->getId(),
-                        'CRM_USER_GROUP_SELECTED'   => $settings['emp_default_user_group'] == $objGroupIds->getId() ? "selected='selected'" : ''
-                ));
-                $objTpl->parse("empUserGroup");
                 $objGroupIds->next();
             }
         }
+        $countries = $this->getCountry();
 
+        foreach ($countries As $key => $value) {
+            if ($settings['default_country_value'] == $value['id']) {
+                $selected = "selected='selected'";
+            } else {
+                $selected = '';
+            }
+            $objTpl->setVariable(array(
+                'CRM_DEFAULT_COUNTRY_ID'        => (int) $value['id'],
+                'CRM_DEFAULT_COUNTRY_NAME'      => contrexx_raw2xhtml($value['name']),
+                'CRM_DEFAULT_COUNTRY_SELECTED'  => $selected
+            ));
+            $objTpl->parse("default_country");
+        }
+        
         $objTpl->setVariable(array(
             'CRM_ALLOW_PM'                   => ($settings['allow_pm']) ? "checked='checked'" : '',
             'CRM_CREATE_ACCOUNT_USER'        => ($settings['create_user_account']) ? "checked='checked'" : '',
@@ -1101,22 +1107,24 @@ class Settings extends CrmLibrary
         
         $objTpl->setVariable(array(                
                 'TXT_CRM_ALLOW_PM'               => $_ARRAYLANG["TXT_CRM_ALLOW_PM"],
+                'TXT_CRM_DEFAULT_COUNTRY'        => $_ARRAYLANG["TXT_CRM_DEFAULT_COUNTRY"],
+                'TXT_CRM_SELECT_COUNTRY'         => $_ARRAYLANG["TXT_CRM_SELECT_COUNTRY"],
                 'TXT_CRM_CUSTOMERS'              => $_ARRAYLANG['TXT_CRM_CUSTOMERS'],
                 'TXT_CRM_LANGUAGE'               => $_ARRAYLANG['TXT_CRM_TITLE_LANGUAGE'],
                 'TXT_CRM_BACKEND'                => $_ARRAYLANG['TXT_CRM_BACKEND'],
                 'TXT_CRM_FRONTEND'               => $_ARRAYLANG['TXT_CRM_FRONTEND'],
                 'TXT_CRM_ALLOW_PM_EXPLANATION'   => $_ARRAYLANG["TXT_CRM_ALLOW_PM_EXPLANATION"],
-                'TXT_CRM_SAVE'                       => $_ARRAYLANG['TXT_CRM_SAVE'],
+                'TXT_CRM_SAVE'                   => $_ARRAYLANG['TXT_CRM_SAVE'],
                 'TXT_CRM_DEFAULT_LANGUAGE'       => $_ARRAYLANG['TXT_CRM_DEFAULT_LANGUAGE'],
                 'TXT_CRM_DEFAULT_USER_GROUP'     => $_ARRAYLANG['TXT_CRM_DEFAULT_USER_GROUP'],
                 'TXT_CRM_CREATE_ACCOUNT_USER'    => $_ARRAYLANG['TXT_CRM_CREATE_ACCOUNT_USER'],
                 'TXT_CRM_CREATE_ACCOUNT_USER_TIP'=> $_ARRAYLANG['TXT_CRM_CREATE_ACCOUNT_USER_TIP'],
 
                 'MODULE_NAME'                    => $this->moduleName,
-                'TXT_CRM_NOTES'                      => $_ARRAYLANG['TXT_CRM_NOTES'],
-                'TXT_CRM_GENERAL'                    => $_ARRAYLANG['TXT_CRM_GENERAL'],
-                'TXT_CRM_CURRENCY'                   => $_ARRAYLANG['TXT_CRM_CURRENCY'],
-                'TXT_CRM_CUSTOMER_TYPES'             => $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPES'],
+                'TXT_CRM_NOTES'                  => $_ARRAYLANG['TXT_CRM_NOTES'],
+                'TXT_CRM_GENERAL'                => $_ARRAYLANG['TXT_CRM_GENERAL'],
+                'TXT_CRM_CURRENCY'               => $_ARRAYLANG['TXT_CRM_CURRENCY'],
+                'TXT_CRM_CUSTOMER_TYPES'         => $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPES'],
                 'TXT_CRM_EMPLOYEE'               => $_ARRAYLANG['TXT_CRM_EMPLOYEE'],
                 'TXT_CRM_EMP_DEFAULT_USER_GROUP' => $_ARRAYLANG['TXT_CRM_EMP_DEFAULT_USER_GROUP'],
                 'TXT_CRM_ACCOUNT_ARE_MANTATORY'  => $_ARRAYLANG['TXT_CRM_ACCOUNT_ARE_MANTATORY']

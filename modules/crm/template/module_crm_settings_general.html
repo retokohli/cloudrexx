@@ -39,6 +39,17 @@
                 <th colspan="2">{TXT_CRM_CUSTOMERS}</th>
             </tr>
             <tr>
+                <td valign="top" width="20%">{TXT_CRM_DEFAULT_COUNTRY}</td>
+                <td>
+                    <select name="default_country_value" id="default_country_value" style="width: 250px;">
+                        <option value="">{TXT_CRM_SELECT_COUNTRY}</option>
+                        <!-- BEGIN default_country -->
+                        <option value="{CRM_DEFAULT_COUNTRY_ID}" {CRM_DEFAULT_COUNTRY_SELECTED}>{CRM_DEFAULT_COUNTRY_NAME}</option>
+                        <!-- END default_country -->
+                    </select>
+                </td>
+            </tr>
+            <tr>
                 <td valign="top" width="20%">
                     {TXT_CRM_CREATE_ACCOUNT_USER}&nbsp;
                     <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_CRM_CREATE_ACCOUNT_USER_TIP}</span>
@@ -84,20 +95,6 @@
                             </select>
                         </span>
                     </div>
-                </td>
-            </tr>
-            <tr>
-                <th colspan="2">{TXT_CRM_EMPLOYEE}</th>
-            </tr>
-            <tr class="row1">
-                <td valign="top" >{TXT_CRM_EMP_DEFAULT_USER_GROUP}</td>
-                <td>
-                    <select name="emp_default_user_group" style="width: 250px;">
-                        <!-- BEGIN empUserGroup -->
-                        <option value="{CRM_GROUP_VALUE}" {CRM_USER_GROUP_SELECTED}>{CRM_GROUP_NAME}</option>
-                        <!-- END empUserGroup -->
-                    </select>
-
                 </td>
             </tr>
         </table>
