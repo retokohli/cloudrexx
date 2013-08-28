@@ -1030,6 +1030,7 @@ CREATE TABLE `contrexx_module_crm_currency` (
   `active` int(1) NOT NULL default '1',
   `pos` int(5) NOT NULL default '0',
   `hourly_rate` text NOT NULL,
+  `default_currency` tinyint(1) NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
