@@ -210,7 +210,6 @@ class BlogLibrary {
         global $objDatabase, $_ARRAYLANG;
 
         $arrReturn = array();
-		$intLanguageIdLoad = $intLanguageId;
 
         if (intval($intLanguageId) > 0) {
             $strLanguageJoin  = '   INNER JOIN  '.DBPREFIX.'module_blog_messages_lang   AS blogMessagesLanguage
@@ -296,10 +295,6 @@ class BlogLibrary {
                     $objCategoryResult->MoveNext();
                 }
 				
-				if ($intLanguageIdLoad) {
-					$where = 'AND lang_id = '.$intLanguageIdLoad;
-				}
-
                 //Get existing translations for the current entry
                 $objLangResult = $objDatabase->Execute('SELECT  lang_id,
                                                                     is_active,
@@ -308,7 +303,7 @@ class BlogLibrary {
                                                                     tags,
                                                                     image
                                                             FROM    '.DBPREFIX.'module_blog_messages_lang
-                                                            WHERE   message_id='.$intMessageId.' '.$where.'
+                                                            WHERE   message_id='.$intMessageId.'
                                                         ');
 
                 while (!$objLangResult->EOF) {
