@@ -15,7 +15,7 @@ if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
 $cl = new \Cx\Core\ClassLoader\ClassLoader($documentRoot, true, $customizing);
 \Env::set('ClassLoader', $cl);
 $cl->loadFile($documentRoot.'/core/API.php');
-$db = new \Cx\Core\Db\Db();
+$db = new \Cx\Core\Model\Db();
 $objDatabase = $db->getAdoDb();
 \Env::set('db', $objDatabase);
 $em = $db->getEntityManager();

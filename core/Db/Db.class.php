@@ -17,15 +17,15 @@ namespace {
      * $ADODB_NEWCONNECTION = array($this, 'adodbPdoConnectionFactory');
      * leads to a "function name must be a string"
      * @deprecated Use Doctrine!
-     * @return \Cx\Core\Db\CustomAdodbPdo 
+     * @return \Cx\Core\Model\CustomAdodbPdo 
      */
     function cxAdodbPdoConnectionFactory() {
-        $obj = new \Cx\Core\Db\CustomAdodbPdo(\Env::get('pdo'));
+        $obj = new \Cx\Core\Model\CustomAdodbPdo(\Env::get('pdo'));
         return $obj;
     }
 }
 
-namespace Cx\Core\Db {
+namespace Cx\Core\Model {
 
     /**
      * DB Exception

@@ -7,7 +7,7 @@
  * @subpackage  core_db
  */
 
-namespace Cx\Core\Db;
+namespace Cx\Core\Model;
 
 // if classloader is not available, load this file yourself
 if (\Env::get('ClassLoader')) {

@@ -5,7 +5,7 @@ class MySQLTestCase extends ContrexxTestCase {
     protected static $database;
 
     public static function setUpBeforeClass() {
-        $db = new \Cx\Core\Db\Db();
+        $db = new \Cx\Core\Model\Db();
         self::$database = $db->getAdoDb();
     }
 
