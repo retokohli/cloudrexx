@@ -98,6 +98,10 @@ class DBG
             self::$mode = self::$mode | $mode | DBG_LOG;
         }
         self::__internal__setup();
+        if ($mode !== DBG_NONE) {
+            self::log('DBG enabled');
+            self::stack();
+        }
     }
 
 
@@ -116,6 +120,10 @@ class DBG
             self::$mode = self::$mode  & ~$mode;
         }
         self::__internal__setup();
+        if ($mode === DBG_NONE) {
+            self::log('DBG disabled');
+            self::stack();
+        }
     }
 
 
