@@ -551,12 +551,13 @@ class CalendarEventManager extends CalendarLibrary
             
             $objCategory = new CalendarCategory($objEvent->catId);     
             
-            if (strlen($objEvent->description) > 100) {
+            $plainDescription = contrexx_html2plaintext($objEvent->description);
+            if (strlen($plainDescription) > 100) {
                 $points = '...';
             } else {
                 $points = '';
             }
-            $parts= explode("\n", wordwrap($objEvent->description, 100, "\n"));
+            $parts= explode("\n", wordwrap($plainDescription, 100, "\n"));
 
             $attachNamePos  = strrpos($objEvent->attach, '/');
             $attachNamelength = strlen($objEvent->attach);
@@ -797,12 +798,13 @@ class CalendarEventManager extends CalendarLibrary
                         break;
                 }                
                 
-                if (strlen($objEvent->description) > 100) {
+                $plainDescription = contrexx_html2plaintext($objEvent->description);
+                if (strlen($plainDescription) > 100) {
                     $points = '...';
                 } else {
                     $points = '';
                 }
-                $parts= explode("\n", wordwrap($objEvent->description, 100, "\n"));
+                $parts= explode("\n", wordwrap($plainDescription, 100, "\n"));
                 
                 $attachNamePos    = strrpos($objEvent->attach, '/');
                 $attachNamelength = strlen($objEvent->attach);
