@@ -15,7 +15,7 @@ header.login h2 {
 
 header.login .inner {
     width: 720px;
-    padding: 10px 0 15px 0;
+    padding: 15px 0 20px 0;
 }
 
 header.login .left {
@@ -38,6 +38,17 @@ header.login .right {
 
 header.login .right input {
     margin-bottom: 10px;
+}
+
+header.login .right input.remember_me {
+    height: 30px;
+    padding-top: 6px;
+}
+
+header.login .right label.remember_me {
+    width: 210px;
+    padding-bottom: 16px;
+    padding-top: 8px;
 }
 
 #metanavigation .login-toggle a {
@@ -80,14 +91,14 @@ header.login .right input {
 #search-form {
     position: absolute;
     top: 30px;
-    right: 70px;
+    right: 0;
     padding: 12px 0 0 0;
 }
 
 #language-navigation {
     position: absolute;
     right: 0;
-    top: 41px;
+    top: 0;
 }
 
 #search-form #search-input {
@@ -101,11 +112,20 @@ header.login .right input {
     -o-border-radius: 6px;
     border: 1px solid #E5E5E5;
     background: #FFFFFF url('images/search-glass.png') no-repeat 138px center;
+     -webkit-transition: all .3s ease-in-out;
+    -moz-transition: all .3s ease-in-out;
+    -o-transition: all .3s ease-in-out;
+    transition: all .3s ease-in-out;
+}
+
+#search-form #search-input:focus {
+    width: 180px;
+    background: #FFFFFF url('images/search-glass.png') no-repeat 198px center;
 }
 
 #metanavigation {
     position: absolute;
-    right: 0;
+    right: 54px;
     top: 0;
     font-family: 'Ubuntu';
 }
@@ -135,46 +155,6 @@ header.login .right input {
 
 #metanavigation li a:hover {
     color: #0A85C8;
-}
-
-#metanavigation .login-toggle a.active {
-    background: #0A85C8;
-    color: #ffffff;
-    border-radius: 9px 9px 0px 0px;
-}
-
-#metanavigation .login-toggle > div {
-    display: none;
-    z-index: 1000;
-    position: absolute;
-    right: 0;
-    top: 39px;
-    width: 400px;
-    padding: 10px 20px 20px;
-    background: #ffffff;
-    border-bottom: 3px #0A85C8 solid;
-    border-left: 3px #0A85C8 solid;
-    border-right: 3px #0A85C8 solid;
-}
-
-#metanavigation .login-toggle > div form p {
-    padding-left: 100px;
-    width: 270px;
-}
-
-#metanavigation .login-toggle > div form label {
-    width: 90px;
-    margin-left: -100px;
-}
-
-#metanavigation .login-toggle > div form label.remember_me {
-    width: auto;
-    margin-left: 0;
-}
-
-#metanavigation .login-toggle > div form input[type="text"],
-#metanavigation .login-toggle > div form input[type="password"] {
-    width: 270px;
 }
 
 #select-language {

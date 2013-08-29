@@ -74,17 +74,17 @@
                     <a href="{NODE_LOGIN}?provider=facebook" class="facebook loginbutton">Facebook</a>
                     <a href="{NODE_LOGIN}?provider=google" class="google loginbutton">Google</a>
                     <a href="{NODE_LOGIN}?provider=twitter" class="twitter loginbutton">Twitter</a>
-                    <div>
-                        Haben Sie noch kein Konto?<br />
-                        <a href="{NODE_ACCESS_SIGNUP}">Jetzt registrieren</a>
-                    </div>
                 </div>
                 <div class="right">
                     <form method="post" action="{NODE_LOGIN}">
                         <input name="USERNAME" placeholder="Benutzername" type="text"/>
                         <input name="PASSWORD" placeholder="Passwort" type="password"/>
-                        <input type="submit" name="login" value="Login"/>
+                        <input type="submit" value="Anmelden" name="login">
+                        <input type="checkbox" id="remember_me" class="remember_me" name="remember_me" value="1">
+                        <label class="remember_me" for="remember_me">Angemeldet bleiben</label>
                     </form>
+                    <a href="{NODE_LOGIN_LOSTPW}">Passwort vergessen?</a><br />
+                    <a href="{NODE_ACCESS_SIGNUP}">Haben Sie noch kein Konto? Jetzt registrieren</a>
                 </div>
             </div>
         </header>
@@ -106,7 +106,7 @@
                             <a class="open" href="{NODE_LOGIN}">Login</a>
                             <a class="close" href="#">Schliessen</a>
                         </li>
-                        <li class="last"><a href="{NODE_ACCESS_SIGNUP}">Registrieren</a></li>
+                        <li><a href="{NODE_ACCESS_SIGNUP}">Registrieren</a></li>
                         <!-- END access_logged_out -->
                         <!-- BEGIN access_logged_in -->
                         <li class="first"><a href="{NODE_ACCESS_SETTINGS_PROFILE}">Angemeldet als {ACCESS_USER_USERNAME}</a></li>
