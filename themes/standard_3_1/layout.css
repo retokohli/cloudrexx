@@ -4,6 +4,62 @@
     position: relative;
 }
 
+header.login {
+    display: none;
+    background: #F1F1F1;
+}
+
+header.login h2 {
+    font-size: 2em;
+}
+
+header.login .inner {
+    width: 720px;
+    padding: 10px 0 15px 0;
+}
+
+header.login .left {
+    float: left;
+    width: 189px;
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    margin-right: 100px;
+    padding-right: 100px;
+}
+
+header.login .left div {
+    float: left;
+    width: 100%;
+}
+
+header.login .right {
+    float: left;
+    width: 330px;
+}
+
+header.login .right input {
+    margin-bottom: 10px;
+}
+
+#metanavigation .login-toggle a {
+    text-align: right;
+}
+
+#metanavigation .login-toggle .close {
+    display: none;
+}
+
+#metanavigation .login-toggle.open .open {
+    display: none;
+}
+
+#metanavigation .login-toggle.open .close {
+    background: #F1F1F1;
+    -webkit-border-radius: 0 0 5px 5px;
+    -moz-border-radius: 0 0 5px 5px;
+    border-radius: 0 0 5px 5px;
+    display: block;
+}
+
 #header {
     background: #FFFFFF;
     float: left;
@@ -23,7 +79,7 @@
 
 #search-form {
     position: absolute;
-    top: 0;
+    top: 30px;
     right: 70px;
     padding: 12px 0 0 0;
 }
@@ -31,7 +87,7 @@
 #language-navigation {
     position: absolute;
     right: 0;
-    top: 11px;
+    top: 41px;
 }
 
 #search-form #search-input {
@@ -50,7 +106,7 @@
 #metanavigation {
     position: absolute;
     right: 0;
-    top: 48px;
+    top: 0;
     font-family: 'Ubuntu';
 }
 
@@ -62,10 +118,10 @@
 #metanavigation li>a {
     display: block;
     padding: 6px 15px 9px 15px;
-    background: url('images/divider.gif') no-repeat left 13px;
+    background: url('images/divider.gif') no-repeat right 13px;
 }
 
-#metanavigation li.first a {
+#metanavigation li.last a {
     background: none;
 }
 

@@ -177,5 +177,17 @@
                 fluentSidebar();
             }
         });
+
+        $(".login-toggle a.open").click(function() {
+            $('.login-toggle').removeClass('open');
+            $('.login-toggle').addClass('open');
+            $("header.login").slideDown();
+            return false;
+        });
+        $(".login-toggle a.close").click(function() {
+            $('.login-toggle').removeClass('open');
+            $("header.login").slideUp();
+            return false;
+        });
     });
 })(jQuery);

@@ -67,6 +67,27 @@
     </head>
     
     <body>
+        <header class="login">
+            <div class="inner clearfix">
+                <h2>Login</h2>
+                <div class="left">
+                    <a href="{NODE_LOGIN}?provider=facebook" class="facebook loginbutton">Facebook</a>
+                    <a href="{NODE_LOGIN}?provider=google" class="google loginbutton">Google</a>
+                    <a href="{NODE_LOGIN}?provider=twitter" class="twitter loginbutton">Twitter</a>
+                    <div>
+                        Haben Sie noch kein Konto?<br />
+                        <a href="{NODE_ACCESS_SIGNUP}">Jetzt registrieren</a>
+                    </div>
+                </div>
+                <div class="right">
+                    <form method="post" action="{NODE_LOGIN}">
+                        <input name="USERNAME" placeholder="Benutzername" type="text"/>
+                        <input name="PASSWORD" placeholder="Passwort" type="password"/>
+                        <input type="submit" name="login" value="Login"/>
+                    </form>
+                </div>
+            </div>
+        </header>
         <header id="header">
             <div class="inner clearfix">
                 <a id="logo" href="{NODE_HOME}">&nbsp;</a>
@@ -81,34 +102,9 @@
                 <nav id="metanavigation">
                     <ul>
                         <!-- BEGIN access_logged_out -->
-                        <li class="first login-toggle"><a href="{NODE_LOGIN}">Login</a>
-
-                            <div>
-                                <h2>Anmelden</h2>
-                                <form method="post" action="{NODE_LOGIN}" name="loginForm">
-                                    <p>
-                                        <label for="USERNAME">Login</label>
-                                        <input id="USERNAME" name="USERNAME" value="" type="text">
-                                    </p>
-                                    <p>
-                                        <label for="PASSWORD">Passwort</label>
-                                        <input id="PASSWORD" name="PASSWORD" value="" type="password">
-                                    </p>
-                                    <p>
-                                        <input type="submit" name="login" value="Anmelden">
-                                        <input type="checkbox" value="1" name="remember_me" class="remember_me"
-                                               id="remember_me">
-                                        <label for="remember_me" class="remember_me">Angemeldet bleiben</label>
-                                    </p>
-                                    <a title="Jetzt kostenlos registrieren" href="{NODE_ACCESS_SIGNUP}" class="register">
-                                        Haben Sie noch keinen Account? Jetzt registrieren
-                                    </a>
-                                    <br>
-                                    <a title="" href="{NODE_LOGIN_LOSTPW}" class="lostpw">
-                                        Passwort vergessen?
-                                    </a>
-                                </form>
-                            </div>
+                        <li class="first login-toggle">
+                            <a class="open" href="{NODE_LOGIN}">Login</a>
+                            <a class="close" href="#">Schliessen</a>
                         </li>
                         <li class="last"><a href="{NODE_ACCESS_SIGNUP}">Registrieren</a></li>
                         <!-- END access_logged_out -->
