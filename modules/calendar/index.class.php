@@ -637,6 +637,19 @@ $this->_objTpl->setVariable(array(
             'TXT_'.$this->moduleLangVar.'_EVENT_PRICE'       =>  $_ARRAYLANG['TXT_CALENDAR_EVENT_PRICE'],
             'TXT_'.$this->moduleLangVar.'_EVENT_FREE_PLACES' =>  $_ARRAYLANG['TXT_CALENDAR_EVENT_FREE_PLACES'],
             'TXT_'.$this->moduleLangVar.'_DATE'              =>  $_CORELANG['TXT_DATE'],
+            'TXT_'.$this->moduleLangVar.'_NAME'              =>  $_ARRAYLANG['TXT_CALENDAR_EVENT_NAME'],
+            'TXT_'.$this->moduleLangVar.'_LINK'              =>  $_ARRAYLANG['TXT_CALENDAR_EVENT_LINK'],
+            'TXT_'.$this->moduleLangVar.'_EVENT'             =>  $_ARRAYLANG['TXT_CALENDAR_EVENT'],
+            'TXT_'.$this->moduleLangVar.'_STREET'            =>  $_ARRAYLANG['TXT_CALENDAR_EVENT_STREET'],
+            'TXT_'.$this->moduleLangVar.'_ZIP'               =>  $_ARRAYLANG['TXT_CALENDAR_EVENT_ZIP'],            
+            'TXT_'.$this->moduleLangVar.'_MAP'               =>  $_ARRAYLANG['TXT_CALENDAR_EVENT_MAP'],
+            'TXT_'.$this->moduleLangVar.'_HOST'              =>  $_ARRAYLANG['TXT_CALENDAR_HOST'],
+            'TXT_'.$this->moduleLangVar.'_MAIL'              =>  $_ARRAYLANG['TXT_CALENDAR_EVENT_EMAIL'],
+            'TXT_'.$this->moduleLangVar.'_HOST_NAME'         =>  $_ARRAYLANG['TXT_CALENDAR_EVENT_NAME'],
+            'TXT_'.$this->moduleLangVar.'_TITLE'             =>  $_ARRAYLANG['TXT_CALENDAR_TITLE'],
+            'TXT_'.$this->moduleLangVar.'_ACCESS'            =>  $_ARRAYLANG['TXT_CALENDAR_ACCESS'],
+            'TXT_'.$this->moduleLangVar.'_REGISTRATION'      =>  $_ARRAYLANG['TXT_CALENDAR_REGISTRATION'],
+            'TXT_'.$this->moduleLangVar.'_REGISTRATION_INFO' =>  $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_INFO']
         ));
          
         $this->objEventManager->showEvent($this->_objTpl, intval($_GET['id']), intval($_GET['date']));
