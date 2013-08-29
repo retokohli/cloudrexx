@@ -551,6 +551,8 @@ class CalendarEventManager extends CalendarLibrary
             
             $objCategory = new CalendarCategory($objEvent->catId);     
             
+            list ($priority, $priorityImg) = $this->getPriorityImage($objEvent);
+            
             $plainDescription = contrexx_html2plaintext($objEvent->description);
             if (strlen($plainDescription) > 100) {
                 $points = '...';
@@ -775,28 +777,7 @@ class CalendarEventManager extends CalendarLibrary
                 }
                 $languages = \Html::getLanguageIcons($langState, 'index.php?cmd=calendar&amp;act=modify_event&amp;id=' . $objEvent->id . '&amp;langId=%1$d');
                 
-                switch ($objEvent->priority) {
-                    case 1:
-                        $priority    = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_HEIGHT'];
-                        $priorityImg = "<img src='images/modules/calendar/very_height.gif' border='0' title='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_HEIGHT']."' alt='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_HEIGHT']."' />";
-                        break;
-                    case 2:
-                        $priority    = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_HEIGHT'];
-                        $priorityImg = "<img src='images/modules/calendar/height.gif' border='0' title='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_HEIGHT']."' alt='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_HEIGHT']."' />";
-                        break;
-                    case 3:
-                        $priority    = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_NORMAL'];
-                        $priorityImg = "&nbsp;";
-                        break;
-                    case 4:
-                        $priority    = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_LOW'];
-                        $priorityImg = "<img src='images/modules/calendar/low.gif' border='0' title='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_LOW']."' alt='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_LOW']."' />";
-                        break;
-                    case 5:
-                        $priority    = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_LOW'];
-                        $priorityImg = "<img src='images/modules/calendar/very_low.gif' border='0' title='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_LOW']."' alt='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_LOW']."' />";
-                        break;
-                }                
+                list ($priority, $priorityImg) = $this->getPriorityImage($objEvent);
                 
                 $plainDescription = contrexx_html2plaintext($objEvent->description);
                 if (strlen($plainDescription) > 100) {
@@ -1617,4 +1598,36 @@ class CalendarEventManager extends CalendarLibrary
                             /* ]]> */
                             </script>';
     }    
+    
+    function getPriorityImage($objEvent)
+    {
+        global $_ARRAYLANG;
+
+        $priority    = '';
+        $priorityImg = '';
+        switch ($objEvent->priority) {
+            case 1:
+                $priority    = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_HEIGHT'];
+                $priorityImg = "<img src='images/modules/calendar/very_height.gif' border='0' title='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_HEIGHT']."' alt='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_HEIGHT']."' />";
+                break;
+            case 2:
+                $priority    = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_HEIGHT'];
+                $priorityImg = "<img src='images/modules/calendar/height.gif' border='0' title='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_HEIGHT']."' alt='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_HEIGHT']."' />";
+                break;
+            case 3:
+                $priority    = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_NORMAL'];
+                $priorityImg = "&nbsp;";
+                break;
+            case 4:
+                $priority    = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_LOW'];
+                $priorityImg = "<img src='images/modules/calendar/low.gif' border='0' title='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_LOW']."' alt='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_LOW']."' />";
+                break;
+            case 5:
+                $priority    = $_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_LOW'];
+                $priorityImg = "<img src='images/modules/calendar/very_low.gif' border='0' title='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_LOW']."' alt='".$_ARRAYLANG['TXT_CALENDAR_PRIORITY_VERY_LOW']."' />";
+                break;
+        }
+        
+        return array($priority, $priorityImg);
+    }
 }
