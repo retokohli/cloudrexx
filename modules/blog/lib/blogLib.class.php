@@ -314,7 +314,7 @@ class BlogLibrary {
                 while (!$objLangResult->EOF) {
                     $intLanguageId = $objLangResult->fields['lang_id'];
 
-                    if ( ($intLanguageId == $this->_intLanguageId && !empty($objResult->fields['subject'])) ||
+                    if ( ($intLanguageId == $this->_intLanguageId && !empty($objLangResult->fields['subject'])) ||
                          empty($arrReturn[$intMessageId]['subject']) )
                     {
                         $arrReturn[$intMessageId]['subject'] = htmlentities(stripslashes($objLangResult->fields['subject']), ENT_QUOTES, CONTREXX_CHARSET);
