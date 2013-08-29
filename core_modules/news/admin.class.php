@@ -1556,7 +1556,11 @@ class newsManager extends newsLibrary {
                 $this->_objTpl->hideBlock('news_language_checkboxes');
             }
             
-            $this->_objTpl->setVariable('NEWS_DEFAULT_LANG', contrexx_raw2xhtml(FWLanguage::getLanguageParameter($selectedLangId, 'name')));            
+            $this->_objTpl->setVariable('NEWS_DEFAULT_LANG', contrexx_raw2xhtml(FWLanguage::getLanguageParameter($selectedLangId, 'name')));   
+        
+            if ($this->arrSettings['news_use_teaser_text'] != 1) {
+                $this->_objTpl->hideBlock('news_use_teaser_text');
+            }         
             
             $teaserShowLink = $objResult->fields['teaser_show_link'];
 
