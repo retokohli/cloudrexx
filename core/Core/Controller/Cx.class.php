@@ -120,7 +120,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Database connection handler
-         * @var \Cx\Core\Db\Db
+         * @var \Cx\Core\Model\Db
          */
         protected $db = null;
 
@@ -694,7 +694,7 @@ namespace Cx\Core\Core\Controller {
                 \CSRF::setFrontendMode();
             }
             
-            $this->db = new \Cx\Core\Db\Db($this);
+            $this->db = new \Cx\Core\Model\Db($this);
             $objDatabase = $this->db->getAdoDb();
             \Env::set('db', $objDatabase);
             $em = $this->db->getEntityManager();
@@ -1424,7 +1424,7 @@ namespace Cx\Core\Core\Controller {
         
         /**
          * Returns the database connection handler
-         * @return \Cx\Core\Db\Db DB connection handler
+         * @return \Cx\Core\Model\Db DB connection handler
          */
         public function getDb() {
             return $this->db;

@@ -34,7 +34,9 @@ require_once($documentRoot.'/lib/FRAMEWORK/User/User.class.php');
 require_once($documentRoot.'/lib/FRAMEWORK/FWUser.class.php');
 require_once($documentRoot.'/core/session.class.php');
 
-$objDatabase = getDatabaseObject($strErrMessage, true);
+$db = new \Cx\Core\Model\Db();
+$objDatabase = $db->getAdoDb();
+\Env::set('db', $objDatabase);
 
 // note that license does not get any language vars, so it won't be able to display the fallback message
 $license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $objDatabase);

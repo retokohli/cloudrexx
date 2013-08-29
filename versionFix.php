@@ -24,7 +24,7 @@ require_once $documentRoot . '/core/API.php';
 require_once $documentRoot . '/core/Init.class.php';
 require_once $documentRoot . '/core/settings.class.php';
 
-$db = new \Cx\Core\Db\Db();
+$db = new \Cx\Core\Model\Db();
 $objDatabase = $db->getAdoDb();
 \Env::set('db', $objDatabase);
 $objInit = new \InitCMS('frontend', null);

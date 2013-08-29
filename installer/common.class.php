@@ -23,12 +23,12 @@ require_once(ASCMS_FRAMEWORK_PATH.'/FileSystem/FileSystem.class.php');
 /**
  * Factory callback for AdoDB NewConnection
  * @deprecated Use Doctrine!
- * @return \Cx\Core\Db\CustomAdodbPdo 
+ * @return \Cx\Core\Model\CustomAdodbPdo 
  */
 function cxupdateAdodbPdoConnectionFactory() {
     require_once '..'.DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'adodb'.DIRECTORY_SEPARATOR.'drivers'.DIRECTORY_SEPARATOR.'adodb-pdo.inc.php';
     require_once '..'.DIRECTORY_SEPARATOR.'core'.DIRECTORY_SEPARATOR.'Db'.DIRECTORY_SEPARATOR.'CustomAdodbPdo.class.php';
-    $obj = new \Cx\Core\Db\CustomAdodbPdo(CommonFunctions::$pdo);
+    $obj = new \Cx\Core\Model\CustomAdodbPdo(CommonFunctions::$pdo);
     return $obj;
 }
 
