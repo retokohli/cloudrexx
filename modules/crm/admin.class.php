@@ -2510,6 +2510,7 @@ END;
                 'CRM_ACCOUNT_MANTORY'       => ($settings['create_user_account'] && $settings['user_account_mantatory']) ? '<font color="red">*</font>' : '',
                 'CRM_ACCOUNT_MANTORY_CLASS' => ($settings['create_user_account'] && $settings['user_account_mantatory']) ? 'mantatory' : '',
 
+                'TXT_CRM_EMPLOYEE'          => $_ARRAYLANG['TXT_CRM_EMPLOYEE'],
                 'TXT_CRM_CITY'              => $_ARRAYLANG['TXT_CRM_TITLE_CITY'],
                 'TXT_CRM_STATE'             => $_ARRAYLANG['TXT_CRM_STATE'],
                 'TXT_CRM_ZIP_CODE'          => $_ARRAYLANG['TXT_CRM_ZIP_CODE'],

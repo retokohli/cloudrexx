@@ -10,7 +10,7 @@ $J.dropdownToggle({
 });
 $J.dropdownToggle({
     dropdownID: 'WebsiteCategoriesPanel',
-    switcherSelector: '.website_list a.category',  
+    switcherSelector: '.website_list a.category',
     addTop: 0,
     addLeft: 0
 });
@@ -39,7 +39,7 @@ function showsocialProfilesPanel(switcherUI) {
         _changeSocialCategory(switcherUI, $J(this).text(), $J(this).attr("category"));
     });
 }
-function showwebsiteProfilesPanel(switcherUI) {    
+function showwebsiteProfilesPanel(switcherUI) {
     $J("#WebsiteCategoriesPanel a.dropDownItem").unbind('click').click(function() {
         _changeWebsiteProfile(switcherUI, $J(this).text(), $J(this).attr("category"));
     });
@@ -124,13 +124,15 @@ $J(document).ready(function() {
 
             first = false;
         });
-         $J("#main_membership").trigger("liszt:updated");
-         $J('#assigned_memberships .chzn-container').mousedown();
+        $J("#main_membership").trigger("liszt:updated");
+        $J('#assigned_memberships .chzn-container').mousedown();
     });
 
     $J("#main_membership").chosen();
-    $J(".chzn-select-deselect").chosen({allow_single_deselect:false});
-//    $J("#advanced").hide();
+    $J(".chzn-select-deselect").chosen({
+        allow_single_deselect:false
+    });
+    //    $J("#advanced").hide();
     $J(".crm-AddressAdd").live("click", function(){
         newElm   = $J("#addressContainer div:first").clone().attr("style", "");
         emailCount++;
@@ -147,7 +149,7 @@ $J(document).ready(function() {
         newElm.find(".contactZip").attr("name", Zip);
         newElm.find(".cCountry").attr("name", Country);
         newElm.find(".contactType").attr("name", Type);
-        
+
         $J(this).closest("#addressContainer").append(newElm);
         resetAddAddressLink();
     });
@@ -162,7 +164,7 @@ $J(document).ready(function() {
     $J(".crm_deleteLink_address").live("click", function() {
         count = $J('#addressContainer > div').length;
         if (count <= 2) return;
-        
+
         $J(this).closest(".address_list_container").remove();
         resetAddAddressLink();
 
@@ -199,7 +201,7 @@ $J(document).ready(function() {
         elm = $J(this).attr("name");
         count = $J('#'+elm+'Container > div').length;
         emailCount++;
-        
+
         switch (elm) {
             case 'website':
                 if (contactType == 'company')
@@ -220,7 +222,7 @@ $J(document).ready(function() {
                 elmName     = "contact"+elm+"_"+emailCount+'_1_0';
                 break;
         }
-        
+
         var newElem = $J('#'+elm+'Container div:first').clone().attr('style', '');
         newElem.find("."+elm+"_list input").attr("name", elmName);
         $J('#'+elm+'Container').append(newElem);
@@ -230,17 +232,17 @@ $J(document).ready(function() {
         elm = $J(this).attr("name");
         $J("#"+elm+"Container .is_primary:not(:first)").removeClass("primary_field");
         $J("#"+elm+"Container .is_primary:not(:first)").removeClass("not_primary_field");
-        $J(this).addClass("primary_field");        
+        $J(this).addClass("primary_field");
         $J("#"+elm+"Container .is_primary:not(.primary_field)").addClass("not_primary_field");
 
         $J("#"+elm+"Container .is_primary:not(:first)").each(function(){
             if ($J(this).hasClass("primary_field")) primary = 1;
             else primary = 0;
-            
+
             var $inputObj = $J(this).closest('.'+elm+'_list_container').find('.'+elm+'_list').find('input');
-            var parts = $inputObj.attr('name').split('_');            
+            var parts = $inputObj.attr('name').split('_');
             elmName     = parts[3] = primary;
-            
+
             $inputObj.attr('name', parts.join('_'));
         });
     });
@@ -283,7 +285,7 @@ function resetAddEmailLink(elm) {
 function resetInputNames(elm) {
     $J(".email_list_container:visible").each(function(){
         category = $J(this).find(".email_list a").text();
-        cat = $J(".dropDownContent a:contains("+category+")").attr("category");        
+        cat = $J(".dropDownContent a:contains("+category+")").attr("category");
     });
 }
 function isSpecialChars(s)
@@ -349,60 +351,75 @@ function checkaddContact() {
     }
     contact_id = $J("#customer_id").val();
     contact_gender = $J("#contact_gender").val();
-    if(($J("#contact_gender").exists() && $J("#contact_gender").is(":visible")) && $J.trim(contact_gender) == "") {
+    if(($J("#contact_gender").exists()) && $J.trim(contact_gender) == "") {
         errChk = 1;
-        $J("#contact_gender").css("border", "1px solid red");        
+        $J("#contact_gender").css("border", "1px solid red");
     }
-    
+
     customerId = $J("#customerId").val();
-    if(($J("#customerId").exists() && $J("#customerId").is(":visible")) && $J.trim(customerId) == "") {
-        errChk = 1;
-        $J("#customerId").css("border", "1px solid red");
-        $J("#customerId").val("");        
-    }
     customerType = $J("#customer_type").val();
-    if(($J("#customer_type").exists() && $J("#customer_type").is(":visible")) && $J.trim(customerType) == "") {
-        errChk = 1;
-        $J("#customer_type").css("border", "1px solid red");
+    currency = $J("#currency").val();
+    var condition = true;
+    if (contactType == 'contact') {
+        if ($J("#companyId").val() == '' || $J("#companyId").val() == 0) {
+            condition = true;
+        } else{
+            condition = false;
+        }
     }
+    if (condition) {
+        if(($J("#customerId").exists()) && $J.trim(customerId) == "") {
+            errChk = 1;
+            $J("#customerId").css("border", "1px solid red");
+            $J("#customerId").val("");
+        }
+
+        if(($J("#customer_type").exists() && $J("#customer_type").is(":visible")) && $J.trim(customerType) == "") {
+            errChk = 1;
+            $J("#customer_type").css("border", "1px solid red");
+        }
+
+        if(($J("#currency").exists()) && $J.trim(currency) == "") {
+            errChk = 1;
+            $J("#currency").css("border", "1px solid red");
+            $J("#currency").val("");
+        }
+    }
+
     companyName = $J("#companyName").val();
     if($J("#companyName").exists() && $J.trim(companyName) == "") {
         errChk = 1;
         $J("#companyName").css("border", "1px solid red");
         $J("#companyName").val("");
     }
-    
-    currency = $J("#currency").val();
-    if(($J("#currency").exists() && $J("#currency").is(":visible")) && $J.trim(currency) == "") {
-        errChk = 1;
-        $J("#currency").css("border", "1px solid red");
-        $J("#currency").val("");
-    }
+
 
     /*if($J("#contact_name").exists() && $J.trim($J("#contact_name").val()) == "") {
         errChk = 1;
-        $J("#contact_name").css("border", "1px solid red");        
+        $J("#contact_name").css("border", "1px solid red");
     }*/
     if($J("#family_name").exists() && $J.trim($J("#family_name").val()) == "") {
         errChk = 1;
         $J("#family_name").css("border", "1px solid red");
     }
-    if ($J("#contact_email").exists()) {
-        emailField = $J("#contact_email");
-        if(emailField.hasClass('mantatory') && checkEmail(emailField.val()) == false) {
-            errChk = 1;
-            emailField.css("border", "1px solid red");
+    if ($J("#contactId").val() == 0) {
+        if ($J("#contact_email").exists()) {
+            emailField = $J("#contact_email");
+            if(emailField.hasClass('mantatory') && checkEmail(emailField.val()) == false) {
+                errChk = 1;
+                emailField.css("border", "1px solid red");
+            }
         }
     }
-    
-    if (contact_id == 0) {       
+
+    if (contact_id == 0) {
         if($J("#contact_password").exists() && $J("#contact_password").hasClass('mantatory') && $J.trim($J("#contact_password").val()) == "") {
             errChk = 1;
             $J("#contact_password").css("border", "1px solid red");
         }
     }
     if (contactType == 'company') {
-        $J("div.email_list:visible input").each(function (){
+        $J("div.email_list:not:last input").each(function (){
             $J(this).parent().css("border", "1px solid #0A50A1");
             if ($J.trim($J(this).val()) == "") {
                 errChk = 1;
@@ -414,7 +431,7 @@ function checkaddContact() {
             }
         });
     }
-    
+
     if($J("#language").exists() && $J.trim($J("#language").val()) == "") {
         errChk = 1;
         $J("#language").css("border", "1px solid red");
@@ -444,7 +461,7 @@ $J(function() {
     $J("input:not(.mInput, .default)").keyup(function () {
         $J(this).css("border","1px solid #0A50A1");
     });
-    $J("input.mInput").keyup(function () {        
+    $J("input.mInput").keyup(function () {
         $J(this).parent().css("border","1px solid #0A50A1");
     });
 
@@ -501,7 +518,7 @@ $J(function() {
     $J("#selectContact, .input-addcontact").live('focus', function() {
         $J(this).removeClass("crm-watermark");
     });
-    $J("#selectContact, .input-addcontact").live('blur', function() {        
+    $J("#selectContact, .input-addcontact").live('blur', function() {
         if ($J(this).val() == '') {
             $J(this).addClass("crm-watermark");
         } else {
@@ -598,14 +615,14 @@ $J(function() {
     });
     resetCustomerType();
     setTableRow("profile-info");
-    
+
     $J('.address_list_container input, .address_list_container textarea').live('focusin', function(){
         $J(this).data('holder',$J(this).attr('placeholder'));
         $J(this).attr('placeholder','');
     });
     $J('.address_list_container input, .address_list_container textarea').live('focusout',function(){
         $J(this).attr('placeholder',$J(this).data('holder'));
-    });    
+    });
 });
 function resetCustomerType() {
     if ($J("#companyId").val() == '' || $J("#companyId").val() == 0) {
@@ -743,22 +760,22 @@ var typewatch = function(){
 }();
 function checkUserNameAvailablity(customer_id, email) {
     $J.ajax({
-       url        : 'index.php?cmd=crm&act=checkuseravailablity',
-       type       : 'get',
-       data       : 'id='+customer_id+'&term='+$J('#contact_email').val(),
-       dataType   : 'json',       
-       success    : function(json) {
-           $J('.contact_user_container .error, .contact_user_container .success, .contact_user_container .progress').remove();
-           var html = '';
-           if (json['error']) {
+        url        : 'index.php?cmd=crm&act=checkuseravailablity',
+        type       : 'get',
+        data       : 'id='+customer_id+'&term='+$J('#contact_email').val(),
+        dataType   : 'json',
+        success    : function(json) {
+            $J('.contact_user_container .error, .contact_user_container .success, .contact_user_container .progress').remove();
+            var html = '';
+            if (json['error']) {
                 html = "<span class='error'><br>"+ json['error'] +"</span>";
-           }
-           if (json['success']) {
-                //html = "<div class='success'>"+ json['success'] +"</div>";
-           }
+            }
+            if (json['success']) {
+            //html = "<div class='success'>"+ json['success'] +"</div>";
+            }
 
-           $J('tr.contact_user_container').find('td').eq(1).append(html);
-       }
+            $J('tr.contact_user_container').find('td').eq(1).append(html);
+        }
     });
     $J('#contact_username').val();
 }
