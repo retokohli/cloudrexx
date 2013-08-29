@@ -936,12 +936,27 @@ if (!$limit) {
         // Send an email to the customer
         if (   !empty($_GET['sendMail'])
             && !empty($_GET['order_id'])) {
-            $result = ShopLibrary::sendConfirmationMail($_GET['order_id']);
-            if (!empty($result)) {
-                Message::ok(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'],
-                    $result));
-            } else {
-                Message::error($_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']);
+            
+            // TODO: It might be useful to move this to its own method:
+            $hasMail = false;
+            $result = null;
+            switch ($status) {
+                case Order::STATUS_CONFIRMED:
+                    $result = ShopLibrary::sendConfirmationMail($_GET['order_id']);
+                    $hasMail = true;
+                    break;
+                case Order::STATUS_COMPLETED:
+                    $result = \Shopmanager::sendProcessedMail($_GET['order_id']);
+                    $hasMail = true;
+                    break;
+            }
+            if ($hasMail) {
+                if (!empty($result)) {
+                    Message::ok(sprintf($_ARRAYLANG['TXT_EMAIL_SEND_SUCCESSFULLY'],
+                        $result));
+                } else {
+                    Message::error($_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']);
+                }
             }
         }
         \CSRF::redirect('index.php?cmd=shop&act=orders');
