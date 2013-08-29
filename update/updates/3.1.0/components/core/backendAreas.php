@@ -938,7 +938,7 @@ function _updateBackendAreas()
 			'target'			=> '_self',
 			'module_id'			=> 68,
 			'order_id'			=> 3,
-			'access_id'			=> 7
+			'access_id'			=> 8
 		),
 		array(
 			'area_id'			=> 144,

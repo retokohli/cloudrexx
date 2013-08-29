@@ -762,6 +762,8 @@ $updatesSp4To301 = array(
             'text' => array('fields' => array('text'), 'type' => 'FULLTEXT'),
         ),
     ),
+    // set new access_id for filesharing
+    "UPDATE `" . DBPREFIX . "backend_areas` SET `access_id` = '8' WHERE `contrexx_backend_areas`.`area_id` = 187"
 );
 
 $updatesRc1ToSp4    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To301);
@@ -1271,11 +1273,27 @@ if($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
  *
  * STRICT_TRANS_TABLES ISSUE FIX FOR PROFILE TABLE
  *
+ * ADD NEW ACCESS ID FOR FILESHARING
+ *
  **************************************/
 if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
     try {
         \Cx\Lib\UpdateUtil::sql("ALTER TABLE `".DBPREFIX."access_user_profile` CHANGE `interests` `interests` TEXT NULL");
         \Cx\Lib\UpdateUtil::sql("ALTER TABLE `".DBPREFIX."access_user_profile` CHANGE `signature` `signature` TEXT NULL");
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
+    // add access to filesharing for existing groups
+    try {
+        $result = \Cx\Lib\UpdateUtil::sql("SELECT `group_id` FROM `" . DBPREFIX . "access_group_static_ids` WHERE access_id = 7 GROUP BY group_id");
+        if ($result !== false) {
+            while (!$result->EOF) {
+                \Cx\Lib\UpdateUtil::sql("INSERT INTO `" . DBPREFIX . "access_group_static_ids` (`access_id`, `group_id`)
+                                            VALUES (8, " . intval($result->fields['group_id']) . ")");
+                $result->MoveNext();
+            }
+        }
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }

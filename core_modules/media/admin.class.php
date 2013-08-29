@@ -176,7 +176,7 @@ class MediaManager extends MediaLibrary
                 ');
                 break;
             case 'filesharing':
-                Permission::checkAccess(7, 'static');
+                Permission::checkAccess(8, 'static');
                 $objTemplate->setVariable('CONTENT_NAVIGATION', '
                     <a href="index.php?cmd=media&amp;archive=filesharing"' . (!isset($_GET['act']) || $_GET['act'] == 'filesharing' ? ' class="active"' : '') . '>' . $_ARRAYLANG['TXT_FILESHARING_MODULE'] . '</a>
                     <a href="index.php?cmd=media&amp;archive=filesharing&amp;act=settings"' . (isset($_GET['act']) && $_GET['act'] == 'settings' ? ' class="active"' : '') . '>' . $_ARRAYLANG['TXT_MEDIA_SETTINGS'] . '</a>
