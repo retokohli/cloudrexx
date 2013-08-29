@@ -91,13 +91,10 @@ class CrmManager extends CrmLibrary
 
         $contentNavigation = '';
 
-        if (Permission::checkAccess($this->customerAccessId, 'static', true)) {
-            $contentNavigation .= "<a href='index.php?cmd={$this->moduleName}&act=customers' class='".($this->act == 'customers' ? 'active' : '')."'  title='".$_ARRAYLANG['TXT_CRM_CUSTOMERS']."'>{$_ARRAYLANG
-                ['TXT_CRM_CUSTOMERS']}</a>";
-        }
-
         if (Permission::checkAccess($this->staffAccessId, 'static', true)) {
-            $contentNavigation .= "<a href='index.php?cmd={$this->moduleName}&act=task' class='".($this->act == 'task' ? 'active' : '')."' title='{$_ARRAYLANG['TXT_CRM_TASKS']}'>{$_ARRAYLANG
+            $contentNavigation .= "<a href='index.php?cmd={$this->moduleName}&act=customers' class='".($this->act == 'customers' ? 'active' : '')."'  title='".$_ARRAYLANG['TXT_CRM_CUSTOMERS']."'>{$_ARRAYLANG
+                ['TXT_CRM_CUSTOMERS']}</a>
+             <a href='index.php?cmd={$this->moduleName}&act=task' class='".($this->act == 'task' ? 'active' : '')."' title='{$_ARRAYLANG['TXT_CRM_TASKS']}'>{$_ARRAYLANG
                 ['TXT_CRM_TASKS']}</a>
              <a href='index.php?cmd={$this->moduleName}&act=deals' class='".($this->act == 'deals' ? 'active' : '')."' title='{$_ARRAYLANG['TXT_CRM_OPPORTUNITY']}'>{$_ARRAYLANG
                 ['TXT_CRM_OPPORTUNITY']}</a>";
@@ -209,9 +206,6 @@ class CrmManager extends CrmLibrary
         case 'customersChangeStatus':
                 $this->customersChangeStatus();
             break;
-//        case 'customerTypeChangeStatus':
-//                $this->customerTypeChangeStatus();
-//            break;
         case 'mailtemplate_overview':
         case 'mailtemplate_edit':
                 $_GET['tpl'] = 'mail';
@@ -252,7 +246,7 @@ class CrmManager extends CrmLibrary
             break;
         case 'customers':
         default:
-            if (Permission::checkAccess($this->customerAccessId, 'static', true)) {
+            if (Permission::checkAccess($this->staffAccessId, 'static', true)) {
                 $this->showCustomers();
             } else {
                 $this->checkCustomerIdentity();
@@ -1498,10 +1492,15 @@ END;
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
         $status = ($_GET['status'] == 0) ? 1 : 0;
         $id     = $_GET['id'];
+        $defaultId = $objDatabase->getOne('SELECT id FROM `'.DBPREFIX.'module_'.$this->moduleName.'_customer_types` WHERE `default` = "1"');
         if (!empty($id)) {
-            $query  = 'UPDATE '.DBPREFIX.'module_'.$this->moduleName.'_customer_types SET active='.$status.' WHERE id = '.$id;
-            $objDatabase->Execute($query);
-            $mes = ($status) ?  'activate' : 'deactivate';
+            if ($defaultId != $id) {
+                $query  = 'UPDATE '.DBPREFIX.'module_'.$this->moduleName.'_customer_types SET active='.$status.' WHERE id = '.$id;
+                $objDatabase->Execute($query);
+                $mes = ($status) ?  'activate' : 'deactivate';
+            } else {
+                $mes = 'error';
+            }
         }
         if ($_REQUEST['type'] == "activate") {
             $arrStatusNote = $_POST['selectedEntriesId'];
@@ -1517,11 +1516,15 @@ END;
             $arrStatusNote = $_POST['selectedEntriesId'];
             if ($arrStatusNote != null) {
                 foreach ($arrStatusNote as $noteId) {
-                    $query = "UPDATE ".DBPREFIX."module_".$this->moduleName."_customer_types SET active='0' WHERE id=$noteId";
-                    $objDatabase->Execute($query);
+                    if ($defaultId != $noteId) {
+                        $query = "UPDATE ".DBPREFIX."module_".$this->moduleName."_customer_types SET active='0' WHERE id=$noteId";
+                        $objDatabase->Execute($query);
+                        $mes = 'deactivate';
+                    } else {
+                        $mes = 'error';
+                    }
                 }
             }
-            $mes = 'deactivate';
         }
         $message = base64_encode($mes);
         CSRF::header("Location: ./index.php?cmd={$this->moduleName}&act=settings&tpl=customertypes&mes={$message}");
