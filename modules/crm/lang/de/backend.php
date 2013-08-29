@@ -534,6 +534,7 @@ $_ARRAYLANG['TXT_CRM_CONTACT_TOOLTIP_HEAD']         = "Kontakt(e)";
 $_ARRAYLANG['TXT_CRM_DEFAULT_COUNTRY']              = "Vorauswahl für Land";
 $_ARRAYLANG['TXT_CRM_DEFAULT_CURRENCY_ERROR']       = "Währung kann nicht gelöscht werden.";
 $_ARRAYLANG['TXT_CRM_DEFAULT_CURRENCY_STATUS_ERROR']       = "Währungsstatus kann nicht geändert werden.";
+$_ARRAYLANG['TXT_CRM_DEFAULT_CUSTOMER_TYPE_STATUS_ERROR']  = "Customer type status cannot be changed.";
 
 /*placeholder Descriptions*/
 $_ARRAYLANG['TXT_CRM_ASSIGNED_USER_EMAIL'] = 'Die ID der Benutzermailadresse .';
