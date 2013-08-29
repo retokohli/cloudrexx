@@ -180,6 +180,7 @@ class crmTask extends CrmLibrary
                             'CRM_TASK_CUSTOMER_ID'  => (int) $objResult->fields['customer_id'],
                             'TXT_CRM_IMAGE_EDIT'    => $_ARRAYLANG['TXT_CRM_IMAGE_EDIT'],
                             'TXT_CRM_IMAGE_DELETE'  => $_ARRAYLANG['TXT_CRM_IMAGE_DELETE'],
+                            'TXT_CRM_DELETE_CONFIRM'=> $_ARRAYLANG['TXT_CRM_DELETE_CONFIRM'],
                             'CRM_TASK_EXPIRED_CLASS'=> $objResult->fields['task_status'] == 1 || strtotime($objResult->fields['due_date']) > $now ? '' : 'task_expired',
                             
                     ));

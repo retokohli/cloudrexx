@@ -1199,7 +1199,20 @@ class Settings extends CrmLibrary
         if (!$objTemplate->loadTemplateFile('module_'.$this->moduleName.'_settings_placeholders.html'))
             die("Failed to load template 'module_'.$this->moduleName.'_settings_placeholders.html'");
         
-        $objTemplate->setVariable('TXT_CRM_PLACEHOLDERS', $_ARRAYLANG['TXT_CRM_PLACEHOLDERS']);
+        $objTemplate->setVariable(array(
+            'TXT_CRM_PLACEHOLDERS' => $_ARRAYLANG['TXT_CRM_PLACEHOLDERS'],
+            'TXT_CRM_ASSIGNED_USER_EMAIL' => $_ARRAYLANG['TXT_CRM_ASSIGNED_USER_EMAIL'],
+            'TXT_CRM_CONTACT_DETAILS_LINK' => $_ARRAYLANG['TXT_CRM_CONTACT_DETAILS_LINK'],
+            'TXT_CRM_TASK_NAME' => $_ARRAYLANG['TXT_CRM_TASK_NAME'],
+            'TXT_CRM_TASK_LINK' => $_ARRAYLANG['TXT_CRM_TASK_LINK'],
+            'TXT_CRM_TASK_DUE_DATE' => $_ARRAYLANG['TXT_CRM_TASK_DUE_DATE'],
+            'TXT_CRM_TASK_CREATED_USER' => $_ARRAYLANG['TXT_CRM_TASK_CREATED_USER'],
+            'TXT_CRM_TASK_DESCRIPTION_TEXT_VERSION' => $_ARRAYLANG['TXT_CRM_TASK_DESCRIPTION_TEXT_VERSION'],
+            'TXT_CRM_CUSTOMER_CONTACT_EMAIL' => $_ARRAYLANG['TXT_CRM_CUSTOMER_CONTACT_EMAIL'],
+            'TXT_CRM_CUSTOMER_COMPANY' => $_ARRAYLANG['TXT_CRM_CUSTOMER_COMPANY'],
+            'TXT_CRM_CUSTOMER_CONTACT_USER_NAME' => $_ARRAYLANG['TXT_CRM_CUSTOMER_CONTACT_USER_NAME'],
+            'TXT_CRM_CUSTOMER_CONTACT_PASSWORD' => $_ARRAYLANG['TXT_CRM_CUSTOMER_CONTACT_PASSWORD'],
+        ));
 
         return $objTemplate->get();
     }
