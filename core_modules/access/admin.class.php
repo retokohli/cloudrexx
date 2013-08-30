@@ -1072,9 +1072,12 @@ class AccessManager extends AccessLib
                     'ACCESS_CHANGE_ACCOUNT_STATUS_MSG'  => sprintf($objUser->getActiveStatus() ? $_ARRAYLANG['TXT_ACCESS_DEACTIVATE_USER'] : $_ARRAYLANG['TXT_ACCESS_ACTIVATE_USER'], htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET))
                 ));
 
-                if ($objUser->isCrmUser()) {
+                if ($crmUserId = $objUser->getCrmUserId()) {
                     if ($this->_objTpl->blockExists('access_user_crm_account')) {
-                        $this->_objTpl->setVariable('ACCESS_USER_CRM_ACCOUNT', $_ARRAYLANG['TXT_ACCESS_USER_CRM_ACCOUNT']);
+                        $this->_objTpl->setVariable(array(
+                            'ACCESS_USER_CRM_ACCOUNT_ID' => $crmUserId,
+                            'TXT_ACCESS_USER_CRM_ACCOUNT' => $_ARRAYLANG['TXT_ACCESS_USER_CRM_ACCOUNT'],
+                        ));
                         $this->_objTpl->parse('access_user_crm_account');
                     }
                 }
