@@ -510,8 +510,9 @@ $J(function() {
             assignedId.push(ui.item.id);
             $J.get("index.php?cmd=crm&act=addcontact&id="+ui.item.id+"&customerid="+$J('#customer_id').val(), function(data) {
                 $J("table#contacts").append(data);
-                $J("table#contacts tfoot").hide("fast");
-                $J("#contactContainer .exContactSelect").hide("fast");
+                $J(".exContactSelect #selectContact").val("");
+//                $J("table#contacts tfoot").hide("fast");
+//                $J("#contactContainer .exContactSelect").hide("fast");
             });
         }
     });
