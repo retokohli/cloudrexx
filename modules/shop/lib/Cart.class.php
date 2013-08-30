@@ -554,6 +554,11 @@ class Cart
                 $product['price']
               - $product['discount_amount']
             );
+            if (!Vat::isIncluded()) {
+                self::$products[$cart_id]['price'] += $vat_amount;
+                $total_price += $vat_amount;
+                self::$products[$cart_id]['price'] = Currency::formatPrice(self::$products[$cart_id]['price']);
+            }
             $total_vat_amount += $vat_amount;
             self::$products[$cart_id]['vat_amount'] =
                 Currency::formatPrice($vat_amount);
@@ -580,6 +585,9 @@ class Cart
         }
         if ($hasCoupon) {
             Message::clear();
+        }
+        if (!Vat::isIncluded()) {
+            $total_price -= $total_vat_amount;
         }
 
         $_SESSION['shop']['cart']['total_discount_amount'] =
