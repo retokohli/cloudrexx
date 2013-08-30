@@ -214,7 +214,7 @@ class CalendarLibrary
                         
                         break;
                     case 'edit_event':                
-                        if($this->arrSettings['addEventsFrontend'] == 2) {
+                        if($this->arrSettings['addEventsFrontend'] == 1 || $this->arrSettings['addEventsFrontend'] == 2) {
                             if($bolUserLogin) {         
                                 if(isset($_POST['submitFormModifyEvent'])) {
                                     $eventId = intval($_POST['id']);
@@ -236,7 +236,7 @@ class CalendarLibrary
                         break;
                     
                     case 'my_events':
-                        if($this->arrSettings['addEventsFrontend'] == 2) { 
+                        if($this->arrSettings['addEventsFrontend'] == 1 || $this->arrSettings['addEventsFrontend'] == 2) {
                             if(!$bolUserLogin) {
                                 $strStatus = 'login';
                             }
