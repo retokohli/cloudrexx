@@ -2420,9 +2420,9 @@ class User extends User_Profile
     /**
      * Checks whether the user account is connected with a crm customer
      *
-     * @return bool true if the user is associated with a customer of crm module
+     * @return int|null id of crm user if the user is associated with a customer of crm module
      */
-    public function isCrmUser() {
+    public function getCrmUserId() {
         /**
          * @var \Cx\Core\Core\Controller\Cx $cx
          */
@@ -2433,9 +2433,9 @@ class User extends User_Profile
         $db = $cx->getDb()->getAdoDb();
         $result = $db->SelectLimit("SELECT `id` FROM `" . DBPREFIX . "module_crm_contacts` WHERE `user_account` = " . intval($this->id), 1);
         if ($result->RecordCount() == 0) {
-            return false;
+            return null;
         }
-        return true;
+        return $result->fields['id'];
     }
 
 

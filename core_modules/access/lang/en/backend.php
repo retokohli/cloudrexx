@@ -303,6 +303,6 @@ $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_PERMISSION_DENIED'] = "You have no permissio
 $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_ACTIVATION_TIME'] = "Time period in minutes before the user, which didn't complete the sign up process, will be deleted.";
 $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_UNCOMPLETED_SIGN_UP'] = "Uncompleted sign up";
 $_ARRAYLANG['TXT_ACCESS_FILTER'] = "Filter";
-$_ARRAYLANG['TXT_ACCESS_USER_CRM_ACCOUNT'] = "This user is a crm contact";
+$_ARRAYLANG['TXT_ACCESS_USER_CRM_ACCOUNT'] = "This user is a crm contact, click to open the crm contact.";
 $_ARRAYLANG['TXT_ACCESS_USER_TYPE_CRM'] = "only crm";
 ?>

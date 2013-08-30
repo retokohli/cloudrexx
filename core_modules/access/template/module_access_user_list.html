@@ -86,7 +86,7 @@ function accessUserDoAction(action)
 					<td><a href="javascript:accessChangeUserStatus({ACCESS_USER_ID},'{ACCESS_USER_USERNAME}');" title="{ACCESS_CHANGE_ACCOUNT_STATUS_MSG}"><img src="images/icons/{ACCESS_USER_STATUS_IMG}" alt="{ACCESS_USER_STATUS}" width="13" height="13" border="0" /></a> <img src="images/icons/{ACCESS_USER_ADMIN_IMG}" border="0" alt="{ACCESS_USER_ADMIN_TXT}" width="16" height="16" /></td>
 					<td><a href="index.php?cmd=access&amp;act=user&amp;tpl=modify&amp;id={ACCESS_USER_ID}" title="{TXT_ACCESS_MODIFY_USER_ACCOUNT}">{ACCESS_USER_USERNAME}</a>
                     <!-- BEGIN access_user_crm_account -->
-                    &nbsp;<img src="template/ascms/images/navigation_level_1_189.png" width="16" height="16" alt="{ACCESS_USER_CRM_ACCOUNT}" />
+                    &nbsp;<a title="{TXT_ACCESS_USER_CRM_ACCOUNT}" href="index.php?cmd=crm&amp;act=customers&amp;tpl=showcustdetail&amp;id={ACCESS_USER_CRM_ACCOUNT_ID}"><img src="template/ascms/images/navigation_level_1_189.png" width="16" height="16" alt="{TXT_ACCESS_USER_CRM_ACCOUNT}" /></a>
                     <!-- END access_user_crm_account --></td>
 					<td>{ACCESS_USER_COMPANY}</td>
 					<td>{ACCESS_USER_FIRSTNAME}</td>
