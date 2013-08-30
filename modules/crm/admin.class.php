@@ -2121,7 +2121,7 @@ END;
                 $this->contact->currency     = 0;
                 $this->contact->customerId   = '';
             }
-
+            
             if (!$settings['create_user_account'] || ($contactType == 1) || (!empty($accountUserEmail) && $this->addUser($accountUserEmail, $accountUserPassword, $sendLoginDetails, $result, $accountUserID)) || !$settings['user_account_mantatory']) {
 
                 $this->contact->save();
@@ -2506,6 +2506,7 @@ END;
                 'CRM_CUSTOMERID'            => contrexx_input2xhtml($this->contact->customerId),
                 'CRM_COMPANY_NAME'          => contrexx_input2xhtml($this->contact->customerName),
                 'CRM_CONTACT_ID'            => $this->contact->id != null ? $this->contact->id : 0,
+                'CRM_CONTACT_USER_ID'       => $this->contact->account_id != null ? $this->contact->account_id : 0,
                 'CRM_CONTACT_USERNAME'      => $objUser ? contrexx_raw2xhtml($objUser->getEmail()) : '',
                 'CRM_GENDER_FEMALE_SELECTED'=> $this->contact->contact_gender == 1 ? 'selected' : '',
                 'CRM_GENDER_MALE_SELECTED'  => $this->contact->contact_gender == 2 ? 'selected' : '',

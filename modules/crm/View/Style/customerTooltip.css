@@ -1,5 +1,5 @@
 .crm-companyInfoCardLink {
-    background: url("../../../../cadmin/images/icons/company_icon.png") no-repeat scroll left center transparent;
+    background: url("../../../../modules/crm/View/Media/CompanySmall.png") no-repeat scroll left center transparent;
     display: inline-block;
     padding: 0 0 0 17px;
 }
