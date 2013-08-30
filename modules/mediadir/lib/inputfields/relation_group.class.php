@@ -172,7 +172,7 @@ class mediaDirectoryInputfieldRelation_group extends mediaDirectoryLibrary imple
                     }
 
                     if($bolAddNewAlowed || (intval($intFormType) == 0) || $intUserIsAdmin == 1) {
-                        $strAddNewButton = '<a class="addEntryLink" rel="shadowbox[add'.$intId.'];height=750;width=730;options={onClose:new Function(\'refreshSelector_'.$intId.'(\\\''.$intId.'\\\', \\\''.$this->moduleName.'Inputfield_deselected_'.$intId.'\\\', \\\''.$this->moduleName.'Inputfield_'.$intId.'\\\', \\\''.$_GET['section'].'\\\', \\\''.$_GET['cmd'].'\\\', \\\''.$intEntryId.'\\\')\')}" href="index.php?section=marketplace&cmd='.$strAddNewCmd.'" ><img src="cadmin/images/icons/user_add.gif" style="cursor: pointer;  border: 0px;" />&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_ADD_ENTRY'].'</a>';
+                        $strAddNewButton = '<a class="addEntryLink" rel="shadowbox[add'.$intId.'];height=750;width=730;options={onClose:new Function(\'refreshSelector_'.$intId.'(\\\''.$intId.'\\\', \\\''.$this->moduleName.'Inputfield_deselected_'.$intId.'\\\', \\\''.$this->moduleName.'Inputfield_'.$intId.'\\\', \\\''.$_GET['section'].'\\\', \\\''.$_GET['cmd'].'\\\', \\\''.$intEntryId.'\\\')\')}" href="index.php?section=marketplace&cmd='.$strAddNewCmd.'" ><img src="cadmin/images/icons/icon-user-add.png" style="cursor: pointer;  border: 0px;" />&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_ADD_ENTRY'].'</a>';
                         $strEditFunction = 'ondblclick="editSelectedElement_'.$intId.'(this);"';
                     } else {
                     	$strAddNewButton = '';
