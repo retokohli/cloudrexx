@@ -2281,7 +2281,7 @@ class User extends User_Profile
      * @return  boolean
      * @static
      */
-    private static function isUniqueEmail($email, $id=0)
+    public static function isUniqueEmail($email, $id=0)
     {
         global $objDatabase;
 
