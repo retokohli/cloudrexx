@@ -854,12 +854,12 @@ class CalendarEvent extends CalendarLibrary
                     $objFile = new File();
                     //delete thumb
                     if (file_exists("{$this->uploadImgPath}$pic.thumb")) {
-                        $objFile->delFile($this->uploadImgPath, $this->uploadImgWebPath, "/$pic.thumb");
+                        \Cx\Lib\FileSystem\FileSystem::delete_file($this->uploadImgPath."/.$pic.thumb");
                     }
 
                     //delete image
                     if (file_exists("{$this->uploadImgPath}$pic")) {
-                        $objFile->delFile($this->uploadImgPath, $this->uploadImgWebPath, "/$pic");
+                        \Cx\Lib\FileSystem\FileSystem::delete_file($this->uploadImgPath."/.$pic");
                     }
 
                     $pic = $picture;

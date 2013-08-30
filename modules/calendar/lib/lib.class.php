@@ -132,7 +132,7 @@ class CalendarLibrary
      * @param string $tplPath Template path
      */
     function __construct($tplPath){                                                                      
-        $this->_objTpl = new HTML_Template_Sigma($tplPath);
+        $this->_objTpl = new \Cx\Core\Html\Sigma($tplPath);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);    
         
         $this->_objTpl->setGlobalVariable(array(
@@ -613,8 +613,8 @@ EOF;
             $datePicker = new activeCalendar($datePickerYear, $datePickerMonth, $datePickerDay);
             $datePicker->enableMonthNav("?section=calendar");
             $datePicker->enableDayLinks("?section=calendar");
-            $datePicker->setDayNames(split(",", $_CORELANG['TXT_DAY_ARRAY']));
-            $datePicker->setMonthNames(split(",", $_CORELANG['TXT_MONTH_ARRAY']));
+            $datePicker->setDayNames(explode(',', $_CORELANG['TXT_DAY_ARRAY']));
+            $datePicker->setMonthNames(explode(',', $_CORELANG['TXT_MONTH_ARRAY']));
 
             $eventManagerAllEvents = new CalendarEventManager(null, null, $cat, null, true, false, true);
             $eventManagerAllEvents->getEventList();

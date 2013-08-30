@@ -516,9 +516,6 @@ class CalendarSettings extends CalendarLibrary
             $objResult->MoveNext();
         }
         
-        $wysiwygEditor = "FCKeditor";
-        $FCKeditorBasePath = "/editor/fckeditor/";
-        
         $objTpl->setVariable(array(
             $this->moduleLangVar.'_TEMPLATE_ACTION'          =>  $action,
             $this->moduleLangVar.'_TEMPLATE_LANG'            =>  $lang,

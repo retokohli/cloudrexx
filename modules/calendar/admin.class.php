@@ -317,8 +317,6 @@ class CalendarManager extends CalendarLibrary
         }
         
         $dateFomat = parent::getDateFormat();
-        $wysiwygEditor = "FCKeditor";
-        $FCKeditorBasePath = "/editor/fckeditor/";
         
         $objCategoryManager = new CalendarCategoryManager(true);   
         $objCategoryManager->getCategoryList();  
@@ -1457,9 +1455,9 @@ class CalendarManager extends CalendarLibrary
             
             $this->_objTpl->setVariable(array(
                 'TXT_'.$this->moduleLangVar.'_PAYMENT_METHOD' => $_ARRAYLANG['TXT_CALENDAR_PAYMENT_METHOD'],
-                'TXT_'.$this->moduleLangVar.'_PAYED'          => $_ARRAYLANG['TXT_PAYMENT_COMPLETED'],
+                'TXT_'.$this->moduleLangVar.'_PAID'          => $_ARRAYLANG['TXT_PAYMENT_COMPLETED'],
                 $this->moduleLangVar.'_PAYMENT_METHODS'       => $paymentMethods,
-                $this->moduleLangVar.'_PAYED'                 => ($objRegistration->payed == true ? " checked='checked'" : "")
+                $this->moduleLangVar.'_PAID'                 => ($objRegistration->paid == true ? " checked='checked'" : "")
             ));
             $this->_objTpl->parse('calendarRegistrationPayment');
         } else {
