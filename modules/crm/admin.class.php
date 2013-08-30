@@ -1453,10 +1453,12 @@ END;
     {
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
 
-        $status = ($_GET['status'] == 0) ? 1 : 0;
-        $id     = $_GET['id'];
-        $query = 'UPDATE '.DBPREFIX.'module_'.$this->moduleName.'_contacts SET status='.$status.' WHERE id = '.$id;
-        $objDatabase->Execute($query);
+        if(isset($_GET['status']) && isset($_GET['id'])){
+            $status = ($_GET['status'] == 0) ? 1 : 0;
+            $id     = $_GET['id'];
+            $query = 'UPDATE '.DBPREFIX.'module_'.$this->moduleName.'_contacts SET status='.$status.' WHERE id = '.$id;
+            $objDatabase->Execute($query);
+        }
         if ($_REQUEST['type'] == "activate") {
             $arrStatusNote = $_POST['selectedEntriesId'];
             if ($arrStatusNote != null) {
@@ -2018,6 +2020,8 @@ END;
         JS::registerCSS("modules/crm/View/Style/contact.css");
         JS::registerCSS("lib/javascript/chosen/chosen.css");
         JS::registerJS("lib/javascript/chosen/chosen.jquery.js");
+        $cxjs = ContrexxJavascript::getInstance();
+        $cxjs->setVariable('TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT', $_ARRAYLANG['TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT'], 'modifyContact');
 
         $mes = isset($_REQUEST['mes']) ? base64_decode($_REQUEST['mes']) : '';
         if (!empty ($mes)) {
@@ -2948,7 +2952,7 @@ END;
                 foreach ($ids as $id) {
                     $query = "UPDATE ".DBPREFIX."module_".$this->moduleName."_notes
                                                                    SET   status  = '".$to."'
-                                                                   WHERE system_defined != 1 AND  id      = '".intval($id)."'";
+                                                                   WHERE id      = '".intval($id)."'";
                     $objDatabase->SelectLimit($query, 1);
                 }
                 $this->_strOkMessage = ($to == 1) ? $_ARRAYLANG['TXT_CRM_ACTIVATED_SUCCESSFULLY'] : $_ARRAYLANG['TXT_CRM_DEACTIVATED_SUCCESSFULLY'];
@@ -4856,7 +4860,7 @@ END;
             'TXT_CRM_CHANGE_STATUS'         => $_ARRAYLANG['TXT_CRM_CHANGE_STATUS'],
             'TXT_CRM_ENTRY_DELETED_SUCCESS' => $_ARRAYLANG['TXT_CRM_ENTRY_DELETED_SUCCESS'],
             'TXT_CRM_OVERVIEW'              => $_ARRAYLANG['TXT_CRM_OVERVIEW'],
-            'TXT_CRM_NAME'                  => $_ARRAYLANG['TXT_CRM_NAME'],
+            'TXT_CRM_NAME'                  => $_ARRAYLANG['TXT_CRM_TITLE_NAME'],
             'TXT_CRM_TITLEACTIVE'           => $_ARRAYLANG['TXT_CRM_TITLEACTIVE'],
             'TXT_CRM_SORTING_NUMBER'        => $_ARRAYLANG['TXT_CRM_SORTING_NUMBER'],
             'TXT_CRM_SAVE'                  => $_ARRAYLANG['TXT_CRM_SAVE'],

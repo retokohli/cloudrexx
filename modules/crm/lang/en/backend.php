@@ -382,6 +382,7 @@ $_ARRAYLANG['TXT_CRM_DEALS_DELETED_SUCCESSFULLY'] = "Opportunity deleted success
 $_ARRAYLANG['TXT_CRM_OF_CONTACTS'] = "of customer";
 $_ARRAYLANG['TXT_CRM_ADD_PROJECT']  = "Add project";
 $_ARRAYLANG['TXT_CRM_PROJECTS_SUCESSMESSAGE']                 = 'Project Details Added Successfully';
+$_ARRAYLANG['TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT'] = 'All mandatory fields have not been filled out!';
 
 
 /* settings industry */
