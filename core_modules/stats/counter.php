@@ -10,26 +10,36 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-error_reporting(0);
-ini_set('display_errors', 0);
-
 /**
- * Includes
+ * @ignore
  */
-global $objDatabase, $objDb;
-require_once dirname(__FILE__).'/../../core/Core/init.php';
+require_once dirname(dirname(dirname(__FILE__))).'/core/Core/init.php';
+
 $cx = init('minimal');
+
+global $objDatabase, $objDb;
 $objDatabase = $cx->getDb()->getAdoDb();
 $objDb = $objDatabase;
 
+// those variables get defined in lib/spiders.inc.php, lib/referers.inc.php, lib/banned.inc.php
 $arrBannedWords = array();
 $arrRobots = array();
+
+// the following includes are required, because they only contain a array definition
+// that can't be loaded automatically by the classloader
+/**
+ * @ignore
+ */
 require_once(ASCMS_CORE_MODULE_PATH.'/stats/lib/spiders.inc.php');
+/**
+ * @ignore
+ */
 require_once(ASCMS_CORE_MODULE_PATH.'/stats/lib/referers.inc.php');
+/**
+ * @ignore
+ */
 require_once(ASCMS_CORE_MODULE_PATH.'/stats/lib/banned.inc.php');
 
-require_once(ASCMS_FRAMEWORK_PATH.'/Language.class.php');
-\FWLanguage::init();
 
 $counter = new counter($arrRobots, $arrBannedWords);
 
@@ -790,4 +800,4 @@ class counter
         }
     }
 }
-?>
+
