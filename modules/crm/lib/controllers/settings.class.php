@@ -1151,7 +1151,7 @@ class Settings extends CrmLibrary
         $_REQUEST['active_tab'] = 1;
         if (   isset($_REQUEST['act'])
             && $_REQUEST['act'] == 'mailtemplate_edit') {
-            $_REQUEST['active_tab'] = 2;
+            $_REQUEST['active_tab'] = 3;
         }
         MailTemplate::deleteTemplate('crm');
         // If there is anything to be stored, and if that fails, return to

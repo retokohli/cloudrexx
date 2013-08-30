@@ -439,12 +439,12 @@ function checkaddContact() {
     if ( errors.length >= 1 || errChk == 1) {
         if ( errors.length >= 1 && errChk == 1) {
             errString = errors.join('<br />');
-            $J('#newContact').html('All mandatory fields have not been filled out.!<br />'+errString);
+            $J('#newContact').html(cx.variables.get('TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT', 'modifyContact')+'<br />'+errString);
         } else if (  errors.length >= 1) {
             errString = errors.join('<br />');
             $J('#newContact').html(errString);
         } else {
-            $J('#newContact').html('All mandatory fields have not been filled out.!');
+            $J('#newContact').html(cx.variables.get('TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT', 'modifyContact'));
         }
         $J('#newContact').css("display","block");
         return false;
