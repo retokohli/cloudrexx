@@ -175,18 +175,6 @@ class CalendarWebserviceServer
         return $eventList; 
     } 
              
-    
-    /**
-     * sagHallo
-     * 
-     * @param string  $begruessung input string
-     * 
-     * @return string Hallo with given string
-     */
-    public function sagHallo($begruessung) { 
-        return 'Hallo ' . $begruessung.': Dini Mueter!!'; 
-    }
-    
     /**
      * addiere
      * 
