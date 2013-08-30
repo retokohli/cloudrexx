@@ -302,6 +302,7 @@ $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_NEED_CURL'] = "Das Login mit sozialen Netzwe
 $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_PERMISSION_DENIED'] = "Sie sind nicht dazu berechtigt diese Einstellungen einzusehen.";
 $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_ACTIVATION_TIME'] = "Zeitperiode in Minuten bevor der Benutzer, bei nicht abgeschlossener Registrierung, wieder entfernt wird.";
 $_ARRAYLANG['TXT_ACCESS_SOCIALLOGIN_UNCOMPLETED_SIGN_UP'] = "Unvollständige Registrierung";
+$_ARRAYLANG['TXT_ACCESS_FILTER'] = "Filter";
 $_ARRAYLANG['TXT_ACCESS_USER_CRM_ACCOUNT'] = "Dieser Benutzer ist verknüpft mit einem CRM Kontakt";
 $_ARRAYLANG['TXT_ACCESS_USER_TYPE_CRM'] = "nur CRM";
 ?>
