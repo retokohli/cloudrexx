@@ -6,7 +6,20 @@ $J(function(){
        showOrHideHeadLines($J(this).val());      
    });
    showOrHideHeadLines($J("input[name='settings[headlinesStatus]']:checked").val());
+   
+   $addEventFrontend = $J("select[name='settings[addEventsFrontend]']");
+   $addEventFrontend.change(function(){
+       showOrHideFrSubmission($J(this).val());
+   });
+   showOrHideFrSubmission($addEventFrontend.val());
 });
+function showOrHideFrSubmission(inputVal) {
+    if (parseInt(inputVal)) {
+        $J("input[name='settings[confirmFrontendEvents]']").closest('tr').show();
+    } else {
+        $J("input[name='settings[confirmFrontendEvents]']").closest('tr').hide();
+    }
+}
 function showOrHideHeadLines(inputVal) {
     if (inputVal == '1') {
         $J("input[name='settings[headlinesNum]']").closest('tr').show();
