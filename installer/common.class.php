@@ -27,7 +27,7 @@ require_once(ASCMS_FRAMEWORK_PATH.'/FileSystem/FileSystem.class.php');
  */
 function cxupdateAdodbPdoConnectionFactory() {
     require_once '..'.DIRECTORY_SEPARATOR.'lib'.DIRECTORY_SEPARATOR.'adodb'.DIRECTORY_SEPARATOR.'drivers'.DIRECTORY_SEPARATOR.'adodb-pdo.inc.php';
-    require_once '..'.DIRECTORY_SEPARATOR.'core'.DIRECTORY_SEPARATOR.'Db'.DIRECTORY_SEPARATOR.'CustomAdodbPdo.class.php';
+    require_once '..'.DIRECTORY_SEPARATOR.'core'.DIRECTORY_SEPARATOR.'Model'.DIRECTORY_SEPARATOR.'CustomAdodbPdo.class.php';
     $obj = new \Cx\Core\Model\CustomAdodbPdo(CommonFunctions::$pdo);
     return $obj;
 }
