@@ -730,7 +730,7 @@ CREATE TABLE `contrexx_module_calendar_registration` (
   `lang_id` int(11) NOT NULL,
   `export` int(11) NOT NULL,
   `payment_method` int(11) NOT NULL,
-  `payed` int(11) NOT NULL,
+  `paid` int(11) NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
