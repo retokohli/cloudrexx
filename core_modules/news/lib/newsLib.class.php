@@ -515,8 +515,8 @@ class newsLibrary
                 if ($objDatabase->Execute("UPDATE `".DBPREFIX."module_news_locale` SET
                         `is_active` = '" . contrexx_input2db($newLangData['active'][$langId]) . "',
                         `title` = '" . contrexx_input2db($newLangData['title'][$langId]) . "',
-                        `text` = '" . $this->filterBodyTag(contrexx_input2db($newLangData['text'][$langId])) . "',
-                        `teaser_text` = '" . contrexx_input2db($newLangData['teaser_text'][$langId]) . "'
+                        " . ($this->arrSettings['news_use_teaser_text'] == 1 ? "`teaser_text` = '" . contrexx_input2db($newLangData['teaser_text'][$langId]) . "'," : "") . "
+                        `text` = '" . $this->filterBodyTag(contrexx_input2db($newLangData['text'][$langId])) . "'
                         WHERE `news_id` = " . $newsId . " AND `lang_id` = " . $langId) === false) {
                     $status = false;
                 }
