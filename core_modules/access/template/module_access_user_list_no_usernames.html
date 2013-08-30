@@ -82,7 +82,7 @@ function accessUserDoAction(action)
 				<tr class="row{ACCESS_ROW_CLASS_ID}">
                     <td style="text-align: center;"><input type="checkbox" name="access_user_id[]" value="{ACCESS_USER_ID}" /></td> 
 					<td>{ACCESS_USER_ID}</td>
-					<td><a href="javascript:accessChangeUserStatus({ACCESS_USER_ID},'{ACCESS_USER_USERNAME}');" title="{ACCESS_CHANGE_ACCOUNT_STATUS_MSG}"><img src="images/icons/{ACCESS_USER_STATUS_IMG}" alt="{ACCESS_USER_STATUS}" width="13" height="13" border="0" /></a> <img src="images/icons/{ACCESS_USER_ADMIN_IMG}" border="0" alt="{ACCESS_USER_ADMIN_TXT}" width="16" height="16" /></td>
+					<td><a style="float: left; margin-top: 3px;" href="javascript:accessChangeUserStatus({ACCESS_USER_ID},'{ACCESS_USER_USERNAME}');" title="{ACCESS_CHANGE_ACCOUNT_STATUS_MSG}"><img src="images/icons/{ACCESS_USER_STATUS_IMG}" alt="{ACCESS_USER_STATUS}" width="13" height="13" border="0" /></a> <img style="float: left; margin-top: 3px; margin-left: 6px;" src="images/icons/{ACCESS_USER_ADMIN_IMG}" border="0" alt="{ACCESS_USER_ADMIN_TXT}" width="16" height="16" /></td>
 					<td><a href="index.php?cmd=access&amp;act=user&amp;tpl=modify&amp;id={ACCESS_USER_ID}" title="{TXT_ACCESS_MODIFY_USER_ACCOUNT}">{ACCESS_USER_EMAIL}</a>
                     <!-- BEGIN access_user_crm_account -->
                     &nbsp;<a title="{TXT_ACCESS_USER_CRM_ACCOUNT}" href="index.php?cmd=crm&amp;act=customers&amp;tpl=showcustdetail&amp;id={ACCESS_USER_CRM_ACCOUNT_ID}"><img src="template/ascms/images/navigation_level_1_189.png" width="16" height="16" alt="{TXT_ACCESS_USER_CRM_ACCOUNT}" /></a>
