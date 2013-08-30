@@ -428,7 +428,7 @@ class CalendarEventManager extends CalendarLibrary
      */
     function _addToEventList($objEvent) {
         if($this->startDate == 0) {
-            if($objEvent->endDate < $this->endDate) {
+            if($objEvent->endDate < $this->endDate || $this->endDate == 0) {
                 return true;
             } else {
                 return false;

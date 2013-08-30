@@ -117,7 +117,7 @@ class CalendarRegistration extends CalendarLibrary
      * @access public
      * @var interger
      */
-    public $payed;
+    public $paid;
     
     /**
      * Save In
@@ -182,7 +182,7 @@ class CalendarRegistration extends CalendarLibrary
                          registration.`lang_id` AS `lang_id`,
                          registration.`export` AS `first_export`,
                          registration.`payment_method` AS `payment_method`,
-                         registration.`payed` AS `payed`
+                         registration.`paid` AS `paid`
                    FROM '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration AS registration
                    WHERE registration.`id` = "'.$regId.'"
                    LIMIT 1';   
@@ -201,7 +201,7 @@ class CalendarRegistration extends CalendarLibrary
             $this->key = htmlentities($objResult->fields['key'], ENT_QUOTES, CONTREXX_CHARSET);          
             $this->firstExport = intval($objResult->fields['first_export']);
             $this->paymentMethod = intval($objResult->fields['payment_method']);
-            $this->payed = intval($objResult->fields['payed']);
+            $this->paid = intval($objResult->fields['paid']);
             
             foreach ($this->form->inputfields as $key => $arrInputfield) {         
                 $name = $arrInputfield['name'][$_LANGID];
@@ -285,15 +285,15 @@ class CalendarRegistration extends CalendarLibrary
         $type = intval($objEvent->freePlaces - $numSeating) < 0 ? 2 : (isset($data['registrationType']) ? intval($data['registrationType']) : 1);
         $this->saveIn = intval($type);
         $paymentMethod = intval($data['paymentMethod']);
-        $payed = intval($data['payed']);
+        $paid = intval($data['paid']);
         $hostName = 0;
         $ipAddress = 0;
         $key = parent::generateKey();
         
         if ($regId == 0) {
             $query = 'INSERT INTO '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration
-                                  (`event_id`,`date`,`host_name`,`ip_address`,`type`,`key`,`user_id`,`lang_id`,`payment_method`,`payed`)
-                           VALUES ("'.$eventId.'","'.$eventDate.'","'.$hostName.'","'.$ipAddress.'","'.$type.'","'.$key.'","'.$userId.'","'.$_LANGID.'","'.$paymentMethod.'","'.$payed.'")';
+                                  (`event_id`,`date`,`host_name`,`ip_address`,`type`,`key`,`user_id`,`lang_id`,`payment_method`,`paid`)
+                           VALUES ("'.$eventId.'","'.$eventDate.'","'.$hostName.'","'.$ipAddress.'","'.$type.'","'.$key.'","'.$userId.'","'.$_LANGID.'","'.$paymentMethod.'","'.$paid.'")';
             
             $objResult = $objDatabase->Execute($query);
             
@@ -312,7 +312,7 @@ class CalendarRegistration extends CalendarLibrary
                              `user_id` = '.$userId.',
                              `lang_id` = '.$_LANGID.',
                              `payment_method` = '.$paymentMethod.',
-                             `payed` = '.$payed.'
+                             `paid` = '.$paid.'
                        WHERE `id` = '.$regId;
             
             $objResult = $objDatabase->Execute($query);
@@ -468,11 +468,11 @@ class CalendarRegistration extends CalendarLibrary
      * 
      * @return null
      */
-    function setPayed($payStatus = 0) {
+    function setPaid($payStatus = 0) {
         global $objDatabase;
         $query = '
                     UPDATE `'.DBPREFIX.'module_calendar_registration` AS `r`
-                    SET `payed` = ? WHERE `id` = ?
+                    SET `paid` = ? WHERE `id` = ?
                 ';
         $objResult = $objDatabase->Execute($query, array($payStatus, $this->id));
     }

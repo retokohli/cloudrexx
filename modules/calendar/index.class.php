@@ -867,7 +867,7 @@ $this->_objTpl->setVariable(array(
                         // erfolgreich
                         $objRegistration = new CalendarRegistration(null);
                         $objRegistration->get($orderId);
-                        $objRegistration->setPayed(1);
+                        $objRegistration->setPaid(1);
                         $this->_objTpl->touchBlock("successMessage");
                         break;
                     case 0:
