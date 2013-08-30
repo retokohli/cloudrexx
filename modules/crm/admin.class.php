@@ -3402,21 +3402,21 @@ END;
             $workAddr = false;
             while (!$objAddr->EOF) {
                 switch (true) {
-                case ($objAddr->fields['Address_Type'] == 0 && $objAddr->fields['is_primary'] == 0): echo '1';
+                case ($objAddr->fields['Address_Type'] == 0 && $objAddr->fields['is_primary'] == 0):
                         $homeAddress    = utf8_decode($objAddr->fields['address']);
                         $homeCity       = utf8_decode($objAddr->fields['city']);
                         $homeState      = utf8_decode($objAddr->fields['state']);
                         $homePostalcode = utf8_decode($objAddr->fields['zip']);
                         $homeCountry    = utf8_decode($objAddr->fields['country']);
                     break;
-                case ($objAddr->fields['Address_Type'] == 0 && $objAddr->fields['is_primary'] == 1):  echo '2';
+                case ($objAddr->fields['Address_Type'] == 0 && $objAddr->fields['is_primary'] == 1):
                         $pryHomeAddress    = utf8_decode($objAddr->fields['address']);
                         $pryHomeCity       = utf8_decode($objAddr->fields['city']);
                         $pryHomeState      = utf8_decode($objAddr->fields['state']);
                         $pryHomePostalcode = utf8_decode($objAddr->fields['zip']);
                         $pryHomeCountry    = utf8_decode($objAddr->fields['country']);
                     break;
-                case ($objAddr->fields['Address_Type'] == 5 && $objAddr->fields['is_primary'] == 0):  echo '3';
+                case ($objAddr->fields['Address_Type'] == 5 && $objAddr->fields['is_primary'] == 0):
                         $workAddr       = true;
                         $workAddress    = utf8_decode($objAddr->fields['address']);
                         $workCity       = utf8_decode($objAddr->fields['city']);
@@ -3424,7 +3424,7 @@ END;
                         $workPostalcode = utf8_decode($objAddr->fields['zip']);
                         $workCountry    = utf8_decode($objAddr->fields['country']);
                     break;
-                case ($objAddr->fields['Address_Type'] == 5 && $objAddr->fields['is_primary'] == 1):  echo '4';
+                case ($objAddr->fields['Address_Type'] == 5 && $objAddr->fields['is_primary'] == 1):
                         $workAddr       = true;
                         $pryWorkAddress    = utf8_decode($objAddr->fields['address']);
                         $pryWorkCity       = utf8_decode($objAddr->fields['city']);
