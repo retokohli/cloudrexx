@@ -56,7 +56,7 @@ class ComboUploader extends Uploader
         //JS / CSS dependencies
         JS::activate('cx');
         JS::registerJS('lib/javascript/swfobject.js');
-        JS::registerJS('lib/javascript/deployJava.js');
+//        JS::registerJS('lib/javascript/deployJava.js');
         JS::registerJS('core_modules/upload/js/uploaders/combo/combo.js');
         JS::registerCSS('core_modules/upload/css/uploaders/combo/combo.css');
 
