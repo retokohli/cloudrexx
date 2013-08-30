@@ -3407,7 +3407,7 @@ END;
                 $role        = utf8_decode($objRS->fields['contact_role']);
                 $companyName = utf8_decode($objRS->fields['company']);
 
-                if (!$workAddr || !$isWorkEmail || !$isWorkPhone) {
+                if ((!$workAddr || !$isWorkEmail || !$isWorkPhone) && !empty($objRS->fields['companyId'])) {
                     $objContactCompany = $objDatabase->Execute("SELECT email.email,
                                                                      phone.phone,
                                                                      addr.*
