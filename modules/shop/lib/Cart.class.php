@@ -99,7 +99,10 @@ class Cart
         }
         $arrCart = array(
             'items' => self::$products,
-            'total_price' => $_SESSION['shop']['cart']['total_price'],
+            'total_price' => Currency::formatPrice(
+                  self::get_price()
+                + (Vat::isEnabled() && !Vat::isIncluded()
+                    ? self::get_vat_amount() : 0)),
             'item_count' => $_SESSION['shop']['cart']['total_items'],
             'unit' => Currency::getActiveCurrencySymbol()
         );
@@ -556,7 +559,6 @@ class Cart
             );
             if (!Vat::isIncluded()) {
                 self::$products[$cart_id]['price'] += $vat_amount;
-                $total_price += $vat_amount;
                 self::$products[$cart_id]['price'] = Currency::formatPrice(self::$products[$cart_id]['price']);
             }
             $total_vat_amount += $vat_amount;
@@ -567,12 +569,16 @@ class Cart
         if (!$objCoupon && ($payment_id || $coupon_code)) {
             $discount_amount = 0;
 //DBG::log("Cart::update(): GLOBAL; Got Coupon code $coupon_code");
+            $total_price_incl_vat = $total_price;
+            if (!Vat::isIncluded()) {
+                $total_price_incl_vat += $total_vat_amount;
+            }
             $objCoupon = Coupon::available(
-                $coupon_code, $total_price, $customer_id, 0, $payment_id);
+                $coupon_code, $total_price_incl_vat, $customer_id, 0, $payment_id);
             if ($objCoupon) {
                 $hasCoupon = true;
                 $discount_amount = $objCoupon->getDiscountAmount(
-                    $total_price, $customer_id);
+                    $total_price_incl_vat, $customer_id);
                 $total_discount_amount = $discount_amount;
 //DBG::log("Cart::update(): GLOBAL; Coupon available: $coupon_code");
 //DBG::log("Cart::update(): GLOBAL; total price $total_price, discount_amount $discount_amount, total discount $total_discount_amount");
@@ -585,9 +591,6 @@ class Cart
         }
         if ($hasCoupon) {
             Message::clear();
-        }
-        if (!Vat::isIncluded()) {
-            $total_price -= $total_vat_amount;
         }
 
         $_SESSION['shop']['cart']['total_discount_amount'] =
