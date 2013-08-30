@@ -577,6 +577,13 @@ $this->_objTpl->setVariable(array(
             $this->moduleLangVar.'_EVENT_COUNTRY'                   => $objEvent->arrData['place_country'][$_LANGID],
             $this->moduleLangVar.'_EVENT_PLACE_MAP'                 => $objEvent->arrData['place_map'][$_LANGID],
             $this->moduleLangVar.'_EVENT_MAP'                       => $objEvent->map == 1 ? 'checked="checked"' : '',
+            $this->moduleLangVar.'_EVENT_HOST'                      => $objEvent->arrData['org_name'][$_LANGID],
+            $this->moduleLangVar.'_EVENT_HOST_ADDRESS'              => $objEvent->arrData['org_street'][$_LANGID],
+            $this->moduleLangVar.'_EVENT_HOST_ZIP'                  => $objEvent->arrData['org_zip'][$_LANGID],
+            $this->moduleLangVar.'_EVENT_HOST_CITY'                 => $objEvent->arrData['org_city'][$_LANGID],
+            $this->moduleLangVar.'_EVENT_HOST_LINK'                 => $objEvent->arrData['org_link'][$_LANGID],
+            $this->moduleLangVar.'_EVENT_HOST_EMAIL'                => $objEvent->arrData['org_email'][$_LANGID],
+    
             $this->moduleLangVar.'_EVENT_DESCRIPTION'               => new \Cx\Core\Wysiwyg\Wysiwyg("description[{$_LANGID}]", contrexx_raw2xhtml($objEvent->description), $eventId != 0 ? 'small' : 'bbcode'),
             $this->moduleLangVar.'_EVENT_ID'                        => $eventId,
             $this->moduleLangVar.'_EVENT_ALL_DAY'                   => $eventId != 0 && $objEvent->all_day ? 'checked="checked"' : '',
