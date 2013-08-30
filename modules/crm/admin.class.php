@@ -91,14 +91,15 @@ class CrmManager extends CrmLibrary
 
         $contentNavigation = '';
 
-        if (Permission::checkAccess($this->staffAccessId, 'static', true)) {
+        if (Permission::checkAccess($this->customerAccessId, 'static', true)) {
             $contentNavigation .= "<a href='index.php?cmd={$this->moduleName}&act=customers' class='".($this->act == 'customers' ? 'active' : '')."'  title='".$_ARRAYLANG['TXT_CRM_CUSTOMERS']."'>{$_ARRAYLANG
-                ['TXT_CRM_CUSTOMERS']}</a>
-             <a href='index.php?cmd={$this->moduleName}&act=task' class='".($this->act == 'task' ? 'active' : '')."' title='{$_ARRAYLANG['TXT_CRM_TASKS']}'>{$_ARRAYLANG
+                ['TXT_CRM_CUSTOMERS']}</a>";
+        }
+
+        $contentNavigation .= "<a href='index.php?cmd={$this->moduleName}&act=task' class='".($this->act == 'task' ? 'active' : '')."' title='{$_ARRAYLANG['TXT_CRM_TASKS']}'>{$_ARRAYLANG
                 ['TXT_CRM_TASKS']}</a>
              <a href='index.php?cmd={$this->moduleName}&act=deals' class='".($this->act == 'deals' ? 'active' : '')."' title='{$_ARRAYLANG['TXT_CRM_OPPORTUNITY']}'>{$_ARRAYLANG
                 ['TXT_CRM_OPPORTUNITY']}</a>";
-        }
 
         if (Permission::checkAccess($this->adminAccessId, 'static', true)) {
             $contentNavigation .= "<a href='index.php?cmd=".$this->moduleName."&act=settings' class='".($this->act == 'settings' ? 'active' : '')."' title='".$_ARRAYLANG['TXT_CRM_SETTINGS']."'>".
@@ -167,7 +168,6 @@ class CrmManager extends CrmLibrary
                 $this->getCustomerDomains();
             break;
         case 'deals':
-                Permission::checkAccess($this->staffAccessId, 'static');
                 $this->dealsOverview();
             break;
         case 'getcontacttasks':
@@ -241,12 +241,11 @@ class CrmManager extends CrmLibrary
                 $this->InsertCSV();
             break;
         case 'task':
-                Permission::checkAccess($this->staffAccessId, 'static');
                 $this->showTasks();
             break;
         case 'customers':
         default:
-            if (Permission::checkAccess($this->staffAccessId, 'static', true)) {
+            if (Permission::checkAccess($this->customerAccessId, 'static', true)) {
                 $this->showCustomers();
             } else {
                 $this->checkCustomerIdentity();
@@ -3324,6 +3323,7 @@ END;
         $query    = "SELECT c.`customer_name`,
                             c.`contact_familyname`,
                             c.`contact_type`,
+                            c.`contact_role`,
                             con.`customer_name` AS company,
                             con.`id` AS companyId
                         FROM `".DBPREFIX."module_{$this->moduleName}_contacts` AS c
@@ -3331,8 +3331,8 @@ END;
                          ON c.`contact_customer` =con.`id`
                         WHERE c.`id` = $id";
 
-        $mailQry  = "SELECT email, email_type FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_emails` WHERE contact_id = $id AND email_type IN (0,1) ORDER BY id DESC";
-        $phoneQry = "SELECT phone, phone_type FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_phone` WHERE contact_id = $id AND phone_type IN (0,1,3,4) ORDER BY id DESC";
+        $mailQry  = "SELECT email, email_type, is_primary FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_emails` WHERE contact_id = $id AND email_type IN (0,1) ORDER BY id DESC";
+        $phoneQry = "SELECT phone, phone_type, is_primary FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_phone` WHERE contact_id = $id AND phone_type IN (0,1,3,4) ORDER BY id DESC";
         $webQry   = "SELECT url, url_type     FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_websites` WHERE contact_id = $id AND `is_primary` = '1' ORDER BY id DESC";
         $addrQry  = "SELECT *                 FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_address` WHERE contact_id = $id AND Address_Type IN (0,5) ORDER BY id DESC";
 
@@ -3341,12 +3341,19 @@ END;
             $isWorkEmail = false;
             while (!$objMail->EOF) {
                 switch (true) {
-                case ($objMail->fields['email_type'] == 0):
-                        $homeEmail      = utf8_decode($objMail->fields['email']);
+                case ($objMail->fields['email_type'] == 0 && $objMail->fields['is_primary'] == 0):
+                    $homeEmail        = utf8_decode($objMail->fields['email']);
                     break;
-                case ($objMail->fields['email_type'] == 1):
-                        $isWorkEmail    = true;
-                        $workEmail      = utf8_decode($objMail->fields['email']);
+                case ($objMail->fields['email_type'] == 0 && $objMail->fields['is_primary'] == 1):
+                    $primaryHomeEmail = utf8_decode($objMail->fields['email']);
+                    break;
+                case ($objMail->fields['email_type'] == 1 && $objMail->fields['is_primary'] == 0):
+                    $isWorkEmail      = true;
+                    $workEmail        = utf8_decode($objMail->fields['email']);
+                    break;
+                case ($objMail->fields['email_type'] == 1 && $objMail->fields['is_primary'] == 1):
+                    $isWorkEmail      = true;
+                    $primaryWorkEmail = utf8_decode($objMail->fields['email']);
                     break;
                 default:
                     break;
@@ -3356,18 +3363,31 @@ END;
             $isWorkPhone = false;
             while (!$objPhone->EOF) {
                 switch (true) {
-                case ($objPhone->fields['phone_type'] == 0):
-                        $homeTelephone  = utf8_decode($objPhone->fields['phone']);
+                case ($objPhone->fields['phone_type'] == 0 && $objPhone->fields['is_primary'] == 0):
+                        $homeTelephone         = utf8_decode($objPhone->fields['phone']);
                     break;
-                case ($objPhone->fields['phone_type'] == 1):
-                        $isWorkPhone    = true;
-                        $wrkTelephone   = utf8_decode($objPhone->fields['phone']);
+                case ($objPhone->fields['phone_type'] == 0 && $objPhone->fields['is_primary'] == 1):
+                        $primaryHomeTelephone  = utf8_decode($objPhone->fields['phone']);
                     break;
-                case ($objPhone->fields['phone_type'] == 3):
-                        $celephone      = utf8_decode($objPhone->fields['phone']);
+                case ($objPhone->fields['phone_type'] == 1 && $objPhone->fields['is_primary'] == 0):
+                        $isWorkPhone           = true;
+                        $wrkTelephone          = utf8_decode($objPhone->fields['phone']);
                     break;
-                case ($objPhone->fields['phone_type'] == 4):
-                        $fax            = utf8_decode($objPhone->fields['phone']);
+                case ($objPhone->fields['phone_type'] == 1 && $objPhone->fields['is_primary'] == 1):
+                        $isWorkPhone           = true;
+                        $primaryWrkTelephone   = utf8_decode($objPhone->fields['phone']);
+                    break;
+                case ($objPhone->fields['phone_type'] == 3 && $objPhone->fields['is_primary'] == 0):
+                        $celephone             = utf8_decode($objPhone->fields['phone']);
+                    break;
+                case ($objPhone->fields['phone_type'] == 3 && $objPhone->fields['is_primary'] == 1):
+                        $primaryCelephone      = utf8_decode($objPhone->fields['phone']);
+                    break;
+                case ($objPhone->fields['phone_type'] == 4 && $objPhone->fields['is_primary'] == 0):
+                        $fax                   = utf8_decode($objPhone->fields['phone']);
+                    break;
+                case ($objPhone->fields['phone_type'] == 4 && $objPhone->fields['is_primary'] == 1):
+                        $primaryFax            = utf8_decode($objPhone->fields['phone']);
                     break;
                 default:
                     break;
@@ -3375,21 +3395,28 @@ END;
                 $objPhone->MoveNext();
             }
             while (!$objWeb->EOF) {
-                $homeWebsite      = utf8_decode($objWeb->fields['url']);
-                $workWebsite      = utf8_decode($objWeb->fields['url']);
+                $homeWebsite      = utf8_decode(urldecode($objWeb->fields['url']));
+                $workWebsite      = utf8_decode(urldecode($objWeb->fields['url']));
                 $objWeb->MoveNext();
             }
             $workAddr = false;
             while (!$objAddr->EOF) {
                 switch (true) {
-                case ($objAddr->fields['Address_Type'] == 0):
+                case ($objAddr->fields['Address_Type'] == 0 && $objAddr->fields['is_primary'] == 0): echo '1';
                         $homeAddress    = utf8_decode($objAddr->fields['address']);
                         $homeCity       = utf8_decode($objAddr->fields['city']);
                         $homeState      = utf8_decode($objAddr->fields['state']);
                         $homePostalcode = utf8_decode($objAddr->fields['zip']);
                         $homeCountry    = utf8_decode($objAddr->fields['country']);
                     break;
-                case ($objAddr->fields['Address_Type'] == 5):
+                case ($objAddr->fields['Address_Type'] == 0 && $objAddr->fields['is_primary'] == 1):  echo '2';
+                        $pryHomeAddress    = utf8_decode($objAddr->fields['address']);
+                        $pryHomeCity       = utf8_decode($objAddr->fields['city']);
+                        $pryHomeState      = utf8_decode($objAddr->fields['state']);
+                        $pryHomePostalcode = utf8_decode($objAddr->fields['zip']);
+                        $pryHomeCountry    = utf8_decode($objAddr->fields['country']);
+                    break;
+                case ($objAddr->fields['Address_Type'] == 5 && $objAddr->fields['is_primary'] == 0):  echo '3';
                         $workAddr       = true;
                         $workAddress    = utf8_decode($objAddr->fields['address']);
                         $workCity       = utf8_decode($objAddr->fields['city']);
@@ -3397,11 +3424,20 @@ END;
                         $workPostalcode = utf8_decode($objAddr->fields['zip']);
                         $workCountry    = utf8_decode($objAddr->fields['country']);
                     break;
+                case ($objAddr->fields['Address_Type'] == 5 && $objAddr->fields['is_primary'] == 1):  echo '4';
+                        $workAddr       = true;
+                        $pryWorkAddress    = utf8_decode($objAddr->fields['address']);
+                        $pryWorkCity       = utf8_decode($objAddr->fields['city']);
+                        $pryWorkState      = utf8_decode($objAddr->fields['state']);
+                        $pryWorkPostalcode = utf8_decode($objAddr->fields['zip']);
+                        $pryWorkCountry    = utf8_decode($objAddr->fields['country']);
+                    break;
                 default:
                     break;
                 }
                 $objAddr->MoveNext();
             }
+            
 
             if ($objRS->fields['contact_type'] == 1) {
                 $firstName = utf8_decode($objRS->fields['customer_name']);
@@ -3410,8 +3446,9 @@ END;
                 $lastName    = utf8_decode($objRS->fields['contact_familyname']);
                 $role        = utf8_decode($objRS->fields['contact_role']);
                 $companyName = utf8_decode($objRS->fields['company']);
+            }
 
-                if ((!$workAddr || !$isWorkEmail || !$isWorkPhone) && !empty($objRS->fields['companyId'])) {
+                if (!$workAddr || !$isWorkEmail || !$isWorkPhone) {
                     $objContactCompany = $objDatabase->Execute("SELECT email.email,
                                                                      phone.phone,
                                                                      addr.*
@@ -3422,7 +3459,7 @@ END;
                                                                    ON (c.id = phone.contact_id AND phone.is_primary = '1')
                                                                   LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_customer_contact_address` as addr
                                                                    ON (c.id = addr.contact_id AND addr.is_primary = '1')
-                                                                  WHERE c.`id` = {$objRS->fields['companyId']}");
+                                                                  WHERE c.`id` = {$id}");
                     if (!$isWorkEmail)
                         $workEmail      = utf8_decode($objContactCompany->fields['email']);
                     if (!$isWorkPhone)
@@ -3436,32 +3473,31 @@ END;
                         $workCountry    = utf8_decode($objContactCompany->fields['country']);
                     }
                 }
-            }
 
             include_once "lib/class_vcard.php";
 
             $vc        = new vcard();
             $vc->data['customer_name']      = $firstName." ".$lastName;
             $vc->data['company']            = $companyName;
-            $vc->data['email1']             = $workEmail;
-            $vc->data['email2']             = $homeEmail;
+            $vc->data['email1']             = !empty ($primaryWorkEmail) ? $primaryWorkEmail : $workEmail;
+            $vc->data['email2']             = !empty ($primaryHomeEmail) ? $primaryHomeEmail : $homeEmail;
             $vc->data['title']              = $role;
             $vc->data['first_name']         = $firstName;
             $vc->data['last_name']          = $lastName;
-            $vc->data['work_address']       = $workAddress;
-            $vc->data['work_city']          = $workCity;
-            $vc->data['work_tele']          = $wrkTelephone;
-            $vc->data['work_postal_code']   = $workPostalcode;
-            $vc->data['work_country']       = $workCountry;
-            $vc->data['home_address']       = $homeAddress;
-            $vc->data['home_city']          = $homeCity;
-            $vc->data['home_country']       = $homeCountry;
-            $vc->data['home_postal_code']   = $homePostalcode;
-            $vc->data['home_tel']           = $homeTelephone;
-            $vc->data['cell_tel']           = $celephone;
-            $vc->data['office_tel']         = $wrkTelephone;
-            $vc->data['fax_tel']            = $fax;
-            $vc->data['fax_home']           = $fax;
+            $vc->data['work_address']       = !empty ($pryWorkAddress) ? $pryWorkAddress : $workAddress;
+            $vc->data['work_city']          = !empty ($pryWorkCity) ? $pryWorkCity : $workCity;
+            $vc->data['work_tele']          = !empty ($primaryWrkTelephone) ? $primaryWrkTelephone : $wrkTelephone;
+            $vc->data['work_postal_code']   = !empty ($pryWorkPostalcode) ? $pryWorkPostalcode : $workPostalcode;
+            $vc->data['work_country']       = !empty ($pryWorkCountry) ? $pryWorkCountry : $workCountry;
+            $vc->data['home_address']       = !empty ($pryHomeAddress) ? $pryHomeAddress : $homeAddress;
+            $vc->data['home_city']          = !empty ($pryHomeCity) ? $pryHomeCity : $homeCity;
+            $vc->data['home_country']       = !empty ($pryHomeCountry) ? $pryHomeCountry : $homeCountry;
+            $vc->data['home_postal_code']   = !empty ($pryHomePostalcode) ? $pryHomePostalcode : $homePostalcode;
+            $vc->data['home_tel']           = !empty ($primaryHomeTelephone) ? $primaryHomeTelephone : $homeTelephone;
+            $vc->data['cell_tel']           = !empty ($primaryCelephone) ? $primaryCelephone : $celephone;
+            $vc->data['office_tel']         = !empty ($primaryWrkTelephone) ? $primaryWrkTelephone : $wrkTelephone;
+            $vc->data['fax_tel']            = !empty ($primaryFax) ? $primaryFax : $fax;
+            $vc->data['fax_home']           = !empty ($primaryFax) ? $primaryFax : $fax;
             $vc->data['work_url']           = $workWebsite;
             $vc->data['home_url']           = $homeWebsite;
             $vc->download();

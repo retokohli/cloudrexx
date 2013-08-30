@@ -587,8 +587,9 @@ $J(function() {
             success: function( data ) {
                 $J("table#contacts").append(data);
                 $J(".newContactFrom").hide();
-                $J("table#contacts tfoot").hide("fast");
-                $J("#contactContainer .exContactSelect").hide("fast");
+                $J("table#contacts tfoot").show("fast");
+                $J("#contactContainer .exContactSelect").show("fast");
+                $J(".exContactSelect #selectContact").val("");
             }
         } );
         resetNewContactForm()

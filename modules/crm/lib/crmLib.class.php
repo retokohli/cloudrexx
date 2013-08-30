@@ -74,20 +74,12 @@ class CrmLibrary
     var $adminAccessId          = 557;
 
     /**
-    * Staff Access Id
-    *
-    * @access public
-    * @var integer
-    */
-    var $staffAccessId          = 556;
-
-    /**
     * Customer Access Id
     *
     * @access public
     * @var integer
     */
-    var $customerAccessId       = 555;
+    var $customerAccessId       = 556;
 
     /**
     * Settings value stored in array
