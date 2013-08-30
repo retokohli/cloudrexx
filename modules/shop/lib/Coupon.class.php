@@ -404,6 +404,7 @@ DBG::log("Coupon::get($code): ERROR: Query failed");
         // Deduct amounts already redeemed
         if (   $objCoupon->discount_amount
             && $objCoupon->getUsedAmount($customer_id) >= $objCoupon->discount_amount) {
+//DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Deduct amounts redeemed");
             return null;
         }
         // Unlimited uses
@@ -620,7 +621,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_customer_coupon`
              WHERE `code`='".addslashes($this->code)."'
                AND `count`!=0".
-            ($customer_id ? " AND `customer_id`=$customer_id" : '').
+            ($customer_id !== null ? " AND `customer_id`=$customer_id" : '').
             ($order_id ? " AND `order_id`=$order_id" : '');
         $objResult = $objDatabase->Execute($query);
         // Failure or none found
