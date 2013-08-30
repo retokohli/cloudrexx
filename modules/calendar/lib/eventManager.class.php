@@ -586,6 +586,15 @@ class CalendarEventManager extends CalendarLibrary
             }            
 
             $picThumb = file_exists(ASCMS_PATH.$objEvent->pic.".thumb") ? $objEvent->pic.".thumb" : $objEvent->pic;
+            
+            $objRegistrationManager = new CalendarRegistrationManager($objEvent->id,true,false);  
+            $objRegistrationManager->getRegistrationList();
+            $numRegistrations = (int) count($objRegistrationManager->registrationList); 
+            
+            $objDeregistrationManager = new CalendarRegistrationManager($objEvent->id, false, true);  
+            $objDeregistrationManager->getRegistrationList();
+            $numDeregistration = count($objDeregistrationManager->registrationList);
+                
             $objTpl->setVariable(array(
                 $this->moduleLangVar.'_EVENT_ID'                => $objEvent->id,
                 $this->moduleLangVar.'_EVENT_START'             => date(parent::getDateFormat()." H:i", $objEvent->startDate),
@@ -610,6 +619,9 @@ class CalendarEventManager extends CalendarLibrary
                 $this->moduleLangVar.'_EVENT_PRICE'             => $this->arrSettings['paymentCurrency'].' '.$objEvent->price,
                 $this->moduleLangVar.'_EVENT_FREE_PLACES'       => $objEvent->freePlaces == 0 ? $objEvent->freePlaces.' ('.$_ARRAYLANG['TXT_CALENDAR_SAVE_IN_WAITLIST'].')' : $objEvent->freePlaces,
                 $this->moduleLangVar.'_EVENT_ACCESS'            => $_ARRAYLANG['TXT_CALENDAR_EVENT_ACCESS_'.$objEvent->access],
+                $this->moduleLangVar.'_EVENT_COUNT_REG'         => $numRegistrations,
+                $this->moduleLangVar.'_EVENT_COUNT_SIGNOFF'     => $numDeregistration,
+                $this->moduleLangVar.'_EVENT_COUNT_SUBSCRIBER'  => 0,
                 $this->moduleLangVar.'_REGISTRATIONS_SUBSCRIBER'=> $objEvent->numSubscriber,
             ));
 
@@ -730,9 +742,6 @@ class CalendarEventManager extends CalendarLibrary
             }
              
             if(($objEvent->registration == 1) && (mktime() <= $objEvent->startDate)) {  
-                $objRegistrationManager = new CalendarRegistrationManager($objEvent->id,true,false);  
-                $objRegistrationManager->getRegistrationList();
-                $numRegistrations = intval(count($objRegistrationManager->registrationList));     
                 
                 if($numRegistrations < $objEvent->numSubscriber || $objEvent->external == 1) {
                     $regLink = '<a href="'.$hostUri.CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'&amp;cmd=register&amp;id='.$objEvent->id.'&amp;date='.$objEvent->startDate.'" '.$hostTarget.'>'.$_ARRAYLANG['TXT_CALENDAR_REGISTRATION'].'</a>';
