@@ -750,7 +750,6 @@ class Settings extends CrmLibrary
         if (!empty($fn)) {
             switch ($fn) {
             case 'editTaskType':
-                Permission::checkAccess($this->staffAccessId, 'static');
                 $this->editTaskType();
                 break;
             }
@@ -1147,7 +1146,7 @@ class Settings extends CrmLibrary
     function mailTemplates()
     {
         global $_CORELANG, $_ARRAYLANG;
-        
+
         $_REQUEST['active_tab'] = 1;
         if (   isset($_REQUEST['act'])
             && $_REQUEST['act'] == 'mailtemplate_edit') {
@@ -1174,7 +1173,7 @@ class Settings extends CrmLibrary
             $_ARRAYLANG['TXT_CRM_PLACEHOLDERS'],
             $this->getCrmModulePlaceHolders()
         );
-        
+
         $result &= SettingDb::show_external(
             $objTemplate,
             (empty($_REQUEST['key'])
