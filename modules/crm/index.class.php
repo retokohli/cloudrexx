@@ -62,7 +62,7 @@ class Crm
 	function __construct($pageContent)
 	{
         //$this->_intLanguageId = intval($_LANGID);
-	    $this->_objTpl = &new HTML_Template_Sigma('.');
+        $this->_objTpl = new HTML_Template_Sigma('.');
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 		$this->_objTpl->setTemplate($pageContent);
 	}
