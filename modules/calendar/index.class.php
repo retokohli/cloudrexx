@@ -626,7 +626,7 @@ $this->_objTpl->setVariable(array(
         
         $this->_objTpl->setTemplate($this->pageContent, true, true);
         
-        $this->pageTitle = $this->objEventManager->eventList[0]->title;
+        $this->pageTitle = html_entity_decode($this->objEventManager->eventList[0]->title, ENT_QUOTES, CONTREXX_CHARSET);
         
         $this->_objTpl->setVariable(array(
             'TXT_'.$this->moduleLangVar.'_ATTACHMENT'        =>  $_ARRAYLANG['TXT_CALENDAR_ATTACHMENT'],
@@ -693,7 +693,7 @@ $this->_objTpl->setVariable(array(
         $objRegistrationManager->getRegistrationList();
         $numRegistrations = intval(count($objRegistrationManager->registrationList));
         
-        $this->pageTitle = date("d.m.Y", $objEvent->startDate).": ".$objEvent->title;
+        $this->pageTitle = date("d.m.Y", (isset($_GET['date']) ? $_GET['date'] : $objEvent->startDate)).": ".html_entity_decode($objEvent->title, ENT_QUOTES, CONTREXX_CHARSET);
 
         if(mktime() <= intval($_REQUEST['date'])) {
             if($numRegistrations < $objEvent->numSubscriber) {
