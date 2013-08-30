@@ -1620,6 +1620,7 @@ class AccessManager extends AccessLib
     {
         global $_ARRAYLANG;
         $menu = '<select'.(!empty($attrs) ? ' '.$attrs : '').'>'."\n";
+        $menu .= '<option value="" style="border-bottom:1px solid #000000; text-indent:5px;">'.$_ARRAYLANG['TXT_ACCESS_USER_ACCOUNT'].'</option>'."\n";
         $menu .= '<option value="0" style="text-indent:5px;">'.$_ARRAYLANG['TXT_ACCESS_ALL'].'</option>'."\n";
         $menu .= '<option value="1" style="text-indent:5px;"'.($selectedAccountType == 1 ? ' selected="selected"' : '').'>'.$_ARRAYLANG['TXT_ACCESS_USER_TYPE_CRM'].'</option>'."\n";
         $menu .= "</select>\n";
