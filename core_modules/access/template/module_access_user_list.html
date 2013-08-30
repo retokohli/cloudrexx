@@ -26,13 +26,31 @@ function accessUserDoAction(action)
 }
 // ]]>
 </script>
-<form action="index.php?cmd=access&amp;act=user&amp;groupId={ACCESS_GROUP_IP}" method="post">
-{ACCESS_GROUP_MENU} {ACCESS_USER_STATUS_MENU} {ACCESS_USER_ROLE_MENU}
-<br />
-<br />
-<input type="text" name="search" value="{ACCESS_SEARCH_VALUE}" style="width:300px;" /> <input type="submit" name="access_search" value="{TXT_ACCESS_SEARCH}" />
+<form action="index.php?cmd=access&amp;act=user&amp;groupId={ACCESS_GROUP_IP}&amp;accountType={ACCESS_ACCOUNT_TYPE}" method="post">
+<table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+    <thead>
+    <tr>
+        <th colspan="4">Filter</th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr>
+        <td width="5%">{ACCESS_GROUP_MENU}</td>
+        <!-- BEGIN access_crm_filter -->
+        <td width="5%">{ACCESS_USER_ACCOUNT_MENU}</td>
+        <!-- END access_crm_filter -->
+        <td width="5%">{ACCESS_USER_STATUS_MENU}</td>
+        <td width="90%">{ACCESS_USER_ROLE_MENU}</td>
+    </tr>
+    <tr>
+        <td colspan="4">
+            <input type="text" name="search" value="{ACCESS_SEARCH_VALUE}" style="width:300px;" /> <input type="submit" name="access_search" value="{TXT_ACCESS_SEARCH}" />
+        </td>
+    </tr>
+    </tbody>
+</table>
 </form>
-<br />
+<br /><br />
 <!-- BEGIN access_user_letter_index_list -->
 <a href="{ACCESS_USER_LETTER_INDEX_URI}">[ {ACCESS_USER_LETTER_INDEX_LETTER} ]</a>
 <!-- END access_user_letter_index_list -->
@@ -66,7 +84,10 @@ function accessUserDoAction(action)
                     <td style="text-align: center;"><input type="checkbox" name="access_user_id[]" value="{ACCESS_USER_ID}" /></td> 
 					<td>{ACCESS_USER_ID}</td>
 					<td><a href="javascript:accessChangeUserStatus({ACCESS_USER_ID},'{ACCESS_USER_USERNAME}');" title="{ACCESS_CHANGE_ACCOUNT_STATUS_MSG}"><img src="images/icons/{ACCESS_USER_STATUS_IMG}" alt="{ACCESS_USER_STATUS}" width="13" height="13" border="0" /></a> <img src="images/icons/{ACCESS_USER_ADMIN_IMG}" border="0" alt="{ACCESS_USER_ADMIN_TXT}" width="16" height="16" /></td>
-					<td><a href="index.php?cmd=access&amp;act=user&amp;tpl=modify&amp;id={ACCESS_USER_ID}" title="{TXT_ACCESS_MODIFY_USER_ACCOUNT}">{ACCESS_USER_USERNAME}</a></td>
+					<td><a href="index.php?cmd=access&amp;act=user&amp;tpl=modify&amp;id={ACCESS_USER_ID}" title="{TXT_ACCESS_MODIFY_USER_ACCOUNT}">{ACCESS_USER_USERNAME}</a>
+                    <!-- BEGIN access_user_crm_account -->
+                    &nbsp;<img src="template/ascms/images/navigation_level_1_189.png" width="16" height="16" alt="{ACCESS_USER_CRM_ACCOUNT}" />
+                    <!-- END access_user_crm_account --></td>
 					<td>{ACCESS_USER_COMPANY}</td>
 					<td>{ACCESS_USER_FIRSTNAME}</td>
 					<td>{ACCESS_USER_LASTNAME}</td>

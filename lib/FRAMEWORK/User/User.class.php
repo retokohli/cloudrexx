@@ -1020,7 +1020,13 @@ class User extends User_Profile
         } else {
             $groupless = false;
         }
-        if (!($arrQuery = $this->setSortedUserIdList($arrSort, $sqlCondition, $limit, $offset, $groupless))) {
+
+        // $filter != 1 needed because $filter can be 1 to show all active users
+        $crmUser = false;
+        if (isset($filter['crm']) && $filter != 1 && $filter['crm'] == 1) {
+            $crmUser = true;
+        }
+        if (!($arrQuery = $this->setSortedUserIdList($arrSort, $sqlCondition, $limit, $offset, $groupless, $crmUser))) {
             $this->clean();
             return false;
         }
@@ -1171,7 +1177,7 @@ class User extends User_Profile
 
 
     private function setSortedUserIdList(
-        $arrSort, $sqlCondition=null, $limit=null, $offset=null, $groupless=false
+        $arrSort, $sqlCondition=null, $limit=null, $offset=null, $groupless=false, $crmUser=false
     ) {
         global $objDatabase;
 
@@ -1226,6 +1232,9 @@ class User extends User_Profile
         }
         if (!is_array($arrSort) || !array_key_exists('id', $arrSort)) {
             $arrSortExpressions[] = 'tblU.`id` ASC';
+        }
+        if ($crmUser == true) {
+            $arrCustomJoins[] = 'INNER JOIN `'.DBPREFIX.'module_crm_contacts` AS tblCrm ON tblCrm.`user_account` = tblU.`id`';
         }
         $query = '
             SELECT SQL_CALC_FOUND_ROWS DISTINCT tblU.`id`
@@ -2406,6 +2415,27 @@ class User extends User_Profile
             return $email[1];
         }
         return '';
+    }
+
+    /**
+     * Checks whether the user account is connected with a crm customer
+     *
+     * @return bool true if the user is associated with a customer of crm module
+     */
+    public function isCrmUser() {
+        /**
+         * @var \Cx\Core\Core\Controller\Cx $cx
+         */
+        $cx = \Env::get('cx');
+        if (!$cx->getLicense()->isInLegalComponents('crm')) {
+            return false;
+        }
+        $db = $cx->getDb()->getAdoDb();
+        $result = $db->SelectLimit("SELECT `id` FROM `" . DBPREFIX . "module_crm_contacts` WHERE `user_account` = " . intval($this->id), 1);
+        if ($result->RecordCount() == 0) {
+            return false;
+        }
+        return true;
     }
 
 

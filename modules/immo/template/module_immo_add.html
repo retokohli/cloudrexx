@@ -607,7 +607,7 @@
         <!-- BEGIN  text-column -->
             <td style="white-space: nowrap;">
             <input style="width: 300px; vertical-align: top;" type="text" size="90" {IMMO_DECIMAL_ONLY} name="{IMMO_FIELD_TEXT_NAME}" value="{IMMO_FIELD_TEXT_VALUE}" />
-            <img style="vertical-align: top;" src="images/icons/reload.gif" onclick="sendReq({IMMO_FIELD_ID}, {IMMO_FIELD_LANG_ID}, document.getElementsByName('{IMMO_FIELD_TEXT_NAME}')[0].value, '{IMMO_FIELD_TEXT_NAME}');" alt="{TXT_IMMO_GET_PROPOSAL_LIST}" />
+            <img style="vertical-align: top;" src="images/icons/refresh.png" onclick="sendReq({IMMO_FIELD_ID}, {IMMO_FIELD_LANG_ID}, document.getElementsByName('{IMMO_FIELD_TEXT_NAME}')[0].value, '{IMMO_FIELD_TEXT_NAME}');" alt="{TXT_IMMO_GET_PROPOSAL_LIST}" />
             <img style="vertical-align: top;" src="images/icons/delete.gif" onclick="document.getElementsByName('{IMMO_FIELD_TEXT_NAME}')[0].value='';" alt="{TXT_IMMO_DELETE}" />
             </td>
         <!-- END text-column -->
@@ -622,7 +622,7 @@
         <!-- BEGIN textarea-column -->
             <td style="vertical-align: top">
             <textarea style="vertical-align: top; width: 300px;" rows="6" cols="90" name="{IMMO_FIELD_TEXTAREA_NAME}">{IMMO_FIELD_TEXTAREA_VALUE}</textarea>
-            <img style="vertical-align:top;" src="images/icons/reload.gif" onclick="sendReq({IMMO_FIELD_ID}, {IMMO_FIELD_LANG_ID}, document.getElementsByName('{IMMO_FIELD_TEXTAREA_NAME}')[0].value, '{IMMO_FIELD_TEXTAREA_NAME}');" alt="{TXT_IMMO_GET_PROPOSAL_LIST}" />
+            <img style="vertical-align:top;" src="images/icons/refresh.png" onclick="sendReq({IMMO_FIELD_ID}, {IMMO_FIELD_LANG_ID}, document.getElementsByName('{IMMO_FIELD_TEXTAREA_NAME}')[0].value, '{IMMO_FIELD_TEXTAREA_NAME}');" alt="{TXT_IMMO_GET_PROPOSAL_LIST}" />
             <img style="vertical-align:top;" src="images/icons/delete.gif" onclick="document.getElementsByName('{IMMO_FIELD_TEXTAREA_NAME}')[0].value='';" alt="{TXT_IMMO_DELETE}" />
             </td>
         <!-- END textarea-column -->

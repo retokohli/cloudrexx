@@ -938,6 +938,7 @@ class AccessManager extends AccessLib
 
         $rowNr = 0;
         $groupId = !empty($_REQUEST['groupId']) ? $_REQUEST['groupId'] : 0;
+        $accountType = !empty($_REQUEST['accountType']) ? intval($_REQUEST['accountType']) : 0;
         $limitOffset = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
         $orderDirection = !empty($_GET['sort']) ? $_GET['sort'] : 'desc';
         $orderBy = !empty($_GET['by']) ? $_GET['by'] : 'regdate';
@@ -952,10 +953,12 @@ class AccessManager extends AccessLib
             'TXT_ACCESS_OPERATION_IRREVERSIBLE'     => $_ARRAYLANG['TXT_ACCESS_OPERATION_IRREVERSIBLE'],
             'TXT_ACCESS_SEARCH'                     => $_ARRAYLANG['TXT_ACCESS_SEARCH'],
             'TXT_ACCESS_USER_LIST'                  => $_ARRAYLANG['TXT_ACCESS_USER_LIST'],
-            'ACCESS_GROUP_MENU'                     => $this->getGroupMenu($groupId, 'name="access_group_id" onchange="window.location.replace(\''.CSRF::enhanceURI('index.php?cmd=access').'&amp;act=user&amp;groupId=\'+this.value+\'&amp;sort='.htmlspecialchars($orderDirection).'&amp;by='.htmlspecialchars($orderBy).'\')"'),
-            'ACCESS_USER_STATUS_MENU'               => $this->getUserStatusMenu($userStatusFilter, 'name="user_status_filter" onchange="window.location.replace(\''.CSRF::enhanceURI('index.php?cmd=access').'&amp;act=user&amp;groupId='.$groupId.'&amp;sort='.htmlspecialchars($orderDirection).'&amp;by='.htmlspecialchars($orderBy).'&amp;user_status_filter=\'+this.value+\'&amp;user_role_filter='.$userRoleFilter.'\')"'),
-            'ACCESS_USER_ROLE_MENU'                 => $this->getUserRoleMenu($userRoleFilter, 'name="user_role_filter" onchange="window.location.replace(\''.CSRF::enhanceURI('index.php?cmd=access').'&amp;act=user&amp;groupId='.$groupId.'&amp;sort='.htmlspecialchars($orderDirection).'&amp;by='.htmlspecialchars($orderBy).'&amp;user_status_filter='.$userStatusFilter.'&amp;user_role_filter=\'+this.value)"'),
+            'ACCESS_GROUP_MENU'                     => $this->getGroupMenu($groupId, 'name="access_group_id" onchange="window.location.replace(\''.CSRF::enhanceURI('index.php?cmd=access').'&amp;act=user&amp;groupId=\'+this.value+\'&amp;sort='.htmlspecialchars($orderDirection).'&amp;by='.htmlspecialchars($orderBy).'&amp;accountType='.$accountType.'\')"'),
+            'ACCESS_USER_ACCOUNT_MENU'              => $this->getUserAccountMenu($accountType, 'name="access_user_account_type" onchange="window.location.replace(\''.CSRF::enhanceURI('index.php?cmd=access').'&amp;act=user&amp;groupId='.$groupId.'&amp;sort='.htmlspecialchars($orderDirection).'&amp;by='.htmlspecialchars($orderBy).'&amp;accountType=\'+this.value)"'),
+            'ACCESS_USER_STATUS_MENU'               => $this->getUserStatusMenu($userStatusFilter, 'name="user_status_filter" onchange="window.location.replace(\''.CSRF::enhanceURI('index.php?cmd=access').'&amp;act=user&amp;groupId='.$groupId.'&amp;sort='.htmlspecialchars($orderDirection).'&amp;by='.htmlspecialchars($orderBy).'&amp;user_status_filter=\'+this.value+\'&amp;user_role_filter='.$userRoleFilter.'&amp;accountType='.$accountType.'\')"'),
+            'ACCESS_USER_ROLE_MENU'                 => $this->getUserRoleMenu($userRoleFilter, 'name="user_role_filter" onchange="window.location.replace(\''.CSRF::enhanceURI('index.php?cmd=access').'&amp;act=user&amp;groupId='.$groupId.'&amp;sort='.htmlspecialchars($orderDirection).'&amp;by='.htmlspecialchars($orderBy).'&amp;user_status_filter='.$userStatusFilter.'&amp;user_role_filter=\'+this.value+\'&amp;accountType='.$accountType.'\')"'),
             'ACCESS_GROUP_IP'                       => $groupId,
+            'ACCESS_ACCOUNT_TYPE'                   => $accountType,
             'ACCESS_SEARCH_VALUE'                   => htmlentities(join(' ', $search), ENT_QUOTES, CONTREXX_CHARSET),
             'ACCESS_SORT_DIRECTION'                 => $orderDirection,
             'ACCESS_SORT_BY'                        => $orderBy,
@@ -965,6 +968,13 @@ class AccessManager extends AccessLib
             'ACCESS_USER_ROLE_FILTER_ESCAPED'       => urlencode($userRoleFilter)
         ));
 
+        $cx = \Env::get('cx');
+        if ($cx->getLicense()->isInLegalComponents('crm')) {
+            $this->_objTpl->touchBlock('access_crm_filter');
+        } else {
+            $this->_objTpl->hideBlock('access_crm_filter');
+        }
+
         $this->parseLetterIndexList('index.php?cmd=access&amp;act=user&amp;groupId='.$groupId.'&amp;user_status_filter='.$userStatusFilter.'&amp;user_role_filter='.$userRoleFilter, 'username_filter', $usernameFilter);
 
         $objGroup = $objFWUser->objGroup->getGroup($groupId);
@@ -973,6 +983,9 @@ class AccessManager extends AccessLib
         if ($groupId) {
             $groupId = $groupId == 'groupless' ? 'groupless' : intval($groupId);
             $userFilter['group_id'] = $groupId;
+        }
+        if ($accountType) {
+            $userFilter['crm'] = 1;
         }
         if ($usernameFilter !== null) {
             $userFilter['username'] = array('REGEXP' => '^'.($usernameFilter == '0' ? '[0-9]|-|_' : $usernameFilter));
@@ -1031,6 +1044,7 @@ class AccessManager extends AccessLib
 				'ACCESS_SEARCH_VALUE'               => contrexx_raw2xhtml(join(' ', $search))
             ));
 
+            $this->_objTpl->setCurrentBlock('access_user_list');
             while (!$objUser->EOF) {
                 $firstname = $objUser->getProfileAttribute('firstname');
                 $lastname = $objUser->getProfileAttribute('lastname');
@@ -1047,7 +1061,7 @@ class AccessManager extends AccessLib
                     'ACCESS_USER_LASTNAME'              => !empty($lastname) ? htmlentities($lastname, ENT_QUOTES, CONTREXX_CHARSET) : '&nbsp;',
                     'ACCESS_USER_EMAIL'                 => htmlentities($objUser->getEmail(), ENT_QUOTES, CONTREXX_CHARSET),
                     'ACCESS_SEND_EMAIL_TO_USER'         => sprintf($_ARRAYLANG['TXT_ACCESS_SEND_EMAIL_TO_USER'], htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)),
-                    'ACCESS_USER_ADMIN_IMG'             => $objUser->getAdminStatus() ? 'admin.gif' : 'no_admin.gif',
+                    'ACCESS_USER_ADMIN_IMG'             => $objUser->getAdminStatus() ? 'admin.png' : 'no_admin.png',
                     'ACCESS_USER_ADMIN_TXT'             => $objUser->getAdminStatus() ? $_ARRAYLANG['TXT_ACCESS_ADMINISTRATOR'] : $_ARRAYLANG['TXT_ACCESS_NO_ADMINISTRATOR'],
                     'ACCESS_DELETE_USER_ACCOUNT'        => sprintf($_ARRAYLANG['TXT_ACCESS_DELETE_USER_ACCOUNT'],htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET)),
                     'ACCESS_USER_REGDATE'               => date(ASCMS_DATE_FORMAT_DATE, $objUser->getRegistrationDate()),
@@ -1056,8 +1070,16 @@ class AccessManager extends AccessLib
                     'ACCESS_USER_EXPIRATION_STYLE'      => $objUser->getExpirationDate() && $objUser->getExpirationDate() < time() ? 'color:#f00; font-weight:bold;' : null,
                     'ACCESS_CHANGE_ACCOUNT_STATUS_MSG'  => sprintf($objUser->getActiveStatus() ? $_ARRAYLANG['TXT_ACCESS_DEACTIVATE_USER'] : $_ARRAYLANG['TXT_ACCESS_ACTIVATE_USER'], htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET))
                 ));
+
+                if ($objUser->isCrmUser()) {
+                    if ($this->_objTpl->blockExists('access_user_crm_account')) {
+                        $this->_objTpl->setVariable('ACCESS_USER_CRM_ACCOUNT', $_ARRAYLANG['TXT_ACCESS_USER_CRM_ACCOUNT']);
+                        $this->_objTpl->parse('access_user_crm_account');
+                    }
+                }
+
                 $rowNr++;
-                $this->_objTpl->parse('access_user_list');
+                $this->_objTpl->parseCurrentBlock();
                 $objUser->next();
             }
             $this->_objTpl->parse('access_has_users');
@@ -1590,6 +1612,16 @@ class AccessManager extends AccessLib
             $objGroup->next();
         }
         $menu .= '<option value="groupless">'.$_ARRAYLANG['TXT_ACCESS_GROUPLESS_USERS'].'</option>'."\n";
+        $menu .= "</select>\n";
+        return $menu;
+    }
+
+    private function getUserAccountMenu($selectedAccountType, $attrs)
+    {
+        global $_ARRAYLANG;
+        $menu = '<select'.(!empty($attrs) ? ' '.$attrs : '').'>'."\n";
+        $menu .= '<option value="0" style="text-indent:5px;">'.$_ARRAYLANG['TXT_ACCESS_ALL'].'</option>'."\n";
+        $menu .= '<option value="1" style="text-indent:5px;"'.($selectedAccountType == 1 ? ' selected="selected"' : '').'>'.$_ARRAYLANG['TXT_ACCESS_USER_TYPE_CRM'].'</option>'."\n";
         $menu .= "</select>\n";
         return $menu;
     }
