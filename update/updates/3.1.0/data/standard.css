@@ -378,9 +378,6 @@ div.row2 {
     width: 100%;
     border-top: 1px solid #DDDDDD;
 }
-#calendar div.registration  {
-    text-align: right;
-}
 #calendar div.note {
     float: left;
     width: 100%;
