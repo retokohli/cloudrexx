@@ -70,14 +70,6 @@ class CalendarMail extends CalendarLibrary
     public $recipients;
     
     /**
-     * default recipient
-     *
-     * @access public
-     * @var string
-     */
-    public $default_recipient;
-    
-    /**
      * Action id
      *
      * @access public
@@ -140,8 +132,7 @@ class CalendarMail extends CalendarLibrary
             $this->title = stripslashes($objResult->fields['title']);
             $this->content_text = stripslashes($objResult->fields['content_text']);
             $this->content_html = stripslashes($objResult->fields['content_html']);
-            $this->recipients = htmlentities($objResult->fields['recipients'], ENT_QUOTES, CONTREXX_CHARSET);
-            $this->default_recipient = htmlentities($objResult->fields['default_recipient'], ENT_QUOTES, CONTREXX_CHARSET);
+            $this->recipients = htmlentities($objResult->fields['recipients'], ENT_QUOTES, CONTREXX_CHARSET);            
             $this->action_id = intval($objResult->fields['action_id']);
             $this->lang_id = intval($objResult->fields['lang_id']);
             $this->is_default = intval($objResult->fields['is_default']);

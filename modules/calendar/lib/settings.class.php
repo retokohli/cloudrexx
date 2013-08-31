@@ -488,6 +488,7 @@ class CalendarSettings extends CalendarLibrary
             'TXT_'.$this->moduleLangVar.'_REGISTRATION_FIRSTNAME'   =>  $_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER_REGISTRATION_FIRSTNAME'],
             'TXT_'.$this->moduleLangVar.'_REGISTRATION_LASTNAME'    =>  $_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER_REGISTRATION_LASTNAME'],
             'TXT_'.$this->moduleLangVar.'_REGISTRATION_EMAIL'       =>  $_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER_REGISTRATION_EMAIL'],
+            'TXT_'.$this->moduleLangVar.'_REGISTRATION_DATA'        =>  $_ARRAYLANG['TXT_CALENDAR_PLACEHOLDER_REGISTRATION_DATA'],
             'TXT_'.$this->moduleLangVar.'_COMMENT'                  =>  $_ARRAYLANG['TXT_CALENDAR_COMMENT'],
         ));
         
