@@ -3324,6 +3324,7 @@ END;
                             c.`contact_familyname`,
                             c.`contact_type`,
                             c.`contact_role`,
+                            c.`contact_customer`,
                             con.`customer_name` AS company,
                             con.`id` AS companyId
                         FROM `".DBPREFIX."module_{$this->moduleName}_contacts` AS c
@@ -3446,6 +3447,8 @@ END;
                 $lastName    = utf8_decode($objRS->fields['contact_familyname']);
                 $role        = utf8_decode($objRS->fields['contact_role']);
                 $companyName = utf8_decode($objRS->fields['company']);
+                //person without company
+                $primary     = !empty ($objRS->fields['contact_customer']) ? true : false;
             }
 
                 if (!$workAddr || !$isWorkEmail || !$isWorkPhone) {
@@ -3479,8 +3482,8 @@ END;
             $vc        = new vcard();
             $vc->data['customer_name']      = $firstName." ".$lastName;
             $vc->data['company']            = $companyName;
-            $vc->data['email1']             = !empty ($primaryWorkEmail) ? $primaryWorkEmail : $workEmail;
-            $vc->data['email2']             = !empty ($primaryHomeEmail) ? $primaryHomeEmail : $homeEmail;
+            $vc->data['email1']             = !$primary ? (!empty ($primaryHomeEmail) ? $primaryHomeEmail : $homeEmail) : (!empty ($primaryWorkEmail) ? $primaryWorkEmail : $workEmail);
+            $vc->data['email2']             = !$primary ? (!empty ($primaryWorkEmail) ? $primaryWorkEmail : $workEmail) : (!empty ($primaryHomeEmail) ? $primaryHomeEmail : $homeEmail);
             $vc->data['title']              = $role;
             $vc->data['first_name']         = $firstName;
             $vc->data['last_name']          = $lastName;
@@ -3489,6 +3492,9 @@ END;
             $vc->data['work_tele']          = !empty ($primaryWrkTelephone) ? $primaryWrkTelephone : $wrkTelephone;
             $vc->data['work_postal_code']   = !empty ($pryWorkPostalcode) ? $pryWorkPostalcode : $workPostalcode;
             $vc->data['work_country']       = !empty ($pryWorkCountry) ? $pryWorkCountry : $workCountry;
+            if (!$primary) {
+                $vc->data['home_pref']      = ",pref";
+            }
             $vc->data['home_address']       = !empty ($pryHomeAddress) ? $pryHomeAddress : $homeAddress;
             $vc->data['home_city']          = !empty ($pryHomeCity) ? $pryHomeCity : $homeCity;
             $vc->data['home_country']       = !empty ($pryHomeCountry) ? $pryHomeCountry : $homeCountry;

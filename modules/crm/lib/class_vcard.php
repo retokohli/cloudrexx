@@ -195,7 +195,7 @@ class vcard
     || $this->data['home_postal_code']
     || $this->data['home_tele']
     || $this->data['home_country']) {
-      $this->card .= "ADR;TYPE=home:"
+      $this->card .= "ADR;TYPE=home".$this->data['home_pref'].":"
         .$this->data['home_po_box'].";"
         .$this->data['home_extended_address'].";"
         .$this->data['home_address'].";"

@@ -1016,10 +1016,25 @@ class Settings extends CrmLibrary
                     'customer_default_language_backend'  => isset($_POST['default_language_backend']) ? (int) $_POST['default_language_backend'] : 0,
                     'customer_default_language_frontend' => isset($_POST['default_language_frontend']) ? (int) $_POST['default_language_frontend'] : 0,
                     'default_user_group'                 => isset($_POST['default_user_group']) ? (int) $_POST['default_user_group'] : 0,
-                    'emp_default_user_group'             => isset($_POST['emp_default_user_group']) ? (int) $_POST['emp_default_user_group'] : 0,
                     'user_account_mantatory'             => isset($_POST['user_account_mantatory']) ? 1 : 0,
                     'default_country_value'              => isset ($_POST['default_country_value']) ? (int) $_POST['default_country_value'] : 0
             );
+
+            if (isset($_POST['emp_default_user_group']) && !empty ($_POST['emp_default_user_group'])) {
+                $groupId = array();
+                $groupValidation = $objDatabase->Execute("SELECT group_id FROM ".DBPREFIX."access_group_static_ids WHERE access_id = {$this->customerAccessId}");
+                if ($groupValidation && $groupValidation->RecordCount() > 0) {
+                    while (!$groupValidation->EOF) {
+                        array_push($groupId, (int) $groupValidation->fields['group_id']);
+                        $groupValidation->MoveNext();
+                    }
+                }
+                if (in_array($_POST['emp_default_user_group'], $groupId)) {
+                    $settings['emp_default_user_group'] = isset($_POST['emp_default_user_group']) ? (int) $_POST['emp_default_user_group'] : 0;
+                } else {
+                    $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_SETTINGS_EMPLOYEE_ACCESS_ERROR'];
+                }
+            }
 
             foreach ($settings as $settings_var => $settings_val) {
                 $updateAllowPm = 'UPDATE '.DBPREFIX.'module_'.$this->moduleName.'_settings
@@ -1082,6 +1097,12 @@ class Settings extends CrmLibrary
                         'CRM_USER_GROUP_SELECTED'   => $settings['default_user_group'] == $objGroupIds->getId() ? "selected='selected'" : ''
                 ));
                 $objTpl->parse("userGroup");
+                $objTpl->setVariable(array(
+                        'CRM_GROUP_NAME'            => contrexx_raw2xhtml($objGroupIds->getName()),
+                        'CRM_GROUP_VALUE'           => (int) $objGroupIds->getId(),
+                        'CRM_USER_GROUP_SELECTED'   => $settings['emp_default_user_group'] == $objGroupIds->getId() ? "selected='selected'" : ''
+                ));
+                $objTpl->parse("empUserGroup");
                 $objGroupIds->next();
             }
         }
@@ -1127,8 +1148,9 @@ class Settings extends CrmLibrary
                 'TXT_CRM_GENERAL'                => $_ARRAYLANG['TXT_CRM_GENERAL'],
                 'TXT_CRM_CURRENCY'               => $_ARRAYLANG['TXT_CRM_CURRENCY'],
                 'TXT_CRM_CUSTOMER_TYPES'         => $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPES'],
-                'TXT_CRM_EMPLOYEE'               => $_ARRAYLANG['TXT_CRM_EMPLOYEE'],
+                'TXT_CRM_EMPLOYEE'               => $_ARRAYLANG['TXT_CRM_SETTINGS_EMPLOYEE'],
                 'TXT_CRM_EMP_DEFAULT_USER_GROUP' => $_ARRAYLANG['TXT_CRM_EMP_DEFAULT_USER_GROUP'],
+                'TXT_CRM_SETTINGS_EMP_TOOLTIP'   => $_ARRAYLANG['TXT_CRM_SETTINGS_EMPLOYEE_TOOLTIP'],
                 'TXT_CRM_ACCOUNT_ARE_MANTATORY'  => $_ARRAYLANG['TXT_CRM_ACCOUNT_ARE_MANTATORY']
         ));
         
