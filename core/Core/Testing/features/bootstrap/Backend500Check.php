@@ -39,7 +39,7 @@ class Backend500CheckContext extends ContrexxContext
     public function iVisitAllLinksIFindOnEachPage()
     {
         // wait otherwise the page is not loaded
-        $this->session->wait(2000);
+        $this->waitForBackend();
         $lastLinkIndex = count($this->page->findAll('css', '.navigation_level_2 > li > a')) - 1;
 
         // visit first link
@@ -63,7 +63,7 @@ class Backend500CheckContext extends ContrexxContext
         $linkTags = $this->page->findAll('css', '.navigation_level_2 > li > a');
         $url = $linkTags[$currentLinkIndex]->getAttribute('href');
         $this->iAmOn($url);
-        $this->session->wait(2000);
+        $this->waitForBackend();
 
         if (!$this->currentPageIsMaintenance()) {
             // refresh current site
@@ -73,12 +73,12 @@ class Backend500CheckContext extends ContrexxContext
                 $subNavigationLinks = $this->page->findAll('css', '#subnavbar_level1 td.navi > a');
                 $url = $subNavigationLinks[$i]->getAttribute('href');
                 $this->iAmOn($url);
-                $this->session->wait(2000);
+                $this->waitForBackend();
 
                 if ($this->currentPageIsMaintenance()) {
                     $this->failedLinks[] = $url;
                     $this->iAmOn($linkTags[$currentLinkIndex]->getAttribute('href'));
-                    $this->session->wait(2000);
+                    $this->waitForBackend();
                 }
             }
 
@@ -99,8 +99,12 @@ class Backend500CheckContext extends ContrexxContext
         // reload backend
         // due to csrf
         $this->iAmInBackend();
-        $this->session->wait(2000);
+        $this->waitForBackend();
 
         $this->visitNextLink(++$currentLinkIndex, $lastLinkIndex, $linkTags);
+    }
+
+    private function waitForBackend(){
+        $this->waitForBackend();
     }
 }
