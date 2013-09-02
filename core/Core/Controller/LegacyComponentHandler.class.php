@@ -1809,7 +1809,7 @@ class LegacyComponentHandler {
                     'server' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
 
-                        \Permission::checkAccess(4, 'static');
+                        \Permission::checkAccess(24, 'static');
                         if (!$cl->loadFile(ASCMS_CORE_PATH.'/serverSettings.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $subMenuTitle = $_CORELANG['TXT_SERVER_INFO'];
