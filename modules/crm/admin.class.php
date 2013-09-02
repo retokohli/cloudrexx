@@ -5124,6 +5124,78 @@ END;
                 'TXT_CRM_IMAGE_DELETE' => $_ARRAYLANG['TXT_CRM_IMAGE_DELETE'],
         ));
 
+
+        // tab 2
+        $id      = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+        $name    = isset($_POST['name']) ? contrexx_input2raw($_POST['name']) : '';
+        $sorting = isset($_POST['sortingNumber']) ? (int) $_POST['sortingNumber'] : '';
+        $status  = isset($_POST['activeStatus']) ? 1 : (empty($_POST) ? 1 : 0);
+        
+        $inputField = isset($_POST['Inputfield']) ? $_POST['Inputfield'] : array();
+        if (isset ($_POST['save_entry'])) {
+            $fields = array(
+                    'sorting'       => $sorting,
+                    'status'        => $status
+            );
+
+            $field_set = '';
+            foreach ($fields as $col => $val) {
+                if ($val !== null) {
+                    $field_set[] = "`$col` = '".contrexx_input2db($val)."'";
+                }
+            }
+            $field_set = implode(', ', $field_set);
+
+            if (!empty($id)) {
+                $query = "UPDATE `".DBPREFIX."module_{$this->moduleName}_memberships` SET
+                        $field_set
+                  WHERE `id` = $id";
+                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_ENTRY_UPDATED_SUCCESS'];
+            } else {
+                $query = "INSERT INTO `".DBPREFIX."module_{$this->moduleName}_memberships` SET
+                        $field_set";
+                
+            }
+            $db = $objDatabase->Execute($query);
+            $entryId = !empty($id) ? $id : $objDatabase->INSERT_ID();
+
+            // Insert the name locale
+            if ($db) {
+                $objDatabase->Execute("DELETE FROM `".DBPREFIX."module_{$this->moduleName}_membership_local` WHERE entry_id = $entryId");
+                foreach ($this->_arrLanguages as $langId => $langValue) {
+                    $value = empty($inputField[$langId]) ? contrexx_input2db($inputField[0]) : contrexx_input2db($inputField[$langId]);
+                    $objDatabase->Execute("
+                        INSERT INTO `".DBPREFIX."module_{$this->moduleName}_membership_local` SET
+                            `entry_id` = $entryId,
+                            `lang_id`   = $langId,
+                            `value`    = '$value'
+                            ");
+                }
+            }
+
+            if ($db) {
+                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_ENTRY_ADDED_SUCCESS'];
+            } else {
+                $this->_strErrMessage = "Error in saving Data";
+            }
+        }
+        
+        $first = true;
+        foreach ($this->_arrLanguages as $langId => $langValue) {
+
+            ($first) ? $objTpl->touchBlock("minimize") : $objTpl->hideBlock("minimize");
+            $first = false;
+
+            $objTpl->setVariable(array(
+                    'LANG_ID'                 => $langId,
+                    'LANG_LONG_NAME'          => $langValue['long'],
+                    'LANG_SHORT_NAME'         => $langValue['short'],
+                    'CRM_SETTINGS_VALUE'      => isset($inputField[$langId]) ? contrexx_raw2xhtml($inputField[$langId]) : ''
+            ));
+            $objTpl->parse("settingsNames");
+        }
+
+        //show all records
         $query = "SELECT membership.*,
                          memberLoc.value,
                          (SELECT COUNT(1) FROM
@@ -5153,8 +5225,15 @@ END;
             $objTpl->parse("membershipEntries");
             $objResult->MoveNext();
         }
-
+        
+        $objTpl->setGlobalVariable(array(
+                'TXT_CRM_MORE'              => $_ARRAYLANG['TXT_CRM_MORE'],
+                'TXT_CRM_MINIMIZE'          => $_ARRAYLANG['TXT_CRM_MINIMIZE']
+        ));
         $objTpl->setVariable(array(
+            'DEFAULT_LANG_ID'               => $_LANGID,
+            'LANG_ARRAY'                    => implode(',', array_keys($this->_arrLanguages)),
+            'CSRF_PARAM'                    => CSRF::param(),
             'TXT_CRM_CUSTOMER_MEMBERSHIP'   => $_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP'],
             'TXT_CRM_ADD_MEMBERSHIP'        => $_ARRAYLANG['TXT_CRM_ADD_MEMBERSHIP'],
             'TXT_STATUS'                    => $_ARRAYLANG['TXT_STATUS'],
@@ -5171,6 +5250,9 @@ END;
             'TXT_CRM_CHANGE_STATUS'         => $_ARRAYLANG['TXT_CRM_CHANGE_STATUS'],
             'TXT_CRM_ENTRY_DELETED_SUCCESS' => $_ARRAYLANG['TXT_CRM_ENTRY_DELETED_SUCCESS'],
             'TXT_CRM_NOTHING_SELECTED'      => $_ARRAYLANG['TXT_CRM_NOTHING_SELECTED'],
+            'TXT_CRM_NAME'                  => $_ARRAYLANG['TXT_CRM_NAME'],
+            'TXT_CRM_TITLEACTIVE'           => $_ARRAYLANG['TXT_CRM_TITLEACTIVE'],
+            'TXT_CRM_SORTING_NUMBER'        => $_ARRAYLANG['TXT_CRM_SORTING_NUMBER'],
             'TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES'           => $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES'],
             'TXT_CRM_ARE_YOU_SURE_DELETE_SELECTED_ENTRIES'  => $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_DELETE_SELECTED_ENTRIES']
         ));
@@ -5287,16 +5369,17 @@ END;
         ));
         $objTpl->setVariable(array(
                 'CRM_SETTINGS_NAME_DEFAULT_VALUE' => isset($inputField[$_LANGID]) ? contrexx_raw2xhtml($inputField[$_LANGID]) : '',
-                'CRM_ACTIVATED_VALUE'       => $status ? "checked='checked'" : '',
-                'CRM_SORTINGNUMBER'         => $sorting,
-                'DEFAULT_LANG_ID'           => $_LANGID,
-                'LANG_ARRAY'                => implode(',', array_keys($this->_arrLanguages)),
-                'TXT_CRM_OVERVIEW'              => $_ARRAYLANG['TXT_CRM_OVERVIEW'],
-                'TXT_CRM_NAME'                  => $_ARRAYLANG['TXT_CRM_NAME'],
-                'TXT_CRM_TITLEACTIVE'           => $_ARRAYLANG['TXT_CRM_TITLEACTIVE'],
-                'TXT_CRM_SORTING_NUMBER'        => $_ARRAYLANG['TXT_CRM_SORTING_NUMBER'],
-                'TXT_CRM_SAVE'                  => $_ARRAYLANG['TXT_CRM_SAVE'],
-                'TXT_TITLE_MODIFY_INDUSTRY' => (!empty ($id)) ? $_ARRAYLANG['TXT_CRM_EDIT_MEMBERSHIP'] : $_ARRAYLANG['TXT_CRM_ADD_MEMBERSHIP'],
+                'CRM_ACTIVATED_VALUE'             => $status ? "checked='checked'" : '',
+                'CRM_SORTINGNUMBER'               => $sorting,
+                'DEFAULT_LANG_ID'                 => $_LANGID,
+                'LANG_ARRAY'                      => implode(',', array_keys($this->_arrLanguages)),
+                'TXT_CRM_OVERVIEW'                => $_ARRAYLANG['TXT_CRM_OVERVIEW'],
+                'TXT_CRM_NAME'                    => $_ARRAYLANG['TXT_CRM_NAME'],
+                'TXT_CRM_TITLEACTIVE'             => $_ARRAYLANG['TXT_CRM_TITLEACTIVE'],
+                'TXT_CRM_SORTING_NUMBER'          => $_ARRAYLANG['TXT_CRM_SORTING_NUMBER'],
+                'TXT_CRM_SAVE'                    => $_ARRAYLANG['TXT_CRM_SAVE'],
+                'TXT_CRM_BACK'                    => $_ARRAYLANG['TXT_CRM_BACK'],
+                'TXT_TITLE_MODIFY_INDUSTRY'       => (!empty ($id)) ? $_ARRAYLANG['TXT_CRM_EDIT_MEMBERSHIP'] : $_ARRAYLANG['TXT_CRM_ADD_MEMBERSHIP'],
         ));
     }
 
