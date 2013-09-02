@@ -96,27 +96,27 @@ class Selenium2Driver implements DriverInterface
             $desiredCapabilities = self::getDefaultCapabilities();
         }
 
-        if (isset($desiredCapabilities['firefox'])) {
-            foreach ($desiredCapabilities['firefox'] as $capability => $value) {
-                switch ($capability) {
-                    case 'profile':
-                        $desiredCapabilities['firefox_'.$capability] = base64_encode(file_get_contents($value));
-                        break;
-                    default:
-                        $desiredCapabilities['firefox_'.$capability] = $value;
-                }
-            }
+//        if (isset($desiredCapabilities['firefox'])) {
+//            foreach ($desiredCapabilities['firefox'] as $capability => $value) {
+//                switch ($capability) {
+//                    case 'profile':
+//                        $desiredCapabilities['firefox_'.$capability] = base64_encode(file_get_contents($value));
+//                        break;
+//                    default:
+//                        $desiredCapabilities['firefox_'.$capability] = $value;
+//                }
+//            }
+//
+//            unset($desiredCapabilities['firefox']);
+//        }
 
-            unset($desiredCapabilities['firefox']);
-        }
-
-        if (isset($desiredCapabilities['chrome'])) {
-            foreach ($desiredCapabilities['chrome'] as $capability => $value) {
-                $desiredCapabilities['chrome.'.$capability] = $value;
-            }
-
-            unset($desiredCapabilities['chrome']);
-        }
+//        if (isset($desiredCapabilities['chrome'])) {
+//            foreach ($desiredCapabilities['chrome'] as $capability => $value) {
+//                $desiredCapabilities['chrome.'.$capability] = $value;
+//            }
+//
+//            unset($desiredCapabilities['chrome']);
+//        }
 
         $this->desiredCapabilities = $desiredCapabilities;
     }

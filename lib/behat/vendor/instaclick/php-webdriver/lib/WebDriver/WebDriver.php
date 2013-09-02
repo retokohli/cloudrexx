@@ -75,6 +75,11 @@ final class WebDriver extends AbstractWebDriver
             array(CURLOPT_FOLLOWLOCATION => true)
         );
 
+        if (isset($results['value']['webdriver.remote.sessionid'])) {
+            return new Session($this->url . '/session/' . $results['value']['webdriver.remote.sessionid']);
+        }
+
+        // backward compatibility fallback
         return new Session($results['info']['url']);
     }
 
