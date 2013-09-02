@@ -105,6 +105,6 @@ class Backend500CheckContext extends ContrexxContext
     }
 
     private function waitForBackend(){
-        $this->waitForBackend();
+        $this->session->wait(2000, 'jQuery(\'.navigation_level_2 > li > a\').length > 0');
     }
 }
