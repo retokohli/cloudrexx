@@ -77,57 +77,10 @@ class LicenseCommunicator {
         if ($response) {
             $response = json_decode($response);
         } else {
-            $v = preg_split('#\.#', $_CONFIG['coreCmsVersion']);
-            $e = $_CONFIG['coreCmsEdition'];
-
-            $version = current($v);
-            unset($v[key($v)]);
-            foreach ($v as $part) {
-                $version *= 100;
-                $version += $part;
-            }
-            
-            $srvUri = 'updatesrv1.contrexx.com';
-            $srvPath = '/';
-
-            $data = array(
-                'installationId' => $license->getInstallationId(),
-                'licenseKey' => $license->getLicenseKey(),
-                'edition' => $license->getEditionName(),
-                'version' => $this->coreCmsVersion,
-                'versionstate' => $this->coreCmsStatus,
-                'domainName' => $this->domainUrl,
-                'sendTemplate' => $forceTemplate,
-            );
-            $a = $_SERVER['REMOTE_ADDR'];
-            $r = 'http://';
-            if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
-                $r = 'https://';
-            }
-            $r .= $_SERVER['SERVER_NAME'] . ASCMS_INSTANCE_OFFSET;
-
-            $request = new \HTTP_Request2('http://' . $srvUri . $srvPath . '?v=' . $version, \HTTP_Request2::METHOD_POST);
-            $request->setHeader('X-Edition', $e);
-            $request->setHeader('X-Remote-Addr', $a);
-            $request->setHeader('Referer', $r);
-            $jd = new \Cx\Core\Json\JsonData();
-            $request->addPostParameter('data', $jd->json($data));
-            try {
-                $objResponse = $request->send();
-                if ($objResponse->getStatus() !== 200) {
-                    $license->setState(License::LICENSE_ERROR);
-                    $license->setGrayzoneMessages(array(\FWLanguage::getLanguageCodeById(LANG_ID) => new Message(\FWLanguage::getLanguageCodeById(LANG_ID), $_CORELANG['TXT_LICENSE_COMMUNICATION_ERROR'])));
-                    $license->check();
-                    return;
-                } else {
-                    \DBG::dump($objResponse->getBody());
-                    $response = json_decode($objResponse->getBody());
-                }
-            } catch (\HTTP_Request2_Exception $objException) {
-                $license->setState(License::LICENSE_ERROR);
-                $license->setGrayzoneMessages(array(\FWLanguage::getLanguageCodeById(LANG_ID) => new Message(\FWLanguage::getLanguageCodeById(LANG_ID), $_CORELANG['TXT_LICENSE_COMMUNICATION_ERROR'])));
-                $license->check();
-                throw $objException;
+            $response = $this->fetchResponse($license, $_CONFIG, $forceTemplate, $_CORELANG);
+            if (!$response) {
+                // status: error
+                return;
             }
         }
         
@@ -251,6 +204,78 @@ class LicenseCommunicator {
         $license->check();
 
         return;
+    }
+    
+    protected function fetchResponse($license, $_CONFIG, $forceTemplate, $_CORELANG) {
+        $v = preg_split('#\.#', $_CONFIG['coreCmsVersion']);
+        $e = $_CONFIG['coreCmsEdition'];
+
+        $version = current($v);
+        unset($v[key($v)]);
+        foreach ($v as $part) {
+            $version *= 100;
+            $version += $part;
+        }
+
+        $srvUri = 'updatesrv1.contrexx.com';
+        $srvPath = '/';
+
+        $data = array(
+            'installationId' => $license->getInstallationId(),
+            'licenseKey' => $license->getLicenseKey(),
+            'edition' => $license->getEditionName(),
+            'version' => $this->coreCmsVersion,
+            'versionstate' => $this->coreCmsStatus,
+            'domainName' => $this->domainUrl,
+            'sendTemplate' => $forceTemplate,
+        );
+        
+        if (false) {
+            try {
+                $objFile = new \Cx\Lib\FileSystem\File(ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/config/License.lic');
+                $rawData = $objFile->getData();
+                $response = json_decode(base64_decode($rawData));
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                $license->setState(License::LICENSE_ERROR);
+                $license->setGrayzoneMessages(array(\FWLanguage::getLanguageCodeById(LANG_ID) => new Message(\FWLanguage::getLanguageCodeById(LANG_ID), $_CORELANG['TXT_LICENSE_COMMUNICATION_ERROR'])));
+                $license->check();
+                throw $e;
+            }
+            return $response;
+        }
+        
+        $a = $_SERVER['REMOTE_ADDR'];
+        $r = 'http://';
+        if (isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] != 'off') {
+            $r = 'https://';
+        }
+        $r .= $_SERVER['SERVER_NAME'] . ASCMS_INSTANCE_OFFSET;
+
+        $request = new \HTTP_Request2('http://' . $srvUri . $srvPath . '?v=' . $version, \HTTP_Request2::METHOD_POST);
+        $request->setHeader('X-Edition', $e);
+        $request->setHeader('X-Remote-Addr', $a);
+        $request->setHeader('Referer', $r);
+        $jd = new \Cx\Core\Json\JsonData();
+        $request->addPostParameter('data', $jd->json($data));
+        try {
+            $objResponse = $request->send();
+            if ($objResponse->getStatus() !== 200) {
+                $license->setState(License::LICENSE_ERROR);
+                $license->setGrayzoneMessages(array(\FWLanguage::getLanguageCodeById(LANG_ID) => new Message(\FWLanguage::getLanguageCodeById(LANG_ID), $_CORELANG['TXT_LICENSE_COMMUNICATION_ERROR'])));
+                $license->check();
+                return null;
+            } else {
+                die($objResponse->getBody());
+                \DBG::dump($objResponse->getBody());
+                $response = json_decode($objResponse->getBody());
+            }
+        } catch (\HTTP_Request2_Exception $objException) {
+            $license->setState(License::LICENSE_ERROR);
+            $license->setGrayzoneMessages(array(\FWLanguage::getLanguageCodeById(LANG_ID) => new Message(\FWLanguage::getLanguageCodeById(LANG_ID), $_CORELANG['TXT_LICENSE_COMMUNICATION_ERROR'])));
+            $license->check();
+            throw $objException;
+        }
+        return $response;
     }
     
     /**
