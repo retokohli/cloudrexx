@@ -265,7 +265,6 @@ class LicenseCommunicator {
                 $license->check();
                 return null;
             } else {
-                die($objResponse->getBody());
                 \DBG::dump($objResponse->getBody());
                 $response = json_decode($objResponse->getBody());
             }
