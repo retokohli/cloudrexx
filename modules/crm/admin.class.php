@@ -3333,19 +3333,22 @@ END;
                         WHERE c.`id` = $id";
 
         $mailQry  = "SELECT email, email_type, is_primary FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_emails` WHERE contact_id = $id AND email_type IN (0,1) ORDER BY id DESC";
-        $phoneQry = "SELECT phone, phone_type, is_primary FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_phone` WHERE contact_id = $id AND phone_type IN (0,1,3,4) ORDER BY id DESC";
+        $phoneQry = "SELECT phone, phone_type, is_primary FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_phone` WHERE contact_id = $id AND phone_type IN (0,1,2,3) ORDER BY id DESC";
         $webQry   = "SELECT url, url_type     FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_websites` WHERE contact_id = $id AND `is_primary` = '1' ORDER BY id DESC";
         $addrQry  = "SELECT *                 FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_address` WHERE contact_id = $id AND Address_Type IN (0,5) ORDER BY id DESC";
 
         if (false != ($objRS = $objDatabase->Execute($query))  && false != ($objMail = $objDatabase->Execute($mailQry)) && false != ($objPhone = $objDatabase->Execute($phoneQry)) && false != ($objWeb = $objDatabase->Execute($webQry)) && false != ($objAddr = $objDatabase->Execute($addrQry))) {
 
             $isWorkEmail = false;
+            $isHomeEmail = false;
             while (!$objMail->EOF) {
                 switch (true) {
                 case ($objMail->fields['email_type'] == 0 && $objMail->fields['is_primary'] == 0):
+                    $isHomeEmail      = true;
                     $homeEmail        = utf8_decode($objMail->fields['email']);
                     break;
                 case ($objMail->fields['email_type'] == 0 && $objMail->fields['is_primary'] == 1):
+                    $isHomeEmail      = true;
                     $primaryHomeEmail = utf8_decode($objMail->fields['email']);
                     break;
                 case ($objMail->fields['email_type'] == 1 && $objMail->fields['is_primary'] == 0):
@@ -3362,12 +3365,15 @@ END;
                 $objMail->MoveNext();
             }
             $isWorkPhone = false;
+            $isHomePhone = false;
             while (!$objPhone->EOF) {
                 switch (true) {
                 case ($objPhone->fields['phone_type'] == 0 && $objPhone->fields['is_primary'] == 0):
+                        $isHomePhone           = true;
                         $homeTelephone         = utf8_decode($objPhone->fields['phone']);
                     break;
                 case ($objPhone->fields['phone_type'] == 0 && $objPhone->fields['is_primary'] == 1):
+                        $isHomePhone           = true;
                         $primaryHomeTelephone  = utf8_decode($objPhone->fields['phone']);
                     break;
                 case ($objPhone->fields['phone_type'] == 1 && $objPhone->fields['is_primary'] == 0):
@@ -3378,16 +3384,16 @@ END;
                         $isWorkPhone           = true;
                         $primaryWrkTelephone   = utf8_decode($objPhone->fields['phone']);
                     break;
-                case ($objPhone->fields['phone_type'] == 3 && $objPhone->fields['is_primary'] == 0):
+                case ($objPhone->fields['phone_type'] == 2 && $objPhone->fields['is_primary'] == 0):
                         $celephone             = utf8_decode($objPhone->fields['phone']);
                     break;
-                case ($objPhone->fields['phone_type'] == 3 && $objPhone->fields['is_primary'] == 1):
+                case ($objPhone->fields['phone_type'] == 2 && $objPhone->fields['is_primary'] == 1):
                         $primaryCelephone      = utf8_decode($objPhone->fields['phone']);
                     break;
-                case ($objPhone->fields['phone_type'] == 4 && $objPhone->fields['is_primary'] == 0):
+                case ($objPhone->fields['phone_type'] == 3 && $objPhone->fields['is_primary'] == 0):
                         $fax                   = utf8_decode($objPhone->fields['phone']);
                     break;
-                case ($objPhone->fields['phone_type'] == 4 && $objPhone->fields['is_primary'] == 1):
+                case ($objPhone->fields['phone_type'] == 3 && $objPhone->fields['is_primary'] == 1):
                         $primaryFax            = utf8_decode($objPhone->fields['phone']);
                     break;
                 default:
@@ -3401,9 +3407,11 @@ END;
                 $objWeb->MoveNext();
             }
             $workAddr = false;
+            $homeAddr = false;
             while (!$objAddr->EOF) {
                 switch (true) {
                 case ($objAddr->fields['Address_Type'] == 0 && $objAddr->fields['is_primary'] == 0):
+                        $homeAddr       = true;
                         $homeAddress    = utf8_decode($objAddr->fields['address']);
                         $homeCity       = utf8_decode($objAddr->fields['city']);
                         $homeState      = utf8_decode($objAddr->fields['state']);
@@ -3411,6 +3419,7 @@ END;
                         $homeCountry    = utf8_decode($objAddr->fields['country']);
                     break;
                 case ($objAddr->fields['Address_Type'] == 0 && $objAddr->fields['is_primary'] == 1):
+                        $homeAddr       = true;
                         $pryHomeAddress    = utf8_decode($objAddr->fields['address']);
                         $pryHomeCity       = utf8_decode($objAddr->fields['city']);
                         $pryHomeState      = utf8_decode($objAddr->fields['state']);
@@ -3442,6 +3451,7 @@ END;
 
             if ($objRS->fields['contact_type'] == 1) {
                 $firstName = utf8_decode($objRS->fields['customer_name']);
+                $primary   = true;
             } elseif ($objRS->fields['contact_type'] == 2) {
                 $firstName   = utf8_decode($objRS->fields['customer_name']);
                 $lastName    = utf8_decode($objRS->fields['contact_familyname']);
@@ -3451,7 +3461,7 @@ END;
                 $primary     = !empty ($objRS->fields['contact_customer']) ? true : false;
             }
 
-                if (!$workAddr || !$isWorkEmail || !$isWorkPhone) {
+                if (!$workAddr || !$isWorkEmail || !$isWorkPhone || !$isHomeEmail || !$isHomePhone || !$homeAddr) {
                     $objContactCompany = $objDatabase->Execute("SELECT email.email,
                                                                      phone.phone,
                                                                      addr.*
@@ -3463,17 +3473,31 @@ END;
                                                                   LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_customer_contact_address` as addr
                                                                    ON (c.id = addr.contact_id AND addr.is_primary = '1')
                                                                   WHERE c.`id` = {$id}");
-                    if (!$isWorkEmail)
-                        $workEmail      = utf8_decode($objContactCompany->fields['email']);
-                    if (!$isWorkPhone)
-                        $wrkTelephone   = utf8_decode($objContactCompany->fields['phone']);
-
+                    if (!$isWorkEmail) {
+                        $workEmail    = utf8_decode($objContactCompany->fields['email']);
+                    }
+                    if (!$isHomeEmail) {
+                        $homeEmail    = utf8_decode($objContactCompany->fields['email']);
+                    }
+                    if (!$isWorkPhone) {
+                        $wrkTelephone = utf8_decode($objContactCompany->fields['phone']);
+                    }
+                    if (!$isHomePhone) {
+                        $homeTelephone = utf8_decode($objContactCompany->fields['phone']);
+                    }
                     if (!$workAddr) {
                         $workAddress    = utf8_decode($objContactCompany->fields['address']);
                         $workCity       = utf8_decode($objContactCompany->fields['city']);
                         $workState      = utf8_decode($objContactCompany->fields['state']);
                         $workPostalcode = utf8_decode($objContactCompany->fields['zip']);
                         $workCountry    = utf8_decode($objContactCompany->fields['country']);
+                    }
+                    if (!$homeAddr) {
+                        $homeAddress    = utf8_decode($objContactCompany->fields['address']);
+                        $homeCity       = utf8_decode($objContactCompany->fields['city']);
+                        $homeState      = utf8_decode($objContactCompany->fields['state']);
+                        $homePostalcode = utf8_decode($objContactCompany->fields['zip']);
+                        $homeCountry    = utf8_decode($objContactCompany->fields['country']);
                     }
                 }
 
@@ -5841,6 +5865,7 @@ END;
         // return web- and filesystem path. files will be moved there.
         return array($tempPath, $tempWebPath);
     }
+    
     /**
      * the upload is finished
      * rewrite the names
@@ -5937,6 +5962,80 @@ END;
                                 }
                             }
                         }
+                    } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                        \DBG::msg($e->getMessage());
+                    }
+                }
+
+                $arrFiles[] = $file;
+            }
+            closedir($h);
+        }
+
+        // return web- and filesystem path. files will be moved there.
+        return array($tempPath, $tempWebPath);
+    }
+    
+    /**
+     * the upload is finished
+     * rewrite the names
+     * write the uploaded files to the database
+     *
+     * @static
+     * @param string $tempPath the temporary file path
+     * @param string $tempWebPath the temporary file path which is accessable by web browser
+     * @param array $data the data which are attached by uploader init method
+     * @param integer $uploadId the upload id
+     * @param $fileInfos
+     * @param $response
+     * @return array the target paths
+     */
+    public static function taskUploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response)
+    {
+
+        global $objDatabase, $objFWUser;
+
+        $depositionTarget = CRM_ACCESS_OTHER_IMG_PATH.'/'; //target folder
+        $h = opendir($tempPath);
+        if ($h) {
+
+            while(false != ($file = readdir($h))) {
+
+                $info = pathinfo($file);
+
+                //skip . and ..
+                if($file == '.' || $file == '..') { continue; }
+
+                if($file != '..' && $file != '.') {
+                    //do not overwrite existing files.
+                    $prefix = '';
+                    while (file_exists($depositionTarget.$prefix.$file)) {
+                        if (empty($prefix)) {
+                            $prefix = 0;
+                        }
+                        $prefix ++;
+                    }
+
+                    // move file
+                    try {
+                        $objFile = new \Cx\Lib\FileSystem\File($tempPath.'/'.$file);
+                        $objFile->copy($depositionTarget.$prefix.$file, false);
+
+                        // create thumbnail
+                        if (empty($objImage)) {
+                            $objImage = new ImageManager();
+                        }
+                        $imageName = trim($prefix.$file);
+                        $objImage->_createThumbWhq(
+                            CRM_ACCESS_OTHER_IMG_PATH.'/',
+                            CRM_ACCESS_OTHER_IMG_WEB_PATH.'/',
+                            $imageName,
+                            24,
+                            24,
+                            70,
+                            '_24X24.thumb'
+                        );
+                        $_SESSION['importFilename'] = $imageName;
                     } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
                         \DBG::msg($e->getMessage());
                     }
