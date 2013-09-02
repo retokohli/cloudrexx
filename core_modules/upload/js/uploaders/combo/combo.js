@@ -120,8 +120,7 @@ var ComboUploader = function(theConfig) {
             var flashSupported = swfobject.getFlashPlayerVersion().major >= 10;
 
             var javaSupported = false;
-            var version = getJavaVersion();
-            if (navigator != undefined && version != null) {
+            if (navigator != undefined) {
                 if (navigator.javaEnabled() && parseFloat(getJavaVersion().substring(0,3)) > 1.4) {
                     javaSupported = true;
                 }
