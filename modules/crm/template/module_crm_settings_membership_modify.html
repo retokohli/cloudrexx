@@ -61,11 +61,6 @@
         });
     });
 </script>
-    <div id="subnavbar_level2">
-        <ul>
-            <li><a href="index.php?cmd={MODULE_NAME}&act=settings&tpl=membership" title="{TXT_CRM_OVERVIEW}">{TXT_CRM_OVERVIEW}</a></li>
-        </ul>
-    </div>
 <div id="success_rate">
     <br>
     <div id="formerr"></div>
@@ -103,6 +98,7 @@
             </tbody>
         </table>
         <br>
+        <input type="button" name="back_entry" value="{TXT_CRM_BACK}" onclick="window.location.replace('index.php?cmd=crm&act=settings&tpl=membership&{CSRF_PARAM}');" />
         <input type="submit" name="save_entry" value="{TXT_CRM_SAVE}" />
     </form>
 </div>
