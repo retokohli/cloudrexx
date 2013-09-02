@@ -478,7 +478,7 @@ $_ARRAYLANG['TXT_CRM_EMPLOYEE']                     = "Angestellte";
 
 $_ARRAYLANG['TXT_CRM_CONTACT'] = "Kontakt";
 $_ARRAYLANG['TXT_CRM_TASK_DUE_DATE'] = "Fällig am";
-$_ARRAYLANG['TXT_CRM_EMP_DEFAULT_USER_GROUP'] = "Standardbenutzergruppe für Mitarbeiter";
+$_ARRAYLANG['TXT_CRM_EMP_DEFAULT_USER_GROUP'] = "Benutzergruppe";
 $_ARRAYLANG['TXT_CRM_FIND_CONTACT_BY_NAME'] = "Einen Kontakt suchen";
 $_ARRAYLANG['TXT_CRM_FIND_COMPANY_BY_NAME'] = "Ein Unternehmen suchen";
 $_ARRAYLANG['TXT_CRM_ENTER_SEARCH_TERM'] = "Suchbegriff eingeben";
@@ -536,6 +536,9 @@ $_ARRAYLANG['TXT_CRM_DEFAULT_COUNTRY']              = "Vorauswahl für Land";
 $_ARRAYLANG['TXT_CRM_DEFAULT_CURRENCY_ERROR']       = "Währung kann nicht gelöscht werden.";
 $_ARRAYLANG['TXT_CRM_DEFAULT_CURRENCY_STATUS_ERROR']       = "Währungsstatus kann nicht geändert werden.";
 $_ARRAYLANG['TXT_CRM_DEFAULT_CUSTOMER_TYPE_STATUS_ERROR']  = "Customer type status cannot be changed.";
+$_ARRAYLANG['TXT_CRM_SETTINGS_EMPLOYEE']  = "Mitarbeiter";
+$_ARRAYLANG['TXT_CRM_SETTINGS_EMPLOYEE_TOOLTIP']  = "Wählen Sie die Benutzergruppe aus, aus welcher die Mitglieder einer Aufgabe oder Verkaufschance zugewiesen werden können.";
+$_ARRAYLANG['TXT_CRM_SETTINGS_EMPLOYEE_ACCESS_ERROR']  = "Die ausgewählte Benutzergruppe verfügt nicht über die benötigten Zugriffsrechte um aufs CRM zu zugreifen. Benutzer, welchen eine Aufgabe oder Verkaufschance zugewiesen wird, werden nicht in der Lage sein, diese zu betreuen wegen den fehlenden Zugriffsberechtigungen.";
 
 /*placeholder Descriptions*/
 $_ARRAYLANG['TXT_CRM_ASSIGNED_USER_EMAIL'] = 'Die ID der Benutzermailadresse .';

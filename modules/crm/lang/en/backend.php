@@ -479,7 +479,7 @@ $_ARRAYLANG['TXT_CRM_EMPLOYEE']                     = "Employees";
 
 $_ARRAYLANG['TXT_CRM_CONTACT']                      = "Contact";
 $_ARRAYLANG['TXT_CRM_TASK_DUE_DATE']                    = "Due Date and Time";
-$_ARRAYLANG['TXT_CRM_EMP_DEFAULT_USER_GROUP']       = "Employee's Default user group";
+$_ARRAYLANG['TXT_CRM_EMP_DEFAULT_USER_GROUP']       = "User group";
 $_ARRAYLANG['TXT_CRM_FIND_CONTACT_BY_NAME']         = "Find a contact by name";
 $_ARRAYLANG['TXT_CRM_FIND_COMPANY_BY_NAME']         = "Find a company by name";
 $_ARRAYLANG['TXT_CRM_ENTER_SEARCH_TERM']            = "Enter your search term";
@@ -536,6 +536,9 @@ $_ARRAYLANG['TXT_CRM_DEFAULT_COUNTRY']              = "Default country";
 $_ARRAYLANG['TXT_CRM_DEFAULT_CURRENCY_ERROR']       = "Currency cannot be deleted.";
 $_ARRAYLANG['TXT_CRM_DEFAULT_CURRENCY_STATUS_ERROR']       = "Currency status cannot be changed.";
 $_ARRAYLANG['TXT_CRM_DEFAULT_CUSTOMER_TYPE_STATUS_ERROR']  = "Customer type status cannot be changed.";
+$_ARRAYLANG['TXT_CRM_SETTINGS_EMPLOYEE']  = "Employees";
+$_ARRAYLANG['TXT_CRM_SETTINGS_EMPLOYEE_TOOLTIP']  = "Select the user group of which its members can be assigned to a task or to an opportunity to.";
+$_ARRAYLANG['TXT_CRM_SETTINGS_EMPLOYEE_ACCESS_ERROR']  = "Selected user group has not sufficient permission to access the CRM module. Users assigned to a task or an opportunity won't be able to manage it due to insufficient access permissions.";
 
 /*placeholder Descriptions*/
 $_ARRAYLANG['TXT_CRM_ASSIGNED_USER_EMAIL'] = 'The crm user email id.';

@@ -135,7 +135,7 @@ class CrmLibrary
     * @access public
     * @var array
     */
-    var $phoneOptions           = array("TXT_CRM_HOME", "TXT_CRM_WORK", "TXT_CRM_OTHERS", "TXT_CRM_MOBILE", "TXT_CRM_FAX", "TXT_CRM_DIRECT");
+    var $phoneOptions           = array("TXT_CRM_HOME", "TXT_CRM_WORK", "TXT_CRM_MOBILE", "TXT_CRM_FAX", "TXT_CRM_DIRECT", "TXT_CRM_OTHERS");
 
     /**
     * Website Options

@@ -97,6 +97,23 @@
                     </div>
                 </td>
             </tr>
+            <tr>
+                <th colspan="2">{TXT_CRM_EMPLOYEE}</th>
+            </tr>
+            <tr class="row1">
+                <td valign="top" >
+                    {TXT_CRM_EMP_DEFAULT_USER_GROUP}&nbsp;
+                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_CRM_SETTINGS_EMP_TOOLTIP}</span>
+                </td>
+                <td>
+                    <select name="emp_default_user_group" style="width: 250px;">
+                        <!-- BEGIN empUserGroup -->
+                        <option value="{CRM_GROUP_VALUE}" {CRM_USER_GROUP_SELECTED}>{CRM_GROUP_NAME}</option>
+                        <!-- END empUserGroup -->
+                    </select>
+
+                </td>
+            </tr>
         </table>
         <br />
         <input type="submit" value="{TXT_CRM_SAVE}" name="save" />
