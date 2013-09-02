@@ -1279,6 +1279,7 @@ CREATE TABLE `contrexx_module_crm_task_types` (
   `status` tinyint(1) NOT NULL,
   `sorting` int(11) NOT NULL,
   `description` text NOT NULL,
+  `icon` varchar(255) NOT NULL,
   `system_defined` tinyint(4) NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=MyISAM ;
