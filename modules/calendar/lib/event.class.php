@@ -1033,7 +1033,8 @@ class CalendarEvent extends CalendarLibrary
         
             $objResult = $objDatabase->Execute($query);
             
-            if ($objResult !== false) {                
+            if ($objResult !== false) {
+                $this->id = $id;
                 $query = "DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_event_field
                                 WHERE event_id = '".$id."'";    
                                 
