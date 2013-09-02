@@ -382,6 +382,7 @@ class CrmLibrary
         $active     = isset($_POST['active']) ? 1 : 0;
         $sortOrder  = isset($_POST['sort']) ? (int) $_POST['sort'] : 0;
         $description= isset($_POST['description']) ? contrexx_input2db($_POST['description']) : '';
+        $icon       = isset($_POST['icon']) ? contrexx_input2db($_POST['icon']) : '';
 
         $where = '';
         if ($id)
@@ -392,7 +393,8 @@ class CrmLibrary
                         SET `name` = '$name',
                             `status` = $active,
                             `sorting` = $sortOrder,
-                            `description` = '$description'
+                            `description` = '$description',
+                            `icon`        = '$icon'
                 $where";
         $objDatabase->Execute($query);
     }
@@ -431,21 +433,25 @@ class CrmLibrary
         if ($objResult) {
             $row = "row2";
             while (!$objResult->EOF) {
-                $status = ($objResult->fields['status']) ? "led_green.gif" : "led_red.gif";
+                $iconPath = '';
+                $status   = ($objResult->fields['status']) ? "led_green.gif" : "led_red.gif";
 
                 if ($objResult->fields['system_defined']) {
                     $objTpl->hideBlock('delete_icon_block');
                 } else {
                     $objTpl->touchBlock('delete_icon_block');
                 }
-
+                if (!empty ($objResult->fields['icon'])) {
+                    $iconPath = CRM_ACCESS_OTHER_IMG_WEB_PATH.'/'.contrexx_raw2xhtml($objResult->fields['icon'])."_24X24.thumb";
+                }
                 $objTpl->setVariable(array(
                         'CRM_TASK_TYPE_ID'          => (int) $objResult->fields['id'],
                         'CRM_TASK_TYPE_NAME'        => contrexx_raw2xhtml($objResult->fields['name']),
                         'CRM_TASK_TYPE_SORTING'     => (int) $objResult->fields['sorting'],
+                        'CRM_TASK_TYPE_ICON'        => $iconPath,
                         'CRM_TASK_TYPE_ACTIVE'      => $status,
                         'ROW_CLASS'                 => $row = ($row == "row2") ? "row1" : "row2",
-                        'TXT_ORDER'         => $sorto
+                        'TXT_ORDER'                 => $sorto
                 ));
                 $objTpl->parse("taskTypes");
                 $objResult->MoveNext();
@@ -474,6 +480,7 @@ class CrmLibrary
         $active     = isset($_POST['active']) || !$id ? 1 : 0;
         $sortOrder  = isset($_POST['sort']) && $id ? (int) $_POST['sort'] : '';
         $description= isset($_POST['description']) && $id ? $_POST['description'] : '';
+        $icon       = isset($_POST['icon']) && $id ? $_POST['icon'] : '';
 
         if ($id) {
             $objResult = $objDatabase->SelectLimit("SELECT * FROM `".DBPREFIX."module_{$this->moduleName}_task_types` WHERE id = $id", 1);
@@ -482,6 +489,7 @@ class CrmLibrary
             $active     = ($objResult->fields['status']) ? 1 : 0;
             $sortOrder  = $objResult->fields['sorting'];
             $description= $objResult->fields['description'];
+            $icon       = $objResult->fields['icon'];
         } else {
             $objTpl->hideBlock("taskBackButton");
         }
@@ -491,6 +499,7 @@ class CrmLibrary
                 'CRM_TASK_TYPE_NAME'        => contrexx_raw2xhtml($name),
                 'CRM_TASK_TYPE_SORTING'     => $sortOrder,
                 'CRM_TASK_TYPE_DESCRIPTION' => contrexx_raw2xhtml($description),
+                'CRM_TASK_TYPE_ICON'        => contrexx_raw2xhtml($icon),
                 'CRM_TASK_TYPE_ADD_ACTIVE'  => (empty($_POST) && empty($id)) || ($active) ? "checked" : '',
 
                 'TXT_CRM_TASK_TYPE_NAME'        => $_ARRAYLANG['TXT_CRM_TASK_TYPE_NAME'],

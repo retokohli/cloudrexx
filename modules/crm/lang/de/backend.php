@@ -405,6 +405,7 @@ $_ARRAYLANG['TXT_CRM_INDUSTRY_UPDATED_SUCCESSFULLY'] = "Branche erfolgreich bear
 $_ARRAYLANG['TXT_CRM_CATALOGS_UPDATED_SUCCESSFULLY'] = "Dringlichkeit erfolgreich bearbeitet";
 $_ARRAYLANG['TXT_CRM_DEACTIVATED'] = "deaktiviert";
 $_ARRAYLANG['TXT_CRM_ACTIVATED']   = "aktiviert";
+$_ARRAYLANG['TXT_CRM_ICON']   = "Symbol";
 
 /* settings membership */
 $_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP'] = "Kundengruppe";

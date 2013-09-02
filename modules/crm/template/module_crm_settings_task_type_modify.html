@@ -15,8 +15,17 @@
                 return true;
             }
         });
+        $J("#browse").click(function(){
+           $J("#contactFormFieldId_taskType").trigger('click');
+        });
     });
 </script>
+<style type="text/css">
+    input.contactFormField {
+        position: absolute;
+        left: -5000px;
+    }
+</style>
 <form action="" method="post" id="addTasktype">
     <table class="adminlist" width="100%" cellspacing="0" cellpadding="3">
         <tr>
@@ -36,6 +45,14 @@
             <td valign="top">{TXT_CRM_TASK_TYPE_DESCRIPTION}</td>
             <td style="padding-left: 5px;"><textarea cols="40" rows="10" name="description" id="description" size="30" style="margin: 0px;">{CRM_TASK_TYPE_DESCRIPTION}</textarea></td>
         </tr>
+        <tr class="row2">
+            <td width="10%">{TXT_CRM_ICON}</td>
+            <td width="90%">
+                <div id="contactFormField_uploadWidget_taskType"></div>
+                <input type="file" class="contactFormField" id="contactFormFieldId_taskType" name="contactFormFieldId_taskType" value="" />
+                <input type="text" name="icon" id="icon" value="{CRM_TASK_TYPE_ICON}" style="width: 198px;"/>&nbsp;<input type="button" name="browse" id="browse" value="Browse" style="width: 100px;"/>
+            </td>
+        </tr>
     </table>
     <br>
     <!-- BEGIN taskBackButton -->
@@ -43,3 +60,19 @@
     <!-- END taskBackButton -->
     <input style="margin-top: 2.5px;margin-left: 2px;" type="submit" name="saveTaskType" value="{TXT_CRM_SAVE}" />
 </form>
+{COMBO_UPLOADER_CODE_TASK_TYPE}
+<script type="text/javascript">
+	cx.ready(function() {
+		var uploader = cx.instances.get('exposed_combo_uploader_taskType','uploader');
+		uploader.dialog().bind('close', function(){
+                    $J.getJSON( '{REDIRECT_URL}', function( data ) {
+                        $J.each(data, function(key, val) {
+                            var file = val.fileName;
+                            if ($J.trim(file) != '') {
+                                $J('#icon').val(file);
+                            }
+                        });
+                    });
+		});
+	},true);
+</script>

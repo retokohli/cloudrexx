@@ -746,6 +746,14 @@ class Settings extends CrmLibrary
     {
         global $objDatabase,$_ARRAYLANG;
 
+        //For task type Upload
+        $uploaderCodeTaskType = $this->initUploader('taskType', true, 'taskUploadFinished', '', 'task_type_files_');
+        $redirectUrl = CSRF::enhanceURI('index.php?cmd=crm&act=getImportFilename');
+        $this->_objTpl->setVariable(array(
+            'COMBO_UPLOADER_CODE_TASK_TYPE' => $uploaderCodeTaskType,
+            'REDIRECT_URL'                  => $redirectUrl
+        ));
+
         $fn = isset($_REQUEST['fn']) ? $_REQUEST['fn'] : '';
         if (!empty($fn)) {
             switch ($fn) {
@@ -816,12 +824,14 @@ class Settings extends CrmLibrary
         $this->showTaskTypes();
 
         $objTpl->setVariable(array(
-                'TXT_CRM_TASK_TYPES'        => $_ARRAYLANG['TXT_CRM_TASK_TYPES'],
-                'TXT_CRM_ADD_TASK_TYPE'     => $_ARRAYLANG['TXT_CRM_ADD_TASK_TYPE'],
-                'TXT_CRM_TASK_TYPE_STATUS'  => $_ARRAYLANG['TXT_CRM_TASK_TYPE_STATUS'],
-                'TXT_CRM_FUNCTIONS'         => $_ARRAYLANG['TXT_CRM_FUNCTIONS'],
-                'TXT_CRM_NO_TASKTYPES'      => $_ARRAYLANG['TXT_CRM_NO_TASKTYPES'],
-                'TXT_CRM_SAVE'                  => $_ARRAYLANG['TXT_CRM_SAVE'],
+                'TXT_CRM_ICON'                 => $_ARRAYLANG['TXT_CRM_ICON'],
+                'TXT_CRM_ICON_PATH'            => CRM_ACCESS_OTHER_IMG_WEB_PATH.'/',
+                'TXT_CRM_TASK_TYPES'           => $_ARRAYLANG['TXT_CRM_TASK_TYPES'],
+                'TXT_CRM_ADD_TASK_TYPE'        => $_ARRAYLANG['TXT_CRM_ADD_TASK_TYPE'],
+                'TXT_CRM_TASK_TYPE_STATUS'     => $_ARRAYLANG['TXT_CRM_TASK_TYPE_STATUS'],
+                'TXT_CRM_FUNCTIONS'            => $_ARRAYLANG['TXT_CRM_FUNCTIONS'],
+                'TXT_CRM_NO_TASKTYPES'         => $_ARRAYLANG['TXT_CRM_NO_TASKTYPES'],
+                'TXT_CRM_SAVE'                 => $_ARRAYLANG['TXT_CRM_SAVE'],
                 'TXT_CRM_SELECT_ALL'           => $_ARRAYLANG['TXT_CRM_SELECT_ALL'],
                 'TXT_CRM_DESELECT_ALL'         => $_ARRAYLANG['TXT_CRM_REMOVE_SELECTION'],
                 'TXT_CRM_SELECT_ACTION'        => $_ARRAYLANG['TXT_CRM_SELECT_ACTION'],
@@ -829,7 +839,7 @@ class Settings extends CrmLibrary
                 'TXT_CRM_ACTIVATE_SELECTED'    => $_ARRAYLANG['TXT_CRM_ACTIVATE_SELECTED'],
                 'TXT_CRM_DEACTIVATE_SELECTED'  => $_ARRAYLANG['TXT_CRM_DEACTIVATE_SELECTED'],
                 'TXT_CRM_SAVE_SORTING'         => $_ARRAYLANG['TXT_CRM_SAVE_SORTING'],
-                'TXT_SELECT_ENTRIES'       => $_ARRAYLANG['TXT_CRM_NO_OPERATION'],
+                'TXT_SELECT_ENTRIES'           => $_ARRAYLANG['TXT_CRM_NO_OPERATION'],
                 'TXT_CRM_STATUS_SUCCESSFULLY_CHANGED' => $_ARRAYLANG['TXT_CRM_TASK_TYPE_STATUS_CHANGED_SUCCESSFULLY'],
         ));
     }
