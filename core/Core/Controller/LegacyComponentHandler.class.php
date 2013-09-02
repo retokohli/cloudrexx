@@ -1856,6 +1856,7 @@ class LegacyComponentHandler {
                     'license' => function() {
                         global $cl, $_CORELANG, $objTemplate, $objDatabase, $_CONFIG, $act;
 
+                        \Permission::checkAccess(177, 'static');
                         $subMenuTitle = $_CORELANG['TXT_LICENSE'];
                         $lm = new \Cx\Core_Modules\License\LicenseManager($act, $objTemplate, $_CORELANG, $_CONFIG, $objDatabase);
                         $lm->getPage($_POST, $_CORELANG);
