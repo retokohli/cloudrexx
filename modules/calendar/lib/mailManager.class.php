@@ -175,7 +175,7 @@ class CalendarMailManager extends CalendarLibrary {
      * @param string $mailTemplate
      */
     function sendMail($eventId, $actionId, $regId=null, $mailTemplate = null)
-    {  
+    {
         global $objDatabase,$_ARRAYLANG, $_CONFIG ;
                 
         $this->mailList = array();  
@@ -192,23 +192,7 @@ class CalendarMailManager extends CalendarLibrary {
                 $objRegistration = new CalendarRegistration($objEvent->registrationForm, $regId);
                 
                 list($registrationDataText, $registrationDataHtml) = $this->getRegistrationData($objRegistration);                 
-            }
-                                                              
-            $recipients = $this->getSendMailRecipients($actionId, $objEvent, $regId, $objRegistration);
-                        
-            $domain     = ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'];            
-            $date       = date(parent::getDateFormat()." - H:i:s");       
-            
-            $eventTitle = $objEvent->title; 
-            $eventStart = $objEvent->all_day ? date(parent::getDateFormat(), $objEvent->startDate) : date(parent::getDateFormat()." (H:i:s)", $objEvent->startDate); 
-            $eventEnd   = $objEvent->all_day ? date(parent::getDateFormat(), $objEvent->endDate) : date(parent::getDateFormat()." (H:i:s)", $objEvent->endDate);
-                        
-            $eventLink = $domain.\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'detail')."?id={$objEvent->id}&date={$objEvent->startDate}";
-            $regLink   = $domain.\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'register')."?id={$objEvent->id}&date={$objEvent->startDate}";
-            
-            $placeholder = array('[[TITLE]]', '[[START_DATE]]', '[[END_DATE]]', '[[LINK_EVENT]]', '[[LINK_REGISTRATION]]', '[[USERNAME]]', '[[FIRSTNAME]]', '[[LASTNAME]]', '[[URL]]', '[[DATE]]');
-            
-            if (!empty($regId)) {
+                
                 $query = 'SELECT `v`.`value`, `n`.`default`, `f`.`type`
                           FROM '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_value AS `v`
                           INNER JOIN '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_name AS `n`
@@ -227,7 +211,7 @@ class CalendarMailManager extends CalendarLibrary {
                 $arrDefaults = array();
                 $arrValues   = array();
                 if ($objResult !== false) {
-                    while (!$objResult->EOF) {
+                    while (!$objResult->EOF) {                         
                         if (!empty($objResult->fields['default'])) {
                             $arrDefaults[$objResult->fields['type']] = explode(',', $objResult->fields['default']);
                         }
@@ -245,6 +229,20 @@ class CalendarMailManager extends CalendarLibrary {
                 $regSearch     = array('[[REGISTRATION_TYPE]]', '[[REGISTRATION_SALUTATION]]', '[[REGISTRATION_FIRSTNAME]]', '[[REGISTRATION_LASTNAME]]', '[[REGISTRATION_EMAIL]]');
                 $regReplace    = array(      $regType,                 $regSalutation,                $regFirstname,                $regLastname,                $regMail);
             }
+                                                                                                  
+            $domain     = ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'];            
+            $date       = date(parent::getDateFormat()." - H:i:s");       
+            
+            $eventTitle = $objEvent->title; 
+            $eventStart = $objEvent->all_day ? date(parent::getDateFormat(), $objEvent->startDate) : date(parent::getDateFormat()." (H:i:s)", $objEvent->startDate); 
+            $eventEnd   = $objEvent->all_day ? date(parent::getDateFormat(), $objEvent->endDate) : date(parent::getDateFormat()." (H:i:s)", $objEvent->endDate);
+                        
+            $eventLink = $domain.\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'detail')."?id={$objEvent->id}&date={$objEvent->startDate}";
+            $regLink   = $domain.\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'register')."?id={$objEvent->id}&date={$objEvent->startDate}";
+            
+            $placeholder = array('[[TITLE]]', '[[START_DATE]]', '[[END_DATE]]', '[[LINK_EVENT]]', '[[LINK_REGISTRATION]]', '[[USERNAME]]', '[[FIRSTNAME]]', '[[LASTNAME]]', '[[URL]]', '[[DATE]]');
+            
+            $recipients = $this->getSendMailRecipients($actionId, $objEvent, $regId, $objRegistration);
                         
             $objMail = new phpmailer();
 
@@ -266,14 +264,23 @@ class CalendarMailManager extends CalendarLibrary {
             $objMail->AddReplyTo($_CONFIG['coreAdminEmail']); 
 
             foreach ($recipients as $mailAdress => $langId) {
-                if(!empty($mailAdress)) {
+                if (!empty($mailAdress)) {
                     
                     $langId = $this->getSendMailLangId($actionId, $mailAdress, $langId);
             
-                    if ($objUser = FWUser::getFWUserObject()->objUser->getUsers($filter = array('email' => $mailAdress, 'is_active' => true))) {
-                        $userNick = $objUser->getUsername();
+                    if ($objUser = FWUser::getFWUserObject()->objUser->getUsers($filter = array('email' => $mailAdress, 'is_active' => true))) {                        
+                        $userNick      = $objUser->getUsername();
                         $userFirstname = $objUser->getProfileAttribute('firstname');
-                        $userLastname = $objUser->getProfileAttribute('lastname');
+                        $userLastname  = $objUser->getProfileAttribute('lastname');
+                    } else {
+                        $userNick = $mailAdress;
+                        if (!empty($regId) && $mailAdress == $regMail) {
+                            $userFirstname = $regFirstname;
+                            $userLastname  = $regLastname;
+                        } else {
+                            $userFirstname = '';
+                            $userLastname  = '';
+                        }
                     }
 
                     $mailTitle       = $this->mailList[$langId]['mail']->title;
@@ -305,7 +312,7 @@ class CalendarMailManager extends CalendarLibrary {
                     $objMail->Send();
                     $objMail->ClearAddresses();
                 }
-            }            
+            }
         }        
     }
     
@@ -410,12 +417,12 @@ class CalendarMailManager extends CalendarLibrary {
         }
         
         switch ($actionId) {
-            case 1:                
-                $invitedMails = explode(",", $objEvent->invitedMails);                
+            case 1:
+                $invitedMails = explode(",", $objEvent->invitedMails);
                 foreach ($invitedMails as $mail) {
                     if (!empty($mail)) {
                         $recipients[$mail] = $_LANGID;
-                    }                    
+                    }
                 }
                 $invitedGroups = array();
                 if ($objUser = FWUser::getFWUserObject()->objUser->getUsers()) {
@@ -429,7 +436,7 @@ class CalendarMailManager extends CalendarLibrary {
                     }
                 }
 
-                $recipients = array_merge($recipients, $invitedGroups);                
+                $recipients = array_merge($recipients, $invitedGroups);
                 break;
             case 3:
                 $notificationEmails = explode(",", $objEvent->notificationTo);
@@ -454,7 +461,7 @@ class CalendarMailManager extends CalendarLibrary {
         if (isset($this->mailList[$langId]) && is_array($this->mailList[$langId]['default_recipient'])) {
             $recipients = array_merge($recipients, $this->mailList[$langId]['default_recipient']);
         }
-            
+
         return $recipients;
     }
     
@@ -463,9 +470,9 @@ class CalendarMailManager extends CalendarLibrary {
         $langId = 0; // default template
         
         // language selection process 1
-        if (   $actionId == self::MAIL_CONFIRM_REG 
+        if (   $actionId == self::MAIL_CONFIRM_REG
             && FWUser::getFWUserObject()->objUser->getEmail() == $receiverEmail
-            && isset($this->mailList[$language_id])    
+            && isset($this->mailList[$language_id])
            ) {
             $langId = $language_id;
         } else {
@@ -486,7 +493,7 @@ class CalendarMailManager extends CalendarLibrary {
         
         return $langId;
     }
-//    
+ 
     /**
      * Loads the RegistrationData text and Html mail content
      * 
@@ -498,29 +505,28 @@ class CalendarMailManager extends CalendarLibrary {
     {
         $registrationDataText = '';
         $registrationDataHtml = '<table align="top" border="0" cellpadding="3" cellspacing="0">';
-        foreach($objRegistration->fields as $arrField){
-            if($arrField['type'] == 'select' || $arrField['type'] == 'radio' || $arrField['type'] == 'checkbox') {  
-                $options = explode(",", $arrField['default']);  
-                $values = explode(",", $arrField['value']);
-                $output = array();
+        foreach ($objRegistration->fields as $arrField) {
+            if ($arrField['type'] == 'select' || $arrField['type'] == 'radio' || $arrField['type'] == 'checkbox') {
+                $options = explode(",", $arrField['default']);
+                $values  = explode(",", $arrField['value']);
+                $output  = array();
 
-                foreach ($values as $value) {  
-                    $arrValue = explode('[[', $value);    
-                    $value = $arrValue[0];
-                    $input = str_replace(']]','', $arrValue[1]); 
+                foreach ($values as $value) {
+                    $arrValue = explode('[[', $value);
+                    $value    = $arrValue[0];
+                    $input    = str_replace(']]','', $arrValue[1]);
 
-                    if(!empty($input)) {
-                        $arrOption = explode('[[', $options[$value-1]);      
-                        $output[] = $arrOption[0].": ".$input; 
-                    } else {   
-                        if($options[0] == '' && $value == 1) {
+                    if (!empty($input)) {
+                        $arrOption = explode('[[', $options[$value-1]);
+                        $output[]  = $arrOption[0].": ".$input;
+                    } else {
+                        if ($options[0] == '' && $value == 1) {
                             $options[$value-1] = '1';
                         }
-                        $output[] = $options[$value-1];        
-                    }        
-                } 
-
-                $value = join(", ", $output);       
+                        $output[] = $options[$value-1];
+                    }
+                }
+                $value = join(", ", $output);
             } else {
                 $value = $arrField['value'];
             }
@@ -530,5 +536,5 @@ class CalendarMailManager extends CalendarLibrary {
         $registrationDataHtml .= '</table>';
         
         return array($registrationDataText, $registrationDataHtml);
-    }    
+    }
 }
