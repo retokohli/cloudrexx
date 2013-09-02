@@ -1,6 +1,6 @@
 <?php
 
-require_once __DIR__ . '/../includes/classes.php';
+require_once __DIR__.'/../includes/classes.php';
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
