@@ -496,7 +496,21 @@ class CalendarManager extends CalendarLibrary
             $this->moduleLangVar.'_EVENT_TICKET_SALES'                      => $eventId != 0 ? ($objEvent->ticketSales ? 'checked="checked"' : '') : '',
             $this->moduleLangVar.'_EVENT_NUM_SEATING'                       => $eventId != 0 ? $objEvent->numSeating : '',
             $this->moduleLangVar.'_EVENT_ALL_DAY'                           => $eventId != 0 && $objEvent->all_day ? 'checked="checked"' : '',
-            $this->moduleLangVar.'_HIDE_ON_SINGLE_LANG'                     => count($this->arrFrontendLanguages) == 1 ? "display: none;" : ""
+            $this->moduleLangVar.'_HIDE_ON_SINGLE_LANG'                     => count($this->arrFrontendLanguages) == 1 ? "display: none;" : "",
+            $this->moduleLangVar.'_EVENT_PLACE'                             => $eventId != 0 ? $objEvent->place : '',
+            $this->moduleLangVar.'_EVENT_STREET'                            => $eventId != 0 ? $objEvent->place_street : '',
+            $this->moduleLangVar.'_EVENT_ZIP'                               => $eventId != 0 ? $objEvent->place_zip : '',
+            $this->moduleLangVar.'_EVENT_CITY'                              => $eventId != 0 ? $objEvent->place_city : '',
+            $this->moduleLangVar.'_EVENT_COUNTRY'                           => $eventId != 0 ? $objEvent->place_country : '',
+            $this->moduleLangVar.'_EVENT_LINK'                              => $eventId != 0 ? $objEvent->place_link : '',
+            $this->moduleLangVar.'_PLACE_MAP_SOURCE'                        => $eventId != 0 ? $objEvent->place_map : '',    
+            //$this->moduleLangVar.'_EVENT_MAP'                               => $objEvent->map == 1 ? 'checked="checked"' : '',    
+            $this->moduleLangVar.'_EVENT_HOST'                              => $eventId != 0 ? $objEvent->org_name : '',
+            $this->moduleLangVar.'_EVENT_HOST_ADDRESS'                      => $eventId != 0 ? $objEvent->org_street : '',
+            $this->moduleLangVar.'_EVENT_HOST_ZIP'                          => $eventId != 0 ? $objEvent->org_zip : '',
+            $this->moduleLangVar.'_EVENT_HOST_CITY'                         => $eventId != 0 ? $objEvent->org_city : '',
+            $this->moduleLangVar.'_EVENT_HOST_LINK'                         => $eventId != 0 ? $objEvent->org_link : '',
+            $this->moduleLangVar.'_EVENT_HOST_EMAIL'                        => $eventId != 0 ? $objEvent->org_email : '',
         ));
         
         //parse access  
@@ -809,47 +823,21 @@ class CalendarManager extends CalendarLibrary
             ));
             
             $this->_objTpl->parse('eventShowIn');
-            
-        	//parse eventTabMenuTitleTab
-            $defaultLang = $arrLang['is_default'] == 'true';
-            if ($forcedLanguage) {
-                $defaultLang = $forcedLanguage == $arrLang['id'];
-            }
+                        
             $this->_objTpl->setVariable(array(
-                $this->moduleLangVar.'_EVENT_TAB_CLASS'  => $defaultLang ? 'active' : '',
-            ));
-            
-            $this->_objTpl->parse('eventTabMenuTitleTab');
-            
-        	//parse eventTitleTab
-        	$this->_objTpl->setVariable(array(
-	            'TXT_'.$this->moduleLangVar.'_EVENT_SHOW_IN'        => $_ARRAYLANG['TXT_CALENDAR_EVENT_SHOW_IN'],
-	            'TXT_'.$this->moduleLangVar.'_EVENT_TITLE'          => $_ARRAYLANG['TXT_CALENDAR_EVENT_TITLE'],
-	            'TXT_'.$this->moduleLangVar.'_EVENT_PLACE'          => $_ARRAYLANG['TXT_CALENDAR_EVENT_PLACE'],
-	            'TXT_'.$this->moduleLangVar.'_EVENT_STREET'         => $_ARRAYLANG['TXT_CALENDAR_EVENT_STREET'],
-	            'TXT_'.$this->moduleLangVar.'_EVENT_ZIP'            => $_ARRAYLANG['TXT_CALENDAR_EVENT_ZIP'],
-	            'TXT_'.$this->moduleLangVar.'_EVENT_CITY'           => $_ARRAYLANG['TXT_CALENDAR_EVENT_CITY'],
-	            'TXT_'.$this->moduleLangVar.'_EVENT_COUNTRY'        => $_ARRAYLANG['TXT_CALENDAR_EVENT_COUNTRY'],
-	            'TXT_'.$this->moduleLangVar.'_EVENT_MAP'            => $_ARRAYLANG['TXT_CALENDAR_EVENT_MAP'],
-	            'TXT_'.$this->moduleLangVar.'_EVENT_USE_GOOGLEMAPS' => $_ARRAYLANG['TXT_CALENDAR_EVENT_USE_GOOGLEMAPS'],
+                'TXT_'.$this->moduleLangVar.'_EVENT_SHOW_IN'        => $_ARRAYLANG['TXT_CALENDAR_EVENT_SHOW_IN'],
+                'TXT_'.$this->moduleLangVar.'_EVENT_TITLE'          => $_ARRAYLANG['TXT_CALENDAR_EVENT_TITLE'],
+                'TXT_'.$this->moduleLangVar.'_EVENT_PLACE'          => $_ARRAYLANG['TXT_CALENDAR_EVENT_PLACE'],
+                'TXT_'.$this->moduleLangVar.'_EVENT_STREET'         => $_ARRAYLANG['TXT_CALENDAR_EVENT_STREET'],
+                'TXT_'.$this->moduleLangVar.'_EVENT_ZIP'            => $_ARRAYLANG['TXT_CALENDAR_EVENT_ZIP'],
+                'TXT_'.$this->moduleLangVar.'_EVENT_CITY'           => $_ARRAYLANG['TXT_CALENDAR_EVENT_CITY'],
+                'TXT_'.$this->moduleLangVar.'_EVENT_COUNTRY'        => $_ARRAYLANG['TXT_CALENDAR_EVENT_COUNTRY'],
+                'TXT_'.$this->moduleLangVar.'_EVENT_MAP'            => $_ARRAYLANG['TXT_CALENDAR_EVENT_MAP'],
+                'TXT_'.$this->moduleLangVar.'_EVENT_USE_GOOGLEMAPS' => $_ARRAYLANG['TXT_CALENDAR_EVENT_USE_GOOGLEMAPS'],
         	
                 $this->moduleLangVar.'_EVENT_TAB_DISPLAY'   => $arrLang['is_default'] == 'true' ? 'block' : 'none',
-                $this->moduleLangVar.'_EVENT_TITLE'         => !empty($objEvent->arrData['title'][$arrLang['id']]) ? $objEvent->arrData['title'][$arrLang['id']] : $objEvent->title,
-                $this->moduleLangVar.'_EVENT_PLACE'         => !empty($objEvent->arrData['place'][$arrLang['id']]) ? $objEvent->arrData['place'][$arrLang['id']] : $objEvent->place,
-                $this->moduleLangVar.'_EVENT_STREET'        => !empty($objEvent->arrData['place_street'][$arrLang['id']]) ? $objEvent->arrData['place_street'][$arrLang['id']] : $objEvent->arrData['place_street'][$_LANGID],
-                $this->moduleLangVar.'_EVENT_ZIP'           => !empty($objEvent->arrData['place_zip'][$arrLang['id']]) ? $objEvent->arrData['place_zip'][$arrLang['id']] : $objEvent->arrData['place_zip'][$_LANGID],
-                $this->moduleLangVar.'_EVENT_CITY'          => !empty($objEvent->arrData['place_city'][$arrLang['id']]) ? $objEvent->arrData['place_city'][$arrLang['id']] : $objEvent->arrData['place_city'][$_LANGID],
-                $this->moduleLangVar.'_EVENT_COUNTRY'       => !empty($objEvent->arrData['place_country'][$arrLang['id']]) ? $objEvent->arrData['place_country'][$arrLang['id']] : $objEvent->arrData['place_country'][$_LANGID],
-                $this->moduleLangVar.'_EVENT_LINK'          => !empty($objEvent->arrData['place_link'][$arrLang['id']]) ? $objEvent->arrData['place_link'][$arrLang['id']] : $objEvent->arrData['place_link'][$_LANGID],
-                $this->moduleLangVar.'_PLACE_MAP_SOURCE'    => !empty($objEvent->arrData['place_map'][$arrLang['id']]) ? $objEvent->arrData['place_map'][$arrLang['id']] : $objEvent->arrData['place_map'][$_LANGID],    
-                $this->moduleLangVar.'_EVENT_MAP'           => $objEvent->map == 1 ? 'checked="checked"' : '',    
-                $this->moduleLangVar.'_EVENT_HOST'          => !empty($objEvent->arrData['org_name'][$arrLang['id']]) ? $objEvent->arrData['org_name'][$arrLang['id']] : $objEvent->arrData['org_name'][$_LANGID],
-                $this->moduleLangVar.'_EVENT_HOST_ADDRESS'  => !empty($objEvent->arrData['org_street'][$arrLang['id']]) ? $objEvent->arrData['org_street'][$arrLang['id']] : $objEvent->arrData['org_street'][$_LANGID],
-                $this->moduleLangVar.'_EVENT_HOST_ZIP'      => !empty($objEvent->arrData['org_zip'][$arrLang['id']]) ? $objEvent->arrData['org_zip'][$arrLang['id']] : $objEvent->arrData['org_zip'][$_LANGID],
-                $this->moduleLangVar.'_EVENT_HOST_CITY'     => !empty($objEvent->arrData['org_city'][$arrLang['id']]) ? $objEvent->arrData['org_city'][$arrLang['id']] : $objEvent->arrData['org_city'][$_LANGID],
-                $this->moduleLangVar.'_EVENT_HOST_LINK'     => !empty($objEvent->arrData['org_link'][$arrLang['id']]) ? $objEvent->arrData['org_link'][$arrLang['id']] : $objEvent->arrData['org_link'][$_LANGID],
-                $this->moduleLangVar.'_EVENT_HOST_EMAIL'    => !empty($objEvent->arrData['org_email'][$arrLang['id']]) ? $objEvent->arrData['org_email'][$arrLang['id']] : $objEvent->arrData['org_email'][$_LANGID],
-	        ));
+                $this->moduleLangVar.'_EVENT_TITLE'         => !empty($objEvent->arrData['title'][$arrLang['id']]) ? $objEvent->arrData['title'][$arrLang['id']] : $objEvent->title,                
+	    ));
 	        
             //parse placeSelect
             /*if ($this->arrSettings['placeData'] != 0) {             
@@ -873,10 +861,9 @@ class CalendarManager extends CalendarLibrary
                 $this->_objTpl->touchBlock('eventPlaceInput');
                 $this->_objTpl->hideBlock('eventPlaceSelect');  
             /* } */
-            
-	        $this->_objTpl->parse('eventTitleTab');
+            	    
 	        
-	        //parse eventTabMenuDescTab
+	    //parse eventTabMenuDescTab
             $this->_objTpl->setVariable(array(
                 $this->moduleLangVar.'_EVENT_TAB_CLASS'  => $defaultLang ? 'active' : '',
             ));

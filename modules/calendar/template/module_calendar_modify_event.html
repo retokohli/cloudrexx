@@ -8,56 +8,56 @@
 </style>
 <script language="JavaScript" type="text/javascript">
     var modifyEvent = {
-      // elm => jquery object
-      _handleSeriesEventRowDisplay : function(elm){
-        if (elm.is(":checked")) {
-            $J('.series-event-row').show();
-            showOrHide();
-        } else {
-            $J('.series-event-row').hide();
+        // elm => jquery object
+        _handleSeriesEventRowDisplay: function(elm) {
+            if (elm.is(":checked")) {
+                $J('.series-event-row').show();
+                showOrHide();
+            } else {
+                $J('.series-event-row').hide();
+            }
+        },
+        _handleAllDayEvent: function(elm) {
+            jQuery(".startDate").data('dateTime', jQuery(".startDate").datetimepicker("getDate").getTime());
+            jQuery(".endDate").data('dateTime', jQuery(".endDate").datetimepicker("getDate").getTime());
+            if (elm.is(":checked")) {
+                // hack to disable timepicker, its not working if we disable time picker before it showing atleast once.
+                jQuery(".startDate, .endDate").datetimepicker("show");
+                jQuery(".startDate, .endDate").datetimepicker("hide");
+                jQuery(".startDate, .endDate").datetimepicker('disableTimepicker');
+            } else {
+                jQuery(".startDate, .endDate").datetimepicker('enableTimepicker');
+            }
+            jQuery(".startDate").datepicker('setDate', new Date(jQuery(".startDate").data('dateTime')));
+            jQuery(".endDate").datepicker('setDate', new Date(jQuery(".endDate").data('dateTime')));
+        },
+        _isNumber: function(evt) {
+            evt = (evt) ? evt : window.event;
+            var charCode = (evt.which) ? evt.which : evt.keyCode;
+            if (charCode > 31 && (charCode < 48 || charCode > 57)) {
+                return false;
+            }
+            return true;
         }
-      },
-      _handleAllDayEvent : function(elm){        
-        jQuery(".startDate").data('dateTime', jQuery(".startDate").datetimepicker("getDate").getTime());
-        jQuery(".endDate").data('dateTime', jQuery(".endDate").datetimepicker("getDate").getTime());
-        if (elm.is(":checked")) {
-            // hack to disable timepicker, its not working if we disable time picker before it showing atleast once.
-           jQuery( ".startDate, .endDate" ).datetimepicker( "show" );
-           jQuery( ".startDate, .endDate" ).datetimepicker( "hide" );
-           jQuery( ".startDate, .endDate" ).datetimepicker('disableTimepicker');
-        } else {
-           jQuery(".startDate, .endDate").datetimepicker('enableTimepicker');
-        }
-        jQuery(".startDate").datepicker('setDate', new Date(jQuery(".startDate").data('dateTime')));
-        jQuery(".endDate").datepicker('setDate', new Date(jQuery(".endDate").data('dateTime')));
-      },
-      _isNumber : function(evt) {
-        evt = (evt) ? evt : window.event;
-        var charCode = (evt.which) ? evt.which : evt.keyCode;
-        if (charCode > 31 && (charCode < 48 || charCode > 57)) {
-            return false;
-        }
-        return true;
-      }
     };
-    $J(function(){
-       $J('[name="seriesStatus"]').click(function(){
-          modifyEvent._handleSeriesEventRowDisplay($J(this));
-       });
-       modifyEvent._handleSeriesEventRowDisplay($J('[name="seriesStatus"]'));    
-       $J(".all_day").click(function(){
-           modifyEvent._handleAllDayEvent($J(this));
-       });
-       $J("#seriesDailyDays, #seriesDouranceEvents").keyup(function(){
-         if (parseInt($J(this).val()) < 1) {
-             $J(this).val('1');
-         }
-       });
-       $J("#seriesDailyDays, #seriesDouranceEvents").blur(function(){
-         if ($J(this).val() == '') {
-             $J(this).val('1');
-         }
-       });
+    $J(function() {
+        $J('[name="seriesStatus"]').click(function() {
+            modifyEvent._handleSeriesEventRowDisplay($J(this));
+        });
+        modifyEvent._handleSeriesEventRowDisplay($J('[name="seriesStatus"]'));
+        $J(".all_day").click(function() {
+            modifyEvent._handleAllDayEvent($J(this));
+        });
+        $J("#seriesDailyDays, #seriesDouranceEvents").keyup(function() {
+            if (parseInt($J(this).val()) < 1) {
+                $J(this).val('1');
+            }
+        });
+        $J("#seriesDailyDays, #seriesDouranceEvents").blur(function() {
+            if ($J(this).val() == '') {
+                $J(this).val('1');
+            }
+        });
     });
 
     cx.ready(function() {
@@ -66,8 +66,8 @@
             timeFormat: 'hh:mm',
             onSelect: function(dateText, inst) {
                 startDateTime = jQuery(".startDate").datetimepicker("getDate").getTime() / 1000;
-                endDateTime   = jQuery(".endDate").datetimepicker("getDate").getTime() / 1000;                
-    
+                endDateTime = jQuery(".endDate").datetimepicker("getDate").getTime() / 1000;
+
                 if (startDateTime > endDateTime) {
                     jQuery(".endDate").datetimepicker('setDate', jQuery(".startDate").val());
                 }
@@ -75,7 +75,7 @@
             showSecond: false
         };
         jQuery('input[name=startDate]').datetimepicker(options);
-        jQuery('input[name=endDate]').datetimepicker(options);        
+        jQuery('input[name=endDate]').datetimepicker(options);
         modifyEvent._handleAllDayEvent($J(".all_day"));
         refreshDatePickers();
     });
@@ -83,9 +83,9 @@
     function SetUrl(url, width, height, alt) {
         switch (fileType) {
             case 'image':
-            case 'webpages':    
+            case 'webpages':
             case 'link':
-                 document.getElementById(insertBox).value = url; 
+                document.getElementById(insertBox).value = url;
                 break;
         }
     }
@@ -94,37 +94,37 @@
     {
         insertBox = name;
         fileType = type;
-        switch (type) { 
+        switch (type) {
             case 'image':
             case 'webpages':
-                openWindow('index.php?cmd=fileBrowser&standalone=true&type=images','','width=800,height=600,resizable=yes,status=no,scrollbars=yes'); 
+                openWindow('index.php?cmd=fileBrowser&standalone=true&type=images', '', 'width=800,height=600,resizable=yes,status=no,scrollbars=yes');
                 break
             case 'link':
-                 openWindow('index.php?cmd=fileBrowser&standalone=true&type=webpages','','width=800,height=600,resizable=yes,status=no,scrollbars=yes'); 
+                openWindow('index.php?cmd=fileBrowser&standalone=true&type=webpages', '', 'width=800,height=600,resizable=yes,status=no,scrollbars=yes');
                 break;
         }
-        
+
     }
 
 
-    function openWindow(theURL,winName,features) {
-        browserPopup = window.open(theURL,"Browser",features);
+    function openWindow(theURL, winName, features) {
+        browserPopup = window.open(theURL, "Browser", features);
         browserPopup.focus();
     }
-    
+
     function formCheck()
     {
         var status = true;
-        var elm = new Array(3) 
-        
+        var elm = new Array(3)
+
         //elm[0] = document.getElementById('title_{CALENDAR_EVENT_DEFAULT_LANG_ID}');
         elm[0] = document.getElementById('startDate');
         elm[1] = document.getElementById('endDate');
         elm[2] = document.getElementById('category');
 
-        
-        for(i=0; i < elm.length; i++) {
-            if(elm[i].value == '') {
+
+        for (i = 0; i < elm.length; i++) {
+            if (elm[i].value == '') {
                 elm[i].style.border = "#ff0000 1px solid";
                 document.getElementById('errorMessage').style.display = 'block';
                 status = false;
@@ -132,115 +132,94 @@
                 elm[i].style.borderColor = '';
             }
         }
-        
-        if(jQuery('[name="seriesStatus"]').is(':checked') && document.getElementById('seriesTypeSelect').value == 2){
+
+        if (jQuery('[name="seriesStatus"]').is(':checked') && document.getElementById('seriesTypeSelect').value == 2) {
             var isChecked = false;
-            if(jQuery('#seriesMaskWeekly input:checked').length > 0){
+            if (jQuery('#seriesMaskWeekly input:checked').length > 0) {
                 isChecked = true;
             }
-            if(!isChecked){
+            if (!isChecked) {
                 status = false;
                 jQuery('#seriesMaskWeekly').children('table').css('border', '#ff0000 1px solid');
                 document.getElementById('errorMessage').style.display = 'block';
             }
         }
         var pattern = /^showIn/;
-        var reg = new RegExp(pattern);                       
-        
-        for (i = 0; i < document.formModifyEvent.elements.length; ++i) {   
-            var elm = document.formModifyEvent.elements[i];      
-            
+        var reg = new RegExp(pattern);
+
+        for (i = 0; i < document.formModifyEvent.elements.length; ++i) {
+            var elm = document.formModifyEvent.elements[i];
+
             if (elm.name.match(reg)) {
-                var langId = elm.value; 
-                if (elm.checked) {     
+                var langId = elm.value;
+                if (elm.checked) {
                     var elmTitle = document.getElementById('title_' + langId);
-                    if(elmTitle.value == '') {
+                    if (elmTitle.value == '') {
                         elmTitle.style.border = "#ff0000 1px solid";
                         document.getElementById('errorMessage').style.display = 'block';
                         status = false;
                     } else {
                         elmTitle.style.borderColor = '';
-                    } 
-                } 
-            }  
+                    }
+                }
+            }
         }
 
-        if(status) {
+        if (status) {
             return true;
         } else {
             return false;
-        }     
+        }
     }
 
-    function langCheck(noTabChange)
+    function langCheck()
     {
         var pattern = /^showIn/;
         var reg = new RegExp(pattern);
-        var firstLang = true;       
-        var type = document.getElementById('type').value;   
-        
+        var firstLang = true;
+        var type = document.getElementById('type').value;
+
         if (langCount(reg) == 0) {
             $J("input[name*=showIn]:first").attr("checked", "checked");
         }
-        
+
         for (i = 0; i < document.formModifyEvent.elements.length; ++i) {
             var elm = document.formModifyEvent.elements[i];
 
-            if (elm.name.match(reg)) {   
-                var langId = elm.value; 
-                var tab1 =  document.getElementById('eventLocationTab_' + langId + '_location');
-                var tab1body =  document.getElementById(langId + '_location');    
-                var tab2 =  document.getElementById('eventDescTab_' + langId + '_desc');
-                var tab2body =  document.getElementById(langId + '_desc');                  
-                
-                var type1 =  document.getElementById(langId + '_typeEvent');    
-                var type2 =  document.getElementById(langId + '_typeRedirect');    
-                
+            if (elm.name.match(reg)) {
+                var langId = elm.value;
+                var tab1 = document.getElementById('eventDescTab_' + langId + '_desc');
+                var tab1body = document.getElementById(langId + '_desc');
+
+                var type1 = document.getElementById(langId + '_typeEvent');
+                var type2 = document.getElementById(langId + '_typeRedirect');
+
                 if (type == 1) {
                     type1.style.display = 'none';
-                    type2.style.display = 'block'; 
-                } else {         
+                    type2.style.display = 'block';
+                } else {
                     type1.style.display = 'block';
-                    type2.style.display = 'none'; 
-                }   
+                    type2.style.display = 'none';
+                }
 
                 if (elm.checked) {
-                    tab1.style.display = 'inline';
-                    tab2.style.display = 'inline';
-                    
-                    if(firstLang) {
-                        var activeTab = jQuery(".language_tab li a.active").attr("id");
+                    tab1.style.display = 'inline';                    
+                    if (firstLang) {                        
                         tab1body.style.display = 'block';
-                        tab2body.style.display = 'block'; 
+
                         $J(".language_tab li a").removeClass('active').addClass("inactive");
-                        $J('#eventLocationTab_' + langId + '_location').addClass("active");
                         $J('#eventDescTab_' + langId + '_desc').addClass("active");
-                        firstLang = false   
+                        
+                        firstLang = false;
                     } else {
                         tab1body.style.display = 'none';
-                        tab2body.style.display = 'none'; 
                     }
                 } else {
                     tab1.style.display = 'none';
-                    tab2.style.display = 'none';
-                    
                     tab1body.style.display = 'none';
-                    tab2body.style.display = 'none'; 
-                }  
-                
-                /*if(firstLang) {
-                    tab1body.style.display = 'block';
-                    tab2body.style.display = 'block'; 
-                    firstLang = false   
-                } else {
-                    tab1body.style.display = 'none';
-                    tab2body.style.display = 'none'; 
-                }  */         
+                }
             }
-        }
-        if (activeTab) {
-            selectTab(activeTab.substr(13));
-        }
+        }                
     }
 
     function langCount(reg)
@@ -261,39 +240,40 @@
 
     function moveElement(from, dest, add, remove) {
         if (from.selectedIndex < 0) {
-            if (from.options[0] != null) from.options[0].selected = true;
-                from.focus();
-                return false;
-            } else {
-                for (i = 0; i < from.length; ++i) {
-                    if (from.options[i].selected) {
-                        dest.options[dest.options.length] = new Option(from.options[i].text, from.options[i].value, false, false);
-                    }
+            if (from.options[0] != null)
+                from.options[0].selected = true;
+            from.focus();
+            return false;
+        } else {
+            for (i = 0; i < from.length; ++i) {
+                if (from.options[i].selected) {
+                    dest.options[dest.options.length] = new Option(from.options[i].text, from.options[i].value, false, false);
                 }
-                for (i = from.options.length-1; i >= 0; --i) {
-                    if (from.options[i].selected) {
+            }
+            for (i = from.options.length - 1; i >= 0; --i) {
+                if (from.options[i].selected) {
                     from.options[i] = null;
                 }
             }
-        } 
+        }
     }
 
-    function selectAll(control){
+    function selectAll(control) {
         for (i = 0; i < control.length; ++i) {
             control.options[i].selected = true;
         }
     }
 
-    function deselectAll(control){
+    function deselectAll(control) {
         for (i = 0; i < control.length; ++i) {
             control.options[i].selected = false;
         }
     }
 
     function showOrHide()
-    {                                                                                             
-        var seriesMaskSelect  = $J('#seriesTypeSelect').val();
-        
+    {
+        var seriesMaskSelect = $J('#seriesTypeSelect').val();
+
         if (seriesMaskSelect == 1) {
             $J('#seriesMaskDaily').css('display', 'block');
             $J('#seriesMaskWeekly').css('display', 'none');
@@ -312,44 +292,56 @@
             $J('seriesMaskWeekly').css('display', 'none');
             $J('seriesMaskMonthly').css('display', 'none');
         }
-                
-    }  
-    
-    function checkRegistration()
-    {                   
-        registrationMask  = document.getElementById('registrationMore');  
-        registrationMaskSelect  = document.getElementsByName('registration')[0].checked;              
-        
-        if (registrationMaskSelect == true) {  
-            registrationMask.style.display = 'block'; 
-        } else { 
-            registrationMask.style.display = 'none'; 
-        }  
+
     }
-    
-    
+
+    function checkRegistration()
+    {
+        registrationMask = document.getElementById('registrationMore');
+        registrationMaskSelect = document.getElementsByName('registration')[0].checked;
+
+        if (registrationMaskSelect == true) {
+            registrationMask.style.display = 'block';
+        } else {
+            registrationMask.style.display = 'none';
+        }
+    }
+
+
     function checkTime()
-    { 
+    {
         var startdate = document.getElementById("formModifyEvent").startDate.value;
-        var enddate = document.getElementById("formModifyEvent").endDate.value;      
+        var enddate = document.getElementById("formModifyEvent").endDate.value;
         var starthour = document.getElementById("formModifyEvent").startHour.value;
-        if(starthour < 10) { starthour = "0" + starthour};   
+        if (starthour < 10) {
+            starthour = "0" + starthour
+        }
+        ;
         var startminute = document.getElementById("formModifyEvent").startMinute.value;
-        if(startminute < 10) { startminute = "0" + startminute}; 
+        if (startminute < 10) {
+            startminute = "0" + startminute
+        }
+        ;
         var endhour = document.getElementById("formModifyEvent").endHour.value;
-        if(endhour < 10) { endhour = "0" + endhour};        
+        if (endhour < 10) {
+            endhour = "0" + endhour
+        }
+        ;
         var endminute = document.getElementById("formModifyEvent").endMinute.value;
-        if(endminute < 10) { endminute = "0" + endminute};  
-        
-        var starttime = starthour+startminute;      
-        var endtime = endhour+endminute;       
-        
-       // alert(starttime + " - " + endtime);
-        
+        if (endminute < 10) {
+            endminute = "0" + endminute
+        }
+        ;
+
+        var starttime = starthour + startminute;
+        var endtime = endhour + endminute;
+
+        // alert(starttime + " - " + endtime);
+
         if (starttime > endtime && enddate <= startdate) {
-            var endhour = document.getElementById("formModifyEvent").endHour.value = starthour;       
-            var endminute = document.getElementById("formModifyEvent").endMinute.value = startminute; 
-        }    
+            var endhour = document.getElementById("formModifyEvent").endHour.value = starthour;
+            var endminute = document.getElementById("formModifyEvent").endMinute.value = startminute;
+        }
     }
 
     function showSelection()
@@ -358,7 +350,7 @@
         var detail = document.getElementById("detailformat");
         var el = document.getElementById("showDateSettings");
 
-        if(el.checked) {
+        if (el.checked) {
             list.style.display = '';
             detail.style.display = '';
         } else {
@@ -375,7 +367,7 @@
         var value = timeSelection.options[index].value;
         var timeSelectionContent = document.getElementById("timeSelectionContentList");
 
-        if(value != 1) {
+        if (value != 1) {
             timeSelectionContent.style.visibility = 'hidden';
         } else {
             timeSelectionContent.style.visibility = 'visible';
@@ -390,7 +382,7 @@
         var value = timeSelection.options[index].value;
         var timeSelectionContent = document.getElementById("timeSelectionContentDetail");
 
-        if(value != 1) {
+        if (value != 1) {
             timeSelectionContent.style.visibility = 'hidden';
         } else {
             timeSelectionContent.style.visibility = 'visible';
@@ -401,38 +393,44 @@
     function refreshEditors()
     {
     }
-    
+
     var lastExeptionId = {CALENDAR_SERIES_LAST_EXEPTION_ID};
     var blankExeption = '<div id="exeption_EXEPTION_ID"><input type="text" name="seriesExeptions[]" value="" id="DPC_editEXEPTION_ID_DD.MM.YYYY" class="event_date" style="width: 129px;" />&nbsp;<a href="#" onclick="deleteExeption(EXEPTION_ID);" title="{TXT_CALENDAR_DELETE}"><img style="vertical-align: middle;" src="images/icons/delete.gif" alt="{TXT_CALENDAR_DELETE}" width="17" border="0" height="17"></a></div>';
-    
-    function appendExeption(){
+
+    function appendExeption() {
         lastExeptionId = lastExeptionId + 1;
 
         var tmpblankExeption1 = blankExeption.replace(/EXEPTION_ID/g, lastExeptionId);
-        
-        
+
+
         $J('#seriesExeptionsList').append(tmpblankExeption1);
-        $J('#exeption_'+lastExeptionId).css('display', 'none');
-        $J('#exeption_'+lastExeptionId).fadeIn("slow");
-        
+        $J('#exeption_' + lastExeptionId).css('display', 'none');
+        $J('#exeption_' + lastExeptionId).fadeIn("slow");
+
         refreshDatePickers();
     }
 
-    function deleteExeption(exeptionId){
-        $J('#exeption_'+exeptionId).fadeOut("slow", function(){ $J('#exeption_'+exeptionId).remove();});
+    function deleteExeption(exeptionId) {
+        $J('#exeption_' + exeptionId).fadeOut("slow", function() {
+            $J('#exeption_' + exeptionId).remove();
+        });
     }
-        
-    function refreshDatePickers(tmp){   
+
+    function refreshDatePickers(tmp) {
         var options = {
-            dateFormat: '{CALENDAR_EVENT_DATE_FORMAT}',            
-        };        
+            dateFormat: '{CALENDAR_EVENT_DATE_FORMAT}',
+        };
         jQuery('.event_date').datepicker(options);
-        
+
     }
 </script>      
 
 
-<form action="index.php?cmd={CALENDAR_MODULE_NAME}&act=modify_event" id="formModifyEvent" name="formModifyEvent" method="post" onsubmit="selectAll(document.formModifyEvent.elements['selectedGroups[]']); {CALENDAR_EVENT_ONSUBMIT_PUBLICATIONS} return formCheck();">
+<form action="index.php?cmd={CALENDAR_MODULE_NAME}&act=modify_event" id="formModifyEvent" name="formModifyEvent" method="post" onsubmit="selectAll(document.formModifyEvent.elements['selectedGroups[]']);
+        {
+            CALENDAR_EVENT_ONSUBMIT_PUBLICATIONS
+        }
+        return formCheck();">
     <input type="hidden" name="id" value="{CALENDAR_EVENT_ID}" />
     <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist" style="{CALENDAR_HIDE_ON_SINGLE_LANG}">
         <tr>
@@ -449,10 +447,12 @@
     </table>
     <br/>
     <ul id="tabmenu">
-        <li><a id="eventTab_event" class="active" href="javascript:{}" onclick="selectTab('event');refreshEditors();" title="{TXT_CALENDAR_BASIC_DATA}">{TXT_CALENDAR_BASIC_DATA}</a></li>
+        <li><a id="eventTab_event" class="active" href="javascript:{}" onclick="selectTab('event');
+        refreshEditors();" title="{TXT_CALENDAR_BASIC_DATA}">{TXT_CALENDAR_BASIC_DATA}</a></li>
         <li><a id="eventTab_location" href="javascript:{}" onclick="selectTab('location');" title="{TXT_CALENDAR_EVENT_LOCATION}">{TXT_CALENDAR_EVENT_LOCATION}</a></li>
         <li><a id="eventTab_details" href="javascript:{}" onclick="selectTab('details');" title="{TXT_CALENDAR_ADDITIONAL_OPTIONS}" >{TXT_CALENDAR_ADDITIONAL_OPTIONS}</a></li>
-        <li><a id="eventTab_invite" href="javascript:{}" onclick="selectTab('invite'); checkRegistration();" title="{TXT_CALENDAR_EVENT_INVITE}" >{TXT_CALENDAR_EVENT_INVITE}</a></li>
+        <li><a id="eventTab_invite" href="javascript:{}" onclick="selectTab('invite');
+        checkRegistration();" title="{TXT_CALENDAR_EVENT_INVITE}" >{TXT_CALENDAR_EVENT_INVITE}</a></li>
         <li><a id="eventTab_series" href="javascript:{}" onclick="selectTab('series');" title="{TXT_CALENDAR_EVENT_SERIES}" >{TXT_CALENDAR_EVENT_SERIES}</a></li>
         <!-- BEGIN eventPublicateMenu -->
         <li><a id="eventTab_publicate" href="javascript:{}" onclick="selectTab('publicate')" title="{TXT_CALENDAR_EVENT_PUBLICATE}">{TXT_CALENDAR_EVENT_PUBLICATE}</a></li>
@@ -496,21 +496,22 @@
         </table>
         <ul id="tabmenu" class="language_tab" style="{CALENDAR_HIDE_ON_SINGLE_LANG} margin-top: 15px;">
             <!-- BEGIN eventTabMenuDescTab -->
-            <li><a id="eventDescTab_{CALENDAR_EVENT_LANG_ID}_desc" class="{CALENDAR_EVENT_TAB_CLASS}" href="javascript:{}" onclick="selectTab('{CALENDAR_EVENT_LANG_ID}_desc');refreshEditors()" title="">{TXT_CALENDAR_EVENT_LANG_NAME}</a></li>
+            <li><a id="eventDescTab_{CALENDAR_EVENT_LANG_ID}_desc" class="{CALENDAR_EVENT_TAB_CLASS}" href="javascript:{}" onclick="selectTab('{CALENDAR_EVENT_LANG_ID}_desc');
+        refreshEditors()" title="">{TXT_CALENDAR_EVENT_LANG_NAME}</a></li>
             <!-- END eventTabMenuDescTab -->
         </ul>
         <!-- BEGIN eventDescTab -->
         <div id="{CALENDAR_EVENT_LANG_ID}_desc" class="eventDescTab" style="display: {CALENDAR_EVENT_TAB_DISPLAY};" >
             <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
-                    <tr style="{CALENDAR_HIDE_ON_SINGLE_LANG}">                            
-                        <th colspan="2">{TXT_CALENDAR_EVENT}</th>
-                    </tr>
-                    <tr class="row1">
-                        <td width="180"  valign="top">{TXT_CALENDAR_EVENT_TITLE} <font color="#ff0000">*</font></td>
-                        <td>
-                             <input id="title_{CALENDAR_EVENT_LANG_ID}" name="title[{CALENDAR_EVENT_LANG_ID}]" type="text" style="width: 250px" value="{CALENDAR_EVENT_TITLE}" />
-                        </td>
-                    </tr>
+                <tr style="{CALENDAR_HIDE_ON_SINGLE_LANG}">                            
+                    <th colspan="2">{TXT_CALENDAR_EVENT}</th>
+                </tr>
+                <tr class="row1">
+                    <td width="180"  valign="top">{TXT_CALENDAR_EVENT_TITLE} <font color="#ff0000">*</font></td>
+                    <td>
+                        <input id="title_{CALENDAR_EVENT_LANG_ID}" name="title[{CALENDAR_EVENT_LANG_ID}]" type="text" style="width: 250px" value="{CALENDAR_EVENT_TITLE}" />
+                    </td>
+                </tr>
             </table>            
             <div id="{CALENDAR_EVENT_LANG_ID}_typeEvent" style="display: {CALENDAR_EVENT_TYPE_EVENT_DISPLAY};" >
                 <br />
@@ -520,7 +521,7 @@
                     </tr>
                     <tr class="row1">
                         <td>
-                             {CALENDAR_EVENT_DESCRIPTION}                                                  
+                            {CALENDAR_EVENT_DESCRIPTION}                                                  
                         </td>
                     </tr>
                 </table>
@@ -530,7 +531,7 @@
                     <tr class="row1">
                         <td width="180"  valign="top">{TXT_CALENDAR_EVENT_TYPE_REDIRECT}</td>
                         <td>
-                             <input type="text" style="width: 250px;" name="redirect[{CALENDAR_EVENT_LANG_ID}]" value="{CALENDAR_EVENT_REDIRECT}" id="eventRedirect" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('eventRedirect', 'link')" />                                                                                                      
+                            <input type="text" style="width: 250px;" name="redirect[{CALENDAR_EVENT_LANG_ID}]" value="{CALENDAR_EVENT_REDIRECT}" id="eventRedirect" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('eventRedirect', 'link')" />                                                                                                      
                         </td>
                     </tr>
                 </table>
@@ -538,7 +539,7 @@
         </div>            
         <!-- END eventDescTab -->                                      
         <br />
-        <input type="button" onclick="location.href='index.php?cmd=calendar&{CALENDAR_CSRF}';" value="{TXT_CALENDAR_CANCEL}" />
+        <input type="button" onclick="location.href = 'index.php?cmd=calendar&{CALENDAR_CSRF}';" value="{TXT_CALENDAR_CANCEL}" />
         &nbsp;<input type="button" onclick="selectTab('location');" value="{TXT_CALENDAR_NEXT}" />
         &nbsp;<input type="submit" name="submitModifyEvent"  value="{TXT_CALENDAR_SAVE}" />
     </div>
@@ -547,22 +548,9 @@
             <tr>
                 <th><b>{TXT_CALENDAR_EVENT_LOCATION}</b></th>
             </tr>
-        </table>
-        <div style="{CALENDAR_HIDE_ON_SINGLE_LANG}">
-            <ul id="tabmenu" class="language_tab" style="{CALENDAR_HIDE_ON_SINGLE_LANG} margin-top: 15px;">
-                <!-- BEGIN eventTabMenuTitleTab -->
-                <li><a id="eventLocationTab_{CALENDAR_EVENT_LANG_ID}_location" class="{CALENDAR_EVENT_TAB_CLASS}" href="javascript:{}" onclick="selectTab('{CALENDAR_EVENT_LANG_ID}_location')" title="" hidefocus="">{TXT_CALENDAR_EVENT_LANG_NAME}</a></li>
-                <!-- END eventTabMenuTitleTab -->
-            </ul>
-            <br />
-        </div>
-        
-        <!-- BEGIN eventTitleTab -->
-        <div id="{CALENDAR_EVENT_LANG_ID}_location" class="eventLocationTab" style="display: {CALENDAR_EVENT_TAB_DISPLAY};" >
+        </table>        
+        <div style="display: {CALENDAR_EVENT_TAB_DISPLAY};" >
             <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
-                <tr style="{CALENDAR_HIDE_ON_SINGLE_LANG}">                    
-                    <th colspan="2">{TXT_CALENDAR_EVENT_LANG_NAME}</th>
-                </tr>                
                 <tr class="row3">
                     <td colspan="2">{TXT_CALENDAR_EVENT_PLACE}</td>
                 </tr>
@@ -570,60 +558,60 @@
                     <td width="180" valign="top">{TXT_CALENDAR_EVENT_PLACE}</td>
                     <td>
                         <!-- BEGIN eventPlaceInput -->
-                        <input name="place[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_PLACE}" style="width: 250px" />
+                        <input name="place" type="text" value="{CALENDAR_EVENT_PLACE}" style="width: 250px" />
                         <!-- END eventPlaceInput -->
-                        
+
                         <!-- BEGIN eventPlaceSelect -->
-                        <select name="placeMediadir[{CALENDAR_EVENT_LANG_ID}]" style="width: 252px;">
+                        <select name="placeMediadir" style="width: 252px;">
                             {CALENDAR_EVENT_PLACE_OPTIONS}
                         </select>
                         <!-- END eventPlaceSelect -->
                     </td>
                 </tr>
             </table>
-            <div id="eventPlaceMore_{CALENDAR_EVENT_LANG_SHORTCUT}" >
+            <div>
                 <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
                     <tr class="row1">
                         <td width="180"  valign="top">{TXT_CALENDAR_EVENT_STREET}</td>
                         <td>
-                             <input name="street[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_STREET}" style="width: 250px" />
+                            <input name="street" type="text" value="{CALENDAR_EVENT_STREET}" style="width: 250px" />
                         </td>
                     </tr>
                     <tr class="row2">
                         <td valign="top">{TXT_CALENDAR_EVENT_ZIP}</td>
                         <td>
-                             <input name="zip[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_ZIP}" style="width: 250px" />
+                            <input name="zip" type="text" value="{CALENDAR_EVENT_ZIP}" style="width: 250px" />
                         </td>
                     </tr>
                     <tr class="row1">
                         <td valign="top">{TXT_CALENDAR_EVENT_CITY}</td>
                         <td>
-                             <input name="city[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_CITY}" style="width: 250px" />
+                            <input name="city" type="text" value="{CALENDAR_EVENT_CITY}" style="width: 250px" />
                         </td>
                     </tr>
                     <tr class="row2">
                         <td valign="top">{TXT_CALENDAR_EVENT_COUNTRY}</td>
                         <td>
-                             <input name="country[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_COUNTRY}" style="width: 250px" />
+                            <input name="country" type="text" value="{CALENDAR_EVENT_COUNTRY}" style="width: 250px" />
                         </td>
                     </tr>
                     <tr class="row1">
                         <td valign="top">{TXT_CALENDAR_EVENT_LINK}</td>
                         <td>
-                             <input name="placeLink[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_LINK}" style="width: 250px" />
+                            <input name="placeLink" type="text" value="{CALENDAR_EVENT_LINK}" style="width: 250px" />
                         </td>
                     </tr>
                     <tr class="row2">
                         <td valign="top">{TXT_CALENDAR_EVENT_MAP}</td>
                         <td>
-                            <input type="text" name="placeMap[{CALENDAR_EVENT_LANG_ID}]" id="inputPlaceMap_{CALENDAR_EVENT_LANG_ID}" style="width: 250px;" value="{CALENDAR_PLACE_MAP_SOURCE}" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('inputPlaceMap_{CALENDAR_EVENT_LANG_ID}', 'image')" />
+                            <input type="text" name="placeMap" id="inputPlaceMap" style="width: 250px;" value="{CALENDAR_PLACE_MAP_SOURCE}" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('inputPlaceMap', 'image')" />
                             <!--<label><input name="map[{CALENDAR_EVENT_LANG_ID}]" value="1" type="checkbox" {CALENDAR_EVENT_MAP}/> {TXT_CALENDAR_EVENT_USE_GOOGLEMAPS}</label>-->
                         </td>
                     </tr>
                 </table>
             </div>
             <br/>
-            <div id="eventHost_{CALENDAR_EVENT_LANG_SHORTCUT}">
+            <div>
                 <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
                     <tr class="row3">
                         <td colspan="2">{TXT_CALENDAR_EVENT_HOST}</td>                        
@@ -631,45 +619,44 @@
                     <tr class="row1">
                         <td width="180"  valign="top">{TXT_CALENDAR_EVENT_NAME}</td>
                         <td>
-                             <input name="organizerName[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_HOST}" style="width: 250px" />
+                            <input name="organizerName" type="text" value="{CALENDAR_EVENT_HOST}" style="width: 250px" />
                         </td>
                     </tr>
                     <tr class="row2">
                         <td valign="top">{TXT_CALENDAR_EVENT_STREET}</td>
                         <td>
-                             <input name="organizerStreet[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_HOST_ADDRESS}" style="width: 250px" />
+                            <input name="organizerStreet" type="text" value="{CALENDAR_EVENT_HOST_ADDRESS}" style="width: 250px" />
                         </td>
                     </tr>
                     <tr class="row1">
                         <td valign="top">{TXT_CALENDAR_EVENT_ZIP}</td>
                         <td>
-                             <input name="organizerZip[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_HOST_ZIP}" style="width: 250px" />
+                            <input name="organizerZip" type="text" value="{CALENDAR_EVENT_HOST_ZIP}" style="width: 250px" />
                         </td>
                     </tr>
                     <tr class="row2">
                         <td valign="top">{TXT_CALENDAR_EVENT_CITY}</td>
                         <td>
-                             <input name="organizerCity[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_HOST_CITY}" style="width: 250px" />
+                            <input name="organizerCity" type="text" value="{CALENDAR_EVENT_HOST_CITY}" style="width: 250px" />
                         </td>
                     </tr>
                     <tr class="row1">
                         <td valign="top">{TXT_CALENDAR_EVENT_LINK}</td>
                         <td>
-                             <input name="organizerLink[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_HOST_LINK}" style="width: 250px" />
+                            <input name="organizerLink" type="text" value="{CALENDAR_EVENT_HOST_LINK}" style="width: 250px" />
                         </td>
                     </tr>
                     <tr class="row2">
                         <td valign="top">{TXT_CALENDAR_EVENT_EMAIL}</td>
                         <td>
-                             <input name="organizerEmail[{CALENDAR_EVENT_LANG_ID}]" type="text" value="{CALENDAR_EVENT_HOST_EMAIL}" style="width: 250px" />
+                            <input name="organizerEmail" type="text" value="{CALENDAR_EVENT_HOST_EMAIL}" style="width: 250px" />
                         </td>
                     </tr>
                 </table>
             </div>
-        </div>
-        <!-- END eventTitleTab -->
+        </div>        
         <br/>
-        <input type="button" onclick="location.href='index.php?cmd=calendar&{CALENDAR_CSRF}';" value="{TXT_CALENDAR_CANCEL}" />
+        <input type="button" onclick="location.href = 'index.php?cmd=calendar&{CALENDAR_CSRF}';" value="{TXT_CALENDAR_CANCEL}" />
         &nbsp;<input type="button" onclick="selectTab('details');" value="{TXT_CALENDAR_NEXT}" />
         &nbsp;<input type="submit" name="submitModifyEvent"  value="{TXT_CALENDAR_SAVE}" />
     </div>
@@ -678,12 +665,12 @@
             <tr>
                 <th colspan="3"><b>{TXT_CALENDAR_ADDITIONAL_OPTIONS}</b></th>
             </tr>
-<!--            <tr class="row1">
-                <td width="180" valign="top">{TXT_CALENDAR_EVENT_PRICE}</td>
-                <td>
-                    <input type="text" name="price" value="{CALENDAR_EVENT_PRICE}" id="eventPrice" style="width: 250px;" />&nbsp;{CALENDAR_EVENT_CURRENCY}
-                </td>
-            </tr>    -->
+            <!--            <tr class="row1">
+                            <td width="180" valign="top">{TXT_CALENDAR_EVENT_PRICE}</td>
+                            <td>
+                                <input type="text" name="price" value="{CALENDAR_EVENT_PRICE}" id="eventPrice" style="width: 250px;" />&nbsp;{CALENDAR_EVENT_CURRENCY}
+                            </td>
+                        </tr>    -->
             <tr class="row2">
                 <td>{TXT_CALENDAR_SHOW_TIME_TYPE}</td>
                 <td colspan="2"><input name="showDateSettings" id="showDateSettings" value="1" type="checkbox" onchange="showSelection();" {CALENDAR_USE_CUSTOM_DATE_DISPLAY} /></td>
@@ -748,7 +735,7 @@
             </tr>                             
         </table>
         <br/>
-        <input type="button" onclick="location.href='index.php?cmd=calendar&{CALENDAR_CSRF}';" value="{TXT_CALENDAR_CANCEL}" />
+        <input type="button" onclick="location.href = 'index.php?cmd=calendar&{CALENDAR_CSRF}';" value="{TXT_CALENDAR_CANCEL}" />
         &nbsp;<input type="button" onclick="selectTab('invite');" value="{TXT_CALENDAR_NEXT}" />
         &nbsp;<input type="submit" name="submitModifyEvent"  value="{TXT_CALENDAR_SAVE}" />
     </div>
@@ -767,8 +754,8 @@
                             </select>
                         </div>
                         <div style="float: left; height: 100px; padding: 60px 10px 0px 10px;">
-                            <input style="width: 40px; min-width: 40px;" value=" &gt;&gt; " name="addElement" onclick="moveElement(document.formModifyEvent.elements['deselectedGroups[]'],document.formModifyEvent.elements['selectedGroups[]'],addElement,removeElement);" type="button"><br />
-                            <input style="width: 40px; min-width: 40px;" value=" &lt;&lt; " name="removeElement" onclick="moveElement(document.formModifyEvent.elements['selectedGroups[]'],document.formModifyEvent.elements['deselectedGroups[]'],removeElement,addElement);" type="button">
+                            <input style="width: 40px; min-width: 40px;" value=" &gt;&gt; " name="addElement" onclick="moveElement(document.formModifyEvent.elements['deselectedGroups[]'], document.formModifyEvent.elements['selectedGroups[]'], addElement, removeElement);" type="button"><br />
+                            <input style="width: 40px; min-width: 40px;" value=" &lt;&lt; " name="removeElement" onclick="moveElement(document.formModifyEvent.elements['selectedGroups[]'], document.formModifyEvent.elements['deselectedGroups[]'], removeElement, addElement);" type="button">
                         </div>
                         <div style="float: left; height: auto !important;">
                             <select id="selectedGroups" name="selectedGroups[]" size="12" multiple="multiple" style="width: 180px;">
@@ -827,22 +814,22 @@
                         </select>&nbsp;&nbsp;<span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_CALENDAR_EVENT_EMAIL_TEMPLATE_INFO}</span>
                     </td>
                 </tr>
-<!--                <tr class="row1">
-                    <td valign="top">{TXT_CALENDAR_EVENT_TICKET_SALES}</td>
-                    <td>
-                        <label><input name="ticketSales" type="checkbox" value="1" {CALENDAR_EVENT_TICKET_SALES} />&nbsp;{TXT_CALENDAR_ACTIVATE}</label>
-                    </td>
-                </tr>
-                <tr class="row2">
-                    <td valign="top">{TXT_CALENDAR_EVENT_NUM_SEATING}</td>
-                    <td>
-                        <input name="numSeating" type="text" style="width: 250px" value="{CALENDAR_EVENT_NUM_SEATING}" />&nbsp;&nbsp;<span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_CALENDAR_EVENT_NUM_SEATING_INFO}</span>
-                    </td>
-                </tr>-->
+                <!--                <tr class="row1">
+                                    <td valign="top">{TXT_CALENDAR_EVENT_TICKET_SALES}</td>
+                                    <td>
+                                        <label><input name="ticketSales" type="checkbox" value="1" {CALENDAR_EVENT_TICKET_SALES} />&nbsp;{TXT_CALENDAR_ACTIVATE}</label>
+                                    </td>
+                                </tr>
+                                <tr class="row2">
+                                    <td valign="top">{TXT_CALENDAR_EVENT_NUM_SEATING}</td>
+                                    <td>
+                                        <input name="numSeating" type="text" style="width: 250px" value="{CALENDAR_EVENT_NUM_SEATING}" />&nbsp;&nbsp;<span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_CALENDAR_EVENT_NUM_SEATING_INFO}</span>
+                                    </td>
+                                </tr>-->
             </table>
         </div>
         <br />
-        <input type="button" onclick="location.href='index.php?cmd=calendar&{CALENDAR_CSRF}';" value="{TXT_CALENDAR_CANCEL}" />
+        <input type="button" onclick="location.href = 'index.php?cmd=calendar&{CALENDAR_CSRF}';" value="{TXT_CALENDAR_CANCEL}" />
         &nbsp;<input type="button" onclick="selectTab('series');" value="{TXT_CALENDAR_NEXT}" />
         &nbsp;<input type="submit" name="submitModifyEvent"  value="{TXT_CALENDAR_SAVE}" />
     </div>
@@ -866,7 +853,7 @@
                         <option value="3" {CALENDAR_SERIES_PATTERN_MONTHLY}>{TXT_CALENDAR_SERIES_PATTERN_MONTHLY}</option>
                     </select>
                 </td>
-           </tr>
+            </tr>
         </table>
 
         <div class="series-event-row" id="seriesMaskDaily" style="display:block">
@@ -935,7 +922,7 @@
             </tr>
         </table>
         <br />
-        <input type="button" onclick="location.href='index.php?cmd=calendar&{CALENDAR_CSRF}';" value="{TXT_CALENDAR_CANCEL}" />
+        <input type="button" onclick="location.href = 'index.php?cmd=calendar&{CALENDAR_CSRF}';" value="{TXT_CALENDAR_CANCEL}" />
         &nbsp;  
         <!-- BEGIN eventSeriesNextButton --> 
         <input type="button" onclick="selectTab('publicate');" value="{TXT_CALENDAR_NEXT}" />  
@@ -944,7 +931,7 @@
         <input type="submit" name="submitModifyEvent"  value="{TXT_CALENDAR_SAVE}" />   
         <!-- END eventSeriesSaveButton -->  
     </div>
-    
+
     <!-- BEGIN eventPublicateTab -->   
     <div id="publicate" class="eventTab" style="display: none;">
         <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
@@ -953,7 +940,7 @@
             </tr>
             <tr class="row1">
                 <td width="180" valign="top">{TXT_CALENDAR_EVENT_SHOW_IN}</td>
-                   <td>
+                <td>
                     <div style="float: left; height: auto !important;">
                         <div style="float: left; height: auto !important;">
                             <select id="deselectedHosts" name="deselectedHosts[]" size="12" multiple="multiple" style="width: 180px;">
@@ -961,8 +948,8 @@
                             </select>
                         </div>
                         <div style="float: left; height: 100px; padding: 60px 10px 0px 10px;">
-                            <input style="width: 40px; min-width: 40px;" value=" &gt;&gt; " name="addElement" onclick="moveElement(document.formModifyEvent.elements['deselectedHosts[]'],document.formModifyEvent.elements['selectedHosts[]'],addElement,removeElement);" type="button"><br />
-                            <input style="width: 40px; min-width: 40px;" value=" &lt;&lt; " name="removeElement" onclick="moveElement(document.formModifyEvent.elements['selectedHosts[]'],document.formModifyEvent.elements['deselectedHosts[]'],removeElement,addElement);" type="button">
+                            <input style="width: 40px; min-width: 40px;" value=" &gt;&gt; " name="addElement" onclick="moveElement(document.formModifyEvent.elements['deselectedHosts[]'], document.formModifyEvent.elements['selectedHosts[]'], addElement, removeElement);" type="button"><br />
+                            <input style="width: 40px; min-width: 40px;" value=" &lt;&lt; " name="removeElement" onclick="moveElement(document.formModifyEvent.elements['selectedHosts[]'], document.formModifyEvent.elements['deselectedHosts[]'], removeElement, addElement);" type="button">
                         </div>
                         <div style="float: left; height: auto !important;">
                             <select id="selectedHosts" name="selectedHosts[]" size="12" multiple="multiple" style="width: 180px;">
@@ -974,7 +961,7 @@
             </tr>           
         </table>
         <br />
-        <input type="button" onclick="location.href='index.php?cmd=calendar&{CALENDAR_CSRF}';" value="{TXT_CALENDAR_CANCEL}" />
+        <input type="button" onclick="location.href = 'index.php?cmd=calendar&{CALENDAR_CSRF}';" value="{TXT_CALENDAR_CANCEL}" />
         &nbsp;<input type="submit" name="submitModifyEvent"  value="{TXT_CALENDAR_SAVE}" />
     </div>
     <!-- END eventPublicateTab -->  
@@ -983,10 +970,10 @@
 <div id="errorMessage" style="color: #ff0000; display: none;"><br />{TXT_CALENDAR_PLEASE_CHECK_INPUT}</div>
 
 <script language="JavaScript" type="text/javascript">
-langCheck(true);
-showSelection();
-showTimeListSelection();
-showTimeDetailSelection();
+    langCheck();
+    showSelection();
+    showTimeListSelection();
+    showTimeDetailSelection();
 </script>
 
 <!-- END module_calendar_modify_event.html -->

@@ -247,7 +247,7 @@ class CalendarEventManager extends CalendarLibrary
         
         if(!empty($this->searchTerm) && $this->searchTerm != $_ARRAYLANG['TXT_CALENDAR_KEYWORD']) {
             $searchTerm_DB = ", ".DBPREFIX."module_".$this->moduleTablePrefix."_event_field AS field";
-            $searchTerm_where = " AND ((field.title LIKE '%".$this->searchTerm."%' OR field.description LIKE '%".$this->searchTerm."%' OR field.place LIKE '%".$this->searchTerm."%') AND field.event_id = event.id)";
+            $searchTerm_where = " AND ((field.title LIKE '%".$this->searchTerm."%' OR field.description LIKE '%".$this->searchTerm."%' OR event.place LIKE '%".$this->searchTerm."%') AND field.event_id = event.id)";
         } else {
             $searchTerm_DB = "";
         }
