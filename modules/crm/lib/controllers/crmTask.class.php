@@ -111,6 +111,7 @@ class crmTask extends CrmLibrary
         $filterCondition = !empty($filter) ? " WHERE ". implode(" AND", $filter) : '';
         
         $query = "SELECT tt.name,
+                               tt.icon,
                                t.task_status,
                                t.id AS taskId,
                                t.task_id,
@@ -170,6 +171,7 @@ class crmTask extends CrmLibrary
                     $objtpl->setVariable(array(
                             'CRM_TASK_ID'           => (int) $objResult->fields['taskId'],
                             'CRM_TASKTITLE'         => contrexx_raw2xhtml($objResult->fields['task_title']),
+                            'CRM_TASKICON'          => !empty ($objResult->fields['icon']) ? CRM_ACCESS_OTHER_IMG_WEB_PATH.'/'.contrexx_raw2xhtml($objResult->fields['icon'])."_24X24.thumb" : '../modules/crm/View/Media/task_default.png',
                             'CRM_TASKTYPE'          => contrexx_raw2xhtml($objResult->fields['task_type_id']),
                             'CRM_CUSTOMERNAME'      => contrexx_raw2xhtml($objResult->fields['customer_name']." ".$objResult->fields['contact_familyname']),
                             'CRM_DUEDATE'           => contrexx_raw2xhtml(date('h:i A Y-m-d', strtotime($objResult->fields['due_date']))),

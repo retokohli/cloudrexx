@@ -78,6 +78,20 @@
         return '<div id="ajaxMessageDiv">'+mes+'..</div>';
     }
 </script>
+<style type="text/css">
+    .taskTypeDiv {
+        float: left;
+        width: 100%;
+    }
+    .taskTypeImg {
+        float: left;
+        width: 5%;
+    }
+    .taskTypeTitle {
+        float: left;
+        width: 95%;
+    }
+</style>
 <div id="subnavbar_level2">
     <ul>
         <li><a href="index.php?cmd={MODULE_NAME}&act=task" title="{TXT_CRM_OVERVIEW}">{TXT_CRM_OVERVIEW}</a></li>
@@ -165,9 +179,12 @@
                     <!-- END task_image_block -->                    
                 </td>
                 <td>
-                    <div class="taskTypeItem_{CRM_TASKTYPE} task_type_overview">
-                        <div>{CRM_TASKTITLE}</div>
-                        <div>{CRM_DUEDATE}</div>
+                    <div class="taskTypeDiv">
+                        <div class="taskTypeImg"><img src="{CRM_TASKICON}"/></div>
+                        <div class="taskTypeTitle">
+                            <div>{CRM_TASKTITLE}</div>
+                            <div>{CRM_DUEDATE}</div>
+                        </div>
                     </div>
                 </td>
                 <td>

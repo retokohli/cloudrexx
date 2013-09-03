@@ -137,6 +137,23 @@
         $J("#taskTypePanel").hide();
     };
 </script>
+<style type="text/css">
+    .taskTypeDiv {
+        float: left;
+        width: 100%;
+    }
+    .taskTypeImg {
+        float: left;
+        width: 20%;
+        text-align: center;
+    }
+    .taskTypeTitle {
+        float: left;
+        width: 80%;
+        text-align: left;
+        margin-top: 5px;
+    }
+</style>
 <div id="subnavbar_level2">
     <ul>
         <li><a href="index.php?cmd={MODULE_NAME}&act=task" title="{TXT_CRM_OVERVIEW}">{TXT_CRM_OVERVIEW}</a></li>
@@ -146,7 +163,12 @@
 <div class="CategoriesDropDownPanel" id="taskTypePanel" style="display: none;position: absolute;">
     <div class="dropDownContent">
         <!-- BEGIN Tasktype -->
-        <a class="taskTypeItem_{TXT_TASKTYPE_ID} taskTypeItem dropDownItem" task_type="{TXT_TASKTYPE_ID}"><span>{TXT_TASKTYPE_NAME}</span></a>
+        <a class="dropDownItem" task_type="{TXT_TASKTYPE_ID}">
+            <div class="taskTypeDiv">
+                <div class="taskTypeImg"><img src="{TXT_TASKTYPE_IMAGE}" alt="{TXT_TASKTYPE_NAME}"/></div>
+                <div class="taskTypeTitle">{TXT_TASKTYPE_NAME}</div>
+            </div>
+        </a>
         <!-- END Tasktype -->        
     </div>
 </div>
