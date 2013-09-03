@@ -545,7 +545,7 @@ class Settings extends CrmLibrary
                 'TXT_CRM_CURRENCY'                   => $_ARRAYLANG['TXT_CRM_CURRENCY'],
                 'TXT_CRM_ADD_CURRENCY'               => $_ARRAYLANG['TXT_CRM_ADD_CURRENCY'],
                 'TXT_CRM_TITLE_STATUS'               => $_ARRAYLANG['TXT_CRM_TITLE_STATUS'],
-                'TXT_CRM_NAME'                       => $_ARRAYLANG['TXT_CRM_NAME'],
+                'TXT_CRM_NAME'                       => $_ARRAYLANG['TXT_CRM_LABEL'],
                 'TXT_CRM_SAVE'                       => $_ARRAYLANG['TXT_CRM_SAVE'],
                 'TXT_CRM_NOTES'                      => $_ARRAYLANG['TXT_CRM_NOTES'],
                 'TXT_CRM_SORTING'                    => $_ARRAYLANG['TXT_CRM_SORTING'],
