@@ -608,6 +608,22 @@ cx.cm = function(target) {
                 page.visibility.protected = jQuery("#page_protection_frontend").is(":checked");
                 page.name = newName;
                 page.version = response.data.version;
+
+                jQuery.ajax({
+                    url: 'index.php?cmd=jsondata&object=page&act=isBroken',
+                    dataType: 'json',
+                    async: false,
+                    data: {
+                        pageId: jQuery('#pageId').val(),
+                        pageRedirectPlaceholder: jQuery('#page_target').val()
+                    },
+                    success: function(reply) {
+                        if (typeof reply['data'] == 'boolean') {
+                            page.visibility.broken = reply['data'];
+                        }
+                    }
+                });
+
                 if (response.data.reload) {
                     cx.cm.createJsTree();
                 } else {
@@ -671,6 +687,22 @@ cx.cm = function(target) {
                 page.visibility.protected = jQuery("#page_protection_frontend").is(":checked");
                 page.name = newName;
                 page.version = response.data.version;
+
+                jQuery.ajax({
+                    url: 'index.php?cmd=jsondata&object=page&act=isBroken',
+                    dataType: 'json',
+                    async: false,
+                    data: {
+                        pageId: jQuery('#pageId').val(),
+                        pageRedirectPlaceholder: jQuery('#page_target').val()
+                    },
+                    success: function(reply) {
+                        if (typeof reply['data'] == 'boolean') {
+                            page.visibility.broken = reply['data'];
+                        }
+                    }
+                });
+
                 if (response.data.reload) {
                     cx.cm.createJsTree();
                 } else {
