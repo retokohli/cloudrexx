@@ -1163,16 +1163,20 @@ class JsonPage implements JsonAdapter {
      * @return  boolean
      */
     public function isBroken($arguments) {
-        if (!\Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->find($arguments['get']['pageId'])) {
-            return true;
-        }
-
-        try {
-            if (!\Cx\Core\Routing\NodePlaceholder::fromPlaceholder($arguments['get']['pageRedirectPlaceholder'])->getPage()) {
+        if (isset($arguments['get']['pageId'])) {
+            if (!\Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->find($arguments['get']['pageId'])) {
                 return true;
             }
-        } catch (\Cx\Core\Routing\NodePlaceholderException $e) {
-            return true;
+        }
+
+        if (isset($arguments['get']['pageRedirectPlaceholder'])) {
+            try {
+                if (!\Cx\Core\Routing\NodePlaceholder::fromPlaceholder($arguments['get']['pageRedirectPlaceholder'])->getPage()) {
+                    return true;
+                }
+            } catch (\Cx\Core\Routing\NodePlaceholderException $e) {
+                return true;
+            }
         }
 
         return false;

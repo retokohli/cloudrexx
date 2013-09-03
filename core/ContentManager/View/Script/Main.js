@@ -609,14 +609,16 @@ cx.cm = function(target) {
                 page.name = newName;
                 page.version = response.data.version;
 
+                parameter = new Object;
+                parameter.pageId = jQuery('#pageId').val();
+                if (jQuery('#page_target_protocol option:selected').val() == '') {
+                    parameter.pageRedirectPlaceholder = jQuery('#page_target').val();
+                }
                 jQuery.ajax({
                     url: 'index.php?cmd=jsondata&object=page&act=isBroken',
                     dataType: 'json',
                     async: false,
-                    data: {
-                        pageId: jQuery('#pageId').val(),
-                        pageRedirectPlaceholder: jQuery('#page_target').val()
-                    },
+                    data: parameter,
                     success: function(reply) {
                         if (typeof reply['data'] == 'boolean') {
                             page.visibility.broken = reply['data'];
@@ -688,14 +690,16 @@ cx.cm = function(target) {
                 page.name = newName;
                 page.version = response.data.version;
 
+                parameter = new Object;
+                parameter.pageId = jQuery('#pageId').val();
+                if (jQuery('#page_target_protocol option:selected').val() == '') {
+                    parameter.pageRedirectPlaceholder = jQuery('#page_target').val();
+                }
                 jQuery.ajax({
                     url: 'index.php?cmd=jsondata&object=page&act=isBroken',
                     dataType: 'json',
                     async: false,
-                    data: {
-                        pageId: jQuery('#pageId').val(),
-                        pageRedirectPlaceholder: jQuery('#page_target').val()
-                    },
+                    data: parameter,
                     success: function(reply) {
                         if (typeof reply['data'] == 'boolean') {
                             page.visibility.broken = reply['data'];
