@@ -76,7 +76,8 @@ class JsonPage implements JsonAdapter {
             'setPagePreview',
             'getHistoryTable',
             'getAccessData',
-            'getPathByTarget'
+            'getPathByTarget',
+            'isBroken',
         );
     }
 
@@ -1153,5 +1154,27 @@ class JsonPage implements JsonAdapter {
         }
 
         return $target;
+    }
+
+    /**
+     * Checks if the passed page or its redirect target page is broken.
+     *
+     * @param   array   $arguments
+     * @return  boolean
+     */
+    public function isBroken($arguments) {
+        if (!\Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->find($arguments['get']['pageId'])) {
+            return true;
+        }
+
+        try {
+            if (!\Cx\Core\Routing\NodePlaceholder::fromPlaceholder($arguments['get']['pageRedirectPlaceholder'])->getPage()) {
+                return true;
+            }
+        } catch (\Cx\Core\Routing\NodePlaceholderException $e) {
+            return true;
+        }
+
+        return false;
     }
 }
