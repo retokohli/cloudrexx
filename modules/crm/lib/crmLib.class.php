@@ -510,6 +510,7 @@ class CrmLibrary
                 'CRM_TASK_TYPE_ICON'        => contrexx_raw2xhtml($icon),
                 'CRM_TASK_TYPE_ADD_ACTIVE'  => (empty($_POST) && empty($id)) || ($active) ? "checked" : '',
 
+                'TXT_CRM_ICON'                 => $_ARRAYLANG['TXT_CRM_ICON'],
                 'TXT_CRM_TASK_TYPE_NAME'        => $_ARRAYLANG['TXT_CRM_TASK_TYPE_NAME'],
                 'TXT_CRM_TASK_TYPE_SORTING'     => $_ARRAYLANG['TXT_CRM_TASK_TYPE_SORTING'],
                 'TXT_CRM_TASK_TYPE_DESCRIPTION' => $_ARRAYLANG['TXT_CRM_TASK_TYPE_DESCRIPTION'],
@@ -1901,7 +1902,7 @@ class CrmLibrary
      */
     function addUser($email, $password, $sendLoginDetails = false, $result = array(), $id)
     {
-        global $objDatabase, $_CORELANG;
+        global $objDatabase, $_CORELANG, $_ARRAYLANG;
 
         $settings = $this->getSettings();
 
@@ -1929,8 +1930,9 @@ class CrmLibrary
         if ($modify) {
             $useralExists = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE user_account = {$accountId}", 1);
             $this->contact->account_id = $objDatabase->getOne("SELECT user_account FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE id = {$this->contact->id}");
-            if (empty ($this->contact->account_id) && !empty($accountId)) {
-                $objUser = new User($accountId);
+            if (empty ($this->contact->account_id) && !empty($accountId)) { echo 'wel';
+                $objUser    = $objFWUser->objUser->getUser($accountId);
+//            $objUser = new User($accountId);
             } elseif ((!empty($this->contact->account_id) && $objUser = $objFWUser->objUser->getUser($this->contact->account_id)) === false) {
                 $objUser = new User();
             } elseif (!empty($accountId) && $useralExists && $useralExists->RecordCount() == 0) {
@@ -1940,12 +1942,16 @@ class CrmLibrary
             if (empty($accountId)){
                 $objUser = new User();
             } else {
-                $userExists = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE user_account = {$accountId}", 1);
-                if ($userExists && $userExists->RecordCount() == 0) {
+                $userExists = $objDatabase->getOne("SELECT id FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE user_account = {$accountId}");
+                if (empty ($userExists)) {
                     $objUser    = $objFWUser->objUser->getUser($accountId);
                 } else {
-                    $this->_strErrMessage = $_CORELANG['TXT_ACCESS_EMAIL_ALREADY_USED'];
-                    return  false;
+                    $this->contact->load($userExists);
+                    $custDetails = $this->contact->getCustomerDetails(); 
+                    $existLink = "<a href='index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id=$userExists' target='_blank'>{$custDetails['customer_name']} {$custDetails['contact_familyname']}</a>";
+//                    sprintf($_ARRAYLANG['TXT_CRM_CONTACT_ALREADY_EXIST_ERROR'], $existLink); exit();
+                    $this->_strErrMessage = sprintf($_ARRAYLANG['TXT_CRM_CONTACT_ALREADY_EXIST_ERROR'], $existLink);
+                    return false;
                 }
             }
         }

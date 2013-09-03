@@ -553,4 +553,4 @@ $_ARRAYLANG['TXT_CRM_CUSTOMER_CONTACT_EMAIL'] = 'Mailadresse des Kunden';
 $_ARRAYLANG['TXT_CRM_CUSTOMER_COMPANY'] = 'Firmenname des Kunden';
 $_ARRAYLANG['TXT_CRM_CUSTOMER_CONTACT_USER_NAME'] = 'Name des Kunden';
 $_ARRAYLANG['TXT_CRM_CUSTOMER_CONTACT_PASSWORD'] = 'Passwort des Kunden';
-
+$_ARRAYLANG['TXT_CRM_CONTACT_ALREADY_EXIST_ERROR'] = 'The selected user account is already linked to the CRM person %s! Please enter or select an other e-mail or user account!';

@@ -99,7 +99,7 @@ var resetAddressPrimaryInputs = function() {
     });
 }
 $J(document).ready(function() {
-
+    
     $J("#assigned_memberships").chosen().change(function(){
         $assGrp  = $J(this);
         $mainGrp = $J("#main_membership");
