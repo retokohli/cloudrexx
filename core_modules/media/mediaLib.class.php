@@ -447,7 +447,7 @@ class MediaLibrary
         
         $objFile = new File();
         $orgFile = $arrData['orgName'].'.'.$arrData['orgExt'];
-        $orgFile = \Cx\Lib\FileSystem\FileSystem::replaceCharacters($orgFile);
+        $orgFile = $orgFile;
         $newName = $arrData['newName'];
         $newFile = $newName.'.'.$arrData['orgExt'];
         $newFile = \Cx\Lib\FileSystem\FileSystem::replaceCharacters($newFile);
