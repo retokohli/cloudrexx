@@ -27,10 +27,13 @@
                 </div>
             </td>
             <td>
-                <div class="taskTypeItem_{CRM_TASKTYPE} task_type_overview">
-                    <div>{CRM_TASKTITLE}</div>
-                    <div>{CRM_DUEDATE}</div>
-                </div>
+                    <div class="taskTypeDiv">
+                        <div class="taskTypeImg"><img src="{CRM_TASKICON}"/></div>
+                        <div class="taskTypeTitle">
+                            <div>{CRM_TASKTITLE}</div>
+                            <div>{CRM_DUEDATE}</div>
+                        </div>
+                    </div>
             </td>
             <td>
                 <a href="./index.php?cmd={MODULE_NAME}&amp;act=customers&amp;tpl=showcustdetail&id={CRM_TASK_CUSTOMER_ID}" title="{CRM_CUSTOMERNAME}">{CRM_CUSTOMERNAME}</a>

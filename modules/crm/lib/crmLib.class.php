@@ -534,7 +534,7 @@ class CrmLibrary
     {
         global $objDatabase, $_ARRAYLANG;
 
-        $objResult = $objDatabase->Execute("SELECT id,name FROM ".DBPREFIX."module_{$this->moduleName}_task_types WHERE status=1 ORDER BY sorting");
+        $objResult = $objDatabase->Execute("SELECT id, name, icon FROM ".DBPREFIX."module_{$this->moduleName}_task_types WHERE status=1 ORDER BY sorting");
         $first     = true;
         while (!$objResult->EOF) {
             $selected = $selectedType == $objResult->fields['id'] ? "selected" : '';
@@ -545,9 +545,15 @@ class CrmLibrary
                 ));
                 $first = false;
             }
+            if (!empty ($objResult->fields['icon'])) {
+                $icons  = CRM_ACCESS_OTHER_IMG_WEB_PATH.'/'.contrexx_raw2xhtml($objResult->fields['icon'])."_24X24.thumb";
+            } else {
+                $icons  = '../modules/crm/View/Media/task_default.png';
+            }
             $objTpl->setVariable(array(
                     'TXT_TASKTYPE_ID'       => (int) $objResult->fields['id'],
                     'TXT_TASKTYPE_NAME'     => contrexx_input2xhtml($objResult->fields['name']),
+                    'TXT_TASKTYPE_IMAGE'    => $icons,
                     'TXT_TASKTYPE_SELECTED' => $selected,
             ));
             $objTpl->parse('Tasktype');
