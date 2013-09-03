@@ -646,18 +646,8 @@ CREATE TABLE `contrexx_module_calendar_event` (
   `confirmed` tinyint(1) NOT NULL default '1',
   `author` varchar(255) NOT NULL,
   `all_day` tinyint(1) NOT NULL default '0',
-  PRIMARY KEY  (`id`),
-  KEY `fk_contrexx_module_calendar_notes_contrexx_module_calendar_ca1` (`catid`)
-) ENGINE=MyISAM ;
-SET character_set_client = @saved_cs_client;
-SET @saved_cs_client     = @@character_set_client;
-SET character_set_client = utf8;
-CREATE TABLE `contrexx_module_calendar_event_field` (
-  `event_id` int(11) NOT NULL default '0',
-  `lang_id` varchar(225) default NULL,
-  `title` varchar(255) default NULL,
-  `place` varchar(255) default NULL,
-  `place_id` int(11) NOT NULL default '0',
+  `place` varchar(255) NOT NULL,
+  `place_id` int(11) NOT NULL,
   `place_street` varchar(255) default NULL,
   `place_zip` varchar(10) default NULL,
   `place_city` varchar(255) default NULL,
@@ -670,11 +660,21 @@ CREATE TABLE `contrexx_module_calendar_event_field` (
   `org_city` varchar(255) NOT NULL,
   `org_link` varchar(255) NOT NULL,
   `org_email` varchar(255) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `fk_contrexx_module_calendar_notes_contrexx_module_calendar_ca1` (`catid`)
+) ENGINE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_calendar_event_field` (
+  `event_id` int(11) NOT NULL default '0',
+  `lang_id` varchar(225) default NULL,
+  `title` varchar(255) default NULL,
   `description` mediumtext,
   `redirect` varchar(255) NOT NULL,
   KEY `lang_field` (`title`),
   KEY `fk_contrexx_module_calendar_note_field_contrexx_module_calend1` (`event_id`),
-  FULLTEXT KEY `eventIndex` (`title`,`place`,`description`)
+  FULLTEXT KEY `eventIndex` (`title`,`description`)
 ) ENGINE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
