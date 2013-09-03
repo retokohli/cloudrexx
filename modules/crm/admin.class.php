@@ -2012,7 +2012,10 @@ END;
         $this->checkCustomerIdentity();
 
         JS::activate('cx');
-        FWUser::getUserLiveSearch();
+        FWUser::getUserLiveSearch(array(
+            'minLength' => 3,
+            'canCancel' => true,
+            'canClear' => true));
         JS::activate("jquery");
         JS::activate("jqueryui");
         JS::registerJS("modules/crm/View/Script/main.js");
