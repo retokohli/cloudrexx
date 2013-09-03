@@ -258,11 +258,13 @@ class CrmManager extends CrmLibrary
                 'CONTENT_TITLE'             => isset($_SESSION['pageTitle']) ? $_SESSION['pageTitle'] : $this->_pageTitle,
                 'CONTENT_OK_MESSAGE'        => isset($_SESSION['strOkMessage']) ? $_SESSION['strOkMessage'] : $this->_strOkMessage,
                 'CONTENT_STATUS_MESSAGE'    => isset($_SESSION['strErrMessage']) ? $_SESSION['strErrMessage'] : $this->_strErrMessage,
+                'CONTENT_WARNING_MESSAGE'   => isset($_SESSION['strWarMessage']) ? $_SESSION['strWarMessage'] : $this->_strWarMessage,
                 'ADMIN_CONTENT'             => $this->_objTpl->get()
         ));
         unset($_SESSION['pageTitle']);
         unset($_SESSION['strOkMessage']);
         unset($_SESSION['strErrMessage']);
+        unset($_SESSION['strWarMessage']);
     }
 
     /**

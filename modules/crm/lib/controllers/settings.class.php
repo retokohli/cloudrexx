@@ -1017,7 +1017,7 @@ class Settings extends CrmLibrary
         $this->_pageTitle = $_ARRAYLANG['TXT_CRM_SETTINGS'];
         $objTpl = $this->_objTpl;
         $objFWUser = FWUser::getFWUserObject();
-        
+        $objTpl->hideBlock('insufficient-warning');
         if (isset($_POST['save'])) {
                                     
             $settings = array(
@@ -1027,24 +1027,9 @@ class Settings extends CrmLibrary
                     'customer_default_language_frontend' => isset($_POST['default_language_frontend']) ? (int) $_POST['default_language_frontend'] : 0,
                     'default_user_group'                 => isset($_POST['default_user_group']) ? (int) $_POST['default_user_group'] : 0,
                     'user_account_mantatory'             => isset($_POST['user_account_mantatory']) ? 1 : 0,
+                    'emp_default_user_group'             => isset($_POST['emp_default_user_group']) ? (int) $_POST['emp_default_user_group'] : 0,
                     'default_country_value'              => isset ($_POST['default_country_value']) ? (int) $_POST['default_country_value'] : 0
             );
-
-            if (isset($_POST['emp_default_user_group']) && !empty ($_POST['emp_default_user_group'])) {
-                $groupId = array();
-                $groupValidation = $objDatabase->Execute("SELECT group_id FROM ".DBPREFIX."access_group_static_ids WHERE access_id = {$this->customerAccessId}");
-                if ($groupValidation && $groupValidation->RecordCount() > 0) {
-                    while (!$groupValidation->EOF) {
-                        array_push($groupId, (int) $groupValidation->fields['group_id']);
-                        $groupValidation->MoveNext();
-                    }
-                }
-                if (in_array($_POST['emp_default_user_group'], $groupId)) {
-                    $settings['emp_default_user_group'] = isset($_POST['emp_default_user_group']) ? (int) $_POST['emp_default_user_group'] : 0;
-                } else {
-                    $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_SETTINGS_EMPLOYEE_ACCESS_ERROR'];
-                }
-            }
 
             foreach ($settings as $settings_var => $settings_val) {
                 $updateAllowPm = 'UPDATE '.DBPREFIX.'module_'.$this->moduleName.'_settings
@@ -1057,6 +1042,21 @@ class Settings extends CrmLibrary
         }
 
         $settings = $this->getSettings();
+
+        if (isset($settings['emp_default_user_group']) && !empty ($settings['emp_default_user_group'])) {
+            $groupId = array();
+            $groupValidation = $objDatabase->Execute("SELECT group_id FROM ".DBPREFIX."access_group_static_ids WHERE access_id = {$this->customerAccessId}");
+            if ($groupValidation && $groupValidation->RecordCount() > 0) {
+                while (!$groupValidation->EOF) {
+                    array_push($groupId, (int) $groupValidation->fields['group_id']);
+                    $groupValidation->MoveNext();
+                }
+            }
+            if (!in_array($settings['emp_default_user_group'], $groupId)) {
+                $objTpl->setVariable('CRM_INSUFFICIENT_WARNING', $_ARRAYLANG['TXT_CRM_SETTINGS_EMPLOYEE_ACCESS_ERROR']);
+                $objTpl->touchBlock('insufficient-warning');
+            }
+        }
 
         $objLanguages = $objDatabase->Execute("SELECT `id`, `name`, `frontend`, `backend` FROM ".DBPREFIX."languages WHERE frontend = 1 OR backend =1");
 
@@ -1107,13 +1107,21 @@ class Settings extends CrmLibrary
                         'CRM_USER_GROUP_SELECTED'   => $settings['default_user_group'] == $objGroupIds->getId() ? "selected='selected'" : ''
                 ));
                 $objTpl->parse("userGroup");
+                $objGroupIds->next();
+            }
+        }
+        
+        //show backend groups
+        $objBackendGroupIds    = $objFWUser->objGroup->getGroups($filter = array('is_active' => true, 'type' => 'backend'));
+        if ($objBackendGroupIds) {
+            while (!$objBackendGroupIds->EOF) {
                 $objTpl->setVariable(array(
-                        'CRM_GROUP_NAME'            => contrexx_raw2xhtml($objGroupIds->getName()),
-                        'CRM_GROUP_VALUE'           => (int) $objGroupIds->getId(),
-                        'CRM_USER_GROUP_SELECTED'   => $settings['emp_default_user_group'] == $objGroupIds->getId() ? "selected='selected'" : ''
+                        'CRM_GROUP_NAME'            => contrexx_raw2xhtml($objBackendGroupIds->getName()),
+                        'CRM_GROUP_VALUE'           => (int) $objBackendGroupIds->getId(),
+                        'CRM_USER_GROUP_SELECTED'   => $settings['emp_default_user_group'] == $objBackendGroupIds->getId() ? "selected='selected'" : ''
                 ));
                 $objTpl->parse("empUserGroup");
-                $objGroupIds->next();
+                $objBackendGroupIds->next();
             }
         }
         $countries = $this->getCountry();
