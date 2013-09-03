@@ -1,21 +1,28 @@
 <!-- START module_crm_settings.html -->
 <style type="text/css">
     .lang-td {float: left;width: 100px;}
+    .warningMsg {
+        background: #FEF0D0;
+        color: #DA7A0A;
+        padding: 8px !important;
+        overflow: auto;
+        border-bottom: 0px !important;
+    }
 </style>
 <script type="text/javascript">
     $J(function(){
-       $J("#create_user_account").click(function(){
-           if ($J(this).is(":checked")) {
-               $J("tr.user_account").show();
-           } else {
-               $J("tr.user_account").hide();
-           }
-       });
-       if ($J("#create_user_account").is(":checked")) {
-           $J("tr.user_account").show();
-       } else {
-           $J("tr.user_account").hide();
-       }
+        $J("#create_user_account").click(function(){
+            if ($J(this).is(":checked")) {
+                $J("tr.user_account").show();
+            } else {
+                $J("tr.user_account").hide();
+            }
+        });
+        if ($J("#create_user_account").is(":checked")) {
+            $J("tr.user_account").show();
+        } else {
+            $J("tr.user_account").hide();
+        }
     });
 </script>
 <br />
@@ -100,6 +107,11 @@
             <tr>
                 <th colspan="2">{TXT_CRM_EMPLOYEE}</th>
             </tr>
+            <!-- BEGIN insufficient-warning -->
+            <tr>
+                <td colspan="2" class="warningMsg">{CRM_INSUFFICIENT_WARNING}</td>
+            </tr>
+            <!-- END insufficient-warning -->
             <tr class="row1">
                 <td valign="top" >
                     {TXT_CRM_EMP_DEFAULT_USER_GROUP}&nbsp;

@@ -204,6 +204,14 @@ class CrmLibrary
     var $_strErrMessage  = '';
 
     /**
+     * Status Warning message
+     *
+     * @access private
+     * @var string
+     */
+    var $_strWarMessage  = '';
+
+    /**
      * Support Case Status
      *
      * @access private
