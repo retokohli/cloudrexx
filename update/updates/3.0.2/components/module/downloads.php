@@ -404,8 +404,8 @@ function _downloadsInstall()
                     (7, 'file', 'image', 'jpg', 88064, '/images/downloads/produktbild_contrexx_premium.jpg', 1, 0, 'Free to Use', '3.0', 'Comvation AG', 'http://www.contrexx.com', 1292506574, 1348228311, 1, 1, 0, 16, 8, 0, 0),
                     (12, 'file', 'document', '_blank', 0, '/images/downloads/produktbild_contrexx_enterprise.jpg', 1, 0, 'Free to Use', '3.0', 'Comvation AG', 'http://www.contrexx.com', 1347628955, 1348228264, 1, 1, 0, 1, 0, 0, 0),
                     (9, 'file', 'pdf', 'pdf', 136192, '', 1, 0, 'Free to Use', '1.0', 'Comvation AG', 'http://www.contrexx.com', 1292601284, 1348226752, 1, 1, 0, 4, 3, 0, 0),
-                    (10, 'file', 'pdf', 'pdf', 135168, 'images/content/digital_asset_management/factsheet_contrexx_basic.pdf', 1, 0, 'Free to Use', '1.0', 'Comvation AG', 'http://www.contrexx.com', 1292601393, 1292601393, 1, 1, 0, 1, 0, 0, 0),
-                    (11, 'file', 'pdf', 'pdf', 111616, 'images/content/digital_asset_management/factsheet_contrexx_premium.pdf', 1, 0, 'Free to Use', '1.0', 'Comvation AG', 'http://www.contrexx.com', 1292601456, 1292601456, 1, 1, 0, 1, 0, 0, 0)
+                    (10, 'file', 'pdf', 'pdf', 135168, 'images/downloads/factsheet_contrexx_basic.pdf', 1, 0, 'Free to Use', '1.0', 'Comvation AG', 'http://www.contrexx.com', 1292601393, 1292601393, 1, 1, 0, 1, 0, 0, 0),
+                    (11, 'file', 'pdf', 'pdf', 111616, 'images/downloads/factsheet_contrexx_premium.pdf', 1, 0, 'Free to Use', '1.0', 'Comvation AG', 'http://www.contrexx.com', 1292601456, 1292601456, 1, 1, 0, 1, 0, 0, 0)
             ON DUPLICATE KEY UPDATE `id` = `id`
         ");
 
@@ -429,36 +429,36 @@ function _downloadsInstall()
         );
         \Cx\Lib\UpdateUtil::sql("
             INSERT INTO `".DBPREFIX."module_downloads_download_locale` (`lang_id`, `download_id`, `name`, `source`, `source_name`, `description`, `metakeys`)
-            VALUES  (1, 4, 'Contrexx® Personal', '/images/content/digital_asset_management/produktbild_contrexx_open_source.jpg', 'produktbild_contrexx_open_source.jpg', 'Produktbild von Contrexx® Personal', ''),
-                    (2, 4, 'Contrexx® Personal', '/images/content/digital_asset_management/produktbild_contrexx_open_source.jpg', 'produktbild_contrexx_open_source.jpg', 'Produktbild von Contrexx® Personal', ''),
+            VALUES  (1, 4, 'Contrexx® Personal', '/images/downloads/produktbild_contrexx_open_source.jpg', 'produktbild_contrexx_open_source.jpg', 'Produktbild von Contrexx® Personal', ''),
+                    (2, 4, 'Contrexx® Personal', '/images/downloads/produktbild_contrexx_open_source.jpg', 'produktbild_contrexx_open_source.jpg', 'Produktbild von Contrexx® Personal', ''),
                     (3, 4, 'Contrexx® Personal', '', 'produktbild_contrexx_open_source.jpg', '', ''),
-                    (1, 5, 'Contrexx® NonProfit', 'images/content/digital_asset_management/produktbild_contrexx_education.jpg', 'produktbild_contrexx_education.jpg', 'Produktbild von Contrexx® NonProfit', ''),
-                    (2, 5, 'Contrexx® NonProfit', 'images/content/digital_asset_management/produktbild_contrexx_education.jpg', 'produktbild_contrexx_education.jpg', 'Produktbild von Contrexx® NonProfit', ''),
+                    (1, 5, 'Contrexx® NonProfit', 'images/downloads/produktbild_contrexx_education.jpg', 'produktbild_contrexx_education.jpg', 'Produktbild von Contrexx® NonProfit', ''),
+                    (2, 5, 'Contrexx® NonProfit', 'images/downloads/produktbild_contrexx_education.jpg', 'produktbild_contrexx_education.jpg', 'Produktbild von Contrexx® NonProfit', ''),
                     (3, 5, 'Contrexx® NonProfit', '', 'produktbild_contrexx_education.jpg', '', ''),
-                    (1, 6, 'Contrexx® Small Business', 'images/content/digital_asset_management/produktbild_contrexx_basic.jpg', 'produktbild_contrexx_basic.jpg', 'Produktbild von Contrexx® Small Business', ''),
-                    (2, 6, 'Contrexx® Small Business', 'images/content/digital_asset_management/produktbild_contrexx_basic.jpg', 'produktbild_contrexx_basic.jpg', 'Produktbild von Contrexx® Small Business', ''),
+                    (1, 6, 'Contrexx® Small Business', 'images/downloads/produktbild_contrexx_basic.jpg', 'produktbild_contrexx_basic.jpg', 'Produktbild von Contrexx® Small Business', ''),
+                    (2, 6, 'Contrexx® Small Business', 'images/downloads/produktbild_contrexx_basic.jpg', 'produktbild_contrexx_basic.jpg', 'Produktbild von Contrexx® Small Business', ''),
                     (3, 6, 'Contrexx® Small Business', '', 'produktbild_contrexx_basic.jpg', '', ''),
-                    (1, 7, 'Contrexx® Premium', 'images/content/digital_asset_management/produktbild_contrexx_premium.jpg', 'produktbild_contrexx_premium.jpg', 'Produktbild von Contrexx® Premium', ''),
-                    (2, 7, 'Contrexx® Premium', 'images/content/digital_asset_management/produktbild_contrexx_premium.jpg', 'produktbild_contrexx_premium.jpg', 'Produktbild von Contrexx® Premium', ''),
+                    (1, 7, 'Contrexx® Premium', 'images/downloads/produktbild_contrexx_premium.jpg', 'produktbild_contrexx_premium.jpg', 'Produktbild von Contrexx® Premium', ''),
+                    (2, 7, 'Contrexx® Premium', 'images/downloads/produktbild_contrexx_premium.jpg', 'produktbild_contrexx_premium.jpg', 'Produktbild von Contrexx® Premium', ''),
                     (3, 7, 'Contrexx® Premium', '', 'produktbild_contrexx_premium.jpg', '', ''),
                     (1, 12, 'Contrexx® Enterprise', '', '', 'Produktbild von Contrexx® Enterprise', ''),
                     (2, 12, 'Contrexx® Enterprise', '', '', 'Produktbild von Contrexx® Enterprise', ''),
                     (3, 12, 'Contrexx® Enterprise', '', '', '', ''),
-                    (1, 9, 'Contrexx® NonProfit', 'images/content/digital_asset_management/factsheet_contrexx_education.pdf', 'factsheet_contrexx_education.pdf', 'Contrexx NonProfit Factsheet', ''),
-                    (2, 9, 'Contrexx® NonProfit', 'images/content/digital_asset_management/factsheet_contrexx_education.pdf', 'factsheet_contrexx_education.pdf', 'Contrexx NonProfit Factsheet', ''),
+                    (1, 9, 'Contrexx® NonProfit', 'images/downloads/factsheet_contrexx_education.pdf', 'factsheet_contrexx_education.pdf', 'Contrexx NonProfit Factsheet', ''),
+                    (2, 9, 'Contrexx® NonProfit', 'images/downloads/factsheet_contrexx_education.pdf', 'factsheet_contrexx_education.pdf', 'Contrexx NonProfit Factsheet', ''),
                     (3, 9, 'Contrexx® NonProfit', '', 'factsheet_contrexx_education.pdf', '', ''),
-                    (1, 10, 'Contrexx Basic', 'images/content/digital_asset_management/factsheet_contrexx_basic.pdf', 'factsheet_contrexx_basic.pdf', 'Contrexx Basic Factsheet', ''),
-                    (2, 10, 'Contrexx Basic', 'images/content/digital_asset_management/factsheet_contrexx_basic.pdf', 'factsheet_contrexx_basic.pdf', 'Contrexx Basic Factsheet', ''),
-                    (3, 10, 'Contrexx Basic', 'images/content/digital_asset_management/factsheet_contrexx_basic.pdf', 'factsheet_contrexx_basic.pdf', 'Contrexx Basic Factsheet', ''),
-                    (4, 10, 'Contrexx Basic', 'images/content/digital_asset_management/factsheet_contrexx_basic.pdf', 'factsheet_contrexx_basic.pdf', 'Contrexx Basic Factsheet', ''),
-                    (5, 10, 'Contrexx Basic', 'images/content/digital_asset_management/factsheet_contrexx_basic.pdf', 'factsheet_contrexx_basic.pdf', 'Contrexx Basic Factsheet', ''),
-                    (6, 10, 'Contrexx Basic', 'images/content/digital_asset_management/factsheet_contrexx_basic.pdf', 'factsheet_contrexx_basic.pdf', 'Contrexx Basic Factsheet', ''),
-                    (1, 11, 'Contrexx Premium', 'images/content/digital_asset_management/factsheet_contrexx_premium.pdf', 'factsheet_contrexx_premium.pdf', 'Contrexx Premium Factsheet', ''),
-                    (2, 11, 'Contrexx Premium', 'images/content/digital_asset_management/factsheet_contrexx_premium.pdf', 'factsheet_contrexx_premium.pdf', 'Contrexx Premium Factsheet', ''),
-                    (3, 11, 'Contrexx Premium', 'images/content/digital_asset_management/factsheet_contrexx_premium.pdf', 'factsheet_contrexx_premium.pdf', 'Contrexx Premium Factsheet', ''),
-                    (4, 11, 'Contrexx Premium', 'images/content/digital_asset_management/factsheet_contrexx_premium.pdf', 'factsheet_contrexx_premium.pdf', 'Contrexx Premium Factsheet', ''),
-                    (5, 11, 'Contrexx Premium', 'images/content/digital_asset_management/factsheet_contrexx_premium.pdf', 'factsheet_contrexx_premium.pdf', 'Contrexx Premium Factsheet', ''),
-                    (6, 11, 'Contrexx Premium', 'images/content/digital_asset_management/factsheet_contrexx_premium.pdf', 'factsheet_contrexx_premium.pdf', 'Contrexx Premium Factsheet', '')
+                    (1, 10, 'Contrexx Basic', 'images/downloads/factsheet_contrexx_basic.pdf', 'factsheet_contrexx_basic.pdf', 'Contrexx Basic Factsheet', ''),
+                    (2, 10, 'Contrexx Basic', 'images/downloads/factsheet_contrexx_basic.pdf', 'factsheet_contrexx_basic.pdf', 'Contrexx Basic Factsheet', ''),
+                    (3, 10, 'Contrexx Basic', 'images/downloads/factsheet_contrexx_basic.pdf', 'factsheet_contrexx_basic.pdf', 'Contrexx Basic Factsheet', ''),
+                    (4, 10, 'Contrexx Basic', 'images/downloads/factsheet_contrexx_basic.pdf', 'factsheet_contrexx_basic.pdf', 'Contrexx Basic Factsheet', ''),
+                    (5, 10, 'Contrexx Basic', 'images/downloads/factsheet_contrexx_basic.pdf', 'factsheet_contrexx_basic.pdf', 'Contrexx Basic Factsheet', ''),
+                    (6, 10, 'Contrexx Basic', 'images/downloads/factsheet_contrexx_basic.pdf', 'factsheet_contrexx_basic.pdf', 'Contrexx Basic Factsheet', ''),
+                    (1, 11, 'Contrexx Premium', 'images/downloads/factsheet_contrexx_premium.pdf', 'factsheet_contrexx_premium.pdf', 'Contrexx Premium Factsheet', ''),
+                    (2, 11, 'Contrexx Premium', 'images/downloads/factsheet_contrexx_premium.pdf', 'factsheet_contrexx_premium.pdf', 'Contrexx Premium Factsheet', ''),
+                    (3, 11, 'Contrexx Premium', 'images/downloads/factsheet_contrexx_premium.pdf', 'factsheet_contrexx_premium.pdf', 'Contrexx Premium Factsheet', ''),
+                    (4, 11, 'Contrexx Premium', 'images/downloads/factsheet_contrexx_premium.pdf', 'factsheet_contrexx_premium.pdf', 'Contrexx Premium Factsheet', ''),
+                    (5, 11, 'Contrexx Premium', 'images/downloads/factsheet_contrexx_premium.pdf', 'factsheet_contrexx_premium.pdf', 'Contrexx Premium Factsheet', ''),
+                    (6, 11, 'Contrexx Premium', 'images/downloads/factsheet_contrexx_premium.pdf', 'factsheet_contrexx_premium.pdf', 'Contrexx Premium Factsheet', '')
             ON DUPLICATE KEY UPDATE `lang_id` = `lang_id`
         ");
 
