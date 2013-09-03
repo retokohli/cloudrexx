@@ -2301,7 +2301,7 @@ class LegacyComponentHandler {
                     'crm' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
 
-                        \Permission::checkAccess(555, 'static');
+                        \Permission::checkAccess(556, 'static');
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/crm/admin.class.php')) {
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         }
