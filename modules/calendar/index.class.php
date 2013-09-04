@@ -419,8 +419,9 @@ EOF;
 
         JS::registerJS('modules/calendar/View/Script/Frontend.js');
         
+        parent::getFrontendLanguages();
         $this->_objTpl->setTemplate($this->pageContent, true, true);
-               
+        
         $showFrom = true;
         if(isset($_POST['submitFormModifyEvent'])) {
             $objEvent = new CalendarEvent();
@@ -536,7 +537,7 @@ UPLOADER;
         $objCategoryManager = new CalendarCategoryManager(true);
         $objCategoryManager->getCategoryList();
         
-$this->_objTpl->setVariable(array(
+        $this->_objTpl->setVariable(array(
             'TXT_'.$this->moduleLangVar.'_EVENT'                    =>  $_ARRAYLANG['TXT_CALENDAR_EVENT'],
             'TXT_'.$this->moduleLangVar.'_EVENT_DETAILS'            =>  $_ARRAYLANG['TXT_CALENDAR_EVENT_DETAILS'],
             'TXT_'.$this->moduleLangVar.'_SAVE'                     => $_ARRAYLANG['TXT_CALENDAR_SAVE'],
@@ -561,7 +562,13 @@ $this->_objTpl->setVariable(array(
             'TXT_'.$this->moduleLangVar.'_EVENT_HOST'               => $_ARRAYLANG['TXT_CALENDAR_EVENT_HOST'],
             'TXT_'.$this->moduleLangVar.'_EVENT_NAME'               => $_ARRAYLANG['TXT_CALENDAR_EVENT_NAME'],
             'TXT_'.$this->moduleLangVar.'_EVENT_ALL_DAY'            => $_ARRAYLANG['TXT_CALENDAR_EVENT_ALL_DAY'],
+            'TXT_'.$this->moduleLangVar.'_LANGUAGE'                 => $_ARRAYLANG['TXT_CALENDAR_LANG'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_TYPE'               => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_TYPE_EVENT'         => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_EVENT'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_TYPE_REDIRECT'      => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_REDIRECT'],
 
+            $this->moduleLangVar.'_EVENT_TYPE_EVENT'                => $eventId != 0 ? ($objEvent->type == 0 ? 'selected="selected"' : '') : '',      
+            $this->moduleLangVar.'_EVENT_TYPE_REDIRECT'             => $eventId != 0 ? ($objEvent->type == 1 ? 'selected="selected"' : '') : '',
             $this->moduleLangVar.'_EVENT_START_DATE'                => $eventId != 0 ? date(parent::getDateFormat()." H:i", $objEvent->startDate) : date(parent::getDateFormat()." H:i"),
             $this->moduleLangVar.'_EVENT_END_DATE'                  => $eventId != 0 ? date(parent::getDateFormat()." H:i", $objEvent->endDate) : date(parent::getDateFormat()." H:i"),
             $this->moduleLangVar.'_EVENT_PICTURE'                   => $objEvent->pic,
@@ -588,8 +595,41 @@ $this->_objTpl->setVariable(array(
             $this->moduleLangVar.'_EVENT_DESCRIPTION'               => new \Cx\Core\Wysiwyg\Wysiwyg("description[{$_LANGID}]", contrexx_raw2xhtml($objEvent->description), $eventId != 0 ? 'small' : 'bbcode'),
             $this->moduleLangVar.'_EVENT_ID'                        => $eventId,
             $this->moduleLangVar.'_EVENT_ALL_DAY'                   => $eventId != 0 && $objEvent->all_day ? 'checked="checked"' : '',
+            $this->moduleLangVar.'_HIDE_ON_SINGLE_LANG'             => count($this->arrFrontendLanguages) == 1 ? "display: none;" : "",
         ));
         
+        foreach ($this->arrFrontendLanguages as $langId => $arrLang) {
+            //parse globals
+            $this->_objTpl->setGlobalVariable(array(
+                $this->moduleLangVar.'_EVENT_LANG_SHORTCUT'     => $arrLang['lang'],
+                $this->moduleLangVar.'_EVENT_LANG_ID'           => $arrLang['id'],
+                'TXT_'.$this->moduleLangVar.'_EVENT_LANG_NAME'  => $arrLang['name'],
+            ));
+        	
+            //parse "show in" checkboxes
+            $arrShowIn = explode(",", $objEvent->showIn);
+            
+            $langChecked = false;
+            if($eventId != 0) {
+                $langChecked = in_array($arrLang['id'], $arrShowIn) ? true : (!$langChecked ? true : false);                
+            } else {
+                $langChecked = $arrLang['is_default'] == 'true';
+            }
+            $langChecked = $langChecked ? 'checked="checked"' : '';
+            	
+            $this->_objTpl->setVariable(array(
+                $this->moduleLangVar.'_EVENT_LANG_CHECKED'  => $langChecked,
+            ));
+            
+            $this->_objTpl->parse('eventShowIn');
+            
+            //parse eventTabMenuDescTab
+            $this->_objTpl->setVariable(array(
+                $this->moduleLangVar.'_EVENT_TAB_CLASS'  => $defaultLang ? 'active' : '',
+            ));
+            
+            $this->_objTpl->parse('eventTabMenuDescTab');
+        }
         //parse placeSelect
         /*if ($this->arrSettings['placeData'] != 0) {
             $objMediadirEntries = new mediaDirectoryEntry();
