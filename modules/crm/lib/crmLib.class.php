@@ -451,6 +451,8 @@ class CrmLibrary
                 }
                 if (!empty ($objResult->fields['icon'])) {
                     $iconPath = CRM_ACCESS_OTHER_IMG_WEB_PATH.'/'.contrexx_raw2xhtml($objResult->fields['icon'])."_24X24.thumb";
+                } else {
+                    $iconPath  = '../modules/crm/View/Media/task_default.png';
                 }
                 $objTpl->setVariable(array(
                         'CRM_TASK_TYPE_ID'          => (int) $objResult->fields['id'],

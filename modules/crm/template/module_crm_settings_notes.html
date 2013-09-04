@@ -2,6 +2,11 @@
 {PM_SETTINGS_CURRENCY_JAVASCRIPT}
 <script type="text/javascript" src="../lib/javascript/jquery.js"></script>
 <script language="JavaScript" type="text/javascript">
+    $J(document).ready(function(){
+        $J("#browse").click(function(){
+           $J("#contactFormFieldId_notesType").trigger('click');
+        });
+    });
     function confirmSubmit()
     {
         if (confirm("Are you sure you wish to delete?"))
@@ -83,6 +88,12 @@
         }
     }
 </script>
+<style type="text/css">
+    input.contactFormField {
+        position: absolute;
+        left: -5000px;
+    }
+</style>
 <div id="formerr"></div>
 <br />
 <ul id="tabmenu">
@@ -98,31 +109,29 @@
             </tr>
 
             <tr class="row3">
-                <td style="text-align:center;width: 50px;"><span style="font-weight:bold;">&nbsp;&nbsp;#</span></td>
-                <td style="text-align:center;width: 7%;"><span style="font-weight:bold;">{TXT_CRM_TITLE_STATUS}</span></td>
-                <td width="26%"><span style="font-weight:bold;"><a href="index.php?cmd={MODULE_NAME}&act=settings&tpl=notes&sortf=1&sorto={TXT_ORDER}">{TXT_CRM_SORTING}</a></span></td>
-                <td width="26%"><span style="font-weight:bold;"><a href="index.php?cmd={MODULE_NAME}&act=settings&tpl=notes&sortf=0&sorto={TXT_ORDER}">{TXT_CRM_NAME}</a></span></td>
-                <td  width="38%" colspan="2" align='right'><div style='text-align:right;font-weight:bold;'>{TXT_CRM_FUNCTIONS}</span></td>
+                <td width="1%" style="text-align:center;"><span style="font-weight:bold;">&nbsp;&nbsp;#</span></td>
+                <td width="5%" style="text-align:center;"><span style="font-weight:bold;">{TXT_CRM_TITLE_STATUS}</span></td>
+                <td width="8%"><span style="font-weight:bold;"><a href="index.php?cmd={MODULE_NAME}&act=settings&tpl=notes&sortf=1&sorto={TXT_ORDER}">{TXT_CRM_SORTING}</a></span></td>
+                <td width="8%">{TXT_CRM_ICON}</td>
+                <td width="68%"><span style="font-weight:bold;"><a href="index.php?cmd={MODULE_NAME}&act=settings&tpl=notes&sortf=0&sorto={TXT_ORDER}">{TXT_CRM_NAME}</a></span></td>
+                <td width="10%" colspan="2" align='right'><div style='text-align:right;font-weight:bold;'>{TXT_CRM_FUNCTIONS}</span></td>
             </tr>
             <!-- BEGIN users -->
             <tr class="{TXT_ROW}">
-                <td ><input type="checkbox" name="selected[]" value="{TXT_NOTES_ID}" onclick="isChecked(this.checked);"/></td>
+                <td><input type="checkbox" name="selected[]" value="{TXT_NOTES_ID}" onclick="isChecked(this.checked);"/></td>
                 <td style="text-align:center"><a href="./index.php?cmd=crm&act=noteschangestatus&ids={TXT_NOTES_ID}&stat={TXT_NOTES_STATVAL}"><img src="images/icons/led_{TXT_NOTES_STATUS}.gif" alt="" /></a></td>
-                <td style="width: 26%;"><input type="hidden" name="form_id[]" value="{TXT_NOTES_ID}" /><input  style="width:25px; text-align:right; padding:2px;" type="text" name="form_pos[]" value="{TXT_NOTES_SORTING}"></td>
-                <td style="width: 67%;"><a href="./index.php?cmd=crm&amp;act=settings&amp;tpl=notes&amp;fn=editnotestype&amp;id={TXT_NOTES_ID}">{TXT_NOTES_NAME}</a></td>            
-                <td style="width: 38%;text-align: right;">
-                    <div style="float: left; width: 65%;">
+                <td><input type="hidden" name="form_id[]" value="{TXT_NOTES_ID}" /><input  style="width:25px; text-align:right; padding:2px;" type="text" name="form_pos[]" value="{TXT_NOTES_SORTING}"></td>
+                <td><img src="{TXT_NOTES_ICON}"/></td>
+                <td><a href="./index.php?cmd=crm&amp;act=settings&amp;tpl=notes&amp;fn=editnotestype&amp;id={TXT_NOTES_ID}">{TXT_NOTES_NAME}</a></td>            
+                <td style="text-align: right;">
                         <a title="Edit" href="./index.php?cmd=crm&amp;act=settings&amp;tpl=notes&amp;fn=editnotestype&id={TXT_NOTES_ID}">
                             <img width="16" height="16" border="0" alt='{TXT_EDIT}' src="images/icons/edit.gif">
                         </a>
-                    </div>
-                    <div style="float: left; width: 35%;">
                         <!-- BEGIN noteDeleteIcon -->
                         <a title="Delete" onclick="return confirmSubmit();" href="./index.php?cmd=crm&act=settings&tpl=notes&idr={TXT_NOTES_ID}">
                             <img width="17" height="17" border="0" alt='{TXT_DELETE}' src="images/icons/delete.gif">
                         </a>
                         <!-- END noteDeleteIcon -->
-                    </div>
                 </td>                
             </tr>
             <!-- END users -->
@@ -166,9 +175,34 @@
                 <td width="10%"><input type="text" name="sorting" id="sortingNumber" style="width: 300px;" value=""></td>
                 <td></td>
             </tr>
+            <tr class="row1">
+                <td width="13%" nowrap>{TXT_CRM_ICON}</td>
+                <td width="10%">
+                    <div id="contactFormField_uploadWidget_notesType"></div>
+                    <input type="file" class="contactFormField" id="contactFormFieldId_notesType" name="contactFormFieldId_notesType" value="" />
+                    <input type="text" name="icon" id="icon" value="" style="width: 190px;"/>&nbsp;&nbsp;
+                    <input type="button" id="browse" value="browse" style="width: 100px;"/>
+                </td>
+                <td></td>
+            </tr>
         </table><br>
         <input type="submit" name="save" value="{TXT_CRM_SAVE}" onClick="return checkValidations();" />
     </div>
 </form>
-
+{COMBO_UPLOADER_CODE_TASK_TYPE}
+<script type="text/javascript">
+	cx.ready(function() {
+		var uploader = cx.instances.get('exposed_combo_uploader_notesType','uploader');
+		uploader.dialog().bind('close', function(){
+                    $J.getJSON( '{REDIRECT_URL}', function( data ) {
+                        $J.each(data, function(key, val) {
+                            var file = val.fileName;
+                            if ($J.trim(file) != '') {
+                                $J('#icon').val(file);
+                            }
+                        });
+                    });
+		});
+	},true);
+</script>
 <!-- END module_partners_entries.html -->
