@@ -759,10 +759,10 @@ class CalendarEvent extends CalendarLibrary
         $convertBBCode = ($objInit->mode == 'frontend' && empty($id));
         
         $useCustomDateDisplay = isset($data['showDateSettings']) ? 1 : 0;
-        if($objInit->mode == 'backend') {
-            $showStartDateList = isset($data['showStartDateList']) ? $data['showStartDateList'] : '';
-            $showEndDateList   = isset($data['showEndDateList']) ? $data['showEndDateList'] : '';   
-            
+        $showStartDateList    = isset($data['showStartDateList']) ? $data['showStartDateList'] : '';
+        $showEndDateList      = isset($data['showEndDateList']) ? $data['showEndDateList'] : '';
+        
+        if($objInit->mode == 'backend') {            
             // reset time values if "no time" is selected
             if($data['showTimeTypeList'] == 0 ) {
                 $showStartTimeList = 0;
@@ -786,10 +786,10 @@ class CalendarEvent extends CalendarLibrary
             }
             $showTimeTypeDetail = isset($data['showTimeTypeDetail']) ? $data['showTimeTypeDetail'] : '';
         } else {
-            $showStartDateList =  ($this->arrSettings['showStartDateList'] == 1);
-            $showEndDateList   =  ($this->arrSettings['showEndDateList'] == 1);            
-            $showStartTimeList = ($this->arrSettings['showStartTimeList'] == 1);
-            $showEndTimeList   = ($this->arrSettings['showEndTimeList'] == 1);
+            $showStartDateList = ($this->arrSettings['showStartDateList'] == 1) ? 1 : 0;
+            $showEndDateList   = ($this->arrSettings['showEndDateList'] == 1) ? 1 : 0;            
+            $showStartTimeList = ($this->arrSettings['showStartTimeList'] == 1) ? 1 : 0;
+            $showEndTimeList   = ($this->arrSettings['showEndTimeList'] == 1) ? 1 : 0;
             
             // reset time values if "no time" is selected
             if($showStartTimeList == 1 || $showEndTimeList == 1) {
@@ -800,10 +800,10 @@ class CalendarEvent extends CalendarLibrary
                 $showTimeTypeList  = 0;
             }
             
-            $showStartDateDetail = ($this->arrSettings['showStartDateDetail'] == 1);
-            $showEndDateDetail   =  ($this->arrSettings['showEndDateDetail'] == 1);
-            $showStartTimeDetail = ($this->arrSettings['showStartTimeDetail'] == 1);
-            $showEndTimeDetail   = ($this->arrSettings['showEndTimeDetail'] == 1);
+            $showStartDateDetail = ($this->arrSettings['showStartDateDetail'] == 1) ? 1 : 0;
+            $showEndDateDetail   = ($this->arrSettings['showEndDateDetail'] == 1) ? 1 : 0;
+            $showStartTimeDetail = ($this->arrSettings['showStartTimeDetail'] == 1) ? 1 : 0;
+            $showEndTimeDetail   = ($this->arrSettings['showEndTimeDetail'] == 1) ? 1 : 0;
             
             // reset time values if "no time" is selected
             if($showStartTimeDetail == 1 || $showEndTimeDetail == 1) {
@@ -826,8 +826,7 @@ class CalendarEvent extends CalendarLibrary
         $showIn                    = isset($data['showIn']) ? contrexx_addslashes(contrexx_strip_tags(join(",",$data['showIn']))) : '';
         $invited_groups            = isset($data['selectedGroups']) ? join(',', $data['selectedGroups']) : ''; 
         $invited_mails             = isset($data['invitedMails']) ? contrexx_addslashes(contrexx_strip_tags($data['invitedMails'])) : '';   
-        $send_invitation           = isset($data['sendInvitation']) ? intval($data['sendInvitation']) : 0;
-        $update_invitation_sent    =  $send_invitation == 1 ?  "`invitation_sent` = '1'," : "";     
+        $send_invitation           = isset($data['sendInvitation']) ? intval($data['sendInvitation']) : 0;        
         $registration              = isset($data['registration']) ? intval($data['registration']) : 0;      
         $registration_form         = isset($data['registrationForm']) ? intval($data['registrationForm']) : 0;      
         $registration_num          = isset($data['numSubscriber']) ? intval($data['numSubscriber']) : 0;      
@@ -843,6 +842,7 @@ class CalendarEvent extends CalendarLibrary
         $country                   = isset($data['country']) ? contrexx_input2db(contrexx_strip_tags($data['country'])) : '';
         $placeLink                 = isset($data['placeLink']) ? contrexx_input2db($data['placeLink']) : '';
         $placeMap                  = isset($data['placeMap']) ? contrexx_input2db($data['placeMap']) : '';
+        $update_invitation_sent    = ($send_invitation == 1);
         
         if (!empty($placeLink)) {
             if (!preg_match('%^(?:ftp|http|https):\/\/%', $placeLink)) {
@@ -914,7 +914,8 @@ class CalendarEvent extends CalendarLibrary
         
         //series pattern
         $seriesStatus = isset($data['seriesStatus']) ? intval($data['seriesStatus']) : 0;
-        $seriesType                     = isset($data['seriesType']) ? intval($data['seriesType']) : 0;
+        $seriesType   = isset($data['seriesType']) ? intval($data['seriesType']) : 0;
+        
         $seriesPatternCount             = 0;
         $seriesPatternWeekday           = 0;
         $seriesPatternDay               = 0;
@@ -999,8 +1000,7 @@ class CalendarEvent extends CalendarLibrary
                 break;
             }
                 
-            $seriesPatternDouranceType  = isset($data['seriesDouranceType']) ? intval($data['seriesDouranceType']) : 0;
-            $dateparts                  = explode("-", $startDate);
+            $seriesPatternDouranceType  = isset($data['seriesDouranceType']) ? intval($data['seriesDouranceType']) : 0;            
             
             switch($seriesPatternDouranceType) {
                 case 1:
@@ -1014,8 +1014,7 @@ class CalendarEvent extends CalendarLibrary
                 break;
             }
         }
-        
-        // TO DO: Update invitation sent
+                
         $formData = array(
             'type'                          => $type,
             'startdate'                     => $startDate,
@@ -1049,9 +1048,7 @@ class CalendarEvent extends CalendarLibrary
             'registration_notification'     => $registration_notification,
             'email_template'                => $email_template,
             'ticket_sales'                  => $ticket_sales,
-            'num_seating'                   => $num_seating,
-            'num_seating'                   => $num_seating,
-            'num_seating'                   => $num_seating,
+            'num_seating'                   => $num_seating,            
             'series_status'                 => $seriesStatus,
             'series_type'                   => $seriesType,
             'series_pattern_count'          => $seriesPatternCount,
@@ -1079,9 +1076,11 @@ class CalendarEvent extends CalendarLibrary
             'org_link'                      => $orgLink,
             'org_email'                     => $orgEmail
         );
+        if ($update_invitation_sent) {
+            $formData['invitation_sent'] = '1';     
+        }
         
-        if($id != 0) {
-            // TO Do: Check the update fields with previous version
+        if ($id != 0) {            
             $query = SQL::update("module_{$this->moduleTablePrefix}_event", $formData) ." WHERE id = '$id'";
         
             $objResult = $objDatabase->Execute($query);
@@ -1104,7 +1103,7 @@ class CalendarEvent extends CalendarLibrary
             $objFWUser  = FWUser::getFWUserObject();
             $objUser    = $objFWUser->objUser;
 
-            if($objInit->mode == 'frontend') {
+            if ($objInit->mode == 'frontend') {
                 $status    = 1;
                 $confirmed = $this->arrSettings['confirmFrontendEvents'] == 1 ? 0 : 1;
                 $author    = $objUser->login() ? intval($objUser->getId()) : 0;
@@ -1114,7 +1113,10 @@ class CalendarEvent extends CalendarLibrary
                 $author    = intval($objUser->getId());
             }
 
-            // TO Do: Check the insert fields with previous version
+            $formData['status']    = $status;
+            $formData['confirmed'] = $confirmed;
+            $formData['author']    = $author;
+                                  
             $query = SQL::insert("module_{$this->moduleTablePrefix}_event", $formData);
             
             $objResult = $objDatabase->Execute($query); 
