@@ -385,6 +385,7 @@ class CrmManager extends CrmLibrary
                                                         comment,
                                                         added_date,
                                                         date,
+                                                        notes.icon,
                                                         notes.name AS notes,
                                                         comment.updated_on,
                                                         comment.user_id,
@@ -407,6 +408,11 @@ class CrmManager extends CrmLibrary
 
             $row = 'row2';
             while (!$objComment->EOF) {
+                if (!empty ($objComment->fields['icon'])) {
+                    $iconPath = CRM_ACCESS_OTHER_IMG_WEB_PATH.'/'.contrexx_raw2xhtml($objComment->fields['icon'])."_16X16.thumb";
+                } else {
+                    $iconPath  = '../modules/crm/View/Media/customer_note.png';
+                }
                 $this->_objTpl->setVariable(array(
                         'TXT_COMMENT_ID'              => (int) $objComment->fields['id'],
                         'TXT_COMMENT_CUSTOMER_ID'     => (int) $objComment->fields['customer_id'],
@@ -414,6 +420,7 @@ class CrmManager extends CrmLibrary
                         'CRM_COMMENT_UPDATEDDATETIME' => !empty($objComment->fields['updated_on']) ? date('Y-m-d h:i A', strtotime($objComment->fields['updated_on'])) : '-',
                         'CRM_COMMENT_DATE'            => contrexx_raw2xhtml($objComment->fields['date']),
                         'CRM_NOTES_TYPE'              => contrexx_raw2xhtml($objComment->fields['notes']),
+                        'CRM_NOTES_TYPE_ICON'         => $iconPath,
                         'CRM_NOTES_TYPE_ID'           => intval($objComment->fields['notes_type_id']),
                         'CRM_ADDED_USER'              => $this->getUserName($objComment->fields['user_id']),
                         'CRM_UPDATED_USER'            => $this->getUserName($objComment->fields['updated_by']),
@@ -2763,12 +2770,18 @@ END;
                 }
             }
 
-            $objResult = $objDatabase->Execute("SELECT id,name FROM ".DBPREFIX."module_".$this->moduleName."_notes WHERE status=1 ORDER BY pos");
+            $objResult = $objDatabase->Execute("SELECT id, name, icon FROM ".DBPREFIX."module_".$this->moduleName."_notes WHERE status=1 ORDER BY pos");
             if ($objResult) {
                 while (!$objResult->EOF) {
+                    if (!empty ($objResult->fields['icon'])) {
+                        $iconPath = CRM_ACCESS_OTHER_IMG_WEB_PATH.'/'.contrexx_raw2xhtml($objResult->fields['icon'])."_16X16.thumb";
+                    } else {
+                        $iconPath  = '../modules/crm/View/Media/customer_note.png';
+                    }
                     $this->_objTpl->setVariable(array(
                             'CRM_NOTE_TYPE_ID'  => (int) $objResult->fields['id'],
-                            'CRM_NOTE_TYPE'     => contrexx_raw2xhtml($objResult->fields['name'])
+                            'CRM_NOTE_TYPE'     => contrexx_raw2xhtml($objResult->fields['name']),
+                            'CRM_NOTE_TYPE_ICON'=> $iconPath
                     ));
                     $this->_objTpl->parse('NoteType');
                     $objResult->MoveNext();
@@ -2910,6 +2923,14 @@ END;
     {
         global $_CORELANG, $_ARRAYLANG, $objDatabase, $objJs;
 
+        //For notes type Upload
+        $uploaderCodeTaskType = $this->initUploader('notesType', true, 'notesUploadFinished', '', 'notes_type_files_');
+        $redirectUrl = CSRF::enhanceURI('index.php?cmd=crm&act=getImportFilename');
+        $this->_objTpl->setVariable(array(
+            'COMBO_UPLOADER_CODE_TASK_TYPE' => $uploaderCodeTaskType,
+            'REDIRECT_URL'                  => $redirectUrl
+        ));
+        
         $fn = isset ($_REQUEST['fn']) ? $_REQUEST['fn'] : '';
         if (!empty($fn)) {
             switch ($fn) {
@@ -2936,6 +2957,7 @@ END;
 
         $name       = isset($_POST['name'])? contrexx_input2db($_POST['name']):'';
         $status     = isset($_POST['status'])? intval($_POST['status']):'';
+        $icon       = isset($_POST['icon'])? contrexx_input2db($_POST['icon']):'';
         $position   = isset($_POST['sorting'])? intval($_POST['sorting']):'';
         $id         = isset($_GET['idr'])? intval($_GET['idr']):'';
 
@@ -2993,6 +3015,7 @@ END;
             if ($validate) {
                 $objResult = $objDatabase->Execute("INSERT ".DBPREFIX."module_".$this->moduleName."_notes SET name   ='$name',
                                                                                                                   status = '$status',
+                                                                                                                  icon   = '$icon',
                                                                                                                   pos    = '$position'");
                 $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_NOTES_INSERTED'];
             } else {
@@ -3011,7 +3034,7 @@ END;
 
         $sortf = isset($_GET['sortf']) && isset($_GET['sorto']) ? (($_GET['sortf'] == 1)? 'pos':'name') : 'pos';
         $sorto = isset($_GET['sortf']) && isset($_GET['sorto']) ? (($_GET['sorto'] == 'ASC') ? 'DESC' : 'ASC') : 'ASC';
-        $objResult = $objDatabase->Execute("SELECT id,name,status,pos, system_defined FROM ".DBPREFIX."module_".$this->moduleName."_notes ORDER BY $sortf $sorto");
+        $objResult = $objDatabase->Execute("SELECT id, name, status, pos, system_defined, icon FROM ".DBPREFIX."module_".$this->moduleName."_notes ORDER BY $sortf $sorto");
 
         $row = 'row2';
         while (!$objResult->EOF) {
@@ -3023,9 +3046,16 @@ END;
                 $this->_objTpl->touchBlock('noteDeleteIcon');
             }
 
+            if (!empty ($objResult->fields['icon'])) {
+                $iconPath = CRM_ACCESS_OTHER_IMG_WEB_PATH.'/'.contrexx_raw2xhtml($objResult->fields['icon'])."_16X16.thumb";
+            } else {
+                $iconPath  = '../modules/crm/View/Media/customer_note.png';
+            }
+            
             $this->_objTpl->setVariable(array(
                     'TXT_NOTES_ID'      => (int) $objResult->fields['id'],
                     'TXT_NOTES_NAME'    => contrexx_raw2xhtml($objResult->fields['name']),
+                    'TXT_NOTES_ICON'    => $iconPath,
                     'TXT_NOTES_STATVAL' => $stat,
                     'TXT_NOTES_STATUS'  => ($stat == 1)? 'green':'red',
                     'TXT_NOTES_SORTING' => (int) $objResult->fields['pos'],
@@ -3037,6 +3067,7 @@ END;
             $objResult->MoveNext();
         }
         $this->_objTpl->setVariable(array(
+                'TXT_CRM_ICON'                      => $_ARRAYLANG['TXT_CRM_ICON'],
                 'TXT_CRM_GENERAL'                   => $_ARRAYLANG['TXT_CRM_GENERAL'],
                 'TXT_CRM_CUSTOMER_TYPES'            => $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPES'],
                 'TXT_CRM_CURRENCY'                  => $_ARRAYLANG['TXT_CRM_CURRENCY'],
@@ -3084,6 +3115,7 @@ END;
 
         $id       = isset($_GET['id'])? intval($_GET['id']):'';
         $name     = isset($_POST['name'])? contrexx_input2db($_POST['name']):'';
+        $icon     = isset($_POST['icon'])? contrexx_input2db($_POST['icon']):'';
         $status   = isset($_POST['status'])? intval($_POST['status']):'';
         $position = isset($_POST['sorting'])? intval($_POST['sorting']):'';
 
@@ -3093,6 +3125,7 @@ END;
                 $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_".$this->moduleName."_notes
                                                                                             SET   name    = '$name',
                                                                                                   status  = '$status',
+                                                                                                  icon    = '$icon',
                                                                                                   pos     = '$position'
                                                                                             WHERE id      = '$id'");
                 $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_NOTES_UPDATED'];
@@ -3102,19 +3135,22 @@ END;
                 $this->_strErrMessage = $_ARRAYLANG['TXT_CRM_ERROR'];
             }
         } else {
-            $objResult = $objDatabase->Execute("SELECT id,name,status,pos FROM ".DBPREFIX."module_".$this->moduleName."_notes WHERE id = '$id'");
+            $objResult = $objDatabase->Execute("SELECT id,name,status,pos,icon FROM ".DBPREFIX."module_".$this->moduleName."_notes WHERE id = '$id'");
 
             $name     = $objResult->fields['name'];
+            $icon     = $objResult->fields['icon'];
             $status   = $objResult->fields['status'];
             $position = $objResult->fields['pos'];
         }
 
         $this->_objTpl->setVariable(array(
                 'TXT_NOTESNAME'   =>  contrexx_raw2xhtml($name),
+                'TXT_NOTESICON'   =>  contrexx_raw2xhtml($icon),
                 'TXT_NOTESSTATUS' =>  ($status == 1) ? 'checked':'',
                 'TXT_NOTESPOS'    =>  (int) $position,
         ));
         $this->_objTpl->setVariable(array(
+                'TXT_CRM_ICON'                      => $_ARRAYLANG['TXT_CRM_ICON'],
                 'TXT_CRM_NOTES'                     => $_ARRAYLANG['TXT_CRM_NOTES'],
                 'TXT_CRM_NAME'                      => $_ARRAYLANG['TXT_CRM_NAME'],
                 'TXT_CRM_TITLEACTIVE'               => $_ARRAYLANG['TXT_CRM_TITLEACTIVE'],
@@ -6041,6 +6077,80 @@ END;
                             24,
                             70,
                             '_24X24.thumb'
+                        );
+                        $_SESSION['importFilename'] = $imageName;
+                    } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                        \DBG::msg($e->getMessage());
+                    }
+                }
+
+                $arrFiles[] = $file;
+            }
+            closedir($h);
+        }
+
+        // return web- and filesystem path. files will be moved there.
+        return array($tempPath, $tempWebPath);
+    }
+    
+    /**
+     * the upload is finished
+     * rewrite the names
+     * write the uploaded files to the database
+     *
+     * @static
+     * @param string $tempPath the temporary file path
+     * @param string $tempWebPath the temporary file path which is accessable by web browser
+     * @param array $data the data which are attached by uploader init method
+     * @param integer $uploadId the upload id
+     * @param $fileInfos
+     * @param $response
+     * @return array the target paths
+     */
+    public static function notesUploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response)
+    {
+
+        global $objDatabase, $objFWUser;
+
+        $depositionTarget = CRM_ACCESS_OTHER_IMG_PATH.'/'; //target folder
+        $h = opendir($tempPath);
+        if ($h) {
+
+            while(false != ($file = readdir($h))) {
+
+                $info = pathinfo($file);
+
+                //skip . and ..
+                if($file == '.' || $file == '..') { continue; }
+
+                if($file != '..' && $file != '.') {
+                    //do not overwrite existing files.
+                    $prefix = '';
+                    while (file_exists($depositionTarget.$prefix.$file)) {
+                        if (empty($prefix)) {
+                            $prefix = 0;
+                        }
+                        $prefix ++;
+                    }
+
+                    // move file
+                    try {
+                        $objFile = new \Cx\Lib\FileSystem\File($tempPath.'/'.$file);
+                        $objFile->copy($depositionTarget.$prefix.$file, false);
+
+                        // create thumbnail
+                        if (empty($objImage)) {
+                            $objImage = new ImageManager();
+                        }
+                        $imageName = trim($prefix.$file);
+                        $objImage->_createThumbWhq(
+                            CRM_ACCESS_OTHER_IMG_PATH.'/',
+                            CRM_ACCESS_OTHER_IMG_WEB_PATH.'/',
+                            $imageName,
+                            16,
+                            16,
+                            90,
+                            '_16X16.thumb'
                         );
                         $_SESSION['importFilename'] = $imageName;
                     } catch (\Cx\Lib\FileSystem\FileSystemException $e) {

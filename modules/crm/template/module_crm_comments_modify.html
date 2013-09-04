@@ -54,6 +54,23 @@
        $J( ".date" ).datepicker({ dateFormat: 'yy-mm-dd' });
     });
 </script>
+<style type="text/css">
+    .taskTypeDiv {
+        float: left;
+        width: 100%;
+    }
+    .taskTypeImg {
+        float: left;
+        width: 20%;
+        text-align: center;
+    }
+    .taskTypeTitle {
+        float: left;
+        width: 80%;
+        text-align: left;
+        margin-top: 5px;
+    }
+</style>
 <div id="subnavbar_level2">
     <ul>
         <li><a href="index.php?cmd={MODULE_NAME}&amp;act=customers&amp;tpl=showcustdetail&amp;id={CRM_CUSTOMER_ID}" title="{TXT_CRM_CUSTOMER_OVERVIEW}">{TXT_CRM_CUSTOMER_OVERVIEW}</a></li>
@@ -65,7 +82,12 @@
 <div class="dropDownDialog" id="notesCategoriesPanel" style="display: none;position: absolute;">
     <div class="dropDownContent">
         <!-- BEGIN NoteType -->
-        <a class="notesItem_{CRM_NOTE_TYPE_ID} notesItem dropDownItem" notes_type="{CRM_NOTE_TYPE_ID}"><span>{CRM_NOTE_TYPE}</span></a>
+        <a class=" dropDownItem" notes_type="{CRM_NOTE_TYPE_ID}">
+            <div class="taskTypeDiv">
+                <div class="taskTypeImg"><img src="{CRM_NOTE_TYPE_ICON}" alt="{CRM_NOTE_TYPE}"/></div>
+                <div class="taskTypeTitle">{CRM_NOTE_TYPE}</div>
+            </div>
+        </a>
         <!-- END NoteType -->        
     </div>
 </div>
