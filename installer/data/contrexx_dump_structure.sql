@@ -1217,6 +1217,7 @@ CREATE TABLE `contrexx_module_crm_notes` (
   `id` int(1) NOT NULL auto_increment,
   `name` varchar(255) NOT NULL,
   `status` tinyint(1) NOT NULL,
+  `icon` varchar(255) NOT NULL,
   `pos` int(1) NOT NULL,
   `system_defined` tinyint(2) NOT NULL default '0',
   PRIMARY KEY  (`id`)
