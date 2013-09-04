@@ -416,7 +416,7 @@ EOF;
     {
         global $_ARRAYLANG, $_CORELANG, $_LANGID;
         JS::activate('cx');
-        
+
         JS::registerJS('modules/calendar/View/Script/Frontend.js');
         
         $this->_objTpl->setTemplate($this->pageContent, true, true);
@@ -571,18 +571,19 @@ $this->_objTpl->setVariable(array(
             $this->moduleLangVar.'_EVENT_LINK'                      => $objEvent->link,
             $this->moduleLangVar.'_EVENT_TITLE'                     => $objEvent->title,
             $this->moduleLangVar.'_EVENT_PLACE'                     => $objEvent->place,
-            $this->moduleLangVar.'_EVENT_STREET'                    => $objEvent->arrData['place_street'][$_LANGID],
-            $this->moduleLangVar.'_EVENT_ZIP'                       => $objEvent->arrData['place_zip'][$_LANGID],
-            $this->moduleLangVar.'_EVENT_CITY'                      => $objEvent->arrData['place_city'][$_LANGID],
-            $this->moduleLangVar.'_EVENT_COUNTRY'                   => $objEvent->arrData['place_country'][$_LANGID],
-            $this->moduleLangVar.'_EVENT_PLACE_MAP'                 => $objEvent->arrData['place_map'][$_LANGID],
+            $this->moduleLangVar.'_EVENT_STREET'                    => $objEvent->place_street,
+            $this->moduleLangVar.'_EVENT_ZIP'                       => $objEvent->place_zip,
+            $this->moduleLangVar.'_EVENT_CITY'                      => $objEvent->place_city,
+            $this->moduleLangVar.'_EVENT_COUNTRY'                   => $objEvent->place_country,
+            $this->moduleLangVar.'_EVENT_PLACE_MAP'                 => $objEvent->place_map,
+            $this->moduleLangVar.'_EVENT_PLACE_LINK'                => $objEvent->place_link,
             $this->moduleLangVar.'_EVENT_MAP'                       => $objEvent->map == 1 ? 'checked="checked"' : '',
-            $this->moduleLangVar.'_EVENT_HOST'                      => $objEvent->arrData['org_name'][$_LANGID],
-            $this->moduleLangVar.'_EVENT_HOST_ADDRESS'              => $objEvent->arrData['org_street'][$_LANGID],
-            $this->moduleLangVar.'_EVENT_HOST_ZIP'                  => $objEvent->arrData['org_zip'][$_LANGID],
-            $this->moduleLangVar.'_EVENT_HOST_CITY'                 => $objEvent->arrData['org_city'][$_LANGID],
-            $this->moduleLangVar.'_EVENT_HOST_LINK'                 => $objEvent->arrData['org_link'][$_LANGID],
-            $this->moduleLangVar.'_EVENT_HOST_EMAIL'                => $objEvent->arrData['org_email'][$_LANGID],
+            $this->moduleLangVar.'_EVENT_HOST'                      => $objEvent->org_name,
+            $this->moduleLangVar.'_EVENT_HOST_ADDRESS'              => $objEvent->org_street,
+            $this->moduleLangVar.'_EVENT_HOST_ZIP'                  => $objEvent->org_zip,
+            $this->moduleLangVar.'_EVENT_HOST_CITY'                 => $objEvent->org_city,
+            $this->moduleLangVar.'_EVENT_HOST_LINK'                 => $objEvent->org_link,
+            $this->moduleLangVar.'_EVENT_HOST_EMAIL'                => $objEvent->org_email,
     
             $this->moduleLangVar.'_EVENT_DESCRIPTION'               => new \Cx\Core\Wysiwyg\Wysiwyg("description[{$_LANGID}]", contrexx_raw2xhtml($objEvent->description), $eventId != 0 ? 'small' : 'bbcode'),
             $this->moduleLangVar.'_EVENT_ID'                        => $eventId,
