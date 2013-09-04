@@ -1190,7 +1190,7 @@ class Settings extends CrmLibrary
         $_REQUEST['active_tab'] = 1;
         if (   isset($_REQUEST['act'])
             && $_REQUEST['act'] == 'mailtemplate_edit') {
-            $_REQUEST['active_tab'] = 3;
+            $_REQUEST['active_tab'] = 2;
         }
         MailTemplate::deleteTemplate('crm');
         // If there is anything to be stored, and if that fails, return to
@@ -1210,18 +1210,18 @@ class Settings extends CrmLibrary
         
         $result &= SettingDb::show_external(
             $objTemplate,
-            $_ARRAYLANG['TXT_CRM_PLACEHOLDERS'],
-            $this->getCrmModulePlaceHolders()
-        );
-
-        $result &= SettingDb::show_external(
-            $objTemplate,
             (empty($_REQUEST['key'])
               ? $_CORELANG['TXT_CORE_MAILTEMPLATE_ADD']
               : $_CORELANG['TXT_CORE_MAILTEMPLATE_EDIT']),
             MailTemplate::edit('crm')->get()
         );
-        
+
+        $result &= SettingDb::show_external(
+            $objTemplate,
+            $_ARRAYLANG['TXT_CRM_PLACEHOLDERS'],
+            $this->getCrmModulePlaceHolders()
+        );
+
         $this->_objTpl->addBlock('CRM_MAIL_SETTINGS_FILE',
             'settings_block', $objTemplate->get());
         $this->_objTpl->touchBlock('settings_block');
@@ -1242,18 +1242,22 @@ class Settings extends CrmLibrary
             die("Failed to load template 'module_'.$this->moduleName.'_settings_placeholders.html'");
         
         $objTemplate->setVariable(array(
-            'TXT_CRM_PLACEHOLDERS' => $_ARRAYLANG['TXT_CRM_PLACEHOLDERS'],
-            'TXT_CRM_ASSIGNED_USER_EMAIL' => $_ARRAYLANG['TXT_CRM_ASSIGNED_USER_EMAIL'],
-            'TXT_CRM_CONTACT_DETAILS_LINK' => $_ARRAYLANG['TXT_CRM_CONTACT_DETAILS_LINK'],
-            'TXT_CRM_TASK_NAME' => $_ARRAYLANG['TXT_CRM_TASK_NAME'],
-            'TXT_CRM_TASK_LINK' => $_ARRAYLANG['TXT_CRM_TASK_LINK'],
-            'TXT_CRM_TASK_DUE_DATE' => $_ARRAYLANG['TXT_CRM_TASK_DUE_DATE'],
-            'TXT_CRM_TASK_CREATED_USER' => $_ARRAYLANG['TXT_CRM_TASK_CREATED_USER'],
+            'TXT_CRM_PLACEHOLDERS'                  => $_ARRAYLANG['TXT_CRM_PLACEHOLDERS'],
+            'TXT_CRM_GENERAL'                       => $_ARRAYLANG['TXT_CRM_GENERAL'],
+            'TXT_CRM_MAIL_TEMPLATE_ONE'             => CRM_EVENT_ON_ACCOUNT_UPDATED,
+            'TXT_CRM_MAIL_TEMPLATE_TWO'             => CRM_EVENT_ON_USER_ACCOUNT_CREATED,
+            'TXT_CRM_MAIL_TEMPLATE_THREE'           => CRM_EVENT_ON_TASK_CREATED,
+            'TXT_CRM_ASSIGNED_USER_EMAIL'           => $_ARRAYLANG['TXT_CRM_ASSIGNED_USER_EMAIL'],
+            'TXT_CRM_CONTACT_DETAILS_LINK'          => $_ARRAYLANG['TXT_CRM_CONTACT_DETAILS_LINK'],
+            'TXT_CRM_TASK_NAME'                     => $_ARRAYLANG['TXT_CRM_TASK_NAME'],
+            'TXT_CRM_TASK_LINK'                     => $_ARRAYLANG['TXT_CRM_TASK_LINK'],
+            'TXT_CRM_TASK_DUE_DATE'                 => $_ARRAYLANG['TXT_CRM_TASK_DUE_DATE'],
+            'TXT_CRM_TASK_CREATED_USER'             => $_ARRAYLANG['TXT_CRM_TASK_CREATED_USER'],
             'TXT_CRM_TASK_DESCRIPTION_TEXT_VERSION' => $_ARRAYLANG['TXT_CRM_TASK_DESCRIPTION_TEXT_VERSION'],
-            'TXT_CRM_CUSTOMER_CONTACT_EMAIL' => $_ARRAYLANG['TXT_CRM_CUSTOMER_CONTACT_EMAIL'],
-            'TXT_CRM_CUSTOMER_COMPANY' => $_ARRAYLANG['TXT_CRM_CUSTOMER_COMPANY'],
-            'TXT_CRM_CUSTOMER_CONTACT_USER_NAME' => $_ARRAYLANG['TXT_CRM_CUSTOMER_CONTACT_USER_NAME'],
-            'TXT_CRM_CUSTOMER_CONTACT_PASSWORD' => $_ARRAYLANG['TXT_CRM_CUSTOMER_CONTACT_PASSWORD'],
+            'TXT_CRM_CUSTOMER_CONTACT_EMAIL'        => $_ARRAYLANG['TXT_CRM_CUSTOMER_CONTACT_EMAIL'],
+            'TXT_CRM_CUSTOMER_COMPANY'              => $_ARRAYLANG['TXT_CRM_CUSTOMER_COMPANY'],
+            'TXT_CRM_CUSTOMER_CONTACT_USER_NAME'    => $_ARRAYLANG['TXT_CRM_CUSTOMER_CONTACT_USER_NAME'],
+            'TXT_CRM_CUSTOMER_CONTACT_PASSWORD'     => $_ARRAYLANG['TXT_CRM_CUSTOMER_CONTACT_PASSWORD'],
         ));
 
         return $objTemplate->get();
