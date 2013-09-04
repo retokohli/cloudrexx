@@ -2921,12 +2921,17 @@ class newsManager extends newsLibrary {
                         // create rss feed
                         $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_'.FWLanguage::getLanguageParameter($LangId, 'lang').'.xml';
                         foreach ($arrNews as $newsId => $arrNewsItem) {
+
+                            $cmdDetail = $this->findCmdById('details', $arrNewsItem['categoryId']);
+                            $cmdOverview = $this->findCmdById('', $arrNewsItem['categoryId']);
+                            $cmdOverview = !empty($cmdOverview) ? '&amp;cmd='.$cmdOverview : '';
+
                             $objRSSWriter->addItem(
                                 contrexx_raw2xml($arrNewsItem['title']),
-                                (empty($arrNewsItem['redirect'])) ? ($itemLink.$this->findCmdById('details', $arrNewsItem['categoryId']).'&amp;newsid='.$newsId.(isset($arrNewsItem['teaser_frames'][0]) ? '&amp;teaserId='.$arrNewsItem['teaser_frames'][0] : '')) : htmlspecialchars($arrNewsItem['redirect'], ENT_QUOTES, CONTREXX_CHARSET),
+                                (empty($arrNewsItem['redirect'])) ? ($itemLink.$cmdDetail.'&amp;newsid='.$newsId.(isset($arrNewsItem['teaser_frames'][0]) ? '&amp;teaserId='.$arrNewsItem['teaser_frames'][0] : '')) : htmlspecialchars($arrNewsItem['redirect'], ENT_QUOTES, CONTREXX_CHARSET),
                                 contrexx_raw2xml($arrNewsItem['text']),
                                 '',
-                                array('domain' => 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.FWLanguage::getLanguageParameter($LangId, 'lang').'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;category='.$arrNewsItem['categoryId'], 'title' => contrexx_raw2xml($arrNewsItem['category'])),
+                                array('domain' => 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.FWLanguage::getLanguageParameter($LangId, 'lang').'/'.CONTREXX_DIRECTORY_INDEX.'?section=news'.$cmdOverview.'&amp;category='.$arrNewsItem['categoryId'], 'title' => contrexx_raw2xml($arrNewsItem['category'])),
                                 '',
                                 '',
                                 '',
@@ -2940,12 +2945,17 @@ class newsManager extends newsLibrary {
                         $objRSSWriter->removeItems();
                         $objRSSWriter->xmlDocumentPath = ASCMS_FEED_PATH.'/news_headlines_'.FWLanguage::getLanguageParameter($LangId, 'lang').'.xml';
                         foreach ($arrNews as $newsId => $arrNewsItem) {
+
+                            $cmdDetail = $this->findCmdById('details', $arrNewsItem['categoryId']);
+                            $cmdOverview = $this->findCmdById('', $arrNewsItem['categoryId']);
+                            $cmdOverview = !empty($cmdOverview) ? '&amp;cmd='.$cmdOverview : '';
+
                             $objRSSWriter->addItem(
                                 contrexx_raw2xml($arrNewsItem['title']),
-                                $itemLink.$newsId.(isset($arrNewsItem['teaser_frames'][0]) ? '&amp;teaserId='.$arrNewsItem['teaser_frames'][0] : ''),
+                                $itemLink.$cmdDetail.'&amp;newsid='.$newsId.(isset($arrNewsItem['teaser_frames'][0]) ? '&amp;teaserId='.$arrNewsItem['teaser_frames'][0] : ''),
                                 '',
                                 '',
-                                array('domain' => 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.FWLanguage::getLanguageParameter($LangId, 'lang').'/'.CONTREXX_DIRECTORY_INDEX.'?section=news&amp;category='.$arrNewsItem['categoryId'], 'title' => contrexx_raw2xml($arrNewsItem['category'])),
+                                array('domain' => 'http://'.$_CONFIG['domainUrl'].($_SERVER['SERVER_PORT'] == 80 ? '' : ':'.intval($_SERVER['SERVER_PORT'])).ASCMS_PATH_OFFSET.'/'.FWLanguage::getLanguageParameter($LangId, 'lang').'/'.CONTREXX_DIRECTORY_INDEX.'?section=news'.$cmdOverview.'&amp;category='.$arrNewsItem['categoryId'], 'title' => contrexx_raw2xml($arrNewsItem['category'])),
                                 '',
                                 '',
                                 '',
