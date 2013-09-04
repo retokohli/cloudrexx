@@ -271,5 +271,24 @@ function _downloadsUpdate()
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
+
+
+
+    /**********************************************************
+    * EXTENSION:    Increase length of download source fields *
+    * ADDED:        Contrexx v3.1.0                           *
+    **********************************************************/
+    try {
+
+        \Cx\Lib\UpdateUtil::sql('
+            ALTER TABLE `'.DBPREFIX.'module_downloads_download_locale`
+            CHANGE `source` `source` VARCHAR(1024) NULL DEFAULT NULL,
+            CHANGE `source_name` `source_name` VARCHAR(1024) NULL DEFAULT NULL
+        ');
+
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
     return true;
 }
