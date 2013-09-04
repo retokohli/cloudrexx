@@ -1636,7 +1636,28 @@ function _coreUpdate()
         }
     }
 
-    
+
+
+    /********************************************************
+    * EXTENSION:    Add new access id (178) to those groups *
+    *               having access to the news (10) or       *
+    *               blog (119) module.                      *
+    * ADDED:        Contrexx v3.1.0                         *
+    ********************************************************/
+    try {
+
+        \Cx\Lib\UpdateUtil::sql('
+            INSERT INTO `'.DBPREFIX.'access_group_static_ids` (`access_id`, `group_id`)
+            SELECT 178, `group_id` FROM `'.DBPREFIX.'access_group_static_ids` WHERE (`access_id` = 10) OR (`access_id` = 119) GROUP BY `group_id`
+            ON DUPLICATE KEY UPDATE `access_id` = `access_id`
+        ');
+
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
+
+
     try {
         Text::errorHandler();
     } catch (\Cx\Lib\UpdateException $e) {
