@@ -368,12 +368,6 @@ function checkaddContact() {
         }
     }
     if (condition) {
-        if(($J("#customerId").exists()) && $J.trim(customerId) == "") {
-            errChk = 1;
-            $J("#customerId").css("border", "1px solid red");
-            $J("#customerId").val("");
-        }
-
         if(($J("#customer_type").exists() && $J("#customer_type").is(":visible")) && $J.trim(customerType) == "") {
             errChk = 1;
             $J("#customer_type").css("border", "1px solid red");
