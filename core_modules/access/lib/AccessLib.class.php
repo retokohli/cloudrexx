@@ -1984,6 +1984,12 @@ JSaccessValidatePrimaryGroupAssociation
     {
         global $_CONFIG, $_ARRAYLANG;
 
+// FIX: Load access language entries if missing.
+// Note that this may be used by other modules, i.e. the shop.
+        if (empty($_ARRAYLANG['TXT_ACCESS_PASSWORD_MINIMAL_CHARACTERS'])) {
+            global $objInit;
+            $objInit->loadLanguageData('access');
+        }
         if (   isset($_CONFIG['passwordComplexity'])
             && $_CONFIG['passwordComplexity'] == 'on') {
             return $_ARRAYLANG['TXT_ACCESS_PASSWORD_MINIMAL_CHARACTERS_WITH_COMPLEXITY'];

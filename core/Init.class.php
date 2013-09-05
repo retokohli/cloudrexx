@@ -894,6 +894,7 @@ class InitCMS
         $isMobile = strpos($ac, 'application/vnd.wap.xhtml+xml') !== false
             || $op != ''
             || strpos($ua, 'htc') !== false
+            || strpos($ua, 'iphone') !== false
             || strpos($ua, 'sony') !== false
             || strpos($ua, 'symbian') !== false
             || strpos($ua, 'nokia') !== false

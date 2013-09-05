@@ -202,5 +202,5 @@ class DropdownNavigationPageTree extends SigmaPageTree {
     
     protected function renderFooter($lang) {}
     
-    protected function preRender($lang) {}
+    protected function realPreRender($lang) {}
 }

@@ -133,7 +133,7 @@ class NavigationPageTree extends SigmaPageTree {
     
     protected function renderFooter($lang) {}
     
-    protected function preRender($lang) {}
+    protected function realPreRender($lang) {}
     
     /**
      * Called on construction. Override if you do not want to override the ctor.
