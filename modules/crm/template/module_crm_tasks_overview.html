@@ -192,7 +192,7 @@
             <tr class="{CRM_TASK_EXPIRED_CLASS} {TXT_ROW}" style="height:26px;">
                 <td style="text-align:center;">
                     <!-- BEGIN task_status_block -->
-                    <span rel="task_{CRM_TASK_ID}" task_status="{TXT_STATUS}" onclick="showTaskStatusPanel(this);"><img src="./images/icons/{CRM_TASK_TYPE_ACTIVE}" alt="status" /></span>
+                    <span style="cursor: pointer;" rel="task_{CRM_TASK_ID}" task_status="{TXT_STATUS}" onclick="showTaskStatusPanel(this);"><img src="./images/icons/{CRM_TASK_TYPE_ACTIVE}" alt="status" /></span>
                     <!-- END task_status_block -->
                     <!-- BEGIN task_image_block -->
                     <img src="./images/icons/{CRM_TASK_TYPE_ACTIVE}" alt="status" />
@@ -228,7 +228,7 @@
 <script id="taskTemplate" type="text/x-jquery-tmpl">    
         <td style="text-align: center;">
             {{if Update}}
-            <span rel="task_{{= id }}" task_status="{{= taskStatus }}" onclick="showTaskStatusPanel(this);"><img src="./images/icons/{{= activeImg }}" alt="status" /></span>
+            <span style="cursor: pointer;" rel="task_{{= id }}" task_status="{{= taskStatus }}" onclick="showTaskStatusPanel(this);"><img src="./images/icons/{{= activeImg }}" alt="status" /></span>
             {{else !Update}}
             <img src="./images/icons/{{= activeImg }}" alt="status" />
             {{/if}}
