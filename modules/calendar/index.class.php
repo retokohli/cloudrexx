@@ -416,7 +416,8 @@ EOF;
     {
         global $_ARRAYLANG, $_CORELANG, $_LANGID;
         JS::activate('cx');
-
+        JS::activate('jqueryui');
+        
         JS::registerJS('modules/calendar/View/Script/Frontend.js');
         
         parent::getFrontendLanguages();
@@ -428,8 +429,7 @@ EOF;
 
             $arrData = array();
             $arrData = $_POST;
-
-            $arrData['type'] = 0;
+            
             $arrData['access'] = 0;
             $arrData['priority'] = 3;
             $arrData['showIn'][0] = $_LANGID;
@@ -455,45 +455,7 @@ EOF;
 
         $javascript = <<< EOF
 <script language="JavaScript" type="text/javascript">
-
-var modifyEvent = {
-    // elm => jquery object
-    _handleSeriesEventRowDisplay : function(elm){
-      if (elm.is(":checked")) {
-          \$J('.series-event-row').show();
-          showOrHide();
-      } else {
-          \$J('.series-event-row').hide();
-      }
-    },
-    _handleAllDayEvent : function(elm){        
-      jQuery(".startDate").data('dateTime', jQuery(".startDate").datetimepicker("getDate").getTime());
-      jQuery(".endDate").data('dateTime', jQuery(".endDate").datetimepicker("getDate").getTime());
-      if (elm.is(":checked")) {
-          // hack to disable timepicker, its not working if we disable time picker before it showing atleast once.
-         jQuery( ".startDate, .endDate" ).datetimepicker( "show" );
-         jQuery( ".startDate, .endDate" ).datetimepicker( "hide" );
-         jQuery( ".startDate, .endDate" ).datetimepicker('disableTimepicker');
-      } else {
-         jQuery(".startDate, .endDate").datetimepicker('enableTimepicker');
-      }
-      jQuery(".startDate").datepicker('setDate', new Date(jQuery(".startDate").data('dateTime')));
-      jQuery(".endDate").datepicker('setDate', new Date(jQuery(".endDate").data('dateTime')));
-    },
-    _isNumber : function(evt) {
-      evt = (evt) ? evt : window.event;
-      var charCode = (evt.which) ? evt.which : evt.keyCode;
-      if (charCode > 31 && (charCode < 48 || charCode > 57)) {
-          return false;
-      }
-      return true;
-    }
-};
-\$J(function(){
-    \$J(".all_day").click(function(){
-        modifyEvent._handleAllDayEvent(\$J(this));
-    });                
-});
+              
 cx.ready(function() {
     var options = {
         dateFormat: '$dateFormat',        
@@ -537,9 +499,9 @@ UPLOADER;
         $objCategoryManager = new CalendarCategoryManager(true);
         $objCategoryManager->getCategoryList();
         
-        $this->_objTpl->setVariable(array(
-            'TXT_'.$this->moduleLangVar.'_EVENT'                    =>  $_ARRAYLANG['TXT_CALENDAR_EVENT'],
-            'TXT_'.$this->moduleLangVar.'_EVENT_DETAILS'            =>  $_ARRAYLANG['TXT_CALENDAR_EVENT_DETAILS'],
+        $this->_objTpl->setGlobalVariable(array(
+            'TXT_'.$this->moduleLangVar.'_EVENT'                    => $_ARRAYLANG['TXT_CALENDAR_EVENT'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_DETAILS'            => $_ARRAYLANG['TXT_CALENDAR_EVENT_DETAILS'],
             'TXT_'.$this->moduleLangVar.'_SAVE'                     => $_ARRAYLANG['TXT_CALENDAR_SAVE'],
             'TXT_'.$this->moduleLangVar.'_EVENT_START'              => $_ARRAYLANG['TXT_CALENDAR_START'],
             'TXT_'.$this->moduleLangVar.'_EVENT_END'                => $_ARRAYLANG['TXT_CALENDAR_END'],
@@ -566,6 +528,8 @@ UPLOADER;
             'TXT_'.$this->moduleLangVar.'_EVENT_TYPE'               => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE'],
             'TXT_'.$this->moduleLangVar.'_EVENT_TYPE_EVENT'         => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_EVENT'],
             'TXT_'.$this->moduleLangVar.'_EVENT_TYPE_REDIRECT'      => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_REDIRECT'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_DESCRIPTION'        => $_ARRAYLANG['TXT_CALENDAR_EVENT_DESCRIPTION'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_REDIRECT'           => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_REDIRECT'],
 
             $this->moduleLangVar.'_EVENT_TYPE_EVENT'                => $eventId != 0 ? ($objEvent->type == 0 ? 'selected="selected"' : '') : '',      
             $this->moduleLangVar.'_EVENT_TYPE_REDIRECT'             => $eventId != 0 ? ($objEvent->type == 1 ? 'selected="selected"' : '') : '',
@@ -573,10 +537,8 @@ UPLOADER;
             $this->moduleLangVar.'_EVENT_END_DATE'                  => $eventId != 0 ? date(parent::getDateFormat()." H:i", $objEvent->endDate) : date(parent::getDateFormat()." H:i"),
             $this->moduleLangVar.'_EVENT_PICTURE'                   => $objEvent->pic,
             $this->moduleLangVar.'_EVENT_PICTURE_THUMB'             => $objEvent->pic != '' ? '<img src="'.$objEvent->pic.'.thumb" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',
-            $this->moduleLangVar.'_EVENT_CATEGORIES'                => $objCategoryManager->getCategoryDropdown(intval($objEvent->catId), 2),
-            $this->moduleLangVar.'_EVENT_PICTURE'                   => $objEvent->pic,
-            $this->moduleLangVar.'_EVENT_LINK'                      => $objEvent->link,
-            $this->moduleLangVar.'_EVENT_TITLE'                     => $objEvent->title,
+            $this->moduleLangVar.'_EVENT_CATEGORIES'                => $objCategoryManager->getCategoryDropdown(intval($objEvent->catId), 2),            
+            $this->moduleLangVar.'_EVENT_LINK'                      => $objEvent->link,            
             $this->moduleLangVar.'_EVENT_PLACE'                     => $objEvent->place,
             $this->moduleLangVar.'_EVENT_STREET'                    => $objEvent->place_street,
             $this->moduleLangVar.'_EVENT_ZIP'                       => $objEvent->place_zip,
@@ -591,14 +553,13 @@ UPLOADER;
             $this->moduleLangVar.'_EVENT_HOST_CITY'                 => $objEvent->org_city,
             $this->moduleLangVar.'_EVENT_HOST_LINK'                 => $objEvent->org_link,
             $this->moduleLangVar.'_EVENT_HOST_EMAIL'                => $objEvent->org_email,
-    
-            $this->moduleLangVar.'_EVENT_DESCRIPTION'               => new \Cx\Core\Wysiwyg\Wysiwyg("description[{$_LANGID}]", contrexx_raw2xhtml($objEvent->description), $eventId != 0 ? 'small' : 'bbcode'),
+                
             $this->moduleLangVar.'_EVENT_ID'                        => $eventId,
             $this->moduleLangVar.'_EVENT_ALL_DAY'                   => $eventId != 0 && $objEvent->all_day ? 'checked="checked"' : '',
             $this->moduleLangVar.'_HIDE_ON_SINGLE_LANG'             => count($this->arrFrontendLanguages) == 1 ? "display: none;" : "",
         ));
         
-        foreach ($this->arrFrontendLanguages as $langId => $arrLang) {
+        foreach ($this->arrFrontendLanguages as $arrLang) {
             //parse globals
             $this->_objTpl->setGlobalVariable(array(
                 $this->moduleLangVar.'_EVENT_LANG_SHORTCUT'     => $arrLang['lang'],
@@ -615,6 +576,27 @@ UPLOADER;
             } else {
                 $langChecked = $arrLang['is_default'] == 'true';
             }
+            
+            //parse eventTabMenuDescTab
+            $this->_objTpl->setVariable(array(
+                $this->moduleLangVar.'_EVENT_TAB_DISPLAY' => $langChecked ? 'block' : 'none',
+                $this->moduleLangVar.'_EVENT_TAB_CLASS'   => '',
+            ));
+            
+            $this->_objTpl->parse('eventTabMenuDescTab');
+            
+            //parse eventDescTab
+            $this->_objTpl->setVariable(array(           
+                $this->moduleLangVar.'_EVENT_TAB_DISPLAY'               => $langChecked ? 'block' : 'none',
+                $this->moduleLangVar.'_EVENT_TITLE'                     => !empty($objEvent->arrData['title'][$arrLang['id']]) ? $objEvent->arrData['title'][$arrLang['id']] : $objEvent->arrData['redirect'][$_LANGID],
+                $this->moduleLangVar.'_EVENT_DESCRIPTION'               => new \Cx\Core\Wysiwyg\Wysiwyg("description[{$arrLang['id']}]", contrexx_raw2xhtml($objEvent->arrData['description'][$arrLang['id']]), $eventId != 0 ? 'small' : 'bbcode'),
+                $this->moduleLangVar.'_EVENT_REDIRECT'                  => !empty($objEvent->arrData['redirect'][$arrLang['id']]) ? $objEvent->arrData['redirect'][$arrLang['id']] : $objEvent->arrData['redirect'][$_LANGID],
+                $this->moduleLangVar.'_EVENT_TYPE_EVENT_DISPLAY'        => $objEvent->type == 0 ? 'block' : 'none',
+                $this->moduleLangVar.'_EVENT_TYPE_REDIRECT_DISPLAY'     => $objEvent->type == 1 ? 'block' : 'none',
+            ));
+            
+            $this->_objTpl->parse('eventDescTab');
+                        
             $langChecked = $langChecked ? 'checked="checked"' : '';
             	
             $this->_objTpl->setVariable(array(
@@ -622,13 +604,7 @@ UPLOADER;
             ));
             
             $this->_objTpl->parse('eventShowIn');
-            
-            //parse eventTabMenuDescTab
-            $this->_objTpl->setVariable(array(
-                $this->moduleLangVar.'_EVENT_TAB_CLASS'  => $defaultLang ? 'active' : '',
-            ));
-            
-            $this->_objTpl->parse('eventTabMenuDescTab');
+                                     
         }
         //parse placeSelect
         /*if ($this->arrSettings['placeData'] != 0) {

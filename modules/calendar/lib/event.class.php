@@ -1420,7 +1420,7 @@ class CalendarEvent extends CalendarLibrary
                          field.`title` AS `title`,
                          field.`description` AS content,
                          event.`place` AS place,
-                         MATCH (field.`title`, field.`description`, event.`place`) AGAINST ('%$term%') AS `score`
+                         MATCH (field.`title`, field.`description`) AGAINST ('%$term%') AS `score`
                     FROM ".DBPREFIX."module_calendar_event AS event,
                          ".DBPREFIX."module_calendar_event_field AS field
                    WHERE   (event.id = field.event_id AND field.lang_id = '".intval($_LANGID)."')
