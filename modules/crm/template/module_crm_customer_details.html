@@ -278,7 +278,8 @@
             success: function(json) {
                 if (json['error']) {
                     fadeAlertbox(json['error']);
-                } else if (json['success']) { 
+                } else if (json['success']) {
+                    $J(Obj).attr('task_status', json['task']['taskStatus']);
                     $J(Obj).find("img").attr('src', json['status_img']);
                     fadeOkbox(json['status_msg']);
                 }
