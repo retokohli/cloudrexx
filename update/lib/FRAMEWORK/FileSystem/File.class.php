@@ -1,8 +1,33 @@
 <?php
+
+/**
+ * File
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_filesystem
+ */
 namespace Cx\Lib\FileSystem;
 
+/**
+ * FileException
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_filesystem
+ */
 class FileException extends \Exception {};
 
+/**
+ * File
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  lib_filesystem
+ */
 class File implements FileInterface
 {
     const UNKNOWN_ACCESS  = 0;
@@ -34,7 +59,7 @@ class File implements FileInterface
         if (function_exists('posix_getuid')) {
             $phpUserId = posix_getuid();
         } else {
-            $phpUserId = null;
+            $phpUserId = getmyuid();
         }
 
         // check if the file we're going to work with is owned by the PHP user
@@ -71,7 +96,7 @@ class File implements FileInterface
     public function getData()
     {
         $data = file_get_contents($this->file);
-        if ($data === false || empty($data)) {
+        if ($data === false) {
             throw new FileSystemException('Unable to read data from file '.$this->file.'!');
         }
 
@@ -194,6 +219,60 @@ class File implements FileInterface
             try {
                 $ftpFile = new FTPFile($this->file);
                 $ftpFile->copy($dst);
+                return true;
+            } catch (FTPFileException $e) {
+                \DBG::msg('FTPFile: '.$e->getMessage());
+            }
+        }
+
+        throw new FileSystemException('File: Unable to copy file '.$this->file.'!');
+    }
+    
+    public function rename($dst, $force = false)
+    {
+        return $this->move($dst, $force);
+    }
+    
+    public function move($dst, $force = false)
+    {
+        if (!$force && file_exists($dst)) {
+            return true;
+        }
+        
+        $path       = ASCMS_PATH.ASCMS_PATH_OFFSET;
+        $relPath    = str_replace($path, '', $dst);
+        $pathInfo   = pathinfo($relPath);
+        $arrFolders = explode('/', $pathInfo['dirname']);
+        
+        foreach ($arrFolders as $folder) {
+            if (empty($folder)) continue;
+            $path .= '/' . $folder;
+            if (!is_dir($path)) {
+                \Cx\Lib\FileSystem\FileSystem::make_folder($path);
+            }
+        }
+        
+        // use PHP
+        if (   $this->accessMode == self::PHP_ACCESS
+            || $this->accessMode == self::UNKNOWN_ACCESS
+        ) {
+            try {
+                // try regular file access first
+                $fsFile = new FileSystemFile($this->file);
+                $fsFile->move($dst);
+                return true;
+            } catch (FileSystemFileException $e) {
+                \DBG::msg('FileSystemFile: '.$e->getMessage());
+            }
+        }
+
+        // use FTP
+        if (   $this->accessMode == self::FTP_ACCESS
+            || $this->accessMode == self::UNKNOWN_ACCESS
+        ) {
+            try {
+                $ftpFile = new FTPFile($this->file);
+                $ftpFile->move($dst);
                 return true;
             } catch (FTPFileException $e) {
                 \DBG::msg('FTPFile: '.$e->getMessage());
