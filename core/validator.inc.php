@@ -379,7 +379,7 @@ function contrexx_html2plaintext($html)
     $plaintext = strip_tags($html);
 
     // remove white-space sequences
-    $plaintext = trim(preg_replace('/\s+/ms', ' ', $plaintext));
+    $plaintext = trim(preg_replace('/\s+/msu', ' ', $plaintext));
 
     return $plaintext;
 }
