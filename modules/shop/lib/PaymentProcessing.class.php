@@ -431,9 +431,9 @@ DBG::log($error);
 
         $arrShopOrder = array(
 // 20111227 - Note that all parameter names should now be uppercase only
-            'ORDERID' => $_SESSION['shop']['order_id'],
-            'AMOUNT' => intval($_SESSION['shop']['grand_total_price']*100),
-            'CURRENCY' => Currency::getActiveCurrencyCode(),
+            'ORDERID'   => $_SESSION['shop']['order_id'],
+            'AMOUNT'    => intval($_SESSION['shop']['grand_total_price']*100),
+            'CURRENCY'  => Currency::getActiveCurrencyCode(),
             'PARAMPLUS' => 'section=shop'.MODULE_INDEX.'&cmd=success&handler=yellowpay',
 // Custom code for adding more Customer data to the form.
 // Enable as needed.
@@ -453,7 +453,11 @@ DBG::log($error);
             // ownertelno   Customer's telephone number
 //            'ownertelno' => $_SESSION['shop']['phone'],
         );
-        $return = Yellowpay::getForm('shop'.MODULE_INDEX, $arrShopOrder, $_ARRAYLANG['TXT_ORDER_NOW']);
+
+        $landingPage = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->findOneByModuleCmdLang('shop'.MODULE_INDEX, 'success', FRONTEND_LANG_ID);
+
+        $return = Yellowpay::getForm($arrShopOrder, $_ARRAYLANG['TXT_ORDER_NOW'], false, null, $landingPage);
+
         if (_PAYMENT_DEBUG && Yellowpay::$arrError) {
             $strError =
                 '<font color="red"><b>'.

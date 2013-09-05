@@ -449,7 +449,8 @@ class eGov extends eGovLibrary
         }
 
         SettingDb::init('egov', 'config');
-        $arrShopOrder = array(
+
+        $arrOrder = array(
             'ORDERID'   => $order_id,
             'AMOUNT'    => $product_amount,
             'CURRENCY'  => self::GetProduktValue('product_paypal_currency', $product_id),
@@ -461,33 +462,35 @@ class eGov extends eGovLibrary
         // Note that none of these fields is present in the post in the current
         // implementation!  The meaning cannot be guessed from the actual field
         // names (i.e. "contactFormField_17").
-        $arrShopOrder['CN'] = '';
+        $arrOrder['CN'] = '';
         if (!empty($_POST['Vorname'])) {
-            $arrShopOrder['CN'] = $_POST['Vorname'];
+            $arrOrder['CN'] = $_POST['Vorname'];
         }
         if (!empty($_POST['Nachname'])) {
-            $arrShopOrder['CN'] .= ($arrShopOrder['CN'] ? ' ' : '').$_POST['Nachname'];
+            $arrOrder['CN'] .= ($arrOrder['CN'] ? ' ' : '').$_POST['Nachname'];
         }
         if (!empty($_POST['Adresse'])) {
-            $arrShopOrder['OWNERADDRESS'] = $_POST['Adresse'];
+            $arrOrder['OWNERADDRESS'] = $_POST['Adresse'];
         }
         if (!empty($_POST['PLZ'])) {
-            $arrShopOrder['OWNERZIP'] = $_POST['PLZ'];
+            $arrOrder['OWNERZIP'] = $_POST['PLZ'];
         }
         if (!empty($_POST['Ort'])) {
-            $arrShopOrder['OWNERTOWN'] = $_POST['Ort'];
+            $arrOrder['OWNERTOWN'] = $_POST['Ort'];
         }
         if (!empty($_POST['Land'])) {
-            $arrShopOrder['OWNERCTY'] = $_POST['Land'];
+            $arrOrder['OWNERCTY'] = $_POST['Land'];
         }
         if (!empty($_POST['Telefon'])) {
-            $arrShopOrder['OWNERTELNO'] = $_POST['Telefon'];
+            $arrOrder['OWNERTELNO'] = $_POST['Telefon'];
         }
         if (!empty($_POST['EMail'])) {
-            $arrShopOrder['EMAIL'] = $_POST['EMail'];
+            $arrOrder['EMAIL'] = $_POST['EMail'];
         }
 
-        $yellowpayForm = Yellowpay::getForm('egov', $arrShopOrder);
+        $landingPage = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->findOneByModuleCmdLang('egov', '', FRONTEND_LANG_ID);
+
+        $yellowpayForm = Yellowpay::getForm($arrOrder, 'Send', false, null, $landingPage);
 
         if (count(Yellowpay::$arrError)) {
             DBG::log(
