@@ -61,7 +61,7 @@ class SitemapPageTree extends SigmaPageTree {
         
     }
 
-    protected function preRender($lang) {
+    protected function realPreRender($lang) {
         
     }
 

@@ -20,7 +20,10 @@ namespace Cx\Core\PageTree;
  * @subpackage  core_pagetree
  */
 abstract class SigmaPageTree extends PageTree {
-        protected $template = null;
+    /**
+     * @var \Cx\Core\Html\Sigma
+     */
+    protected $template = null;
 
     /**
      * @param $template the PEAR Sigma template.
@@ -28,4 +31,12 @@ abstract class SigmaPageTree extends PageTree {
     public function setTemplate($template) {
         $this->template = $template;
     }
+    protected function preRender($lang) {
+        if ($this->template->placeholderExists('levels_full')) {
+            $this->rootNode = \Env::get('em')->getRepository('\Cx\Model\ContentManager\Node')->getRoot();
+        }
+        $this->realPreRender($lang);
+    }
+    
+    protected abstract function realPreRender($lang);
 }

@@ -63,7 +63,7 @@ class NestedNavigationPageTree extends SigmaPageTree {
         }
     }
     
-    protected function preRender($lang) {
+    protected function realPreRender($lang) {
         // checks which levels to use
         // default is 1+ (all)
         $match = array();
