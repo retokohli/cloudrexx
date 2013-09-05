@@ -419,7 +419,7 @@ EOF;
         JS::activate('jqueryui');
         
         JS::registerJS('modules/calendar/View/Script/Frontend.js');
-        
+         
         parent::getFrontendLanguages();
         $this->_objTpl->setTemplate($this->pageContent, true, true);
         
@@ -431,8 +431,7 @@ EOF;
             $arrData = $_POST;
             
             $arrData['access'] = 0;
-            $arrData['priority'] = 3;
-            $arrData['showIn'][0] = $_LANGID;
+            $arrData['priority'] = 3;            
 
             if($objEvent->save($arrData)) {
                 $showFrom = false;
@@ -572,7 +571,7 @@ UPLOADER;
             
             $langChecked = false;
             if($eventId != 0) {
-                $langChecked = in_array($arrLang['id'], $arrShowIn) ? true : (!$langChecked ? true : false);                
+                $langChecked = in_array($arrLang['id'], $arrShowIn) ? true : false;                
             } else {
                 $langChecked = $arrLang['is_default'] == 'true';
             }

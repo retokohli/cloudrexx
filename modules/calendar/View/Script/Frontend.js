@@ -5,7 +5,7 @@ var calendarFrontend = {
         that  = this;
         var frmError = false;
         
-        $form.find('.validate_required').each(function(){
+        $form.find('[class*=validate]').each(function(){
             $field = $J(this);
             if ( !that._validateField($field) ) {
                 $field.css('border', '#ff0000 1px solid');
@@ -26,34 +26,70 @@ var calendarFrontend = {
         /**
          * inspired from validation Engine
          */
-        switch (field.prop("type")) {
-            case "text":
-            case "password":
-            case "textarea":
-            case "file":
-            case "select-one":
-            case "select-multiple":
-            default:
-                    var field_val      = $J.trim( field.val() );                    
-                    if (
-                               ( !field_val )                            
-                    ) {
-                            return false;
+        var rules = /validate\[(.*)\]/.exec($field.attr('class'));
+
+        if (!rules)
+            return false;
+
+        var str = rules[1];
+        var rules = str.split(/\[|,|\]/);
+        // Fix for adding spaces in the rules
+        for (var i = 0; i < rules.length; i++) {
+            rules[i] = rules[i].replace(" ", "");
+            // Remove any parsing errors
+            if (rules[i] === '') {
+                    delete rules[i];
+            }
+        }
+        
+        for (var i = 0; i < rules.length; i++) {            
+            switch (rules[i]) {
+                case "event_title":
+                    language = field.attr("data-id");        
+                    if ($J("#showIn_"+language).is(":checked")) {
+                        var field_val      = $J.trim( field.val() );
+                        if (
+                                   ( !field_val )                            
+                        ) {
+                                return false;
+                        }
+                        return true;
                     }
                     return true;
                     break;
-            case "radio":
-            case "checkbox":
-                    var form = field.closest("form");
-                    var name = field.attr("name");
-                    if (form.find("input[name='" + name + "']:checked").size() == 0) {
-                            if (form.find("input[name='" + name + "']:visible").size() == 1)
-                                    return true;
-                            else
-                                    return false;
+                case "required":
+                    switch (field.prop("type")) {
+                        case "text":
+                        case "password":
+                        case "textarea":
+                        case "file":
+                        case "select-one":
+                        case "select-multiple":
+                        default:
+                                var field_val      = $J.trim( field.val() );                    
+                                if (
+                                           ( !field_val )                            
+                                ) {
+                                        return false;
+                                }
+                                return true;
+                                break;
+                        case "radio":
+                        case "checkbox":
+                                var form = field.closest("form");
+                                var name = field.attr("name");
+                                if (form.find("input[name='" + name + "']:checked").size() == 0) {
+                                        if (form.find("input[name='" + name + "']:visible").size() == 1)
+                                                return true;
+                                        else
+                                                return false;
+                                }
+                                break;                            
                     }
                     break;
+            }
         }
+        
 
     }
 };
