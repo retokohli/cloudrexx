@@ -33,8 +33,14 @@ function _accessUpdate()
             ),
             'InnoDB'
         );
-        \Cx\Lib\UpdateUtil::sql('ALTER IGNORE TABLE `' . DBPREFIX . 'access_group_dynamic_ids` ADD PRIMARY KEY ( `access_id` , `group_id` )');
-        \Cx\Lib\UpdateUtil::sql('ALTER IGNORE TABLE `' . DBPREFIX . 'access_group_static_ids` ADD PRIMARY KEY ( `access_id` , `group_id` )');
+        $result = \Cx\Lib\UpdateUtil::sql('SHOW KEYS FROM `' . DBPREFIX . 'access_group_dynamic_ids`');
+        if ($result->EOF) {
+            \Cx\Lib\UpdateUtil::sql('ALTER IGNORE TABLE `' . DBPREFIX . 'access_group_dynamic_ids` ADD PRIMARY KEY ( `access_id` , `group_id` )');
+        }
+        $result = \Cx\Lib\UpdateUtil::sql('SHOW KEYS FROM `' . DBPREFIX . 'access_group_static_ids`');
+        if ($result->EOF) {
+            \Cx\Lib\UpdateUtil::sql('ALTER IGNORE TABLE `' . DBPREFIX . 'access_group_static_ids` ADD PRIMARY KEY ( `access_id` , `group_id` )');
+        }
     }
     catch (\Cx\Lib\UpdateException $e) {
         // we COULD do something else here..

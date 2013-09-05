@@ -740,8 +740,6 @@ $updatesSp2ToSp3 = array(
 
 $updatesSp3ToSp4 = array(
     'UPDATE  `' . DBPREFIX . 'backend_areas` SET  `scope` =  \'backend\' WHERE  `area_id` = 161',
-    'ALTER IGNORE TABLE `' . DBPREFIX . 'access_group_dynamic_ids` ADD PRIMARY KEY ( `access_id` , `group_id` )',
-    'ALTER IGNORE TABLE `' . DBPREFIX . 'access_group_static_ids` ADD PRIMARY KEY ( `access_id` , `group_id` )',
 );
 
 $updatesSp4To301 = array(
@@ -812,6 +810,16 @@ foreach ($updates as $update) {
             return false;
         }
     }
+}
+
+// Add primary keys
+$result = \Cx\Lib\UpdateUtil::sql('SHOW KEYS FROM `' . DBPREFIX . 'access_group_dynamic_ids`');
+if ($result->EOF) {
+    \Cx\Lib\UpdateUtil::sql('ALTER IGNORE TABLE `' . DBPREFIX . 'access_group_dynamic_ids` ADD PRIMARY KEY ( `access_id` , `group_id` )');
+}
+$result = \Cx\Lib\UpdateUtil::sql('SHOW KEYS FROM `' . DBPREFIX . 'access_group_static_ids`');
+if ($result->EOF) {
+    \Cx\Lib\UpdateUtil::sql('ALTER IGNORE TABLE `' . DBPREFIX . 'access_group_static_ids` ADD PRIMARY KEY ( `access_id` , `group_id` )');
 }
 
 // reimport module repository
