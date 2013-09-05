@@ -100,7 +100,7 @@ class File implements FileInterface
     public function getData()
     {
         $data = file_get_contents($this->file);
-        if ($data === false || empty($data)) {
+        if ($data === false) {
             throw new FileSystemException('Unable to read data from file '.$this->file.'!');
         }
 
