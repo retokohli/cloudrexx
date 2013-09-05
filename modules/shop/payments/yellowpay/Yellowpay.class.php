@@ -430,74 +430,75 @@ class Yellowpay
      *
      * @access  public
      * @global  array       $_ARRAYLANG
-     * @param   array       $arrField       The parameter array
+     * @param   array       $arrFields      The parameter array
      * @param   string      $submitValue    The optional label for the submit button
-     * @param   boolean     $autopost       If true, the form is automatically submitted.
-     *                                      Defaults to false
-     * @param   array       $settings       Settings from SettingDb
-     * @param   string      $uriparam       The optional URI parameter string
-     * @return  string                      The HTML Form code
+     * @param   boolean     $autopost       If true, the form is automatically submitted. Defaults to false.
+     * @param   array       $arrSettings    Settings from SettingDb
+     * @param   object      $landingPage    The optional URI parameter string
+     * @return  string                      The HTML form code
      */
-    static function getForm($sectionName, $arrField, $submitValue='Send', $autopost=false, $settings=null, $uriParam='')
+    static function getForm($arrFields, $submitValue='Send', $autopost=false, $arrSettings=null, $landingPage=null)
     {
         global $_ARRAYLANG;
 
-        if (!empty($sectionName)) {
-            self::$sectionName = $sectionName;
-        } else {
-            self::$arrError[] = 'No section name passed.';
+        if ((gettype($landingPage) != 'object') || (get_class($landingPage) != 'Cx\Core\ContentManager\Model\Entity\Page')) {
+            self::$arrError[] = 'No landing page passed.';
         }
 
-        if (empty($settings)) {
-            $settingDb = SettingDb::getArray($sectionName, 'config');
+        if (($sectionName = $landingPage->getModule()) && !empty($sectionName)) {
+            self::$sectionName = $sectionName;
+        } else {
+            self::$arrError[] = 'Passed landing page is not an application.';
+        }
+
+        if (empty($arrSettings)) {
+            $settingDb = SettingDb::getArray(self::$sectionName, 'config');
             if (!empty($settingDb) && $settingDb['postfinance_active']['value']) {
-                $settings = $settingDb;
+                $arrSettings = $settingDb;
             } else {
-                self::$arrError[] = "Could not load settings";
+                self::$arrError[] = "Could not load settings.";
             }
         }
 
-        if (empty($arrField['PSPID'])) {
-            $arrField['PSPID'] = $settings['postfinance_shop_id']['value'];
+        if (empty($arrFields['PSPID'])) {
+            $arrFields['PSPID'] = $arrSettings['postfinance_shop_id']['value'];
         }
-        if (empty($arrField['OPERATION'])) {
-            $arrField['OPERATION'] = $settings['postfinance_authorization_type']['value'];
+        if (empty($arrFields['OPERATION'])) {
+            $arrFields['OPERATION'] = $arrSettings['postfinance_authorization_type']['value'];
         }
-        if (empty($arrField['LANGUAGE'])) {
-            $arrField['LANGUAGE'] = strtolower(FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)).'_'.strtoupper(FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID));
+        if (empty($arrFields['LANGUAGE'])) {
+            $arrFields['LANGUAGE'] = strtolower(FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID)).'_'.strtoupper(FWLanguage::getLanguageCodeById(FRONTEND_LANG_ID));
         }
 
-        $baseUri =
-            Cx\Core\Routing\Url::fromModuleAndCmd('shop', 'success')->toString().
-            '?'.$uriParam.(empty($uriParam) ? '' : '&').'result=';
-        if (empty($arrField['ACCEPTURL'])) {
-            $arrField['ACCEPTURL'] = $baseUri.'1';
+        $baseUri = Cx\Core\Routing\Url::fromPage($landingPage)->toString().'?result=';
+        if (empty($arrFields['ACCEPTURL'])) {
+            $arrFields['ACCEPTURL'] = $baseUri.'1';
         }
-        if (empty($arrField['DECLINEURL'])) {
-            $arrField['DECLINEURL'] = $baseUri.'2';
+        if (empty($arrFields['DECLINEURL'])) {
+            $arrFields['DECLINEURL'] = $baseUri.'2';
         }
-        if (empty($arrField['EXCEPTIONURL'])) {
-            $arrField['EXCEPTIONURL'] = $baseUri.'2';
+        if (empty($arrFields['EXCEPTIONURL'])) {
+            $arrFields['EXCEPTIONURL'] = $baseUri.'2';
         }
-        if (empty($arrField['CANCELURL'])) {
-            $arrField['CANCELURL'] = $baseUri.'0';
+        if (empty($arrFields['CANCELURL'])) {
+            $arrFields['CANCELURL'] = $baseUri.'0';
         }
-        if (empty($arrField['BACKURL'])) {
-            $arrField['BACKURL'] = $baseUri.'2';
+        if (empty($arrFields['BACKURL'])) {
+            $arrFields['BACKURL'] = $baseUri.'2';
         }
 
 
-        if (!self::setFields($arrField)) {
-            self::$arrError[] = 'Failed to verify keys';
+        if (!self::setFields($arrFields)) {
+            self::$arrError[] = 'Failed to verify keys.';
             return false;
         }
-        $arrField['SHASIGN'] = self::signature($arrField, $settings['postfinance_hash_signature_in']['value']);
+        $arrFields['SHASIGN'] = self::signature($arrFields, $arrSettings['postfinance_hash_signature_in']['value']);
 
-        $server = $settings['postfinance_use_testserver']['value'] ? 'test' : 'prod';
+        $server = $arrSettings['postfinance_use_testserver']['value'] ? 'test' : 'prod';
         $charset = (CONTREXX_CHARSET == 'UTF-8') ? '_utf8' : '';
 
         $hiddenFields = '';
-        foreach ($arrField as $name => $value) {
+        foreach ($arrFields as $name => $value) {
             $hiddenFields .= Html::getHidden($name, $value);
         }
 

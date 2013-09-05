@@ -251,19 +251,21 @@ class Checkout extends CheckoutLibrary {
                     $objSettingsYellowpay = new SettingsYellowpay($objDatabase);
                     $arrYellowpay = $objSettingsYellowpay->get();
                     
-                    $arrShopOrder = array(
+                    $arrOrder = array(
                         'ORDERID'   => $id,
                         'AMOUNT'    => intval($arrFieldValues['invoice_amount'] * 100),
                         'CURRENCY'  => $this->arrCurrencies[$arrFieldValues['invoice_currency']],
                         'PARAMPLUS' => 'section=checkout',
                     );
 
-                    $settings['postfinance_shop_id']['value'] = $arrYellowpay['pspid'];
-                    $settings['postfinance_hash_signature_in']['value'] = $arrYellowpay['sha_in'];
-                    $settings['postfinance_authorization_type']['value'] = $arrYellowpay['operation'];
-                    $settings['postfinance_use_testserver']['value'] = $arrYellowpay['testserver'];
+                    $arrSettings['postfinance_shop_id']['value'] = $arrYellowpay['pspid'];
+                    $arrSettings['postfinance_hash_signature_in']['value'] = $arrYellowpay['sha_in'];
+                    $arrSettings['postfinance_authorization_type']['value'] = $arrYellowpay['operation'];
+                    $arrSettings['postfinance_use_testserver']['value'] = $arrYellowpay['testserver'];
+                    
+                    $landingPage = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->findOneByModuleCmdLang('checkout', '', FRONTEND_LANG_ID);
 
-                    $this->objTemplate->setVariable('CHECKOUT_YELLOWPAY_FORM', Yellowpay::getForm('checkout', $arrShopOrder, $_ARRAYLANG['TXT_CHECKOUT_START_PAYMENT'], false, $settings));
+                    $this->objTemplate->setVariable('CHECKOUT_YELLOWPAY_FORM', Yellowpay::getForm($arrOrder, $_ARRAYLANG['TXT_CHECKOUT_START_PAYMENT'], false, $arrSettings, $landingPage));
 
                     if (Yellowpay::$arrError) {
                         $this->arrStatusMessages['error'][] = $_ARRAYLANG['TXT_CHECKOUT_FAILED_TO_INITIALISE_YELLOWPAY'];

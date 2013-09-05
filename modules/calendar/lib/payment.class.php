@@ -39,13 +39,16 @@ class CalendarPayment {
             'CURRENCY'  => $data['currency'],
             'PARAMPLUS' => "section=calendar&cmd=success&handler=yellowpay",
         );
-        $settings = array();
-        $settings['postfinance_shop_id']['value']            = $arrCalendarSettings['paymentYellowpayPspid'];
-        $settings['postfinance_hash_signature_in']['value']  = $arrCalendarSettings['paymentYellowpayShaIn'];
-        $settings['postfinance_authorization_type']['value'] = $arrCalendarSettings['paymentYellowpayAuthorization'] == 0 ? 'SAL' : 'RES';
-        $settings['postfinance_use_testserver']['value']     = $arrCalendarSettings['paymentTestserver'];
+        $arrSettings = array();
+        $arrSettings['postfinance_shop_id']['value']            = $arrCalendarSettings['paymentYellowpayPspid'];
+        $arrSettings['postfinance_hash_signature_in']['value']  = $arrCalendarSettings['paymentYellowpayShaIn'];
+        $arrSettings['postfinance_authorization_type']['value'] = $arrCalendarSettings['paymentYellowpayAuthorization'] == 0 ? 'SAL' : 'RES';
+        $arrSettings['postfinance_use_testserver']['value']     = $arrCalendarSettings['paymentTestserver'];
 
-        $yellowpayForm = Yellowpay::getForm('calendar', $arrOrder, $_ARRAYLANG['TXT_CALENDAR_START_PAYMENT'], false, $settings);
+        $landingPage = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->findOneByModuleCmdLang('calendar', 'success', FRONTEND_LANG_ID);
+
+        $yellowpayForm = Yellowpay::getForm($arrOrder, $_ARRAYLANG['TXT_CALENDAR_START_PAYMENT'], false, $arrSettings, $landingPage);
+
         if (_PAYMENT_DEBUG && Yellowpay::$arrError) {
             $strError =
                 '<font color="red"><b>'.
