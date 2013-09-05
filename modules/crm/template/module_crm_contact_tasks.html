@@ -19,12 +19,8 @@
         <!-- END noRecords -->
         <!-- BEGIN showTask -->
         <tr class="{CRM_TASK_EXPIRED_CLASS} {TXT_ROW}" style="height:26px;">
-            <td>
-                <div class="task_status_wrapper">
-                    <div class="button white taskStatusLink" rel="task_{CRM_TASK_ID}" onclick="showTaskStatusPanel(this);">
-                        <a href="javascript:void(0);"><img src="./images/icons/{CRM_TASK_TYPE_ACTIVE}" alt="status" /><span class="arrow-down-task"></span></a>
-                    </div>
-                </div>
+            <td style="text-align: center;">
+                    <span rel="task_{CRM_TASK_ID}" task_status="{TXT_STATUS}" onclick="showTaskStatusPanel(this);"><img src="./images/icons/{CRM_TASK_TYPE_ACTIVE}" alt="status" /></span>
             </td>
             <td>
                     <div class="taskTypeDiv">

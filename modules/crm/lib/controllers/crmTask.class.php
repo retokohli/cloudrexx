@@ -316,31 +316,33 @@ class crmTask extends CrmLibrary
                     $added_user == $objFWUser->objUser->getId() ||
                     $assigned_user == $assignedto
                 ) {
-                        $query = "UPDATE ".DBPREFIX."module_{$this->moduleName}_task
-                                   SET `task_title`    = '$title',
-                                       `task_type_id`  = '$type',
-                                       `customer_id`   = '$customer',
-                                       `due_date`      = '$duedate',
-                                       `assigned_to`   = '$assignedto',
-                                       `description`   = '".contrexx_raw2db($description)."'
-                                        WHERE id= '$id'";
+                        $fields    = array(
+                            'task_title'        => $title,
+                            'task_type_id'      => $type,
+                            'customer_id'       => $customer,
+                            'due_date'          => $duedate,
+                            'assigned_to'       => $assignedto,
+                            'description'       => $description
+                        );
+                        $query = SQL::update("module_{$this->moduleName}_task", $fields, array('escape' => true))." WHERE `id` = {$id}";
                         $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_TASK_UPDATE_MESSAGE'];
                 } else {
                         $_SESSION['strErrMessage'] = $_ARRAYLANG['TXT_CRM_TASK_RESPONSIBLE_ERR'];
                     }                
             } else {
                 $addedDate = date('Y-m-d H:i:s');
-                $query     = "INSERT INTO ".DBPREFIX."module_{$this->moduleName}_task
-                                   SET `task_title`      = '$title',
-                                       `task_type_id`    = '$type',
-                                       `customer_id`     = '$customer',
-                                       `due_date`        = '$duedate',
-                                       `assigned_to`     = '$assignedto',
-                                       `added_by`        = '{$objFWUser->objUser->getId()}',
-                                       `added_date_time` = '$addedDate',
-                                       `task_status`     = '0',
-                                       `description`     = '".contrexx_raw2db($description)."'
-                                       ";
+                $fields    = array(
+                    'task_title'        => $title,
+                    'task_type_id'      => $type,
+                    'customer_id'       => $customer,
+                    'due_date'          => $duedate,
+                    'assigned_to'       => $assignedto,
+                    'added_by'          => $objFWUser->objUser->getId(),
+                    'added_date_time'   => $addedDate,
+                    'task_status'       => '0',
+                    'description'       => $description
+                );
+                $query = SQL::insert("module_{$this->moduleName}_task", $fields, array('escape' => true));
                 $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_TASK_OK_MESSAGE'];
             }
             $db = $objDatabase->Execute($query);
@@ -440,6 +442,7 @@ class crmTask extends CrmLibrary
 
         $id     = isset($_POST['id']) ? (int) $_POST['id'] : 0;
         $status = isset($_POST['status']) ? (int) $_POST['status'] : 0;
+        $status = ($status == 1) ? 0 : 1;
         // check permission
         if (!empty($id)) {
             $objResult = $objDatabase->Execute("SELECT `added_by`,
@@ -460,6 +463,7 @@ class crmTask extends CrmLibrary
                     $json['status_msg'] = sprintf($_ARRAYLANG['TXT_CRM_TASK_STATUS_CHANGED'], ($status ? $_ARRAYLANG['TXT_CRM_TASK_COMPLETED'] : $_ARRAYLANG['TXT_CRM_TASK_OPEN']));
 
                     $query = "SELECT tt.name,
+                               tt.icon,
                                t.task_status,
                                t.id AS taskId,
                                t.task_id,
@@ -486,9 +490,11 @@ class crmTask extends CrmLibrary
                             'id'           => (int) $objResult->fields['taskId'],
                             'activeImg'    => $objResult->fields['task_status'] == 1 ? 'led_green.gif':'led_red.gif',
                             'taskType'     => (int) $objResult->fields['task_type_id'],
+                            'taskTypeIcon' => !empty ($objResult->fields['icon']) ? CRM_ACCESS_OTHER_IMG_WEB_PATH.'/'.contrexx_raw2xhtml($objResult->fields['icon'])."_24X24.thumb" : '../modules/crm/View/Media/task_default.png',
                             'taskTitle'    => contrexx_raw2xhtml($objResult->fields['task_title']),
                             'dueDate'      => contrexx_raw2xhtml(date('h:i A Y-m-d', strtotime($objResult->fields['due_date']))),
                             'customerId'   => (int) $objResult->fields['customer_id'],
+                            'taskStatus'   => (int) $objResult->fields['task_status'],
                             'customerName' => contrexx_raw2xhtml($objResult->fields['customer_name']." ".$objResult->fields['contact_familyname']),
                             'addedBy'      => contrexx_raw2xhtml($this->getUserName($objResult->fields['assigned_to'])),
                             'taskClass'    => $objResult->fields['task_status'] == 1 || strtotime($objResult->fields['due_date']) > $now ? '' : 'task_expired',

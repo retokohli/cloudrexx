@@ -249,10 +249,24 @@
         }
         return false;
     });
+    function fadeOkbox(msg) {
+        $J('#okbox').html(msg);
+        $J('#okbox').fadeIn('slow');
+        setTimeout(function () {
+            $J('#okbox').fadeOut('slow');
+        }, 9000);
+    }
+    function fadeAlertbox(msg) {
+        $J('#alertbox').html(msg);
+        $J('#alertbox').fadeIn('slow');
+        setTimeout(function () {
+            $J('#alertbox').fadeOut('slow');
+        }, 6000);
+    }
     function showTaskStatusPanel(switcherUI) {
-        $J("#taskStatusPanel a.dropDownItem").unbind('click').click(function() {
-            _changeTaskStatus(switcherUI, $J(this).attr("task_status"));
-        });
+//        $J("#taskStatusPanel a.dropDownItem").unbind('click').click(function() {
+            _changeTaskStatus(switcherUI, $J(switcherUI).attr("task_status"));
+//        });
     }
     var _changeTaskStatus = function(Obj, task_status) {
         var taskId = $J(Obj).attr('rel').split('_')[1];
@@ -263,10 +277,10 @@
             data: {id: taskId,status: task_status},
             success: function(json) {
                 if (json['error']) {
-                    alert(json['error']);
-                } else if (json['success']) {
-                    $J(Obj).find("a img").attr('src', json['status_img']);
-                    alert(json['status_msg']);
+                    fadeAlertbox(json['error']);
+                } else if (json['success']) { 
+                    $J(Obj).find("img").attr('src', json['status_img']);
+                    fadeOkbox(json['status_msg']);
                 }
             }
         });
