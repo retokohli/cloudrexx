@@ -35,9 +35,9 @@
         addLeft: 0
     });
     function showTaskStatusPanel(switcherUI) {
-        $J("#taskStatusPanel a.dropDownItem").unbind('click').click(function() {
-            _changeTaskStatus(switcherUI, $J(this).attr("task_status"));
-        });
+//        $J("#taskStatusPanel a.dropDownItem").unbind('click').click(function() { alert('525');
+            _changeTaskStatus(switcherUI, $J(switcherUI).attr("task_status"));
+//        });
     }
     var _changeTaskStatus = function(Obj, task_status) {
         var taskId = $J(Obj).attr('rel').split('_')[1];
@@ -49,20 +49,20 @@
             data: {id: taskId,status: task_status},
             success: function(json) {
                 if (json['error']) {
-                    alert(json['error']);
+                    fadeAlertbox(json['error']);
                 } else if (json['success']) {
                     $J(Obj).find("a img").attr('src', json['status_img']);
                     
                     $parent = $J(Obj).closest('tr');
-                    $parent.fadeOut('slow');
+                    $parent.fadeOut('fast');
                     $parent.html('');
                     responseData = json['task'];
                     $J("#taskTemplate").tmpl(responseData).appendTo($parent);
-                    $parent.fadeIn('slow');
+                    $parent.fadeIn('fast');
 
                     $parent.removeClass('task_expired');
                     $parent.addClass(json['task']['taskClass']);
-                    alert(json['status_msg']);                    
+                    fadeOkbox(json['status_msg']);
                 }
             }
         });
@@ -76,6 +76,20 @@
     });
     function getMessageDiv(mes) {
         return '<div id="ajaxMessageDiv">'+mes+'..</div>';
+    }
+    function fadeOkbox(msg) {
+        $J('.okBox-new').html(msg);
+        $J('.okBox-new').fadeIn('slow');
+        setTimeout(function () {
+            $J('.okBox-new').fadeOut('slow');
+        }, 9000);
+    }
+    function fadeAlertbox(msg) {
+        $J('.alertBox-new').html(msg);
+        $J('.alertBox-new').fadeIn('slow');
+        setTimeout(function () {
+            $J('.alertBox-new').fadeOut('slow');
+        }, 6000);
     }
 </script>
 <style type="text/css">
@@ -91,6 +105,20 @@
         float: left;
         width: 95%;
     }
+    .okBox-new {
+        color: #39950C;
+        background: #DFF0D8;
+        padding: 8px;
+        margin-bottom: 5px;
+        clear: left;
+    }
+    .alertBox-new {
+        color: #B94A48;
+        background: #F2DEDE;
+        padding: 8px;
+        margin-bottom: 5px;
+        clear: left;
+    }
 </style>
 <div id="subnavbar_level2">
     <ul>
@@ -98,12 +126,8 @@
         <li><a href="index.php?cmd={MODULE_NAME}&act=task&tpl=modify" title="{TXT_CRM_ADD_TASK}">{TXT_CRM_ADD_TASK}</a></li>
     </ul>
 </div><br>
-<div id="taskStatusPanel" style="display: none;position: absolute;">
-    <div class="dropDownContent">
-        <a class="dropDownItem" task_status="0"><span><img src="./images/icons/led_red.gif" alt="status" />&nbsp;{TXT_CRM_TASK_OPEN}</span></a>
-        <a class="dropDownItem" task_status="1"><span><img src="./images/icons/led_green.gif" alt="status" />&nbsp;{TXT_CRM_TASK_COMPLETED}</span></a>
-    </div>
-</div>
+<div class="okBox-new" style="display:none;"></div>
+<div class="alertBox-new" style="display:none;"></div>
 <form action="" method="get" name="searchtask" id="searchtask">
     <input type="hidden" name="cmd" value="{MODULE_NAME}" />
     <input type="hidden" name="act" value="task" />
@@ -166,13 +190,9 @@
             <!-- END noRecords -->
             <!-- BEGIN showTask -->
             <tr class="{CRM_TASK_EXPIRED_CLASS} {TXT_ROW}" style="height:26px;">
-                <td>
+                <td style="text-align:center;">
                     <!-- BEGIN task_status_block -->
-                    <div class="task_status_wrapper">
-                        <div class="button white taskStatusLink" rel="task_{CRM_TASK_ID}" onclick="showTaskStatusPanel(this);">
-                            <a href="javascript:void(0);"><img src="./images/icons/{CRM_TASK_TYPE_ACTIVE}" alt="status" /><span class="arrow-down-task"></span></a>
-                        </div>
-                    </div>
+                    <span rel="task_{CRM_TASK_ID}" task_status="{TXT_STATUS}" onclick="showTaskStatusPanel(this);"><img src="./images/icons/{CRM_TASK_TYPE_ACTIVE}" alt="status" /></span>
                     <!-- END task_status_block -->
                     <!-- BEGIN task_image_block -->
                     <img src="./images/icons/{CRM_TASK_TYPE_ACTIVE}" alt="status" />
@@ -206,21 +226,20 @@
 </form>
 <div align="right">{ENTRIES_PAGING}</div>
 <script id="taskTemplate" type="text/x-jquery-tmpl">    
-        <td>
+        <td style="text-align: center;">
             {{if Update}}
-            <div class="task_status_wrapper">
-                <div class="button white taskStatusLink" rel="task_{{= id }}" onclick="showTaskStatusPanel(this);">
-                    <a href="javascript:void(0);"><img src="./images/icons/{{= activeImg }}" alt="status" /><span class="arrow-down-task"></span></a>
-                </div>
-            </div>
+            <span rel="task_{{= id }}" task_status="{{= taskStatus }}" onclick="showTaskStatusPanel(this);"><img src="./images/icons/{{= activeImg }}" alt="status" /></span>
             {{else !Update}}
             <img src="./images/icons/{{= activeImg }}" alt="status" />
             {{/if}}
         </td>
         <td>
-            <div class="taskTypeItem_{{= taskType }} task_type_overview">
-                <div>{{= taskTitle }}</div>
-                <div>{{= dueDate }}</div>
+            <div class="taskTypeDiv">
+                <div class="taskTypeImg"><img src="{{= taskTypeIcon }}"/></div>
+                <div class="taskTypeTitle">
+                    <div>{{= taskTitle }}</div>
+                    <div>{{= dueDate }}</div>
+                </div>
             </div>
         </td>
         <td>
