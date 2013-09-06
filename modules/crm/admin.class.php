@@ -5017,7 +5017,12 @@ END;
         $status   = isset($_POST['activeStatus']) ? 1 : (empty($_POST) ? 1 : 0);
         $parentId = isset($_POST['parentId']) ? (int) $_POST['parentId'] : 0;
 
-        $industryType = isset($_POST['Inputfield']) ? $_POST['Inputfield'] : array();
+        $industryType = array();
+        foreach ($this->_arrLanguages as $langId => $langValue) {
+            if (isset($_POST['Inputfield'][$langId]) && !empty($_POST['Inputfield'][$langId])) {
+                $industryType[$langId] = contrexx_input2raw($_POST['Inputfield'][$langId]);
+            }
+        }
         if (isset ($_POST['save_entry'])) {
             $error = false;
             $fields = array(
@@ -5057,7 +5062,7 @@ END;
                 if ($db) {
                     $objDatabase->Execute("DELETE FROM `".DBPREFIX."module_{$this->moduleName}_industry_type_local` WHERE entry_id = $entryId");
                     foreach ($this->_arrLanguages as $langId => $langValue) {
-                        $value = empty($industryType[$langId]) ? contrexx_input2db($industryType[0]) : contrexx_input2db($industryType[$langId]);
+                        $value = empty($industryType[$langId]) ? contrexx_raw2db($industryType[0]) : contrexx_raw2db($industryType[$langId]);
                         $objDatabase->Execute("
                             INSERT INTO `".DBPREFIX."module_{$this->moduleName}_industry_type_local` SET
                                 `entry_id` = $entryId,
@@ -5112,21 +5117,21 @@ END;
         $objTpl->setVariable(array(
                 'CRM_INDUSTRY_NAME_DEFAULT_VALUE' => isset($industryType[$_LANGID]) ? contrexx_raw2xhtml($industryType[$_LANGID]) : '',
                 'CRM_PARENT_INDUSTRY_DROPDOWN'    => $this->listIndustryTypes($this->_objTpl, 2, $parentId),
-                'CRM_ACTIVATED_VALUE'       => $status ? "checked='checked'" : '',
-                'CRM_SORTINGNUMBER'         => $sorting,
-                'DEFAULT_LANG_ID'           => $_LANGID,
-                'LANG_ARRAY'                => implode(',', array_keys($this->_arrLanguages)),
-                'TXT_CRM_CUSTOMER_INDUSTRY' => $_ARRAYLANG['TXT_CRM_CUSTOMER_INDUSTRY'],
-                'TXT_CRM_OVERVIEW'              => $_ARRAYLANG['TXT_CRM_OVERVIEW'],
-                'TXT_CRM_NAME'                  => $_ARRAYLANG['TXT_CRM_NAME'],
-                'TXT_CRM_TITLEACTIVE'           => $_ARRAYLANG['TXT_CRM_TITLEACTIVE'],
-                'TXT_CRM_SORTING_NUMBER'        => $_ARRAYLANG['TXT_CRM_SORTING_NUMBER'],
-                'TXT_CRM_SAVE'                  => $_ARRAYLANG['TXT_CRM_SAVE'],
-                'TXT_CRM_PARENT_INDUSTRY_TYPE'  => $_ARRAYLANG['TXT_CRM_PARENT_INDUSTRY_TYPE'],
-                'TXT_CRM_NEW_INDUSTRY_TYPE' => $_ARRAYLANG['TXT_CRM_NEW_INDUSTRY_TYPE'],
-                'TXT_CRM_BACK'                  => $_ARRAYLANG['TXT_CRM_BACK'],
-                'TXT_TITLE_MODIFY_INDUSTRY' => (!empty ($id)) ? $_ARRAYLANG['TXT_CRM_EDIT_INDUSTRY'] : $_ARRAYLANG['TXT_CRM_ADD_INDUSTRY'],
-                'CSRF_PARAM'                => CSRF::param(),
+                'CRM_ACTIVATED_VALUE'             => $status ? "checked='checked'" : '',
+                'CRM_SORTINGNUMBER'               => $sorting,
+                'DEFAULT_LANG_ID'                 => $_LANGID,
+                'LANG_ARRAY'                      => implode(',', array_keys($this->_arrLanguages)),
+                'TXT_CRM_CUSTOMER_INDUSTRY'       => $_ARRAYLANG['TXT_CRM_CUSTOMER_INDUSTRY'],
+                'TXT_CRM_OVERVIEW'                => $_ARRAYLANG['TXT_CRM_OVERVIEW'],
+                'TXT_CRM_NAME'                    => $_ARRAYLANG['TXT_CRM_NAME'],
+                'TXT_CRM_TITLEACTIVE'             => $_ARRAYLANG['TXT_CRM_TITLEACTIVE'],
+                'TXT_CRM_SORTING_NUMBER'          => $_ARRAYLANG['TXT_CRM_SORTING_NUMBER'],
+                'TXT_CRM_SAVE'                    => $_ARRAYLANG['TXT_CRM_SAVE'],
+                'TXT_CRM_PARENT_INDUSTRY_TYPE'    => $_ARRAYLANG['TXT_CRM_PARENT_INDUSTRY_TYPE'],
+                'TXT_CRM_NEW_INDUSTRY_TYPE'       => $_ARRAYLANG['TXT_CRM_NEW_INDUSTRY_TYPE'],
+                'TXT_CRM_BACK'                    => $_ARRAYLANG['TXT_CRM_BACK'],
+                'TXT_TITLE_MODIFY_INDUSTRY'       => (!empty ($id)) ? $_ARRAYLANG['TXT_CRM_EDIT_INDUSTRY'] : $_ARRAYLANG['TXT_CRM_ADD_INDUSTRY'],
+                'CSRF_PARAM'                      => CSRF::param(),
         ));
     }
 

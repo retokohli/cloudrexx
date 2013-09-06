@@ -359,7 +359,7 @@ class crmTask extends CrmLibrary
                             'CRM_TASK_DUE_DATE'                 => $duedate,
                             'CRM_TASK_CREATED_USER'             => contrexx_raw2xhtml(FWUser::getParsedUserTitle($objFWUser->objUser->getId())),
                             'CRM_TASK_DESCRIPTION_TEXT_VERSION' => contrexx_html2plaintext($description),
-                            'CRM_TASK_DESCRIPTION_HTML_VERSION' => contrexx_raw2xhtml($description)
+                            'CRM_TASK_DESCRIPTION_HTML_VERSION' => $description
                     );
 
                     $dispatcher = EventDispatcher::getInstance();
