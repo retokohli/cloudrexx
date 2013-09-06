@@ -924,7 +924,7 @@ class CrmLibrary
         switch ($urlProfile) {
         // linkedIn
         case 3:
-                $formattedValue = "<a href='http://".preg_replace("`^http://`is", "", urldecode($url))."'>".urldecode($url)."</a>";
+                $formattedValue = "<a href='http://".preg_replace("`^http://`is", "", html_entity_decode(contrexx_raw2xhtml($url), ENT_QUOTES, CONTREXX_CHARSET))."'>".html_entity_decode(contrexx_raw2xhtml($url), ENT_QUOTES, CONTREXX_CHARSET)."</a>";
             break;
         // skype
         case 1:
@@ -951,7 +951,7 @@ class CrmLibrary
                 $formattedValue = "<a href='http://icq.com/people/".contrexx_raw2xhtml($url)."'>".contrexx_raw2xhtml($url)."</a>";
             break;
         default:
-                $formattedValue = "<a href='http://".preg_replace("`^http://`is", "", urldecode($url))."'>".urldecode($url)."</a>";
+                $formattedValue = "<a href='http://".preg_replace("`^http://`is", "", html_entity_decode(contrexx_raw2xhtml($url), ENT_QUOTES, CONTREXX_CHARSET))."'>".html_entity_decode(contrexx_raw2xhtml($url), ENT_QUOTES, CONTREXX_CHARSET)."</a>";
             break;
         }
         return $formattedValue;

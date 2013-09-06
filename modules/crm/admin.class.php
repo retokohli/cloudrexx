@@ -2104,13 +2104,13 @@ END;
         $customerContacts    = isset($_POST['companyContacts']) ? array_map('intval', (array) $_POST['companyContacts']) : array();
         $assignedMembersShip = isset($_POST['assigned_memberships']) ? array_map('intval', (array) $_POST['assigned_memberships']) : array();
 
-        $this->contact->notes        = isset($_POST['notes']) ? html_entity_decode($_POST['notes'], ENT_QUOTES, CONTREXX_CHARSET) : '';
+        $this->contact->notes        = isset($_POST['notes']) ? contrexx_input2raw($_POST['notes']) : '';
         $this->contact->industryType = isset($_POST['industryType']) ? (int) $_POST['industryType'] : 0;
         $this->contact->user_name    = isset($_POST['contact_username']) ? contrexx_input2raw($_POST['contact_username']) : '';
 
         if (isset($_POST['save_contact']) || isset($_POST['save_add_new_contact'])) {
-            $description          = $this->stripOnlyTags($this->contact->notes, '<script><iframe>', $stripContent = false);
-            $this->contact->notes = $description;
+//            $description          = $this->stripOnlyTags($this->contact->notes, '<script><iframe>', $stripContent = false);
+//            $this->contact->notes = $description;
             $msg = '';
             switch(true) {
             case ($contactType == 1 && !empty($id)):
@@ -2183,7 +2183,7 @@ END;
                 foreach ($result['contactwebsite'] as $value) {
                     if (!empty($value['value'])) {
                         $fields = array(
-                                    'url'           => urlencode($value['value']),
+                                    'url'           => contrexx_input2raw($value['value']),
                                     'url_profile'   => (int) $value['profile'],
                                     'is_primary'    => $value['primary'],
                                     'contact_id'    => $this->contact->id
@@ -2210,7 +2210,7 @@ END;
                     if (!empty($value['value'])) {
                         $fields = array(
                                     'id'            => array('val' => !empty($value['id']) ? (int) $value['id'] : null, 'omitEmpty' => true) ,
-                                    'url'           => $value['value'],
+                                    'url'           => contrexx_input2raw($value['value']),
                                     'url_profile'   => (int) $value['profile'],
                                     'is_primary'    => $value['primary'],
                                     'contact_id'    => $this->contact->id
@@ -2386,7 +2386,7 @@ END;
             foreach ($result['contactwebsite'] as $website) {
                 $this->_objTpl->setVariable(array(
                         'CRM_CONTACT_WEBSITE_NAME'    => "contactwebsite_{$Count}_{$website['profile']}_{$website['primary']}",
-                        'CRM_CONTACT_WEBSITE'         => contrexx_raw2xhtml(urldecode($website['value'])),
+                        'CRM_CONTACT_WEBSITE'         => contrexx_raw2xhtml(html_entity_decode($website['value'], ENT_QUOTES, CONTREXX_CHARSET)),
                         'CRM_WEBSITE_PROFILE'         => $_ARRAYLANG[$this->websiteProfileOptions[$website['profile']]],
                         'CRM_WEBSITE_OPTION'          => $_ARRAYLANG[$this->websiteOptions[$website['type']]],
                         'CRM_CONTACT_WEB_ID_NAME'     => "website_{$Count}",
@@ -2403,7 +2403,7 @@ END;
             foreach ($result['contactsocial'] as $social) {
                 $this->_objTpl->setVariable(array(
                         'CRM_CONTACT_SOCIAL_NAME'     => "contactsocial_{$Count}_{$social['profile']}_{$social['primary']}",
-                        'CRM_CONTACT_SOCIAL'          => contrexx_raw2xhtml(urldecode($social['value'])),
+                        'CRM_CONTACT_SOCIAL'          => contrexx_raw2xhtml(html_entity_decode($social['value'], ENT_QUOTES, CONTREXX_CHARSET)),
                         'CRM_SOCIAL_PROFILE'          => $_ARRAYLANG[$this->socialProfileOptions[$social['profile']]],
                         'CRM_CONTACT_SOCIAL_ID_NAME'  => "social_{$Count}",
                         'CRM_CONTACT_SOCIAL_ID'       => (int) $social['id'],
@@ -3443,8 +3443,8 @@ END;
                 $objPhone->MoveNext();
             }
             while (!$objWeb->EOF) {
-                $homeWebsite      = utf8_decode(urldecode($objWeb->fields['url']));
-                $workWebsite      = utf8_decode(urldecode($objWeb->fields['url']));
+                $homeWebsite      = utf8_decode(html_entity_decode(contrexx_raw2xhtml($objWeb->fields['url']), ENT_QUOTES, CONTREXX_CHARSET));
+                $workWebsite      = utf8_decode(html_entity_decode(contrexx_raw2xhtml($objWeb->fields['url']), ENT_QUOTES, CONTREXX_CHARSET));
                 $objWeb->MoveNext();
             }
             $workAddr = false;
@@ -4004,7 +4004,7 @@ END;
             $this->_objTpl->setVariable(array(
                     'CRM_PROJECT_ACTIVE'       => $active,
                     'CRM_PROJECT_ID'           => (int) $objProjectResult->fields['id'],
-                    'CRM_PROJECT_NAME'         => "<a href='index.php?cmd={$this->pm_moduleName}&act=projectdetails&".CSRF::param()."&projectid={$objProjectResult->fields['id']}'>".urldecode($objProjectResult->fields['url'])." - ".contrexx_raw2xhtml($objProjectResult->fields['name'])."</a>",
+                    'CRM_PROJECT_NAME'         => "<a href='index.php?cmd={$this->pm_moduleName}&act=projectdetails&".CSRF::param()."&projectid={$objProjectResult->fields['id']}'>".contrexx_raw2xhtml(html_entity_decode($objProjectResult->fields['url'], ENT_QUOTES, CONTREXX_CHARSET))." - ".contrexx_raw2xhtml($objProjectResult->fields['name'])."</a>",
                     'CRM_PROJECT_QUOTED_PRICE' => contrexx_raw2xhtml($objProjectResult->fields['quoted_price']).' '.contrexx_raw2xhtml($objProjectResult->fields['currency']),
                     'CRM_PROJECT_STATUS'       => contrexx_raw2xhtml($objProjectResult->fields['proStatus']),
                     'CRM_PROJECT_RESPONSIBLE'  => $this->getUserName($objProjectResult->fields['assigned_to']),
@@ -5644,8 +5644,8 @@ END;
         while (!$objResult->EOF) {
             $website[] = array(
                     'id'         => $objResult->fields['id'],
-                    'label'      => urldecode($objResult->fields['url']),
-                    'value'      => urldecode($objResult->fields['url']),
+                    'label'      => html_entity_decode(contrexx_raw2xhtml($objResult->fields['url']), ENT_QUOTES, CONTREXX_CHARSET),
+                    'value'      => html_entity_decode(contrexx_raw2xhtml($objResult->fields['url']), ENT_QUOTES, CONTREXX_CHARSET),
                     'company'    => $objResult->fields['customer_name'],
                     'companyId'    => $objResult->fields['contact_id'],
             );

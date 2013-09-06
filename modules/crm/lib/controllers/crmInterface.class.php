@@ -557,14 +557,14 @@ class crmInterface extends CrmLibrary
                 $objWebsite = $objDatabase->Execute("SELECT * FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_websites` WHERE contact_id = {$objResult->fields['id']} ORDER BY id ASC");
                 if ($objWebsite) {
                     while (!$objWebsite->EOF) {
-                        $result['contactwebsite'][$objWebsite->fields['url_profile']] = urldecode($objWebsite->fields['url']);
+                        $result['contactwebsite'][$objWebsite->fields['url_profile']] = html_entity_decode(contrexx_raw2xhtml($objWebsite->fields['url']), ENT_QUOTES, CONTREXX_CHARSET);
                         $objWebsite->MoveNext();
                     }
                 }
                 $objSocial = $objDatabase->Execute("SELECT * FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_social_network` WHERE contact_id = {$objResult->fields['id']} ORDER BY id ASC");
                 if ($objSocial) {
                     while (!$objSocial->EOF) {
-                        $result['contactsocial'][$objSocial->fields['url_profile']] = urldecode($objSocial->fields['url']);
+                        $result['contactsocial'][$objSocial->fields['url_profile']] = html_entity_decode(contrexx_raw2xhtml($objSocial->fields['url']), ENT_QUOTES, CONTREXX_CHARSET);
                         $objSocial->MoveNext();
                     }
                 }
@@ -831,7 +831,7 @@ class crmInterface extends CrmLibrary
                                 if (!empty($line[${"customer_website_$websiteKey"}]) && $proceed) {
                                     $tableName = "module_{$this->moduleName}_customer_contact_websites";
                                     $fields = array(
-                                        'url'           => urlencode($line[${"customer_website_$websiteKey"}]),
+                                        'url'           => contrexx_input2raw($line[${"customer_website_$websiteKey"}]),
                                         'url_profile'   => $websiteKey,
                                         'is_primary'    => $first ? '1' : '0',
                                         'contact_id'    => $this->contact->id
@@ -848,7 +848,7 @@ class crmInterface extends CrmLibrary
                                 if (!empty($line[${"customer_social_$websiteKey"}])) {
                                     $tableName = "module_{$this->moduleName}_customer_contact_social_network";
                                     $fields = array(
-                                        'url'           => urlencode($line[${"customer_social_$websiteKey"}]),
+                                        'url'           => contrexx_input2raw($line[${"customer_social_$websiteKey"}]),
                                         'url_profile'   => $websiteKey,
                                         'is_primary'    => $first ? '1' : '0',
                                         'contact_id'    => $this->contact->id
