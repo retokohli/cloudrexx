@@ -62,10 +62,17 @@ define('FRONTEND_LANG_ID', 1);
 // Update configuration
 require_once(dirname(__FILE__).'/config/configuration.php');
 
+global $_PATHCONFIG;
 // Config files
-require_once(dirname(UPDATE_PATH) . '/config/configuration.php');
+//require_once(dirname(UPDATE_PATH) . '/config/configuration.php');
+$configContents = file_get_contents(dirname(UPDATE_PATH) . '/config/configuration.php');
+// remove require_once dirname(__FILE__).'/set_constants.php';
+$configContents = preg_replace('#<\?(?:php)?#', '', $configContents);
+$configContents = preg_replace('#require_once (?:[/\(\)_a-zA-Z\\.\']+);#', '', $configContents);
+eval($configContents);
 
 fixPaths($_PATHCONFIG['ascms_root'], $_PATHCONFIG['ascms_root_offset']);
+
 $_PATHCONFIG['ascms_installation_root'] = $_PATHCONFIG['ascms_root'];
 $_PATHCONFIG['ascms_installation_offset'] = $_PATHCONFIG['ascms_root_offset'];
 
@@ -175,9 +182,13 @@ function fixPaths(&$documentRoot, &$rootOffset) {
     $nonOffsetParts = explode('/', $nonOffset);
     end($nonOffsetParts);
     unset($nonOffsetParts[key($nonOffsetParts)]);
+    end($nonOffsetParts);
+    unset($nonOffsetParts[key($nonOffsetParts)]);
     $nonOffset = implode('/', $nonOffsetParts);
-    $rootOffset = preg_replace('#' . $nonOffset . '#', '', $rootOffset);
+    $rootOffset = $nonOffset;//preg_replace('#' . $nonOffset . '#', '', $rootOffset);
 
+    $documentRoot = preg_replace('#' . $rootOffset . '#', '', $fileRoot);
+    /*echo $documentRoot;
     // calculate correct document root
     // turning '/var/www/myoffset' into '/var/www'
     $documentRoot = '';
@@ -188,5 +199,5 @@ function fixPaths(&$documentRoot, &$rootOffset) {
     }
     if (preg_match("#(.*)".preg_replace(array('#\\\#', '#\^#', '#\$#', '#\.#', '#\[#', '#\]#', '#\|#', '#\(#', '#\)#', '#\?#', '#\*#', '#\+#', '#\{#', '#\}#'), '\\\\$0', $rootOffset)."#", $scriptPath, $arrMatches) == 1) {
         $documentRoot = $arrMatches[1];
-    }
+    }*/
 }

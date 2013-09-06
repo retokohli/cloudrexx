@@ -303,16 +303,25 @@ class DBG
         while (file_exists($file.$suffix)) {
             $suffix = '.'.++$nr;
         }*/
-        try {
-            self::$dbg_fh = new \Cx\Lib\FileSystem\File($file.$suffix);
-            self::$dbg_fh->touch();
-            if (self::$dbg_fh->makeWritable()) {
+        if (class_exists('\Cx\Lib\FileSystem\File')) {
+            try {
+                self::$dbg_fh = new \Cx\Lib\FileSystem\File(dirname($_SERVER['SCRIPT_FILENAME']).'/'.$file.$suffix);
+                self::$dbg_fh->touch();
+                if (self::$dbg_fh->makeWritable()) {
+                    return true;
+                } else {
+                    return false;
+                }
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                return false;
+            }
+        } else {
+            self::$dbg_fh = fopen(dirname($_SERVER['SCRIPT_FILENAME']).'/'.$file.$suffix, $mode);
+            if (self::$dbg_fh) {
                 return true;
             } else {
                 return false;
             }
-        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-            return false;
         }
     }
 
@@ -652,11 +661,17 @@ class DBG
             } else {
                 $dateFormat = 'Y-m-d H:i:s';
             }
-            self::$dbg_fh->write(
-                self::$dbg_fh->getData() .
-// TODO: Add some flag to enable/disable timestamps
-                date($dateFormat).' '.
-                $text."\n");
+            if (self::$dbg_fh instanceof \Cx\Lib\FileSystem\File) {
+                self::$dbg_fh->write(
+                    self::$dbg_fh->getData() .
+    // TODO: Add some flag to enable/disable timestamps
+                    date($dateFormat).' '.
+                    $text."\n");
+            } else {
+                fputs(self::$dbg_fh,
+                    date($dateFormat).' '.
+                    $text."\n");
+            }
         } else {
             echo $text.'<br />'."\r\n";
             // force log message output
