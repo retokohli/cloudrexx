@@ -102,7 +102,7 @@ class CrmManager extends CrmLibrary
                 ['TXT_CRM_OPPORTUNITY']}</a>";
 
         if (Permission::checkAccess($this->adminAccessId, 'static', true)) {
-            $contentNavigation .= "<a href='index.php?cmd=".$this->moduleName."&act=settings' class='".($this->act == 'settings' ? 'active' : '')."' title='".$_ARRAYLANG['TXT_CRM_SETTINGS']."'>".
+            $contentNavigation .= "<a href='index.php?cmd=".$this->moduleName."&act=settings' class='".(($this->act == 'settings' || $this->act == 'mailtemplate_overview' || $this->act == 'mailtemplate_edit') ? 'active' : '')."' title='".$_ARRAYLANG['TXT_CRM_SETTINGS']."'>".
                 $_ARRAYLANG['TXT_CRM_SETTINGS']."</a>";
         }
 

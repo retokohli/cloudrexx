@@ -2022,11 +2022,24 @@ class CrmLibrary
 
         if (empty($objUser->error_msg) && $objUser->store()) {
             if (empty($this->contact->account_id) && $sendLoginDetails) {
+                if (trim($objUser->getProfileAttribute('gender')) == 'gender_female') {
+                    $saluation = $_ARRAYLANG['TXT_CRM_SALUATION_FEMALE'];
+                } else if (trim($objUser->getProfileAttribute('gender')) == 'gender_male') {
+                    $saluation = $_ARRAYLANG['TXT_CRM_SALUATION_MALE'];
+                } else {
+                    $saluation = $_ARRAYLANG['TXT_CRM_SALUATION'];
+                }
                 $info['substitution'] = array(
+                        'CRM_CONTACT_FIRSTNAME'          => contrexx_raw2xhtml($objUser->getProfileAttribute('firstname')),
+                        'CRM_CONTACT_LASTNAME'           => contrexx_raw2xhtml($objUser->getProfileAttribute('lastname')),
+                        'CRM_ASSIGNED_USER_EMAIL'        => $objUser->getEmail(),
+                        'CRM_CONTACT_SALUTATION'         => contrexx_raw2xhtml($saluation),
+                        'CRM_ASSIGNED_USER_NAME'         => contrexx_raw2xhtml(FWUser::getParsedUserTitle($objUser->getId())),
                         'CRM_CUSTOMER_COMPANY'           => $this->contact->customerName." ".$this->contact->family_name,
-                        'CRM_CUSTOMER_CONTACT_EMAIL'     => $email,
-                        'CRM_CUSTOMER_CONTACT_USER_NAME' => $email,
-                        'CRM_CUSTOMER_CONTACT_PASSWORD'  => $password,
+                        'CRM_DOMAIN'                     => ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}".ASCMS_PATH_OFFSET,
+                        'CRM_CONTACT_EMAIL'              => $email,
+                        'CRM_CONTACT_USERNAME'           => $email,
+                        'CRM_CONTACT_PASSWORD'           => $password,
                 );
                 $dispatcher = EventDispatcher::getInstance();
                 $dispatcher->triggerEvent(CRM_EVENT_ON_USER_ACCOUNT_CREATED, null, $info);
@@ -2567,25 +2580,34 @@ CODE;
      */
     public function notifyStaffOnContactAccModification($customerId = 0, $customer_name = '')
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG, $objFWUser;
 
         if (empty($customerId)) return false;
 
         $settings = $this->getSettings();
         $resources = $this->getResources($settings['emp_default_user_group']);
-        $emails    = array();
+        $emailIds    = array();
         foreach ($resources as $key => $value) {
-            $emails[]    = $value['email'];
+            $emailIds[]    = $value['email'];
         }
 
-        if (!empty ($emails)) {
-            $info['substitution'] = array(
-                    'CRM_ASSIGNED_USER_EMAIL'           => implode(',', $emails),
+        foreach ($emailIds As $emails) {
+            if (!empty ($emails)) {
+                $objUsers = $objFWUser->objUser->getUsers($filter = array('email' => addslashes($emails)));
+                $info['substitution'] = array(
+                    'CRM_ASSIGNED_USER_NAME'            => contrexx_raw2xhtml(FWUser::getParsedUserTitle($objUsers->getId())),
+                    'CRM_ASSIGNED_USER_EMAIL'           => $emails,
+                    'CRM_CONTACT_FIRSTNAME'             => contrexx_raw2xhtml($objUsers->getProfileAttribute('firstname')),
+                    'CRM_CONTACT_LASTNAME'              => contrexx_raw2xhtml($objUsers->getProfileAttribute('lastname')),
+                    'CRM_CONTACT_GENDER'                => contrexx_raw2xhtml($objUsers->getProfileAttribute('gender')),
+                    'CRM_DOMAIN'                        => ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}".ASCMS_PATH_OFFSET,
+                    'CRM_CONTACT_DETAILS_URL'           => ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}". ASCMS_ADMIN_WEB_PATH ."/index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id=$customerId",
                     'CRM_CONTACT_DETAILS_LINK'          => "<a href='". ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}". ASCMS_ADMIN_WEB_PATH ."/index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id=$customerId'>".$customer_name."</a>"
-            );
+                );
 
-            $dispatcher = EventDispatcher::getInstance();
-            $dispatcher->triggerEvent(CRM_EVENT_ON_ACCOUNT_UPDATED, null, $info);
+                $dispatcher = EventDispatcher::getInstance();
+                $dispatcher->triggerEvent(CRM_EVENT_ON_ACCOUNT_UPDATED, null, $info);
+            }
         }
     }
 
