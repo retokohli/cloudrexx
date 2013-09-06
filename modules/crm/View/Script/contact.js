@@ -98,6 +98,31 @@ var resetAddressPrimaryInputs = function() {
         $inputObj.attr('name', parts.join('_'));
     });
 }
+cx.ready(function(){
+    fn = function(objUser) {
+        $J.getJSON( 'index.php?cmd=crm&act=checkAccountId&id='+objUser.id+'&email='+objUser.name, function( data ) { 
+            $J.each(data, function(key, val) {
+                if (val.show) {
+                    $J("#contact_email").val(val.email);
+                    $J(".showAccountDetail").show();
+                    $J('#send_account_notification').prop('checked', false);
+                } else {
+                    $J(".showAccountDetail").hide();
+                }
+                if (val.sendLoginCheck) {
+                    $J('#send_account_notification').prop('checked', true);
+                }
+                if (val.setDefaultUser || val.id ) {
+                    $J("#contactId").val(val.id);
+                    $J("#contact_email").val(val.email);
+                    $J(".live-search-user-title").text(val.setDefaultUser);
+                }
+            });
+        });
+    }
+    cx.bind("userSelected", fn, "user/live-search/contactId");
+}, true);
+
 $J(document).ready(function() {
     
     $J("#assigned_memberships").chosen().change(function(){
@@ -505,8 +530,8 @@ $J(function() {
             $J.get("index.php?cmd=crm&act=addcontact&id="+ui.item.id+"&customerid="+$J('#customer_id').val(), function(data) {
                 $J("table#contacts").append(data);
                 $J(".exContactSelect #selectContact").val("");
-//                $J("table#contacts tfoot").hide("fast");
-//                $J("#contactContainer .exContactSelect").hide("fast");
+            //                $J("table#contacts tfoot").hide("fast");
+            //                $J("#contactContainer .exContactSelect").hide("fast");
             });
         }
     });
