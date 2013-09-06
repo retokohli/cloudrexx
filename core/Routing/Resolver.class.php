@@ -143,6 +143,7 @@ class Resolver {
 
         if ($aliaspage != null) {
             $this->lang = $aliaspage->getTargetLangId();
+            $aliaspage = clone $aliaspage;
             $aliaspage->setVirtual(true);
             return $aliaspage;
         } else {
@@ -335,6 +336,7 @@ class Resolver {
             return null;
         }
         
+        $this->page = clone $this->page;
         $this->page->setVirtual();
         
         // check for further URL parts to resolve
