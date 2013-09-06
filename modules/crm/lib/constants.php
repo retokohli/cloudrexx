@@ -18,6 +18,6 @@ define('CRM_ACCESS_OTHER_IMG_WEB_PATH', ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/
 define('CRM_ACCESS_OTHER_IMG_PATH',     ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/crm');
 define('CRM_MEDIA_PATH', ASCMS_MEDIA_PATH.'/crm/');
 
-define('CRM_EVENT_ON_USER_ACCOUNT_CREATED', 'crm_on_user_acc_created');
+define('CRM_EVENT_ON_USER_ACCOUNT_CREATED', 'crm_user_account_created');
 define('CRM_EVENT_ON_TASK_CREATED', 'crm_task_assigned');
 define('CRM_EVENT_ON_ACCOUNT_UPDATED', 'crm_notify_staff_on_contact_added');
