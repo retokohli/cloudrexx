@@ -1070,7 +1070,7 @@ function _updateCssDefinitions(&$viewUpdateTable, $objUpdate) {
         \DBG::msg('Updating CSS definitions for theme "' . $result->fields['themesname'] . '" (' . $type . ')');
         if (!_updateCssDefinitionsForTemplate($result->fields['foldername'], $type, $viewUpdateTable, $objUpdate)) {
             \DBG::msg('CSS update for theme "' . $result->fields['themesname'] . '" failed');
-            return false;
+            $errorMessages .= sprintf($_CORELANG['TXT_UPDATE_THEME_FAILED'], $result->fields['themesname']);
         }
         $result->moveNext();
     }

@@ -95,4 +95,5 @@ $_CORELANG = array(
     'TXT_UPDATE_DBG_FILE'                        => 'Zur schnelleren Analyse und Behebung von Problemen, die während einem Update auftreten, wurde versucht eine Datei als Log zu erstellen.<br />Dies ist leider nicht gelungen. Bitte erstellen Sie die Datei dbg.log im Ordner update/ und setzen Sie die Schreibberechtigungen auf 777.',
     'TXT_UPDATE_EXECUTION_TIME'                  => 'Die PHP max_execution_time beträgt auf Ihrem Server weniger als 20 Sekunden. Dies kann Probleme während dem Update verursachen. Sie können den Update Vorgang hier trotzdem fortsetzen.',
     'TXT_UPDATE_PDO'                             => 'PHP-Erweiterung PDO',
+    'TXT_UPDATE_THEME_FAILED'                    => 'Das CSS des Designes "%s" konnte nicht aktualisiert werden.',
 );
