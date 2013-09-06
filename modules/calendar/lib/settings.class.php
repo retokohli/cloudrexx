@@ -278,50 +278,7 @@ class CalendarSettings extends CalendarLibrary
 
         $objTpl->addBlockfile($this->moduleLangVar.'_SETTINGS_CONTENT', 'settings_content', 'module_calendar_settings_modify_form.html');           
         
-        foreach ($this->arrFrontendLanguages as $key => $arrLang) {
-        	$strFieldNamesJS .= '<input name="inputfield[FIELD_ID][name]['.$arrLang['id'].']" maxlength="255" type="text" style="width: 179px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url(\\\'images/flags/flag_'.$arrLang['lang'].'.gif\\\') no-repeat 3px 3px;" title="'.$arrLang['name'].'" value="" /><br />'; 
-        	$strFieldDefaultValuesJS .= '<input name="inputfield[FIELD_ID][default_value]['.$arrLang['id'].']" maxlength="255" type="text" style="width: 179px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url(\\\'images/flags/flag_'.$arrLang['lang'].'.gif\\\') no-repeat 3px 3px;" title="'.$arrLang['name'].'" value="" /><br />';                 
-            
-            if(($key+1) == count($this->arrFrontendLanguages)) {
-                $strMinimize = '<a href="javascript:ExpandMinimize(\\\'name\\\', FIELD_ID);ExpandMinimize(\\\'default_value\\\', FIELD_ID);ExpandMinimize(\\\'lang_name\\\', FIELD_ID);">&laquo;&nbsp;'.$_ARRAYLANG['TXT_CALENDAR_MINIMIZE'].'</a>';
-            } else {
-                $strMinimize = '';	
-            }
-        	
-        	$strFieldLangNamesJS .= $arrLang['name'].'&nbsp;&nbsp;&nbsp;'.$strMinimize.'<br />';
-        }
-        
-        $arrInputfieldTypes = array(
-            1  => 'inputtext',
-            2  => 'textarea',
-            3  => 'select',
-            4  => 'radio',
-            5  => 'checkbox',
-            6  => 'mail',
-            7  => 'seating',
-            8  => 'agb',
-            9  => 'salutation',
-            10 => 'firstname',
-            11 => 'lastname',
-            12 => 'selectBillingAddress',
-            13 => 'title',
-        );
-        
-        foreach ($arrInputfieldTypes as $id => $strType) {
-            $strFieldTypesJS .= '<option value="'.$strType.'">'.$_ARRAYLANG['TXT_CALENDAR_FORM_FIELD_'.strtoupper($strType)].'</option>';
-        }
-        
-        $arrInputfieldAffiliations = array(
-            1  => 'form',
-            2  => 'contact',
-            3  => 'billing',
-        );
-        
-        foreach ($arrInputfieldAffiliations as $id => $strAffiliation) {
-            $strSelectAffiliation .= '<option value="'.$strAffiliation.'">'.$_ARRAYLANG['TXT_CALENDAR_FORM_FIELD_AFFILIATION_'.strtoupper($strAffiliation)].'</option>';
-        }
-        
-        if($formId != 0) {    
+        if($formId != 0) {
             $this->_pageTitle = $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_FORM']." ".$_ARRAYLANG['TXT_CALENDAR_EDIT']; 
         } else {
             if(intval($_GET['copy']) != 0) {
@@ -356,11 +313,8 @@ class CalendarSettings extends CalendarLibrary
             'TXT_'.$this->moduleLangVar.'_NEW_INPUTFIELD'           => $_ARRAYLANG['TXT_CALENDAR_NEW_INPUTFIELD'],
             'TXT_'.$this->moduleLangVar.'_EXPAND'                   => $_ARRAYLANG['TXT_CALENDAR_EXPAND'],
             'TXT_'.$this->moduleLangVar.'_MINIMIZE'                 => $_ARRAYLANG['TXT_CALENDAR_MINIMIZE'],
-            $this->moduleLangVar.'_INPUTFIELD_NAMES_JS'             => $strFieldNamesJS,
-            $this->moduleLangVar.'_INPUTFIELD_DEFAULT_VALUES_JS'    => $strFieldDefaultValuesJS,
-            $this->moduleLangVar.'_INPUTFIELD_LANG_NAMES_JS'        => $strFieldLangNamesJS,
-            $this->moduleLangVar.'_INPUTFIELD_TYPES_JS'             => $strFieldTypesJS,
-            $this->moduleLangVar.'_INPUTFIELD_AFFILIATION_JS'       => $strSelectAffiliation,
+            'TXT_'.$this->moduleLangVar.'_FIELDS'                   => $_ARRAYLANG['TXT_CALENDAR_FIELDS'],
+            'TXT_'.$this->moduleLangVar.'_REGISTRATION_DATA'        => $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_DATA'],
         ));       
         
         $objFormManager = new CalendarFormManager();  

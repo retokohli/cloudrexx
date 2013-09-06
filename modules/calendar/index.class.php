@@ -723,7 +723,9 @@ UPLOADER;
 
                 $objFormManager = new CalendarFormManager();
                 $objFormManager->getFormList();
-                $objFormManager->showForm($this->_objTpl,intval($objEvent->registrationForm), 2, $objEvent->ticketSales);
+                //$objFormManager->showForm($this->_objTpl,intval($objEvent->registrationForm), 2, $objEvent->ticketSales);
+                // Made the ticket sales always true, because ticket functionality currently not implemented
+                $objFormManager->showForm($this->_objTpl,intval($objEvent->registrationForm), 2, true); 
                 
 
                 /* if ($this->arrSettings['paymentStatus'] == '1' && $objEvent->ticketSales && ($this->arrSettings['paymentBillStatus'] == '1' || $this->arrSettings['paymentYellowpayStatus'] == '1')) {
