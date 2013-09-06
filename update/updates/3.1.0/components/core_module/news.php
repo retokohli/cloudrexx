@@ -606,11 +606,12 @@ NEWS;
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
+
+    /************************************************
+    * EXTENSION:    Categories as NestedSet         *
+    * ADDED:        Contrexx v3.1.0                 *
+    ************************************************/
     try {
-        /************************************************
-        * EXTENSION:    Categories as NestedSet         *
-        * ADDED:        Contrexx v3.1.0                 *
-        ************************************************/
         $nestedSetRootId = null;
         $count = null;
         $leftAndRight = 2;
@@ -685,6 +686,76 @@ NEWS;
 
         // insert id of last added category
         \Cx\Lib\UpdateUtil::sql('INSERT INTO `'.DBPREFIX.'module_news_categories_catid` (`id`) VALUES ('.$nestedSetRootId.')');
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
+
+    /************************************
+    * EXTENSION:    Module page changes *
+    * ADDED:        Contrexx v3.1.0     *
+    ************************************/
+    try {
+
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
+            $result = \Cx\Lib\UpdateUtil::sql('SELECT `id` FROM `'.DBPREFIX.'content_page` WHERE `module` = "news" AND `cmd` RLIKE "^[0-9]*$"');
+            if ($result && ($result->RecordCount() > 0)) {
+                while (!$result->EOF) {
+
+                    \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('id' => $result->fields['id']), '/(.*)/ms', function($matches) {
+                        $page = $matches[0];
+
+                        if (!preg_match('/<!--\s+BEGIN\s+news_status_message\s+-->.*<!--\s+END\s+news_status_message\s+-->/', $page) &&
+                            !preg_match('/<!--\s+BEGIN\s+news_menu\s+-->.*<!--\s+END\s+news_menu\s+-->/', $page) &&
+                            !preg_match('/<!--\s+BEGIN\s+news_list\s+-->.*<!--\s+END\s+news_list\s+-->/', $page)
+                        ) {
+                            $page = preg_replace_callback('/<form[^>]*>[^<]*\\{NEWS_CAT_DROPDOWNMENU\\}[^>]*<\/form>/ims', function($matches) {
+                                $menu = $matches[0];
+
+                                $menu = preg_replace_callback('/(action\s*=\s*([\'"])[^\2]+section=news)\2/i', function($matches) {
+                                    return $matches[1].'&cmd=[[NEWS_CMD]]'.$matches[2];
+                                }, $menu);
+
+                                return '
+                                    <!-- BEGIN news_status_message -->
+                                    {TXT_NEWS_NO_NEWS_FOUND}
+                                    <!-- END news_status_message -->
+
+                                    <!-- BEGIN news_menu -->
+                                    '.$menu.'
+                                    <!-- END news_menu -->
+                                ';
+
+                            }, $page);
+
+                            $page = preg_replace_callback('/<ul[^>]*>[^<]*<!--\s+BEGIN\s+newsrow\s+-->.*<!--\s+END\s+newsrow\s+-->[^>]*<\/ul>/ims', function($matches) {
+                                return '
+                                    <!-- BEGIN news_list -->
+                                    '.$matches[0].'
+                                    <!-- END news_list -->
+                                ';
+                            }, $page);
+                        }
+
+                        return $page;
+
+                    }, array('content'), '3.1.0');
+
+                    $result->MoveNext();
+                }
+            }
+
+            $result = \Cx\Lib\UpdateUtil::sql('SELECT `id` FROM `'.DBPREFIX.'content_page` WHERE `module` = "news" AND `cmd` RLIKE "^details[0-9]*$"');
+            if ($result && ($result->RecordCount() > 0)) {
+                while (!$result->EOF) {
+
+                    \Cx\Lib\UpdateUtil::migrateContentPageUsingRegex(array('id' => $result->fields['id']), '/\\{NEWS_TEASER_TEXT\\}/', '<!-- BEGIN news_use_teaser_text -->\0<!-- END news_use_teaser_text -->', array('content'), '3.1.0');
+
+                    $result->MoveNext();
+                }
+            }
+        }
+
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
