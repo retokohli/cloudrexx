@@ -444,7 +444,8 @@
                                 <td width="200">{TXT_CRM_ACCOUNT_EMAIL}&nbsp;{CRM_ACCOUNT_MANTORY}</td>
                                 <td>
                                     <input class="live-search-user-id" id="contactId" type="hidden" name="contactId" value="{CRM_CONTACT_USER_ID}" />
-                                    <input class="live-search-user-name" id="contact_email" type="hidden" name="contact_email" value="{CRM_CONTACT_USERNAME}" placeholder="{TXT_CORE_SEARCH_USER}..." style="width: 277px;" />
+                                    <input class="live-search-user-name" id="contactEmail" type="hidden" name="contactEmail" value="{CRM_CONTACT_ACCOUNT_USERNAME}" placeholder="{TXT_CORE_SEARCH_USER}..." style="width: 277px;" />
+                                    <input type="hidden" id="contact_email" name="contact_email" value="{CRM_CONTACT_USERNAME}"/>
                                     <!--<input type="text" name="contact_email" autocomplete="off" id="contact_email" style="width: 254px;" value="{CRM_CONTACT_USERNAME}" class="{CRM_ACCOUNT_MANTORY_CLASS}" onKeyUp="typewatch(function(){checkUserNameAvailablity('{CRM_CONTACT_ID}')}, 1000 );" />-->
                                 </td>
                                 <!-- END contactUserName -->
@@ -452,13 +453,13 @@
                                 <td colspan="2">&nbsp;</td>
                                 <!-- END emptyContactUserName -->
                             </tr>
-                            <tr class="row2">
+                            <tr class="row2 showAccountDetail" {CRM_CONTACT_SHOW_PASSWORD}>
                                 <!-- BEGIN contactPassword -->
                                 <td width="200">{TXT_CRM_ACCOUNT_PASSWORD}&nbsp;{CRM_ACCOUNT_MANTORY}</td>
                                 <td>
                                     <input type="password" name="contact_password" autocomplete="off" id="contact_password" class="{CRM_ACCOUNT_MANTORY_CLASS}" style="width: 254px;" value="" />
                                     <!-- BEGIN contactSendNotification -->
-                                    <br><input type="checkbox" checked name="send_account_notification" value="1" />&nbsp;{TXT_CRM_SEND_LOGIN_DETAILS}
+                                    <br><input type="checkbox" id="send_account_notification" name="send_account_notification" value="1" />&nbsp;{TXT_CRM_SEND_LOGIN_DETAILS}
                                     <!-- END contactSendNotification -->
                                 </td>
                                 <!-- END contactPassword -->
