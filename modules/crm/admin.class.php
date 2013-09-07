@@ -2496,6 +2496,9 @@ END;
 
         if (!empty($this->contact->account_id)) {
             $objUser = $objFWUser->objUser->getUser($this->contact->account_id);
+            $accountCompany     = contrexx_raw2xhtml($objUser->getProfileAttribute('company'));
+            $accountFirstName   = contrexx_raw2xhtml($objUser->getProfileAttribute('firstname'));
+            $accountLastName    = contrexx_raw2xhtml($objUser->getProfileAttribute('lastname'));
         } else {
             $objUser = false;
         }
@@ -2510,13 +2513,12 @@ END;
             'CRM_MEMBERSHIP_BLOCK_DISPLAY'  => !empty($assignedMembersShip) ? 'table-row-group' : 'none',
         ));
 
-        $personCompany = ($this->contact->contact_customer!=null) ? contrexx_raw2xhtml($objDatabase->getOne("SELECT `customer_name` FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE id = {$this->contact->contact_customer} ")) : '';
         $this->_objTpl->setGlobalVariable(array(
                 'TXT_CON_FAMILY'            => contrexx_raw2xhtml($this->contact->family_name),
                 'TXT_CON_ROLE'              => contrexx_raw2xhtml($this->contact->contact_role),
                 'CRM_INPUT_COUNT'           => $Count,
                 'CRM_CONTACT_COMPANY_ID'    => (int) $this->contact->contact_customer,
-                'CRM_CONTACT_COMPANY'       => $personCompany,
+                'CRM_CONTACT_COMPANY'       => ($this->contact->contact_customer!=null) ? contrexx_raw2xhtml($objDatabase->getOne("SELECT `customer_name` FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE id = {$this->contact->contact_customer} ")) : '',
                 'CRM_CONTACT_NOTES'         => contrexx_raw2xhtml($this->contact->notes),
                 'CRM_INDUSTRY_DROPDOWN'     => $this->listIndustryTypes($this->_objTpl, 2, $this->contact->industryType),
 
@@ -2525,8 +2527,8 @@ END;
                 'CRM_CONTACT_ID'            => $this->contact->id != null ? $this->contact->id : 0,
                 'CRM_CONTACT_USER_ID'       => $this->contact->account_id != null ? $this->contact->account_id : 0,
                 'CRM_CONTACT_USERNAME'      => $objUser ? contrexx_raw2xhtml($objUser->getEmail()) : '',
-                'CRM_CONTACT_ACCOUNT_USERNAME' => $personCompany ? $personCompany.', '.contrexx_input2xhtml($this->contact->customerName).' '.contrexx_raw2xhtml($this->contact->family_name) : contrexx_input2xhtml($this->contact->customerName).' '.contrexx_raw2xhtml($this->contact->family_name),
-                'CRM_CONTACT_SHOW_PASSWORD' => $this->contact->id != null ? "style='display: table-row;'" : "style='display: none;'",
+                'CRM_CONTACT_ACCOUNT_USERNAME' => $objUser ? ($accountCompany ? $accountCompany.', '.$accountFirstName.' '.$accountLastName : $accountFirstName.' '.$accountLastName) : ' ',
+                'CRM_CONTACT_SHOW_PASSWORD' => "style='display: none;'",
                 'CRM_GENDER_FEMALE_SELECTED'=> $this->contact->contact_gender == 1 ? 'selected' : '',
                 'CRM_GENDER_MALE_SELECTED'  => $this->contact->contact_gender == 2 ? 'selected' : '',
                 'CRM_CONTACT_TYPE'          => ($contactType == 1) ? 'company' : 'contact',
