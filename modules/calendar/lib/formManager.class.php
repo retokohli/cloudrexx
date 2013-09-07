@@ -75,6 +75,16 @@ class CalendarFormManager extends CalendarLibrary
     private $onlyActive;  
     
     /**
+     * Form field Template
+     * 
+     * @var string
+     */
+    const frontendFieldTemplate = '<div class="row">
+                <label>{TXT_CALENDAR_FIELD_NAME}</label> 
+                {CALENDAR_FIELD_INPUT}
+            </div>';
+
+    /**
      * Form manager constructor
      * 
      * @param boolean $onlyActive get only active forms
@@ -274,22 +284,24 @@ class CalendarFormManager extends CalendarLibrary
 
                 break;
             case 2:
-                $objTpl->setVariable(array(             
-                    $this->moduleLangVar.'_FORM_ID'             => $objForm->id,  
-                    'TXT_'.$this->moduleLangVar.'_FIELD_NAME'   => '<label>'.$_ARRAYLANG['TXT_CALENDAR_TYPE'].'<font class="calendarRequired"> *</font></label>',
-                    $this->moduleLangVar.'_FIELD_INPUT'         => '<select class="calendarSelect affiliateForm" name="registrationType"><option value="1" selected="selected"/>'.$_ARRAYLANG['TXT_CALENDAR_REG_REGISTRATION'].'</option><option value="0"/>'.$_ARRAYLANG['TXT_CALENDAR_REG_SIGNOFF'].'</option></select>',      
-                    $this->moduleLangVar.'_FIELD_CLASS' => 'affiliationForm',   
-                ));  
-
+                $objFieldTemplate = new \Cx\Core\Html\Sigma('.');
+                $objFieldTemplate->setTemplate(self::frontendFieldTemplate, true, true);
+                $objFieldTemplate->setVariable(array(                    
+                    'TXT_'.$this->moduleLangVar.'_FIELD_NAME'   => $_ARRAYLANG['TXT_CALENDAR_TYPE'].'<font class="calendarRequired"> *</font>',
+                    $this->moduleLangVar.'_FIELD_INPUT'         => '<select class="calendarSelect affiliateForm" name="registrationType"><option value="1" selected="selected"/>'.$_ARRAYLANG['TXT_CALENDAR_REG_REGISTRATION'].'</option><option value="0"/>'.$_ARRAYLANG['TXT_CALENDAR_REG_SIGNOFF'].'</option></select>',
+                    $this->moduleLangVar.'_FIELD_CLASS'         => 'affiliationForm',   
+                ));
+                $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_FIELD', $objFieldTemplate->get());
                 $objTpl->parse('calendarRegistrationField');
-
-                $selectBillingAddressStatus = false;
                 
-                foreach ($objForm->inputfields as $key => $arrInputfield) { 
+                $selectBillingAddressStatus = false;
+                                
+                foreach ($objForm->inputfields as $key => $arrInputfield) {
+                    $objFieldTemplate->setTemplate(self::frontendFieldTemplate, true, true);
                     $options = array();
                     $options = explode(',', $arrInputfield['default_value'][$_LANGID]);
                     $inputfield = null;
-                                            $hide = false;
+                    $hide = false;
 
                     if(isset($_POST['registrationField'][$arrInputfield['id']])) {
                         $value = $_POST['registrationField'][$arrInputfield['id']];
@@ -376,20 +388,25 @@ class CalendarFormManager extends CalendarLibrary
                             break;
                     }
 
+                    $field = '';
                     if($arrInputfield['type'] == 'fieldset') {
-                        $label = '<h2>'.$arrInputfield['name'][$_LANGID].'</h2>';
+                        $field = '</fieldset><fieldset><legend>'.$arrInputfield['name'][$_LANGID].'</legend>';                        
+                        $hide = true;
                     } else {
                         $required = $arrInputfield['required'] == 1 ? '<font class="calendarRequired"> *</font>' : '';
-                        $label = '<label>'.$arrInputfield['name'][$_LANGID].$required.'</label>';
+                        $label    = $arrInputfield['name'][$_LANGID].$required;
                     }
 
                     if(!$hide) {
-                        $objTpl->setVariable(array(
+                        $objFieldTemplate->setVariable(array(
                             'TXT_'.$this->moduleLangVar.'_FIELD_NAME' => $label,
-                            $this->moduleLangVar.'_FIELD_INPUT' => $inputfield,
-                            $this->moduleLangVar.'_FIELD_CLASS' => $affiliationClass,
+                            $this->moduleLangVar.'_FIELD_INPUT'       => $inputfield,
+                            $this->moduleLangVar.'_FIELD_CLASS'       => $affiliationClass,
                         ));
+                        $field = $objFieldTemplate->get();
                     }
+                    $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_FIELD', $field);
+                    
                     $objTpl->parse('calendarRegistrationField');
                 }
                 break;
