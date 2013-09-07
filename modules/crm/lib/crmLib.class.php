@@ -1915,30 +1915,41 @@ class CrmLibrary
 
         $modify = isset($this->contact->id) && !empty($this->contact->id);
         $accountId = 0;
-        $objUsers = $objFWUser->objUser->getUsers($filter = array('id' => intval($id)));
 
-        if ($objUsers) {
-            $accountId = $objUsers->getId();
-            $email     = $objUsers->getEmail();
-        }
-
-        if (empty($id)) {
+        if (!empty($id)) {
+            $objUsers = $objFWUser->objUser->getUsers($filter = array('id' => intval($id)));
+            if ($objUsers) {
+                $accountId = $objUsers->getId();
+                $email     = $objUsers->getEmail();
+            }
+        } else if (empty($id)) {
             $objUsers = $objFWUser->objUser->getUsers($filter = array('email' => addslashes($email)));
             if ($objUsers) {
                 $accountId = $objUsers->getId();
             }
         }
-
         if ($modify) {
-            $useralExists = $objDatabase->SelectLimit("SELECT 1 FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE user_account = {$accountId}", 1);
+            $useralExists = $objDatabase->SelectLimit("SELECT id FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE user_account = {$accountId}", 1);
+            if ($useralExists && !empty($useralExists->fields['id']) && !empty($accountId) && intval($useralExists->fields['id']) != $this->contact->id) {
+                    $existId = (int) $useralExists->fields['id'];
+                    $this->contact->load($existId);
+                    $custDetails = $this->contact->getCustomerDetails();
+                    $existLink = "<a href='index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id=$existId' target='_blank'>{$custDetails['customer_name']} {$custDetails['contact_familyname']}</a>";
+                    $this->_strErrMessage = sprintf($_ARRAYLANG['TXT_CRM_CONTACT_ALREADY_EXIST_ERROR'], $existLink);
+                    return false;
+            }
             $this->contact->account_id = $objDatabase->getOne("SELECT user_account FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE id = {$this->contact->id}");
-            if (empty ($this->contact->account_id) && !empty($accountId)) { echo 'wel';
+            if (empty ($this->contact->account_id) && !empty($accountId)) {
                 $objUser    = $objFWUser->objUser->getUser($accountId);
 //            $objUser = new User($accountId);
             } elseif ((!empty($this->contact->account_id) && $objUser = $objFWUser->objUser->getUser($this->contact->account_id)) === false) {
                 $objUser = new User();
             } elseif (!empty($accountId) && $useralExists && $useralExists->RecordCount() == 0) {
                 $objUser    = $objFWUser->objUser->getUser($accountId);
+            } else if ((!empty($this->contact->account_id) && $objUser = $objFWUser->objUser->getUser($this->contact->account_id)) === true) {
+                $objUser    = $objFWUser->objUser->getUser($this->contact->account_id);
+            } else if (empty($this->contact->account_id) && empty($accountId)) {
+                $objUser = new User();
             }
         } else {
             if (empty($accountId)){

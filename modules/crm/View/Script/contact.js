@@ -104,12 +104,13 @@ cx.ready(function(){
             $J.each(data, function(key, val) {
                 if (val.show) {
                     $J("#contact_email").val(val.email);
-                    $J(".showAccountDetail").show();
                     $J('#send_account_notification').prop('checked', false);
+                    $J(".showAccountDetail").hide();
                 } else {
                     $J(".showAccountDetail").hide();
                 }
                 if (val.sendLoginCheck) {
+                    $J(".showAccountDetail").show();
                     $J('#send_account_notification').prop('checked', true);
                 }
                 if (val.setDefaultUser || val.id ) {
