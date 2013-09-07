@@ -433,7 +433,7 @@ function checkaddContact() {
     }
 
     if (contact_id == 0) {
-        if($J("#contact_password").exists() && $J("#contact_password").hasClass('mantatory') && $J.trim($J("#contact_password").val()) == "") {
+        if($J("#contact_password").exists() && $J("#contact_password").is(":visible") && $J("#contact_password").hasClass('mantatory') && $J.trim($J("#contact_password").val()) == "") {
             errChk = 1;
             $J("#contact_password").css("border", "1px solid red");
         }
