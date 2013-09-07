@@ -1932,8 +1932,7 @@ class CrmLibrary
             $useralExists = $objDatabase->SelectLimit("SELECT id FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE user_account = {$accountId}", 1);
             if ($useralExists && !empty($useralExists->fields['id']) && !empty($accountId) && intval($useralExists->fields['id']) != $this->contact->id) {
                     $existId = (int) $useralExists->fields['id'];
-                    $this->contact->load($existId);
-                    $custDetails = $this->contact->getCustomerDetails();
+                    $custDetails = $this->getExistCrmDetail($existId);
                     $existLink = "<a href='index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id=$existId' target='_blank'>{$custDetails['customer_name']} {$custDetails['contact_familyname']}</a>";
                     $this->_strErrMessage = sprintf($_ARRAYLANG['TXT_CRM_CONTACT_ALREADY_EXIST_ERROR'], $existLink);
                     return false;
@@ -1959,8 +1958,7 @@ class CrmLibrary
                 if (empty ($userExists)) {
                     $objUser    = $objFWUser->objUser->getUser($accountId);
                 } else {
-                    $this->contact->load($userExists);
-                    $custDetails = $this->contact->getCustomerDetails(); 
+                    $custDetails = $this->getExistCrmDetail($userExists);
                     $existLink = "<a href='index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id=$userExists' target='_blank'>{$custDetails['customer_name']} {$custDetails['contact_familyname']}</a>";
 //                    sprintf($_ARRAYLANG['TXT_CRM_CONTACT_ALREADY_EXIST_ERROR'], $existLink); exit();
                     $this->_strErrMessage = sprintf($_ARRAYLANG['TXT_CRM_CONTACT_ALREADY_EXIST_ERROR'], $existLink);
@@ -2068,6 +2066,32 @@ class CrmLibrary
         return false;
     }
 
+    /**
+     * get exist crm account detail
+     *
+     * @param integer $id
+     *
+     * @return array
+     */
+    function getExistCrmDetail($id)
+    {
+        global $objDatabase;
+
+        if (empty($id)) {
+            return false;
+        }
+
+        $query = "SELECT id, customer_name, contact_familyname FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE `id` = {$id}";
+        $objResult = $objDatabase->Execute($query);
+
+        if ($objResult && $objResult->RecordCount()) {
+            $result = array(
+                'customer_name'      => contrexx_raw2xhtml($objResult->fields['customer_name']),
+                'contact_familyname' => contrexx_raw2xhtml($objResult->fields['contact_familyname'])
+            );
+            return $result;
+        }
+    }
     /**
      * Make the url string's into clickable link's.
      * Example: <p> http://www.contrexx.com </p> will be
