@@ -165,14 +165,18 @@ class CalendarRegistrationManager extends CalendarLibrary
             $objTpl->parse('eventRegistrationName');
             
             while (!$objResult->EOF) {
-                if ($objResult->fields['type'] != 'agb') {
-                    $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_NAME', $objResult->fields['name']);
+                if (!in_array($objResult->fields['type'], array('agb', 'fieldset'))) {
+                    $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_NAME', $objResult->fields['name']);                    
                     $objTpl->parse('eventRegistrationName');
                 }
                 $objResult->MoveNext();
             }
             
-            $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_NAME', $_ARRAYLANG['TXT_CALENDAR_PAYMENT_METHOD']);
+            //$objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_NAME', $_ARRAYLANG['TXT_CALENDAR_PAYMENT_METHOD']);
+            $objTpl->setVariable(array(                                
+                $this->moduleLangVar.'_REGISTRATION_NAME'  => $_ARRAYLANG['TXT_CALENDAR_ACTION'],
+                $this->moduleLangVar.'_REG_COL_ATTRIBUTES' => "style='text-align:right;'",
+            ));
             $objTpl->parse('eventRegistrationName');
         }
         
@@ -188,9 +192,10 @@ class CalendarRegistrationManager extends CalendarLibrary
         ';
         $objResult = $objDatabase->Execute($query);
         
+        $arrValues = array();
         if ($objResult !== false) {
             while (!$objResult->EOF) {
-                if ($objResult->fields['type'] != 'agb') {
+                if (!in_array($objResult->fields['type'], array('agb', 'fieldset'))) {
                     $value = '';
                     if (!empty($objResult->fields['default'])) {
                         $arrDefaultValues = explode(',', $objResult->fields['default']);
@@ -206,10 +211,10 @@ class CalendarRegistrationManager extends CalendarLibrary
         
         $i = 0;
 
-        $paymentMethods = explode(',', $_ARRAYLANG["TXT_PAYMENT_METHODS"]);
+        //$paymentMethods = explode(',', $_ARRAYLANG["TXT_PAYMENT_METHODS"]);
 
         foreach ($this->registrationList as $objRegistration) {
-            $checkbox = '<input type="checkbox" name="selectedRegistrationId[]" id="selectedRegistrationId" value="'.$objRegistration->id.'" />';
+            $checkbox = '<input type="checkbox" name="selectedRegistrationId[]" class="selectedRegistrationId" value="'.$objRegistration->id.'" />';
             $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_VALUE', $checkbox);
             $objTpl->parse('eventRegistrationValue');
             
@@ -221,7 +226,7 @@ class CalendarRegistrationManager extends CalendarLibrary
                 $objTpl->parse('eventRegistrationValue');
             }
             
-            unset($paymentMethod);
+            /*unset($paymentMethod);
             switch ($objRegistration->paymentMethod) {
                 case 1:
                     $paymentMethod = $paymentMethods[1];
@@ -232,10 +237,10 @@ class CalendarRegistrationManager extends CalendarLibrary
                 default:
                     $paymentMethod = $paymentMethods[0];
                     break;
-            }
+            }*/
 
-            $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_VALUE', $paymentMethod . " (" . ($objRegistration->paid ? $_ARRAYLANG["TXT_PAYMENT_COMPLETED"] : $_ARRAYLANG["TXT_PAYMENT_INCOMPLETED"]) . ")");
-            $objTpl->parse('eventRegistrationValue');
+            //$objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_VALUE', $paymentMethod . " (" . ($objRegistration->paid ? $_ARRAYLANG["TXT_PAYMENT_COMPLETED"] : $_ARRAYLANG["TXT_PAYMENT_INCOMPLETED"]) . ")");
+            //$objTpl->parse('eventRegistrationValue');
             
             $links = '
                 <a style="float: right;" href="javascript:deleteNote(\''.$objRegistration->id.'\');" title="'.$_ARRAYLANG['TXT_CALENDAR_DELETE'].'"><img src="images/icons/delete.gif" width="17" height="17" border="0" alt="'.$_ARRAYLANG['TXT_CALENDAR_DELETE'].'" /></a>

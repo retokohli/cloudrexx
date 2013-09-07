@@ -1303,11 +1303,12 @@ class CalendarManager extends CalendarLibrary
      */
     function showEventRegistrations($eventId)
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
         
         $this->_objTpl->loadTemplateFile('module_calendar_registrations.html');
         $objEvent = new CalendarEvent(intval($eventId));
         
+        $getTpl = isset($_GET['tpl']) ? $_GET['tpl'] : 'r';
         if (isset($_GET['delete'])) {
             $objRegistration = new CalendarRegistration($objEvent->registrationForm, $_GET['delete']);
             $status = $objRegistration->delete($_GET['delete']) ? true : false;
@@ -1317,7 +1318,7 @@ class CalendarManager extends CalendarLibrary
         if (isset($_GET['multi'])) {
             Permission::checkAccess(164, 'static');
             
-            foreach($_POST['selectedRegistrationId'] as $key => $regId) {
+            foreach($_POST['selectedRegistrationId'] as $regId) {
                 $objRegistration = new CalendarRegistration($objEvent->registrationForm, $regId);
                 
                 switch($_GET['multi']) {
@@ -1347,32 +1348,7 @@ class CalendarManager extends CalendarLibrary
             $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_'.$messageVar];
         }
         
-        $r = $d = $w = false;
-        
-        switch ($_GET['tpl']) {
-            case 'r':
-                $r = true;
-                $title = $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS'];
-                break;
-            case 'd':
-                $d = true;
-                $title = $_ARRAYLANG['TXT_CALENDAR_DEREGISTRATIONS'];
-                break;
-            case 'w':
-                $w = true;
-                $title = $_ARRAYLANG['TXT_CALENDAR_WAITLIST'];
-                break;
-            default:
-                $r = true;
-                $title = $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS'];
-                break;
-        }
-        
-        $objRegistrationManager = new CalendarRegistrationManager($eventId, $r, $d, $w);
-        $objRegistrationManager->getRegistrationList();
-        
-        $this->_objTpl->setGlobalVariable(array(
-            'TXT_'.$this->moduleLangVar.'_REGISTRATIONS_TITLE'    => $title,
+        $this->_objTpl->setGlobalVariable(array(            
             'TXT_'.$this->moduleLangVar.'_REGISTRATIONS'          => $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS'],
             'TXT_'.$this->moduleLangVar.'_DEREGISTRATIONS'        => $_ARRAYLANG['TXT_CALENDAR_DEREGISTRATIONS'],
             'TXT_'.$this->moduleLangVar.'_WAITLIST'               => $_ARRAYLANG['TXT_CALENDAR_WAITLIST'],
@@ -1386,10 +1362,49 @@ class CalendarManager extends CalendarLibrary
             'TXT_SUBMIT_DELETE'                                   => $_ARRAYLANG['TXT_SUBMIT_DELETE'],
             $this->moduleLangVar.'_EVENT_ID'                      => $eventId,
             $this->moduleLangVar.'_REGISTRATION_ID'               => $regId,
-            $this->moduleLangVar.'_EVENT_TPL'                     => $_GET['tpl'],
+            $this->moduleLangVar.'_EVENT_TPL'                     => $getTpl,
+            $this->moduleLangVar.'_REGISTRATION_'. strtoupper($getTpl) .'_CONTAINER_CLASS'  => 'active',
         ));
         
-        $objRegistrationManager->showRegistrationList($this->_objTpl);
+        $tplArr = array('r', 'd', 'w');
+        
+        foreach ($tplArr as $tpl) {
+            $r = $d = $w = false;
+        
+            switch ($tpl) {
+                case 'r':
+                    $r = true;
+                    $title = $_ARRAYLANG['TXT_CALENDAR_REGISTRATIONS'];
+                    $containerId = 'registration';
+                    $containerDisplay = ($getTpl == 'r');
+                    break;
+                case 'd':
+                    $d = true;
+                    $title = $_ARRAYLANG['TXT_CALENDAR_DEREGISTRATIONS'];
+                    $containerId = 'deregistration';
+                    $containerDisplay = ($getTpl == 'd');
+                    break;
+                case 'w':
+                    $w = true;
+                    $title = $_ARRAYLANG['TXT_CALENDAR_WAITLIST'];
+                    $containerId = 'waitlist';
+                    $containerDisplay = ($getTpl == 'w');
+                    break;
+                default:                    
+                    break;
+            }
+
+            $objRegistrationManager = new CalendarRegistrationManager($eventId, $r, $d, $w);
+            $objRegistrationManager->getRegistrationList();
+            $objRegistrationManager->showRegistrationList($this->_objTpl);
+            
+            $this->_objTpl->setVariable(array(
+                'TXT_'.$this->moduleLangVar.'_REGISTRATIONS_TITLE'         => $title,
+                $this->moduleLangVar.'_REGISTRATION_LIST_CONTAINER_ID'     => $containerId,                
+                $this->moduleLangVar.'_REGISTRATION_LIST_CONTAINER_DISPLAY'=> $containerDisplay ? 'block' : 'none'
+            ));
+            $this->_objTpl->parse("calendar_registration_lists");
+        }                                
     }
     
     /**
