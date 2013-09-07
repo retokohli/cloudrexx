@@ -749,7 +749,7 @@ SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_calendar_registration_form_field` (
   `id` int(7) NOT NULL auto_increment,
   `form` int(11) NOT NULL,
-  `type` enum('inputtext','textarea','select','radio','checkbox','mail','seating','agb','salutation','firstname','lastname','selectBillingAddress','title') NOT NULL,
+  `type` enum('inputtext','textarea','select','radio','checkbox','mail','seating','agb','salutation','firstname','lastname','selectBillingAddress','fieldset') NOT NULL,
   `required` int(1) NOT NULL,
   `order` int(3) NOT NULL,
   `affiliation` varchar(45) NOT NULL,
