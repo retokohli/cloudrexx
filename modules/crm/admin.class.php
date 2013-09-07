@@ -2496,9 +2496,11 @@ END;
 
         if (!empty($this->contact->account_id)) {
             $objUser = $objFWUser->objUser->getUser($this->contact->account_id);
-            $accountCompany     = contrexx_raw2xhtml($objUser->getProfileAttribute('company'));
-            $accountFirstName   = contrexx_raw2xhtml($objUser->getProfileAttribute('firstname'));
-            $accountLastName    = contrexx_raw2xhtml($objUser->getProfileAttribute('lastname'));
+            if ($objUser) {
+                $accountCompany     = contrexx_raw2xhtml($objUser->getProfileAttribute('company'));
+                $accountFirstName   = contrexx_raw2xhtml($objUser->getProfileAttribute('firstname'));
+                $accountLastName    = contrexx_raw2xhtml($objUser->getProfileAttribute('lastname'));
+            }
         } else {
             $objUser = false;
         }
