@@ -1,118 +1,95 @@
 <!-- START module_calendar_event_registrations.html -->
 <script language="JavaScript" type="text/javascript">
 // <![CDATA[
-function deleteNote(noteId) {
-    if (confirm('{TXT_CALENDAR_CONFIRM_DELETE_DATA}\n{TXT_CALENDAR_ACTION_IS_IRREVERSIBLE}')) {
-        window.location.replace("index.php?cmd={CALENDAR_MODULE_NAME}&act=event_registrations&tpl={CALENDAR_EVENT_TPL}&id={CALENDAR_EVENT_ID}&delete="+noteId+"&{CALENDAR_CSRF}");
+    function deleteNote(noteId) {
+        if (confirm('{TXT_CALENDAR_CONFIRM_DELETE_DATA}\n{TXT_CALENDAR_ACTION_IS_IRREVERSIBLE}')) {
+            window.location.replace("index.php?cmd={CALENDAR_MODULE_NAME}&act=event_registrations&tpl={CALENDAR_EVENT_TPL}&id={CALENDAR_EVENT_ID}&delete=" + noteId + "&{CALENDAR_CSRF}");
+        }
     }
-}
 
-function elementIsChecked(fieldName) {
-    var x = 0;
-    for(var i = 0; i < document.formRegistrationList.elements.length; i++) {
-        var e = document.formRegistrationList.elements[i];
-        if(e.name == fieldName && e.checked == true) {
-            x++;
+    function selectMultiAction(containerForm) {
+        console.log(containerForm.find('.selectedRegistrationId:checked').length)
+        if (containerForm.find('.selectedRegistrationId:checked').length)
+        {
+            console.log(containerForm.find('.registrationMove').val());
+            if (containerForm.find('.registrationAction').val() == "delete") {
+                containerForm.attr("action", "index.php?cmd={CALENDAR_MODULE_NAME}&act=event_registrations&tpl={CALENDAR_EVENT_TPL}&id={CALENDAR_EVENT_ID}&multi=delete&{CALENDAR_CSRF}");
+                containerForm.submit();
+            }
+            tpl = containerForm.find('.registrationMove').val();
+            if (tpl == 'r' || tpl == 'd' || tpl == 'w') {
+                containerForm.attr("action", "index.php?cmd={CALENDAR_MODULE_NAME}&act=event_registrations&tpl="+ tpl +"&id={CALENDAR_EVENT_ID}&multi="+ tpl +"&{CALENDAR_CSRF}");
+                containerForm.submit();
+            }
+        } else {
+            alert("{TXT_CALENDAR_MAKE_SELECTION}");
         }
-    }
-    
-    if(x > 0) {
-        return true;
-    } else {
-        return false;
-    }
-}
 
-function selectMultiAction() {
-    if (elementIsChecked("selectedRegistrationId[]") == true)
-    {
-        if (document.formRegistrationList.registrationAction.value == "delete") {                
-            document.formRegistrationList.action = "index.php?cmd={CALENDAR_MODULE_NAME}&act=event_registrations&tpl={CALENDAR_EVENT_TPL}&id={CALENDAR_EVENT_ID}&multi=delete&{CALENDAR_CSRF}";
-            document.formRegistrationList.submit(); 
-        }
-        if (document.formRegistrationList.registrationMove.value == "r") {                
-            document.formRegistrationList.action = "index.php?cmd={CALENDAR_MODULE_NAME}&act=event_registrations&tpl={CALENDAR_EVENT_TPL}&id={CALENDAR_EVENT_ID}&multi=r&{CALENDAR_CSRF}";
-            document.formRegistrationList.submit(); 
-        }
-        if (document.formRegistrationList.registrationMove.value == "d") {                
-            document.formRegistrationList.action = "index.php?cmd={CALENDAR_MODULE_NAME}&act=event_registrations&tpl={CALENDAR_EVENT_TPL}&id={CALENDAR_EVENT_ID}&multi=d&{CALENDAR_CSRF}";
-            document.formRegistrationList.submit(); 
-        }
-        if (document.formRegistrationList.registrationMove.value == "w") {                
-            document.formRegistrationList.action = "index.php?cmd={CALENDAR_MODULE_NAME}&act=event_registrations&tpl={CALENDAR_EVENT_TPL}&id={CALENDAR_EVENT_ID}&multi=w&{CALENDAR_CSRF}";
-            document.formRegistrationList.submit(); 
-        }
-    } else {
-        alert("{TXT_CALENDAR_MAKE_SELECTION}");
+        containerForm.find(".multiAction").val(0);
     }
-    
-    document.formRegistrationList.registrationListMultiAction.value = "0";
-} 
 // ]]>
 </script>
 
-<div id="subnavbar_level2">
-    <ul>
-        <li><a href="index.php?cmd={CALENDAR_MODULE_NAME}&amp;act=event_registrations&amp;id={CALENDAR_EVENT_ID}&amp;tpl=r" title="{TXT_CALENDAR_REGISTRATIONS}">{TXT_CALENDAR_REGISTRATIONS}</a></li>
-        <li><a href="index.php?cmd={CALENDAR_MODULE_NAME}&amp;act=event_registrations&amp;id={CALENDAR_EVENT_ID}&amp;tpl=d" title="{TXT_CALENDAR_DEREGISTRATIONS}">{TXT_CALENDAR_DEREGISTRATIONS}</a></li>
-        <li><a href="index.php?cmd={CALENDAR_MODULE_NAME}&amp;act=event_registrations&amp;id={CALENDAR_EVENT_ID}&amp;tpl=w" title="{TXT_CALENDAR_WAITLIST}">{TXT_CALENDAR_WAITLIST}</a></li>
-    </ul>
-</div>
-<br />
-<table style="width: 100%; border-spacing: 0px;" cellspacing="0" cellpadding="0">
-    <tr>
-        <td valign="top">
-            <form name="formRegistrationList" method="post" action="index.php?cmd={CALENDAR_MODULE_NAME}&act=event_registrations">
-	            <table style="width: 100%; border-spacing: 0px;" class="adminlist" cellspacing="0" cellpadding="3">
-	                <tr>
-	                    <th>{TXT_CALENDAR_REGISTRATIONS_TITLE}</th><th colspan="{CALENDAR_COUNT_FORM_FIELDS}">&nbsp;<a href="index.php?cmd={CALENDAR_MODULE_NAME}&amp;act=export_registrations&amp;id={CALENDAR_EVENT_ID}&amp;tpl={CALENDAR_EVENT_TPL}" title="Export"><img src="images/icons/export.gif" alt="Export" border="0" height="17" width="17"></a></th>
-                    </tr>
-                    
-	                <tr class="row3">
-                        <!-- BEGIN eventRegistrationName -->
-						<td>{CALENDAR_REGISTRATION_NAME}</td>
-                        <!-- END eventRegistrationName -->
-                        <td></td>
-					</tr>
-                    
-	                <!-- BEGIN eventRegistrationList -->
-					<tr class="{CALENDAR_REGISTRATION_ROW}">
-                        <!-- BEGIN eventRegistrationValue -->
-					    <td>{CALENDAR_REGISTRATION_VALUE}</td>
-                        <!-- END eventRegistrationValue -->
-					</tr>
-					<!-- END eventRegistrationList -->
-                    
-                    <!-- BEGIN emptyEventRegistrationList -->
-                    <tr class="row1">
-                        <td colspan="9"><i>{TXT_CALENDAR_NO_REGISTRATIONS}</i></td>
-                    </tr>
-                    <!-- END emptyEventRegistrationList -->
-	            </table>
-                <table cellpadding="2" cellspacing="0" border="0">
-                    <tr>
-                        <td style="border: 0px;">
-                            <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
-                            <a href="#" onclick="changeCheckboxes('formRegistrationList', 'selectedRegistrationId', true); return false;">{TXT_SELECT_ALL}</a> /
-                            <a href="#" onclick="changeCheckboxes('formRegistrationList', 'selectedRegistrationId', false); return false;">{TXT_DESELECT_ALL}</a>
-                            <img src="images/icons/strike.gif" alt="space" />
-                            <select name="registrationAction" onchange="selectMultiAction();">
-                                <option value="0">{TXT_SUBMIT_SELECT}</option>
-                                <option value="delete">{TXT_SUBMIT_DELETE}</option>
-                            </select>
-                            <img src="images/icons/strike.gif" alt="space" />
-                            <select name="registrationMove" onchange="selectMultiAction();">
-                                <option value="0">{TXT_SUBMIT_MOVE}</option>
-                                <option value="r">{TXT_CALENDAR_REGISTRATIONS}</option>
-                                <option value="d">{TXT_CALENDAR_DEREGISTRATIONS}</option>
-                                <option value="w">{TXT_CALENDAR_WAITLIST}</option>
-                            </select>
-                        </td>
-                    </tr>
-                </table>
+<ul id="tabmenu">
+    <li><a id="regTab_registration" class="{CALENDAR_REGISTRATION_R_CONTAINER_CLASS}" href="javascript:{}" onclick="selectTab('registration');" title="{TXT_CALENDAR_REGISTRATIONS}">{TXT_CALENDAR_REGISTRATIONS}</a></li>
+    <li><a id="regTab_deregistration" class="{CALENDAR_REGISTRATION_D_CONTAINER_CLASS}" href="javascript:{}" onclick="selectTab('deregistration');" title="{TXT_CALENDAR_DEREGISTRATIONS}">{TXT_CALENDAR_DEREGISTRATIONS}</a></li>
+    <li><a id="regTab_waitlist" class="{CALENDAR_REGISTRATION_W_CONTAINER_CLASS}" href="javascript:{}" onclick="selectTab('waitlist');" title="{TXT_CALENDAR_WAITLIST}">{TXT_CALENDAR_WAITLIST}</a></li>    
+</ul>
+<!-- BEGIN calendar_registration_lists -->
+<div class="regTab" id="{CALENDAR_REGISTRATION_LIST_CONTAINER_ID}" style="display: {CALENDAR_REGISTRATION_LIST_CONTAINER_DISPLAY}">
+    <form class="formRegistrationList" method="post" action="index.php?cmd={CALENDAR_MODULE_NAME}&act=event_registrations">
+        <table style="width: 100%; border-spacing: 0px;" class="adminlist" cellspacing="0" cellpadding="3">
+            <tr>
+                <th colspan="{CALENDAR_COUNT_FORM_FIELDS}">
+                    {TXT_CALENDAR_REGISTRATIONS_TITLE}&nbsp;
+                    <a style="position: relative; top: 4px;" href="index.php?cmd={CALENDAR_MODULE_NAME}&amp;act=export_registrations&amp;id={CALENDAR_EVENT_ID}&amp;tpl={CALENDAR_EVENT_TPL}" title="Export"><img src="images/icons/csv.gif" alt="Export" border="0" height="17" width="17"></a>
+                </th>
+            </tr>
 
-            </form>
-        </td>
-    </tr>
-</table>
+            <tr class="row3">
+                <!-- BEGIN eventRegistrationName -->
+                <td {CALENDAR_REG_COL_ATTRIBUTES}>{CALENDAR_REGISTRATION_NAME}</td>
+                <!-- END eventRegistrationName -->                        
+            </tr>
+
+            <!-- BEGIN eventRegistrationList -->
+            <tr class="{CALENDAR_REGISTRATION_ROW}">
+                <!-- BEGIN eventRegistrationValue -->
+                <td>{CALENDAR_REGISTRATION_VALUE}</td>
+                <!-- END eventRegistrationValue -->
+            </tr>
+            <!-- END eventRegistrationList -->
+
+            <!-- BEGIN emptyEventRegistrationList -->
+            <tr class="row1">
+                <td colspan="9"><i>{TXT_CALENDAR_NO_REGISTRATIONS}</i></td>
+            </tr>
+            <!-- END emptyEventRegistrationList -->
+        </table>
+        <table cellpadding="2" cellspacing="0" border="0">
+            <tr>
+                <td style="border: 0px;">
+                    <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
+                    <a href="#" onclick="changeCheckboxes('formRegistrationList', 'selectedRegistrationId', true);
+        return false;">{TXT_SELECT_ALL}</a> /
+                    <a href="#" onclick="changeCheckboxes('formRegistrationList', 'selectedRegistrationId', false);
+        return false;">{TXT_DESELECT_ALL}</a>
+                    <img src="images/icons/strike.gif" alt="space" />
+                    <select class="multiAction registrationAction" name="registrationAction" onchange="selectMultiAction($J(this).closest('form'));">
+                        <option value="0">{TXT_SUBMIT_SELECT}</option>
+                        <option value="delete">{TXT_SUBMIT_DELETE}</option>
+                    </select>
+                    <img src="images/icons/strike.gif" alt="space" />
+                    <select class="multiAction registrationMove" name="registrationMove" onchange="selectMultiAction($J(this).closest('form'));">
+                        <option value="0">{TXT_SUBMIT_MOVE}</option>
+                        <option value="r">{TXT_CALENDAR_REGISTRATIONS}</option>
+                        <option value="d">{TXT_CALENDAR_DEREGISTRATIONS}</option>
+                        <option value="w">{TXT_CALENDAR_WAITLIST}</option>
+                    </select>
+                </td>
+            </tr>
+        </table>
+    </form>
+</div>
+<!-- END calendar_registration_lists -->
 <!-- END module_calendar_event_registrations.html -->
