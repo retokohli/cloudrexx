@@ -74,7 +74,23 @@ function getField(data) {
         $field.find('.inputDefaultfield_'+index).val(value);
     });
     
+    changeFieldType($field);
+    
     return $field;
+}
+function changeFieldType(container) {    
+    switch(container.find('.field_type').val()) {
+        case 'fieldset':
+            container.find(".field_req").attr('disabled', 'disabled').hide();
+            container.find(".field_afflications").attr('disabled', 'disabled').hide();
+            container.find(".col_default_value :input").attr('disabled', 'disabled').hide();
+            break;
+        default:
+            container.find(".field_req").removeAttr('disabled').show();
+            container.find(".field_afflications").removeAttr('disabled').show();
+            container.find(".col_default_value :input").removeAttr('disabled').show();
+            break;
+    }
 }
 </script>
 <script id="blankField" type="jquery/tmpl">
@@ -94,7 +110,7 @@ function getField(data) {
         </div>
     </td>
     <td valign="top">
-        <select class="field_type" name="inputfield[FIELD_ID][type]" style="width: 140px">
+        <select onChange="changeFieldType($J(this).closest('#inputfield_FIELD_ID'));" class="field_type" name="inputfield[FIELD_ID][type]" style="width: 140px">
             <optgroup label="{TXT_CALENDAR_FIELDS}">
             <!-- BEGIN inputfieldTypes -->
             <option value="{CALENDAR_FORM_FIELD_TYPE}">{TXT_CALENDAR_FORM_FIELD_TYPE}</option>
@@ -107,7 +123,7 @@ function getField(data) {
             </optgroup>
         </select>
     </td>
-    <td valign="top">
+    <td valign="top" class="col_default_value">
         <div id="inputfield_FIELD_ID_default_value_Minimized" style="display: block;">
             <input class="lang_default_value_master" name="inputfield[FIELD_ID][default_value][0]" maxlength="255" style="width: 200px;" type="text" value="" />
         </div>
@@ -127,15 +143,17 @@ function getField(data) {
             <!-- END fieldAfflications -->
         </select>
     </td>
-    <td valign="top" style="line-height: 19px;">        
+    <td valign="top" style="line-height: 19px;" nowrap="nowrap">        
         <div id="inputfield_FIELD_ID_lang_name_Minimized" style="display: {CALENDAR_DISPLAY_EXPAND};">
-            <a href="javascript:ExpandMinimize('name', 'FIELD_ID'); ExpandMinimize('default_value', 'FIELD_ID');" >{TXT_CALENDAR_EXPAND}&nbsp;&raquo;</a>
+            <a href="javascript:ExpandMinimize('name', 'FIELD_ID'); ExpandMinimize('default_value', 'FIELD_ID'); javascript:ExpandMinimize('lang_name', 'FIELD_ID');" >{TXT_CALENDAR_EXPAND}&nbsp;&raquo;</a>
         </div>        
         <div id="inputfield_FIELD_ID_lang_name_Expanded" style="display: none;">
+            <div class="pull-left width-50">
             <!-- BEGIN inputfieldLanguagesList -->
             {CALENDAR_INPUTFIELD_LANG_NAME}&nbsp;&nbsp;&nbsp;<br />
             <!-- END inputfieldLanguagesList -->
-            <a href="javascript:ExpandMinimize('name', 'FIELD_ID');ExpandMinimize('default_value', 'FIELD_ID');">&laquo;&nbsp;{TXT_CALENDAR_MINIMIZE}</a>
+            </div>
+            <a class="pull-left width-50" href="javascript:ExpandMinimize('name', 'FIELD_ID');ExpandMinimize('default_value', 'FIELD_ID'); javascript:ExpandMinimize('lang_name', 'FIELD_ID');">&laquo;&nbsp;{TXT_CALENDAR_MINIMIZE}</a>
         </div>
     </td>
     <td style="text-align: right;" valign="top">
@@ -143,7 +161,10 @@ function getField(data) {
     </td>
 </tr>
 </script>
-
+<style type="text/css">
+    .pull-left{float: left;}
+    .width-50{width: 50%;}
+</style>
 <form name="formModifyForm" method="post" action="index.php?cmd={CALENDAR_MODULE_NAME}&act=settings&tpl=forms">
     <input name="formId" type="hidden" value="{CALENDAR_FORM_ID}" />  
 	<table id="form" style="width: 100%; border-spacing: 0px;" class="adminlist" cellspacing="0" cellpadding="3">
@@ -164,8 +185,8 @@ function getField(data) {
             <td style="text-align: left; font-weight: bold" width="1%" nowrap="nowrap">{TXT_CALENDAR_DEFAULT_VALUES}</td>
             <td style="text-align: left; font-weight: bold" width="1%" nowrap="nowrap">&nbsp;&nbsp;{TXT_CALENDAR_FIELD_REQUIRED}&nbsp;&nbsp;</td>
             <td style="text-align: left; font-weight: bold" width="1%" nowrap="nowrap">{TXT_CALENDAR_FIELD_AFFILIATION}</td>
-            <td style="text-align: left;" width="1%" nowrap="nowrap"><br /></td>
-            <td style="text-align: right; font-weight: bold" width="93%" nowrap="nowrap">{TXT_CALENDAR_ACTIONS}</td>
+            <td style="text-align: left;" width="3%" nowrap="nowrap"><br /></td>
+            <td style="text-align: right; font-weight: bold" width="90%" nowrap="nowrap">{TXT_CALENDAR_ACTIONS}</td>
         </tr>        
     </table>
     <input type="button" onclick="appendField();" name="newInputfiels" value="{TXT_CALENDAR_NEW_INPUTFIELD}" style="margin-left: 96px; margin-top: 6px;" />
