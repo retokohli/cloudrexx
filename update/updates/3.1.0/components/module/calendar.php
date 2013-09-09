@@ -956,7 +956,7 @@ class CalendarUpdate31
                         '" . contrexx_raw2db($result->fields['registration']) . "',
                         '" . contrexx_raw2db($result->fields['groups']) . "',
                         '" . contrexx_raw2db($result->fields['notification']) . "',
-                        " . ($result->fields['notification'] ? "'" . contrexx_raw2db($result->fields['notification_address']) . "'" : '') . ",
+                        " . ($result->fields['notification'] ? "'" . contrexx_raw2db($result->fields['notification_address']) . "'" : "''") . ",
                         '" . contrexx_raw2db($result->fields['series_status']) . "',
                         '" . contrexx_raw2db($result->fields['series_type']) . "',
                         '" . contrexx_raw2db($result->fields['series_pattern_count']) . "',
@@ -1221,7 +1221,6 @@ class CalendarUpdate31
     {
         try {
             \Cx\Lib\UpdateUtil::drop_table(CALENDAR_OLD_EVENT_TABLE);
-            \Cx\Lib\UpdateUtil::drop_table(CALENDAR_OLD_SETTINGS_TABLE);
             \Cx\Lib\UpdateUtil::drop_table(CALENDAR_OLD_CATEGORY_TABLE);
             \Cx\Lib\UpdateUtil::drop_table(CALENDAR_OLD_FORM_DATA_TABLE);
             \Cx\Lib\UpdateUtil::drop_table(CALENDAR_OLD_FORM_FIELD_TABLE);
