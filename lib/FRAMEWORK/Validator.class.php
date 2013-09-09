@@ -177,7 +177,7 @@ class FWValidator
             # client script containers:
             'html', 'xhtml', 'xml', 'svg', 'shtml', 'htm',
             # server scripts:
-            'php', 'cgi', 'pl', 'jsp', 'jspx', 'asp', 'aspx',
+            'php', 'php4', 'php5', 'phps', 'cgi', 'pl', 'jsp', 'jspx', 'asp', 'aspx',
             'jsp', 'jspx', 'jhtml', 'phtml', 'cfm',
         );
         $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
