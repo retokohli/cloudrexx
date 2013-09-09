@@ -1688,7 +1688,7 @@ function _coreUpdate()
                 (70, 'Workbench', 'core_module'),
                 (71, 'FrontendEditing', 'core_module'),
                 (72, 'ContentManager', 'core')
-        ")
+        ");
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }

@@ -773,7 +773,7 @@ $updatesSp4To301 = array(
     "INSERT IGNORE INTO `".DBPREFIX."component` (`id`, `name`, `type`) VALUES
     (70, 'Workbench', 'core_module'),
     (71, 'FrontendEditing', 'core_module'),
-    (72, 'ContentManager', 'core')"
+    (72, 'ContentManager', 'core')",
 );
 
 $updatesRc1ToSp4    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To301);
