@@ -1669,6 +1669,31 @@ function _coreUpdate()
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
+
+    /********************************************************
+    * EXTENSION:    ADD COMPONENTS TABLE                    *
+    * ADDED:        Contrexx v3.1.0                         *
+    ********************************************************/
+    try {
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'component',
+            array(
+                'id'         => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'name'       => array('type' => 'VARCHAR(100)', 'after' => 'id'),
+                'type'       => array('type' => 'ENUM(\'core\',\'core_module\',\'module\')', 'after' => 'name')
+            )
+        );
+        \Cx\Lib\UpdateUtil::sql("
+            INSERT IGNORE INTO `".DBPREFIX."component` (`id`, `name`, `type`) VALUES
+                (70, 'Workbench', 'core_module'),
+                (71, 'FrontendEditing', 'core_module'),
+                (72, 'ContentManager', 'core')
+        ")
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
+
     return true;
 }
 
