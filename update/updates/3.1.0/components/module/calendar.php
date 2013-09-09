@@ -650,17 +650,20 @@ class CalendarUpdate31
      */
     protected function insertSettingsDemoData()
     {
-        // @todo: check for current settings
         try {
             if (\Cx\Lib\UpdateUtil::table_empty(CALENDAR_NEW_SETTINGS_TABLE)) {
+                $headlinesActivated = $_CONFIG['calendarheadlines'];
+                $headlinesCategory = $_CONFIG['calendarheadlinescat'];
+                $headlinesCount = $_CONFIG['calendarheadlinescount'];
+                $defaultCount = $_CONFIG['calendardefaultcount'];
                 \Cx\Lib\UpdateUtil::sql("
                     INSERT INTO `" . CALENDAR_NEW_SETTINGS_TABLE . "` (`id`, `section_id`, `name`, `title`, `value`, `info`, `type`, `options`, `special`, `order`)
                     VALUES
-                        (8, 5, 'numPaging', 'TXT_CALENDAR_NUM_PAGING', '15', '', 1, '', '', 1),
-                        (9, 5, 'numEntrance', 'TXT_CALENDAR_NUM_EVENTS_ENTRANCE', '5', '', 1, '', '', 2),
-                        (10, 6, 'headlinesStatus', 'TXT_CALENDAR_HEADLINES_STATUS', '1', '', 3, 'TXT_CALENDAR_ACTIVATE,TXT_CALENDAR_DEACTIVATE', '', 1),
-                        (11, 6, 'headlinesCategory', 'TXT_CALENDAR_HEADLINES_CATEGORY', '', '', 5, '', 'getCategoryDorpdown', 3),
-                        (12, 6, 'headlinesNum', 'TXT_CALENDAR_HEADLINES_NUM', '3', '', 1, '', '', 2),
+                        (8, 5, 'numPaging', 'TXT_CALENDAR_NUM_PAGING', '".$defaultCount."', '', 1, '', '', 1),
+                        (9, 5, 'numEntrance', 'TXT_CALENDAR_NUM_EVENTS_ENTRANCE', '".$defaultCount."', '', 1, '', '', 2),
+                        (10, 6, 'headlinesStatus', 'TXT_CALENDAR_HEADLINES_STATUS', '".$headlinesActivated."', '', 3, 'TXT_CALENDAR_ACTIVATE,TXT_CALENDAR_DEACTIVATE', '', 1),
+                        (11, 6, 'headlinesCategory', 'TXT_CALENDAR_HEADLINES_CATEGORY', '".$headlinesCategory."', '', 5, '', 'getCategoryDorpdown', 3),
+                        (12, 6, 'headlinesNum', 'TXT_CALENDAR_HEADLINES_NUM', '".$headlinesCount."', '', 1, '', '', 2),
                         (14, 7, 'publicationStatus', 'TXT_CALENDAR_PUBLICATION_STATUS', '2', 'TXT_CALENDAR_PUBLICATION_STATUS_INFO', 3, 'TXT_CALENDAR_ACTIVATE,TXT_CALENDAR_DEACTIVATE', '', 0),
                         (15, 15, 'dateFormat', 'TXT_CALENDAR_DATE_FORMAT', '0', 'TXT_CALENDAR_DATE_FORMAT_INFO', 5, 'TXT_CALENDAR_DATE_FORMAT_DD.MM.YYYY,TXT_CALENDAR_DATE_FORMAT_DD/MM/YYYY,TXT_CALENDAR_DATE_FORMAT_YYYY.MM.DD,TXT_CALENDAR_DATE_FORMAT_MM/DD/YYYY,TXT_CALENDAR_DATE_FORMAT_YYYY-MM-DD', '', 3),
                         (16, 8, 'countCategoryEntries', 'TXT_CALENDAR_CATEGORY_COUNT_ENTRIES', '2', '', 3, 'TXT_CALENDAR_ACTIVATE,TXT_CALENDAR_DEACTIVATE', '', 0),
@@ -944,16 +947,17 @@ class CalendarUpdate31
                     WHERE `note_id` = " . $oldEventId . "
             ");
             while (!$resultRegistrations->EOF) {
+                $key = generateRandomKey();
                 \Cx\Lib\UpdateUtil::sql("
                     INSERT INTO `" . CALENDAR_NEW_REGISTRATION_TABLE . "`
                         (`event_id`, `date`, `host_name`, `ip_address`, `type`, `key`, `user_id`, `lang_id`, `export`, `payment_method`, `paid`)
                     VALUES (
                         " . $newEventId . ",
-                        '" . $resultRegistrations->fields['time'] . "',
-                        '" . $resultRegistrations->fields['host'] . "',
-                        '" . $resultRegistrations->fields['ip_address'] . "',
-                        '" . $resultRegistrations->fields['type'] . "',
-                        '',
+                        '" . contrexx_raw2db($resultRegistrations->fields['time']) . "',
+                        '" . contrexx_raw2db($resultRegistrations->fields['host']) . "',
+                        '" . contrexx_raw2db($resultRegistrations->fields['ip_address']) . "',
+                        '" . contrexx_raw2db($resultRegistrations->fields['type']) . "',
+                        '" . contrexx_raw2db($key) . "',
                         0,
                         " . $langId . ",
                         0,
@@ -984,6 +988,38 @@ class CalendarUpdate31
 
                 $resultRegistrations->MoveNext();
             }
+        }
+
+        /**
+         * Generate a random key
+         * @see \CalendarLibrary
+         * @return string
+         */
+        function generateRandomKey() {
+            $arrRandom = array();
+            $arrChars = array ('a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z');
+            $arrNumerics =  array (0,1,2,3,4,5,6,7,8,9);
+
+            for ($i = 0; $i <= rand(15,40); $i++) {
+                $charOrNum = rand(0,1);
+                if($charOrNum == 1) {
+                    $posChar = rand(0,25);
+                    $upOrLow = rand(0,1);
+
+                    if($upOrLow == 0) {
+                        $arrRandom[$i] = strtoupper($arrChars[$posChar]);
+                    } else {
+                        $arrRandom[$i] = strtolower($arrChars[$posChar]);
+                    }
+                } else {
+                    $posNum = rand(0,9);
+                    $arrRandom[$i] = $arrNumerics[$posNum];
+                }
+            }
+
+            $key = join($arrRandom);
+
+            return $key;
         }
 
 
