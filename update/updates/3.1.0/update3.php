@@ -1319,7 +1319,9 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
     $CalendarUpdate31 = new CalendarUpdate31();
 
     // if something fails, return the error or message
-    if ($CalendarUpdate31->run() != true) {
+    $calendarMigration = $CalendarUpdate31->run();
+    if ($calendarMigration != true) {
+        \DBG::dump($calendarMigration);
         return $calendarMigration;
     }
 }
@@ -1345,7 +1347,7 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
             )
         );
         // change all fields currently set to 'file' to 'multi_file' ('multi_file' is same as former 'file' in previous versions)
-        \Cx\Lib\UpdateUtil::sql("UPDATE TABLE `".DBPREFIX."module_contact_form_field` SET `type` = 'multi_file' WHERE `type` = 'file'");
+        \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."module_contact_form_field` SET `type` = 'multi_file' WHERE `type` = 'file'");
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
