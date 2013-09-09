@@ -1283,6 +1283,8 @@ if($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
  *
  * ADD NEW ACCESS ID FOR FILESHARING
  *
+ * MIGRATE CALENDAR
+ *
  **************************************/
 if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
     try {
@@ -1304,6 +1306,15 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
         }
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
+    $calendarComponentUpdateFile = dirname(__FILE__).'/components/module/calendar.php';
+    require_once($calendarComponentUpdateFile);
+    $CalendarUpdate31 = new CalendarUpdate31();
+
+    // if something fails, return the error or message
+    if ($CalendarUpdate31->run() != true) {
+        return $calendarMigration;
     }
 }
 
