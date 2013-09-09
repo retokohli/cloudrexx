@@ -41,7 +41,7 @@
             }, 6000);
     }
     function deleteEntry(entryId) {
-        if(confirm('Are you sure want to delete the Entry')) {
+        if(confirm('{TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES}')) {
             $J.ajax({
                 url: 'index.php?cmd={MODULE_NAME}&{CSRF_PARAM}&ajax=1&act=settings&tpl=tasktypes&actionType=deletecatalog&taskTypeId='+entryId
             }).done(function(msg){
