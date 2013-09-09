@@ -192,10 +192,10 @@ class CalendarUpdate31
         // old tables (contrexx version < 3.1)
         define('CALENDAR_OLD_CATEGORY_TABLE', DBPREFIX . 'module_calendar_categories');
         define('CALENDAR_OLD_SETTINGS_TABLE', DBPREFIX . 'module_calendar_settings');
-        define('CALENDAR_OLD_EVENT_TABLE', DBPREFIX . 'module_calendar_calendar');
-        define('CALENDAR_OLD_REGISTRATIONS_TABLE', DBPREFIX . 'module_calendar_calendar_registrations');
-        define('CALENDAR_OLD_FORM_FIELD_TABLE', DBPREFIX . 'module_calendar_calendar_form_fields');
-        define('CALENDAR_OLD_FORM_DATA_TABLE', DBPREFIX . 'module_calendar_calendar_form_data');
+        define('CALENDAR_OLD_EVENT_TABLE', DBPREFIX . 'module_calendar');
+        define('CALENDAR_OLD_REGISTRATIONS_TABLE', DBPREFIX . 'module_calendar_registrations');
+        define('CALENDAR_OLD_FORM_FIELD_TABLE', DBPREFIX . 'module_calendar_form_fields');
+        define('CALENDAR_OLD_FORM_DATA_TABLE', DBPREFIX . 'module_calendar_form_data');
 
 
         // new tables (contrexx version >= 3.1)
@@ -657,13 +657,13 @@ class CalendarUpdate31
                 $headlinesCount = $_CONFIG['calendarheadlinescount'];
                 $defaultCount = $_CONFIG['calendardefaultcount'];
                 \Cx\Lib\UpdateUtil::sql("
-                    INSERT INTO `" . CALENDAR_NEW_SETTINGS_TABLE . "` (`id`, `section_id`, `name`, `title`, `value`, `info`, `type`, `options`, `special`, `order`)
+                    INSERT IGNORE INTO `" . CALENDAR_NEW_SETTINGS_TABLE . "` (`id`, `section_id`, `name`, `title`, `value`, `info`, `type`, `options`, `special`, `order`)
                     VALUES
-                        (8, 5, 'numPaging', 'TXT_CALENDAR_NUM_PAGING', '".$defaultCount."', '', 1, '', '', 1),
-                        (9, 5, 'numEntrance', 'TXT_CALENDAR_NUM_EVENTS_ENTRANCE', '".$defaultCount."', '', 1, '', '', 2),
-                        (10, 6, 'headlinesStatus', 'TXT_CALENDAR_HEADLINES_STATUS', '".$headlinesActivated."', '', 3, 'TXT_CALENDAR_ACTIVATE,TXT_CALENDAR_DEACTIVATE', '', 1),
-                        (11, 6, 'headlinesCategory', 'TXT_CALENDAR_HEADLINES_CATEGORY', '".$headlinesCategory."', '', 5, '', 'getCategoryDorpdown', 3),
-                        (12, 6, 'headlinesNum', 'TXT_CALENDAR_HEADLINES_NUM', '".$headlinesCount."', '', 1, '', '', 2),
+                        (8, 5, 'numPaging', 'TXT_CALENDAR_NUM_PAGING', '" . $defaultCount . "', '', 1, '', '', 1),
+                        (9, 5, 'numEntrance', 'TXT_CALENDAR_NUM_EVENTS_ENTRANCE', '" . $defaultCount . "', '', 1, '', '', 2),
+                        (10, 6, 'headlinesStatus', 'TXT_CALENDAR_HEADLINES_STATUS', '" . $headlinesActivated . "', '', 3, 'TXT_CALENDAR_ACTIVATE,TXT_CALENDAR_DEACTIVATE', '', 1),
+                        (11, 6, 'headlinesCategory', 'TXT_CALENDAR_HEADLINES_CATEGORY', '" . $headlinesCategory . "', '', 5, '', 'getCategoryDorpdown', 3),
+                        (12, 6, 'headlinesNum', 'TXT_CALENDAR_HEADLINES_NUM', '" . $headlinesCount . "', '', 1, '', '', 2),
                         (14, 7, 'publicationStatus', 'TXT_CALENDAR_PUBLICATION_STATUS', '2', 'TXT_CALENDAR_PUBLICATION_STATUS_INFO', 3, 'TXT_CALENDAR_ACTIVATE,TXT_CALENDAR_DEACTIVATE', '', 0),
                         (15, 15, 'dateFormat', 'TXT_CALENDAR_DATE_FORMAT', '0', 'TXT_CALENDAR_DATE_FORMAT_INFO', 5, 'TXT_CALENDAR_DATE_FORMAT_DD.MM.YYYY,TXT_CALENDAR_DATE_FORMAT_DD/MM/YYYY,TXT_CALENDAR_DATE_FORMAT_YYYY.MM.DD,TXT_CALENDAR_DATE_FORMAT_MM/DD/YYYY,TXT_CALENDAR_DATE_FORMAT_YYYY-MM-DD', '', 3),
                         (16, 8, 'countCategoryEntries', 'TXT_CALENDAR_CATEGORY_COUNT_ENTRIES', '2', '', 3, 'TXT_CALENDAR_ACTIVATE,TXT_CALENDAR_DEACTIVATE', '', 0),
@@ -718,7 +718,7 @@ class CalendarUpdate31
 
             if (\Cx\Lib\UpdateUtil::table_empty(CALENDAR_NEW_SETTINGS_SECTION_TABLE)) {
                 \Cx\Lib\UpdateUtil::sql("
-                    INSERT INTO `" . CALENDAR_NEW_SETTINGS_SECTION_TABLE . "` (`id`, `parent`, `order`, `name`, `title`)
+                    INSERT IGNORE INTO `" . CALENDAR_NEW_SETTINGS_SECTION_TABLE . "` (`id`, `parent`, `order`, `name`, `title`)
                         VALUES
                             (5, 1, 0, 'global', 'TXT_CALENDAR_GLOBAL'),
                             (6, 1, 1, 'headlines', 'TXT_CALENDAR_HEADLINES'),
@@ -755,7 +755,7 @@ class CalendarUpdate31
         try {
             if (\Cx\Lib\UpdateUtil::table_empty(CALENDAR_NEW_MAIL_TABLE)) {
                 \Cx\Lib\UpdateUtil::sql("
-                    INSERT INTO `" . CALENDAR_NEW_MAIL_TABLE . "` (`id`, `title`, `content_text`, `content_html`, `recipients`, `lang_id`, `action_id`, `is_default`, `status`)
+                    INSERT IGNORE INTO `" . CALENDAR_NEW_MAIL_TABLE . "` (`id`, `title`, `content_text`, `content_html`, `recipients`, `lang_id`, `action_id`, `is_default`, `status`)
                         VALUES
                             (1, '[[URL]] - Einladung zu [[TITLE]]', 'Hallo [[FIRSTNAME]] [[LASTNAME]] \r\n\r\nSie wurden auf [[URL]] zum Event \"[[TITLE]]\" eingeladen.\r\nDetails: [[LINK_EVENT]]\r\n\r\nFolgen Sie dem unten stehenden Link um sich f&uuml;r diesen Event an- oder abzumelden.\r\nHinweis: Sollte der Link nicht funktionieren, kopieren Sie die komplette Adresse ohne Zeilenumbr&uuml;che in die Adresszeile Ihres Browsers und dr&uuml;cken Sie anschliessend \"Enter\".\r\n\r\n[[LINK_REGISTRATION]]\r\n\r\n\r\n--\r\nDiese Nachricht wurde automatisch generiert\r\n[[DATE]]', 'Hallo [[FIRSTNAME]] [[LASTNAME]]<br />\r\n<br />\r\nSie wurden auf <a href=\"http://[[URL]]\" title=\"[[URL]]\">[[URL]]</a> zum Event <a href=\"[[LINK_EVENT]]\" title=\"Event Details\">&quot;[[TITLE]]&quot;</a> eingeladen. <br />\r\nKlicken Sie <a href=\"[[LINK_REGISTRATION]]\" title=\"Anmeldung\">hier</a>, um sich an diesem Event an- oder abzumelden.<br />\r\n<br />\r\n<br />\r\n--<br />\r\n<em>Diese Nachricht wurde automatisch generiert</em><br />\r\n<em>[[DATE]]</em>', '', 1, 1, 1, 1),
                             (15, '[[URL]] - Neue [[REGISTRATION_TYPE]] f&uuml;r [[TITLE]]', 'Hallo\r\n\r\nAuf [[URL]] wurde eine neue [[REGISTRATION_TYPE]] f&uuml;r den Termin \"[[TITLE]]\" eingetragen.\r\n\r\nInformationen zur [[REGISTRATION_TYPE]]\r\n[[REGISTRATION_DATA]]\r\n\r\n-- \r\nDiese Nachricht wurde automatisch generiert [[DATE]]', 'Hallo<br />\r\n<br />\r\nAuf [[URL]] wurde eine neue [[REGISTRATION_TYPE]] f&uuml;r den Termin &quot;[[TITLE]]&quot; eingetragen.<br />\r\n<br />\r\n<h2>Informationen zur [[REGISTRATION_TYPE]]</h2>\r\n[[REGISTRATION_DATA]] <br />\r\n<br />\r\n-- <br />\r\nDiese Nachricht wurde automatisch generiert [[DATE]]', '', 1, 3, 1, 1),
@@ -770,7 +770,7 @@ class CalendarUpdate31
 
             if (\Cx\Lib\UpdateUtil::table_empty(CALENDAR_NEW_MAIL_ACTION_TABLE)) {
                 \Cx\Lib\UpdateUtil::sql("
-                    INSERT INTO `" . CALENDAR_NEW_MAIL_ACTION_TABLE . "`
+                    INSERT IGNORE INTO `" . CALENDAR_NEW_MAIL_ACTION_TABLE . "`
                         VALUES
                             (1, 'invitationTemplate', 'empty', 0),
                             (2, 'confirmationRegistration', 'author', 0),
@@ -794,10 +794,10 @@ class CalendarUpdate31
             if (!empty($_SESSION['contrexx_update']['calendar']['categories'])) {
                 $where = ' WHERE `id` > ' . $_SESSION['contrexx_update']['calendar']['categories'];
             }
-            $result = \Cx\Lib\UpdateUtil::sql("SELECT `id`, `name`, `status`, `pos`, `lang` FROM `" . CALENDAR_OLD_CATEGORY_TABLE . "`".$where." ORDER BY `id`");
+            $result = \Cx\Lib\UpdateUtil::sql("SELECT `id`, `name`, `status`, `pos`, `lang` FROM `" . CALENDAR_OLD_CATEGORY_TABLE . "`" . $where . " ORDER BY `id`");
             while (!$result->EOF) {
                 \Cx\Lib\UpdateUtil::sql(
-                    "INSERT INTO `" . CALENDAR_NEW_CATEGORY_TABLE . "` (`id`, `pos`,`status`)
+                    "INSERT IGNORE INTO `" . CALENDAR_NEW_CATEGORY_TABLE . "` (`id`, `pos`,`status`)
                         VALUES (
                             " . intval($result->fields['id']) . ",
                             " . intval($result->fields['pos']) . ",
@@ -805,11 +805,11 @@ class CalendarUpdate31
                         )"
                 );
                 \Cx\Lib\UpdateUtil::sql(
-                    "INSERT INTO `" . CALENDAR_NEW_CATEGORY_NAME_TABLE . "` (`cat_id`,`lang_id`,`name`)
+                    "INSERT IGNORE INTO `" . CALENDAR_NEW_CATEGORY_NAME_TABLE . "` (`cat_id`,`lang_id`,`name`)
                         VALUES (
                             " . intval($result->fields['id']) . ",
                             " . intval($result->fields['lang']) . ",
-                            " . contrexx_raw2db($result->fields['name']) . "
+                            '" . contrexx_raw2db($result->fields['name']) . "'
                         )"
                 );
 
@@ -824,12 +824,14 @@ class CalendarUpdate31
         } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
+        return true;
     }
 
     /**
      * get the language ids of each category
      */
-    protected function getCategoryLanguages() {
+    protected function getCategoryLanguages()
+    {
         $languageIds = array();
         try {
             $result = \Cx\Lib\UpdateUtil::sql("SELECT `cat_id`, `lang_id` FROM `" . CALENDAR_NEW_CATEGORY_NAME_TABLE . "`");
@@ -846,183 +848,8 @@ class CalendarUpdate31
     /**
      * migrate old events to new events table
      */
-    protected function migrateEvents() {
-        /**
-         * insert registration form
-         * @param string $name the name of the event
-         * @return bool|void
-         */
-        function addRegistrationFormForEvent($name) {
-            \Cx\Lib\UpdateUtil::sql("
-                INSERT INTO `" . CALENDAR_NEW_REGISTRATION_FORM_TABLE . "` (
-                    `status`,
-                    `order`,
-                    `title`
-                ) VALUES (
-                    1,
-                    99,
-                    '" . contrexx_raw2db($result->fields['name']) . "'
-                )
-            ");
-            return $this->db->Insert_ID();
-        }
-
-        /**
-         * @param string $title the subject for the mail template
-         * @param string $content the content for the mail template
-         * @param int $langId the language id
-         * @return bool|void
-         */
-        function addMailTemplate($title, $content, $langId) {
-            \Cx\Lib\UpdateUtil::sql("
-                INSERT INTO `" . CALENDAR_NEW_MAIL_TABLE . "` (
-                    `title`,
-                    `content_text`,
-                    `content_html`,
-                    `recipients`,
-                    `lang_id`,
-                    `action_id`,
-                    `is_default`,
-                    `status`
-                ) VALUES (
-                    '" . contrexx_raw2db($title) . "',
-                    '" . contrexx_raw2db($content) . "',
-                    '" . contrexx_raw2db($content) . "',
-                    '', " . $langId . ", 2, 0, 1)
-            ");
-            return $this->db->Insert_ID();
-        }
-
-        /**
-         * @param int $eventId the event id
-         * @param int $langId the language id
-         * @return array|bool|void
-         */
-        function addRegistrationFormFields($eventId, $langId) {
-            $formFieldIdMap = array();
-            $resultFormFields = \Cx\Lib\UpdateUtil::sql("
-                SELECT `id`, `name`, `type`, `required`, `order`, `key` FROM `" . CALENDAR_OLD_FORM_FIELD_TABLE . "`
-                    WHERE `note_id` = " . $eventId . "
-            ");
-            while (!$resultFormFields->EOF) {
-                \Cx\Lib\UpdateUtil::sql("
-                    INSERT INTO `" . CALENDAR_NEW_REGISTRATION_FORM_FIELD_TABLE . "` (`form`, `type`, `required`, `order`, `affiliation`)
-                    VALUES (
-                        " . $registrationFormId . ",
-                        '" . contrexx_raw2db($resultFormFields->fields['type']) . "',
-                        '" . contrexx_raw2db($resultFormFields->fields['required']) . "',
-                        '" . contrexx_raw2db($resultFormFields->fields['order']) . "',
-                        '" . contrexx_raw2db($resultFormFields->fields['key']) . "'
-                    )
-                ");
-
-                $formFieldId = $this->db->Insert_ID();
-                $formFieldIdMap[$resultFormFields->fields['id']] = $formFieldId;
-
-                \Cx\Lib\UpdateUtil::sql("
-                    INSERT INTO `" . CALENDAR_NEW_REGISTRATION_FORM_FIELD_NAME_TABLE . "` (`field_id`, `form_id`, `lang_id`, `name`, `default`)
-                    VALUES (
-                        " . $formFieldId . ",
-                        " . $registrationFormId . ",
-                        " . $langId . ",
-                        '" . contrexx_raw2db($resultFormFields->fields['name']) . "',
-                        ''
-                    )
-                ");
-
-                $resultFormFields->MoveNext();
-            }
-            return $formFieldIdMap;
-        }
-
-        /**
-         * @param int $oldEventId
-         * @param int $newEventId
-         * @param int $langId
-         * @param array $formFieldMap
-         */
-        function addRegistrationData($oldEventId, $newEventId, $langId, $formFieldMap) {
-            $resultRegistrations = \Cx\Lib\UpdateUtil::sql("
-                SELECT `id`, `note_date`, `time`, `host`, `ip_address`, `type` FROM `" . CALENDAR_OLD_REGISTRATIONS_TABLE . "`
-                    WHERE `note_id` = " . $oldEventId . "
-            ");
-            while (!$resultRegistrations->EOF) {
-                $key = generateRandomKey();
-                \Cx\Lib\UpdateUtil::sql("
-                    INSERT INTO `" . CALENDAR_NEW_REGISTRATION_TABLE . "`
-                        (`event_id`, `date`, `host_name`, `ip_address`, `type`, `key`, `user_id`, `lang_id`, `export`, `payment_method`, `paid`)
-                    VALUES (
-                        " . $newEventId . ",
-                        '" . contrexx_raw2db($resultRegistrations->fields['time']) . "',
-                        '" . contrexx_raw2db($resultRegistrations->fields['host']) . "',
-                        '" . contrexx_raw2db($resultRegistrations->fields['ip_address']) . "',
-                        '" . contrexx_raw2db($resultRegistrations->fields['type']) . "',
-                        '" . contrexx_raw2db($key) . "',
-                        0,
-                        " . $langId . ",
-                        0,
-                        0,
-                        0
-                    )
-                ");
-                $registrationId = $this->db->Insert_ID();
-
-                $resultRegistrationData = \Cx\Lib\UpdateUtil::sql("
-                    SELECT `field_id`, `value` FROM `" . CALENDAR_OLD_FORM_DATA_TABLE . "`
-                    WHERE `reg_id` = " . $resultRegistrations->fields['id'] . "
-                ");
-                while (!$resultRegistrationData->EOF) {
-                    \Cx\Lib\UpdateUtil::sql("
-                        INSERT INTO `" . CALENDAR_NEW_REGISTRATION_FORM_FIELD_VALUE_TABLE . "` (
-                            `reg_id`,
-                            `field_id`,
-                            `data`
-                        ) VALUES (
-                            '" . $registrationId . "',
-                            " . $formFieldMap[$resultRegistrationData->fields['field_id']] . ",
-                            '" . contrexx_raw2db($resultRegistrationData->fields['value']) . "'
-                        )
-                    ");
-                    $resultRegistrationData->MoveNext();
-                }
-
-                $resultRegistrations->MoveNext();
-            }
-        }
-
-        /**
-         * Generate a random key
-         * @see \CalendarLibrary
-         * @return string
-         */
-        function generateRandomKey() {
-            $arrRandom = array();
-            $arrChars = array ('a','b','c','d','e','f','g','h','i','j','k','l','m','n','o','p','q','r','s','t','u','v','w','x','y','z');
-            $arrNumerics =  array (0,1,2,3,4,5,6,7,8,9);
-
-            for ($i = 0; $i <= rand(15,40); $i++) {
-                $charOrNum = rand(0,1);
-                if($charOrNum == 1) {
-                    $posChar = rand(0,25);
-                    $upOrLow = rand(0,1);
-
-                    if($upOrLow == 0) {
-                        $arrRandom[$i] = strtoupper($arrChars[$posChar]);
-                    } else {
-                        $arrRandom[$i] = strtolower($arrChars[$posChar]);
-                    }
-                } else {
-                    $posNum = rand(0,9);
-                    $arrRandom[$i] = $arrNumerics[$posNum];
-                }
-            }
-
-            $key = join($arrRandom);
-
-            return $key;
-        }
-
-
+    protected function migrateEvents()
+    {
         try {
             // migration old events to new event table
             // migrate entries
@@ -1030,14 +857,15 @@ class CalendarUpdate31
             if (!empty($_SESSION['contrexx_update']['calendar']['events'])) {
                 $where = ' WHERE `id` > ' . $_SESSION['contrexx_update']['calendar']['events'];
             }
-            $result = \Cx\Lib\UpdateUtil::sql("SELECT * FROM `" . CALENDAR_OLD_EVENT_TABLE . "`".$where." ORDER BY `id`");
+            $result = \Cx\Lib\UpdateUtil::sql("SELECT * FROM `" . CALENDAR_OLD_EVENT_TABLE . "`" . $where . " ORDER BY `id`");
             while (!$result->EOF) {
-                $registrationFormId = addRegistrationFormForEvent($result->fields['name']);
-                $mailTemplateId = addMailTemplateWithTitleAndContent($result->fields['mailTitle'], $result->fields['mailContent'], $langId);
+                $langId = $this->categoryLanguages[$result->fields['catid']];
+                $registrationFormId = $this->addRegistrationFormForEvent($result->fields['name']);
+                $mailTemplateId = $this->addMailTemplate($result->fields['mailTitle'], $result->fields['mailContent'], $langId);
 
                 // insert event
                 \Cx\Lib\UpdateUtil::sql("
-                    INSERT INTO `" . CALENDAR_NEW_EVENT_TABLE . "` (
+                    INSERT IGNORE INTO `" . CALENDAR_NEW_EVENT_TABLE . "` (
                         `status`,
                         `catid`,
                         `startdate`,
@@ -1045,7 +873,7 @@ class CalendarUpdate31
                         `priority`,
                         `access`,
                         `place`,
-                        `link`
+                        `link`,
                         `pic`,
                         `attach`,
                         `place_street`,
@@ -1091,7 +919,7 @@ class CalendarUpdate31
                         `google`,
                         `price`,
                         `place_mediadir_id`,
-                        `showIn`,
+                        `show_in`,
                         `invitation_sent`,
                         `ticket_sales`,
                         `num_seating`,
@@ -1162,6 +990,8 @@ class CalendarUpdate31
                         1,
                         " . $_SESSION['contrexx_update']['user_id'] . ",
                         0,
+                        0,
+                        '',
                         " . $registrationFormId . ",
                         " . $mailTemplateId . "
                     )
@@ -1171,7 +1001,7 @@ class CalendarUpdate31
 
                 // add language fields for event
                 \Cx\Lib\UpdateUtil::sql("
-                    INSERT INTO `" . CALENDAR_NEW_EVENT_FIELD_TABLE . "` (`event_id`, `lang_id`, `title`, `description`, `redirect`)
+                    INSERT IGNORE INTO `" . CALENDAR_NEW_EVENT_FIELD_TABLE . "` (`event_id`, `lang_id`, `title`, `description`, `redirect`)
                     VALUES (
                         " . $eventId . ",
                         " . $langId . ",
@@ -1182,10 +1012,10 @@ class CalendarUpdate31
                 ");
 
                 // add registration form fields
-                $formFieldsMap = addRegistrationFormFields($result->fields['id'], $langId);
+                $formFieldsMap = $this->addRegistrationFormFields($registrationFormId, $result->fields['id'], $langId);
 
                 // add registration data
-                addRegistrationData($oldEventId, $newEventId, $langId, $formFieldsMap);
+                $this->addRegistrationData($result->fields['id'], $eventId, $langId, $formFieldsMap);
 
                 $_SESSION['contrexx_update']['calendar']['events'] = intval($result->fields['id']);
 
@@ -1203,10 +1033,192 @@ class CalendarUpdate31
     }
 
     /**
+     * insert registration form
+     * @param string $name the name of the event
+     * @return bool|void
+     */
+    protected function addRegistrationFormForEvent($name)
+    {
+        \Cx\Lib\UpdateUtil::sql("
+                INSERT IGNORE INTO `" . CALENDAR_NEW_REGISTRATION_FORM_TABLE . "` (
+                    `status`,
+                    `order`,
+                    `title`
+                ) VALUES (
+                    1,
+                    99,
+                    '" . contrexx_raw2db($name) . "'
+                )
+            ");
+        return $this->db->Insert_ID();
+    }
+
+    /**
+     * @param string $title the subject for the mail template
+     * @param string $content the content for the mail template
+     * @param int $langId the language id
+     * @return bool|void
+     */
+    protected function addMailTemplate($title, $content, $langId)
+    {
+        \Cx\Lib\UpdateUtil::sql("
+                INSERT IGNORE INTO `" . CALENDAR_NEW_MAIL_TABLE . "` (
+                    `title`,
+                    `content_text`,
+                    `content_html`,
+                    `recipients`,
+                    `lang_id`,
+                    `action_id`,
+                    `is_default`,
+                    `status`
+                ) VALUES (
+                    '" . contrexx_raw2db($title) . "',
+                    '" . contrexx_raw2db($content) . "',
+                    '" . contrexx_raw2db($content) . "',
+                    '', " . $langId . ", 2, 0, 1)
+            ");
+        return $this->db->Insert_ID();
+    }
+
+    /**
+     * @param int $registrationFormId the registration form id
+     * @param int $eventId the event id
+     * @param int $langId the language id
+     * @return array|bool|void
+     */
+    protected function addRegistrationFormFields($registrationFormId, $eventId, $langId)
+    {
+        $formFieldIdMap = array();
+        $resultFormFields = \Cx\Lib\UpdateUtil::sql("
+                SELECT `id`, `name`, `type`, `required`, `order`, `key` FROM `" . CALENDAR_OLD_FORM_FIELD_TABLE . "`
+                    WHERE `note_id` = " . $eventId . "
+            ");
+        while (!$resultFormFields->EOF) {
+            \Cx\Lib\UpdateUtil::sql("
+                    INSERT IGNORE INTO `" . CALENDAR_NEW_REGISTRATION_FORM_FIELD_TABLE . "` (`form`, `type`, `required`, `order`, `affiliation`)
+                    VALUES (
+                        " . $registrationFormId . ",
+                        '" . contrexx_raw2db($resultFormFields->fields['type']) . "',
+                        '" . contrexx_raw2db($resultFormFields->fields['required']) . "',
+                        '" . contrexx_raw2db($resultFormFields->fields['order']) . "',
+                        '" . contrexx_raw2db($resultFormFields->fields['key']) . "'
+                    )
+                ");
+
+            $formFieldId = $this->db->Insert_ID();
+            $formFieldIdMap[$resultFormFields->fields['id']] = $formFieldId;
+
+            \Cx\Lib\UpdateUtil::sql("
+                    INSERT IGNORE INTO `" . CALENDAR_NEW_REGISTRATION_FORM_FIELD_NAME_TABLE . "` (`field_id`, `form_id`, `lang_id`, `name`, `default`)
+                    VALUES (
+                        " . $formFieldId . ",
+                        " . $registrationFormId . ",
+                        " . $langId . ",
+                        '" . contrexx_raw2db($resultFormFields->fields['name']) . "',
+                        ''
+                    )
+                ");
+
+            $resultFormFields->MoveNext();
+        }
+        return $formFieldIdMap;
+    }
+
+    /**
+     * @param int $oldEventId
+     * @param int $newEventId
+     * @param int $langId
+     * @param array $formFieldMap
+     */
+    protected function addRegistrationData($oldEventId, $newEventId, $langId, $formFieldMap)
+    {
+        $resultRegistrations = \Cx\Lib\UpdateUtil::sql("
+                SELECT `id`, `note_date`, `time`, `host`, `ip_address`, `type` FROM `" . CALENDAR_OLD_REGISTRATIONS_TABLE . "`
+                    WHERE `note_id` = " . $oldEventId . "
+            ");
+        while (!$resultRegistrations->EOF) {
+            $key = $this->generateRandomKey();
+            \Cx\Lib\UpdateUtil::sql("
+                    INSERT IGNORE INTO `" . CALENDAR_NEW_REGISTRATION_TABLE . "`
+                        (`event_id`, `date`, `host_name`, `ip_address`, `type`, `key`, `user_id`, `lang_id`, `export`, `payment_method`, `paid`)
+                    VALUES (
+                        " . $newEventId . ",
+                        '" . contrexx_raw2db($resultRegistrations->fields['time']) . "',
+                        '" . contrexx_raw2db($resultRegistrations->fields['host']) . "',
+                        '" . contrexx_raw2db($resultRegistrations->fields['ip_address']) . "',
+                        '" . contrexx_raw2db($resultRegistrations->fields['type']) . "',
+                        '" . contrexx_raw2db($key) . "',
+                        0,
+                        " . $langId . ",
+                        0,
+                        0,
+                        0
+                    )
+                ");
+            $registrationId = $this->db->Insert_ID();
+
+            $resultRegistrationData = \Cx\Lib\UpdateUtil::sql("
+                    SELECT `field_id`, `value` FROM `" . CALENDAR_OLD_FORM_DATA_TABLE . "`
+                    WHERE `reg_id` = " . $resultRegistrations->fields['id'] . "
+                ");
+            while (!$resultRegistrationData->EOF) {
+                \Cx\Lib\UpdateUtil::sql("
+                        INSERT IGNORE INTO `" . CALENDAR_NEW_REGISTRATION_FORM_FIELD_VALUE_TABLE . "` (
+                            `reg_id`,
+                            `field_id`,
+                            `data`
+                        ) VALUES (
+                            '" . $registrationId . "',
+                            " . $formFieldMap[$resultRegistrationData->fields['field_id']] . ",
+                            '" . contrexx_raw2db($resultRegistrationData->fields['value']) . "'
+                        )
+                    ");
+                $resultRegistrationData->MoveNext();
+            }
+
+            $resultRegistrations->MoveNext();
+        }
+    }
+
+    /**
+     * Generate a random key
+     * @see \CalendarLibrary
+     * @return string
+     */
+    protected function generateRandomKey()
+    {
+        $arrRandom = array();
+        $arrChars = array('a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z');
+        $arrNumerics = array(0, 1, 2, 3, 4, 5, 6, 7, 8, 9);
+
+        for ($i = 0; $i <= rand(15, 40); $i++) {
+            $charOrNum = rand(0, 1);
+            if ($charOrNum == 1) {
+                $posChar = rand(0, 25);
+                $upOrLow = rand(0, 1);
+
+                if ($upOrLow == 0) {
+                    $arrRandom[$i] = strtoupper($arrChars[$posChar]);
+                } else {
+                    $arrRandom[$i] = strtolower($arrChars[$posChar]);
+                }
+            } else {
+                $posNum = rand(0, 9);
+                $arrRandom[$i] = $arrNumerics[$posNum];
+            }
+        }
+
+        $key = join($arrRandom);
+
+        return $key;
+    }
+
+    /**
      * drop old tables
      * @return bool|void
      */
-    protected function dropOldTables() {
+    protected function dropOldTables()
+    {
         try {
             \Cx\Lib\UpdateUtil::drop_table(CALENDAR_OLD_EVENT_TABLE);
             \Cx\Lib\UpdateUtil::drop_table(CALENDAR_OLD_SETTINGS_TABLE);
