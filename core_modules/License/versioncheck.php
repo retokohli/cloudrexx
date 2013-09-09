@@ -1,16 +1,26 @@
 <?php
-global $sessionObj, $_CONFIG, $_CORELANG;
+global $sessionObj, $_CONFIG, $_CORELANG, $objUser, $objDatabase;
 
-require_once dirname(dirname(dirname(__FILE__))).'/core/Core/init.php';
-$cx = init('minimal');
+if (!isset($objUser) || !isset($objDatabase) || !isset($license)) {
+    require_once dirname(dirname(dirname(__FILE__))).'/core/Core/init.php';
+    $cx = init('minimal');
+}
 
 // Init user
 if (empty($sessionObj)) $sessionObj = new \cmsSession();
-$objUser = $cx->getUser()->objUser;
+if (!isset($objUser)) {
+    $objUser = $cx->getUser()->objUser;
+}
 $objUser->login();
 
+if (!isset($objDatabase)) {
+    $objDatabase = $cx->getDb()->getAdoDb();
+}
+
 // update license, return "false" if no connection to license server could be established
-$license = $cx->getLicense();
+if (!isset($license)) {
+    $license = $cx->getLicense();
+}
 $licenseCommunicator = \Cx\Core_Modules\License\LicenseCommunicator::getInstance($_CONFIG);
 try {
     $licenseCommunicator->update(
@@ -24,7 +34,7 @@ try {
 } catch (\Exception $e) {
     $license->check();
     if (!isset($_GET['nosave']) || $_GET['nosave'] != 'true') {
-        $license->save(new \settingsManager(), $cx->getDb()->getAdoDb());
+        $license->save(new \settingsManager(), $objDatabase);
     }
     if (!isset($_GET['silent']) || $_GET['silent'] != 'true') {
         echo "false";
@@ -33,7 +43,7 @@ try {
 }
 $license->check();
 if (!isset($_GET['nosave']) || $_GET['nosave'] != 'true') {
-    $license->save(new \settingsManager(), $cx->getDb()->getAdoDb());
+    $license->save(new \settingsManager(), $objDatabase);
 }
 
 if (!$objUser->login(true)) {

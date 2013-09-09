@@ -1687,7 +1687,7 @@ class License {
     }
 
     public function update() {
-        global $documentRoot, $_CONFIG;
+        global $documentRoot, $_CONFIG, $objUser, $license, $objDatabase;
 
         if (@include_once(ASCMS_DOCUMENT_ROOT.'/lib/PEAR/HTTP/Request2.php')) {
             $_GET['force'] = 'true';
@@ -1699,6 +1699,9 @@ class License {
             $_CONFIG['installationId'] = '';
             $_CONFIG['licenseKey'] = '';
             $_CONFIG['licenseState'] = '';
+            
+            $objUser = \FWUser::getFWUserObject()->objUser;
+            $license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $objDatabase);
 
             $return = @include_once(ASCMS_DOCUMENT_ROOT.'/core_modules/License/versioncheck.php');
         }
