@@ -80,12 +80,11 @@ class Paging
         // remove all parameters otherwise the url object has parameters like &act=add
         $requestUrl = clone \Env::get('Resolver')->getUrl();
         $requestUrl->removeAllParams();
+        $requestUrl->setParams($uri_parameter);
 
         $firstUrl = clone $requestUrl;
-        $firstUrl->setParams($uri_parameter);
         $firstUrl->setParam($parameter_name, 0);
         $lastUrl = clone $requestUrl;
-        $lastUrl->setParams($uri_parameter);
         $lastUrl->setParam($parameter_name, ($numof_rows - $corr_value));
 
         // Set up the base navigation entries
@@ -104,7 +103,6 @@ class Paging
         // Note:  previous/next link are currently unused.
         if ($position != 0) {
             $previousUrl = clone $requestUrl;
-            $previousUrl->setParams($uri_parameter);
             $previousUrl->setParam($parameter_name, ($position - $results_per_page));
             $array_paging['previous_link'] =
                 '<a href="'.Cx\Core\Routing\Url::encode_amp($previousUrl).'">';
@@ -112,7 +110,6 @@ class Paging
         if (($numof_rows - $position) > $results_per_page) {
             $int_new_position = $position + $results_per_page;
             $nextUrl = clone $requestUrl;
-            $nextUrl->setParams($uri_parameter);
             $nextUrl->setParam($parameter_name, $int_new_position);
             $array_paging['next_link'] =
                 '<a href="'.Cx\Core\Routing\Url::encode_amp($nextUrl).'">';
@@ -124,7 +121,6 @@ class Paging
                     '<b class="pagingPage'.$i.'">'.$i.'</b>';
             } else {
                 $pageUrl = clone $requestUrl;
-                $pageUrl->setParams($uri_parameter);
                 $pageUrl->setParam($parameter_name, (($i-1) * $results_per_page));
                 $array_paging[$i] =
                     '<a class="pagingPage'.$i.'" href="'.
