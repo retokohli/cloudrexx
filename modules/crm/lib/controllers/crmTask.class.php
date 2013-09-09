@@ -429,7 +429,7 @@ class crmTask extends CrmLibrary
                 'TXT_CRM_SAVE'                 => $_ARRAYLANG['TXT_CRM_SAVE'],
                 'TXT_CRM_BACK'                 => $_ARRAYLANG['TXT_CRM_BACK'],
                 'TXT_CRM_NOTIFY'               => $_ARRAYLANG['TXT_CRM_NOTIFY'],
-
+                
         ));
     }
 

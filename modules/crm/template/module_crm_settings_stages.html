@@ -73,7 +73,7 @@
         $J(".deleteEntry").click(function(){
             $elm  = $J(this);
             en_id = $J(this).attr('rel').split('_')[1]
-            if (confirm ("Are you sure want to delete the entry!")) {
+            if (confirm ("{TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES}")) {
                 $J.ajax({
                     url     : './index.php?cmd={MODULE_NAME}&act=settings&tpl=opstages&actionType=deletestage&ajax=1&id='+en_id,
                     type    : 'POST',
@@ -224,7 +224,7 @@
                 <tbody>
                     <tr class="row1">
                         <td width="15%">{TXT_CRM_LABEL}<font color="red">&nbsp;*</font></td>
-                        <td><input type="text" name="label" id="label" value="{CRM_STAGE_LABEL}" />&nbsp;<input type="checkbox" {CRM_STAGE_CHECKED} name="status" value="1" />&nbsp;Active</td>
+                        <td><input type="text" name="label" id="label" value="{CRM_STAGE_LABEL}" />&nbsp;<input type="checkbox" {CRM_STAGE_CHECKED} name="status" value="1" />&nbsp;{TXT_ACTIVE}</td>
                     </tr>
                     <tr class="row2">
                         <td>{TXT_CRM_DEALS_STAGE}<font color="red">&nbsp;*</font></td>

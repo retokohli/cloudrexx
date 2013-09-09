@@ -519,6 +519,7 @@ class CrmLibrary
                 'TXT_CRM_TASK_TYPE_SORTING1'     => $_ARRAYLANG['TXT_CRM_TASK_TYPE_SORTING1'],
                 'TXT_CRM_TASK_TYPE_ACTIVE'      => $_ARRAYLANG['TXT_CRM_TASK_TYPE_ACTIVE'],
                 'TXT_CRM_SAVE'                      => $_ARRAYLANG['TXT_CRM_SAVE'],
+                'TXT_BROWSE'                         => $_ARRAYLANG['TXT_BROWSE'],
         ));
     }
 

@@ -244,7 +244,8 @@ class Settings extends CrmLibrary
                 'TXT_CRM_DEFAULT'                    => $_ARRAYLANG['TXT_CRM_DEFAULT'],
                 'TXT_CRM_GENERAL'                    => $_ARRAYLANG['TXT_CRM_GENERAL'],
                 'TXT_CRM_NOTES'                      => $_ARRAYLANG['TXT_CRM_NOTES'],
-                'TXT_CRM_SAVE'                       => $_ARRAYLANG['TXT_CRM_SAVE']
+                'TXT_CRM_SAVE'                       => $_ARRAYLANG['TXT_CRM_SAVE'],
+                
         ));
     }
 
@@ -657,7 +658,7 @@ class Settings extends CrmLibrary
             'TXT_ACTIVATED_VALUE'     => $status ? 'checked' : '',
 
             'TXT_CRM_EDIT_CURRENCY'   => $_ARRAYLANG['TXT_CRM_EDIT_CURRENCY'],
-            'TXT_CRM_NAME'            => $_ARRAYLANG['TXT_CRM_NAME'],
+            'TXT_CRM_NAME'            => $_ARRAYLANG['TXT_CRM_LABEL'],
             'TXT_CRM_FUNCTIONS'       => $_ARRAYLANG['TXT_CRM_FUNCTIONS'],
             'TXT_CRM_SAVE'            => $_ARRAYLANG['TXT_CRM_SAVE'],
             'TXT_CRM_SORTING_NUMBER'  => $_ARRAYLANG['TXT_CRM_SORTING_NUMBER'],
@@ -841,6 +842,7 @@ class Settings extends CrmLibrary
                 'TXT_CRM_SAVE_SORTING'         => $_ARRAYLANG['TXT_CRM_SAVE_SORTING'],
                 'TXT_SELECT_ENTRIES'           => $_ARRAYLANG['TXT_CRM_NO_OPERATION'],
                 'TXT_CRM_STATUS_SUCCESSFULLY_CHANGED' => $_ARRAYLANG['TXT_CRM_TASK_TYPE_STATUS_CHANGED_SUCCESSFULLY'],
+                'TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES' => $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES'],
         ));
     }
 
@@ -882,6 +884,7 @@ class Settings extends CrmLibrary
                 'TXT_CRM_ADD_TASK_TYPE'     => $_ARRAYLANG['TXT_CRM_EDIT_TASK_TYPE'],
                 'TXT_CRM_BACK1'                 => $_ARRAYLANG['TXT_CRM_BACK1'],
                 'CSRF_PARAM'                => CSRF::param(),
+                'TXT_BROWSE'                   => $_ARRAYLANG['TXT_BROWSE'],
         ));
 
     }

@@ -1904,6 +1904,8 @@ END;
                 'TXT_CRM_STATUS_SUCCESSFULLY_CHANGED' => $_ARRAYLANG['TXT_CRM_CHANGE_STATUS'],
                 'TXT_CRM_EDIT_MESSAGE'              => $_ARRAYLANG['TXT_CRM_CHANGES_UPDATED_SUCCESSFULLY'],
                 'TXT_CRM_DELETE_MESSAGE'            => $_ARRAYLANG['TXT_CRM_ENTRY_DELETED_SUCCESS'],
+                'TXT_ACTIVE'                        => $_ARRAYLANG['TXT_ACTIVE'],
+                'TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES'=> $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES'],
         ));
 
     }
@@ -3089,7 +3091,7 @@ END;
                 'TXT_CRM_TITLE_STATUS'              => $_ARRAYLANG['TXT_CRM_TITLE_STATUS'],
                 'TXT_CRM_SORTING'                   => $_ARRAYLANG['TXT_CRM_SORTING'],
                 'TXT_CRM_FUNCTIONS'                 => $_ARRAYLANG['TXT_CRM_FUNCTIONS'],
-                'TXT_ENTRIES_MARKED'            => $_ARRAYLANG['TXT_ENTRIES_MARKED'],
+                'TXT_ENTRIES_MARKED'                => $_ARRAYLANG['TXT_ENTRIES_MARKED'],
                 'TXT_CRM_SELECT_ALL'                => $_ARRAYLANG['TXT_CRM_SELECT_ALL'],
                 'TXT_CRM_DESELECT_ALL'              => $_ARRAYLANG['TXT_CRM_REMOVE_SELECTION'],
                 'TXT_CRM_SELECT_ACTION'             => $_ARRAYLANG['TXT_CRM_SELECT_ACTION'],
@@ -3102,6 +3104,8 @@ END;
                 'TXT_CRM_CHANGE_STATUS'             => $_ARRAYLANG['TXT_CRM_CHANGE_STATUS'],
                 'TXT_CRM_DELETE_SELECTED'           => $_ARRAYLANG['TXT_CRM_DELETE_SELECTED'],
                 'PM_SETTINGS_CURRENCY_JAVASCRIPT' => $objJs->getAddNotesJavascript(),
+                'TXT_BROWSE'                        => $_ARRAYLANG['TXT_BROWSE'],
+                'TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES' => $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES'],
         ));
     }
 
@@ -3161,17 +3165,18 @@ END;
         $this->_objTpl->setVariable(array(
                 'TXT_CRM_ICON'                      => $_ARRAYLANG['TXT_CRM_ICON'],
                 'TXT_CRM_NOTES'                     => $_ARRAYLANG['TXT_CRM_NOTES'],
-                'TXT_CRM_NAME'                      => $_ARRAYLANG['TXT_CRM_NAME'],
+                'TXT_CRM_NAME'                      => $_ARRAYLANG['TXT_CRM_LABEL'],
                 'TXT_CRM_TITLEACTIVE'               => $_ARRAYLANG['TXT_CRM_TITLEACTIVE'],
                 'TXT_CRM_SORTING_NUMBER'            => $_ARRAYLANG['TXT_CRM_SORTING_NUMBER'],
                 'TXT_CRM_ADD_NOTES_TYPES'           => $_ARRAYLANG['TXT_CRM_ADD_NOTES_TYPES'],
                 'TXT_CRM_TITLE_STATUS'              => $_ARRAYLANG['TXT_CRM_TITLE_STATUS'],
                 'TXT_CRM_SORTING'                   => $_ARRAYLANG['TXT_CRM_SORTING'],
-                'TXT_CRM_NAME'                      => $_ARRAYLANG['TXT_CRM_NAME'],
+                'TXT_CRM_NAME'                      => $_ARRAYLANG['TXT_CRM_LABEL'],
                 'TXT_CRM_FUNCTIONS'                 => $_ARRAYLANG['TXT_CRM_FUNCTIONS'],
                 'TXT_CRM_SAVE'                      => $_ARRAYLANG['TXT_CRM_SAVE'],
                 'TXT_CRM_EDIT_NOTES'                => $_ARRAYLANG['TXT_CRM_EDIT_NOTES'],
                 'TXT_CRM_BACK'                      => $_ARRAYLANG['TXT_CRM_BACK'],
+                'TXT_BROWSE'                        => $_ARRAYLANG['TXT_BROWSE'],
                 'PM_SETTINGS_CURRENCY_JAVASCRIPT' => $objJs->getAddCurrencyJavascript(),
                 'CSRF_PARAM'                    => CSRF::param(),
         ));
@@ -5132,7 +5137,7 @@ END;
                 'LANG_ARRAY'                      => implode(',', array_keys($this->_arrLanguages)),
                 'TXT_CRM_CUSTOMER_INDUSTRY'       => $_ARRAYLANG['TXT_CRM_CUSTOMER_INDUSTRY'],
                 'TXT_CRM_OVERVIEW'                => $_ARRAYLANG['TXT_CRM_OVERVIEW'],
-                'TXT_CRM_NAME'                    => $_ARRAYLANG['TXT_CRM_NAME'],
+                'TXT_CRM_NAME'                    => $_ARRAYLANG['TXT_CRM_LABEL'],
                 'TXT_CRM_TITLEACTIVE'             => $_ARRAYLANG['TXT_CRM_TITLEACTIVE'],
                 'TXT_CRM_SORTING_NUMBER'          => $_ARRAYLANG['TXT_CRM_SORTING_NUMBER'],
                 'TXT_CRM_SAVE'                    => $_ARRAYLANG['TXT_CRM_SAVE'],
@@ -5338,7 +5343,7 @@ END;
             'TXT_CRM_CHANGE_STATUS'         => $_ARRAYLANG['TXT_CRM_CHANGE_STATUS'],
             'TXT_CRM_ENTRY_DELETED_SUCCESS' => $_ARRAYLANG['TXT_CRM_ENTRY_DELETED_SUCCESS'],
             'TXT_CRM_NOTHING_SELECTED'      => $_ARRAYLANG['TXT_CRM_NOTHING_SELECTED'],
-            'TXT_CRM_NAME'                  => $_ARRAYLANG['TXT_CRM_NAME'],
+            'TXT_CRM_NAME'                  => $_ARRAYLANG['TXT_CRM_LABEL'],
             'TXT_CRM_TITLEACTIVE'           => $_ARRAYLANG['TXT_CRM_TITLEACTIVE'],
             'TXT_CRM_SORTING_NUMBER'        => $_ARRAYLANG['TXT_CRM_SORTING_NUMBER'],
             'TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES'           => $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES'],
@@ -5462,7 +5467,7 @@ END;
                 'DEFAULT_LANG_ID'                 => $_LANGID,
                 'LANG_ARRAY'                      => implode(',', array_keys($this->_arrLanguages)),
                 'TXT_CRM_OVERVIEW'                => $_ARRAYLANG['TXT_CRM_OVERVIEW'],
-                'TXT_CRM_NAME'                    => $_ARRAYLANG['TXT_CRM_NAME'],
+                'TXT_CRM_NAME'                    => $_ARRAYLANG['TXT_CRM_LABEL'],
                 'TXT_CRM_TITLEACTIVE'             => $_ARRAYLANG['TXT_CRM_TITLEACTIVE'],
                 'TXT_CRM_SORTING_NUMBER'          => $_ARRAYLANG['TXT_CRM_SORTING_NUMBER'],
                 'TXT_CRM_SAVE'                    => $_ARRAYLANG['TXT_CRM_SAVE'],
