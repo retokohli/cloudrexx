@@ -34,10 +34,15 @@ function removePlaceholder(object, placeholder) {
     }
 }
 
-$J(function(){
-  $J("#monthFilter").change(function(){
-    window.location.replace("index.php?cmd=news&{CSRF_PARAM}&monthFilter=" + $J(this).val());
-  });
+$J(document).ready(function() {
+    var elementIds = "#categoryFilter, #monthFilter";
+    $J(elementIds).change(function(){
+        var url = "index.php?cmd=news&{CSRF_PARAM}&show=archive";
+        $J(elementIds).each(function() {
+            url += "&" + $J(this).attr("id") + "=" + $J(this).val();
+        });
+        window.location.replace(url);
+    });
 });
 
 //-->
@@ -76,16 +81,21 @@ $J(function(){
       <td valign="top" nowrap="nowrap"><b>{TXT_TITLE}</b></td>
       <td valign="top" nowrap="nowrap"><b>{TXT_VIEW}</b></td>
       <td valign="top" nowrap="nowrap"><b>{TXT_LANGUAGE}</b></td>
-      <td valign="top" nowrap="nowrap" width="10%"> <b>{TXT_CATEGORY}</b></td>
-        <!-- BEGIN news_type_label -->
-        <td valign="top" nowrap="nowrap" width="10%"> <b>{TXT_NEWS_TYPE}</b></td>
-        <!-- END news_type_label -->
+      <td valign="top" nowrap="nowrap" width="10%">
+        <select id="categoryFilter" style="margin-left: 0; font-weight: bold; font-size: 12px;">
+          <option value="0">{TXT_CATEGORY}</option>
+          {NEWS_CATEGORY_OPTIONS}
+        </select>
+      </td>
+      <!-- BEGIN news_type_label -->
+      <td valign="top" nowrap="nowrap" width="10%"> <b>{TXT_NEWS_TYPE}</b></td>
+      <!-- END news_type_label -->
       <td valign="top" nowrap="nowrap" width="12%"> <b>{TXT_USER}</b></td>
       <td valign="top" nowrap="nowrap" width="5%">
-        <select id="monthFilter" style="margin-left: 0; font-weight: bold;">
-          <option value="0"/>{TXT_DATE}</option>
+        <select id="monthFilter" style="margin-left: 0; font-weight: bold; font-size: 12px;">
+          <option value="0">{TXT_DATE}</option>
           <!-- BEGIN month_navigation_item -->
-          <option style="font-weight:normal;" value="{NEWS_MONTH_KEY}" {NEWS_MONTH_SELECTED}> {NEWS_MONTH_NAME}</option>
+          <option value="{NEWS_MONTH_KEY}" {NEWS_MONTH_SELECTED}> {NEWS_MONTH_NAME}</option>
           <!-- END month_navigation_item -->
         </select>
       </td>
