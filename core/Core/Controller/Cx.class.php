@@ -1132,6 +1132,15 @@ namespace Cx\Core\Core\Controller {
                                                             var s = document.getElementsByTagName(\'script\')[0]; s.parentNode.insertBefore(po, s);
                                                         })();
                                                     </script>',
+                'XING_SHARE'                     => '<div data-type="XING/Share" data-counter="right"></div>
+                                                    <script>
+                                                        ;(function (d, s) {
+                                                            var x = d.createElement(s),
+                                                                s = d.getElementsByTagName(s)[0];
+                                                            x.src = "https://www.xing-share.com/js/external/share.js";
+                                                            s.parentNode.insertBefore(x, s);
+                                                        })(document, "script");
+                                                    </script>',
                 'GOOGLE_ANALYTICS'               => '<script type="text/javascript">
                                                         var _gaq = _gaq || [];
                                                         _gaq.push([\'_setAccount\', \''.(isset($_CONFIG['googleAnalyticsTrackingId']) ? contrexx_raw2xhtml($_CONFIG['googleAnalyticsTrackingId']) : '').'\']);
