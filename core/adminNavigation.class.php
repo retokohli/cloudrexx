@@ -303,6 +303,11 @@ class adminMenu
                                     $link_data[1] = $_CORELANG['TXT_CRM_CUSTOMER'];
                                 }
                                 break;
+                            case 'access':
+                                if($link_data[0] == '189'){
+                                    $cssClass = 'inactive';
+                                }
+                                break;
                             default:
                                 break;
                         }
