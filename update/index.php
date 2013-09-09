@@ -179,6 +179,7 @@ function fixPaths(&$documentRoot, &$rootOffset) {
     // turning '/myoffset/core_module/somemodule' into '/myoffset'
     $fileRoot = dirname(dirname(dirname(dirname(__FILE__))));
     $nonOffset = preg_replace('#' . $fileRoot . '#', '', $_SERVER['SCRIPT_FILENAME']);
+	$nonOffset = str_replace('\\', '/', $nonOffset);
     $nonOffsetParts = explode('/', $nonOffset);
     end($nonOffsetParts);
     unset($nonOffsetParts[key($nonOffsetParts)]);
@@ -188,6 +189,8 @@ function fixPaths(&$documentRoot, &$rootOffset) {
     $rootOffset = $nonOffset;//preg_replace('#' . $nonOffset . '#', '', $rootOffset);
 
     $documentRoot = preg_replace('#' . $rootOffset . '#', '', $fileRoot);
+	$documentRoot = str_replace('\\', '/', $documentRoot);
+	$rootOffset = preg_replace('#' . $documentRoot . '#', '', $rootOffset);
     /*echo $documentRoot;
     // calculate correct document root
     // turning '/var/www/myoffset' into '/var/www'

@@ -1205,13 +1205,17 @@ if($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
         $level = 2;
 
         // add nested set columns
-        \Cx\Lib\UpdateUtil::sql('
-            ALTER TABLE  `'.DBPREFIX.'module_news_categories` ADD  `parent_id` INT( 11 ) NOT NULL AFTER  `catid`,
-                ADD  `left_id` INT( 11 ) NOT NULL AFTER  `parent_id`,
-                ADD  `right_id` INT( 11 ) NOT NULL AFTER  `left_id`,
-                ADD  `sorting` INT( 11 ) NOT NULL AFTER  `right_id`,
-                ADD  `level` INT( 11 ) NOT NULL AFTER  `sorting`
-        ');
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_news_categories',
+            array(
+                'catid'          => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'parent_id'      => array('type' => 'INT(11)', 'after' => 'catid'),
+                'left_id'        => array('type' => 'INT(11)', 'after' => 'parent_id'),
+                'right_id'       => array('type' => 'INT(11)', 'after' => 'left_id'),
+                'sorting'        => array('type' => 'INT(11)', 'after' => 'right_id'),
+                'level'          => array('type' => 'INT(11)', 'after' => 'sorting')
+            )
+        );
 
         // add nested set root node and select its id
         $objResultRoot = \Cx\Lib\UpdateUtil::sql('INSERT INTO `'.DBPREFIX.'module_news_categories` (`catid`, `parent_id`, `left_id`, `right_id`, `sorting`, `level`) VALUES (0, 0, 0, 0, 0, 0)');
@@ -1257,18 +1261,20 @@ if($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
         }
 
         // add new tables
-        \Cx\Lib\UpdateUtil::sql('
-            CREATE TABLE IF NOT EXISTS `'.DBPREFIX.'module_news_categories_locks` (
-              `lockId` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-              `lockTable` varchar(32) COLLATE utf8_unicode_ci NOT NULL,
-              `lockStamp` bigint(11) NOT NULL
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
-        ');
-        \Cx\Lib\UpdateUtil::sql('
-            CREATE TABLE IF NOT EXISTS `'.DBPREFIX.'module_news_categories_catid` (
-              `id` int(11) NOT NULL
-            ) ENGINE=MyISAM DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci
-        ');
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_news_categories_locks',
+            array(
+                'lockId'         => array('type' => 'VARCHAR(32)'),
+                'lockTable'      => array('type' => 'VARCHAR(32)', 'after' => 'lockId'),
+                'lockStamp'      => array('type' => 'BIGINT(11)', 'notnull' => true, 'after' => 'lockTable')
+            )
+        );
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_news_categories_catid',
+            array(
+                'id'     => array('type' => 'INT(11)', 'notnull' => true)
+            )
+        );
 
         // insert id of last added category
         \Cx\Lib\UpdateUtil::sql('INSERT INTO `'.DBPREFIX.'module_news_categories_catid` (`id`) VALUES ('.$nestedSetRootId.')');
@@ -1299,7 +1305,7 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
         $result = \Cx\Lib\UpdateUtil::sql("SELECT `group_id` FROM `" . DBPREFIX . "access_group_static_ids` WHERE access_id = 7 GROUP BY group_id");
         if ($result !== false) {
             while (!$result->EOF) {
-                \Cx\Lib\UpdateUtil::sql("INSERT INTO `" . DBPREFIX . "access_group_static_ids` (`access_id`, `group_id`)
+                \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `" . DBPREFIX . "access_group_static_ids` (`access_id`, `group_id`)
                                             VALUES (8, " . intval($result->fields['group_id']) . ")");
                 $result->MoveNext();
             }
