@@ -298,6 +298,11 @@ class adminMenu
                                         break;
                                 }
                                 break;
+                            case 'crm':
+                                if($link_data[1] == $_CORELANG['TXT_CRM_CUSTOMERS']){
+                                    $link_data[1] = $_CORELANG['TXT_CRM_CUSTOMER'];
+                                }
+                                break;
                             default:
                                 break;
                         }
