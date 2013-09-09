@@ -6,37 +6,6 @@ require_once(UPDATE_PATH . '/core/UpdatePageEventListener.class.php');
 
 $_DBCONFIG   = \Env::get('dbconfig');
 $doctrineDir = ASCMS_LIBRARY_PATH . '/doctrine/';
-
-//require_once $doctrineDir.'vendor/doctrine-common/lib/Doctrine/Common/ClassLoader.php';
-//use \Doctrine\Common\ClassLoader as ClassLoader;
-require_once(ASCMS_CORE_PATH.'/ClassLoader.class.php');
-use \Cx\ClassLoader as ClassLoader;
-
-$classLoader = new ClassLoader('Doctrine\ORM', realpath($doctrineDir));
-$classLoader->register();
-$classLoader = new ClassLoader('Doctrine\DBAL', realpath($doctrineDir.'/vendor/doctrine-dbal/lib'));
-$classLoader->register();
-$classLoader = new ClassLoader('Doctrine\Common', realpath($doctrineDir.'/vendor/doctrine-common/lib'));
-$classLoader->register();
-$classLoader = new ClassLoader('Symfony', realpath($doctrineDir.'/vendor'));
-$classLoader->register();
-$classLoader = new ClassLoader('Cx\Model', ASCMS_MODEL_PATH.'/entities');
-$classLoader->register();
-$classLoader = new ClassLoader('Cx\Model\Proxies', ASCMS_MODEL_PROXIES_PATH);
-$classLoader->register();
-
-$classLoader = new ClassLoader('DoctrineExtension', ASCMS_MODEL_PATH.'/extensions');
-$classLoader->register();
-
-$classLoader = new ClassLoader('Gedmo', UPDATE_CORE);
-$classLoader->register();
-
-$classLoader = new ClassLoader('Gedmo\Loggable\Entity', ASCMS_MODEL_PATH.'/entities');
-$classLoader->register();
-
-$classLoader = new ClassLoader('Gedmo', $doctrineDir);
-$classLoader->register();
-
 require_once(UPDATE_PATH . '/lib/FRAMEWORK/DBG/DoctrineSQLLogger.class.php');
 
 $config = new \Doctrine\ORM\Configuration();
@@ -70,6 +39,8 @@ $evm = new \Doctrine\Common\EventManager();
 $chainDriverImpl = new \Doctrine\ORM\Mapping\Driver\DriverChain();
 $driverImpl = new \Doctrine\ORM\Mapping\Driver\YamlDriver(ASCMS_MODEL_PATH.'/yml');
 $chainDriverImpl->addDriver($driverImpl, 'Cx\Model');
+$driverImpl = new \Doctrine\ORM\Mapping\Driver\YamlDriver(ASCMS_CORE_PATH.'/ContentManager/Model/Yaml');
+$chainDriverImpl->addDriver($driverImpl, 'Cx\Core\ContentManager');
 
 //loggable stuff
 $loggableDriverImpl = $config->newDefaultAnnotationDriver(array(
