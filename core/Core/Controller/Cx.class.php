@@ -556,6 +556,19 @@ namespace Cx\Core\Core\Controller {
                 ini_set('eaccelerator.enable', 0);
                 ini_set('eaccelerator.optimizer', 0);
             }
+
+            // Disable zend opcache if it is enabled
+            // If save_comments is set to TRUE, doctrine2 will not work properly.
+            // It is not possible to set a new value for this directive with php.
+            if (
+                (
+                    extension_loaded('opcache') ||
+                    extension_loaded('Zend OPcache')
+                ) &&
+                ini_get('opcache.save_comments') != 1
+            ) {
+                ini_set('opcache.enable', 0);
+            }
         }
 
         /**
