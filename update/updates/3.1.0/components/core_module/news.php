@@ -695,9 +695,8 @@ NEWS;
     * EXTENSION:    Module page changes *
     * ADDED:        Contrexx v3.1.0     *
     ************************************/
-    try {
-
-        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
+        try {
             $result = \Cx\Lib\UpdateUtil::sql('SELECT `id` FROM `'.DBPREFIX.'content_page` WHERE `module` = "news" AND `cmd` RLIKE "^[0-9]*$"');
             if ($result && ($result->RecordCount() > 0)) {
                 while (!$result->EOF) {
@@ -705,9 +704,10 @@ NEWS;
                     \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('id' => $result->fields['id']), '/(.*)/ms', function($matches) {
                         $page = $matches[0];
 
-                        if (!preg_match('/<!--\s+BEGIN\s+news_status_message\s+-->.*<!--\s+END\s+news_status_message\s+-->/', $page) &&
-                            !preg_match('/<!--\s+BEGIN\s+news_menu\s+-->.*<!--\s+END\s+news_menu\s+-->/', $page) &&
-                            !preg_match('/<!--\s+BEGIN\s+news_list\s+-->.*<!--\s+END\s+news_list\s+-->/', $page)
+                        if (!empty($page) &&
+                            !preg_match('/<!--\s+BEGIN\s+news_status_message\s+-->.*<!--\s+END\s+news_status_message\s+-->/ms', $page) &&
+                            !preg_match('/<!--\s+BEGIN\s+news_menu\s+-->.*<!--\s+END\s+news_menu\s+-->/ms', $page) &&
+                            !preg_match('/<!--\s+BEGIN\s+news_list\s+-->.*<!--\s+END\s+news_list\s+-->/ms', $page)
                         ) {
                             $page = preg_replace_callback('/<form[^>]*>[^<]*\\{NEWS_CAT_DROPDOWNMENU\\}[^>]*<\/form>/ims', function($matches) {
                                 $menu = $matches[0];
@@ -735,6 +735,14 @@ NEWS;
                                     <!-- END news_list -->
                                 ';
                             }, $page);
+
+                            if (!preg_match('/<!--\s+BEGIN\s+news_status_message\s+-->.*<!--\s+END\s+news_status_message\s+-->/ms', $page)) {
+                                $page = '
+                                    <!-- BEGIN news_status_message -->
+                                    {TXT_NEWS_NO_NEWS_FOUND}
+                                    <!-- END news_status_message -->
+                                '.$page;
+                            }
                         }
 
                         return $page;
@@ -749,15 +757,23 @@ NEWS;
             if ($result && ($result->RecordCount() > 0)) {
                 while (!$result->EOF) {
 
-                    \Cx\Lib\UpdateUtil::migrateContentPageUsingRegex(array('id' => $result->fields['id']), '/\\{NEWS_TEASER_TEXT\\}/', '<!-- BEGIN news_use_teaser_text -->\0<!-- END news_use_teaser_text -->', array('content'), '3.1.0');
+                    \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('id' => $result->fields['id']), '/(.*)/ms', function($matches) {
+                        $page = $matches[0];
+
+                        if (!empty($page) && !preg_match('/<!--\s+BEGIN\s+news_use_teaser_text\s+-->.*<!--\s+END\s+news_use_teaser_text\s+-->/ms', $page)) {
+                            $page = preg_replace('/\\{NEWS_TEASER_TEXT\\}/', '<!-- BEGIN news_use_teaser_text -->\0<!-- END news_use_teaser_text -->', $page);
+                        }
+                        
+                        return $page;
+                    }, array('content'), '3.1.0');
+
 
                     $result->MoveNext();
                 }
             }
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
-
-    } catch (\Cx\Lib\UpdateException $e) {
-        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
     return true;
