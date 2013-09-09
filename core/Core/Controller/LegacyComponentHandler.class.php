@@ -1770,7 +1770,7 @@ class LegacyComponentHandler {
                     'banner' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
 
-                        // Permission::checkAccess(??, 'static');
+                        \Permission::checkAccess(62, 'static');
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/banner/admin.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $subMenuTitle = $_CORELANG['TXT_BANNER_ADMINISTRATION'];
@@ -1829,7 +1829,7 @@ class LegacyComponentHandler {
                     'log' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
 
-                        \Permission::checkAccess(18, 'static');
+                        \Permission::checkAccess(55, 'static');
                         if (!$cl->loadFile(ASCMS_CORE_PATH.'/log.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $subMenuTitle = $_CORELANG['TXT_SYSTEM_LOGS'];
@@ -1839,7 +1839,7 @@ class LegacyComponentHandler {
                     'skins' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
 
-                        //Permission::checkAccess(18, 'static');
+                        \Permission::checkAccess(21, 'static');
                         if (!$cl->loadFile(ASCMS_CORE_PATH.'/skins.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $subMenuTitle = $_CORELANG['TXT_DESIGN_MANAGEMENT'];
@@ -1847,24 +1847,21 @@ class LegacyComponentHandler {
                         $objSkins->getPage();
                     },
                     'content' => function() {
-                        global $cl, $_CORELANG, $subMenuTitle, $objTemplate, $objDatabase, $objInit, $act;
+                        global $objTemplate, $objDatabase, $objInit, $act;
 
-                        $subMenuTitle = $_CORELANG['TXT_CONTENT_MANAGER'];
+                        \Permission::checkAccess(6, 'static');
                         $cm = new \Cx\Core\ContentManager\Controller\ContentManager($act, $objTemplate, $objDatabase, $objInit);
                         $cm->getPage();
                     },
                     'license' => function() {
-                        global $cl, $_CORELANG, $objTemplate, $objDatabase, $_CONFIG, $act;
+                        global $_CORELANG, $objTemplate, $objDatabase, $_CONFIG, $act;
 
                         \Permission::checkAccess(177, 'static');
-                        $subMenuTitle = $_CORELANG['TXT_LICENSE'];
                         $lm = new \Cx\Core_Modules\License\LicenseManager($act, $objTemplate, $_CORELANG, $_CONFIG, $objDatabase);
                         $lm->getPage($_POST, $_CORELANG);
                     },
                 // TODO: handle expired sessions in any xhr callers.
                     'jsondata' => function() {
-                        global $cl, $_CORELANG;
-
                         $json = new \Cx\Core\Json\JsonData();
                 // TODO: Verify that the arguments are actually present!
                         $adapter = contrexx_input2raw($_GET['object']);
@@ -1906,7 +1903,7 @@ class LegacyComponentHandler {
                     'contact' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
 
-                        // Permission::checkAccess(10, 'static');
+                        \Permission::checkAccess(84, 'static');
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/contact/admin.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $subMenuTitle = $_CORELANG['TXT_CONTACTS'];
@@ -1916,6 +1913,7 @@ class LegacyComponentHandler {
                     'immo' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
 
+                        \Permission::checkAccess(88, 'static');
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/immo/admin.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $subMenuTitle = $_CORELANG['TXT_IMMO_MANAGEMENT'];
@@ -1925,7 +1923,7 @@ class LegacyComponentHandler {
                     'livecam' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
                         
-                        // \Permission::checkAccess(9, 'static');
+                        \Permission::checkAccess(82, 'static');
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/livecam/admin.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $subMenuTitle = $_CORELANG['TXT_LIVECAM'];
@@ -1942,17 +1940,6 @@ class LegacyComponentHandler {
                         $objGuestbook = new \GuestbookManager();
                         $objGuestbook->getPage();
                     },
-                        // dataviewer
-                    'dataviewer' => function() {
-                        global $cl, $_CORELANG, $subMenuTitle;
-
-                        \Permission::checkAccess(9, 'static');
-                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/dataviewer/admin.class.php'))
-                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $subMenuTitle = $_CORELANG['TXT_DATAVIEWER'];
-                        $objDataviewer = new \Dataviewer();
-                        $objDataviewer->getPage();
-                    },
                     'memberdir' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
                         
@@ -1963,19 +1950,10 @@ class LegacyComponentHandler {
                         $objMemberdir = new \MemberDirManager();
                         $objMemberdir->getPage();
                     },
-                    'download' => function() {
-                        global $cl, $_CORELANG, $subMenuTitle;
-
-                        \Permission::checkAccess(57, 'static');
-                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/download/admin.class.php'))
-                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $subMenuTitle = $_CORELANG['TXT_DOWNLOAD_MANAGER'];
-                        $objDownload = new \DownloadManager();
-                        $objDownload->getPage();
-                    },
                     'media' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
 
+                        \Permission::checkAccess(182, 'static');
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/media/admin.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $subMenuTitle = $_CORELANG['TXT_MEDIA_MANAGER'];
@@ -1995,6 +1973,7 @@ class LegacyComponentHandler {
                     'dbm' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
 
+                        \Permission::checkAccess(20, 'static');
                         if (!$cl->loadFile(ASCMS_CORE_PATH.'/DatabaseManager.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $subMenuTitle = $_CORELANG['TXT_DATABASE_MANAGER'];
@@ -2015,7 +1994,6 @@ class LegacyComponentHandler {
                         global $cl, $_CORELANG, $subMenuTitle;
 
                         \Permission::checkAccess(115, 'static');
-                        \Permission::checkAccess(78, 'static');
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/alias/admin.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $subMenuTitle = $_CORELANG['TXT_ALIAS_ADMINISTRATION'];
@@ -2025,7 +2003,6 @@ class LegacyComponentHandler {
                     'nettools' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
 
-                        \Permission::checkAccess(54, 'static');
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/nettools/admin.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $subMenuTitle = $_CORELANG['TXT_NETWORK_TOOLS'];
@@ -2144,7 +2121,6 @@ class LegacyComponentHandler {
                     'directory' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
 
-                        //Permission::checkAccess(18, 'static');
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/directory/admin.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $subMenuTitle = $_CORELANG['TXT_LINKS_MODULE_DESCRIPTION'];
@@ -2174,7 +2150,7 @@ class LegacyComponentHandler {
                     'data' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
 
-                        \Permission::checkAccess(122, 'static'); // ID !!
+                        \Permission::checkAccess(146, 'static'); // ID !!
                         if (!$cl->loadFile(ASCMS_MODULE_PATH."/data/admin.class.php"))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $subMenuTitle = $_CORELANG['TXT_DATA_MODULE'];
@@ -2214,7 +2190,7 @@ class LegacyComponentHandler {
                     'u2u' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
 
-                        \Permission::checkAccess(141, 'static');
+                        \Permission::checkAccess(149, 'static');
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/u2u/admin.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $subMenuTitle = $_CORELANG['TXT_U2U_MODULE'];
@@ -2291,7 +2267,8 @@ class LegacyComponentHandler {
                     },
                     'checkout' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
-                        
+
+                        \Permission::checkAccess(161, 'static');
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/checkout/admin.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $subMenuTitle = $_CORELANG['TXT_CHECKOUT_MODULE'];
