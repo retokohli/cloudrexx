@@ -414,15 +414,19 @@ class newsManager extends newsLibrary {
             'TXT_NEWS_READ_ALL_ACCESS_DESC' => $_ARRAYLANG['TXT_NEWS_READ_ALL_ACCESS_DESC']
         ));
 
+        $selectedCategory = !empty($_GET['categoryFilter']) ? intval($_GET['categoryFilter']) : 0;
+        $whereCategory    =  ($selectedCategory !== 0) ? ' AND `catid` = ' . $selectedCategory : '';
+
         // month filter
         // archive list
-        $monthCountQuery = "SELECT n.id AS id,
-                                   n.date AS date,
-                                   n.changelog AS changelog
-                            FROM   ".DBPREFIX."module_news AS n
-                            WHERE  n.validated='1'
-                                   ".($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? " AND (n.backend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") OR n.userid = ".$objFWUser->objUser->getId().") " : '')
-                            ."ORDER BY date DESC";
+        $monthCountQuery = '
+            SELECT `id`, `date`, `changelog`
+              FROM `' . DBPREFIX . 'module_news`
+             WHERE `validated` = "1"
+               ' . $whereCategory . '
+               ' . ($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? ' AND (`backend_access_id` IN (' . implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())) . ') OR `userid` = ' . $objFWUser->objUser->getId() . ') ' : '') . '
+          ORDER BY `date` DESC
+        ';
         $objResult = $objDatabase->Execute($monthCountQuery);
         if ($objResult !== false) {
             $arrMonthTxts = explode(',', $_CORELANG['TXT_MONTH_ARRAY']);
@@ -452,7 +456,7 @@ class newsManager extends newsLibrary {
             if (array_key_exists($_GET['monthFilter'], $monthlyStats)) {
                 $isFilteredByMonth = true;
                 $monthInfo = explode('_', $_GET['monthFilter']);
-                $monthLimitQuery = ' AND n.' . $dateFilterName;
+                $monthLimitQuery = ' AND `' . $dateFilterName . '`';
                 if (count($monthInfo) == 1) { // month filter
                     $monthLimitQuery .= ' BETWEEN ' . mktime(0, 0, 0, 1, 1, $monthInfo[0]);
                     $monthLimitQuery .= ' AND ' . mktime(23, 59, 59, 12, 31, $monthInfo[0]);
@@ -466,23 +470,18 @@ class newsManager extends newsLibrary {
         $activeFrontendLangIds = array_keys(\FWLanguage::getActiveFrontendLanguages());
 
         // set archive list
-        $query = "SELECT n.id AS id,
-                         n.date AS date,
-                         n.changelog AS changelog,
-                         n.status AS status,
-                         n.validated AS validated,
-                         n.catid AS catid,
-                         n.typeid AS typeid,
-                         n.frontend_access_id,
-                         n.userid
-                         FROM ".DBPREFIX."module_news AS n
-                         WHERE n.validated='1'"
-                         .$monthLimitQuery
-                         .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? " AND (n.backend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") OR n.userid = ".$objFWUser->objUser->getId().") " : '')
-			 .' ORDER BY date DESC';
+        $query = '
+            SELECT `id`, `date`, `changelog`, `status`, `validated`, `catid`, `typeid`, `frontend_access_id`, `userid`
+              FROM `' . DBPREFIX . 'module_news`
+             WHERE `validated` = "1"
+               ' . $whereCategory . '
+               ' . $monthLimitQuery . '
+               ' . ($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? ' AND (`backend_access_id` IN (' . implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())) . ') OR `userid` = ' . $objFWUser->objUser->getId() . ') ' : '') . '
+		  ORDER BY `date` DESC
+        ';
         $objResult = $objDatabase->Execute($query);        
         
-        if ($objResult != false) {
+        if ($objResult !== false) {
             $count = $objResult->RecordCount();
 
             if (isset($_GET['pos'])) {
@@ -767,12 +766,14 @@ class newsManager extends newsLibrary {
                     'NEWS_CATEGORY'         => contrexx_raw2xhtml($news['lang'][$selectedInterfaceLanguage]['catname']),
                     'NEWS_STATUS'           => $news['status'],
                     'NEWS_STATUS_PICTURE'   => $statusPicture,
-                    'NEWS_LANGUAGES'        => $langString
+                    'NEWS_LANGUAGES'        => $langString,
                 ));
 
                 $this->_objTpl->parse('news_validator_row');
             }                
-        }        
+        }
+
+        $this->_objTpl->setVariable('NEWS_CATEGORY_OPTIONS', $this->getCategoryMenu($this->nestedSetRootId, $selectedCategory, array(), true));
 
         // month/year filter
         if (!empty($monthlyStats)) {

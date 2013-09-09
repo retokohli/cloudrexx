@@ -110,22 +110,25 @@ class newsLibrary
      * Generates the category menu.
      *
      * @access  protected
-     * @param   array or integer    $categories         categories which have to be listed
-     * @param   integer             $selectedCategory   selected category
-     * @param   array               $hiddenCategories   the categories which shouldn't be shown as option
-     * @return  string              $options            html options
+     * @param   array or integer    $categories                   categories which have to be listed
+     * @param   integer             $selectedCategory             selected category
+     * @param   array               $hiddenCategories             the categories which shouldn't be shown as option
+     * @param   boolean             $onlyCategoriesWithEntries    only categories which have entries
+     * @return  string              $options                      html options
      */
-    protected function getCategoryMenu($categories, $selectedCategory = 0, $hiddenCategories = array())
+    protected function getCategoryMenu($categories, $selectedCategory = 0, $hiddenCategories = array(), $onlyCategoriesWithEntries = false)
     {
-        global $objDatabase;
-
         if (empty($categories)) {
             $categories = array($this->nestedSetRootId);
         } else if (!is_array($categories)) {
             $categories = array(intval($categories));
         }
 
-        $nestedSetCategories = $this->sortNestedSetArray($this->getNestedSetCategories($categories));
+        $nestedSetCategories = $this->getNestedSetCategories($categories);
+
+        if ($onlyCategoriesWithEntries) {
+            $hiddenCategories = array_merge($hiddenCategories, $this->getEmptyCategoryIds());
+        }
 
         $levels = array();
         foreach($nestedSetCategories as $category) {
@@ -173,6 +176,69 @@ class newsLibrary
         }
 
         return $this->sortNestedSetArray($nestedSetCategories);
+    }
+
+    /**
+     * Returns an array containing the ids of empty categories.
+     *
+     * @access  protected
+     * @global  object     $objDatabase              ADONewConnection
+     * @return  array      $arrEmptyCategoryIds      ids of categories without entries
+     */
+    protected function getEmptyCategoryIds() {
+        global $objDatabase;
+
+        $orCatIdNotIn = '';
+        if (!empty($_GET['monthFilter']) && preg_match('/^\d{4}(?:_\d{2})?$/', $_GET['monthFilter'])) {
+            $monthFilter    = $_GET['monthFilter'];
+            $arrMonthFilter = explode('_', $monthFilter);
+            $year           = $arrMonthFilter[0];
+            $month          = 0;
+
+            if (count($arrMonthFilter) > 1) {
+                if ($arrMonthFilter[1] >= 1 && $arrMonthFilter[1] <= 12) {
+                    $month = $arrMonthFilter[1];
+                }
+            }
+
+            if ($month > 0) {
+                $daysOfMonth = date("t", mktime(0, 0, 0, $month, 1, $year));
+                $whereDate   = 'WHERE `n`.`date` BETWEEN ' . mktime(0, 0, 0, $month, 1, $year) . ' AND ' . mktime(23, 59, 59, $month, $daysOfMonth, $year);
+            } else {
+                $whereDate   = 'WHERE `n`.`date` BETWEEN ' . mktime(0, 0, 0, 1, 1, $year) . ' AND ' . mktime(23, 59, 59, 12, 31, $year);
+            }
+            $selectCatIdBetweenDate = '
+                SELECT `n`.`catid`
+                  FROM `' . DBPREFIX . 'module_news_categories` AS `c`
+             LEFT JOIN `' . DBPREFIX . 'module_news` AS `n`
+                    ON `c`.`catid` = `n`.`catid`
+                   ' . $whereDate . '
+              GROUP BY `c`.`catid`
+            ';
+            $orCatIdNotIn = 'OR (`n`.`catid` NOT IN (' . $selectCatIdBetweenDate . '))';
+        }
+
+        $query = '
+                SELECT `c`.`catid`
+                  FROM `' . DBPREFIX . 'module_news_categories` AS `c`
+             LEFT JOIN `' . DBPREFIX . 'module_news` AS `n`
+                    ON `c`.`catid` = `n`.`catid`
+                 WHERE `n`.`catid` IS NULL
+                   ' . $orCatIdNotIn . '
+              GROUP BY `c`.`catid`
+        ';
+
+        $objResult = $objDatabase->Execute($query);
+
+        $arrEmptyCategoryIds = array();
+        if ($objResult !== false) {
+            while (!$objResult->EOF) {
+                $arrEmptyCategoryIds[] = $objResult->fields['catid'];
+                $objResult->MoveNext();
+            }
+        }
+
+        return $arrEmptyCategoryIds;
     }
 
     /**
