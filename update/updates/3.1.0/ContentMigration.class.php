@@ -577,7 +577,7 @@ class ContentMigration
         }
         $page->setLinkTarget($linkTarget);
 
-        $page->setType(\Cx\Model\ContentManager\Page::TYPE_CONTENT);
+        $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_CONTENT);
         if ($objResult->fields['module'] && isset($this->moduleNames[$objResult->fields['module']])) {
             $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
             $page->setModule($this->moduleNames[$objResult->fields['module']]);

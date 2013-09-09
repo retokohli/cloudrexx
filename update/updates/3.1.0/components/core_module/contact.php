@@ -418,7 +418,7 @@ function _contactUpdate()
             $em = \Env::em();
             $cl = \Env::get('ClassLoader');
             $cl->loadFile(ASCMS_CORE_MODULE_PATH . '/contact/admin.class.php');
-            $pageRepo = $em->getRepository('Cx\Model\ContentManager\Page');
+            $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
             $Contact = new \ContactManager();
             $Contact->initContactForms();
 

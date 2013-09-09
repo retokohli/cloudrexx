@@ -1001,7 +1001,7 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
     $em = \Env::em();
     $cl = \Env::get('ClassLoader');
     $cl->loadFile(ASCMS_CORE_MODULE_PATH . '/contact/admin.class.php');
-    $pageRepo = $em->getRepository('Cx\Model\ContentManager\Page');
+    $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
     $Contact = new \ContactManager();
     $Contact->initContactForms();
 
@@ -1320,7 +1320,7 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
 
 
 // fix tree
-\Env::em()->getRepository('Cx\Core\ContentManager\Model\Node')->recover();
+\Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Node')->recover();
 
 require(dirname(__FILE__).'/config.inc.php');
 \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'settings` SET `setvalue` = \'' . $arrUpdate['cmsVersion'] . '\' WHERE `setname` = \'coreCmsVersion\'');

@@ -1046,10 +1046,10 @@ function _updateModulePages(&$viewUpdateTable) {
             continue;
         }
         $em = \Env::get('em');
-        $pageRepo = $em->getRepository('\Cx\Model\ContentManager\Page');
+        $pageRepo = $em->getRepository('\Cx\Core\ContentManager\Model\Entity\Page');
         $pages = $pageRepo->findBy(array(
             'module' => $module,
-            'type'   => \Cx\Model\ContentManager\Page::TYPE_APPLICATION,
+            'type'   => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
         ));
         $objResult = $objDatabase->Execute('
             SELECT
