@@ -1318,6 +1318,33 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
     }
 }
 
+/***************************************
+ *
+ * CONTACT: Add multi-file upload field
+ *
+ **************************************/
+if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
+    try {
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_contact_form_field',
+            array(
+                'id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'id_form'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'name'           => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'type'           => array('type' => 'ENUM(\'text\',\'label\',\'checkbox\',\'checkboxGroup\',\'date\',\'file\',\'multi_file\',\'hidden\',\'password\',\'radio\',\'select\',\'textarea\',\'recipient\')', 'notnull' => true, 'default' => 'text'),
+                'attributes'     => array('type' => 'TEXT'),
+                'is_required'    => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '0'),
+                'check_type'     => array('type' => 'INT(3)', 'notnull' => true, 'default' => '1'),
+                'order_id'       => array('type' => 'SMALLINT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0')
+            )
+        );
+        // change all fields currently set to 'file' to 'multi_file' ('multi_file' is same as former 'file' in previous versions)
+        \Cx\Lib\UpdateUtil::sql("UPDATE TABLE `".DBPREFIX."module_contact_form_field` SET `type` = 'multi_file' WHERE `type` = 'file'");
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+}
+
 
 // fix tree
 \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Node')->recover();
