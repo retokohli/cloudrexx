@@ -22,7 +22,7 @@ function _contactUpdate()
                 'id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                 'id_form'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
                 'name'           => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                'type'           => array('type' => 'ENUM(\'text\',\'label\',\'checkbox\',\'checkboxGroup\',\'date\',\'file\',\'hidden\',\'password\',\'radio\',\'select\',\'textarea\',\'recipient\')', 'notnull' => true, 'default' => 'text'),
+                'type'           => array('type' => 'ENUM(\'text\',\'label\',\'checkbox\',\'checkboxGroup\',\'date\',\'file\',\'multi_file\',\'hidden\',\'password\',\'radio\',\'select\',\'textarea\',\'recipient\')', 'notnull' => true, 'default' => 'text'),
                 'attributes'     => array('type' => 'TEXT'),
                 'is_required'    => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '0'),
                 'check_type'     => array('type' => 'INT(3)', 'notnull' => true, 'default' => '1'),
@@ -275,7 +275,7 @@ function _contactUpdate()
             array(
                 'id'             => array('type' => 'INT(10)',          'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                 'id_form'        => array('type' => 'INT(10)',          'unsigned' => true, 'notnull' => true, 'default' => 0, 'after' => 'id'),
-                'type'           => array('type' => 'ENUM(\'text\',\'label\',\'checkbox\',\'checkboxGroup\',\'country\',\'date\',\'file\',\'fieldset\',\'hidden\',\'horizontalLine\',\'password\',\'radio\',\'select\',\'textarea\',\'recipient\',\'special\')', 'notnull' => true, 'default' => 'text', 'after' => 'id_form'),
+                'type'           => array('type' => 'ENUM(\'text\',\'label\',\'checkbox\',\'checkboxGroup\',\'country\',\'date\',\'file\',\'multi_file\',\'fieldset\',\'hidden\',\'horizontalLine\',\'password\',\'radio\',\'select\',\'textarea\',\'recipient\',\'special\')', 'notnull' => true, 'default' => 'text', 'after' => 'id_form'),
                 'special_type'   => array('type' => 'VARCHAR(20)',      'notnull' => true, 'after' => 'type'),
                 'is_required'    => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true,  'default' => '0', 'after' => 'special_type'),
                 'check_type'     => array('type' => 'INT(3)',           'notnull' => true,  'default' => 1, 'after' => 'is_required'),
