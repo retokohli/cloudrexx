@@ -2,7 +2,7 @@
 
 namespace Cx\Update;
 
-class UpdatePageEventListener extends \Cx\Core\ContentManager\Model\Doctrine\Event\PageEventListener {
+class UpdatePageEventListener extends \Cx\Core\ContentManager\Model\Event\PageEventListener {
     protected function setUpdatedByCurrentlyLoggedInUser($eventArgs) {
         $entity = $eventArgs->getEntity();
         $em = $eventArgs->getEntityManager();
