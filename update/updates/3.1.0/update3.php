@@ -761,7 +761,19 @@ $updatesSp4To301 = array(
         ),
     ),
     // set new access_id for filesharing
-    "UPDATE `" . DBPREFIX . "backend_areas` SET `access_id` = '8' WHERE `contrexx_backend_areas`.`area_id` = 187"
+    "UPDATE `" . DBPREFIX . "backend_areas` SET `access_id` = '8' WHERE `contrexx_backend_areas`.`area_id` = 187",
+    array(
+        'table' => DBPREFIX.'component',
+        'structure' => array(
+            'id'         => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'name'       => array('type' => 'VARCHAR(100)', 'after' => 'id'),
+            'type'       => array('type' => 'ENUM(\'core\',\'core_module\',\'module\')', 'after' => 'name')
+        )
+    ),
+    "INSERT IGNORE INTO `".DBPREFIX."component` (`id`, `name`, `type`) VALUES
+    (70, 'Workbench', 'core_module'),
+    (71, 'FrontendEditing', 'core_module'),
+    (72, 'ContentManager', 'core')"
 );
 
 $updatesRc1ToSp4    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To301);
