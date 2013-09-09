@@ -750,7 +750,7 @@ class CalendarUpdate31
      * insert demo data to mail tables
      * @return bool|string
      */
-    protected function mailDemoData()
+    protected function insertMailDemoData()
     {
         try {
             if (\Cx\Lib\UpdateUtil::table_empty(CALENDAR_NEW_MAIL_TABLE)) {

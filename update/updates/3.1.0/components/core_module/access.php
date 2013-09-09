@@ -890,6 +890,20 @@ function _accessUpdate()
         try {
             \Cx\Lib\UpdateUtil::sql("ALTER TABLE `".DBPREFIX."access_user_profile` CHANGE `interests` `interests` TEXT NULL");
             \Cx\Lib\UpdateUtil::sql("ALTER TABLE `".DBPREFIX."access_user_profile` CHANGE `signature` `signature` TEXT NULL");
+
+            // add access to filesharing for existing groups
+            try {
+                $result = \Cx\Lib\UpdateUtil::sql("SELECT `group_id` FROM `" . DBPREFIX . "access_group_static_ids` WHERE access_id = 7 GROUP BY group_id");
+                if ($result !== false) {
+                    while (!$result->EOF) {
+                        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `" . DBPREFIX . "access_group_static_ids` (`access_id`, `group_id`)
+                                                    VALUES (8, " . intval($result->fields['group_id']) . ")");
+                        $result->MoveNext();
+                    }
+                }
+            } catch (\Cx\Lib\UpdateException $e) {
+                return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+            }
         } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
