@@ -649,6 +649,15 @@ function executeContrexxUpdate() {
         return false;
     }
 
+    // remove cadmin index.php if it exists
+    try {
+        $cadminIndex = new \Cx\Lib\FileSystem\File(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php');
+        $cadminIndex->delete();
+    } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+        setUpdateMsg('Die Datei \''.ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php\' konnte nicht gelöscht werden.');
+        return false;
+    }
+
     $arrUpdate = $objUpdate->getLoadedVersionInfo();
     $_CONFIG['coreCmsVersion'] = $arrUpdate['cmsVersion'];
 
