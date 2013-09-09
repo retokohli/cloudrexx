@@ -126,6 +126,7 @@ $_ARRAYLANG['TXT_NEW_CATEGORY'] = "Nouvelle catégorie";
 $_ARRAYLANG['TXT_NEW_PAGE'] = "Nouvelle page";
 $_ARRAYLANG['TXT_NEWS_MANAGER'] = "Nouvelles";
 $_ARRAYLANG['TXT_NEWSLETTER'] = "Newsletter";
+$_ARRAYLANG['TXT_NEWSLETTER_SETTINGS'] = "Réglages";
 $_ARRAYLANG['TXT_OPEN_ISSUE'] = "Ouvert";
 $_ARRAYLANG['TXT_SOURCE_MODE'] = "Afficher la source:";
 $_ARRAYLANG['TXT_REDIRECT'] = "URL de redirection";

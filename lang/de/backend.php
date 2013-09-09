@@ -129,6 +129,7 @@ $_ARRAYLANG['TXT_NEW_CATEGORY'] = "Neue Kategorie";
 $_ARRAYLANG['TXT_NEW_PAGE'] = "Neue Seite";
 $_ARRAYLANG['TXT_NEWS_MANAGER'] = "News";
 $_ARRAYLANG['TXT_NEWSLETTER'] = "Newsletter";
+$_ARRAYLANG['TXT_NEWSLETTER_SETTINGS'] = "Einstellungen";
 $_ARRAYLANG['TXT_OPEN_ISSUE'] = "Pendent";
 $_ARRAYLANG['TXT_SOURCE_MODE'] = "Quelltext Mode:";
 $_ARRAYLANG['TXT_REDIRECT'] = "Redirekt URL";
