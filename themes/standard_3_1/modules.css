@@ -93,6 +93,66 @@ form input[type="submit"] {
     float: left;
 }
 
+form fieldset .ui-tabs,
+form fieldset .ui-tabs .ui-tabs-nav{
+    border: 0px none;
+}
+
+form fieldset .ui-tabs .ui-tabs-nav{
+    background: none;
+    padding: 0 !important;
+    width: 100%;
+}
+
+form fieldset .ui-tabs .ui-tabs-panel{
+    border: 1px solid #ddd;
+    padding: 10px 10px 10px 10px !important;
+}
+
+form fieldset .ui-tabs .ui-tabs-nav li{
+    padding: 0 !important;
+    margin: 0 5px 0 0 !important;
+    border-radius: 2px 2px 0 0;
+    border-bottom: 0px none;
+}
+
+form fieldset .ui-tabs .ui-tabs-nav li.ui-state-active{
+    border-left: 0px none !important;
+    border-top: 0px none !important;
+    border-right: 0px none !important;
+    border-bottom: 1px solid #0A85C8 !important;
+}
+
+form fieldset .ui-tabs .ui-tabs-nav li.ui-state-disabled{
+    display: none;
+}
+
+form fieldset .ui-tabs .ui-tabs-nav li a{
+    border-radius: 2px 2px 0 0;
+    color: #0A85C8;
+}
+
+form fieldset .ui-tabs .ui-tabs-nav li.ui-state-active a{
+    color: #fff;
+    background: #0A85C8;
+}
+
+form fieldset .ui-tabs label{
+    width: 240px;
+}
+
+form fieldset .ui-tabs .row{
+    padding: 10px 0 0 0;
+}
+
+form fieldset .ui-tabs .row:first-child{
+    padding: 0px;
+}
+
+form fieldset .ui-tabs .row div.cke{
+    margin: 10px 0 0 0;
+}
+
 #login form input.remember_me,
 #login form label.remember_me {
     margin-left: 0;
