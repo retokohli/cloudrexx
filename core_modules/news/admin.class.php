@@ -367,14 +367,6 @@ class newsManager extends newsLibrary {
             $this->_objTpl->hideBlock('news_type_label');
         }
 
-        if ($this->arrSettings['news_comments_activated'] == 1) {
-            $colspanArchive++;
-            $colspanInvalidated++;
-            $this->_objTpl->touchBlock('news_comments_label');
-        } else {
-            $this->_objTpl->hideBlock('news_comments_label');
-        }
-
         $this->_objTpl->setVariable(array(
             'TXT_EDIT_NEWS_MESSAGE'      => $_ARRAYLANG['TXT_EDIT_NEWS_MESSAGE'],
             'TXT_EDIT_NEWS_ID'           => $_ARRAYLANG['TXT_EDIT_NEWS_ID'],
@@ -411,7 +403,8 @@ class newsManager extends newsLibrary {
             'TXT_LAST_EDIT'                 => $_ARRAYLANG['TXT_LAST_EDIT'],
             'TXT_NEWS_COMMENTS'             => $_ARRAYLANG['TXT_NEWS_COMMENTS'],
             'TXT_NEWS_MESSAGE_PROTECTED'    => $_ARRAYLANG['TXT_NEWS_MESSAGE_PROTECTED'],
-            'TXT_NEWS_READ_ALL_ACCESS_DESC' => $_ARRAYLANG['TXT_NEWS_READ_ALL_ACCESS_DESC']
+            'TXT_NEWS_READ_ALL_ACCESS_DESC' => $_ARRAYLANG['TXT_NEWS_READ_ALL_ACCESS_DESC'],
+            'TXT_NEWS_NUMBER_OF_COMMENTS'   => $_ARRAYLANG['TXT_NEWS_NUMBER_OF_COMMENTS'],
         ));
 
         $selectedCategory = !empty($_GET['categoryFilter']) ? intval($_GET['categoryFilter']) : 0;
@@ -567,17 +560,20 @@ class newsManager extends newsLibrary {
 
                 // get comments count
                 if ($this->arrSettings['news_comments_activated'] == 1) {
+                    $ccResult = $objDatabase->Execute('
+                        SELECT COUNT(1) AS `com_num`
+                          FROM `'.DBPREFIX.'module_news_comments`
+                         WHERE `newsid` = ' . $newsId . '
+                    ');
 
-                    $ccResult = $objDatabase->Execute('SELECT COUNT(1) AS com_num
-                                                    FROM '.DBPREFIX.'module_news_comments
-                                                    WHERE newsid = ' . $newsId);    
-
-                    $this->_objTpl->setVariable('NEWS_COMMENTS_COUNT', $ccResult->fields['com_num']);
-                    $this->_objTpl->parse('news_comments_data');
-                    $this->_objTpl->touchBlock('news_comments_label');
+                    if ($ccResult !== false && !empty($ccResult->fields['com_num'])) {
+                        $this->_objTpl->setVariable('NEWS_COMMENTS_COUNT', $ccResult->fields['com_num']);
+                        $this->_objTpl->parse('news_comments_data');
+                    } else {
+                        $this->_objTpl->hideBlock('news_comments_data');
+                    }
                 } else {
                     $this->_objTpl->hideBlock('news_comments_data');
-                    $this->_objTpl->hideBlock('news_comments_label');
                 }
 
                 if ($this->arrSettings['news_use_types'] == 1) {

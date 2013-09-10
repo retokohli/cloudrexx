@@ -334,4 +334,5 @@ $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_CONTACT_FORM_CAPTCHA_CODE'] = "HTML-Code fü
 $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_TITLE_BUTTON'] = "Titel für den Button Kommentar hinzufügen.";
 $_ARRAYLANG['TXT_NEWS_NO_TITLE_ENTERED'] = "Fehler beim Speichern der Newsmeldung. Es muss ein Titel angegeben werden.";
 $_ARRAYLANG['TXT_NEWS_PREVIEW'] = "Open preview";
+$_ARRAYLANG['TXT_NEWS_NUMBER_OF_COMMENTS'] = "Number of comments";
 ?>
