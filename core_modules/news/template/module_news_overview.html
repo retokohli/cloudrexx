@@ -99,9 +99,6 @@ $J(document).ready(function() {
           <!-- END month_navigation_item -->
         </select>
       </td>
-        <!-- BEGIN news_comments_label -->
-      <td valign="top" nowrap="nowrap" width="6%"> <b>{TXT_NEWS_COMMENTS}</b></td>
-        <!-- END news_comments_label -->
       <td valign="top" nowrap="nowrap" width="4%"><div align="right"><b>{TXT_ACTION}</b></div></td>
     </tr>
     <!-- BEGIN newsrow -->
@@ -115,7 +112,12 @@ $J(document).ready(function() {
           <!-- BEGIN news_message_protected_icon --><img src="images/icons/lock_closed.gif" width="12" height="13" alt="{TXT_NEWS_MESSAGE_PROTECTED}" /><!-- END news_message_protected_icon -->
           <!-- BEGIN news_message_not_protected_icon --><img src="images/icons/pixel.gif" width="12" height="13" alt="{TXT_NEWS_READ_ALL_ACCESS_DESC}" /><!-- END news_message_not_protected_icon -->
         </td>
-        <td><a href="?cmd=news&amp;act=edit&amp;newsId={NEWS_ID}">{NEWS_TITLE}</a>&nbsp;</td>
+        <td>
+          <a href="?cmd=news&amp;act=edit&amp;newsId={NEWS_ID}">{NEWS_TITLE}</a>&nbsp;
+          <!-- BEGIN news_comments_data -->
+          <a href="index.php?cmd=news&amp;act=comments&amp;newsId={NEWS_ID}"><img src="images/icons/comment.gif" alt="{TXT_NEWS_NUMBER_OF_COMMENTS}" class="tooltip-trigger" /><span class="tooltip-message">{TXT_NEWS_NUMBER_OF_COMMENTS}: {NEWS_COMMENTS_COUNT}</span></a>
+          <!-- END news_comments_data -->
+        </td>
         <td>
           <!-- BEGIN news_preview -->
           <a href="{NEWS_PREVIEW_LINK_HREF}" target="_blank" title="{TXT_NEWS_PREVIEW}"><img src="images/icons/preview.png" border="0" alt="{TXT_NEWS_PREVIEW}"></a>
@@ -128,9 +130,6 @@ $J(document).ready(function() {
         <!-- END news_type_data -->
         <td nowrap="nowrap"><span class="tooltip-trigger">{NEWS_USER}</span><span class="tooltip-message">{TXT_LAST_EDIT}:<br />{NEWS_CHANGELOG}</span>&nbsp;</td>
         <td nowrap="nowrap">{NEWS_DATE}&nbsp;</td>
-        <!-- BEGIN news_comments_data -->
-        <td nowrap="nowrap" style="text-align: center;"><a href="index.php?cmd=news&amp;act=comments&amp;newsId={NEWS_ID}" title="{TXT_NEWS_COMMENTS}">{NEWS_COMMENTS_COUNT}</a></td>
-        <!-- END news_comments_data -->
         <td nowrap="nowrap">
           <div align="right">
             <a href="?cmd=news&amp;act=edit&amp;newsId={NEWS_ID}" title="{TXT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{TXT_EDIT}" /></a>
