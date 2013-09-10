@@ -270,13 +270,5 @@ input[disabled=disabled]:hover {
 }
 
 legend {
-    padding: 0 5px 0 5px;
-    font-size: 18px;
-}
-
-fieldset {
-    clear: left;
-    padding: 10px;
-    margin: 0 0 20px 0;
-    border: 1px solid #DDDDDD;
+    display: none;
 }
