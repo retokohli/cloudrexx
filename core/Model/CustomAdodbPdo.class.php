@@ -1,4 +1,5 @@
 <?php
+
 /**
  * This class is needed in order to make AdoDB use an existing PDO connection
  * @copyright   Comvation AG
@@ -26,6 +27,7 @@ class CustomAdodbPdo extends \ADODB_pdo
     
     /**
      * Initializes Adodb with an existing PDO connection
+     *
      * @param \PDO $pdo PDO connection to use
      * @return boolean True on success, false otherwise
      */
@@ -74,4 +76,57 @@ class CustomAdodbPdo extends \ADODB_pdo
         $this->_driver = new \ADODB_pdo_base(); 
         return false; 
     } 
+
+    
+    /**
+     * Returns the queryID or false
+     *
+     * @param   mixed   $sql
+     * @param   mixed   $inputarr
+     * @return  mixed               queryID or false
+     */
+    function _query($sql, $inputarr=false) 
+    {
+        if (is_array($sql)) {
+            $stmt = $sql[1];
+        } else {
+            $stmt = $this->_connectionID->prepare($sql);
+        }
+
+        if ($stmt) {
+            try {
+                if (isset($this->_driver)) {
+                    $this->_driver->debug = $this->debug;
+                }
+                if ($inputarr) {
+                    $ok = $stmt->execute($inputarr);
+                } else {
+                    $ok = $stmt->execute();
+                }
+            } catch (\Exception $e) {
+                return false;
+            }
+        }
+
+        $this->_errormsg = false;
+        $this->_errorno = false;
+
+        if ($ok) {
+            $this->_stmt = $stmt;
+            return $stmt;
+        }
+
+        if ($stmt) {
+            $arr = $stmt->errorinfo();
+            if ((integer)$arr[1]) {
+                $this->_errormsg = $arr[2];
+                $this->_errorno = $arr[1];
+            }
+        } else {
+            $this->_errormsg = false;
+            $this->_errorno = false;
+        }
+
+        return false;
+    }
 }
