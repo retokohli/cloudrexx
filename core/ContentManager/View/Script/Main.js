@@ -2490,7 +2490,11 @@ cx.cm.loadHistory = function(id, pos) {
             cx.cm.loadHistory(id, jQuery(this).data("pos"));
         });
         cx.cm.updateHistoryTableHighlighting();
-        jQuery("#hideDrafts").change(function() {
+        jQuery("#hideDrafts").change(function(event) {
+            // Exclude non-human events or history is loaded twice
+            if (event.originalEvent === undefined) {
+                return;
+            }
             cx.cm.loadHistory(id, pos);
         });
     });
