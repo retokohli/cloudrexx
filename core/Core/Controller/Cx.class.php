@@ -1223,7 +1223,7 @@ namespace Cx\Core\Core\Controller {
                 if (isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
                     $this->cl->loadFile(ASCMS_CORE_PATH.'/pdf.class.php');
                     $pageTitle = $this->resolvedPage->getTitle();
-                    $objPDF          = new PDF();
+                    $objPDF          = new \PDF();
                     $objPDF->title   = $pageTitle.(empty($pageTitle) ? null : '.pdf');
                     $objPDF->content = $this->template->get();
                     $objPDF->Create();
