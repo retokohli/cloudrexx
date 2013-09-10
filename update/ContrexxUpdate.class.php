@@ -591,6 +591,21 @@ class ContrexxUpdate
                     $this->objTemplate->hideblock('backed_files');
                 }
 
+                if (   !empty($_SESSION['contrexx_update']['modified_cmds'])
+                    && count($_SESSION['contrexx_update']['modified_cmds'])) {
+                    foreach ($_SESSION['contrexx_update']['modified_cmds'] as $arrCmds) {
+                        $this->objTemplate->setVariable(array(
+                            'CHANGED_CMD_PAGE_TITLE'   => $arrCmds['pageTitle'],
+                            'CHANGED_CMD_ORIG_CMD'     => $arrCmds['origCmd'],
+                            'CHANGED_CMD_NEW_CMD'      => $arrCmds['newCmd'],
+                        ));
+                        $this->objTemplate->parse('changed_cmd');
+                    }
+                    $this->objTemplate->parse('changed_cmds');
+                } else {
+                    $this->objTemplate->hideblock('changed_cmds');
+                }
+
                 $this->objTemplate->setVariable(array(
                     'TXT_UPDATE_UPDATE_FINISHED'    => $_CORELANG['TXT_UPDATE_UPDATE_FINISHED'],
                     'URL_FRONTEND'                  => $urlFrontend,
