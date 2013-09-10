@@ -509,7 +509,7 @@ class ContentMigration
                     if ($aliasPage) {
                         $targetPage = $pageRepo->getTargetPage($aliasPage);
                         if ($targetPage) {
-                            $targetPage->setCmd($i);
+                            $this->_setCmd($targetPage, $i);
                             self::$em->persist($targetPage);
                         }
                     }
@@ -521,6 +521,20 @@ class ContentMigration
         }
 
         return true;
+    }
+    
+    function _setCmd($page, $cmd) {
+        $origCmd = $cmd;
+        $cmd = preg_replace('/[^-A-Za-z0-9_]+/', '_', $origCmd);
+        if ($cmd != $origCmd) {
+            // add message like 'Cmd of page {title} has been changed to {newcmd} (was {oldcmd})'
+            $_SESSION['contrexx_update']['modified_cmds'][] = array(
+                'pageTitle' => $page->getTitle(),
+                'newCmd'    => $cmd,
+                'origCmd'   => $origCmd,
+            );
+        }
+        $page->setCmd($cmd);
     }
 
     function _setPageRecords($objResult, $node, $page)
@@ -582,7 +596,7 @@ class ContentMigration
             $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
             $page->setModule($this->moduleNames[$objResult->fields['module']]);
         }
-        $page->setCmd($objResult->fields['cmd']);
+        $this->_setCmd($page, $objResult->fields['cmd']);
 
         if ($page->getTarget()) {
             $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_REDIRECT);
