@@ -2297,12 +2297,7 @@ class ContactManager extends ContactLib
         $objFWUser   = FWUser::getFWUserObject();
 
         $pages = array();
-        foreach ($this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->findBy(array('module' => 'contact', 'cmd' => $formId, 'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION)) as $page) {
-            if ($page) {
-                $pages[$page->getLang()] = $page;
-            }
-        }
-        foreach ($this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->findBy(array('module' => 'contact', 'cmd' => $formId, 'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK)) as $page) {
+        foreach ($this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->findBy(array('module' => 'contact', 'cmd' => $formId)) as $page) {
             if ($page) {
                 $pages[$page->getLang()] = $page;
             }
@@ -2361,11 +2356,6 @@ class ContactManager extends ContactLib
                         DBG::msg("Attach page to node {$node->getId()} of the page of the lang ".FWLanguage::getDefaultLangId());
                     } else {
                         foreach ($pages as $langIdOfPage => $page) {
-                            // Skip the language we're going to create a new page
-                            if ($langIdOfPage == $langId) {
-                                continue;
-                            }
-
                             // Skip the page of the default frontend language - we just checked this page's node before
                             if ($langIdOfPage == FWLanguage::getDefaultLangId()) {
                                 continue;
@@ -2398,16 +2388,16 @@ class ContactManager extends ContactLib
 
                 // Set the following attributes only on new pages
                 $page->setTitle($this->arrForms[$formId]['lang'][$langId]['name']);
-                $page->setCmd($formId);
-                $page->setModule('contact');
-                $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
                 $page->setDisplay(false);
                 $page->setActive(true);
                 $page->setLang($langId);
             }
 
-            $content = $this->_getSourceCode($formId, $langId);
+            $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
+            $page->setModule('contact');
+            $page->setCmd($formId);
 
+            $content = $this->_getSourceCode($formId, $langId);
             $page->setContent($content);
             $page->setSourceMode(true);
             
