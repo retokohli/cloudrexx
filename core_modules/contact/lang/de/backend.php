@@ -198,4 +198,5 @@ $_ARRAYLANG['TXT_CONTACT_USE_EMAIL_OF_SENDER_DESCRIPTION'] = "Durch das Aktivier
 $_ARRAYLANG['TXT_CONTACT_FORM_CRM_FIELDS_MISSING'] = "Damit die Daten ins CRM übertragen werden können, müssen die Benutzerkonto Daten <i>E-Mail</i>, <i>Vorname</i> und <i>Nachname</i> als Formularfelder eingesetzt werden!";
 $_ARRAYLANG['TXT_CONTACT_CSV_TOOLTIP'] = "CSV-Export in Unicode<br /><i>(optimiert für gängige Tabellen-kalkulations-programme)</i>";
 $_ARRAYLANG['TXT_CONTACT_XLS_TOOLTIP'] = "CSV-Export in ISO-8859-1<br /><i>(optimiert für Microsoft Excel)</i>";
+$_ARRAYLANG['TXT_CONTACT_FORM_USED_IN_CRM'] = "Die Anfragen dieses Formulars werden automatisch ins CRM als neue Kontaktpersonen übertragen.";
 ?>
