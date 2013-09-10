@@ -2296,8 +2296,17 @@ class ContactManager extends ContactLib
         $objDatabase = Env::get('db');
         $objFWUser   = FWUser::getFWUserObject();
 
-        $pages = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Page')
-                          ->getFromModuleCmdByLang('contact', $formId);
+        $pages = array();
+        foreach ($this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->findBy(array('module' => 'contact', 'cmd' => $formId, 'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION)) as $page) {
+            if ($page) {
+                $pages[$page->getLang()] = $page;
+            }
+        }
+        foreach ($this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->findBy(array('module' => 'contact', 'cmd' => $formId, 'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK)) as $page) {
+            if ($page) {
+                $pages[$page->getLang()] = $page;
+            }
+        }
 
         $frontendLangIds = array_keys(FWLanguage::getActiveFrontendLanguages());
         $selectedLangIds = array_keys($this->arrForms[$formId]['lang']);
@@ -2319,7 +2328,6 @@ class ContactManager extends ContactLib
 
         $langIdsOfAssociatedPagesOfPageNode = array();
         foreach ($presentLangIds as $langId) {
-            //
             $langIdsOfAssociatedPagesOfPageNode[$pages[$langId]->getId()] = array_keys($pages[$langId]->getNode()->getPagesByLang());
         }
 
