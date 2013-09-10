@@ -605,7 +605,7 @@ class ContactManager extends ContactLib
                 $langString = implode($lang);
                 
                 $formName = contrexx_raw2xhtml($arrForm['lang'][$selectedInterfaceLanguage]['name']);
-                $useCrm   = $arrForm['saveDataInCRM'] ? "&nbsp;&nbsp;<img style='margin-top: 2px;' src='./template/ascms/images/navigation_level_1_189.png' alt='crm' /> " : '';
+                $useCrm   = $arrForm['saveDataInCRM'] ? "&nbsp;&nbsp;<img style='margin-top: 2px;' src='./template/ascms/images/navigation_level_1_189.png' class='tooltip-trigger' alt='crm' /><span class='tooltip-message'>".$_ARRAYLANG['TXT_CONTACT_FORM_USED_IN_CRM']."</span>" : '';
 
                 // check if the form contains submitted data
                 if ($arrForm['number'] > 0) {

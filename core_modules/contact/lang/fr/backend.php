@@ -189,4 +189,5 @@ $_ARRAYLANG['TXT_CONTACT_PROFESSION'] = "Profession";
 $_ARRAYLANG['TXT_CONTACT_INTERESTS'] = "Interests";
 $_ARRAYLANG['TXT_CONTACT_SIGNATURE'] = "Signature";
 $_ARRAYLANG['TXT_CONTACT_NOT_SPECIFIED'] = "Non indiquée";
+$_ARRAYLANG['TXT_CONTACT_FORM_USED_IN_CRM'] = "Les demandes à ce formulaire sont automatiquement transferd à la CRM comme un nouveau contact.";
 ?>
