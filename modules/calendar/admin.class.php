@@ -298,22 +298,33 @@ class CalendarManager extends CalendarLibrary
         
         parent::getSettings();
         parent::getFrontendLanguages();
-        if(isset($_POST['submitModifyEvent'])) {
+        if(isset($_POST['submitModifyEvent']) || isset($_POST['save_and_publish'])) {
         	$objEvent = new CalendarEvent();
 	        
 	        if($objEvent->save($_POST)) {
                     $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_SUCCESSFULLY_SAVED'];
+                    
+                    if (isset($_POST['save_and_publish'])) {
+                        Permission::checkAccess(164, 'static');
+
+                        if($objEvent->confirm()) {
+                            // do nothing
+                        } else {
+                            $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_EDITED'];   
+                        }
+                    }
+                    
                     $this->showOverview();
                     return;
 	        } else {
                     $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_CORRUPT_SAVED']; 
 	        }
             
-            if($this->arrSettings['rssFeedStatus'] == 1) {
-                $objFeedEventManager = new CalendarEventManager(mktime(),null,null,null,true);
-                $objFeed = new CalendarFeed($objFeedEventManager);
-                $objFeed->creatFeed();   
-            }     
+                if($this->arrSettings['rssFeedStatus'] == 1) {
+                    $objFeedEventManager = new CalendarEventManager(mktime(),null,null,null,true);
+                    $objFeed = new CalendarFeed($objFeedEventManager);
+                    $objFeed->creatFeed();   
+                }     
         }
         
         $dateFomat = parent::getDateFormat();
@@ -883,6 +894,13 @@ class CalendarManager extends CalendarLibrary
             ));
             
             $this->_objTpl->parse('eventDescTab');    
+        }
+        
+        if (isset($_GET['confirm']) && $_GET['confirm']) {
+            $this->_objTpl->setGlobalVariable(array(
+                $this->moduleLangVar.'_SAVE_PUBLISH' => "<input type='submit' name='save_and_publish' value='{$_ARRAYLANG['TXT_CALENDAR_SAVE_AND_PUBLISH']}'>",
+                $this->moduleLangVar.'_EVENT_DELETE' => "<input type='button' name='delete' value='{$_ARRAYLANG['TXT_CALENDAR_DELETE']}' onClick='if (confirm(\"{$_ARRAYLANG['TXT_CALENDAR_CONFIRM_DELETE_DATA']}\\n{$_ARRAYLANG['TXT_CALENDAR_ACTION_IS_IRREVERSIBLE']}\")) { window.location.href = \"index.php?cmd={$this->moduleName}&delete=$eventId&".CSRF::param()."\"} return false;'>",
+            ));
         }
     }
     

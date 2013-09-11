@@ -236,8 +236,12 @@ class CalendarMailManager extends CalendarLibrary {
             $eventTitle = $objEvent->title; 
             $eventStart = $objEvent->all_day ? date(parent::getDateFormat(), $objEvent->startDate) : date(parent::getDateFormat()." (H:i:s)", $objEvent->startDate); 
             $eventEnd   = $objEvent->all_day ? date(parent::getDateFormat(), $objEvent->endDate) : date(parent::getDateFormat()." (H:i:s)", $objEvent->endDate);
-                        
-            $eventLink = $domain.\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'detail')."?id={$objEvent->id}&date={$objEvent->startDate}";
+            
+            if ($actionId == self::MAIL_NOTFY_NEW_APP && $objEvent->arrSettings['confirmFrontendEvents'] == 1) {
+                $eventLink = $domain."/cadmin/index.php?cmd={$this->moduleName}&act=modify_event&id={$objEvent->id}&confirm=1";
+            } else {
+                $eventLink = $domain.\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'detail')."?id={$objEvent->id}&date={$objEvent->startDate}";
+            }            
             $regLink   = $domain.\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'register')."?id={$objEvent->id}&date={$objEvent->startDate}";
             
             $placeholder = array('[[TITLE]]', '[[START_DATE]]', '[[END_DATE]]', '[[LINK_EVENT]]', '[[LINK_REGISTRATION]]', '[[USERNAME]]', '[[FIRSTNAME]]', '[[LASTNAME]]', '[[URL]]', '[[DATE]]');
