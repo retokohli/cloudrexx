@@ -82,6 +82,7 @@ function changeFieldType(container) {
     switch(container.find('.field_type').val()) {
         case 'fieldset':
             container.find(".field_req").attr('disabled', 'disabled').hide();
+        case 'agb':
             container.find(".field_afflications").attr('disabled', 'disabled').hide();
             container.find(".col_default_value :input").attr('disabled', 'disabled').hide();
             break;

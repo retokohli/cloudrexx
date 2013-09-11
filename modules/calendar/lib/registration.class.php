@@ -379,14 +379,12 @@ class CalendarRegistration extends CalendarLibrary
      * @return boolean true if data deleted, false otherwise
      */
     function delete($regId) {
-        global $objDatabase, $_LANGID; 
+        global $objDatabase; 
         
         if (!empty($regId)) {
             $query = '
                 DELETE FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration`
-                WHERE `id` = '.intval($regId).'
-                AND `lang_id` = '.$_LANGID
-            ;
+                WHERE `id` = '.intval($regId);
             $objResult = $objDatabase->Execute($query);
             
             if ($objResult !== false) {

@@ -27,6 +27,19 @@
 
         containerForm.find(".multiAction").val(0);
     }
+    
+    function changeCalendarCheckboxes(objForm, inputCheckbox, do_check)
+    {
+        if ($J("form#"+objForm).length) {
+            $form = $J("form#"+objForm);
+            
+            if (do_check) {
+                $form.find("input.selectedRegistrationId").attr("checked", "checked");
+            } else {
+                $form.find("input.selectedRegistrationId").removeAttr("checked");
+            }
+        }
+    }
 // ]]>
 </script>
 
@@ -37,7 +50,7 @@
 </ul>
 <!-- BEGIN calendar_registration_lists -->
 <div class="regTab" id="{CALENDAR_REGISTRATION_LIST_CONTAINER_ID}" style="display: {CALENDAR_REGISTRATION_LIST_CONTAINER_DISPLAY}">
-    <form class="formRegistrationList" method="post" action="index.php?cmd={CALENDAR_MODULE_NAME}&act=event_registrations">
+    <form id="form_{CALENDAR_REGISTRATION_LIST_CONTAINER_ID}" class="formRegistrationList" method="post" action="index.php?cmd={CALENDAR_MODULE_NAME}&act=event_registrations">
         <table style="width: 100%; border-spacing: 0px;" class="adminlist" cellspacing="0" cellpadding="3">
             <tr>
                 <th colspan="{CALENDAR_COUNT_FORM_FIELDS}">
@@ -70,9 +83,9 @@
             <tr>
                 <td style="border: 0px;">
                     <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
-                    <a href="#" onclick="changeCheckboxes('formRegistrationList', 'selectedRegistrationId', true);
+                    <a href="javascript:void(0);" onclick="changeCalendarCheckboxes('form_{CALENDAR_REGISTRATION_LIST_CONTAINER_ID}', 'selectedRegistrationId', true);
         return false;">{TXT_SELECT_ALL}</a> /
-                    <a href="#" onclick="changeCheckboxes('formRegistrationList', 'selectedRegistrationId', false);
+                    <a href="javascript:void(0);" onclick="changeCalendarCheckboxes('form_{CALENDAR_REGISTRATION_LIST_CONTAINER_ID}', 'selectedRegistrationId', false);
         return false;">{TXT_DESELECT_ALL}</a>
                     <img src="images/icons/strike.gif" alt="space" />
                     <select class="multiAction registrationAction" name="registrationAction" onchange="selectMultiAction($J(this).closest('form'));">
