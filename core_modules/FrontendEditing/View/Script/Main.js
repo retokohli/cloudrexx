@@ -230,11 +230,10 @@ cx.fe.toolbar = function() {
         }
     });
 
-    // add csrf to content manager link
-    cx.jQuery("#fe_metanavigation a.backend").attr(
-        'href',
-        cx.jQuery("#fe_metanavigation a.backend").attr('href') + "&csrf=" + cx.variables.get('csrf')
-    );
+    // add csrf to links where needed
+    cx.jQuery('#fe_metanavigation a.backend, #fe_metanavigation a.profile').each(function() {
+        cx.jQuery(this).attr('href', cx.jQuery(this).attr('href') + '&csrf=' + cx.variables.get('csrf'));
+    });
 
     // start / stop edit mode button
     cx.jQuery("#fe_toolbar_startEditMode").html(cx.fe.langVars.TXT_FRONTEND_EDITING_EDIT).click(function(e) {
