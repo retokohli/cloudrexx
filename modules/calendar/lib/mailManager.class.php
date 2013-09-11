@@ -508,11 +508,12 @@ class CalendarMailManager extends CalendarLibrary {
         $registrationDataText = '';
         $registrationDataHtml = '<table align="top" border="0" cellpadding="3" cellspacing="0">';
         foreach ($objRegistration->fields as $arrField) {
-            $hide = false;            
+            $hide = false;
             switch ($arrField['type']) {
                 case 'select':
                 case 'radio':
                 case 'checkbox':
+                case 'salutation':
                     $options = explode(",", $arrField['default']);
                     $values  = explode(",", $arrField['value']);
                     $output  = array();
