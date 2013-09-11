@@ -542,6 +542,8 @@
         <input type="button" onclick="location.href = 'index.php?cmd=calendar&{CALENDAR_CSRF}';" value="{TXT_CALENDAR_CANCEL}" />
         &nbsp;<input type="button" onclick="selectTab('location');" value="{TXT_CALENDAR_NEXT}" />
         &nbsp;<input type="submit" name="submitModifyEvent"  value="{TXT_CALENDAR_SAVE}" />
+        &nbsp;{CALENDAR_SAVE_PUBLISH}
+        &nbsp;{CALENDAR_EVENT_DELETE}
     </div>
     <div id="location" class="eventTab" style="display:none;">
         <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
@@ -659,6 +661,8 @@
         <input type="button" onclick="location.href = 'index.php?cmd=calendar&{CALENDAR_CSRF}';" value="{TXT_CALENDAR_CANCEL}" />
         &nbsp;<input type="button" onclick="selectTab('details');" value="{TXT_CALENDAR_NEXT}" />
         &nbsp;<input type="submit" name="submitModifyEvent"  value="{TXT_CALENDAR_SAVE}" />
+        &nbsp;{CALENDAR_SAVE_PUBLISH}
+        &nbsp;{CALENDAR_EVENT_DELETE}
     </div>
     <div id="details" class="eventTab" style="display:none;">
         <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
@@ -738,6 +742,8 @@
         <input type="button" onclick="location.href = 'index.php?cmd=calendar&{CALENDAR_CSRF}';" value="{TXT_CALENDAR_CANCEL}" />
         &nbsp;<input type="button" onclick="selectTab('invite');" value="{TXT_CALENDAR_NEXT}" />
         &nbsp;<input type="submit" name="submitModifyEvent"  value="{TXT_CALENDAR_SAVE}" />
+        &nbsp;{CALENDAR_SAVE_PUBLISH}
+        &nbsp;{CALENDAR_EVENT_DELETE}
     </div>
     <div id="invite" class="eventTab" style="display:none;">
         <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
@@ -832,6 +838,8 @@
         <input type="button" onclick="location.href = 'index.php?cmd=calendar&{CALENDAR_CSRF}';" value="{TXT_CALENDAR_CANCEL}" />
         &nbsp;<input type="button" onclick="selectTab('series');" value="{TXT_CALENDAR_NEXT}" />
         &nbsp;<input type="submit" name="submitModifyEvent"  value="{TXT_CALENDAR_SAVE}" />
+        &nbsp;{CALENDAR_SAVE_PUBLISH}
+        &nbsp;{CALENDAR_EVENT_DELETE}
     </div>
     <div id="series" class="eventTab" style="display:none;">
         <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
@@ -929,6 +937,8 @@
         <!-- END eventSeriesNextButton -->     
         <!-- BEGIN eventSeriesSaveButton --> 
         <input type="submit" name="submitModifyEvent"  value="{TXT_CALENDAR_SAVE}" />   
+        &nbsp;{CALENDAR_SAVE_PUBLISH}
+        &nbsp;{CALENDAR_EVENT_DELETE}
         <!-- END eventSeriesSaveButton -->  
     </div>
 
@@ -963,6 +973,8 @@
         <br />
         <input type="button" onclick="location.href = 'index.php?cmd=calendar&{CALENDAR_CSRF}';" value="{TXT_CALENDAR_CANCEL}" />
         &nbsp;<input type="submit" name="submitModifyEvent"  value="{TXT_CALENDAR_SAVE}" />
+        &nbsp;{CALENDAR_SAVE_PUBLISH}
+        &nbsp;{CALENDAR_EVENT_DELETE}
     </div>
     <!-- END eventPublicateTab -->  
 </form>
