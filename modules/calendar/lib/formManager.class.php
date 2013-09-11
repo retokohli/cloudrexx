@@ -305,9 +305,28 @@ class CalendarFormManager extends CalendarLibrary
 
                     if(isset($_POST['registrationField'][$arrInputfield['id']])) {
                         $value = $_POST['registrationField'][$arrInputfield['id']];
+                    } elseif (
+                         FWUser::getFWUserObject()->objUser->login() &&
+                         in_array ($arrInputfield['type'], array('mail', 'firstname', 'lastname'))
+                        ) {
+                        $value = '';
+                        switch ($arrInputfield['type']) {
+                            case 'mail':
+                                $value = FWUser::getFWUserObject()->objUser->getEmail();
+                                break;
+                            case 'firstname':
+                                $value = FWUser::getFWUserObject()->objUser->getProfileAttribute('firstname');
+                                break;
+                            case 'lastname':
+                                $value = FWUser::getFWUserObject()->objUser->getProfileAttribute('lastname');
+                                break;
+                            default :
+                                $value = $arrInputfield['default_value'][$_LANGID];
+                                break;
+                        }
                     } else {
                         $value = $arrInputfield['default_value'][$_LANGID];
-                    }  
+                    }
 
                     $affiliationClass = 'affiliation'.ucfirst($arrInputfield['affiliation']);
 

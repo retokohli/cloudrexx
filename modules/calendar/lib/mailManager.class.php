@@ -503,35 +503,56 @@ class CalendarMailManager extends CalendarLibrary {
      */
     private function getRegistrationData($objRegistration)
     {
+        global $_ARRAYLANG;
+        
         $registrationDataText = '';
         $registrationDataHtml = '<table align="top" border="0" cellpadding="3" cellspacing="0">';
         foreach ($objRegistration->fields as $arrField) {
-            if ($arrField['type'] == 'select' || $arrField['type'] == 'radio' || $arrField['type'] == 'checkbox') {
-                $options = explode(",", $arrField['default']);
-                $values  = explode(",", $arrField['value']);
-                $output  = array();
+            $hide = false;            
+            switch ($arrField['type']) {
+                case 'select':
+                case 'radio':
+                case 'checkbox':
+                    $options = explode(",", $arrField['default']);
+                    $values  = explode(",", $arrField['value']);
+                    $output  = array();
 
-                foreach ($values as $value) {
-                    $arrValue = explode('[[', $value);
-                    $value    = $arrValue[0];
-                    $input    = str_replace(']]','', $arrValue[1]);
+                    foreach ($values as $value) {
+                        $arrValue = explode('[[', $value);
+                        $value    = $arrValue[0];
+                        $input    = str_replace(']]','', $arrValue[1]);
 
-                    if (!empty($input)) {
-                        $arrOption = explode('[[', $options[$value-1]);
-                        $output[]  = $arrOption[0].": ".$input;
-                    } else {
-                        if ($options[0] == '' && $value == 1) {
-                            $options[$value-1] = '1';
+                        if (!empty($input)) {
+                            $arrOption = explode('[[', $options[$value-1]);
+                            $output[]  = $arrOption[0].": ".$input;
+                        } else {
+                            if ($options[0] == '' && $value == 1) {
+                                $options[$value-1] = '1';
+                            }
+                            $output[] = $options[$value-1];
                         }
-                        $output[] = $options[$value-1];
                     }
-                }
-                $value = join(", ", $output);
-            } else {
-                $value = $arrField['value'];
+                    $htmlValue = $textValue = join(", ", $output);
+                    break;
+                case 'agb':
+                    $htmlValue = $textValue = $arrField['value'] ? $_ARRAYLANG["TXT_{$this->moduleLangVar}_YES"] : $_ARRAYLANG["TXT_{$this->moduleLangVar}_NO"];
+                    break;
+                case 'textarea':
+                    $textValue = $arrField['value'];
+                    $htmlValue = nl2br($arrField['value']);
+                    break;
+                case 'fieldset':
+                    $hide = true;
+                    break;
+                default :
+                    $htmlValue = $textValue = $arrField['value'];
+                    break;
             }
-            $registrationDataText .= html_entity_decode($arrField['name']).":\t".html_entity_decode($value)."\n";
-            $registrationDataHtml .= '<tr><td><b>'.$arrField['name'].":</b></td><td>". $value."</td></tr>";
+            
+            if (!$hide) {
+                $registrationDataText .= html_entity_decode($arrField['name']).":\t".html_entity_decode($textValue)."\n";
+                $registrationDataHtml .= '<tr><td><b>'.$arrField['name'].":</b></td><td>". $htmlValue."</td></tr>";
+            }
         }
         $registrationDataHtml .= '</table>';
         
