@@ -8,6 +8,8 @@
  * @copyright  CONTREXX CMS - COMVATION AG
  * @version    1.00
  */
+$_ARRAYLANG['TXT_CALENDAR_YES'] = "Ja";
+$_ARRAYLANG['TXT_CALENDAR_NO'] = "Nein";
 $_ARRAYLANG['TXT_CALENDAR_BACK'] = "zurück zum Kalender";
 $_ARRAYLANG['TXT_NEXT_CALENDAR_EVENTS'] = "Die nächsten Termine:";
 $_ARRAYLANG['TXT_CALENDAR_SHOW'] = "anzeigen";
