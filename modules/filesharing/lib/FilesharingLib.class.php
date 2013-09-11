@@ -33,6 +33,7 @@ abstract class FilesharingLib
          * Name of the upload instance
          */
         $uploaderInstanceName = 'exposed_combo_uploader';
+        $uploaderWidgetName = 'uploadWidget';
 
         /**
          * jQuery selector of the HTML-element where the upload folder-widget shall be put in
@@ -55,11 +56,13 @@ abstract class FilesharingLib
 <script type="text/javascript">
 cx.include(
 [
-'core_modules/contact/js/extendedFileInput.js'
+'core_modules/upload/js/uploaders/exposedCombo/extendedFileInput.js'
 ],
 function() {
         var ef = new ExtendedFileInput({
-                field: \$J('#file_upload')
+                field: \$J('#file_upload'),
+                instance: '$uploaderInstanceName',
+                widget: '$uploaderWidgetName'
         });
 }
 );
