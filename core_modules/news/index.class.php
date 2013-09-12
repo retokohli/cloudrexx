@@ -113,6 +113,16 @@ class news extends newsLibrary {
             exit;
         }
 
+        $whereStatus    = '';
+        $newsAccess     = \Permission::checkAccess(10, 'static', true);
+        $newsPreview    = !empty($_GET['newsPreview']) ? intval($_GET['newsPreview']) : 0;
+        $base64Redirect = base64_encode(\Env::get('cx')->getRequest());
+        if ($newsPreview && !$newsAccess) {
+            \Permission::noAccess($base64Redirect);
+        } else if (!$newsAccess) {
+            $whereStatus = 'news.status = 1 AND';
+        }
+
 // TODO: add error handler to load the fallback-language version of the news message
 //       in case the message doesn't exist in the requested language. But only try load the
 //       the message in the fallback-language in case the associated news-detail content page
@@ -141,7 +151,7 @@ class news extends newsLibrary {
                                                   FROM  '.DBPREFIX.'module_news AS news
                                             INNER JOIN  '.DBPREFIX.'module_news_locale AS locale ON news.id = locale.news_id
                                             INNER JOIN  '.DBPREFIX.'module_news_categories_locale AS cat ON cat.category_id = news.catid
-                                                WHERE   news.status = 1 AND
+                                                WHERE   ' . $whereStatus . '
                                                         news.id = '.$newsid.' AND
                                                         locale.is_active=1 AND
                                                         locale.lang_id ='.FRONTEND_LANG_ID.' AND

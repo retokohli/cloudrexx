@@ -391,8 +391,9 @@ class newsManager extends newsLibrary {
             'TXT_ACTIVATE'               => $_ARRAYLANG['TXT_ACTIVATE'],
             'TXT_DEACTIVATE'             => $_ARRAYLANG['TXT_DEACTIVATE'],
             'TXT_STATUS'                 => $_ARRAYLANG['TXT_STATUS'],
-            'TXT_CONFIRM_AND_ACTIVATE'  => $_ARRAYLANG['TXT_CONFIRM_AND_ACTIVATE'],
-            'TXT_INVALIDATED_ENTRIES'   => $_ARRAYLANG['TXT_INVALIDATED_ENTRIES']
+            'TXT_CONFIRM_AND_ACTIVATE'   => $_ARRAYLANG['TXT_CONFIRM_AND_ACTIVATE'],
+            'TXT_INVALIDATED_ENTRIES'    => $_ARRAYLANG['TXT_INVALIDATED_ENTRIES'],
+            'TXT_NEWS_PREVIEW'           => $_ARRAYLANG['TXT_NEWS_PREVIEW'],
         ));
 
         $this->_objTpl->setGlobalVariable(array(
@@ -587,32 +588,28 @@ class newsManager extends newsLibrary {
                 foreach ($news['lang'] as $langId => $langValues) {
                     $langState[$langId] = 'active';
                 }
-                $langString = \Html::getLanguageIcons($langState, 'index.php?cmd=news&amp;act=edit&amp;newsId=' . $newsId . '&amp;langId=%1$d');
+                $langString  = \Html::getLanguageIcons($langState, 'index.php?cmd=news&amp;act=edit&amp;newsId=' . $newsId . '&amp;langId=%1$d');
+                $previewLink = \Cx\Core\Routing\Url::fromModuleAndCmd('news', $this->findCmdById('details', $news['catid']), '', array('newsid' => $newsId));
 
-                if ($news['status'] == true) {
-                    $this->_objTpl->setVariable(array (
-                        'TXT_NEWS_PREVIEW' => $_ARRAYLANG['TXT_NEWS_PREVIEW'],
-                        'NEWS_PREVIEW_LINK_HREF' => \Cx\Core\Routing\Url::fromModuleAndCmd('news', $this->findCmdById('details', $news['catid']), '', array('newsid' => $newsId)),
-                    ));
-                    $this->_objTpl->touchBlock('news_preview');
-                } else {
-                    $this->_objTpl->hideBlock('news_preview');
+                if ($news['status'] == 0) {
+                    $previewLink .= '&newsPreview=1';
                 }
 
                 $this->_objTpl->setVariable(array(
-                    'NEWS_ID'               => $newsId,
-                    'NEWS_DATE'             => date(ASCMS_DATE_FORMAT, $news['date']),
-                    'NEWS_TITLE'            => contrexx_raw2xhtml($news['lang'][$selectedInterfaceLanguage]['title']),
-                    'NEWS_USER'             => $author,
-                    'NEWS_CHANGELOG'        => date(ASCMS_DATE_FORMAT, $news['changelog']),
-                    'NEWS_LIST_PARSING'     => $paging,
-                    'NEWS_CLASS'            => $class,
-                    'NEWS_CATEGORY'         => contrexx_raw2xhtml($news['lang'][$selectedInterfaceLanguage]['catname']),
-                    'NEWS_STATUS'           => $news['status'],
-                    'NEWS_STATUS_PICTURE'   => $statusPicture,
-                    'NEWS_LANGUAGES'        => $langString,
+                    'NEWS_ID'                => $newsId,
+                    'NEWS_DATE'              => date(ASCMS_DATE_FORMAT, $news['date']),
+                    'NEWS_TITLE'             => contrexx_raw2xhtml($news['lang'][$selectedInterfaceLanguage]['title']),
+                    'NEWS_USER'              => $author,
+                    'NEWS_CHANGELOG'         => date(ASCMS_DATE_FORMAT, $news['changelog']),
+                    'NEWS_LIST_PARSING'      => $paging,
+                    'NEWS_CLASS'             => $class,
+                    'NEWS_CATEGORY'          => contrexx_raw2xhtml($news['lang'][$selectedInterfaceLanguage]['catname']),
+                    'NEWS_STATUS'            => $news['status'],
+                    'NEWS_STATUS_PICTURE'    => $statusPicture,
+                    'NEWS_LANGUAGES'         => $langString,
 // TODO: Not in use yet. From r8465@branches/contrexx_2_1
 //                        'NEWS_FACEBOOK_SHARE_BUTTON'  => $socialNetworkTemplater->getFacebookShareButton()
+                    'NEWS_PREVIEW_LINK_HREF' => $previewLink,
                 ));
 
                 $this->_objTpl->setVariable(array(
