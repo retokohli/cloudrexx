@@ -1107,12 +1107,15 @@ class ContrexxUpdate
         // check if usernames are in use
         $whereField = "`username`";
         try {
+            include_once(UPDATE_LIB . '/FRAMEWORK/Validator.class.php');
             $arrTables = $this->objDatabase->MetaTables('TABLES');
             if (in_array(DBPREFIX.'access_settings', $arrTables)) {
                 $objUseUsernameSetting = $this->objDatabase->SelectLimit("SELECT `status` FROM `".DBPREFIX."access_settings` WHERE `key` = 'use_usernames'", 1, -1);
-                if ($objUseUsernameSetting !== false &&
-                    $objUseUsernameSetting->RecordCount() > 0 &&
-                    !$objUseUsernameSetting->fields['status']
+                if ((   $objUseUsernameSetting !== false
+                     && $objUseUsernameSetting->RecordCount() > 0
+                     && !$objUseUsernameSetting->fields['status']
+                    )
+                    || \FWValidator::isEmail(contrexx_input2db($user))
                 ) {
                     $whereField = "`email`" ;
                 }
