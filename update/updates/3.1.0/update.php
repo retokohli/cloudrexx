@@ -655,13 +655,31 @@ function executeContrexxUpdate() {
         return false;
     }
 
-    // remove cadmin index.php if it exists
-    try {
-        $cadminIndex = new \Cx\Lib\FileSystem\File(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php');
-        $cadminIndex->delete();
-    } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-        setUpdateMsg('Die Datei \''.ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php\' konnte nicht gelöscht werden.');
-        return false;
+    if (file_exists(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php')) {
+        \DBG::msg('/cadmin/index.php still exists...');
+        // move cadmin index.php if its customized
+        if (!loadMd5SumOfOriginalCxFiles()) {
+            return false;
+        }
+        if (!verifyMd5SumOfFile(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php', '', false)) {
+            \DBG::msg('...and it\'s customized, so let\'s move it to customizing directory');
+            // changes, backup modified file
+            if (!backupModifiedFile(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php')) {
+                setUpdateMsg('Die Datei \''.ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php\' konnte nicht kopiert werden.');
+                return false;
+            }
+        } else {
+            \DBG::msg('...but it\'s not customized');
+        }
+        // no non-backupped changes, can delete
+        try {
+            \DBG::msg('So let\'s remove it...');
+            $cadminIndex = new \Cx\Lib\FileSystem\File(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php');
+            $cadminIndex->delete();
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            setUpdateMsg('Die Datei \''.ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php\' konnte nicht gelöscht werden.');
+            return false;
+        }
     }
 
     $arrUpdate = $objUpdate->getLoadedVersionInfo();
@@ -1437,12 +1455,6 @@ function loadMd5SumOfOriginalCxFiles()
         $_SESSION['contrexx_update']['skipIntegrityCheck'] = false;
     }
 
-    // skip integrity check for version 3 or newer
-    if (!$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
-        $_SESSION['contrexx_update']['skipIntegrityCheck'] = true;
-        return true;
-    }
-
     $md5File = UPDATE_PATH . '/md5sums/'.$_CONFIG['coreCmsVersion'].'.md5';
     if (!file_exists($md5File)) {
         if (!empty($_POST['skipIntegrityCheck'])) {
@@ -1522,30 +1534,36 @@ function backupModifiedFile($file)
 }
 
 
-function verifyMd5SumOfFile($file, $newFile)
+function verifyMd5SumOfFile($file, $newFile, $allowSkip = true)
 {
     global $arrMd5SumsOfCxFiles;
 
+    \DBG::msg('Running MD5 comparision for file ' . $file);
     // user wants to skip integrity check
-    if ($_SESSION['contrexx_update']['skipIntegrityCheck']) {
+    if ($_SESSION['contrexx_update']['skipIntegrityCheck'] && $allowSkip) {
+        \DBG::msg('MD5 comparision skipped');
         return true;
     }
 
     if (!file_exists($file)) {
+        \DBG::msg('MD5 comparision cancelled, file not found (' . $file . ')');
         return true;
     }
 
     $md5 = md5_file($file);
     $cxFilePath = substr($file, strlen(ASCMS_DOCUMENT_ROOT.'/'));
+    \DBG::msg('Cx file path is ' . $cxFilePath);
 
     // file did not exist in old version,
     // therefore, a check would be non-sense
     if (!isset($arrMd5SumsOfCxFiles[$cxFilePath])) {
+        \DBG::msg('MD5 comparision complete, file did not exist in prior versions');
         return true;
     }
 
     foreach ($arrMd5SumsOfCxFiles[$cxFilePath] as $validMd5Sum) {
         if ($md5 == $validMd5Sum['md5_sum']) {
+            \DBG::msg('MD5 comparision complete, MD5 sum matches');
             return true;
         }
     }
@@ -1553,15 +1571,18 @@ function verifyMd5SumOfFile($file, $newFile)
     $rawmd5 = md5(preg_replace('/\s/u', '', file_get_contents($file)));
     foreach ($arrMd5SumsOfCxFiles[$cxFilePath] as $validMd5Sum) {
         if ($rawmd5 == $validMd5Sum['raw_md5_sum']) {
+            \DBG::msg('MD5 comparision complete, raw MD5 sum matches');
             return true;
         }
     }
     
-    $md5SumOfNewFile = md5_file($newFile);    
+    $md5SumOfNewFile = md5_file($newFile);
     if ($md5 == $md5SumOfNewFile) {
+        \DBG::msg('MD5 comparision complete, file equals new one');
         return true;
     }
 
+    \DBG::msg('MD5 comparision complete, file has changed');
     return false;
 }
 
