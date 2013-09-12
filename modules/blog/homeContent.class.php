@@ -171,7 +171,7 @@ class BlogHomeContent extends BlogLibrary  {
 
         //Show latest XX entries
         $arrEntries = $this->createEntryArray($this->_intLanguageId, 0, intval($this->_arrSettings['blog_block_messages']));
-        if (count($arrEntries) > 0) {
+        if (count($arrEntries) > 0 && $this->_objTpl->blockExists('blogBlockEntries')) {
             $intRowClass = 1;
 
             foreach ($arrEntries as $intEntryId => $arrEntryValues) {
@@ -212,7 +212,7 @@ class BlogHomeContent extends BlogLibrary  {
         //Show overview of categories
         $arrCategories = $this->createCategoryArray();
 
-        if (count($arrCategories) > 0) {
+        if (count($arrCategories) > 0 && $this->_objTpl->blockExists('blogBlockCategories')) {
             //Collect active categories for the current language
             $arrCurrentLanguageCategories = array();
             foreach($arrCategories as $intCategoryId => $arrLanguageData) {
