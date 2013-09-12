@@ -530,7 +530,7 @@ class LegacyComponentHandler {
                                 $homeForumContent = '';
                                 if ($forumHomeContentInPageContent || $forumHomeContentInPageTemplate || $forumHomeContentInThemesPage) {
                                     $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('forum'));
-                                    $objForum = new ForumHomeContent($themesPages['forum_content']);
+                                    $objForum = new \ForumHomeContent($themesPages['forum_content']);
                                     $homeForumContent = $objForum->getContent();
                                 }
                                 if ($forumHomeContentInPageContent) {
@@ -635,7 +635,7 @@ class LegacyComponentHandler {
                                     || $podcastHomeContentInPageTemplate
                                     || $podcastHomeContentInThemesPage) {
                                     $_ARRAYLANG = array_merge($_ARRAYLANG, $objInit->loadLanguageData('podcast'));
-                                    $objPodcast = new podcastHomeContent($themesPages['podcast_content']);
+                                    $objPodcast = new \podcastHomeContent($themesPages['podcast_content']);
                                     $podcastContent = $objPodcast->getContent();
                                     if ($podcastHomeContentInPageContent) {
                                         \Env::get('cx')->getPage()->setContent(str_replace('{PODCAST_FILE}', $podcastContent, \Env::get('cx')->getPage()->getContent()));
@@ -914,7 +914,7 @@ class LegacyComponentHandler {
                         // currently online users
                         $objAccessBlocks = false;
                         if ($objTemplate->blockExists('access_currently_online_member_list')) {
-                            if (    FWUser::showCurrentlyOnlineUsers()
+                            if (    \FWUser::showCurrentlyOnlineUsers()
                                 && (    $objTemplate->blockExists('access_currently_online_female_members')
                                     ||  $objTemplate->blockExists('access_currently_online_male_members')
                                     ||  $objTemplate->blockExists('access_currently_online_members'))) {
@@ -933,7 +933,7 @@ class LegacyComponentHandler {
 
                         // last active users
                         if ($objTemplate->blockExists('access_last_active_member_list')) {
-                            if (    FWUser::showLastActivUsers()
+                            if (    \FWUser::showLastActivUsers()
                                 && (    $objTemplate->blockExists('access_last_active_female_members')
                                     ||  $objTemplate->blockExists('access_last_active_male_members')
                                     ||  $objTemplate->blockExists('access_last_active_members'))) {
@@ -953,13 +953,13 @@ class LegacyComponentHandler {
 
                         // latest registered users
                         if ($objTemplate->blockExists('access_latest_registered_member_list')) {
-                            if (    FWUser::showLatestRegisteredUsers()
+                            if (    \FWUser::showLatestRegisteredUsers()
                                 && (    $objTemplate->blockExists('access_latest_registered_female_members')
                                     ||  $objTemplate->blockExists('access_latest_registered_male_members')
                                     ||  $objTemplate->blockExists('access_latest_registered_members'))) {
                                 if (   !$objAccessBlocks
                                     && $cl->loadFile(ASCMS_CORE_MODULE_PATH.'/access/lib/blocks.class.php'))
-                                    $objAccessBlocks = new Access_Blocks();
+                                    $objAccessBlocks = new \Access_Blocks();
                                 if ($objTemplate->blockExists('access_latest_registered_female_members'))
                                     $objAccessBlocks->setLatestRegisteredUsers('female');
                                 if ($objTemplate->blockExists('access_latest_registered_male_members'))
@@ -973,7 +973,7 @@ class LegacyComponentHandler {
 
                         // birthday users
                         if ($objTemplate->blockExists('access_birthday_member_list')) {
-                            if (    FWUser::showBirthdayUsers()
+                            if (    \FWUser::showBirthdayUsers()
                                 && (    $objTemplate->blockExists('access_birthday_female_members')
                                     ||  $objTemplate->blockExists('access_birthday_male_members')
                                     ||  $objTemplate->blockExists('access_birthday_members'))) {
