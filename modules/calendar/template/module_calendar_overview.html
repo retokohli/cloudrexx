@@ -102,7 +102,7 @@ function selectMultiAction()
                     <!-- BEGIN eventConfirmList -->
                     <tr class="{CALENDAR_EVENT_ROW}">
                         <td>{CALENDAR_EVENT_DATE}</td>
-                        <td><a href="index.php?cmd={CALENDAR_MODULE_NAME}&amp;act=modify_event&amp;id={CALENDAR_EVENT_ID}">{CALENDAR_EVENT_TITLE}</a></td>
+                        <td><a href="{CALENDAR_EVENT_EDIT_LINK}">{CALENDAR_EVENT_TITLE}</a></td>
                         <td>{CALENDAR_EVENT_LANGUAGES}</td>
                         <td>{CALENDAR_EVENT_CATEGORY}</td>       
                         <td style="text-align: right;">      
@@ -147,7 +147,7 @@ function selectMultiAction()
                                             <td><a href="index.php?cmd={CALENDAR_MODULE_NAME}&amp;act=event_registrations&amp;tpl=w&amp;id={CALENDAR_EVENT_ID}">{CALENDAR_EVENT_COUNT_WAITLIST}</a></td>
                                             <td style="text-align: right;">
                                                 <a href="index.php?cmd={CALENDAR_MODULE_NAME}&amp;export={CALENDAR_EVENT_ID}" title="{TXT_CALENDAR_EXPORT_ICAL_FORMAT}"><img src="images/icons/EventExport.png" border="0" alt="{TXT_CALENDAR_EXPORT_ICAL_FORMAT}" /></a>
-						<a href="index.php?cmd={CALENDAR_MODULE_NAME}&amp;act=modify_event&amp;id={CALENDAR_EVENT_ID}" title="{TXT_CALENDAR_EDIT}"><img src="images/icons/edit.gif" width="16" height="16" border="0" alt="{TXT_CALENDAR_EDIT}" /></a>
+						<a href="{CALENDAR_EVENT_EDIT_LINK}" title="{TXT_CALENDAR_EDIT}"><img src="images/icons/edit.gif" width="16" height="16" border="0" alt="{TXT_CALENDAR_EDIT}" /></a>
 						<a href="javascript:deleteNote('{CALENDAR_EVENT_ID}');" title="{TXT_CALENDAR_DELETE}"><img src="images/icons/delete.gif" width="16" height="16" border="0" alt="{TXT_CALENADR_DELETE}" /></a>
                                             </td>
 					</tr>
