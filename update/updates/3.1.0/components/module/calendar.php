@@ -344,6 +344,8 @@ class CalendarUpdate31
                         'order' => array('type' => 'INT(11)', 'after' => 'special')
                     )
                 );
+                // remove old settings data
+                \Cx\Lib\UpdateUtil::sql("TRUNCATE `" . CALENDAR_OLD_SETTINGS_TABLE . "`");
             }
 
             if (!checkMemoryLimit() || !checkTimeoutLimit()) {
