@@ -1035,7 +1035,7 @@ JS_CODE;
 
             $downloadCount = $objDownload->getFilteredSearchDownloadCount();
             if ($downloadCount > $_CONFIG['corePagingLimit']) {
-                if(\Env::get('cx')->getPage()->getModule() == ''){
+                if(\Env::get('cx')->getPage()->getModule() != 'downloads'){
                     $this->objTemplate->setVariable('DOWNLOADS_FILE_PAGING', getPaging($downloadCount, $limitOffset, '', "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>"));
                 }else{
                     $this->objTemplate->setVariable('DOWNLOADS_FILE_PAGING', getPaging($downloadCount, $limitOffset, '&'.substr($this->moduleParamsHtml, 1).'&category='.$objCategory->getId().'&downloads_search_keyword='.htmlspecialchars($this->searchKeyword), "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>"));
