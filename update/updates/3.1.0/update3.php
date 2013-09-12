@@ -1204,7 +1204,7 @@ HTMLCODE;
 };
 \Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(array('module' => 'filesharing', 'cmd' => ''), $search, $callback, array('content'), '3.1.0');
 
-if($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
+if($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0') && \Cx\Lib\UpdateUtil::table_empty(DBPREFIX.'module_news_categories_catid')) {
     try {
         /************************************************
         * EXTENSION:    Categories as NestedSet         *

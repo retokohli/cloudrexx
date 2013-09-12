@@ -328,25 +328,25 @@ class CalendarUpdate31
             }
 
             // settings table
-            if (!\Cx\Lib\UpdateUtil::table_exist(CALENDAR_NEW_SETTINGS_TABLE)) {
-                \Cx\Lib\UpdateUtil::table(
-                    CALENDAR_NEW_SETTINGS_TABLE,
-                    array(
-                        'id' => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                        'section_id' => array('type' => 'INT(11)', 'after' => 'id'),
-                        'name' => array('type' => 'VARCHAR(255)', 'after' => 'section_id'),
-                        'title' => array('type' => 'VARCHAR(255)', 'after' => 'name'),
-                        'value' => array('type' => 'mediumtext', 'after' => 'title'),
-                        'info' => array('type' => 'mediumtext', 'after' => 'value'),
-                        'type' => array('type' => 'INT(11)', 'after' => 'info'),
-                        'options' => array('type' => 'mediumtext', 'after' => 'type'),
-                        'special' => array('type' => 'VARCHAR(255)', 'after' => 'options'),
-                        'order' => array('type' => 'INT(11)', 'after' => 'special')
-                    )
-                );
+            if (!\Cx\Lib\UpdateUtil::table_empty(CALENDAR_OLD_SETTINGS_TABLE)) {
                 // remove old settings data
-                \Cx\Lib\UpdateUtil::sql("TRUNCATE `" . CALENDAR_OLD_SETTINGS_TABLE . "`");
+                \Cx\Lib\UpdateUtil::drop_table(CALENDAR_NEW_SETTINGS_TABLE);
             }
+            \Cx\Lib\UpdateUtil::table(
+                CALENDAR_NEW_SETTINGS_TABLE,
+                array(
+                    'id' => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                    'section_id' => array('type' => 'INT(11)', 'after' => 'id'),
+                    'name' => array('type' => 'VARCHAR(255)', 'after' => 'section_id'),
+                    'title' => array('type' => 'VARCHAR(255)', 'after' => 'name'),
+                    'value' => array('type' => 'mediumtext', 'after' => 'title'),
+                    'info' => array('type' => 'mediumtext', 'after' => 'value'),
+                    'type' => array('type' => 'INT(11)', 'after' => 'info'),
+                    'options' => array('type' => 'mediumtext', 'after' => 'type'),
+                    'special' => array('type' => 'VARCHAR(255)', 'after' => 'options'),
+                    'order' => array('type' => 'INT(11)', 'after' => 'special')
+                )
+            );
 
             if (!checkMemoryLimit() || !checkTimeoutLimit()) {
                 return 'timeout';
@@ -652,6 +652,7 @@ class CalendarUpdate31
      */
     protected function insertSettingsDemoData()
     {
+        global $_CONFIG;
         try {
             if (\Cx\Lib\UpdateUtil::table_empty(CALENDAR_NEW_SETTINGS_TABLE)) {
                 $headlinesActivated = $_CONFIG['calendarheadlines'];
@@ -797,6 +798,7 @@ class CalendarUpdate31
                 $where = ' WHERE `id` > ' . $_SESSION['contrexx_update']['calendar']['categories'];
             }
             $result = \Cx\Lib\UpdateUtil::sql("SELECT `id`, `name`, `status`, `pos`, `lang` FROM `" . CALENDAR_OLD_CATEGORY_TABLE . "`" . $where . " ORDER BY `id`");
+            $languages = \FWLanguage::getLanguageArray();
             while (!$result->EOF) {
                 \Cx\Lib\UpdateUtil::sql(
                     "INSERT IGNORE INTO `" . CALENDAR_NEW_CATEGORY_TABLE . "` (`id`, `pos`,`status`)
@@ -806,14 +808,16 @@ class CalendarUpdate31
                             " . intval($result->fields['status']) . "
                         )"
                 );
-                \Cx\Lib\UpdateUtil::sql(
-                    "INSERT IGNORE INTO `" . CALENDAR_NEW_CATEGORY_NAME_TABLE . "` (`cat_id`,`lang_id`,`name`)
-                        VALUES (
-                            " . intval($result->fields['id']) . ",
-                            " . intval($result->fields['lang']) . ",
-                            '" . contrexx_raw2db($result->fields['name']) . "'
-                        )"
-                );
+                foreach ($languages as $id => $languageData) {
+                    \Cx\Lib\UpdateUtil::sql(
+                        "INSERT IGNORE INTO `" . CALENDAR_NEW_CATEGORY_NAME_TABLE . "` (`cat_id`,`lang_id`,`name`)
+                            VALUES (
+                                " . intval($result->fields['id']) . ",
+                                " . intval($id) . ",
+                                '" . contrexx_raw2db($result->fields['name']) . "'
+                            )"
+                    );
+                }
 
                 $_SESSION['contrexx_update']['calendar']['categories'] = intval($result->fields['id']);
 

@@ -611,90 +611,93 @@ NEWS;
     * EXTENSION:    Categories as NestedSet         *
     * ADDED:        Contrexx v3.1.0                 *
     ************************************************/
-    try {
-        $nestedSetRootId = null;
-        $count = null;
-        $leftAndRight = 2;
-        $sorting = 1;
-        $level = 2;
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0') && !isset($_SESSION['contrexx_update']['news']['nestedSet'])) {
+        try {
+            $nestedSetRootId = null;
+            $count = null;
+            $leftAndRight = 2;
+            $sorting = 1;
+            $level = 2;
 
-        // add nested set columns
-        \Cx\Lib\UpdateUtil::table(
-            DBPREFIX.'module_news_categories',
-            array(
-                'catid'          => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                'parent_id'      => array('type' => 'INT(11)', 'after' => 'catid'),
-                'left_id'        => array('type' => 'INT(11)', 'after' => 'parent_id'),
-                'right_id'       => array('type' => 'INT(11)', 'after' => 'left_id'),
-                'sorting'        => array('type' => 'INT(11)', 'after' => 'right_id'),
-                'level'          => array('type' => 'INT(11)', 'after' => 'sorting')
-            )
-        );
+            // add nested set columns
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX.'module_news_categories',
+                array(
+                    'catid'          => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                    'parent_id'      => array('type' => 'INT(11)', 'after' => 'catid'),
+                    'left_id'        => array('type' => 'INT(11)', 'after' => 'parent_id'),
+                    'right_id'       => array('type' => 'INT(11)', 'after' => 'left_id'),
+                    'sorting'        => array('type' => 'INT(11)', 'after' => 'right_id'),
+                    'level'          => array('type' => 'INT(11)', 'after' => 'sorting')
+                )
+            );
 
-        // add nested set root node and select its id
-        $objResultRoot = \Cx\Lib\UpdateUtil::sql('INSERT INTO `'.DBPREFIX.'module_news_categories` (`catid`, `parent_id`, `left_id`, `right_id`, `sorting`, `level`) VALUES (0, 0, 0, 0, 0, 0)');
-        if ($objResultRoot) {
-            $nestedSetRootId = $objDatabase->Insert_ID();
-        }
-
-        // count categories
-        $objResultCount = \Cx\Lib\UpdateUtil::sql('SELECT count(`catid`) AS count FROM `'.DBPREFIX.'module_news_categories`');
-        if ($objResultCount && !$objResultCount->EOF) {
-            $count = $objResultCount->fields['count'];
-        }
-
-        // add nested set information to root node
-        \Cx\Lib\UpdateUtil::sql('
-            UPDATE `'.DBPREFIX.'module_news_categories` SET
-            `parent_id` = '.$nestedSetRootId.',
-            `left_id` = 1,
-            `right_id` = '.($count*2).',
-            `sorting` = 1,
-            `level` = 1
-            WHERE `catid` = '.$nestedSetRootId.'
-        ');
-
-        // add nested set information to all categories
-        $objResultCatSelect = \Cx\Lib\UpdateUtil::sql('SELECT `catid` FROM `'.DBPREFIX.'module_news_categories` ORDER BY `catid` ASC');
-        if ($objResultCatSelect) {
-            while (!$objResultCatSelect->EOF) {
-                $catId = $objResultCatSelect->fields['catid'];
-                if ($catId != $nestedSetRootId) {
-                    \Cx\Lib\UpdateUtil::sql('
-                        UPDATE `'.DBPREFIX.'module_news_categories` SET
-                        `parent_id` = '.$nestedSetRootId.',
-                        `left_id` = '.$leftAndRight++.',
-                        `right_id` = '.$leftAndRight++.',
-                        `sorting` = '.$sorting++.',
-                        `level` = '.$level.'
-                        WHERE `catid` = '.$catId.'
-                    ');
-                }
-                $objResultCatSelect->MoveNext();
+            // add nested set root node and select its id
+            $objResultRoot = \Cx\Lib\UpdateUtil::sql('INSERT INTO `'.DBPREFIX.'module_news_categories` (`catid`, `parent_id`, `left_id`, `right_id`, `sorting`, `level`) VALUES (0, 0, 0, 0, 0, 0)');
+            if ($objResultRoot) {
+                $nestedSetRootId = $objDatabase->Insert_ID();
             }
+
+            // count categories
+            $objResultCount = \Cx\Lib\UpdateUtil::sql('SELECT count(`catid`) AS count FROM `'.DBPREFIX.'module_news_categories`');
+            if ($objResultCount && !$objResultCount->EOF) {
+                $count = $objResultCount->fields['count'];
+            }
+
+            // add nested set information to root node
+            \Cx\Lib\UpdateUtil::sql('
+                UPDATE `'.DBPREFIX.'module_news_categories` SET
+                `parent_id` = '.$nestedSetRootId.',
+                `left_id` = 1,
+                `right_id` = '.($count*2).',
+                `sorting` = 1,
+                `level` = 1
+                WHERE `catid` = '.$nestedSetRootId.'
+            ');
+
+            // add nested set information to all categories
+            $objResultCatSelect = \Cx\Lib\UpdateUtil::sql('SELECT `catid` FROM `'.DBPREFIX.'module_news_categories` ORDER BY `catid` ASC');
+            if ($objResultCatSelect) {
+                while (!$objResultCatSelect->EOF) {
+                    $catId = $objResultCatSelect->fields['catid'];
+                    if ($catId != $nestedSetRootId) {
+                        \Cx\Lib\UpdateUtil::sql('
+                            UPDATE `'.DBPREFIX.'module_news_categories` SET
+                            `parent_id` = '.$nestedSetRootId.',
+                            `left_id` = '.$leftAndRight++.',
+                            `right_id` = '.$leftAndRight++.',
+                            `sorting` = '.$sorting++.',
+                            `level` = '.$level.'
+                            WHERE `catid` = '.$catId.'
+                        ');
+                    }
+                    $objResultCatSelect->MoveNext();
+                }
+            }
+
+            // add new tables
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX.'module_news_categories_locks',
+                array(
+                    'lockId'         => array('type' => 'VARCHAR(32)'),
+                    'lockTable'      => array('type' => 'VARCHAR(32)', 'after' => 'lockId'),
+                    'lockStamp'      => array('type' => 'BIGINT(11)', 'notnull' => true, 'after' => 'lockTable')
+                )
+            );
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX.'module_news_categories_catid',
+                array(
+                    'id'     => array('type' => 'INT(11)', 'notnull' => true)
+                )
+            );
+
+
+            // insert id of last added category
+            \Cx\Lib\UpdateUtil::sql('INSERT INTO `'.DBPREFIX.'module_news_categories_catid` (`id`) VALUES ('.$nestedSetRootId.')');
+            $_SESSION['contrexx_update']['news']['nestedSet'] = true;
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
-
-        // add new tables
-        \Cx\Lib\UpdateUtil::table(
-            DBPREFIX.'module_news_categories_locks',
-            array(
-                'lockId'         => array('type' => 'VARCHAR(32)'),
-                'lockTable'      => array('type' => 'VARCHAR(32)', 'after' => 'lockId'),
-                'lockStamp'      => array('type' => 'BIGINT(11)', 'notnull' => true, 'after' => 'lockTable')
-            )
-        );
-        \Cx\Lib\UpdateUtil::table(
-            DBPREFIX.'module_news_categories_catid',
-            array(
-                'id'     => array('type' => 'INT(11)', 'notnull' => true)
-            )
-        );
-
-
-        // insert id of last added category
-        \Cx\Lib\UpdateUtil::sql('INSERT INTO `'.DBPREFIX.'module_news_categories_catid` (`id`) VALUES ('.$nestedSetRootId.')');
-    } catch (\Cx\Lib\UpdateException $e) {
-        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
 
