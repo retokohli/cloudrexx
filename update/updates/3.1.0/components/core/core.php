@@ -1739,8 +1739,7 @@ define('CONTEXX_INSTALLED', true);
 \$_DBCONFIG['password'] = '{$_DBCONFIG['password']}'; // Database password
 \$_DBCONFIG['dbType'] = '{$_DBCONFIG['dbType']}';    // Database type (e.g. mysql,postgres ..)
 \$_DBCONFIG['charset'] = '{$dbCharset}'; // Charset (default, latin1, utf8, ..)
-\$_DBCONFIG['timezone'] = \$_CONFIG['timezone']; // Timezone
-\$_DBCONFIG['collation'] = '{$_DBCONFIG['collation']}';
+\$_DBCONFIG['timezone'] = '{$_CONFIG['timezone']}'; // Controller's timezone for model
 
 /**
 * -------------------------------------------------------------------------
@@ -1749,6 +1748,8 @@ define('CONTEXX_INSTALLED', true);
 */
 \$_PATHCONFIG['ascms_root'] = '';
 \$_PATHCONFIG['ascms_root_offset'] = ''; // example: '/cms';
+\$_PATHCONFIG['ascms_installation_root'] = \$_PATHCONFIG['ascms_root'];
+\$_PATHCONFIG['ascms_installation_offset'] = \$_PATHCONFIG['ascms_root_offset']; // example: '/cms';
 
 /**
 * -------------------------------------------------------------------------
