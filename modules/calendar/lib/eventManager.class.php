@@ -594,7 +594,10 @@ class CalendarEventManager extends CalendarLibrary
             $objDeregistrationManager = new CalendarRegistrationManager($objEvent->id, false, true);  
             $objDeregistrationManager->getRegistrationList();
             $numDeregistration = count($objDeregistrationManager->registrationList);
-                
+
+            $objEscortManager = new CalendarRegistrationManager($objEvent->id, true, false);
+            $escortCount      = $objEscortManager->getEscortData();
+
             $objTpl->setVariable(array(
                 $this->moduleLangVar.'_EVENT_ID'                => $objEvent->id,
                 $this->moduleLangVar.'_EVENT_START'             => date(parent::getDateFormat()." H:i", $objEvent->startDate),
@@ -621,7 +624,7 @@ class CalendarEventManager extends CalendarLibrary
                 $this->moduleLangVar.'_EVENT_ACCESS'            => $_ARRAYLANG['TXT_CALENDAR_EVENT_ACCESS_'.$objEvent->access],
                 $this->moduleLangVar.'_EVENT_COUNT_REG'         => $numRegistrations,
                 $this->moduleLangVar.'_EVENT_COUNT_SIGNOFF'     => $numDeregistration,
-                $this->moduleLangVar.'_EVENT_COUNT_SUBSCRIBER'  => 0,
+                $this->moduleLangVar.'_EVENT_COUNT_SUBSCRIBER'  => $numRegistrations + $escortCount,
                 $this->moduleLangVar.'_REGISTRATIONS_SUBSCRIBER'=> $objEvent->numSubscriber,
             ));
 

@@ -334,4 +334,43 @@ class CalendarRegistrationManager extends CalendarLibrary
             }
         }
     }
+    
+    /**
+     * Count returns the number of escort data for the event
+     *      
+     * @return int number of escort data
+     */
+    function getEscortData()
+    {
+        global $objDatabase, $_LANGID;
+
+        $query = "SELECT 
+                    `n`.`field_id`
+                  FROM 
+                    `".DBPREFIX."module_{$this->moduleTablePrefix}_registration_form_field_name` AS `n`
+                  INNER JOIN 
+                    `".DBPREFIX."module_{$this->moduleTablePrefix}_registration_form_field` AS `f`
+                  ON 
+                    `n`.`field_id` = `f`.`id`
+                  WHERE 
+                    `n`.`form_id` = '{$this->formId}'
+                  AND 
+                    `n`.`lang_id` = '{$_LANGID}'
+                  AND
+                    `f`.`type` = 'seating'
+                ";
+        $seatingFieldId = $objDatabase->getOne($query);
+        
+        if (empty($seatingFieldId))
+            return 0;
+        
+        $this->getRegistrationList();
+        
+        $countSeating = 0;
+        foreach ($this->registrationList as $registration) {
+            $countSeating += (int) $registration->fields[$seatingFieldId]['value'];            
+        }
+        
+        return $countSeating;
+    }
 }
