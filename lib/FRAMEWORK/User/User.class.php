@@ -314,6 +314,27 @@ class User extends User_Profile
      */
     public function auth($username, $password, $backend = false, $captchaCheckResult = false)
     {
+        $userId = $this->checkLoginData($username, $password, $captchaCheckResult);
+
+        if (!$userId || !$this->load($userId) || !$this->hasModeAccess($backend) || !$this->updateLastAuthTime()) {
+            return false;
+        }
+
+        return true;
+    }
+
+
+    /**
+     * Checks username, password and captcha.
+     *
+     * @param  string  $username
+     * @param  string  $password
+     * @param  bool    $captchaCheckResult
+     *
+     * @return  mixed  false or user id
+     */
+    public function checkLoginData($username, $password, $captchaCheckResult = false)
+    {
         global $objDatabase;
 
         $loginByEmail = false;
@@ -324,41 +345,28 @@ class User extends User_Profile
         }
 
         if ($loginByEmail) {
-            $loginCheck = "`email` = '".addslashes($username)."'";
+            $loginCheck = '`email` = "' . addslashes($username) . '"';
         } else {
-            $loginCheck = "`username` = '".addslashes($username)."'";
+            $loginCheck = '`username` = "' . addslashes($username) . '"';
         }
-        $loginStatusCondition = $captchaCheckResult == false ? 'AND `last_auth_status`=1' : '';
-        $objResult = $objDatabase->SelectLimit("
+
+        $loginStatusCondition = $captchaCheckResult == false ? 'AND `last_auth_status` = 1' : '';
+
+        $objResult = $objDatabase->SelectLimit('
             SELECT `id`
-              FROM `".DBPREFIX."access_users`
-            WHERE ".$loginCheck."
-               AND `password`='".addslashes($password)."'
-               AND `active`=1
-             ".$loginStatusCondition."
-               AND (`expiration`=0 OR `expiration`>".time().")", 1);
-        if (!$objResult) {
-//DBG::log("User::auth($username, $password, $backend): Query error");
+              FROM `' . DBPREFIX . 'access_users`
+             WHERE ' . $loginCheck . '
+               AND `password` = "'.addslashes($password).'"
+               AND `active` = 1
+               ' . $loginStatusCondition . '
+               AND (`expiration` = 0 OR `expiration` > ' . time() . ')
+        ', 1);
+
+        if (!$objResult || $objResult->RecordCount() != 1) {
             return false;
         }
-        if ($objResult->RecordCount() != 1) {
-//DBG::log("User::auth($username, $password, $backend): Wrong User count: ".$objResult->RecordCount());
-            return false;
-        }
-        if (!$this->load($objResult->fields['id'])) {
-//DBG::log("User::auth($username, $password, $backend): Failed to load User ID ".$objResult->fields['id']);
-            return false;
-        }
-        if (!$this->hasModeAccess($backend)) {
-//DBG::log("User::auth($username, $password, $backend): No access");
-            return false;
-        }
-        if (!$this->updateLastAuthTime()) {
-//DBG::log("User::auth($username, $password, $backend): Failed to update auth time");
-            return false;
-        }
-//DBG::log("User::auth($username, $password, $backend): Success!");
-        return true;
+
+        return $objResult->fields['id'];
     }
 
 

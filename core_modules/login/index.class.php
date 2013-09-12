@@ -218,7 +218,7 @@ class Login
     */
     function _login()
     {
-        global $_CORELANG;
+        global $_CORELANG, $sessionObj;
 
         $objFWUser = FWUser::getFWUserObject();
 
@@ -238,7 +238,16 @@ class Login
                 return $providerLogin;
             }
         }
-        if ((!isset($_REQUEST['relogin']) || $_REQUEST['relogin'] != 'true') && $objFWUser->objUser->login() || $objFWUser->checkAuth()) {
+        if (isset($_POST['login']) && $objFWUser->objUser->login()) {
+            if ($objFWUser->checkLogin()) {
+                $objFWUser->objUser->reset();
+                $objFWUser->logoutAndDestroySession();
+                $sessionObj = new \cmsSession();
+            } else {
+                $_GET['relogin'] = 'true';
+            }
+        }
+        if ((!isset($_GET['relogin']) || $_GET['relogin'] != 'true') && $objFWUser->objUser->login() || $objFWUser->checkAuth()) {
             $groupRedirect = ($objGroup = $objFWUser->objGroup->getGroup($objFWUser->objUser->getPrimaryGroupId())) && $objGroup->getHomepage() ? preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $objGroup->getHomepage()) : CONTREXX_SCRIPT_PATH;
             LinkGenerator::parseTemplate($groupRedirect);
             if (isset($_SESSION['redirect'])) {
