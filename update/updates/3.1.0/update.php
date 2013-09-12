@@ -1550,7 +1550,7 @@ function verifyMd5SumOfFile($file, $newFile)
         }
     }
 
-    $rawmd5 = md5(preg_replace('/\s/', '', file_get_contents($file)));
+    $rawmd5 = md5(preg_replace('/\s/u', '', file_get_contents($file)));
     foreach ($arrMd5SumsOfCxFiles[$cxFilePath] as $validMd5Sum) {
         if ($rawmd5 == $validMd5Sum['raw_md5_sum']) {
             return true;
