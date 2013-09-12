@@ -2007,10 +2007,17 @@ class User extends User_Profile
     {
         global $objDatabase;
 
-        return $objDatabase->Execute("
-            UPDATE `".DBPREFIX."access_users`
-               SET `last_auth_status`=0
-             WHERE `username`='".$username."'");
+        $column = 'email';
+        $arrUserSettings = \User_Setting::getSettings();
+        if ($arrUserSettings['use_usernames']['status']) {
+            $column = 'username';
+        }
+
+        return $objDatabase->Execute('
+            UPDATE `' . DBPREFIX . 'access_users`
+               SET `last_auth_status` = 0
+             WHERE `' . $column . '` = "' . $username . '"
+        ');
     }
 
 
