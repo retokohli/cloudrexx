@@ -101,6 +101,23 @@ class FWUser extends User_Setting
     }
 
     /**
+     * Checks the login
+     *
+     * @return  bool|mixed  false or user id
+     */
+    public function checkLogin()
+    {
+        $username = isset($_POST['USERNAME']) && $_POST['USERNAME'] != '' ? contrexx_stripslashes($_POST['USERNAME']) : null;
+        $password = isset($_POST['PASSWORD']) && $_POST['PASSWORD'] != '' ? md5(contrexx_stripslashes($_POST['PASSWORD'])) : null;
+
+        if (isset($username) && isset($password)) {
+            return $this->objUser->checkLoginData($username, $password, \FWCaptcha::getInstance()->check());
+        }
+
+        return false;
+    }
+
+    /**
      * Log in the current user with the object given
      * @param mixed $objUser the user to be logged in
      */
@@ -132,11 +149,7 @@ class FWUser extends User_Setting
      */
     function logout()
     {
-        if (isset($_SESSION['auth'])) {
-            unset($_SESSION['auth']);
-        }
-        session_destroy();
-        setcookie(session_name(), '', time() - 3600, ASCMS_PATH_OFFSET.'/');
+        $this->logoutAndDestroySession();
 
         if ($this->backendMode) {
             $pathOffset = ASCMS_PATH_OFFSET;
@@ -151,6 +164,17 @@ class FWUser extends User_Setting
         exit;
     }
 
+    /**
+     * Logs the user off and destroys the session.
+     */
+    public function logoutAndDestroySession()
+    {
+        if (isset($_SESSION['auth'])) {
+            unset($_SESSION['auth']);
+        }
+        session_destroy();
+        setcookie(session_name(), '', time() - 3600, ASCMS_PATH_OFFSET.'/');
+    }
 
     /**
      * Log the user session.
@@ -289,7 +313,7 @@ class FWUser extends User_Setting
         $objUser->objAttribute->first();
         while (!$objUser->objAttribute->EOF) {
             $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
-            $objAccessLib->parseAttribute($objUser, $objAttribute->getId(), 0, false, FALSE, false, false, false);
+            $objAccessLib->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, false);
             $objUser->objAttribute->next();
         }
 
