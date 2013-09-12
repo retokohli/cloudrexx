@@ -622,6 +622,9 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
               FROM `".DBPREFIX."module_shop".MODULE_INDEX."_rel_customer_coupon`
              WHERE `code`='".addslashes($this->code)."'
                AND `count`!=0".
+            // Customers with ID 0 are customers without an account
+            // A coupon limited to one use per customer can only be used once
+            // by no-account users (see changeset 26506)
             ($customer_id !== null ? " AND `customer_id`=$customer_id" : '').
             ($order_id ? " AND `order_id`=$order_id" : '');
         $objResult = $objDatabase->Execute($query);
