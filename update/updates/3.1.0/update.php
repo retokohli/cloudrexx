@@ -409,7 +409,7 @@ function executeContrexxUpdate() {
 
         $lupd = new License();
         try {
-            $lupd->update();
+            $lupd->update(false);
         } catch (\Cx\Lib\UpdateException $e) {
             setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_LICENSE_DATA']), 'title');
             return false;
@@ -1695,7 +1695,7 @@ class License {
 
     }
 
-    public function update() {
+    public function update($getNew = true) {
         global $documentRoot, $_CONFIG, $objUser, $license, $objDatabase;
 
         if (@include_once(ASCMS_DOCUMENT_ROOT.'/lib/PEAR/HTTP/Request2.php')) {
@@ -1705,9 +1705,11 @@ class License {
 
             $_CONFIG['licenseUpdateInterval'] = 0;
             $_CONFIG['licenseSuccessfulUpdate'] = 0;
-            $_CONFIG['installationId'] = '';
-            $_CONFIG['licenseKey'] = '';
             $_CONFIG['licenseState'] = '';
+            if ($getNew) {
+                $_CONFIG['installationId'] = '';
+                $_CONFIG['licenseKey'] = '';
+            }
             
             $objUser = \FWUser::getFWUserObject()->objUser;
             $license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $objDatabase);
