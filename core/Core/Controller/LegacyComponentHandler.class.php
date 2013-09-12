@@ -841,7 +841,7 @@ class LegacyComponentHandler {
                         if (   !empty($directoryCheck)
                             /** @ignore */
                             && $cl->loadFile(ASCMS_MODULE_PATH.'/directory/index.class.php')) {
-                            $objDirectory = new rssDirectory('');
+                            $objDirectory = new \rssDirectory('');
                             if (!empty($directoryCheck)) {
                                 $objTemplate->setVariable('TXT_DIRECTORY_LATEST', $_CORELANG['TXT_DIRECTORY_LATEST']);
                                 $objDirectory->getBlockLatest($directoryCheck);
@@ -856,7 +856,7 @@ class LegacyComponentHandler {
                         if (   $marketCheck
                             /** @ignore */
                             && $cl->loadFile(ASCMS_MODULE_PATH.'/market/index.class.php')) {
-                            $objMarket = new Market('');
+                            $objMarket = new \Market('');
                             $objTemplate->setVariable('TXT_MARKET_LATEST', $_CORELANG['TXT_MARKET_LATEST']);
                             $objMarket->getBlockLatest();
                         }
