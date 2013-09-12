@@ -299,7 +299,7 @@ class Blog extends BlogLibrary  {
                     if ($objCommentsResult->fields['user_id'] == 0 || $objUser === false) {
                         $strUserName 	= $objCommentsResult->fields['user_name'];
                     } else {
-                        $strUserName 	= htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
+                        $strUserName 	= contrexx_raw2xhtml(\FWUser::getParsedUserTitle($objUser));
 
                         if ($objUser->getProfileAttribute('picture') != '') {
                             $strUserAvatar	= '<img src="'.ASCMS_ACCESS_PROFILE_IMG_WEB_PATH.'/'.$objUser->getProfileAttribute('picture').'" alt="'.$strUserName.'" />';
@@ -338,9 +338,9 @@ class Blog extends BlogLibrary  {
 
                 $this->_objTpl->setVariable(array(
                     'BLOG_DETAILS_COMMENT_ADD_MESSAGE_ID'       =>  $intMessageId,
-                    'BLOG_DETAILS_COMMENT_ADD_NAME'             =>  ($this->_intCurrentUserId == 0) ? '<input type="text" name="frmAddComment_Name" value="'.$strName.'" class="blogCommentInput" />' : htmlentities($objFWUser->objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET),
-                    'BLOG_DETAILS_COMMENT_ADD_EMAIL'            =>  ($this->_intCurrentUserId == 0) ? '<input type="text" name="frmAddComment_EMail" value="'.$strEMail.'" class="blogCommentInput" />' : htmlentities($objFWUser->objUser->getEmail(), ENT_QUOTES, CONTREXX_CHARSET),
-                    'BLOG_DETAILS_COMMENT_ADD_WWW'              =>  ($this->_intCurrentUserId == 0) ? '<input type="text" name="frmAddComment_WWW" value="'.$strWWW.'" class="blogCommentInput" />' : htmlentities($objFWUser->objUser->getProfileAttribute('website'), ENT_QUOTES, CONTREXX_CHARSET),
+                    'BLOG_DETAILS_COMMENT_ADD_NAME'             =>  ($this->_intCurrentUserId == 0) ? '<input type="text" name="frmAddComment_Name" value="'.$strName.'" class="blogCommentInput" />' : contrexx_raw2xhtml(\FWUser::getParsedUserTitle($objFWUser->objUser)),
+                    'BLOG_DETAILS_COMMENT_ADD_EMAIL'            =>  ($this->_intCurrentUserId == 0) ? '<input type="text" name="frmAddComment_EMail" value="'.$strEMail.'" class="blogCommentInput" />' : contrexx_raw2xhtml($objFWUser->objUser->getEmail()),
+                    'BLOG_DETAILS_COMMENT_ADD_WWW'              =>  ($this->_intCurrentUserId == 0) ? '<input type="text" name="frmAddComment_WWW" value="'.$strWWW.'" class="blogCommentInput" />' : contrexx_raw2xhtml($objFWUser->objUser->getProfileAttribute('website')),
                     'BLOG_DETAILS_COMMENT_ADD_SUBJECT'          =>  $strSubject,
                     'BLOG_DETAILS_COMMENT_ADD_COMMENT'          =>  $strEditor,
                 ));
