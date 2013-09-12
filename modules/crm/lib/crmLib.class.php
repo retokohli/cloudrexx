@@ -2616,10 +2616,11 @@ CODE;
      */
     public function notifyStaffOnContactAccModification($customerId = 0, $customer_name = '')
     {
-        global $objDatabase, $_ARRAYLANG, $objFWUser;
+        global $objDatabase, $_ARRAYLANG;
 
         if (empty($customerId)) return false;
-
+        
+        $objFWUser = FWUser::getFWUserObject();
         $settings = $this->getSettings();
         $resources = $this->getResources($settings['emp_default_user_group']);
         $emailIds    = array();
