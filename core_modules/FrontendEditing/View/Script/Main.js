@@ -229,6 +229,11 @@ cx.fe.toolbar = function() {
             cx.fe.toolbar.show();
         }
     });
+    cx.jQuery("a.start-frontend-editing").click(function(e) {
+        e.preventDefault();
+        cx.fe.toolbar.show();
+        cx.jQuery("html, body").animate({ scrollTop: 0 }, 600);
+    });
 
     // add csrf to links where needed
     cx.jQuery('#fe_metanavigation a.backend, #fe_metanavigation a.profile').each(function() {
