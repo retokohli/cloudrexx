@@ -840,9 +840,9 @@ class CalendarUpdate31
     {
         $languageIds = array();
         try {
-            $result = \Cx\Lib\UpdateUtil::sql("SELECT `cat_id`, `lang_id` FROM `" . CALENDAR_NEW_CATEGORY_NAME_TABLE . "`");
+            $result = \Cx\Lib\UpdateUtil::sql("SELECT `id`, `lang` FROM `" . CALENDAR_OLD_CATEGORY_TABLE . "`");
             while (!$result->EOF) {
-                $languageIds[$result->fields['cat_id']] = $result->fields['lang_id'];
+                $languageIds[$result->fields['id']] = $result->fields['lang'];
                 $result->MoveNext();
             }
         } catch (\Cx\Lib\UpdateException $e) {
@@ -1067,6 +1067,9 @@ class CalendarUpdate31
      */
     protected function addMailTemplate($title, $content, $langId)
     {
+        // replace old placeholders with new placeholders
+        $title = str_replace('[[REG_LINK]]', '[[LINK_REGISTRATION]]', $title);
+        $content = str_replace('[[REG_LINK]]', '[[LINK_REGISTRATION]]', $content);
         \Cx\Lib\UpdateUtil::sql("
                 INSERT IGNORE INTO `" . CALENDAR_NEW_MAIL_TABLE . "` (
                     `title`,
