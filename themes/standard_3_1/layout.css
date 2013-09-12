@@ -291,6 +291,7 @@ header.login .right label.remember_me {
     font-size: 14px;
     font-weight: normal;
     background: none;
+    white-space: pre;
 }
 
 #content-wrapper {
