@@ -164,8 +164,10 @@ class CalendarRegistrationManager extends CalendarLibrary
             $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_NAME', $_ARRAYLANG['TXT_CALENDAR_DATE']);
             $objTpl->parse('eventRegistrationName');
             
-            while (!$objResult->EOF) {
+            $arrFieldColumns = array();
+            while (!$objResult->EOF) {                
                 if (!in_array($objResult->fields['type'], array('agb', 'fieldset'))) {
+                    $arrFieldColumns[] = $objResult->fields['field_id'];
                     $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_NAME', $objResult->fields['name']);                    
                     $objTpl->parse('eventRegistrationName');
                 }
@@ -221,8 +223,8 @@ class CalendarRegistrationManager extends CalendarLibrary
             $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_VALUE', date("d.m.Y", $objRegistration->eventDate));
             $objTpl->parse('eventRegistrationValue');
             
-            foreach ($arrValues[$objRegistration->id] as $value) {
-                $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_VALUE', $value);
+            foreach ($arrFieldColumns as $fieldId) {
+                $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_VALUE', isset($arrValues[$objRegistration->id][$fieldId]) ? $arrValues[$objRegistration->id][$fieldId] : '');
                 $objTpl->parse('eventRegistrationValue');
             }
             

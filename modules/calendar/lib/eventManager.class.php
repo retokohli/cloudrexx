@@ -786,7 +786,7 @@ class CalendarEventManager extends CalendarLibrary
                         $langState[$langKey] = 'active';
                     }
                 }
-                $languages = \Html::getLanguageIcons($langState, 'index.php?cmd=calendar&amp;act=modify_event&amp;id=' . $objEvent->id . '&amp;langId=%1$d');
+                $languages = \Html::getLanguageIcons($langState, 'index.php?cmd=calendar&amp;act=modify_event&amp;id=' . $objEvent->id . '&amp;langId=%1$d'.($type == 'confirm' ? "&amp;confirm=1" : ""));
                 
                 list ($priority, $priorityImg) = $this->getPriorityImage($objEvent);
                 
@@ -815,13 +815,17 @@ class CalendarEventManager extends CalendarLibrary
                         $hostUri = "http://".$hostUri;
                     }                    
                 }
-                
+                if($objInit->mode == 'backend') {
+                    $editLink = 'index.php?cmd='.$this->moduleName.'&amp;act=modify_event&id='.$objEvent->id.($type == 'confirm' ? "&amp;confirm=1" : "");
+                } else {
+                    $editLink = CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'&amp;cmd=edit&id='.$objEvent->id;
+                }
                 $picThumb = file_exists(ASCMS_PATH."{$objEvent->pic}.thumb") ? "{$objEvent->pic}.thumb" : ($objEvent->pic != '' ? $objEvent->pic : '');
                 $objTpl->setVariable(array(
                     $this->moduleLangVar.'_EVENT_ROW'            => $i%2==0 ? 'row1' : 'row2',
                     $this->moduleLangVar.'_EVENT_LED'            => $objEvent->status==0 ? 'red' : 'green',
                     $this->moduleLangVar.'_EVENT_STATUS'         => $objEvent->status==0 ? $_ARRAYLANG['TXT_CALENDAR_INACTIVE'] : $_ARRAYLANG['TXT_CALENDAR_ACTIVE'],
-                    $this->moduleLangVar.'_EVENT_ID'             => $objEvent->id,
+                    $this->moduleLangVar.'_EVENT_ID'             => $objEvent->id,                                        
                     $this->moduleLangVar.'_EVENT_TITLE'          => $objEvent->title,                                                         
                     $this->moduleLangVar.'_EVENT_PICTURE'        => $objEvent->pic != '' ? '<img src="'.$objEvent->pic.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',                                                          
                     $this->moduleLangVar.'_EVENT_PICTURE_SOURCE' => $objEvent->pic,
@@ -845,7 +849,7 @@ class CalendarEventManager extends CalendarLibrary
                     $this->moduleLangVar.'_EVENT_LANGUAGES'      => $languages,
                     $this->moduleLangVar.'_EVENT_CATEGORY'       => $objCategory->name,
                     $this->moduleLangVar.'_EVENT_DETAIL_LINK'    => $objEvent->type==0 ? self::_getDetailLink($objEvent) : $objEvent->arrData['redirect'][$_LANGID],
-                    $this->moduleLangVar.'_EVENT_EDIT_LINK'      => CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'&amp;cmd=edit&id='.$objEvent->id,
+                    $this->moduleLangVar.'_EVENT_EDIT_LINK'      => $editLink,                    
                     $this->moduleLangVar.'_EVENT_DETAIL_TARGET'  => $objEvent->type==0 ? '_self' : '_blank',
                     $this->moduleLangVar.'_EVENT_SERIES'         => $objEvent->seriesStatus == 1 ? '<img src="'.ASCMS_MODULE_WEB_PATH.'/'.$this->moduleName.'/View/Media/Repeat.png" border="0"/>' : '<i>'.$_ARRAYLANG['TXT_CALENDAR_NO_SERIES'].'</i>',
                     $this->moduleLangVar.'_EVENT_FREE_PLACES'    => $objEvent->freePlaces,
@@ -890,7 +894,7 @@ class CalendarEventManager extends CalendarLibrary
                     $objTpl->setVariable(array(
                         $this->moduleLangVar.'_EVENT_COUNT_REG'      => count($objRegistrationManager->registrationList),
                         $this->moduleLangVar.'_EVENT_COUNT_DEREG'    => count($objDeregistrationManager->registrationList),
-                        $this->moduleLangVar.'_EVENT_COUNT_WAITLIST' => count($objWaitlistManager->registrationList),
+                        $this->moduleLangVar.'_EVENT_COUNT_WAITLIST' => count($objWaitlistManager->registrationList),                                                
                     ));    
                 }
                 
