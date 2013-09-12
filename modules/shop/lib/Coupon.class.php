@@ -402,8 +402,7 @@ DBG::log("Coupon::get($code): ERROR: Query failed");
             return null;
         }
         // Deduct amounts already redeemed
-        if (   $objCoupon->discount_amount
-            && !$objCoupon->discount_rate
+        if (   floatval($objCoupon->discount_amount) > 0
             && $objCoupon->getUsedAmount($customer_id) >= $objCoupon->discount_amount) {
 //DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Deduct amounts redeemed");
             return null;
