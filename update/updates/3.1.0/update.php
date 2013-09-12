@@ -22,6 +22,12 @@ function executeContrexxUpdate() {
             ),
         ),
 
+        // Veranstaltungskalender
+        'calendar'    => array (
+            'version'       => '3.1.0.0',
+            'dependencies'  => array (),
+        ),
+
         // Online Shop
         'shop'          => array (
             'version'       => '3.0.0.0',
