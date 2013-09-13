@@ -170,7 +170,7 @@ class cmsSession
         $objResult = $this->_objDb->Execute('SELECT `datavalue`, `'.($this->compatibilityMode ? 'username' : 'user_id').'`, `status` FROM `'.DBPREFIX.'sessions` WHERE `sessionid` = "'.$aKey.'"');
         if ($objResult !== false) {
             if ($objResult->RecordCount() == 1) {
-                $this->userId = $objResult->fields['user_id'];
+                $this->userId = $objResult->fields[($this->compatibilityMode ? 'username' : 'user_id')];
                 $this->status = $objResult->fields['status'];
                 return $objResult->fields['datavalue'];
             } else {
@@ -205,7 +205,7 @@ class cmsSession
 
     function cmsSessionDestroyByUserId($userId)
     {
-        $objResult = $this->_objDb->Execute('SELECT `sessionid` FROM `'.DBPREFIX.'sessions` WHERE `user_id` = '.intval($userId));
+        $objResult = $this->_objDb->Execute('SELECT `sessionid` FROM `'.DBPREFIX.'sessions` WHERE `'.($this->compatibilityMode ? 'username' : 'user_id').'` = '.intval($userId));
         if ($objResult) {
             while (!$objResult->EOF) {
                 if ($objResult->fields['sessionid'] != $this->sessionid) {
