@@ -1,2 +1,3 @@
 <?php
 
+function _crmUpdate() {}
