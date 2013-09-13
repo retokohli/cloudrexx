@@ -411,6 +411,12 @@ function _contactUpdate()
             \Cx\Lib\UpdateUtil::sql('UPDATE '.DBPREFIX.'module_contact_form SET html_mail = 0');
         }
 
+        if (!$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '2.1.5')) {
+            // for all versions >= 2.2.0
+            // change all fields currently set to 'file' to 'multi_file' ('multi_file' is same as former 'file' in previous versions)
+            \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."module_contact_form_field` SET `type` = 'multi_file' WHERE `type` = 'file'");
+        }
+
         /**
          * Update the content pages
          */
