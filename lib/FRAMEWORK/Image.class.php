@@ -516,7 +516,7 @@ class ImageManager
         }
 		// Only adjust quality, if it is set.
         if ($this->newImageQuality != '') {
-            $function($this->newImage, '', $this->getQuality());
+            $function($this->newImage, null, $this->getQuality());
         } else {
             $function($this->newImage);
         }
