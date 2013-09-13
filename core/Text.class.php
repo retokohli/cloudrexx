@@ -910,7 +910,7 @@ die("Obsolete method Text::getIdArrayBySearch() called");
                 ) ENGINE=MyISAM";
             $objResult = Cx\Lib\UpdateUtil::sql($query);
             if (!$objResult) {
-                throw new Update_DatabaseException(
+                throw new \Cx\Lib\Update_DatabaseException(
                    'Failed to create Text table', $query);
             }
         }
