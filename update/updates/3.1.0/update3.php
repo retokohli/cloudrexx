@@ -1338,6 +1338,14 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
         \DBG::dump($calendarMigration);
         return $calendarMigration;
     }
+
+    // install crm module
+    require_once(dirname(__FILE__).'/components/module/crm.php');
+    $crmInstall = _crmInstall();
+    if ($crmInstall) {
+        // crm install returns an error
+        return $crmInstall;
+    }
 }
 
 /***************************************
