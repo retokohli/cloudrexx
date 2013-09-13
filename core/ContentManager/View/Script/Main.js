@@ -566,10 +566,12 @@ cx.cm = function(target) {
                 }
                 var newName = jQuery('#page_name').val();
                 if (jQuery('#pageId').val() == 'new' || jQuery('#pageId').val() == 0) {
-                    cx.cm.loadPage(response.data.id, null, response.data.version);
-                    if (jQuery('a[href="#page_history"]').parent().hasClass('ui-state-active')) {
-                        cx.cm.loadHistory(response.data.id);
-                    }
+                    jQuery("#pageId").val(response.data.id);
+                }
+                if (response.data.reload) {
+                    cx.cm.createJsTree();
+                    cx.cm.loadHistory(jQuery("#pageId").val());
+                    return;
                 }
                 var page = cx.cm.getPageStatus(cx.cm.getNodeId(jQuery("#pageId").val()), cx.cm.getCurrentLang());
                 if (publishAllowed) {
@@ -626,14 +628,11 @@ cx.cm = function(target) {
                     }
                 });
 
-                if (response.data.reload) {
-                    cx.cm.createJsTree();
-                } else {
-                    cx.cm.updateTreeEntry(page);
-                }
+                cx.cm.updateTreeEntry(page);
+            } else {
+                cx.trigger("loadingEnd", "contentmanager", {});
             }
             cx.tools.StatusMessage.removeAllDialogs();
-            cx.trigger("loadingEnd", "contentmanager", {});
         });
     });
 
@@ -652,10 +651,12 @@ cx.cm = function(target) {
                 }
                 var newName = jQuery('#page_name').val();
                 if (jQuery('#pageId').val() == 'new' || jQuery('#pageId').val() == 0) {
-                    cx.cm.loadPage(response.data.id, null, response.data.version);
-                    if (jQuery('a[href="#page_history"]').parent().hasClass('ui-state-active')) {
-                        cx.cm.loadHistory(response.data.id);
-                    }
+                    jQuery("#pageId").val(response.data.id);
+                }
+                if (response.data.reload) {
+                    cx.cm.createJsTree();
+                    cx.cm.loadHistory(jQuery("#pageId").val());
+                    return;
                 }
                 var page = cx.cm.getPageStatus(cx.cm.getNodeId(jQuery("#pageId").val()), cx.cm.getCurrentLang());
                 page.publishing.hasDraft = "yes";
@@ -707,13 +708,10 @@ cx.cm = function(target) {
                     }
                 });
 
-                if (response.data.reload) {
-                    cx.cm.createJsTree();
-                } else {
-                    cx.cm.updateTreeEntry(page);
-                }
+                cx.cm.updateTreeEntry(page);
+            } else {
+                cx.trigger("loadingEnd", "contentmanager", {});
             }
-            cx.trigger("loadingEnd", "contentmanager", {});
         });
     });
 
@@ -956,6 +954,7 @@ cx.cm.homeCheck = function(addClasses, pageId) {
 }
 
 cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
+    cx.trigger("loadingStart", "contentmanager", {});
     var langPreset;
     try {
         langPreset = cx.cm.getCurrentLang();
@@ -1060,7 +1059,6 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
         eventAdded = true;;
     })
     .bind("create.jstree", function (e, data) {
-        cx.trigger("loadingStart", "contentmanager", {});
         jQuery.post(
             "server.php",
             {
@@ -1076,13 +1074,11 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                 } else {
                     jQuery.jstree.rollback(data.rlbk);
                 }
-                cx.trigger("loadingEnd", "contentmanager", {});
             }
             );
     })
     .bind("remove.jstree", function (e, data) {
         data.rslt.obj.each(function () {
-            cx.trigger("loadingStart", "contentmanager", {});
             jQuery.ajax({
                 async : false,
                 type: 'POST',
@@ -1095,7 +1091,6 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                     if (!r.status) {
                         data.inst.refresh();
                     }
-                    cx.trigger("loadingEnd", "contentmanager", {});
                 }
             });
         });
@@ -1793,7 +1788,6 @@ cx.cm.performAction = function(action, pageId, nodeId) {
                     return;
             }
             cx.cm.updateTreeEntry(page);
-            cx.trigger("loadingEnd", "contentmanager", {});
         }
     });
 }
