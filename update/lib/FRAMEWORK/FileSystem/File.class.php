@@ -140,6 +140,37 @@ class File implements FileInterface
 
         throw new FileSystemException('File: Unable to write data to file '.$this->file.'!');
     }
+    
+    public function append($data) {
+        // use PHP
+        if (   $this->accessMode == self::PHP_ACCESS
+            || $this->accessMode == self::UNKNOWN_ACCESS
+        ) {
+            try {
+                // try regular file access first
+                $fsFile = new FileSystemFile($this->file);
+                $fsFile->append($data);
+                return true;
+            } catch (FileSystemFileException $e) {
+                \DBG::msg('FileSystemFile: '.$e->getMessage());
+            }
+        }
+
+        // use FTP
+        if (   $this->accessMode == self::FTP_ACCESS
+            || $this->accessMode == self::UNKNOWN_ACCESS
+        ) {
+            try {
+                $ftpFile = new FTPFile($this->file);
+                $ftpFile->append($data);
+                return true;
+            } catch (FTPFileException $e) {
+                \DBG::msg('FTPFile: '.$e->getMessage());
+            }
+        }
+
+        throw new FileSystemException('File: Unable to append data to file '.$this->file.'!');
+    }
 
     /**
      * Creates files if it doesn't exists yet
