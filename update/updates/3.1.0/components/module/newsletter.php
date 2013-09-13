@@ -445,7 +445,7 @@ return;
 
     // 3. migrate to new country format (using IDs)
     if (\Cx\Lib\UpdateUtil::column_exist(DBPREFIX.'module_newsletter_user', 'country_old')) {
-        $objResult = \Cx\Lib\UpdateUtil::sql('SELECT `id`, `country_old` FROM `'.DBPREFIX.'module_newsletter_user` WHERE `country_id` = 0');
+        $objResult = \Cx\Lib\UpdateUtil::sql('SELECT `id`, `country_old` FROM `'.DBPREFIX.'module_newsletter_user` WHERE `country_id` = 0 AND `country_old` <> \'\'');
         if ($objResult->RecordCount()) {
             while (!$objResult->EOF) {
                 // try setting country_id based on a guess from country_old
@@ -454,7 +454,7 @@ return;
                 if (!$objResult->EOF) {
                     $countryId = $objText->fields['id'];
                 }
-                \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_newsletter_user` SET `country_id` = \''.contrexx_raw2db($countryId).'\' WHERE `id` = '.$objResult->fields['id']);
+                \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_newsletter_user` SET `country_id` = \''.contrexx_raw2db($countryId).'\', `country_old` = \'\' WHERE `id` = '.$objResult->fields['id']);
                 if (!checkTimeoutLimit()) {
                     return 'timeout';
                 }
