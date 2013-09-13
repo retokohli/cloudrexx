@@ -96,6 +96,11 @@ class File implements FileInterface
         $this->accessMode = self::UNKNOWN_ACCESS;
         return false;
     }
+    
+    public function getAccessMode()
+    {
+        return $this->accessMode;
+    }
 
     public function getData()
     {
