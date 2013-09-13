@@ -96,6 +96,11 @@ class FTPFile implements FileInterface
         $this->uploadTempFile();
         $this->deleteTempFile();
     }
+    
+    public function append($data)
+    {
+        $this->write($data);
+    }
 
     public function touch()
     {

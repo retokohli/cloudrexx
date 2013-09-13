@@ -103,6 +103,34 @@ class FileSystemFile implements FileInterface
         }
     }
 
+    public function append($data)
+    {
+        // first try 
+        $fp = @fopen($this->filePath, 'w');
+        if (!$fp) {
+            // try to set write access
+            $this->makeWritable($this->filePath);
+        }
+
+        // second try 
+        $fp = @fopen($this->filePath, 'a');
+        if (!$fp) { 
+            throw new FileSystemFileException('Unable to open file '.$this->filePath.' for writting!');
+        }
+
+        // acquire exclusive file lock
+        flock($fp, LOCK_EX);
+
+        // write data to file
+        $writeStatus = fwrite($fp, $data);
+
+        // release exclusive file lock
+        flock($fp, LOCK_UN);
+        if ($writeStatus === false) {
+            throw new FileSystemFileException('Unable to append data to file '.$this->filePath.'!');
+        }
+    }
+
     public function touch()
     {
         \Cx\Lib\FileSystem\FileSystem::makeWritable($this->filePath);

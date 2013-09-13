@@ -662,8 +662,7 @@ class DBG
                 $dateFormat = 'Y-m-d H:i:s';
             }
             if (self::$dbg_fh instanceof \Cx\Lib\FileSystem\File) {
-                self::$dbg_fh->write(
-                    self::$dbg_fh->getData() .
+                self::$dbg_fh->append(
     // TODO: Add some flag to enable/disable timestamps
                     date($dateFormat).' '.
                     $text."\n");
