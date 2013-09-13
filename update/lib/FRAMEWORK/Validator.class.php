@@ -10,7 +10,7 @@
  * @subpackage  lib_framework
  * @todo        Edit PHP DocBlocks!
  */
-
+namespace Update;
 /**
  * Regular Expression for e-mail addresses
  * TKaelin @ 2.0.2: wrote new regex based on http://en.wikipedia.org/wiki/E-mail_address
