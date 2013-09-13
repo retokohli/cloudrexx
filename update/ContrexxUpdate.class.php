@@ -1115,7 +1115,7 @@ class ContrexxUpdate
                      && $objUseUsernameSetting->RecordCount() > 0
                      && !$objUseUsernameSetting->fields['status']
                     )
-                    || \FWValidator::isEmail(contrexx_input2db($user))
+                    || \Update\FWValidator::isEmail(contrexx_input2db($user))
                 ) {
                     $whereField = "`email`" ;
                 }
