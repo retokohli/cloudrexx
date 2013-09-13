@@ -165,10 +165,10 @@ class CalendarRegistrationManager extends CalendarLibrary
             $objTpl->parse('eventRegistrationName');
             
             $arrFieldColumns = array();
-            while (!$objResult->EOF) {                
+            while (!$objResult->EOF) {
                 if (!in_array($objResult->fields['type'], array('agb', 'fieldset'))) {
                     $arrFieldColumns[] = $objResult->fields['field_id'];
-                    $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_NAME', $objResult->fields['name']);                    
+                    $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_NAME', contrexx_raw2xhtml($objResult->fields['name']));                    
                     $objTpl->parse('eventRegistrationName');
                 }
                 $objResult->MoveNext();
@@ -224,7 +224,7 @@ class CalendarRegistrationManager extends CalendarLibrary
             $objTpl->parse('eventRegistrationValue');
             
             foreach ($arrFieldColumns as $fieldId) {
-                $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_VALUE', isset($arrValues[$objRegistration->id][$fieldId]) ? $arrValues[$objRegistration->id][$fieldId] : '');
+                $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_VALUE', isset($arrValues[$objRegistration->id][$fieldId]) ? contrexx_raw2xhtml($arrValues[$objRegistration->id][$fieldId]) : '');
                 $objTpl->parse('eventRegistrationValue');
             }
             
@@ -321,9 +321,13 @@ class CalendarRegistrationManager extends CalendarLibrary
                         $inputfield .= '<input '.$checked.' type="checkbox" class="calendarInputCheckbox" name="registrationField['.$arrInputfield['id'].'][]" value="'.intval($key+1).'" />&nbsp;'.$name.'<br />';  
                     }
                     break;
+                 case 'agb':                     
+                     $checked = $value ? "checked='checked'" : '';
+                     $inputfield = '<input '. $checked .' class="calendarInputCheckbox" type="checkbox" name="registrationField['.$arrInputfield['id'].'][]" value="1" />&nbsp;'.$_ARRAYLANG['TXT_CALENDAR_AGB'].'<br />';
+                     break;
             }
             
-            if ($arrInputfield['type'] != 'agb') {
+            if ($arrInputfield['type'] != 'fieldset') {
                 $objTpl->setVariable(array(
                     $this->moduleLangVar.'_ROW'                             => $i % 2 == 0 ? 'row1' : 'row2',
                     $this->moduleLangVar.'_REGISTRATION_INPUTFIELD_NAME'    => $arrInputfield['name'][$_LANGID],
@@ -362,7 +366,7 @@ class CalendarRegistrationManager extends CalendarLibrary
         $seatingFieldId = $objDatabase->getOne($query);
         
         if (empty($seatingFieldId))
-            return 0;
+            return (int) count($this->registrationList);
         
         $this->getRegistrationList();
         

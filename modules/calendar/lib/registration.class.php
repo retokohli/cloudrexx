@@ -353,7 +353,7 @@ class CalendarRegistration extends CalendarLibrary
             
             $query = 'INSERT INTO '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_value
                                   (`reg_id`, `field_id`, `value`) 
-                           VALUES ('.$this->id.', '.$id.', "'.contrexx_addslashes(contrexx_strip_tags($value)).'")';
+                           VALUES ('.$this->id.', '.$id.', "'.  contrexx_input2db($value).'")';
 
             $objResult = $objDatabase->Execute($query);
             
