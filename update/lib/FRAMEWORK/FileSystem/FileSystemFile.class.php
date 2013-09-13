@@ -95,7 +95,7 @@ class FileSystemFile implements FileInterface
     public function append($data)
     {
         // first try 
-        $fp = @fopen($this->filePath, 'w');
+        $fp = @fopen($this->filePath, 'a');
         if (!$fp) {
             // try to set write access
             $this->makeWritable($this->filePath);
