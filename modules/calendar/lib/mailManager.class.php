@@ -317,7 +317,7 @@ class CalendarMailManager extends CalendarLibrary {
                     $objMail->ClearAddresses();
                 }
             }
-        }        
+        }
     }
     
     /**
@@ -400,7 +400,7 @@ class CalendarMailManager extends CalendarLibrary {
         
         if (array_key_exists('admin', $this->mailList[0]['default_recipient'])) {
             $recipients[$_CONFIG['coreAdminEmail']] = $_LANGID;
-        } elseif (isset($this->mailList[$_LANGID]) && array_key_exists('author', $this->mailList[$_LANGID]['default_recipient'])) {
+        } elseif (array_key_exists('author', $this->mailList[$_LANGID]['default_recipient']) || array_key_exists('author', $this->mailList[0]['default_recipient'])) {
             if (!empty($regId) && !empty($objRegistration)) {
                 if (!empty($objRegistration->userId)) {
                     $objFWUser = FWUser::getFWUserObject();
@@ -414,7 +414,7 @@ class CalendarMailManager extends CalendarLibrary {
                 
                 foreach ($objRegistration->fields as $arrField) {
                     if ($arrField['type'] == 'mail' && !empty($arrField['value'])) {
-                        $recipients[$arrField['value']] = $_LANGID;
+                        $recipients[$arrField['value']] = isset($this->mailList[$_LANGID]) ? $_LANGID : 0;
                     }
                 }
             }
