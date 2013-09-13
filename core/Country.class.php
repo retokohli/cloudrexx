@@ -936,7 +936,7 @@ class Country
                       FROM ".DBPREFIX."module_shop_countries";
                 $objResult = Cx\Lib\UpdateUtil::sql($query);
                 if (!$objResult) {
-                    throw new Update_DatabaseException(
+                    throw new \Cx\Lib\Update_DatabaseException(
                        "Failed to to query Country names", $query);
                 }
                 $default_lang_id = FWLanguage::getDefaultLangId();
@@ -950,7 +950,7 @@ class Country
                     if (!self::store($alpha2, $alpha3, $default_lang_id,
                         $name, $ord, $active, $id)
                     ) {
-                        throw new Update_DatabaseException(
+                        throw new \Cx\Lib\Update_DatabaseException(
                            "Failed to to migrate Country '$name'");
                     }
                     $objResult->MoveNext();
@@ -981,7 +981,7 @@ class Country
                     if (!self::store(
                         $alpha2, $alpha3, 2, $name, ++$ord, true, $country_id)
                     ) {
-                        throw new Update_DatabaseException(
+                        throw new \Cx\Lib\Update_DatabaseException(
                            "Failed to to add Country '$name' from ISO file");
                     }
 //DBG::log("Country::errorHandler(): Added Country ID $country_id: '$name'");
@@ -1006,7 +1006,7 @@ class Country
                 foreach ($arrLanguage as $lang_id => $name) {
                     if (!Text::replace($country_id, $lang_id, 'core',
                         self::TEXT_NAME, $name)) {
-                        throw new Update_DatabaseException(
+                        throw new \Cx\Lib\Update_DatabaseException(
                            "Failed to to update Country '$name' from languages file");
                     }
 //DBG::log("Country::errorHandler(): Added Country ID $country_id: language ID $lang_id");

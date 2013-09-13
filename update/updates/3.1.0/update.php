@@ -569,12 +569,8 @@ function executeContrexxUpdate() {
                     }
 
                     $_SESSION['contrexx_update']['update']['done'][] = $file;
-                    // because calendar uses almost the whole memory , force javascript to make a new request
-                    // otherwise the shop migration will fail because there is no timeout and memory check
-                    if ($file == 'calendar.php') {
-                        setUpdateMsg(1, 'timeout');
-                        return false;
-                    }
+                    setUpdateMsg(1, 'timeout');
+                    return false;
                 }
             }
         } else {
