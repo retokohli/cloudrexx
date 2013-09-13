@@ -514,8 +514,11 @@ class ContrexxUpdate
                         }
                         $result = true;
                     } catch (\Exception $e) {
-                        setUpdateMsg($_CORELANG['TXT_UPDATE_DBG_FILE']);
-                        $result = false;
+                        setUpdateMsg($_CORELANG['TXT_UPDATE_DBG_FILE'], 'msg');
+                        setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_CONTINUE_UPDATE'].'" name="updateNext" /><input type="hidden" name="skipDebugMsg" id="skipDebugMsg" value="skipDebugMsg" />', 'button');
+                        if (empty($_POST['skipDebugMsg'])) {
+                            $result = false;
+                        }
                     }
                     if ($result !== false) {
                         DBG::msg('-------------------------------------------------------------');
@@ -1299,12 +1302,12 @@ function checkMemoryLimit()
         }
         $memoryLimit = $objSystem->getBytesOfLiteralSizeFormat(@ini_get('memory_limit'));
         if (empty($memoryLimit)) {
-            // set default php memory limit of 8MBytes
+            // set default php memory limit of 8MiBytes
             $memoryLimit = 8*pow(1024, 2);
         }
-        $MB2 = 2 * pow(1024, 2);
+        $MiB2 = 2 * pow(1024, 2);
     }
-    $potentialRequiredMemory = memory_get_usage() + $MB2;
+    $potentialRequiredMemory = memory_get_usage() + $MiB2;
     if ($potentialRequiredMemory > $memoryLimit) {
         // try to set a higher memory_limit
         if (!@ini_set('memory_limit', $potentialRequiredMemory)) {
@@ -1341,6 +1344,9 @@ function checkTimeoutLimit()
 function activateDebugging()
 {
     $File = new \Cx\Lib\FileSystem\File(ASCMS_DOCUMENT_ROOT . '/update/dbg.log');
+    if ($File->getAccessMode() == \Cx\Lib\FileSystem\File::FTP_ACCESS) {
+        throw new \Exception('Cannot write log via FTP (file needs to be loaded into memory which leads to memory overflow)');
+    }
     $File->touch();
     if ($File->makeWritable()) {
         \DBG::activate(DBG_LOG_FILE | DBG_PHP | DBG_DB);
