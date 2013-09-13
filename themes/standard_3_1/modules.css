@@ -510,6 +510,20 @@ div.row2 {
     width: 70%;
 }
 
+
+#calendar fieldset#place legend,
+#calendar fieldset#host legend,
+#calendar fieldset#additionalinfos legend{
+    display: block;
+}
+
+#calendar fieldset#place,
+#calendar fieldset#host,
+#calendar fieldset#additionalinfos{
+    border: 1px solid #DDDDDD;
+    padding: 10px;
+}
+
 /* Calendar Headlines */
 .calendar-headlines .monthnavigation{
     display: none;
@@ -2404,6 +2418,9 @@ dl.data_module img {
 }
 #mediadir table.list tr td{
     padding: 4px 0px 4px 0px;
+}
+#mediadir table td{
+    vertical-align: middle;
 }
 #mediadir .mapLarge{
     margin-top: 10px;
