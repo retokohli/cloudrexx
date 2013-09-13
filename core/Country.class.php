@@ -947,6 +947,10 @@ class Country
                     $alpha3 = $objResult->fields['countries_iso_code_3'];
                     $active = $objResult->fields['activation_status'];
                     $ord = 0;
+                    if ($id == 14) {
+                        // fixing missing name
+                        $name = 'Österreich';
+                    }
                     if (!self::store($alpha2, $alpha3, $default_lang_id,
                         $name, $ord, $active, $id)
                     ) {
