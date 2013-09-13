@@ -76,7 +76,7 @@ fixPaths($_PATHCONFIG['ascms_root'], $_PATHCONFIG['ascms_root_offset']);
 $_PATHCONFIG['ascms_installation_root'] = $_PATHCONFIG['ascms_root'];
 $_PATHCONFIG['ascms_installation_offset'] = $_PATHCONFIG['ascms_root_offset'];
 
-$incSettingsStatus = include_once(dirname(UPDATE_PATH) . '/config/settings.php');
+$incSettingsStatus = include_once(dirname(UPDATE_PATH). '/config/settings.php');
 $incSettingsStatus = include_once(dirname(UPDATE_PATH) . '/config/set_constants.php');
 
 if (!isset($_CONFIG['useCustomizings'])) {
@@ -168,8 +168,9 @@ function fixPaths(&$documentRoot, &$rootOffset) {
     // calculate correct offset path
     // turning '/myoffset/somefile.php' into '/myoffset'
     $rootOffset = '';
-    $directories = explode('/', $_SERVER['SCRIPT_NAME']);
-    for ($i = 0; $i < count($directories) - 1; $i++) {
+    $scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME']);
+    $directories = explode('/', $scriptName);
+    for ($i = 0; $i < count($directories) - 2; $i++) {
         if ($directories[$i] !== '') {
             $rootOffset .= '/'.$directories[$i];
         }
@@ -178,11 +179,9 @@ function fixPaths(&$documentRoot, &$rootOffset) {
     // fix wrong offset if another file than index.php was requested
     // turning '/myoffset/core_module/somemodule' into '/myoffset'
     $fileRoot = dirname(dirname(dirname(dirname(__FILE__))));
-    $nonOffset = preg_replace('#' . $fileRoot . '#', '', $_SERVER['SCRIPT_FILENAME']);
-	$nonOffset = str_replace('\\', '/', $nonOffset);
+    $nonOffset = preg_replace('#' . preg_quote($fileRoot) . '#', '', realpath($_SERVER['SCRIPT_FILENAME']));
+    $nonOffset = str_replace('\\', '/', $nonOffset);
     $nonOffsetParts = explode('/', $nonOffset);
-    end($nonOffsetParts);
-    unset($nonOffsetParts[key($nonOffsetParts)]);
     end($nonOffsetParts);
     unset($nonOffsetParts[key($nonOffsetParts)]);
     $nonOffset = implode('/', $nonOffsetParts);
