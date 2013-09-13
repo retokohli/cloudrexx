@@ -463,6 +463,8 @@ function _updateSettings()
     if (isset($_SESSION['contrexx_update']['update']['timezone']) && array_key_exists($_SESSION['contrexx_update']['update']['timezone'], $arrTimezoneIdentifiers)) {
         try {
             \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'settings` SET `setvalue` = "'.$arrTimezoneIdentifiers[$_SESSION['contrexx_update']['update']['timezone']].'" WHERE `setname` = "timezone"');
+            // add timezone to $_CONFIG array so it will be written in configuration.php in components/core/core.php
+            $_CONFIG['timezone'] = $arrTimezoneIdentifiers[$_SESSION['contrexx_update']['update']['timezone']];
         } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
