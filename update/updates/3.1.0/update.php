@@ -421,6 +421,33 @@ function executeContrexxUpdate() {
             return false;
         }
 
+        if (file_exists(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php')) {
+            \DBG::msg('/cadmin/index.php still exists...');
+            // move cadmin index.php if its customized
+            if (!loadMd5SumOfOriginalCxFiles()) {
+                return false;
+            }
+            if (!verifyMd5SumOfFile(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php', '', false)) {
+                \DBG::msg('...and it\'s customized, so let\'s move it to customizing directory');
+                // changes, backup modified file
+                if (!backupModifiedFile(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php')) {
+                    setUpdateMsg('Die Datei \''.ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php\' konnte nicht kopiert werden.');
+                    return false;
+                }
+            } else {
+                \DBG::msg('...but it\'s not customized');
+            }
+            // no non-backupped changes, can delete
+            try {
+                \DBG::msg('So let\'s remove it...');
+                $cadminIndex = new \Cx\Lib\FileSystem\File(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php');
+                $cadminIndex->delete();
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                setUpdateMsg('Die Datei \''.ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php\' konnte nicht gelöscht werden.');
+                return false;
+            }
+        }
+
         return true;
         /////////////////////////////////////////
         // END: UPDATE FOR CONTREXX 3 OR NEWER //
