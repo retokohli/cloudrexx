@@ -39,7 +39,7 @@ class File implements FileInterface
     
     public function __construct($file)
     {
-        $this->file = $file;
+        $this->file = str_replace('\\', '/', $file);
         $this->setAccessMode();
     }
 
