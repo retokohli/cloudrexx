@@ -1,10 +1,6 @@
 <?php
-require_once dirname(__FILE__) . '/ContrexxContext.php';
 
-/**
- * Features context.
- */
-class Backend500CheckContext extends ContrexxContext
+class Backend500CheckContext extends \Behat\Behat\Context\BehatContext
 {
     private $failedLinks = array();
 
@@ -49,8 +45,8 @@ class Backend500CheckContext extends ContrexxContext
     }
 
     private function currentPageIsMaintenance() {
-        $html = $this->page->find('css', 'body')->getHtml();
-        if (preg_match('/maintenance mode/', $this->page->find('css', 'body')->getHtml()) || empty($html)) {
+        $html = $this->getMainContext()->page->find('css', 'body')->getHtml();
+        if (preg_match('/maintenance mode/', $this->getMainContext()->page->find('css', 'body')->getHtml()) || empty($html)) {
             return true;
         }
         return false;
@@ -63,7 +59,7 @@ class Backend500CheckContext extends ContrexxContext
 
         $linkTags = $this->getLinkTagsOfNavigation(1);
         $url = $linkTags[$currentLinkIndex]->getAttribute('href');
-        $this->iAmOn($url);
+        $this->getMainContext()->iAmOn($url);
         $this->waitForBackend();
 
         if (!$this->currentPageIsMaintenance()) {
@@ -73,7 +69,7 @@ class Backend500CheckContext extends ContrexxContext
             for($i = 0; $i < $subNavigationLinksCount; $i++) {
                 $subNavigationLinks = $this->getLinkTagsOfNavigation(2);
                 $url = $subNavigationLinks[$i]->getAttribute('href');
-                $this->iAmOn($url);
+                $this->getMainContext()->iAmOn($url);
                 $this->waitForBackend();
 
                 if ($this->currentPageIsMaintenance()) {
@@ -88,7 +84,7 @@ class Backend500CheckContext extends ContrexxContext
                             continue;
                         }
                         $url = $subNavigation2Links[$j]->getAttribute('href');
-                        $this->iAmOn($url);
+                        $this->getMainContext()->iAmOn($url);
                         $this->waitForBackend();
 
                         if ($this->currentPageIsMaintenance()) {
@@ -116,7 +112,7 @@ class Backend500CheckContext extends ContrexxContext
 
         // reload backend
         // due to csrf
-        $this->iAmInBackend();
+        $this->getMainContext()->iAmInBackend();
         $this->waitForBackend();
 
         $this->visitNextLink(++$currentLinkIndex, $lastLinkIndex, $linkTags);
@@ -125,19 +121,19 @@ class Backend500CheckContext extends ContrexxContext
     private function getLinkTagsOfNavigation($level) {
         switch ($level) {
             case 1:
-                return $this->page->findAll('css', '.navigation_level_2 > li > a');
+                return $this->getMainContext()->page->findAll('css', '.navigation_level_2 > li > a');
                 break;
             case 2:
-                return $this->page->findAll('css', '#subnavbar_level1 td.navi > a');
+                return $this->getMainContext()->page->findAll('css', '#subnavbar_level1 td.navi > a');
                 break;
             case 3:
             default:
-                return $this->page->findAll('css', '#subnavbar_level2 a');
+                return $this->getMainContext()->page->findAll('css', '#subnavbar_level2 a');
                 break;
         }
     }
 
     private function waitForBackend(){
-        $this->session->wait(2000, 'document.getElementsByTagName("body")[0] !== undefined');
+        $this->getMainContext()->session->wait(2000, 'document.getElementsByTagName("body")[0] !== undefined');
     }
 }
