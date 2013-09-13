@@ -542,6 +542,12 @@ function executeContrexxUpdate() {
                     }
 
                     $_SESSION['contrexx_update']['update']['done'][] = $file;
+                    // because calendar uses almost the whole memory , force javascript to make a new request
+                    // otherwise the shop migration will fail because there is no timeout and memory check
+                    if ($file == 'calendar.php') {
+                        setUpdateMsg(1, 'timeout');
+                        return false;
+                    }
                 }
             }
         } else {
@@ -726,7 +732,7 @@ function getMissedModules() {
     }
 
     $missedModules = array();
-    $potentialMissedModules = array('blog', 'calendar', 'directory', 'docsys', 'egov', 'feed', 'forum', 'gallery', 'guestbook', 'livecam', 'market', 'memberdir', 'newsletter', 'podcast', 'shop', 'voting', 'downloads', 'ecard', 'jobs', 'knowledge', 'mediadir');
+    $potentialMissedModules = array('blog', 'crm', 'calendar', 'directory', 'docsys', 'egov', 'feed', 'forum', 'gallery', 'guestbook', 'livecam', 'market', 'memberdir', 'newsletter', 'podcast', 'shop', 'voting', 'downloads', 'ecard', 'jobs', 'knowledge', 'mediadir');
     foreach ($potentialMissedModules as $module) {
         if (!in_array($module, $installedModules)) {
             $missedModules[] = $module;
