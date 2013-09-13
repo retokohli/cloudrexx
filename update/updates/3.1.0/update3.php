@@ -1341,10 +1341,24 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
 
     // install crm module
     require_once(dirname(__FILE__).'/components/module/crm.php');
+    require_once(dirname(__FILE__).'/components/core/modules.php');
+    $crmModuleInfo = getModuleInfo('crm');
+    try {
+        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO ".DBPREFIX."modules ( `id` , `name` , `description_variable` , `status` , `is_required` , `is_core` , `distributor` ) VALUES ( ".$crmModuleInfo['id']." , '".$crmModuleInfo['name']."', '".$crmModuleInfo['description_variable']."', '".$crmModuleInfo['status']."', '".$crmModuleInfo['is_required']."', '".$crmModuleInfo['is_core']."', 'Comvation AG') ON DUPLICATE KEY UPDATE `id` = `id`");
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
     $crmInstall = _crmInstall();
     if ($crmInstall) {
         // crm install returns an error
         return $crmInstall;
+    }
+
+    // rewrite backendAreas
+    require_once(dirname(__FILE__).'/components/core/backendAreas.php');
+    $backendAreasUpdate = _updateBackendAreas();
+    if ($backendAreasUpdate !== true) {
+        return $backendAreasUpdate;
     }
 }
 
