@@ -178,8 +178,9 @@ function fixPaths(&$documentRoot, &$rootOffset) {
 
     // fix wrong offset if another file than index.php was requested
     // turning '/myoffset/core_module/somemodule' into '/myoffset'
-    $fileRoot = dirname(dirname(dirname(dirname(__FILE__))));
-    $nonOffset = preg_replace('#' . preg_quote($fileRoot) . '#', '', realpath($_SERVER['SCRIPT_FILENAME']));
+    $fileRoot = dirname(dirname(__FILE__));
+    $fileRoot = str_replace('\\', '/', $fileRoot);
+    $nonOffset = preg_replace('#' . preg_quote($fileRoot) . '#', '', $_SERVER['SCRIPT_NAME']);
     $nonOffset = str_replace('\\', '/', $nonOffset);
     $nonOffsetParts = explode('/', $nonOffset);
     end($nonOffsetParts);
