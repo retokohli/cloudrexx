@@ -1235,11 +1235,13 @@ class CalendarManager extends CalendarLibrary
             
             $firstKey = key($objRegistrationManager->registrationList);   
                 
-            foreach ($objRegistrationManager->registrationList[$firstKey]->fields as $id => $arrField) {  
-                print (html_entity_decode(self::escapeCsvValue($arrField['name']), ENT_QUOTES).$this->csvSeparator);   
+            foreach ($objRegistrationManager->registrationList[$firstKey]->fields as $id => $arrField) {
+                if ($arrField['type'] != 'fieldset') {
+                    print (self::escapeCsvValue(html_entity_decode($arrField['name'], ENT_QUOTES)).$this->csvSeparator);
+                }
             }
-              
-            print ("\r\n");        
+
+            print ("\r\n");
             
             foreach ($objRegistrationManager->registrationList as $key => $objRegistration) {   
              
@@ -1271,8 +1273,12 @@ class CalendarManager extends CalendarLibrary
                         case 'inputtext':
                         case 'mail':
                         case 'textarea':
-                            print (html_entity_decode(self::escapeCsvValue($arrField['value']), ENT_QUOTES).$this->csvSeparator); 
+                        case 'seating':
+                        case 'firstname':
+                        case 'lastname':
+                            print (self::escapeCsvValue(html_entity_decode($arrField['value'], ENT_QUOTES)).$this->csvSeparator); 
                             break ;
+                        case 'salutation':
                         case 'select': 
                         case 'radio':  
                         case 'checkbox':   
@@ -1297,6 +1303,9 @@ class CalendarManager extends CalendarLibrary
                             
                             print (html_entity_decode(self::escapeCsvValue(join(", ", $output)), ENT_QUOTES).$this->csvSeparator);     
                             
+                            break;
+                        case 'agb':
+                            print (($arrField['value'] ? $_ARRAYLANG["TXT_{$this->moduleLangVar}_YES"] : $_ARRAYLANG["TXT_{$this->moduleLangVar}_NO"]).$this->csvSeparator);
                             break;
                     }  
                          
@@ -1487,6 +1496,7 @@ class CalendarManager extends CalendarLibrary
         $this->_objTpl->setGlobalVariable(array(
             'TXT_'.$this->moduleLangVar.'_REGISTRATION_TITLE'    => $this->_pageTitle,
             'TXT_'.$this->moduleLangVar.'_SAVE'                  => $_ARRAYLANG['TXT_CALENDAR_SAVE'],
+            'TXT_'.$this->moduleLangVar.'_BACK'                  => $_ARRAYLANG['TXT_CALENDAR_BACK'],
             $this->moduleLangVar.'_EVENT_ID'                     => $eventId,
             $this->moduleLangVar.'_REGISTRATION_TPL'             => $_GET['tpl'],
             $this->moduleLangVar.'_REGISTRATION_ID'              => $regId,
