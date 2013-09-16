@@ -404,22 +404,6 @@ function executeContrexxUpdate() {
             setUpdateMsg('Die Datei \'' . $file . '\' konnte nicht erstellt/aktualisiert werden.');
             return false;
         }
-        
-        // Update configuration.php
-        if (!_writeNewConfigurationFile()) {
-            return false;
-        }
-
-        $arrUpdate = $objUpdate->getLoadedVersionInfo();
-        $_CONFIG['coreCmsVersion'] = $arrUpdate['cmsVersion'];
-
-        $lupd = new License();
-        try {
-            $lupd->update(false);
-        } catch (\Cx\Lib\UpdateException $e) {
-            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_LICENSE_DATA']), 'title');
-            return false;
-        }
 
         if (file_exists(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php')) {
             \DBG::msg('/cadmin/index.php still exists...');
@@ -446,6 +430,22 @@ function executeContrexxUpdate() {
                 setUpdateMsg('Die Datei \''.ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php\' konnte nicht gelöscht werden.');
                 return false;
             }
+        }
+        
+        // Update configuration.php
+        if (!_writeNewConfigurationFile()) {
+            return false;
+        }
+
+        $arrUpdate = $objUpdate->getLoadedVersionInfo();
+        $_CONFIG['coreCmsVersion'] = $arrUpdate['cmsVersion'];
+
+        $lupd = new License();
+        try {
+            $lupd->update(false);
+        } catch (\Cx\Lib\UpdateException $e) {
+            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_LICENSE_DATA']), 'title');
+            return false;
         }
 
         return true;
