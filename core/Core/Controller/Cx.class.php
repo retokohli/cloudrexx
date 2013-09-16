@@ -1121,8 +1121,8 @@ namespace Cx\Core\Core\Controller {
                                                             fjs.parentNode.insertBefore(js, fjs);
                                                         }(document, \'script\', \'facebook-jssdk\'));
                                                     </script>
-                                                    <div class="fb-like" data-href="http://'.$_CONFIG['domainUrl'].\Env::get('init')->getCurrentPageUri().'" data-send="false" data-layout="button_count" data-show-faces="false" data-font="segoe ui"></div>',
-                'GOOGLE_PLUSONE'                 => '<div class="g-plusone" data-href="http://'.$_CONFIG['domainUrl'].\Env::get('init')->getCurrentPageUri().'"></div>
+                                                    <div class="fb-like" data-href="'.ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].\Env::get('init')->getCurrentPageUri().'" data-send="false" data-layout="button_count" data-show-faces="false" data-font="segoe ui"></div>',
+                'GOOGLE_PLUSONE'                 => '<div class="g-plusone" data-href="'.ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].\Env::get('init')->getCurrentPageUri().'"></div>
                                                     <script type="text/javascript">
                                                         window.___gcfg = {lang: \'de\'};
 
@@ -1132,6 +1132,9 @@ namespace Cx\Core\Core\Controller {
                                                             var s = document.getElementsByTagName(\'script\')[0]; s.parentNode.insertBefore(po, s);
                                                         })();
                                                     </script>',
+                'TWITTER_SHARE'                  => '<a href="https://twitter.com/share" class="twitter-share-button"
+                                                    data-url="'.ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].\Env::get('init')->getCurrentPageUri().'" data-lang="de">Twittern</a>
+                                                    <script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0],p=/^http:/.test(d.location)?\'http\':\'https\';if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src=p+\'://platform.twitter.com/widgets.js\';fjs.parentNode.insertBefore(js,fjs);}}(document, \'script\', \'twitter-wjs\');</script>',
                 'XING_SHARE'                     => '<div data-type="XING/Share" data-counter="right"></div>
                                                     <script>
                                                         ;(function (d, s) {
