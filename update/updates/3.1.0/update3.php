@@ -1431,6 +1431,27 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
     }
 }
 
+/***************************************
+ *
+ * STATS: ACCESS IDS
+ *
+ **************************************/
+// add permission to stats settings if the user had permission to stats
+if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
+    try {
+        $result = \Cx\Lib\UpdateUtil::sql("SELECT `group_id` FROM `" . DBPREFIX . "access_group_static_ids` WHERE access_id = 163 GROUP BY `group_id`");
+        if ($result !== false) {
+            while (!$result->EOF) {
+                \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `" . DBPREFIX . "access_group_static_ids` (`access_id`, `group_id`)
+                                            VALUES (170, " . intval($result->fields['group_id']) . ")");
+                $result->MoveNext();
+            }
+        }
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+}
+
 // fix tree
 \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Node')->recover();
 

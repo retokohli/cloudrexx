@@ -149,6 +149,7 @@ $_ARRAYLANG['TXT_STANDARD_PAGES'] = "Standardseiten";
 $_ARRAYLANG['TXT_START_DATE'] = "Startdatum";
 $_ARRAYLANG['TXT_STARTPAGE'] = "Startseite";
 $_ARRAYLANG['TXT_STATS'] = "Statistik";
+$_ARRAYLANG['TXT_STATS_SETTINGS'] = "Settings";
 $_ARRAYLANG['TXT_PROTECTION_CHANGE'] = "Frontend Zugangsberechtigung";
 $_ARRAYLANG['TXT_SYSTEM_SETTINGS'] = "Grundeinstellungen";
 $_ARRAYLANG['TXT_CHOOSE_TEMPLATE_GROUP'] = "Template Gruppe auswählen";
