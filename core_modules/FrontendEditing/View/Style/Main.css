@@ -10,6 +10,52 @@
     -moz-box-shadow: 0px 0 9px #0c8ccd;
     -webkit-box-shadow: 0px 0 9px #0c8ccd;
     box-shadow: 0px 0 9px #0c8ccd;
+    font-size: 14px;
+    line-height: 21px;
+    font-family: Arial, sans-serif;
+}
+
+#fe_toolbar table {
+    float: left;
+    width: 100%;
+}
+#fe_toolbar table th {
+    background-color: #0A85C8;
+    color: #FFFFFF;
+    font-weight: bold;
+    padding: 6px 8px;
+    text-align: left;
+}
+#fe_toolbar table th a {
+    color: #FFFFFF;
+}
+#fe_toolbar table tr.row1, table tr.marketRow2 {
+    background-color: #FFFFFF;
+}
+#fe_toolbar table tr.row2, table tr.marketRow3 {
+    background-color: #F6F6F6;
+}
+#fe_toolbar table tr.row3, table tr.marketRow1 {
+    background-color: #FFEE9F;
+}
+#fe_toolbar table td {
+    padding: 6px 8px;
+    vertical-align: top;
+}
+#fe_toolbar table td.none {
+    border: 0 none;
+}
+#fe_toolbar div.row_1, #fe_toolbar div.row1 {
+    background-color: #F9F9F9;
+    border-bottom: 1px solid #ECEDF3;
+}
+#fe_toolbar div.row_2, #fe_toolbar div.row2 {
+    background-color: #FFFFFF;
+    border-bottom: 1px solid #ECEDF3;
+}
+
+#fe_toolbar a {
+    text-decoration: none;
 }
 
 #fe_toolbar_logo {
