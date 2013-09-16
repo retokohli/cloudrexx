@@ -1389,6 +1389,47 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
     }
 }
 
+/***************************************
+ *
+ * NEWSLETTER: ACCESS IDS
+ *
+ **************************************/
+// add access id 176 for user groups which had access to 172 if version is older than 3.1.0
+if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
+    try {
+        $result = \Cx\Lib\UpdateUtil::sql("SELECT `group_id` FROM `" . DBPREFIX . "access_group_static_ids` WHERE access_id = 172 GROUP BY `group_id`");
+        if ($result !== false) {
+            while (!$result->EOF) {
+                \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `" . DBPREFIX . "access_group_static_ids` (`access_id`, `group_id`)
+                                            VALUES (176, " . intval($result->fields['group_id']) . ")");
+                $result->MoveNext();
+            }
+        }
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+}
+
+/***************************************
+ *
+ * E-COMMERCE: ACCESS IDS
+ *
+ **************************************/
+// add access id 4 for user groups which had access to 13 or 161
+if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
+    try {
+        $result = \Cx\Lib\UpdateUtil::sql("SELECT `group_id` FROM `" . DBPREFIX . "access_group_static_ids` WHERE access_id = 13 OR access_id = 161 GROUP BY `group_id`");
+        if ($result !== false) {
+            while (!$result->EOF) {
+                \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `" . DBPREFIX . "access_group_static_ids` (`access_id`, `group_id`)
+                                            VALUES (4, " . intval($result->fields['group_id']) . ")");
+                $result->MoveNext();
+            }
+        }
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+}
 
 // fix tree
 \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Node')->recover();

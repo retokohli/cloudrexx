@@ -51,9 +51,9 @@ class CalendarManager extends CalendarLibrary
         $this->act = $_REQUEST['act'];
         
         $contentNavigation = '<a href="index.php?cmd='.$this->moduleName.'" class="'.($this->act == '' ? 'active' : '').'">'.$_ARRAYLANG['TXT_CALENDAR_MENU_OVERVIEW'].' </a>';
-        $contentNavigation .= Permission::checkAccess(164, 'static', true) ? '<a href="index.php?cmd='.$this->moduleName.'&amp;act=modify_event" class="'.($this->act == 'modify_event' ? 'active' : '').'">'.$_ARRAYLANG['TXT_CALENDAR_NEW_EVENT'].' </a>' : '';              
+        $contentNavigation .= Permission::checkAccess(180, 'static', true) ? '<a href="index.php?cmd='.$this->moduleName.'&amp;act=modify_event" class="'.($this->act == 'modify_event' ? 'active' : '').'">'.$_ARRAYLANG['TXT_CALENDAR_NEW_EVENT'].' </a>' : '';              
         $contentNavigation .= Permission::checkAccess(165, 'static', true) ? '<a href="index.php?cmd='.$this->moduleName.'&amp;act=categories" class="'.($this->act == 'categories' ? 'active' : '').'">'.$_ARRAYLANG['TXT_CALENDAR_CATEGORIES'].' </a>' : '';                
-        $contentNavigation .= Permission::checkAccess(166, 'static', true) ? '<a href="index.php?cmd='.$this->moduleName.'&amp;act=settings" class="'.($this->act == 'settings' ? 'active' : '').'">'.$_ARRAYLANG['TXT_CALENDAR_MENU_SETTINGS'].' </a>' : '';             
+        $contentNavigation .= Permission::checkAccess(181, 'static', true) ? '<a href="index.php?cmd='.$this->moduleName.'&amp;act=settings" class="'.($this->act == 'settings' ? 'active' : '').'">'.$_ARRAYLANG['TXT_CALENDAR_MENU_SETTINGS'].' </a>' : '';             
         
         $objTemplate->setVariable("CONTENT_NAVIGATION", $contentNavigation);
     }
@@ -69,27 +69,27 @@ class CalendarManager extends CalendarLibrary
         
         switch ($_GET['act']) {
             case 'settings':
-                Permission::checkAccess(166, 'static');
+                Permission::checkAccess(181, 'static');
                 $this->showSettings();
-                break;     
+                break;
             case 'categories':              
                 Permission::checkAccess(165, 'static');
                 $this->showCategories();
                 break;
             case 'modify_event':
-                Permission::checkAccess(164, 'static');
+                Permission::checkAccess(180, 'static');
                 $this->modifyEvent(intval($_GET['id']));
                 break;
             case 'export_registrations':
-                Permission::checkAccess(167, 'static');
+                Permission::checkAccess(182, 'static');
                 $this->exportRegistrations(intval($_GET['id']), $_GET['tpl']);
                 break;
             case 'event_registrations':
-                Permission::checkAccess(167, 'static');
+                Permission::checkAccess(182, 'static');
                 $this->showEventRegistrations(intval($_GET['id']));
                 break;
             case 'modify_registration':
-                Permission::checkAccess(167, 'static');
+                Permission::checkAccess(182, 'static');
                 $this->modifyRegistration(intval($_GET['event_id']), intval($_GET['reg_id']));
                 break;
             default:
@@ -119,7 +119,7 @@ class CalendarManager extends CalendarLibrary
         parent::getSettings();
         
         if(isset($_GET['switch_status'])) {
-            Permission::checkAccess(164, 'static');  
+            Permission::checkAccess(180, 'static');  
             
             $objEvent = new CalendarEvent(intval($_GET['switch_status']));
             if($objEvent->switchStatus()) {
@@ -130,7 +130,7 @@ class CalendarManager extends CalendarLibrary
         }
         
         if(isset($_GET['delete'])) {
-            Permission::checkAccess(164, 'static');  
+            Permission::checkAccess(180, 'static');  
             
             $objEvent = new CalendarEvent(intval($_GET['delete']));
             if($objEvent->delete()) {
@@ -141,7 +141,7 @@ class CalendarManager extends CalendarLibrary
         }
         
         if(isset($_GET['confirm'])) {
-            Permission::checkAccess(164, 'static');  
+            Permission::checkAccess(180, 'static');  
             
             $objEvent = new CalendarEvent(intval($_GET['confirm']));
             if($objEvent->confirm()) {
@@ -157,7 +157,7 @@ class CalendarManager extends CalendarLibrary
         }
         
         if(isset($_GET['multi'])) {
-            Permission::checkAccess(164, 'static');   
+            Permission::checkAccess(180, 'static');   
                                     
             $status = true;  
             $messageVar = 'EDITED';
@@ -305,7 +305,7 @@ class CalendarManager extends CalendarLibrary
                     $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_EVENT_SUCCESSFULLY_SAVED'];
                     
                     if (isset($_POST['save_and_publish'])) {
-                        Permission::checkAccess(164, 'static');
+                        Permission::checkAccess(180, 'static');
 
                         if($objEvent->confirm()) {
                             // do nothing
@@ -1343,7 +1343,7 @@ class CalendarManager extends CalendarLibrary
         }
         
         if (isset($_GET['multi'])) {
-            Permission::checkAccess(164, 'static');
+            Permission::checkAccess(180, 'static');
             
             foreach($_POST['selectedRegistrationId'] as $regId) {
                 $objRegistration = new CalendarRegistration($objEvent->registrationForm, $regId);
