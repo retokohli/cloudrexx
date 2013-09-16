@@ -509,7 +509,7 @@
                 <tr class="row1">
                     <td width="180"  valign="top">{TXT_CALENDAR_EVENT_TITLE} <font color="#ff0000">*</font></td>
                     <td>
-                        <input id="title_{CALENDAR_EVENT_LANG_ID}" name="title[{CALENDAR_EVENT_LANG_ID}]" type="text" maxlength="" style="width: 250px" value="{CALENDAR_EVENT_TITLE}" />
+                        <input id="title_{CALENDAR_EVENT_LANG_ID}" name="title[{CALENDAR_EVENT_LANG_ID}]" type="text" maxlength="255" style="width: 250px" value="{CALENDAR_EVENT_TITLE}" />
                     </td>
                 </tr>
             </table>            
@@ -531,7 +531,7 @@
                     <tr class="row1">
                         <td width="180"  valign="top">{TXT_CALENDAR_EVENT_TYPE_REDIRECT}</td>
                         <td>
-                            <input type="text" maxlength="" style="width: 250px;" name="redirect[{CALENDAR_EVENT_LANG_ID}]" value="{CALENDAR_EVENT_REDIRECT}" id="eventRedirect" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('eventRedirect', 'link')" />                                                                                                      
+                            <input type="text" maxlength="255" style="width: 250px;" name="redirect[{CALENDAR_EVENT_LANG_ID}]" value="{CALENDAR_EVENT_REDIRECT}" id="eventRedirect" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('eventRedirect', 'link')" />                                                                                                      
                         </td>
                     </tr>
                 </table>
@@ -560,7 +560,7 @@
                     <td width="180" valign="top">{TXT_CALENDAR_EVENT_PLACE}</td>
                     <td>
                         <!-- BEGIN eventPlaceInput -->
-                        <input name="place" type="text" maxlength="" value="{CALENDAR_EVENT_PLACE}" style="width: 250px" />
+                        <input name="place" type="text" maxlength="255" value="{CALENDAR_EVENT_PLACE}" style="width: 250px" />
                         <!-- END eventPlaceInput -->
 
                         <!-- BEGIN eventPlaceSelect -->
@@ -576,37 +576,37 @@
                     <tr class="row1">
                         <td width="180"  valign="top">{TXT_CALENDAR_EVENT_STREET}</td>
                         <td>
-                            <input name="street" type="text" maxlength="" value="{CALENDAR_EVENT_STREET}" style="width: 250px" />
+                            <input name="street" type="text" maxlength="255" value="{CALENDAR_EVENT_STREET}" style="width: 250px" />
                         </td>
                     </tr>
                     <tr class="row2">
                         <td valign="top">{TXT_CALENDAR_EVENT_ZIP}</td>
                         <td>
-                            <input name="zip" type="text" maxlength="" value="{CALENDAR_EVENT_ZIP}" style="width: 250px" />
+                            <input name="zip" type="text" maxlength="10" value="{CALENDAR_EVENT_ZIP}" style="width: 250px" />
                         </td>
                     </tr>
                     <tr class="row1">
                         <td valign="top">{TXT_CALENDAR_EVENT_CITY}</td>
                         <td>
-                            <input name="city" type="text" maxlength="" value="{CALENDAR_EVENT_CITY}" style="width: 250px" />
+                            <input name="city" type="text" maxlength="255" value="{CALENDAR_EVENT_CITY}" style="width: 250px" />
                         </td>
                     </tr>
                     <tr class="row2">
                         <td valign="top">{TXT_CALENDAR_EVENT_COUNTRY}</td>
                         <td>
-                            <input name="country" type="text" maxlength="" value="{CALENDAR_EVENT_COUNTRY}" style="width: 250px" />
+                            <input name="country" type="text" maxlength="255" value="{CALENDAR_EVENT_COUNTRY}" style="width: 250px" />
                         </td>
                     </tr>
                     <tr class="row1">
                         <td valign="top">{TXT_CALENDAR_EVENT_LINK}</td>
                         <td>
-                            <input name="placeLink" type="text" maxlength="" value="{CALENDAR_EVENT_LINK}" style="width: 250px" />
+                            <input name="placeLink" type="text" maxlength="255" value="{CALENDAR_EVENT_LINK}" style="width: 250px" />
                         </td>
                     </tr>
                     <tr class="row2">
                         <td valign="top">{TXT_CALENDAR_EVENT_MAP}</td>
                         <td>
-                            <input type="text" maxlength="" name="placeMap" id="inputPlaceMap" style="width: 250px;" value="{CALENDAR_PLACE_MAP_SOURCE}" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('inputPlaceMap', 'image')" />
+                            <input type="text" maxlength="255" name="placeMap" id="inputPlaceMap" style="width: 250px;" value="{CALENDAR_PLACE_MAP_SOURCE}" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('inputPlaceMap', 'image')" />
                             <!--<label><input name="map[{CALENDAR_EVENT_LANG_ID}]" value="1" type="checkbox" {CALENDAR_EVENT_MAP}/> {TXT_CALENDAR_EVENT_USE_GOOGLEMAPS}</label>-->
                         </td>
                     </tr>
@@ -621,37 +621,37 @@
                     <tr class="row1">
                         <td width="180"  valign="top">{TXT_CALENDAR_EVENT_NAME}</td>
                         <td>
-                            <input name="organizerName" type="text" maxlength="" value="{CALENDAR_EVENT_HOST}" style="width: 250px" />
+                            <input name="organizerName" type="text" maxlength="255" value="{CALENDAR_EVENT_HOST}" style="width: 250px" />
                         </td>
                     </tr>
                     <tr class="row2">
                         <td valign="top">{TXT_CALENDAR_EVENT_STREET}</td>
                         <td>
-                            <input name="organizerStreet" type="text" maxlength="" value="{CALENDAR_EVENT_HOST_ADDRESS}" style="width: 250px" />
+                            <input name="organizerStreet" type="text" maxlength="255" value="{CALENDAR_EVENT_HOST_ADDRESS}" style="width: 250px" />
                         </td>
                     </tr>
                     <tr class="row1">
                         <td valign="top">{TXT_CALENDAR_EVENT_ZIP}</td>
                         <td>
-                            <input name="organizerZip" type="text" maxlength="" value="{CALENDAR_EVENT_HOST_ZIP}" style="width: 250px" />
+                            <input name="organizerZip" type="text" maxlength="255" value="{CALENDAR_EVENT_HOST_ZIP}" style="width: 250px" />
                         </td>
                     </tr>
                     <tr class="row2">
                         <td valign="top">{TXT_CALENDAR_EVENT_CITY}</td>
                         <td>
-                            <input name="organizerCity" type="text" maxlength="" value="{CALENDAR_EVENT_HOST_CITY}" style="width: 250px" />
+                            <input name="organizerCity" type="text" maxlength="255" value="{CALENDAR_EVENT_HOST_CITY}" style="width: 250px" />
                         </td>
                     </tr>
                     <tr class="row1">
                         <td valign="top">{TXT_CALENDAR_EVENT_LINK}</td>
                         <td>
-                            <input name="organizerLink" type="text" maxlength="" value="{CALENDAR_EVENT_HOST_LINK}" style="width: 250px" />
+                            <input name="organizerLink" type="text" maxlength="255" value="{CALENDAR_EVENT_HOST_LINK}" style="width: 250px" />
                         </td>
                     </tr>
                     <tr class="row2">
                         <td valign="top">{TXT_CALENDAR_EVENT_EMAIL}</td>
                         <td>
-                            <input name="organizerEmail" type="text" maxlength="" value="{CALENDAR_EVENT_HOST_EMAIL}" style="width: 250px" />
+                            <input name="organizerEmail" type="text" maxlength="255" value="{CALENDAR_EVENT_HOST_EMAIL}" style="width: 250px" />
                         </td>
                     </tr>
                 </table>
@@ -722,19 +722,19 @@
             <tr class="row2">
                 <td width="180" valign="top">{TXT_CALENDAR_EVENT_LINK}</td>
                 <td colspan="2">
-                    <input type="text" maxlength="" name="link" value="{CALENDAR_EVENT_LINK}" id="eventLink" style="width: 250px;" />
+                    <input type="text" maxlength="255" name="link" value="{CALENDAR_EVENT_LINK}" id="eventLink" style="width: 250px;" />
                 </td>
             </tr>             
             <tr class="row1">
                 <td width="180" valign="top">{TXT_CALENDAR_EVENT_PICTURE}</td>
                 <td colspan="2">
-                    <input type="text" maxlength="" name="picture" value="{CALENDAR_EVENT_PICTURE}" id="eventPicture" style="width: 250px;" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('eventPicture', 'image')" />
+                    <input type="text" maxlength="255" name="picture" value="{CALENDAR_EVENT_PICTURE}" id="eventPicture" style="width: 250px;" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('eventPicture', 'image')" />
                 </td>
             </tr>
             <tr class="row2">
                 <td valign="top">{TXT_CALENDAR_EVENT_ATTACHMENT}</td>
                 <td colspan="2">
-                    <input type="text" maxlength="" name="attachment" value="{CALENDAR_EVENT_ATTACHMENT}" id="eventAttachment" style="width: 250px;" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('eventAttachment', 'image')" />
+                    <input type="text" maxlength="255" name="attachment" value="{CALENDAR_EVENT_ATTACHMENT}" id="eventAttachment" style="width: 250px;" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('eventAttachment', 'image')" />
                 </td>
             </tr>                             
         </table>
