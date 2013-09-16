@@ -285,8 +285,7 @@ class CalendarRegistrationManager extends CalendarLibrary
             
             switch ($arrInputfield['type']) {
                 case 'inputtext':
-                case 'mail':
-                case 'seating':
+                case 'mail':                
                 case 'firstname':
                 case 'lastname':
                     $inputfield = '<input style="width: 200px;" type="text" class="calendarInputText" name="registrationField['.$arrInputfield['id'].']" value="'.$value.'" />';
@@ -296,6 +295,7 @@ class CalendarRegistrationManager extends CalendarLibrary
                     break ;
                 case 'select':
                 case 'salutation':
+                case 'seating':
                     $inputfield = '<select style="width: 202px;" class="calendarSelect" name="registrationField['.$arrInputfield['id'].']">';
                     $selected =  empty($_POST) ? 'selected="selected"' : '';  
                     $inputfield .= '<option value="" '.$selected.'>'.$_ARRAYLANG['TXT_CALENDAR_PLEASE_CHOOSE'].'</option>';    
