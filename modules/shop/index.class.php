@@ -648,6 +648,7 @@ die("Failed to update the Cart!");
         // Necessary, otherwise no successive orders are possible
         $_SESSION['shop']['order_id'] = $_SESSION['shop']['order_id_checkin'] =
             NULL;
+        $_SESSION['shop']['coupon_code'] = NULL;
 // TEST ONLY, to not clear the cart: return;
         Cart::destroy();
         // In case you want to flush everything, including the Customer:
