@@ -184,7 +184,7 @@ class CalendarUpdate31
 
     public function run()
     {
-        global $objDatabase;
+        global $objDatabase, $objUpdate;
         $this->db = $objDatabase;
 
         // set constant for all table names
@@ -278,6 +278,26 @@ class CalendarUpdate31
             }
             $_SESSION['contrexx_update']['calendar']['migration_completed'] = true;
         }
+
+        // add access to access ids 164/165/166/167 for user groups which had access to access id 16
+        try {
+            $result = \Cx\Lib\UpdateUtil::sql("SELECT `group_id` FROM `" . DBPREFIX . "access_group_static_ids` WHERE access_id = 16 GROUP BY group_id");
+            if ($result !== false) {
+                while (!$result->EOF) {
+                    \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `" . DBPREFIX . "access_group_static_ids` (`access_id`, `group_id`)
+                                                VALUES
+                                                (165, " . intval($result->fields['group_id']) . "),
+                                                (180, " . intval($result->fields['group_id']) . "),
+                                                (181, " . intval($result->fields['group_id']) . "),
+                                                (182, " . intval($result->fields['group_id']) . ")
+                                            ");
+                    $result->MoveNext();
+                }
+            }
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+
         return true;
     }
 

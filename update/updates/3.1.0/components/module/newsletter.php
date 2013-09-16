@@ -412,6 +412,45 @@ function _newsletterUpdate()
         }
     }
 
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+        // add access to access ids 152/171/172/174/175/176 for user groups which had access to access id 25
+        try {
+            $result = \Cx\Lib\UpdateUtil::sql("SELECT `group_id` FROM `" . DBPREFIX . "access_group_static_ids` WHERE access_id = 25 GROUP BY group_id");
+            if ($result !== false) {
+                while (!$result->EOF) {
+                    \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `" . DBPREFIX . "access_group_static_ids` (`access_id`, `group_id`)
+                                                VALUES
+                                                (152, " . intval($result->fields['group_id']) . "),
+                                                (171, " . intval($result->fields['group_id']) . "),
+                                                (172, " . intval($result->fields['group_id']) . "),
+                                                (174, " . intval($result->fields['group_id']) . "),
+                                                (175, " . intval($result->fields['group_id']) . "),
+                                                (176, " . intval($result->fields['group_id']) . ")
+                                                ");
+                    $result->MoveNext();
+                }
+            }
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+    }
+
+    // add access id 176 for user groups which had access to 172 if version is older than 3.1.0
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
+        try {
+            $result = \Cx\Lib\UpdateUtil::sql("SELECT `group_id` FROM `" . DBPREFIX . "access_group_static_ids` WHERE access_id = 172 GROUP BY `group_id`");
+            if ($result !== false) {
+                while (!$result->EOF) {
+                    \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `" . DBPREFIX . "access_group_static_ids` (`access_id`, `group_id`)
+                                                VALUES (176, " . intval($result->fields['group_id']) . ")");
+                    $result->MoveNext();
+                }
+            }
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+    }
+
     return true;
 }
 
