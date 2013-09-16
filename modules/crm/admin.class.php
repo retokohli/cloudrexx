@@ -667,7 +667,7 @@ class CrmManager extends CrmLibrary
         $objResult = $objDatabase->Execute($query);
 
         if ($objResult && $objResult->RecordCount() == 0) {
-            $errMsg = "<div width='100%'>No Records Found ..</div>";
+            $errMsg = "<div width='100%'>" . $_ARRAYLANG['TXT_CRM_CONTAINS_NO_RECORDS'] . "</div>";
             $this->_objTpl->setVariable('TXT_NORECORDFOUND_ERROR', $errMsg);
         }
 
