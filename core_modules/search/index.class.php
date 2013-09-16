@@ -200,6 +200,7 @@ class Search
                 ? sprintf($_ARRAYLANG['TXT_NO_SEARCH_RESULTS'], $term)
                 : $_ARRAYLANG['TXT_PLEASE_ENTER_SEARCHTERM']);
         $objTpl->setVariable('SEARCH_TITLE', $noresult);
+        return $objTpl->get();
     }
 
     /**
