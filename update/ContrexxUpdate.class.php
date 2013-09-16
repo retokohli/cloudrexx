@@ -1291,7 +1291,7 @@ function setUpdateMsg($msg, $type='error')
 function checkMemoryLimit()
 {
     global $_CORELANG;
-    static $memoryLimit, $MB2;
+    static $memoryLimit, $MiB2;
 
     if (!isset($memoryLimit)) {
         @include(UPDATE_PATH . '/lib/FRAMEWORK/System.class.php');
