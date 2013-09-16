@@ -230,7 +230,7 @@ class CalendarMailManager extends CalendarLibrary {
                 $regReplace    = array(      $regType,                 $regSalutation,                $regFirstname,                $regLastname,                $regMail);
             }
                                                                                                   
-            $domain     = ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'];            
+            $domain     = ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET."/";            
             $date       = date(parent::getDateFormat()." - H:i:s");       
             
             $eventTitle = $objEvent->title; 
