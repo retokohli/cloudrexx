@@ -1072,7 +1072,8 @@ class AccessManager extends AccessLib
                     'ACCESS_CHANGE_ACCOUNT_STATUS_MSG'  => sprintf($objUser->getActiveStatus() ? $_ARRAYLANG['TXT_ACCESS_DEACTIVATE_USER'] : $_ARRAYLANG['TXT_ACCESS_ACTIVATE_USER'], htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET))
                 ));
 
-                if ($crmUserId = $objUser->getCrmUserId()) {
+                $license = \Env::get('cx')->getLicense();
+                if ($crmUserId = $objUser->getCrmUserId() && $license->isInLegalComponents('crm')) {
                     if ($this->_objTpl->blockExists('access_user_crm_account')) {
                         $this->_objTpl->setVariable(array(
                             'ACCESS_USER_CRM_ACCOUNT_ID' => $crmUserId,
