@@ -481,7 +481,6 @@ class CrmManager extends CrmLibrary
         if (!empty($tpl)) {
             switch($tpl) {
             case 'showcustdetail' :
-                    $this->checkCustomerIdentity();
                     $this->showCustomerDetail();
                 break;
             case 'managecontact':
@@ -2020,9 +2019,6 @@ END;
     {
         global $_ARRAYLANG, $objDatabase ,$objJs, $objResult, $_LANGID, $_CORELANG;
 
-        /** verify the user redirects to details page **/
-        $this->checkCustomerIdentity();
-
         JS::activate('cx');
         JS::activate("jquery");
         JS::activate("jqueryui");
@@ -2263,7 +2259,7 @@ END;
                 $customerName = $this->contact->customerName;
 
                 // notify the staff's
-                $this->notifyStaffOnContactAccModification($this->contact->id, $this->contact->customerName.' '.$this->contact->family_name);
+                $this->notifyStaffOnContactAccModification($this->contact->id, $this->contact->customerName, $this->contact->family_name, $this->contact->contact_gender);
 
                 // ajax request
                 if ($_GET['design'] == 'custom') {

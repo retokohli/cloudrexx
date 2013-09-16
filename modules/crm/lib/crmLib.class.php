@@ -2246,7 +2246,7 @@ class CrmLibrary
                     $objDatabase->Execute($query);
                 }
                 // notify the staff's
-                $this->notifyStaffOnContactAccModification($this->contact->id, $this->contact->customerName.' '.$this->contact->family_name);
+                $this->notifyStaffOnContactAccModification($this->contact->id, $this->contact->customerName, $this->contact->family_name, $this->contact->contact_gender);
             }
         }
     }
@@ -2606,7 +2606,8 @@ CODE;
      * notify the staffs regarding the account modification of a contact
      *
      * @param Integer $customerId    customer id
-     * @param String  $customer_name customer name
+     * @param String  $first_name customer first name
+     * @param String  $last_name customer last name
      *
      * @access public
      * @global object $objTemplate
@@ -2614,7 +2615,7 @@ CODE;
      *
      * @return null
      */
-    public function notifyStaffOnContactAccModification($customerId = 0, $customer_name = '')
+    public function notifyStaffOnContactAccModification($customerId = 0, $first_name = '', $last_name = '', $gender = 0)
     {
         global $objDatabase, $_ARRAYLANG;
 
@@ -2623,6 +2624,8 @@ CODE;
         $objFWUser = FWUser::getFWUserObject();
         $settings = $this->getSettings();
         $resources = $this->getResources($settings['emp_default_user_group']);
+        $customer_name = $first_name." ".$last_name;
+        $contact_gender = ($gender == 1) ? "gender_female" : ($gender == 2 ? "gender_male" : 'gender_undefined');
         $emailIds    = array();
         foreach ($resources as $key => $value) {
             $emailIds[]    = $value['email'];
@@ -2634,9 +2637,9 @@ CODE;
                 $info['substitution'] = array(
                     'CRM_ASSIGNED_USER_NAME'            => contrexx_raw2xhtml(FWUser::getParsedUserTitle($objUsers->getId())),
                     'CRM_ASSIGNED_USER_EMAIL'           => $emails,
-                    'CRM_CONTACT_FIRSTNAME'             => contrexx_raw2xhtml($objUsers->getProfileAttribute('firstname')),
-                    'CRM_CONTACT_LASTNAME'              => contrexx_raw2xhtml($objUsers->getProfileAttribute('lastname')),
-                    'CRM_CONTACT_GENDER'                => contrexx_raw2xhtml($objUsers->getProfileAttribute('gender')),
+                    'CRM_CONTACT_FIRSTNAME'             => contrexx_raw2xhtml($first_name),
+                    'CRM_CONTACT_LASTNAME'              => contrexx_raw2xhtml($last_name),
+                    'CRM_CONTACT_GENDER'                => contrexx_raw2xhtml($contact_gender),
                     'CRM_DOMAIN'                        => ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}".ASCMS_PATH_OFFSET,
                     'CRM_CONTACT_DETAILS_URL'           => ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}". ASCMS_ADMIN_WEB_PATH ."/index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id=$customerId",
                     'CRM_CONTACT_DETAILS_LINK'          => "<a href='". ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}". ASCMS_ADMIN_WEB_PATH ."/index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id=$customerId'>".$customer_name."</a>"
