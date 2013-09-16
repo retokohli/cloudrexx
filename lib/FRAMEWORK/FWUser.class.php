@@ -130,7 +130,7 @@ class FWUser extends User_Setting
         // Store frontend lang_id in cookie
         if (empty($_COOKIE['langId'])) {
             // TODO: Seems that this method returns zero at first when the Users' language is set to "default"!
-            $langId = $this->objUser->getFrontendLanguage();
+            $langId = $objUser->getFrontendLanguage();
             // Temporary fix:
             if (empty($langId)) $langId = FWLanguage::getDefaultLangId();
             if ($objInit->arrLang[$langId]['frontend']) {
