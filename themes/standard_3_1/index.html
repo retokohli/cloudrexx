@@ -13,16 +13,23 @@
         <meta name="robots" content="{METAROBOTS}" />
         <meta name="description" content="{METADESC}" />
         <meta charset="{CHARSET}" />
-        
-        <link type="images/x-icon" rel="icon" href="favicon.ico">
+
+        <meta property="og:site_name" content="{GLOBAL_TITLE}" />
+        <meta property="og:title" content="{METATITLE}" />
+        <meta property="og:description" content="{METADESC}" />
+        <meta property="og:url" content="http://{DOMAIN_URL}{CURRENT_URL}" />
+        <meta property="og:image" content="{BASE_URL}/themes/standard_3_1/images/logo_facebook.png" />
+
+        <link type="images/x-icon" rel="icon" href="favicon.ico" />
+        <link rel="apple-touch-icon" href="/themes/standard_3_1/images/logo_apple_touch.png" />
         <link type="text/css" rel="stylesheet" href="themes/standard_3_1/layout.css" />
         <link type="text/css" rel="stylesheet" href="themes/standard_3_1/text.css" />
         <link type="text/css" rel="stylesheet" href="themes/standard_3_1/modules.css" />
-        
+
         {JAVASCRIPT}
         {STYLE_FILE}
         {LOGIN_INCLUDE}
-        
+
         <script type="text/javascript">
             var cssName = '{CSS_NAME}';
             if (cssName.length > 0) {
@@ -37,11 +44,11 @@
                 });
             }
         </script>
-        
+
         <script type="text/javascript" src="themes/standard_3_1/modernizr.js"></script>
         <script type="text/javascript" src="themes/standard_3_1/jquery.cycle.js"></script>
         <script type="text/javascript" src="themes/standard_3_1/javascript.js"></script>
-        
+
         <!--[if IE 6]>
         <script type="text/javascript" src="themes/standard_3_1/DD_belatedPNG.js"></script>
         <script type="text/javascript">
@@ -65,7 +72,7 @@
         </script>
         <![endif]-->
     </head>
-    
+
     <body>
         <header class="login">
             <div class="inner clearfix">
@@ -159,7 +166,7 @@
         </footer>
 
         <div id="back-top">&nbsp;</div>
-        
+
         {LOGIN_CONTENT}
         {COUNTER}
     </body>
