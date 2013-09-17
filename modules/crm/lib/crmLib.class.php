@@ -1932,15 +1932,15 @@ class CrmLibrary
         if ($modify) {
             $useralExists = $objDatabase->SelectLimit("SELECT id FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE user_account = {$accountId}", 1);
             if ($useralExists && !empty($useralExists->fields['id']) && !empty($accountId) && intval($useralExists->fields['id']) != $this->contact->id) {
-                    $existId = (int) $useralExists->fields['id'];
+                    $existId     = (int) $useralExists->fields['id'];
                     $custDetails = $this->getExistCrmDetail($existId);
-                    $existLink = "<a href='index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id=$existId' target='_blank'>{$custDetails['customer_name']} {$custDetails['contact_familyname']}</a>";
+                    $existLink   = "<a href='index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id=$existId' target='_blank'>{$custDetails['customer_name']} {$custDetails['contact_familyname']}</a>";
                     $this->_strErrMessage = sprintf($_ARRAYLANG['TXT_CRM_CONTACT_ALREADY_EXIST_ERROR'], $existLink);
                     return false;
             }
             $this->contact->account_id = $objDatabase->getOne("SELECT user_account FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE id = {$this->contact->id}");
             if (empty ($this->contact->account_id) && !empty($accountId)) {
-                $objUser    = $objFWUser->objUser->getUser($accountId);
+                $objUser = $objFWUser->objUser->getUser($accountId);
 //            $objUser = new User($accountId);
             } elseif ((!empty($this->contact->account_id) && $objUser = $objFWUser->objUser->getUser($this->contact->account_id)) === false) {
                 if (!empty ($accountId)) {
@@ -1949,9 +1949,13 @@ class CrmLibrary
                     $objUser = new User();
                 }
             } elseif (!empty($accountId) && $useralExists && $useralExists->RecordCount() == 0) {
-                $objUser    = $objFWUser->objUser->getUser($accountId);
+                $objUser = $objFWUser->objUser->getUser($accountId);
             } else if ((!empty($this->contact->account_id) && $objUser = $objFWUser->objUser->getUser($this->contact->account_id)) === true) {
-                $objUser    = $objFWUser->objUser->getUser($this->contact->account_id);
+                if (empty($accountId)) {
+                    $objUser = new User();
+                } else {
+                    $objUser = $objFWUser->objUser->getUser($this->contact->account_id);
+                }
             } else if (empty($this->contact->account_id) && empty($accountId)) {
                 $objUser = new User();
             }
@@ -1961,11 +1965,10 @@ class CrmLibrary
             } else {
                 $userExists = $objDatabase->getOne("SELECT id FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE user_account = {$accountId}");
                 if (empty ($userExists)) {
-                    $objUser    = $objFWUser->objUser->getUser($accountId);
+                    $objUser = $objFWUser->objUser->getUser($accountId);
                 } else {
                     $custDetails = $this->getExistCrmDetail($userExists);
-                    $existLink = "<a href='index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id=$userExists' target='_blank'>{$custDetails['customer_name']} {$custDetails['contact_familyname']}</a>";
-//                    sprintf($_ARRAYLANG['TXT_CRM_CONTACT_ALREADY_EXIST_ERROR'], $existLink); exit();
+                    $existLink   = "<a href='index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id=$userExists' target='_blank'>{$custDetails['customer_name']} {$custDetails['contact_familyname']}</a>";
                     $this->_strErrMessage = sprintf($_ARRAYLANG['TXT_CRM_CONTACT_ALREADY_EXIST_ERROR'], $existLink);
                     return false;
                 }

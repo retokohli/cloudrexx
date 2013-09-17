@@ -122,6 +122,7 @@ cx.ready(function(){
         });
     }
     cx.bind("userSelected", fn, "user/live-search/contactId");
+    cx.bind("userCleared", function() { $J("#contact_email").val(''); $J(".showAccountDetail").hide(); }, "user/live-search/contactId");
 }, true);
 
 $J(document).ready(function() {
