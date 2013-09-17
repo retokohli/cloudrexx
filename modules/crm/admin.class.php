@@ -2025,7 +2025,8 @@ END;
         $objFWUser = FWUser::getFWUserObject();
         FWUser::getUserLiveSearch(array(
             'minLength' => 3,
-            'canCancel' => true));
+            'canCancel' => true,
+            'canClear'  => true));
         JS::registerJS("modules/crm/View/Script/main.js");
         JS::registerJS("modules/crm/View/Script/contact.js");
         JS::registerCSS("modules/crm/View/Style/main.css");
