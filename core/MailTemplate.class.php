@@ -498,7 +498,6 @@ DBG::log("MailTemplate::send(): ERROR: Failed to load phpMailer");
                 $objMail->Password = $arrSmtp['password'];
             }
         }
-        $lang_id = FRONTEND_LANG_ID;
         if (!empty($arrField['lang_id'])) {
             $arrField['lang_id'] = FRONTEND_LANG_ID;
         }
@@ -507,7 +506,7 @@ DBG::log("MailTemplate::send(): ERROR: Failed to load phpMailer");
         if (empty($arrField['key'])) {
             $arrTemplate = self::getEmpty();
         } else {
-            $arrTemplate = self::get($section, $arrField['key'], $lang_id);
+            $arrTemplate = self::get($section, $arrField['key'], $arrField['lang_id']);
             if (empty($arrTemplate)) {
 DBG::log("MailTemplate::send(): WARNING: No Template for key {$arrField['key']} (section $section)");
                 return false;
