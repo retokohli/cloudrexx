@@ -237,13 +237,6 @@ class CalendarMailManager extends CalendarLibrary {
             $eventStart = $objEvent->all_day ? date(parent::getDateFormat(), $objEvent->startDate) : date(parent::getDateFormat()." (H:i:s)", $objEvent->startDate); 
             $eventEnd   = $objEvent->all_day ? date(parent::getDateFormat(), $objEvent->endDate) : date(parent::getDateFormat()." (H:i:s)", $objEvent->endDate);
             
-            if ($actionId == self::MAIL_NOTFY_NEW_APP && $objEvent->arrSettings['confirmFrontendEvents'] == 1) {
-                $eventLink = $domain."/cadmin/index.php?cmd={$this->moduleName}&act=modify_event&id={$objEvent->id}&confirm=1";
-            } else {
-                $eventLink = $domain.\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'detail')."?id={$objEvent->id}&date={$objEvent->startDate}";
-            }            
-            $regLink   = $domain.\Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'register')."?id={$objEvent->id}&date={$objEvent->startDate}";
-            
             $placeholder = array('[[TITLE]]', '[[START_DATE]]', '[[END_DATE]]', '[[LINK_EVENT]]', '[[LINK_REGISTRATION]]', '[[USERNAME]]', '[[FIRSTNAME]]', '[[LASTNAME]]', '[[URL]]', '[[DATE]]');
             
             $recipients = $this->getSendMailRecipients($actionId, $objEvent, $regId, $objRegistration);
@@ -291,6 +284,16 @@ class CalendarMailManager extends CalendarLibrary {
                     $mailContentText = !empty($this->mailList[$langId]['mail']->content_text) ? $this->mailList[$langId]['mail']->content_text : strip_tags($this->mailList[$langId]['mail']->content_html);
                     $mailContentHtml = !empty($this->mailList[$langId]['mail']->content_html) ? $this->mailList[$langId]['mail']->content_html : $this->mailList[$langId]['mail']->content_text;
                     
+                    // actual language of selected e-mail template
+                    $contentLanguage = $this->mailList[$langId]['lang_id'];
+
+                    if ($actionId == self::MAIL_NOTFY_NEW_APP && $objEvent->arrSettings['confirmFrontendEvents'] == 1) {
+                        $eventLink = $domain."/cadmin/index.php?cmd={$this->moduleName}&act=modify_event&id={$objEvent->id}&confirm=1";
+                    } else {
+                        $eventLink = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'detail', $contentLanguage, array('id' => $objEvent->id, 'date' => $objEvent->startDate))->toString();
+                    }            
+                    $regLink   = \Cx\Core\Routing\Url::fromModuleAndCmd($this->moduleName, 'register', $contentLanguage, array('id' => $objEvent->id, 'date' => $objEvent->startDate))->toString();
+
                     $replaceContent  = array($eventTitle, $eventStart, $eventEnd, $eventLink, $regLink, $userNick, $userFirstname, $userLastname, $domain, $date);
 
                     $mailTitle       = str_replace($placeholder, $replaceContent, $mailTitle);                                                                           
