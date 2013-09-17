@@ -302,6 +302,7 @@ class CalendarFormManager extends CalendarLibrary
                     $options = explode(',', $arrInputfield['default_value'][$_LANGID]);
                     $inputfield = null;
                     $hide = false;
+                    $optionSelect = true;
 
                     if(isset($_POST['registrationField'][$arrInputfield['id']])) {
                         $value = $_POST['registrationField'][$arrInputfield['id']];
@@ -339,12 +340,17 @@ class CalendarFormManager extends CalendarLibrary
                             break;
                         case 'textarea':
                             $inputfield = '<textarea class="calendarTextarea" name="registrationField['.$arrInputfield['id'].']">'.$value.'</textarea>';
-                            break ;
+                            break;
+                        case 'seating':
+                            if (!$ticketSales) {
+                                $hide = true;
+                            }
+                            $optionSelect = false;
                         case 'select':
                         case 'salutation':
                             $inputfield = '<select class="calendarSelect" name="registrationField['.$arrInputfield['id'].']">';
                             $selected =  empty($_POST) ? 'selected="selected"' : '';  
-                            $inputfield .= '<option value="" '.$selected.'>'.$_ARRAYLANG['TXT_CALENDAR_PLEASE_CHOOSE'].'</option>';    
+                            $inputfield .= $optionSelect ? '<option value="" '.$selected.'>'.$_ARRAYLANG['TXT_CALENDAR_PLEASE_CHOOSE'].'</option>' : '';
 
                             foreach($options as $key => $name)  {
                                 $selected =  ($key+1 == $value)  ? 'selected="selected"' : '';        
@@ -371,19 +377,7 @@ class CalendarFormManager extends CalendarLibrary
                                 $checked =  (in_array($key+1, $_POST['registrationField'][$arrInputfield['id']]))  ? 'checked="checked"' : '';       
                                 $inputfield .= '<input '.$checked.' type="checkbox" class="calendarInputCheckbox" name="registrationField['.$arrInputfield['id'].'][]" value="'.intval($key+1).'" />&nbsp;'.$name.'<br />';  
                             }
-                            break;
-                        case 'seating':
-                            if ($ticketSales) {
-                                $inputfield = '<select class="calendarSelect" name="registrationField['.$arrInputfield['id'].']">';
-                                foreach ($options as $intNumSeating) {
-                                    $selected    = $intNumSeating == $value ? 'selected="selected"' : '';
-                                    $inputfield .= '<option value="'.$intNumSeating.'" '.$selected.'>'.$intNumSeating.'</option>';
-                                }
-                                $inputfield .= '</select>';
-                            } else {
-                                $hide = true;
-                            }
-                            break;
+                            break;                        
                         case 'agb':
                             $inputfield = '<input class="calendarInputCheckbox" type="checkbox" name="registrationField['.$arrInputfield['id'].'][]" value="1" />&nbsp;'.$_ARRAYLANG['TXT_CALENDAR_AGB'].'<br />';
                             break;
