@@ -1619,8 +1619,9 @@ function copyCxFilesToRoot($src, $dst)
 
         if (is_dir($srcPath)) {
             \Cx\Lib\FileSystem\FileSystem::make_folder($dstPath);
-            if (!copyCxFilesToRoot($srcPath, $dstPath)) {
-                return false;
+            $status = copyCxFilesToRoot($srcPath, $dstPath);
+            if ($status !== true) {
+                return $status;
             }
         } else {
             $copiedCxFilesIndex++;
