@@ -142,6 +142,12 @@ namespace Cx\Core
                 while (!$objResult->EOF) {
                     $moduleName = $objResult->fields['name'];
 
+                    if ($moduleName == 'news' && in_array($moduleName, $arrCmActiveModules)) {
+                        $this->arrInstalledModules[] = $moduleName;
+                        $objResult->MoveNext();
+                        continue;
+                    }
+                    
                     if (!empty($moduleName)) {
                         $isCore = $objResult->fields['is_core'];
 
