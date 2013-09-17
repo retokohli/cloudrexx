@@ -626,7 +626,7 @@ CREATE TABLE `contrexx_module_calendar_event` (
   `registration` int(1) NOT NULL default '0',
   `registration_form` int(11) NOT NULL,
   `registration_num` varchar(45) default NULL,
-  `registration_notification` varchar(45) default NULL,
+  `registration_notification` varchar(1024) default NULL,
   `email_template` int(11) NOT NULL,
   `ticket_sales` tinyint(1) NOT NULL default '0',
   `num_seating` text NOT NULL,
