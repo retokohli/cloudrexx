@@ -21,9 +21,9 @@
             jQuery(".startDate").data('dateTime', jQuery(".startDate").datetimepicker("getDate").getTime());
             jQuery(".endDate").data('dateTime', jQuery(".endDate").datetimepicker("getDate").getTime());
             if (elm.is(":checked")) {
-                // hack to disable timepicker, its not working if we disable time picker before it showing atleast once.
-                jQuery(".startDate, .endDate").datetimepicker("show");
-                jQuery(".startDate, .endDate").datetimepicker("hide");
+                // new initialization instead of show up once
+                jQuery(".startDate").datepicker('setDate', new Date(jQuery(".startDate").data('dateTime')));
+                jQuery(".endDate").datepicker('setDate', new Date(jQuery(".endDate").data('dateTime')));
                 jQuery(".startDate, .endDate").datetimepicker('disableTimepicker');
             } else {
                 jQuery(".startDate, .endDate").datetimepicker('enableTimepicker');
