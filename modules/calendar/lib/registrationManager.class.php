@@ -276,6 +276,7 @@ class CalendarRegistrationManager extends CalendarLibrary
         foreach ($objForm->inputfields as $arrInputfield) {
             $inputfield = '';
             $options = explode(',', $arrInputfield['default_value'][$_LANGID]);
+            $optionSelect = true;
             
             if(isset($_POST['registrationField'][$arrInputfield['id']])) {
                 $value = $_POST['registrationField'][$arrInputfield['id']];
@@ -293,12 +294,13 @@ class CalendarRegistrationManager extends CalendarLibrary
                 case 'textarea':
                     $inputfield = '<textarea style="width: 196px;" class="calendarTextarea" name="registrationField['.$arrInputfield['id'].']">'.$value.'</textarea>';
                     break ;
-                case 'select':
-                case 'salutation':
                 case 'seating':
+                    $optionSelect = false;
+                case 'select':
+                case 'salutation':                
                     $inputfield = '<select style="width: 202px;" class="calendarSelect" name="registrationField['.$arrInputfield['id'].']">';
                     $selected =  empty($_POST) ? 'selected="selected"' : '';  
-                    $inputfield .= '<option value="" '.$selected.'>'.$_ARRAYLANG['TXT_CALENDAR_PLEASE_CHOOSE'].'</option>';    
+                    $inputfield .= $optionSelect ? '<option value="" '.$selected.'>'.$_ARRAYLANG['TXT_CALENDAR_PLEASE_CHOOSE'].'</option>' : '';
                     foreach ($options as $key => $name)  {
                         $selected =  ($key+1 == $value)  ? 'selected="selected"' : '';        
                         $inputfield .= '<option value="'.intval($key+1).'" '.$selected.'>'.$name.'</option>';       
@@ -372,7 +374,8 @@ class CalendarRegistrationManager extends CalendarLibrary
         
         $countSeating = 0;
         foreach ($this->registrationList as $registration) {
-            $countSeating += (int) $registration->fields[$seatingFieldId]['value'];            
+            $arrOptions    = explode(',', $registration->fields[$seatingFieldId]['default']);            
+            $countSeating += (int) $arrOptions[$registration->fields[$seatingFieldId]['value'] - 1];
         }
         
         return $countSeating;
