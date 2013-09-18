@@ -454,21 +454,23 @@ class CalendarMailManager extends CalendarLibrary {
                 break;
             default:
         }
+                
+        foreach ($this->mailList as $langId => $mailList) {
+            foreach ($mailList['recipients'] as $email => $langId) {
+                $recipients[$email] = $langId;
+            }
+        }
         
         if(isset($this->mailList[$_LANGID]) && $this->mailList[$_LANGID]['mail']->title == '') {
             $langId = 0;
         } else {
             $langId = $_LANGID;
         }
-
-        if (isset($this->mailList[$langId]) && is_array($this->mailList[$langId]['recipients']) && !empty($this->mailList[$langId]['recipients'])) {
-            $recipients = array_merge($recipients, $this->mailList[$langId]['recipients']);
-        }
-        
+                
         if (isset($this->mailList[$langId]) && is_array($this->mailList[$langId]['default_recipient'])) {
             $recipients = array_merge($recipients, $this->mailList[$langId]['default_recipient']);
         }
-
+        
         return $recipients;
     }
     
@@ -515,30 +517,20 @@ class CalendarMailManager extends CalendarLibrary {
         $registrationDataText = '';
         $registrationDataHtml = '<table align="top" border="0" cellpadding="3" cellspacing="0">';
         foreach ($objRegistration->fields as $arrField) {
-            $hide = false;
+            $options = !empty($arrField['default']) ? explode(",", $arrField['default']) : array();
+            $values  = explode(",", $arrField['value']);
+            $hide    = false;
+            $output  = array();
+            
             switch ($arrField['type']) {
                 case 'select':
                 case 'radio':
-                case 'checkbox':
                 case 'salutation':
-                    $options = explode(",", $arrField['default']);
-                    $values  = explode(",", $arrField['value']);
-                    $output  = array();
-
+                    if (empty($options)) {
+                        $options[0] = '1';
+                    }
                     foreach ($values as $value) {
-                        $arrValue = explode('[[', $value);
-                        $value    = $arrValue[0];
-                        $input    = str_replace(']]','', $arrValue[1]);
-
-                        if (!empty($input)) {
-                            $arrOption = explode('[[', $options[$value-1]);
-                            $output[]  = $arrOption[0].": ".$input;
-                        } else {
-                            if ($options[0] == '' && $value == 1) {
-                                $options[$value-1] = '1';
-                            }
-                            $output[] = $options[$value-1];
-                        }
+                        $output[] = $options[$value-1];
                     }
                     $htmlValue = $textValue = join(", ", $output);
                     break;
@@ -548,6 +540,17 @@ class CalendarMailManager extends CalendarLibrary {
                 case 'textarea':
                     $textValue = $arrField['value'];
                     $htmlValue = nl2br($arrField['value']);
+                    break;
+                case 'checkbox':
+                    if (empty($options)) {
+                        $value = $arrField['value'] ? $_ARRAYLANG['TXT_CALENDAR_YES'] : $_ARRAYLANG['TXT_CALENDAR_NO'];
+                    } else {
+                        foreach ($values as $value) {
+                            $output[] = $options[$value - 1];
+                        }
+                        $value = implode(', ', $output);
+                    }
+                    $htmlValue = $textValue = $value;
                     break;
                 case 'fieldset':
                     $hide = true;
