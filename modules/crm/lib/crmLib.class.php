@@ -2058,6 +2058,11 @@ class CrmLibrary
                         'CRM_CONTACT_USERNAME'           => $email,
                         'CRM_CONTACT_PASSWORD'           => $password,
                 );
+                //setting email template lang id
+                $availableMailTempLangAry = $this->getActiveEmailTemLangId('crm', CRM_EVENT_ON_USER_ACCOUNT_CREATED);
+                $availableLangId          = $this->getEmailTempLang($availableMailTempLangAry, $email);
+                $info['lang_id']          = $availableLangId;  
+                
                 $dispatcher = EventDispatcher::getInstance();
                 $dispatcher->triggerEvent(CRM_EVENT_ON_USER_ACCOUNT_CREATED, null, $info);
             }
@@ -2074,6 +2079,83 @@ class CrmLibrary
         return false;
     }
 
+    /**
+     * get the available email template lang ids
+     *
+     * @param String $section mail template section name
+     * @param String $key     mail template key value
+     *
+     * @return array
+     */
+    function getActiveEmailTemLangId($section = 'crm', $key = '')
+    {
+        global $objDatabase;
+
+        if (empty($section) || empty($key))
+            return false;
+        
+        $query = "SELECT DISTINCT ct.lang_id FROM `".DBPREFIX."core_text` as ct LEFT JOIN
+                                `".DBPREFIX."core_mail_template` as mt ON (ct.id=mt.text_id)
+                                    WHERE mt.key = '".$key."' AND mt.section = '".$section."'";
+        $objResult = $objDatabase->Execute($query);
+        if ($objResult && $objResult->RecordCount() > 0) {
+            $activeLangArray = array();
+            while (!$objResult->EOF) {
+                array_push($activeLangArray, (int) $objResult->fields['lang_id']);
+                $objResult->MoveNext();
+            }
+            return $activeLangArray;
+        }
+        return false;
+    }
+
+    /**
+     * get the email template lang id for sending mail
+     *
+     * @param Array  $availableEmailTemp available email template ids
+     * @param String $email              recipient email id
+     *
+     * @return Integer
+     */
+    function getEmailTempLang($availableEmailTemp = array(), $email = '')
+    {
+        global $objFWUser;
+        
+        if (empty($email))
+            return false;
+        $defaultLangId = FWLanguage::getDefaultLangId();
+        $objUsers = $objFWUser->objUser->getUsers($filter = array('email' => addslashes($email)));
+        if ($objUsers) {
+            $availableLangId = '';
+            switch (true) {
+            case ($objUsers->getBackendLanguage() && in_array($objUsers->getBackendLanguage(), $availableEmailTemp)):
+                $availableLangId = $objUsers->getBackendLanguage();
+                break;
+            case ($objUsers->getFrontendLanguage() && in_array($objUsers->getFrontendLanguage(), $availableEmailTemp)):
+                $availableLangId =  $objUsers->getFrontendLanguage();
+                break;
+            case ($defaultLangId && in_array($defaultLangId, $availableEmailTemp)):
+                $availableLangId =  $defaultLangId;
+                break;
+            default:
+                $availableLangId = $availableEmailTemp[0];
+                break;
+            }
+            return $availableLangId;
+        } else {
+            switch (true) {
+            case ($defaultLangId && in_array($defaultLangId, $availableEmailTemp)):
+                $availableLangId =  $defaultLangId;
+                break;
+            default:
+                $availableLangId = $availableEmailTemp[0];
+                break;
+            }
+            return $availableLangId;
+        }
+        return false;
+    }
+    
     /**
      * get exist crm account detail
      *
@@ -2652,6 +2734,10 @@ CODE;
                     'CRM_CONTACT_DETAILS_LINK'          => ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}". ASCMS_ADMIN_WEB_PATH ."/index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id=$customerId",
 //                    'CRM_CONTACT_DETAILS_LINK'          => "<a href='". ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}". ASCMS_ADMIN_WEB_PATH ."/index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id=$customerId'>".$customer_name."</a>"
                 );
+                //setting email template lang id
+                $availableMailTempLangAry = $this->getActiveEmailTemLangId('crm', CRM_EVENT_ON_ACCOUNT_UPDATED);
+                $availableLangId          = $this->getEmailTempLang($availableMailTempLangAry, $emails);
+                $info['lang_id']          = $availableLangId;  
 
                 $dispatcher = EventDispatcher::getInstance();
                 $dispatcher->triggerEvent(CRM_EVENT_ON_ACCOUNT_UPDATED, null, $info);
