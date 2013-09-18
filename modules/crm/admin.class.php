@@ -6219,6 +6219,8 @@ END;
                 $sendLoginCheck = true;
                 $email          = $accountEmail;
             }
+        } else {
+            $email          = $accountEmail;
         }
         $json[] = array(
             'show'              => $show,
