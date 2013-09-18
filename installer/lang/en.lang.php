@@ -42,7 +42,6 @@ $_ARRLANG['TXT_USERNAME'] = "User name";
 $_ARRLANG['TXT_PASSWORD'] = "Password";
 $_ARRLANG['TXT_GENERAL'] = "General";
 $_ARRLANG['TXT_FILL_OUT_ALL_FIELDS'] = "You have to fill in all fields!";
-$_ARRLANG['TXT_FTP_PASSIVE_MODE_FAILED'] = "Could not turn on the passive mode!";
 
 // license
 $_ARRLANG['TXT_READ_LICENCE'] = "Please read/accept license to continue installation";
@@ -104,7 +103,6 @@ $_ARRLANG['TXT_PATH_DOES_NOT_EXIST'] = "The path \"[PATH]\" does not exist!";
 $_ARRLANG['TXT_CANNOT_FIND_FIlE'] = "Cannot find the file \"[FILE]\" in the WCMS directory!";
 $_ARRLANG['TXT_DIRECTORY_ON_FTP_DOES_NOT_EXIST'] = "The directory \"[DIRECTORY]\" does not exist on the FTP server!";
 $_ARRLANG['TXT_FILE_ON_FTP_DOES_NOT_EXIST'] = "The file \"[FILE]\" does not exist on the FTP server!";
-$_ARRLANG['TXT_USE_PASSIVE_FTP'] = "Passive mode";
 $_ARRLANG['TXT_FTP_DESCRIPTION'] = "This option enables file manipulations over the FTP protocol. FTP must be used if the Web page is running on a Unix family of operating systems and the PHP installation runs in Safe mode.";
 $_ARRLANG['TXT_DB_TABLE_PREFIX_INVALID'] = "The table prefix may only consist of alphanumeric signs (a-z/A-Z/0-9) and the following special character: _";
 $_ARRLANG['TXT_OPEN_BASEDIR_TMP_MISSING'] = "The directory tree couldn't be showed on this server, due that the PHP-directive open_basedir is active, but does not include the required temp path (/tmp)!";

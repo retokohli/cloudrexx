@@ -408,16 +408,7 @@ class CommonFunctions
             if ($objFtp) {
                 // login to ftp server
                 if (@ftp_login($objFtp, $_SESSION['installer']['config']['ftpUsername'], $_SESSION['installer']['config']['ftpPassword'])) {
-                    if ($_SESSION['installer']['config']['ftpPasv']) {
-                        if (@ftp_pasv($objFtp, true)) {
-                            return $objFtp;
-                        } else {
-                            @ftp_close($objFtp);
-                            $statusMsg = $_ARRLANG['TXT_FTP_PASSIVE_MODE_FAILED'];
-                        }
-                    } else {
-                        return $objFtp;
-                    }
+                    return $objFtp;
                 } else {
                     @ftp_close($objFtp);
                     unset($objFtp);
@@ -962,17 +953,20 @@ class CommonFunctions
         // CHARSET
         $str = str_replace("%CHARSET%", $useUtf8 ? 'UTF-8' : 'ISO-8859-1', $str);
 
+        // COLLATION
+        $str = str_replace("%DB_COLLATION%", $_SESSION['installer']['config']['dbCollation'], $str);
+
         //FTP
         if ($_SESSION['installer']['config']['useFtp']) {
             $str = str_replace(
-                array("%FTP_STATUS%", "%FTP_PASSIVE%", "%FTP_HOST%", "%FTP_PORT%", "%FTP_USER%", "%FTP_PASSWORD%", "%FTP_PATH%"),
-                array("true", ($_SESSION['installer']['config']['ftpPasv'] ? "true" : "false"), $_SESSION['installer']['config']['ftpHostname'], (isset($_SESSION['installer']['config']['ftpPort']) ? $_SESSION['installer']['config']['ftpPort'] : $this->ftpPort), $_SESSION['installer']['config']['ftpUsername'], $_SESSION['installer']['config']['ftpPassword'], $_SESSION['installer']['config']['ftpPath']),
+                array("%FTP_STATUS%", "%FTP_HOST%", "%FTP_PORT%", "%FTP_USER%", "%FTP_PASSWORD%", "%FTP_PATH%"),
+                array("true", $_SESSION['installer']['config']['ftpHostname'], (isset($_SESSION['installer']['config']['ftpPort']) ? $_SESSION['installer']['config']['ftpPort'] : $this->ftpPort), $_SESSION['installer']['config']['ftpUsername'], $_SESSION['installer']['config']['ftpPassword'], $_SESSION['installer']['config']['ftpPath']),
                 $str
             );
         } else {
             $str = str_replace(
-                array("%FTP_STATUS%", "%FTP_PASSIVE%", "%FTP_HOST%", "%FTP_PORT%", "%FTP_USER%", "%FTP_PASSWORD%", "%FTP_PATH%"),
-                array("false", "false", "", $this->ftpPort, "", "", ""),
+                array("%FTP_STATUS%", "%FTP_HOST%", "%FTP_PORT%", "%FTP_USER%", "%FTP_PASSWORD%", "%FTP_PATH%"),
+                array("false", "", $this->ftpPort, "", "", ""),
                 $str
             );
         }
