@@ -2091,20 +2091,28 @@ class CrmLibrary
     {
         global $objDatabase;
 
-        if (empty($section) || empty($key))
+        if (empty($section) || empty($key)) {
             return false;
+        }
         
+        $activeFrontLangId = FWLanguage::getActiveFrontendLanguages();
         $query = "SELECT DISTINCT ct.lang_id FROM `".DBPREFIX."core_text` as ct LEFT JOIN
                                 `".DBPREFIX."core_mail_template` as mt ON (ct.id=mt.text_id)
                                     WHERE mt.key = '".$key."' AND mt.section = '".$section."'";
         $objResult = $objDatabase->Execute($query);
         if ($objResult && $objResult->RecordCount() > 0) {
             $activeLangArray = array();
+            $finalActiveLangArray = array();
             while (!$objResult->EOF) {
                 array_push($activeLangArray, (int) $objResult->fields['lang_id']);
                 $objResult->MoveNext();
             }
-            return $activeLangArray;
+            foreach ($activeFrontLangId As $val) {
+                if (in_array($val['id'], $activeLangArray)) {
+                    array_push($finalActiveLangArray, $val['id']);
+                }
+            }
+            return $finalActiveLangArray;
         }
         return false;
     }
