@@ -362,6 +362,10 @@ class crmTask extends CrmLibrary
                             'CRM_TASK_DESCRIPTION_TEXT_VERSION' => contrexx_html2plaintext($description),
                             'CRM_TASK_DESCRIPTION_HTML_VERSION' => $description
                     );
+                    //setting email template lang id
+                    $availableMailTempLangAry = $this->getActiveEmailTemLangId('crm', CRM_EVENT_ON_TASK_CREATED);
+                    $availableLangId          = $this->getEmailTempLang($availableMailTempLangAry, $objFWUser->objUser->getUser($assignedto)->getEmail());
+                    $info['lang_id']          = $availableLangId;  
 
                     $dispatcher = EventDispatcher::getInstance();
                     $dispatcher->triggerEvent(CRM_EVENT_ON_TASK_CREATED, null, $info);

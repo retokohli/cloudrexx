@@ -31,8 +31,7 @@ class DefaultEventHandler implements EventHandler
      * @var array
      */
     protected $default_info = array(
-        'section'   => 'crm',
-        'lang_id'   => FRONTEND_LANG_ID,
+        'section'   => 'crm'
     );
 
     /**
@@ -44,12 +43,14 @@ class DefaultEventHandler implements EventHandler
      */
     function handleEvent(Event $event)
     {
-        $info = $event->getInfo();
+        $info          = $event->getInfo();
         $substitutions = isset($info['substitution']) ? $info['substitution'] : array();
+        $lang_id       = isset($info['lang_id']) ? $info['lang_id'] : FRONTEND_LANG_ID;
         $arrMailTemplate = array_merge(
             $this->default_info,
             array(
-                'key'     => $event->getName(),
+                'key'          => $event->getName(),
+                'lang_id'      => $lang_id, 
                 'substitution' => $substitutions,
         ));
 
