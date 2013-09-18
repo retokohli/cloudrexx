@@ -498,7 +498,7 @@ DBG::log("MailTemplate::send(): ERROR: Failed to load phpMailer");
                 $objMail->Password = $arrSmtp['password'];
             }
         }
-        if (!empty($arrField['lang_id'])) {
+        if (empty($arrField['lang_id'])) {
             $arrField['lang_id'] = FRONTEND_LANG_ID;
         }
         $section = (isset($arrField['section']) ? $arrField['section'] : null);
