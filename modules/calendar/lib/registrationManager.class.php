@@ -198,13 +198,36 @@ class CalendarRegistrationManager extends CalendarLibrary
         if ($objResult !== false) {
             while (!$objResult->EOF) {
                 if (!in_array($objResult->fields['type'], array('agb', 'fieldset'))) {
-                    $value = '';
-                    if (!empty($objResult->fields['default'])) {
-                        $arrDefaultValues = explode(',', $objResult->fields['default']);
-                        $value = $arrDefaultValues[$objResult->fields['value'] - 1];
-                    } else {
-                        $value = $objResult->fields['value'];
+                    $options = !empty($objResult->fields['default']) ? explode(',', $objResult->fields['default']) : array();
+                    $value   = '';
+                    
+                    switch ($objResult->fields['type']) {
+                        case 'firstname':
+                        case 'lastname':
+                        case 'inputtext':
+                        case 'textarea':
+                        case 'mail':
+                        case 'selectBillingAddress':
+                            $value = $objResult->fields['value'];
+                            break;
+                        case 'salutation':
+                        case 'seating':
+                        case 'select':
+                        case 'radio':
+                            $value = $options[$objResult->fields['value'] - 1];
+                            break;
+                        case 'checkbox':
+                            if (empty($options)) {
+                                $value = $objResult->fields['value'] ? $_ARRAYLANG['TXT_CALENDAR_YES'] : $_ARRAYLANG['TXT_CALENDAR_NO'];
+                            } else {
+                                $tmpValue = array();
+                                foreach (explode(',', $objResult->fields['value']) as $selectedValue) {
+                                    $tmpValue[] = $options[$selectedValue - 1];
+                                }
+                                $value = implode(', ', $tmpValue);
+                            }
                     }
+
                     $arrValues[$objResult->fields['reg_id']][$objResult->fields['field_id']] = $value;
                 }
                 $objResult->MoveNext();
@@ -315,11 +338,12 @@ class CalendarRegistrationManager extends CalendarLibrary
                         $inputfield .= '<input type="radio" class="calendarInputCheckbox" name="registrationField['.$arrInputfield['id'].']" value="'.intval($key+1).'" '.$checked.'/>&nbsp;'.$name.'<br />';  
                     }
                     break;
-                 case 'checkbox':
+                 case 'checkbox':      
+                    $value = explode(',', $value); 
                     foreach ($options as $key => $name)  {    
                         $textfield = '<input type="text" class="calendarInputCheckboxAdditional" name="registrationFieldAdditional['.$arrInputfield['id'].']['.$key.']" />';
                         $name = str_replace('[[INPUT]]', $textfield, $name);
-                        $checked =  (in_array($key+1, $_POST['registrationField'][$arrInputfield['id']]))  ? 'checked="checked"' : '';       
+                        $checked = in_array($key+1, $value) || (in_array($key+1, $_POST['registrationField'][$arrInputfield['id']]))  ? 'checked="checked"' : '';       
                         $inputfield .= '<input '.$checked.' type="checkbox" class="calendarInputCheckbox" name="registrationField['.$arrInputfield['id'].'][]" value="'.intval($key+1).'" />&nbsp;'.$name.'<br />';  
                     }
                     break;
