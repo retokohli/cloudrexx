@@ -1,4 +1,5 @@
 <?php
+global $_DBCONFIG, $_PATHCONFIG, $_FTPCONFIG, $_CONFIG;
 /**
 * @exclude
 *
@@ -27,7 +28,8 @@ $_DBCONFIG['user'] = '%DB_USER%'; // Database username
 $_DBCONFIG['password'] = '%DB_PASSWORD%'; // Database password
 $_DBCONFIG['dbType'] = 'mysql'; // Database type (e.g. mysql,postgres ..)
 $_DBCONFIG['charset'] = '%DB_CHARSET%'; // Charset (default, latin1, utf8, ..)
-$_DBCONFIG['timezone'] = $_CONFIG['timezone']; // Timezone
+$_DBCONFIG['timezone'] = $_CONFIG['timezone']; // Controller's timezone for model
+$_DBCONFIG['collation'] = '%DB_COLLATION%';
 
 /**
 * -------------------------------------------------------------------------
@@ -36,6 +38,8 @@ $_DBCONFIG['timezone'] = $_CONFIG['timezone']; // Timezone
 */
 $_PATHCONFIG['ascms_root'] = '';
 $_PATHCONFIG['ascms_root_offset'] = ''; // example: '/cms';
+$_PATHCONFIG['ascms_installation_root'] = $_PATHCONFIG['ascms_root'];
+$_PATHCONFIG['ascms_installation_offset'] = $_PATHCONFIG['ascms_root_offset']; // example: '/cms';
 
 /**
 * -------------------------------------------------------------------------
@@ -43,7 +47,6 @@ $_PATHCONFIG['ascms_root_offset'] = ''; // example: '/cms';
 * -------------------------------------------------------------------------
 */
 $_FTPCONFIG['is_activated'] = %FTP_STATUS%; // Ftp support true or false
-$_FTPCONFIG['use_passive'] = %FTP_PASSIVE%; // Use passive ftp mode
 $_FTPCONFIG['host'] = '%FTP_HOST%';// This is normally set to localhost
 $_FTPCONFIG['port'] = %FTP_PORT%; // Ftp remote port
 $_FTPCONFIG['username'] = '%FTP_USER%'; // Ftp login username

@@ -1702,7 +1702,6 @@ function _writeNewConfigurationFile()
     global $_CORELANG, $_ARRAYLANG, $_DBCONFIG, $_PATHCONFIG, $_FTPCONFIG, $_CONFIGURATION, $_CONFIG;
 
     $ftpStatus = $_FTPCONFIG['is_activated'] ? 'true' : 'false';
-    $ftpUsePassive = $_FTPCONFIG['use_passive'] ? 'true' : 'false';
     $charset = 'UTF-8';
     $dbCharset = 'utf8';
 
@@ -1758,7 +1757,6 @@ define('CONTEXX_INSTALLED', true);
 * -------------------------------------------------------------------------
 */
 \$_FTPCONFIG['is_activated'] = {$ftpStatus}; // Ftp support true or false
-\$_FTPCONFIG['use_passive'] = {$ftpUsePassive};    // Use passive ftp mode
 \$_FTPCONFIG['host']    = '{$_FTPCONFIG['host']}';// This is normally set to localhost
 \$_FTPCONFIG['port'] = {$_FTPCONFIG['port']}; // Ftp remote port
 \$_FTPCONFIG['username'] = '{$_FTPCONFIG['username']}'; // Ftp login username

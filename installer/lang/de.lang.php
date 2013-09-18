@@ -43,7 +43,6 @@ $_ARRLANG['TXT_LOGIN_EMAIL'] = "Login / E-Mail";
 $_ARRLANG['TXT_PASSWORD'] = "Passwort";
 $_ARRLANG['TXT_GENERAL'] = "Allgemein";
 $_ARRLANG['TXT_FILL_OUT_ALL_FIELDS'] = "Sie müssen alle Felder ausfüllen!";
-$_ARRLANG['TXT_FTP_PASSIVE_MODE_FAILED'] = "Konnte nicht in den Passiven Modus wechseln!";
 
 // license
 $_ARRLANG['TXT_READ_LICENCE'] = "Please read/accept license to continue installation";
@@ -105,7 +104,6 @@ $_ARRLANG['TXT_PATH_DOES_NOT_EXIST'] = "Der Pfad \"[PATH]\" existiert nicht!";
 $_ARRLANG['TXT_CANNOT_FIND_FIlE'] = "Kann die Datei \"[FILE]\" im CMS-Verzeichnis nicht finden!";
 $_ARRLANG['TXT_DIRECTORY_ON_FTP_DOES_NOT_EXIST'] = "Das Verzeichnis \"[DIRECTORY]\" existiert auf dem FTP-Server nicht!";
 $_ARRLANG['TXT_FILE_ON_FTP_DOES_NOT_EXIST'] = "Die Datei \"[FILE]\" existiert auf dem FTP-Server nicht!";
-$_ARRLANG['TXT_USE_PASSIVE_FTP'] = "Passiver Modus";
 $_ARRLANG['TXT_FTP_DESCRIPTION'] = "Durch aktivieren dieser Option werden alle Dateimanipulationen über das FTP-Protokoll durchgeführt. Falls diese Webseite auf einem Unix ähnlichen System und die dazu verwendete PHP-Installation im Safemode läuft, ist die Verwendung des FTP-Protokolls unumgänglich.";
 $_ARRLANG['TXT_DB_TABLE_PREFIX_INVALID'] = "Das Tabellen Präfix (Vorsilbe) darf nur aus Alphanumerischen Zeichen (a-z/A-Z/0-9) und dem folgenden Sonderzeichen bestehen: _";
 $_ARRLANG['TXT_OPEN_BASEDIR_TMP_MISSING'] = "Die Ordnerstruktur kann auf diesem Server nicht angezeigt werden, da die PHP-Direktive open_basedir gesetzt ist, wobei diese aber den notwendigen Temp-Pfad (/tmp) nicht enthält!";

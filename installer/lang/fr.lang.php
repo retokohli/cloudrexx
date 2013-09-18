@@ -42,7 +42,6 @@ $_ARRLANG['TXT_USERNAME'] = "Identifiant (nom utilisateur)";
 $_ARRLANG['TXT_PASSWORD'] = "Mot de passe";
 $_ARRLANG['TXT_GENERAL'] = "Général";
 $_ARRLANG['TXT_FILL_OUT_ALL_FIELDS'] = "Veuillez compléter tous les champs!";
-$_ARRLANG['TXT_FTP_PASSIVE_MODE_FAILED'] = "Impossible de passer en mode passif!";
 
 // license
 $_ARRLANG['TXT_READ_LICENCE'] = "Veuillez lire/accepter le contrat de licence pour continuer l'installation";
@@ -104,7 +103,6 @@ $_ARRLANG['TXT_PATH_DOES_NOT_EXIST'] = "Le dossier \"[PATH]\" n'existe pas!";
 $_ARRLANG['TXT_CANNOT_FIND_FIlE'] = "Le fichier \"[FILE]\" n'existe pas dans le dossier du CMS!";
 $_ARRLANG['TXT_DIRECTORY_ON_FTP_DOES_NOT_EXIST'] = "Le dossier \"[DIRECTORY]\" n'existe pas sur le serveur FTP!";
 $_ARRLANG['TXT_FILE_ON_FTP_DOES_NOT_EXIST'] = "Le fichier \"[FILE]\" n'existe pas sur le serveur FTP!";
-$_ARRLANG['TXT_USE_PASSIVE_FTP'] = "Mode passif";
 $_ARRLANG['TXT_FTP_DESCRIPTION'] = "Avec cette option, les opérations sur les fichiers seront effectuées via le protocole FTP. Ce protocole est obligatoire pour une installation sur un système Unix ou similaire sur lequel PHP fonctionne en Safemode.";
 $_ARRLANG['TXT_DB_TABLE_PREFIX_INVALID'] = "Le préfixe des tables ne peut être composé que de caractères alphanumériques (a-z/A-Z/0-9) et du caractère: _";
 $_ARRLANG['TXT_OPEN_BASEDIR_TMP_MISSING'] = "Impossible d'afficher la structure des dossiers sur ce serveur, car la Direktive PHP open_basedir est active, mais ne contient pas le chemin du dossier temporaire Temp (/tmp)!";

@@ -199,7 +199,6 @@ class Installer
 
             $ftpConfig = array(
                     'is_activated'  => $_SESSION['installer']['config']['useFtp'],
-                    'use_passive'   => $_SESSION['installer']['config']['ftpPasv'],
                     'host'          => $_SESSION['installer']['config']['ftpHostname'],
                     'port'          => isset($_SESSION['installer']['config']['ftpPort']) ? $_SESSION['installer']['config']['ftpPort'] : $objCommon->ftpPort,
                     'username'      => $_SESSION['installer']['config']['ftpUsername'],
@@ -713,10 +712,6 @@ class Installer
                         $_POST['useFtp'] = 0;
                     }
 
-                    if (!isset($_POST['ftpPasv'])) {
-                        $_POST['ftpPasv'] = 0;
-                    }
-
                     $_POST['ftpHostname'] = preg_replace(
                         '/^\w*:\/\//', '', $_POST['ftpHostname']);
                     if ($ftpPortPos = intval(strpos($_POST['ftpHostname'], ":"))) {
@@ -734,7 +729,6 @@ class Installer
                     if (($_POST['useFtp'] != $_SESSION['installer']['config']['useFtp'])
                         || ($_SESSION['installer']['config']['useFtp']
                         && (!isset($_SESSION['installer']['config']['ftpHostname']) || $_POST['ftpHostname'] != $_SESSION['installer']['config']['ftpHostname']
-                        || $_POST['ftpPasv'] != $_SESSION['installer']['config']['ftpPasv']
                         || !isset($_SESSION['installer']['config']['ftpUsername']) || $_POST['ftpUsername'] != $_SESSION['installer']['config']['ftpUsername']
                         || !isset($_SESSION['installer']['config']['ftpPassword']) || $_POST['ftpPassword'] != $_SESSION['installer']['config']['ftpPassword']
                         )))
@@ -742,7 +736,6 @@ class Installer
                         $_SESSION['installer']['config']['useFtp'] = (boolean) $_POST['useFtp'];
                         if ($_SESSION['installer']['config']['useFtp']) {
                             $_SESSION['installer']['config']['ftpHostname'] = $_POST['ftpHostname'];
-                            $_SESSION['installer']['config']['ftpPasv'] = (boolean) $_POST['ftpPasv'];
                             $_SESSION['installer']['config']['ftpUsername'] = $_POST['ftpUsername'];
                             $_SESSION['installer']['config']['ftpPassword'] = $_POST['ftpPassword'];
                             if (!isset($_SESSION['installer']['config']['ftpPath'])) {
@@ -1170,10 +1163,6 @@ class Installer
                     }
                 }
 
-                if (!isset($_SESSION['installer']['config']['ftpPasv'])) {
-                    $_SESSION['installer']['config']['ftpPasv'] = false;
-                }
-
                 if (!$objCommon->isWindows() && ini_get('safe_mode') && $objCommon->_checkOpenbaseDirConfig) {
                     $_SESSION['installer']['config']['forceFtp'] = true;
                 } else {
@@ -1183,14 +1172,12 @@ class Installer
                 if (isset($_SESSION['installer']['setPermissions']) && $_SESSION['installer']['setPermissions']) {
                     if ($_SESSION['installer']['config']['useFtp']) {
                         $ftpHostname = $_SESSION['installer']['config']['ftpHostname'].(isset($_SESSION['installer']['config']['ftpPort']) ? ":".$_SESSION['installer']['config']['ftpPort'] : "");
-                        $ftpPasv = $_SESSION['installer']['config']['ftpPasv'] ? "&nbsp;(".$_ARRLANG['TXT_USE_PASSIVE_FTP'].")" : "";
                         $ftpUsername = $_SESSION['installer']['config']['ftpUsername'];
                         $ftpPassword = sprintf("%'*".strlen($_SESSION['installer']['config']['ftpPassword'])."s","");
                         $ftpPath = $_SESSION['installer']['config']['ftpPath'];
 
                         $objTpl->setVariable(array(
                             'FTP_HOSTNAME'  => $ftpHostname,
-                            'FTP_PASV'      => $ftpPasv,
                             'FTP_USERNAME'  => (empty($ftpUsername) ? "&nbsp;" : $ftpUsername),
                             'FTP_PASSWORD'  => (empty($ftpPassword) ? "&nbsp;" : $ftpPassword),
                             'FTP_PATH'      => (empty($ftpPath) ? "&nbsp;" : $ftpPath),
@@ -1203,14 +1190,12 @@ class Installer
                 } else {
                     $useFtp = "<label for=\"useFtp\">".$_ARRLANG['TXT_USE_FTP']."</label>&nbsp;<input type=\"checkbox\" name=\"useFtp\" id=\"useFtp\" value=\"1\" ".($_SESSION['installer']['config']['useFtp'] ? "checked=\"checked\"" : "")." ".($_SESSION['installer']['config']['forceFtp'] ? "disabled=\"disabled\"" : "")." tabindex=\"".$this->_getTabIndex()."\" />&nbsp;<span class=\"icon-info tooltip-trigger\"></span><span class=\"tooltip-message\">".$_ARRLANG['TXT_FTP_DESCRIPTION']."</span>";
                     $ftpHostname = "<input type=\"text\" name=\"ftpHostname\" value=\"".(isset($_SESSION['installer']['config']['ftpHostname']) ? $_SESSION['installer']['config']['ftpHostname'] : $arrDefaultConfig['ftpHostname']).(isset($_SESSION['installer']['config']['ftpPort']) ? ":".$_SESSION['installer']['config']['ftpPort'] : "")."\" tabindex=\"".$this->_getTabIndex()."\" />";
-                    $ftpPasv = "&nbsp;<input type=\"checkbox\" name=\"ftpPasv\" id=\"ftpPasv\" value=\"1\" ".($_SESSION['installer']['config']['ftpPasv'] ? "checked=\"checked\"" : "")." tabindex=\"".$this->_getTabIndex()."\" />&nbsp;<label for=\"ftpPasv\">".$_ARRLANG['TXT_USE_PASSIVE_FTP']."</label>";
                     $ftpUsername = "<input type=\"text\" name=\"ftpUsername\" value=\"".(isset($_SESSION['installer']['config']['ftpUsername']) ? $_SESSION['installer']['config']['ftpUsername'] : $arrDefaultConfig['ftpUsername'])."\" tabindex=\"".$this->_getTabIndex()."\" />";
                     $ftpPassword = "<input type=\"password\" name=\"ftpPassword\" value=\"".(isset($_SESSION['installer']['config']['ftpPassword']) ? $_SESSION['installer']['config']['ftpPassword'] : $arrDefaultConfig['ftpPassword'])."\" tabindex=\"".$this->_getTabIndex()."\" />";
 
                     $objTpl->setVariable(array(
                         'USE_FTP'       => $useFtp,
                         'FTP_HOSTNAME'  => $ftpHostname,
-                        'FTP_PASV'      => $ftpPasv,
                         'FTP_USERNAME'  => $ftpUsername,
                         'FTP_PASSWORD'  => $ftpPassword
                     ));
