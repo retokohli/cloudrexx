@@ -28,7 +28,7 @@ $_DBCONFIG['user'] = '%DB_USER%'; // Database username
 $_DBCONFIG['password'] = '%DB_PASSWORD%'; // Database password
 $_DBCONFIG['dbType'] = 'mysql'; // Database type (e.g. mysql,postgres ..)
 $_DBCONFIG['charset'] = '%DB_CHARSET%'; // Charset (default, latin1, utf8, ..)
-$_DBCONFIG['timezone'] = $_CONFIG['timezone']; // Controller's timezone for model
+$_DBCONFIG['timezone'] = '%DB_TIMEZONE%'; // Controller's timezone for model
 $_DBCONFIG['collation'] = '%DB_COLLATION%';
 
 /**
@@ -36,8 +36,8 @@ $_DBCONFIG['collation'] = '%DB_COLLATION%';
 * Site path specific configuration
 * -------------------------------------------------------------------------
 */
-$_PATHCONFIG['ascms_root'] = '';
-$_PATHCONFIG['ascms_root_offset'] = ''; // example: '/cms';
+$_PATHCONFIG['ascms_root'] = '%PATH_ROOT%';
+$_PATHCONFIG['ascms_root_offset'] = '%PATH_ROOT_OFFSET%'; // example: '/cms';
 $_PATHCONFIG['ascms_installation_root'] = $_PATHCONFIG['ascms_root'];
 $_PATHCONFIG['ascms_installation_offset'] = $_PATHCONFIG['ascms_root_offset']; // example: '/cms';
 
