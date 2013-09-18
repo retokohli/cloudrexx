@@ -2,7 +2,7 @@
 
 function _shopUpdate()
 {
-    global $objDatabase, $_ARRAYLANG;
+    global $objDatabase, $_ARRAYLANG, $objUpdate;
 
     if (!defined('MODULE_INDEX')) define('MODULE_INDEX', '');
 
