@@ -142,8 +142,15 @@ namespace Cx\Core
                 while (!$objResult->EOF) {
                     $moduleName = $objResult->fields['name'];
 
-                    if ($moduleName == 'news' && in_array($moduleName, $arrCmActiveModules)) {
-                        $this->arrInstalledModules[] = $moduleName;
+                    if ($moduleName == 'news') {
+                        $this->arrModules[] = $moduleName;
+                        //$this->arrCoreModules[] = $moduleName;
+                        if (in_array($moduleName, $arrCmInstalledModules)) {
+                            $this->arrInstalledModules[] = $moduleName;
+                            if (in_array($moduleName, $arrCmInstalledModules)) {
+                                $this->arrActiveModules[] = $moduleName;
+                            }
+                        }
                         $objResult->MoveNext();
                         continue;
                     }
