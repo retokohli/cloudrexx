@@ -2110,8 +2110,6 @@ END;
         $this->contact->user_name    = isset($_POST['contact_username']) ? contrexx_input2raw($_POST['contact_username']) : '';
 
         if (isset($_POST['save_contact']) || isset($_POST['save_add_new_contact'])) {
-//            $description          = $this->stripOnlyTags($this->contact->notes, '<script><iframe>', $stripContent = false);
-//            $this->contact->notes = $description;
             $msg = '';
             switch(true) {
             case ($contactType == 1 && !empty($id)):
@@ -2137,8 +2135,8 @@ END;
                 $this->contact->currency     = 0;
                 $this->contact->customerId   = '';
             }
-            
-            if (!$settings['create_user_account'] || ($contactType == 1) || (!empty($accountUserEmail) && $this->addUser($accountUserEmail, $accountUserPassword, $sendLoginDetails, $result, $accountUserID)) || !$settings['user_account_mantatory']) {
+            $accountMandatory = !empty($accountUserEmail) ? false : !$settings['user_account_mantatory'];
+            if (!$settings['create_user_account'] || ($contactType == 1) || (!empty($accountUserEmail) && $this->addUser($accountUserEmail, $accountUserPassword, $sendLoginDetails, $result, $accountUserID)) || $accountMandatory) {
 
                 $this->contact->save();
 
