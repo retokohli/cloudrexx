@@ -1073,7 +1073,7 @@ class AccessManager extends AccessLib
                 ));
 
                 $license = \Env::get('cx')->getLicense();
-                if ($crmUserId = $objUser->getCrmUserId() && $license->isInLegalComponents('crm')) {
+                if (($crmUserId = $objUser->getCrmUserId()) && $license->isInLegalComponents('crm')) {
                     if ($this->_objTpl->blockExists('access_user_crm_account')) {
                         $this->_objTpl->setVariable(array(
                             'ACCESS_USER_CRM_ACCOUNT_ID' => $crmUserId,
