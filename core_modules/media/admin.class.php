@@ -185,20 +185,60 @@ class MediaManager extends MediaLibrary
                 break;
             case 'attach':
                 Permission::checkAccess(84, 'static');
+                $objTemplate->setVariable('CONTENT_NAVIGATION', '
+                    <a href="index.php?cmd=media&amp;archive=content">'. $_ARRAYLANG['TXT_IMAGE_CONTENT'] .'</a>
+                    <a href="index.php?cmd=media&amp;archive=attach" class="active">'. $_ARRAYLANG['TXT_MODULE'] .'</a>
+                ');
+                break;
             case 'access':
                 Permission::checkAccess(18, 'static');
+                $objTemplate->setVariable('CONTENT_NAVIGATION', '
+                    <a href="index.php?cmd=media&amp;archive=content">'. $_ARRAYLANG['TXT_IMAGE_CONTENT'] .'</a>
+                    <a href="index.php?cmd=media&amp;archive=attach" class="active">'. $_ARRAYLANG['TXT_MODULE'] .'</a>
+                ');
+                break;
             case 'blog':
                 Permission::checkAccess(119, 'static');
+                $objTemplate->setVariable('CONTENT_NAVIGATION', '
+                    <a href="index.php?cmd=media&amp;archive=content">'. $_ARRAYLANG['TXT_IMAGE_CONTENT'] .'</a>
+                    <a href="index.php?cmd=media&amp;archive=attach" class="active">'. $_ARRAYLANG['TXT_MODULE'] .'</a>
+                ');
+                break;
             case 'calendar':
                 Permission::checkAccess(16, 'static');
+                $objTemplate->setVariable('CONTENT_NAVIGATION', '
+                    <a href="index.php?cmd=media&amp;archive=content">'. $_ARRAYLANG['TXT_IMAGE_CONTENT'] .'</a>
+                    <a href="index.php?cmd=media&amp;archive=attach" class="active">'. $_ARRAYLANG['TXT_MODULE'] .'</a>
+                ');
+                break;
             case 'downloads':
                 Permission::checkAccess(141, 'static');
+                $objTemplate->setVariable('CONTENT_NAVIGATION', '
+                    <a href="index.php?cmd=media&amp;archive=content">'. $_ARRAYLANG['TXT_IMAGE_CONTENT'] .'</a>
+                    <a href="index.php?cmd=media&amp;archive=attach" class="active">'. $_ARRAYLANG['TXT_MODULE'] .'</a>
+                ');
+                break;
             case 'gallery':
                 Permission::checkAccess(12, 'static');
+                $objTemplate->setVariable('CONTENT_NAVIGATION', '
+                    <a href="index.php?cmd=media&amp;archive=content">'. $_ARRAYLANG['TXT_IMAGE_CONTENT'] .'</a>
+                    <a href="index.php?cmd=media&amp;archive=attach" class="active">'. $_ARRAYLANG['TXT_MODULE'] .'</a>
+                ');
+                break;
             case 'mediadir':
                 Permission::checkAccess(153, 'static');
+                $objTemplate->setVariable('CONTENT_NAVIGATION', '
+                    <a href="index.php?cmd=media&amp;archive=content">'. $_ARRAYLANG['TXT_IMAGE_CONTENT'] .'</a>
+                    <a href="index.php?cmd=media&amp;archive=attach" class="active">'. $_ARRAYLANG['TXT_MODULE'] .'</a>
+                ');
+                break;
             case 'podcast':
                 Permission::checkAccess(87, 'static');
+                $objTemplate->setVariable('CONTENT_NAVIGATION', '
+                    <a href="index.php?cmd=media&amp;archive=content">'. $_ARRAYLANG['TXT_IMAGE_CONTENT'] .'</a>
+                    <a href="index.php?cmd=media&amp;archive=attach" class="active">'. $_ARRAYLANG['TXT_MODULE'] .'</a>
+                ');
+                break;
             case 'shop':
                 Permission::checkAccess(13, 'static');
                 $objTemplate->setVariable('CONTENT_NAVIGATION', '
