@@ -1947,21 +1947,25 @@ class CrmLibrary
                     $objUser = $objFWUser->objUser->getUser($accountId);
                 } else {
                     $objUser = new User();
+                    $objUser->setPassword($password);
                 }
             } elseif (!empty($accountId) && $useralExists && $useralExists->RecordCount() == 0) {
                 $objUser = $objFWUser->objUser->getUser($accountId);
             } else if ((!empty($this->contact->account_id) && $objUser = $objFWUser->objUser->getUser($this->contact->account_id)) === true) {
                 if (empty($accountId)) {
                     $objUser = new User();
+                    $objUser->setPassword($password);
                 } else {
                     $objUser = $objFWUser->objUser->getUser($this->contact->account_id);
                 }
             } else if (empty($this->contact->account_id) && empty($accountId)) {
                 $objUser = new User();
+                $objUser->setPassword($password);
             }
         } else {
             if (empty($accountId)){
                 $objUser = new User();
+                $objUser->setPassword($password);
             } else {
                 $userExists = $objDatabase->getOne("SELECT id FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE user_account = {$accountId}");
                 if (empty ($userExists)) {
@@ -2029,7 +2033,7 @@ class CrmLibrary
             }
         }
         $objUser->setUsername($email);
-        $objUser->setPassword($password);
+        
         $objUser->setEmail($email);
         $objUser->setGroups((array) $settings['default_user_group']);
         $objUser->setFrontendLanguage($result['contact_language']);
