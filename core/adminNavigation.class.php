@@ -230,6 +230,13 @@ class adminMenu
                                     break;
                                 }
                                 $linkCmdSection = 'archive=themes';
+                            case 'contact':
+                                if ($this->activeCmd == 'contact') {
+                                    break;
+                                }
+                                if ($linkCmd == 'contact') {
+                                    $linkCmdSection = 'archive=contact';
+                                }
                             case 'media':
                                 if ($this->activeCmd != 'media') {
                                     break;
@@ -256,6 +263,9 @@ class adminMenu
                                     case 'themes':
                                         $linkCmd = 'media';
                                         break;
+                                    case 'contact':
+                                        $linkCmd = 'media';
+                                        break;
                                     case 'archive':
                                         $requestedArchive = 'archive';
                                         break;
@@ -270,7 +280,7 @@ class adminMenu
                                     }
 
                                 }
-                                
+
                                 if (!$isRequestedMediaArchive) {
                                     $linkCmd = '';
                                 }
