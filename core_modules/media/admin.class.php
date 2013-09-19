@@ -169,6 +169,7 @@ class MediaManager extends MediaLibrary
                 );
                 break;
             case 'contact':
+                Permission::checkAccess(84, 'static');
                 $objTemplate->setVariable('CONTENT_NAVIGATION', '
                     <a href="index.php?cmd=contact" title="'.$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS'].'">'.$_ARRAYLANG['TXT_FORMS'].'</a>
                     <a hreF="index.php?cmd=media&amp;archive=contact" title="'.$_ARRAYLANG['TXT_FILE_UPLOADS'].'" class="active">'.$_ARRAYLANG['TXT_FILE_UPLOADS'].'</a>
@@ -183,14 +184,23 @@ class MediaManager extends MediaLibrary
                 ');
                 break;
             case 'attach':
+                Permission::checkAccess(84, 'static');
             case 'access':
+                Permission::checkAccess(18, 'static');
             case 'blog':
+                Permission::checkAccess(119, 'static');
             case 'calendar':
+                Permission::checkAccess(16, 'static');
             case 'downloads':
+                Permission::checkAccess(141, 'static');
             case 'gallery':
+                Permission::checkAccess(12, 'static');
             case 'mediadir':
+                Permission::checkAccess(153, 'static');
             case 'podcast':
+                Permission::checkAccess(87, 'static');
             case 'shop':
+                Permission::checkAccess(13, 'static');
                 $objTemplate->setVariable('CONTENT_NAVIGATION', '
                     <a href="index.php?cmd=media&amp;archive=content">'. $_ARRAYLANG['TXT_IMAGE_CONTENT'] .'</a>
                     <a href="index.php?cmd=media&amp;archive=attach" class="active">'. $_ARRAYLANG['TXT_MODULE'] .'</a>
