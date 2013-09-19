@@ -234,14 +234,14 @@ class CalendarRegistration extends CalendarLibrary
     function save($data) {
         global $objDatabase, $objInit, $_LANGID;
         
-        foreach ($this->form->inputfields as $key => $arrInputfield) {
+        /* foreach ($this->form->inputfields as $key => $arrInputfield) {
             if($arrInputfield['type'] == 'selectBillingAddress') { 
                 $affiliationStatus = $data['registrationField'][$arrInputfield['id']];
             }
-        }
+        } */
         
         foreach ($this->form->inputfields as $key => $arrInputfield) {
-            if($affiliationStatus == 'sameAsContact') {
+            /* if($affiliationStatus == 'sameAsContact') {
                 if($arrInputfield['required'] == 1 && empty($data['registrationField'][$arrInputfield['id']]) && $arrInputfield['affiliation'] != 'billing') {
                     return false;
                 } 
@@ -253,7 +253,7 @@ class CalendarRegistration extends CalendarLibrary
                         return false;    
                     }
                 }
-            } else {
+            } else { */
                 if($arrInputfield['required'] == 1 && empty($data['registrationField'][$arrInputfield['id']])) {
                     return false;
                 } 
@@ -265,7 +265,7 @@ class CalendarRegistration extends CalendarLibrary
                         return false;    
                     }
                 }
-            }
+            /* } */
         }
         
         $regId = intval($data['regid']);

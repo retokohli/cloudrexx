@@ -51,7 +51,7 @@ class CalendarFormManager extends CalendarLibrary
         'salutation',
         'firstname',
         'lastname',
-        'selectBillingAddress'
+        //'selectBillingAddress'
     );
     
     /**
@@ -266,13 +266,13 @@ class CalendarFormManager extends CalendarLibrary
                         ));
                         $objTpl->parse('inputRegfieldTypes');
                     }
-                    foreach ($this->arrInputfieldAffiliations as $strAffiliation) {
+                    /* foreach ($this->arrInputfieldAffiliations as $strAffiliation) {
                         $objTpl->setVariable(array(
                             $this->moduleLangVar.'_FORM_FIELD_TYPE'        =>  $strAffiliation,
                             'TXT_'.$this->moduleLangVar.'_FORM_FIELD_TYPE' =>  $_ARRAYLANG['TXT_CALENDAR_FORM_FIELD_AFFILIATION_'.strtoupper($strAffiliation)],
                         ));
                         $objTpl->parse('fieldAfflications');
-                    }
+                    }*/
                     
                     $objTpl->setVariable(array(                        
                         $this->moduleLangVar.'_FORM_DATA'           => json_encode($formFields),
@@ -294,7 +294,7 @@ class CalendarFormManager extends CalendarLibrary
                 $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_FIELD', $objFieldTemplate->get());
                 $objTpl->parse('calendarRegistrationField');
                 
-                $selectBillingAddressStatus = false;
+                // $selectBillingAddressStatus = false;
                                 
                 foreach ($objForm->inputfields as $key => $arrInputfield) {
                     $objFieldTemplate->setTemplate(self::frontendFieldTemplate, true, true);
@@ -381,7 +381,7 @@ class CalendarFormManager extends CalendarLibrary
                         case 'agb':
                             $inputfield = '<input class="calendarInputCheckbox" type="checkbox" name="registrationField['.$arrInputfield['id'].'][]" value="1" />&nbsp;'.$_ARRAYLANG['TXT_CALENDAR_AGB'].'<br />';
                             break;
-                        case 'selectBillingAddress':
+                        /* case 'selectBillingAddress':
                             if(!$selectBillingAddressStatus) {
                                 if($_REQUEST['registrationField'][$arrInputfield['id']] == 'deviatesFromContact') {
                                     $selectDeviatesFromContact = 'selected="selected"';
@@ -395,7 +395,7 @@ class CalendarFormManager extends CalendarLibrary
                                 $inputfield .= '</select>'; 
                                 $selectBillingAddressStatus = true;
                             } 
-                            break;
+                            break; */
                         case 'fieldset':
                             $inputfield = null;
                             break;

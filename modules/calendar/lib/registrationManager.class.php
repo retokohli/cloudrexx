@@ -207,7 +207,7 @@ class CalendarRegistrationManager extends CalendarLibrary
                         case 'inputtext':
                         case 'textarea':
                         case 'mail':
-                        case 'selectBillingAddress':
+                        // case 'selectBillingAddress':
                             $value = $objResult->fields['value'];
                             break;
                         case 'salutation':
