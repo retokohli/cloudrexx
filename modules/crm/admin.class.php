@@ -2018,7 +2018,7 @@ END;
     function _modifyContact()
     {
         global $_ARRAYLANG, $objDatabase ,$objJs, $objResult, $_LANGID, $_CORELANG;
-
+        
         JS::activate('cx');
         JS::activate("jquery");
         JS::activate("jqueryui");
@@ -2528,6 +2528,7 @@ END;
                 'CRM_CONTACT_USERNAME'      => $objUser ? contrexx_raw2xhtml($objUser->getEmail()) : '',
                 'CRM_CONTACT_ACCOUNT_USERNAME' => $objUser ? ($accountCompany ? $accountCompany.', '.$accountFirstName.' '.$accountLastName : $accountFirstName.' '.$accountLastName) : ' ',
                 'CRM_CONTACT_SHOW_PASSWORD' => "style='display: none;'",
+                'CRM_CONTACT_RANDOM_PASSWORD' => User::make_password(),        
                 'CRM_GENDER_FEMALE_SELECTED'=> $this->contact->contact_gender == 1 ? 'selected' : '',
                 'CRM_GENDER_MALE_SELECTED'  => $this->contact->contact_gender == 2 ? 'selected' : '',
                 'CRM_CONTACT_TYPE'          => ($contactType == 1) ? 'company' : 'contact',
