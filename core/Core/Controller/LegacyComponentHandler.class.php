@@ -1953,7 +1953,6 @@ class LegacyComponentHandler {
                     'media' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
 
-                        \Permission::checkAccess(7, 'static');
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/media/admin.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $subMenuTitle = $_CORELANG['TXT_MEDIA_MANAGER'];
