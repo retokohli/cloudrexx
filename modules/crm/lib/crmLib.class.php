@@ -2739,8 +2739,7 @@ CODE;
                     'CRM_CONTACT_GENDER'                => contrexx_raw2xhtml($contact_gender),
                     'CRM_DOMAIN'                        => ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}".ASCMS_PATH_OFFSET,
                     'CRM_CONTACT_DETAILS_URL'           => ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}". ASCMS_ADMIN_WEB_PATH ."/index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id=$customerId",
-                    'CRM_CONTACT_DETAILS_LINK'          => ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}". ASCMS_ADMIN_WEB_PATH ."/index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id=$customerId",
-//                    'CRM_CONTACT_DETAILS_LINK'          => "<a href='". ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}". ASCMS_ADMIN_WEB_PATH ."/index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id=$customerId'>".$customer_name."</a>"
+                    'CRM_CONTACT_DETAILS_LINK'          => "<a href='". ASCMS_PROTOCOL."://{$_SERVER['HTTP_HOST']}". ASCMS_ADMIN_WEB_PATH ."/index.php?cmd={$this->moduleName}&act=customers&tpl=showcustdetail&id=$customerId'>".$customer_name."</a>"
                 );
                 //setting email template lang id
                 $availableMailTempLangAry = $this->getActiveEmailTemLangId('crm', CRM_EVENT_ON_ACCOUNT_UPDATED);
