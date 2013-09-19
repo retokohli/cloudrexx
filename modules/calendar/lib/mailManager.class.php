@@ -517,20 +517,31 @@ class CalendarMailManager extends CalendarLibrary {
         $registrationDataText = '';
         $registrationDataHtml = '<table align="top" border="0" cellpadding="3" cellspacing="0">';
         foreach ($objRegistration->fields as $arrField) {
-            $options = !empty($arrField['default']) ? explode(",", $arrField['default']) : array();
-            $values  = explode(",", $arrField['value']);
-            $hide    = false;
-            $output  = array();
-            
+            $hide = false;
             switch ($arrField['type']) {
                 case 'select':
                 case 'radio':
+                case 'checkbox':
                 case 'salutation':
-                    if (empty($options)) {
-                        $options[0] = '1';
-                    }
-                    foreach ($values as $value) {
-                        $output[] = $options[$value-1];
+                    $options = explode(",", $arrField['default']);
+                    $values  = explode(",", $arrField['value']);
+                    $output  = array();
+
+                    foreach ($values as $value) {                        
+                        $arrValue = explode('[[', $value);
+                        $value    = $arrValue[0];
+                        $input    = str_replace(']]','', $arrValue[1]);
+
+                        $newOptions = explode('[[', $options[$value-1]);                                
+                        if (!empty($input)) {
+                            $output[]  = $newOptions[0].": ".$input;
+                        } else {
+                            if ($newOptions[0] == '') {
+                                $newOptions[0] = $value == 1 ? $_ARRAYLANG['TXT_CALENDAR_YES'] : $_ARRAYLANG['TXT_CALENDAR_NO'];
+                            }
+
+                            $output[] = $newOptions[0];
+                        }                                             
                     }
                     $htmlValue = $textValue = join(", ", $output);
                     break;
@@ -540,17 +551,6 @@ class CalendarMailManager extends CalendarLibrary {
                 case 'textarea':
                     $textValue = $arrField['value'];
                     $htmlValue = nl2br($arrField['value']);
-                    break;
-                case 'checkbox':
-                    if (empty($options)) {
-                        $value = $arrField['value'] ? $_ARRAYLANG['TXT_CALENDAR_YES'] : $_ARRAYLANG['TXT_CALENDAR_NO'];
-                    } else {
-                        foreach ($values as $value) {
-                            $output[] = $options[$value - 1];
-                        }
-                        $value = implode(', ', $output);
-                    }
-                    $htmlValue = $textValue = $value;
                     break;
                 case 'fieldset':
                     $hide = true;

@@ -196,7 +196,7 @@ class CalendarRegistrationManager extends CalendarLibrary
         
         $arrValues = array();
         if ($objResult !== false) {
-            while (!$objResult->EOF) {
+            while (!$objResult->EOF) {                    
                 if (!in_array($objResult->fields['type'], array('agb', 'fieldset'))) {
                     $options = !empty($objResult->fields['default']) ? explode(',', $objResult->fields['default']) : array();
                     $value   = '';
@@ -213,19 +213,30 @@ class CalendarRegistrationManager extends CalendarLibrary
                         case 'salutation':
                         case 'seating':
                         case 'select':
-                        case 'radio':
                             $value = $options[$objResult->fields['value'] - 1];
                             break;
+                        case 'radio':
                         case 'checkbox':
-                            if (empty($options)) {
-                                $value = $objResult->fields['value'] ? $_ARRAYLANG['TXT_CALENDAR_YES'] : $_ARRAYLANG['TXT_CALENDAR_NO'];
-                            } else {
-                                $tmpValue = array();
-                                foreach (explode(',', $objResult->fields['value']) as $selectedValue) {
-                                    $tmpValue[] = $options[$selectedValue - 1];
+                            $output   = array();
+                            $input    = '';
+                            foreach (explode(',', $objResult->fields['value']) as $value) {
+                                $arrValue = explode('[[', $value);
+                                $value    = $arrValue[0];
+                                $input    = str_replace(']]','', $arrValue[1]);
+
+                                $newOptions = explode('[[', $options[$value-1]);                                
+                                if (!empty($input)) {
+                                    $output[]  = $newOptions[0].": ".$input;
+                                } else {
+                                    if ($newOptions[0] == '') {
+                                        $newOptions[0] = $value == 1 ? $_ARRAYLANG['TXT_CALENDAR_YES'] : $_ARRAYLANG['TXT_CALENDAR_NO'];
+                                    }
+                                    
+                                    $output[] = $newOptions[0];
                                 }
-                                $value = implode(', ', $tmpValue);
+                                $value = implode(", ", $output);
                             }
+                            break;
                     }
 
                     $arrValues[$objResult->fields['reg_id']][$objResult->fields['field_id']] = $value;
@@ -331,19 +342,24 @@ class CalendarRegistrationManager extends CalendarLibrary
                     $inputfield .= '</select>';
                     break;
                  case 'radio':
+                    $arrValue = explode('[[', $value);
+                    $value    = $arrValue[0];
+                    $input    = str_replace(']]','', $arrValue[1]);
                     foreach ($options as $key => $name)  {
-                        $checked =  ($key+1 == $value) || (empty($_POST) && $key == 0) ? 'checked="checked"' : '';     
-                        $textfield = '<input type="text" class="calendarInputCheckboxAdditional" name="registrationFieldAdditional['.$arrInputfield['id'].']['.$key.']" />';
+                        $checked =  ($key+1 == $value) || (in_array($key+1, $_POST['registrationField'][$arrInputfield['id']])) ? 'checked="checked"' : '';
+                        $textfield = '<input type="text" class="calendarInputCheckboxAdditional" name="registrationFieldAdditional['.$arrInputfield['id'].']['.$key.']" value="'. ($checked ? $input : '') .'" />';
                         $name = str_replace('[[INPUT]]', $textfield, $name);
                         $inputfield .= '<input type="radio" class="calendarInputCheckbox" name="registrationField['.$arrInputfield['id'].']" value="'.intval($key+1).'" '.$checked.'/>&nbsp;'.$name.'<br />';  
                     }
                     break;
                  case 'checkbox':      
-                    $value = explode(',', $value); 
+                    $arrValue = explode('[[', $value);
+                    $value    = $arrValue[0];
+                    $input    = str_replace(']]','', $arrValue[1]); 
                     foreach ($options as $key => $name)  {    
                         $textfield = '<input type="text" class="calendarInputCheckboxAdditional" name="registrationFieldAdditional['.$arrInputfield['id'].']['.$key.']" />';
                         $name = str_replace('[[INPUT]]', $textfield, $name);
-                        $checked = in_array($key+1, $value) || (in_array($key+1, $_POST['registrationField'][$arrInputfield['id']]))  ? 'checked="checked"' : '';       
+                        $checked = ($key+1 == $value) || (in_array($key+1, $_POST['registrationField'][$arrInputfield['id']]))  ? 'checked="checked"' : '';       
                         $inputfield .= '<input '.$checked.' type="checkbox" class="calendarInputCheckbox" name="registrationField['.$arrInputfield['id'].'][]" value="'.intval($key+1).'" />&nbsp;'.$name.'<br />';  
                     }
                     break;
