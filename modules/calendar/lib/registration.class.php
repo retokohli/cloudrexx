@@ -333,8 +333,11 @@ class CalendarRegistration extends CalendarLibrary
                 return false;
             }
         }
-        
-        foreach ($data['registrationField'] as $id => $value) {
+
+        foreach ($this->form->inputfields as $key => $arrInputfield) {
+            $value = $data['registrationField'][$arrInputfield['id']];
+            $id    = $arrInputfield['id'];
+            
             if(is_array($value)) {   
                 $subvalue = array();
                 foreach ($value as $key => $element) {
@@ -346,7 +349,7 @@ class CalendarRegistration extends CalendarLibrary
                 }
                 $value = join(",", $subvalue);
             } else {                                                                   
-                if(!empty($data['registrationFieldAdditional'][$id][$value-1])) {
+                if(isset($data['registrationFieldAdditional'][$id][$value-1])) {
                     $value = $value."[[".$data['registrationFieldAdditional'][$id][$value-1]."]]";
                 }
             }
