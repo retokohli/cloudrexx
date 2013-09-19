@@ -3,8 +3,8 @@
  * Admin Class CRM
  *
  * @category   CrmManager
- * @package    contrexx
- * @subpackage module_crm
+ * @package    Contrexx
+ * @subpackage Module_Crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
  * @copyright  2012 and CONTREXX CMS - COMVATION AG
  * @license    trial license
@@ -19,8 +19,8 @@ require_once CRM_MODULE_LIB_PATH.'/Csv_bv.class.php';
  * Admin Class CRM
  *
  * @category   CrmManager
- * @package    contrexx
- * @subpackage module_crm
+ * @package    Contrexx
+ * @subpackage Module_Crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
  * @copyright  2012 and CONTREXX CMS - COMVATION AG
  * @license    trial license
@@ -2639,11 +2639,6 @@ END;
                 $this->_objTpl->touchBlock("contactUserName");
                 $this->_objTpl->touchBlock("contactPassword");
                 $this->_objTpl->touchBlock("show-account-details");
-//                if ($this->contact->id) {
-//                    $this->_objTpl->hideBlock("contactSendNotification");
-//                } else {
-//                    $this->_objTpl->touchBlock("contactSendNotification");
-//                }
                 $this->_objTpl->touchBlock("contactSendNotification");
             } else {
                 $this->_objTpl->hideBlock("contactUserName");
@@ -3524,33 +3519,33 @@ END;
                                                                   LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_customer_contact_address` as addr
                                                                    ON (c.id = addr.contact_id AND addr.is_primary = '1')
                                                                   WHERE c.`id` = {$id}");
-                    if (!$isWorkEmail) {
-                        $workEmail    = utf8_decode($objContactCompany->fields['email']);
-                    }
-                    if (!$isHomeEmail) {
-                        $homeEmail    = utf8_decode($objContactCompany->fields['email']);
-                    }
-                    if (!$isWorkPhone) {
-                        $wrkTelephone = utf8_decode($objContactCompany->fields['phone']);
-                    }
-                    if (!$isHomePhone) {
-                        $homeTelephone = utf8_decode($objContactCompany->fields['phone']);
-                    }
-                    if (!$workAddr) {
-                        $workAddress    = utf8_decode($objContactCompany->fields['address']);
-                        $workCity       = utf8_decode($objContactCompany->fields['city']);
-                        $workState      = utf8_decode($objContactCompany->fields['state']);
-                        $workPostalcode = utf8_decode($objContactCompany->fields['zip']);
-                        $workCountry    = utf8_decode($objContactCompany->fields['country']);
-                    }
-                    if (!$homeAddr) {
-                        $homeAddress    = utf8_decode($objContactCompany->fields['address']);
-                        $homeCity       = utf8_decode($objContactCompany->fields['city']);
-                        $homeState      = utf8_decode($objContactCompany->fields['state']);
-                        $homePostalcode = utf8_decode($objContactCompany->fields['zip']);
-                        $homeCountry    = utf8_decode($objContactCompany->fields['country']);
-                    }
+                if (!$isWorkEmail) {
+                    $workEmail    = utf8_decode($objContactCompany->fields['email']);
                 }
+                if (!$isHomeEmail) {
+                    $homeEmail    = utf8_decode($objContactCompany->fields['email']);
+                }
+                if (!$isWorkPhone) {
+                    $wrkTelephone = utf8_decode($objContactCompany->fields['phone']);
+                }
+                if (!$isHomePhone) {
+                    $homeTelephone = utf8_decode($objContactCompany->fields['phone']);
+                }
+                if (!$workAddr) {
+                    $workAddress    = utf8_decode($objContactCompany->fields['address']);
+                    $workCity       = utf8_decode($objContactCompany->fields['city']);
+                    $workState      = utf8_decode($objContactCompany->fields['state']);
+                    $workPostalcode = utf8_decode($objContactCompany->fields['zip']);
+                    $workCountry    = utf8_decode($objContactCompany->fields['country']);
+                }
+                if (!$homeAddr) {
+                    $homeAddress    = utf8_decode($objContactCompany->fields['address']);
+                    $homeCity       = utf8_decode($objContactCompany->fields['city']);
+                    $homeState      = utf8_decode($objContactCompany->fields['state']);
+                    $homePostalcode = utf8_decode($objContactCompany->fields['zip']);
+                    $homeCountry    = utf8_decode($objContactCompany->fields['country']);
+                }
+            }
 
             include_once "lib/class_vcard.php";
 
@@ -3910,7 +3905,7 @@ END;
                 'TXT_CRM_FUNCTIONS'        => $_ARRAYLANG['TXT_CRM_FUNCTIONS'],
                 'CRM_CUSTOMER_ID'       => $contactId,
         ));
-        $this->_objTpl->setGlobalVariable('CRM_REDIRECT_LINK' , '&redirect='.base64_encode("&act=customers&tpl=showcustdetail&id={$contactId}"));
+        $this->_objTpl->setGlobalVariable('CRM_REDIRECT_LINK', '&redirect='.base64_encode("&act=customers&tpl=showcustdetail&id={$contactId}"));
 
         if (isset($_GET['ajax'])) {
             $this->_objTpl->hideBlock("skipAjaxBlock");
@@ -5770,18 +5765,21 @@ END;
     }
 
     /**
-     * Uploader callback function
+     * the upload is finished
+     * rewrite the names
+     * write the uploaded files to the database
      *
-     * @param string  $tempPath    Temp path
-     * @param string  $tempWebPath Temp webpath
-     * @param string  $data        post data
-     * @param integer $uploadId    upload id
-     * @param array   $fileInfos   file infos
-     * @param object  $response    Upload api response object
-     *
-     * @return array path and webpath
+     * @param string     $tempPath    the temporary file path
+     * @param string     $tempWebPath the temporary file path which is accessable by web browser
+     * @param array      $data        the data which are attached by uploader init method
+     * @param integer    $uploadId    the upload id
+     * @param array      $fileInfos   the file infos  
+     * @param String     $response    the respose
+     * 
+     * @return array the target paths
      */
-    public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response) {
+    public static function uploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response) 
+    {
         global $objDatabase, $_ARRAYLANG, $_CONFIG, $objInit;
 
         $arrFiles = array();
@@ -5793,12 +5791,14 @@ END;
         $h = opendir($tempPath);
         if ($h) {
 
-            while(false != ($file = readdir($h))) {
+            while (false != ($file = readdir($h))) {
 
                 $info = pathinfo($file);
 
                 //skip . and ..
-                if($file == '.' || $file == '..') { continue; }
+                if ($file == '.' || $file == '..') { 
+                    continue; 
+                }
 
                 //delete unwanted files
                 $sizeLimit = 10485760;
@@ -5813,7 +5813,7 @@ END;
                     continue;
                 }
 
-                if(!in_array(strtolower($info['extension']), $arrAllowedFileTypes)) {
+                if (!in_array(strtolower($info['extension']), $arrAllowedFileTypes)) {
                     $response->addMessage(
                         UploadResponse::STATUS_ERROR,
                         'Please choose a csv to upload',
@@ -5823,7 +5823,7 @@ END;
                     continue;
                 }
 
-                if($file != '..' && $file != '.') {
+                if ($file != '..' && $file != '.') {
                     //do not overwrite existing files.
                     $prefix = '';
                     while (file_exists($depositionTarget.$prefix.$file)) {
@@ -5863,13 +5863,13 @@ END;
      * rewrite the names
      * write the uploaded files to the database
      *
-     * @static
-     * @param string $tempPath the temporary file path
-     * @param string $tempWebPath the temporary file path which is accessable by web browser
-     * @param array $data the data which are attached by uploader init method
-     * @param integer $uploadId the upload id
-     * @param $fileInfos
-     * @param $response
+     * @param string     $tempPath    the temporary file path
+     * @param string     $tempWebPath the temporary file path which is accessable by web browser
+     * @param array      $data        the data which are attached by uploader init method
+     * @param integer    $uploadId    the upload id
+     * @param array      $fileInfos   the file infos  
+     * @param String     $response    the respose
+     * 
      * @return array the target paths
      */
     public static function docUploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response)
@@ -5881,14 +5881,16 @@ END;
         $h = opendir($tempPath);
         if ($h) {
 
-            while(false != ($file = readdir($h))) {
+            while (false != ($file = readdir($h))) {
 
                 $info = pathinfo($file);
 
                 //skip . and ..
-                if($file == '.' || $file == '..') { continue; }
+                if ($file == '.' || $file == '..') { 
+                    continue; 
+                }
 
-                if($file != '..' && $file != '.') {
+                if ($file != '..' && $file != '.') {
                     //do not overwrite existing files.
                     $prefix = '';
                     while (file_exists($depositionTarget.$prefix.$file)) {
@@ -5930,13 +5932,13 @@ END;
      * rewrite the names
      * write the uploaded files to the database
      *
-     * @static
-     * @param string $tempPath the temporary file path
-     * @param string $tempWebPath the temporary file path which is accessable by web browser
-     * @param array $data the data which are attached by uploader init method
-     * @param integer $uploadId the upload id
-     * @param $fileInfos
-     * @param $response
+     * @param string     $tempPath    the temporary file path
+     * @param string     $tempWebPath the temporary file path which is accessable by web browser
+     * @param array      $data        the data which are attached by uploader init method
+     * @param integer    $uploadId    the upload id
+     * @param array      $fileInfos   the file infos  
+     * @param String     $response    the respose
+     * 
      * @return array the target paths
      */
     public static function proPhotoUploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response)
@@ -5948,14 +5950,16 @@ END;
         $h = opendir($tempPath);
         if ($h) {
 
-            while(false != ($file = readdir($h))) {
+            while (false != ($file = readdir($h))) {
 
                 $info = pathinfo($file);
 
                 //skip . and ..
-                if($file == '.' || $file == '..') { continue; }
+                if ($file == '.' || $file == '..') { 
+                    continue; 
+                }
 
-                if($file != '..' && $file != '.') {
+                if ($file != '..' && $file != '.') {
                     //do not overwrite existing files.
                     $prefix = '';
                     while (file_exists($depositionTarget.$prefix.$file)) {
@@ -6040,13 +6044,13 @@ END;
      * rewrite the names
      * write the uploaded files to the database
      *
-     * @static
-     * @param string $tempPath the temporary file path
-     * @param string $tempWebPath the temporary file path which is accessable by web browser
-     * @param array $data the data which are attached by uploader init method
-     * @param integer $uploadId the upload id
-     * @param $fileInfos
-     * @param $response
+     * @param string     $tempPath    the temporary file path
+     * @param string     $tempWebPath the temporary file path which is accessable by web browser
+     * @param array      $data        the data which are attached by uploader init method
+     * @param integer    $uploadId    the upload id
+     * @param array      $fileInfos   the file infos  
+     * @param String     $response    the respose
+     * 
      * @return array the target paths
      */
     public static function taskUploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response)
@@ -6058,14 +6062,16 @@ END;
         $h = opendir($tempPath);
         if ($h) {
 
-            while(false != ($file = readdir($h))) {
+            while (false != ($file = readdir($h))) {
 
                 $info = pathinfo($file);
 
                 //skip . and ..
-                if($file == '.' || $file == '..') { continue; }
+                if ($file == '.' || $file == '..') { 
+                    continue; 
+                }
 
-                if($file != '..' && $file != '.') {
+                if ($file != '..' && $file != '.') {
                     //do not overwrite existing files.
                     $prefix = '';
                     while (file_exists($depositionTarget.$prefix.$file)) {
@@ -6114,13 +6120,13 @@ END;
      * rewrite the names
      * write the uploaded files to the database
      *
-     * @static
-     * @param string $tempPath the temporary file path
-     * @param string $tempWebPath the temporary file path which is accessable by web browser
-     * @param array $data the data which are attached by uploader init method
-     * @param integer $uploadId the upload id
-     * @param $fileInfos
-     * @param $response
+     * @param string     $tempPath    the temporary file path
+     * @param string     $tempWebPath the temporary file path which is accessable by web browser
+     * @param array      $data        the data which are attached by uploader init method
+     * @param integer    $uploadId    the upload id
+     * @param array      $fileInfos   the file infos  
+     * @param String     $response    the respose
+     * 
      * @return array the target paths
      */
     public static function notesUploadFinished($tempPath, $tempWebPath, $data, $uploadId, $fileInfos, $response)
@@ -6132,14 +6138,16 @@ END;
         $h = opendir($tempPath);
         if ($h) {
 
-            while(false != ($file = readdir($h))) {
+            while (false != ($file = readdir($h))) {
 
                 $info = pathinfo($file);
 
                 //skip . and ..
-                if($file == '.' || $file == '..') { continue; }
+                if ($file == '.' || $file == '..') { 
+                    continue; 
+                }
 
-                if($file != '..' && $file != '.') {
+                if ($file != '..' && $file != '.') {
                     //do not overwrite existing files.
                     $prefix = '';
                     while (file_exists($depositionTarget.$prefix.$file)) {
@@ -6188,7 +6196,7 @@ END;
      * 
      * @global object $objFWUser
      *
-     * return json
+     * @return json
      */
     function checkAccountId()
     {
