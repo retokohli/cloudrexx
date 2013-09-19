@@ -734,8 +734,8 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 	                        $arrValues = explode(',', $objRSMapKoordinates->fields['value']);
 	                    }
 
-	                    $strValueLon = $arrValues[0];
-	                    $strValueLat = $arrValues[1];
+	                    $strValueLon = empty($arrValues[0]) ? 0 : $arrValues[0];
+                        $strValueLat = empty($arrValues[1]) ? 0 : $arrValues[1];
 	                    $strValueGeoXml = $arrValues[3];
 	                    $strValueClick = 'marker'.$intEntryId.'.openInfoWindowHtml(info'.$intEntryId.');';
 
