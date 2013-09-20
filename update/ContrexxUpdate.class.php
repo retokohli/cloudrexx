@@ -1198,7 +1198,7 @@ class ContrexxUpdate
         if (in_array($this->lang, $arrVersions[$_SESSION['contrexx_update']['version']]['lang'])) {
             $lang = $this->lang;
         } else {
-            $lang = $arrVersions[$_SESSION['contrexx_update']['version']['lang'][0]];
+            $lang = $arrVersions[$_SESSION['contrexx_update']['version']]['lang'][0];
         }
         if (@file_exists(UPDATE_UPDATES.'/'.$_SESSION['contrexx_update']['version'].'/lang/'.$lang.'.lang.php') && @include_once(UPDATE_UPDATES.'/'.$_SESSION['contrexx_update']['version'].'/lang/'.$lang.'.lang.php')) {
             return true;
