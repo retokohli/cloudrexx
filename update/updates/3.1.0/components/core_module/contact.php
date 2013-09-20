@@ -466,19 +466,6 @@ function _contactUpdate()
                 )
             );
 
-            \Cx\Lib\UpdateUtil::table(
-                DBPREFIX.'module_contact_form_field',
-                array(
-                    'id'                 => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                    'id_form'            => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'id'),
-                    'type'               => array('type' => 'ENUM(\'text\',\'label\',\'checkbox\',\'checkboxGroup\',\'country\',\'date\',\'file\',\'multi_file\',\'fieldset\',\'hidden\',\'horizontalLine\',\'password\',\'radio\',\'select\',\'textarea\',\'recipient\',\'special\')', 'default' => '\'text\'', 'after' => 'id_form'),
-                    'special_type'       => array('type' => 'VARCHAR(20)', 'after' => 'type'),
-                    'is_required'        => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '0', 'after' => 'special_type'),
-                    'check_type'         => array('type' => 'INT(3)', 'notnull' => true, 'default' => '1', 'after' => 'is_required'),
-                    'order_id'           => array('type' => 'SMALLINT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'check_type')
-                )
-            );
-
         }
 
     } catch (\Cx\Lib\UpdateException $e) {
