@@ -343,24 +343,71 @@ class crmInterface extends CrmLibrary
     {
         global $_ARRAYLANG,$objDatabase, $_LANGID;
 
+        $alphaFilter = isset($_REQUEST['companyname_filter']) ? contrexx_input2raw($_REQUEST['companyname_filter']) : '';
+        if (!empty($alphaFilter)) {
+            $where[] = " (c.customer_name LIKE '".contrexx_input2raw($alphaFilter)."%')";
+        }
+        $searchContactTypeFilter = isset($_GET['contactSearch']) ? (array) $_GET['contactSearch'] : array(1,2);
+        $searchContactTypeFilter = array_map('intval', array_unique($searchContactTypeFilter));
+        $where[] = " c.contact_type IN (".implode(',', $searchContactTypeFilter).")";
+
+        if (isset($_GET['s_name']) && !empty($_GET['s_name'])) {
+            $where[] = " (c.customer_name LIKE '".contrexx_input2db($_GET['s_name'])."%' OR c.contact_familyname LIKE '".contrexx_input2db($_GET['s_name'])."%')";
+        }
+        if (isset($_GET['s_email']) && !empty($_GET['s_email'])) {
+            $where[] = " (email.email LIKE '".contrexx_input2db($_GET['s_email'])."%')";
+        }
+        if (isset($_GET['s_address']) && !empty($_GET['s_address'])) {
+            $where[] = " (addr.address LIKE '".contrexx_input2db($_GET['s_address'])."%')";
+        }
+        if (isset($_GET['s_city']) && !empty($_GET['s_city'])) {
+            $where[] = " (addr.city LIKE '".contrexx_input2db($_GET['s_city'])."%')";
+        }
+        if (isset($_GET['s_postal_code']) && !empty($_GET['s_postal_code'])) {
+            $where[] = " (addr.zip LIKE '".contrexx_input2db($_GET['s_postal_code'])."%')";
+        }
+        if (isset($_GET['s_notes']) && !empty($_GET['s_notes'])) {
+            $where[] = " (c.notes LIKE '".contrexx_input2db($_GET['s_notes'])."%')";
+        }
+        if (isset($_GET['customer_type']) && !empty($_GET['customer_type'])) {
+            $where[] = " (c.customer_type = '".intval($_GET['customer_type'])."')";
+        }
+        if (isset($_GET['filter_membership']) && !empty($_GET['filter_membership'])) {
+            $where[] = " mem.membership_id = '".intval($_GET['filter_membership'])."'";
+        }
+
+        if (isset($_GET['term']) && !empty($_GET['term'])) {
+            $fullTextContact = array();
+            if (in_array(2, $searchContactTypeFilter))
+                $fullTextContact[]  =  'c.customer_name, c.contact_familyname';
+            if (in_array(1, $searchContactTypeFilter))
+                $fullTextContact[]  = 'c.customer_name';
+            if (empty($fullTextContact)) {
+                $fullTextContact[]  =  'c.customer_name, c.contact_familyname';
+            }
+            $where[] = " MATCH (".implode(',', $fullTextContact).") AGAINST ('".contrexx_input2db($_GET['term'])."' IN BOOLEAN MODE)";
+        }
+
         $process = isset ($_GET['process']) ? trim($_GET['process']) : '';
         switch ($process) {
         case '1':
-                $activeWhere = " WHERE c.contact_type = 1";
+                $where[] = " c.contact_type = 1";
             break;
         case '2':
-                $activeWhere = " WHERE c.contact_type = 2";
+                $where[] = " c.contact_type = 2";
             break;
         case 'active':
-                $activeWhere = " WHERE c.status = 1";
-            break;
-        default:
-                $activeWhere = '';
+                $where[] = " c.status = 1";
             break;
         }
         
+        //  Join where conditions
+        $filter = '';
+        if (!empty ($where))
+            $filter = " WHERE ".implode(' AND ', $where);
+        
         $query = "SELECT
-                           c.id,                           
+                           DISTINCT c.id,
                            c.customer_id,
                            c.customer_name,
                            c.contact_familyname,
@@ -379,9 +426,17 @@ class crmInterface extends CrmLibrary
                            cur.name AS currency
                        FROM `".DBPREFIX."module_{$this->moduleName}_contacts` AS c
                        LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_contacts` AS con
-                         ON c.contact_customer = con.id
-                       LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_customer_types` AS t
+                         ON c.contact_customer =con.id
+                       LEFT JOIN ".DBPREFIX."module_{$this->moduleName}_customer_types AS t
                          ON c.customer_type = t.id
+                       LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_customer_contact_emails` as email
+                         ON (c.id = email.contact_id AND email.is_primary = '1')
+                       LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_customer_contact_phone` as phone
+                         ON (c.id = phone.contact_id AND phone.is_primary = '1')
+                       LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_customer_contact_address` as addr
+                         ON (c.id = addr.contact_id AND addr.is_primary = '1')
+                       LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_customer_membership` as mem
+                         ON (c.id = mem.contact_id)
                        LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_industry_types` AS Intype
                          ON c.industry_type = Intype.id
                        LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_industry_type_local` AS Inloc
@@ -390,8 +445,8 @@ class crmInterface extends CrmLibrary
                          ON cur.id = c.customer_currency
                        LEFT JOIN `".DBPREFIX."languages` AS lang
                          ON lang.id = c.contact_language
-                         ".$activeWhere."
-                         order by c.id desc"; 
+                $filter
+                       ORDER BY c.id DESC";
         $objResult = $objDatabase->Execute($query);
 
         switch ($process){
