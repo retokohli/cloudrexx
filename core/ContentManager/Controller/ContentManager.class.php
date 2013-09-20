@@ -11,7 +11,6 @@
 
 namespace Cx\Core\ContentManager\Controller;
 use Doctrine\Common\Util\Debug as DoctrineDebug;
-use \Cx\Core\Json\Adapter\ContentManager\JsonPage;
 
 /**
  * ContentManager
