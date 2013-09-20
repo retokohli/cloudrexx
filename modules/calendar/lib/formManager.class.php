@@ -359,11 +359,12 @@ class CalendarFormManager extends CalendarLibrary
 
                             $inputfield .= '</select>'; 
                             break;
-                         case 'radio':                                             
+                         case 'radio': 
                             foreach($options as $key => $name)  { 
                                 $checked =  ($key+1 == $value) || (empty($_POST) && $key == 0) ? 'checked="checked"' : '';     
-
-                                $textfield = '<input type="text" class="calendarInputCheckboxAdditional" name="registrationFieldAdditional['.$arrInputfield['id'].']['.$key.']" />';
+                                
+                                $textValue = (isset($_POST["registrationFieldAdditional"][$arrInputfield['id']][$key]) ? $_POST["registrationFieldAdditional"][$arrInputfield['id']][$key] : '');
+                                $textfield = '<input type="text" class="calendarInputCheckboxAdditional" name="registrationFieldAdditional['.$arrInputfield['id'].']['.$key.']" value="'. contrexx_input2xhtml($textValue) .'" />';
                                 $name = str_replace('[[INPUT]]', $textfield, $name);
 
                                 $inputfield .= '<input type="radio" class="calendarInputCheckbox" name="registrationField['.$arrInputfield['id'].']" value="'.intval($key+1).'" '.$checked.'/>&nbsp;'.$name.'<br />';  
@@ -371,7 +372,8 @@ class CalendarFormManager extends CalendarLibrary
                             break;
                          case 'checkbox':       
                             foreach($options as $key => $name)  {    
-                                $textfield = '<input type="text" class="calendarInputCheckboxAdditional" name="registrationFieldAdditional['.$arrInputfield['id'].']['.$key.']" />';
+                                $textValue = (isset($_POST["registrationFieldAdditional"][$arrInputfield['id']][$key]) ? $_POST["registrationFieldAdditional"][$arrInputfield['id']][$key] : '');
+                                $textfield = '<input type="text" class="calendarInputCheckboxAdditional" name="registrationFieldAdditional['.$arrInputfield['id'].']['.$key.']" value="'. contrexx_input2xhtml($textValue) .'" />';
                                 $name = str_replace('[[INPUT]]', $textfield, $name);
 
                                 $checked =  (in_array($key+1, $_POST['registrationField'][$arrInputfield['id']]))  ? 'checked="checked"' : '';       
