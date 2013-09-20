@@ -623,6 +623,7 @@ CREATE TABLE `contrexx_module_calendar_event` (
   `invited_groups` varchar(45) default NULL,
   `invited_mails` mediumtext,
   `invitation_sent` int(1) NOT NULL,
+  `invitation_email_template` int(11) NOT NULL,
   `registration` int(1) NOT NULL default '0',
   `registration_form` int(11) NOT NULL,
   `registration_num` varchar(45) default NULL,
