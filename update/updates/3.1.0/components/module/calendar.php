@@ -439,7 +439,7 @@ class CalendarUpdate31
                     array(
                         'id' => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                         'form' => array('type' => 'INT(11)', 'after' => 'id'),
-                        'type' => array('type' => 'ENUM(\'inputtext\',\'textarea\',\'select\',\'radio\',\'checkbox\',\'mail\',\'seating\',\'agb\',\'salutation\',\'firstname\',\'lastname\',\'selectBillingAddress\',\'title\')', 'after' => 'form'),
+                        'type' => array('type' => 'ENUM(\'inputtext\',\'textarea\',\'select\',\'radio\',\'checkbox\',\'mail\',\'seating\',\'agb\',\'salutation\',\'firstname\',\'lastname\',\'selectBillingAddress\',\'fieldset\')', 'after' => 'form'),
                         'required' => array('type' => 'INT(1)', 'after' => 'type'),
                         'order' => array('type' => 'INT(3)', 'after' => 'required'),
                         'affiliation' => array('type' => 'VARCHAR(45)', 'after' => 'order')
@@ -590,12 +590,12 @@ class CalendarUpdate31
                         'catid' => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'place_mediadir_id'),
                         'show_in' => array('type' => 'VARCHAR(255)', 'after' => 'catid'),
                         'invited_groups' => array('type' => 'VARCHAR(45)', 'notnull' => false, 'after' => 'show_in'),
-                        'invited_mails' => array('type' => 'mediumtext', 'after' => 'invited_groups'),
+                        'invited_mails' => array('type' => 'mediumtext', 'notnull' => false, 'after' => 'invited_groups'),
                         'invitation_sent' => array('type' => 'INT(1)', 'after' => 'invited_mails'),
                         'registration' => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'invitation_sent'),
                         'registration_form' => array('type' => 'INT(11)', 'after' => 'registration'),
                         'registration_num' => array('type' => 'VARCHAR(45)', 'notnull' => false, 'after' => 'registration_form'),
-                        'registration_notification' => array('type' => 'VARCHAR(45)', 'notnull' => false, 'after' => 'registration_num'),
+                        'registration_notification' => array('type' => 'VARCHAR(1024)', 'notnull' => false, 'after' => 'registration_num'),
                         'email_template' => array('type' => 'INT(11)', 'after' => 'registration_notification'),
                         'ticket_sales' => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'email_template'),
                         'num_seating' => array('type' => 'text', 'after' => 'ticket_sales'),
@@ -648,7 +648,7 @@ class CalendarUpdate31
                         'event_id' => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0'),
                         'lang_id' => array('type' => 'VARCHAR(225)', 'notnull' => false, 'after' => 'event_id'),
                         'title' => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'lang_id'),
-                        'description' => array('type' => 'mediumtext', 'after' => 'title'),
+                        'description' => array('type' => 'mediumtext', 'notnull' => false, 'after' => 'title'),
                         'redirect' => array('type' => 'VARCHAR(255)', 'after' => 'description')
                     ),
                     array(
@@ -1123,6 +1123,9 @@ class CalendarUpdate31
                     WHERE `note_id` = " . $eventId . "
             ");
         while (!$resultFormFields->EOF) {
+            if ($resultFormFields->fields['type'] == 'title') {
+                $resultFormFields->fields['type'] = 'fieldset';
+            }
             \Cx\Lib\UpdateUtil::sql("
                     INSERT IGNORE INTO `" . CALENDAR_NEW_REGISTRATION_FORM_FIELD_TABLE . "` (`form`, `type`, `required`, `order`, `affiliation`)
                     VALUES (

@@ -1334,7 +1334,7 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
 
     // if something fails, return the error or message
     $calendarMigration = $CalendarUpdate31->run();
-    if ($calendarMigration != true) {
+    if ($calendarMigration !== true) {
         \DBG::dump($calendarMigration);
         return $calendarMigration;
     }
