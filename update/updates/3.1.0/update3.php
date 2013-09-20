@@ -810,18 +810,6 @@ $updatesSp4To301 = array(
         )
     ),
     array(
-        'table' => DBPREFIX.'module_contact_form_field',
-        'structure' => array(
-            'id'                 => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-            'id_form'            => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'id'),
-            'type'               => array('type' => 'ENUM(\'text\',\'label\',\'checkbox\',\'checkboxGroup\',\'country\',\'date\',\'file\',\'multi_file\',\'fieldset\',\'hidden\',\'horizontalLine\',\'password\',\'radio\',\'select\',\'textarea\',\'recipient\',\'special\')', 'after' => 'id_form'),
-            'special_type'       => array('type' => 'VARCHAR(20)', 'after' => 'type'),
-            'is_required'        => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '0', 'after' => 'special_type'),
-            'check_type'         => array('type' => 'INT(3)', 'notnull' => true, 'default' => '1', 'after' => 'is_required'),
-            'order_id'           => array('type' => 'SMALLINT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'check_type')
-        )
-    ),
-    array(
         'table' => DBPREFIX.'module_downloads_download_locale',
         'structure' => array(
             'lang_id'        => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'primary' => true, 'default' => '0'),
@@ -1437,9 +1425,7 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
             array(
                 'id'             => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                 'id_form'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                'name'           => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
                 'type'           => array('type' => 'ENUM(\'text\',\'label\',\'checkbox\',\'checkboxGroup\',\'date\',\'file\',\'multi_file\',\'hidden\',\'password\',\'radio\',\'select\',\'textarea\',\'recipient\')', 'notnull' => true, 'default' => 'text'),
-                'attributes'     => array('type' => 'TEXT'),
                 'is_required'    => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '0'),
                 'check_type'     => array('type' => 'INT(3)', 'notnull' => true, 'default' => '1'),
                 'order_id'       => array('type' => 'SMALLINT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0')
