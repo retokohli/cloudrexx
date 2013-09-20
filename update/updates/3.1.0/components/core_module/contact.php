@@ -442,6 +442,45 @@ function _contactUpdate()
             }
             $em->flush();
         }
+
+
+        /*******************************************
+        * EXTENSION:    Database structure changes *
+        * ADDED:        Contrexx v3.1.0            *
+        *******************************************/
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
+
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX.'module_contact_form',
+                array(
+                    'id'                     => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                    'mails'                  => array('type' => 'text', 'after' => 'id'),
+                    'showForm'               => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'mails'),
+                    'use_captcha'            => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'after' => 'showForm'),
+                    'use_custom_style'       => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'use_captcha'),
+                    'save_data_in_crm'       => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'use_custom_style'),
+                    'send_copy'              => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'save_data_in_crm'),
+                    'use_email_of_sender'    => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'send_copy'),
+                    'html_mail'              => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'after' => 'use_email_of_sender'),
+                    'send_attachment'        => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'html_mail')
+                )
+            );
+
+            \Cx\Lib\UpdateUtil::table(
+                DBPREFIX.'module_contact_form_field',
+                array(
+                    'id'                 => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                    'id_form'            => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'id'),
+                    'type'               => array('type' => 'ENUM(\'text\',\'label\',\'checkbox\',\'checkboxGroup\',\'country\',\'date\',\'file\',\'multi_file\',\'fieldset\',\'hidden\',\'horizontalLine\',\'password\',\'radio\',\'select\',\'textarea\',\'recipient\',\'special\')', 'after' => 'id_form'),
+                    'special_type'       => array('type' => 'VARCHAR(20)', 'after' => 'type'),
+                    'is_required'        => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '0', 'after' => 'special_type'),
+                    'check_type'         => array('type' => 'INT(3)', 'notnull' => true, 'default' => '1', 'after' => 'is_required'),
+                    'order_id'           => array('type' => 'SMALLINT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'check_type')
+                )
+            );
+
+        }
+
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }

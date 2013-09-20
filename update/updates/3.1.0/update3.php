@@ -423,6 +423,24 @@ $updatesHotfixToSp1 = array(
     '
         DROP TABLE IF EXISTS `'.DBPREFIX.'module_shop_products_downloads`
     ',
+    array(
+        'table' => DBPREFIX.'module_checkout_settings_mails',
+        'structure' => array(
+            'id'         => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'title'      => array('type' => 'text', 'after' => 'id'),
+            'content'    => array('type' => 'text', 'after' => 'title')
+        ),
+        'engine' => 'MyISAM',
+    ),
+    array(
+        'table' => DBPREFIX.'module_checkout_settings_yellowpay',
+        'structure' => array(
+            'id'         => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'name'       => array('type' => 'text', 'after' => 'id'),
+            'value'      => array('type' => 'text', 'after' => 'name')
+        ),
+        'engine' => 'MyISAM',
+    ),
 );
 
 $updatesSp1ToSp2 = array(
@@ -509,6 +527,7 @@ $updatesSp1ToSp2 = array(
             'oauth_id'           => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => '', 'after' => 'oauth_provider'),
             'user_id'            => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'oauth_id')
         ),
+        'engine' => 'InnoDB',
     ),
     '
         INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES
@@ -768,12 +787,56 @@ $updatesSp4To301 = array(
             'id'         => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
             'name'       => array('type' => 'VARCHAR(100)', 'after' => 'id'),
             'type'       => array('type' => 'ENUM(\'core\',\'core_module\',\'module\')', 'after' => 'name')
-        )
+        ),
+        'engine' => 'InnoDB',
     ),
     "INSERT IGNORE INTO `".DBPREFIX."component` (`id`, `name`, `type`) VALUES
     (70, 'Workbench', 'core_module'),
     (71, 'FrontendEditing', 'core_module'),
     (72, 'ContentManager', 'core')",
+    array(
+        'table' => DBPREFIX.'module_contact_form',
+        'structure' => array(
+            'id'                     => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'mails'                  => array('type' => 'text', 'after' => 'id'),
+            'showForm'               => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'mails'),
+            'use_captcha'            => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'after' => 'showForm'),
+            'use_custom_style'       => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'use_captcha'),
+            'save_data_in_crm'       => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'use_custom_style'),
+            'send_copy'              => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'save_data_in_crm'),
+            'use_email_of_sender'    => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'send_copy'),
+            'html_mail'              => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'after' => 'use_email_of_sender'),
+            'send_attachment'        => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'html_mail')
+        )
+    ),
+    array(
+        'table' => DBPREFIX.'module_contact_form_field',
+        'structure' => array(
+            'id'                 => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'id_form'            => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'id'),
+            'type'               => array('type' => 'ENUM(\'text\',\'label\',\'checkbox\',\'checkboxGroup\',\'country\',\'date\',\'file\',\'multi_file\',\'fieldset\',\'hidden\',\'horizontalLine\',\'password\',\'radio\',\'select\',\'textarea\',\'recipient\',\'special\')', 'after' => 'id_form'),
+            'special_type'       => array('type' => 'VARCHAR(20)', 'after' => 'type'),
+            'is_required'        => array('type' => 'SET(\'0\',\'1\')', 'notnull' => true, 'default' => '0', 'after' => 'special_type'),
+            'check_type'         => array('type' => 'INT(3)', 'notnull' => true, 'default' => '1', 'after' => 'is_required'),
+            'order_id'           => array('type' => 'SMALLINT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'check_type')
+        )
+    ),
+    array(
+        'table' => DBPREFIX.'module_downloads_download_locale',
+        'structure' => array(
+            'lang_id'        => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+            'download_id'    => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'lang_id'),
+            'name'           => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'download_id'),
+            'source'         => array('type' => 'VARCHAR(1024)', 'notnull' => false, 'after' => 'name'),
+            'source_name'    => array('type' => 'VARCHAR(1024)', 'notnull' => false, 'after' => 'source'),
+            'description'    => array('type' => 'text', 'after' => 'source_name'),
+            'metakeys'       => array('type' => 'text', 'after' => 'description')
+        ),
+        'keys' => array(
+            'name'           => array('fields' => array('name'), 'type' => 'FULLTEXT'),
+            'description'    => array('fields' => array('description'), 'type' => 'FULLTEXT')
+        )
+    ),
 );
 
 $updatesRc1ToSp4    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To301);
