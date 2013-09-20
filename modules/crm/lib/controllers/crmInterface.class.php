@@ -493,7 +493,7 @@ class crmInterface extends CrmLibrary
                     $objMember->MoveNext();
                 }
                 $membership = implode(', ', $membership);
-                $gender = ($objResult->fields['gender'] == 1) ? $_ARRAYLANG['TXT_CRM_GENDER_FEMALE'] : ($objResult->fields['gender'] == 2) ? $_ARRAYLANG['TXT_CRM_GENDER_MALE'] : '' ;
+                $gender = ($objResult->fields['gender'] == 1) ? $_ARRAYLANG['TXT_CRM_GENDER_FEMALE'] : (($objResult->fields['gender'] == 2) ? $_ARRAYLANG['TXT_CRM_GENDER_MALE'] : '');
                 switch ($process) {
                 case '1':
                         print ($objResult->fields['contact_type'] == 1 ? 'Company' : 'Person').$this->_csvSeparator;
