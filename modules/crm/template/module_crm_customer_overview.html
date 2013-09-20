@@ -194,7 +194,7 @@
             <tr>
                 <td style="width: 550px;">
                     <input type='hidden' name="cmd" value="{MODULE_NAME}" />
-                    <input type='hidden' name="act" value="customer" />                    
+                    <input type='hidden' name="act" value="customers" />                    
                     <input type='text' name='term' placeholder="{TXT_CRM_ENTER_SEARCH_TERM}" class="crm-watermark" id='term'  style='width: 300px;' class='search-box' value='{CRM_SEARCH_TERM}' />
                     &nbsp;&nbsp;
                     <input type='submit' value='{TXT_CRM_SEARCH}'  id='searchButton'/>&nbsp;&nbsp;
@@ -269,7 +269,14 @@
     <form style="clear:both;margin-top: 5px;" action="" method="post" name="frmShowCustomersEntries">
         <table cellspacing="0" cellpadding="3" border="0" width="100%" class="adminlist" id="customerOverview" >
             <tr>
-                <th colspan="9">{TXT_CRM_CUSTOMER_OVERVIEW}</th>
+                <th colspan="9">
+                    {TXT_CRM_CUSTOMER_OVERVIEW}
+                    <span style="float: right;margin-top: 5px;">
+                        <a title="{TXT_CRM_CUSTOMER_EXPORT}"  href="index.php?cmd={MODULE_NAME}&amp;act=settings&amp;tpl=interface&amp;subTpl=exportcsv{CRM_SEARCH_LINK}">
+                            <img src="./images/icons/csv.gif"/>
+                        </a>
+                    </span>
+                </th>
             </tr>
             <tr class="row3">
                 <td width="3%"><span style="font-weight:bold;">&nbsp;&nbsp;#</span></td>
