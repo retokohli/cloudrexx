@@ -352,15 +352,20 @@ class CalendarRegistrationManager extends CalendarLibrary
                         $inputfield .= '<input type="radio" class="calendarInputCheckbox" name="registrationField['.$arrInputfield['id'].']" value="'.intval($key+1).'" '.$checked.'/>&nbsp;'.$name.'<br />';  
                     }
                     break;
-                 case 'checkbox':      
-                    $arrValue = explode('[[', $value);
-                    $value    = $arrValue[0];
-                    $input    = str_replace(']]','', $arrValue[1]); 
-                    foreach ($options as $key => $name)  {    
-                        $textfield = '<input type="text" class="calendarInputCheckboxAdditional" name="registrationFieldAdditional['.$arrInputfield['id'].']['.$key.']" />';
-                        $name = str_replace('[[INPUT]]', $textfield, $name);
-                        $checked = ($key+1 == $value) || (in_array($key+1, $_POST['registrationField'][$arrInputfield['id']]))  ? 'checked="checked"' : '';       
-                        $inputfield .= '<input '.$checked.' type="checkbox" class="calendarInputCheckbox" name="registrationField['.$arrInputfield['id'].'][]" value="'.intval($key+1).'" />&nbsp;'.$name.'<br />';  
+                 case 'checkbox':
+                    $results = explode(',', $value);
+                    foreach ($results as $result) {
+                        list ($value, $input) = explode('[[', $result);
+                        $value = !empty($value) ? $value : 0;
+                        $input = str_replace(']]','', $input);
+                        $newResult[$value] = $input;
+                    }
+                    
+                    foreach ($options as $key => $name)  {
+                        $checked = array_key_exists($key+1, $newResult) || (in_array($key+1, $_POST['registrationField'][$arrInputfield['id']]))  ? 'checked="checked"' : '';
+                        $textfield = '<input type="text" class="calendarInputCheckboxAdditional" name="registrationFieldAdditional['.$arrInputfield['id'].']['.$key.']" value="'. ($checked ? $newResult[$key+1] : '') .'" />';
+                        $name = str_replace('[[INPUT]]', $textfield, $name);                        
+                        $inputfield .= '<input '.$checked.' type="checkbox" class="calendarInputCheckbox" name="registrationField['.$arrInputfield['id'].'][]" value="'.intval($key+1).'" />&nbsp;'.$name.'<br />';
                     }
                     break;
                  case 'agb':                     
