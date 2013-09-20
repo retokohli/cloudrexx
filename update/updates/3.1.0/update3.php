@@ -824,8 +824,8 @@ $updatesSp4To301 = array(
     array(
         'table' => DBPREFIX.'module_downloads_download_locale',
         'structure' => array(
-            'lang_id'        => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-            'download_id'    => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'lang_id'),
+            'lang_id'        => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'primary' => true, 'default' => '0'),
+            'download_id'    => array('type' => 'INT(11)', 'unsigned' => true, 'notnull' => true, 'primary' => true, 'default' => '0', 'after' => 'lang_id'),
             'name'           => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'download_id'),
             'source'         => array('type' => 'VARCHAR(1024)', 'notnull' => false, 'after' => 'name'),
             'source_name'    => array('type' => 'VARCHAR(1024)', 'notnull' => false, 'after' => 'source'),
