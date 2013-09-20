@@ -2,7 +2,7 @@
 
 function _downloadsUpdate()
 {
-    global $objDatabase, $_ARRAYLANG, $_CORELANG;
+    global $objDatabase, $_ARRAYLANG, $_CORELANG, $objUpdate;
 
     /************************************************
     * EXTENSION:    Initial creation of the         *
@@ -279,13 +279,15 @@ function _downloadsUpdate()
     * ADDED:        Contrexx v3.1.0                           *
     **********************************************************/
     try {
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
 
-        \Cx\Lib\UpdateUtil::sql('
-            ALTER TABLE `'.DBPREFIX.'module_downloads_download_locale`
-            CHANGE `source` `source` VARCHAR(1024) NULL DEFAULT NULL,
-            CHANGE `source_name` `source_name` VARCHAR(1024) NULL DEFAULT NULL
-        ');
+            \Cx\Lib\UpdateUtil::sql('
+                ALTER TABLE `'.DBPREFIX.'module_downloads_download_locale`
+                CHANGE `source` `source` VARCHAR(1024) NULL DEFAULT NULL,
+                CHANGE `source_name` `source_name` VARCHAR(1024) NULL DEFAULT NULL
+            ');
 
+        }
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }

@@ -1681,7 +1681,9 @@ function _coreUpdate()
                 'id'         => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                 'name'       => array('type' => 'VARCHAR(100)', 'after' => 'id'),
                 'type'       => array('type' => 'ENUM(\'core\',\'core_module\',\'module\')', 'after' => 'name')
-            )
+            ),
+            null,
+            'InnoDB',
         );
         \Cx\Lib\UpdateUtil::sql("
             INSERT IGNORE INTO `".DBPREFIX."component` (`id`, `name`, `type`) VALUES
