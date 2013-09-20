@@ -1683,7 +1683,7 @@ function _coreUpdate()
                 'type'       => array('type' => 'ENUM(\'core\',\'core_module\',\'module\')', 'after' => 'name')
             ),
             null,
-            'InnoDB',
+            'InnoDB'
         );
         \Cx\Lib\UpdateUtil::sql("
             INSERT IGNORE INTO `".DBPREFIX."component` (`id`, `name`, `type`) VALUES
