@@ -812,7 +812,7 @@ cx.cm = function(target) {
             var fallbackPageId = jQuery("#" + jQuery("#pageId").val()).parent().children("." + fallbackLanguage).attr("id");
             cx.trigger("loadingStart", "contentmanager", {});
             jQuery.ajax({
-                url: "http://localhost/trunk2/cadmin/index.php?cmd=jsondata&object=page&act=get&page=" + fallbackPageId,
+                url: "index.php?cmd=jsondata&object=page&act=get&page=" + fallbackPageId,
                 async: false,
                 success: function(response) {
                     var fallbackPageType = response.data.type;
@@ -1788,6 +1788,7 @@ cx.cm.performAction = function(action, pageId, nodeId) {
                     return;
             }
             cx.cm.updateTreeEntry(page);
+            cx.trigger("loadingEnd", "contentmanager", {});
         }
     });
 }
