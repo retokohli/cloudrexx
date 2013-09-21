@@ -500,7 +500,13 @@ class CalendarMailManager extends CalendarLibrary {
             }
         }
         
-        return $langId;
+        if (isset($this->mailList[$langId])) {
+            return $langId;
+        } else {
+            reset($this->mailList);
+            return key($this->mailList);
+        }
+        
     }
  
     /**
