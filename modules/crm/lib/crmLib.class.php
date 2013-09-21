@@ -2731,7 +2731,7 @@ CODE;
         foreach ($resources as $key => $value) {
             $emailIds[]    = $value['email'];
         }
-
+        
         foreach ($emailIds As $emails) {
             if (!empty ($emails)) {
                 $objUsers = $objFWUser->objUser->getUsers($filter = array('email' => addslashes($emails)));
@@ -2748,10 +2748,13 @@ CODE;
                 //setting email template lang id
                 $availableMailTempLangAry = $this->getActiveEmailTemLangId('crm', CRM_EVENT_ON_ACCOUNT_UPDATED);
                 $availableLangId          = $this->getEmailTempLang($availableMailTempLangAry, $emails);
-                $info['lang_id']          = $availableLangId;  
-
-                $dispatcher = EventDispatcher::getInstance();
-                $dispatcher->triggerEvent(CRM_EVENT_ON_ACCOUNT_UPDATED, null, $info);
+                $info['lang_id']          = $availableLangId;
+                $eTemplate                = MailTemplate::get('crm', CRM_EVENT_ON_ACCOUNT_UPDATED, $availableLangId);
+                $toEmails                 = preg_split('/\s*,\s*/', $eTemplate['to'], null, PREG_SPLIT_NO_EMPTY);
+                if (!in_array($emails, $toEmails)) {
+                    $dispatcher = EventDispatcher::getInstance();
+                    $dispatcher->triggerEvent(CRM_EVENT_ON_ACCOUNT_UPDATED, null, $info);
+                }
             }
         }
     }
