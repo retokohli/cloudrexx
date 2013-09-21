@@ -490,7 +490,8 @@ class CalendarManager extends CalendarLibrary
             $this->moduleLangVar.'_EVENT_SERIES_PATTERN_MONTHLY_COUNT'      => $count,
             $this->moduleLangVar.'_EVENT_SERIES_PATTERN_MONTHLY_WEEKDAY'    => $weekdays,
             $this->moduleLangVar.'_EVENT_REGISTRATION_FORMS'                => $objFormManager->getFormDorpdown(intval($objEvent->registrationForm)),
-            $this->moduleLangVar.'_EVENT_EMAIL_TEMPLATE'                    => $objMail->getTemplateDropdown(intval($objEvent->emailTemplate), 2),
+            $this->moduleLangVar.'_EVENT_EMAIL_TEMPLATE'                    => $objMail->getTemplateDropdown(intval($objEvent->emailTemplate), CalendarMailManager::MAIL_CONFIRM_REG),
+            $this->moduleLangVar.'_EVENT_INVITATION_EMAIL_TEMPLATE'         => $objMail->getTemplateDropdown(intval($objEvent->invitationTemplate), CalendarMailManager::MAIL_INVITATION),
             
             $this->moduleLangVar.'_EVENT_TYPE_EVENT'                        => $eventId != 0 ? ($objEvent->type == 0 ? 'selected="selected"' : '') : '',      
             $this->moduleLangVar.'_EVENT_TYPE_REDIRECT'                     => $eventId != 0 ? ($objEvent->type == 1 ? 'selected="selected"' : '') : '',
@@ -769,15 +770,11 @@ class CalendarManager extends CalendarLibrary
         
         /*if($this->arrSettings['publicationStatus'] == 1 && !empty($objHostManager->hostList)) { 
             $onsubmitPublications = "selectAll(document.formModifyEvent.elements['selectedHosts[]']);"; 
-            $this->_objTpl->touchBlock('eventPublicateMenu');    
-            $this->_objTpl->touchBlock('eventSeriesNextButton'); 
-            $this->_objTpl->hideBlock('eventSeriesSaveButton');
+            $this->_objTpl->touchBlock('eventPublicateMenu');            
             $this->_objTpl->touchBlock('eventPublicateTab');
         } else { */
             $onsubmitPublications = "";   
-            $this->_objTpl->hideBlock('eventPublicateMenu');   
-            $this->_objTpl->hideBlock('eventSeriesNextButton');
-            $this->_objTpl->touchBlock('eventSeriesSaveButton');
+            $this->_objTpl->hideBlock('eventPublicateMenu');               
             $this->_objTpl->hideBlock('eventPublicateTab');
         /* } */   
         

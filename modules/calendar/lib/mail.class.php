@@ -286,10 +286,12 @@ class CalendarMail extends CalendarLibrary
         parent::getSettings();
         $arrOptions = array();
         
-        foreach ($this->templateList as $key => $objMail) {
+        foreach ($this->templateList as $objMail) {
             if ($actionId != null && $actionId != $objMail->action_id) continue;
+            
+            $selectedId = empty($selectedId) && $objMail->is_default ? $objMail->id : $selectedId;            
             $arrOptions[$objMail->id] = $objMail->title;
-        }      
+        }
         
         $options = parent::buildDropdownmenu($arrOptions, $selectedId);
         
