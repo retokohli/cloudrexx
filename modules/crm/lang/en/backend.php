@@ -383,6 +383,11 @@ $_ARRAYLANG['TXT_CRM_OF_CONTACTS'] = "of customer";
 $_ARRAYLANG['TXT_CRM_ADD_PROJECT']  = "Add project";
 $_ARRAYLANG['TXT_CRM_PROJECTS_SUCESSMESSAGE']                 = 'Project Details Added Successfully';
 $_ARRAYLANG['TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT'] = 'All mandatory fields have not been filled out!';
+$_ARRAYLANG['TXT_CRM_ADDRESS']  = "Address";
+$_ARRAYLANG['TXT_CRM_CITY']     = "City";
+$_ARRAYLANG['TXT_CRM_STATE']    = "State";
+$_ARRAYLANG['TXT_CRM_ZIP']      = "Zip";
+$_ARRAYLANG['TXT_CRM_COUNTRY']  = "Country";
 
 
 /* settings industry */

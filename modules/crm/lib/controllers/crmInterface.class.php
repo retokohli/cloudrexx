@@ -516,7 +516,7 @@ class crmInterface extends CrmLibrary
         foreach ($this->addressTypes as $addressType) {
             foreach ($this->addressValues as $addressValue) {
                 if (!empty ($addressValue) && $addressValue != 'type') {
-                    array_push($headerCsv, "$addressValue ({$_ARRAYLANG[$addressType]})");
+                    array_push($headerCsv, "{$_ARRAYLANG[$addressValue['lang_variable']]} ({$_ARRAYLANG[$addressType]})");
                 }
             }
         }        
@@ -714,7 +714,7 @@ class crmInterface extends CrmLibrary
         foreach ($this->addressTypes as $addrKey => $addressType) {
             foreach ($this->addressValues as $key => $addressValue) {
                 if (!empty ($addressValue) && $addressValue != 'type') {
-                    array_push($headerCsv, array("value" => "customer_address_{$addrKey}_{$key}", 'title' => "$addressValue ({$_ARRAYLANG[$addressType]})", 'Header' => false));
+                    array_push($headerCsv, array("value" => "customer_address_{$addrKey}_{$key}", 'title' => "{$_ARRAYLANG[$addressValue['lang_variable']]} ({$_ARRAYLANG[$addressType]})", 'Header' => false));
                 }
             }
         }
@@ -923,7 +923,7 @@ class crmInterface extends CrmLibrary
                                     if (!empty ($line[${"customer_address_$addTypeKey"."_$addressKey"}])) {
                                         if (!empty ($addressValue) && $addressValue != 'type') {
                                             $insert = true;
-                                            $fields[$addressValue] = contrexx_input2raw($line[${"customer_address_$addTypeKey"."_$addressKey"}]);
+                                            $fields[$addressValue['label']] = contrexx_input2raw($line[${"customer_address_$addTypeKey"."_$addressKey"}]);
                                         }
                                     }
                                 }
