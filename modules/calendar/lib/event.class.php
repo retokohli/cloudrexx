@@ -302,6 +302,13 @@ class CalendarEvent extends CalendarLibrary
     public $invitationSent;
     
     /**
+     * Template Id of the invitation mail
+     * 
+     * @var integer
+     */
+    public $invitationTemplate;
+
+    /**
      * Event status of registration
      *
      * @access public
@@ -488,6 +495,7 @@ class CalendarEvent extends CalendarLibrary
                          event.invited_groups AS invited_groups,
                          event.invited_mails AS invited_mails,
                          event.invitation_sent AS invitation_sent,
+                         event.invitation_email_template AS invitation_email_template,
                          event.registration AS registration,
                          event.registration_form AS registration_form,
                          event.registration_num AS registration_num,
@@ -578,6 +586,7 @@ class CalendarEvent extends CalendarLibrary
                 $this->all_day  = intval($objResult->fields['all_day']);;
                 $this->confirmed = intval($objResult->fields['confirmed']);
                 $this->invitationSent = intval($objResult->fields['invitation_sent']);
+                $this->invitationTemplate = (int) $objResult->fields['invitation_email_template'];
                 $this->access = intval($objResult->fields['access']);
                 $this->price = intval($objResult->fields['price']);
                 $this->link = htmlentities(stripslashes($objResult->fields['link']), ENT_QUOTES, CONTREXX_CHARSET);
@@ -827,6 +836,7 @@ class CalendarEvent extends CalendarLibrary
         $invited_groups            = isset($data['selectedGroups']) ? join(',', $data['selectedGroups']) : ''; 
         $invited_mails             = isset($data['invitedMails']) ? contrexx_addslashes(contrexx_strip_tags($data['invitedMails'])) : '';   
         $send_invitation           = isset($data['sendInvitation']) ? intval($data['sendInvitation']) : 0;        
+        $invitationTemplate        = isset($data['invitationEmailTemplate']) ? intval($data['invitationEmailTemplate']) : 0;        
         $registration              = isset($data['registration']) ? intval($data['registration']) : 0;      
         $registration_form         = isset($data['registrationForm']) ? intval($data['registrationForm']) : 0;      
         $registration_num          = isset($data['numSubscriber']) ? intval($data['numSubscriber']) : 0;      
@@ -1041,7 +1051,8 @@ class CalendarEvent extends CalendarLibrary
             'place_mediadir_id'             => $placeMediadir,
             'show_in'                       => $showIn,
             'invited_groups'                => $invited_groups,             
-            'invited_mails'                 => $invited_mails,      
+            'invited_mails'                 => $invited_mails,
+            'invitation_email_template'     => $invitationTemplate,
             'registration'                  => $registration, 
             'registration_form'             => $registration_form, 
             'registration_num'              => $registration_num, 
@@ -1169,7 +1180,7 @@ class CalendarEvent extends CalendarLibrary
             
         if($send_invitation == 1) {    
              $objMailManager = new CalendarMailManager();           
-             $objMailManager->sendMail(intval($id), CalendarMailManager::MAIL_INVITATION);
+             $objMailManager->sendMail(intval($id), CalendarMailManager::MAIL_INVITATION, null, $invitationTemplate);
         }  
         
         return true;
