@@ -169,7 +169,15 @@ class CrmLibrary
     * @access public
     * @var array
     */
-    var $addressValues          = array("","address", "city", "state", "zip", "country", "type");
+    var $addressValues          = array(
+                                        "",
+                                        array('label' => 'address', 'lang_variable' => "TXT_CRM_ADDRESS"), 
+                                        array('label' => 'city', 'lang_variable' => "TXT_CRM_CITY"), 
+                                        array('label' => 'state', 'lang_variable' => "TXT_CRM_STATE"),
+                                        array('label' => 'zip', 'lang_variable' => "TXT_CRM_ZIP"), 
+                                        array('label' => 'country', 'lang_variable' => "TXT_CRM_COUNTRY"),
+                                        "type"
+                                  );
 
     /**
     * Address Types
@@ -726,8 +734,9 @@ class CrmLibrary
                     $result['contactwebsite'][$splitKeys[1]]['id'] = $value;
                 break;
             case 'contactAddress':
-                if ($this->addressValues[$splitKeys[2]] == "address") $result[$splitKeys[0]][$splitKeys[1]]["primary"] = $splitKeys[3];
-                    $result[$splitKeys[0]][$splitKeys[1]][$this->addressValues[$splitKeys[2]]] = $value;
+                if ($this->addressValues[$splitKeys[2]]['label'] == "address") $result[$splitKeys[0]][$splitKeys[1]]["primary"] = $splitKeys[3];
+                $label = is_array($this->addressValues[$splitKeys[2]]) ? $this->addressValues[$splitKeys[2]]['label'] : $this->addressValues[$splitKeys[2]];
+                $result[$splitKeys[0]][$splitKeys[1]][$label] = $value;
                 break;
             default:
                     $result[$key] = $value;
@@ -2749,12 +2758,9 @@ CODE;
                 $availableMailTempLangAry = $this->getActiveEmailTemLangId('crm', CRM_EVENT_ON_ACCOUNT_UPDATED);
                 $availableLangId          = $this->getEmailTempLang($availableMailTempLangAry, $emails);
                 $info['lang_id']          = $availableLangId;
-                $eTemplate                = MailTemplate::get('crm', CRM_EVENT_ON_ACCOUNT_UPDATED, $availableLangId);
-                $toEmails                 = preg_split('/\s*,\s*/', $eTemplate['to'], null, PREG_SPLIT_NO_EMPTY);
-                if (!in_array($emails, $toEmails)) {
-                    $dispatcher = EventDispatcher::getInstance();
-                    $dispatcher->triggerEvent(CRM_EVENT_ON_ACCOUNT_UPDATED, null, $info);
-                }
+                
+                $dispatcher = EventDispatcher::getInstance();
+                $dispatcher->triggerEvent(CRM_EVENT_ON_ACCOUNT_UPDATED, null, $info);
             }
         }
     }

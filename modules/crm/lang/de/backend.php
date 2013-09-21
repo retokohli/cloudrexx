@@ -285,9 +285,9 @@ $_ARRAYLANG['TXT_CRM_CONTACTS']      = "Personen";
 $_ARRAYLANG['TXT_CRM_ADD_OR_LINK_CONTACT'] = "Person Verknüpfen oder hinzufügen";
 $_ARRAYLANG['TXT_CRM_CUSTOMER_CONTACT_NAME']   = "Name des Ansprechpartners";
 $_ARRAYLANG['TXT_CRM_CONTACT_STATUS']   = "Status";
-$_ARRAYLANG['TXT_CRM_HOME'] = "Home";
-$_ARRAYLANG['TXT_CRM_WORK'] = "Arbeit";
-$_ARRAYLANG['TXT_CRM_OTHERS'] = "Anders";
+$_ARRAYLANG['TXT_CRM_HOME']   = "Privat";
+$_ARRAYLANG['TXT_CRM_WORK']   = "Arbeit";
+$_ARRAYLANG['TXT_CRM_OTHERS'] = "Sonstige";
 $_ARRAYLANG['TXT_CRM_MOBILE'] = "Mobile";
 $_ARRAYLANG['TXT_CRM_FAX']    = "Fax";
 $_ARRAYLANG['TXT_CRM_DIRECT'] = "Direkt";
@@ -382,6 +382,11 @@ $_ARRAYLANG['TXT_CRM_OF_CONTACTS'] = "aus Kontakten";
 $_ARRAYLANG['TXT_CRM_ADD_PROJECT']  = "Projekt hinzufügen";
 $_ARRAYLANG['TXT_CRM_PROJECTS_SUCESSMESSAGE']                 = 'Projektdetails erfolgreich hinzugefügt';
 $_ARRAYLANG['TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT'] = 'Es wurden nicht alle erforderlichen Felder ausgefüllt!';
+$_ARRAYLANG['TXT_CRM_ADDRESS']  = "Adresse";
+$_ARRAYLANG['TXT_CRM_CITY']     = "Ort";
+$_ARRAYLANG['TXT_CRM_STATE']    = "Kanton";
+$_ARRAYLANG['TXT_CRM_ZIP']      = "PLZ";
+$_ARRAYLANG['TXT_CRM_COUNTRY']  = "Land";
 
 
 /* settings industry */
@@ -484,7 +489,7 @@ $_ARRAYLANG['TXT_CRM_FIND_CONTACT_BY_NAME'] = "Einen Kontakt suchen";
 $_ARRAYLANG['TXT_CRM_FIND_COMPANY_BY_NAME'] = "Ein Unternehmen suchen";
 $_ARRAYLANG['TXT_CRM_ENTER_SEARCH_TERM'] = "Suchbegriff eingeben";
 $_ARRAYLANG['TXT_CRM_ACTIVITIES'] = "Aktivitäten";
-$_ARRAYLANG['TXT_CRM_STATE']                        = "State";
+$_ARRAYLANG['TXT_CRM_STATE']                        = "Kanton";
 $_ARRAYLANG['TXT_CRM_ZIP_CODE']                     = "Postleitzahl";
 $_ARRAYLANG['TXT_CRM_COMMA'] = "Komma";
 $_ARRAYLANG['TXT_CRM_SEMICOLON'] = "Strichpunkt";
