@@ -568,7 +568,7 @@ class Payment
                 Text::deleteByKey('shop', self::TEXT_NAME);
                 $query = "
                     SELECT `id`, `name`
-                      FROM `$table_name";
+                      FROM `$table_name`";
                 $objResult = Cx\Lib\UpdateUtil::sql($query);
                 if (!$objResult) {
                     throw new Cx\Lib\Update_DatabaseException(
