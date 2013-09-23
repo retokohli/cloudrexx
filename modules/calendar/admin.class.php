@@ -337,7 +337,7 @@ class CalendarManager extends CalendarLibrary
         
         $objMail = new CalendarMail();
         $objMail->getTemplateList();
-        
+                
         if($eventId != 0) {   
             $this->_pageTitle = $_ARRAYLANG['TXT_CALENDAR_EVENT']." ".$_ARRAYLANG['TXT_CALENDAR_EDIT'];
             $objEvent = new CalendarEvent($eventId);
@@ -490,8 +490,7 @@ class CalendarManager extends CalendarLibrary
             $this->moduleLangVar.'_EVENT_SERIES_PATTERN_MONTHLY_COUNT'      => $count,
             $this->moduleLangVar.'_EVENT_SERIES_PATTERN_MONTHLY_WEEKDAY'    => $weekdays,
             $this->moduleLangVar.'_EVENT_REGISTRATION_FORMS'                => $objFormManager->getFormDorpdown(intval($objEvent->registrationForm)),
-            $this->moduleLangVar.'_EVENT_EMAIL_TEMPLATE'                    => $objMail->getTemplateDropdown(intval($objEvent->emailTemplate), CalendarMailManager::MAIL_CONFIRM_REG),
-            $this->moduleLangVar.'_EVENT_INVITATION_EMAIL_TEMPLATE'         => $objMail->getTemplateDropdown(intval($objEvent->invitationTemplate), CalendarMailManager::MAIL_INVITATION),
+            $this->moduleLangVar.'_EVENT_EMAIL_TEMPLATE'                    => $objMail->getTemplateDropdown(intval($objEvent->emailTemplate), CalendarMailManager::MAIL_CONFIRM_REG),            
             
             $this->moduleLangVar.'_EVENT_TYPE_EVENT'                        => $eventId != 0 ? ($objEvent->type == 0 ? 'selected="selected"' : '') : '',      
             $this->moduleLangVar.'_EVENT_TYPE_REDIRECT'                     => $eventId != 0 ? ($objEvent->type == 1 ? 'selected="selected"' : '') : '',
@@ -524,6 +523,16 @@ class CalendarManager extends CalendarLibrary
             $this->moduleLangVar.'_EVENT_HOST_LINK'                         => $eventId != 0 ? $objEvent->org_link : '',
             $this->moduleLangVar.'_EVENT_HOST_EMAIL'                        => $eventId != 0 ? $objEvent->org_email : '',
         ));
+        
+        // parse invitation E-mail template
+        foreach ($this->arrFrontendLanguages as $language) {
+            $this->_objTpl->setVariable(array(
+                $this->moduleLangVar.'_EVENT_INVITATION_EMAIL_LANG'     => \Html::getLanguageIcon($language['id'], 'active', 'javascript:void()'),
+                $this->moduleLangVar.'_EVENT_INVITATION_EMAIL_LANG_ID'  => (int) $language['id'],
+                $this->moduleLangVar.'_EVENT_INVITATION_EMAIL_TEMPLATE' => $objMail->getTemplateDropdown(intval($objEvent->invitationTemplate[$language['id']]), CalendarMailManager::MAIL_INVITATION, $language['id']),
+            ));
+            $this->_objTpl->parse('invitation_email_template');
+        }
         
         //parse access  
         for ($i = 0; $i < 2; $i++) {
