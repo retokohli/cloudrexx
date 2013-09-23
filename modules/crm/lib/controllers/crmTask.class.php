@@ -59,7 +59,7 @@ class crmTask extends CrmLibrary
         ),
         array(
           'name'   => 'TXT_CRM_TASK_RESPONSIBLE',
-          'column' => 'responsible'
+          'column' => 'assigned_to'
         ),
     );
 
