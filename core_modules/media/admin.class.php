@@ -387,6 +387,8 @@ class MediaManager extends MediaLibrary
     function _overviewMedia(){
         global $_ARRAYLANG, $_CONFIG, $_CORELANG, $objDatabase;
 
+        \JS::activate('shadowbox');
+
         $this->_objTpl->loadTemplateFile('module_media.html', true, true);
 
         switch ($this->archive) {
@@ -638,7 +640,7 @@ class MediaManager extends MediaLibrary
                         $this->_objTpl->setVariable(array(  // thumbnail
                             'MEDIA_FILE_NAME_SIZE'     => $tmpSize[0] . ' x ' . $tmpSize[1],
                             'MEDIA_FILE_NAME_PRE'      =>'preview_' . $fileName,
-                            'MEDIA_FILE_NAME_IMG_HREF' => $tmpHref = 'javascript:preview(\'' . $this->webPath . $fileName . '\',' . $tmpSize[0] . ',' . $tmpSize[1] . ');',
+                            'MEDIA_FILE_NAME_IMG_HREF' => $this->webPath . $fileName,
                             'MEDIA_FILE_NAME_IMG_SRC'  => $thumb,
                             'MEDIA_FILE_NAME_IMG_SIZE' => $thbSize[3]
                         ));
