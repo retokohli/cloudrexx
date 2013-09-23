@@ -1457,7 +1457,25 @@ function loadMd5SumOfOriginalCxFiles()
         $_SESSION['contrexx_update']['skipIntegrityCheck'] = false;
     }
 
-    $md5File = UPDATE_PATH . '/md5sums/'.$_CONFIG['coreCmsVersion'].'.md5';
+    if ($_CONFIG['coreCmsVersion'] == '3.0.0') {
+        try {
+            $resultRc1 = \Cx\Lib\UpdateUtil::sql('SELECT `target` FROM `'.DBPREFIX.'backend_areas` WHERE `area_id` = 186');
+            $resultRc2 = \Cx\Lib\UpdateUtil::sql('SELECT `order_id` FROM `'.DBPREFIX.'backend_areas` WHERE `area_id` = 2');
+
+            if ($resultRc1->fields['target'] != '_blank') {
+                $filename = $_CONFIG['coreCmsVersion'].'_RC1.md5';
+            } elseif ($resultRc2->fields['order_id'] != 6) {
+                $filename = $_CONFIG['coreCmsVersion'].'_RC2.md5';
+            }
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+    } else {
+        $filename = $_CONFIG['coreCmsVersion'].'.md5';
+    }
+
+    $md5File = UPDATE_PATH.'/md5sums/'.$filename;
+
     if (!file_exists($md5File)) {
         if (!empty($_POST['skipIntegrityCheck'])) {
             $_SESSION['contrexx_update']['skipIntegrityCheck'] = true;
