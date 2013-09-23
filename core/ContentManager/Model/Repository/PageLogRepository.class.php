@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Page log repository
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  model_contentmanager
+ */
+
 namespace Cx\Core\ContentManager\Model\Repository;
 
 use Doctrine\Common\Util\Debug as DoctrineDebug;
@@ -9,7 +18,25 @@ use Doctrine\ORM\EntityRepository,
     Doctrine\ORM\Query\Expr;
 use Gedmo\Loggable\Entity\Repository\LogEntryRepository;
 
+/**
+ * Log entry exception
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  model_contentmanager
+ */
+
 class LogEntryRepositoryException extends \Exception {};
+
+/**
+ * Page log repository
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  model_contentmanager
+ */
 
 class PageLogRepository extends LogEntryRepository
 {

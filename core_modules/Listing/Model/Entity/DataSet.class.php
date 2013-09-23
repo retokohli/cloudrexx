@@ -1,8 +1,35 @@
 <?php
 
+/**
+ * Data Set
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_module_listing
+ */
+
 namespace Cx\Core_Modules\Listing\Model\Entity;
 
+/**
+ * Data Set Exception
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_module_listing
+ */
+
 class DataSetException extends \Exception {}
+
+/**
+ * Data Set
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_module_listing
+ */
 
 class DataSet implements \Iterator {
     protected static $yamlInterface = null;

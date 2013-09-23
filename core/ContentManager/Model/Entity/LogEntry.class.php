@@ -1,5 +1,14 @@
 <?php
 
+/**
+ * Log entry
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  model_contentmanager
+ */
+
 namespace Cx\Core\ContentManager\Model\Entity;
 
 use Doctrine\ORM\Mapping\Table;
@@ -10,6 +19,10 @@ use Gedmo\Loggable\Entity\AbstractLogEntry;
 /**
  * Cx\Core\ContentManager\Model\Entity\LogEntry
  *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  model_contentmanager
  * @Table(
  *     name="log_entry",
  *  indexes={

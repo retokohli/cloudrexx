@@ -1,8 +1,35 @@
 <?php
 
+/**
+ * Event manager
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_event
+ */
+
 namespace Cx\Core\Event\Controller;
 
+/**
+ * Event manager exception
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_event
+ */
+
 class EventManagerException extends \Exception {}
+
+/**
+ * Event manager
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_event
+ */
 
 class EventManager {
     protected $listeners = array();

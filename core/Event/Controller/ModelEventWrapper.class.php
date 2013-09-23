@@ -1,6 +1,24 @@
 <?php
 
+/**
+ * Model event wrapper
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_event
+ */
+
 namespace Cx\Core\Event\Controller;
+
+/**
+ * Model event wrapper
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_event
+ */
 
 class ModelEventWrapper {
     protected $cx = null;
