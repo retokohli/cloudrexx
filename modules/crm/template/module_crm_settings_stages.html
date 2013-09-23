@@ -9,152 +9,151 @@
         background-color: #D0D0A8;
     }    
     .okBox-new {
-        border: #029202 1px solid;
-        color: #006900;
-        background: #B8FD9F;
-        padding: 4px;
-        margin-bottom: 5px;
+        background: #DFF0D8;
         clear: left;
+        color: #39950C;
+        margin-bottom: 5px;
+        padding: 8px;
     }
-</style>
-<script type="text/javascript">
-    function htmlEncode(value){
-        if (value) {
-            return jQuery('<div />').text(value).html();
-        } else {
-            return '';
+    </style>
+    <script type="text/javascript">
+        function htmlEncode(value) {
+            if (value) {
+                return jQuery('<div />').text(value).html();
+            } else {
+                return '';
+            }
         }
-    }
 
-    function htmlDecode(value) {
-        if (value) {
-            return $('<div />').html(value).text();
-        } else {
-            return '';
+        function htmlDecode(value) {
+            if (value) {
+                return $('<div />').html(value).text();
+            } else {
+                return '';
+            }
         }
-    }
-    
-    function setTableRow(tableId) {
-        count = 0;
-        $J('table#'+tableId+' tbody tr:visible').each(function(){
-            $J(this).removeClass("row1 row2");
-            rowClass = (count%2 == 0) ? "row1" : "row2";
-            $J(this).addClass(rowClass);
-            count++;
-        });
-    } 
-    $J(function(){
-        $J('.changestatus').click(function(e){
-            var $elm = $J(this);
-            url = $elm.attr("href");
-            $J.get(url, function(data) {
-                image = $elm.find('img').attr('src').split('/')[2] == 'led_green.gif' ? 'led_red.gif' : 'led_green.gif';
-                $elm.find('img').attr('src', 'images/icons/'+image);
-                fadeOkbox('{TXT_CRM_STATUS_SUCCESSFULLY_CHANGED}');
+
+        function setTableRow(tableId) {
+            count = 0;
+            $J('table#' + tableId + ' tbody tr:visible').each(function() {
+                $J(this).removeClass("row1 row2");
+                rowClass = (count % 2 == 0) ? "row1" : "row2";
+                $J(this).addClass(rowClass);
+                count++;
             });
-            e.preventDefault();
-        });
-        $J("#multiAction").change(function(){
-            
-            if ($J(".entrySelection:checked").length <= 0 && $J(this).val() != 0) {
-                alert('{TXT_PRODUCTS_SELECT_ENTRIES}');
-                return
-            }
-            if ($J(this).val() == "delete") {
-                if(confirm('Are you Sure Want to delete the Entry')) 
-                    $J("#stage_entries").submit();
-                else 
-                    return;
-
-            }
-            if ($J(this).val() != 0)
-                $J("#stage_entries").submit();
-        });
-        $J(".deleteEntry").click(function(){
-            $elm  = $J(this);
-            en_id = $J(this).attr('rel').split('_')[1]
-            if (confirm ("{TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES}")) {
-                $J.ajax({
-                    url     : './index.php?cmd={MODULE_NAME}&act=settings&tpl=opstages&actionType=deletestage&ajax=1&id='+en_id,
-                    type    : 'POST',
-                    success : function(msg){
-                        $elm.closest("tr").remove();
-                        setTableRow("entryList");
-                        fadeOkbox('{TXT_CRM_DELETE_MESSAGE}');
-                    }
+        }
+        $J(function() {
+            $J('.changestatus').click(function(e) {
+                var $elm = $J(this);
+                url = $elm.attr("href");
+                $J.get(url, function(data) {
+                    image = $elm.find('img').attr('src').split('/')[2] == 'led_green.gif' ? 'led_red.gif' : 'led_green.gif';
+                    $elm.find('img').attr('src', 'images/icons/' + image);
+                    fadeOkbox('{TXT_CRM_STATUS_SUCCESSFULLY_CHANGED}');
                 });
-            }
-        });
-        $J(".editEntry ").click(function(){
-            
-            en_id = $J(this).attr('rel').split('_')[1];
-            $J(".entry_"+en_id+"_hidden").show();
-            $J(".entry_"+en_id+"_text").hide();
-            
-            $J(this).hide();
-            $J(".entry_"+en_id+"_save").show();
+                e.preventDefault();
+            });
+            $J("#multiAction").change(function() {
 
-        });
-        $J(".saveEntry").click(function() {
-            var $elm = $J(this);
-            form_value = $J("#stage_entries").serialize();
-            
-            $J.ajax({
-                url     : './index.php?cmd={MODULE_NAME}&act=settings&tpl=opstages&fn=modify&ajax=1',
-                type    : 'POST',
-                data    : form_value,
-                success : function(result){
-                    en_id = $elm.attr('rel').split('_')[1];
-                    $J(".entry_"+en_id+"_hidden").hide();
-                    $J(".entry_"+en_id+"_hidden").each(function(){
-                        $J(this).next().html(htmlEncode($J(this).val()));
+                if ($J(".entrySelection:checked").length <= 0 && $J(this).val() != 0) {
+                    alert('{TXT_PRODUCTS_SELECT_ENTRIES}');
+                    return
+                }
+                if ($J(this).val() == "delete") {
+                    if (confirm('Are you Sure Want to delete the Entry'))
+                        $J("#stage_entries").submit();
+                    else
+                        return;
+
+                }
+                if ($J(this).val() != 0)
+                    $J("#stage_entries").submit();
+            });
+            $J(".deleteEntry").click(function() {
+                $elm = $J(this);
+                en_id = $J(this).attr('rel').split('_')[1]
+                if (confirm("{TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES}")) {
+                    $J.ajax({
+                        url: './index.php?cmd={MODULE_NAME}&act=settings&tpl=opstages&actionType=deletestage&ajax=1&id=' + en_id,
+                        type: 'POST',
+                        success: function(msg) {
+                            $elm.closest("tr").remove();
+                            setTableRow("entryList");
+                            fadeOkbox('{TXT_CRM_DELETE_MESSAGE}');
+                        }
                     });
-                    $J(".entry_"+en_id+"_text").show();
-
-                    $elm.hide();
-                    $J(".entry_"+en_id+"_edit").show();
-                    fadeOkbox('{TXT_CRM_EDIT_MESSAGE}');
                 }
             });
+            $J(".editEntry ").click(function() {
+
+                en_id = $J(this).attr('rel').split('_')[1];
+                $J(".entry_" + en_id + "_hidden").show();
+                $J(".entry_" + en_id + "_text").hide();
+
+                $J(this).hide();
+                $J(".entry_" + en_id + "_save").show();
+
+            });
+            $J(".saveEntry").click(function() {
+                var $elm = $J(this);
+                form_value = $J("#stage_entries").serialize();
+
+                $J.ajax({
+                    url: './index.php?cmd={MODULE_NAME}&act=settings&tpl=opstages&fn=modify&ajax=1',
+                    type: 'POST',
+                    data: form_value,
+                    success: function(result) {
+                        en_id = $elm.attr('rel').split('_')[1];
+                        $J(".entry_" + en_id + "_hidden").hide();
+                        $J(".entry_" + en_id + "_hidden").each(function() {
+                            $J(this).next().html(htmlEncode($J(this).val()));
+                        });
+                        $J(".entry_" + en_id + "_text").show();
+
+                        $elm.hide();
+                        $J(".entry_" + en_id + "_edit").show();
+                        fadeOkbox('{TXT_CRM_EDIT_MESSAGE}');
+                    }
+                });
+            });
         });
-    });
-    $J(document).ajaxStart(function() {
-        $J('body').append(getMessageDiv('Saving'));
-    }).ajaxStop(function() {
-        $J("#ajaxMessageDiv").remove();
-    });
-    function getMessageDiv(mes) {
-        return '<div id="ajaxMessageDiv">'+mes+'..</div>';
-    }
-    function fadeOkbox(msg) {
+        $J(document).ajaxStart(function() {
+            $J('body').append(getMessageDiv('Saving'));
+        }).ajaxStop(function() {
+            $J("#ajaxMessageDiv").remove();
+        });
+        function getMessageDiv(mes) {
+            return '<div id="ajaxMessageDiv">' + mes + '..</div>';
+        }
+        function fadeOkbox(msg) {
             $J('.okBox-new').html(msg);
             $J('.okBox-new').fadeIn('slow');
-            setTimeout(function () {
-                    $J('.okBox-new').fadeOut('slow');
+            setTimeout(function() {
+                $J('.okBox-new').fadeOut('slow');
             }, 6000);
-    }
-    function checkValidations() {
-        var errChk;
-        if (document.getElementById('label').value.trim() == '') {
-            errChk = 1;
-            $J('#label').css('border','1px solid red');
         }
-        if (document.getElementById('stage').value.trim() == '') {
-            errChk = 1;
-            $J('#stage').css('border','1px solid red');
-        }
-        
-        if (errChk == 1) {
-            $J('#formerr').html("All mandatory fields have not been filled out.!");
-            $J('#formerr').css('display','block');
-            return false;
-        } else {
-            return true;
-        }
-    }
-</script>
+        function checkValidations() {
+            var errChk;
+            if (document.getElementById('label').value.trim() == '') {
+                errChk = 1;
+                $J('#label').css('border', '1px solid red');
+            }
+            if (document.getElementById('stage').value.trim() == '') {
+                errChk = 1;
+                $J('#stage').css('border', '1px solid red');
+            }
 
-<div id="stage_page">
+            if (errChk == 1) {
+                $J('#formerr').html("All mandatory fields have not been filled out.!");
+                $J('#formerr').css('display', 'block');
+                return false;
+            } else {
+                return true;
+            }
+        }
+    </script>
+
+    <div id="stage_page">
     <div class="okBox-new" style="display:none;"></div>
     <br>
     <div id="formerr"></div>
@@ -201,7 +200,9 @@
             </table>
             <br>
             <img height="22" border="0" width="38" src="images/icons/arrow.gif" alt=":" />
-            <a href="#" onclick="changeCheckboxes('stage_overview_entries','stageEntry[]',true); return false;">{TXT_CRM_SELECT_ALL}</a> / <a href="#" onclick="changeCheckboxes('stage_overview_entries','stageEntry[]',false); return false;">{TXT_CRM_REMOVE_SELECTION}</a>
+            <a href="#" onclick="changeCheckboxes('stage_overview_entries', 'stageEntry[]', true);
+        return false;">{TXT_CRM_SELECT_ALL}</a> / <a href="#" onclick="changeCheckboxes('stage_overview_entries', 'stageEntry[]', false);
+        return false;">{TXT_CRM_REMOVE_SELECTION}</a>
             <select name="actionType" id="multiAction">
                 <option value="0">{TXT_CRM_SELECT_ACTION}</option>
                 <option value="activate">{TXT_CRM_ACTIVATESELECTED}</option>
