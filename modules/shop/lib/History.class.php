@@ -7,6 +7,8 @@
  *
  * Order history for Shop Customers
  * @author Reto Kohli <reto.kohli@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_shop
  */
 
 /**
@@ -14,6 +16,8 @@
  *
  * Order history for Shop Customers
  * @author Reto Kohli <reto.kohli@comvation.com>
+ * @package     contrexx
+ * @subpackage  module_shop
  */
 class History {
 
