@@ -529,7 +529,7 @@ class CalendarManager extends CalendarLibrary
             $this->_objTpl->setVariable(array(
                 $this->moduleLangVar.'_EVENT_INVITATION_EMAIL_LANG'     => \Html::getLanguageIcon($language['id'], 'active', 'javascript:void()'),
                 $this->moduleLangVar.'_EVENT_INVITATION_EMAIL_LANG_ID'  => (int) $language['id'],
-                $this->moduleLangVar.'_EVENT_INVITATION_EMAIL_TEMPLATE' => $objMail->getTemplateDropdown(intval($objEvent->invitationTemplate), CalendarMailManager::MAIL_INVITATION, $language['id']),
+                $this->moduleLangVar.'_EVENT_INVITATION_EMAIL_TEMPLATE' => $objMail->getTemplateDropdown(intval($objEvent->invitationTemplate[$language['id']]), CalendarMailManager::MAIL_INVITATION, $language['id']),
             ));
             $this->_objTpl->parse('invitation_email_template');
         }
