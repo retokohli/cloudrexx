@@ -104,14 +104,13 @@ var ComboUploader = function(theConfig) {
     if(uploaders.length > 1) { //multiple uploaders to choose from, load functionality to switch
         //check what is supported by the browser
         var getJavaVersion = function() {
-            var result = null;
+            var arrVersion;
             // Walk through the full list of mime types.
-            for(var i=0, size=navigator.mimeTypes.length; i<size; i++)
-            {
-                // The jpi-version is the plug-in version.  This is the best
-                // version to use.
-                if((result = navigator.mimeTypes[i].type.match(/^application\/x-java-applet;jpi-version=(.*)$/)) !== null)
-                    return result[1];
+            for (var i = 0, size=navigator.mimeTypes.length; i < size; i++) {
+                // The jpi-version is the plug-in version.  This is the best version to use.
+                if ((arrVersion = navigator.mimeTypes[i].type.match(/^application\/x-java-applet;jpi-version=(.*)$/)) !== null) {
+                    return arrVersion[1];
+                }
             }
             return null;
         }
@@ -121,7 +120,8 @@ var ComboUploader = function(theConfig) {
 
             var javaSupported = false;
             if (navigator != undefined) {
-                if (navigator.javaEnabled() && parseFloat(getJavaVersion().substring(0,3)) > 1.4) {
+                var javaVersion = getJavaVersion();
+                if (navigator.javaEnabled() && javaVersion !== null && parseFloat(javaVersion.substring(0,3)) > 1.4) {
                     javaSupported = true;
                 }
                 completeFunction(flashSupported, javaSupported, true);
