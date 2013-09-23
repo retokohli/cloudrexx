@@ -3,7 +3,7 @@
  * @author: Ueli Kramer <ueli.kramer@comvation.com>
  * @version: 1.0
  * @package: contrexx
- * @subpackage: core_modules_frontendediting
+ * @subpackage: coremodules_frontendediting
  */
 
 /**

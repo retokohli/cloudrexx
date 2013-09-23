@@ -6,7 +6,7 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  core_module_listing
+ * @subpackage  coremodule_listing
  */
 
 namespace Cx\Core_Modules\Listing\Controller;
@@ -17,7 +17,7 @@ namespace Cx\Core_Modules\Listing\Controller;
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  core_module_listing
+ * @subpackage  coremodule_listing
  */
 
 class SortingController {

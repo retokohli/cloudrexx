@@ -5,7 +5,7 @@
  * @copyright   CONTREXX CMS - Comvation AG Thun
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
  * @package     contrexx
- * @subpackage  core_module_frontendediting
+ * @subpackage  coremodule_frontendediting
  * @version     1.0.0
  */
 
@@ -19,7 +19,7 @@ namespace Cx\Core_Modules\FrontendEditing\Controller;
  * @copyright   CONTREXX CMS - Comvation AG Thun
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
  * @package     contrexx
- * @subpackage  core_module_frontendediting
+ * @subpackage  coremodule_frontendediting
  * @version     1.0.0
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController
