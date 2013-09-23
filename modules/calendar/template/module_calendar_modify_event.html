@@ -40,13 +40,13 @@
             return true;
         },
         _moveToNextTab: function() {
-            current = $J("ul#tabmenu > li").has("a.active");            
+            current = $J("ul#tabmenu > li").has("a.active");
             if (current.next().length) {
                 target = current.next();
             } else {
                 target = $J("ul#tabmenu > li:first"); // This will not happen
             }
-            target.find("a").trigger("click");                       
+            target.find("a").trigger("click");
         }
     };
     $J(function() {
@@ -67,19 +67,19 @@
                 $J(this).val('1');
             }
         });
-        $J("ul#tabmenu > li").click(function(){
+        $J("ul#tabmenu > li").click(function() {
             if ($J(this).next().length) {
                 $J(".tab-next").show();
             } else {
                 $J(".tab-next").hide();
             }
         });
-        $J(".sendInvitation").click(function(){            
-           if ($J(this).is(":checked")) {
-               $J(".invitationEmailTemplate").show();
-           } else {
-               $J(".invitationEmailTemplate").hide();
-           }
+        $J(".sendInvitation").click(function() {
+            if ($J(this).is(":checked")) {
+                $J(".invitationEmailTemplateContainer").show();
+            } else {
+                $J(".invitationEmailTemplateContainer").hide();
+            }
         });
     });
 
@@ -226,13 +226,13 @@
                 }
 
                 if (elm.checked) {
-                    tab1.style.display = 'inline';                    
-                    if (firstLang) {                        
+                    tab1.style.display = 'inline';
+                    if (firstLang) {
                         tab1body.style.display = 'block';
 
                         $J(".language_tab li a").removeClass('active').addClass("inactive");
                         $J('#eventDescTab_' + langId + '_desc').addClass("active");
-                        
+
                         firstLang = false;
                     } else {
                         tab1body.style.display = 'none';
@@ -242,7 +242,7 @@
                     tab1body.style.display = 'none';
                 }
             }
-        }                
+        }
     }
 
     function langCount(reg)
@@ -475,7 +475,8 @@
         <li><a id="eventTab_location" href="javascript:{}" onclick="selectTab('location');" title="{TXT_CALENDAR_EVENT_LOCATION}">{TXT_CALENDAR_EVENT_LOCATION}</a></li>
         <li><a id="eventTab_details" href="javascript:{}" onclick="selectTab('details');" title="{TXT_CALENDAR_ADDITIONAL_OPTIONS}" >{TXT_CALENDAR_ADDITIONAL_OPTIONS}</a></li>
         <li><a id="eventTab_invite" href="javascript:{}" onclick="selectTab('invite');" title="{TXT_CALENDAR_EVENT_INVITE}" >{TXT_CALENDAR_EVENT_INVITE}</a></li>
-        <li><a id="eventTab_registration" href="javascript:{}" onclick="selectTab('registration');checkRegistration();" title="{TXT_CALENDAR_EVENT_REGISTRATION}" >{TXT_CALENDAR_EVENT_REGISTRATION}</a></li>
+        <li><a id="eventTab_registration" href="javascript:{}" onclick="selectTab('registration');
+        checkRegistration();" title="{TXT_CALENDAR_EVENT_REGISTRATION}" >{TXT_CALENDAR_EVENT_REGISTRATION}</a></li>
         <li><a id="eventTab_series" href="javascript:{}" onclick="selectTab('series');" title="{TXT_CALENDAR_EVENT_SERIES}" >{TXT_CALENDAR_EVENT_SERIES}</a></li>
         <!-- BEGIN eventPublicateMenu -->
         <li><a id="eventTab_publicate" href="javascript:{}" onclick="selectTab('publicate')" title="{TXT_CALENDAR_EVENT_PUBLICATE}">{TXT_CALENDAR_EVENT_PUBLICATE}</a></li>
@@ -753,11 +754,11 @@
     <div id="invite" class="eventTab" style="display:none;">
         <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
             <tr>
-                <th colspan="2"><b>{TXT_CALENDAR_EVENT_INVITE}</b></th>
+                <th colspan="3"><b>{TXT_CALENDAR_EVENT_INVITE}</b></th>
             </tr>
             <tr class="row1">
                 <td width="180" valign="top">{TXT_CALENDAR_COMMUNITY_GROUPS}</td>
-                <td>
+                <td colspan="2">
                     <div style="float: left; height: auto !important;">
                         <div style="float: left; height: auto !important;">
                             <select id="deselectedGroups" name="deselectedGroups[]" size="12" multiple="multiple" style="width: 180px;">
@@ -778,18 +779,26 @@
             </tr>
             <tr class="row2">
                 <td valign="top">{TXT_CALENDAR_EVENT_MORE_INVITATIONS}</td>
-                <td>
+                <td colspan="2">
                     <textarea name="invitedMails" style="width: 250px; height: 60px;" />{CALENDAR_EVENT_MORE_INVITATIONS}</textarea>&nbsp;&nbsp;<span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_CALENDAR_EVENT_MORE_INVITATIONS_INFO}</span>
                 </td>
             </tr>
             <tr class="row1">
                 <td valign="top">{TXT_CALENDAR_EVENT_SEND_INVITATION}</td>
-                <td>
+                <td width="1%">
                     <input name="sendInvitation" class="sendInvitation" type="checkbox" value="1" {CALENDAR_EVENT_SEND_INVITATION}/>
-                    &nbsp;
-                    <select name="invitationEmailTemplate" class="invitationEmailTemplate" style="width: 230px;display: none;">
-                            {CALENDAR_EVENT_INVITATION_EMAIL_TEMPLATE}
-                    </select>
+                </td>
+                <td>
+                    <div class="invitationEmailTemplateContainer" style="display: none;">                        
+                        <!-- BEGIN invitation_email_template -->
+                        <div class="invitationEmailTemplate">
+                            <div class="language-icons">{CALENDAR_EVENT_INVITATION_EMAIL_LANG}</div>
+                            <select name="invitationEmailTemplate[{CALENDAR_EVENT_INVITATION_EMAIL_LANG_ID}]" style="width: 230px;">
+                                {CALENDAR_EVENT_INVITATION_EMAIL_TEMPLATE}
+                            </select>
+                        </div>
+                        <!-- END invitation_email_template -->
+                    </div>
                 </td>
             </tr>
         </table>
