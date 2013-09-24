@@ -372,6 +372,11 @@ function executeContrexxUpdate() {
             }
             return false;
         } else {
+            try {
+                \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'log_entry` SET `object_class` = \'Cx\\\\Core\\\\ContentManager\\\\Model\\\\Entity\\\\Page\'');
+            } catch (\Cx\Lib\UpdateException $e) {
+                return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+            }
             if (_updateModulePages($viewUpdateTable) === false) {
                 if (empty($objUpdate->arrStatusMsg['title'])) {
                     DBG::msg('unable to update module templates');
