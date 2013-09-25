@@ -89,6 +89,7 @@ class CalendarManager extends CalendarLibrary
                 $this->showEventRegistrations(intval($_GET['id']));
                 break;
             case 'modify_registration':
+            case 'add_registration':    
                 Permission::checkAccess(182, 'static');
                 $this->modifyRegistration(intval($_GET['event_id']), intval($_GET['reg_id']));
                 break;
@@ -1203,8 +1204,7 @@ class CalendarManager extends CalendarLibrary
         }   
         
         switch ($registrationType) {
-            case 'r':
-            default:
+            case 'r':            
                 $getRegistrations = true; 
                 $getDeregistrations = false;  
                 $getWaitlist = false;
@@ -1217,6 +1217,11 @@ class CalendarManager extends CalendarLibrary
             case 'w':
                 $getRegistrations = false; 
                 $getDeregistrations = false;  
+                $getWaitlist = true;
+                break;
+            default:
+                $getRegistrations = true; 
+                $getDeregistrations = true;  
                 $getWaitlist = true;
                 break;
         }
@@ -1388,14 +1393,18 @@ class CalendarManager extends CalendarLibrary
             'TXT_'.$this->moduleLangVar.'_CONFIRM_DELETE_DATA'    => $_ARRAYLANG['TXT_CALENDAR_CONFIRM_DELETE_DATA'],
             'TXT_'.$this->moduleLangVar.'_ACTION_IS_IRREVERSIBLE' => $_ARRAYLANG['TXT_CALENDAR_ACTION_IS_IRREVERSIBLE'],
             'TXT_'.$this->moduleLangVar.'_MAKE_SELECTION'         => $_ARRAYLANG['TXT_CALENDAR_MAKE_SELECTION'],
+            'TXT_'.$this->moduleLangVar.'_BACK'                   => $_ARRAYLANG['TXT_CALENDAR_BACK'],
+            'TXT_'.$this->moduleLangVar.'_NO_REGISTRATIONS'       => $_ARRAYLANG['TXT_CALENDAR_NO_REGISTRATIONS'],
+            'TXT_'.$this->moduleLangVar.'_SUBSCRIPTIONS'          => $_ARRAYLANG['TXT_CALENDAR_SUBSCRIPTIONS'],
+            'TXT_'.$this->moduleLangVar.'_ADD'                    => $_ARRAYLANG['TXT_CALENDAR_ADD'],
+            'TXT_'.$this->moduleLangVar.'_EXPORT'                 => $_ARRAYLANG['TXT_CALENDAR_EXPORT'],
             'TXT_SUBMIT_SELECT'                                   => $_ARRAYLANG['TXT_SUBMIT_SELECT'],
             'TXT_SUBMIT_MOVE'                                     => $_ARRAYLANG['TXT_SUBMIT_MOVE'],
             'TXT_SELECT_ALL'                                      => $_ARRAYLANG['TXT_SELECT_ALL'],
             'TXT_DESELECT_ALL'                                    => $_ARRAYLANG['TXT_DESELECT_ALL'],
             'TXT_SUBMIT_DELETE'                                   => $_ARRAYLANG['TXT_SUBMIT_DELETE'],
             $this->moduleLangVar.'_EVENT_ID'                      => $eventId,
-            $this->moduleLangVar.'_REGISTRATION_ID'               => $regId,
-            $this->moduleLangVar.'_EVENT_TPL'                     => $getTpl,
+            $this->moduleLangVar.'_REGISTRATION_ID'               => $regId,            
             $this->moduleLangVar.'_REGISTRATION_'. strtoupper($getTpl) .'_CONTAINER_CLASS'  => 'active',
         ));
         
@@ -1429,9 +1438,10 @@ class CalendarManager extends CalendarLibrary
 
             $objRegistrationManager = new CalendarRegistrationManager($eventId, $r, $d, $w);
             $objRegistrationManager->getRegistrationList();
-            $objRegistrationManager->showRegistrationList($this->_objTpl);
+            $objRegistrationManager->showRegistrationList($this->_objTpl, $tpl);
             
             $this->_objTpl->setVariable(array(
+                $this->moduleLangVar.'_EVENT_TPL'                          => $tpl,
                 'TXT_'.$this->moduleLangVar.'_REGISTRATIONS_TITLE'         => $title,
                 $this->moduleLangVar.'_REGISTRATION_LIST_CONTAINER_ID'     => $containerId,                
                 $this->moduleLangVar.'_REGISTRATION_LIST_CONTAINER_DISPLAY'=> $containerDisplay ? 'block' : 'none'
@@ -1454,11 +1464,24 @@ class CalendarManager extends CalendarLibrary
         
         if (isset($_POST['submitModifyRegistration'])) {
         	$objRegistration = new CalendarRegistration(intval($_POST['form']));
-	        if ($objRegistration->save($_POST)) {
-	        	$this->okMessage = $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFULLY_SAVED'];
-                CSRF::header('Location: index.php?cmd='.$this->moduleName.'&act=event_registrations&tpl='.$_POST['regtpl'].'&id='.$eventId);
+	        if ($objRegistration->save($_POST)) {                    
+                    switch ($_POST['registrationType']) {
+                        case 0:
+                            $tpl = 'd';
+                            break;
+                        case 1:
+                        default:
+                            $tpl = 'r';
+                            break;
+                        case 2:
+                            $tpl = 'w';
+                            break;                   
+                    }
+                    $tpl = !empty($_POST['regtpl']) ? $_POST['regtpl'] : $tpl;
+                    $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFULLY_SAVED'];                    
+                    CSRF::header('Location: index.php?cmd='.$this->moduleName.'&act=event_registrations&tpl='.$tpl.'&id='.$eventId);
 	        } else {
-                $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_CORRUPT_SAVED'];
+                    $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_CORRUPT_SAVED'];
 	        }
         }
         
