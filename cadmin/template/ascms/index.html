@@ -30,6 +30,18 @@
                     <!-- BEGIN upgradable -->
                     <a class="license-upgrade first" href="index.php?cmd=license" target="_self">{TXT_UPGRADE}</a>
                     <!-- END upgradable -->
+                    <!-- BEGIN backend_language_navigation -->
+                    <ul>
+                        <li>
+                            <a href="#">{TXT_LANGUAGE}</a>
+                            <ul>
+                                <!-- BEGIN backend_language_navigation_item -->
+                                <li><a class="{LANGUAGE_CSS}" style="background: url('images/flags/{LANGUAGE_FLAG}') 11px 6px no-repeat;" href="{LANGUAGE_URL}">{LANGUAGE_NAME}</a></li>
+                                <!-- END backend_language_navigation_item -->
+                            </ul>
+                        </li>
+                    </ul>
+                    <!-- END backend_language_navigation -->
                     <a class="frontend" href="../index.php" target="_blank">{TXT_FRONTEND}</a>
                     <a class="profile" href="index.php?cmd=access&amp;act=user&amp;tpl=modify&amp;id={USER_ID}">{TXT_PROFILE}</a>
                     <a class="logout" href="javascript:logout()">{TXT_LOGOUT}</a>

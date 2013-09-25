@@ -179,6 +179,38 @@ class FWLanguage
 
 
     /**
+     * Return only the languages active in the backend
+     * @author     Stefan Heinemann <sh@adfinis.com>
+     * @return     array(
+     *                 array(
+     *                     'id'         => {lang_id},
+     *                     'lang'       => {iso_639-1},
+     *                     'name'       => {name},
+     *                     'charset'    => 'UTF-8',
+     *                     'themesid'   => {theme_id},
+     *                     'frontend'   => {bool},
+     *                     'backend'    => {bool},
+     *                     'is_default' => {bool},
+     *                     'fallback'   => {language_id},
+     *                 )
+     *             )
+     */
+    public static function getActiveBackendLanguages()
+    {
+        if (empty(self::$arrLanguages)) {
+            self::init();
+        }
+        $arr = array();
+        foreach (self::$arrLanguages as $id => $lang) {
+            if ($lang['backend']) {
+                $arr[$id] = $lang;
+            }
+        }
+        return $arr;
+    }
+
+
+    /**
      * Returns single language related fields
      *
      * Access language data by specifying the language ID and the index
