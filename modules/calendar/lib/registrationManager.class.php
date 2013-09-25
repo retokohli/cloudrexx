@@ -136,10 +136,11 @@ class CalendarRegistrationManager extends CalendarLibrary
      * Set the registration list place holder to the template
      *      
      * @param object $objTpl Template object
+     * @param string tpl     Template type
      * 
      * @return null
      */
-    function showRegistrationList($objTpl)
+    function showRegistrationList($objTpl, $tpl)
     {
         global $objDatabase, $_LANGID, $_ARRAYLANG;
         
@@ -248,7 +249,11 @@ class CalendarRegistrationManager extends CalendarLibrary
         $i = 0;
 
         //$paymentMethods = explode(',', $_ARRAYLANG["TXT_PAYMENT_METHODS"]);
-
+        if (empty($this->registrationList)) {
+            $objTpl->touchBlock("emptyEventRegistrationList");
+        } else {
+            $objTpl->hideBlock("emptyEventRegistrationList");
+        }
         foreach ($this->registrationList as $objRegistration) {
             $checkbox = '<input type="checkbox" name="selectedRegistrationId[]" class="selectedRegistrationId" value="'.$objRegistration->id.'" />';
             $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_VALUE', $checkbox);
@@ -279,8 +284,8 @@ class CalendarRegistrationManager extends CalendarLibrary
             //$objTpl->parse('eventRegistrationValue');
             
             $links = '
-                <a style="float: right;" href="javascript:deleteNote(\''.$objRegistration->id.'\');" title="'.$_ARRAYLANG['TXT_CALENDAR_DELETE'].'"><img src="images/icons/delete.gif" width="17" height="17" border="0" alt="'.$_ARRAYLANG['TXT_CALENDAR_DELETE'].'" /></a>
-                <a style="float: right;" href="index.php?cmd='.$this->moduleName.'&act=modify_registration&tpl='.$_GET['tpl'].'&event_id='.$this->eventId.'&amp;reg_id='.$objRegistration->id.'" title="'.$_ARRAYLANG['TXT_CALENDAR_EDIT'].'"><img src="images/icons/edit.gif" width="16" height="16" border="0" alt="'.$_ARRAYLANG['TXT_CALENDAR_EDIT'].'" /></a>
+                <a style="float: right;" class="delete_registration" href="index.php?cmd='. $this->moduleName .'&amp;act=event_registrations&amp;tpl='.$tpl.'&amp;id='.$this->eventId.'&amp;delete='.$objRegistration->id.'" title="'.$_ARRAYLANG['TXT_CALENDAR_DELETE'].'"><img src="images/icons/delete.gif" width="17" height="17" border="0" alt="'.$_ARRAYLANG['TXT_CALENDAR_DELETE'].'" /></a>
+                <a style="float: right;" href="index.php?cmd='.$this->moduleName.'&amp;act=modify_registration&amp;tpl='.$tpl.'&amp;event_id='.$this->eventId.'&amp;reg_id='.$objRegistration->id.'" title="'.$_ARRAYLANG['TXT_CALENDAR_EDIT'].'"><img src="images/icons/edit.gif" width="16" height="16" border="0" alt="'.$_ARRAYLANG['TXT_CALENDAR_EDIT'].'" /></a>
             ';
             $objTpl->setVariable($this->moduleLangVar.'_REGISTRATION_VALUE', $links);
             $objTpl->parse('eventRegistrationValue');
@@ -307,6 +312,21 @@ class CalendarRegistrationManager extends CalendarLibrary
         $i = 0;
         $objForm = new CalendarForm(intval($formId));
         
+        // parse the registration type for the add/edit subscription        
+        $regType      = isset($_POST['registrationType']) ? (int) $_POST['registrationType'] : (!empty($regId) ? $this->registrationList[$regId]->type : 1);
+        $regTypeField = '<select style="width: 208px;" class="calendarSelect" name="registrationType">
+                            <option value="1" '. ($regType == 1 ? "selected='selected'" : '') .' />'.$_ARRAYLANG['TXT_CALENDAR_REG_REGISTRATION'].'</option>
+                            <option value="0" '. ($regType == 0 ? "selected='selected'" : '') .' />'.$_ARRAYLANG['TXT_CALENDAR_REG_SIGNOFF'].'</option>
+                            <option value="2" '. ($regType == 2 ? "selected='selected'" : '') .' />'.$_ARRAYLANG['TXT_CALENDAR_REG_WAITLIST'].'</option>
+                        </select>';
+        $objTpl->setVariable(array(
+            $this->moduleLangVar.'_ROW'                             => $i % 2 == 0 ? 'row1' : 'row2',
+            $this->moduleLangVar.'_REGISTRATION_INPUTFIELD_NAME'    => $_ARRAYLANG['TXT_CALENDAR_TYPE'],
+            $this->moduleLangVar.'_REGISTRATION_INPUTFIELD_VALUE'   => $regTypeField,
+        ));
+        $objTpl->parse('calendar_registration_inputfield');
+        $i++;
+        
         foreach ($objForm->inputfields as $arrInputfield) {
             $inputfield = '';
             $options = explode(',', $arrInputfield['default_value'][$_LANGID]);
@@ -332,7 +352,7 @@ class CalendarRegistrationManager extends CalendarLibrary
                     $optionSelect = false;
                 case 'select':
                 case 'salutation':                
-                    $inputfield = '<select style="width: 202px;" class="calendarSelect" name="registrationField['.$arrInputfield['id'].']">';
+                    $inputfield = '<select style="width: 208px;" class="calendarSelect" name="registrationField['.$arrInputfield['id'].']">';
                     $selected =  empty($_POST) ? 'selected="selected"' : '';  
                     $inputfield .= $optionSelect ? '<option value="" '.$selected.'>'.$_ARRAYLANG['TXT_CALENDAR_PLEASE_CHOOSE'].'</option>' : '';
                     foreach ($options as $key => $name)  {
