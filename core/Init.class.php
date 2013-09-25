@@ -122,16 +122,38 @@ class InitCMS
     function _initBackendLanguage()
     {
         $objFWUser = FWUser::getFWUserObject();
+
+        // defaults
+        $backendLangId = $this->defaultBackendLangId;
+        $setUserLanguage = false;
+
+        // if the user is logged in, take the users backend language
         if ($objFWUser->objUser->login(true)) {
             $backendLangId = $objFWUser->objUser->getBackendLanguage();
-        } elseif (!empty($_COOKIE['backendLangId'])) {
-            $backendLangId = intval($_COOKIE['backendLangId']);
-        } else {
-            $backendLangId = $this->defaultBackendLangId;
         }
+
+        // the user want to change the language
+        if (!empty($_REQUEST['setLang'])) {
+            $backendLangId = intval($_REQUEST['setLang']);
+            $setUserLanguage = true;
+        } elseif (!empty($_COOKIE['backendLangId'])) {
+            // the language already has changed for the backend, but he hasn't been logged in at this time
+            // (perhaps on login page)
+            $setUserLanguage = true;
+            $backendLangId = intval($_COOKIE['backendLangId']);
+        }
+
+        // the language is activated for the backend
         if (empty($this->arrLang[$backendLangId]['backend'])) {
             $backendLangId = $this->defaultBackendLangId;
         }
+
+        // set the users default backend language and store it into the db if he has changed the language manually
+        if ($setUserLanguage === true && $objFWUser->objUser->login(true)) {
+            $objFWUser->objUser->setBackendLanguage($backendLangId);
+            $objFWUser->objUser->store();
+        }
+
         $this->backendLangId = $this->arrLang[$backendLangId]['id'];
         $this->currentThemesId = $this->arrLang[$backendLangId]['themesid'];
         $this->backendLangCharset = $this->arrLang[$backendLangId]['charset'];

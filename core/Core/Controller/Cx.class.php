@@ -1280,6 +1280,32 @@ namespace Cx\Core\Core\Controller {
 
                 $objCache->endCache($this->resolvedPage);
             } else {
+                // backend meta navigation
+                if ($this->template->blockExists('backend_metanavigation')) {
+                    // parse language navigation
+                    if ($this->template->blockExists('backend_language_navigation') && $this->template->blockExists('backend_language_navigation_item')) {
+                        $backendLanguage = \FWLanguage::getActiveBackendLanguages();
+                        if (count($backendLanguage) > 1) {
+                            $this->template->setVariable('TXT_LANGUAGE', $_CORELANG['TXT_LANGUAGE']);
+                            foreach ($backendLanguage as $language) {
+                                $languageUrl = \Env::get('init')->getUriBy('setLang', $language['id']);
+                                $this->template->setVariable(array(
+                                    'LANGUAGE_URL' => $languageUrl,
+                                    'LANGUAGE_FLAG' => 'flag_' . $language['lang'] . '.gif',
+                                    'LANGUAGE_NAME' => $language['name'],
+                                    'LANGUAGE_CSS' => \Env::get('init')->getBackendLangId() == $language['id'] ? 'active' : '',
+                                ));
+                                $this->template->parse('backend_language_navigation_item');
+                            }
+                            $this->template->parse('backend_language_navigation');
+                        } else {
+                            $this->template->hideBlock('backend_language_navigation');
+                        }
+                    }
+
+                    $this->template->touchBlock('backend_metanavigation');
+                }
+
                 // page parsing
                 $parsingTime = $this->stopTimer();
 //                var_dump($parsingTime);

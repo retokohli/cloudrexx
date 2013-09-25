@@ -1557,10 +1557,7 @@ class LegacyComponentHandler {
                         global $license, $_CONFIG, $objDatabase, $objTemplate;
                         
                         $license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $objDatabase);
-                        
-                        if ($objTemplate->blockExists('backend_metanavigation')) {
-                            $objTemplate->touchBlock('backend_metanavigation');
-                        }
+
                         if ($objTemplate->blockExists('upgradable')) {
                             if ($license->isUpgradable()) {
                                 $objTemplate->touchBlock('upgradable');
