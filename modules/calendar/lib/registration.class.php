@@ -310,6 +310,7 @@ class CalendarRegistration extends CalendarLibrary
                              `ip_address` = '.$ipAddress.',
                              `key` = "'.$key.'",
                              `user_id` = '.$userId.',
+                             `type`    = '.$type.',
                              `lang_id` = '.$_LANGID.',
                              `payment_method` = '.$paymentMethod.',
                              `paid` = '.$paid.'
