@@ -91,6 +91,15 @@ class crmTask extends CrmLibrary
         $objtpl->loadTemplateFile("module_{$this->moduleName}_tasks_overview.html");
         $objtpl->setGlobalVariable("MODULE_NAME", $this->moduleName);
         
+        $msg = isset($_GET['msg']) ? base64_decode($_GET['msg']) : '';
+        if ($msg) {
+            switch ($msg) {
+            case 'taskDeleted':
+                $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_TASK_DELETE_MESSAGE'];            
+                break;
+            }
+        }
+
         $filterTaskType  = isset($_GET['searchType'])? intval($_GET['searchType']) : 0 ;
         $filterTaskTitle = isset($_GET['searchTitle'])? contrexx_input2raw($_GET['searchTitle']) : '';
         $sortField       = isset($_GET['sort_by']) && array_key_exists($_GET['sort_by'], $this->_sortFields) ? (int) $_GET['sort_by'] : 2;
@@ -98,7 +107,7 @@ class crmTask extends CrmLibrary
 
         $filter     = array();
         $filterLink = '';
-
+        
         if (!empty($filterTaskType)) {
             $filter[]    = " t.task_type_id = '$filterTaskType'";
             $filterLink .= "&searchType=$filterTaskType";
@@ -548,8 +557,7 @@ class crmTask extends CrmLibrary
         if (!empty($id)) {
             $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_{$this->moduleName}_task WHERE id = '$id'");
             
-            $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_TASK_DELETE_MESSAGE'];            
-            csrf::header("Location:index.php?cmd={$this->moduleName}".base64_decode($redirect));
+            csrf::header("Location:index.php?cmd={$this->moduleName}".base64_decode($redirect)."&msg=".  base64_encode('taskDeleted'));
         }
     }
 
