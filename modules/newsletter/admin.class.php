@@ -598,7 +598,7 @@ class newsletter extends NewsletterLib
                                 n.author_id,
                                 n.catid,
                                 nl.title            AS newstitle,
-                                nl.text NOT REGEXP \'^(<br type="_moz" />)?$\' AS newscontent,
+                                nl.text             AS newscontent,
                                 nl.teaser_text,
                                 nc.name             AS name
                     FROM        '.DBPREFIX.'module_news AS n
@@ -631,9 +631,8 @@ class newsletter extends NewsletterLib
                                                 ? ''
                                                 : 'index.php?section=news&cmd=details&newsid='.$newsid)
                                             : $objNews->fields['redirect'];
-						$newstext = substr(ltrim(strip_tags($objNews->fields['newscontent'])), 0, 800);
-						$newstext .= "[....]";
-						$newsteasertext = substr(ltrim(strip_tags($objNews->fields['teaser_text'])), 0, 100);
+						$newstext = ltrim(strip_tags($objNews->fields['newscontent']));
+						$newsteasertext = ltrim(strip_tags($objNews->fields['teaser_text']));
 						$newslink = "[[" . \Cx\Core\ContentManager\Model\Entity\Page::PLACEHOLDER_PREFIX . "NEWS_DETAILS]]?newsid=" . $newsid;
 						if ($objNews->fields['newsuid'] && ($objUser = $objFWUser->objUser->getUser($objNews->fields['newsuid']))) {
 							$author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
@@ -684,9 +683,8 @@ class newsletter extends NewsletterLib
 					$mailHtmlContent = '';
 					while (!$objNews->EOF) {
 						$content = $this->_getBodyContent($this->GetTemplateSource($importTemplate, 'html'));
-						$newstext = substr(ltrim(strip_tags($objNews->fields['newscontent'])), 0, 800);
-						$newstext .= "[....]";
-						$newsteasertext = substr(ltrim(strip_tags($objNews->fields['teaser_text'])), 0, 100);
+						$newstext = ltrim(strip_tags($objNews->fields['newscontent']));
+						$newsteasertext = ltrim(strip_tags($objNews->fields['teaser_text']));
 						$newslink = \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'details', '', array('newsid' => $objNews->fields['newsid']));;
 						if ($objNews->fields['newsuid'] && ($objUser = $objFWUser->objUser->getUser($objNews->fields['newsuid']))) {
 							$author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
@@ -3616,9 +3614,8 @@ class newsletter extends NewsletterLib
 				if($current_category == $objNews->fields['catid'])
 					$this->_objTpl->hideBlock("news_category");
 				$current_category = $objNews->fields['catid'];
-                $newstext = substr(ltrim(strip_tags($objNews->fields['text'])), 0, 800);
-				$newstext .= "[....]";
-				$newsteasertext = substr(ltrim(strip_tags($objNews->fields['teaser_text'])), 0, 100);
+                $newstext = ltrim(strip_tags($objNews->fields['text']));
+				$newsteasertext = ltrim(strip_tags($objNews->fields['teaser_text']));
                 //$newslink = $this->newsletterUri.ASCMS_PROTOCOL."://".$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET."/index.php?section=news&cmd=details&newsid=".$objNews->fields['id'];
 				/*if ($objNews->fields['userid'] && ($objUser = $objFWUser->objUser->getUser($objNews->fields['userid']))) {
                         $author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
@@ -3697,7 +3694,7 @@ class newsletter extends NewsletterLib
                                 n.author_id,
                                 n.catid,
                                 nl.title            AS newstitle,
-                                nl.text NOT REGEXP \'^(<br type="_moz" />)?$\' AS newscontent,
+                                nl.text             AS newscontent,
                                 nl.teaser_text,
                                 nc.name             AS name
                     FROM        '.DBPREFIX.'module_news AS n
@@ -3730,9 +3727,8 @@ class newsletter extends NewsletterLib
                                                 : 'index.php?section=news&cmd=details&newsid='.$newsid)
                                             : $objNews->fields['redirect'];
 
-						$newstext = substr(ltrim(strip_tags($objNews->fields['newscontent'])), 0, 800);
-						$newstext .= "[....]";
-						$newsteasertext = substr(ltrim(strip_tags($objNews->fields['teaser_text'])), 0, 100);
+						$newstext = ltrim(strip_tags($objNews->fields['newscontent']));
+						$newsteasertext = ltrim(strip_tags($objNews->fields['teaser_text']));
 						$newslink = \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'details', '', array('newsid' => $objNews->fields['newsid']));
 						if ($objNews->fields['newsuid'] && ($objUser = $objFWUser->objUser->getUser($objNews->fields['newsuid']))) {
 							$author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
@@ -3785,8 +3781,7 @@ class newsletter extends NewsletterLib
 					$parsedNewsList = '';
 					while (!$objNews->EOF) {
 						$content = $this->_getBodyContent($this->GetTemplateSource($importTemplate, 'html'));
-						$newstext = substr(ltrim(strip_tags($objNews->fields['newscontent'])), 0, 800);
-						$newstext .= "[....]";
+						$newstext = ltrim(strip_tags($objNews->fields['newscontent']));
 						$newsteasertext = substr(ltrim(strip_tags($objNews->fields['teaser_text'])), 0, 100);
 						$newslink = \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'detals', '', array('newsid' => $objNews->fields['newsid']));;
 						if ($objNews->fields['newsuid'] && ($objUser = $objFWUser->objUser->getUser($objNews->fields['newsuid']))) {
