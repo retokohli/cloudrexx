@@ -440,7 +440,7 @@ function checkaddContact() {
         }
     }
     if (contactType == 'company') {
-        $J("div.email_list:not:last input").each(function (){
+        $J("div.email_list input:visible").each(function (){
             $J(this).parent().css("border", "1px solid #0A50A1");
             if ($J.trim($J(this).val()) == "") {
                 errChk = 1;
