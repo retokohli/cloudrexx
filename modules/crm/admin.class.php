@@ -943,6 +943,9 @@ class CrmManager extends CrmLibrary
             case "CommentDelete":
                     $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_COMMENT_DELETESUCESSMESSAGE'];
                 break;
+            case 'taskDeleted':
+                    $this->_strOkMessage = $_ARRAYLANG['TXT_CRM_TASK_DELETE_MESSAGE'];            
+                break;
             }
         }
 

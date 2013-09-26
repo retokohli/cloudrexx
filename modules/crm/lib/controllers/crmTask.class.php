@@ -91,7 +91,7 @@ class crmTask extends CrmLibrary
         $objtpl->loadTemplateFile("module_{$this->moduleName}_tasks_overview.html");
         $objtpl->setGlobalVariable("MODULE_NAME", $this->moduleName);
         
-        $msg = isset($_GET['msg']) ? base64_decode($_GET['msg']) : '';
+        $msg = isset($_GET['mes']) ? base64_decode($_GET['mes']) : '';
         if ($msg) {
             switch ($msg) {
             case 'taskDeleted':
@@ -557,7 +557,7 @@ class crmTask extends CrmLibrary
         if (!empty($id)) {
             $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_{$this->moduleName}_task WHERE id = '$id'");
             
-            csrf::header("Location:index.php?cmd={$this->moduleName}".base64_decode($redirect)."&msg=".  base64_encode('taskDeleted'));
+            csrf::header("Location:index.php?cmd={$this->moduleName}".base64_decode($redirect)."&mes=".  base64_encode('taskDeleted'));
         }
     }
 
