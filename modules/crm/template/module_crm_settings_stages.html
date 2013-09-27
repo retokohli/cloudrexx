@@ -134,6 +134,7 @@
         }
         function checkValidations() {
             var errChk;
+            $J("input , select").css("border","1px solid #0A50A1");
             if (document.getElementById('label').value.trim() == '') {
                 errChk = 1;
                 $J('#label').css('border', '1px solid red');
