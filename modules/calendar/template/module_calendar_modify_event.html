@@ -5,8 +5,51 @@
         width: 100%;
         margin-bottom: 5px;
     }
+    .exceptionDateHolder {
+        margin: 0;
+        padding: 0;
+        list-style-type: none;
+        display: block;
+    }
+    .paginationHolder {
+        position: absolute;
+        bottom: 0;
+    }
+    .exceptionDateHolder li {
+        padding: 2px 0;
+    }
+    .pagination .current.prev, .pagination .current.next {
+        color: #999;
+        border-color: #999;
+        background: #fff;
+    }
+    .pagination .current {
+        background: #26B;
+        color: #fff;
+        border: solid 1px #AAE;
+    }
+    .pagination a {
+        text-decoration: none;
+        border: solid 1px #AAE;
+        color: #15B;
+    }
+    .pagination a, .pagination span {
+        display: block;
+        float: left;
+        padding: 0.3em 0.5em;
+        margin-right: 5px;
+        margin-bottom: 5px;
+        min-width: 1em;
+        text-align: center;
+    }
+    .pagination .current.prev, .pagination .current.next {
+        color: #999;
+        border-color: #999;
+        background: #fff;
+    }
 </style>
 <script language="JavaScript" type="text/javascript">
+    var blankExeception;
     var modifyEvent = {
         // elm => jquery object
         _handleSeriesEventRowDisplay: function(elm) {
@@ -101,8 +144,97 @@
         jQuery('input[name=endDate]').datetimepicker(options);
         modifyEvent._handleAllDayEvent($J(".all_day"));
         refreshDatePickers();
+        
+        blankException = $J( "#exceptionDateTemplate" ).html();
+        //create the dialog and save a reference
+        var exceptionDialog = cx.ui.dialog({
+            width: 380,
+            title: '{TXT_CALENDAR_SELECT_EXCEPTION_DATE_INFO}',
+            content: $J( ".exceptionDateContainer" ),
+            autoOpen: false,
+            buttons: {
+                Cancel: function() {
+                    $J( this ).dialog( "close" );
+                },
+                "{TXT_CALENDAR_OK}": function() {
+                    $J( "#seriesExeptionsList" ).html( "" );
+                    $J( ".exceptionDateContainer .exceptionDateHolder input:checked" ).each(function(){
+                        checkedDate = $J(this).val();
+                        $J( "#seriesExeptionsList" ).append('<input type="hidden" name="seriesExeptions[]" value="'+ checkedDate +'"  />');
+                    });
+                    $J( this ).dialog( "close" );
+                }
+            },
+            close: function() {
+                $J( ".exceptionDateContainer .exceptionDateHolder" ).html( "" );
+            }
+        });
+
+        $J( ".add_exception" ).click(function() {
+            generateExecptionDates();
+            
+            // initialize paging
+            // count entries inside the hidden content
+            var num_entries = $J( '.exceptionDateHolder li' ).length;
+            $J( ".paginationHolder" ).pagination(num_entries,{
+                callback: paginationCallback,
+                items_per_page:10
+            });
+            
+            exceptionDialog.open();
+        });        
     });
 
+    function getExecptionDates() {
+        startTime = parseInt($J( ".startDate" ).datetimepicker( "getDate" ).getTime());
+        endTime   = parseInt($J( ".endDate" ).datetimepicker( "getDate" ).getTime());
+        
+        exDates  = [];
+        recurrenceType = $J( "#seriesTypeSelect" ).val();
+        switch (recurrenceType) {
+            case '1':
+                fromDate = startTime;
+                while (fromDate < endTime) {
+                    curDate = $J.datepicker.formatDate('{CALENDAR_EVENT_DATE_FORMAT}', new Date(fromDate));
+                    exDates.push(curDate);
+                    fromDate = fromDate + (24*60*60*1000);
+                }
+                break;
+            case '2':
+            case '3':
+                break;
+        }
+        
+        return exDates;
+    }
+    
+    function generateExecptionDates() {
+        exDates   = getExecptionDates();
+        
+        if (exDates.length > 0) {
+            $J.each(exDates, function(i, v) {
+                $field  = $J( blankException );
+
+                $field.find('.exceptionDate').val(v);
+                $field.find('.txtExceptionDate').text(v);
+
+                $J( ".exceptionDateContainer ul.exceptionDateHolder" ).append($field);
+            });
+        } else {
+            $J( ".exceptionDateContainer").html("No Dates found");
+        }
+        
+    }
+    
+    function paginationCallback( page_index ) {
+        $J( '.exceptionDateHolder li' ).hide();
+        var limit = 10;
+        for(i=0;i<limit;i++) {
+           var page = (page_index*limit) + i;
+           $J( '.exceptionDateHolder li:eq('+ page +')').show();            
+        }
+    }
+    
     function SetUrl(url, width, height, alt) {
         switch (fileType) {
             case 'image':
@@ -930,11 +1062,11 @@
                     <div id="seriesExeptionsList">
                         <!-- BEGIN eventExeptions -->
                         <div id="exeption_{CALENDAR_SERIES_EXEPTION_ID}">
-                            <input type="text" name="seriesExeptions[]" value="{CALENDAR_SERIES_EXEPTION_DATE}" class="event_date" style="width: 129px;" />&nbsp;<a href="#" onclick="deleteExeption({CALENDAR_SERIES_EXEPTION_ID});" title="{TXT_CALENDAR_DELETE}"><img style="vertical-align: middle;" src="images/icons/delete.gif" alt="{TXT_CALENDAR_DELETE}" width="17" border="0" height="17"></a>
+                            <input type="hidden" name="seriesExeptions[]" value="{CALENDAR_SERIES_EXEPTION_DATE}" class="event_date" style="width: 129px;" />&nbsp;<a href="#" onclick="deleteExeption({CALENDAR_SERIES_EXEPTION_ID});" title="{TXT_CALENDAR_DELETE}"><img style="vertical-align: middle;" src="images/icons/delete.gif" alt="{TXT_CALENDAR_DELETE}" width="17" border="0" height="17"></a>
                         </div>
                         <!-- END eventExeptions -->
                     </div>
-                    <input type="button" value="Add" onclick="appendExeption();">
+                    <input type="button" class="add_exception" value="{TXT_CALENDAR_ADD}" />
                 </td>
             </tr>
             <tr class="row1">
@@ -990,6 +1122,21 @@
 
 <div id="errorMessage" style="color: #ff0000; display: none;"><br />{TXT_CALENDAR_PLEASE_CHECK_INPUT}</div>
 
+<div class="exceptionDateContainer" style="display: none;">
+    <ul class="exceptionDateHolder" style="min-height: 190px;">
+        
+    </ul>
+    <br/>
+    <br/>
+    <div class="paginationHolder"></div>
+</div>
+<script id="exceptionDateTemplate" type="jquery/tmpl">                
+    <li>
+        <label>
+            <input class="exceptionDate" type="checkbox" value="" />&nbsp;<span class="txtExceptionDate"></span>
+        </label>
+    </li>
+</script>
 <script language="JavaScript" type="text/javascript">
     langCheck();
     showSelection();

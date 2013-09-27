@@ -296,6 +296,7 @@ class CalendarManager extends CalendarLibrary
         global $objDatabase, $_ARRAYLANG, $_CORELANG, $_LANGID;
         
         $this->_objTpl->loadTemplateFile('module_calendar_modify_event.html');
+        JS::registerJS("modules/{$this->moduleName}/View/Script/jquery.pagination.js");
         
         parent::getSettings();
         parent::getFrontendLanguages();
@@ -482,6 +483,9 @@ class CalendarManager extends CalendarLibrary
             'TXT_'.$this->moduleLangVar.'_EVENT_NAME'                       => $_ARRAYLANG['TXT_CALENDAR_EVENT_NAME'],            
             'TXT_'.$this->moduleLangVar.'_EVENT_HOST'                       => $_ARRAYLANG['TXT_CALENDAR_EVENT_HOST'],
             'TXT_'.$this->moduleLangVar.'_EVENT_EMAIL'                      => $_ARRAYLANG['TXT_CALENDAR_EVENT_EMAIL'],
+            'TXT_'.$this->moduleLangVar.'_SELECT_EXCEPTION_DATE_INFO'       => $_ARRAYLANG['TXT_CALENDAR_SELECT_EXCEPTION_DATE_INFO'],
+            'TXT_'.$this->moduleLangVar.'_OK'                               => $_ARRAYLANG['TXT_CALENDAR_OK'],    
+            'TXT_'.$this->moduleLangVar.'_ADD'                              => $_ARRAYLANG['TXT_CALENDAR_ADD'],    
             
             $this->moduleLangVar.'_EVENT_ID'                                => $eventId,
             $this->moduleLangVar.'_EVENT_DEFAULT_LANG_ID'                   => $_LANGID,
