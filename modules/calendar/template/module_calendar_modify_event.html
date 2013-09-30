@@ -193,19 +193,75 @@
         recurrenceType = $J( "#seriesTypeSelect" ).val();
         switch (recurrenceType) {
             case '1':
+                seriesPatternType = $J( "input[name=seriesDaily]:checked" ).val();
+                seriesDailyDays   = seriesPatternType == '1' ? parseInt( $J( "#seriesDailyDays" ).val() ) : 1;
+                
                 fromDate = startTime;
                 while (fromDate < endTime) {
-                    curDate = $J.datepicker.formatDate('{CALENDAR_EVENT_DATE_FORMAT}', new Date(fromDate));
-                    exDates.push(curDate);
-                    fromDate = fromDate + (24*60*60*1000);
+                    objCurDate = new Date( fromDate );
+                    weekDay = objCurDate.getDay();
+                    if (seriesPatternType == '1' || (weekDay != 0 && weekDay != 6)) {
+                        curDate = $J.datepicker.formatDate('{CALENDAR_EVENT_DATE_FORMAT}', new Date(fromDate));
+                        exDates.push(curDate);
+                    }
+
+                    fromDate = fromDate + (seriesDailyDays*24*60*60*1000);
                 }
                 break;
             case '2':
+                seriesWeeks = parseInt( $J( "#seriesWeeklyWeeks" ).val() );
+                // push the start date
+                curDate     = $J.datepicker.formatDate('{CALENDAR_EVENT_DATE_FORMAT}', new Date(startTime));
+                exDates.push(curDate);
+                
+                fromDate = startTime;
+                while (fromDate < endTime) {
+                    startOfWeek = goToNxtSunday( fromDate );
+                    seriesDate  = startOfWeek;
+                    // Sun day to be first
+                    if ($J("input[name='seriesWeeklyDays[7]']").is(":checked")) {
+                        curDate = $J.datepicker.formatDate('{CALENDAR_EVENT_DATE_FORMAT}', new Date(seriesDate));
+                        exDates.push(curDate);
+                    }
+                    // parse through the week days
+                    for (i=1;i<=6;i++) {
+                        if ($J("input[name='seriesWeeklyDays["+ i +"]']").is(":checked")) {
+                            curDate = $J.datepicker.formatDate('{CALENDAR_EVENT_DATE_FORMAT}', new Date(seriesDate+(i*24*60*60*1000)));
+                            exDates.push(curDate);
+                        }
+                    }
+                    
+                    fromDate = fromDate + ((seriesWeeks*7)*24*60*60*1000);
+                }
             case '3':
+                seriesPatternType = $J( "input[name=seriesMonthly]:checked" ).val();
+                // push the start date
+                curDate     = $J.datepicker.formatDate('{CALENDAR_EVENT_DATE_FORMAT}', new Date(startTime));
+                exDates.push(curDate);
+                if (seriesPatternType == '1') {
+                    seriesMonthlyDay   = parseInt( $J( "input[name=seriesMonthlyDay]" ).val() );
+                    seriesMonthlyMonth = parseInt( $J( "input[name^=seriesMonthlyMonth]" ).val() );
+                    
+                    fromDate = startTime;
+                    while (fromDate < endTime) {
+                        
+                        fromDate = fromDate + ((30)*24*60*60*1000);
+                    }
+                } else {
+                    
+                }
                 break;
         }
         
         return exDates;
+    }
+    
+    function goToNxtSunday(timeStamp)
+    {
+        objDate = new Date(timeStamp);
+        nextSunday= new Date(objDate.getFullYear(),objDate.getMonth(),objDate.getDate()+(7-objDate.getDay()));
+        
+        return nextSunday.getTime();
     }
     
     function generateExecptionDates() {
@@ -1031,7 +1087,7 @@
                 <tr class="row1">
                     <td valign="middle" width="180"><br /></td>
                     <td valign="middle">
-                        {TXT_CALENDAR_ALL}&nbsp;<input type="text" name='seriesWeeklyWeeks' maxlength="3" value="{CALENDAR_SERIES_PATTERN_WEEKLY_WEEKS}" style="width: 20px;" />&nbsp;{TXT_CALENDAR_WEEKS}&nbsp;{TXT_CALENDAR_AT}:&nbsp;<br />
+                        {TXT_CALENDAR_ALL}&nbsp;<input type="text" name='seriesWeeklyWeeks' id="seriesWeeklyWeeks" maxlength="3" value="{CALENDAR_SERIES_PATTERN_WEEKLY_WEEKS}" style="width: 20px;" />&nbsp;{TXT_CALENDAR_WEEKS}&nbsp;{TXT_CALENDAR_AT}:&nbsp;<br />
                         <label><input type="checkbox" name='seriesWeeklyDays[1]' value="1" {CALENDAR_SERIES_PATTERN_WEEKLY_MONDAY}/>&nbsp;{TXT_CALENDAR_DAYS_MONDAY}&nbsp;&nbsp;</label>
                         <label><input type="checkbox" name='seriesWeeklyDays[2]' value="1" {CALENDAR_SERIES_PATTERN_WEEKLY_TUESDAY}/>&nbsp;{TXT_CALENDAR_DAYS_TUESDAY}&nbsp;&nbsp;</label>
                         <label><input type="checkbox" name='seriesWeeklyDays[3]' value="1" {CALENDAR_SERIES_PATTERN_WEEKLY_WEDNESDAY}/>&nbsp;{TXT_CALENDAR_DAYS_WEDNESDAY}&nbsp;&nbsp;</label>
