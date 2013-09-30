@@ -139,13 +139,13 @@ class Resolver {
     }
     
     public function resolve() {
+        // $this->resolveAlias() also sets $this->page
         $aliaspage = $this->resolveAlias();
 
         if ($aliaspage != null) {
             $this->lang = $aliaspage->getTargetLangId();
             $aliaspage = clone $aliaspage;
             $aliaspage->setVirtual(true);
-            return $aliaspage;
         } else {
             $this->lang = \Env::get('init')->getFallbackFrontendLangId();
 
