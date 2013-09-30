@@ -877,6 +877,8 @@ class CalendarUpdate31
      */
     protected function migrateEvents()
     {
+        $eventId = null;
+        $mailTemplateId = null;
         try {
             // migration old events to new event table
             // migrate entries
@@ -886,9 +888,16 @@ class CalendarUpdate31
             }
             $result = \Cx\Lib\UpdateUtil::sql("SELECT * FROM `" . CALENDAR_OLD_EVENT_TABLE . "`" . $where . " ORDER BY `id`");
             while (!$result->EOF) {
+                $langId = null;
+                $registrationFormId = null;
+                $mailTemplateId = null;
+                $eventId = null;
+
                 $langId = $this->categoryLanguages[$result->fields['catid']];
-                $registrationFormId = $this->addRegistrationFormForEvent($result->fields['name']);
-                $mailTemplateId = $this->addMailTemplate($result->fields['mailTitle'], $result->fields['mailContent'], $langId);
+                $name = $result->fields['name'];
+
+                // added event name to mail title
+                $mailTemplateId = $this->addMailTemplate($result->fields['mailTitle'] . ' (' . $name . ')', $result->fields['mailContent'], $langId);
 
                 // insert event
                 \Cx\Lib\UpdateUtil::sql("
@@ -1021,7 +1030,7 @@ class CalendarUpdate31
                         0,
                         0,
                         '',
-                        " . $registrationFormId . ",
+                        0,
                         0
                     )
                 ");
@@ -1034,17 +1043,25 @@ class CalendarUpdate31
                     VALUES (
                         " . $eventId . ",
                         " . $langId . ",
-                        '" . contrexx_raw2db($result->fields['name']) . "',
+                        '" . contrexx_raw2db($name) . "',
                         '" . contrexx_raw2db($result->fields['comment']) . "',
                         ''
                     )
                 ");
 
                 // add registration form fields
-                $formFieldsMap = $this->addRegistrationFormFields($registrationFormId, $result->fields['id'], $langId);
-
-                // add registration data
-                $this->addRegistrationData($result->fields['id'], $eventId, $langId, $formFieldsMap);
+                $resultFormFields = \Cx\Lib\UpdateUtil::sql("
+                    SELECT `id` FROM `" . CALENDAR_OLD_FORM_FIELD_TABLE . "`
+                        WHERE `note_id` = " . $result->fields['id'] . "
+                ");
+                if ($resultFormFields->RecordCount() > 0) {
+                    // add registration form
+                    $registrationFormId = $this->addRegistrationFormForEvent($name);
+                    $formFieldsMap = $this->addRegistrationFormFields($registrationFormId, $result->fields['id'], $langId);
+                    \Cx\Lib\UpdateUtil::sql("UPDATE `" . CALENDAR_NEW_EVENT_TABLE . "` SET `registration_form` = " . $registrationFormId . " WHERE `id` = " . $eventId);
+                    // add registration data
+                    $this->addRegistrationData($result->fields['id'], $eventId, $langId, $formFieldsMap);
+                }
 
                 $_SESSION['contrexx_update']['calendar']['events'] = intval($result->fields['id']);
 
@@ -1056,6 +1073,14 @@ class CalendarUpdate31
                 $result->MoveNext();
             }
         } catch (\Cx\Lib\UpdateException $e) {
+            // remove already inserted data from failed event
+            if ($eventId) {
+                \Cx\Lib\UpdateUtil::sql("DELETE FROM `" . CALENDAR_NEW_EVENT_TABLE . "` WHERE `id` = " . $eventId);
+                \Cx\Lib\UpdateUtil::sql("DELETE FROM `" . CALENDAR_NEW_EVENT_FIELD_TABLE . "` WHERE `event_id` = " . $eventId);
+            }
+            if ($mailTemplateId) {
+                \Cx\Lib\UpdateUtil::sql("DELETE FROM `" . CALENDAR_NEW_MAIL_TABLE . "` WHERE `id` = " . $mailTemplateId);
+            }
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
         return true;
@@ -1126,8 +1151,24 @@ class CalendarUpdate31
                     WHERE `note_id` = " . $eventId . "
             ");
         while (!$resultFormFields->EOF) {
-            if ($resultFormFields->fields['type'] == 'title') {
-                $resultFormFields->fields['type'] = 'fieldset';
+            $default = '';
+
+            if ($resultFormFields->fields['key'] == 13) {
+                // person number field
+                // this value should be able to set in frontend
+                $resultMaxSeatingNumber = \Cx\Lib\UpdateUtil::sql("
+                    SELECT MAX(CONVERT(`data`, UNSIGNED)) AS `maxSeatingNumber`
+                        FROM `" . CALENDAR_OLD_FORM_DATA_TABLE . "`
+                        WHERE `field_id` = " . $resultFormFields->fields['id']
+                );
+                $resultFormFields->fields['type'] = 'seating';
+                $default = implode(',',
+                    range(1, $resultMaxSeatingNumber->fields['maxSeatingNumber'] + 1)
+                );
+            }
+
+            if ($resultFormFields->fields['type'] == 3) { // checkbox
+                $resultFormFields->fields['type'] = 'checkbox';
             }
             \Cx\Lib\UpdateUtil::sql("
                     INSERT IGNORE INTO `" . CALENDAR_NEW_REGISTRATION_FORM_FIELD_TABLE . "` (`form`, `type`, `required`, `order`, `affiliation`)
@@ -1150,7 +1191,7 @@ class CalendarUpdate31
                         " . $registrationFormId . ",
                         " . $langId . ",
                         '" . contrexx_raw2db($resultFormFields->fields['name']) . "',
-                        ''
+                        '" . contrexx_raw2db($default) . "'
                     )
                 ");
 
@@ -1193,19 +1234,29 @@ class CalendarUpdate31
             $registrationId = $this->db->Insert_ID();
 
             $resultRegistrationData = \Cx\Lib\UpdateUtil::sql("
-                    SELECT `field_id`, `value` FROM `" . CALENDAR_OLD_FORM_DATA_TABLE . "`
+                    SELECT `field_id`, `data` FROM `" . CALENDAR_OLD_FORM_DATA_TABLE . "`
                     WHERE `reg_id` = " . $resultRegistrations->fields['id'] . "
                 ");
             while (!$resultRegistrationData->EOF) {
+
+                // if a seating number field exists, add this number to data
+                $resultNewFieldType = \Cx\Lib\UpdateUtil::sql("
+                    SELECT `type` FROM `" . CALENDAR_NEW_REGISTRATION_FORM_FIELD_TABLE . "`
+                        WHERE `id` = " . $formFieldMap[$resultRegistrationData->fields['field_id']]
+                );
+                if ($resultNewFieldType->fields['type'] == 'seating') {
+                    $resultRegistrationData->fields['data'] = intval($resultRegistrationData->fields['data']) + 1;
+                }
+
                 \Cx\Lib\UpdateUtil::sql("
                         INSERT IGNORE INTO `" . CALENDAR_NEW_REGISTRATION_FORM_FIELD_VALUE_TABLE . "` (
                             `reg_id`,
                             `field_id`,
-                            `data`
+                            `value`
                         ) VALUES (
                             '" . $registrationId . "',
                             " . $formFieldMap[$resultRegistrationData->fields['field_id']] . ",
-                            '" . contrexx_raw2db($resultRegistrationData->fields['value']) . "'
+                            '" . contrexx_raw2db($resultRegistrationData->fields['data']) . "'
                         )
                     ");
                 $resultRegistrationData->MoveNext();
@@ -1243,7 +1294,7 @@ class CalendarUpdate31
             }
         }
 
-        $key = join($arrRandom);
+        $key = join('',$arrRandom);
 
         return $key;
     }
