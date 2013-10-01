@@ -204,7 +204,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
         }
         
         if($objInit->mode == 'frontend') {
-            $strWhereDuration = "AND (`duration_type` = 1 OR (`duration_type` = 2 AND (`duration_start` < '$intToday' AND `duration_end` > '$intToday'))) ";
+            $strWhereDuration = "AND (`duration_type` = 1 OR (`duration_type` = 2 AND (`duration_start` < '" . time() . "' AND `duration_end` > '" . time() . "'))) ";
         } else {
             $strWhereDuration = null;
         }
