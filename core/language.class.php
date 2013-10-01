@@ -1063,6 +1063,23 @@ class LanguageManager
             foreach ($_POST['langName'] as $id => $name) {
                 $active = 0;
                 if (isset($_POST['langActiveStatus'][$id]) && $_POST['langActiveStatus'][$id]==1 ) {
+                    $languageCode = \FWLanguage::getLanguageCodeById($id);
+                    $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+                    $alias = $pageRepo->findBy(array(
+                        'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS,
+                        'slug' => $languageCode,
+                    ), true);
+
+                    if (count($alias)) {
+                        if (is_array($alias)) $alias = $alias[0];
+                        $id   = $alias->getNode()->getId();
+                        $link = 'http://' . \Env::get('config')['domainUrl'] . ASCMS_PATH_OFFSET . '/' . $alias->getSlug();
+                        $this->strErrMessage  =
+                            \Env::get('lang')['TXT_CORE_REMOVE_ALIAS_TO_ACTIVATE_LANGUAGE'] . ':<br />
+                            <a href="index.php?cmd=alias&act=modify&id=' . $id . '" target="_blank">' . $link . '</a>';
+                        return false;
+                    }
+
                     $active = 1;
                 }
                 $status = "false";
@@ -1083,7 +1100,7 @@ class LanguageManager
                                         WHERE id=".$id);
             }
             $this->strOkMessage = $_CORELANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
-            FWLanguage::init();
+            \FWLanguage::init();
             return true;
         }
         return false;
