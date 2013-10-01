@@ -136,7 +136,7 @@ function checkValidations() {
 //                return false;
 //        }
         if((trim(sorting) != "") && (IsNumeric(sorting) == false)){
-            errors.push("$TXT_SORTING_NUMERIC");
+            errChk = 1;
 	        document.getElementById("sortingNumber").style.border = "1px solid red";     
             document.getElementById("sortingNumber").value = "";
 //            return false;
@@ -412,6 +412,7 @@ function checkValidations() {
 //        }
         if((trim(sorting) != "") && (IsNumeric(sorting) == false)){
             errors.push("$TXT_SORTING_NUMERIC");
+            errChk = 1;
 	        document.getElementById("sortingNumber").style.border = "1px solid red";
             document.getElementById("sortingNumber").value = "";
 //            return false;
@@ -1247,6 +1248,7 @@ function checkValidations() {
         }
         if((trim(sorting) != "") && (IsNumeric(sorting) == false)) {
                 errors.push("$TXT_SORTING_NUMERIC");
+                errChk = 1;
 	        document.getElementById("sortingNumber").style.border = "1px solid red";
                 document.getElementById("sortingNumber").value = "";
         }
