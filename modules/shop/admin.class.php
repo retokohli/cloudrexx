@@ -2411,6 +2411,14 @@ if ($test === NULL) {
         } elseif ($result === true) {
             $edit = false;
         }
+        if($edit){
+            $order_id = intval($_REQUEST['order_id']);
+            $objOrder = Order::getById($order_id);
+            $options = $objOrder->getOptionArray();
+            if(!empty($options[$order_id])){
+                $edit = false;
+            }
+        }
         if ($edit) {
             self::$pageTitle = $_ARRAYLANG['TXT_EDIT_ORDER'];
             self::$objTemplate->loadTemplateFile('module_shop_order_edit.html');

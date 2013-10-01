@@ -1844,6 +1844,10 @@ class Order
                     $objCustomer->group_id(), $objCustomer->is_reseller()),
             ));
         }
+        $options = $objOrder->getOptionArray();
+        if(!empty($options[$order_id])){
+            $have_option = true;
+        }
         // Order items
         $total_weight = $i = 0;
         $total_net_price = $objOrder->view_items(
@@ -1979,16 +1983,14 @@ class Order
                 } else {
 //DBG::log("Order::view_items(): Item ID $item_id, Attributes: ".var_export($arrProductOptions[$item_id], true));
 // Verify that options are properly shown
-                    $options_price = 0;
                     foreach ($arrProductOptions[$item_id]
                             as $attribute_id => $attribute) {
-                        $long = $cart = '';
-                        list($long, $cart) = Attributes::getAsStrings(
-                            array($attribute_id => $attribute['options']),
-// c_sp
-                            $options_price);
-//DBG::log("Order::view_items(): Added option, price: $options_price");
-                        $name .= $long;
+//DBG::log("Order::view_items(): Added option, price: $options_price");                        
+                        foreach($attribute as $a){
+                            $name .= '<i><br />- '.$attribute_id.': '.
+                            $a['name'].' ('.$a['price'].')</i>';
+                            $price += $a['price'];
+                        }
                     }
                 }
             }
