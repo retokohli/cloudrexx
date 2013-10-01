@@ -4781,7 +4781,7 @@ END;
             $objTpl->hideBlock("projectEntryBlock");
 
         $objTpl->setVariable(array(
-                'TXT_CRM_DEALS_OVERVIEW'            => $_ARRAYLANG['TXT_CRM_DEALS_OVERVIEW'],
+                'TXT_CRM_DEALS_OVERVIEW'        => $_ARRAYLANG['TXT_CRM_DEALS_OVERVIEW'],
                 'TXT_CRM_DEALS_CUSTOMER_NAME'   => $_ARRAYLANG['TXT_CRM_CUSTOMER_NAME'],
                 'TXT_CRM_DEALS_CONTACT_PERSON'  => $_ARRAYLANG['TXT_CRM_CONTACT_PERSON'],
                 'TXT_CRM_DEALS_QUOTED_PRICE'    => $_ARRAYLANG['TXT_CRM_PROJECT_QUOTED_PRICE'],
@@ -4791,8 +4791,8 @@ END;
                 'TXT_CRM_DEALS_DUE_DATE'        => $_ARRAYLANG['TXT_CRM_DUE_DATE'],
                 'TXT_CRM_DEALS_STAGES'          => $_ARRAYLANG['TXT_CRM_DEALS_STAGES'],
                 'TXT_CRM_DEALS_SUCC_RATE'       => $_ARRAYLANG['TXT_CRM_DEALS_SUCC_RATE'],
-                'TXT_CRM_SAVE'                      => $_ARRAYLANG['TXT_CRM_SAVE'],
-                'TXT_CRM_BACK'                      => $_ARRAYLANG['TXT_CRM_BACK'],
+                'TXT_CRM_SAVE'                  => $_ARRAYLANG['TXT_CRM_SAVE'],
+                'TXT_CRM_BACK'                  => $_ARRAYLANG['TXT_CRM_BACK'],
                 'CRM_MODIFY_DEAL_TITLE'         => empty($id) ? $_ARRAYLANG['TXT_CRM_ADD_DEAL_TITLE'] : $_ARRAYLANG['TXT_CRM_EDIT_DEAL_TITLE'],
 
                 'CRM_DEALS_TITLE'               => contrexx_raw2xhtml($fields['title']),
@@ -4806,10 +4806,11 @@ END;
                 'CRM_BACK_LINK'                 => base64_decode($redirect),
                 'CRM_DEALS_DESCRIPTION'         => new \Cx\Core\Wysiwyg\Wysiwyg('description', contrexx_raw2xhtml($fields['description'])),
                 'TXT_CRM_DEALS_TITLE'           => $_ARRAYLANG['TXT_CRM_DEALS_TITLE'],
-                'TXT_CRM_SELECT_MEMBER_NAME'        => $_ARRAYLANG['TXT_CRM_SELECT_MEMBER_NAME'],
+                'TXT_CRM_SELECT_MEMBER_NAME'    => $_ARRAYLANG['TXT_CRM_SELECT_MEMBER_NAME'],
                 'CRM_MODIFY_DEAL_DESCRIPTION'   => $_ARRAYLANG['TXT_CRM_DESCRIPTION'],
                 'IS_EDIT_TRUE'                  => empty($id) ? 'false' : 'true',
                 'TXT_CRM_FIND_COMPANY_BY_NAME'  => $_ARRAYLANG['TXT_CRM_FIND_COMPANY_BY_NAME'],
+                'TXT_CRM_OPPORTUNITY_QUOTE_PRICE_ERROR' => $_ARRAYLANG['TXT_CRM_OPPORTUNITY_QUOTE_PRICE_ERROR']
         ));
 
         $this->_pageTitle = empty($id) ? $_ARRAYLANG['TXT_CRM_ADD_DEAL_TITLE'] : $_ARRAYLANG['TXT_CRM_EDIT_DEAL_TITLE'];
