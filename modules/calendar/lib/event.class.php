@@ -1188,6 +1188,145 @@ class CalendarEvent extends CalendarLibrary
         return true;
     }
     
+    function loadEventFromPost($data)
+    {
+        list($startDate, $strStartTime) = explode(' ', $data['startDate']);
+        list($startHour, $startMin)     = explode(':', $strStartTime);
+        
+        list($endDate, $strEndTime)     = explode(' ', $data['endDate']);
+        list($endHour, $endMin)         = explode(':', $strEndTime);
+        
+        list($startHour, $startMin) = array(0, 0);
+        list($endHour, $endMin)     = array(23, 59);
+        
+        
+        //event data        
+        $startDate     = parent::getDateTimestamp($startDate, intval($startHour), intval($startMin));
+        $endDate       = parent::getDateTimestamp($endDate, intval($endHour), intval($endMin));
+        
+        $this->startDate = $startDate;
+        $this->endDate   = $endDate;
+        
+        //series pattern
+        $seriesStatus = isset($data['seriesStatus']) ? intval($data['seriesStatus']) : 0;
+        $seriesType   = isset($data['seriesType']) ? intval($data['seriesType']) : 0;
+        
+        $seriesPatternCount             = 0;
+        $seriesPatternWeekday           = 0;
+        $seriesPatternDay               = 0;
+        $seriesPatternWeek              = 0;
+        $seriesPatternMonth             = 0;
+        $seriesPatternType              = 0;
+        $seriesPatternDouranceType      = 0;
+        $seriesPatternEnd               = 0;
+        $seriesExeptions = '';
+        
+        if($seriesStatus == 1) {
+            if(!empty($data['seriesExeptions'])) {
+                $exeptions = array();
+                
+                foreach($data['seriesExeptions'] as $key => $exeptionDate)  {
+                    $exeptions[] = parent::getDateTimestamp($exeptionDate, 0, 0) ;  
+                }  
+                
+                sort($exeptions);
+                
+                $seriesExeptions = join(",", $exeptions);
+            }
+        
+            switch($seriesType) {
+                case 1;
+                    if ($seriesStatus == 1) {
+                        $seriesPatternType          = isset($data['seriesDaily']) ? intval($data['seriesDaily']) : 0;
+                        if($seriesPatternType == 1) {
+                            $seriesPatternWeekday   = 0;
+                            $seriesPatternDay       = isset($data['seriesDailyDays']) ? intval($data['seriesDailyDays']) : 0;
+                        } else {
+                            $seriesPatternWeekday   = "1111100";
+                            $seriesPatternDay       = 0;
+                        }
+
+                        $seriesPatternWeek          = 0;
+                        $seriesPatternMonth         = 0;
+                        $seriesPatternCount         = 0;
+                    }
+                break;
+                case 2;
+                    if ($seriesStatus == 1) {
+                        $seriesPatternWeek          = isset($data['seriesWeeklyWeeks']) ? intval($data['seriesWeeklyWeeks']) : 0;
+
+                        $weekdayPattern = '';
+                        for($i=1; $i <= 7; $i++) {
+                            if (isset($data['seriesWeeklyDays'][$i])) {
+                                $weekdayPattern .= "1";
+                            } else {
+                                $weekdayPattern .= "0";
+                            }
+                        }
+                        
+                        // To DO: not correct to set day to monday
+                        $seriesPatternWeekday       = (int) $weekdayPattern == 0 ? '1000000' : $weekdayPattern;
+
+                        $seriesPatternCount         = 0;
+                        $seriesPatternDay           = 0;
+                        $seriesPatternMonth         = 0;
+                        $seriesPatternType          = 0;
+                    }
+                break;
+                case 3;
+                    if ($seriesStatus == 1) {
+                        $seriesPatternType          = isset($data['seriesMonthly']) ? intval($data['seriesMonthly']) : 0;
+                        if($seriesPatternType == 1) {
+                            $seriesPatternMonth     = isset($data['seriesMonthlyMonth_1']) ? intval($data['seriesMonthlyMonth_1']) : 0;
+                            $seriesPatternDay       = isset($data['seriesMonthlyDay']) ? intval($data['seriesMonthlyDay']) : 0;
+                            $seriesPatternWeekday   = 0;
+                        } else {
+                            $seriesPatternCount     = isset($data['seriesMonthlyDayCount']) ? intval($data['seriesMonthlyDayCount']) : 0;
+                            $seriesPatternMonth     = isset($data['seriesMonthlyMonth_2']) ? intval($data['seriesMonthlyMonth_2']) : 0;
+                            
+                            if ($seriesPatternMonth < 1) {
+                                // the increment must be at least once a month, otherwise we will end up in a endless loop in the presence
+                                $seriesPatternMonth = 1;
+                            }
+                            $seriesPatternWeekday   = isset($data['seriesMonthlyWeekday']) ? $data['seriesMonthlyWeekday'] : '';
+                            $seriesPatternDay       = 0;
+                        }
+
+                        $seriesPatternWeek           = 0;
+                    }
+                break;
+            }
+                
+            $seriesPatternDouranceType  = isset($data['seriesDouranceType']) ? intval($data['seriesDouranceType']) : 0;            
+            
+            switch($seriesPatternDouranceType) {
+                case 1:
+                    $seriesPatternEnd   = 0;
+                break;
+                case 2:
+                    $seriesPatternEnd   = isset($data['seriesDouranceEvents']) ? intval($data['seriesDouranceEvents']) : 0;
+                break;
+                case 3:
+                    $seriesPatternEnd   = parent::getDateTimestamp($data['seriesDouranceDate'], 0, 0) ;    
+                break;
+            }
+        }
+        
+        $this->seriesData['seriesPatternCount'] = intval($seriesPatternCount); 
+        $this->seriesData['seriesType'] = intval($seriesType); 
+        $this->seriesData['seriesPatternCount'] = intval($seriesPatternCount); 
+        $this->seriesData['seriesPatternWeekday'] = htmlentities($seriesPatternWeekday, ENT_QUOTES, CONTREXX_CHARSET);     
+        $this->seriesData['seriesPatternDay'] = intval($seriesPatternDay); 
+        $this->seriesData['seriesPatternWeek'] = intval($seriesPatternWeek); 
+        $this->seriesData['seriesPatternMonth'] = intval($seriesPatternMonth); 
+        $this->seriesData['seriesPatternType'] = intval($seriesPatternType); 
+        $this->seriesData['seriesPatternDouranceType'] = intval($seriesPatternDouranceType); 
+        $this->seriesData['seriesPatternEnd'] = intval($seriesPatternEnd); 
+        $this->seriesData['seriesPatternBegin'] = 0; 
+        $this->seriesData['seriesPatternExceptions'] = explode(",", $seriesExeptions);
+        
+    }
+    
     /**
      * Delete the event
      *      
