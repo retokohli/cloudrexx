@@ -221,7 +221,11 @@ class aliasLib
         }
         
         // save
-	$page->validate();
+        try {
+            $page->validate();
+        } catch (\Cx\Core\ContentManager\Model\Entity\PageException $e) {
+            return $e->getUserMessage();
+        }
         $this->em->persist($page);
         $this->em->flush();
         $this->em->refresh($node);
