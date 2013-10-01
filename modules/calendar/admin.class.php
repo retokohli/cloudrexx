@@ -93,6 +93,9 @@ class CalendarManager extends CalendarLibrary
                 Permission::checkAccess(182, 'static');
                 $this->modifyRegistration(intval($_GET['event_id']), intval($_GET['reg_id']));
                 break;
+            case 'get_exception_dates':
+                $this->getExeceptionDates();
+                break;
             default:
                 $this->showOverview();
                 break;
@@ -1538,6 +1541,23 @@ class CalendarManager extends CalendarLibrary
             $this->moduleLangVar.'_EVENT_DATE'                   => $objEvent->startDate,
             $this->moduleLangVar.'_USER_ID'                      => $userId,
         ));
+    }
+    
+    function getExeceptionDates()
+    {
+        $exceptionDates = array();
+        
+        $objEvent = new CalendarEvent();
+        $objEvent->loadEventFromPost($_POST);
+
+        $objEventManager = new CalendarEventManager($objEvent->startDate);
+        $objEventManager->_setNextSeriesElement($objEvent);
+        foreach ($objEventManager->eventList as $event) {
+            $exceptionDates[] = date(parent::getDateFormat(), $event->startDate);
+        }
+        
+        echo json_encode($exceptionDates);
+        exit();
     }
     
     /**
