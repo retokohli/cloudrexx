@@ -109,21 +109,26 @@ class mediaDirectoryLevel extends mediaDirectoryLibrary
             ORDER BY
                 ".$sortOrder."
         ");
-
+        
         //fetch entry counts if needed
         $weAreCountingEntries = ($this->arrSettings['settingsCountEntries'] == 1 || $objInit->mode == 'backend');
         $arrEntryCounts = array();
         if($weAreCountingEntries) {
-            $query = '
-                SELECT `level_id`, COUNT(1) AS `c`
-                FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_levels` AS `rel_levels`
-                WHERE (
-                    SELECT COUNT(1)
-                    FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_rel_entry_inputfields` AS `rel_inputfields`
-                    WHERE `rel_levels`.`entry_id` = `rel_inputfields`.`entry_id`
-                ) > 0
-                GROUP BY `level_id`
-            ';
+            $query = "
+                SELECT 
+                    `rel_levels`.`level_id`, count(*) AS `c`
+                FROM 
+                    `" . DBPREFIX . "module_".$this->moduleTablePrefix."_entries` AS `entries`
+                INNER JOIN 
+                    `" . DBPREFIX . "module_".$this->moduleTablePrefix."_rel_entry_levels` AS `rel_levels`
+                ON 
+                    `rel_levels`.`entry_id` = `entries`.`id`
+                WHERE 
+                    `entries`.`active` = 1
+                AND ((`entries`.`duration_type`=2 AND `entries`.`duration_start` <= ".time()." AND `entries`.`duration_end` >= ".time().") OR (`entries`.`duration_type`=1))
+                GROUP BY 
+                    `rel_levels`.`level_id`";
+            
             $rs = $objDatabase->Execute($query);
             while(!$rs->EOF) {
                 $arrEntryCounts[$rs->fields['level_id']] = $rs->fields['c'];
@@ -184,7 +189,7 @@ class mediaDirectoryLevel extends mediaDirectoryLibrary
                 $objLevels->MoveNext();
             }
         }
-
+        
         return $arrLevels;
     }
 

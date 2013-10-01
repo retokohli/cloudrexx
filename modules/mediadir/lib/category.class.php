@@ -705,16 +705,19 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
             $whereLevel = '';
         }*/
 		// TODO: what for was the assigement within the if condition just above
-	    $whereLevel = '';
-
-        $objCountEntriesRS = $objDatabase->Execute("SELECT
-                                                        COUNT(1) as c
+        $objCountEntriesRS = $objDatabase->Execute("
+                                                SELECT COUNT(*) as c
                                                     FROM
-                                                        ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories AS cat
-                                                    WHERE
-                                                        cat.category_id ='$intCategoryId'
-                                                        $whereLevel
-                                                   ");
+                                                        `" . DBPREFIX . "module_".$this->moduleTablePrefix."_entries` AS `entries`
+                                                INNER JOIN
+                                                    `".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_categories` AS `rel_categories`
+                                                ON
+                                                    `rel_categories`.`entry_id` = `entries`.`id`
+                                                WHERE
+                                                    `entries`.`active` = 1
+                                                AND ((`entries`.`duration_type`=2 AND `entries`.`duration_start` <= ".time()." AND `entries`.`duration_end` >= ".time().") OR (`entries`.`duration_type`=1))
+                                                GROUP BY
+                                                    `rel_categories`.`category_id`");
 
         $this->intNumEntries += $objCountEntriesRS->fields['c'];
 
