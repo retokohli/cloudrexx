@@ -1086,7 +1086,8 @@ class Page extends \Cx\Model\Base\EntityBase
                 $invalidAliasNames[] = $lang['lang'];
             }
             if (in_array($this->getSlug(), $invalidAliasNames)) {
-                throw new PageException('Cannot use name of existing files, folders or languages as alias.', \Env::get('lang')['TXT_CORE_CANNOT_USE_AS_ALIAS']);
+                $lang = \Env::get('lang');
+                throw new PageException('Cannot use name of existing files, folders or languages as alias.', $lang['TXT_CORE_CANNOT_USE_AS_ALIAS']);
             }
         }
         //workaround, this method is regenerated each time
