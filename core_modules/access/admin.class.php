@@ -629,7 +629,7 @@ class AccessManager extends AccessLib
             'TXT_ACCESS_UNCHECK_ALL'                    => $_ARRAYLANG['TXT_ACCESS_UNCHECK_ALL']
         ));
 
-        JS::registerCSS(ASCMS_BACKEND_PATH.'/template/ascms/css/contentmanager2.css');
+        JS::registerCSS('core/ContentManager/View/Style/Main.css');
         $objJsonData =  new \Cx\Core\Json\JsonData();
         $jsonData = $objJsonData->data('node', 'getTree', array('get' => array('recursive' => 'true')));
         $nodeTree = $jsonData['data']['tree'];
