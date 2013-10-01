@@ -76,9 +76,9 @@
         });
         $J(".sendInvitation").click(function() {
             if ($J(this).is(":checked")) {
-                $J(".invitationEmailTemplateContainer").show();
+                $J(".invitationEmailTemplate").show();
             } else {
-                $J(".invitationEmailTemplateContainer").hide();
+                $J(".invitationEmailTemplate").hide();
             }
         });
     });
@@ -754,11 +754,11 @@
     <div id="invite" class="eventTab" style="display:none;">
         <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
             <tr>
-                <th colspan="3"><b>{TXT_CALENDAR_EVENT_INVITE}</b></th>
+                <th colspan="2"><b>{TXT_CALENDAR_EVENT_INVITE}</b></th>
             </tr>
             <tr class="row1">
                 <td width="180" valign="top">{TXT_CALENDAR_COMMUNITY_GROUPS}</td>
-                <td colspan="2">
+                <td>
                     <div style="float: left; height: auto !important;">
                         <div style="float: left; height: auto !important;">
                             <select id="deselectedGroups" name="deselectedGroups[]" size="12" multiple="multiple" style="width: 180px;">
@@ -779,26 +779,18 @@
             </tr>
             <tr class="row2">
                 <td valign="top">{TXT_CALENDAR_EVENT_MORE_INVITATIONS}</td>
-                <td colspan="2">
+                <td>
                     <textarea name="invitedMails" style="width: 250px; height: 60px;" />{CALENDAR_EVENT_MORE_INVITATIONS}</textarea>&nbsp;&nbsp;<span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_CALENDAR_EVENT_MORE_INVITATIONS_INFO}</span>
                 </td>
             </tr>
             <tr class="row1">
-                <td valign="top">{TXT_CALENDAR_EVENT_SEND_INVITATION}</td>
-                <td width="1%">
-                    <input name="sendInvitation" class="sendInvitation" type="checkbox" value="1" {CALENDAR_EVENT_SEND_INVITATION}/>
-                </td>
+                <td valign="top">{TXT_CALENDAR_EVENT_SEND_INVITATION}</td>                
                 <td>
-                    <div class="invitationEmailTemplateContainer" style="display: none;">                        
-                        <!-- BEGIN invitation_email_template -->
-                        <div class="invitationEmailTemplate">
-                            <div class="language-icons">{CALENDAR_EVENT_INVITATION_EMAIL_LANG}</div>
-                            <select name="invitationEmailTemplate[{CALENDAR_EVENT_INVITATION_EMAIL_LANG_ID}]" style="width: 230px;">
-                                {CALENDAR_EVENT_INVITATION_EMAIL_TEMPLATE}
-                            </select>
-                        </div>
-                        <!-- END invitation_email_template -->
-                    </div>
+                    <input name="sendInvitation" class="sendInvitation" type="checkbox" value="1" {CALENDAR_EVENT_SEND_INVITATION}/>
+                    &nbsp;
+                    <select name="invitationEmailTemplate" class="invitationEmailTemplate" style="width: 230px;display: none;">
+                        {CALENDAR_EVENT_INVITATION_EMAIL_TEMPLATE}
+                    </select>
                 </td>
             </tr>
         </table>

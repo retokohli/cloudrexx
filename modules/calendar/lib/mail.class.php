@@ -282,13 +282,12 @@ class CalendarMail extends CalendarLibrary
      * 
      * @return string Html drop down with the mail templates
      */
-    function getTemplateDropdown($selectedId=null, $actionId=null, $languageId=null) {
+    function getTemplateDropdown($selectedId=null, $actionId=null) {
         parent::getSettings();
         $arrOptions = array();
         
         foreach ($this->templateList as $objMail) {
-            if ($actionId != null && $actionId != $objMail->action_id) continue;
-            if (!$objMail->is_default && $languageId != null && $languageId != $objMail->lang_id) continue;
+            if ($actionId != null && $actionId != $objMail->action_id) continue;            
 
             $selectedId = empty($selectedId) && $objMail->is_default ? $objMail->id : $selectedId;            
             $arrOptions[$objMail->id] = $objMail->title;
