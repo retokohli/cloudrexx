@@ -132,15 +132,20 @@
                 $J('.okBox-new').fadeOut('slow');
             }, 6000);
         }
-        function checkValidations() {
+function checkValidations() {
             var errChk;
             $J("input , select").css("border","1px solid #0A50A1");
             if (document.getElementById('label').value.trim() == '') {
                 errChk = 1;
                 $J('#label').css('border', '1px solid red');
             }
+            
             if (document.getElementById('stage').value.trim() == '') {
                 errChk = 1;
+                $J('#stage').css('border', '1px solid red');
+            } else if (!/^[+-]?\d+(\.\d+)?([eE][+-]?\d+)?$/.test($J("#stage").val())) {
+                errChk = 1;
+                $J("#stage").val("");
                 $J('#stage').css('border', '1px solid red');
             }
 
@@ -152,7 +157,7 @@
                 return true;
             }
         }
-    </script>
+        </script>
 
     <div id="stage_page">
     <div class="okBox-new" style="display:none;"></div>
