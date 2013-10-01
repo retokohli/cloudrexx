@@ -572,3 +572,4 @@ $_ARRAYLANG['TXT_CRM_CONTACT_LASTNAME'] = 'Nachname des CRM-Kontaktes';
 $_ARRAYLANG['TXT_CRM_CONTACT_SALUTATION'] = 'Anrede des im CRM ausgewählten Geschlechtes';
 $_ARRAYLANG['TXT_CRM_CONTACT_GENDER'] = 'Geschlecht des Kontaktes im CRM';
 $_ARRAYLANG['TXT_CRM_CONTACT_KEY'] = 'Schlüssel: ';
+$_ARRAYLANG['TXT_CRM_OPPORTUNITY_QUOTE_PRICE_ERROR'] = 'Enter a valid quoted price.';

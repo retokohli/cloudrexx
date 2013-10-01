@@ -19,8 +19,9 @@
         $J("form#addDeal").submit(function(){
             $J("input, select").css("border","1px solid #0A50A1");
 
-            var errors =new  Array();
-            var errChk = 0;
+            var errors   = new  Array();
+            var errChk   = 0;
+            var quoteErr = "{TXT_CRM_OPPORTUNITY_QUOTE_PRICE_ERROR}";
             
             if ($J.trim($J("#title").val()) == '') {
                 errChk = 1;
@@ -40,8 +41,11 @@
                 document.getElementById("customer_name").value = "";
             }
             var project_volume = $J('#quotedPrice').val();
-            if (project_volume == "" || /^[0-9']+(\.\d{1,2})?$/.test(project_volume) == false) {
+            if (project_volume == "") {
                 errChk = 1;
+                $J('#quotedPrice').css("border", "1px solid red");
+            } else if (/^[0-9']+(\.\d{1,2})?$/.test(project_volume) == false) {
+                errors.push(quoteErr);
                 $J('#quotedPrice').css("border", "1px solid red");
             }
             var AssignedTo =  document.getElementById("assigned_to").value;

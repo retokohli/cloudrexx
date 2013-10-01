@@ -15,11 +15,22 @@
         margin-bottom: 5px;
         clear: left;
     }
+    #alertbox {
+        margin-bottom: 5px;
+        display: none;
+        clear: left;
+        background-color: rgb(255, 204, 204);
+        border: 1px solid;
+        color: rgb(255, 0, 0);
+        font-size: 12px;
+        line-height: 14px;
+        padding: 5px;
+    }
 </style>
 <script type="text/javascript">
     var inputFileds = [0];
     var defaultLang = '{DEFAULT_LANG_ID}';
-    function ExpandMinimize(toggle){
+    function ExpandMinimize(toggle) {
         elm1 = document.getElementById('Inputfield_' + toggle + '_Minimized');
         elm2 = document.getElementById('Inputfield_' + toggle + '_Expanded');
 
@@ -28,49 +39,49 @@
         elmMaster = document.getElementById('Inputfield_' + toggle + '_0');
         elmDefault = document.getElementById('Inputfield_' + toggle + '_' + defaultLang);
 
-        for(i=0;i<activeLang.length;i++) {
+        for (i = 0; i < activeLang.length; i++) {
             elmCurrent = document.getElementById('Inputfield_' + toggle + '_' + activeLang[i]);
-            if(elmCurrent.value == '') {
+            if (elmCurrent.value == '') {
                 elmCurrent.value = elmMaster.value;
             }
         }
 
-        if(elm1.style.display=='block') {
+        if (elm1.style.display == 'block') {
             elmDefault.value = elmMaster.value;
         } else {
             elmMaster.value = elmDefault.value;
         }
 
-        elm1.style.display = (elm1.style.display=='none') ? 'block' : 'none';
-        elm2.style.display = (elm2.style.display=='none') ? 'block' : 'none';
+        elm1.style.display = (elm1.style.display == 'none') ? 'block' : 'none';
+        elm2.style.display = (elm2.style.display == 'none') ? 'block' : 'none';
     }
-    $J(function(){
-        $J("input").keyup(function () {
-            $J(this).css("border","1px solid #0A50A1");
+    $J(function() {
+        $J("input").keyup(function() {
+            $J(this).css("border", "1px solid #0A50A1");
         });
-        $J("#industry_types").submit(function(){
-            $J.each(inputFileds, function(i, val){
-                if ($J("#Inputfield_"+val+"_Minimized").is(":visible")){
-                   $J("#Inputfield_"+val+"_"+defaultLang).val($J("#Inputfield_"+val+"_0").val());
+        $J("#industry_types").submit(function() {
+            $J.each(inputFileds, function(i, val) {
+                if ($J("#Inputfield_" + val + "_Minimized").is(":visible")) {
+                    $J("#Inputfield_" + val + "_" + defaultLang).val($J("#Inputfield_" + val + "_0").val());
                 }
             });
             //alert("test");
-             $J("input, select").css("border","1px solid #0A50A1");
-             var errors =new  Array();
-             var errChk;
+            $J("input, select").css("border", "1px solid #0A50A1");
+            var errors = new Array();
+            var errChk;
 
 
-            if ($J.trim($J("#Inputfield_0_"+defaultLang).val()) == "") {
+            if ($J.trim($J("#Inputfield_0_" + defaultLang).val()) == "") {
                 errChk = 1;
 
-                $J("input[id^=Inputfield_0_]").each(function(){
-                   if ($J.trim($J(this).val()) == "")
-                       $J(this).css('border','1px solid red');
+                $J("input[id^=Inputfield_0_]").each(function() {
+                    if ($J.trim($J(this).val()) == "")
+                        $J(this).css('border', '1px solid red');
                 });
             }
-            if ( errChk == 1) {
-                $J('#formerr').html("All mandatory fields have not been filled out.!");
-                $J('#formerr').css('display','block');
+            if (errChk == 1) {
+                $J('#alertbox').html("All mandatory fields have not been filled out.!");
+                $J('#alertbox').css('display', 'block');
                 return false;
             } else {
                 return true;
@@ -80,33 +91,33 @@
     });
     function setTableRow(tableId) {
         count = 0;
-        $J('table#'+tableId+' tbody tr:visible').each(function(){
+        $J('table#' + tableId + ' tbody tr:visible').each(function() {
             $J(this).removeClass("row1 row2");
-            rowClass = (count%2 == 0) ? "row1" : "row2";
+            rowClass = (count % 2 == 0) ? "row1" : "row2";
             $J(this).addClass(rowClass);
             count++;
         });
     }
-    $J(function(){
+    $J(function() {
         setTableRow("entryList");
-        $J('.changestatus').click(function(e){
+        $J('.changestatus').click(function(e) {
             var $elm = $J(this);
             url = $elm.attr("href");
             $J.get(url, function(data) {
                 image = $elm.find('img').attr('src').split('/')[2] == 'led_green.gif' ? 'led_red.gif' : 'led_green.gif';
-                $elm.find('img').attr('src', 'images/icons/'+image);
+                $elm.find('img').attr('src', 'images/icons/' + image);
                 fadeOkbox('{TXT_CRM_CHANGE_STATUS}');
             });
             e.preventDefault();
         });
-        $J("#multiAction").change(function(){
+        $J("#multiAction").change(function() {
 
             if ($J(".entrySelection:checked").length <= 0 && $J(this).val() != 0) {
                 alert('{TXT_CRM_NOTHING_SELECTED}');
                 return
             }
             if ($J(this).val() == "delete") {
-                if(confirm('{TXT_CRM_ARE_YOU_SURE_DELETE_SELECTED_ENTRIES}'))
+                if (confirm('{TXT_CRM_ARE_YOU_SURE_DELETE_SELECTED_ENTRIES}'))
                     $J("#entries").submit();
                 else
                     return;
@@ -115,15 +126,15 @@
             if ($J(this).val() != 0)
                 $J("#entries").submit();
         });
-        $J(".deleteEntry").click(function(){
-            $elm  = $J(this);
+        $J(".deleteEntry").click(function() {
+            $elm = $J(this);
             en_id = $J(this).attr('rel').split('_')[1];
-            
-            if (confirm ("{TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES}")) {
+
+            if (confirm("{TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES}")) {
                 $J.ajax({
-                    url     : './index.php?cmd={MODULE_NAME}&act=settings&tpl=membership&actionType=deleteMembership&ajax=1&id='+en_id,
-                    type    : 'POST',
-                    success : function(msg){
+                    url: './index.php?cmd={MODULE_NAME}&act=settings&tpl=membership&actionType=deleteMembership&ajax=1&id=' + en_id,
+                    type: 'POST',
+                    success: function(msg) {
                         $elm.closest("tr").remove();
                         setTableRow("entryList");
                         fadeOkbox('{TXT_CRM_ENTRY_DELETED_SUCCESS}');
@@ -138,12 +149,12 @@
         $J("#ajaxMessageDiv").remove();
     });
     function getMessageDiv(mes) {
-        return '<div id="ajaxMessageDiv">'+mes+'..</div>';
+        return '<div id="ajaxMessageDiv">' + mes + '..</div>';
     }
     function fadeOkbox(msg) {
         $J('.okBox-new').html(msg);
         $J('.okBox-new').fadeIn('slow');
-        setTimeout(function () {
+        setTimeout(function() {
             $J('.okBox-new').fadeOut('slow');
         }, 6000);
     }
@@ -151,12 +162,13 @@
     function fadeAlertbox(msg) {
         $J('#alertbox').html(msg);
         $J('#alertbox').fadeIn('slow');
-        setTimeout(function () {
+        setTimeout(function() {
             $J('#alertbox').fadeOut('slow');
         }, 6000);
     }
 </script>
 <div class="okBox-new" style="display:none;"></div>
+<div id="alertbox" style="display:none;"></div>
 <ul id="tabmenu">
     <li><a id="Entries_ShowEntries" class="active" href="javascript:{}" onclick="selectTab('ShowEntries')" title="{TXT_CRM_CUSTOMER_MEMBERSHIP}">{TXT_CRM_CUSTOMER_MEMBERSHIP}</a></li>
     <li><a id="Entries_AddCustomerGroup" class="inactive" href="javascript:{}" onclick="selectTab('AddCustomerGroup')" title="{TXT_CRM_ADD_MEMBERSHIP}">{TXT_CRM_ADD_MEMBERSHIP}</a></li>
@@ -207,7 +219,9 @@
             </table>
             <br>
             <img height="22" border="0" width="38" src="images/icons/arrow.gif" alt=":" />
-            <a href="#" onclick="changeCheckboxes('entries','memberEntry[]',true); return false;">{TXT_CRM_SELECT_ALL}</a> / <a href="#" onclick="changeCheckboxes('entries','memberEntry[]',false); return false;">{TXT_CRM_REMOVE_SELECTION}</a>
+            <a href="#" onclick="changeCheckboxes('entries', 'memberEntry[]', true);
+        return false;">{TXT_CRM_SELECT_ALL}</a> / <a href="#" onclick="changeCheckboxes('entries', 'memberEntry[]', false);
+        return false;">{TXT_CRM_REMOVE_SELECTION}</a>
             <select name="actionType" id="multiAction">
                 <option value="0">{TXT_CRM_SELECT_ACTION}</option>
                 <option value="activate">{TXT_CRM_ACTIVATESELECTED}</option>
