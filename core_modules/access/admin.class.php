@@ -1521,7 +1521,7 @@ class AccessManager extends AccessLib
 
         $damCategoryUri = '?cmd=downloads&amp;act=categories&amp;parent_id='.$objCategory->getId();
         $damCategoryAnchor = '<a href="'.$damCategoryUri.'">'.htmlentities($objCategory->getName(LANG_ID), ENT_QUOTES, CONTREXX_CHARSET).'</a>';
-        self::$arrStatusMsg['ok'][] = sprintf($_ARRAYLANG['TXT_ACCESS_NEW_DAM_CATEGORY_CREATED_TXT'], contrexx_raw2xhml($objUser->getUsername()), $damCategoryAnchor);
+        self::$arrStatusMsg['ok'][] = sprintf($_ARRAYLANG['TXT_ACCESS_NEW_DAM_CATEGORY_CREATED_TXT'], contrexx_raw2xhtml($objUser->getUsername()), $damCategoryAnchor);
 
         return true;
     }
