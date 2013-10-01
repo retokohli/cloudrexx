@@ -1719,3 +1719,5 @@ $_ARRAYLANG['TXT_CORE_MODULE_NEWS_TYPES'] = 'Typen';
 $_ARRAYLANG['TXT_CORE_MODULE_NEWS_TICKER'] = 'Newsticker';
 $_ARRAYLANG['TXT_CORE_MODULE_NEWS_TEASERS'] = 'Teasers';
 $_ARRAYLANG['TXT_CORE_MODULE_NEWS_SETTINGS'] = 'Einstellungen';
+
+$_ARRAYLANG['TXT_CORE_CANNOT_USE_AS_ALIAS'] = 'Bestehende Dateien oder Ordner aus dem Root-Verzeichnis und aktivierte Sprachen (z.B. de, en) können nicht als Alias verwendet werden.';

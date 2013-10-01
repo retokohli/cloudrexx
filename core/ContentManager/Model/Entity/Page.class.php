@@ -24,7 +24,18 @@ define('BACKEND_PROTECTION',  1 << 1);
  * @package     contrexx
  * @subpackage  model_contentmanager
  */
-class PageException extends \Exception {}
+class PageException extends \Exception {
+    protected $userMessage = '';
+
+    public function __construct($message, $userMessage = '', $code = 0, \Exception $previous = null) {
+        $this->userMessage = $userMessage;
+        parent::__construct($message, $code, $previous);
+    }
+
+    final function getUserMessage() {
+        return $this->userMessage;
+    }
+}
 
 /**
  * Page
@@ -1075,7 +1086,7 @@ class Page extends \Cx\Model\Base\EntityBase
                 $invalidAliasNames[] = $lang['lang'];
             }
             if (in_array($this->getSlug(), $invalidAliasNames)) {
-                throw new PageException('Cannot use name of existing files, folders or languages as alias.');
+                throw new PageException('Cannot use name of existing files, folders or languages as alias.', \Env::get('lang')['TXT_CORE_CANNOT_USE_AS_ALIAS']);
             }
         }
         //workaround, this method is regenerated each time

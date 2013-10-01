@@ -1642,3 +1642,5 @@ $_ARRAYLANG['TXT_CORE_MODULE_NEWS_TYPES'] = 'Types';
 $_ARRAYLANG['TXT_CORE_MODULE_NEWS_TICKER'] = 'Newsticker';
 $_ARRAYLANG['TXT_CORE_MODULE_NEWS_TEASERS'] = 'Teasers';
 $_ARRAYLANG['TXT_CORE_MODULE_NEWS_SETTINGS'] = 'Settings';
+
+$_ARRAYLANG['TXT_CORE_CANNOT_USE_AS_ALIAS'] = 'Existing files oder folders from the root directory and activated languages (e.g. en, de) can\'t be used as an alias.';
