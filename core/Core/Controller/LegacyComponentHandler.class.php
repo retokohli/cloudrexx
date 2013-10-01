@@ -246,7 +246,7 @@ class LegacyComponentHandler {
                                     /** @ignore */
                                     if (!$cl->loadFile(ASCMS_MODULE_PATH.'/immo/index.class.php'))
                                         die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                                    $objImmo = new Immo('');
+                                    $objImmo = new \Immo('');
                                     $objImmo->getPage();
                                     exit;
                                     break;
@@ -256,7 +256,7 @@ class LegacyComponentHandler {
                         // Get immo headline
                         $modulespath = ASCMS_MODULE_PATH.'/immo/headlines/index.class.php';
                         if (file_exists($modulespath)) {
-                            $immoHeadlines = new immoHeadlines($themesPages['immo']);
+                            $immoHeadlines = new \immoHeadlines($themesPages['immo']);
                             $immoHomeHeadlines = $immoHeadlines->getHeadlines();
                             \Env::get('cx')->getPage()->setContent(str_replace('{IMMO_FILE}', $immoHomeHeadlines, \Env::get('cx')->getPage()->getContent()));
                             $themesPages['index'] = str_replace('{IMMO_FILE}', $immoHomeHeadlines, $themesPages['index']);
@@ -309,7 +309,7 @@ class LegacyComponentHandler {
                             if (preg_match_all('/{TEASERS_([0-9A-Z_-]+)}/', \Env::get('cx')->getPage()->getContent(), $arrMatches)) {
                                 /** @ignore */
                                 if ($cl->loadFile(ASCMS_CORE_MODULE_PATH.'/news/lib/teasers.class.php')) {
-                                    $objTeasers = new Teasers();
+                                    $objTeasers = new \Teasers();
                                     $objTeasers->setTeaserFrames($arrMatches[1], \Env::get('cx')->getPage()->getContent());
                                 }
                             }
@@ -317,7 +317,7 @@ class LegacyComponentHandler {
                             if (preg_match_all('/{TEASERS_([0-9A-Z_-]+)}/', $page_template, $arrMatches)) {
                                 /** @ignore */
                                 if ($cl->loadFile(ASCMS_CORE_MODULE_PATH.'/news/lib/teasers.class.php')) {
-                                    $objTeasers = new Teasers();
+                                    $objTeasers = new \Teasers();
                                     $objTeasers->setTeaserFrames($arrMatches[1], $page_template);
                                 }
                             }
@@ -325,7 +325,7 @@ class LegacyComponentHandler {
                             if (preg_match_all('/{TEASERS_([0-9A-Z_-]+)}/', $themesPages['index'], $arrMatches)) {
                                 /** @ignore */
                                 if ($cl->loadFile(ASCMS_CORE_MODULE_PATH.'/news/lib/teasers.class.php')) {
-                                    $objTeasers = new Teasers();
+                                    $objTeasers = new \Teasers();
                                     $objTeasers->setTeaserFrames($arrMatches[1], $themesPages['index']);
                                 }
                             }
@@ -339,7 +339,7 @@ class LegacyComponentHandler {
                         if (preg_match_all('/{DOWNLOADS_GROUP_([0-9]+)}/', \Env::get('cx')->getPage()->getContent(), $arrMatches)) {
                             /** @ignore */
                             if ($cl->loadFile(ASCMS_MODULE_PATH.'/downloads/lib/downloadsLib.class.php')) {
-                                $objDownloadLib = new DownloadsLibrary();
+                                $objDownloadLib = new \DownloadsLibrary();
                                 $objDownloadLib->setGroups($arrMatches[1], \Env::get('cx')->getPage()->getContent());
                             }
                         }
@@ -368,21 +368,21 @@ class LegacyComponentHandler {
                             if (preg_match_all('/{NEWSML_([0-9A-Z_-]+)}/', \Env::get('cx')->getPage()->getContent(), $arrMatches)) {
                                 /** @ignore */
                                 if ($cl->loadFile(ASCMS_MODULE_PATH.'/feed/newsML.class.php')) {
-                                    $objNewsML = new NewsML();
+                                    $objNewsML = new \NewsML();
                                     $objNewsML->setNews($arrMatches[1], \Env::get('cx')->getPage()->getContent());
                                 }
                             }
                             if (preg_match_all('/{NEWSML_([0-9A-Z_-]+)}/', $page_template, $arrMatches)) {
                                 /** @ignore */
                                 if ($cl->loadFile(ASCMS_MODULE_PATH.'/feed/newsML.class.php')) {
-                                    $objNewsML = new NewsML();
+                                    $objNewsML = new \NewsML();
                                     $objNewsML->setNews($arrMatches[1], $page_template);
                                 }
                             }
                             if (preg_match_all('/{NEWSML_([0-9A-Z_-]+)}/', $themesPages['index'], $arrMatches)) {
                                 /** @ignore */
                                 if ($cl->loadFile(ASCMS_MODULE_PATH.'/feed/newsML.class.php')) {
-                                    $objNewsML = new NewsML();
+                                    $objNewsML = new \NewsML();
                                     $objNewsML->setNews($arrMatches[1], $themesPages['index']);
                                 }
                             }
@@ -493,13 +493,13 @@ class LegacyComponentHandler {
 
                                 $dirc = $themesPages['directory_content'];
                                 if (preg_match('/{DIRECTORY_FILE}/', \Env::get('cx')->getPage()->getContent())) {
-                                    \Env::get('cx')->getPage()->setContent(str_replace('{DIRECTORY_FILE}', dirHomeContent::getObj($dirc)->getContent(), \Env::get('cx')->getPage()->getContent()));
+                                    \Env::get('cx')->getPage()->setContent(str_replace('{DIRECTORY_FILE}', \dirHomeContent::getObj($dirc)->getContent(), \Env::get('cx')->getPage()->getContent()));
                                 }
                                 if (preg_match('/{DIRECTORY_FILE}/', $page_template)) {
-                                    $page_template = str_replace('{DIRECTORY_FILE}', dirHomeContent::getObj($dirc)->getContent(), $page_template);
+                                    $page_template = str_replace('{DIRECTORY_FILE}', \dirHomeContent::getObj($dirc)->getContent(), $page_template);
                                 }
                                 if (preg_match('/{DIRECTORY_FILE}/', $themesPages['index'])) {
-                                    $themesPages['index'] = str_replace('{DIRECTORY_FILE}', dirHomeContent::getObj($dirc)->getContent(), $themesPages['index']);
+                                    $themesPages['index'] = str_replace('{DIRECTORY_FILE}', \dirHomeContent::getObj($dirc)->getContent(), $themesPages['index']);
                                 }
                             }
                         }
@@ -549,7 +549,7 @@ class LegacyComponentHandler {
                         if (!empty($_CONFIG['forumTagContent'])) {
                             /** @ignore */
                             if ($cl->loadFile(ASCMS_MODULE_PATH.'/forum/homeContent.class.php')) {
-                                $objForumHome = new ForumHomeContent();
+                                $objForumHome = new \ForumHomeContent('');
                                 //Forum-TagCloud
                                 $forumHomeTagCloudInContent = $objForumHome->searchKeywordInContent('FORUM_TAG_CLOUD', \Env::get('cx')->getPage()->getContent());
                                 $forumHomeTagCloudInTemplate = $objForumHome->searchKeywordInContent('FORUM_TAG_CLOUD', $page_template);
@@ -869,7 +869,7 @@ class LegacyComponentHandler {
                         if (   $_CONFIG['bannerStatus']
                             /** @ignore */
                             && $cl->loadFile(ASCMS_CORE_MODULE_PATH.'/banner/index.class.php')) {
-                            $objBanner = new Banner();
+                            $objBanner = new \Banner();
                             $objTemplate->setVariable(array(
                                 'BANNER_GROUP_1' => $objBanner->getBannerCode(1, $page->getNode()->getId()),
                                 'BANNER_GROUP_2' => $objBanner->getBannerCode(2, $page->getNode()->getId()),
@@ -900,7 +900,7 @@ class LegacyComponentHandler {
                         if (   $mediadirCheck
                             /** @ignore */
                             && $cl->loadFile(ASCMS_MODULE_PATH.'/mediadir/index.class.php')) {
-                            $objMediadir = new mediaDirectory('');
+                            $objMediadir = new \mediaDirectory('');
                             $objTemplate->setVariable('TXT_MEDIADIR_LATEST', $_CORELANG['TXT_DIRECTORY_LATEST']);
                             $objMediadir->getHeadlines($mediadirCheck);
                         }
