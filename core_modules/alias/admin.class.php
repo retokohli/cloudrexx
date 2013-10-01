@@ -291,19 +291,27 @@ class AliasAdmin extends aliasLib
                     }
 
                     foreach ($aliases as $id=>$slug) {
-                        if (!$this->_saveAlias($slug, $newtarget, $newtype == 'local', $id)) {
-                            $this->arrStatusMsg['error'][] = $aliasId ? $_ARRAYLANG['TXT_ALIAS_ALIAS_UPDATE_FAILED'] : $_ARRAYLANG['TXT_ALIAS_ALIAS_ADD_FAILED'];
-                            $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ALIAS_RETRY_OPERATION'];
+                        if (($message = $this->_saveAlias($slug, $newtarget, $newtype == 'local', $id)) !== true) {
                             $error = true;
+                            if ($message !== false) {
+                                $this->arrStatusMsg['error'][] = $message;
+                            } else {
+                                $this->arrStatusMsg['error'][] = $aliasId ? $_ARRAYLANG['TXT_ALIAS_ALIAS_UPDATE_FAILED'] : $_ARRAYLANG['TXT_ALIAS_ALIAS_ADD_FAILED'];
+                                $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ALIAS_RETRY_OPERATION'];
+                            }
                             break;
                         }
                     }
                     if (!$error) {
                         foreach ($newaliases as $id=>$slug) {
-                            if (!$this->_saveAlias($slug, $newtarget, $newtype == 'local')) {
+                            if (($message = $this->_saveAlias($slug, $newtarget, $newtype == 'local')) !== true) {
                                 $error = true;
-                                $this->arrStatusMsg['error'][] = $aliasId ? $_ARRAYLANG['TXT_ALIAS_ALIAS_UPDATE_FAILED'] : $_ARRAYLANG['TXT_ALIAS_ALIAS_ADD_FAILED'];
-                                $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ALIAS_RETRY_OPERATION'];
+                                if ($message !== false) {
+                                    $this->arrStatusMsg['error'][] = $message;
+                                } else {
+                                    $this->arrStatusMsg['error'][] = $aliasId ? $_ARRAYLANG['TXT_ALIAS_ALIAS_UPDATE_FAILED'] : $_ARRAYLANG['TXT_ALIAS_ALIAS_ADD_FAILED'];
+                                    $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ALIAS_RETRY_OPERATION'];
+                                }
                                 break;
                             }
                         }
