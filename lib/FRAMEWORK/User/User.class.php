@@ -1262,7 +1262,7 @@ class User extends User_Profile
         $objUserId = false;
         if (empty($limit)) {
             $objUserId = $objDatabase->Execute($query);
-            $this->filtered_search_count = $objUserId->RecordCount();
+            $this->filtered_search_count = ($objUserId === false ? 0 : $objUserId->RecordCount());
         } else {
             $objUserId = $objDatabase->SelectLimit($query, $limit, intval($offset));
             $objUserCount = $objDatabase->Execute('SELECT FOUND_ROWS()');
