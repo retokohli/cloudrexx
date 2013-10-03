@@ -187,7 +187,11 @@
                     $J( "#seriesExeptionsList" ).html( "" );
                     $J( ".exceptionDateContainer .exceptionDateHolder input:checked" ).each(function(){
                         checkedDate = $J(this).val();
-                        $J( "#seriesExeptionsList" ).append('<div><div>'+ checkedDate +'</div><input type="hidden" name="seriesExeptions[]" value="'+ checkedDate +'"  /></div>');
+                        $J( "#seriesExeptionsList" ).append('<div class="seriesList">\n\
+                                                                <span>'+ checkedDate +'</span>\n\
+                                                                <input type="hidden" name="seriesExeptions[]" value="'+ checkedDate +'"  />\n\
+                                                                &nbsp;<a href="javascript:void(0);" class="delete_exception" title="{TXT_CALENDAR_DELETE}"><img style="vertical-align: middle;" src="images/icons/delete.gif" alt="{TXT_CALENDAR_DELETE}" width="17" border="0" height="17"></a>\n\
+                                                             </div>');
                     });
                     $J( this ).dialog( "close" );
                 }
@@ -198,7 +202,11 @@
         });
 
         $J( ".add_exception" ).click(function() {
-            generateExecptionDates();
+            selectedDates = [];
+            $J( "#seriesExeptionsList input[type='hidden']" ).each(function(){
+                selectedDates.push($J(this).val());
+            });
+            generateExecptionDates(selectedDates);
             
             // initialize paging
             // count entries inside the hidden content
@@ -209,14 +217,17 @@
             });
             
             exceptionDialog.open();
-        });        
+        });   
+        $J( ".delete_exception" ).live("click", function() {
+           $J( this ).closest(".seriesList").fadeOut("slow").remove(); 
+        });
     });
 
-    function generateExecptionDates() {
+    function generateExecptionDates(selectedDates) {
         var exDates = [];
-        
+                
         $J.ajax({
-           url      : "index.php?cmd={CALENDAR_MODULE_NAME}&act=get_exception_dates",
+           url      : "index.php?cmd=jsondata&object=calendar&act=getExeceptionDates&recursive=true",
            type     : "post",
            data     : "startDate="+$J( "#startDate" ).val()+"&endDate="+$J( "#endDate" ).val()+"&"+$J( "div#series input, div#series select" ).serialize(),
            dataType : "json",
@@ -227,17 +238,24 @@
            complete: function() {
                 cx.tools.StatusMessage.removeAllDialogs();
            },
-           success  : function(data) {
-               exDates = data;               
+           success  : function(response) {
+               if (response.status == 'success') {
+                   exDates = response.data;
+               } else {
+                   cx.tools.StatusMessage.showMessage(response.message, "error", 1000);
+               }
            }
         });
         
-        if (exDates.length > 0) {
+        if (exDates.length > 0) {            
             $J.each(exDates, function(i, v) {
                 $field  = $J( blankException );
 
                 $field.find('.exceptionDate').val(v);
                 $field.find('.txtExceptionDate').text(v);
+                if ($J.inArray(v, selectedDates) != -1) {
+                    $field.find('.exceptionDate').attr("checked", "checked");
+                }
 
                 $J( ".exceptionDateContainer ul.exceptionDateHolder" ).append($field);
             });
@@ -566,38 +584,11 @@
 
     }
 
-    function refreshEditors()
-    {
-    }
-
-    var lastExeptionId = {CALENDAR_SERIES_LAST_EXEPTION_ID};
-    var blankExeption = '<div id="exeption_EXEPTION_ID"><input type="text" name="seriesExeptions[]" value="" id="DPC_editEXEPTION_ID_DD.MM.YYYY" class="event_date" style="width: 129px;" />&nbsp;<a href="#" onclick="deleteExeption(EXEPTION_ID);" title="{TXT_CALENDAR_DELETE}"><img style="vertical-align: middle;" src="images/icons/delete.gif" alt="{TXT_CALENDAR_DELETE}" width="17" border="0" height="17"></a></div>';
-
-    function appendExeption() {
-        lastExeptionId = lastExeptionId + 1;
-
-        var tmpblankExeption1 = blankExeption.replace(/EXEPTION_ID/g, lastExeptionId);
-
-
-        $J('#seriesExeptionsList').append(tmpblankExeption1);
-        $J('#exeption_' + lastExeptionId).css('display', 'none');
-        $J('#exeption_' + lastExeptionId).fadeIn("slow");
-
-        refreshDatePickers();
-    }
-
-    function deleteExeption(exeptionId) {
-        $J('#exeption_' + exeptionId).fadeOut("slow", function() {
-            $J('#exeption_' + exeptionId).remove();
-        });
-    }
-
     function refreshDatePickers(tmp) {
         var options = {
             dateFormat: '{CALENDAR_EVENT_DATE_FORMAT}',
         };
         jQuery('.event_date').datepicker(options);
-
     }
 </script>      
 
@@ -1082,12 +1073,14 @@
                 <td valign="top">
                     <div id="seriesExeptionsList">
                         <!-- BEGIN eventExeptions -->
-                        <div id="exeption_{CALENDAR_SERIES_EXEPTION_ID}">
-                            <input type="hidden" name="seriesExeptions[]" value="{CALENDAR_SERIES_EXEPTION_DATE}" class="event_date" style="width: 129px;" />&nbsp;<a href="#" onclick="deleteExeption({CALENDAR_SERIES_EXEPTION_ID});" title="{TXT_CALENDAR_DELETE}"><img style="vertical-align: middle;" src="images/icons/delete.gif" alt="{TXT_CALENDAR_DELETE}" width="17" border="0" height="17"></a>
+                        <div class="seriesList">
+                            <span>{CALENDAR_SERIES_EXEPTION_DATE}</span>
+                            <input type="hidden" name="seriesExeptions[]" value="{CALENDAR_SERIES_EXEPTION_DATE}"  />
+                            &nbsp;<a href="javascript:void(0);" class="delete_exception" title="{TXT_CALENDAR_DELETE}"><img style="vertical-align: middle;" src="images/icons/delete.gif" alt="{TXT_CALENDAR_DELETE}" width="17" border="0" height="17"></a>
                         </div>
-                        <!-- END eventExeptions -->
+                        <!-- END eventExeptions -->                        
                     </div>
-                    <input type="button" class="add_exception" value="{TXT_CALENDAR_ADD}" />
+                    <input type="button" class="add_exception" value="{TXT_CALENDAR_MANAGE}" />
                 </td>
             </tr>
             <tr class="row1">

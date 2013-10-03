@@ -593,3 +593,4 @@ $_ARRAYLANG['TXT_CALENDAR_ADD'] = "Add";
 $_ARRAYLANG['TXT_CALENDAR_EXPORT'] = "Export";
 $_ARRAYLANG['TXT_CALENDAR_SELECT_EXCEPTION_DATE_INFO'] = "Select dates that shall be excluded from event series";
 $_ARRAYLANG['TXT_CALENDAR_OK'] = "Ok";
+$_ARRAYLANG['TXT_CALENDAR_MANAGE'] = "Manage";

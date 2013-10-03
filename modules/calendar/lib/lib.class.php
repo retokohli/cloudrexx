@@ -680,4 +680,26 @@ EOF;
         );
         return $result;
     }
+        
+    /**
+     * Returns all series dates based on the given post data
+     *       
+     * @return array Array of dates
+     */    
+    function getExeceptionDates()
+    {
+        $exceptionDates = array();
+        
+        $objEvent = new CalendarEvent();
+        $objEvent->loadEventFromPost($_POST);
+
+        $objEventManager = new CalendarEventManager($objEvent->startDate);
+        $objEventManager->_setNextSeriesElement($objEvent);
+        foreach ($objEventManager->eventList as $event) {
+            $exceptionDates[] = date(self::getDateFormat(), $event->startDate);
+        }
+        
+        return $exceptionDates;        
+    }
+    
 }
