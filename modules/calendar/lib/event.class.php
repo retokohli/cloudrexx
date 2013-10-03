@@ -1222,17 +1222,6 @@ class CalendarEvent extends CalendarLibrary
         $seriesExeptions = '';
         
         if($seriesStatus == 1) {
-            if(!empty($data['seriesExeptions'])) {
-                $exeptions = array();
-                
-                foreach($data['seriesExeptions'] as $key => $exeptionDate)  {
-                    $exeptions[] = parent::getDateTimestamp($exeptionDate, 0, 0) ;  
-                }  
-                
-                sort($exeptions);
-                
-                $seriesExeptions = join(",", $exeptions);
-            }
         
             switch($seriesType) {
                 case 1;

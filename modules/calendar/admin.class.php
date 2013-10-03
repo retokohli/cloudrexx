@@ -488,7 +488,7 @@ class CalendarManager extends CalendarLibrary
             'TXT_'.$this->moduleLangVar.'_EVENT_EMAIL'                      => $_ARRAYLANG['TXT_CALENDAR_EVENT_EMAIL'],
             'TXT_'.$this->moduleLangVar.'_SELECT_EXCEPTION_DATE_INFO'       => $_ARRAYLANG['TXT_CALENDAR_SELECT_EXCEPTION_DATE_INFO'],
             'TXT_'.$this->moduleLangVar.'_OK'                               => $_ARRAYLANG['TXT_CALENDAR_OK'],    
-            'TXT_'.$this->moduleLangVar.'_ADD'                              => $_ARRAYLANG['TXT_CALENDAR_ADD'],    
+            'TXT_'.$this->moduleLangVar.'_MANAGE'                           => $_ARRAYLANG['TXT_CALENDAR_MANAGE'],
             
             $this->moduleLangVar.'_EVENT_ID'                                => $eventId,
             $this->moduleLangVar.'_EVENT_DEFAULT_LANG_ID'                   => $_LANGID,
@@ -715,17 +715,14 @@ class CalendarManager extends CalendarLibrary
             
             
             
-            foreach ($objEvent->seriesData['seriesPatternExceptions'] as $key => $seriesExceptionDate) {     
-                $exeptionId = $lastExeptionId;
+            foreach ($objEvent->seriesData['seriesPatternExceptions'] as $key => $seriesExceptionDate) {                     
                 
                 if($seriesExceptionDate != null) {
-                    $this->_objTpl->setVariable(array(
-                        $this->moduleLangVar.'_SERIES_EXEPTION_ID'          => $exeptionId,                        
+                    $this->_objTpl->setVariable(array(                        
                         $this->moduleLangVar.'_SERIES_EXEPTION_DATE'        => date($dateFomat, $seriesExceptionDate),
                     ));  
                     
-                    $this->_objTpl->parse('eventExeptions');  
-                    $lastExeptionId++;
+                    $this->_objTpl->parse('eventExeptions');                      
                 } 
             }
         } else { 
@@ -737,8 +734,7 @@ class CalendarManager extends CalendarLibrary
             $this->_objTpl->hideBlock('eventExeptions');   
         }
         
-        $this->_objTpl->setVariable(array(
-            $this->moduleLangVar.'_SERIES_LAST_EXEPTION_ID'         => $lastExeptionId,
+        $this->_objTpl->setVariable(array(            
             $this->moduleLangVar.'_EVENT_SERIES_STATUS'             => $seriesStatus,
             $this->moduleLangVar.'_SERIES_PATTERN_DAILY'            => $seriesPatternDaily,
             $this->moduleLangVar.'_SERIES_PATTERN_WEEKLY'           => $seriesPatternWeekly,
@@ -1542,24 +1538,7 @@ class CalendarManager extends CalendarLibrary
             $this->moduleLangVar.'_USER_ID'                      => $userId,
         ));
     }
-    
-    function getExeceptionDates()
-    {
-        $exceptionDates = array();
         
-        $objEvent = new CalendarEvent();
-        $objEvent->loadEventFromPost($_POST);
-
-        $objEventManager = new CalendarEventManager($objEvent->startDate);
-        $objEventManager->_setNextSeriesElement($objEvent);
-        foreach ($objEventManager->eventList as $event) {
-            $exceptionDates[] = date(parent::getDateFormat(), $event->startDate);
-        }
-        
-        echo json_encode($exceptionDates);
-        exit();
-    }
-    
     /**
      * Returns the escaped value for processing csv
      * 
