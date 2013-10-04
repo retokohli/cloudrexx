@@ -1073,9 +1073,11 @@ class LanguageManager
                     if (count($alias)) {
                         if (is_array($alias)) $alias = $alias[0];
                         $id   = $alias->getNode()->getId();
-                        $link = 'http://' . \Env::get('config')['domainUrl'] . ASCMS_PATH_OFFSET . '/' . $alias->getSlug();
+                        $config = \Env::get('config');
+                        $link = 'http://' . $config['domainUrl'] . ASCMS_PATH_OFFSET . '/' . $alias->getSlug();
+                        $lang = \Env::get('lang');
                         $this->strErrMessage  =
-                            \Env::get('lang')['TXT_CORE_REMOVE_ALIAS_TO_ACTIVATE_LANGUAGE'] . ':<br />
+                            $lang['TXT_CORE_REMOVE_ALIAS_TO_ACTIVATE_LANGUAGE'] . ':<br />
                             <a href="index.php?cmd=alias&act=modify&id=' . $id . '" target="_blank">' . $link . '</a>';
                         return false;
                     }
