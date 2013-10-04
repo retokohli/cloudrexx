@@ -350,6 +350,7 @@ class settingsManager
             'TXT_SETTINGS_FORCE_DOMAIN_URL_HELP'        => $_CORELANG['TXT_SETTINGS_FORCE_DOMAIN_URL_HELP'],
             'TXT_SETTINGS_FORCE_DOMAIN_URL'             => $_CORELANG['TXT_SETTINGS_FORCE_DOMAIN_URL'],
             'SETTINGS_FORCE_DOMAIN_URL_ON'              => ($arrSettings['forceDomainUrl'] == 'on') ? 'checked="checked"' : '',
+            'SETTINGS_FORCE_DOMAIN_URL_OFF'              => ($arrSettings['forceDomainUrl'] == 'off') ? 'checked="checked"' : '',
         ));
         
         $this->setDebuggingVariables($objTemplate);
@@ -424,10 +425,6 @@ class settingsManager
         if (isset($_POST['setvalue'][87]) && !in_array((!empty($_POST['setvalue'][87]) ? $_POST['setvalue'][87] : ''), timezone_identifiers_list())) {
             $this->strErrMessage[] = $_CORELANG['TXT_CORE_TIMEZONE_INVALID'];
             return;
-        }
-
-        if (!isset($_POST['setvalue'][59])) {
-            $_POST['setvalue'][59] = 'off';
         }
 
         $checkHttps = false;
