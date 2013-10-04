@@ -593,6 +593,7 @@ class CalendarEvent extends CalendarLibrary
                 $this->priority = intval($objResult->fields['priority']);
                 $this->description = $objResult->fields['description'];
                 
+                $this->place_mediadir_id = (int) $objResult->fields['place_mediadir_id'];
                 $this->place        = htmlentities(stripslashes($objResult->fields['place']), ENT_QUOTES, CONTREXX_CHARSET);
                 $this->place_street = htmlentities(stripslashes($objResult->fields['place_street']), ENT_QUOTES, CONTREXX_CHARSET);
                 $this->place_zip    = htmlentities(stripslashes($objResult->fields['place_zip']), ENT_QUOTES, CONTREXX_CHARSET);
@@ -818,7 +819,7 @@ class CalendarEvent extends CalendarLibrary
                 
         $access                    = isset($data['access']) ? intval($data['access']) : 0;
         $priority                  = isset($data['priority']) ? intval($data['priority']) : 0;
-        $placeMediadir             = isset($data['placeMediadir'][$_LANGID]) ? intval($data['placeMediadir'][$_LANGID]) : 0;
+        $placeMediadir             = isset($data['placeMediadir']) ? intval($data['placeMediadir']) : 0;
         $price                     = isset($data['price']) ? contrexx_addslashes(contrexx_strip_tags($data['price'])) : '';
         $link                      = isset($data['link']) ? contrexx_addslashes(contrexx_strip_tags($data['link'])) : '';
         $pic                       = isset($data['picture']) ? contrexx_addslashes(contrexx_strip_tags($data['picture'])) : '';
@@ -837,9 +838,7 @@ class CalendarEvent extends CalendarLibrary
         $ticket_sales              = isset($data['ticketSales']) ? intval($data['ticketSales']) : 0;
         $num_seating               = isset($data['numSeating']) ? json_encode(explode(',', $data['numSeating'])) : '';
         $related_hosts             = isset($data['selectedHosts']) ? $data['selectedHosts'] : '';        
-        $place                     = $this->arrSettings['placeData'] != 0 
-                                     ? (isset($data['placeMediadir']) ? (int) $data['placeMediadir'] : 0) 
-                                     : (isset($data['place']) ? contrexx_input2db(contrexx_strip_tags($data['place'])) : '');
+        $place                     = isset($data['place']) ? contrexx_input2db(contrexx_strip_tags($data['place'])) : '';
         $street                    = isset($data['street']) ? contrexx_input2db(contrexx_strip_tags($data['street'])) : '';
         $zip                       = isset($data['zip']) ? contrexx_input2db(contrexx_strip_tags($data['zip'])) : '';
         $city                      = isset($data['city']) ? contrexx_input2db(contrexx_strip_tags($data['city'])) : '';
