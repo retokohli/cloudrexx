@@ -1197,7 +1197,7 @@ class CalendarEvent extends CalendarLibrary
         list($endHour, $endMin)         = explode(':', $strEndTime);
         
         list($startHour, $startMin) = array(0, 0);
-        list($endHour, $endMin)     = array(23, 59);
+        list($endHour, $endMin)     = array(0, 0);
         
         
         //event data        

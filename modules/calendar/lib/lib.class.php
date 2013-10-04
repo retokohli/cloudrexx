@@ -696,7 +696,9 @@ EOF;
         $objEventManager = new CalendarEventManager($objEvent->startDate);
         $objEventManager->_setNextSeriesElement($objEvent);
         foreach ($objEventManager->eventList as $event) {
-            $exceptionDates[] = date(self::getDateFormat(), $event->startDate);
+            $exceptionDates[date(self::getDateFormat(), $event->startDate)] = $event->startDate != $event->endDate 
+                                                                              ? date(self::getDateFormat(), $event->startDate) . " " . date("D", $event->startDate) .' - '. date(self::getDateFormat(), $event->endDate) . " " . date("D", $event->endDate)
+                                                                              : date(self::getDateFormat(), $event->startDate) . " " . date("D", $event->startDate);
         }
         
         return $exceptionDates;        
