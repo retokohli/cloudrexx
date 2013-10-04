@@ -489,6 +489,15 @@ class CalendarManager extends CalendarLibrary
             'TXT_'.$this->moduleLangVar.'_SELECT_EXCEPTION_DATE_INFO'       => $_ARRAYLANG['TXT_CALENDAR_SELECT_EXCEPTION_DATE_INFO'],
             'TXT_'.$this->moduleLangVar.'_OK'                               => $_ARRAYLANG['TXT_CALENDAR_OK'],    
             'TXT_'.$this->moduleLangVar.'_MANAGE'                           => $_ARRAYLANG['TXT_CALENDAR_MANAGE'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_SHOW_IN'                    => $_ARRAYLANG['TXT_CALENDAR_EVENT_SHOW_IN'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_TITLE'                      => $_ARRAYLANG['TXT_CALENDAR_EVENT_TITLE'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_PLACE'                      => $_ARRAYLANG['TXT_CALENDAR_EVENT_PLACE'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_STREET'                     => $_ARRAYLANG['TXT_CALENDAR_EVENT_STREET'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_ZIP'                        => $_ARRAYLANG['TXT_CALENDAR_EVENT_ZIP'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_CITY'                       => $_ARRAYLANG['TXT_CALENDAR_EVENT_CITY'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_COUNTRY'                    => $_ARRAYLANG['TXT_CALENDAR_EVENT_COUNTRY'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_MAP'                        => $_ARRAYLANG['TXT_CALENDAR_EVENT_MAP'],
+            'TXT_'.$this->moduleLangVar.'_EVENT_USE_GOOGLEMAPS'             => $_ARRAYLANG['TXT_CALENDAR_EVENT_USE_GOOGLEMAPS'],
             
             $this->moduleLangVar.'_EVENT_ID'                                => $eventId,
             $this->moduleLangVar.'_EVENT_DEFAULT_LANG_ID'                   => $_LANGID,
@@ -812,6 +821,28 @@ class CalendarManager extends CalendarLibrary
             $forcedLanguage = contrexx_input2raw($_GET['langId']);
         }
         
+        //parse placeSelect
+        if ($this->arrSettings['placeData'] != 0) {
+            $objMediadirEntries = new mediaDirectoryEntry();
+            $objMediadirEntries->getEntries(null,null,null,null,null,null,true,0,'n',null,null,intval($this->arrSettings['placeData']));
+
+            $placeOptions = '<option value="">'.$_ARRAYLANG['TXT_CALENDAR_PLEASE_CHOOSE'].'</option>';
+
+            foreach($objMediadirEntries->arrEntries as $key => $arrEntry) {
+                $selectedPlace = ($arrEntry['entryId'] == $objEvent->place) ? 'selected="selected"' : '';   
+                $placeOptions .= '<option '.$selectedPlace.' value="'.$arrEntry['entryId'].'">'.$arrEntry['entryFields'][0].'</option>';   
+            }
+
+            $this->_objTpl->setVariable(array(   
+                $this->moduleLangVar.'_EVENT_PLACE_OPTIONS'    => $placeOptions,    
+            ));
+            $this->_objTpl->parse('eventPlaceSelect');      
+            $this->_objTpl->hideBlock('eventPlaceInput');                
+        } else {
+            $this->_objTpl->touchBlock('eventPlaceInput');
+            $this->_objTpl->hideBlock('eventPlaceSelect');  
+        }
+        
         foreach ($this->arrFrontendLanguages as $key => $arrLang) {
             //parse globals
         	$this->_objTpl->setGlobalVariable(array(
@@ -845,45 +876,11 @@ class CalendarManager extends CalendarLibrary
             
             $this->_objTpl->parse('eventShowIn');
                         
-            $this->_objTpl->setVariable(array(
-                'TXT_'.$this->moduleLangVar.'_EVENT_SHOW_IN'        => $_ARRAYLANG['TXT_CALENDAR_EVENT_SHOW_IN'],
-                'TXT_'.$this->moduleLangVar.'_EVENT_TITLE'          => $_ARRAYLANG['TXT_CALENDAR_EVENT_TITLE'],
-                'TXT_'.$this->moduleLangVar.'_EVENT_PLACE'          => $_ARRAYLANG['TXT_CALENDAR_EVENT_PLACE'],
-                'TXT_'.$this->moduleLangVar.'_EVENT_STREET'         => $_ARRAYLANG['TXT_CALENDAR_EVENT_STREET'],
-                'TXT_'.$this->moduleLangVar.'_EVENT_ZIP'            => $_ARRAYLANG['TXT_CALENDAR_EVENT_ZIP'],
-                'TXT_'.$this->moduleLangVar.'_EVENT_CITY'           => $_ARRAYLANG['TXT_CALENDAR_EVENT_CITY'],
-                'TXT_'.$this->moduleLangVar.'_EVENT_COUNTRY'        => $_ARRAYLANG['TXT_CALENDAR_EVENT_COUNTRY'],
-                'TXT_'.$this->moduleLangVar.'_EVENT_MAP'            => $_ARRAYLANG['TXT_CALENDAR_EVENT_MAP'],
-                'TXT_'.$this->moduleLangVar.'_EVENT_USE_GOOGLEMAPS' => $_ARRAYLANG['TXT_CALENDAR_EVENT_USE_GOOGLEMAPS'],
-        	
+            $this->_objTpl->setVariable(array(        	
                 $this->moduleLangVar.'_EVENT_TAB_DISPLAY'   => $arrLang['is_default'] == 'true' ? 'block' : 'none',
                 $this->moduleLangVar.'_EVENT_TITLE'         => !empty($objEvent->arrData['title'][$arrLang['id']]) ? $objEvent->arrData['title'][$arrLang['id']] : $objEvent->title,                
 	    ));
-	        
-            //parse placeSelect
-            /*if ($this->arrSettings['placeData'] != 0) {             
-                $objMediadirEntries = new mediaDirectoryEntry();
-                $objMediadirEntries->getEntries(null,null,null,null,null,null,true,0,'n',null,null,intval($this->arrSettings['placeData']));
-                
-                $placeOptions = '<option value="">'.$_ARRAYLANG['TXT_CALENDAR_PLEASE_CHOOSE'].'</option>';
-                
-                foreach($objMediadirEntries->arrEntries as $key => $arrEntry) {
-                    $selectedPlace = ($arrEntry['entryId'] == $objEvent->place) ? 'selected="selected"' : '';   
-                    $placeOptions .= '<option '.$selectedPlace.' value="'.$arrEntry['entryId'].'">'.$arrEntry['entryFields'][0].'</option>';   
-                }
-                
-                $this->_objTpl->setVariable(array(   
-                    $this->moduleLangVar.'_EVENT_PLACE_OPTIONS'    => $placeOptions,    
-                ));
-                      
-                $this->_objTpl->hideBlock('eventPlaceInput');
-                $this->_objTpl->parse('eventPlaceSelect');
-            } else { */
-                $this->_objTpl->touchBlock('eventPlaceInput');
-                $this->_objTpl->hideBlock('eventPlaceSelect');  
-            /* } */
-            	    
-	        
+	                  	    	        
 	    //parse eventTabMenuDescTab
             $this->_objTpl->setVariable(array(
                 $this->moduleLangVar.'_EVENT_TAB_CLASS'  => $defaultLang ? 'active' : '',
