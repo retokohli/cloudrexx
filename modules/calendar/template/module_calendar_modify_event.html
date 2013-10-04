@@ -225,7 +225,7 @@
     });
 
     function generateExecptionDates(selectedDates) {
-        var exDates = [];
+        var exDates = {};
                 
         $J.ajax({
            url      : "index.php?cmd=jsondata&object=calendar&act=getExeceptionDates&recursive=true",
@@ -248,13 +248,13 @@
            }
         });
         
-        if (exDates.length > 0) {            
-            $J.each(exDates, function(i, v) {
+        if (!$J.isEmptyObject( exDates )) {
+            $J.each(exDates, function(key, v) {
                 $field  = $J( blankException );
-
-                $field.find('.exceptionDate').val(v);
+                
+                $field.find('.exceptionDate').val(key);
                 $field.find('.txtExceptionDate').text(v);
-                if ($J.inArray(v, selectedDates) != -1) {
+                if ($J.inArray(key, selectedDates) != -1) {
                     $field.find('.exceptionDate').attr("checked", "checked");
                 }
 
