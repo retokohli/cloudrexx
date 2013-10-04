@@ -59,7 +59,8 @@ function toggleDebuggingFlags(show) {
             <tr class="row1">
                 <td>{TXT_SETTINGS_FORCE_DOMAIN_URL}&nbsp;</td>
                 <td>
-                    <input type="checkbox" name="setvalue[59]" value="on" {SETTINGS_FORCE_DOMAIN_URL_ON}/>&nbsp;
+                    <input type="radio" name="setvalue[59]" id="setvalue_59_on" value="on" {SETTINGS_FORCE_DOMAIN_URL_ON} /><label for="setvalue_59_on">{TXT_RADIO_ON}</label>&nbsp;
+                    <input type="radio" name="setvalue[59]" id="setvalue_59_off" value="off" {SETTINGS_FORCE_DOMAIN_URL_OFF} /><label for="setvalue_59_off">{TXT_RADIO_OFF}</label>&nbsp;
                     <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SETTINGS_FORCE_DOMAIN_URL_HELP}</span>
                 </td>
             </tr>
