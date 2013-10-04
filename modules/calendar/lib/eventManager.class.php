@@ -709,8 +709,17 @@ class CalendarEventManager extends CalendarLibrary
                 $picHeight = $arrInfo[1]+20;
                 
                 $map_thumb_name = file_exists(ASCMS_PATH.$objEvent->place_map.".thumb") ? $objEvent->place_map.".thumb" : $objEvent->place_map;
+                
+                if($this->arrSettings['placeData'] != 0) {
+                    $objMediadirEntry = new mediaDirectoryEntry();
+                    $objMediadirEntry->getEntries(intval($objEvent->place)); 
+                    $place = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=mediadir&amp;cmd=detail&amp;eid='.intval($objEvent->place).'">'.$objMediadirEntry->arrEntries[$objEvent->place]['entryFields'][0].'</a>';   
+                } else {
+                    $place = $objEvent->place;
+                }
+                
                 $objTpl->setVariable(array(                                                          
-                    $this->moduleLangVar.'_EVENT_PLACE'           => $objEvent->place,
+                    $this->moduleLangVar.'_EVENT_PLACE'           => $place,
                     $this->moduleLangVar.'_EVENT_LOCATION_ADDRESS'=> $objEvent->place_street,
                     $this->moduleLangVar.'_EVENT_LOCATION_ZIP'    => $objEvent->place_zip,
                     $this->moduleLangVar.'_EVENT_LOCATION_CITY'   => $objEvent->place_city,
@@ -823,6 +832,13 @@ class CalendarEventManager extends CalendarLibrary
                     $editLink = CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'&amp;cmd=edit&id='.$objEvent->id;
                 }
                 $picThumb = file_exists(ASCMS_PATH."{$objEvent->pic}.thumb") ? "{$objEvent->pic}.thumb" : ($objEvent->pic != '' ? $objEvent->pic : '');
+                if($this->arrSettings['placeData'] != 0) {
+                    $objMediadirEntry = new mediaDirectoryEntry();
+                    $objMediadirEntry->getEntries(intval($objEvent->place)); 
+                    $place = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=mediadir&amp;cmd=detail&amp;eid='.intval($objEvent->place).'">'.$objMediadirEntry->arrEntries[$objEvent->place]['entryFields'][0].'</a>';   
+                } else {
+                    $place = $objEvent->place;
+                }
                 $objTpl->setVariable(array(
                     $this->moduleLangVar.'_EVENT_ROW'            => $i%2==0 ? 'row1' : 'row2',
                     $this->moduleLangVar.'_EVENT_LED'            => $objEvent->status==0 ? 'red' : 'green',
@@ -834,7 +850,7 @@ class CalendarEventManager extends CalendarLibrary
                     $this->moduleLangVar.'_EVENT_THUMBNAIL'      => $objEvent->pic != '' ? '<img src="'.$picThumb.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',                                                               
                     $this->moduleLangVar.'_EVENT_PRIORITY'       => $priority,                                                           
                     $this->moduleLangVar.'_EVENT_PRIORITY_IMG'   => $priorityImg, 
-                    $this->moduleLangVar.'_EVENT_PLACE'          => $objEvent->place,
+                    $this->moduleLangVar.'_EVENT_PLACE'          => $place,
                     $this->moduleLangVar.'_EVENT_DESCRIPTION'    => $objEvent->description,
                     $this->moduleLangVar.'_EVENT_SHORT_DESCRIPTION' => $parts[0].$points,
                     $this->moduleLangVar.'_EVENT_LINK'           => $objEvent->link ? "<a href='".$objEvent->link."' target='_blank' >".$objEvent->link."</a>" : "",
@@ -864,7 +880,7 @@ class CalendarEventManager extends CalendarLibrary
                 
                 $map_thumb_name = file_exists(ASCMS_PATH.$objEvent->place_map.".thumb") ? $objEvent->place_map.".thumb" : $objEvent->place_map;
                 $objTpl->setVariable(array(                                                          
-                    $this->moduleLangVar.'_EVENT_LOCATION_PLACE'         => $objEvent->place,
+                    $this->moduleLangVar.'_EVENT_LOCATION_PLACE'         => $place,
                     $this->moduleLangVar.'_EVENT_LOCATION_ADDRESS'       => $objEvent->place_street,
                     $this->moduleLangVar.'_EVENT_LOCATION_ZIP'           => $objEvent->place_zip,
                     $this->moduleLangVar.'_EVENT_LOCATION_CITY'          => $objEvent->place_city,

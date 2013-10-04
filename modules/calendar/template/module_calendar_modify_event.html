@@ -715,22 +715,30 @@
             </tr>
         </table>        
         <div style="display: {CALENDAR_EVENT_TAB_DISPLAY};" >
+            <!-- BEGIN eventPlaceSelect -->
             <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
                 <tr class="row3">
                     <td colspan="2">{TXT_CALENDAR_EVENT_PLACE}</td>
                 </tr>
                 <tr class="row2">
                     <td width="180" valign="top">{TXT_CALENDAR_EVENT_PLACE}</td>
-                    <td>
-                        <!-- BEGIN eventPlaceInput -->
-                        <input name="place" type="text" maxlength="255" value="{CALENDAR_EVENT_PLACE}" style="width: 250px" />
-                        <!-- END eventPlaceInput -->
-
-                        <!-- BEGIN eventPlaceSelect -->
+                    <td>                                                
                         <select name="placeMediadir" style="width: 258px;">
                             {CALENDAR_EVENT_PLACE_OPTIONS}
-                        </select>
-                        <!-- END eventPlaceSelect -->
+                        </select>                        
+                    </td>
+                </tr>
+            </table>            
+            <!-- END eventPlaceSelect -->
+            <!-- BEGIN eventPlaceInput -->
+            <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+                <tr class="row3">
+                    <td colspan="2">{TXT_CALENDAR_EVENT_PLACE}</td>
+                </tr>
+                <tr class="row2">
+                    <td width="180" valign="top">{TXT_CALENDAR_EVENT_PLACE}</td>
+                    <td>                        
+                        <input name="place" type="text" maxlength="255" value="{CALENDAR_EVENT_PLACE}" style="width: 250px" />                                                
                     </td>
                 </tr>
             </table>
@@ -775,6 +783,7 @@
                     </tr>
                 </table>
             </div>
+            <!-- END eventPlaceInput -->
             <br/>
             <div>
                 <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">

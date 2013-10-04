@@ -606,15 +606,7 @@ class CalendarEvent extends CalendarLibrary
                 $this->org_city     = contrexx_raw2xhtml($objResult->fields['org_city']);
                 $this->org_link     = contrexx_raw2xhtml($objResult->fields['org_link']);
                 $this->org_email    = contrexx_raw2xhtml($objResult->fields['org_email']);
-                
-                /* if($this->arrSettings['placeData'] == 1) {
-                    $objMediadirEntry = new mediaDirectoryEntry();
-                    $objMediadirEntry->getEntries(intval($objResult->fields['place_mediadir_id'])); 
-                    $this->place = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=mediadir&amp;cmd=detail&amp;eid='.intval($objResult->fields['place_mediadir_id']).'">'.$objMediadirEntry->arrEntries[$objResult->fields['place_mediadir_id']]['entryFields'][0].'</a>';   
-                } else { */
-                    //$this->place = htmlentities(stripslashes($objResult->fields['place']), ENT_QUOTES, CONTREXX_CHARSET);     
-                /* } */
-                
+                                
                 $this->showIn = htmlentities($objResult->fields['show_in'], ENT_QUOTES, CONTREXX_CHARSET);
                 $this->availableLang = intval($langId);
                 $this->status = intval($objResult->fields['status']);
@@ -845,7 +837,9 @@ class CalendarEvent extends CalendarLibrary
         $ticket_sales              = isset($data['ticketSales']) ? intval($data['ticketSales']) : 0;
         $num_seating               = isset($data['numSeating']) ? json_encode(explode(',', $data['numSeating'])) : '';
         $related_hosts             = isset($data['selectedHosts']) ? $data['selectedHosts'] : '';        
-        $place                     = isset($data['place']) ? contrexx_input2db(contrexx_strip_tags($data['place'])) : '';
+        $place                     = $this->arrSettings['placeData'] != 0 
+                                     ? (isset($data['placeMediadir']) ? (int) $data['placeMediadir'] : 0) 
+                                     : (isset($data['place']) ? contrexx_input2db(contrexx_strip_tags($data['place'])) : '');
         $street                    = isset($data['street']) ? contrexx_input2db(contrexx_strip_tags($data['street'])) : '';
         $zip                       = isset($data['zip']) ? contrexx_input2db(contrexx_strip_tags($data['zip'])) : '';
         $city                      = isset($data['city']) ? contrexx_input2db(contrexx_strip_tags($data['city'])) : '';
