@@ -829,7 +829,7 @@ class CalendarManager extends CalendarLibrary
             $placeOptions = '<option value="">'.$_ARRAYLANG['TXT_CALENDAR_PLEASE_CHOOSE'].'</option>';
 
             foreach($objMediadirEntries->arrEntries as $key => $arrEntry) {
-                $selectedPlace = ($arrEntry['entryId'] == $objEvent->place) ? 'selected="selected"' : '';   
+                $selectedPlace = ($arrEntry['entryId'] == $objEvent->place_mediadir_id) ? 'selected="selected"' : '';   
                 $placeOptions .= '<option '.$selectedPlace.' value="'.$arrEntry['entryId'].'">'.$arrEntry['entryFields'][0].'</option>';   
             }
 

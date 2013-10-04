@@ -712,8 +712,8 @@ class CalendarEventManager extends CalendarLibrary
                 
                 if($this->arrSettings['placeData'] != 0) {
                     $objMediadirEntry = new mediaDirectoryEntry();
-                    $objMediadirEntry->getEntries(intval($objEvent->place)); 
-                    $place = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=mediadir&amp;cmd=detail&amp;eid='.intval($objEvent->place).'">'.$objMediadirEntry->arrEntries[$objEvent->place]['entryFields'][0].'</a>';   
+                    $objMediadirEntry->getEntries(intval($objEvent->place_mediadir_id)); 
+                    $place = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=mediadir&amp;cmd=detail&amp;eid='.intval($objEvent->place_mediadir_id).'">'.$objMediadirEntry->arrEntries[$objEvent->place_mediadir_id]['entryFields'][0].'</a>';   
                 } else {
                     $place = $objEvent->place;
                 }
@@ -834,8 +834,8 @@ class CalendarEventManager extends CalendarLibrary
                 $picThumb = file_exists(ASCMS_PATH."{$objEvent->pic}.thumb") ? "{$objEvent->pic}.thumb" : ($objEvent->pic != '' ? $objEvent->pic : '');
                 if($this->arrSettings['placeData'] != 0) {
                     $objMediadirEntry = new mediaDirectoryEntry();
-                    $objMediadirEntry->getEntries(intval($objEvent->place)); 
-                    $place = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=mediadir&amp;cmd=detail&amp;eid='.intval($objEvent->place).'">'.$objMediadirEntry->arrEntries[$objEvent->place]['entryFields'][0].'</a>';   
+                    $objMediadirEntry->getEntries(intval($objEvent->place_mediadir_id)); 
+                    $place = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?section=mediadir&amp;cmd=detail&amp;eid='.intval($objEvent->place_mediadir_id).'">'.$objMediadirEntry->arrEntries[$objEvent->place_mediadir_id]['entryFields'][0].'</a>';   
                 } else {
                     $place = $objEvent->place;
                 }
