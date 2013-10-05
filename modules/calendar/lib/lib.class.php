@@ -688,6 +688,8 @@ EOF;
      */    
     function getExeceptionDates()
     {
+        global $_CORELANG;
+        
         $exceptionDates = array();
         
         $objEvent = new CalendarEvent();
@@ -695,10 +697,12 @@ EOF;
 
         $objEventManager = new CalendarEventManager($objEvent->startDate);
         $objEventManager->_setNextSeriesElement($objEvent);
+        
+        $dayArray = explode(',', $_CORELANG['TXT_CORE_DAY_ABBREV2_ARRAY']);
         foreach ($objEventManager->eventList as $event) {
             $exceptionDates[date(self::getDateFormat(), $event->startDate)] = $event->startDate != $event->endDate 
-                                                                              ? date(self::getDateFormat(), $event->startDate) . " " . date("D", $event->startDate) .' - '. date(self::getDateFormat(), $event->endDate) . " " . date("D", $event->endDate)
-                                                                              : date(self::getDateFormat(), $event->startDate) . " " . date("D", $event->startDate);
+                                                                              ? $dayArray[date("w", $event->startDate)] .", " . date(self::getDateFormat(), $event->startDate).' - '. $dayArray[date("w", $event->endDate)] .", ". date(self::getDateFormat(), $event->endDate)
+                                                                              : $dayArray[date("w", $event->startDate)] .", " . date(self::getDateFormat(), $event->startDate);
         }
         
         return $exceptionDates;        
