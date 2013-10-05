@@ -184,14 +184,11 @@
                     $J( this ).dialog( "close" );
                 },
                 "{TXT_CALENDAR_OK}": function() {
-                    $J( "#seriesExeptionsList" ).html( "" );
+                    $J( "#seriesExeptionsList" ).html( "" );                    
                     $J( ".exceptionDateContainer .exceptionDateHolder input:checked" ).each(function(){
-                        checkedDate = $J(this).val();
-                        $J( "#seriesExeptionsList" ).append('<div class="seriesList">\n\
-                                                                <span>'+ checkedDate +'</span>\n\
-                                                                <input type="hidden" name="seriesExeptions[]" value="'+ checkedDate +'"  />\n\
-                                                                &nbsp;<a href="javascript:void(0);" class="delete_exception" title="{TXT_CALENDAR_DELETE}"><img style="vertical-align: middle;" src="images/icons/delete.gif" alt="{TXT_CALENDAR_DELETE}" width="17" border="0" height="17"></a>\n\
-                                                             </div>');
+                        checkedDate    = $J(this).val();
+                        txtCheckedDate = $J(this).data( 'txtSeriesDate' );
+                        addExeptionList(checkedDate, txtCheckedDate);                        
                     });
                     $J( this ).dialog( "close" );
                 }
@@ -206,7 +203,8 @@
             $J( "#seriesExeptionsList input[type='hidden']" ).each(function(){
                 selectedDates.push($J(this).val());
             });
-            generateExecptionDates(selectedDates);
+            exceptionDates = generateExecptionDates();
+            appendTheExecptionDate(exceptionDates, selectedDates, $J( ".exceptionDateContainer" ));
             
             // initialize paging
             // count entries inside the hidden content
@@ -222,9 +220,50 @@
         $J( ".delete_exception" ).live("click", function() {
            $J( this ).closest(".seriesList").fadeOut("slow").remove(); 
         });
+        
+        // Format the series exceptions on page load
+        selectedDates = [];
+        $J( "#seriesExeptionsList input[type='hidden']" ).each(function(){
+            selectedDates.push($J(this).val());
+        });
+        
+        $J( "#seriesExeptionsList" ).html( "" );
+        exceptionDates = generateExecptionDates();
+        $J.each(exceptionDates, function(key, v) {
+            if ($J.inArray(key, selectedDates) != -1) {
+                addExeptionList(key, v);
+            }
+        });
     });
 
-    function generateExecptionDates(selectedDates) {
+    function addExeptionList(exeptionDate, txtCheckedDate) {
+        $J( "#seriesExeptionsList" ).append('<div class="seriesList">\n\
+                                                <span>'+ txtCheckedDate +'</span>\n\
+                                                <input type="hidden" name="seriesExeptions[]" value="'+ exeptionDate +'"  />\n\
+                                                &nbsp;<a href="javascript:void(0);" class="delete_exception" title="{TXT_CALENDAR_DELETE}"><img style="vertical-align: middle;" src="images/icons/delete.gif" alt="{TXT_CALENDAR_DELETE}" width="17" border="0" height="17"></a>\n\
+                                             </div>');
+    }
+    
+    function appendTheExecptionDate(exDates, selectedDates, exDateContainer) {
+        if (!$J.isEmptyObject( exDates )) {
+            var exceptionDateHolder = $J("<ul />", {class: 'exceptionDateHolder'});
+            $J.each(exDates, function(key, v) {
+                $field  = $J( blankException );
+                
+                $field.find('.exceptionDate').val(key);
+                $field.find('.txtExceptionDate').text(v);
+                if ($J.inArray(key, selectedDates) != -1) {
+                    $field.find('.exceptionDate').attr("checked", "checked");
+                }
+                $field.find( '.exceptionDate' ).data( 'txtSeriesDate', v );
+                
+                exceptionDateHolder.append( $field );
+            });
+            exDateContainer.html( exceptionDateHolder );
+        }
+    }
+    
+    function generateExecptionDates() {
         var exDates = {};
                 
         $J.ajax({
@@ -248,21 +287,7 @@
            }
         });
         
-        if (!$J.isEmptyObject( exDates )) {
-            $J.each(exDates, function(key, v) {
-                $field  = $J( blankException );
-                
-                $field.find('.exceptionDate').val(key);
-                $field.find('.txtExceptionDate').text(v);
-                if ($J.inArray(key, selectedDates) != -1) {
-                    $field.find('.exceptionDate').attr("checked", "checked");
-                }
-
-                $J( ".exceptionDateContainer ul.exceptionDateHolder" ).append($field);
-            });
-        } else {
-            $J( ".exceptionDateContainer").html("No Dates found");
-        }
+        return exDates;
         
     }
     
