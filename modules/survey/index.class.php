@@ -21,21 +21,12 @@ class survey {
     var $_objTpl;
 
     /**
-     * Constructor
-     */
-    function survey($pageContent) {
-        $this->__construct($pageContent);
-    }
-
-    /**
      * PHP5 constructor
      *
      * @global object $objTemplate
      * @global array $_ARRAYLANG
      */
     function __construct($pageContent) {
-        global $objDatabase;
-        
         $this->_objTpl = new \Cx\Core\Html\Sigma('.');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
@@ -253,8 +244,6 @@ class survey {
         global $_ARRAYLANG;
         $javascript = <<<END
         <script language="JavaScript" src="cadmin/javascript/set_checkboxes.js" type="text/javascript"></script>
-        <script language="JavaScript" src="cadmin/javascript/wz_tooltip/jquery.js" type="text/javascript"></script>
-        <script language="JavaScript" src="cadmin/javascript/wz_tooltip/main.js" type="text/javascript"></script>
 END;
         return $javascript;
 

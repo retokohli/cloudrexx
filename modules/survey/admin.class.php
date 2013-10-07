@@ -45,13 +45,6 @@ class survey {
     var $_strOkMessage = '';
 
     /**
-     * Constructor
-     */
-    function survey() {
-        $this->__construct();
-    }
-
-    /**
      * PHP5 constructor
      *
      * @global object $objTemplate
@@ -2079,17 +2072,6 @@ END;
         $CSRF_PARAM = CSRF::param();
 
         $javascript = <<<END
-         <script language="JavaScript" src="javascript/wz_tooltip/main.js" type="text/javascript"></script>
-        <style>
-       
-        #tooltip{
-	position:absolute;
-	border:1px solid #333;
-	background:#f7f5d1;
-	padding:2px 5px;
-	color:#333;
-	}
-        </style>         
         <script language="JavaScript" type="text/javascript">
        function IsNumeric(strString){
         //  check for valid numeric strings	
@@ -2452,17 +2434,6 @@ END;
         $CSRF_PARAM = CSRF::param();
 
         $javascript = <<<END
-        <script language="JavaScript" src="javascript/wz_tooltip/main.js" type="text/javascript"></script>
-        <style>
-       
-        #tooltip{
-	position:absolute;
-	border:1px solid #333;
-	background:#f7f5d1;
-	padding:2px 5px;
-	color:#333;
-	}
-        </style>
         <script language="JavaScript" type="text/javascript">
        
         function trim(sString){
@@ -2755,20 +2726,13 @@ END;
     function getCreateAddressJavascript() {
         global $_CORELANG, $_ARRAYLANG, $objDatabase;
 
+        JS::activate('jquery');
+
         $javascript = <<<END
-         <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.3.0/jquery.min.js"></script>
-         <script language="JavaScript" src="javascript/wz_tooltip/main.js" type="text/javascript"></script>
         <style>
         #colchoice {
          display:none;
         }
-        #tooltip{
-	position:absolute;
-	border:1px solid #333;
-	background:#f7f5d1;
-	padding:2px 5px;
-	color:#333;
-	}
         </style>
         <script language="JavaScript" type="text/javascript">
         $(document).ready(function() {
