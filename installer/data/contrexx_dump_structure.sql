@@ -3814,6 +3814,122 @@ CREATE TABLE `contrexx_module_shop_zones` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_survey_addtionalfields` (
+  `id` int(10) NOT NULL auto_increment,
+  `survey_id` varchar(10) NOT NULL,
+  `salutation` varchar(400) NOT NULL,
+  `nickname` varchar(400) NOT NULL,
+  `forename` varchar(400) NOT NULL,
+  `surname` varchar(400) NOT NULL,
+  `agegroup` varchar(400) NOT NULL,
+  `phone` varchar(400) NOT NULL,
+  `street` varchar(400) NOT NULL,
+  `zip` varchar(400) NOT NULL,
+  `email` varchar(400) NOT NULL,
+  `city` varchar(400) NOT NULL,
+  `added_date` timestamp NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_survey_columnChoices` (
+  `id` int(10) NOT NULL auto_increment,
+  `question_id` int(10) NOT NULL,
+  `choice` varchar(400) NOT NULL,
+  `votes` int(10) NOT NULL default '0',
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_survey_email` (
+  `id` int(10) NOT NULL auto_increment,
+  `survey_id` int(10) NOT NULL,
+  `email` varchar(400) NOT NULL,
+  `voted` int(11) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_survey_poll_result` (
+  `id` int(10) NOT NULL auto_increment,
+  `survey_id` int(10) NOT NULL,
+  `question_id` int(10) NOT NULL,
+  `user_id` int(10) NOT NULL,
+  `comment` text NOT NULL,
+  `answers` text NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_survey_settings` (
+  `id` int(10) NOT NULL auto_increment,
+  `salutation` text NOT NULL,
+  `agegroup` text NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM ;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_survey_surveyAnswers` (
+  `id` int(10) NOT NULL auto_increment,
+  `question_id` int(10) NOT NULL,
+  `answer` varchar(400) NOT NULL,
+  `votes` text NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_survey_surveyQuestions` (
+  `id` int(10) NOT NULL auto_increment,
+  `survey_id` int(10) NOT NULL,
+  `created` timestamp NOT NULL,
+  `isActive` int(2) NOT NULL default '1',
+  `isCommentable` int(2) NOT NULL default '0',
+  `QuestionType` int(10) NOT NULL,
+  `Question` varchar(1000) NOT NULL,
+  `pos` int(10) NOT NULL default '0',
+  `votes` int(10) NOT NULL default '0',
+  `skipped` int(10) NOT NULL default '0',
+  `column_choice` varchar(400) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_survey_surveygroup` (
+  `id` int(10) NOT NULL auto_increment,
+  `title` varchar(400) NOT NULL,
+  `UserRestriction` varchar(100) NOT NULL,
+  `description` text NOT NULL,
+  `isActive` int(2) NOT NULL default '1',
+  `isHomeBox` int(2) NOT NULL default '0',
+  `created` timestamp NOT NULL,
+  `updated` timestamp NOT NULL default '0000-00-00 00:00:00',
+  `votes` int(10) NOT NULL default '0',
+  `additional_salutation` tinyint(1) NOT NULL,
+  `additional_nickname` tinyint(1) NOT NULL,
+  `additional_forename` tinyint(1) NOT NULL,
+  `additional_surname` tinyint(1) NOT NULL,
+  `additional_agegroup` tinyint(1) NOT NULL,
+  `additional_phone` tinyint(1) NOT NULL,
+  `additional_street` tinyint(1) NOT NULL,
+  `additional_zip` tinyint(1) NOT NULL,
+  `additional_email` tinyint(1) NOT NULL,
+  `additional_city` tinyint(1) NOT NULL,
+  `textAfterButton` text NOT NULL,
+  `text1` text NOT NULL,
+  `text2` text NOT NULL,
+  `thanksMSG` text NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_u2u_address_list` (
   `id` int(11) NOT NULL auto_increment,
   `user_id` int(11) NOT NULL default '0',
