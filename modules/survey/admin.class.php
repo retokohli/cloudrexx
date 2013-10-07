@@ -60,7 +60,7 @@ class survey {
     function __construct() {
         global $objTemplate, $_ARRAYLANG, $objDatabase;
 
-        $this->_objTpl = &new HTML_Template_Sigma(ASCMS_MODULE_PATH.'/survey/template');
+        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/survey/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $objTemplate->setVariable("CONTENT_NAVIGATION",
@@ -257,11 +257,9 @@ class survey {
     }
 
     function copyEditSurvey() {
-        global $_CORELANG, $_ARRAYLANG,$wysiwygEditor, $objDatabase;
+        global $_CORELANG, $_ARRAYLANG, $objDatabase;
         $this->_pageTitle = $_ARRAYLANG['TXT_CREATE_SURVEY'];
         $this->_objTpl->loadTemplateFile('module_add_surveyone.html');
-        $wysiwygEditor = "FCKeditor";
-        $FCKeditorBasePath = "/editor/fckeditor/";
         
         $id = contrexx_input2raw($_REQUEST['id']);
         // Parsing javascript function to the place holder.
@@ -434,11 +432,11 @@ class survey {
             $text2 = contrexx_remove_script_tags($objResult->fields['text2']);
             $thanksMSG = contrexx_remove_script_tags($objResult->fields['thanksMSG']);
 
-            $strMessageInputHTML = get_wysiwyg_editor('Description',$description,'');
-            $strMessageText1 = get_wysiwyg_editor('text1',$text1,'');
-            $strMessageText2 = get_wysiwyg_editor('text2',$text2,'');
-            $strMessageAftButton = get_wysiwyg_editor('textAfterButton',$textAfterButton,'');
-            $strMessageThanksMSG = get_wysiwyg_editor('thanksMSG',$thanksMSG,'');
+            $strMessageInputHTML = new \Cx\Core\Wysiwyg\Wysiwyg('Description', contrexx_raw2xhtml($description), 'full');
+            $strMessageText1     = new \Cx\Core\Wysiwyg\Wysiwyg('text1', contrexx_raw2xhtml($text1), 'full');
+            $strMessageText2     = new \Cx\Core\Wysiwyg\Wysiwyg('text2', contrexx_raw2xhtml($text2), 'full');
+            $strMessageAftButton = new \Cx\Core\Wysiwyg\Wysiwyg('textAfterButton', contrexx_raw2xhtml($textAfterButton), 'full');
+            $strMessageThanksMSG = new \Cx\Core\Wysiwyg\Wysiwyg('thanksMSG', contrexx_raw2xhtml($thanksMSG), 'full');
 
             $this->_objTpl->setVariable(array(
                 'DB_SURVEY_DESC'                        => $strMessageInputHTML,
@@ -462,12 +460,10 @@ class survey {
     }
     
     function EditSurvey() {
-        global $_CORELANG, $_ARRAYLANG,$wysiwygEditor, $objDatabase;
+        global $_CORELANG, $_ARRAYLANG, $objDatabase;
 
         $this->_pageTitle = $_ARRAYLANG['TXT_EDIT_SURVEY_TXT'];
         $this->_objTpl->loadTemplateFile('module_add_surveyone.html');
-        $wysiwygEditor = "FCKeditor";
-        $FCKeditorBasePath = "/editor/fckeditor/";
         $CSRF_PARAM = CSRF::param();
 
         $id = isset($_REQUEST['id']) ? contrexx_input2raw($_REQUEST['id']) : 0;
@@ -588,11 +584,11 @@ class survey {
             $text2              = contrexx_remove_script_tags($objResult->fields['text2']);
             $thanksMSG          = contrexx_remove_script_tags($objResult->fields['thanksMSG']);
 
-            $strMessageInputHTML = get_wysiwyg_editor('Description',$description,'');
-            $strMessageText1     = get_wysiwyg_editor('text1',$text1,'');
-            $strMessageText2     = get_wysiwyg_editor('text2',$text2,'');
-            $strMessageAftButton = get_wysiwyg_editor('textAfterButton',$textAfterButton,'');
-            $strMessageThanksMSG = get_wysiwyg_editor('thanksMSG',$thanksMSG,'');
+            $strMessageInputHTML = new \Cx\Core\Wysiwyg\Wysiwyg('Description', contrexx_raw2xhtml($description), 'full');
+            $strMessageText1     = new \Cx\Core\Wysiwyg\Wysiwyg('text1', contrexx_raw2xhtml($text1), 'full');
+            $strMessageText2     = new \Cx\Core\Wysiwyg\Wysiwyg('text2', contrexx_raw2xhtml($text2), 'full');
+            $strMessageAftButton = new \Cx\Core\Wysiwyg\Wysiwyg('textAfterButton', contrexx_raw2xhtml($textAfterButton), 'full');
+            $strMessageThanksMSG = new \Cx\Core\Wysiwyg\Wysiwyg('thanksMSG', contrexx_raw2xhtml($thanksMSG), 'full');
 
             $this->_objTpl->setVariable(array(
                 'DB_SURVEY_DESC'                    => $strMessageInputHTML,
@@ -1713,11 +1709,9 @@ class survey {
 
     // Function for adding the survey
     function AddSurvey() {
-        global $_CORELANG, $_ARRAYLANG,$wysiwygEditor, $objDatabase;
+        global $_CORELANG, $_ARRAYLANG, $objDatabase;
         $this->_pageTitle = $_ARRAYLANG['TXT_SURVEY_ADD_TXT'];
         $this->_objTpl->loadTemplateFile('module_add_surveyone.html');
-        $wysiwygEditor = "FCKeditor";
-        $FCKeditorBasePath = "/editor/fckeditor/";
 
         $homeBoxCheck = $objDatabase->Execute('SELECT 1 FROM `'.DBPREFIX.'module_survey_surveygroup` WHERE isHomeBox="1"');
         if(!$homeBoxCheck->EOF) {
@@ -1726,11 +1720,11 @@ class survey {
             $hiddenField = "<input type='hidden' name='hidfield' id='hidfield' value=''>";
         }
         
-        $strMessageInputHTML = get_wysiwyg_editor('Description',"",'');
-        $strMessageText1 = get_wysiwyg_editor('text1',"",'');
-        $strMessageText2 = get_wysiwyg_editor('text2',"",'');
-        $strMessageAftButton = get_wysiwyg_editor('textAfterButton',"",'');
-        $strMessageThanksMSG = get_wysiwyg_editor('thanksMSG',"",'');
+        $strMessageInputHTML = new \Cx\Core\Wysiwyg\Wysiwyg('Description', '', 'full');
+        $strMessageText1     = new \Cx\Core\Wysiwyg\Wysiwyg('text1', '', 'full');
+        $strMessageText2     = new \Cx\Core\Wysiwyg\Wysiwyg('text2', '', 'full');
+        $strMessageAftButton = new \Cx\Core\Wysiwyg\Wysiwyg('textAfterButton', '', 'full');
+        $strMessageThanksMSG = new \Cx\Core\Wysiwyg\Wysiwyg('thanksMSG', '', 'full');
 
         // Parsing javascript function to the place holder.
         $this->_objTpl->setVariable(array(

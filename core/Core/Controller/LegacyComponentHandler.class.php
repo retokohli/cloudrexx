@@ -1498,6 +1498,16 @@ class LegacyComponentHandler {
                         \Env::get('cx')->getPage()->setContent($objFileshare->getPage());
                     },
                     
+                    'survey' => function() {
+                        global $cl, $_CORELANG;
+                        
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/survey/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objSurvey = new \survey(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($objSurvey->getPage());
+                    },
+
                     'home' => function() {
                     },
                 ),
@@ -2070,7 +2080,7 @@ class LegacyComponentHandler {
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/survey/admin.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $subMenuTitle = $_CORELANG['TXT_SURVEY'];
-                        $objSurvey = new \SurveyAdmin();
+                        $objSurvey = new \survey();
                         $objSurvey->getPage();
                     },
                     'calendar' => function() {
