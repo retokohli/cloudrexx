@@ -1291,7 +1291,6 @@ namespace Cx\Core\Core\Controller {
                                 $languageUrl = \Env::get('init')->getUriBy('setLang', $language['id']);
                                 $this->template->setVariable(array(
                                     'LANGUAGE_URL' => $languageUrl,
-                                    'LANGUAGE_FLAG' => 'flag_' . $language['lang'] . '.gif',
                                     'LANGUAGE_NAME' => $language['name'],
                                     'LANGUAGE_CSS' => \Env::get('init')->getBackendLangId() == $language['id'] ? 'active' : '',
                                 ));
