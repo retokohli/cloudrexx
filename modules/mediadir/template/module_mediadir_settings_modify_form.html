@@ -1,6 +1,33 @@
 <!-- START module_mediadir_settings_global.html -->
 <script language="JavaScript" type="text/javascript">
+$J(function(){
+   $J( ".inputfieldContext" ).live('change', function(){
+       resetContextFields();
+   });
+   resetContextFields();
+});
 
+function resetContextFields() {
+    var contexts = ['title', 'address', 'zip', 'city', 'country'];
+    $J(".inputfieldContext").each(function(){
+        if ($J(this).val() != 'none') {            
+            $J(".inputfieldContext option[value="+ $J(this).val() +"]")
+                    .not(":selected")
+                    .attr('disabled', 'disabled');
+            contexts = jQuery.removeFromArray($J(this).val(), contexts);
+        }
+    });
+    
+    $J.each(contexts, function(i, context){
+        $J(".inputfieldContext option[value="+ context +"]").removeAttr('disabled');
+    });
+}
+
+jQuery.removeFromArray = function(value, arr) {
+    return jQuery.grep(arr, function(elem, index) {
+        return elem !== value;
+    });
+};
 function ExpandMinimizeInputfields(toggle, id) {
 
     var pattern = /^inputfieldLanguages/;
@@ -136,7 +163,7 @@ var saveInputfield = function(success_function)
 
 var refreshInputfields = function(formId)
 {
-    jQuery.get('index.php', {cmd : '{MODULE_NAME}', act : 'settings', tpl : 'modify_form', id : formId, ajax : 'refresh'}).success(function(data) { jQuery('#inputfields_list').html(data); }).error(function(){ alert('Something went wrong...') });
+    jQuery.get('index.php', {cmd : '{MODULE_NAME}', act : 'settings', tpl : 'modify_form', id : formId, ajax : 'refresh'}).success(function(data) { jQuery('#inputfields_list').html(data); resetContextFields();}).error(function(){ alert('Something went wrong...') });
 }
 </script>
 
