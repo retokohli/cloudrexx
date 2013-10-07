@@ -127,17 +127,17 @@ a:active {
 
 #metanavigation>ul>li>a {
     height: 21px;
-    padding: 0 0 0 17px;
+    padding: 0 0 0 19px;
     background: url("../images/metanavigation_language.png") no-repeat scroll 0 0 transparent;
 }
 
 #metanavigation>ul ul {
     display: none;
     position: absolute;
-    left: -10px;
+    left: 9px;
     top: 26px;
     z-index: 10;
-    padding: 5px 0 10px;
+    padding: 5px 0 5px;
     background: #0873bb;
 }
 
@@ -146,7 +146,7 @@ a:active {
 }
 
 #metanavigation>ul>li>ul a {
-    padding: 3px 10px 3px 33px;
+    padding: 3px 10px 3px 10px;
 }
 
 #metanavigation a {
