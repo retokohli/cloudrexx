@@ -3881,7 +3881,7 @@ CREATE TABLE `contrexx_module_survey_surveyAnswers` (
   `answer` varchar(400) NOT NULL,
   `votes` text NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM;
+) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -3898,7 +3898,7 @@ CREATE TABLE `contrexx_module_survey_surveyQuestions` (
   `skipped` int(10) NOT NULL default '0',
   `column_choice` varchar(400) NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM;
+) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
@@ -3927,7 +3927,7 @@ CREATE TABLE `contrexx_module_survey_surveygroup` (
   `text2` text NOT NULL,
   `thanksMSG` text NOT NULL,
   PRIMARY KEY  (`id`)
-) ENGINE=MyISAM;
+) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
