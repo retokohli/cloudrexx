@@ -647,6 +647,7 @@ CREATE TABLE `contrexx_module_calendar_event` (
   `confirmed` tinyint(1) NOT NULL default '1',
   `author` varchar(255) NOT NULL,
   `all_day` tinyint(1) NOT NULL default '0',
+  `location_type` tinyint(1) NOT NULL default '1',
   `place` varchar(255) NOT NULL,
   `place_id` int(11) NOT NULL,
   `place_street` varchar(255) default NULL,
