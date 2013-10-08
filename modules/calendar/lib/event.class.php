@@ -1566,5 +1566,54 @@ class CalendarEvent extends CalendarLibrary
         
         return $query;
     }
-    
+
+    function loadPlaceFromMediadir()
+    {
+        $objMediadirEntry = new mediaDirectoryEntry();
+        $objMediadirEntry->getEntries(intval($this->place_mediadir_id)); 
+        //get inputfield object                    
+        $objInputfields = new mediaDirectoryInputfield($objMediadirEntry->arrEntries[$this->place_mediadir_id]['entryFormId'],false,$objMediadirEntry->arrEntries[$this->place_mediadir_id]['entryTranslationStatus']);
+        
+        foreach ($objInputfields->arrInputfields as $arrInputfield) {
+            
+            $intInputfieldType = intval($arrInputfield['type']);
+            if ($intInputfieldType != 16 && $intInputfieldType != 17) {
+                if(!empty($arrInputfield['type'])) {
+                    $strType = $arrInputfield['type_name'];
+                    $strInputfieldClass = "mediaDirectoryInputfield".ucfirst($strType);
+                    try {
+                        $objInputfield = safeNew($strInputfieldClass);
+
+                        if(intval($arrInputfield['type_multi_lang']) == 1) {
+                            $arrInputfieldContent = $objInputfield->getContent($this->place_mediadir_id, $arrInputfield, $objMediadirEntry->arrEntries[$this->place_mediadir_id]['entryTranslationStatus']);
+                        } else {
+                            $arrInputfieldContent = $objInputfield->getContent($this->place_mediadir_id, $arrInputfield, null);
+                        }
+                        
+                        switch ($arrInputfield['context_type']) {
+                            case 'title':
+                                $this->place = end($arrInputfieldContent);
+                                break;
+                            case 'address':
+                                $this->place_street = end($arrInputfieldContent);
+                                break;
+                            case 'zip':                                
+                                $this->place_zip = end($arrInputfieldContent);
+                                break;
+                            case 'city':
+                                $this->place_city = end($arrInputfieldContent);
+                                break;
+                            case 'country':
+                                $this->place_country = end($arrInputfieldContent);
+                                break;
+                        }
+                        
+                    } catch (Exception $error) {
+                        echo "Error: ".$error->getMessage();
+                    }
+                }
+            }
+        }
+        
+    }
 }
