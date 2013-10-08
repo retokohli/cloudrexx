@@ -167,4 +167,17 @@ $J(function(){
             $J(".event-redirect").show();
         }
     });
+    $J( ".eventLocationType" ).click(function(){
+        showOrHidePlaceFields($J(this).val());
+    });
+    showOrHidePlaceFields($J( ".eventLocationType:checked" ).val());
 });
+function showOrHidePlaceFields(inputValue) {     
+    if (inputValue == '1') {
+        $J( "div.event_place_manual" ).css("display", "block");
+        $J( "div.event_place_mediadir" ).css("display", "none");
+    } else {
+        $J( "div.event_place_manual" ).css("display", "none");
+        $J( "div.event_place_mediadir" ).css("display", "block");
+    }
+}

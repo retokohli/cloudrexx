@@ -198,6 +198,16 @@ class CalendarEvent extends CalendarLibrary
     public $description;
     
     /**
+     * Event location type 
+     * 1 => Manual Entry
+     * 2 => Refer to mediadir module
+     * 
+     * @access public
+     * @var integer
+     */
+    public $locationType;
+    
+    /**
      * Event place
      * 
      * @access public
@@ -516,6 +526,7 @@ class CalendarEvent extends CalendarLibrary
                          event.series_pattern_begin AS series_pattern_begin,
                          event.series_pattern_exceptions AS series_pattern_exceptions,
                          event.all_day,
+                         event.location_type AS location_type,
                          event.place AS place, 
                          event.place_street AS place_street, 
                          event.place_zip AS place_zip, 
@@ -593,6 +604,7 @@ class CalendarEvent extends CalendarLibrary
                 $this->priority = intval($objResult->fields['priority']);
                 $this->description = $objResult->fields['description'];
                 
+                $this->locationType = (int) $objResult->fields['location_type'];
                 $this->place_mediadir_id = (int) $objResult->fields['place_mediadir_id'];
                 $this->place        = htmlentities(stripslashes($objResult->fields['place']), ENT_QUOTES, CONTREXX_CHARSET);
                 $this->place_street = htmlentities(stripslashes($objResult->fields['place_street']), ENT_QUOTES, CONTREXX_CHARSET);
@@ -838,6 +850,7 @@ class CalendarEvent extends CalendarLibrary
         $ticket_sales              = isset($data['ticketSales']) ? intval($data['ticketSales']) : 0;
         $num_seating               = isset($data['numSeating']) ? json_encode(explode(',', $data['numSeating'])) : '';
         $related_hosts             = isset($data['selectedHosts']) ? $data['selectedHosts'] : '';        
+        $locationType              = isset($data['eventLocationType']) ? (int) $data['eventLocationType'] : 1;
         $place                     = isset($data['place']) ? contrexx_input2db(contrexx_strip_tags($data['place'])) : '';
         $street                    = isset($data['street']) ? contrexx_input2db(contrexx_strip_tags($data['street'])) : '';
         $zip                       = isset($data['zip']) ? contrexx_input2db(contrexx_strip_tags($data['zip'])) : '';
@@ -1065,6 +1078,7 @@ class CalendarEvent extends CalendarLibrary
             'series_pattern_end'            => $seriesPatternEnd,
             'series_pattern_exceptions'     => $seriesExeptions,
             'all_day'                       => $allDay,
+            'location_type'                 => $locationType,
             'place'                         => $place,
             'place_id'                      => 0,
             'place_street'                  => $street,
@@ -1567,8 +1581,17 @@ class CalendarEvent extends CalendarLibrary
         return $query;
     }
 
+    /**
+     * Loads the location fields from the selected media directory entry
+     * 
+     * 
+     */
     function loadPlaceFromMediadir()
     {
+        if (empty($this->place_mediadir_id)) {
+            return ;
+        }
+        
         $objMediadirEntry = new mediaDirectoryEntry();
         $objMediadirEntry->getEntries(intval($this->place_mediadir_id)); 
         //get inputfield object                    

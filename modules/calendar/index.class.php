@@ -529,6 +529,8 @@ UPLOADER;
             'TXT_'.$this->moduleLangVar.'_EVENT_TYPE_REDIRECT'      => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_REDIRECT'],
             'TXT_'.$this->moduleLangVar.'_EVENT_DESCRIPTION'        => $_ARRAYLANG['TXT_CALENDAR_EVENT_DESCRIPTION'],
             'TXT_'.$this->moduleLangVar.'_EVENT_REDIRECT'           => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_REDIRECT'],
+            'TXT_'.$this->moduleLangVar.'_PLACE_DATA_DEFAULT'       => $_ARRAYLANG['TXT_CALENDAR_PLACE_DATA_DEFAULT'],
+            'TXT_'.$this->moduleLangVar.'_PLACE_DATA_FROM_MEDIADIR' => $_ARRAYLANG['TXT_CALENDAR_PLACE_DATA_FROM_MEDIADIR'],
 
             $this->moduleLangVar.'_EVENT_TYPE_EVENT'                => $eventId != 0 ? ($objEvent->type == 0 ? 'selected="selected"' : '') : '',      
             $this->moduleLangVar.'_EVENT_TYPE_REDIRECT'             => $eventId != 0 ? ($objEvent->type == 1 ? 'selected="selected"' : '') : '',
@@ -552,7 +554,9 @@ UPLOADER;
             $this->moduleLangVar.'_EVENT_HOST_CITY'                 => $objEvent->org_city,
             $this->moduleLangVar.'_EVENT_HOST_LINK'                 => $objEvent->org_link,
             $this->moduleLangVar.'_EVENT_HOST_EMAIL'                => $objEvent->org_email,
-                
+            $this->moduleLangVar.'_EVENT_LOCATION_TYPE_MANUAL'      => $eventId != 0 ? ($objEvent->locationType == 1 ? "checked='checked'" : '') : "checked='checked'",
+            $this->moduleLangVar.'_EVENT_LOCATION_TYPE_MEDIADIR'    => $eventId != 0 ? ($objEvent->locationType == 2 ? "checked='checked'" : '') : "",
+            
             $this->moduleLangVar.'_EVENT_ID'                        => $eventId,
             $this->moduleLangVar.'_EVENT_ALL_DAY'                   => $eventId != 0 && $objEvent->all_day ? 'checked="checked"' : '',
             $this->moduleLangVar.'_HIDE_ON_SINGLE_LANG'             => count($this->arrFrontendLanguages) == 1 ? "display: none;" : "",
@@ -606,9 +610,9 @@ UPLOADER;
                                      
         }
         //parse placeSelect
-        if ($this->arrSettings['placeData'] != 0) {
+        if ((int) $this->arrSettings['placeData'] > 1) {
             $objMediadirEntries = new mediaDirectoryEntry();
-            $objMediadirEntries->getEntries(null,null,null,null,null,null,true,0,'n',null,null,intval($this->arrSettings['placeData']));
+            $objMediadirEntries->getEntries(null,null,null,null,null,null,true,0,'n',null,null,intval($this->arrSettings['placeDataForm']));
 
             $placeOptions = '<option value="">'.$_ARRAYLANG['TXT_CALENDAR_PLEASE_CHOOSE'].'</option>';
 
@@ -621,11 +625,17 @@ UPLOADER;
                 $this->moduleLangVar.'_EVENT_PLACE_OPTIONS'    => $placeOptions,
             ));
 
-            $this->_objTpl->hideBlock('eventPlaceInput');
-            $this->_objTpl->parse('eventPlaceSelect');
+            if ((int) $this->arrSettings['placeData'] == 2) {
+                $this->_objTpl->hideBlock('eventPlaceInput');
+                $this->_objTpl->hideBlock('eventPlaceTypeRadio');
+            } else {
+                $this->_objTpl->touchBlock('eventPlaceInput');
+                $this->_objTpl->touchBlock('eventPlaceTypeRadio');
+            }
         } else {
             $this->_objTpl->touchBlock('eventPlaceInput');
-            $this->_objTpl->hideBlock('eventPlaceSelect');
+            $this->_objTpl->hideBlock('eventPlaceSelect');  
+            $this->_objTpl->hideBlock('eventPlaceTypeRadio');
         }
 
     }

@@ -12,7 +12,20 @@ $J(function(){
        showOrHideFrSubmission($J(this).val());
    });
    showOrHideFrSubmission($addEventFrontend.val());
+   
+   $locationInfo = $J("input[name='settings[placeData]']");
+   $locationInfo.click(function(){
+       showOrHideMediaDirForm($J(this).val());
+   });
+   showOrHideMediaDirForm($J("input[name='settings[placeData]']:checked").val());
 });
+function showOrHideMediaDirForm(inputVal) {
+   if (parseInt(inputVal) > 1) {
+        $J("select[name='settings[placeDataForm]']").closest('tr').show();        
+    } else {
+        $J("select[name='settings[placeDataForm]']").closest('tr').hide();        
+    } 
+}
 function showOrHideFrSubmission(inputVal) {
     if (parseInt(inputVal)) {
         $J("input[name='settings[confirmFrontendEvents]']").closest('tr').show();
