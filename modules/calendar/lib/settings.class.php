@@ -803,8 +803,7 @@ class CalendarSettings extends CalendarLibrary
                             $objMediadirForms->getForms();      
                             $objMediadirForms->listForms($objTpl,4);
 
-                            $output = '<select style="width: 252px;" name="settings['.$name.']" >';  
-                            $output .= '<option value="0">'.$_ARRAYLANG['TXT_CALENDAR_PLACE_DATA_DEFAULT'].'</option>';  
+                            $output = '<select style="width: 252px;" name="settings['.$name.']" >';                              
                             $output .= $objMediadirForms->listForms($objTpl,4,intval($value));  
                             $output .= '</select>';
                             break;

@@ -676,7 +676,7 @@ class CalendarEventManager extends CalendarLibrary
                 }
             }
             
-            if(empty($this->arrSettings['placeData']) && $objEvent->place == '' && $objEvent->place_street == '' && $objEvent->place_zip == '' && $objEvent->place_city == '' && $objEvent->place_country == '') {
+            if (($this->arrSettings['placeData'] == 1) && $objEvent->place == '' && $objEvent->place_street == '' && $objEvent->place_zip == '' && $objEvent->place_city == '' && $objEvent->place_country == '') {
                 $objTpl->hideBlock('calendarEventAddress');  
             } else {
                 /* if($objEvent->map == 1) { 
@@ -710,7 +710,7 @@ class CalendarEventManager extends CalendarLibrary
                 
                 $map_thumb_name = file_exists(ASCMS_PATH.$objEvent->place_map.".thumb") ? $objEvent->place_map.".thumb" : $objEvent->place_map;
 
-                if(!empty($this->arrSettings['placeData'])) {
+                if ($this->arrSettings['placeData'] > 1 && $objEvent->locationType == 2) {
                     $objEvent->loadPlaceFromMediadir();                                        
                 }
                 
@@ -828,7 +828,7 @@ class CalendarEventManager extends CalendarLibrary
                     $editLink = CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'&amp;cmd=edit&id='.$objEvent->id;
                 }
                 $picThumb = file_exists(ASCMS_PATH."{$objEvent->pic}.thumb") ? "{$objEvent->pic}.thumb" : ($objEvent->pic != '' ? $objEvent->pic : '');
-                if(!empty($this->arrSettings['placeData'])) {
+                if ($this->arrSettings['placeData'] > 1 && $objEvent->locationType == 2) {
                     $objEvent->loadPlaceFromMediadir();
                 }
                 

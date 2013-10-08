@@ -151,6 +151,10 @@
                 $J(".invitationEmailTemplateContainer").hide();
             }
         });
+        $J( ".eventLocationType" ).click(function(){
+            showOrHidePlaceFields($J(this).val());
+        });
+        showOrHidePlaceFields($J( ".eventLocationType:checked" ).val());
     });
 
     cx.ready(function() {
@@ -171,10 +175,10 @@
         jQuery('input[name=endDate]').datetimepicker(options);
         modifyEvent._handleAllDayEvent($J(".all_day"));
         refreshDatePickers();
-        
+
         blankException = $J( "#exceptionDateTemplate" ).html();
         //create the dialog and save a reference
-        var exceptionDialog = cx.ui.dialog({            
+        var exceptionDialog = cx.ui.dialog({
             width: 520,
             title: '{TXT_CALENDAR_SELECT_EXCEPTION_DATE_INFO}',
             content: $J( ".exceptionDateContainer" ),
@@ -188,7 +192,7 @@
                     $J( ".exceptionDateContainer .exceptionDateHolder input:checked" ).each(function(){
                         checkedDate    = $J(this).val();
                         txtCheckedDate = $J(this).data( 'txtSeriesDate' );
-                        addExeptionList(checkedDate, txtCheckedDate);                        
+                        addExeptionList(checkedDate, txtCheckedDate);
                     });
                     $J( this ).dialog( "close" );
                 }
@@ -205,7 +209,7 @@
             });
             exceptionDates = generateExecptionDates();
             appendTheExecptionDate(exceptionDates, selectedDates, $J( ".exceptionDateContainer" ));
-            
+
             // initialize paging
             // count entries inside the hidden content
             var num_entries = $J( '.exceptionDateHolder li' ).length;
@@ -214,19 +218,19 @@
                 items_per_page:10,
                 link_to: "javascript:void(0);"
             });
-            
+
             exceptionDialog.open();
-        });   
+        });
         $J( ".delete_exception" ).live("click", function() {
            $J( this ).closest(".seriesList").fadeOut("slow").remove(); 
         });
-        
+
         // Format the series exceptions on page load
         selectedDates = [];
         $J( "#seriesExeptionsList input[type='hidden']" ).each(function(){
             selectedDates.push($J(this).val());
         });
-        
+
         $J( "#seriesExeptionsList" ).html( "" );
         exceptionDates = generateExecptionDates();
         $J.each(exceptionDates, function(key, v) {
@@ -236,6 +240,15 @@
         });
     });
 
+    function showOrHidePlaceFields(inputValue) {        
+        if (inputValue == '1') {
+            $J( "tr.event_place_manual" ).css("display", "table-row");
+            $J( "tr.event_place_mediadir" ).css("display", "none");
+        } else {
+            $J( "tr.event_place_manual" ).css("display", "none");
+            $J( "tr.event_place_mediadir" ).css("display", "table-row");
+        }
+    }
     function addExeptionList(exeptionDate, txtCheckedDate) {
         $J( "#seriesExeptionsList" ).append('<div class="seriesList">\n\
                                                 <span>'+ txtCheckedDate +'</span>\n\
@@ -243,29 +256,29 @@
                                                 &nbsp;<a href="javascript:void(0);" class="delete_exception" title="{TXT_CALENDAR_DELETE}"><img style="vertical-align: middle;" src="images/icons/delete.gif" alt="{TXT_CALENDAR_DELETE}" width="17" border="0" height="17"></a>\n\
                                              </div>');
     }
-    
+
     function appendTheExecptionDate(exDates, selectedDates, exDateContainer) {
         if (!$J.isEmptyObject( exDates )) {
             var exceptionDateHolder = $J("<ul />", {class: 'exceptionDateHolder'});
             $J.each(exDates, function(key, v) {
                 $field  = $J( blankException );
-                
+
                 $field.find('.exceptionDate').val(key);
                 $field.find('.txtExceptionDate').text(v);
                 if ($J.inArray(key, selectedDates) != -1) {
                     $field.find('.exceptionDate').attr("checked", "checked");
                 }
                 $field.find( '.exceptionDate' ).data( 'txtSeriesDate', v );
-                
+
                 exceptionDateHolder.append( $field );
             });
             exDateContainer.html( exceptionDateHolder );
         }
     }
-    
+
     function generateExecptionDates() {
         var exDates = {};
-                
+
         $J.ajax({
            url      : "index.php?cmd=jsondata&object=calendar&act=getExeceptionDates&recursive=true",
            type     : "post",
@@ -276,21 +289,21 @@
                cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + jQuery('#loading').html() + "</div>");
            },
            complete: function() {
-                cx.tools.StatusMessage.removeAllDialogs();
+               cx.tools.StatusMessage.removeAllDialogs();
            },
            success  : function(response) {
-               if (response.status == 'success') {
-                   exDates = response.data;
-               } else {
-                   cx.tools.StatusMessage.showMessage(response.message, "error", 1000);
-               }
-           }
+                if (response.status == 'success') {
+                    exDates = response.data;
+                } else {
+                    cx.tools.StatusMessage.showMessage(response.message, "error", 1000);
+                }
+            }
         });
-        
+
         return exDates;
-        
+
     }
-    
+
     function paginationCallback( page_index ) {
         $J( '.exceptionDateHolder li' ).hide();
         var limit = 10;
@@ -299,7 +312,7 @@
            $J( '.exceptionDateHolder li:eq('+ page +')').show();            
         }
     }
-    
+
     function SetUrl(url, width, height, alt) {
         switch (fileType) {
             case 'image':
@@ -733,127 +746,120 @@
         </div>            
         <!-- END eventDescTab -->                                              
     </div>
-    <div id="location" class="eventTab" style="display:none;">
+    <div id="location" class="eventTab" style="display:none;">                     
         <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
             <tr>
-                <th><b>{TXT_CALENDAR_EVENT_LOCATION}</b></th>
+                <th colspan="2"><strong>{TXT_CALENDAR_EVENT_LOCATION}</strong></th>
             </tr>
-        </table>        
-        <div style="display: {CALENDAR_EVENT_TAB_DISPLAY};" >
+            <tr class="row3">
+                <td>
+                    {TXT_CALENDAR_EVENT_PLACE}                    
+                </td>
+                <td>
+                    <!-- BEGIN eventPlaceTypeRadio -->
+                    <label><input type="radio" name="eventLocationType" class="eventLocationType" value="1" {CALENDAR_EVENT_LOCATION_TYPE_MANUAL} /> {TXT_CALENDAR_PLACE_DATA_DEFAULT}</label>
+                    <label><input type="radio" name="eventLocationType" class="eventLocationType" value="2" {CALENDAR_EVENT_LOCATION_TYPE_MEDIADIR} /> {TXT_CALENDAR_PLACE_DATA_FROM_MEDIADIR}</label>
+                    <!-- END eventPlaceTypeRadio -->
+                </td>
+            </tr>
             <!-- BEGIN eventPlaceSelect -->
-            <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
-                <tr class="row3">
-                    <td colspan="2">{TXT_CALENDAR_EVENT_PLACE}</td>
-                </tr>
-                <tr class="row2">
-                    <td width="180" valign="top">{TXT_CALENDAR_EVENT_PLACE}</td>
-                    <td>                                                
-                        <select name="placeMediadir" style="width: 258px;">
-                            {CALENDAR_EVENT_PLACE_OPTIONS}
-                        </select>                        
-                    </td>
-                </tr>
-            </table>            
-            <!-- END eventPlaceSelect -->
-            <!-- BEGIN eventPlaceInput -->
-            <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
-                <tr class="row3">
-                    <td colspan="2">{TXT_CALENDAR_EVENT_PLACE}</td>
-                </tr>
-                <tr class="row2">
-                    <td width="180" valign="top">{TXT_CALENDAR_EVENT_PLACE}</td>
-                    <td>                        
-                        <input name="place" type="text" maxlength="255" value="{CALENDAR_EVENT_PLACE}" style="width: 250px" />                                                
-                    </td>
-                </tr>
-            </table>
-            <div>
-                <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
-                    <tr class="row1">
-                        <td width="180"  valign="top">{TXT_CALENDAR_EVENT_STREET}</td>
-                        <td>
-                            <input name="street" type="text" maxlength="255" value="{CALENDAR_EVENT_STREET}" style="width: 250px" />
-                        </td>
-                    </tr>
-                    <tr class="row2">
-                        <td valign="top">{TXT_CALENDAR_EVENT_ZIP}</td>
-                        <td>
-                            <input name="zip" type="text" maxlength="10" value="{CALENDAR_EVENT_ZIP}" style="width: 250px" />
-                        </td>
-                    </tr>
-                    <tr class="row1">
-                        <td valign="top">{TXT_CALENDAR_EVENT_CITY}</td>
-                        <td>
-                            <input name="city" type="text" maxlength="255" value="{CALENDAR_EVENT_CITY}" style="width: 250px" />
-                        </td>
-                    </tr>
-                    <tr class="row2">
-                        <td valign="top">{TXT_CALENDAR_EVENT_COUNTRY}</td>
-                        <td>
-                            <input name="country" type="text" maxlength="255" value="{CALENDAR_EVENT_COUNTRY}" style="width: 250px" />
-                        </td>
-                    </tr>
-                    <tr class="row1">
-                        <td valign="top">{TXT_CALENDAR_EVENT_LINK}</td>
-                        <td>
-                            <input name="placeLink" type="text" maxlength="255" value="{CALENDAR_EVENT_PLACE_LINK}" style="width: 250px" />
-                        </td>
-                    </tr>
-                    <tr class="row2">
-                        <td valign="top">{TXT_CALENDAR_EVENT_MAP}</td>
-                        <td>
-                            <input type="text" maxlength="255" name="placeMap" id="inputPlaceMap" style="width: 250px;" value="{CALENDAR_PLACE_MAP_SOURCE}" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('inputPlaceMap', 'image')" />
-                            <!--<label><input name="map[{CALENDAR_EVENT_LANG_ID}]" value="1" type="checkbox" {CALENDAR_EVENT_MAP}/> {TXT_CALENDAR_EVENT_USE_GOOGLEMAPS}</label>-->
-                        </td>
-                    </tr>
-                </table>
-            </div>
-            <!-- END eventPlaceInput -->
-            <br/>
-            <div>
-                <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
-                    <tr class="row3">
-                        <td colspan="2">{TXT_CALENDAR_EVENT_HOST}</td>                        
-                    </tr>
-                    <tr class="row1">
-                        <td width="180"  valign="top">{TXT_CALENDAR_EVENT_NAME}</td>
-                        <td>
-                            <input name="organizerName" type="text" maxlength="255" value="{CALENDAR_EVENT_HOST}" style="width: 250px" />
-                        </td>
-                    </tr>
-                    <tr class="row2">
-                        <td valign="top">{TXT_CALENDAR_EVENT_STREET}</td>
-                        <td>
-                            <input name="organizerStreet" type="text" maxlength="255" value="{CALENDAR_EVENT_HOST_ADDRESS}" style="width: 250px" />
-                        </td>
-                    </tr>
-                    <tr class="row1">
-                        <td valign="top">{TXT_CALENDAR_EVENT_ZIP}</td>
-                        <td>
-                            <input name="organizerZip" type="text" maxlength="10" value="{CALENDAR_EVENT_HOST_ZIP}" style="width: 250px" />
-                        </td>
-                    </tr>
-                    <tr class="row2">
-                        <td valign="top">{TXT_CALENDAR_EVENT_CITY}</td>
-                        <td>
-                            <input name="organizerCity" type="text" maxlength="255" value="{CALENDAR_EVENT_HOST_CITY}" style="width: 250px" />
-                        </td>
-                    </tr>
-                    <tr class="row1">
-                        <td valign="top">{TXT_CALENDAR_EVENT_LINK}</td>
-                        <td>
-                            <input name="organizerLink" type="text" maxlength="255" value="{CALENDAR_EVENT_HOST_LINK}" style="width: 250px" />
-                        </td>
-                    </tr>
-                    <tr class="row2">
-                        <td valign="top">{TXT_CALENDAR_EVENT_EMAIL}</td>
-                        <td>
-                            <input name="organizerEmail" type="text" maxlength="255" value="{CALENDAR_EVENT_HOST_EMAIL}" style="width: 250px" />
-                        </td>
-                    </tr>
-                </table>
-            </div>
-        </div>        
+            <tr class="row2 event_place_mediadir">
+                <td width="180" valign="top">{TXT_CALENDAR_EVENT_PLACE}</td>
+                <td>                                                
+                    <select name="placeMediadir" style="width: 258px;">
+                        {CALENDAR_EVENT_PLACE_OPTIONS}
+                    </select>
+                </td>
+            </tr>
+            <!-- END eventPlaceSelect -->                        
+            <!-- BEGIN eventPlaceInput -->            
+            <tr class="row2 event_place_manual">
+                <td width="180" valign="top">{TXT_CALENDAR_EVENT_PLACE}</td>
+                <td>                        
+                    <input name="place" type="text" maxlength="255" value="{CALENDAR_EVENT_PLACE}" style="width: 250px" />                                                
+                </td>
+            </tr>            
+            <tr class="row1 event_place_manual">
+                <td width="180"  valign="top">{TXT_CALENDAR_EVENT_STREET}</td>
+                <td>
+                    <input name="street" type="text" maxlength="255" value="{CALENDAR_EVENT_STREET}" style="width: 250px" />
+                </td>
+            </tr>
+            <tr class="row2 event_place_manual">
+                <td valign="top">{TXT_CALENDAR_EVENT_ZIP}</td>
+                <td>
+                    <input name="zip" type="text" maxlength="10" value="{CALENDAR_EVENT_ZIP}" style="width: 250px" />
+                </td>
+            </tr>
+            <tr class="row1 event_place_manual">
+                <td valign="top">{TXT_CALENDAR_EVENT_CITY}</td>
+                <td>
+                    <input name="city" type="text" maxlength="255" value="{CALENDAR_EVENT_CITY}" style="width: 250px" />
+                </td>
+            </tr>
+            <tr class="row2 event_place_manual">
+                <td valign="top">{TXT_CALENDAR_EVENT_COUNTRY}</td>
+                <td>
+                    <input name="country" type="text" maxlength="255" value="{CALENDAR_EVENT_COUNTRY}" style="width: 250px" />
+                </td>
+            </tr>
+            <tr class="row1 event_place_manual">
+                <td valign="top">{TXT_CALENDAR_EVENT_LINK}</td>
+                <td>
+                    <input name="placeLink" type="text" maxlength="255" value="{CALENDAR_EVENT_PLACE_LINK}" style="width: 250px" />
+                </td>
+            </tr>
+            <tr class="row2 event_place_manual">
+                <td valign="top">{TXT_CALENDAR_EVENT_MAP}</td>
+                <td>
+                    <input type="text" maxlength="255" name="placeMap" id="inputPlaceMap" style="width: 250px;" value="{CALENDAR_PLACE_MAP_SOURCE}" />&nbsp;<input type="button" value="{TXT_CALENDAR_BROWSE}" onClick="getFileBrowser('inputPlaceMap', 'image')" />
+                    <!--<label><input name="map[{CALENDAR_EVENT_LANG_ID}]" value="1" type="checkbox" {CALENDAR_EVENT_MAP}/> {TXT_CALENDAR_EVENT_USE_GOOGLEMAPS}</label>-->
+                </td>
+            </tr>                    
+        <!-- END eventPlaceInput -->
+        </table>
+        <br/>
+        <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
+            <tr class="row3">
+                <td colspan="2">{TXT_CALENDAR_EVENT_HOST}</td>                        
+            </tr>
+            <tr class="row1">
+                <td width="180"  valign="top">{TXT_CALENDAR_EVENT_NAME}</td>
+                <td>
+                    <input name="organizerName" type="text" maxlength="255" value="{CALENDAR_EVENT_HOST}" style="width: 250px" />
+                </td>
+            </tr>
+            <tr class="row2">
+                <td valign="top">{TXT_CALENDAR_EVENT_STREET}</td>
+                <td>
+                    <input name="organizerStreet" type="text" maxlength="255" value="{CALENDAR_EVENT_HOST_ADDRESS}" style="width: 250px" />
+                </td>
+            </tr>
+            <tr class="row1">
+                <td valign="top">{TXT_CALENDAR_EVENT_ZIP}</td>
+                <td>
+                    <input name="organizerZip" type="text" maxlength="10" value="{CALENDAR_EVENT_HOST_ZIP}" style="width: 250px" />
+                </td>
+            </tr>
+            <tr class="row2">
+                <td valign="top">{TXT_CALENDAR_EVENT_CITY}</td>
+                <td>
+                    <input name="organizerCity" type="text" maxlength="255" value="{CALENDAR_EVENT_HOST_CITY}" style="width: 250px" />
+                </td>
+            </tr>
+            <tr class="row1">
+                <td valign="top">{TXT_CALENDAR_EVENT_LINK}</td>
+                <td>
+                    <input name="organizerLink" type="text" maxlength="255" value="{CALENDAR_EVENT_HOST_LINK}" style="width: 250px" />
+                </td>
+            </tr>
+            <tr class="row2">
+                <td valign="top">{TXT_CALENDAR_EVENT_EMAIL}</td>
+                <td>
+                    <input name="organizerEmail" type="text" maxlength="255" value="{CALENDAR_EVENT_HOST_EMAIL}" style="width: 250px" />
+                </td>
+            </tr>
+        </table>                          
     </div>
     <div id="details" class="eventTab" style="display:none;">
         <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
@@ -1173,16 +1179,16 @@
 
 <div class="exceptionDateContainer" style="display: none;">
     <ul class="exceptionDateHolder" style="min-height: 190px;">
-        
+
     </ul>
     <br/>    
     <div class="paginationHolder"></div>
 </div>
 <script id="exceptionDateTemplate" type="jquery/tmpl">                
     <li>
-        <label>
-            <input class="exceptionDate" type="checkbox" value="" />&nbsp;<span class="txtExceptionDate"></span>
-        </label>
+    <label>
+    <input class="exceptionDate" type="checkbox" value="" />&nbsp;<span class="txtExceptionDate"></span>
+    </label>
     </li>
 </script>
 <script language="JavaScript" type="text/javascript">
