@@ -42,7 +42,7 @@ $_ARRAYLANG['TXT_EMAIL_BASED']="E-Mail Based";
 $_ARRAYLANG['TXT_IS_HOME_BOX']="Is Home Box";
 $_ARRAYLANG['TXT_DESCRIPTION']="Description";
 $_ARRAYLANG['TXT_BEGINNING_SURVEY']="Text am Anfang der Umfrage";
-$_ARRAYLANG['TXT_ADDITIONALINFO_SURVEY']="Text vor den zusätzlichen<br />Teilnehmerinformationen";
+$_ARRAYLANG['TXT_ADDITIONALINFO_SURVEY']="Text vor den zusätzlichen Teilnehmerinformationen";
 $_ARRAYLANG['TXT_BELOW_SUBMIT']="Text unterhalb Absende-Button";
 $_ARRAYLANG['TXT_THANK_MSG']="Text für Dankes-Seite";
 $_ARRAYLANG['TXT_SALUTATION'] = "Anrede";
@@ -145,4 +145,12 @@ $_ARRAYLANG['TXT_SURVEY_SELECT_EMAIL_ERR'] = "Please Select Email Address in Use
 
 $_ARRAYLANG['TXT_SHOW']="Show";
 $_ARRAYLANG['TXT_HIDE']="Hide";
-?>
+
+$_ARRAYLANG['TXT_SURVEY_GENERAL'] = "General";
+$_ARRAYLANG['TXT_SURVEY_START'] = "1. Start";
+$_ARRAYLANG['TXT_SURVEY_QUESTIONS'] = "2. Questions";
+$_ARRAYLANG['TXT_SURVEY_FINISH'] = "3. Finish";
+$_ARRAYLANG['TXT_SURVEY_FEEDBACK'] = "4. Feedback";
+$_ARRAYLANG['TXT_SURVEY_CANCEL'] = "Cancel";
+$_ARRAYLANG['TXT_SURVEY_NEXT'] = "Next";
+$_ARRAYLANG['TXT_SURVEY_SAVE'] = "Save";

@@ -28,6 +28,14 @@ class SurveyLibrary {
 	var $_arrLanguages          = array();
 	var $_arrSurveyTranslations = array();
 	var $_arrSurveyValues       = array();
+        
+        /**
+         * module name
+         * 
+         * @var string
+         */
+        public $moduleName    = 'survey';
+        public $moduleLangVar = 'SURVEY';
 
 	/**
 	 * Constructor
