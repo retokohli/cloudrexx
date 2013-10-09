@@ -11,7 +11,7 @@
  * @access		public
  * @version		1.0.0
  */
-class survey {
+class survey extends SurveyLibrary {
     /**
      * Template object
      *
@@ -84,8 +84,9 @@ class survey {
             case "copyEditSurvey":
                 $this->copyEditSurvey();
                 break;
+            case "modify_survey":                
             case "addSurvey":
-                $this->AddSurvey();
+                $this->_modifySurvey();                
                 break;
             case "settings":
                 $this->Settings();
@@ -3177,6 +3178,66 @@ END;
             echo utf8_decode($CsvData);
             exit;
         }
+    }
+    
+    function _modifySurvey()
+    {
+        global $_ARRAYLANG;
+        
+        $objTpl = $this->_objTpl;
+        $objTpl->loadTemplateFile("module_{$this->moduleName}_modify_survey.html");
+        
+        $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+        
+        $this->_pageTitle = !empty($id) ?  $_ARRAYLANG['TXT_SURVEY_EDIT_TXT'] : $_ARRAYLANG['TXT_CREATE_SURVEY'];
+        
+        $objTpl->setVariable(array(
+            $this->moduleLangVar.'_TITLE_MODIFY'     => !empty($id) ?  $_ARRAYLANG['TXT_SURVEY_EDIT_TXT'] : $_ARRAYLANG['TXT_CREATE_SURVEY'],
+            'TXT_'.$this->moduleLangVar.'_GENERAL'   => $_ARRAYLANG['TXT_SURVEY_GENERAL'],
+            'TXT_'.$this->moduleLangVar.'_START'     => $_ARRAYLANG['TXT_SURVEY_START'],
+            'TXT_'.$this->moduleLangVar.'_QUESTIONS' => $_ARRAYLANG['TXT_SURVEY_QUESTIONS'],
+            'TXT_'.$this->moduleLangVar.'_FINISH'    => $_ARRAYLANG['TXT_SURVEY_FINISH'],
+            'TXT_'.$this->moduleLangVar.'_FEEDBACK'  => $_ARRAYLANG['TXT_SURVEY_FEEDBACK'],
+            'TXT_'.$this->moduleLangVar.'_CANCEL'    => $_ARRAYLANG['TXT_SURVEY_CANCEL'],
+            'TXT_'.$this->moduleLangVar.'_NEXT'      => $_ARRAYLANG['TXT_SURVEY_NEXT'],
+            'TXT_'.$this->moduleLangVar.'_SAVE'      => $_ARRAYLANG['TXT_SURVEY_SAVE'],
+            
+            $this->moduleLangVar.'_DESC'            => contrexx_raw2xhtml(''),
+            $this->moduleLangVar.'_TEXT1'           => new \Cx\Core\Wysiwyg\Wysiwyg('text1', '', 'full'),
+            $this->moduleLangVar.'_TEXT2'           => new \Cx\Core\Wysiwyg\Wysiwyg('text2', '', 'full'),
+            $this->moduleLangVar.'_AFTER_SUBMIT'    => new \Cx\Core\Wysiwyg\Wysiwyg('textAfterButton', '', 'full'),
+            $this->moduleLangVar.'_THANKS_MSG'      => new \Cx\Core\Wysiwyg\Wysiwyg('thanksMSG', '', 'full'),
+            
+            
+            'TXT_BUTTON'                    => $_ARRAYLANG['TXT_SURVEY_CREATE_TXT'],            
+            'TXT_TITLE_ADD'                 => $_ARRAYLANG['TXT_CREATE_SURVEY'],
+            'TXT_TITLE'                     => $_ARRAYLANG['TXT_TITLE'],
+            'TXT_UNIQUE_USER_VERIFICATION'  => $_ARRAYLANG['TXT_UNIQUE_USER_VERIFICATION'],
+            'TXT_IS_HOME_BOX'               => $_ARRAYLANG['TXT_IS_HOME_BOX'],
+            'TXT_YES'                       => $_ARRAYLANG['TXT_YES'],
+            'TXT_NO'                        => $_ARRAYLANG['TXT_NO'],
+            'TXT_DESCRIPTION'               => $_ARRAYLANG['TXT_DESCRIPTION'],
+            'TXT_BEGINNING_SURVEY'          => $_ARRAYLANG['TXT_BEGINNING_SURVEY'],
+            'TXT_ADDITIONALINFO_SURVEY'     => $_ARRAYLANG['TXT_ADDITIONALINFO_SURVEY'],
+            'TXT_BELOW_SUBMIT'              => $_ARRAYLANG['TXT_BELOW_SUBMIT'],
+            'TXT_THANK_MSG'                 => $_ARRAYLANG['TXT_THANK_MSG'],
+            'TXT_COOKIE_BASED'              => $_ARRAYLANG['TXT_COOKIE_BASED'],
+            'TXT_EMAIL_BASED'               => $_ARRAYLANG['TXT_EMAIL_BASED'],
+            'TXT_ADDITIONAL_FIELDS_LABEL'   => $_ARRAYLANG['TXT_ADDITIONAL_FIELDS_LABEL'],
+            'TXT_SALUTATION'                => $_ARRAYLANG['TXT_SALUTATION'],
+            'TXT_NICKNAME'                  => $_ARRAYLANG['TXT_NICKNAME'],
+            'TXT_FIRSTNAME'                 => $_ARRAYLANG['TXT_FIRSTNAME'],
+            'TXT_LASTNAME'                  => $_ARRAYLANG['TXT_LASTNAME'],
+            'TXT_AGEGROUP'                  => $_ARRAYLANG['TXT_AGEGROUP'],
+            'TXT_EMAIL_TEXT'                => $_ARRAYLANG['TXT_EMAIL_TEXT'],
+            'TXT_TELEPHONE'                 => $_ARRAYLANG['TXT_TELEPHONE'],
+            'TXT_STREET'                    => $_ARRAYLANG['TXT_STREET'],
+            'TXT_ZIPCODE'                   => $_ARRAYLANG['TXT_ZIPCODE'],
+            'TXT_PLACEOFREC'                => $_ARRAYLANG['TXT_PLACEOFREC'],
+            'TXT_HIDE'                      => $_ARRAYLANG['TXT_HIDE'],
+            'TXT_SHOW'                      => $_ARRAYLANG['TXT_SHOW']
+        ));
+        
     }
 }
 ?>

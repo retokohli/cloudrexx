@@ -1,0 +1,155 @@
+<script type="text/javascript">
+        var modifySurvey = {        
+            _moveToNextTab: function() {
+                current = $J("ul#tabmenu > li").has("a.active");
+                if (current.next().length) {
+                    target = current.next();
+                } else {
+                    target = $J("ul#tabmenu > li:first"); // This will not happen
+                }
+                target.find("a").trigger("click");
+            }
+        };
+        $J(function(){
+            $J("ul#tabmenu > li").click(function() {
+                if ($J(this).next().length) {
+                    $J(".tab-next").show();
+                } else {
+                    $J(".tab-next").hide();
+                }
+            });
+        });
+</script>
+<form name="modify_servey" method="post" action="">
+    <ul id="tabmenu">
+        <li><a id="surveyTab_survey" class="active" href="javascript:{}" onclick="selectTab('survey');" title="{TXT_SURVEY_GENERAL}">{TXT_SURVEY_GENERAL}</a></li>
+        <li><a id="surveyTab_start" href="javascript:{}" onclick="selectTab('start');" title="{TXT_SURVEY_START}">{TXT_SURVEY_START}</a></li>
+        <li><a id="surveyTab_questions" href="javascript:{}" onclick="selectTab('questions');" title="{TXT_SURVEY_QUESTIONS}">{TXT_SURVEY_QUESTIONS}</a></li>
+        <li><a id="surveyTab_finish" href="javascript:{}" onclick="selectTab('finish');" title="{TXT_SURVEY_FINISH}">{TXT_SURVEY_FINISH}</a></li>
+        <li><a id="surveyTab_feedback" href="javascript:{}" onclick="selectTab('feedback');" title="{TXT_SURVEY_FEEDBACK}">{TXT_SURVEY_FEEDBACK}</a></li>
+    </ul>
+    <div class="surveyTab" id="survey">
+        <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+            <tr>
+                <th colspan="2">{TXT_SURVEY_GENERAL}</th>
+            </tr> 
+            <tr class="row1">
+                <td width="250">{TXT_TITLE}&nbsp;<font color="red">*</font></td>
+                <td><input type="text" name="title" id="title" style="width: 250px;" value="{DB_SURVEY_TITLE}"></td>
+            </tr>
+            <tr class="row2">
+                <td valign="top" >{TXT_DESCRIPTION}</td>                
+                <td>
+                    <textarea name="Description" style="width: 250px; height: 60px;"></textarea>
+                </td>
+            </tr>
+            <tr class="row1">
+                <td>{TXT_UNIQUE_USER_VERIFICATION}&nbsp;<font color="red">*</font></td>
+                <td>
+                    <input type="radio" value="cookie" id="votingRestrictionMethod" checked name="votingRestrictionMethod" {SELECT_RESTRICTION_COOKIE} /><label for="votingRestrictionMethodCookie">{TXT_COOKIE_BASED}</label><br/>
+                    <input type="radio" value="email" id="votingRestrictionMethod" name="votingRestrictionMethod" {SELECT_RESTRICTION_EMAIL} /><label for="votingRestrictionMethodEmail">{TXT_EMAIL_BASED}</label>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="surveyTab" id="start" style="display: none;">
+        <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+            <tr>
+                <th>{TXT_SURVEY_START}</th>
+            </tr>
+            <tr class="row1">
+                <td>{TXT_BEGINNING_SURVEY}</td>                
+            </tr>
+            <tr>
+                <td>                    
+                    {SURVEY_TEXT1}                    
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="surveyTab" id="questions" style="display: none;">
+        <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+            <tr>
+                <th colspan="2">{TXT_SURVEY_QUESTIONS}</th>
+            </tr>
+        </table>
+    </div>
+    <div class="surveyTab" id="finish" style="display: none;">
+        <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+            <tr>
+                <th colspan="2">{TXT_SURVEY_FINISH}</th>
+            </tr>
+            <tr class="row1">
+                <td colspan="2">{TXT_ADDITIONALINFO_SURVEY}</td> 
+            </tr>
+            <tr class="row2">
+                <td colspan="2">                   
+                    {SURVEY_TEXT2}                    
+                </td>
+            </tr>
+            <tr class="row1">
+                <td colspan="2">{TXT_BELOW_SUBMIT}</td>                
+            </tr>
+            <tr class="row2">
+                <td colspan="2">                    
+                    {SURVEY_AFTER_SUBMIT}                    
+                </td>
+            </tr>
+            <tr class="row1">
+                <td width="250">{TXT_ADDITIONAL_FIELDS_LABEL}</td>
+                <td>
+                    <input type="checkbox" id="additional_salutation" name="additional_salutation" {VOTING_FLAG_ADDITIONAL_SALUTATION}/>
+                           <label for="additional_salutation">{TXT_SALUTATION}</label> <br/>
+
+                    <input type="checkbox" id="additional_nickname" name="additional_nickname" {VOTING_FLAG_ADDITIONAL_NICKNAME}/>
+
+                           <label for="additional_nickname">{TXT_NICKNAME}</label><br/>
+                    <input type="checkbox" id="additional_forename" name="additional_forename" {VOTING_FLAG_ADDITIONAL_FORENAME}/>
+                           <label for="additional_forename">{TXT_FIRSTNAME}</label> <br/>
+
+                    <input type="checkbox" id="additional_surname" name="additional_surname" {VOTING_FLAG_ADDITIONAL_SURNAME}/>
+                           <label for="additional_surname">{TXT_LASTNAME}</label> <br/>
+
+                    <input type="checkbox" id="additional_agegroup" name="additional_agegroup" {VOTING_FLAG_ADDITIONAL_AGEGROUP}/>
+                           <label for="additional_agegroup">{TXT_AGEGROUP}</label> <br/>
+
+
+                    <input type="checkbox" id="additional_email" name="additional_email" {VOTING_FLAG_ADDITIONAL_EMAIL}/>
+                           <label for="additional_email">{TXT_EMAIL_TEXT}</label> <br/>
+
+                    <input type="checkbox" id="additional_phone" name="additional_phone" {VOTING_FLAG_ADDITIONAL_PHONE}/>
+                           <label for="additional_phone">{TXT_TELEPHONE}</label> <br/>
+
+                    <input type="checkbox" id="additional_street" name="additional_street" {VOTING_FLAG_ADDITIONAL_STREET}/>
+                           <label for="additional_street">{TXT_STREET}</label> <br/>
+
+                    <input type="checkbox" id="additional_zip" name="additional_zip" {VOTING_FLAG_ADDITIONAL_ZIP}/>
+                           <label for="additional_zip">{TXT_ZIPCODE}</label> <br/>
+
+                    <input type="checkbox" id="additional_city" name="additional_city" {VOTING_FLAG_ADDITIONAL_CITY}/>
+                           <label for="additional_city">{TXT_PLACEOFREC}</label> <br/>
+                </td>
+            </tr>
+        </table>
+    </div>
+    <div class="surveyTab" id="feedback" style="display: none;">
+        <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+            <tr>
+                <th>{TXT_SURVEY_FEEDBACK}</th>
+            </tr>
+            <tr class="row1">
+                <td>{TXT_THANK_MSG}</td>
+            </tr>
+            <tr class="row2">
+                <td>
+                   {SURVEY_THANKS_MSG}                    
+                </td>
+            </tr> 
+        </table>
+    </div>    
+    <br />
+    <input type="button" onclick="location.href = 'index.php?cmd=survey&{CSRF_PARAM}';" value="{TXT_SURVEY_CANCEL}" />
+    &nbsp;<input class="tab-next" type="button" onclick="modifySurvey._moveToNextTab($J(this));" value="{TXT_SURVEY_NEXT}" />
+    &nbsp;<input type="submit" name="survey_submit"  value="{TXT_SURVEY_SAVE}" />
+</form>
+
