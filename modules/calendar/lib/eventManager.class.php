@@ -710,8 +710,12 @@ class CalendarEventManager extends CalendarLibrary
                 
                 $map_thumb_name = file_exists(ASCMS_PATH.$objEvent->place_map.".thumb") ? $objEvent->place_map.".thumb" : $objEvent->place_map;
 
+                
+                $placeLink         = $objEvent->place_link != '' ? "<a href='".$objEvent->place_link."' target='_blank' >".$objEvent->place_link."</a>" : "";
+                $placeLinkSource   = $objEvent->place_link;
                 if ($this->arrSettings['placeData'] > 1 && $objEvent->locationType == 2) {
-                    $objEvent->loadPlaceFromMediadir();                                        
+                    $objEvent->loadPlaceFromMediadir();
+                    list($placeLink, $placeLinkSource) = $objEvent->loadPlaceLinkFromMediadir();                    
                 }
                 
                 $objTpl->setVariable(array(                                                          
@@ -720,8 +724,8 @@ class CalendarEventManager extends CalendarLibrary
                     $this->moduleLangVar.'_EVENT_LOCATION_ZIP'    => $objEvent->place_zip,
                     $this->moduleLangVar.'_EVENT_LOCATION_CITY'   => $objEvent->place_city,
                     $this->moduleLangVar.'_EVENT_LOCATION_COUNTRY'=> $objEvent->place_country,                                                  
-                    $this->moduleLangVar.'_EVENT_LOCATION_LINK'          => $objEvent->place_link != '' ? "<a href='".$objEvent->place_link."' target='_blank' >".$objEvent->place_link."</a>" : "",
-                    $this->moduleLangVar.'_EVENT_LOCATION_LINK_SOURCE'   => $objEvent->place_link,
+                    $this->moduleLangVar.'_EVENT_LOCATION_LINK'          => $placeLink,
+                    $this->moduleLangVar.'_EVENT_LOCATION_LINK_SOURCE'   => $placeLinkSource,
                     $this->moduleLangVar.'_EVENT_LOCATION_MAP_LINK'        => $objEvent->place_map != '' ? '<a href="'.$objEvent->place_map.'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false">'.$_ARRAYLANG['TXT_CALENDAR_MAP'].'</a>' : "",
                     $this->moduleLangVar.'_EVENT_LOCATION_MAP_THUMBNAIL'   => $objEvent->place_map != '' ? '<a href="'.$objEvent->place_map.'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false"><img src="'.$map_thumb_name.'" border="0" alt="'.$objEvent->place_map.'" /></a>' : "",
                     $this->moduleLangVar.'_EVENT_LOCATION_MAP_SOURCE'      => $objEvent->place_map,
@@ -828,8 +832,12 @@ class CalendarEventManager extends CalendarLibrary
                     $editLink = CONTREXX_DIRECTORY_INDEX.'?section='.$this->moduleName.'&amp;cmd=edit&id='.$objEvent->id;
                 }
                 $picThumb = file_exists(ASCMS_PATH."{$objEvent->pic}.thumb") ? "{$objEvent->pic}.thumb" : ($objEvent->pic != '' ? $objEvent->pic : '');
+                
+                $placeLink         = $objEvent->place_link != '' ? "<a href='".$objEvent->place_link."' target='_blank' >".$objEvent->place_link."</a>" : "";
+                $placeLinkSource   = $objEvent->place_link;
                 if ($this->arrSettings['placeData'] > 1 && $objEvent->locationType == 2) {
                     $objEvent->loadPlaceFromMediadir();
+                    list($placeLink, $placeLinkSource) = $objEvent->loadPlaceLinkFromMediadir();                    
                 }
                 
                 $objTpl->setVariable(array(
@@ -878,8 +886,8 @@ class CalendarEventManager extends CalendarLibrary
                     $this->moduleLangVar.'_EVENT_LOCATION_ZIP'           => $objEvent->place_zip,
                     $this->moduleLangVar.'_EVENT_LOCATION_CITY'          => $objEvent->place_city,
                     $this->moduleLangVar.'_EVENT_LOCATION_COUNTRY'       => $objEvent->place_country,                                                  
-                    $this->moduleLangVar.'_EVENT_LOCATION_LINK'          => $objEvent->place_link != '' ? "<a href='".$objEvent->place_link."' target='_blank' >".$objEvent->place_link."</a>" : "",
-                    $this->moduleLangVar.'_EVENT_LOCATION_LINK_SOURCE'   => $objEvent->place_link,
+                    $this->moduleLangVar.'_EVENT_LOCATION_LINK'          => $placeLink,
+                    $this->moduleLangVar.'_EVENT_LOCATION_LINK_SOURCE'   => $placeLinkSource,
                     $this->moduleLangVar.'_EVENT_LOCATION_MAP_LINK'      => $objEvent->place_map != '' ? '<a href="'.$objEvent->place_map.'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false">'.$_ARRAYLANG['TXT_CALENDAR_MAP'].'</a>' : "",
                     $this->moduleLangVar.'_EVENT_LOCATION_MAP_THUMBNAIL' => $objEvent->place_map != '' ? '<a href="'.$objEvent->place_map.'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false"><img src="'.$map_thumb_name.'" border="0" alt="'.$objEvent->place_map.'" /></a>' : "",
                     $this->moduleLangVar.'_EVENT_LOCATION_MAP_SOURCE'    => $objEvent->place_map,

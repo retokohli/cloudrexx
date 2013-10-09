@@ -850,7 +850,7 @@ class CalendarEvent extends CalendarLibrary
         $ticket_sales              = isset($data['ticketSales']) ? intval($data['ticketSales']) : 0;
         $num_seating               = isset($data['numSeating']) ? json_encode(explode(',', $data['numSeating'])) : '';
         $related_hosts             = isset($data['selectedHosts']) ? $data['selectedHosts'] : '';        
-        $locationType              = isset($data['eventLocationType']) ? (int) $data['eventLocationType'] : 1;
+        $locationType              = isset($data['eventLocationType']) ? (int) $data['eventLocationType'] : $this->arrSettings['placeData'];
         $place                     = isset($data['place']) ? contrexx_input2db(contrexx_strip_tags($data['place'])) : '';
         $street                    = isset($data['street']) ? contrexx_input2db(contrexx_strip_tags($data['street'])) : '';
         $zip                       = isset($data['zip']) ? contrexx_input2db(contrexx_strip_tags($data['zip'])) : '';
@@ -1638,5 +1638,59 @@ class CalendarEvent extends CalendarLibrary
             }
         }
         
+    }
+    
+    /**
+     * Return event place url and its source link     
+     * 
+     * @return array place url and its source link
+     */
+    function loadPlaceLinkFromMediadir()
+    {
+        global $_LANGID, $_CONFIG;
+        
+        if (empty($this->place_mediadir_id)) {
+            return ;
+        }
+        
+        $objMediadirEntry = new mediaDirectoryEntry();
+        $objMediadirEntry->getEntries(intval($this->place_mediadir_id)); 
+        
+        $pageRepo = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+        $pages = $pageRepo->findBy(array(
+            'cmd'    => contrexx_addslashes('detail'.intval($objMediadirEntry->arrEntries[$this->place_mediadir_id]['entryFormId'])),
+            'lang'   => $_LANGID,
+            'type'   => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
+            'module' => 'mediadir',
+        ));
+        
+        if(count($pages)) {
+            $strDetailCmd = 'detail'.intval($objMediadirEntry->arrEntries[$this->place_mediadir_id]['entryFormId']);
+        } else {
+            $strDetailCmd = 'detail';
+        }
+        
+        $pages = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->getFromModuleCmdByLang('mediadir', $strDetailCmd);
+
+        $arrActiveFrontendLanguages = FWLanguage::getActiveFrontendLanguages();
+        if (isset($arrActiveFrontendLanguages[FRONTEND_LANG_ID]) && isset($pages[FRONTEND_LANG_ID])) {
+            $langId = FRONTEND_LANG_ID;
+        } else if (isset($arrActiveFrontendLanguages[BACKEND_LANG_ID]) && isset($pages[BACKEND_LANG_ID])) {
+            $langId = BACKEND_LANG_ID;
+        } else {
+            foreach ($arrActiveFrontendLanguages as $lang) {
+                if (isset($pages[$lang['id']])) {
+                    $langId = $lang['id'];
+                    break;
+                }
+            }
+        }
+        
+        $url = $pages[$langId]->getUrl(ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET, "?eid={$this->place_mediadir_id}");
+        
+        $placeUrl       = "<a href='".$url."' target='_blank' >". (!empty($this->place) ? $this->place : $url) ."</a>";
+        $placeUrlSource = $url;
+        
+        return array($placeUrl, $placeUrlSource);
     }
 }
