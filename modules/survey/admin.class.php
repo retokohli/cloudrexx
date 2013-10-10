@@ -187,7 +187,7 @@ class survey extends SurveyLibrary {
     }
 
     function createOrCopy() {
-        global $_CORELANG, $_ARRAYLANG, $objDatabase;
+        global $_ARRAYLANG, $objDatabase;
         $this->_pageTitle = $_ARRAYLANG['TXT_EDIT_SURVEY_TXT'];
         $this->_objTpl->loadTemplateFile('module_Create_copy.html');
         // Parsing javascript function to the place holder.
@@ -207,46 +207,9 @@ class survey extends SurveyLibrary {
         if(isset($_POST['create_submit'])) {
             if($_POST['createSurvey'] == "create") {
                 CSRF::header("Location: ".ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=survey&act=addSurvey");
-            }else {
-                $s_id = $_REQUEST['selectSurvey'];
-                $insertCopy = $objDatabase->Execute('INSERT INTO `'.DBPREFIX.'module_survey_surveygroup`
-                    (title,
-                    UserRestriction,
-                    description,
-                    additional_salutation,
-                    additional_nickname,
-                    additional_forename,
-                    additional_surname,
-                    additional_agegroup,
-                    additional_phone,
-                    additional_street,
-                    additional_zip,
-                    additional_email,
-                    additional_city,
-                    textAfterButton,
-                    text1,
-                    text2,
-                    thanksMSG
-                    )(SELECT title,
-                        UserRestriction,
-                        description,
-                        additional_salutation,
-                        additional_nickname,
-                        additional_forename,
-                        additional_surname,
-                        additional_agegroup,
-                        additional_phone,
-                        additional_street,
-                        additional_zip,
-                        additional_email,
-                        additional_city,
-                        textAfterButton,
-                        text1,
-                        text2,
-                        thanksMSG FROM `'.DBPREFIX.'module_survey_surveygroup` WHERE id= "'.$s_id.'")');
-                // Last Inserted Id
-                $lastId = mysql_insert_id();
-                CSRF::header("Location: ".ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=survey&act=copyEditSurvey&id=$lastId&copyId=$s_id");
+            } else {
+                $selectedSurvey = (int) $_REQUEST['selectSurvey'];
+                CSRF::header("Location: ".ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=survey&act=modify_survey&copy=1&id={$selectedSurvey}");
             }
         }
     }
@@ -3188,7 +3151,8 @@ END;
         $objTpl = $this->_objTpl;
         $objTpl->loadTemplateFile("module_{$this->moduleName}_modify_survey.html");
         
-        $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+        $id   = isset($_GET['id']) ? (int) $_GET['id'] : 0;
+        $copy = isset($_GET['copy']); 
         
         $this->_pageTitle = !empty($id) ?  $_ARRAYLANG['TXT_SURVEY_EDIT_TXT'] : $_ARRAYLANG['TXT_CREATE_SURVEY'];
         
@@ -3209,6 +3173,7 @@ END;
 
         if (isset($_POST['save_survey'])) {
             if ($objSurvey->validate()) {
+                $objSurvey->id = !$copy ? $objSurvey->id : 0;
                 if ($objSurvey->save()) {
                     $this->_strOkMessage = implode("<br />", $objSurvey->okMsg);
                     $this->surveyOverview();
@@ -3232,8 +3197,11 @@ END;
             
             $objTpl->parse('surveyAdditionalFields');
         }
+                
+        $objSurveyQuestionManager = new SurveyQuestionManager($objSurvey->id);
+        $objSurveyQuestionManager->showQuestions($objTpl);
         
-        $objTpl->setVariable(array(
+        $objTpl->setGlobalVariable(array(
             $this->moduleLangVar.'_TITLE_MODIFY'     => !empty($id) ?  $_ARRAYLANG['TXT_SURVEY_EDIT_TXT'] : $_ARRAYLANG['TXT_CREATE_SURVEY'],
             'TXT_'.$this->moduleLangVar.'_GENERAL'   => $_ARRAYLANG['TXT_SURVEY_GENERAL'],
             'TXT_'.$this->moduleLangVar.'_START'     => $_ARRAYLANG['TXT_SURVEY_START'],
@@ -3243,6 +3211,48 @@ END;
             'TXT_'.$this->moduleLangVar.'_CANCEL'    => $_ARRAYLANG['TXT_SURVEY_CANCEL'],
             'TXT_'.$this->moduleLangVar.'_NEXT'      => $_ARRAYLANG['TXT_SURVEY_NEXT'],
             'TXT_'.$this->moduleLangVar.'_SAVE'      => $_ARRAYLANG['TXT_SURVEY_SAVE'],
+            'TXT_'.$this->moduleLangVar.'_MODIFY_QUESTION' => $_ARRAYLANG['TXT_SURVEY_MODIFY_QUESTION'],
+            'TXT_'.$this->moduleLangVar.'_OK'        => $_ARRAYLANG['TXT_SURVEY_OK'],
+            
+            'TXT_'.$this->moduleLangVar.'_QUESTION_OVERVIEW'         => $_ARRAYLANG['TXT_QUESTION_OVERVIEW'],
+            'TXT_'.$this->moduleLangVar.'_SORTING'                   => $_ARRAYLANG['TXT_SORTING'],
+            'TXT_'.$this->moduleLangVar.'_QUESTION'                  => $_ARRAYLANG['TXT_QUESTION'],
+            'TXT_'.$this->moduleLangVar.'_ANALYSE_QUESTION_PREVIEW'  => $_ARRAYLANG['TXT_ANALYSE_QUESTION_PREVIEW'],
+            'TXT_'.$this->moduleLangVar.'_SURVEY_EDIT_TXT'           => $_ARRAYLANG['TXT_SURVEY_EDIT_TXT'],
+            'TXT_'.$this->moduleLangVar.'_SURVEY_DELETE_TXT'         => $_ARRAYLANG['TXT_SURVEY_DELETE_TXT'],
+            'TXT_'.$this->moduleLangVar.'_CREATED_AT'                => $_ARRAYLANG['TXT_CREATED_AT'],
+            'TXT_'.$this->moduleLangVar.'_QUESTION_TYPE'             => $_ARRAYLANG['TXT_QUESTION_TYPE'],
+            'TXT_'.$this->moduleLangVar.'_IS_COMMENTABLE'            => $_ARRAYLANG['TXT_IS_COMMENTABLE'],
+            'TXT_'.$this->moduleLangVar.'_COUNTER'                   => $_ARRAYLANG['TXT_COUNTER'],
+            'TXT_'.$this->moduleLangVar.'_FUNCTIONS'                 => $_ARRAYLANG['TXT_FUNCTIONS'],
+            'TXT_'.$this->moduleLangVar.'_SELECT_ALL'                => $_ARRAYLANG['TXT_SELECT_ALL'],
+            'TXT_'.$this->moduleLangVar.'_DESELECT_ALL'              => $_ARRAYLANG['TXT_DESELECT_ALL'],
+            'TXT_'.$this->moduleLangVar.'_SELECT_ACTION'             => $_ARRAYLANG['TXT_SELECT_ACTION'],
+            'TXT_'.$this->moduleLangVar.'_SAVE_SORTING'              => $_ARRAYLANG['TXT_SAVE_SORTING'],
+            'TXT_'.$this->moduleLangVar.'_DELETE_SELECTED'           => $_ARRAYLANG['TXT_DELETE_SELECTED'],
+            'TXT_'.$this->moduleLangVar.'_ADD_QUESTION'              => $_ARRAYLANG['TXT_QUESTION_ADD_TXT'],
+            
+            'SURVEY_IMAGE_PATH'                     => ASCMS_MODULE_IMAGE_WEB_PATH.'/survey',
+            'WELCOME_MSD'                           => $_ARRAYLANG['TXT_WELCOME_MSG'],
+            'TXT_ADD_QUESTION'                      => $_ARRAYLANG['TXT_SURVEY_CREATEQUESTION_TXT'],
+            'TXT_SELECT_QUESTION'                   => $_ARRAYLANG['TXT_SELECT_QUESTION'],
+            'TXT_QUESTION_TYPE'                     => $_ARRAYLANG['TXT_QUESTION_TYPE'],
+            'TXT_MULTIPLE_CHOICE_ONE_ANSWER'        => $_ARRAYLANG['TXT_MULTIPLE_CHOICE_ONE_ANSWER'],
+            'TXT_MULTIPLE_CHOICE_MULTIPLE_ANSWER'   => $_ARRAYLANG['TXT_MULTIPLE_CHOICE_MULTIPLE_ANSWER'],
+            'TXT_MATRIX_CHOICE_ONE_ANSWER_PER_ROW'  => $_ARRAYLANG['TXT_MATRIX_CHOICE_ONE_ANSWER_PER_ROW'],
+            'TXT_MATRIX_CHOICE_MULTIPLE_ANSWER_PER_ROW' => $_ARRAYLANG['TXT_MATRIX_CHOICE_MULTIPLE_ANSWER_PER_ROW'],
+            'TXT_SINGLE_TEXTBOX'                    => $_ARRAYLANG['TXT_SINGLE_TEXTBOX'],
+            'TXT_QUESTION_TEXT'                     => $_ARRAYLANG['TXT_QUESTION_TEXT'],
+            'TXT_ANSWER_CHOICE'                     => $_ARRAYLANG['TXT_ANSWER_CHOICE'],
+            'TXT_ADD_COMMENT'                       => $_ARRAYLANG['TXT_ADD_COMMENT'],
+            'TXT_YES'                               => $_ARRAYLANG['TXT_YES'],
+            'TXT_NO'                                => $_ARRAYLANG['TXT_NO'],
+            'TXT_HELP_TXT'                          => $_ARRAYLANG['TXT_HELP_TXT'],
+            'TXT_HELP_IMAGE_TXT'                    => $_ARRAYLANG['TXT_HELP_IMAGE_TXT'],
+            'TXT_SAVE_TXT'                          => $_ARRAYLANG['TXT_SAVE_TXT'],
+            'TXT_COLUMN_CHOICE'                     => $_ARRAYLANG['TXT_COLUMN_CHOICE'],
+            'TXT_MULTIPLE_TEXTBOX'                  => $_ARRAYLANG['TXT_MULTIPLE_TEXTBOX'],
+            'TXT_TEXT_ROW'				=> $_ARRAYLANG['TXT_TEXT_ROW'],
             
             $this->moduleLangVar.'_TITLE'           => contrexx_raw2xhtml($objSurvey->title),
             $this->moduleLangVar.'_DESCRIPTION'     => contrexx_raw2xhtml($objSurvey->description),
