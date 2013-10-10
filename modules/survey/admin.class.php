@@ -52,10 +52,13 @@ class survey extends SurveyLibrary {
      */
     function __construct() {
         global $objTemplate, $_ARRAYLANG, $objDatabase;
-
+        
+        parent::__construct();
+        
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/survey/template');
         CSRF::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
+        
         $objTemplate->setVariable("CONTENT_NAVIGATION",
                 "<a href='index.php?cmd=survey' title='".$_ARRAYLANG['TXT_OVERVIEW']."'>".$_ARRAYLANG['TXT_OVERVIEW']."</a>
                  <a href='index.php?cmd=survey&act=createOrCopy' title='".$_ARRAYLANG['TXT_CREATE_SURVEY']."'>".$_ARRAYLANG['TXT_CREATE_SURVEY']."</a>
@@ -86,13 +89,11 @@ class survey extends SurveyLibrary {
                 break;
             case "modify_survey":                
             case "addSurvey":
+            case "editSurvey":
                 $this->_modifySurvey();                
                 break;
             case "settings":
                 $this->Settings();
-                break;
-            case "editSurvey":
-                $this->EditSurvey();
                 break;
             case "csvSurvey":
                 $this->csvSurvey();
@@ -3191,6 +3192,47 @@ END;
         
         $this->_pageTitle = !empty($id) ?  $_ARRAYLANG['TXT_SURVEY_EDIT_TXT'] : $_ARRAYLANG['TXT_CREATE_SURVEY'];
         
+        $objSurvey = new SurveyEntry();
+        
+        $objSurvey->id                       = $id;
+        $objSurvey->title                    = isset($_POST['title']) ? contrexx_input2raw($_POST['title']) : '';
+        $objSurvey->description              = isset($_POST['Description']) ? contrexx_input2raw($_POST['Description']) : '';
+        $objSurvey->surveyType               = isset($_POST['votingRestrictionMethod']) ? contrexx_input2raw($_POST['votingRestrictionMethod']) : 'cookie';
+        $objSurvey->textBelowSubmit          = isset($_POST['below_submit_button']) ? contrexx_input2raw($_POST['below_submit_button']) : '';
+        $objSurvey->textBeginSurvey          = isset($_POST['begin_survey']) ? contrexx_input2raw($_POST['begin_survey']) : '';
+        $objSurvey->textBeforeSubscriberInfo = isset($_POST['before_sub_info']) ? contrexx_input2raw($_POST['before_sub_info']) : '';
+        $objSurvey->textFeedbackMsg          = isset($_POST['feedback_msg']) ? contrexx_input2raw($_POST['feedback_msg']) : '';        
+        
+        foreach ($objSurvey->additionalFields as $additionalField) {
+            $objSurvey->{$additionalField}   = isset($_POST["additional_{$additionalField}"]) ? 1 : 0;
+        }
+
+        if (isset($_POST['save_survey'])) {
+            if ($objSurvey->validate()) {
+                if ($objSurvey->save()) {
+                    $this->_strOkMessage = implode("<br />", $objSurvey->okMsg);
+                    $this->surveyOverview();
+                    return;
+                } else {
+                    $this->_strErrMessage = implode("<br />", $objSurvey->errorMsg);
+                }
+            } else {
+                $this->_strErrMessage = implode("<br />", $objSurvey->errorMsg);
+            }
+        } elseif (!empty($objSurvey->id)) {
+            $objSurvey->get();            
+        }
+        
+        foreach ($objSurvey->additionalFields as $additionalField) {                        
+            $objTpl->setVariable(array(
+                $this->moduleLangVar.'_ADDITIONAL_FIELD_NAME'      => $additionalField,
+                $this->moduleLangVar.'_ADDITIONAL_FIELD'           => $objSurvey->{$additionalField} ? "checked='checked'" : '',
+                "TXT_{$this->moduleLangVar}_ADDITIONAL_FIELD_NAME" => $_ARRAYLANG["TXT_{$this->moduleLangVar}_ADDITIONAL_FIELD_".  strtoupper($additionalField)]
+            ));
+            
+            $objTpl->parse('surveyAdditionalFields');
+        }
+        
         $objTpl->setVariable(array(
             $this->moduleLangVar.'_TITLE_MODIFY'     => !empty($id) ?  $_ARRAYLANG['TXT_SURVEY_EDIT_TXT'] : $_ARRAYLANG['TXT_CREATE_SURVEY'],
             'TXT_'.$this->moduleLangVar.'_GENERAL'   => $_ARRAYLANG['TXT_SURVEY_GENERAL'],
@@ -3202,15 +3244,16 @@ END;
             'TXT_'.$this->moduleLangVar.'_NEXT'      => $_ARRAYLANG['TXT_SURVEY_NEXT'],
             'TXT_'.$this->moduleLangVar.'_SAVE'      => $_ARRAYLANG['TXT_SURVEY_SAVE'],
             
-            $this->moduleLangVar.'_DESC'            => contrexx_raw2xhtml(''),
-            $this->moduleLangVar.'_TEXT1'           => new \Cx\Core\Wysiwyg\Wysiwyg('text1', '', 'full'),
-            $this->moduleLangVar.'_TEXT2'           => new \Cx\Core\Wysiwyg\Wysiwyg('text2', '', 'full'),
-            $this->moduleLangVar.'_AFTER_SUBMIT'    => new \Cx\Core\Wysiwyg\Wysiwyg('textAfterButton', '', 'full'),
-            $this->moduleLangVar.'_THANKS_MSG'      => new \Cx\Core\Wysiwyg\Wysiwyg('thanksMSG', '', 'full'),
-            
+            $this->moduleLangVar.'_TITLE'           => contrexx_raw2xhtml($objSurvey->title),
+            $this->moduleLangVar.'_DESCRIPTION'     => contrexx_raw2xhtml($objSurvey->description),
+            $this->moduleLangVar.'_BEGIN_SURVEY'    => new \Cx\Core\Wysiwyg\Wysiwyg('begin_survey', contrexx_raw2xhtml($objSurvey->textBeginSurvey), 'full'),
+            $this->moduleLangVar.'_BEFORE_SUB_INFO' => new \Cx\Core\Wysiwyg\Wysiwyg('before_sub_info', contrexx_raw2xhtml($objSurvey->textBeforeSubscriberInfo), 'full'),
+            $this->moduleLangVar.'_BELOW_SUBMIT'    => new \Cx\Core\Wysiwyg\Wysiwyg('below_submit_button', contrexx_raw2xhtml($objSurvey->textBelowSubmit), 'full'),
+            $this->moduleLangVar.'_FEEDBACK_MSG'    => new \Cx\Core\Wysiwyg\Wysiwyg('feedback_msg', contrexx_raw2xhtml($objSurvey->textFeedbackMsg), 'full'),
+            $this->moduleLangVar.'_TYPE_COOKIE'     => $objSurvey->surveyType == 'cookie' ? "checked='checked'" : '',
+            $this->moduleLangVar.'_TYPE_EMAIL'      => $objSurvey->surveyType == 'email' ? "checked='checked'" : '',
             
             'TXT_BUTTON'                    => $_ARRAYLANG['TXT_SURVEY_CREATE_TXT'],            
-            'TXT_TITLE_ADD'                 => $_ARRAYLANG['TXT_CREATE_SURVEY'],
             'TXT_TITLE'                     => $_ARRAYLANG['TXT_TITLE'],
             'TXT_UNIQUE_USER_VERIFICATION'  => $_ARRAYLANG['TXT_UNIQUE_USER_VERIFICATION'],
             'TXT_IS_HOME_BOX'               => $_ARRAYLANG['TXT_IS_HOME_BOX'],
@@ -3223,21 +3266,10 @@ END;
             'TXT_THANK_MSG'                 => $_ARRAYLANG['TXT_THANK_MSG'],
             'TXT_COOKIE_BASED'              => $_ARRAYLANG['TXT_COOKIE_BASED'],
             'TXT_EMAIL_BASED'               => $_ARRAYLANG['TXT_EMAIL_BASED'],
-            'TXT_ADDITIONAL_FIELDS_LABEL'   => $_ARRAYLANG['TXT_ADDITIONAL_FIELDS_LABEL'],
-            'TXT_SALUTATION'                => $_ARRAYLANG['TXT_SALUTATION'],
-            'TXT_NICKNAME'                  => $_ARRAYLANG['TXT_NICKNAME'],
-            'TXT_FIRSTNAME'                 => $_ARRAYLANG['TXT_FIRSTNAME'],
-            'TXT_LASTNAME'                  => $_ARRAYLANG['TXT_LASTNAME'],
-            'TXT_AGEGROUP'                  => $_ARRAYLANG['TXT_AGEGROUP'],
-            'TXT_EMAIL_TEXT'                => $_ARRAYLANG['TXT_EMAIL_TEXT'],
-            'TXT_TELEPHONE'                 => $_ARRAYLANG['TXT_TELEPHONE'],
-            'TXT_STREET'                    => $_ARRAYLANG['TXT_STREET'],
-            'TXT_ZIPCODE'                   => $_ARRAYLANG['TXT_ZIPCODE'],
-            'TXT_PLACEOFREC'                => $_ARRAYLANG['TXT_PLACEOFREC'],
-            'TXT_HIDE'                      => $_ARRAYLANG['TXT_HIDE'],
-            'TXT_SHOW'                      => $_ARRAYLANG['TXT_SHOW']
+            'TXT_ADDITIONAL_FIELDS_LABEL'   => $_ARRAYLANG['TXT_ADDITIONAL_FIELDS_LABEL'],            
         ));
         
     }
 }
 ?>
+

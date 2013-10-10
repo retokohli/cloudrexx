@@ -24,8 +24,7 @@
 class SurveyLibrary {
 
 	var $_intLangId;
-	var $_arrSettings           = array();
-	var $_arrLanguages          = array();
+	var $_arrSettings           = array();	
 	var $_arrSurveyTranslations = array();
 	var $_arrSurveyValues       = array();
         
@@ -64,11 +63,13 @@ class SurveyLibrary {
                                                            FROM	'.DBPREFIX.'languages
                                                            WHERE frontend=1
                                                            ORDER BY id');
-		while (!$objResult->EOF) {
-                    $arrReturn[$objResult->fields['id']] = array('short' => $objResult->fields['lang']);
-                    $objResult->MoveNext();
-		}
-
+                if ($objResult) {
+                    while (!$objResult->EOF) {
+                        $arrReturn[$objResult->fields['id']] = array('short' => $objResult->fields['lang']);
+                        $objResult->MoveNext();
+                    }
+                }
+		
 		return $arrReturn;
 	}
 
@@ -87,11 +88,13 @@ class SurveyLibrary {
 		$objResult = $objDatabase->Execute('SELECT name,
                                                            value
                                                            FROM	'.DBPREFIX.'module_survey_settings');
-		while (!$objResult->EOF) {
-                    $arrReturn[$objResult->fields['name']] = $objResult->fields['value'];
-                    $objResult->MoveNext();
-		}
-
+		if ($objResult) {
+                    while (!$objResult->EOF) {
+                        $arrReturn[$objResult->fields['name']] = $objResult->fields['value'];
+                        $objResult->MoveNext();
+                    }
+                }
+                
 		return $arrReturn;
 	}
 
@@ -112,11 +115,13 @@ class SurveyLibrary {
                                                     subject
                                                     FROM '.DBPREFIX.'module_survey_groups_lang
                                                     ORDER BY group_id ASC');
-            while (!$objResult->EOF) {
-                $arrReturn[$objResult->fields['group_id']][$objResult->fields['lang_id']] = contrexx_remove_script_tags($objResult->fields['subject']);
-                $objResult->MoveNext();
+            if ($objResult) {
+                while (!$objResult->EOF) {
+                    $arrReturn[$objResult->fields['group_id']][$objResult->fields['lang_id']] = contrexx_remove_script_tags($objResult->fields['subject']);
+                    $objResult->MoveNext();
+                }
             }
-
+            
             return $arrReturn;
 	}
 
@@ -145,19 +150,21 @@ class SurveyLibrary {
                                                        ORDER BY created DESC');
 
             $intIndex = 0;
-            while (!$objResult->EOF) {
-                $arrReturn[$intIndex] = array('id'          => $objResult->fields['id'],
-                                            'redirect'      => contrexx_remove_script_tags($objResult->fields['redirect']),
-                                            'created'       => date(ASCMS_DATE_FORMAT, $objResult->fields['created']),
-                                            'lastvote'      => (intval($objResult->fields['lastvote']) == 0) ? 'Keine Teilnehmer.' : date(ASCMS_DATE_FORMAT,$objResult->fields['lastvote']),
-                                            'participant'   => intval($objResult->fields['participant']),
-                                            'isActive'      => intval($objResult->fields['isActive']),
-                                            'isExtended'    => intval($objResult->fields['isExtended']),
-                                            'isCommentable' => intval($objResult->fields['isCommentable']),
-                                            'isHomeBox'     => intval($objResult->fields['isHomeBox'])
-                                            );
-                ++$intIndex;
-                $objResult->MoveNext();
+            if ($objResult) {
+                while (!$objResult->EOF) {
+                    $arrReturn[$intIndex] = array('id'          => $objResult->fields['id'],
+                                                'redirect'      => contrexx_remove_script_tags($objResult->fields['redirect']),
+                                                'created'       => date(ASCMS_DATE_FORMAT, $objResult->fields['created']),
+                                                'lastvote'      => (intval($objResult->fields['lastvote']) == 0) ? 'Keine Teilnehmer.' : date(ASCMS_DATE_FORMAT,$objResult->fields['lastvote']),
+                                                'participant'   => intval($objResult->fields['participant']),
+                                                'isActive'      => intval($objResult->fields['isActive']),
+                                                'isExtended'    => intval($objResult->fields['isExtended']),
+                                                'isCommentable' => intval($objResult->fields['isCommentable']),
+                                                'isHomeBox'     => intval($objResult->fields['isHomeBox'])
+                                                );
+                    ++$intIndex;
+                    $objResult->MoveNext();
+                }
             }
 
             return $arrReturn;
