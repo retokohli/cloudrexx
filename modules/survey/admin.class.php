@@ -3198,8 +3198,7 @@ END;
             $objTpl->parse('surveyAdditionalFields');
         }
                 
-        $objSurveyQuestionManager = new SurveyQuestionManager($objSurvey->id);
-        $objSurveyQuestionManager->showQuestions($objTpl);
+        $objSurveyQuestionManager = new SurveyQuestionManager($objSurvey->id);        
         
         $objTpl->setGlobalVariable(array(
             $this->moduleLangVar.'_TITLE_MODIFY'     => !empty($objSurvey->id) ?  $_ARRAYLANG['TXT_SURVEY_EDIT_TXT'] : $_ARRAYLANG['TXT_CREATE_SURVEY'],
@@ -3263,6 +3262,7 @@ END;
             $this->moduleLangVar.'_FEEDBACK_MSG'    => new \Cx\Core\Wysiwyg\Wysiwyg('feedback_msg', contrexx_raw2xhtml($objSurvey->textFeedbackMsg), 'full'),
             $this->moduleLangVar.'_TYPE_COOKIE'     => $objSurvey->surveyType == 'cookie' ? "checked='checked'" : '',
             $this->moduleLangVar.'_TYPE_EMAIL'      => $objSurvey->surveyType == 'email' ? "checked='checked'" : '',
+            $this->moduleLangVar.'_QUESTIONS'       => $objSurveyQuestionManager->showQuestions(),            
             
             'TXT_BUTTON'                    => $_ARRAYLANG['TXT_SURVEY_CREATE_TXT'],            
             'TXT_TITLE'                     => $_ARRAYLANG['TXT_TITLE'],

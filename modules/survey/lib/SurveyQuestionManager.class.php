@@ -1,6 +1,6 @@
 <?php
 
-class SurveyQuestionManager
+class SurveyQuestionManager extends SurveyLibrary
 {
     public $surveyId;
     public $questions;
@@ -47,9 +47,14 @@ class SurveyQuestionManager
         }
     }
     
-    function showQuestions($objTpl)
-    {
-        global $_ARRAYLANG;
+    function showQuestions()
+    {        
+        global $objInit;
+        
+        $objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH."/{$this->moduleName}/template");
+        $objTpl->loadTemplateFile("module_{$this->moduleName}_questions.html");
+        
+        $_ARRAYLANG = $objInit->loadLanguageData('survey');
         
         if (empty($this->questions)) {
             $objTpl->setVariable('TXT_SERVEY_NO_QUESTIONS', $_ARRAYLANG['TXT_SERVEY_NO_QUESTIONS']);
@@ -103,18 +108,19 @@ class SurveyQuestionManager
             $objTpl->setVariable(array(
                     'TXT_SURVEY_ID'		      => contrexx_raw2xhtml($questionId),
                     'TXT_SURVEY_POS'	              => contrexx_raw2xhtml($question['pos']),
-                    'TXT_SURVEY_QUESTION'	      => $surveyTemp,
-                    'TXT_SURVEY_QUESTION_CREATED_AT'  => contrexx_raw2xhtml($question['created']),
-                    'TXT_SURVEY_QUESTION_TYPE'        => contrexx_raw2xhtml($Radio),
-                    'TXT_SURVEY_QUESTION_COMMENTABLE' => contrexx_raw2xhtml($comment),
+                    'SURVEY_QUESTION'                 => $surveyTemp,
+                    'SURVEY_QUESTION_CREATED_AT'      => contrexx_raw2xhtml($question['created']),
+                    'SURVEY_QUESTION_TYPE'            => contrexx_raw2xhtml($Radio),
+                    'SURVEY_QUESTION_COMMENTABLE'     => contrexx_raw2xhtml($comment),
                     'TXT_ANALYSE_QUESTION_PREVIEW'    => $_ARRAYLANG['TXT_ANALYSE_QUESTION_PREVIEW'],
                     'TXT_SURVEY_EDIT_TXT'	      => $_ARRAYLANG['TXT_SURVEY_EDIT_TXT'],
                     'TXT_SURVEY_DELETE_TXT'	      => $_ARRAYLANG['TXT_SURVEY_DELETE_TXT'],
-                    'TXT_SURVEY_COUNTER'              => contrexx_raw2xhtml($question['votes'])." votes",                    
+                    'SURVEY_COUNTER'              => contrexx_raw2xhtml($question['votes'])." votes",                    
                     'ENTRY_ROWCLASS'                  => $row = ($row == 'row1') ? 'row2' : 'row1',
             ));
             $objTpl->parse('ShowQuestions');    
         }
         
+        return $objTpl->get();
     }
 }

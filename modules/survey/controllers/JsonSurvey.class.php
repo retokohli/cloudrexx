@@ -38,7 +38,7 @@ class JsonSurvey implements JsonAdapter {
      * @return array List of method names
      */
     public function getAccessableMethods() {
-        return array('modifyQuestions');
+        return array('modifyQuestions', 'getSurveyQuestions');
     }
 
     /**
@@ -64,6 +64,12 @@ class JsonSurvey implements JsonAdapter {
                 
         $objQuestion->save();
         
+    }
+    
+    public function getSurveyQuestions() 
+    {
+        $objQuestionManager = new \SurveyQuestionManager((int) $_GET['surveyId']);
+        return $objQuestionManager->showQuestions();
     }
 }
 
