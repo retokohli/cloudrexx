@@ -1,0 +1,35 @@
+
+<!-- BEGIN ShowQuestions -->
+<tr class="{ENTRY_ROWCLASS}">
+     <!-- td>
+      <input type="checkbox" name="selectedEntriesId[]" id="selectedEntriesId" value="{TXT_SURVEY_ID}" />
+     </td>
+     <td style="text-align:center;">
+          <input type="hidden" name="form_id[]" value="{TXT_SURVEY_ID}" />
+          <input type="text" name="form_pos[]" value="{TXT_SURVEY_POS}" style="width:25px; text-align:right; padding:2px;" />
+     </td -->            
+     <td>{SURVEY_QUESTION}</td>
+     <td>{SURVEY_QUESTION_CREATED_AT}</td>
+     <td style="text-align:left;padding-left:2px;">{SURVEY_QUESTION_TYPE}</td>
+     <td>{SURVEY_QUESTION_COMMENTABLE}</td>    
+     <td>{SURVEY_COUNTER}</td>                     
+     <td nowrap="nowrap">
+          <div align="right" style="padding-right:5px;">
+            <a href="../index.php?section=survey&cmd=questionpreview&id={TXT_SURVEY_ID}" title="{TXT_ANALYSE_QUESTION_PREVIEW}" target="_blank" rel="gb_page_fs[]">
+              <img src="images/icons/preview.png" border="0" alt="{TXT_ANALYSE_QUESTION_PREVIEW}" title="{TXT_ANALYSE_QUESTION_PREVIEW}" />
+            </a>		 
+            <a href="index.php?cmd=survey&act=editQuestions&id={TXT_SURVEY_ID}&linkId={TXT_LINKID}" target="_self" title="{TXT_IMAGE_EDIT}">
+              <img src="images/icons/edit.gif" border="0" alt="{TXT_IMAGE_EDIT}" title="{TXT_SURVEY_EDIT_TXT}" />
+            </a>
+            <a href="javascript:deleteEntry({TXT_SURVEY_ID});" target="_self" title="{TXT_IMGALT_DELETE}">
+              <img src="images/icons/delete.gif" border="0" alt="{TXT_IMGALT_DELETE}" title="{TXT_SURVEY_DELETE_TXT}" />
+            </a>
+          </div>
+      </td>
+</tr>
+<!-- END ShowQuestions -->	
+<!-- BEGIN noSurveyQuestions -->	
+<tr>
+    <td colspan="8"><i>{TXT_SERVEY_NO_QUESTIONS}</i></td>
+</tr>
+<!-- END noSurveyQuestions -->	            
