@@ -49,72 +49,21 @@ class JsonSurvey implements JsonAdapter {
         return implode('<br />', $this->messages);
     }
     
-    public function modifyQuestions() {
-        global $objDatabase;
+    public function modifyQuestions() {        
         
-        //$surveyId       = contrexx_input2raw($_REQUEST['surveyId']);
-        $surveyId       = 1;
-        $questionType   = contrexx_input2raw($_POST['questionType']);
-        $columnChoices  = contrexx_input2raw($_POST['ColumnChoices']);
-        $questionAnswers= contrexx_input2raw($_POST['QuestionAnswers']);
-
-        $vote = 0;
-        $Question = ($questionType != 7)?contrexx_input2db($_POST['Question']):contrexx_input2db($_POST['QuestionRow']);
-
-        if(($questionType == 3) || ($questionType == 4)) {
-            $options       = explode ("\n", $columnChoices);
-            $ColChoices    = explode ("\n", $questionAnswers);
-            $colChoic      = implode($ColChoices,";");
-            $vote = array();
-            foreach ($ColChoices as $key => $value) {
-                $vote[$key] = 0;
-            }
-            $vote = json_encode($vote);
-        }else {
-            $options       = explode ("\n", $questionAnswers);
-            $ColChoices    = explode ("\n", $columnChoices);
-            $colChoic      = "";
-        }
-        if($questionType == 5)
-            $options[0] = "Answer";
-            $commentable= contrexx_input2db($_POST['Iscomment']);
-        if($questionType ==7) {
-            $options[0] = "Answer";
-            $commentable= contrexx_input2db($_POST['Iscomment']);
-        }
-
-        $sorting_id = 0;
-        $objResult = $objDatabase->Execute('SELECT MAX(`pos`) as `pos` FROM `'.DBPREFIX.'module_survey_surveyQuestions` WHERE `survey_id` ='.$surveyId);
-        $sorting_id = $objResult->fields['pos'] + 1;
-
-        // Insert Query for Inserting the Fields Posted
-        $insertSurvey = 'INSERT INTO `'.DBPREFIX.'module_survey_surveyQuestions`
-                        SET `survey_id` = "'.contrexx_raw2db($surveyId).'",
-                            `isCommentable` = "'.$commentable.'",
-                            `QuestionType` = "'.contrexx_raw2db($questionType).'",
-                            `Question` = "'.$Question.'",
-                            `pos` = '.$sorting_id.',
-                            `column_choice` = "'.contrexx_raw2db($colChoic).'" ';
-        $objDatabase->Execute($insertSurvey);
-        $lastId = mysql_insert_id();
-        for ($i=0;$i<count($options);$i++) {
-            if(trim($options[$i]) != "") {
-                $insertSurvey = 'INSERT INTO `'.DBPREFIX.'module_survey_surveyAnswers`
-                                        SET  `question_id` = "'.$lastId.'",
-                                            `answer` = "'.contrexx_raw2db($options[$i]).'",
-                                            `votes` = "'.contrexx_raw2db($vote).'"';
-                $objDatabase->Execute($insertSurvey);
-            }
-        }
-        // loop for inserting the column choices
-        for ($i=0;$i<count($ColChoices);$i++) {
-            if($ColChoices[$i] != "") {
-                $insertSurvey = 'INSERT INTO `'.DBPREFIX.'module_survey_columnChoices`
-                                        SET `question_id` = "'.$lastId.'",
-                                            `choice` = "'.contrexx_raw2db($ColChoices[$i]).'"';
-                $objDatabase->Execute($insertSurvey);
-            }
-        }
+        $objQuestion = new \SurveyQuestion();
+        
+        $objQuestion->id              = isset($_REQUEST['id']) ? (int) $_REQUEST['id'] : 0;
+        $objQuestion->surveyId        = isset($_GET['surveyId']) ? (int) $_GET['surveyId'] : 0;
+        $objQuestion->questionType    = isset($_POST['questionType']) ? (int) $_POST['questionType'] : 0;
+        $objQuestion->question        = isset($_POST['Question']) ? contrexx_input2raw($_POST['Question']) : '';
+        $objQuestion->questionRow     = isset($_POST['QuestionRow']) ? contrexx_input2raw($_POST['QuestionRow']) : '';
+        $objQuestion->questionChoice  = isset($_POST['ColumnChoices']) ? contrexx_input2raw($_POST['ColumnChoices']) : '';
+        $objQuestion->questionAnswers = isset($_POST['QuestionAnswers']) ? contrexx_input2raw($_POST['QuestionAnswers']) : '';        
+        $objQuestion->isCommentable   = isset($_POST['Iscomment']) ? (int) $_POST['Iscomment'] : 0;
+                
+        $objQuestion->save();
+        
     }
 }
 

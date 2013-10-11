@@ -3202,7 +3202,7 @@ END;
         $objSurveyQuestionManager->showQuestions($objTpl);
         
         $objTpl->setGlobalVariable(array(
-            $this->moduleLangVar.'_TITLE_MODIFY'     => !empty($id) ?  $_ARRAYLANG['TXT_SURVEY_EDIT_TXT'] : $_ARRAYLANG['TXT_CREATE_SURVEY'],
+            $this->moduleLangVar.'_TITLE_MODIFY'     => !empty($objSurvey->id) ?  $_ARRAYLANG['TXT_SURVEY_EDIT_TXT'] : $_ARRAYLANG['TXT_CREATE_SURVEY'],
             'TXT_'.$this->moduleLangVar.'_GENERAL'   => $_ARRAYLANG['TXT_SURVEY_GENERAL'],
             'TXT_'.$this->moduleLangVar.'_START'     => $_ARRAYLANG['TXT_SURVEY_START'],
             'TXT_'.$this->moduleLangVar.'_QUESTIONS' => $_ARRAYLANG['TXT_SURVEY_QUESTIONS'],
@@ -3252,8 +3252,9 @@ END;
             'TXT_SAVE_TXT'                          => $_ARRAYLANG['TXT_SAVE_TXT'],
             'TXT_COLUMN_CHOICE'                     => $_ARRAYLANG['TXT_COLUMN_CHOICE'],
             'TXT_MULTIPLE_TEXTBOX'                  => $_ARRAYLANG['TXT_MULTIPLE_TEXTBOX'],
-            'TXT_TEXT_ROW'				=> $_ARRAYLANG['TXT_TEXT_ROW'],
+            'TXT_TEXT_ROW'                          => $_ARRAYLANG['TXT_TEXT_ROW'],
             
+            $this->moduleLangVar.'_ID'              => (int) $objSurvey->id,
             $this->moduleLangVar.'_TITLE'           => contrexx_raw2xhtml($objSurvey->title),
             $this->moduleLangVar.'_DESCRIPTION'     => contrexx_raw2xhtml($objSurvey->description),
             $this->moduleLangVar.'_BEGIN_SURVEY'    => new \Cx\Core\Wysiwyg\Wysiwyg('begin_survey', contrexx_raw2xhtml($objSurvey->textBeginSurvey), 'full'),
