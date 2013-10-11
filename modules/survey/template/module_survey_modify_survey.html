@@ -101,7 +101,7 @@ cx.ready(function(){
             },
             "{TXT_SURVEY_OK}": function() {
                 $J.ajax({
-                    url      : "index.php?cmd=jsondata&object=survey&act=modifyQuestions",
+                    url      : "index.php?cmd=jsondata&object=survey&act=modifyQuestions&surveyId={SURVEY_ID}",
                     type     : "post",
                     data     : $J( "#addsurvey" ).serialize(),
                     dataType : "json",                    
@@ -355,9 +355,7 @@ cx.ready(function(){
                 </td>
             </tr>
             <tr class="row2 answer">
-                <td>
-                    <input type="hidden" name="votingresults" value="{IDS_ANSWERS}">
-                    <input type="hidden" name="Colvoltingresults" value="{COL_IDS_ANSWERS}">
+                <td>                    
                     <textarea style="width: 440px;" rows="6" name="QuestionAnswers" id="QuestionAnswers">{DB_QUESTION_OPTIONS}</textarea>
                 </td>
             </tr>
