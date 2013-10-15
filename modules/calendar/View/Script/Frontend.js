@@ -168,16 +168,18 @@ $J(function(){
         }
     });
     $J( ".eventLocationType" ).click(function(){
-        showOrHidePlaceFields($J(this).val());
+        showOrHidePlaceFields($J(this).val(), 'place');
+    });    
+    $J( ".eventHostType" ).click(function(){
+        showOrHidePlaceFields($J(this).val(), 'host');
     });
-    showOrHidePlaceFields($J( ".eventLocationType:checked" ).val());
 });
-function showOrHidePlaceFields(inputValue) {     
+function showOrHidePlaceFields(inputValue, type) {        
     if (inputValue == '1') {
-        $J( "div.event_place_manual" ).css("display", "block");
-        $J( "div.event_place_mediadir" ).css("display", "none");
+        $J( "tr.event_"+type+"_manual" ).css("display", "table-row");
+        $J( "tr.event_"+type+"_mediadir" ).css("display", "none");
     } else {
-        $J( "div.event_place_manual" ).css("display", "none");
-        $J( "div.event_place_mediadir" ).css("display", "block");
+        $J( "tr.event_"+type+"_manual" ).css("display", "none");
+        $J( "tr.event_"+type+"_mediadir" ).css("display", "table-row");
     }
 }
