@@ -527,6 +527,9 @@ class CalendarManager extends CalendarLibrary
             $this->moduleLangVar.'_EVENT_NUM_SEATING'                       => $eventId != 0 ? $objEvent->numSeating : '',
             $this->moduleLangVar.'_EVENT_ALL_DAY'                           => $eventId != 0 && $objEvent->all_day ? 'checked="checked"' : '',
             $this->moduleLangVar.'_HIDE_ON_SINGLE_LANG'                     => count($this->arrFrontendLanguages) == 1 ? "display: none;" : "",
+            $this->moduleLangVar.'_LOCATION_TYPE'                           => $this->arrSettings['placeData'] == 3 ? ($eventId != 0 ? $objEvent->locationType : 1) : $this->arrSettings['placeData'],
+            $this->moduleLangVar.'_EVENT_LOCATION_TYPE_MANUAL'              => $eventId != 0 ? ($objEvent->locationType == 1 ? "checked='checked'" : '') : "checked='checked'",
+            $this->moduleLangVar.'_EVENT_LOCATION_TYPE_MEDIADIR'            => $eventId != 0 ? ($objEvent->locationType == 2 ? "checked='checked'" : '') : "",            
             $this->moduleLangVar.'_EVENT_PLACE'                             => $eventId != 0 ? $objEvent->place : '',
             $this->moduleLangVar.'_EVENT_STREET'                            => $eventId != 0 ? $objEvent->place_street : '',
             $this->moduleLangVar.'_EVENT_ZIP'                               => $eventId != 0 ? $objEvent->place_zip : '',
@@ -535,15 +538,15 @@ class CalendarManager extends CalendarLibrary
             $this->moduleLangVar.'_EVENT_PLACE_LINK'                        => $eventId != 0 ? $objEvent->place_link : '', 
             $this->moduleLangVar.'_PLACE_MAP_SOURCE'                        => $eventId != 0 ? $objEvent->place_map : '',    
             //$this->moduleLangVar.'_EVENT_MAP'                               => $objEvent->map == 1 ? 'checked="checked"' : '',    
+            $this->moduleLangVar.'_EVENT_HOST_TYPE'                         => $this->arrSettings['placeDataHost'] == 3 ? ($eventId != 0 ? $objEvent->hostType : 1) : $this->arrSettings['placeDataHost'],
             $this->moduleLangVar.'_EVENT_HOST'                              => $eventId != 0 ? $objEvent->org_name : '',
             $this->moduleLangVar.'_EVENT_HOST_ADDRESS'                      => $eventId != 0 ? $objEvent->org_street : '',
             $this->moduleLangVar.'_EVENT_HOST_ZIP'                          => $eventId != 0 ? $objEvent->org_zip : '',
             $this->moduleLangVar.'_EVENT_HOST_CITY'                         => $eventId != 0 ? $objEvent->org_city : '',
             $this->moduleLangVar.'_EVENT_HOST_LINK'                         => $eventId != 0 ? $objEvent->org_link : '',
             $this->moduleLangVar.'_EVENT_HOST_EMAIL'                        => $eventId != 0 ? $objEvent->org_email : '',
-            $this->moduleLangVar.'_EVENT_LOCATION_TYPE_MANUAL'              => $eventId != 0 ? ($objEvent->locationType == 1 ? "checked='checked'" : '') : "checked='checked'",
-            $this->moduleLangVar.'_EVENT_LOCATION_TYPE_MEDIADIR'            => $eventId != 0 ? ($objEvent->locationType == 2 ? "checked='checked'" : '') : "",
-            $this->moduleLangVar.'_LOCATION_TYPE'                           => $eventId != 0 ? $objEvent->locationType : ($this->arrSettings['placeData'] != 3 ? $this->arrSettings['placeData'] : 1),
+            $this->moduleLangVar.'_EVENT_HOST_TYPE_MANUAL'                  => $eventId != 0 ? ($objEvent->hostType == 1 ? "checked='checked'" : '') : "checked='checked'",
+            $this->moduleLangVar.'_EVENT_HOST_TYPE_MEDIADIR'                => $eventId != 0 ? ($objEvent->hostType == 2 ? "checked='checked'" : '') : "",            
         ));
         
         // parse invitation E-mail template
@@ -854,6 +857,36 @@ class CalendarManager extends CalendarLibrary
             $this->_objTpl->touchBlock('eventPlaceInput');
             $this->_objTpl->hideBlock('eventPlaceSelect');  
             $this->_objTpl->hideBlock('eventPlaceTypeRadio');
+        }
+        
+        //parse placeHostSelect
+        if ((int) $this->arrSettings['placeDataHost'] > 1) {
+            $objMediadirEntries = new mediaDirectoryEntry();
+            $objMediadirEntries->getEntries(null,null,null,null,null,null,true,0,'n',null,null,intval($this->arrSettings['placeDataHostForm']));
+
+            $placeOptions = '<option value="">'.$_ARRAYLANG['TXT_CALENDAR_PLEASE_CHOOSE'].'</option>';
+
+            foreach($objMediadirEntries->arrEntries as $key => $arrEntry) {
+                $selectedPlace = ($arrEntry['entryId'] == $objEvent->host_mediadir_id) ? 'selected="selected"' : '';   
+                $placeOptions .= '<option '.$selectedPlace.' value="'.$arrEntry['entryId'].'">'.$arrEntry['entryFields'][0].'</option>';   
+            }
+
+            $this->_objTpl->setVariable(array(   
+                $this->moduleLangVar.'_EVENT_PLACE_OPTIONS'    => $placeOptions,    
+            ));
+            $this->_objTpl->parse('eventHostSelect');  
+            
+            if ((int) $this->arrSettings['placeDataHost'] == 2) {
+                $this->_objTpl->hideBlock('eventHostInput');
+                $this->_objTpl->hideBlock('eventHostTypeRadio');
+            } else {
+                $this->_objTpl->touchBlock('eventHostInput');
+                $this->_objTpl->touchBlock('eventHostTypeRadio');
+            }
+        } else {
+            $this->_objTpl->touchBlock('eventHostInput');
+            $this->_objTpl->hideBlock('eventHostSelect');  
+            $this->_objTpl->hideBlock('eventHostTypeRadio');
         }
         
         foreach ($this->arrFrontendLanguages as $key => $arrLang) {

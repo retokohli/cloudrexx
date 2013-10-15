@@ -421,6 +421,7 @@ EOF;
         JS::registerJS('modules/calendar/View/Script/Frontend.js');
          
         parent::getFrontendLanguages();
+        parent::getSettings();
         $this->_objTpl->setTemplate($this->pageContent, true, true);
         
         $showFrom = true;
@@ -451,7 +452,9 @@ EOF;
         }
 
         $dateFormat = parent::getDateFormat(1);
-
+        
+        $locationType = $this->arrSettings['placeData'] == 3 ? ($eventId != 0 ? $objEvent->locationType : 1) : $this->arrSettings['placeData'];
+        $hostType     = $this->arrSettings['placeDataHost'] == 3 ? ($eventId != 0 ? $objEvent->hostType : 1) : $this->arrSettings['placeDataHost'];
         $javascript = <<< EOF
 <script language="JavaScript" type="text/javascript">
               
@@ -472,6 +475,8 @@ cx.ready(function() {
     jQuery('input[name=startDate]').datetimepicker(options);
     jQuery('input[name=endDate]').datetimepicker(options);
     modifyEvent._handleAllDayEvent(\$J(".all_day"));
+    showOrHidePlaceFields('$locationType', 'place');
+    showOrHidePlaceFields('$hostType', 'host');
 });
 
 </script>
@@ -556,6 +561,8 @@ UPLOADER;
             $this->moduleLangVar.'_EVENT_HOST_EMAIL'                => $objEvent->org_email,
             $this->moduleLangVar.'_EVENT_LOCATION_TYPE_MANUAL'      => $eventId != 0 ? ($objEvent->locationType == 1 ? "checked='checked'" : '') : "checked='checked'",
             $this->moduleLangVar.'_EVENT_LOCATION_TYPE_MEDIADIR'    => $eventId != 0 ? ($objEvent->locationType == 2 ? "checked='checked'" : '') : "",
+            $this->moduleLangVar.'_EVENT_HOST_TYPE_MANUAL'          => $eventId != 0 ? ($objEvent->hostType == 1 ? "checked='checked'" : '') : "checked='checked'",
+            $this->moduleLangVar.'_EVENT_HOST_TYPE_MEDIADIR'        => $eventId != 0 ? ($objEvent->hostType == 2 ? "checked='checked'" : '') : "",            
             
             $this->moduleLangVar.'_EVENT_ID'                        => $eventId,
             $this->moduleLangVar.'_EVENT_ALL_DAY'                   => $eventId != 0 && $objEvent->all_day ? 'checked="checked"' : '',
@@ -636,6 +643,36 @@ UPLOADER;
             $this->_objTpl->touchBlock('eventPlaceInput');
             $this->_objTpl->hideBlock('eventPlaceSelect');  
             $this->_objTpl->hideBlock('eventPlaceTypeRadio');
+        }
+        
+        //parse placeHostSelect
+        if ((int) $this->arrSettings['placeDataHost'] > 1) {
+            $objMediadirEntries = new mediaDirectoryEntry();
+            $objMediadirEntries->getEntries(null,null,null,null,null,null,true,0,'n',null,null,intval($this->arrSettings['placeDataHostForm']));
+
+            $placeOptions = '<option value="">'.$_ARRAYLANG['TXT_CALENDAR_PLEASE_CHOOSE'].'</option>';
+
+            foreach($objMediadirEntries->arrEntries as $key => $arrEntry) {
+                $selectedPlace = ($arrEntry['entryId'] == $objEvent->host_mediadir_id) ? 'selected="selected"' : '';   
+                $placeOptions .= '<option '.$selectedPlace.' value="'.$arrEntry['entryId'].'">'.$arrEntry['entryFields'][0].'</option>';   
+            }
+
+            $this->_objTpl->setVariable(array(   
+                $this->moduleLangVar.'_EVENT_PLACE_OPTIONS'    => $placeOptions,    
+            ));
+            $this->_objTpl->parse('eventHostSelect');  
+            
+            if ((int) $this->arrSettings['placeDataHost'] == 2) {
+                $this->_objTpl->hideBlock('eventHostInput');
+                $this->_objTpl->hideBlock('eventHostTypeRadio');
+            } else {
+                $this->_objTpl->touchBlock('eventHostInput');
+                $this->_objTpl->touchBlock('eventHostTypeRadio');
+            }
+        } else {
+            $this->_objTpl->touchBlock('eventHostInput');
+            $this->_objTpl->hideBlock('eventHostSelect');  
+            $this->_objTpl->hideBlock('eventHostTypeRadio');
         }
 
     }

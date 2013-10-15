@@ -208,6 +208,16 @@ class CalendarEvent extends CalendarLibrary
     public $locationType;
     
     /**
+     * Event Host type 
+     * 1 => Manual Entry
+     * 2 => Refer to mediadir module
+     * 
+     * @access public
+     * @var integer
+     */
+    public $hostType;
+    
+    /**
      * Event place
      * 
      * @access public
@@ -495,6 +505,7 @@ class CalendarEvent extends CalendarLibrary
                          event.pic AS pic,
                          event.attach AS attach,
                          event.place_mediadir_id AS place_mediadir_id,
+                         event.host_mediadir_id AS host_mediadir_id,
                          event.priority AS priority,
                          event.catid AS catid,
                          event.status AS status,
@@ -534,6 +545,7 @@ class CalendarEvent extends CalendarLibrary
                          event.place_country AS place_country, 
                          event.place_link AS place_link, 
                          event.place_map AS place_map, 
+                         event.host_type AS host_type,
                          event.org_name AS org_name, 
                          event.org_street AS org_street, 
                          event.org_zip AS org_zip, 
@@ -604,8 +616,8 @@ class CalendarEvent extends CalendarLibrary
                 $this->priority = intval($objResult->fields['priority']);
                 $this->description = $objResult->fields['description'];
                 
-                $this->locationType = (int) $objResult->fields['location_type'];
-                $this->place_mediadir_id = (int) $objResult->fields['place_mediadir_id'];
+                $this->locationType = (int) $objResult->fields['location_type'];                
+                $this->place_mediadir_id = (int) $objResult->fields['place_mediadir_id'];                
                 $this->place        = htmlentities(stripslashes($objResult->fields['place']), ENT_QUOTES, CONTREXX_CHARSET);
                 $this->place_street = htmlentities(stripslashes($objResult->fields['place_street']), ENT_QUOTES, CONTREXX_CHARSET);
                 $this->place_zip    = htmlentities(stripslashes($objResult->fields['place_zip']), ENT_QUOTES, CONTREXX_CHARSET);
@@ -613,6 +625,8 @@ class CalendarEvent extends CalendarLibrary
                 $this->place_country = htmlentities(stripslashes($objResult->fields['place_country']), ENT_QUOTES, CONTREXX_CHARSET);
                 $this->place_link   = contrexx_raw2xhtml($objResult->fields['place_link']);
                 $this->place_map    = contrexx_raw2xhtml($objResult->fields['place_map']);
+                $this->hostType = (int) $objResult->fields['host_type'];
+                $this->host_mediadir_id = (int) $objResult->fields['host_mediadir_id'];
                 $this->org_name     = contrexx_raw2xhtml($objResult->fields['org_name']);
                 $this->org_street   = contrexx_raw2xhtml($objResult->fields['org_street']);
                 $this->org_zip      = contrexx_raw2xhtml($objResult->fields['org_zip']);
@@ -832,6 +846,7 @@ class CalendarEvent extends CalendarLibrary
         $access                    = isset($data['access']) ? intval($data['access']) : 0;
         $priority                  = isset($data['priority']) ? intval($data['priority']) : 0;
         $placeMediadir             = isset($data['placeMediadir']) ? intval($data['placeMediadir']) : 0;
+        $hostMediadir              = isset($data['hostMediadir']) ? intval($data['hostMediadir']) : 0;
         $price                     = isset($data['price']) ? contrexx_addslashes(contrexx_strip_tags($data['price'])) : '';
         $link                      = isset($data['link']) ? contrexx_addslashes(contrexx_strip_tags($data['link'])) : '';
         $pic                       = isset($data['picture']) ? contrexx_addslashes(contrexx_strip_tags($data['picture'])) : '';
@@ -851,6 +866,7 @@ class CalendarEvent extends CalendarLibrary
         $num_seating               = isset($data['numSeating']) ? json_encode(explode(',', $data['numSeating'])) : '';
         $related_hosts             = isset($data['selectedHosts']) ? $data['selectedHosts'] : '';        
         $locationType              = isset($data['eventLocationType']) ? (int) $data['eventLocationType'] : $this->arrSettings['placeData'];
+        $hostType                  = isset($data['eventHostType']) ? (int) $data['eventHostType'] : $this->arrSettings['placeDataHost'];
         $place                     = isset($data['place']) ? contrexx_input2db(contrexx_strip_tags($data['place'])) : '';
         $street                    = isset($data['street']) ? contrexx_input2db(contrexx_strip_tags($data['street'])) : '';
         $zip                       = isset($data['zip']) ? contrexx_input2db(contrexx_strip_tags($data['zip'])) : '';
@@ -1055,6 +1071,7 @@ class CalendarEvent extends CalendarLibrary
             'catid'                         => $catId,
             'attach'                        => $attach,
             'place_mediadir_id'             => $placeMediadir,
+            'host_mediadir_id'              => $hostMediadir,            
             'show_in'                       => $showIn,
             'invited_groups'                => $invited_groups,             
             'invited_mails'                 => $invited_mails,
@@ -1079,6 +1096,7 @@ class CalendarEvent extends CalendarLibrary
             'series_pattern_exceptions'     => $seriesExeptions,
             'all_day'                       => $allDay,
             'location_type'                 => $locationType,
+            'host_type'                     => $hostType,
             'place'                         => $place,
             'place_id'                      => 0,
             'place_street'                  => $street,

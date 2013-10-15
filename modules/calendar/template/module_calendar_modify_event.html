@@ -152,9 +152,13 @@
             }
         });
         $J( ".eventLocationType" ).click(function(){
-            showOrHidePlaceFields($J(this).val());
+            showOrHidePlaceFields($J(this).val(), 'place');
         });
-        showOrHidePlaceFields('{CALENDAR_LOCATION_TYPE}');
+        $J( ".eventHostType" ).click(function(){
+            showOrHidePlaceFields($J(this).val(), 'host');
+        });
+        showOrHidePlaceFields('{CALENDAR_LOCATION_TYPE}', 'place');
+        showOrHidePlaceFields('{CALENDAR_EVENT_HOST_TYPE}', 'host');
     });
 
     cx.ready(function() {
@@ -240,13 +244,13 @@
         });
     });
 
-    function showOrHidePlaceFields(inputValue) {        
+    function showOrHidePlaceFields(inputValue, type) {        
         if (inputValue == '1') {
-            $J( "tr.event_place_manual" ).css("display", "table-row");
-            $J( "tr.event_place_mediadir" ).css("display", "none");
+            $J( "tr.event_"+type+"_manual" ).css("display", "table-row");
+            $J( "tr.event_"+type+"_mediadir" ).css("display", "none");
         } else {
-            $J( "tr.event_place_manual" ).css("display", "none");
-            $J( "tr.event_place_mediadir" ).css("display", "table-row");
+            $J( "tr.event_"+type+"_manual" ).css("display", "none");
+            $J( "tr.event_"+type+"_mediadir" ).css("display", "table-row");
         }
     }
     function addExeptionList(exeptionDate, txtCheckedDate) {
@@ -821,44 +825,62 @@
         <br/>
         <table cellspacing="0" cellpadding="3" width="100%" border="0" class="adminlist">
             <tr class="row3">
-                <td colspan="2">{TXT_CALENDAR_EVENT_HOST}</td>                        
+                <td >{TXT_CALENDAR_EVENT_HOST}</td>                        
+                <td>
+                    <!-- BEGIN eventHostTypeRadio -->
+                    <label><input type="radio" name="eventHostType" class="eventHostType" value="1" {CALENDAR_EVENT_HOST_TYPE_MANUAL} /> {TXT_CALENDAR_PLACE_DATA_DEFAULT}</label>
+                    <label><input type="radio" name="eventHostType" class="eventHostType" value="2" {CALENDAR_EVENT_HOST_TYPE_MEDIADIR} /> {TXT_CALENDAR_PLACE_DATA_FROM_MEDIADIR}</label>
+                    <!-- END eventHostTypeRadio -->
+                </td>
             </tr>
-            <tr class="row1">
+            <!-- BEGIN eventHostSelect -->
+            <tr class="row2 event_host_mediadir">
+                <td width="180" valign="top">{TXT_CALENDAR_EVENT_PLACE}</td>
+                <td>                                                
+                    <select name="hostMediadir" style="width: 258px;">
+                        {CALENDAR_EVENT_PLACE_OPTIONS}
+                    </select>
+                </td>
+            </tr>
+            <!-- END eventHostSelect -->
+            <!-- BEGIN eventHostInput -->
+            <tr class="row1 event_host_manual">
                 <td width="180"  valign="top">{TXT_CALENDAR_EVENT_NAME}</td>
                 <td>
                     <input name="organizerName" type="text" maxlength="255" value="{CALENDAR_EVENT_HOST}" style="width: 250px" />
                 </td>
             </tr>
-            <tr class="row2">
+            <tr class="row2 event_host_manual">
                 <td valign="top">{TXT_CALENDAR_EVENT_STREET}</td>
                 <td>
                     <input name="organizerStreet" type="text" maxlength="255" value="{CALENDAR_EVENT_HOST_ADDRESS}" style="width: 250px" />
                 </td>
             </tr>
-            <tr class="row1">
+            <tr class="row1 event_host_manual">
                 <td valign="top">{TXT_CALENDAR_EVENT_ZIP}</td>
                 <td>
                     <input name="organizerZip" type="text" maxlength="10" value="{CALENDAR_EVENT_HOST_ZIP}" style="width: 250px" />
                 </td>
             </tr>
-            <tr class="row2">
+            <tr class="row2 event_host_manual">
                 <td valign="top">{TXT_CALENDAR_EVENT_CITY}</td>
                 <td>
                     <input name="organizerCity" type="text" maxlength="255" value="{CALENDAR_EVENT_HOST_CITY}" style="width: 250px" />
                 </td>
             </tr>
-            <tr class="row1">
+            <tr class="row1 event_host_manual">
                 <td valign="top">{TXT_CALENDAR_EVENT_LINK}</td>
                 <td>
                     <input name="organizerLink" type="text" maxlength="255" value="{CALENDAR_EVENT_HOST_LINK}" style="width: 250px" />
                 </td>
             </tr>
-            <tr class="row2">
+            <tr class="row2 event_host_manual">
                 <td valign="top">{TXT_CALENDAR_EVENT_EMAIL}</td>
                 <td>
                     <input name="organizerEmail" type="text" maxlength="255" value="{CALENDAR_EVENT_HOST_EMAIL}" style="width: 250px" />
                 </td>
             </tr>
+            <!-- END eventHostInput -->
         </table>                          
     </div>
     <div id="details" class="eventTab" style="display:none;">
