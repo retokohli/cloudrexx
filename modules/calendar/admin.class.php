@@ -543,6 +543,7 @@ class CalendarManager extends CalendarLibrary
             $this->moduleLangVar.'_EVENT_HOST_EMAIL'                        => $eventId != 0 ? $objEvent->org_email : '',
             $this->moduleLangVar.'_EVENT_LOCATION_TYPE_MANUAL'              => $eventId != 0 ? ($objEvent->locationType == 1 ? "checked='checked'" : '') : "checked='checked'",
             $this->moduleLangVar.'_EVENT_LOCATION_TYPE_MEDIADIR'            => $eventId != 0 ? ($objEvent->locationType == 2 ? "checked='checked'" : '') : "",
+            $this->moduleLangVar.'_LOCATION_TYPE'                           => $eventId != 0 ? $objEvent->locationType : ($this->arrSettings['placeData'] != 3 ? $this->arrSettings['placeData'] : 1),
         ));
         
         // parse invitation E-mail template

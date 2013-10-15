@@ -154,7 +154,7 @@
         $J( ".eventLocationType" ).click(function(){
             showOrHidePlaceFields($J(this).val());
         });
-        showOrHidePlaceFields($J( ".eventLocationType:checked" ).val());
+        showOrHidePlaceFields('{CALENDAR_LOCATION_TYPE}');
     });
 
     cx.ready(function() {
