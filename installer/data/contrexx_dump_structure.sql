@@ -656,12 +656,14 @@ CREATE TABLE `contrexx_module_calendar_event` (
   `place_country` varchar(255) default NULL,
   `place_link` varchar(255) NOT NULL,
   `place_map` varchar(255) NOT NULL,
+  `host_type` tinyint(1) NOT NULL,
   `org_name` varchar(255) NOT NULL,
   `org_street` varchar(255) NOT NULL,
   `org_zip` varchar(10) NOT NULL,
   `org_city` varchar(255) NOT NULL,
   `org_link` varchar(255) NOT NULL,
   `org_email` varchar(255) NOT NULL,
+  `host_mediadir_id` int(11) NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `fk_contrexx_module_calendar_notes_contrexx_module_calendar_ca1` (`catid`)
 ) ENGINE=MyISAM ;
