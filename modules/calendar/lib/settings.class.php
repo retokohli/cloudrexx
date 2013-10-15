@@ -700,6 +700,7 @@ class CalendarSettings extends CalendarLibrary
 
                         $objTpl->setVariable(array(
                             $this->moduleLangVar.'_SETTING_ROW'             => $i%2==0 ? 'row1' : 'row2',
+                            $this->moduleLangVar.'_SETTING_NAME'            => $objResultSetting->fields['name'],
                             'TXT_'.$this->moduleLangVar.'_SETTING_NAME'     => $_ARRAYLANG[$objResultSetting->fields['title']],
                             $this->moduleLangVar.'_SETTING_VALUE'           => $arrSetting['output'],
                             $this->moduleLangVar.'_SETTING_INFO'            => $arrSetting['infobox'],
@@ -754,12 +755,25 @@ class CalendarSettings extends CalendarLibrary
                 break;
             case 3:
                 //radio
+                switch ($name) {
+                    case 'placeData':
+                    case 'placeDataHost':
+                        $addBreak = true;
+                        break;
+                    default:
+                        $addBreak = false;
+                        break;
+                }
+                
                 $arrOptions = array();
                 if(!empty($options)) {
                     $arrOptions = explode(",",$options);
+                    $first = true;
                     foreach ($arrOptions as $key => $label) {
                         $checked = ($key+1)==$value ? 'checked="checked"' : '';
+                        $output .= !$first && $addBreak ? "<br />" : '';
                         $output .= '<label><input type="radio" '.$checked.' value="'.($key+1).'" name="settings['.$name.']" />&nbsp;'.$_ARRAYLANG[$label].'</label>&nbsp;&nbsp;&nbsp;';
+                        $first   = false;
                     }
                 }
                 break;
@@ -802,8 +816,9 @@ class CalendarSettings extends CalendarLibrary
                             $objMediadirForms = new mediaDirectoryForm();
                             $objMediadirForms->getForms();      
                             $objMediadirForms->listForms($objTpl,4);
-
-                            $output = '<select style="width: 252px;" name="settings['.$name.']" >';                              
+                            
+                            $output  = $_ARRAYLANG['TXT_CALENDAR_SELECT_FORM_MEDIADIR'].": <br />";
+                            $output .= '<select style="width: 252px;" name="settings['.$name.']" >';                              
                             $output .= $objMediadirForms->listForms($objTpl,4,intval($value));  
                             $output .= '</select>';
                             break;
