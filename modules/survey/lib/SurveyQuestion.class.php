@@ -14,7 +14,60 @@ class SurveyQuestion
             
     function get()
     {
+        global $objDatabase;
         
+        if (empty($this->id)) {
+            return false;
+        }
+        
+        $query = "SELECT 
+                        * 
+                      FROM 
+                        `".DBPREFIX."module_survey_surveyQuestions`
+                      WHERE 
+                        `id` = {$this->id}";
+        $objResult = $objDatabase->Execute($query);
+        
+        if ($objResult) {
+            $this->surveyId      = (int) $objResult->fields['survey_id'];
+            $this->questionType  = (int) $objResult->fields['QuestionType'];
+            $this->isCommentable = (int) $objResult->fields['isCommentable'];
+            $this->question      = $this->questionType != 7 ? $objResult->fields['Question'] : '';
+            $this->questionRow   = $this->questionType == 7 ? $objResult->fields['Question'] : '';
+        }
+        
+        $query = "SELECT 
+                        * 
+                      FROM 
+                        `".DBPREFIX."module_survey_surveyAnswers`
+                      WHERE 
+                        `question_id` = {$this->id}";
+        $objResult = $objDatabase->Execute($query);
+        $answers   = array();
+        if ($objResult) {
+            while (!$objResult->EOF) {
+                $answers[] = $objResult->fields['answer'];
+                $objResult->MoveNext();                
+            }
+        }
+        $this->questionAnswers = implode(PHP_EOL, $answers);
+        
+        $query = "SELECT 
+                        * 
+                      FROM 
+                        `".DBPREFIX."module_survey_columnChoices`
+                      WHERE 
+                        `question_id` = {$this->id}";
+        $objResult = $objDatabase->Execute($query);
+        $choices   = array();
+        if ($objResult) {
+            while (!$objResult->EOF) {                
+                $choices[] = $objResult->fields['choice'];
+                $objResult->MoveNext();                
+            }
+        }
+        $this->questionChoice = implode(PHP_EOL, $choices);
+                        
     }
     
     function save()
@@ -53,12 +106,12 @@ class SurveyQuestion
             'survey_id'     => $this->surveyId,
             'isCommentable' => $this->isCommentable,
             'QuestionType'  => $this->questionType,
-            'Question'      => $this->question,
-            'pos'           => 0,
+            'Question'      => $this->question,            
             'column_choice' => $colChoices
         );
         
         if (empty($this->id)) {
+            $arrFields['pos'] = 0;
             $query = SQL::insert('module_survey_surveyQuestions', $arrFields, array('escape' => true));
         } else {
             $query = SQL::update('module_survey_surveyQuestions', $arrFields, array('escape' => true))." WHERE `id` = {$this->id}";
@@ -70,6 +123,12 @@ class SurveyQuestion
             }
         }
         
+        $deleteQuery = 'DELETE FROM `'.DBPREFIX.'module_survey_surveyAnswers` WHERE question_id = '.$this->id;
+        $objDatabase->Execute($deleteQuery);
+
+        $deleteQuery = 'DELETE FROM `'.DBPREFIX.'module_survey_columnChoices` WHERE question_id = '.$this->id;
+        $objDatabase->Execute($deleteQuery);
+            
         if (!empty($options)) {
             foreach (array_filter($options) as $option) {
                 $arrFields = array(
@@ -94,4 +153,29 @@ class SurveyQuestion
         }
          
     }
+    
+    function updatePosition()
+    {
+        global $objDatabase;
+        
+        $query = SQL::update('module_survey_surveyQuestions', array('pos' => $this->position), array('escape' => true))." WHERE `id` = {$this->id}";
+        $objDatabase->Execute($query);
+    }
+    
+    function delete()
+    {             
+        global $objDatabase;
+        
+        if (!empty($this->id)) {
+            $deleteQuery = 'DELETE FROM `'.DBPREFIX.'module_survey_surveyQuestions` WHERE id = '.$this->id;
+            $objDatabase->Execute($deleteQuery);
+            
+            $deleteQuery = 'DELETE FROM `'.DBPREFIX.'module_survey_surveyAnswers` WHERE question_id = '.$this->id;
+            $objDatabase->Execute($deleteQuery);
+            
+            $deleteQuery = 'DELETE FROM `'.DBPREFIX.'module_survey_columnChoices` WHERE question_id = '.$this->id;
+            $objDatabase->Execute($deleteQuery);
+        }
+    }
+
 }
