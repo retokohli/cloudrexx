@@ -1,5 +1,8 @@
 <style type="text/css">
     /* jquery ui css customization */
+    .ui-icon {
+        display: inline-block;
+    }
     .ui-dialog.cxDialog {
         position: absolute;
         top: 0 !important;
@@ -10,7 +13,6 @@
         border-radius: 0;
         text-align: center;
     }
-
     .ui-dialog.noTitle .ui-dialog-titlebar {
         display: none;
     }
@@ -25,6 +27,9 @@
     }
     .ui-dialog #loading img {
         float: left;
+    }
+    table.survey_questions_container tbody tr td:not(:last-child) {
+        cursor: move;
     }
     #help1, #help2, #help3, help4, #help5, #help6, #help7, #help8 {display: none;padding-left: 5px;} 
 </style>
@@ -131,12 +136,60 @@ cx.ready(function(){
     });
 
     $J( ".add_question" ).click(function(){
+        $J("#addsurvey #questionId").val('0');
         d.open();
+    });
+    $J( ".edit_question" ).live('click', function(){
+        var id = $J(this).attr("data-id");
+        cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + jQuery('#loading').html() + "</div>");
+        $J.getJSON('index.php', {cmd : 'jsondata', object : 'survey' ,act : 'getSurveyQuestion', id : id }, function(data){            
+            $J("#addsurvey #questionId").val(data.data.id);
+            $J("#addsurvey #questionType").val(data.data.questionType);
+            $J("#addsurvey #Question").val(data.data.question);
+            $J("#addsurvey #QuestionRow").val(data.data.questionRow);
+            $J("#addsurvey #ColumnChoices").val(data.data.questionChoice); 
+            $J("#addsurvey #QuestionAnswers").val(data.data.questionAnswers); 
+            $J("#addsurvey #QuestionAnswers").val(data.data.questionAnswers); 
+            $J("#addsurvey input:radio[name=Iscomment]").filter("[value="+data.data.isCommentable+"]").prop("checked", true);
+            $J("#questionType").trigger('change');
+            d.open();
+            
+            cx.tools.StatusMessage.removeAllDialogs();
+        });
+    });
+    $J( ".delete_question" ).live('click', function(){
+        var id = $J(this).attr("data-id");
+        
+        cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + jQuery('#loading').html() + "</div>");
+        $J.getJSON('index.php', {cmd : 'jsondata', object : 'survey' ,act : 'deleteQuestion', id : id }, function(data){
+            getSurveyQuestions();
+            cx.tools.StatusMessage.removeAllDialogs();
+        });
+    });
+    $J("table.survey_questions_container tbody").sortable({
+        stop: function( event, ui ) {
+            
+            var sortFields = $J(this).sortable('serialize');            
+            $J.ajax({
+                url      : "index.php?cmd=jsondata&object=survey&act=saveSorting&surveyId={SURVEY_ID}",
+                type     : "post",
+                data     : sortFields,
+                dataType : "json",                    
+                beforeSend: function() {
+                    cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + jQuery('#loading').html() + "</div>");
+                },
+                complete: function() {
+                    cx.tools.StatusMessage.removeAllDialogs();
+                }
+             });                             
+        }
     });
 });
 function getSurveyQuestions() {
+    cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + jQuery('#loading').html() + "</div>");
     $J.getJSON('index.php', {cmd : 'jsondata', object : 'survey' ,act : 'getSurveyQuestions', surveyId : '{SURVEY_ID}' }, function(data){
         $J("table.survey_questions_container tbody").html(data.data);
+        cx.tools.StatusMessage.removeAllDialogs();
     });
 }
 </script>
@@ -193,9 +246,7 @@ function getSurveyQuestions() {
                 <tr>
                     <th colspan="8">{TXT_SURVEY_QUESTIONS}</th>
                 </tr>           
-                <tr class="row3">
-                     <!--td width="2%">&nbsp;&nbsp;#</td>
-                     <td style="text-align:center;" width="10%">{TXT_SURVEY_SORTING}</td -->            
+                <tr class="row3">                                
                      <td width="20%">{TXT_SURVEY_QUESTION}</td>
                      <td width="15%">{TXT_SURVEY_CREATED_AT}</td>            
                      <td width="20%">{TXT_SURVEY_QUESTION_TYPE}</td>    
@@ -277,15 +328,16 @@ function getSurveyQuestions() {
             </tr>
             <tr class="row2">
                 <td>
+                    <input type="hidden" name="id" id="questionId" value="" />
                     <select name="questionType" id="questionType">
                         <option value="">{TXT_QUESTION_TYPE}</option>
-                        <option value="1" {TXT_RADIO_SEL}>{TXT_MULTIPLE_CHOICE_ONE_ANSWER}</option>
-                        <option value="2" {TXT_CHECK_SEL}>{TXT_MULTIPLE_CHOICE_MULTIPLE_ANSWER}</option>
-                        <option value="3" {TXT_MATRIX_SEL}>{TXT_MATRIX_CHOICE_ONE_ANSWER_PER_ROW}</option>
-                        <option value="4" {TXT_MATRIXMUL_SEL}>{TXT_MATRIX_CHOICE_MULTIPLE_ANSWER_PER_ROW}</option>
-                        <option value="5" {TXT_SINGLEBOX_SEL}>{TXT_SINGLE_TEXTBOX}</option>
-                        <option value="6" {TXT_MULTIPLEBOX_SEL}>{TXT_MULTIPLE_TEXTBOX}</option>
-                        <option value="7" {TXT_TEXTROW_SEL}>{TXT_TEXT_ROW}</option>
+                        <option value="1">{TXT_MULTIPLE_CHOICE_ONE_ANSWER}</option>
+                        <option value="2">{TXT_MULTIPLE_CHOICE_MULTIPLE_ANSWER}</option>
+                        <option value="3">{TXT_MATRIX_CHOICE_ONE_ANSWER_PER_ROW}</option>
+                        <option value="4">{TXT_MATRIX_CHOICE_MULTIPLE_ANSWER_PER_ROW}</option>
+                        <option value="5">{TXT_SINGLE_TEXTBOX}</option>
+                        <option value="6">{TXT_MULTIPLE_TEXTBOX}</option>
+                        <option value="7">{TXT_TEXT_ROW}</option>
                     </select>
                     <span id="help1"><a class="info-image" href='{SURVEY_IMAGE_PATH}/MC_OA-01.png' title="{TXT_HELP_IMAGE_TXT}">{TXT_HELP_TXT}</a></span>
                     <span id="help2"><a class="info-image" href='{SURVEY_IMAGE_PATH}/MC_MA01.png' title="{TXT_HELP_IMAGE_TXT}">{TXT_HELP_TXT}</a></span>

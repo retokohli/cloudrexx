@@ -38,7 +38,7 @@ class JsonSurvey implements JsonAdapter {
      * @return array List of method names
      */
     public function getAccessableMethods() {
-        return array('modifyQuestions', 'getSurveyQuestions');
+        return array('modifyQuestions', 'getSurveyQuestions', 'getSurveyQuestion', 'deleteQuestion', 'saveSorting');
     }
 
     /**
@@ -70,6 +70,51 @@ class JsonSurvey implements JsonAdapter {
     {
         $objQuestionManager = new \SurveyQuestionManager((int) $_GET['surveyId']);
         return $objQuestionManager->showQuestions();
+    }
+    
+    public function getSurveyQuestion()
+    {
+        $objQuestion = new \SurveyQuestion();
+        
+        $objQuestion->id = isset($_REQUEST['id']) ? (int) $_REQUEST['id'] : 0;
+        
+        $objQuestion->get();
+        
+        return array(
+            'id'              => (int) $objQuestion->id,
+            'surveyId'        => (int) $objQuestion->surveyId,
+            'questionType'    => (int) $objQuestion->questionType,
+            'question'        => $objQuestion->question,
+            'questionRow'     => $objQuestion->questionRow,
+            'questionChoice'  => $objQuestion->questionChoice,
+            'questionAnswers' => $objQuestion->questionAnswers,
+            'isCommentable'   => (int) $objQuestion->isCommentable
+        );
+        
+    }
+    
+    public function deleteQuestion()
+    {
+        $objQuestion = new \SurveyQuestion();
+        
+        $objQuestion->id = isset($_REQUEST['id']) ? (int) $_REQUEST['id'] : 0;
+        
+        $objQuestion->delete();
+    }
+    
+    public function saveSorting()
+    {
+        $objQuestion = new \SurveyQuestion();
+        
+        if (!empty($_POST['questions'])) {
+            foreach ($_POST['questions'] as $key => $questionId) {
+                $objQuestion->id       = (int) $questionId;
+                $objQuestion->position = $key;
+
+                $objQuestion->updatePosition();
+            }
+        }
+        
     }
 }
 

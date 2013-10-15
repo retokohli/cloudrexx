@@ -106,17 +106,17 @@ class SurveyQuestionManager extends SurveyLibrary
             }
             
             $objTpl->setVariable(array(
-                    'TXT_SURVEY_ID'		      => contrexx_raw2xhtml($questionId),
+                    'SURVEY_ID'                       => contrexx_raw2xhtml($questionId),
                     'TXT_SURVEY_POS'	              => contrexx_raw2xhtml($question['pos']),
                     'SURVEY_QUESTION'                 => $surveyTemp,
                     'SURVEY_QUESTION_CREATED_AT'      => contrexx_raw2xhtml($question['created']),
                     'SURVEY_QUESTION_TYPE'            => contrexx_raw2xhtml($Radio),
-                    'SURVEY_QUESTION_COMMENTABLE'     => contrexx_raw2xhtml($comment),
+                    'SURVEY_QUESTION_COMMENTABLE'     => contrexx_raw2xhtml($comment),                    
+                    'SURVEY_COUNTER'                  => contrexx_raw2xhtml($question['votes'])." votes",                    
+                    'ENTRY_ROWCLASS'                  => $row = ($row == 'row1') ? 'row2' : 'row1',
                     'TXT_ANALYSE_QUESTION_PREVIEW'    => $_ARRAYLANG['TXT_ANALYSE_QUESTION_PREVIEW'],
                     'TXT_SURVEY_EDIT_TXT'	      => $_ARRAYLANG['TXT_SURVEY_EDIT_TXT'],
                     'TXT_SURVEY_DELETE_TXT'	      => $_ARRAYLANG['TXT_SURVEY_DELETE_TXT'],
-                    'SURVEY_COUNTER'              => contrexx_raw2xhtml($question['votes'])." votes",                    
-                    'ENTRY_ROWCLASS'                  => $row = ($row == 'row1') ? 'row2' : 'row1',
             ));
             $objTpl->parse('ShowQuestions');    
         }
