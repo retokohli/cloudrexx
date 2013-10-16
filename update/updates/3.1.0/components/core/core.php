@@ -2,7 +2,7 @@
 
 function _coreUpdate()
 {
-    global $objUpdate, $objDatabase, $_CORELANG, $_CONFIG;
+    global $objUpdate, $objDatabase, $_ARRAYLANG, $_CORELANG, $_CONFIG;
 
     $query = "SELECT `id` FROM `".DBPREFIX."languages` WHERE `charset` != 'UTF-8'";
     $objResult = $objDatabase->Execute($query);
