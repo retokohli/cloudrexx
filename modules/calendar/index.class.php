@@ -631,7 +631,8 @@ UPLOADER;
             $this->_objTpl->setVariable(array(
                 $this->moduleLangVar.'_EVENT_PLACE_OPTIONS'    => $placeOptions,
             ));
-
+            $this->_objTpl->parse('eventPlaceSelect');
+            
             if ((int) $this->arrSettings['placeData'] == 2) {
                 $this->_objTpl->hideBlock('eventPlaceInput');
                 $this->_objTpl->hideBlock('eventPlaceTypeRadio');
