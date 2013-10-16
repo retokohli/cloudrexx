@@ -1,7 +1,7 @@
 <?php
 function _guestbookUpdate()
 {
-    global $objDatabase;
+    global $objDatabase, $_ARRAYLANG;
 
     $arrGuestbookColumns = $objDatabase->MetaColumns(DBPREFIX.'module_guestbook');
     if ($arrGuestbookColumns === false) {
