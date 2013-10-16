@@ -1602,18 +1602,21 @@ class CalendarEvent extends CalendarLibrary
     /**
      * Loads the location fields from the selected media directory entry
      * 
-     * 
-     */
-    function loadPlaceFromMediadir()
+     * @param integer $intMediaDirId  media directory Entry id
+     * @param string  $type           place type 
+     *                                availble options are place or host
+     * @return null   it loads the place values based on the media directory Entry id and type
+     */    
+    function loadPlaceFromMediadir($intMediaDirId = 0, $type = 'place')
     {
-        if (empty($this->place_mediadir_id)) {
+        if (empty($intMediaDirId)) {
             return ;
         }
-        
+                
         $objMediadirEntry = new mediaDirectoryEntry();
-        $objMediadirEntry->getEntries(intval($this->place_mediadir_id)); 
+        $objMediadirEntry->getEntries(intval($intMediaDirId)); 
         //get inputfield object                    
-        $objInputfields = new mediaDirectoryInputfield($objMediadirEntry->arrEntries[$this->place_mediadir_id]['entryFormId'],false,$objMediadirEntry->arrEntries[$this->place_mediadir_id]['entryTranslationStatus']);
+        $objInputfields = new mediaDirectoryInputfield($objMediadirEntry->arrEntries[$intMediaDirId]['entryFormId'],false,$objMediadirEntry->arrEntries[$intMediaDirId]['entryTranslationStatus']);
         
         foreach ($objInputfields->arrInputfields as $arrInputfield) {
             
@@ -1626,26 +1629,26 @@ class CalendarEvent extends CalendarLibrary
                         $objInputfield = safeNew($strInputfieldClass);
 
                         if(intval($arrInputfield['type_multi_lang']) == 1) {
-                            $arrInputfieldContent = $objInputfield->getContent($this->place_mediadir_id, $arrInputfield, $objMediadirEntry->arrEntries[$this->place_mediadir_id]['entryTranslationStatus']);
+                            $arrInputfieldContent = $objInputfield->getContent($intMediaDirId, $arrInputfield, $objMediadirEntry->arrEntries[$intMediaDirId]['entryTranslationStatus']);
                         } else {
-                            $arrInputfieldContent = $objInputfield->getContent($this->place_mediadir_id, $arrInputfield, null);
+                            $arrInputfieldContent = $objInputfield->getContent($intMediaDirId, $arrInputfield, null);
                         }
                         
                         switch ($arrInputfield['context_type']) {
                             case 'title':
-                                $this->place = end($arrInputfieldContent);
+                                $place = end($arrInputfieldContent);
                                 break;
                             case 'address':
-                                $this->place_street = end($arrInputfieldContent);
+                                $place_street = end($arrInputfieldContent);
                                 break;
                             case 'zip':                                
-                                $this->place_zip = end($arrInputfieldContent);
+                                $place_zip = end($arrInputfieldContent);
                                 break;
                             case 'city':
-                                $this->place_city = end($arrInputfieldContent);
+                                $place_city = end($arrInputfieldContent);
                                 break;
                             case 'country':
-                                $this->place_country = end($arrInputfieldContent);
+                                $place_country = end($arrInputfieldContent);
                                 break;
                         }
                         
@@ -1656,6 +1659,21 @@ class CalendarEvent extends CalendarLibrary
             }
         }
         
+        if ($type == 'place') {
+            $this->place         = $place;
+            $this->place_street  = $place_street;
+            $this->place_zip     = $place_zip;
+            $this->place_city    = $place_city;
+            $this->place_country = $place_country;
+            $this->place_map     = '';
+        } else {            
+            $this->org_name   = $place;
+            $this->org_street = $place_street;
+            $this->org_zip    = $place_zip;
+            $this->org_city   = $place_city;
+            $this->org_email  = '';
+        }
+        
     }
     
     /**
@@ -1663,27 +1681,27 @@ class CalendarEvent extends CalendarLibrary
      * 
      * @return array place url and its source link
      */
-    function loadPlaceLinkFromMediadir()
+    function loadPlaceLinkFromMediadir($intMediaDirId = 0, $type = 'place')
     {
         global $_LANGID, $_CONFIG;
         
-        if (empty($this->place_mediadir_id)) {
+        if (empty($intMediaDirId)) {
             return ;
         }
         
         $objMediadirEntry = new mediaDirectoryEntry();
-        $objMediadirEntry->getEntries(intval($this->place_mediadir_id)); 
+        $objMediadirEntry->getEntries(intval($intMediaDirId)); 
         
         $pageRepo = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
         $pages = $pageRepo->findBy(array(
-            'cmd'    => contrexx_addslashes('detail'.intval($objMediadirEntry->arrEntries[$this->place_mediadir_id]['entryFormId'])),
+            'cmd'    => contrexx_addslashes('detail'.intval($objMediadirEntry->arrEntries[$intMediaDirId]['entryFormId'])),
             'lang'   => $_LANGID,
             'type'   => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
             'module' => 'mediadir',
         ));
         
         if(count($pages)) {
-            $strDetailCmd = 'detail'.intval($objMediadirEntry->arrEntries[$this->place_mediadir_id]['entryFormId']);
+            $strDetailCmd = 'detail'.intval($objMediadirEntry->arrEntries[$intMediaDirId]['entryFormId']);
         } else {
             $strDetailCmd = 'detail';
         }
@@ -1704,9 +1722,10 @@ class CalendarEvent extends CalendarLibrary
             }
         }
         
-        $url = $pages[$langId]->getUrl(ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET, "?eid={$this->place_mediadir_id}");
+        $url = $pages[$langId]->getUrl(ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET, "?eid={$intMediaDirId}");
         
-        $placeUrl       = "<a href='".$url."' target='_blank' >". (!empty($this->place) ? $this->place : $url) ."</a>";
+        $place          = ($type = 'place') ? $this->place : $this->org_name;
+        $placeUrl       = "<a href='".$url."' target='_blank' >". (!empty($place) ? $place : $url) ."</a>";
         $placeUrlSource = $url;
         
         return array($placeUrl, $placeUrlSource);

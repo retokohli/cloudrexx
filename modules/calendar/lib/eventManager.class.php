@@ -714,8 +714,8 @@ class CalendarEventManager extends CalendarLibrary
                 $placeLink         = $objEvent->place_link != '' ? "<a href='".$objEvent->place_link."' target='_blank' >".$objEvent->place_link."</a>" : "";
                 $placeLinkSource   = $objEvent->place_link;
                 if ($this->arrSettings['placeData'] > 1 && $objEvent->locationType == 2) {
-                    $objEvent->loadPlaceFromMediadir();
-                    list($placeLink, $placeLinkSource) = $objEvent->loadPlaceLinkFromMediadir();                    
+                    $objEvent->loadPlaceFromMediadir($objEvent->place_mediadir_id, 'place');
+                    list($placeLink, $placeLinkSource) = $objEvent->loadPlaceLinkFromMediadir($objEvent->place_mediadir_id, 'place');                    
                 }
                 
                 $objTpl->setVariable(array(                                                          
@@ -735,7 +735,13 @@ class CalendarEventManager extends CalendarLibrary
                 $objTpl->parse('calendarEventAddress'); 
             }
             
-            if($objEvent->org_name == '' && $objEvent->org_street == '' && $objEvent->org_zip == '' && $objEvent->org_city == '') {
+            $hostLink         = $objEvent->org_link != '' ? "<a href='".$objEvent->org_link."' target='_blank' >".$objEvent->org_link."</a>" : "";
+            $hostLinkSource   = $objEvent->org_link;
+            if ($this->arrSettings['placeDataHost'] > 1 && $objEvent->hostType == 2) {
+                $objEvent->loadPlaceFromMediadir($objEvent->host_mediadir_id, 'host');
+                list($hostLink, $hostLinkSource) = $objEvent->loadPlaceLinkFromMediadir($objEvent->host_mediadir_id, 'host');                    
+            }
+            if(($this->arrSettings['placeDataHost'] == 1) && $objEvent->org_name == '' && $objEvent->org_street == '' && $objEvent->org_zip == '' && $objEvent->org_city == '') {
                 $objTpl->hideBlock('calendarEventHost');  
             } else {
                 $objTpl->setVariable(array(
@@ -743,8 +749,8 @@ class CalendarEventManager extends CalendarLibrary
                     $this->moduleLangVar.'_EVENT_HOST_ADDRESS' => $objEvent->org_street,
                     $this->moduleLangVar.'_EVENT_HOST_ZIP'     => $objEvent->org_zip,
                     $this->moduleLangVar.'_EVENT_HOST_CITY'    => $objEvent->org_city,
-                    $this->moduleLangVar.'_EVENT_HOST_LINK'    => $objEvent->org_link != '' ? "<a href='".$objEvent->org_link."' target='_blank' >".$objEvent->org_link."</a>" : "",
-                    $this->moduleLangVar.'_EVENT_HOST_LINK_SOURCE'  => $objEvent->org_link,
+                    $this->moduleLangVar.'_EVENT_HOST_LINK'    => $hostLink,
+                    $this->moduleLangVar.'_EVENT_HOST_LINK_SOURCE'  => $hostLinkSource,
                     $this->moduleLangVar.'_EVENT_HOST_EMAIL'        => $objEvent->org_email != '' ? "<a href='mailto:".$objEvent->org_email."' >".$objEvent->org_email."</a>" : "",
                     $this->moduleLangVar.'_EVENT_HOST_EMAIL_SOURCE' => $objEvent->org_email,
                 ));    
@@ -836,8 +842,14 @@ class CalendarEventManager extends CalendarLibrary
                 $placeLink         = $objEvent->place_link != '' ? "<a href='".$objEvent->place_link."' target='_blank' >".$objEvent->place_link."</a>" : "";
                 $placeLinkSource   = $objEvent->place_link;
                 if ($this->arrSettings['placeData'] > 1 && $objEvent->locationType == 2) {
-                    $objEvent->loadPlaceFromMediadir();
-                    list($placeLink, $placeLinkSource) = $objEvent->loadPlaceLinkFromMediadir();                    
+                    $objEvent->loadPlaceFromMediadir($objEvent->place_mediadir_id, 'place');
+                    list($placeLink, $placeLinkSource) = $objEvent->loadPlaceLinkFromMediadir($objEvent->place_mediadir_id, 'place');                    
+                }
+                $hostLink         = $objEvent->org_link != '' ? "<a href='".$objEvent->org_link."' target='_blank' >".$objEvent->org_link."</a>" : "";
+                $hostLinkSource   = $objEvent->org_link;
+                if ($this->arrSettings['placeDataHost'] > 1 && $objEvent->hostType == 2) {
+                    $objEvent->loadPlaceFromMediadir($objEvent->host_mediadir_id, 'host');
+                    list($hostLink, $hostLinkSource) = $objEvent->loadPlaceLinkFromMediadir($objEvent->host_mediadir_id, 'host');                    
                 }
                 
                 $objTpl->setVariable(array(
@@ -896,8 +908,8 @@ class CalendarEventManager extends CalendarLibrary
                     $this->moduleLangVar.'_EVENT_HOST_ADDRESS'      => $objEvent->org_street,
                     $this->moduleLangVar.'_EVENT_HOST_ZIP'          => $objEvent->org_zip,
                     $this->moduleLangVar.'_EVENT_HOST_CITY'         => $objEvent->org_city,
-                    $this->moduleLangVar.'_EVENT_HOST_LINK'         => $objEvent->org_link != '' ? "<a href='".$objEvent->org_link."' target='_blank' >".$objEvent->org_link."</a>" : "",
-                    $this->moduleLangVar.'_EVENT_HOST_LINK_SOURCE'  => $objEvent->org_link,
+                    $this->moduleLangVar.'_EVENT_HOST_LINK'         => $hostLink,
+                    $this->moduleLangVar.'_EVENT_HOST_LINK_SOURCE'  => $hostLinkSource,
                     $this->moduleLangVar.'_EVENT_HOST_EMAIL'        => $objEvent->org_email != '' ? "<a href='mailto:".$objEvent->org_email."' >".$objEvent->org_email."</a>" : "",
                     $this->moduleLangVar.'_EVENT_HOST_EMAIL_SOURCE' => $objEvent->org_email,
                 ));

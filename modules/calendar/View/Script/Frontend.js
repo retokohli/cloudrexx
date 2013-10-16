@@ -176,10 +176,10 @@ $J(function(){
 });
 function showOrHidePlaceFields(inputValue, type) {        
     if (inputValue == '1') {
-        $J( "tr.event_"+type+"_manual" ).css("display", "table-row");
-        $J( "tr.event_"+type+"_mediadir" ).css("display", "none");
+        $J( "div.event_"+type+"_manual" ).css("display", "table-row");
+        $J( "div.event_"+type+"_mediadir" ).css("display", "none");
     } else {
-        $J( "tr.event_"+type+"_manual" ).css("display", "none");
-        $J( "tr.event_"+type+"_mediadir" ).css("display", "table-row");
+        $J( "div.event_"+type+"_manual" ).css("display", "none");
+        $J( "div.event_"+type+"_mediadir" ).css("display", "table-row");
     }
 }
