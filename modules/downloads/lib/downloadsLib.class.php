@@ -143,7 +143,7 @@ class DownloadsLibrary
         }
 
         $menu = '<select name="downloads_category_parent_id"'.(!empty($attrs) ? ' '.$attrs : '').'>';
-        $menu .= '<option value="0"'.(!$selectedCategory ? ' selected="selected"' : '').($accessType != 'read' && !Permission::checkAccess(142, 'static', true) ? ' disabled="disabled"' : '').' style="border-bottom:1px solid #000;">'.$selectionText.'</option>';
+        $menu .= '<option value="0"'.(!$selectedCategory ? ' selected="selected"' : '').($accessType != 'read' && !Permission::checkAccess(143, 'static', true) ? ' disabled="disabled"' : '').' style="border-bottom:1px solid #000;">'.$selectionText.'</option>';
 
         $menu .= $this->parseCategoryTreeForMenu($arrCategories, $selectedCategory, $categoryId);
 
@@ -171,7 +171,7 @@ class DownloadsLibrary
                     .($arrCategories[$parentId][$i]['id'] == $selectedCategory ? ' selected="selected"' : '')
                     .($arrCategories[$parentId][$i]['id'] == $categoryId || $arrCategories[$parentId][$i]['is_child'] ? ' disabled="disabled"' : (
                         // managers are allowed to see the content of every category
-                        Permission::checkAccess(142, 'static', true)
+                        Permission::checkAccess(143, 'static', true)
                         // the category isn't protected => everyone is allowed to the it's content
                         || !$arrCategories[$parentId][$i]['access_id']
                         // the category is protected => only those who have the sufficent permissions are allowed to see it's content
