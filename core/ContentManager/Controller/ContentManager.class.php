@@ -277,16 +277,34 @@ class ContentManager extends \Module
             $this->template->hideBlock('page_permissions');
         }
 
-        if (\Permission::checkAccess(78, 'static', true)) {
-            $this->template->hideBlock('release_button');
-        } else {
-            $this->template->hideBlock('publish_button');
+        $newPageFirstLevel = isset($_GET['act']) && $_GET['act'] == 'new';
+
+        // show edit view for act=new
+        $editViewCssClass = '';
+        if ($newPageFirstLevel) {
+            $editViewCssClass = 'edit_view';
             $this->template->hideBlock('refuse_button');
         }
 
-        $editViewCssClass = '';
-        if (isset($_GET['act']) && $_GET['act'] == 'new') {
-            $editViewCssClass = 'edit_view';
+        // flag to check whether the user has permission to publish a new page
+        $hasPublishPermission = true;
+
+        // check for publish permission in general
+        if (!\Permission::checkAccess(78, 'static', true)) {
+            $hasPublishPermission = false;
+        }
+
+        // user wants to create new page in first level but does not have permission
+        if ($newPageFirstLevel && $hasPublishPermission && !\Permission::checkAccess(127, 'static', true)) {
+            $hasPublishPermission = false;
+        }
+
+        if ($hasPublishPermission) {
+            // show publish button if the user has permission to publish
+            $this->template->hideBlock('release_button');
+        } else {
+            // hide publish and refuse button, only show release button
+            $this->template->hideBlock('publish_button');
             $this->template->hideBlock('refuse_button');
         }
 
