@@ -110,6 +110,12 @@ class ContentManager extends \Module
         $cachedRoot = $this->template->getRoot();
         $this->template->setRoot(ASCMS_CORE_PATH . '/ContentManager/View/Template');
         $this->template->addBlockfile('ADMIN_CONTENT', 'content_manager', 'Skeleton.html');
+
+        // user has no permission to create new page, hide navigation item in admin navigation
+        if (!\Permission::checkAccess(127, 'static', true)) {
+            $this->template->hideBlock('content_manager_create_new_page_navigation_item');
+        }
+
         $this->template->touchBlock('content_manager');
         $this->template->addBlockfile('CONTENT_MANAGER_MEAT', 'content_manager_meat', 'Page.html');
         $this->template->touchBlock('content_manager_meat');
@@ -269,6 +275,8 @@ class ContentManager extends \Module
             $modules->MoveNext();
         }
 
+        $newPageFirstLevel = isset($_GET['act']) && $_GET['act'] == 'new';
+
         if (\Permission::checkAccess(36, 'static', true)) {
             $this->template->touchBlock('page_permissions_tab');
             $this->template->touchBlock('page_permissions');
@@ -277,34 +285,21 @@ class ContentManager extends \Module
             $this->template->hideBlock('page_permissions');
         }
 
-        $newPageFirstLevel = isset($_GET['act']) && $_GET['act'] == 'new';
-
-        // show edit view for act=new
-        $editViewCssClass = '';
-        if ($newPageFirstLevel) {
-            $editViewCssClass = 'edit_view';
+        if (\Permission::checkAccess(78, 'static', true)) {
+            $this->template->hideBlock('release_button');
+        } else {
+            $this->template->hideBlock('publish_button');
             $this->template->hideBlock('refuse_button');
         }
 
-        // flag to check whether the user has permission to publish a new page
-        $hasPublishPermission = true;
-
-        // check for publish permission in general
-        if (!\Permission::checkAccess(78, 'static', true)) {
-            $hasPublishPermission = false;
+        // show no access page if the user wants to create new page in first level but he does not have enough permissions
+        if ($newPageFirstLevel) {
+            \Permission::checkAccess(127, 'static');
         }
 
-        // user wants to create new page in first level but does not have permission
-        if ($newPageFirstLevel && $hasPublishPermission && !\Permission::checkAccess(127, 'static', true)) {
-            $hasPublishPermission = false;
-        }
-
-        if ($hasPublishPermission) {
-            // show publish button if the user has permission to publish
-            $this->template->hideBlock('release_button');
-        } else {
-            // hide publish and refuse button, only show release button
-            $this->template->hideBlock('publish_button');
+        $editViewCssClass = '';
+        if ($newPageFirstLevel) {
+            $editViewCssClass = 'edit_view';
             $this->template->hideBlock('refuse_button');
         }
 
