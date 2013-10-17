@@ -211,6 +211,10 @@ class adminMenu
 
                                     $linkCmd = '';
                                 }
+                                // hide new page item in navigation if the user has no permission to create new page in first level
+                                if ($linkCmdSection == 'act=new' && !\Permission::checkAccess(127, 'static', true)) {
+                                    continue 2;
+                                }
                                 break;
                             case 'stats':
                                 $cssClass = 'inactive';
