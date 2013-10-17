@@ -1502,6 +1502,26 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
     }
 }
 
+/***************************************
+ *
+ * DOWNLOADS: ACCESS IDS
+ *
+ **************************************/
+// add permission to downloads edit all downloads if the user had permission to downloads administer
+if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0.2')) {
+    try {
+        $result = \Cx\Lib\UpdateUtil::sql("SELECT `group_id` FROM `" . DBPREFIX . "access_group_static_ids` WHERE access_id = 142 GROUP BY `group_id`");
+        if ($result !== false) {
+            while (!$result->EOF) {
+                \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `" . DBPREFIX . "access_group_static_ids` (`access_id`, `group_id`)
+                                            VALUES (143, " . intval($result->fields['group_id']) . ")");
+                $result->MoveNext();
+            }
+        }
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+}
 
 if (file_exists(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php')) {
     // move cadmin index.php if its customized

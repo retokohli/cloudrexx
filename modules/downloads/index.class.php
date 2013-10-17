@@ -176,7 +176,7 @@ class downloads extends DownloadsLibrary
 
         if ($objCategory->getId()) {
             // check access permissions to selected category
-            if (!Permission::checkAccess(142, 'static', true)
+            if (!Permission::checkAccess(143, 'static', true)
                 && $objCategory->getReadAccessId()
                 && !Permission::checkAccess($objCategory->getReadAccessId(), 'dynamic', true)
                 && $objCategory->getOwnerId() != $this->userId
@@ -1361,7 +1361,7 @@ JS_CODE;
             if (// download is protected
                 $objDownload->getAccessId()
                 // the user isn't a admin
-                && !Permission::checkAccess(142, 'static', true)
+                && !Permission::checkAccess(143, 'static', true)
                 // the user doesn't has access to this download
                 && !Permission::checkAccess($objDownload->getAccessId(), 'dynamic', true)
                 // the user isn't the owner of the download
@@ -1394,7 +1394,7 @@ JS_CODE;
     public function hasUserAccessToCategoriesOfDownload($objDownload)
     {
         // user is DAM admin (or superuser)
-        if (Permission::checkAccess(142, 'static', true)) {
+        if (Permission::checkAccess(143, 'static', true)) {
             return true;
         }
 

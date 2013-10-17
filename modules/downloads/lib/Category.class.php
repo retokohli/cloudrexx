@@ -204,10 +204,10 @@ class Category
         $objFWUser = FWUser::getFWUserObject();
 
         if (// the category is a main category => only managers are allowed to delete the category
-            !$this->parent_id && !Permission::checkAccess(142, 'static', true)
+            !$this->parent_id && !Permission::checkAccess(143, 'static', true)
             // the category isn't a main category and...
             || $this->parent_id && (
-                !Permission::checkAccess(142, 'static', true)
+                !Permission::checkAccess(143, 'static', true)
                 // ...the owner has the permission to delete it by himself
                 && (!$this->getDeletableByOwner() || !$objFWUser->objUser->login() || $this->owner_id != $objFWUser->objUser->getId())
                 // ...or the user has the right the delete subcategories of the current parent category
@@ -343,11 +343,11 @@ class Category
             SELECT  tblR.`category_id`,
                     COUNT(1) AS `count`
             FROM    `'.DBPREFIX.'module_downloads_rel_download_category` AS tblR
-            '.($this->isFrontendMode || !Permission::checkAccess(142, 'static', true) ? 'INNER JOIN `'.DBPREFIX.'module_downloads_download` AS tblD ON tblD.`id` = tblR.`download_id`' : '').'
+            '.($this->isFrontendMode || !Permission::checkAccess(143, 'static', true) ? 'INNER JOIN `'.DBPREFIX.'module_downloads_download` AS tblD ON tblD.`id` = tblR.`download_id`' : '').'
             WHERE   tblR.`category_id` IN ('.implode(',', $arrCategoryIds).')
                     '.($this->isFrontendMode ? 'AND tblD.`is_active` = 1' : '').'
                     '.($this->isFrontendMode ? 'AND (tblD.`expiration` = 0 || tblD.`expiration` > '.time().')' : '').'
-                    '.($this->isFrontendMode || !Permission::checkAccess(142, 'static', true) ?
+                    '.($this->isFrontendMode || !Permission::checkAccess(143, 'static', true) ?
                             'AND (tblD.`visibility` = 1'.(
                                 $objFWUser->objUser->login() ?
                                     ' OR tblD.`owner_id` = '.$objFWUser->objUser->getId()
@@ -658,7 +658,7 @@ class Category
         }
 
         // parse access permissions
-        if (!Permission::checkAccess(142, 'static', true)) {
+        if (!Permission::checkAccess(143, 'static', true)) {
             $objFWUser = FWUser::getFWUserObject();
 
             // category access
@@ -936,7 +936,7 @@ class Category
         }
 
         $objParentCategory = Category::getCategory($this->parent_id);
-        if (!Permission::checkAccess(142, 'static', true)
+        if (!Permission::checkAccess(143, 'static', true)
             // the user isn't the owner of the category
             && (!$this->id || (($objFWUser = FWUser::getFWUserObject()) == false || !$objFWUser->objUser->login() || $this->owner_id != $objFWUser->objUser->getId()))
             && (
@@ -1116,7 +1116,7 @@ class Category
             return false;
         }
 
-        if (Permission::checkAccess(142, 'static', true)
+        if (Permission::checkAccess(143, 'static', true)
             || !$this->getAddFilesAccessId()
             || Permission::checkAccess($this->getAddFilesAccessId(), 'dynamic', true)
             || $this->getOwnerId() == $userId
@@ -1126,7 +1126,7 @@ class Category
             $arrNewDownloads = array();
         }
 
-        $removePermission = Permission::checkAccess(142, 'static', true)
+        $removePermission = Permission::checkAccess(143, 'static', true)
             || !$this->getManageFilesAccessId()
             || Permission::checkAccess($this->getManageFilesAccessId(), 'dynamic', true)
             || $this->getOwnerId() == $userId;
@@ -1273,7 +1273,7 @@ class Category
         // check if the user is allowed to change the parent id
         if ($this->parent_id) {
             $objParentCategory = Category::getCategory($this->parent_id);
-            if (!Permission::checkAccess(142, 'static', true)
+            if (!Permission::checkAccess(143, 'static', true)
                 && $objParentCategory->getManageSubcategoriesAccessId()
                 && !Permission::checkAccess($objParentCategory->getManageSubcategoriesAccessId(), 'dynamic', true)
                 && (($objFWUser = FWUser::getFWUserObject()) == false || !$objFWUser->objUser->login() || $objParentCategory->getOwnerId() != $objFWUser->objUser->getId())
@@ -1285,8 +1285,8 @@ class Category
 
         // check if the user is allowed to use the desired category as a parent id
         $objParentCategory = Category::getCategory($parentId);
-        if (!$objParentCategory->EOF || Permission::checkAccess(142, 'static', true)) {
-            if (!Permission::checkAccess(142, 'static', true)
+        if (!$objParentCategory->EOF || Permission::checkAccess(143, 'static', true)) {
+            if (!Permission::checkAccess(143, 'static', true)
                 && $objParentCategory->getAddSubcategoriesAccessId()
                 && !Permission::checkAccess($objParentCategory->getAddSubcategoriesAccessId(), 'dynamic', true)
                 && (($objFWUser = FWUser::getFWUserObject()) == false || !$objFWUser->objUser->login() || $objParentCategory->getOwnerId() != $objFWUser->objUser->getId())

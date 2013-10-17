@@ -335,7 +335,7 @@ class Download {
         $objFWUser = FWUser::getFWUserObject();
 
         if (// managers are allowed to delete the download
-            !Permission::checkAccess(142, 'static', true)
+            !Permission::checkAccess(143, 'static', true)
             // the owner has the permission to delete it by himself
             && (!$objFWUser->objUser->login() || $this->owner_id != $objFWUser->objUser->getId())
             && (
@@ -729,7 +729,7 @@ class Download {
             if (!isset($arrFilter['is_active'])) {
                 $arrConditions[] = 'tblD.`is_active` = 1';
             }
-            if (!Permission::checkAccess(142, 'static', true)) {
+            if (!Permission::checkAccess(143, 'static', true)) {
                 $arrConditions[] = 'tblD.`visibility` = 1'.(
                     $objFWUser->objUser->login() ?
                     ' OR tblD.`owner_id` = '.$objFWUser->objUser->getId()
@@ -743,14 +743,14 @@ class Download {
                 $arrTables[] = 'category';
             }
             $arrConditions[] = 'tblC.`is_active` = 1';
-            if (!Permission::checkAccess(142, 'static', true)) {
+            if (!Permission::checkAccess(143, 'static', true)) {
                 $arrConditions[] = 'tblC.`visibility` = 1'.(
                     $objFWUser->objUser->login() ?
                         ' OR tblC.`owner_id` = '.$objFWUser->objUser->getId()
                         .(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR tblC.`read_access_id` IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds()).')' : '')
                     : '');
             }
-        } elseif (!Permission::checkAccess(142, 'static', true)) {
+        } elseif (!Permission::checkAccess(143, 'static', true)) {
             $objFWUser = FWUser::getFWUserObject();
 
              $arrConditions[] = 'tblD.`visibility` = 1'.(
@@ -1084,7 +1084,7 @@ class Download {
     {
         global $objDatabase, $_ARRAYLANG;
 
-        if (!Permission::checkAccess(142, 'static', true)
+        if (!Permission::checkAccess(143, 'static', true)
             && (($objFWUser = FWUser::getFWUserObject()) == false || !$objFWUser->objUser->login() || $this->owner_id != $objFWUser->objUser->getId())
             && (
                 empty($objCategory)
@@ -1299,7 +1299,7 @@ class Download {
         $arrNewCategories = array_diff($this->categories, $arrOldCategories);
         $arrRemovedCategories = array_diff($arrOldCategories, $this->categories);
 
-        if (!Permission::checkAccess(142, 'static', true)) {
+        if (!Permission::checkAccess(143, 'static', true)) {
             // we have to check if all associations are within the users permissions
             $objFWUser = FWUser::getFWUserObject();
             $objCategory = Category::getCategories(null, null, array('order' => 'ASC', 'name' => 'ASC', 'id' => 'ASC'));
@@ -1623,7 +1623,7 @@ class Download {
                         '.($this->isFrontendMode ? 'INNER JOIN `'.DBPREFIX.'module_downloads_category` AS tblC ON tblC.`id` = tblR.`category_id`' : '').'
                 WHERE   tblR.`download_id` IN ('.implode(',', array_keys($this->arrLoadedDownloads)).')
                         '.($this->isFrontendMode ? 'AND tblC.`is_active` = 1'
-                            .(!Permission::checkAccess(142, 'static', true) ? ' AND (tblC.`visibility` = 1'.(
+                            .(!Permission::checkAccess(143, 'static', true) ? ' AND (tblC.`visibility` = 1'.(
                             $objFWUser->objUser->login() ?
                                 ' OR tblC.`owner_id` = '.$objFWUser->objUser->getId()
                                 .(count($objFWUser->objUser->getDynamicPermissionIds()) ? ' OR tblC.`read_access_id` IN ('.implode(', ', $objFWUser->objUser->getDynamicPermissionIds()).')' : '')

@@ -272,7 +272,7 @@ class downloads extends DownloadsLibrary
             if (// download is protected
                 $objDownload->getAccessId()
                 // the user isn't a admin
-                && !Permission::checkAccess(142, 'static', true)
+                && !Permission::checkAccess(143, 'static', true)
                 // the user doesn't has access to this download
                 && !Permission::checkAccess($objDownload->getAccessId(), 'dynamic', true)
                 // the user isn't the owner of the download
@@ -650,7 +650,7 @@ class downloads extends DownloadsLibrary
             $objCategory->setDescriptions(isset($_POST['downloads_category_description']) ? array_map('trim', array_map('contrexx_stripslashes', $_POST['downloads_category_description'])) : array());
             $objCategory->setDownloads(isset($_POST['downloads_category_associated_downloads']) ? array_map('intval', $_POST['downloads_category_associated_downloads']) : array());
 
-            if (Permission::checkAccess(142, 'static', true)) {
+            if (Permission::checkAccess(143, 'static', true)) {
                 $objCategory->setOwner(isset($_POST['downloads_category_owner_id']) ? intval($_POST['downloads_category_owner_id']) : $objFWUser->objUser->getId());
                 $objCategory->setDeletableByOwner($objCategory->getOwnerId() == $objFWUser->objUser->getId() || isset($_POST['downloads_category_deletable_by_owner']) && $_POST['downloads_category_deletable_by_owner']);
                 $objCategory->setModifyAccessByOwner($objCategory->getOwnerId() == $objFWUser->objUser->getId() || isset($_POST['downloads_category_manage_by_owner']) && $_POST['downloads_category_manage_by_owner']);
@@ -740,8 +740,8 @@ class downloads extends DownloadsLibrary
             'DOWNLOADS_CATEGORY_ID'                         => $objCategory->getId(),
             'DOWNLOADS_CATEGORY_PARENT_ID'                  => $objCategory->getParentId(),
             'DOWNLOADS_CATEGORY_OPERATION_TITLE'            => $objCategory->getId() ? $_ARRAYLANG['TXT_DOWNLOADS_EDIT_CATEGORY'] : $_ARRAYLANG['TXT_DOWNLOADS_ADD_CATEGORY'],
-            'DOWNLOADS_CATEGORY_OWNER'                      => Permission::checkAccess(142, 'static', true) ? $this->getUserDropDownMenu($objCategory->getOwnerId(), $objFWUser->objUser->getId()) : $this->getParsedUsername($objCategory->getOwnerId()),
-            'DOWNLOADS_CATEGORY_OWNER_CONFIG_DISPLAY'       => Permission::checkAccess(142, 'static', true) && $objCategory->getOwnerId() != $objFWUser->objUser->getId() ? '' : 'none',
+            'DOWNLOADS_CATEGORY_OWNER'                      => Permission::checkAccess(143, 'static', true) ? $this->getUserDropDownMenu($objCategory->getOwnerId(), $objFWUser->objUser->getId()) : $this->getParsedUsername($objCategory->getOwnerId()),
+            'DOWNLOADS_CATEGORY_OWNER_CONFIG_DISPLAY'       => Permission::checkAccess(143, 'static', true) && $objCategory->getOwnerId() != $objFWUser->objUser->getId() ? '' : 'none',
             'DOWNLOADS_CATEGORY_DELETABLE_BY_OWNER_CHECKED' => $objCategory->getDeletableByOwner() ? 'checked="checked"' : '',
             'DOWNLOADS_CATEGORY_MANAGE_BY_OWNER_CHECKED'    => $objCategory->getModifyAccessByOwner() ? 'checked="checked"' : '',
             'DOWNLOADS_CATEGORY_ACTIVE_CHECKED'             => $objCategory->getActiveStatus() ? 'checked="checked"' : '',
@@ -966,7 +966,7 @@ class downloads extends DownloadsLibrary
 
 
         if (// managers are allowed to change the sort order
-            Permission::checkAccess(142, 'static', true)
+            Permission::checkAccess(143, 'static', true)
         ) {
             $changeOrderAllowed = true;
             $this->objTemplate->setVariable('TXT_DOWNLOADS_ORDER', $_ARRAYLANG['TXT_DOWNLOADS_ORDER']);
@@ -1004,7 +1004,7 @@ class downloads extends DownloadsLibrary
             }
 
             if (// managers are allowed to modify/delete downloads
-                Permission::checkAccess(142, 'static', true)
+                Permission::checkAccess(143, 'static', true)
                 // to owner of the download is allowed to modify/delete it
                 || $objDownload->getOwnerId() == $objFWUser->objUser->getId()
             ) {
@@ -1050,7 +1050,7 @@ class downloads extends DownloadsLibrary
                 // the download is protected -> only those who have the sufficent permissions are allowed to download it
                 || Permission::checkAccess($objDownload->getAccessId(), 'dynamic', true)
                 // managers are allowed to download every download
-                || Permission::checkAccess(142, 'static', true)
+                || Permission::checkAccess(143, 'static', true)
             ) {
                 // parse download function
                 $this->objTemplate->setVariable(array(
@@ -1194,7 +1194,7 @@ class downloads extends DownloadsLibrary
         $objFWUser = FWUser::getFWUserObject();
 
         // check permissions
-        if (!Permission::checkAccess(142, 'static', true)
+        if (!Permission::checkAccess(143, 'static', true)
             && ($objCategory->getReadAccessId() && !Permission::checkAccess($objCategory->getReadAccessId(), 'dynamic', true))
             && $objCategory->getOwnerId() != $objFWUser->objUser->getId()
         ) {
@@ -1217,13 +1217,13 @@ class downloads extends DownloadsLibrary
 
         // parse download associations
         $arrAssociatedDownloads = array_keys($objCategory->getAssociatedDownloadIds());
-        $hasRemoveRight = Permission::checkAccess(142, 'static', true) || $objCategory->getId() && (!$objCategory->getManageFilesAccessId() || Permission::checkAccess($objCategory->getManageFilesAccessId(), 'dynamic', true) || $objCategory->getOwnerId() == $objFWUser->objUser->getId());
+        $hasRemoveRight = Permission::checkAccess(143, 'static', true) || $objCategory->getId() && (!$objCategory->getManageFilesAccessId() || Permission::checkAccess($objCategory->getManageFilesAccessId(), 'dynamic', true) || $objCategory->getOwnerId() == $objFWUser->objUser->getId());
         $associatedDownloads = '';
         $notAssociatedDownloads = '';
         $objDownload = new Download();
         $objDownload->loadDownloads();
         while (!$objDownload->EOF) {
-            if (!Permission::checkAccess(142, 'static', true) && !$objDownload->getVisibility() && $objDownload->getOwnerId() != $objFWUser->objUser->getId()) {
+            if (!Permission::checkAccess(143, 'static', true) && !$objDownload->getVisibility() && $objDownload->getOwnerId() != $objFWUser->objUser->getId()) {
                 $objDownload->next();
                 continue;
             }
@@ -1293,7 +1293,7 @@ class downloads extends DownloadsLibrary
         $objDownload->load(isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0);
 
         if ($objDownload->getId()
-            && !Permission::checkAccess(142, 'static', true)
+            && !Permission::checkAccess(143, 'static', true)
             && (($objFWUser = FWUser::getFWUserObject()) == false || !$objFWUser->objUser->login() || $objDownload->getOwnerId() != $objFWUser->objUser->getId())
         ) {
             $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_DOWNLOADS_MODIFY_DOWNLOAD_PROHIBITED'];
@@ -1593,7 +1593,7 @@ class downloads extends DownloadsLibrary
         $length = count($arrCategories);
         for ($i = 0; $i < $length; $i++) {
             if (// managers are allowed to change the category association
-                Permission::checkAccess(142, 'static', true)
+                Permission::checkAccess(143, 'static', true)
                 // the download isn't associated with the category
                 || !in_array($arrCategories[$i]['id'], $arrAssociatedCategories) && (
                     // everyone is allowed to associate new files with this category
@@ -1779,7 +1779,7 @@ class downloads extends DownloadsLibrary
         $objFWUser = FWUser::getFWUserObject();
 
         $objCategory = Category::getCategory($this->parentCategoryId);
-        if (Permission::checkAccess(142, 'static', true)
+        if (Permission::checkAccess(143, 'static', true)
             || !$objCategory->EOF && (
                 !$objCategory->getAddSubcategoriesAccessId()
                 || Permission::checkAccess($objCategory->getAddSubcategoriesAccessId(), 'dynamic', true)
@@ -1819,7 +1819,7 @@ class downloads extends DownloadsLibrary
 
         // check access permission
         if (// managers are allowed to see the content of every category
-            !Permission::checkAccess(142, 'static', true)
+            !Permission::checkAccess(143, 'static', true)
             && $objCategory->getReadAccessId()
             && !Permission::checkAccess($objCategory->getReadAccessId(), 'dynamic', true)
             && $objCategory->getOwnerId() != $objFWUser->objUser->getId()
@@ -1859,7 +1859,7 @@ class downloads extends DownloadsLibrary
         // process downloads multi action
         if (isset($_POST['downloads_download_select_action'])) {
             if (// managers are allowed to manage to downloads
-                !Permission::checkAccess(142, 'static', true)
+                !Permission::checkAccess(143, 'static', true)
                 && $objCategory->getManageFilesAccessId()
                 && !Permission::checkAccess($objCategory->getManageFilesAccessId(), 'dynamic', true)
                 && $objCategory->getOwnerId() != $objFWUser->objUser->getId()
@@ -1888,7 +1888,7 @@ class downloads extends DownloadsLibrary
 
 //        // check if user is allowed to add a subcategory
 //        if (// managers are allowed to add subcategories
-//            Permission::checkAccess(142, 'static', true)
+//            Permission::checkAccess(143, 'static', true)
 //            // the selected category must be valid to proceed future permission checks.
 //            // this is required to protect the overview section from non-admins
 //            || $objCategory->getId() && (
@@ -1940,7 +1940,7 @@ class downloads extends DownloadsLibrary
         if (// we can only add downloads to a category
             $objCategory->getId() && (
                 // managers are allowed to add new downloads
-                Permission::checkAccess(142, 'static', true)
+                Permission::checkAccess(143, 'static', true)
                 // the category isn't protected => everyone is allowed to add new downloads
                 || !$objCategory->getAddFilesAccessId()
                 // the category is protected => only those who have the sufficent permissions are allowed to add new downloads
@@ -1999,7 +1999,7 @@ class downloads extends DownloadsLibrary
 
         // check of it is allowed to change the sort order
         if (// managers are allowed to manage every subcategory
-            Permission::checkAccess(142, 'static', true)
+            Permission::checkAccess(143, 'static', true)
             // the selected category must be valid to proceed future permission checks.
             // this is required to protect the overview section from non-admins
             || $objCategory->getId() && (
@@ -2016,7 +2016,7 @@ class downloads extends DownloadsLibrary
 
         // parse select posibilities and dropdown action menu
         if (// managers are allowed to operate on subcategories
-            Permission::checkAccess(142, 'static', true)
+            Permission::checkAccess(143, 'static', true)
             // the selected category must be valid to proceed future permission checks.
             // this is required to protect the overview section from non-admins
             || $objCategory->getId() && (
@@ -2072,7 +2072,7 @@ class downloads extends DownloadsLibrary
 //                if (// subcategory is hidden -> check if the user is allowed to see it listed anyways
 //                    !$objSubcategory->getVisibility()
 //                    // non managers are not allowed to see hidden subcategories
-//                    && !Permission::checkAccess(142, 'static', true)
+//                    && !Permission::checkAccess(143, 'static', true)
 //                    // those who have read access permission to the subcategory are allowed to see it listed
 //                    && !Permission::checkAccess($objSubcategory->getReadAccessId(), 'dynamic', true)
 //                    // the owner is allowed to see its own categories
@@ -2098,7 +2098,7 @@ class downloads extends DownloadsLibrary
 
                 // parse status link and modify button
                 if (// managers are allowed to manage every subcategory
-                    Permission::checkAccess(142, 'static', true)
+                    Permission::checkAccess(143, 'static', true)
                     // the selected category must be valid to proceed future permission checks.
                     // this is required to protect the overview section from non-admins
                     || $objCategory->getId() && (
@@ -2155,7 +2155,7 @@ class downloads extends DownloadsLibrary
 
                 // parse delete button
                 if (// managers are allowed to see delete every category
-                    Permission::checkAccess(142, 'static', true)
+                    Permission::checkAccess(143, 'static', true)
                     // the selected category must be valid to proceed future permission checks.
                     // this is required to protect the overview section from non-admins
                     || $objCategory->getId() && (
@@ -2192,7 +2192,7 @@ class downloads extends DownloadsLibrary
 
                 // parse detail link
                 if (// managers are allowed to see the content of every category
-                    Permission::checkAccess(142, 'static', true)
+                    Permission::checkAccess(143, 'static', true)
                     // the category isn't protected => everyone is allowed to the it's content
                     || !$objSubcategory->getReadAccessId()
                     // the category is protected => only those who have the sufficent permissions are allowed to see it's content
@@ -2294,14 +2294,14 @@ class downloads extends DownloadsLibrary
         $objDownload->loadDownloads(array('category_id' => $objCategory->getId()), $searchTerm, array($downloadOrderBy => $downloadOrderDirection), null, $_CONFIG['corePagingLimit'], $downloadLimitOffset, true);
         $downloadsAvailable = $objDownload->EOF ? false : true;
         while (!$objDownload->EOF) {
-//            if (!Permission::checkAccess(142, 'static', true) && !$objDownload->getVisibility() && $objDownload->getOwnerId() != $objFWUser->objUser->getId()) {
+//            if (!Permission::checkAccess(143, 'static', true) && !$objDownload->getVisibility() && $objDownload->getOwnerId() != $objFWUser->objUser->getId()) {
 //                $objDownload->next();
 //                continue;
 //            }
 
             // parse select checkbox & order box
             if (// managers are allowed to manage every download
-                Permission::checkAccess(142, 'static', true)
+                Permission::checkAccess(143, 'static', true)
                 || !$objCategory->getManageFilesAccessId()
                 || Permission::checkAccess($objCategory->getManageFilesAccessId(), 'dynamic', true)
                 || $objCategory->getOwnerId() == $objFWUser->objUser->getId()
@@ -2329,7 +2329,7 @@ class downloads extends DownloadsLibrary
 
             // parse status link and modify button
             if (// managers are allowed to manage every download
-                Permission::checkAccess(142, 'static', true)
+                Permission::checkAccess(143, 'static', true)
                 // the selected category must be valid to proceed future permission checks.
                 // this is required to protect the overview section from non-admins
                 || $objCategory->getId() && (
@@ -2412,7 +2412,7 @@ class downloads extends DownloadsLibrary
                 // the download is protected -> only those who have the sufficent permissions are allowed to download it
                 || Permission::checkAccess($objDownload->getAccessId(), 'dynamic', true)
                 // managers are allowed to download every download
-                || Permission::checkAccess(142, 'static', true)
+                || Permission::checkAccess(143, 'static', true)
                 // the selected category must be valid to proceed future permission checks.
                 // this is required to protect the overview section from non-admins
                 || $objCategory->getId() && (
@@ -2440,7 +2440,7 @@ class downloads extends DownloadsLibrary
 
             // parse unlink button
             if (// managers are allowed to unlink every download
-                Permission::checkAccess(142, 'static', true)
+                Permission::checkAccess(143, 'static', true)
                 // the selected category must be valid to proceed future permission checks.
                 // this is required to protect the overview section from non-admins
                 || $objCategory->getId() && (

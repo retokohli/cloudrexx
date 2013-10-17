@@ -2,7 +2,7 @@
 
 function _downloadsUpdate()
 {
-    global $objDatabase, $_ARRAYLANG, $_CORELANG, $objUpdate;
+    global $objDatabase, $_ARRAYLANG, $_CORELANG, $objUpdate, $_CONFIG;
 
     /************************************************
     * EXTENSION:    Initial creation of the         *
@@ -287,6 +287,27 @@ function _downloadsUpdate()
                 CHANGE `source_name` `source_name` VARCHAR(1024) NULL DEFAULT NULL
             ');
 
+        }
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
+
+    /**********************************************************
+    * EXTENSION:    Add access ids of "editing all downloads" *
+    *               to groups which had access to "administer"*
+    * ADDED:        Contrexx v3.1.1                           *
+    **********************************************************/
+    try {
+        if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0.2')) {
+            $result = \Cx\Lib\UpdateUtil::sql("SELECT `group_id` FROM `" . DBPREFIX . "access_group_static_ids` WHERE access_id = 142 GROUP BY `group_id`");
+            if ($result !== false) {
+                while (!$result->EOF) {
+                    \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO `" . DBPREFIX . "access_group_static_ids` (`access_id`, `group_id`)
+                                                VALUES (143, " . intval($result->fields['group_id']) . ")");
+                    $result->MoveNext();
+                }
+            }
         }
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
