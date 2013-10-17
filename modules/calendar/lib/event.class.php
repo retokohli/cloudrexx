@@ -550,6 +550,7 @@ class CalendarEvent extends CalendarLibrary
                          event.org_street AS org_street, 
                          event.org_zip AS org_zip, 
                          event.org_city AS org_city, 
+                         event.org_country AS org_country, 
                          event.org_link AS org_link, 
                          event.org_email AS org_email, 
                          field.title AS title,
@@ -631,6 +632,7 @@ class CalendarEvent extends CalendarLibrary
                 $this->org_street   = contrexx_raw2xhtml($objResult->fields['org_street']);
                 $this->org_zip      = contrexx_raw2xhtml($objResult->fields['org_zip']);
                 $this->org_city     = contrexx_raw2xhtml($objResult->fields['org_city']);
+                $this->org_country  = contrexx_raw2xhtml($objResult->fields['org_country']);
                 $this->org_link     = contrexx_raw2xhtml($objResult->fields['org_link']);
                 $this->org_email    = contrexx_raw2xhtml($objResult->fields['org_email']);
                                 
@@ -898,6 +900,7 @@ class CalendarEvent extends CalendarLibrary
         $orgStreet = isset($data['organizerStreet']) ? contrexx_input2db($data['organizerStreet']) : '';
         $orgZip    = isset($data['organizerZip']) ? contrexx_input2db($data['organizerZip']) : '';
         $orgCity   = isset($data['organizerCity']) ? contrexx_input2db($data['organizerCity']) : '';
+        $orgCountry= isset($data['organizerCountry']) ? contrexx_input2db($data['organizerCountry']) : '';
         $orgLink   = isset($data['organizerLink']) ? contrexx_input2db($data['organizerLink']) : '';
         $orgEmail  = isset($data['organizerEmail']) ? contrexx_input2db($data['organizerEmail']) : '';
         if (!empty($orgLink)) {
@@ -1109,6 +1112,7 @@ class CalendarEvent extends CalendarLibrary
             'org_street'                    => $orgStreet,
             'org_zip'                       => $orgZip,
             'org_city'                      => $orgCity,
+            'org_country'                   => $orgCountry,
             'org_link'                      => $orgLink,
             'org_email'                     => $orgEmail
         );
@@ -1671,6 +1675,7 @@ class CalendarEvent extends CalendarLibrary
             $this->org_street = $place_street;
             $this->org_zip    = $place_zip;
             $this->org_city   = $place_city;
+            $this->org_country= $place_country;
             $this->org_email  = '';
         }
         

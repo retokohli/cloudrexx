@@ -557,6 +557,7 @@ UPLOADER;
             $this->moduleLangVar.'_EVENT_HOST_ADDRESS'              => $objEvent->org_street,
             $this->moduleLangVar.'_EVENT_HOST_ZIP'                  => $objEvent->org_zip,
             $this->moduleLangVar.'_EVENT_HOST_CITY'                 => $objEvent->org_city,
+            $this->moduleLangVar.'_EVENT_HOST_COUNTRY'              => $objEvent->org_country,
             $this->moduleLangVar.'_EVENT_HOST_LINK'                 => $objEvent->org_link,
             $this->moduleLangVar.'_EVENT_HOST_EMAIL'                => $objEvent->org_email,
             $this->moduleLangVar.'_EVENT_LOCATION_TYPE_MANUAL'      => $eventId != 0 ? ($objEvent->locationType == 1 ? "checked='checked'" : '') : "checked='checked'",

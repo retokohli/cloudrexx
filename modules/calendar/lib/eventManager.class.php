@@ -741,7 +741,7 @@ class CalendarEventManager extends CalendarLibrary
                 $objEvent->loadPlaceFromMediadir($objEvent->host_mediadir_id, 'host');
                 list($hostLink, $hostLinkSource) = $objEvent->loadPlaceLinkFromMediadir($objEvent->host_mediadir_id, 'host');                    
             }
-            if(($this->arrSettings['placeDataHost'] == 1) && $objEvent->org_name == '' && $objEvent->org_street == '' && $objEvent->org_zip == '' && $objEvent->org_city == '') {
+            if(($this->arrSettings['placeDataHost'] == 1) && $objEvent->org_name == '' && $objEvent->org_street == '' && $objEvent->org_zip == '' && $objEvent->org_city == '' && $objEvent->org_country == '') {
                 $objTpl->hideBlock('calendarEventHost');  
             } else {
                 $objTpl->setVariable(array(
@@ -749,6 +749,7 @@ class CalendarEventManager extends CalendarLibrary
                     $this->moduleLangVar.'_EVENT_HOST_ADDRESS' => $objEvent->org_street,
                     $this->moduleLangVar.'_EVENT_HOST_ZIP'     => $objEvent->org_zip,
                     $this->moduleLangVar.'_EVENT_HOST_CITY'    => $objEvent->org_city,
+                    $this->moduleLangVar.'_EVENT_HOST_COUNTRY' => $objEvent->org_country,
                     $this->moduleLangVar.'_EVENT_HOST_LINK'    => $hostLink,
                     $this->moduleLangVar.'_EVENT_HOST_LINK_SOURCE'  => $hostLinkSource,
                     $this->moduleLangVar.'_EVENT_HOST_EMAIL'        => $objEvent->org_email != '' ? "<a href='mailto:".$objEvent->org_email."' >".$objEvent->org_email."</a>" : "",
@@ -908,6 +909,7 @@ class CalendarEventManager extends CalendarLibrary
                     $this->moduleLangVar.'_EVENT_HOST_ADDRESS'      => $objEvent->org_street,
                     $this->moduleLangVar.'_EVENT_HOST_ZIP'          => $objEvent->org_zip,
                     $this->moduleLangVar.'_EVENT_HOST_CITY'         => $objEvent->org_city,
+                    $this->moduleLangVar.'_EVENT_HOST_COUNTRY'      => $objEvent->org_country,
                     $this->moduleLangVar.'_EVENT_HOST_LINK'         => $hostLink,
                     $this->moduleLangVar.'_EVENT_HOST_LINK_SOURCE'  => $hostLinkSource,
                     $this->moduleLangVar.'_EVENT_HOST_EMAIL'        => $objEvent->org_email != '' ? "<a href='mailto:".$objEvent->org_email."' >".$objEvent->org_email."</a>" : "",
