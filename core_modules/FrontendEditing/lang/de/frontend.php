@@ -16,6 +16,7 @@ $_ARRAYLANG['TXT_FRONTEND_EDITING_EDIT'] = 'Seite bearbeiten';
 $_ARRAYLANG['TXT_FRONTEND_EDITING_CANCEL_EDIT'] = 'Abbrechen';
 $_ARRAYLANG['TXT_FRONTEND_EDITING_THE_DRAFT'] = 'Sie bearbeiten die neuste Version, welche noch nicht veröffentlicht wurde.';
 $_ARRAYLANG['TXT_FRONTEND_EDITING_MODULE_PAGE'] = 'Sie bearbeiten eine Inhaltsseite eines Contrexx Moduls. Die Bearbeitungsmöglichkeiten sind eingeschränkt.';
+$_ARRAYLANG['TXT_FRONTEND_EDITING_NO_TITLE_AND_CONTENT'] = 'Der Titel und der Inhalt ist im verwendeten Template nicht vorhanden. Die Bearbeitungsmöglichkeiten sind eingeschränkt.';
 $_ARRAYLANG['TXT_FRONTEND_EDITING_HISTORY'] = 'Verlauf';
 $_ARRAYLANG['TXT_FRONTEND_EDITING_OPTIONS'] = 'Optionen';
 $_ARRAYLANG['TXT_FRONTEND_EDITING_ADMINMENU'] = 'Administration';

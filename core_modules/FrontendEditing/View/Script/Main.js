@@ -95,7 +95,7 @@ cx.fe.contentEditor.start = function() {
     cx.fe.publishedPage = {};
 
     // init the editors if the editor is not already initialized
-    if (!CKEDITOR.instances.fe_title) {
+    if (!CKEDITOR.instances.fe_title && cx.jQuery("#fe_title").length > 0) {
         CKEDITOR.inline("fe_title", {
             customConfig: CKEDITOR.getUrl(cx.variables.get("configPath", "FrontendEditing")),
             toolbar: "FrontendEditingTitle",
@@ -112,7 +112,7 @@ cx.fe.contentEditor.start = function() {
             }
         });
     }
-    if (!CKEDITOR.instances.fe_content) {
+    if (!CKEDITOR.instances.fe_content && cx.jQuery("#fe_content").length > 0) {
         CKEDITOR.inline("fe_content", {
             customConfig: CKEDITOR.getUrl(cx.variables.get("configPath", "FrontendEditing")),
             toolbar: "FrontendEditingContent",
@@ -150,13 +150,21 @@ cx.fe.contentEditor.stop = function() {
             if (cx.fe.confirmSaveAsDraft()) {
                 cx.fe.savePage();
             }
-            cx.jQuery("#fe_title").html(cx.fe.publishedPage.title);
-            cx.jQuery("#fe_content").html(cx.fe.publishedPage.content);
+            if (cx.jQuery("#fe_title").length > 0) {
+                cx.jQuery("#fe_title").html(cx.fe.publishedPage.title);
+            }
+            if (cx.jQuery("#fe_content").length > 0) {
+                cx.jQuery("#fe_content").html(cx.fe.publishedPage.content);
+            }
         }
 
         // destroy and remove the inline editor
-        CKEDITOR.instances.fe_content.destroy();
-        CKEDITOR.instances.fe_title.destroy();
+        if (CKEDITOR.instances.fe_content) {
+            CKEDITOR.instances.fe_content.destroy();
+        }
+        if (CKEDITOR.instances.fe_title) {
+            CKEDITOR.instances.fe_title.destroy();
+        }
     }
 
     // remove outline of editable content divs
@@ -189,8 +197,8 @@ cx.fe.contentEditor.stop = function() {
  * @returns {boolean}
  */
 cx.fe.pageHasBeenModified = function() {
-    return CKEDITOR.instances.fe_title.getData() != cx.fe.publishedPage.title ||
-        CKEDITOR.instances.fe_content.getData() != cx.fe.publishedPage.content ||
+    return (CKEDITOR.instances.fe_title && CKEDITOR.instances.fe_title.getData() != cx.fe.publishedPage.title) ||
+        (CKEDITOR.instances.fe_content && CKEDITOR.instances.fe_content.getData() != cx.fe.publishedPage.content) ||
         cx.jQuery("#fe_options .fe_box select[name=\"page[skin]\"]").val() != cx.fe.page.skin ||
         cx.jQuery("#fe_options .fe_box select[name=\"page[customContent]\"]").val() != cx.fe.page.customContent ||
         cx.jQuery("#fe_options .fe_box input[name=\"page[cssName]\"]").val() != cx.fe.page.cssName;
@@ -259,13 +267,21 @@ cx.fe.toolbar = function() {
 
                 // check whether the content is editable or not
                 // don't show inline editor for module pages, except home
-                if (cx.fe.page.type == "content" || (cx.fe.page.type == "application" && cx.fe.page.module == "home")) {
+                // don't show inline editor if the content and title cannot be found
+                if ((
+                        cx.fe.page.type == "content"
+                            || (cx.fe.page.type == "application" && cx.fe.page.module == "home"))
+                    && (cx.jQuery("#fe_title").length > 0 || cx.jQuery("#fe_content").length > 0)) {
                     // init the inline ckeditor
                     cx.fe.contentEditor.start();
                     cx.fe.toolbar.showAnchors(true, true); // show both anchors, history and options
                 } else {
                     cx.fe.editMode = true;
-                    cx.tools.StatusMessage.showMessage(cx.fe.langVars.TXT_FRONTEND_EDITING_MODULE_PAGE, 'info', 5000);
+                    if (cx.jQuery("#fe_title").length > 0 || cx.jQuery("#fe_content").length > 0) {
+                        cx.tools.StatusMessage.showMessage(cx.fe.langVars.TXT_FRONTEND_EDITING_MODULE_PAGE, 'info', 5000);
+                    } else {
+                        cx.tools.StatusMessage.showMessage(cx.fe.langVars.TXT_FRONTEND_EDITING_NO_TITLE_AND_CONTENT, 'info', 5000);
+                    }
                     cx.fe.toolbar.showAnchors(false, true); // only show option anchor, hide history anchor
                 }
 
@@ -448,8 +464,12 @@ cx.fe.toolbar.showAnchors = function(history, options) {
 cx.fe.preparePageToSend = function() {
     // load data from options box and write to page object
     if (cx.fe.editorLoaded()) {
-        cx.fe.page.title = CKEDITOR.instances.fe_title.getData();
-        cx.fe.page.content = CKEDITOR.instances.fe_content.getData();
+        if (CKEDITOR.instances.fe_title) {
+            cx.fe.page.title = CKEDITOR.instances.fe_title.getData();
+        }
+        if (CKEDITOR.instances.fe_content) {
+            cx.fe.page.content = CKEDITOR.instances.fe_content.getData();
+        }
     }
     cx.fe.page.application = cx.fe.page.module;
     cx.fe.page.skin = cx.jQuery("#fe_options .fe_box select[name=\"page[skin]\"]").val();
@@ -470,7 +490,7 @@ cx.fe.preparePageToSend = function() {
  * @returns {boolean}
  */
 cx.fe.editorLoaded = function() {
-    return CKEDITOR.instances.fe_title != undefined && CKEDITOR.instances.fe_content != undefined;
+    return CKEDITOR.instances.fe_title != undefined || CKEDITOR.instances.fe_content != undefined;
 };
 
 /**
@@ -494,8 +514,12 @@ cx.fe.loadPageData = function(historyId, putTheData, callback) {
             // the application pages do not allow to update title and content
             if (putTheData && (cx.fe.page.type != "application" || cx.fe.page.module == "home")) {
                 // put the new data of page into the html and start editor if the user is in edit mode
-                cx.jQuery("#fe_title").html(cx.fe.page.title);
-                cx.jQuery("#fe_content").html(cx.fe.page.content);
+                if (cx.fe.page.title) {
+                    cx.jQuery("#fe_title").html(cx.fe.page.title);
+                }
+                if (cx.fe.page.content) {
+                    cx.jQuery("#fe_content").html(cx.fe.page.content);
+                }
                 // when the editor is in the edit mode, restart the content editor
                 if (cx.fe.editMode) {
                     cx.fe.contentEditor.start();
@@ -663,10 +687,13 @@ cx.fe.publishPage = function() {
             cx.tools.StatusMessage.showMessage(response.message, className, 5000);
 
             if(cx.fe.editorLoaded()) {
-                cx.fe.publishedPage = {
-                    title: CKEDITOR.instances.fe_title.getData(),
-                    content: CKEDITOR.instances.fe_content.getData()
-                };
+                cx.fe.publishedPage = {};
+                if (CKEDITOR.instances.fe_title) {
+                    cx.fe.publishedPage.title = CKEDITOR.instances.fe_title.getData();
+                }
+                if (CKEDITOR.instances.fe_content) {
+                    cx.fe.publishedPage.content = CKEDITOR.instances.fe_content.getData();
+                }
             }
             // load new page data, but don't reload and don't put data into content
             cx.fe.loadPageData(null, false);
