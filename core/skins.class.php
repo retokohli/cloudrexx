@@ -1307,7 +1307,7 @@ class skins
         if (!$objResult->EOF) {
             $themesId = $objResult->fields['id'];
 
-            $pageRepo = \Env::get('em')->getRepository('Cx\Model\ContentManager\Page');
+            $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
             $pages = $pageRepo->findBy(array(
                 'skin' => intval($themesId),
             ));
