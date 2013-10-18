@@ -441,6 +441,27 @@ class CalendarEvent extends CalendarLibrary
     public $uploadImgWebPath = '';
     
     /**
+     * Registered members count for the event
+     * 
+     * @var integer
+     */
+    public $registrationCount = '';
+    
+    /**
+     * Waitlist members count for the event
+     * 
+     * @var integer
+     */
+    public $waitlistCount = '';
+    
+    /**
+     * Cancellation members count for the event
+     * 
+     * @var integer
+     */
+    public $cancellationCount = '';
+    
+    /**
      * Constructor
      * 
      * Loads the event object of given id
@@ -555,13 +576,16 @@ class CalendarEvent extends CalendarLibrary
                          event.org_email AS org_email, 
                          field.title AS title,
                          field.description AS description,
-                         event.place AS place
+                         event.place AS place,
+                         (select count(1) FROM `".DBPREFIX."module_".$this->moduleTablePrefix."_registration` WHERE  `event_id` = event.`id` AND type = 1) AS reg,
+                         (select count(1) FROM `".DBPREFIX."module_".$this->moduleTablePrefix."_registration` WHERE  `event_id` = event.`id` AND type = 0) AS cancellation,
+                         (select count(1) FROM `".DBPREFIX."module_".$this->moduleTablePrefix."_registration` WHERE  `event_id` = event.`id` AND type = 2) AS dereg
                     FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_event AS event,
                          ".DBPREFIX."module_".$this->moduleTablePrefix."_event_field AS field
                    WHERE event.id = '".intval($eventId)."'  
-                     AND (event.id = field.event_id ".$lang_where.")                                           
+                     AND (event.id = field.event_id ".$lang_where.")                                          
                    LIMIT 1";
-                                            
+
         
         $objResult = $objDatabase->Execute($query);  
         
@@ -616,6 +640,9 @@ class CalendarEvent extends CalendarLibrary
                 $this->link = htmlentities(stripslashes($objResult->fields['link']), ENT_QUOTES, CONTREXX_CHARSET);
                 $this->priority = intval($objResult->fields['priority']);
                 $this->description = $objResult->fields['description'];
+                $this->registrationCount = (int) $objResult->fields['reg'];
+                $this->waitlistCount = (int) $objResult->fields['dereg'];
+                $this->cancellationCount = (int) $objResult->fields['cancellation'];
                 
                 $this->locationType = (int) $objResult->fields['location_type'];                
                 $this->place_mediadir_id = (int) $objResult->fields['place_mediadir_id'];                
@@ -1613,51 +1640,55 @@ class CalendarEvent extends CalendarLibrary
      */    
     function loadPlaceFromMediadir($intMediaDirId = 0, $type = 'place')
     {
-        if (empty($intMediaDirId)) {
-            return ;
-        }
+        $place         = '';
+        $place_street  = '';
+        $place_zip     = '';
+        $place_city    = '';
+        $place_country = '';        
                 
-        $objMediadirEntry = new mediaDirectoryEntry();
-        $objMediadirEntry->getEntries(intval($intMediaDirId)); 
-        //get inputfield object                    
-        $objInputfields = new mediaDirectoryInputfield($objMediadirEntry->arrEntries[$intMediaDirId]['entryFormId'],false,$objMediadirEntry->arrEntries[$intMediaDirId]['entryTranslationStatus']);
-        
-        foreach ($objInputfields->arrInputfields as $arrInputfield) {
-            
-            $intInputfieldType = intval($arrInputfield['type']);
-            if ($intInputfieldType != 16 && $intInputfieldType != 17) {
-                if(!empty($arrInputfield['type'])) {
-                    $strType = $arrInputfield['type_name'];
-                    $strInputfieldClass = "mediaDirectoryInputfield".ucfirst($strType);
-                    try {
-                        $objInputfield = safeNew($strInputfieldClass);
+        if (!empty($intMediaDirId)) {
+            $objMediadirEntry = new mediaDirectoryEntry();
+            $objMediadirEntry->getEntries(intval($intMediaDirId)); 
+            //get inputfield object                    
+            $objInputfields = new mediaDirectoryInputfield($objMediadirEntry->arrEntries[$intMediaDirId]['entryFormId'],false,$objMediadirEntry->arrEntries[$intMediaDirId]['entryTranslationStatus']);
 
-                        if(intval($arrInputfield['type_multi_lang']) == 1) {
-                            $arrInputfieldContent = $objInputfield->getContent($intMediaDirId, $arrInputfield, $objMediadirEntry->arrEntries[$intMediaDirId]['entryTranslationStatus']);
-                        } else {
-                            $arrInputfieldContent = $objInputfield->getContent($intMediaDirId, $arrInputfield, null);
+            foreach ($objInputfields->arrInputfields as $arrInputfield) {
+
+                $intInputfieldType = intval($arrInputfield['type']);
+                if ($intInputfieldType != 16 && $intInputfieldType != 17) {
+                    if(!empty($arrInputfield['type'])) {
+                        $strType = $arrInputfield['type_name'];
+                        $strInputfieldClass = "mediaDirectoryInputfield".ucfirst($strType);
+                        try {
+                            $objInputfield = safeNew($strInputfieldClass);
+
+                            if(intval($arrInputfield['type_multi_lang']) == 1) {
+                                $arrInputfieldContent = $objInputfield->getContent($intMediaDirId, $arrInputfield, $objMediadirEntry->arrEntries[$intMediaDirId]['entryTranslationStatus']);
+                            } else {
+                                $arrInputfieldContent = $objInputfield->getContent($intMediaDirId, $arrInputfield, null);
+                            }
+
+                            switch ($arrInputfield['context_type']) {
+                                case 'title':
+                                    $place = end($arrInputfieldContent);
+                                    break;
+                                case 'address':
+                                    $place_street = end($arrInputfieldContent);
+                                    break;
+                                case 'zip':                                
+                                    $place_zip = end($arrInputfieldContent);
+                                    break;
+                                case 'city':
+                                    $place_city = end($arrInputfieldContent);
+                                    break;
+                                case 'country':
+                                    $place_country = end($arrInputfieldContent);
+                                    break;
+                            }
+
+                        } catch (Exception $error) {
+                            echo "Error: ".$error->getMessage();
                         }
-                        
-                        switch ($arrInputfield['context_type']) {
-                            case 'title':
-                                $place = end($arrInputfieldContent);
-                                break;
-                            case 'address':
-                                $place_street = end($arrInputfieldContent);
-                                break;
-                            case 'zip':                                
-                                $place_zip = end($arrInputfieldContent);
-                                break;
-                            case 'city':
-                                $place_city = end($arrInputfieldContent);
-                                break;
-                            case 'country':
-                                $place_country = end($arrInputfieldContent);
-                                break;
-                        }
-                        
-                    } catch (Exception $error) {
-                        echo "Error: ".$error->getMessage();
                     }
                 }
             }
@@ -1690,48 +1721,49 @@ class CalendarEvent extends CalendarLibrary
     {
         global $_LANGID, $_CONFIG;
         
-        if (empty($intMediaDirId)) {
-            return ;
-        }
+        $placeUrl       = '';
+        $placeUrlSource = '';
         
-        $objMediadirEntry = new mediaDirectoryEntry();
-        $objMediadirEntry->getEntries(intval($intMediaDirId)); 
-        
-        $pageRepo = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-        $pages = $pageRepo->findBy(array(
-            'cmd'    => contrexx_addslashes('detail'.intval($objMediadirEntry->arrEntries[$intMediaDirId]['entryFormId'])),
-            'lang'   => $_LANGID,
-            'type'   => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
-            'module' => 'mediadir',
-        ));
-        
-        if(count($pages)) {
-            $strDetailCmd = 'detail'.intval($objMediadirEntry->arrEntries[$intMediaDirId]['entryFormId']);
-        } else {
-            $strDetailCmd = 'detail';
-        }
-        
-        $pages = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->getFromModuleCmdByLang('mediadir', $strDetailCmd);
+        if (!empty($intMediaDirId)) {
+            $objMediadirEntry = new mediaDirectoryEntry();
+            $objMediadirEntry->getEntries(intval($intMediaDirId)); 
 
-        $arrActiveFrontendLanguages = FWLanguage::getActiveFrontendLanguages();
-        if (isset($arrActiveFrontendLanguages[FRONTEND_LANG_ID]) && isset($pages[FRONTEND_LANG_ID])) {
-            $langId = FRONTEND_LANG_ID;
-        } else if (isset($arrActiveFrontendLanguages[BACKEND_LANG_ID]) && isset($pages[BACKEND_LANG_ID])) {
-            $langId = BACKEND_LANG_ID;
-        } else {
-            foreach ($arrActiveFrontendLanguages as $lang) {
-                if (isset($pages[$lang['id']])) {
-                    $langId = $lang['id'];
-                    break;
+            $pageRepo = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+            $pages = $pageRepo->findBy(array(
+                'cmd'    => contrexx_addslashes('detail'.intval($objMediadirEntry->arrEntries[$intMediaDirId]['entryFormId'])),
+                'lang'   => $_LANGID,
+                'type'   => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
+                'module' => 'mediadir',
+            ));
+
+            if(count($pages)) {
+                $strDetailCmd = 'detail'.intval($objMediadirEntry->arrEntries[$intMediaDirId]['entryFormId']);
+            } else {
+                $strDetailCmd = 'detail';
+            }
+
+            $pages = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->getFromModuleCmdByLang('mediadir', $strDetailCmd);
+
+            $arrActiveFrontendLanguages = FWLanguage::getActiveFrontendLanguages();
+            if (isset($arrActiveFrontendLanguages[FRONTEND_LANG_ID]) && isset($pages[FRONTEND_LANG_ID])) {
+                $langId = FRONTEND_LANG_ID;
+            } else if (isset($arrActiveFrontendLanguages[BACKEND_LANG_ID]) && isset($pages[BACKEND_LANG_ID])) {
+                $langId = BACKEND_LANG_ID;
+            } else {
+                foreach ($arrActiveFrontendLanguages as $lang) {
+                    if (isset($pages[$lang['id']])) {
+                        $langId = $lang['id'];
+                        break;
+                    }
                 }
             }
+
+            $url = $pages[$langId]->getUrl(ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET, "?eid={$intMediaDirId}");
+
+            $place          = ($type = 'place') ? $this->place : $this->org_name;
+            $placeUrl       = "<a href='".$url."' target='_blank' >". (!empty($place) ? $place : $url) ."</a>";
+            $placeUrlSource = $url;
         }
-        
-        $url = $pages[$langId]->getUrl(ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET, "?eid={$intMediaDirId}");
-        
-        $place          = ($type = 'place') ? $this->place : $this->org_name;
-        $placeUrl       = "<a href='".$url."' target='_blank' >". (!empty($place) ? $place : $url) ."</a>";
-        $placeUrlSource = $url;
         
         return array($placeUrl, $placeUrlSource);
     }
