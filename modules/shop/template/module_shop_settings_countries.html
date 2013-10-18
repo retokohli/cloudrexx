@@ -1,16 +1,17 @@
 <!-- START module_shop_settings_countries.html -->
 <script type="text/javascript">
 // <![CDATA[
-function submit_form()
-{
-  for (var i = document.shopForm.elements['list1[]'].length-1; i >= 0; --i) {
-    document.shopForm.elements['list1[]'].options[i].selected = true;
-  }
-  for (var i=document.shopForm.elements['list2[]'].length-1; i >= 0; --i) {
-    document.shopForm.elements['list2[]'].options[i].selected = true;
-  }
-  document.shopForm.submit();
-}
+cx.ready(function() {
+    cx.jQuery("form.countries").submit(function(e) {
+        for (var i = document.shopForm.elements['list1[]'].length-1; i >= 0; --i) {
+            document.shopForm.elements['list1[]'].options[i].selected = true;
+        }
+        for (var i=document.shopForm.elements['list2[]'].length-1; i >= 0; --i) {
+            document.shopForm.elements['list2[]'].options[i].selected = true;
+        }
+        return true;
+    });
+});
 
 function sortSelect(obj)
 {
@@ -84,7 +85,7 @@ function moveAllOptions(from, to)
 <ul id="tabmenu">
   <li><a id="countriesTab_content1" class="active" href="#" onclick="selectTab('content1')" title="{TXT_DELIVERY_COUNTRIES}">{TXT_DELIVERY_COUNTRIES}</a></li>
 </ul>
-<form name="shopForm" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=settings&amp;tpl=countries">
+<form name="shopForm" class="countries" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=settings&amp;tpl=countries">
 <!-- start content1 div -->
   <div id="content1" class="countriesTab" style="display:block">
     <table border="0" cellspacing="0" cellpadding="2" width="100%" class="adminlist">
@@ -127,7 +128,7 @@ function moveAllOptions(from, to)
   </div>
 <!-- end content1 div -->
   <br />
-  <input type="submit" name="countries" value="{TXT_STORE}" onclick="submit_form();" />
+  <input type="submit" name="countries" value="{TXT_STORE}" />
   <br />
 </form>
 <!-- END module_shop_settings_countries.html -->
