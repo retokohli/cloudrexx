@@ -16,6 +16,7 @@ $_ARRAYLANG['TXT_FRONTEND_EDITING_EDIT'] = 'Edit page';
 $_ARRAYLANG['TXT_FRONTEND_EDITING_CANCEL_EDIT'] = 'Cancel';
 $_ARRAYLANG['TXT_FRONTEND_EDITING_THE_DRAFT'] = 'You are editing the newest version which haven\'t been published yet.';
 $_ARRAYLANG['TXT_FRONTEND_EDITING_MODULE_PAGE'] = 'You are editing a content page of a contrexx module. The editing possibility is limited.';
+$_ARRAYLANG['TXT_FRONTEND_EDITING_NO_TITLE_AND_CONTENT'] = 'The title and the content is not available for the template used by this page. The editing possibility is limited.';
 $_ARRAYLANG['TXT_FRONTEND_EDITING_HISTORY'] = 'History';
 $_ARRAYLANG['TXT_FRONTEND_EDITING_OPTIONS'] = 'Options';
 $_ARRAYLANG['TXT_FRONTEND_EDITING_ADMINMENU'] = 'Administration';
