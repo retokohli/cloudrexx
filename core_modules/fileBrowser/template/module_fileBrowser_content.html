@@ -40,6 +40,12 @@ function setUrl(url, width, height, alt, type) {
                 }
             }
         });
+        // the following code is used by internet explorer, IE did not call the callback function above
+        var dialog = window.opener.CKEDITOR.dialog.getCurrent();
+        if (dialog.getName() == 'link' && type == 'page') {
+            var element = dialog.getContentElement( 'info', 'protocol' );
+            element.setValue('');
+        }
     } else {
         window.opener.SetUrl( webPath+url, width, height, alt );
     }
