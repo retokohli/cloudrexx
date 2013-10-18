@@ -656,7 +656,7 @@ CREATE TABLE `contrexx_module_calendar_event` (
   `place_country` varchar(255) default NULL,
   `place_link` varchar(255) NOT NULL,
   `place_map` varchar(255) NOT NULL,
-  `host_type` tinyint(1) NOT NULL,
+  `host_type` tinyint(1) NOT NULL default '1',
   `org_name` varchar(255) NOT NULL,
   `org_street` varchar(255) NOT NULL,
   `org_zip` varchar(10) NOT NULL,
