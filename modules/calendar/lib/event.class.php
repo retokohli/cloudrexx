@@ -445,21 +445,21 @@ class CalendarEvent extends CalendarLibrary
      * 
      * @var integer
      */
-    public $registrationCount = '';
+    public $registrationCount = 0;
     
     /**
      * Waitlist members count for the event
      * 
      * @var integer
      */
-    public $waitlistCount = '';
+    public $waitlistCount = 0;
     
     /**
      * Cancellation members count for the event
      * 
      * @var integer
      */
-    public $cancellationCount = '';
+    public $cancellationCount = 0;
     
     /**
      * Constructor
@@ -576,10 +576,7 @@ class CalendarEvent extends CalendarLibrary
                          event.org_email AS org_email, 
                          field.title AS title,
                          field.description AS description,
-                         event.place AS place,
-                         (select count(1) FROM `".DBPREFIX."module_".$this->moduleTablePrefix."_registration` WHERE  `event_id` = event.`id` AND type = 1) AS reg,
-                         (select count(1) FROM `".DBPREFIX."module_".$this->moduleTablePrefix."_registration` WHERE  `event_id` = event.`id` AND type = 0) AS cancellation,
-                         (select count(1) FROM `".DBPREFIX."module_".$this->moduleTablePrefix."_registration` WHERE  `event_id` = event.`id` AND type = 2) AS dereg
+                         event.place AS place
                     FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_event AS event,
                          ".DBPREFIX."module_".$this->moduleTablePrefix."_event_field AS field
                    WHERE event.id = '".intval($eventId)."'  
@@ -588,7 +585,7 @@ class CalendarEvent extends CalendarLibrary
 
         
         $objResult = $objDatabase->Execute($query);  
-        
+
         if($this->arrSettings['showEventsOnlyInActiveLanguage'] == 2) {
             if($objResult->RecordCount() == 0) {
                 
@@ -640,9 +637,6 @@ class CalendarEvent extends CalendarLibrary
                 $this->link = htmlentities(stripslashes($objResult->fields['link']), ENT_QUOTES, CONTREXX_CHARSET);
                 $this->priority = intval($objResult->fields['priority']);
                 $this->description = $objResult->fields['description'];
-                $this->registrationCount = (int) $objResult->fields['reg'];
-                $this->waitlistCount = (int) $objResult->fields['dereg'];
-                $this->cancellationCount = (int) $objResult->fields['cancellation'];
                 
                 $this->locationType = (int) $objResult->fields['location_type'];                
                 $this->place_mediadir_id = (int) $objResult->fields['place_mediadir_id'];                
@@ -696,6 +690,34 @@ class CalendarEvent extends CalendarLibrary
                 $this->arrNumSeating = json_decode($objResult->fields['num_seating']);
                 $this->numSeating = implode(',', $this->arrNumSeating);
                 
+                $queryCountRegistration = "SELECT 
+                                                COUNT(1) AS numSubscriber, 
+                                                `type` 
+                                            FROM 
+                                                `".DBPREFIX."module_".$this->moduleTablePrefix."_registration`
+                                            WHERE  
+                                                `event_id` = ". (int) $eventId ." 
+                                            GROUP BY 
+                                                `type`";
+                $objCountRegistration = $objDatabase->Execute($queryCountRegistration);
+                
+                if ($objCountRegistration) {
+                    while (!$objCountRegistration->EOF) {
+                        switch ($objCountRegistration->fields['type']) {
+                            case 1:
+                                $this->registrationCount = (int) $objCountRegistration->fields['numSubscriber'];
+                                break;
+                            case 2:
+                                $this->waitlistCount = (int) $objCountRegistration->fields['numSubscriber'];
+                                break;
+                            case 0:
+                                $this->cancellationCount = (int) $objCountRegistration->fields['numSubscriber'];
+                                break;
+                        }
+                        $objCountRegistration->MoveNext();
+                    }
+                }
+                                
                 $queryRegistrations = '
                     SELECT `v`.`value` AS `reserved_seating`
                     FROM `'.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration_form_field_value` AS `v`
