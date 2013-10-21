@@ -201,11 +201,12 @@ class CalendarManager extends CalendarLibrary
         $searchTerm =  isset($_REQUEST['term']) ? $_REQUEST['term'] : $searchTerm = $_ARRAYLANG['TXT_CALENDAR_KEYWORD'];
         $startPos =  isset($_REQUEST['pos']) ? $_REQUEST['pos'] : 0;
         
-       
+        $listType = 'all';
         if($_GET['list'] == 'actual' || !isset($_GET['list'])) {
             $styleListActual = 'underline';  
             $styleListAll = '';                                 
             $startDate = mktime(); 
+            $listType = 'upcoming';
         } else {
             $styleListActual = '';  
             $styleListAll = 'underline';                                  
@@ -272,8 +273,9 @@ class CalendarManager extends CalendarLibrary
             $objFeed = new CalendarFeed($objFeedEventManager);
             $objFeed->creatFeed();   
         }                                                                             
-
-        $objEventManager = new CalendarEventManager($startDate,$endDate,$categoryId,$searchTerm,false,null,null,$startPos,$this->arrSettings['numPaging']);
+        
+        $showSeries = ($listType == 'upcoming');        
+        $objEventManager = new CalendarEventManager($startDate,$endDate,$categoryId,$searchTerm,$showSeries,null,null,$startPos,$this->arrSettings['numPaging'], 'ASC', true, null, $listType);
         $objEventManager->getEventList();
         
         if($objEventManager->countEvents > $this->arrSettings['numPaging']) {
