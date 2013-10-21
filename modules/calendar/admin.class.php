@@ -209,11 +209,13 @@ class CalendarManager extends CalendarLibrary
         } else {
             $styleListActual = '';  
             $styleListAll = 'underline';                                  
-            $startDate = null;     
+            $startDate = null; 
         }                 
         
         $this->_objTpl->setGlobalVariable(array(
             'TXT_'.$this->moduleLangVar.'_OVERVIEW'                 => $this->_pageTitle,
+            'TXT_'.$this->moduleLangVar.'_UPCOMING_EVENTS'          => $_ARRAYLANG['TXT_CALENDAR_UPCOMING_EVENTS'],
+            'TXT_'.$this->moduleLangVar.'_ALL_EVENTS'               => $_ARRAYLANG['TXT_CALENDAR_ALL_EVENTS'],
             'TXT_'.$this->moduleLangVar.'_FILTER'                   => $_ARRAYLANG['TXT_CALENDAR_FILTER'],
             'TXT_'.$this->moduleLangVar.'_CONFIRMLIST'              => $_ARRAYLANG['TXT_CALENDAR_CONFIRMLIST'],
             'TXT_SEARCH'                                            => $_CORELANG['TXT_USER_SEARCH'],
