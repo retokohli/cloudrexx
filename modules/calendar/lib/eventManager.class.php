@@ -294,11 +294,15 @@ class CalendarEventManager extends CalendarLibrary
                 $objEvent = new CalendarEvent(intval($objResult->fields['id']));
 
                 if($objInit->mode == 'frontend' || $this->showSeries) {
+                    $checkFutureEvents = true;
                     if(self::_addToEventList($objEvent)) {
                         $this->eventList[] = $objEvent;
+                        if ($this->listType == 'upcoming') {
+                            $checkFutureEvents = false;
+                        }
                     }
 
-                    if($objEvent->seriesStatus == 1 && $_GET['cmd'] != 'my_events') {
+                    if ($checkFutureEvents && $objEvent->seriesStatus == 1 && $_GET['cmd'] != 'my_events') {
                         self::_setNextSeriesElement($objEvent);
                     }
                 } else {
