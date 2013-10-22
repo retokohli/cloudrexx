@@ -212,7 +212,7 @@
                 selectedDates.push($J(this).val());
             });
             exceptionDates = generateExecptionDates();
-            appendTheExecptionDate(exceptionDates, selectedDates, $J( ".exceptionDateContainer" ));
+            appendTheExecptionDate(exceptionDates, selectedDates, $J( ".exceptionDateContainer .exceptionDateHolder" ));
 
             // initialize paging
             // count entries inside the hidden content
@@ -657,8 +657,7 @@
     </table>
     <br/>
     <ul id="tabmenu">
-        <li><a id="eventTab_event" class="active" href="javascript:{}" onclick="selectTab('event');
-        refreshEditors();" title="{TXT_CALENDAR_BASIC_DATA}">{TXT_CALENDAR_BASIC_DATA}</a></li>
+        <li><a id="eventTab_event" class="active" href="javascript:{}" onclick="selectTab('event');" title="{TXT_CALENDAR_BASIC_DATA}">{TXT_CALENDAR_BASIC_DATA}</a></li>
         <li><a id="eventTab_location" href="javascript:{}" onclick="selectTab('location');" title="{TXT_CALENDAR_EVENT_LOCATION}">{TXT_CALENDAR_EVENT_LOCATION}</a></li>
         <li><a id="eventTab_details" href="javascript:{}" onclick="selectTab('details');" title="{TXT_CALENDAR_ADDITIONAL_OPTIONS}" >{TXT_CALENDAR_ADDITIONAL_OPTIONS}</a></li>
         <li><a id="eventTab_invite" href="javascript:{}" onclick="selectTab('invite');" title="{TXT_CALENDAR_EVENT_INVITE}" >{TXT_CALENDAR_EVENT_INVITE}</a></li>
@@ -707,8 +706,7 @@
         </table>
         <ul id="tabmenu" class="language_tab" style="{CALENDAR_HIDE_ON_SINGLE_LANG} margin-top: 15px;">
             <!-- BEGIN eventTabMenuDescTab -->
-            <li><a id="eventDescTab_{CALENDAR_EVENT_LANG_ID}_desc" class="{CALENDAR_EVENT_TAB_CLASS}" href="javascript:{}" onclick="selectTab('{CALENDAR_EVENT_LANG_ID}_desc');
-        refreshEditors()" title="">{TXT_CALENDAR_EVENT_LANG_NAME}</a></li>
+            <li><a id="eventDescTab_{CALENDAR_EVENT_LANG_ID}_desc" class="{CALENDAR_EVENT_TAB_CLASS}" href="javascript:{}" onclick="selectTab('{CALENDAR_EVENT_LANG_ID}_desc');" title="">{TXT_CALENDAR_EVENT_LANG_NAME}</a></li>
             <!-- END eventTabMenuDescTab -->
         </ul>
         <!-- BEGIN eventDescTab -->

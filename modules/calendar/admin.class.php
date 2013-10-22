@@ -733,7 +733,7 @@ class CalendarManager extends CalendarLibrary
             $seriesPatternDourance3 = $objEvent->seriesData['seriesPatternDouranceType'] == 3 ? 'checked="checked"' : '';
             
             $seriesPatternEndsEvents = $objEvent->seriesData['seriesPatternDouranceType'] == 2 ? $objEvent->seriesData['seriesPatternEnd'] : 5;
-            $seriesPatternEndsDate   = $objEvent->seriesData['seriesPatternDouranceType'] == 3 ? date($dateFomat, $objEvent->seriesData['seriesPatternEnd']) : '';
+            $seriesPatternEndsDate   = $objEvent->seriesData['seriesPatternDouranceType'] == 3 ? date($dateFomat, $objEvent->seriesData['seriesPatternEndDate']) : '';
             
             
             

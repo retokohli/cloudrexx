@@ -555,6 +555,7 @@ class CalendarEvent extends CalendarLibrary
                          event.series_pattern_type AS series_pattern_type,
                          event.series_pattern_dourance_type AS series_pattern_dourance_type,
                          event.series_pattern_end AS series_pattern_end,
+                         event.series_pattern_end_date AS series_pattern_end_date,
                          event.series_pattern_begin AS series_pattern_begin,
                          event.series_pattern_exceptions AS series_pattern_exceptions,
                          event.all_day,
@@ -675,6 +676,7 @@ class CalendarEvent extends CalendarLibrary
                     $this->seriesData['seriesPatternType'] = intval($objResult->fields['series_pattern_type']); 
                     $this->seriesData['seriesPatternDouranceType'] = intval($objResult->fields['series_pattern_dourance_type']); 
                     $this->seriesData['seriesPatternEnd'] = intval($objResult->fields['series_pattern_end']); 
+                    $this->seriesData['seriesPatternEndDate'] = strtotime($objResult->fields['series_pattern_end_date']); 
                     $this->seriesData['seriesPatternBegin'] = intval($objResult->fields['series_pattern_begin']); 
                     $this->seriesData['seriesPatternExceptions'] = explode(",", $objResult->fields['series_pattern_exceptions']);
                 }    
@@ -1085,7 +1087,7 @@ class CalendarEvent extends CalendarLibrary
             }
                 
             $seriesPatternDouranceType  = isset($data['seriesDouranceType']) ? intval($data['seriesDouranceType']) : 0;            
-            
+            $seriesPatternEndDate       = '';
             switch($seriesPatternDouranceType) {
                 case 1:
                     $seriesPatternEnd   = 0;
@@ -1094,7 +1096,7 @@ class CalendarEvent extends CalendarLibrary
                     $seriesPatternEnd   = isset($data['seriesDouranceEvents']) ? intval($data['seriesDouranceEvents']) : 0;
                 break;
                 case 3:
-                    $seriesPatternEnd   = parent::getDateTimestamp($data['seriesDouranceDate'], 0, 0) ;    
+                    $seriesPatternEndDate = date("Y-m-d H:i:s", parent::getDateTimestamp($data['seriesDouranceDate'], 0, 0));    
                 break;
             }
         }
@@ -1145,6 +1147,7 @@ class CalendarEvent extends CalendarLibrary
             'series_pattern_type'           => $seriesPatternType,
             'series_pattern_dourance_type'  => $seriesPatternDouranceType,
             'series_pattern_end'            => $seriesPatternEnd,
+            'series_pattern_end_date'       => $seriesPatternEndDate,
             'series_pattern_exceptions'     => $seriesExeptions,
             'all_day'                       => $allDay,
             'location_type'                 => $locationType,
@@ -1365,7 +1368,7 @@ class CalendarEvent extends CalendarLibrary
             }
                 
             $seriesPatternDouranceType  = isset($data['seriesDouranceType']) ? intval($data['seriesDouranceType']) : 0;            
-            
+            $seriesPatternEndDate = '';
             switch($seriesPatternDouranceType) {
                 case 1:
                     $seriesPatternEnd   = 0;
@@ -1374,7 +1377,7 @@ class CalendarEvent extends CalendarLibrary
                     $seriesPatternEnd   = isset($data['seriesDouranceEvents']) ? intval($data['seriesDouranceEvents']) : 0;
                 break;
                 case 3:
-                    $seriesPatternEnd   = parent::getDateTimestamp($data['seriesDouranceDate'], 0, 0) ;    
+                    $seriesPatternEndDate = parent::getDateTimestamp($data['seriesDouranceDate'], 0, 0) ;    
                 break;
             }
         }
@@ -1389,6 +1392,7 @@ class CalendarEvent extends CalendarLibrary
         $this->seriesData['seriesPatternType'] = intval($seriesPatternType); 
         $this->seriesData['seriesPatternDouranceType'] = intval($seriesPatternDouranceType); 
         $this->seriesData['seriesPatternEnd'] = intval($seriesPatternEnd); 
+        $this->seriesData['seriesPatternEndDate'] = intval($seriesPatternEndDate); 
         $this->seriesData['seriesPatternBegin'] = 0; 
         $this->seriesData['seriesPatternExceptions'] = explode(",", $seriesExeptions);
         
