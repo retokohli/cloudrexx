@@ -217,6 +217,10 @@ class CalendarEventManager extends CalendarLibrary
         
         parent::getSettings();
         
+        // need for database TIMESTAMP
+        $startDate = !empty($this->startDate) ? date("Y-m-d H:i:s", $this->startDate) : $this->startDate;
+        $endDate   = !empty($this->endDate) ? date("Y-m-d H:i:s", $this->endDate) : $this->endDate;
+        
         $onlyActive_where = ($this->onlyActive == true ? ' AND event.status=1' : '');  
         $categoryId_where = ($this->categoryId != 0 ? ' AND event.catid='.$this->categoryId : '');  
         
@@ -239,18 +243,18 @@ class CalendarEventManager extends CalendarLibrary
 
         if (isset($this->endDate) && $this->endDate != 0) {
             $dateScope_where = '((
-                ((event.startdate <= '.$this->startDate.') AND ('.$this->endDate.' <= event.enddate)) OR
-                ((('.$this->startDate.' <= event.startdate) AND ('.$this->endDate.' <= event.enddate)) AND ((event.startdate <= '.$this->endDate.') AND ('.$this->endDate.' <= event.enddate))) OR
-                (((event.startdate <= '.$this->startDate.') AND (event.enddate <= '.$this->endDate.')) AND (('.$this->startDate.' <= event.enddate) AND (event.enddate <= '.$this->endDate.'))) OR
-                (('.$this->startDate.' <= event.startdate) AND (event.enddate <= '.$this->endDate.'))
+                ((event.startdate <= "'.$startDate.'") AND ("'.$endDate.'" <= event.enddate)) OR
+                ((("'.$startDate.'" <= event.startdate) AND ("'.$endDate.'" <= event.enddate)) AND ((event.startdate <= "'.$endDate.'") AND ("'.$endDate.'" <= event.enddate))) OR
+                (((event.startdate <= "'.$startDate.'") AND (event.enddate <= "'.$endDate.'")) AND (("'.$startDate.'" <= event.enddate) AND (event.enddate <= "'.$endDate.'"))) OR
+                (("'.$startDate.'" <= event.startdate) AND (event.enddate <= "'.$endDate.'"))
             ) OR (
-                (event.series_status = 1) AND (event.startdate <= '.$this->endDate.')
+                (event.series_status = 1) AND (event.startdate <= "'.$endDate.'")
             ))';
 
         } else {                                        
             $dateScope_where = '((
-                ((event.enddate >= '.$this->startDate.') AND (event.startdate <= '.$this->startDate.')) OR
-                ((event.startdate >= '.$this->startDate.') AND (event.enddate >= '.$this->startDate.'))
+                ((event.enddate >= "'.$startDate.'") AND (event.startdate <= "'.$startDate.'")) OR
+                ((event.startdate >= "'.$startDate.'") AND (event.enddate >= "'.$startDate.'"))
             ) OR (
                 (event.series_status = 1)
             ))';
