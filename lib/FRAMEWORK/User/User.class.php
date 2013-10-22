@@ -350,7 +350,7 @@ class User extends User_Profile
             $loginCheck = '`username` = "' . addslashes($username) . '"';
         }
 
-        $loginStatusCondition = $captchaCheckResult == false ? 'AND `last_auth_status` = 1' : '';
+        //$loginStatusCondition = $captchaCheckResult == false ? 'AND `last_auth_status` = 1' : '';
 
         $objResult = $objDatabase->SelectLimit('
             SELECT `id`
@@ -1031,7 +1031,7 @@ class User extends User_Profile
 
         // $filter != 1 needed because $filter can be 1 to show all active users
         $crmUser = false;
-        if (isset($filter['crm']) && $filter != 1 && $filter['crm'] == 1) {
+        if (isset($filter['crm']) && $filter != 1 && $filter['crm'] == 1 && is_array($filter)) {
             $crmUser = true;
         }
         if (!($arrQuery = $this->setSortedUserIdList($arrSort, $sqlCondition, $limit, $offset, $groupless, $crmUser))) {
