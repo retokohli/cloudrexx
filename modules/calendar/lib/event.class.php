@@ -615,8 +615,8 @@ class CalendarEvent extends CalendarLibrary
                 $this->pic = htmlentities($objResult->fields['pic'], ENT_QUOTES, CONTREXX_CHARSET);
                 $this->attach = htmlentities($objResult->fields['attach'], ENT_QUOTES, CONTREXX_CHARSET);
                 $this->author = htmlentities($objResult->fields['author'], ENT_QUOTES, CONTREXX_CHARSET);
-                $this->startDate = intval($objResult->fields['startdate']);
-                $this->endDate = intval($objResult->fields['enddate']);
+                $this->startDate = strtotime($objResult->fields['startdate']);
+                $this->endDate = strtotime($objResult->fields['enddate']);
                 $this->useCustomDateDisplay = intval($objResult->fields['useCustomDateDisplay']);
                 $this->showStartDateList = intval($objResult->fields['showStartDateList']);
                 $this->showEndDateList = intval($objResult->fields['showEndDateList']);
@@ -628,7 +628,7 @@ class CalendarEvent extends CalendarLibrary
                 $this->showStartTimeDetail = intval($objResult->fields['showStartTimeDetail']);
                 $this->showEndTimeDetail = intval($objResult->fields['showEndTimeDetail']);
                 $this->showTimeTypeDetail = intval($objResult->fields['showTimeTypeDetail']);
-                $this->all_day  = intval($objResult->fields['all_day']);;
+                $this->all_day  = intval($objResult->fields['all_day']);
                 $this->confirmed = intval($objResult->fields['confirmed']);
                 $this->invitationSent = intval($objResult->fields['invitation_sent']);
                 $this->invitationTemplate = json_decode($objResult->fields['invitation_email_template'], true);
