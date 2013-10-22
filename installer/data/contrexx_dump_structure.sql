@@ -597,8 +597,8 @@ SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_calendar_event` (
   `id` int(11) NOT NULL auto_increment,
   `type` int(11) NOT NULL default '0',
-  `startdate` int(14) default NULL,
-  `enddate` int(14) default NULL,
+  `startdate` timestamp NULL default '0000-00-00 00:00:00',
+  `enddate` timestamp NULL default '0000-00-00 00:00:00',
   `use_custom_date_display` tinyint(1) NOT NULL,
   `showStartDateList` int(1) NOT NULL,
   `showEndDateList` int(1) NOT NULL,
