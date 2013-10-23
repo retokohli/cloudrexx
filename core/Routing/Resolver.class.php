@@ -586,7 +586,11 @@ class Resolver {
                     if ($target[0] == '/') {
                         $target = substr($target, 1);
                     }
-                    header('Location: '.ASCMS_INSTANCE_OFFSET.'/'.\FWLanguage::getLanguageCodeById($this->lang).'/'.$target);
+                    $langDir = '';
+                    if (!file_exists(ASCMS_INSTANCE_PATH . ASCMS_INSTANCE_OFFSET . '/' . $target)) {
+                        $langDir = '/' . \FWLanguage::getLanguageCodeById($this->lang);
+                    }
+                    header('Location: ' . ASCMS_INSTANCE_OFFSET . $langDir . '/' . $target);
                     exit;
                 }
             }
