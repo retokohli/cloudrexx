@@ -163,16 +163,6 @@ class LegacyComponentHandler {
                             }
                         }
                     },
-                    'Cache' => function() {
-                        global $objCache;
-
-                        // Caching-System
-                        /**
-                        * Include the cache module.  The cache is initialized right afterwards.
-                        */
-                        $objCache = new \Cache();
-                        $objCache->startCache();
-                    },
                 ),
                 'preContentLoad' => array(
                     'JsonData' => function() {
