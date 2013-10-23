@@ -1010,7 +1010,8 @@ class CalendarEvent extends CalendarLibrary
         $seriesPatternType              = 0;
         $seriesPatternDouranceType      = 0;
         $seriesPatternEnd               = 0;
-        $seriesExeptions = '';
+        $seriesExeptions                = '';
+        $seriesPatternEndDate           = '';
         
         if($seriesStatus == 1) {
             if(!empty($data['seriesExeptions'])) {
@@ -1086,8 +1087,7 @@ class CalendarEvent extends CalendarLibrary
                 break;
             }
                 
-            $seriesPatternDouranceType  = isset($data['seriesDouranceType']) ? intval($data['seriesDouranceType']) : 0;            
-            $seriesPatternEndDate       = '';
+            $seriesPatternDouranceType  = isset($data['seriesDouranceType']) ? intval($data['seriesDouranceType']) : 0;                        
             switch($seriesPatternDouranceType) {
                 case 1:
                     $seriesPatternEnd   = 0;
