@@ -1301,12 +1301,22 @@ class CalendarEventManager extends CalendarLibrary
         $isAllowedEvent = true;
         switch($objCloneEvent->seriesData['seriesPatternDouranceType']) {
             case 1:
-                $lastDate = mktime(date("H", $this->startDate), date("i", $this->startDate), date("s", $this->startDate), date("m", $this->startDate), date("d", $this->startDate), date("Y", $this->startDate)+intval($this->arrSettings['maxSeriesEndsYear'])+1);
+                $getNextEvent = false;
                 
-                if($objCloneEvent->startDate <= $lastDate) {
-                    $getNextEvent = true;
-                } else {
-                    $getNextEvent = false;
+                if ($this->startDate != null) {                    
+                    $lastDate = mktime(date("H", $this->startDate), date("i", $this->startDate), date("s", $this->startDate), date("m", $this->startDate), date("d", $this->startDate), date("Y", $this->startDate)+intval($this->arrSettings['maxSeriesEndsYear'])+1); 
+                    if($objCloneEvent->startDate <= $lastDate) {
+                        $getNextEvent = true;
+                    } else {
+                        $getNextEvent = false;
+                    }
+                } elseif($this->endDate != null) { // start date will be null only on archive
+                    
+                    if ($objCloneEvent->endDate <= $this->endDate) {
+                        $getNextEvent = true;
+                    } else {
+                        $getNextEvent = false;
+                    }
                 }
                 break;
             case 2:
