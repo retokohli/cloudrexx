@@ -294,11 +294,13 @@ class CalendarEventManager extends CalendarLibrary
                     $this->eventList[] = $objEvent;
                 }
                 
-                if ($this->numEvents != 'n' && count($this->eventList) > $this->numEvents && $objInit->mode == 'frontend') {
-                     break;
-                } else {
-                     $objResult->MoveNext();
-                }
+                // Do not break the loop until all events being parsed.It might cause the event sorting.
+                
+                //if ($this->numEvents != 'n' && count($this->eventList) > $this->numEvents && $objInit->mode == 'frontend') {
+                //     break;
+                //} else {
+                $objResult->MoveNext();
+                //}
             }
         }
         
