@@ -313,11 +313,11 @@ class CalendarEventManager extends CalendarLibrary
                     $this->eventList[] = $objEvent;
                 }
                 
-                if ($this->numEvents != 'n' && count($this->eventList) > $this->numEvents && $objInit->mode == 'frontend') {
-                     break;
-                } else {
-                     $objResult->MoveNext();
-                }
+                //if ($this->numEvents != 'n' && count($this->eventList) > $this->numEvents && $objInit->mode == 'frontend') {
+                //     break;
+                //} else {
+                $objResult->MoveNext();
+//              //  }
             }
         }
         
