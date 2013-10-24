@@ -708,7 +708,7 @@ class CalendarWebserviceEvent
                     $this->seriesData['seriesPatternEnd'] = intval($row['series_pattern_end']); 
                     $this->seriesData['seriesPatternEndDate'] = strtotime($row['series_pattern_end_date']); 
                     $this->seriesData['seriesPatternBegin'] = intval($row['series_pattern_begin']); 
-                    $this->seriesData['seriesPatternExceptions'] = explode(",", $row['series_pattern_exceptions']);
+                    $this->seriesData['seriesPatternExceptions'] = array_map('strtotime', (array) explode(",", $row['series_pattern_exceptions']));
                 }   
                   
                 $this->invitedGroups = explode(',', $row['invited_groups']);     
