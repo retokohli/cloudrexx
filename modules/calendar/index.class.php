@@ -288,6 +288,7 @@ class Calendar extends CalendarLibrary
         }
 
         if ($_GET['cmd'] == 'detail') {
+            $this->startDate = null;
             $this->numEvents = 'n';
         }
 
