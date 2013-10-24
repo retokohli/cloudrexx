@@ -678,7 +678,7 @@ class CalendarEvent extends CalendarLibrary
                     $this->seriesData['seriesPatternEnd'] = intval($objResult->fields['series_pattern_end']); 
                     $this->seriesData['seriesPatternEndDate'] = strtotime($objResult->fields['series_pattern_end_date']); 
                     $this->seriesData['seriesPatternBegin'] = intval($objResult->fields['series_pattern_begin']); 
-                    $this->seriesData['seriesPatternExceptions'] = explode(",", $objResult->fields['series_pattern_exceptions']);
+                    $this->seriesData['seriesPatternExceptions'] = array_map('strtotime', (array) explode(",", $objResult->fields['series_pattern_exceptions']));
                 }    
                   
                 $this->invitedGroups = explode(',', $objResult->fields['invited_groups']);     
@@ -1018,7 +1018,7 @@ class CalendarEvent extends CalendarLibrary
                 $exeptions = array();
                 
                 foreach($data['seriesExeptions'] as $key => $exeptionDate)  {
-                    $exeptions[] = parent::getDateTimestamp($exeptionDate, 0, 0) ;  
+                    $exeptions[] = date("Y-m-d", parent::getDateTimestamp($exeptionDate, 0, 0));  
                 }  
                 
                 sort($exeptions);
@@ -1394,7 +1394,7 @@ class CalendarEvent extends CalendarLibrary
         $this->seriesData['seriesPatternEnd'] = intval($seriesPatternEnd); 
         $this->seriesData['seriesPatternEndDate'] = intval($seriesPatternEndDate); 
         $this->seriesData['seriesPatternBegin'] = 0; 
-        $this->seriesData['seriesPatternExceptions'] = explode(",", $seriesExeptions);
+        $this->seriesData['seriesPatternExceptions'] = '';
         
     }
     
