@@ -350,7 +350,7 @@ class User extends User_Profile
             $loginCheck = '`username` = "' . addslashes($username) . '"';
         }
 
-        //$loginStatusCondition = $captchaCheckResult == false ? 'AND `last_auth_status` = 1' : '';
+        $loginStatusCondition = $captchaCheckResult == false ? 'AND `last_auth_status` = 1' : '';
 
         $objResult = $objDatabase->SelectLimit('
             SELECT `id`
