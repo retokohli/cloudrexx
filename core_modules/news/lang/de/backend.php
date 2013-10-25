@@ -322,4 +322,12 @@ $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_ADD_COMMENT_TITLE_BUTTON'] = "Titel für den
 $_ARRAYLANG['TXT_NEWS_NO_TITLE_ENTERED'] = "Fehler beim Speichern der Newsmeldung. Es muss ein Titel angegeben werden.";
 $_ARRAYLANG['TXT_NEWS_PREVIEW'] = "Vorschau öffnen";
 $_ARRAYLANG['TXT_NEWS_NUMBER_OF_COMMENTS'] = "Anzahl Kommentare";
-?>
+$_ARRAYLANG['TXT_NEWS_TIME_DESCRIPTION'] = "Time of the news message";
+$_ARRAYLANG['TXT_NEWS_LINK_TITLE_DESCRIPTION'] = "News title";
+$_ARRAYLANG['TXT_NEWS_LINK_URL_DESCRIPTION'] = "News url";
+$_ARRAYLANG['TXT_NEWS_PUBLISHER_DESCRIPTION'] = "Name of publisher";
+$_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_TITLE'] = "Title of the comment";
+$_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_TIME'] = "Time of the comment";
+$_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_POSTER_ID'] = "ID value of the comment poster, if the person has user account";
+$_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_POSTER_NAME'] = "Name value of the comment poster";
+$_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_POSTER'] = "Block, which is displayed when the corresponding message news poster details.";
