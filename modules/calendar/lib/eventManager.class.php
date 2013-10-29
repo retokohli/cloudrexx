@@ -1371,7 +1371,8 @@ class CalendarEventManager extends CalendarLibrary
                 if($objCloneEvent->startDate <= $objCloneEvent->seriesData['seriesPatternEndDate']) {
                     $getNextEvent = true;
                 } else {
-                    $getNextEvent = false;
+                    $isAllowedEvent = false;
+                    $getNextEvent   = false;
                 }
                 break;
         }
