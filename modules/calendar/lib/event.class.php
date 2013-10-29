@@ -1016,9 +1016,9 @@ class CalendarEvent extends CalendarLibrary
         if($seriesStatus == 1) {
             if(!empty($data['seriesExeptions'])) {
                 $exeptions = array();
-                
+                                
                 foreach($data['seriesExeptions'] as $key => $exeptionDate)  {
-                    $exeptions[] = date("Y-m-d", parent::getDateTimestamp($exeptionDate, 0, 0));  
+                    $exeptions[] = date("Y-m-d", parent::getDateTimestamp($exeptionDate, 23, 59));  
                 }  
                 
                 sort($exeptions);
@@ -1096,7 +1096,7 @@ class CalendarEvent extends CalendarLibrary
                     $seriesPatternEnd   = isset($data['seriesDouranceEvents']) ? intval($data['seriesDouranceEvents']) : 0;
                 break;
                 case 3:
-                    $seriesPatternEndDate = date("Y-m-d H:i:s", parent::getDateTimestamp($data['seriesDouranceDate'], 0, 0));    
+                    $seriesPatternEndDate = date("Y-m-d H:i:s", parent::getDateTimestamp($data['seriesDouranceDate'], 23, 59));    
                 break;
             }
         }
