@@ -373,7 +373,9 @@ function executeContrexxUpdate() {
             return false;
         } else {
             try {
-                \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'log_entry` SET `object_class` = \'Cx\\\\Core\\\\ContentManager\\\\Model\\\\Entity\\\\Page\'');
+                \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'log_entry` 
+                    SET `object_class` = \'Cx\\\\Core\\\\ContentManager\\\\Model\\\\Entity\\\\Page\'
+                    WHERE object_class = \'Cx\\\\Model\\\\ContentManager\\\\Page\'');
             } catch (\Cx\Lib\UpdateException $e) {
                 return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
             }
