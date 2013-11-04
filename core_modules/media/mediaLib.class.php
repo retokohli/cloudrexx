@@ -656,30 +656,30 @@ class MediaLibrary
         switch ($this->sortBy) {
             // sort by size
             case 'size':
-                @array_multisort(strtolower($d['size']), $direction, strtolower($d['name']), strtolower($d['type']), strtolower($d['date']), strtolower($d['perm']), strtolower($d['icon']));
-                @array_multisort(strtolower($f['size']), $direction, strtolower($f['name']), strtolower($f['type']), strtolower($f['date']), strtolower($f['perm']), strtolower($f['icon']));
+                @array_multisort($d['size'], $direction, $d['name'], $d['type'], $d['date'], $d['perm'], $d['icon']);
+                @array_multisort($f['size'], $direction, $f['name'], $f['type'], $f['date'], $f['perm'], $f['icon']);
                 break;
             // sort by type
             case 'type':
-                @array_multisort(strtolower($d['type']), $direction, strtolower($d['name']), strtolower($d['size']), strtolower($d['date']), strtolower($d['perm']), strtolower($d['icon']));
-                @array_multisort(strtolower($f['type']), $direction, strtolower($f['name']), strtolower($f['size']), strtolower($f['date']), strtolower($f['perm']), strtolower($f['icon']));
+                @array_multisort($d['type'], $direction, $d['name'], $d['size'], $d['date'], $d['perm'], $d['icon']);
+                @array_multisort($f['type'], $direction, $f['name'], $f['size'], $f['date'], $f['perm'], $f['icon']);
                 break;
             //sort by date
             case 'date':
-                @array_multisort(strtolower($d['date']), $direction, strtolower($d['name']), strtolower($d['size']), strtolower($d['type']), strtolower($d['perm']), strtolower($d['icon']));
-                @array_multisort(strtolower($f['date']), $direction, strtolower($f['name']), strtolower($f['size']), strtolower($f['type']), strtolower($f['perm']), strtolower($f['icon']));
+                @array_multisort($d['date'], $direction, $d['name'], $d['size'], $d['type'], $d['perm'], $d['icon']);
+                @array_multisort($f['date'], $direction, $f['name'], $f['size'], $f['type'], $f['perm'], $f['icon']);
                 break;
             //sort by perm
             case 'perm':
                 $direction = !$this->sortDesc ? SORT_DESC : SORT_ASC;
-                @array_multisort(strtolower($d['perm']), $direction, strtolower($d['name']), strtolower($d['size']), strtolower($d['type']), strtolower($d['date']), strtolower($d['icon']));
-                @array_multisort(strtolower($f['perm']), $direction, strtolower($f['name']), strtolower($f['size']), strtolower($f['type']), strtolower($f['date']), strtolower($f['icon']));
+                @array_multisort($d['perm'], $direction, $d['name'], $d['size'], $d['type'], $d['date'], $d['icon']);
+                @array_multisort($f['perm'], $direction, $f['name'], $f['size'], $f['type'], $f['date'], $f['icon']);
                 break;
             // sort by name
             case 'name':
             default:
-                @array_multisort(strtolower($d['name']), $direction, strtolower($d['size']), strtolower($d['type']), strtolower($d['date']), strtolower($d['perm']), strtolower($d['icon']));
-                @array_multisort(strtolower($f['name']), $direction, strtolower($f['size']), strtolower($f['type']), strtolower($f['date']), strtolower($f['perm']), strtolower($f['icon']));
+                @array_multisort($d['name'], $direction, $d['size'], $d['type'], $d['date'], $d['perm'], $d['icon']);
+                @array_multisort($f['name'], $direction, $f['size'], $f['type'], $f['date'], $f['perm'], $f['icon']);
                 break;
         }
         
