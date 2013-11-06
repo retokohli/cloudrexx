@@ -1985,7 +1985,7 @@ class Order
 // Verify that options are properly shown
                     foreach ($arrProductOptions[$item_id]
                             as $attribute_id => $attribute) {
-//DBG::log("Order::view_items(): Added option, price: $options_price");                        
+//DBG::log("Order::view_items(): Added option, price: $options_price");
                         foreach($attribute as $a){
                             $name .= '<i><br />- '.$attribute_id.': '.
                             $a['name'].' ('.$a['price'].')</i>';
@@ -2126,7 +2126,7 @@ class Order
                 'item_id' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0', 'renamefrom' => 'order_items_id'),
                 'attribute_name' => array('type' => 'VARCHAR(255)', 'default' => '', 'renamefrom' => 'product_option_name'),
                 'option_name' => array('type' => 'VARCHAR(255)', 'default' => '', 'renamefrom' => 'product_option_value'),
-                'price' => array('type' => 'DECIMAL(9,2)', 'unsigned' => true, 'default' => '0.00', 'renamefrom' => 'product_option_values_price'),
+                'price' => array('type' => 'DECIMAL(9,2)', 'unsigned' => false, 'default' => '0.00', 'renamefrom' => 'product_option_values_price'),
             );
             $table_index = array(
                 'item_id' => array('fields' => array('item_id')));
