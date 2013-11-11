@@ -365,7 +365,7 @@ class LicenseCommunicator {
             }
             $jsCode .= '
                         var data = jQuery.parseJSON(data);
-                        if (data == null) {
+                        if (!data) {
                             revertMessage();
                             return;
                         }
