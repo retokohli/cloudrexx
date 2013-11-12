@@ -155,9 +155,10 @@ class news extends newsLibrary {
                                                         news.id = '.$newsid.' AND
                                                         locale.is_active=1 AND
                                                         locale.lang_id ='.FRONTEND_LANG_ID.' AND
-                                                        cat.lang_id ='.FRONTEND_LANG_ID.' AND
-                                                        (news.startdate <= \''.date('Y-m-d H:i:s').'\' OR news.startdate="0000-00-00 00:00:00") AND
-                                                        (news.enddate >= \''.date('Y-m-d H:i:s').'\' OR news.enddate="0000-00-00 00:00:00")'
+                                                        cat.lang_id ='.FRONTEND_LANG_ID
+                                                        // ignore time for previews
+                                                        .((!$newsPreview) ? ' AND (news.startdate <= \''.date('Y-m-d H:i:s').'\' OR news.startdate="0000-00-00 00:00:00") AND
+                                                        (news.enddate >= \''.date('Y-m-d H:i:s').'\' OR news.enddate="0000-00-00 00:00:00")' : '')
                                                        .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? (
                                                             ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?
                                                                 " AND (frontend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") OR userid = ".$objFWUser->objUser->getId().") "

@@ -590,10 +590,7 @@ class newsManager extends newsLibrary {
                 }
                 $langString  = \Html::getLanguageIcons($langState, 'index.php?cmd=news&amp;act=edit&amp;newsId=' . $newsId . '&amp;langId=%1$d');
                 $previewLink = \Cx\Core\Routing\Url::fromModuleAndCmd('news', $this->findCmdById('details', $news['catid']), '', array('newsid' => $newsId));
-
-                if ($news['status'] == 0) {
-                    $previewLink .= '&newsPreview=1';
-                }
+                $previewLink .= '&newsPreview=1';
 
                 $this->_objTpl->setVariable(array(
                     'NEWS_ID'                => $newsId,
@@ -3395,7 +3392,7 @@ class newsManager extends newsLibrary {
             'TXT_NEWS_TEASER_TEXT_DESCRIPTION'                          => $_ARRAYLANG['TXT_NEWS_TEASER_TEXT_DESCRIPTION'],
             'TXT_NEWS_AUTHOR_DESCRIPTION'                               => $_ARRAYLANG['TXT_NEWS_AUTHOR_DESCRIPTION'],
             'TXT_TOP_NEWS_PLACEHOLDERS_USAGE'                           => $_ARRAYLANG['TXT_TOP_NEWS_PLACEHOLDERS_USAGE'],
-            'TXT_NEWS_COMMENTS'                                         => $_ARRAYLANG['TXT_NEWS_COMMENTS'],
+            'TXT_NEWS_COMMENTS'                                         => $_ARRAYLANG['TXT_NEWS_COMMENTS'],            
             'TXT_NEWS_COMMENT_BLOCK_COMMENT_LIST'                       => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_LIST'],
             'TXT_NEWS_COMMENT_BLOCK_COMMENT_LIST_TITLE'                 => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_LIST_TITLE'],
             'TXT_NEWS_COMMENT_BLOCK_COMMENT'                            => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT'],
