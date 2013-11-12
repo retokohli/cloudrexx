@@ -590,10 +590,7 @@ class newsManager extends newsLibrary {
                 }
                 $langString  = \Html::getLanguageIcons($langState, 'index.php?cmd=news&amp;act=edit&amp;newsId=' . $newsId . '&amp;langId=%1$d');
                 $previewLink = \Cx\Core\Routing\Url::fromModuleAndCmd('news', $this->findCmdById('details', $news['catid']), '', array('newsid' => $newsId));
-
-                if ($news['status'] == 0) {
-                    $previewLink .= '&newsPreview=1';
-                }
+                $previewLink .= '&newsPreview=1';
 
                 $this->_objTpl->setVariable(array(
                     'NEWS_ID'                => $newsId,
