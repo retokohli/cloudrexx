@@ -29,7 +29,7 @@ namespace Cx\Core\Core\Controller;
 class LegacyComponentHandler {
     /**
      * This is the list of exceptions
-     * 
+     *
      * array[
      *     frontend|
      *     backend
@@ -44,10 +44,10 @@ class LegacyComponentHandler {
      *     preFinalize|
      *     postFinalize
      * ] = {callable}
-     * @var array 
+     * @var array
      */
     private $exceptions = array();
-    
+
     /**
      * Tells wheter there is an exception for a certain action and component or not
      * @param boolean $frontend Are we in frontend mode or not
@@ -61,7 +61,7 @@ class LegacyComponentHandler {
         }
         return isset($this->exceptions[$frontend ? 'frontend' : 'backend'][$action][$componentName]);
     }
-    
+
     /**
      * Executes an exception (if any) for a certain action and component
      * @param boolean $frontend Are we in frontend mode or not
@@ -75,7 +75,7 @@ class LegacyComponentHandler {
         }
         return $this->exceptions[$frontend ? 'frontend' : 'backend'][$action][$componentName]();
     }
-    
+
     /**
      * Pushes all the legacy code into our array of exceptions
      * @throws \Exception If frontend is locked by license
@@ -113,7 +113,7 @@ class LegacyComponentHandler {
                     },
                     'Captcha' => function() {
                         global $url;
-                        
+
                         $params = $url->getParamArray();
                         if (isset($params['section']) && $params['section'] == 'captcha') {
                             /*
@@ -127,7 +127,7 @@ class LegacyComponentHandler {
                     },
                     'Upload' => function() {
                         global $isRegularPageRequest;
-                        
+
                         if (isset($_REQUEST['section']) && $_REQUEST['section'] == 'upload') {
                             $_REQUEST['standalone'] = 'true';
                         }
@@ -136,7 +136,7 @@ class LegacyComponentHandler {
                 'postResolve' => array(
                     'Upload' => function() {
                         global $url, $sessionObj;
-                        
+
                         if (isset($_REQUEST['section']) && $_REQUEST['section'] == 'upload') {
                             if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new \cmsSession();
                             $objUploadModule = new \Upload();
@@ -151,7 +151,7 @@ class LegacyComponentHandler {
                             $_LANGID = \FWLanguage::getDefaultLangId();
                             \Env::get('Resolver')->redirectToCorrectLanguageDir();
                         }
-                        
+
                         if (!empty($section) && !$license->isInLegalFrontendComponents($section)) {
                             if ($section == 'error') {
                                 // If the error module is not installed, show this
@@ -310,7 +310,9 @@ class LegacyComponentHandler {
                                 /** @ignore */
                                 if ($cl->loadFile(ASCMS_CORE_MODULE_PATH.'/news/lib/teasers.class.php')) {
                                     $objTeasers = new \Teasers();
-                                    $objTeasers->setTeaserFrames($arrMatches[1], \Env::get('cx')->getPage()->getContent());
+                                    $content = \Env::get('cx')->getPage()->getContent();
+                                    $objTeasers->setTeaserFrames($arrMatches[1], $content);
+                                    \Env::get('cx')->getPage()->setContent($content);
                                 }
                             }
                             // set news teasers in the page design
@@ -1006,10 +1008,10 @@ class LegacyComponentHandler {
                     'agb' => function() {},
                     'ids' => function() {},
                     'privacy' => function() {},
-                    
+
                     'access' => function() {
                         global $cl, $_CORELANG, $objTemplate, $objAccess, $page_metatitle;
-                        
+
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/access/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $objAccess = new \Access(\Env::get('cx')->getPage()->getContent());
@@ -1019,7 +1021,7 @@ class LegacyComponentHandler {
 
                     'login' => function() {
                         global $cl, $_CORELANG, $objTemplate, $sessionObj;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/login/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1030,7 +1032,7 @@ class LegacyComponentHandler {
 
                     'nettools' => function() {
                         global $cl, $_CORELANG, $objTemplate;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/nettools/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1040,7 +1042,7 @@ class LegacyComponentHandler {
 
                     'shop' => function() {
                         global $cl, $_CORELANG;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/shop/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1056,7 +1058,7 @@ class LegacyComponentHandler {
 
                     'news' => function() {
                         global $cl, $_CORELANG, $page, $objTemplate, $page_metatitle;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/news/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1075,7 +1077,7 @@ class LegacyComponentHandler {
 
                     'livecam' => function() {
                         global $cl, $_CORELANG, $objTemplate;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/livecam/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1085,7 +1087,7 @@ class LegacyComponentHandler {
 
                     'guestbook' => function() {
                         global $cl, $_CORELANG, $objTemplate;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/guestbook/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1095,7 +1097,7 @@ class LegacyComponentHandler {
 
                     'memberdir' => function() {
                         global $cl, $_CORELANG, $objTemplate;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/memberdir/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1105,7 +1107,7 @@ class LegacyComponentHandler {
 
                     'data' => function() {
                         global $cl, $_CORELANG, $objTemplate;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/data/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1118,7 +1120,7 @@ class LegacyComponentHandler {
 
                     'download' => function() {
                         global $cl, $_CORELANG, $objTemplate;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/download/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1128,7 +1130,7 @@ class LegacyComponentHandler {
 
                     'recommend' => function() {
                         global $cl, $_CORELANG, $objTemplate;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/recommend/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1138,7 +1140,7 @@ class LegacyComponentHandler {
 
                     'ecard' => function() {
                         global $cl, $_CORELANG, $objTemplate;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/ecard/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1148,7 +1150,7 @@ class LegacyComponentHandler {
 
                     'tools' => function() {
                         global $cl, $_CORELANG, $objTemplate;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/tools/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1158,7 +1160,7 @@ class LegacyComponentHandler {
 
                     'dataviewer' => function() {
                         global $cl, $_CORELANG, $objTemplate;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/dataviewer/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1168,7 +1170,7 @@ class LegacyComponentHandler {
 
                     'docsys' => function() {
                         global $cl, $_CORELANG, $objTemplate, $page_metatitle;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/docsys/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1183,7 +1185,7 @@ class LegacyComponentHandler {
 
                     'search' => function() {
                         global $cl, $_CORELANG, $objTemplate, $pos, $license;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/search/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1194,7 +1196,7 @@ class LegacyComponentHandler {
 
                     'contact' => function() {
                         global $cl, $_CORELANG, $objTemplate, $moduleStyleFile;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/contact/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1205,7 +1207,7 @@ class LegacyComponentHandler {
 
                     'sitemap' => function() {
                         global $cl, $_CORELANG, $objTemplate;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/sitemap/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1215,7 +1217,7 @@ class LegacyComponentHandler {
 
                     'media' => function() {
                         global $cl, $_CORELANG, $objTemplate, $plainSection;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/media/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1225,7 +1227,7 @@ class LegacyComponentHandler {
 
                     'newsletter' => function() {
                         global $cl, $_CORELANG, $objTemplate;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/newsletter/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1235,7 +1237,7 @@ class LegacyComponentHandler {
 
                     'gallery' => function() {
                         global $cl, $_CORELANG, $objTemplate, $page_metatitle;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/gallery/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1253,7 +1255,7 @@ class LegacyComponentHandler {
 
                     'voting' => function() {
                         global $cl, $_CORELANG, $objTemplate;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/voting/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1262,7 +1264,7 @@ class LegacyComponentHandler {
 
                     'feed' => function() {
                         global $cl, $_CORELANG, $objTemplate;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/feed/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1272,7 +1274,7 @@ class LegacyComponentHandler {
 
                     'immo' => function() {
                         global $cl, $_CORELANG, $objTemplate, $page_metatitle;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/immo/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1288,7 +1290,7 @@ class LegacyComponentHandler {
 
                     'calendar' => function() {
                         global $cl, $_CORELANG, $objTemplate, $page_metatitle;
-                        
+
                         define('CALENDAR_MANDATE', MODULE_INDEX);
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/calendar'.MODULE_INDEX.'/index.class.php'))
@@ -1305,7 +1307,7 @@ class LegacyComponentHandler {
 
                     'directory' => function() {
                         global $cl, $_CORELANG, $objTemplate, $page_metatitle;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/directory/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1327,7 +1329,7 @@ class LegacyComponentHandler {
 
                     'market' => function() {
                         global $cl, $_CORELANG, $objTemplate;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/market/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1337,7 +1339,7 @@ class LegacyComponentHandler {
 
                     'podcast' => function() {
                         global $cl, $_CORELANG, $objTemplate;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/podcast/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1347,7 +1349,7 @@ class LegacyComponentHandler {
 
                     'forum' => function() {
                         global $cl, $_CORELANG, $objTemplate;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/forum/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1358,7 +1360,7 @@ class LegacyComponentHandler {
 
                     'blog' => function() {
                         global $cl, $_CORELANG, $objTemplate;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/blog/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1368,7 +1370,7 @@ class LegacyComponentHandler {
 
                     'knowledge' => function() {
                         global $cl, $_CORELANG, $objTemplate, $page_metatitle;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/knowledge/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1384,7 +1386,7 @@ class LegacyComponentHandler {
 
                     'jobs' => function() {
                         global $cl, $_CORELANG, $objTemplate, $page_metatitle;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/jobs/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1399,7 +1401,7 @@ class LegacyComponentHandler {
 
                     'error' => function() {
                         global $cl, $_CORELANG, $objTemplate;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_CORE_PATH.'/error.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1409,7 +1411,7 @@ class LegacyComponentHandler {
 
                     'egov' => function() {
                         global $cl, $_CORELANG, $objTemplate;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/egov/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1419,7 +1421,7 @@ class LegacyComponentHandler {
 
                     'u2u' => function() {
                         global $cl, $_CORELANG, $objTemplate;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/u2u/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1429,7 +1431,7 @@ class LegacyComponentHandler {
 
                     'downloads' => function() {
                         global $cl, $_CORELANG, $objTemplate, $page_metatitle;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/downloads/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1446,7 +1448,7 @@ class LegacyComponentHandler {
 
                     'printshop' => function() {
                         global $cl, $_CORELANG, $objTemplate, $page_metatitle;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/printshop/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1460,7 +1462,7 @@ class LegacyComponentHandler {
 
                     'mediadir' => function() {
                         global $cl, $_CORELANG, $objTemplate, $page_metatitle;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/mediadir/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1480,7 +1482,7 @@ class LegacyComponentHandler {
 
                     'checkout' => function() {
                         global $cl, $_CORELANG, $objTemplate;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/checkout/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1490,14 +1492,14 @@ class LegacyComponentHandler {
 
                     'filesharing' => function() {
                         global $cl, $_CORELANG, $objTemplate;
-                        
+
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/filesharing/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $objFileshare = new \Filesharing(\Env::get('cx')->getPage()->getContent());
                         \Env::get('cx')->getPage()->setContent($objFileshare->getPage());
                     },
-                    
+
                     'home' => function() {
                     },
                 ),
@@ -1506,7 +1508,7 @@ class LegacyComponentHandler {
                 'preResolve' => array(
                     'Session' => function() {
                         global $sessionObj;
-                        
+
                         if (empty($sessionObj)) $sessionObj = new \cmsSession();
                         $sessionObj->cmsSessionStatusUpdate('backend');
                     },
@@ -1519,7 +1521,7 @@ class LegacyComponentHandler {
                     },
                     'ComponentHandler' => function() {
                         global $arrMatch, $plainCmd, $cmd;
-                        
+
                         // To clone any module, use an optional integer cmd suffix.
                         // E.g.: "shop2", "gallery5", etc.
                         // Mind that you *MUST* copy all necessary database tables, and fix any
@@ -1555,7 +1557,7 @@ class LegacyComponentHandler {
                     },
                     'License' => function() {
                         global $license, $_CONFIG, $objDatabase, $objTemplate;
-                        
+
                         $license = \Cx\Core_Modules\License\License::getCached($_CONFIG, $objDatabase);
 
                         if ($objTemplate->blockExists('upgradable')) {
@@ -1570,7 +1572,7 @@ class LegacyComponentHandler {
                 'postResolve' => array(
                     'License' => function() {
                         global $plainCmd, $objDatabase, $loggedIn, $_CONFIG, $_CORELANG, $license;
-                        
+
                         // check if the requested module is active:
                         if (!in_array($plainCmd, array('login', 'license', 'noaccess', ''))) {
                             $query = '
@@ -1591,7 +1593,7 @@ class LegacyComponentHandler {
                                 $plainCmd = 'license';
                             }
                         }
-                        
+
                         // If logged in
                         if (\Env::get('cx')->getUser()->objUser->login(true)) {
                             $license->check();
@@ -1605,7 +1607,7 @@ class LegacyComponentHandler {
                     },
                     'Language' => function() {
                         global $objInit, $_LANGID, $_FRONTEND_LANGID, $_CORELANG, $_ARRAYLANG, $plainCmd;
-                        
+
                         $objInit->_initBackendLanguage();
                         $objInit->getUserFrontendLangId();
 
@@ -1642,7 +1644,7 @@ class LegacyComponentHandler {
                         if (!is_array($_CORELANG) || !count($_CORELANG)) {
                             $_CORELANG = $objInit->loadLanguageData('core');
                         }
-                        
+
                         /**
                         * Module specific language data
                         * @ignore
@@ -1654,12 +1656,12 @@ class LegacyComponentHandler {
                     'FwUser' => function() {
                         global $objFWUser, $plainCmd, $isRegularPageRequest,
                                 $objUser, $firstname, $lastname, $objTemplate;
-                        
+
                         $objFWUser = \FWUser::getFWUserObject();
 
                         /* authentification */
                         $loggedIn = $objFWUser->objUser->login(true); //check if the user is already logged in
-                        if (!empty($_POST) && !$loggedIn && 
+                        if (!empty($_POST) && !$loggedIn &&
                                 (
                                     (!isset($_GET['cmd']) || $_GET['cmd'] !== 'login') &&
                                     (!isset($_GET['act']) || $_GET['act'] !== 'resetpw')
@@ -1681,7 +1683,7 @@ class LegacyComponentHandler {
                             );
                             \Env::get('cx')->getDb()->setUsername(json_encode($userData));
                         }
-                        
+
                         $objUser = \FWUser::getFWUserObject()->objUser;
                         $firstname = $objUser->getProfileAttribute('firstname');
                         $lastname = $objUser->getProfileAttribute('lastname');
@@ -1691,25 +1693,25 @@ class LegacyComponentHandler {
                         } else {
                             $txtProfile = $objUser->getUsername();
                         }
-                        
+
                         $objTemplate->setVariable(array(
                             'TXT_PROFILE'               => $txtProfile,
                             'USER_ID'                   => $objFWUser->objUser->getId(),
                         ));
-                        
-                        
+
+
                         if (isset($_POST['redirect']) && preg_match('/\.php/', $_POST['redirect'])) {
                             \CSRF::header('location: '.$_POST['redirect']);
                         }
                     },
                     'Csrf' => function() {
                         global $plainCmd, $cmd, $objInit, $_CORELANG;
-                        
+
                         // CSRF code needs to be even in the login form. otherwise, we
                         // could not do a super-generic check later.. NOTE: do NOT move
                         // this above the "new cmsSession" line!
                         \CSRF::add_code();
-                        
+
                         // CSRF protection.
                         // Note that we only do the check as long as there's no
                         // cmd given; this is so we can reload the main screen if
@@ -1815,7 +1817,7 @@ class LegacyComponentHandler {
                     },
                     'shop' => function() {
                         global $cl, $_CORELANG, $subMenuTitle, $intAccessIdOffset;
-                        
+
                         \Permission::checkAccess($intAccessIdOffset+13, 'static');
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/shop/admin.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1919,7 +1921,7 @@ class LegacyComponentHandler {
                     },
                     'livecam' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
-                        
+
                         \Permission::checkAccess(82, 'static');
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/livecam/admin.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1929,7 +1931,7 @@ class LegacyComponentHandler {
                     },
                     'guestbook' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
-                        
+
                         \Permission::checkAccess(9, 'static');
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/guestbook/admin.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -1939,7 +1941,7 @@ class LegacyComponentHandler {
                     },
                     'memberdir' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
-                        
+
                         \Permission::checkAccess(83, 'static');
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/memberdir/admin.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -2086,7 +2088,7 @@ class LegacyComponentHandler {
                     },
                     'recommend' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
-                        
+
                         \Permission::checkAccess(64, 'static');
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/recommend/admin.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -2106,7 +2108,7 @@ class LegacyComponentHandler {
                     },
                     'gallery' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
-                        
+
                         \Permission::checkAccess(12, 'static');
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/gallery/admin.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -2125,7 +2127,7 @@ class LegacyComponentHandler {
                     },
                     'block' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
-                        
+
                         \Permission::checkAccess(76, 'static');
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/block/admin.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -2155,7 +2157,7 @@ class LegacyComponentHandler {
                     },
                     'podcast' => function() {
                         global $cl, $_CORELANG, $subMenuTitle;
-                        
+
                         \Permission::checkAccess(87, 'static');
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/podcast/admin.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
@@ -2297,7 +2299,7 @@ class LegacyComponentHandler {
                 'postContentLoad' => array(
                     'Message' => function() {
                         global $objTemplate;
-                        
+
                         // TODO: This would better be handled by the Message class
                         if (!empty($objTemplate->_variables['CONTENT_STATUS_MESSAGE'])) {
                             $objTemplate->_variables['CONTENT_STATUS_MESSAGE'] =
@@ -2320,7 +2322,7 @@ class LegacyComponentHandler {
                     },
                     'Csrf' => function() {
                         global $objTemplate;
-                        
+
                         \CSRF::add_placeholder($objTemplate);
                     },
                 ),
