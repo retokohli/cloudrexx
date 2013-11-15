@@ -376,7 +376,7 @@ class docSysManager extends docSysLibrary
              : strip_tags(contrexx_input2raw($_POST['docSysTitle'])));
 //        $title = str_replace("ß", "ss", $title);
         $text = (empty($_POST['docSysText']) ? ''
-             : strip_tags(contrexx_input2raw($_POST['docSysText'])));
+             : contrexx_input2raw($_POST['docSysText']));
         $text = $this->filterBodyTag($text);
 //        $text = str_replace("ß", "ss", $text);
         $author = (empty($_POST['author']) ? ''
