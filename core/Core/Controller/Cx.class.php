@@ -659,7 +659,7 @@ namespace Cx\Core\Core\Controller {
          * @global type $objInit 
          */
         protected function init() {
-            global $_CONFIG, $_FTPCONFIG, $objDatabase, $objInit;
+            global $_CONFIG, $_FTPCONFIG, $objDatabase, $objInit, $objCache;
 
             /**
              * This needs to be initialized before loading config/doctrine.php
@@ -668,6 +668,12 @@ namespace Cx\Core\Core\Controller {
              */
             require_once(ASCMS_CORE_PATH.'/ClassLoader/ClassLoader.class.php');
             $this->cl = new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT, true, $this->customizingPath);
+
+            /**
+             * Start contrexx static cache
+             */
+            $objCache = new \Cache();
+            $objCache->startCache();
 
             /**
              * Environment repository
