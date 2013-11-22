@@ -43,6 +43,9 @@ class JsonData {
         '\\Cx\\modules\\survey\\controllers' => array(
             'JsonSurvey',
         ),
+        '\\Cx\\Modules\\Crm\\Lib\\Controllers' => array(
+            'JsonCrm',
+        ),
     );
     
     /**
