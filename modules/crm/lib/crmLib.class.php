@@ -1267,6 +1267,153 @@ class CrmLibrary
         }
     }
 
+    function getContactsQuery($filter = array(), $sortField = 'c.id', $sortOrder = 0)
+    {
+        global $_LANGID;
+        
+        $where = array();
+
+        $alphaFilter = isset($filter['companyname_filter']) ? contrexx_input2raw($filter['companyname_filter']) : '';
+        
+        if (!empty($alphaFilter)) {
+            $where[] = " (c.customer_name LIKE '".contrexx_input2raw($alphaFilter)."%')";
+        }
+        
+        $searchContactTypeFilter = isset($filter['contactSearch']) ? (array) $filter['contactSearch'] : array(1,2);
+        $searchContactTypeFilter = array_map('intval', $searchContactTypeFilter);
+        $where[] = " c.contact_type IN (".implode(',', $searchContactTypeFilter).")";
+
+        if (isset($filter['advanced-search'])) {
+            if (isset($filter['s_name']) && !empty($filter['s_name'])) {
+                $where[] = " (c.customer_name LIKE '".contrexx_input2db($filter['s_name'])."%' OR c.contact_familyname LIKE '".contrexx_input2db($filter['s_name'])."%')";
+            }
+            if (isset($filter['s_email']) && !empty($filter['s_email'])) {
+                $where[] = " (email.email LIKE '".contrexx_input2db($filter['s_email'])."%')";
+            }
+            if (isset($filter['s_address']) && !empty($filter['s_address'])) {
+                $where[] = " (addr.address LIKE '".contrexx_input2db($filter['s_address'])."%')";
+            }
+            if (isset($filter['s_city']) && !empty($filter['s_city'])) {
+                $where[] = " (addr.city LIKE '".contrexx_input2db($filter['s_city'])."%')";
+            }
+            if (isset($filter['s_postal_code']) && !empty($filter['s_postal_code'])) {
+                $where[] = " (addr.zip LIKE '".contrexx_input2db($filter['s_postal_code'])."%')";
+            }
+            if (isset($filter['s_notes']) && !empty($filter['s_notes'])) {
+                $where[] = " (c.notes LIKE '".contrexx_input2db($filter['s_notes'])."%')";
+            }
+        }
+        if (isset($filter['customer_type']) && !empty($filter['customer_type'])) {
+            $where[] = " (c.customer_type = '".intval($filter['customer_type'])."')";
+        }
+        if (isset($filter['filter_membership']) && !empty($filter['filter_membership'])) {
+            $where[] = " mem.membership_id = '".intval($filter['filter_membership'])."'";
+        }
+
+        $orderBy = '';
+        $orderQuery = '';
+        if (isset($filter['term']) && !empty($filter['term'])) {
+            $gender     = ($filter['term'] == 'male' || $filter['term'] == 'Männlich') ? 2 : (($filter['term'] == 'female' || $filter['term'] == 'female') ? 1 : '');
+            switch (true) {
+            case (preg_match("/(^|[\n ])([a-z0-9&\-_\.]+?)@([\w\-]+\.([\w\-\.]+)+)/i", $filter['term'])):
+                $filter['term'] = '"'.$filter['term'].'"';
+                break;
+            case (preg_match("/(^|[\n ])([\w]*?)((ht|f)tp(s)?:\/\/[\w]+[^ \,\"\n\r\t<]*)/is", $filter['term']) || preg_match("/(^|[\n ])([\w]*?)((www|ftp)\.[^ \,\"\t\n\r<]*)/is", $filter['term'])):
+                $filter['term'] = '"'.$filter['term'].'"';
+                break;
+            case (preg_match('/[^a-z0-9 _]+/i', $filter['term'])):
+                $filter['term'] = '"'.$filter['term'].'"';
+                break;
+            case (preg_match('/(\w+[+-.]\w+[\w]+[^ \,\"\n\r\t<]*)/is', $filter['term'])):
+                $filter['term'] = preg_replace('/(\w+[+-.]\w+[\w]+[^ \,\"\n\r\t<]*)/is', '+"$0"', $filter['term']);
+                break;
+//            case (!preg_match('/[\+|\-]/', $filter['term'])):
+//                $filter['term'] = preg_replace('/\s+/', ' +', "+".$filter['term']);
+//                break;
+            default:
+                $filter['term'] = '"'.$filter['term'].'"';
+                break;
+            } 
+            if (!empty($gender)) {
+                $genderQuery = "OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE id = c.id AND gender = '".$gender."')";
+            }
+            $orderBy    = "nameRelevance DESC, familyNameRelevance DESC, c.customer_name ASC";
+            $orderQuery = "MATCH (c.customer_name) AGAINST ('".contrexx_input2raw($filter['term'])."*' IN BOOLEAN MODE) AS nameRelevance,
+                           MATCH (c.contact_familyname) AGAINST ('".contrexx_input2raw($filter['term'])."*' IN BOOLEAN MODE) AS familyNameRelevance,";
+            $where[]    = "((SELECT 1 FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_emails` WHERE c.id = contact_id AND MATCH (email) AGAINST ('".contrexx_input2raw($filter['term'])."*' IN BOOLEAN MODE) LIMIT 1) 
+                            OR MATCH (c.customer_id, c.customer_name, c.contact_familyname, c.contact_role, c.notes) AGAINST ('".contrexx_input2raw($filter['term'])."*' IN BOOLEAN MODE) 
+                            OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_websites` WHERE c.id = contact_id AND MATCH (url) AGAINST ('".contrexx_input2raw($filter['term'])."*' IN BOOLEAN MODE) LIMIT 1) 
+                            OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_social_network` WHERE c.id = contact_id AND MATCH (url) AGAINST ('".contrexx_input2raw($filter['term'])."*' IN BOOLEAN MODE)) 
+                            OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_phone` WHERE c.id = contact_id AND MATCH (phone) AGAINST ('".contrexx_input2raw($filter['term'])."*' IN BOOLEAN MODE)) 
+                            OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleName}_customer_comment` WHERE c.id = customer_id AND MATCH (comment) AGAINST ('".contrexx_input2raw($filter['term'])."*' IN BOOLEAN MODE)) 
+                            OR MATCH (cur.name) AGAINST ('".contrexx_input2raw($filter['term'])."*' IN BOOLEAN MODE) OR MATCH (t.label) AGAINST ('".contrexx_input2raw($filter['term'])."*' IN BOOLEAN MODE) 
+                            OR (select 1 FROM `".DBPREFIX."module_{$this->moduleName}_customer_membership` as m JOIN `".DBPREFIX."module_{$this->moduleName}_membership_local` As ml ON (ml.entry_id=m.membership_id AND ml.lang_id = '".$_LANGID."') WHERE c.id = m.contact_id AND MATCH (ml.value) AGAINST ('".contrexx_input2raw($filter['term'])."*' IN BOOLEAN MODE)) 
+                            OR MATCH (Inloc.value) AGAINST ('".contrexx_input2raw($filter['term'])."*' IN BOOLEAN MODE) 
+                            OR MATCH (lang.name) AGAINST ('".contrexx_input2raw($filter['term'])."*' IN BOOLEAN MODE) 
+                            OR (SELECT 1 FROM `".DBPREFIX."module_{$this->moduleName}_customer_contact_address` WHERE c.id = contact_id AND MATCH (address, city, state, zip, country) AGAINST ('".contrexx_input2raw($filter['term'])."*' IN BOOLEAN MODE) LIMIT 1) {$genderQuery})";
+        }
+
+        //  Join where conditions
+        $filters = '';
+        if (!empty ($where)) {
+            $filters = " WHERE ".implode(' AND ', $where);
+        }
+
+        $sortingFields = array("c.customer_name" ,  "activities", "c.added_date");
+        $sortOrder = (isset ($filter['sorto'])) ? (((int) $filter['sorto'] == 0) ? 'DESC' : 'ASC') : 'DESC';
+        $sortField = (isset ($filter['sortf']) && in_array($sortingFields[$filter['sortf']], $sortingFields)) ? $sortingFields[$filter['sortf']] : 'c.id';
+        
+        $query = "SELECT
+                       DISTINCT c.id,
+                       c.customer_id,
+                       c.customer_type,
+                       c.customer_name,
+                       c.contact_familyname,
+                       c.contact_type,
+                       c.contact_customer AS contactCustomerId,
+                       c.status,
+                       c.added_date,
+                       con.customer_name AS contactCustomer,
+                       email.email,
+                       phone.phone,
+                       t.label AS cType,
+                       Inloc.value AS industryType,
+                       ".$orderQuery."
+                           ((SELECT count(1) AS notesCount FROM `".DBPREFIX."module_{$this->moduleName}_customer_comment` AS com WHERE com.customer_id = c.id ) +
+                           (SELECT count(1) AS tasksCount FROM `".DBPREFIX."module_{$this->moduleName}_task` AS task WHERE task.customer_id = c.id ) +
+                           (SELECT count(1) AS dealsCount FROM `".DBPREFIX."module_{$this->moduleName}_deals` AS deal WHERE deal.customer = c.id )) AS activities
+                   FROM `".DBPREFIX."module_{$this->moduleName}_contacts` AS c
+                   LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_contacts` AS con
+                     ON c.contact_customer =con.id
+                   LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_currency` As cur 
+                     ON (cur.id=c.customer_currency)
+                   LEFT JOIN `".DBPREFIX."languages` As lang 
+                     ON (lang.id=c.contact_language)  
+                   LEFT JOIN ".DBPREFIX."module_{$this->moduleName}_customer_types AS t
+                     ON c.customer_type = t.id
+                   LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_customer_contact_emails` as email
+                     ON (c.id = email.contact_id AND email.is_primary = '1')
+                   LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_customer_contact_phone` as phone
+                     ON (c.id = phone.contact_id AND phone.is_primary = '1')
+                   LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_customer_contact_address` as addr
+                     ON (c.id = addr.contact_id AND addr.is_primary = '1')
+                   LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_customer_membership` as mem
+                     ON (c.id = mem.contact_id)
+                   LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_industry_types` AS Intype
+                     ON c.industry_type = Intype.id
+                   LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_industry_type_local` AS Inloc
+                     ON Intype.id = Inloc.entry_id AND Inloc.lang_id = ".$_LANGID."
+            $filters";
+                   
+        if (!empty($orderBy) && empty($sortField) && empty($sortOrder)) {
+            $query = $query." ORDER BY $orderBy";
+        } else {
+            $query = $query." ORDER BY $sortField $sortOrder";
+        }
+        
+        return $query;
+    }
+    
     /**
      * Delete Industry type
      *

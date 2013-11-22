@@ -118,14 +118,17 @@ $J(function(){
     
     $J('form#searchcustomer #term').autocomplete({
             minLength: 2,
+            delay: 500,
             source: function( request, response ) {
-                $J.ajax({
-                    url         : 'index.php?cmd=crm&act=customersearch',
+                lastXhr = $J.ajax({
+                    url         : 'index.php?cmd=jsondata&object=crm&act=searchContacts',
                     type        : "POST",
-                    data        : $J('form#searchcustomer').serialize(),
+                    data        : $J('form#searchcustomer input[type!=hidden], form#searchcustomer select').serialize(),
                     dataType    : 'json',
-                    success: function(data) {
-                        response( data );
+                    success: function(res, status, xhr) {
+                        if (xhr === lastXhr) {
+                            response( res.data );
+                    }
                     }
                 });
             },
