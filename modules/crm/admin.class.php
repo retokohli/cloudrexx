@@ -554,7 +554,7 @@ class CrmManager extends CrmLibrary
             's_notes'             => $_REQUEST['s_notes'],
             'customer_type'       => $_REQUEST['customer_type'],
             'filter_membership'   => $_REQUEST['filter_membership'],
-            'term'                => $_REQUEST['term'],
+            'term'                => isset($_REQUEST['term']) ? contrexx_input2raw($_REQUEST['term']) : '',
             'sorto'               => $_REQUEST['sorto'],
             'sortf'               => $_REQUEST['sortf'],
         );
