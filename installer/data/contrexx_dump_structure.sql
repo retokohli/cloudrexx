@@ -1025,7 +1025,12 @@ CREATE TABLE `contrexx_module_crm_contacts` (
   `status` tinyint(2) NOT NULL default '1',
   `added_date` date NOT NULL,
   PRIMARY KEY  (`id`),
-  KEY `contact_customer` (`contact_customer`)
+  KEY `contact_customer` (`contact_customer`),
+  KEY `customer_id` (`customer_id`),
+  KEY `customer_name` (`customer_name`),
+  KEY `contact_familyname` (`contact_familyname`),
+  KEY `contact_role` (`contact_role`),
+  FULLTEXT KEY `customer_id_2` (`customer_id`,`customer_name`,`contact_familyname`,`contact_role`,`notes`)
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -1037,7 +1042,9 @@ CREATE TABLE `contrexx_module_crm_currency` (
   `pos` int(5) NOT NULL default '0',
   `hourly_rate` text NOT NULL,
   `default_currency` tinyint(1) NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `name` (`name`(333)),
+  FULLTEXT KEY `name_2` (`name`)
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -1053,7 +1060,8 @@ CREATE TABLE `contrexx_module_crm_customer_comment` (
   `updated_by` int(11) default NULL,
   `updated_on` datetime default NULL,
   PRIMARY KEY  (`id`),
-  KEY `customer_id` (`customer_id`)
+  KEY `customer_id` (`customer_id`),
+  FULLTEXT KEY `comment` (`comment`)
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -1069,7 +1077,8 @@ CREATE TABLE `contrexx_module_crm_customer_contact_address` (
   `is_primary` enum('0','1') NOT NULL,
   `contact_id` int(11) NOT NULL,
   PRIMARY KEY  (`id`),
-  KEY `contact_id` (`contact_id`)
+  KEY `contact_id` (`contact_id`),
+  KEY `address` (`address`)
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
