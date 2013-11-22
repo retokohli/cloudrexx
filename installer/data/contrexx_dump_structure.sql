@@ -361,7 +361,9 @@ CREATE TABLE `contrexx_languages` (
   `app_themes_id` int(2) NOT NULL,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `lang` (`lang`),
-  KEY `defaultstatus` (`is_default`)
+  KEY `defaultstatus` (`is_default`),
+  KEY `name` (`name`),
+  FULLTEXT KEY `name_2` (`name`)
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -1078,7 +1080,13 @@ CREATE TABLE `contrexx_module_crm_customer_contact_address` (
   `contact_id` int(11) NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `contact_id` (`contact_id`),
-  KEY `address` (`address`)
+  KEY `address` (`address`),
+  KEY `city` (`city`),
+  KEY `state` (`state`),
+  KEY `zip` (`zip`),
+  KEY `zip_2` (`zip`),
+  KEY `country` (`country`),
+  FULLTEXT KEY `address_2` (`address`,`city`,`state`,`zip`,`country`)
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -1090,7 +1098,9 @@ CREATE TABLE `contrexx_module_crm_customer_contact_emails` (
   `is_primary` enum('0','1') default '0',
   `contact_id` int(11) NOT NULL,
   PRIMARY KEY  (`id`),
-  KEY `contact_id` (`contact_id`)
+  KEY `contact_id` (`contact_id`),
+  KEY `email` (`email`),
+  FULLTEXT KEY `email_2` (`email`)
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -1102,7 +1112,9 @@ CREATE TABLE `contrexx_module_crm_customer_contact_phone` (
   `is_primary` enum('0','1') default '0',
   `contact_id` int(11) NOT NULL,
   PRIMARY KEY  (`id`),
-  KEY `contact_id` (`contact_id`)
+  KEY `contact_id` (`contact_id`),
+  KEY `phone` (`phone`),
+  FULLTEXT KEY `phone_2` (`phone`)
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -1114,7 +1126,9 @@ CREATE TABLE `contrexx_module_crm_customer_contact_social_network` (
   `is_primary` enum('0','1') default '0',
   `contact_id` int(11) NOT NULL,
   PRIMARY KEY  (`id`),
-  KEY `contact_id` (`contact_id`)
+  KEY `contact_id` (`contact_id`),
+  KEY `url` (`url`),
+  FULLTEXT KEY `url_2` (`url`)
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -1127,7 +1141,9 @@ CREATE TABLE `contrexx_module_crm_customer_contact_websites` (
   `is_primary` enum('0','1') default '0',
   `contact_id` int(11) NOT NULL,
   PRIMARY KEY  (`id`),
-  KEY `contact_id` (`contact_id`)
+  KEY `contact_id` (`contact_id`),
+  KEY `url` (`url`),
+  FULLTEXT KEY `url_2` (`url`)
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -1158,7 +1174,9 @@ CREATE TABLE `contrexx_module_crm_customer_types` (
   `active` int(1) NOT NULL,
   `pos` int(10) NOT NULL default '0',
   `default` tinyint(2) NOT NULL default '0',
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `label` (`label`),
+  FULLTEXT KEY `label_2` (`label`)
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -1195,7 +1213,9 @@ CREATE TABLE `contrexx_module_crm_industry_type_local` (
   `entry_id` int(11) NOT NULL,
   `lang_id` int(11) NOT NULL,
   `value` varchar(256) NOT NULL,
-  KEY `entry_id` (`entry_id`)
+  KEY `entry_id` (`entry_id`),
+  KEY `value` (`value`),
+  FULLTEXT KEY `value_2` (`value`)
 ) ENGINE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -1214,7 +1234,9 @@ CREATE TABLE `contrexx_module_crm_membership_local` (
   `entry_id` int(11) NOT NULL,
   `lang_id` int(11) NOT NULL,
   `value` varchar(256) NOT NULL,
-  KEY `entry_id` (`entry_id`)
+  KEY `entry_id` (`entry_id`),
+  KEY `value` (`value`),
+  FULLTEXT KEY `value_2` (`value`)
 ) ENGINE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -1235,7 +1257,9 @@ CREATE TABLE `contrexx_module_crm_notes` (
   `icon` varchar(255) NOT NULL,
   `pos` int(1) NOT NULL,
   `system_defined` tinyint(2) NOT NULL default '0',
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `name` (`name`),
+  FULLTEXT KEY `name_2` (`name`)
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -1297,7 +1321,9 @@ CREATE TABLE `contrexx_module_crm_task_types` (
   `description` text NOT NULL,
   `icon` varchar(255) NOT NULL,
   `system_defined` tinyint(4) NOT NULL,
-  PRIMARY KEY  (`id`)
+  PRIMARY KEY  (`id`),
+  KEY `name` (`name`),
+  FULLTEXT KEY `name_2` (`name`)
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
