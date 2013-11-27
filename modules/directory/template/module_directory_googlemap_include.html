@@ -1,4 +1,4 @@
-<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key={DIRECTORY_GOOGLE_API_KEY}" type="text/javascript"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key={DIRECTORY_GOOGLE_API_KEY}&amp;sensor=false&amp;v=3" type="text/javascript"></script>
 <script type="text/javascript">
 //<![CDATA[
 
@@ -48,13 +48,18 @@ var EventCache = function(){
 addEvent(window,'unload',EventCache.flush);
 
 var reasons=[];
-reasons[G_GEO_SUCCESS]            = "{TXT_DIR_GEO_SUCCESS}";
-reasons[G_GEO_MISSING_ADDRESS]    = "{TXT_DIR_GEO_MISSING}";
-reasons[G_GEO_UNKNOWN_ADDRESS]    = "{TXT_DIR_GEO_UNKNOWN}";
-reasons[G_GEO_UNAVAILABLE_ADDRESS]= "{TXT_DIR_GEO_UNAVAILABLE}";
-reasons[G_GEO_BAD_KEY]            = "{TXT_DIR_GEO_BAD_KEY}";
-reasons[G_GEO_TOO_MANY_QUERIES]   = "{TXT_DIR_GEO_TOO_MANY_QUERIES}";
-reasons[G_GEO_SERVER_ERROR]       = "{TXT_DIR_GEO_SERVER_ERROR}";
+/*reasons[G_GEO_SUCCESS]            = "{TXT_DIR_GEO_SUCCESS}"; -> OK
+reasons[G_GEO_MISSING_ADDRESS]    = "{TXT_DIR_GEO_MISSING}"; ->INVALID_REQUEST
+reasons[G_GEO_UNKNOWN_ADDRESS]    = "{TXT_DIR_GEO_UNKNOWN}"; -> ZERO_RESULTS
+reasons[G_GEO_UNAVAILABLE_ADDRESS]= "{TXT_DIR_GEO_UNAVAILABLE}"; -> ZERO_RESULTS
+reasons[G_GEO_BAD_KEY]            = "{TXT_DIR_GEO_BAD_KEY}"; -> REQUEST_DENIED
+reasons[G_GEO_TOO_MANY_QUERIES]   = "{TXT_DIR_GEO_TOO_MANY_QUERIES}"; -> OVER_QUERY_LIMIT
+reasons[G_GEO_SERVER_ERROR]       = "{TXT_DIR_GEO_SERVER_ERROR}"; -> REQUEST_DENIED */
+reasons[google.maps.GeocoderStatus.OK]                  = "{TXT_DIR_GEO_SUCCESS}";
+reasons[google.maps.GeocoderStatus.ZERO_RESULTS]        = "{TXT_DIR_GEO_UNKNOWN}";
+reasons[google.maps.GeocoderStatus.OVER_QUERY_LIMIT]    = "{TXT_DIR_GEO_TOO_MANY_QUERIES}";
+reasons[google.maps.GeocoderStatus.REQUEST_DENIED]      = "{TXT_DIR_GEO_SERVER_ERROR}";
+reasons[google.maps.GeocoderStatus.INVALID_REQUEST]     = "{TXT_DIR_GEO_BAD_KEY}";
 
 
 var startX      = {DIRECTORY_START_X};
@@ -92,46 +97,55 @@ var updateAddress = function(){
 }
 
 var load = function() {
-    if (GBrowserIsCompatible()) {
-     	map = new GMap2(document.getElementById("gmap"));
-    	map.addControl(new GLargeMapControl());
-    	map.addControl(new GMapTypeControl());
-    	map.addControl(new GOverviewMapControl(new GSize(95,95)));
-    	if( (elLon.value != '' && elLon.value != 0 && elLat.value != '' && elLat.value != 0) &&
-    		(elLonFrac.value != '' && elLonFrac.value != 0 && elLatFrac.value != '' && elLatFrac.value != 0)){
-    		lon = elLon.value;
-    		lonf = elLonFrac.value;
-    		lat = elLat.value;
-    		latf = elLatFrac.value;
-    		zoom = parseInt((elZoom.value != '') ? elZoom.value : 13);
-    		map.setCenter(new GLatLng(lon+'.'+lonf, lat+'.'+latf), zoom);
-    		point = map.getCenter();
-    		if(isBackend){
-    			document.getElementById("loclayer").innerHTML = getStatusString(point.x.toString(), point.y.toString());
-    		}
-    	}else{
-    		map.setCenter(new GLatLng({DIRECTORY_MAP_LAT_BACKEND}, {DIRECTORY_MAP_LON_BACKEND}), {DIRECTORY_MAP_ZOOM_BACKEND});
-    		point = map.getCenter();
-    		if(!location.href.match(/cmd=add/) && !location.href.match(/act=new/)){
-				x = setTimeout('getAddress()', 0);
-    		}
-    	}
+    var options = {
+        zoom: 13,
+        center: new google.maps.LatLng(37.4419, -122.1419),
+        mapTypeId: google.maps.MapTypeId.ROADMAP
+    };
+    
+	if( (elLon.value != '' && elLon.value != 0 && elLat.value != '' && elLat.value != 0) &&
+		(elLonFrac.value != '' && elLonFrac.value != 0 && elLatFrac.value != '' && elLatFrac.value != 0)){
+		lon = elLon.value;
+		lonf = elLonFrac.value;
+		lat = elLat.value;
+		latf = elLatFrac.value;
+		options.zoom = parseInt((elZoom.value != '') ? elZoom.value : 13);
+		options.center = new google.maps.LatLng(lon+'.'+lonf, lat+'.'+latf);
+		point = options.center;
+	} else {
+		options.center = new google.maps.LatLng(
+		    {DIRECTORY_MAP_LAT_BACKEND},
+		    {DIRECTORY_MAP_LON_BACKEND}
+	    );
+	    options.zoom = {DIRECTORY_MAP_ZOOM_BACKEND};
+		point = options.center;
+		if(!location.href.match(/cmd=add/) && !location.href.match(/act=new/)){
+			x = setTimeout('getAddress()', 0);
+		}
+	}
+	
+    map = new google.maps.Map(
+        document.getElementById('gmap'),
+        options
+    );
 
-    	point = map.getCenter();
-    	map.addOverlay(new GMarker(point));
+    marker = new google.maps.Marker({
+        position: point,
+        map: map
+    });
+    
+    geocoder = new google.maps.Geocoder();
 
-    	GEvent.addListener(map, "moveend", function() {
-			if(isBackend){
-    			point = map.getCenter();
-    			passValues();
-    			map.clearOverlays();
-    			marker = new GMarker(point);
-	       		map.addOverlay(marker);
-				document.getElementById("loclayer").innerHTML = getStatusString(point.x.toString(), point.y.toString())
-			}
-    	});
-        geocoder = new GClientGeocoder();
-    }
+    google.maps.event.addListener(map, 'idle', function() {
+        if(isBackend){
+            point = map.getCenter();
+            passValues();
+            marker.setPosition(point);
+        }
+    });
+    passValues();
+    var loclayer = document.getElementById("loclayer");
+    loclayer.parentNode.removeChild(loclayer);
 }
 
 var getStatusString = function(X, Y){
@@ -139,10 +153,16 @@ var getStatusString = function(X, Y){
 }
 
 var passValues = function(){
-	lon 	= point.y.toString().split('.')[0];
-	lonfac 	= point.y.toString().split('.')[1];
-	lat 	= point.x.toString().split('.')[0];
-	latfac 	= point.x.toString().split('.')[1];
+	lon 	= point.ob.toString().split('.')[0];
+	lonfac 	= point.ob.toString().split('.')[1];
+	lat 	= point.pb.toString().split('.')[0];
+	latfac 	= point.pb.toString().split('.')[1];
+	if (!lonfac) {
+	    lonfac = 0;
+	}
+	if (!latfac) {
+	    latfac = 0;
+	}
 	elLon.value = lon;
 	elLonFrac.value = lonfac;
 	elLat.value = lat;
@@ -153,29 +173,23 @@ var passValues = function(){
 var getAddress = function() {
 	address = updateAddress();
 	if(address.match(/^,  ,/)){
-	    try{
+        try{
 	        document.getElementById("geostatus").innerHTML = "{TXT_DIR_GEO_SPECIFY_ADDRESS_OR_CHOOSE_MANUALLY}";
 	    }catch(e){}
 	    return false;
 	}
    	if (geocoder) {
-   		geocoder.getLocations(address, getGeoCodeData);
+   		geocoder.geocode({'address':address}, getGeoCodeData);
     }
 }
 
-var getGeoCodeData = function(data){
-	try{
-		if(data.Status.code == G_GEO_SUCCESS){
-			try{
-				point = new GLatLng(data.Placemark[0].Point.coordinates[1], data.Placemark[0].Point.coordinates[0]);
-				suggestions = /\s([^,\ ])+/.exec(data.Placemark[0].address)[1];
-				map.setCenter(point, 14);
-			}catch(e){}
-		}
-		if(!location.href.match(/cmd=detail/)){
-			document.getElementById("geostatus").innerHTML = reasons[data.Status.code];
-		}
-	}catch(e){}
+var getGeoCodeData = function(results, status) {
+    if (status == google.maps.GeocoderStatus.OK) {
+        map.setCenter(results[0].geometry.location);
+        marker.setPosition(results[0].geometry.location);
+    } else {
+		document.getElementById("geostatus").innerHTML = reasons[status];
+    }
 }
 
 addEvent(window, 'load', load);
