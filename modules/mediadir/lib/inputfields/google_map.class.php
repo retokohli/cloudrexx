@@ -68,17 +68,6 @@ class mediaDirectoryInputfieldGoogle_map extends mediaDirectoryLibrary implement
                     $strValueLon = empty($arrValues[0]) ? 0 : $arrValues[0];
                     $strValueLat = empty($arrValues[1]) ? 0 : $arrValues[1];
                     $strValueZoom = empty($arrValues[2]) ? 0 : $arrValues[2];
-                    $strValueKml = $arrValues[3];
-
-                    if($strValueKml != null) {
-                        $arrKml = explode("/", $strValueKml);
-                        $intArrKmlLenght = count($arrKml)-1;
-                        $strKmlFilename = $arrKml[$intArrKmlLenght];
-
-                        $strKmlPreview = '<a href="'.$arrValues[3].'" target="_blank">'.$strKmlFilename.'</a>&nbsp;&nbsp;<input type="checkbox" value="1" name="deleteMedia['.$intId.']" />'.$_ARRAYLANG['TXT_MEDIADIR_DELETE'].'<br />';
-                    } else {
-                        $strKmlPreview = '';
-                    }
                 } else {
                     $objSettingsRS = $objDatabase->Execute("SELECT value FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_settings WHERE name='settingsGoogleMapStartposition'");
                     if ($objSettingsRS !== false) {
@@ -89,7 +78,6 @@ class mediaDirectoryInputfieldGoogle_map extends mediaDirectoryLibrary implement
                     $strValueLon = empty($arrValues[0]) ? 0 : $arrValues[0];
                     $strValueLat = empty($arrValues[1]) ? 0 : $arrValues[1];
                     $strValueZoom = empty($arrValues[2]) ? 0 : $arrValues[2];
-                    $strKmlPreview = '';
                 }
 
                 $strMapId       = $this->moduleName.'Inputfield_'.$intId.'_map';
@@ -99,7 +87,6 @@ class mediaDirectoryInputfieldGoogle_map extends mediaDirectoryLibrary implement
                 $strStreetId    = $this->moduleName.'Inputfield_'.$intId.'_street';
                 $strZipId       = $this->moduleName.'Inputfield_'.$intId.'_zip';
                 $strCityId      = $this->moduleName.'Inputfield_'.$intId.'_city';
-                $strKmlId       = $this->moduleName.'Inputfield_'.$intId.'_kml';
                 $strKey         = $_CONFIG['googleMapsAPIKey'];
 
                 if($objInit->mode == 'backend') {
@@ -114,11 +101,6 @@ class mediaDirectoryInputfieldGoogle_map extends mediaDirectoryLibrary implement
                     $strInputfield .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_ZOOM'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="'.$this->moduleName.'Inputfield['.$intId.'][zoom]" id="'.$strZoomId.'" value="'.$strValueZoom.'" onfocus="this.select();" /></td></tr>';
                     $strInputfield .= '</table><br />';
                     $strInputfield .= '<div id="'.$strMapId.'" style="border: solid 1px #0A50A1; width: 418px; height: 300px;"></div>';
-                    if($this->arrSettings['settingsGoogleMapAllowKml'] == 1) {
-                        $strInputfield .= '<br /><table cellpadding="0" cellspacing="0" border="0" class="'.$this->moduleName.'TableGoogleMap">';
-                        $strInputfield .= '<tr><td style="border: 0px;">Routedatei (*.kml):&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;">'.$strKmlPreview.'<input type="text" name="'.$this->moduleName.'Inputfield['.$intId.'][kml]" value="'.$strValueKml.'" id="'.$strKmlId.'"  style="width: 238px;" onfocus="this.select();" />&nbsp;<input type="button" value="Durchsuchen" onClick="getFileBrowser(\''.$strKmlId.'\', \''.$this->moduleName.'\', \'/uploads\')" /></td></tr>';
-                        $strInputfield .= '</table>';
-                    }
 
                 } else {
                     $strInputfield  = '<div class="'.$this->moduleName.'GoogleMap" style="float: left; height: auto ! important;">';
@@ -138,123 +120,77 @@ class mediaDirectoryInputfieldGoogle_map extends mediaDirectoryLibrary implement
                     $strInputfield .= '<div class="'.$this->moduleName.'GoogleMap" style="float: left; height: auto ! important;">';
                     $strInputfield .= '<div id="'.$strMapId.'" class="map"></div>';
                     $strInputfield .= '</div>';
-                    if($this->arrSettings['settingsGoogleMapAllowKml'] == 1) {
-                        $strInputfield .= '<div class="'.$this->moduleName.'GoogleMap" style="float: left; height: auto ! important;">';
-                        $strInputfield .= '<br /><fieldset class="'.$this->moduleName.'FieldsetGoogleMap">';
-                        $strInputfield .= '<legend>Routedatei beif�gen</legend>';
-                        $strInputfield .= '<table cellpadding="0" cellspacing="0" border="0" class="'.$this->moduleName.'TableGoogleMap">';
-                        $strInputfield .= '<tr><td>Datei (*.kml):&nbsp;&nbsp;</td><td>'.$strKmlPreview.'<input type="file" name="kmlUpload_'.$intId.'" value="'.$strValueKml.'" id="'.$strKmlId.'" class="'.$this->moduleName.'InputfieldGoogleMapFile" /><input name="'.$this->moduleName.'Inputfield['.$intId.'][kml]" value="'.$strValueKml.'" type="hidden"></td></tr>';
-                        $strInputfield .= '</table>';
-                        $strInputfield .= '</fieldset>';
-                        $strInputfield .= '</div>';
-                    }
                 }
-
-
+                
                 $strInputfield .= <<<EOF
-<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=$strKey" type="text/javascript"></script>
-<script type="text/javascript">
+<script src="https://maps.googleapis.com/maps/api/js?key=$strKey&sensor=false&v=3"></script>
+<script>
 //<![CDATA[
-var elZoom = document.getElementById('$strZoomId');
-var elLon = document.getElementById('$strLonId');
-var elLat = document.getElementById('$strLatId');
-
-var elStreet = document.getElementById('$strStreetId');
-var elZip = document.getElementById('$strZipId');
-var elCity = document.getElementById('$strCityId');
-
-var map;
-var point;
-var geocoder;
-var old_marker = null;
+var elZoom, elLon, elLat, elStreet, elZip, elCity;
+var map, marker, geocoder, old_marker = null;
 
 function initialize() {
-    if (GBrowserIsCompatible()) {
-        map = new GMap2(document.getElementById("$strMapId"));
+    elZoom = document.getElementById("$strZoomId");
+    elLon = document.getElementById("$strLonId");
+    elLat = document.getElementById("$strLatId");
 
-        map.setCenter(new GLatLng($strValueLon, $strValueLat), $strValueZoom);
-        map.addControl(new GLargeMapControl());
-        map.addControl(new GMapTypeControl());
-        map.addMapType(G_PHYSICAL_MAP);
+    elStreet = document.getElementById("$strStreetId");
+    elZip = document.getElementById("$strZipId");
+    elCity = document.getElementById("$strCityId");
 
+    map = new google.maps.Map(document.getElementById("$strMapId"));
 
-        if($strValueLon != 0 && $strValueLon != 0) {
-            var marker = new GMarker(new GLatLng($strValueLon, $strValueLat), $strValueZoom);
-            map.addOverlay(marker);
-            old_marker = marker;
-        }
+    map.setCenter(new google.maps.LatLng($strValueLon, $strValueLat));
+    map.setZoom($strValueZoom);
+    map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
 
-        geocoder = new GClientGeocoder();
-
-        GEvent.addListener(map,"click", function(overlay,latlng) {
-            if (latlng) {
-                if (old_marker != null) {
-                    map.removeOverlay(old_marker);
-                }
-
-                var marker = new GMarker(latlng);
-
-                point = latlng;
-                setAttributes();
-
-                map.addOverlay(marker);
-
-                old_marker = marker;
-            }
+    if($strValueLon != 0 && $strValueLon != 0) {
+        marker = new google.maps.Marker({
+            map: map
         });
-
-        GEvent.addListener(map, "moveend", function() {
-            elZoom.value = map.getZoom();
-        });
+        setPosition(new google.maps.LatLng($strValueLon, $strValueLat));
     }
+
+    geocoder = new google.maps.Geocoder();
+
+    google.maps.event.addListener(map, "click", function(event) {
+        setPosition(event.latLng);
+    });
+
+    google.maps.event.addListener(map, "idle", function() {
+        elZoom.value = map.getZoom();
+    });
 }
 
 function searchAddress() {
     var address =  elStreet.value + " " + elZip.value + " " + elCity.value;
 
     if (geocoder) {
-        geocoder.getLatLng(
-        address,
-        function(latlng) {
-            if (!latlng) {
-                alert(address + " not found");
-            } else {
-
-
-                map.setCenter(latlng, 15);
-
-                if (old_marker != null) {
-                    map.removeOverlay(old_marker);
-                }
-
-                var marker = new GMarker(latlng);
-
-                point = latlng;
-                setAttributes();
-
-                map.addOverlay(marker);
-
-                old_marker = marker;
+        geocoder.geocode( { 'address': address}, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+                setPosition(results[0].geometry.location);
+                map.setCenter(results[0].geometry.location);
             }
-        }
-    );
+        });
     }
 }
-
-function setAttributes() {
-    var lon = point.y.toString();
-    var lat = point.x.toString();
-
+                        
+function setPosition(position) {
+    if (!marker) {
+        marker = new google.maps.Marker({
+            map: map
+        });
+    }
+    marker.setPosition(position);
     elZoom.value = map.getZoom();
-    elLon.value = lon;
-    elLat.value = lat;
+    elLon.value = position.ob;
+    elLat.value = position.pb;
 }
 
-var tmpGoogleMapOnLoad = window.onload; window.onload = function() { if(tmpGoogleMapOnLoad){tmpGoogleMapOnLoad();} initialize(); }
+google.maps.event.addDomListener(window, 'load', initialize);
 //]]>
 </script>
 EOF;
-
                 return $strInputfield;
 
                 break;
@@ -270,101 +206,14 @@ EOF;
         $lat  = floatval($arrValue['lat']);
         $lon  = floatval($arrValue['lon']);
         $zoom = floatval($arrValue['zoom']);
-
-        if($objInit->mode == 'backend') {
-            if ($_POST["deleteMedia"][$intInputfieldId] != 1) {
-                $strGeoXml = contrexx_input2raw($_POST[$this->moduleName.'Inputfield'][$intInputfieldId]['kml']);
-            } else {
-                $strGeoXml = null;
-            }
-        } else {
-            if (!empty($_FILES['kmlUpload_'.$intInputfieldId]['name']) || $_POST["deleteMedia"][$intInputfieldId] == 1) {
-                $this->deleteKml($_POST[$this->moduleName.'Inputfield'][$intInputfieldId]['kml']);
-
-                if ($_POST["deleteMedia"][$intInputfieldId] != 1) {
-                    $strGeoXml = $this->uploadMedia($intInputfieldId);
-                } else {
-                    $strGeoXml = null;
-                }
-            } else {
-                $strGeoXml = contrexx_input2raw($_POST[$this->moduleName.'Inputfield'][$intInputfieldId]['kml']);
-            }
-        }
-
-        $strValue = $lon.','.$lat.','.$zoom.','.$strGeoXml;
+        $strValue = $lon.','.$lat.','.$zoom;
 
         return $strValue;
     }
 
-
-    function deleteKml($strPathKml)
-    {
-        if(!empty($strPathKml)) {
-            $objFile = new File();
-            $arrFileInfo = pathinfo($strPathKml);
-            $kmlName    = $arrFileInfo['basename'];
-
-            //delete kml
-            if (file_exists(ASCMS_PATH.$strPathKml)) {
-                $objFile->delFile($this->imagePath, $this->imageWebPath, 'uploads/'.$kmlName);
-            }
-        }
-    }
-
-
-
-    function uploadMedia($intInputfieldId)
-    {
-        global $objDatabase;
-
-        if (isset($_FILES)) {
-            $tmpKml   = $_FILES['kmlUpload_'.$intInputfieldId]['tmp_name'];
-            $kmlName  = $_FILES['kmlUpload_'.$intInputfieldId]['name'];
-
-            if ($kmlName != "") {
-                //get extension
-                $arrKmlInfo   = pathinfo($kmlName);
-                $kmlExtension = !empty($arrKmlInfo['extension']) ? '.'.$arrKmlInfo['extension'] : '';
-                $kmlBasename  = $arrKmlInfo['filename'];
-                $randomSum    = rand(10, 99);
-
-
-                //check filename
-                if (file_exists($this->imagePath.'uploads/'.$kmlName)) {
-                    $kmlName = $kmlBasename.'_'.time().$kmlExtension;
-                }
-
-                //upload file
-                if (move_uploaded_file($tmpKml, $this->imagePath.'uploads/'.$kmlName)) {
-                    $objFile = new File();
-                    $objFile->setChmod($this->imagePath, $this->imageWebPath, 'uploads/'.$kmlName);
-                    return $this->imageWebPath.'uploads/'.$kmlName;
-                } else {
-                    return false;
-                }
-            } else {
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
-
-
-
     function deleteContent($intEntryId, $intIputfieldId)
     {
         global $objDatabase;
-
-        $objDeleteKmlFile = $objDatabase->Execute("SELECT value FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
-        if($objDeleteKmlFile !== false) {
-            $strValue  = $objDeleteKmlFile->fields['value'];
-            $arrValues = explode(',', $strValue);
-            $strKmlPath = $arrValues[3];
-            if(!empty($strKmlPath)) {
-                $this->deleteKml($strKmlPath);
-            }
-        }
 
         $objDeleteInputfield = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields WHERE `entry_id`='".intval($intEntryId)."' AND  `field_id`='".intval($intIputfieldId)."'");
 
@@ -401,37 +250,17 @@ EOF;
         $strValueLon = $arrValues[0];
         $strValueLat = $arrValues[1];
         $strValueZoom = $arrValues[2];
-        $strValueGeoXml = $arrValues[3];
         $strValueLink = '<a href="http://maps.google.com/maps?q='.$arrValues[0].','.$arrValues[1].'" target="_blank">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLEMAPS_LINK'].'</a>';
         $strValueLinkHref = 'http://maps.google.com/maps?q='.$arrValues[0].','.$arrValues[1];
-
-         if(!empty($strValueGeoXml) || $strValueGeoXml != 0){
-            $strServerProtocol = ASCMS_PROTOCOL."://";
-            $strServerName = $_SERVER['SERVER_NAME'];
-            $strServerKmlWebPath = constant('ASCMS_'.$this->moduleConstVar.'_IMAGES_WEB_PATH').'/uploads';
-
-            $strGeoXmlPath = $strServerProtocol.$strServerName.$strServerKmlWebPath.$strValueGeoXml;
-            //test only
-            //$strGeoXmlPath = 'http://mapgadgets.googlepages.com/cta.kml';
-            $strHideGeoXml = false;
-            $strMouseover = 'loadGeoXml(kml'.$intEntryId.');';
-            $strMouseout = 'hideGeoXml(kml'.$intEntryId.');';
-        } else {
-            $strGeoXmlPath = null;
-            $strHideGeoXml = true;
-            $strMouseover = null;
-            $strMouseout = null;
-        }
 
         if(!empty($strValue)) {
             $objGoogleMap = new googleMap();
             $objGoogleMap->setMapId($this->moduleName.'Inputfield_'.$intId.'_map');
             $objGoogleMap->setMapStyleClass('map');
-            $objGoogleMap->setMapType(0);
             $objGoogleMap->setMapZoom($arrValues[2]);
             $objGoogleMap->setMapCenter($arrValues[0], $arrValues[1]);
 
-            $objGoogleMap->addMapMarker($intId, $strValueLon, $strValueLat, null, true, $strGeoXmlPath, $strHideGeoXml);
+            $objGoogleMap->addMapMarker($intId, $strValueLon, $strValueLat, null, true);
 
             $arrContent['TXT_'.$this->moduleLangVar.'_INPUTFIELD_NAME'] = htmlspecialchars($arrInputfield['name'][0], ENT_QUOTES, CONTREXX_CHARSET);
             $arrContent[$this->moduleLangVar.'_INPUTFIELD_VALUE'] = $objGoogleMap->getMap();
@@ -451,27 +280,6 @@ EOF;
         parent::getSettings();
 
         $fieldName = $this->moduleName."Inputfield_";
-        
-        if($this->arrSettings['settingsGoogleMapAllowKml'] == 1) {
-            $strKmlCheck  = <<<EOF
-                value_kml = document.getElementById('$fieldName' + field + '_kml').value;
-
-                if (value_kml != "") {
-                	ending = value_kml.substr(-4);
-                    if(ending != '.kml') {
-                        isOk = false;
-                    	document.getElementById('$fieldName' + field + '_kml').style.border = "#ff0000 1px solid";
-                    } else {
-                	   document.getElementById('$fieldName' + field + '_kml').style.borderColor = '';
-                    }
-                }  else {
-                    document.getElementById('$fieldName' + field + '_kml').style.borderColor = '';
-                }
-EOF;
-        } else {
-            $strKmlCheck  = '';
-        }
-
         $strJavascriptCheck = <<<EOF
 
             case 'google_map':
@@ -497,8 +305,6 @@ EOF;
                 	document.getElementById('$fieldName' + field + '_lat').style.borderColor = '';
                 	document.getElementById('$fieldName' + field + '_zoom').style.borderColor = '';
                 }
-
-                $strKmlCheck
 
                 break;
 
