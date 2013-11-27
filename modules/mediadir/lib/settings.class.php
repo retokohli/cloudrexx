@@ -394,114 +394,76 @@ class mediaDirectorySettings extends mediaDirectoryLibrary
         $strGoogleMap .= '<tr><td style="border: 0px;">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLE_MAP_ZOOM'].':&nbsp;&nbsp;</td><td style="border: 0px; padding-bottom: 2px;"><input type="text" name="settingsGoogleMap[zoom]" id="'.$strZoomId.'" class="'.$this->moduleName.'InputfieldGoogleMapSmall" value="'.$strValueZoom.'" onfocus="this.select();" /></td></tr>';
         $strGoogleMap .= '</table><br />';
         $strGoogleMap .= '<div id="'.$strMapId.'" style="border: solid 1px #0A50A1; width: 418px; height: 300px;"></div>';
+        
         $strGoogleMap .= <<<EOF
-<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=$strKey" type="text/javascript"></script>
-<script type="text/javascript">
+<script src="https://maps.googleapis.com/maps/api/js?key=$strKey&sensor=false&v=3"></script>
+<script>
 //<![CDATA[
-var elZoom = document.getElementById('$strZoomId');
-var elLon = document.getElementById('$strLonId');
-var elLat = document.getElementById('$strLatId');
-
-var elStreet = document.getElementById('$strStreetId');
-var elZip = document.getElementById('$strZipId');
-var elCity = document.getElementById('$strCityId');
-
-var map;
-var point;
-var geocoder;
-var old_marker = null;
+var elZoom, elLon, elLat, elStreet, elZip, elCity;
+var map, marker, geocoder, old_marker = null;
 
 function initialize() {
-    if (GBrowserIsCompatible()) {
-        map = new GMap2(document.getElementById("$strMapId"));
+    elZoom = document.getElementById("$strZoomId");
+    elLon = document.getElementById("$strLonId");
+    elLat = document.getElementById("$strLatId");
 
-        map.setCenter(new GLatLng($strValueLon, $strValueLat), $strValueZoom);
-        map.addControl(new GLargeMapControl());
+    elStreet = document.getElementById("$strStreetId");
+    elZip = document.getElementById("$strZipId");
+    elCity = document.getElementById("$strCityId");
 
-        if($strValueLon != 0 && $strValueLon != 0) {
-            var marker = new GMarker(new GLatLng($strValueLon, $strValueLat), $strValueZoom);
-            map.addOverlay(marker);
-            old_marker = marker;
-        }
+    map = new google.maps.Map(document.getElementById("$strMapId"));
 
-        geocoder = new GClientGeocoder();
+    map.setCenter(new google.maps.LatLng($strValueLon, $strValueLat));
+    map.setZoom($strValueZoom);
+    map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
 
-        GEvent.addListener(map,"click", function(overlay,latlng) {
-            if (latlng) {
-                if (old_marker != null) {
-                    map.removeOverlay(old_marker);
-                }
-
-                var marker = new GMarker(latlng);
-
-                point = latlng;
-                setAttributes();
-
-                map.addOverlay(marker);
-
-                old_marker = marker;
-            }
+    if($strValueLon != 0 && $strValueLon != 0) {
+        marker = new google.maps.Marker({
+            map: map
         });
-
-        GEvent.addListener(map, "moveend", function() {
-            elZoom.value = map.getZoom();
-        });
+        setPosition(new google.maps.LatLng($strValueLon, $strValueLat));
     }
+
+    geocoder = new google.maps.Geocoder();
+
+    google.maps.event.addListener(map, "click", function(event) {
+        setPosition(event.latLng);
+    });
+
+    google.maps.event.addListener(map, "idle", function() {
+        elZoom.value = map.getZoom();
+    });
 }
 
 function searchAddress() {
     var address =  elStreet.value + " " + elZip.value + " " + elCity.value;
 
     if (geocoder) {
-        geocoder.getLatLng(
-        address,
-        function(latlng) {
-            if (!latlng) {
-                alert(address + " not found");
-            } else {
-
-
-                map.setCenter(latlng, 15);
-
-                if (old_marker != null) {
-                    map.removeOverlay(old_marker);
-                }
-
-                var marker = new GMarker(latlng);
-
-                point = latlng;
-                setAttributes();
-
-                map.addOverlay(marker);
-
-                old_marker = marker;
+        geocoder.geocode( { 'address': address}, function(results, status) {
+            if (status == google.maps.GeocoderStatus.OK) {
+                setPosition(results[0].geometry.location);
+                map.setCenter(results[0].geometry.location);
             }
-        }
-    );
+        });
     }
 }
-
-function setAttributes() {
-    var lon = point.y.toString();
-    var lat = point.x.toString();
-
+                        
+function setPosition(position) {
+    if (!marker) {
+        marker = new google.maps.Marker({
+            map: map
+        });
+    }
+    marker.setPosition(position);
     elZoom.value = map.getZoom();
-    elLon.value = lon;
-    elLat.value = lat;
+    elLon.value = position.ob;
+    elLat.value = position.pb;
 }
 
-window.onload = initialize();
+google.maps.event.addDomListener(window, 'load', initialize);
 //]]>
 </script>
 EOF;
-        if($this->arrSettings['settingsGoogleMapAllowKml'] == 1) {
-            $strAllowKmlOn = 'checked="checked"';
-            $strAllowKmlOff = '';
-        } else {
-            $strAllowKmlOn = '';
-            $strAllowKmlOff = 'checked="checked"';
-        }
-
         if($this->arrSettings['settingsGoogleMapType'] == 0) {
             $strMapyType0 = 'selected="selected"';
             $strMapyType1 = '';
@@ -522,10 +484,7 @@ EOF;
 
         $objTpl->setVariable(array(
             $this->moduleLangVar.'_SETTINGS_GOOGLE_START_POSITION' => $strGoogleMap,
-            'TXT_'.$this->moduleLangVar.'_SETTINGS_GOOGLE_ALLOW_KML' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GOOGLE_ALLOW_KML'],
             'TXT_'.$this->moduleLangVar.'_SETTINGS_GOOGLE_MAP_TYPE' => $_ARRAYLANG['TXT_MEDIADIR_SETTINGS_GOOGLE_MAP_TYPE'],
-            $this->moduleLangVar.'_SETTINGS_GOOGLE_ALLOW_KML_ON' => $strAllowKmlOn,
-            $this->moduleLangVar.'_SETTINGS_GOOGLE_ALLOW_KML_OFF' => $strAllowKmlOff,
             $this->moduleLangVar.'_SETTINGS_GOOGLE_MAP_TYPE' => $strSelectMapyType,
         ));
     }
@@ -558,18 +517,6 @@ EOF;
                     value='".intval($arrData['settingsGoogleMapType'])."'
                 WHERE
                     name='settingsGoogleMapType'
-                ");
-        if ($objRSSaveGoogle === false) {
-            return false;
-        }
-
-        $objRSSaveGoogle = $objDatabase->Execute("
-                UPDATE
-                    ".DBPREFIX."module_".$this->moduleTablePrefix."_settings
-                SET
-                    value='".intval($arrData['settingsGoogleMapAllowKml'])."'
-                WHERE
-                    name='settingsGoogleMapAllowKml'
                 ");
         if ($objRSSaveGoogle === false) {
             return false;
