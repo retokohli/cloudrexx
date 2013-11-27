@@ -24,10 +24,9 @@ class googleMap
     private $mapModus = 'overview';
     private $mapDimensions;
     private $mapZoom = 1;
-    private $mapControls = true;
-    private $mapCenter = 'var center = new GLatLng(0, 0)';
+    private $mapCenter = 'var center = new google.maps.LatLng(0, 0)';
     private $mapId = 'googleMap';
-    private $mapType = 0;
+    private $mapType = 'ROADMAP';
     private $mapClass;
     private $mapMarkers = array();
     private $mapIndex = 1;
@@ -53,23 +52,10 @@ class googleMap
         $this->mapIndex = $index;
     }
     
-    
-    function setMapControls($controls)
+    function getMapIndex()
     {
-        $this->mapControls = $controls;
+        return $this->mapIndex;
     }
-    
-    function getMapControls()
-    {
-    	if ($this->mapControls) {
-    		$controls = 'map_'.$this->mapIndex.'.addControl(new GLargeMapControl());';
-    		$controls .= 'map_'.$this->mapIndex.'.addControl(new GMapTypeControl());';
-    	} else {
-    		$controls = '';
-    	}
-        return $controls;
-    }
-
 
     function setMapId($id)
     {
@@ -101,7 +87,7 @@ class googleMap
 
     function setMapCenter($lon, $lat)
     {
-        $this->mapCenter = 'var center = new GLatLng('.$lon.', '.$lat.')';
+        $this->mapCenter = 'var center = new google.maps.LatLng('.$lon.', '.$lat.')';
     }
 
 
@@ -115,22 +101,31 @@ class googleMap
         [2] hybrid
         */
 
-        $this->mapType = intval($type);
+        switch ($type) {
+            case 1:
+                $this->mapType = 'SATELLITE';
+                break;
+            case 2:
+                $this->mapType = 'HYBRID';
+                break;
+            case 0:
+            default:
+                $this->mapType = 'ROADMAP';
+                break;
+        }
     }
 
 
 
-    function addMapMarker($id, $lon, $lat, $info, $hideInfo=true, $kml=null, $hideKml=true, $click=null, $mouseover=null, $mouseout=null, $icon=null)
+    function addMapMarker($id, $lon, $lat, $info, $hideInfo=true, $click=null, $mouseover=null, $mouseout=null, $icon=null)
     {
         $this->mapMarkers[$id]['lon'] = $lon;
         $this->mapMarkers[$id]['lat'] = $lat;
         $this->mapMarkers[$id]['info'] = $info;
         $this->mapMarkers[$id]['hideInfo'] = $hideInfo;
-        $this->mapMarkers[$id]['kml'] = $kml;
         $this->mapMarkers[$id]['click'] = $click;
         $this->mapMarkers[$id]['mouseover'] = $mouseover;
         $this->mapMarkers[$id]['mouseout'] = $mouseout;
-        $this->mapMarkers[$id]['hideKml'] = $hideKml;
         $this->mapMarkers[$id]['icon'] = $icon;
     }
 
@@ -140,14 +135,8 @@ class googleMap
     {
         foreach ($this->mapMarkers as $id => $marker) {
             if($marker['lon'] >= 0 && $marker['lat'] >= 0) {
-                if ($marker['kml'] != null) {
-                    $kml = "var kml$id = new GGeoXml('".$marker['kml']."');";
-                } else {
-                    $kml = '';
-                }
-
                 if ($marker['click'] != null) {
-                    $click = "GEvent.addListener(marker$id, \"click\", function() {
+                    $click = "google.maps.event.addListener(marker$id, \"click\", function() {
                         ".$marker['click']."
                     });";
                 } else {
@@ -155,7 +144,7 @@ class googleMap
                 }
 
                 if ($marker['mouseover'] != null) {
-                    $mouseover = "GEvent.addListener(marker$id, \"mouseover\", function() {
+                    $mouseover = "google.maps.event.addListener(marker$id, \"mouseover\", function() {
                         ".$marker['mouseover']."
                     });";
                 } else {
@@ -163,21 +152,15 @@ class googleMap
                 }
 
                 if ($marker['mouseout'] != null) {
-                    $mouseout = "GEvent.addListener(marker$id, \"mouseout\", function() {
+                    $mouseout = "google.maps.event.addListener(marker$id, \"mouseout\", function() {
                         ".$marker['mouseout']."
                     });";
                 } else {
                     $mouseout = '';
                 }
 
-                if (!$marker['hideKml']) {
-                    $showKml = "map_".$this->mapIndex.".addOverlay(kml$id);";
-                } else {
-                    $showKml = '';
-                }
-
                 if (!$marker['hideInfo']) {
-                    $showInfo = "marker$id.openInfoWindowHtml(info$id');";
+                    $showInfo = "var window_info$id = new google.maps.InfoWindow({content:info$id});window_info$id.open(map_".$this->mapIndex.", marker$id);";
                 } else {
                     $showInfo = '';
                 }
@@ -192,18 +175,17 @@ class googleMap
                 $divLonMinus = $marker['lon']-$dist;
 
                 $markers .= "
-                var point$id = new GLatLng(".$marker['lon'].", ".$marker['lat'].");
-                var marker$id = new GMarker(point$id);
+                var point$id = new google.maps.LatLng(".$marker['lon'].", ".$marker['lat'].");
+                var marker$id = new google.maps.Marker({
+                        position: point$id,
+                        map: map_".$this->mapIndex."
+                });
                 var info$id = '".$marker['info']."';
 
-                ".$kml."
                 ".$click."
                 ".$mouseover."
                 ".$mouseout."
-                ".$showKml."
                 ".$showInfo."
-
-                map_".$this->mapIndex.".addOverlay(marker$id);
 
                 ";
             }
@@ -231,42 +213,26 @@ class googleMap
         $layer = '<div id="'.$this->mapId.'" '.$this->mapClass.' '.$this->mapDimensions.'></div>';
 
         $markers = $this->getMapMarkers();
-        $controls = $this->getMapControls();
-        
         $map = "map_".$this->mapIndex;
-        $geoXml = "geoXml_".$this->mapIndex;
         $initialize = "initialize_".$this->mapIndex;
         $tmpGoogleMapOnLoad = "tmpGoogleMapOnLoad_".$this->mapIndex;
 
-        $javascript = <<<EOF
-<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=$this->apiKey" type="text/javascript"></script>
-<script type="text/javascript">
-
+        $layer .= <<<EOF
+<script src="https://maps.googleapis.com/maps/api/js?key=$strKey&sensor=false&v=3"></script>
+<script>
+//<![CDATA[
 var $map;
-var $geoXml;
 
 function $initialize() {
-  if (GBrowserIsCompatible()) {
-    $map = new GMap2(document.getElementById('$this->mapId'));
+    $map = new google.maps.Map(document.getElementById("$this->mapId"));
     $this->mapCenter
 
-    $map.setCenter(center, $this->mapZoom);
+    $map.setCenter(center);
+    $map.setZoom($this->mapZoom);
 
-    $controls
-
-    types = $map.getMapTypes();
-    $map.setMapType(types[$this->mapType]);
+    $map.setMapTypeId(google.maps.MapTypeId.$this->mapType);
 
     $markers
-  }
-}
-
-function loadGeoXml(geoXml) {
-    $map.addOverlay(geoXml);
-}
-
-function hideGeoXml(geoXml) {
-    $map.removeOverlay(geoXml);
 }
 
 var $tmpGoogleMapOnLoad = window.onload; 
@@ -276,10 +242,10 @@ window.onload = function() {
     } 
     $initialize(); 
 }
+//]]>
 </script>
 EOF;
-
-        return $layer.$javascript;
+        return $layer;
     }
 
 

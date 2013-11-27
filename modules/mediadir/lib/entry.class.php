@@ -735,27 +735,10 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 	                    }
 
 	                    $strValueLon = empty($arrValues[0]) ? 0 : $arrValues[0];
-                        $strValueLat = empty($arrValues[1]) ? 0 : $arrValues[1];
-	                    $strValueGeoXml = $arrValues[3];
-	                    $strValueClick = 'marker'.$intEntryId.'.openInfoWindowHtml(info'.$intEntryId.');';
-
-	                    if(!empty($strValueGeoXml) || $strValueGeoXml != 0){
-	                        $strServerProtocol = ASCMS_PROTOCOL."://";
-	                        $strServerName = $_SERVER['SERVER_NAME'];
-	                        $strServerKmlWebPath = constant('ASCMS_'.$this->moduleConstVar.'_IMAGES_WEB_PATH').'/uploads';
-
-	                        $strValueGeoXmlPath = $strServerProtocol.$strServerName.$strServerKmlWebPath.$strValueGeoXml;
-	                        //test only
-	                        //$strValueGeoXmlPath = 'http://mapgadgets.googlepages.com/cta.kml';
-	                        $strValueMouseover = 'loadGeoXml(kml'.$intEntryId.');';
-	                        $strValueMouseout = 'hideGeoXml(kml'.$intEntryId.');';
-	                    } else {
-	                        $strValueGeoXmlPath = null;
-	                        $strValueMouseover = null;
-	                        $strValueMouseout = null;
-	                    }
-
-	                    $objGoogleMap->addMapMarker($intEntryId, $strValueLon, $strValueLat, $strEntryTitle."<br />".$strEntryLink, true, $strValueGeoXmlPath, true, $strValueClick, $strValueMouseover, $strValueMouseout);
+                            $strValueLat = empty($arrValues[1]) ? 0 : $arrValues[1];
+                           
+                            $clickFunction = 'window_info'.$intEntryId.'.open(map_'.$objGoogleMap->getMapIndex().', marker'.$intEntryId.');';
+	                    $objGoogleMap->addMapMarker($intEntryId, $strValueLon, $strValueLat, $strEntryTitle."<br />".$strEntryLink, false, $clickFunction, $strValueMouseover, $strValueMouseout);
                     }
                 }
 
