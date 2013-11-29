@@ -411,7 +411,6 @@ class Resolver {
             header('Connection: close');
             exit;
         }
-
         return $this->page;
     }
     
@@ -588,8 +587,12 @@ class Resolver {
                     }
                     $langDir = '';
                     if (!file_exists(ASCMS_INSTANCE_PATH . ASCMS_INSTANCE_OFFSET . '/' . $target)) {
-                        $langDir = '/' . \FWLanguage::getLanguageCodeById($this->lang);
+                        $langCode = \FWLanguage::getLanguageCodeById($this->lang);
+                        if (!empty($langCode)) {
+                            $langDir = '/' . $langCode;
+                        }
                     }
+                    
                     header('Location: ' . ASCMS_INSTANCE_OFFSET . $langDir . '/' . $target);
                     exit;
                 }
