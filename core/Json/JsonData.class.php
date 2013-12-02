@@ -24,8 +24,6 @@ use \Cx\Core\Json\Adapter\JsonContentManager;
  * @subpackage  core_json
  */
 class JsonData {
-    
-    const PHP_SESSION_ID_COOKIE_NAME = 'PHPSESSID';
     /**
      * List of adapter class names.
      * @deprecated Use component framework instead (SystemComponentController->getControllersAccessableByJson())
@@ -204,7 +202,7 @@ class JsonData {
             $request->addPostParameter($name, $value);
         }
         if ($this->sessionId !== null) {
-            $request->addCookie(static::PHP_SESSION_ID_COOKIE_NAME, $this->sessionId);
+            $request->addCookie(session_name(), $this->sessionId);
         }
         $request->setConfig(array(
             'ssl_verify_host' => false,
@@ -214,7 +212,7 @@ class JsonData {
         //echo '<pre>';var_dump($response->getBody());echo '<br /><br />';
         $cookies = $response->getCookies();
         foreach ($cookies as &$cookie) {
-            if ($cookie['name'] === static::PHP_SESSION_ID_COOKIE_NAME) {
+            if ($cookie['name'] === session_name()) {
                 $this->sessionId = $cookie['value'];
                 break;
             }
