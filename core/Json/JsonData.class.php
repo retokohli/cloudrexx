@@ -25,6 +25,7 @@ use \Cx\Core\Json\Adapter\JsonContentManager;
  */
 class JsonData {
     
+    const PHP_SESSION_ID_COOKIE_NAME = 'PHPSESSID';
     /**
      * List of adapter class names.
      * @deprecated Use component framework instead (SystemComponentController->getControllersAccessableByJson())
@@ -53,6 +54,11 @@ class JsonData {
      * @var Array List of JsonAdapters
      */
     protected $adapters = array();
+    /**
+     * Session id for request which we got from the login request
+     * @var string $sessionId
+     */
+    protected $sessionId = null;
 
     /**
      * Constructor, loads adapter classes
@@ -94,7 +100,8 @@ class JsonData {
             $adapter = $namespace . '\\' . $className;
         }
         // check if its an adapter!
-        $object = new $adapter();
+        // find proper systemcomponent instead of empty one
+        $object = new $adapter(new \Cx\Core\Core\Model\Entity\SystemComponent(), \Env::get('cx'));
         $this->adapters[$object->getName()] = $object;
     }
 
@@ -172,6 +179,51 @@ class JsonData {
             //die($e->getTraceAsString());
             return $this->getErrorData($e->getMessage());
         }
+    }
+    
+    public function setSessionId($sessionId) {
+        $this->sessionId = $sessionId;
+    }
+    
+    public function getSessionId() {
+        return $this->sessionId;
+    }
+    
+    /**
+     * Fetches a json response via HTTP request
+     * @todo Support cookies (to allow login and similiar features)
+     * @param string $url URL to get json from
+     * @param array $data (optional) HTTP post data
+     * @param boolean $secure (optional) Wheter to verify peer using SSL or not, default false
+     * @param string $certificateFile (optional) Local certificate file for non public SSL certificates
+     * @return mixed Decoded JSON on success, false otherwise
+     */
+    public function getJson($url, $data = array(), $secure = false, $certificateFile = '') {
+        $request = new \HTTP_Request2($url, \HTTP_Request2::METHOD_POST);
+        foreach ($data as $name=>$value) {
+            $request->addPostParameter($name, $value);
+        }
+        if ($this->sessionId !== null) {
+            $request->addCookie(static::PHP_SESSION_ID_COOKIE_NAME, $this->sessionId);
+        }
+        $request->setConfig(array(
+            'ssl_verify_host' => false,
+            'ssl_verify_peer' => false,
+        ));
+        $response = $request->send();
+        //echo '<pre>';var_dump($response->getBody());echo '<br /><br />';
+        $cookies = $response->getCookies();
+        foreach ($cookies as &$cookie) {
+            if ($cookie['name'] === static::PHP_SESSION_ID_COOKIE_NAME) {
+                $this->sessionId = $cookie['value'];
+                break;
+            }
+        }
+        if ($response->getStatus() != 200) {
+            return false;
+        }
+        
+        return json_decode($response->getBody());
     }
     
     /**
