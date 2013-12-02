@@ -226,6 +226,15 @@ class Url {
      * @param   mixed       $value
      */
     public function setParam($key, $value) {
+        if ($value === null) {
+            $params = $this->getParamArray();
+            if (isset($params[$key])) {
+                unset($params[$key]);
+                $this->removeAllParams();
+                $this->addParamsToPath($params);
+                return;
+            }
+        }
         if (!empty($key)) {
             $this->setParams(array($key => $value));
         }
@@ -640,7 +649,7 @@ class Url {
      */
     public static function fromPage($page, $parameters = array(), $protocol = '') {
         global $_CONFIG;
-
+        
         if ($protocol == '') {
             $protocol = ASCMS_PROTOCOL;
         }
