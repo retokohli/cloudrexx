@@ -288,7 +288,7 @@ class Shipment
             $selectedId = current($arrId);
         }
 */
-        foreach ($arrId as $shipper_id) {
+        foreach ($arrId as $key => $shipper_id) {
             // Only show suitable shipments in the menu if the user is on the payment page,
             // check the availability of the shipment in her country,
             // and verify that the shipper will be able to handle the freight.
@@ -299,7 +299,7 @@ class Shipment
                     $shipper_id,
                     $_SESSION['shop']['cart']['total_price'],
                     $_SESSION['shop']['cart']['total_weight']) < 0) {
-                unset($arrId[$shipper_id]);
+                unset($arrId[$key]);
             }
         }
         if (empty($arrId)) {
