@@ -698,7 +698,10 @@ class InitCMS
             $path = $this->arrModulePath[$module].$this->arrLang[$langId]['lang'].'/'.$mode.'.php';
 
             if (!file_exists($path)) {
-                $path = '';
+                $path = \Env::get('ClassLoader')->getFilePath($path, $isCustomized);
+                if (!file_exists($path)) {
+                    return '';
+                }
             }
         }
         return $path;
