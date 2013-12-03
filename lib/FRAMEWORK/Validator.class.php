@@ -17,6 +17,7 @@
  * Dave V, @ 2.1.2: re-wrote regex according to http://www.regular-expressions.info/email.html
  * Reto Kohli @ 2.1.4: Fixed e-mail regex for PHP by adding more backslashes for special characters
  * @since   2.0.0
+ * @deprecated 3.1.1
  */
 define('VALIDATOR_REGEX_EMAIL',
     '[a-zäàáâöôüûñéè0-9!\#\$\%\&\'\*\+\/\=\?\^_\`\{\|\}\~-]+(?:\.[a-zäàáâöôüûñéè0-9!\#\$\%\&\'\*\+\/\=\?\^_\`\{\|\}\~-]+)*@(?:[a-zäàáâöôüûñéè0-9](?:[a-zäàáâöôüûñéè0-9-]*[a-zäàáâöôüûñéè0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?'
@@ -26,6 +27,7 @@ define('VALIDATOR_REGEX_EMAIL',
  * Regular Expression in javascript for e-mail addresses
  * @author  Michael Räss <info@comvation.com>
  * @since  2.2.6
+ * @deprecated 3.1.1
  */
 define('VALIDATOR_REGEX_EMAIL_JS',
     '^'.VALIDATOR_REGEX_EMAIL.'$'
@@ -37,6 +39,7 @@ define('VALIDATOR_REGEX_EMAIL_JS',
  * Known protocols include HTTP, HTTPS, FTP, and FTPS.
  * @author  Reto Kohli <reto.kohli@comvation.com>
  * @since   2.2.0
+ * @deprecated 3.1.1
  */
 define('VALIDATOR_REGEX_URI_PROTO',
     '(?:(?:ht|f)tps?\:\/\/)'
@@ -46,6 +49,7 @@ define('VALIDATOR_REGEX_URI_PROTO',
  * Regular Expression for URIs
  * @author  Reto Kohli <reto.kohli@comvation.com>
  * @since   2.2.0
+ * @deprecated 3.1.1
  */
 define('VALIDATOR_REGEX_URI',
     VALIDATOR_REGEX_URI_PROTO.
@@ -57,6 +61,7 @@ define('VALIDATOR_REGEX_URI',
  * Regular Expression in javascript for URIs
  * @author  Michael Räss <info@comvation.com>
  * @since   2.2.6
+ * @deprecated 3.1.1
  */
 define('VALIDATOR_REGEX_URI_JS',
     '^'.VALIDATOR_REGEX_URI.'$'
@@ -76,6 +81,45 @@ define('VALIDATOR_REGEX_URI_JS',
  */
 class FWValidator
 {
+    
+    /**
+     * Regular Expression for e-mail addresses
+     * @author Kevin Riesen
+     * @since 3.1.1
+     */
+    const REGEX_EMAIL = VALIDATOR_REGEX_EMAIL;
+    
+    /**
+     * Regular Expression in javascript for e-mail addresses
+     * @author Kevin Riesen
+     * @since 3.1.1
+     */
+    const REGEX_EMAIL_JS = VALIDATOR_REGEX_EMAIL_JS;
+
+    /**
+     * Regular Expression for URI protocols
+     * 
+     * Known protocols include HTTP, HTTPS, FTP, and FTPS
+     * @author Kevin Riesen
+     * @since 3.1.1
+     */
+    const REGEX_URI_PROTO = VALIDATOR_REGEX_URI_PROTO;
+    
+    /**
+     * Regular Expression for URIs
+     * @author  Kevin Riesen
+     * @since   3.1.1
+     */
+    const REGEX_URI = VALIDATOR_REGEX_URI;
+    
+    
+    /*
+     * Regular Expression in javascript for URIs
+     * @author Kevin Riesen
+     * @since 3.1.1
+     */
+    const REGEX_URI_JS = VALIDATOR_REGEX_URI_JS;
+    
     /**
      * Validate an E-mail address
      *
