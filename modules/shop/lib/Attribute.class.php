@@ -783,13 +783,13 @@ class Attribute
             case self::TYPE_UPLOAD_MANDATORY:
                 return '.+';
             case self::TYPE_EMAIL_OPTIONAL:
-                return '(^$|^'.VALIDATOR_REGEX_EMAIL.'$)';
+                return '(^$|^'.FWValidator::REGEX_EMAIL.'$)';
             case self::TYPE_EMAIL_MANDATORY:
-                return '^'.VALIDATOR_REGEX_EMAIL.'$';
+                return '^'.FWValidator::REGEX_EMAIL.'$';
             case self::TYPE_URL_OPTIONAL:
-                return '(^$|^'.VALIDATOR_REGEX_URI.'$)';
+                return '(^$|^'.FWValidator::REGEX_URI.'$)';
             case self::TYPE_URL_MANDATORY:
-                return '^'.VALIDATOR_REGEX_URI.'$';
+                return '^'.FWValidator::REGEX_URI.'$';
             // Note: The date regex is defined based on the value of the
             // ASCMS_DATE_FORMAT_DATE constant and may thus be localized.
             case self::TYPE_DATE_OPTIONAL:
