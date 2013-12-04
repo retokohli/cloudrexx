@@ -77,7 +77,7 @@ var $strFunctionComment = function(entry)
             jQuery('#commentForm_'+entry).html('$strErrMessage');
         }
     }).error(function(){
-        jQuery('#commentForm_'+entry).attr('class', $strCommentErr);
+        jQuery('#commentForm_'+entry).attr('class', '$strCommentErr');
         jQuery('#commentForm_'+entry).html('$strErrMessage');
     });
 }
@@ -322,7 +322,7 @@ EOF;
         ));
 
         if (count($pages)) {
-            $strPageContent = current($pages)->getContent();
+            $strPageContent = reset($pages)->getContent();
             $regexBlock = '<!-- BEGIN '.$this->moduleName.'EntryComments -->(.*?)<!-- END '.$this->moduleName.'EntryComments -->';
 
             if(preg_match("/".$regexBlock."/is", $strPageContent, $matchBlock)){
