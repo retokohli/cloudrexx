@@ -2292,6 +2292,13 @@ class CrmLibrary
         if (empty($email))
             return false;
         $defaultLangId = FWLanguage::getDefaultLangId();
+        
+        /**
+         * This IF clause fixes #1799, but there has to be a better solution for this!
+         */
+        if (!$objFWUser->objUser) {
+            return false;
+        }
         $objUsers = $objFWUser->objUser->getUsers($filter = array('email' => addslashes($email)));
         if ($objUsers) {
             $availableLangId = '';
