@@ -491,7 +491,11 @@ die("Failed to get Customer for ID $customer_id");
     {
         global $_ARRAYLANG, $themesPages;
 
-        if (!SettingDb::getValue('use_js_cart')) return;
+        $objModuleChecker = new \Cx\Core\ModuleChecker(\Env::get('em'), \Env::get('db'), \Env::get('ClassLoader'));
+        if (
+                !SettingDb::getValue('use_js_cart') || 
+                !$objModuleChecker->isModuleInstalled('shop')
+                ) return;
         $objTemplate = new \Cx\Core\Html\Sigma('.');
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $match = null;
