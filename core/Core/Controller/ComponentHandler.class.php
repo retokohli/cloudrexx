@@ -138,19 +138,10 @@ class ComponentHandler {
      * @return boolean True if legacy has an exception for this action and component
      */
     private function checkLegacy($action, $componentName) {
-        if ($this->legacyComponentHandler->hasExceptionFor(
-            $this->frontend,
-            $action,
-            $componentName
-        )) {
-            $this->legacyComponentHandler->executeException(
-                $this->frontend,
-                $action,
-                $componentName
-            );
-            return true;
+        if ($this->legacyComponentHandler->executeException($this->frontend, $action, $componentName) === false) {
+            return false;
         }
-        return false;
+        return true;
     }
     
     /**
