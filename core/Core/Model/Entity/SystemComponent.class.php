@@ -104,7 +104,27 @@ class SystemComponent
     {
         return $this->type;
     }
-    
+
+    /**
+     * Checks if the component is active and in the list of legal components (license)
+     * @return bool True if the component is active and legal, false otherwise
+     */
+    public function isActive() {
+        $cx = \Env::get('cx');
+        $mc = new \Cx\Core\ModuleChecker($cx->getDb()->getEntityManager(), $cx->getDb()->getAdoDb(), $cx->getClassLoader());
+
+        if (in_array($this->getName(), $mc->getModules())) {
+            if ($cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+                if (!$cx->getLicense()->isInLegalFrontendComponents($this->getName())) return false;
+            } else {
+                if (!$cx->getLicense()->isInLegalComponents($this->getName())) return false;
+            }
+            if (!$mc->isModuleInstalled($this->getName())) return false;
+        }
+
+        return true;
+    }
+
     /**
      * Returns the absolute path to this component's location in the file system
      * @param boolean $allowCustomizing (optional) Set to false if you want to ignore customizings
