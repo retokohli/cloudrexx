@@ -219,5 +219,41 @@ namespace Cx\Core
         {
             return in_array($moduleName, $this->arrInstalledModules);
         }
+
+        /**
+         * Returns the contrexx core modules
+         * @return array List of core modules
+         */
+        public function getCoreModules()
+        {
+            return $this->arrCoreModules;
+        }
+
+        /**
+         * Returns the contrexx modules
+         * @return array List of modules
+         */
+        public function getModules()
+        {
+            return $this->arrModules;
+        }
+
+        /**
+         * Returns the installed contrexx modules
+         * @return array List of installed modules
+         */
+        public function getInstalledModules()
+        {
+            return $this->arrInstalledModules;
+        }
+
+        /**
+         * Returns the active contrexx modules
+         * @return array List of active modules
+         */
+        public function getActiveModules()
+        {
+            return $this->arrActiveModules;
+        }
     }
 }

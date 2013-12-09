@@ -63,6 +63,29 @@ class LegacyComponentHandler {
     }
 
     /**
+     * Checks if the component is active and in the list of legal components (license)
+     * @param  boolean $frontend      Are we in frontend mode or not
+     * @param  string  $componentName Component name
+     * @return boolean True if the component is active and legal, false otherwise
+     */
+    public function isActive($frontend, $componentName) {
+        $cx = \Env::get('cx');
+        $cn = strtolower($componentName);
+        $mc = new \Cx\Core\ModuleChecker($cx->getDb()->getEntityManager(), $cx->getDb()->getAdoDb(), $cx->getClassLoader());
+
+        if (in_array($cn, $mc->getModules())) {
+            if ($frontend) {
+                if (!$cx->getLicense()->isInLegalFrontendComponents($cn)) return false;
+            } else {
+                if (!$cx->getLicense()->isInLegalComponents($cn)) return false;
+            }
+            if (!$mc->isModuleInstalled($cn)) return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Executes an exception (if any) for a certain action and component
      * @param boolean $frontend Are we in frontend mode or not
      * @param string $action Name of action
@@ -70,9 +93,11 @@ class LegacyComponentHandler {
      * @return mixed Return value of called exception (most of them return null)
      */
     public function executeException($frontend, $action, $componentName) {
-        if (!$this->hasExceptionFor($frontend, $action, $componentName)) {
+        if (!$this->hasExceptionFor($frontend, $action, $componentName)
+            || !$this->isActive($frontend, $componentName)) {
             return false;
         }
+
         return $this->exceptions[$frontend ? 'frontend' : 'backend'][$action][$componentName]();
     }
 

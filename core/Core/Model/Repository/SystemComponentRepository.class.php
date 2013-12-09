@@ -70,7 +70,25 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
     public function findAll() {
         return $this->decorate(parent::findAll());
     }
-    
+
+    /**
+     * Finds all active entities in the repository.
+     *
+     * @return array The active entities.
+     */
+    public function findActive() {
+        $activeComponents = array();
+        $components = $this->decorate(parent::findAll());
+        if (is_array($components)) {
+            foreach ($components as $component) {
+                if ($component->isActive()) {
+                    $activeComponents[] = $component;
+                }
+            }
+        }
+        return $activeComponents;
+    }
+
     /**
      * Finds entities by a set of criteria.
      *
@@ -169,7 +187,7 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
      * Call hook script of all SystemComponents before resolving
      */
     public function callPreResolveHooks() {
-        foreach ($this->findAll() as $component) {
+        foreach ($this->findActive() as $component) {
             $component->preResolve($this->cx->getRequest());
         }
     }
@@ -178,7 +196,7 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
      * Call hook script of all SystemComponents after resolving
      */
     public function callPostResolveHooks() {
-        foreach ($this->findAll() as $component) {
+        foreach ($this->findActive() as $component) {
             $component->postResolve($this->cx->getPage());
         }
     }
@@ -187,7 +205,7 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
      * Call hook script of all SystemComponents before loading content
      */
     public function callPreContentLoadHooks() {
-        foreach ($this->findAll() as $component) {
+        foreach ($this->findActive() as $component) {
             $component->preContentLoad($this->cx->getPage());
         }
     }
@@ -196,7 +214,7 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
      * Call hook script of all SystemComponents before loading module content
      */
     public function callPreContentParseHooks() {
-        foreach ($this->findAll() as $component) {
+        foreach ($this->findActive() as $component) {
             $component->preContentParse($this->cx->getPage());
         }
     }
@@ -213,7 +231,7 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
      * Call hook script of all SystemComponents after loading module content
      */
     public function callPostContentParseHooks() {
-        foreach ($this->findAll() as $component) {
+        foreach ($this->findActive() as $component) {
             $component->postContentParse($this->cx->getPage());
         }
     }
@@ -222,7 +240,7 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
      * Call hook script of all SystemComponents after loading content
      */
     public function callPostContentLoadHooks() {
-        foreach ($this->findAll() as $component) {
+        foreach ($this->findActive() as $component) {
             $component->postContentLoad($this->cx->getPage());
         }
     }
@@ -231,7 +249,7 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
      * Call hook script of all SystemComponents before finalization
      */
     public function callPreFinalizeHooks() {
-        foreach ($this->findAll() as $component) {
+        foreach ($this->findActive() as $component) {
             $component->preFinalize($this->cx->getTemplate());
         }
     }
@@ -240,7 +258,7 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
      * Call hook script of all SystemComponents after finalization
      */
     public function callPostFinalizeHooks() {
-        foreach ($this->findAll() as $component) {
+        foreach ($this->findActive() as $component) {
             $component->postFinalize();
         }
     }
