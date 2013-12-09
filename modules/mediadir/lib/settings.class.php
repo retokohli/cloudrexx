@@ -1337,28 +1337,28 @@ EOF;
                 $objInputfields = new mediaDirectoryInputfield(intval($_GET['id']));
                 $intInsertId = $objInputfields->addInputfield();
 
-                die();
+                die($intInsertId);
                 break;
 
             case 'delete':
                 $objInputfields = new mediaDirectoryInputfield(intval($_GET['id']));
                 $intInsertId = $objInputfields->deleteInputfield($_GET['field']);
 
-                die();
+                die('1');
                 break;
 
             case 'save':
                 $objInputfields = new mediaDirectoryInputfield(intval($_POST['formId']));
                 $strInputfields = $objInputfields->saveInputfields($_POST);
 
-                die();
+                die('1');
                 break;
 
             case 'move':
                 $objInputfields = new mediaDirectoryInputfield(intval($_GET['id']));
                 $strInputfields = $objInputfields->moveInputfield($_GET['field'], $_GET['direction']);
 
-                die();
+                die('1');
                 break;
 
             case 'refresh':
