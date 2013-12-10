@@ -20,7 +20,7 @@ $cl->loadFile(ASCMS_LIBRARY_PATH . '/services/Twitter/tmhUtilities.php');
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
- * @version     1.0.0
+ * @version     1.0.1
  * @package     contrexx
  * @subpackage  lib_oauth
  */
@@ -68,7 +68,7 @@ class Twitter extends OAuth
             $tmhOAuth->config['user_token'] = $access_token['oauth_token'];
             $tmhOAuth->config['user_secret'] = $access_token['oauth_token_secret'];
 
-            $tmhOAuth->request('GET', $tmhOAuth->url('1/account/verify_credentials'));
+            $tmhOAuth->request('GET', $tmhOAuth->url('1.1/account/verify_credentials'));
             $resp = json_decode($tmhOAuth->response['response']);
 
             unset($_SESSION['oauth']);
