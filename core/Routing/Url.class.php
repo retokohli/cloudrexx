@@ -535,17 +535,19 @@ class Url {
                 $url = $matches[1] . $matches[2] . $matches[3] . $url;
             }
             $url = new static($url);
-            // disable virtual language dir
-            $url->setMode('backend');
-            return $url;
             
         // absolute URL
         } else {
             $url = new static($url);
-            // disable virtual language dir
-            $url->setMode('backend');
-            return $url;
         }
+        
+        // disable virtual language dir if in Backend
+        if(preg_match('/.*(cadmin).*/', $url->getPath()) < 1){
+            $url->setMode('frontend');
+        }else{
+            $url->setMode('backend');
+        }
+        return $url;
     }
 
     /**
