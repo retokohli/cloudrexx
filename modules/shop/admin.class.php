@@ -1552,7 +1552,7 @@ if ($test === NULL) {
             $objCategory = ShopCategory::getById($category_id);
             if ($objCategory) {
                 $parent_id = $objCategory->parent_id();
-                $name = $objCategory->name();
+                $name = contrexx_raw2xhtml($objCategory->name());
                 $desc = $objCategory->description();
                 $active = $objCategory->active();
                 $virtual = $objCategory->virtual();
