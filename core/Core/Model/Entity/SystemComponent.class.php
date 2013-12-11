@@ -113,13 +113,22 @@ class SystemComponent
         $cx = \Env::get('cx');
         $mc = new \Cx\Core\ModuleChecker($cx->getDb()->getEntityManager(), $cx->getDb()->getAdoDb(), $cx->getClassLoader());
 
-        if (in_array($this->getName(), $mc->getModules())) {
-            if ($cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
-                if (!$cx->getLicense()->isInLegalFrontendComponents($this->getName())) return false;
-            } else {
-                if (!$cx->getLicense()->isInLegalComponents($this->getName())) return false;
+        if (!in_array($this->getName(), $mc->getModules())) {
+            return true;
+        }
+
+        if ($cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_FRONTEND) {
+            if (!$cx->getLicense()->isInLegalFrontendComponents($this->getName())) {
+                return false;
             }
-            if (!$mc->isModuleInstalled($this->getName())) return false;
+        } else {
+            if (!$cx->getLicense()->isInLegalComponents($this->getName())) {
+                return false;
+            }
+        }
+
+        if (!$mc->isModuleInstalled($this->getName())) {
+            return false;
         }
 
         return true;
