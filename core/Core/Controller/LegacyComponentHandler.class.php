@@ -73,13 +73,22 @@ class LegacyComponentHandler {
         $cn = strtolower($componentName);
         $mc = new \Cx\Core\ModuleChecker($cx->getDb()->getEntityManager(), $cx->getDb()->getAdoDb(), $cx->getClassLoader());
 
-        if (in_array($cn, $mc->getModules())) {
-            if ($frontend) {
-                if (!$cx->getLicense()->isInLegalFrontendComponents($cn)) return false;
-            } else {
-                if (!$cx->getLicense()->isInLegalComponents($cn)) return false;
+        if (!in_array($cn, $mc->getModules())) {
+            return false;
+        }
+
+        if ($frontend) {
+            if (!$cx->getLicense()->isInLegalFrontendComponents($cn)) {
+                return false;
             }
-            if (!$mc->isModuleInstalled($cn)) return false;
+        } else {
+            if (!$cx->getLicense()->isInLegalComponents($cn)) {
+                return false;
+            }
+        }
+
+        if (!$mc->isModuleInstalled($cn)) {
+            return false;
         }
 
         return true;
