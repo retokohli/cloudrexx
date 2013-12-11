@@ -135,7 +135,6 @@ class NodeRepository extends NestedTreeRepository {
         if ($level == null) {
             $level = $rootNode->getLvl();
         }
-        echo $rootNode->getId() . '<br />';
 
         // The order in which the children are returned by $rootnode->getChildren() is wrong.
         // Therefore we'll have to manually put the children in the right order.
