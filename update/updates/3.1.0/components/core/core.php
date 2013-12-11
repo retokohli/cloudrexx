@@ -1453,7 +1453,7 @@ function _coreUpdate()
                 'backend'                => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'frontend'),
                 'is_default'             => array('type' => 'SET(\'true\',\'false\')', 'notnull' => true, 'default' => 'false', 'after' => 'backend'),
                 'mobile_themes_id'       => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'is_default'),
-                'fallback'               => array('type' => 'INT(2)', 'unsigned' => true, 'default' => '0', 'after' => 'mobile_themes_id'),
+                'fallback'               => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => false, 'default' => '0', 'after' => 'mobile_themes_id'),
                 'app_themes_id'          => array('type' => 'INT(2)', 'after' => 'fallback')
             ),
             array(
