@@ -1455,7 +1455,7 @@ class Page extends \Cx\Model\Base\EntityBase
                 $page
         );
         $fallback_language = \FWLanguage::getFallbackLanguageIdById($destinationLang);
-        if ($fallback_language) {
+        if ($fallback_language && !$includeContent) {
             $copy->setType(self::TYPE_FALLBACK);
         } else if ($copy->getType() == self::TYPE_FALLBACK) {
             $copy->setType(self::TYPE_CONTENT);
