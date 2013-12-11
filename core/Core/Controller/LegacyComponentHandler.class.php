@@ -74,7 +74,7 @@ class LegacyComponentHandler {
         $mc = new \Cx\Core\ModuleChecker($cx->getDb()->getEntityManager(), $cx->getDb()->getAdoDb(), $cx->getClassLoader());
 
         if (!in_array($cn, $mc->getModules())) {
-            return false;
+            return true;
         }
 
         if ($frontend) {
