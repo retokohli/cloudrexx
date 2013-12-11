@@ -2422,6 +2422,11 @@ cx.cm.showEditModeWindow = function(cmdName, pageId) {
     if (cmdName == 'contact') {
         var contactFormId  = cx.cm.getcontactFormId(pageId);
         editModeModuleLink = "index.php?cmd=" + cmdName + "&act=forms&tpl=edit&formId=" + contactFormId + "&csrf=" + csrf;
+        
+    // Redirect to media module for media1, 2, 3 and 4
+    } else if (/media[1-4]/.exec(cmdName)) {
+        var archiveId = /media([1-4])/.exec(cmdName)[1];
+        editModeModuleLink = "index.php?cmd=media&archive" + archiveId + "&csrf=" + csrf;
     }
     
     content = content.replace(/\%1/g, editModeLayoutLink);
