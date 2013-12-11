@@ -78,7 +78,8 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
      */
     public function findActive() {
         $activeComponents = array();
-        $components = $this->decorate(parent::findAll());
+        $components = $this->findAll();
+
         if (is_array($components)) {
             foreach ($components as $component) {
                 if ($component->isActive()) {
@@ -86,6 +87,7 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
                 }
             }
         }
+
         return $activeComponents;
     }
 
