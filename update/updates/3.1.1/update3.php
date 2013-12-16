@@ -829,7 +829,13 @@ $updatesSp4To310 = array(
     ),
 );
 
-$updates310To310Sp1 = array();
+$updates310To310Sp1 = array(
+    // fixing issue with protocol selection in settings
+    "INSERT INTO `" . DBPREFIX . "settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES
+        (57, 'forceProtocolFrontend', 'none', 1),
+        (58, 'forceProtocolBackend', 'none', 1)
+        ON DUPLICATE KEY UPDATE `setname` = VALUES(`setname`)",
+);
 
 $updatesRc1ToSp4    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1);
 $updatesRc2ToSp4    = array_merge($updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1);
