@@ -588,11 +588,11 @@ class Page extends \Cx\Model\Base\EntityBase
     /**
      * Get metarobots
      *
-     * @return string $metarobots
+     * @return int $metarobots
      */
     public function getMetarobots()
     {
-        return $this->metarobots;
+        return empty($this->metarobots) ? 0 : 1;
     }
 
     /**
