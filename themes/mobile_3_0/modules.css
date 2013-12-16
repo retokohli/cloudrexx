@@ -1124,6 +1124,12 @@ table.news_meta td {
 #newsletter_home input[type=checkbox]{
     float: none;
 }
+#newsletter .newsletterFormGroup {
+    float: left;
+}
+#newsletter .newsletterFormGroup input[type=radio] {
+    clear: left;
+}
 /***************************************************/
 /* CSS DEFINITIONS FOR EGOV MODULE                 */
 /***************************************************/
