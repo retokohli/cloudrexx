@@ -1745,6 +1745,12 @@ div.row2 {
 #newsletter_home input[type=checkbox]{
     float: none;
 }
+#newsletter .newsletterFormGroup {
+    float: left;
+}
+#newsletter .newsletterFormGroup input[type=radio] {
+    clear: left;
+}
 /***************************************************/
 /* CSS DEFINITIONS FOR EGOV MODULE                 */
 /***************************************************/
