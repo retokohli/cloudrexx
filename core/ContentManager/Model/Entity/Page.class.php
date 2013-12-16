@@ -1757,7 +1757,7 @@ class Page extends \Cx\Model\Base\EntityBase
      */
     public function getURL($protocolAndDomainWithPathOffset, $params) {
         $path = $this->getPath($this);
-        return $protocolAndDomainWithPathOffset . $path . $params;
+        return $protocolAndDomainWithPathOffset . '/' . \FWLanguage::getLanguageCodeById($this->lang) .$path . $params;
     }
     
     /**
