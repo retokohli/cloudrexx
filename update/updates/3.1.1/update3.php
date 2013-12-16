@@ -34,6 +34,8 @@ if ($objResultRc1->fields['target'] != '_blank') {
     $version = 'sp3';
 } elseif ($_CONFIG['coreCmsVersion'] == '3.0.4') {
     $version = 'sp4';
+} elseif ($_CONFIG['coreCmsVersion'] == '3.1.0') {
+    $version = '310';
 } else {
     // nothing to do
     return true;
@@ -761,7 +763,7 @@ $updatesSp3ToSp4 = array(
     'UPDATE  `' . DBPREFIX . 'backend_areas` SET  `scope` =  \'backend\' WHERE  `area_id` = 161',
 );
 
-$updatesSp4To301 = array(
+$updatesSp4To310 = array(
     "INSERT IGNORE INTO `" . DBPREFIX . "settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES
     (57, 'forceProtocolFrontend', 'none', 1),
     (58, 'forceProtocolBackend', 'none', 1),
@@ -827,14 +829,17 @@ $updatesSp4To301 = array(
     ),
 );
 
-$updatesRc1ToSp4    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To301);
-$updatesRc2ToSp4    = array_merge($updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To301);
-$updatesStableToSp4 = array_merge($updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To301);
-$updatesHotfixToSp4 = array_merge($updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To301);
-$updatesSp1ToSp4    = array_merge($updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To301);
-$updatesSp2ToSp4    = array_merge($updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To301);
-$updatesSp3ToSp4    = array_merge($updatesSp3ToSp4, $updatesSp4To301);
-$updatesSp4To301    = $updatesSp4To301;
+$updates310To310Sp1 = array();
+
+$updatesRc1ToSp4    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1);
+$updatesRc2ToSp4    = array_merge($updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1);
+$updatesStableToSp4 = array_merge($updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1);
+$updatesHotfixToSp4 = array_merge($updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1);
+$updatesSp1ToSp4    = array_merge($updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1);
+$updatesSp2ToSp4    = array_merge($updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1);
+$updatesSp3ToSp4    = array_merge($updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1);
+$updatesSp4To310    = array_merge($updatesSp4To310, $updates310To310Sp1);
+//$updates310To310Sp1 = $updates310To310Sp1;
 
 if ($version == 'rc1') {
     $updates = $updatesRc1ToSp4;
@@ -850,8 +855,10 @@ if ($version == 'rc1') {
     $updates = $updatesSp2ToSp4;
 } elseif ($version == 'sp3') {
     $updates = $updatesSp3ToSp4;
+} elseif ($version == 'sp4') {
+    $updates = $updatesSp4To310;
 } else {
-    $updates = $updatesSp4To301;
+    $updates = $updates310To310Sp1;
 }
 
 foreach ($updates as $update) {
