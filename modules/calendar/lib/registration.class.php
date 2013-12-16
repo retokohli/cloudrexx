@@ -292,8 +292,8 @@ class CalendarRegistration extends CalendarLibrary
         
         if ($regId == 0) {
             $query = 'INSERT INTO '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_registration
-                                  (`event_id`,`date`,`host_name`,`ip_address`,`type`,`key`,`user_id`,`lang_id`,`payment_method`,`paid`)
-                           VALUES ("'.$eventId.'","'.$eventDate.'","'.$hostName.'","'.$ipAddress.'","'.$type.'","'.$key.'","'.$userId.'","'.$_LANGID.'","'.$paymentMethod.'","'.$paid.'")';
+                                  (`event_id`,`date`,`host_name`,`ip_address`,`type`,`key`,`user_id`,`lang_id`,`export`,`payment_method`,`paid`)
+                           VALUES ("'.$eventId.'","'.$eventDate.'","'.$hostName.'","'.$ipAddress.'","'.$type.'","'.$key.'","'.$userId.'","'.$_LANGID.'",0,"'.$paymentMethod.'","'.$paid.'")';
             
             $objResult = $objDatabase->Execute($query);
             
