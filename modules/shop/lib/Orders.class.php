@@ -1291,7 +1291,7 @@ if (!$limit) {
             }
 //DBG::log("Orders::getSubstitutionArray(): Item: Product ID $product_id");
             $product_name = substr($item['name'], 0, 40);
-            $item_price = Currency::getCurrencyPrice($item['price']);
+            $item_price = $item['price'];
             $quantity = $item['quantity'];
 // TODO: Add individual VAT rates for Products
 //            $orderItemVatPercent = $objResultItem->fields['vat_percent'];
