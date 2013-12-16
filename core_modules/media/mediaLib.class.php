@@ -347,7 +347,7 @@ class MediaLibrary
             $oldName  = $_POST['oldName'].'.'.$_POST['oldExt'];
         }
 
-        $fileName = \Cx\Lib\FileSystem\FileSystem::replaceCharacters($fileName);
+        \Cx\Lib\FileSystem\FileSystem::clean_path($fileName);
 
         if (!isset($_POST['mediaInputAsCopy']) || $_POST['mediaInputAsCopy'] != 1) {
             // rename old to new
@@ -449,7 +449,7 @@ class MediaLibrary
         $orgFile = $arrData['orgName'].'.'.$arrData['orgExt'];
         $newName = $arrData['newName'];
         $newFile = $newName.'.'.$arrData['orgExt'];
-        $newFile = \Cx\Lib\FileSystem\FileSystem::replaceCharacters($newFile);
+        \Cx\Lib\FileSystem\FileSystem::clean_path($newFile);
         
         // If new image name is set, image will be copied. Otherwise, image will be overwritten
         if ($newName != '') {
@@ -1189,7 +1189,8 @@ END;
                     continue;
 
                 //clean file name
-                $newName = \Cx\Lib\FileSystem\FileSystem::replaceCharacters($file);
+                $newName = $file;
+                \Cx\Lib\FileSystem\FileSystem::clean_path($newName);
 
                 //check if file needs to be renamed
                 if (file_exists($path.$newName)) {
