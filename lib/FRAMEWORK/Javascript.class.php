@@ -264,9 +264,11 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             'dependencies' => array('jquery'),
             'specialcode'  => '
                 $J(document).ready(function() {
-                    $J(".chzn-select").chosen({
-                        disable_search: true
-                    });
+                    if($J(".chzn-select").length > 0) {
+                        $J(".chzn-select").chosen({
+                            disable_search: true
+                        });
+                    }
                 });'
         ),
         'backend' => array(
