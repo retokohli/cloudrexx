@@ -258,10 +258,15 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             'jsfiles' => array(
                 'lib/javascript/jquery/chosen/jquery.chosen.js'
             ),
+            'cssfiles' => array(
+                'lib/javascript/jquery/chosen/chosen.css'
+            ),
             'dependencies' => array('jquery'),
             'specialcode'  => '
                 $J(document).ready(function() {
-                    $J(".chzn-select").chosen();
+                    $J(".chzn-select").chosen({
+                        disable_search: true
+                    });
                 });'
         ),
         'backend' => array(
