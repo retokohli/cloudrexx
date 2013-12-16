@@ -70,12 +70,12 @@
             if ( errors.length >= 1 || errChk == 1) {
                 if ( errors.length >= 1 && errChk == 1) {
                     errString = errors.join('<br />');
-                    $J('#formerr').html("All mandatory fields have not been filled out.!<br />"+errString);
+                    $J('#formerr').html("{TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT}<br />"+errString);
                 }  else if (  errors.length >= 1) {
                     errString = errors.join('<br />');
                     $J('#formerr').html(errString);
                 } else {
-                    $J('#formerr').html("All mandatory fields have not been filled out.!");
+                    $J('#formerr').html("{TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT}");
                 }
                 $J('#formerr').css('display','block');
                 return false;
@@ -185,7 +185,7 @@
         </ul>
     </div>
     <div id="formerr"></div>
-    <br />
+    
     <form action="" method="post" enctype="multipart/form-data" name="addDeal" id="addDeal">
         <table class="adminlist" width="100%" cellpadding="3" cellspacing="0">
             <thead>

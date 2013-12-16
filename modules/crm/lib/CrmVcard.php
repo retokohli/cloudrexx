@@ -1,9 +1,9 @@
 <?php
 /**
- * vcard Class CRM
+ * CrmVcard Class CRM
  * A class to generate vCards for contact data.
  *
- * @category   vcard
+ * @category   CrmVcard
  * @package    contrexx
  * @subpackage module_crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
@@ -13,10 +13,10 @@
  */
 
 /**
- * vcard Class CRM
+ * CrmVcard Class CRM
  * A class to generate vCards for contact data.
  *
- * @category   vcard
+ * @category   CrmVcard
  * @package    contrexx
  * @subpackage module_crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
@@ -24,7 +24,7 @@
  * @license    trial license
  * @link       www.contrexx.com
  */
-class vcard
+class CrmVcard
 {
   /**
   * log

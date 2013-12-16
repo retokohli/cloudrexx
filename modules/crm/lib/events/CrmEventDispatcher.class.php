@@ -1,8 +1,8 @@
 <?php
 /**
- * EventDispatcher Class CRM
+ * CrmEventDispatcher Class CRM
  *
- * @category   EventDispatcher
+ * @category   CrmEventDispatcher
  * @package    contrexx
  * @subpackage module_crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
@@ -12,9 +12,9 @@
  */
 
 /**
- * EventDispatcher Class CRM
+ * CrmEventDispatcher Class CRM
  *
- * @category   EventDispatcher
+ * @category   CrmEventDispatcher
  * @package    contrexx
  * @subpackage module_crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
@@ -22,7 +22,7 @@
  * @license    trial license
  * @link       www.contrexx.com
  */
-class EventDispatcher
+class CrmEventDispatcher
 {
     /**
     * Class object
@@ -77,7 +77,7 @@ class EventDispatcher
      *
      * @return null
      */
-    function addHandler($event_name, EventHandler $event_handler)
+    function addHandler($event_name, CrmEventHandler $event_handler)
     {
         $this->handlers[$event_name][] = $event_handler;
     }
@@ -98,7 +98,7 @@ class EventDispatcher
             return false;
         }
 
-        $event = new Event($event_name, $context, $info);
+        $event = new CrmEvent($event_name, $context, $info);
 
         /** @var $handler EventHandler */
         foreach ($this->handlers[$event_name] as $handler) {

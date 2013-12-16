@@ -1,8 +1,8 @@
 <?php
 /**
- * Event Class CRM
+ * CrmEvent Class CRM
  *
- * @category   Event
+ * @category   CrmEvent
  * @package    contrexx
  * @subpackage module_crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
@@ -12,9 +12,9 @@
  */
 
 /**
- * Event Class CRM
+ * CrmEvent Class CRM
  *
- * @category   Event
+ * @category   CrmEvent
  * @package    contrexx
  * @subpackage module_crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
@@ -22,7 +22,7 @@
  * @license    trial license
  * @link       www.contrexx.com
  */
-class Event
+class CrmEvent
 {
     /**
     * Event name

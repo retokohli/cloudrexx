@@ -25,7 +25,7 @@
  * @link       www.contrexx.com
  */
 
-class Settings extends CrmLibrary
+class CrmSettings extends CrmLibrary
 {
 
     /**
@@ -843,6 +843,7 @@ class Settings extends CrmLibrary
                 'TXT_SELECT_ENTRIES'           => $_ARRAYLANG['TXT_CRM_NO_OPERATION'],
                 'TXT_CRM_STATUS_SUCCESSFULLY_CHANGED' => $_ARRAYLANG['TXT_CRM_TASK_TYPE_STATUS_CHANGED_SUCCESSFULLY'],
                 'TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES' => $_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES'],
+                'TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT' => $_ARRAYLANG['TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT'],
         ));
     }
 
@@ -885,6 +886,7 @@ class Settings extends CrmLibrary
                 'TXT_CRM_BACK1'                 => $_ARRAYLANG['TXT_CRM_BACK1'],
                 'CSRF_PARAM'                => CSRF::param(),
                 'TXT_BROWSE'                   => $_ARRAYLANG['TXT_BROWSE'],
+                'TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT' => $_ARRAYLANG['TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT']
         ));
 
     }

@@ -1,8 +1,8 @@
 <?php
 /**
- * DefaultEventHandler Class CRM
+ * CrmDefaultEventHandler Class CRM
  *
- * @category   DefaultEventHandler
+ * @category   CrmDefaultEventHandler
  * @package    contrexx
  * @subpackage module_crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
@@ -12,9 +12,9 @@
  */
 
 /**
- * DefaultEventHandler Class CRM
+ * CrmDefaultEventHandler Class CRM
  *
- * @category   DefaultEventHandler
+ * @category   CrmDefaultEventHandler
  * @package    contrexx
  * @subpackage module_crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
@@ -22,7 +22,7 @@
  * @license    trial license
  * @link       www.contrexx.com
  */
-class DefaultEventHandler implements EventHandler
+class CrmDefaultEventHandler implements CrmEventHandler
 {
     /**
      * Default Information
@@ -41,7 +41,7 @@ class DefaultEventHandler implements EventHandler
      *
      * @return boolean
      */
-    function handleEvent(Event $event)
+    function handleEvent(CrmEvent $event)
     {
         $info          = $event->getInfo();
         $substitutions = isset($info['substitution']) ? $info['substitution'] : array();
