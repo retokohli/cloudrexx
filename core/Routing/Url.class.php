@@ -541,7 +541,7 @@ class Url {
             $url = new static($url);
         }
         
-        // disable virtual language dir if in Backend
+        // disable virtual language dir if not in Backend
         if(preg_match('/.*(cadmin).*/', $url->getPath()) < 1){
             $url->setMode('frontend');
         }else{
