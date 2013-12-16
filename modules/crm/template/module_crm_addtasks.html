@@ -102,14 +102,14 @@
         if ( errors.length >= 1 || errChk == 1) {
             if (errChk == 1 && errors.length >= 1) {
                 errString = errors.join('<br />');
-                $J('#formerr').html("All mandatory fields have not been filled out.!<br />"+errString);
+                $J('#formerr').html("{TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT}<br />"+errString);
             } else if (  errors.length >= 1) {
                 errString = errors.join('<br />');
                 $J('#formerr').html(errString);
             } else if (errChk == 2){
                 $J('#formerr').html("Task title already exists!");
             }else {
-                $J('#formerr').html("All mandatory fields have not been filled out.!");
+                $J('#formerr').html("{TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT}");
             }
             $J('#formerr').css('display','block');
             //\$j('#formerr').html(errString);

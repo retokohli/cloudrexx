@@ -60,7 +60,7 @@
                     return
                 }
                 if ($J(this).val() == "delete") {
-                    if (confirm('Are you Sure Want to delete the Entry'))
+                    if (confirm('{TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES}'))
                         $J("#stage_entries").submit();
                     else
                         return;
@@ -150,7 +150,7 @@ function checkValidations() {
             }
 
             if (errChk == 1) {
-                $J('#formerr').html("All mandatory fields have not been filled out.!");
+                $J('#formerr').html("{TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT}");
                 $J('#formerr').css('display', 'block');
                 return false;
             } else {

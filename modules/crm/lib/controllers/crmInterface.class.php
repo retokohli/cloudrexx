@@ -753,7 +753,7 @@ class crmInterface extends CrmLibrary
         }
         
         if (isset($firstname) || isset($lastname) || isset($company)) {
-            $this->contact = $this->load->model('crmContact', __CLASS__);
+            $this->contact = new crmContact();
 
             $objCsv        = new Csv_bv($this->_mediaPath.'/'.$fileName, $csvSeprator, $csvDelimiter);
             $line          = $objCsv->NextLine();

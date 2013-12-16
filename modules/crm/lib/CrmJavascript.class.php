@@ -1,8 +1,8 @@
 <?php
 /**
- * Javascript Class CRM
+ * CrmJavascript Class CRM
  *
- * @category   Javascript
+ * @category   CrmJavascript
  * @package    contrexx
  * @subpackage module_crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
@@ -12,9 +12,9 @@
  */
 
 /**
- * Javascript Class CRM
+ * CrmJavascript Class CRM
  *
- * @category   Javascript
+ * @category   CrmJavascript
  * @package    contrexx
  * @subpackage module_crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
@@ -23,7 +23,7 @@
  * @link       www.contrexx.com
  */
 
-class Javascript {
+class CrmJavascript {
 
     /**
     * Module Name
@@ -51,6 +51,7 @@ class Javascript {
         $TXT_CRM_SAME_SORTVALUE                  = $_ARRAYLANG['TXT_CRM_SAME_SORTVALUE'];
         $TXT_ENTER_SORTING                  = $_ARRAYLANG['TXT_ENTER_SORTING'];
         $TXT_SORTING_NUMERIC                  = $_ARRAYLANG['TXT_SORTING_NUMERIC'];
+        $TXT_MANDATORY_ERROR                  = $_ARRAYLANG['TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT'];
         $MODULE_NAME                          = $this->moduleName;
         $CSRFPARAM                            = CSRF::param();
 
@@ -148,12 +149,12 @@ function showErrors(errors,  errChk) {
     if ( errors.length >= 1 || errChk == 1) {
                 if (errChk == 1 && errors.length >= 1) {
                     errString = errors.join('<br />');
-                    \$j('#formerr').html("All mandatory fields have not been filled out.!<br />"+errString);
+                    \$j('#formerr').html("$TXT_MANDATORY_ERROR<br />"+errString);
                 } else if (  errors.length >= 1) {
                     errString = errors.join('<br />');
                     \$j('#formerr').html(errString);       
                 } else {
-                    \$j('#formerr').html("All mandatory fields have not been filled out.!");
+                    \$j('#formerr').html("$TXT_MANDATORY_ERROR");
                 }       
        \$j('#formerr').css('display','block');
        //\$j('#formerr').html(errString);       
@@ -189,12 +190,12 @@ function showErrors(errors,  errChk) {
     if ( errors.length >= 1 || errChk == 1) {
                 if (errChk == 1 && errors.length >= 1) {
                     errString = errors.join('<br />');
-                    \$j('#formerr').html("All mandatory fields have not been filled out.!<br />"+errString);
+                    \$j('#formerr').html("$TXT_MANDATORY_ERROR<br />"+errString);
                 } else if (  errors.length >= 1) {
                     errString = errors.join('<br />');
                     \$j('#formerr').html(errString);       
                 } else {
-                    \$j('#formerr').html("All mandatory fields have not been filled out.!");
+                    \$j('#formerr').html("$TXT_MANDATORY_ERROR");
                 }       
        \$j('#formerr').css('display','block');
        //\$j('#formerr').html(errString);       
@@ -326,6 +327,7 @@ END;
         $TXT_CRM_NOTHING_SELECTED                = $_ARRAYLANG['TXT_CRM_NOTHING_SELECTED'];
         $TXT_CRM_SAME_SORTVALUE                  = $_ARRAYLANG['TXT_CRM_SAME_SORTVALUE'];
         $TXT_ENTER_SORTING                  = $_ARRAYLANG['TXT_ENTER_SORTING'];
+        $TXT_MANDATORY_ERROR                  = $_ARRAYLANG['TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT'];  
         $TXT_SORTING_NUMERIC                  = $_ARRAYLANG['TXT_SORTING_NUMERIC'];
         $MODULE_NAME                          = $this->moduleName;
 
@@ -424,12 +426,12 @@ function showErrors(errors,  errChk) {
     if ( errors.length >= 1 || errChk == 1) {
                 if (errChk == 1 && errors.length >= 1) {
                     errString = errors.join('<br />');
-                    \$j('#formerr').html("All mandatory fields have not been filled out.!<br />"+errString);
+                    \$j('#formerr').html("$TXT_MANDATORY_ERROR<br />"+errString);
                 } else if (  errors.length >= 1) {
                     errString = errors.join('<br />');
                     \$j('#formerr').html(errString);
                 } else {
-                    \$j('#formerr').html("All mandatory fields have not been filled out.!");
+                    \$j('#formerr').html("$TXT_MANDATORY_ERROR");
                 }
        \$j('#formerr').css('display','block');
        //\$j('#formerr').html(errString);
@@ -465,12 +467,12 @@ function showErrors(errors,  errChk) {
     if ( errors.length >= 1 || errChk == 1) {
                 if (errChk == 1 && errors.length >= 1) {
                     errString = errors.join('<br />');
-                    \$j('#formerr').html("All mandatory fields have not been filled out.!<br />"+errString);
+                    \$j('#formerr').html("$TXT_MANDATORY_ERROR<br />"+errString);
                 } else if (  errors.length >= 1) {
                     errString = errors.join('<br />');
                     \$j('#formerr').html(errString);
                 } else {
-                    \$j('#formerr').html("All mandatory fields have not been filled out.!");
+                    \$j('#formerr').html("$TXT_MANDATORY_ERROR");
                 }
        \$j('#formerr').css('display','block');
        //\$j('#formerr').html(errString);
@@ -1079,6 +1081,7 @@ END;
         $TXT_CRM_SAME_SORTVALUE                   = $_ARRAYLANG['TXT_CRM_SAME_SORTVALUE'];
         $TXT_ENTER_SORTING                    = $_ARRAYLANG['TXT_ENTER_SORTING'];
         $TXT_SORTING_NUMERIC                  = $_ARRAYLANG['TXT_SORTING_NUMERIC'];
+        $TXT_MANDATORY_ERROR                  = $_ARRAYLANG['TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT'];  
         $MODULE_NAME                          = $this->moduleName;
         $CSRFPARAM                            = CSRF::param();
 
@@ -1265,12 +1268,12 @@ function checkValidations() {
     if ( errors.length >= 1 || errChk == 1) {
                 if (errChk == 1 && errors.length >= 1) {
                     errString = errors.join('<br />');
-                    \$j('#formerr').html("All mandatory fields have not been filled out.!<br />"+errString);
+                    \$j('#formerr').html("$TXT_MANDATORY_ERROR<br />"+errString);
                 } else if (  errors.length >= 1) {
                     errString = errors.join('<br />');
                     \$j('#formerr').html(errString);       
                 } else {
-                    \$j('#formerr').html("All mandatory fields have not been filled out.!");
+                    \$j('#formerr').html("$TXT_MANDATORY_ERROR");
                 }       
        \$j('#formerr').css('display','block');
         return false;
@@ -1308,6 +1311,7 @@ END;
 
         $TXT_CRM_SURE_TO_DELETE_SELECTED_ENTRIES = $_ARRAYLANG['TXT_CRM_SURE_TO_DELETE_SELECTED_ENTRIES'];
         $TXT_CRM_ARE_YOU_SURE_TO_DELETE_THE_ENTRY =$_ARRAYLANG['TXT_CRM_ARE_YOU_SURE_TO_DELETE_THE_ENTRY'];
+        $TXT_MANDATORY_ERROR                  = $_ARRAYLANG['TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT'];  
         $MODULE_NAME                          = $this->moduleName;
         $javascript = <<<END
 <script type="text/javascript" src="../lib/javascript/jquery.js"></script>          
@@ -1462,12 +1466,12 @@ function checkValidations() {
     if ( errors.length >= 1 || errChk == 1) {
                 if (errChk == 1 && errors.length >= 1) {
                     errString = errors.join('<br />');
-                    \$j('#formerr').html("All mandatory fields have not been filled out.!<br />"+errString);
+                    \$j('#formerr').html("$TXT_MANDATORY_ERROR<br />"+errString);
                 } else if (  errors.length >= 1) {
                     errString = errors.join('<br />');
                     \$j('#formerr').html(errString);       
                 } else {
-                    \$j('#formerr').html("All mandatory fields have not been filled out.!");
+                    \$j('#formerr').html("$TXT_MANDATORY_ERROR");
                 }       
        \$j('#formerr').css('display','block');
         return false;
