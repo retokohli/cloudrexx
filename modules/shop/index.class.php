@@ -3092,7 +3092,8 @@ die("Shop::processRedirect(): This method is obsolete!");
                 // to order without registration.  The generated one
                 // defaults to length 8, fulfilling the requirements for
                 // complex passwords.  And it's kept absolutely secret.
-                $password = (empty($_SESSION['shop']['password'])
+                $password = ((empty($_SESSION['shop']['password']) || 
+                        SettingDb::getValue('register') == ShopLibrary::REGISTER_OPTIONAL)
                     ? User::make_password()
                     : $_SESSION['shop']['password']);
 //\DBG::log("Password: $password (session: {$_SESSION['shop']['password']})");
