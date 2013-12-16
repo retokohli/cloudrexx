@@ -2513,6 +2513,8 @@ END;
                 'TXT_CRM_ICQ'               => $_ARRAYLANG['TXT_CRM_ICQ'],
                 'TXT_CRM_JABBER'            => $_ARRAYLANG['TXT_CRM_JABBER'],
                 'TXT_CRM_AIM'               => $_ARRAYLANG['TXT_CRM_AIM'],
+                'TXT_CRM_GOOGLE_PLUS'       => $_ARRAYLANG['TXT_CRM_GOOGLE_PLUS'],
+                'TXT_CRM_XING'              => $_ARRAYLANG['TXT_CRM_XING'],
                 'TXT_CRM_ADDRESS'           => $_ARRAYLANG['TXT_CRM_TITLE_ADDRESS'],
                 'TXT_CRM_SELECT_COUNTRY'    => $_ARRAYLANG['TXT_CRM_SELECT_COUNTRY'],
                 'TXT_CRM_OVERVIEW'              => $_ARRAYLANG['TXT_CRM_OVERVIEW'],

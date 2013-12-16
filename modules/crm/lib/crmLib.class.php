@@ -161,7 +161,7 @@ class CrmLibrary
     */
     var $socialProfileOptions   = array("", "TXT_CRM_SKYPE", "TXT_CRM_TWITTER", "TXT_CRM_LINKEDIN", "TXT_CRM_FACEBOOK", "TXT_CRM_LIVEJOURNAL",
             "TXT_CRM_MYSPACE", "TXT_CRM_GMAIL", "TXT_CRM_BLOGGER", "TXT_CRM_YAHOO", "TXT_CRM_MSN", "TXT_CRM_ICQ", "TXT_CRM_JABBER",
-            "TXT_CRM_AIM");
+            "TXT_CRM_AIM", "TXT_CRM_GOOGLE_PLUS", "TXT_CRM_XING");
 
     /**
     * Address Values
