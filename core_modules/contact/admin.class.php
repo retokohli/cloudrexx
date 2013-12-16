@@ -2295,9 +2295,10 @@ class ContactManager extends ContactLib
 
         $objDatabase = Env::get('db');
         $objFWUser   = FWUser::getFWUserObject();
+        $pageRepo    = $this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
 
         $pages = array();
-        foreach ($this->em->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->findBy(array('module' => 'contact', 'cmd' => $formId)) as $page) {
+        foreach ($pageRepo->findBy(array('module' => 'contact', 'cmd' => $formId)) as $page) {
             if ($page) {
                 $pages[$page->getLang()] = $page;
             }
@@ -2309,6 +2310,17 @@ class ContactManager extends ContactLib
         // filter out only those languages that are active in the frontent.
         // we do want to create/update only the content pages of those languages.
         $selectedLangIds = array_intersect($selectedLangIds, $frontendLangIds);
+
+        // Maybe there will already be a fallback page if we activate a new language.
+        // So we use the fallback page to prevent the creation of a new page.
+        foreach ($selectedLangIds as $selectedLangId) {
+            if (!isset($pages[$selectedLangId])) {
+                $fallbackPage = $pageRepo->findOneByModuleCmdLang('contact', $formId, $selectedLangId);
+                if (!empty($fallbackPage)) {
+                    $pages[$selectedLangId] = $fallbackPage;
+                }
+            }
+        }
 
         $presentLangIds = array_keys($pages);
 
