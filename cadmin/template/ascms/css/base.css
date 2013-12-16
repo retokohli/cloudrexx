@@ -7,7 +7,6 @@
 */
 
 @import url(navbar.css);  /* CSS for navigation menu. */
-@import url(jquery_chosen.css);
 
 html, body {
     width: 100%;
