@@ -1063,6 +1063,7 @@ namespace Cx\Core\Core\Controller {
             $boolShop = \Shop::isInitialized();
             $objNavbar = new \Navigation($this->resolvedPage->getId(), $this->resolvedPage);
             $objNavbar->setLanguagePlaceholders($this->resolvedPage, $this->request, $this->template);
+            $metarobots = $this->resolvedPage->getMetarobots();
             $this->template->setVariable(array(
                 'CHARSET'                        => \Env::get('init')->getFrontendLangCharset(),
                 'TITLE'                          => contrexx_raw2xhtml($this->resolvedPage->getTitle()),
@@ -1072,9 +1073,9 @@ namespace Cx\Core\Core\Controller {
                 'DOMAIN_URL'                     => $_CONFIG['domainUrl'],
                 'PATH_OFFSET'                    => ASCMS_PATH_OFFSET,
                 'BASE_URL'                       => ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET,
-                'METAKEYS'                       => contrexx_raw2xhtml($this->resolvedPage->getMetakeys()),
-                'METADESC'                       => contrexx_raw2xhtml($this->resolvedPage->getMetadesc()),
-                'METAROBOTS'                     => contrexx_raw2xhtml($this->resolvedPage->getMetarobots()),
+                'METAKEYS'                       => $metarobots ? contrexx_raw2xhtml($this->resolvedPage->getMetakeys()) : '',
+                'METADESC'                       => $metarobots ? contrexx_raw2xhtml($this->resolvedPage->getMetadesc()) : '',
+                'METAROBOTS'                     => $metarobots ? 'all' : 'none',
                 'CONTENT_TITLE'                  => $this->resolvedPage->getContentTitle(),
                 'CONTENT_TEXT'                   => $this->resolvedPage->getContent(),
                 'CSS_NAME'                       => contrexx_raw2xhtml($this->resolvedPage->getCssName()),
