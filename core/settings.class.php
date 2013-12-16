@@ -427,7 +427,7 @@ class settingsManager
             return;
         }
 
-        $checkHttps = false;
+        $checkWebsiteAccess = false;
         foreach ($_POST['setvalue'] as $id => $value) {
             switch (intval($id)) {
                 case 53:
@@ -460,96 +460,83 @@ class settingsManager
                     break;
                 case 57:
                     if ($_CONFIG['forceProtocolFrontend'] != $value) {
-                        $checkHttps = true;
+                        if (!$this->checkAccessibility($value)) {
+                            $value = 'none';
+                        }
+                        $_CONFIG['forceProtocolFrontend'] = $value;
                     }
                     break;
                 case 58:
                     if ($_CONFIG['forceProtocolBackend'] != $value) {
-                        $checkHttps = true;
+                        if (!$this->checkAccessibility($value)) {
+                            $value = 'none';
+                        }
+                        $_CONFIG['forceProtocolBackend'] = $value;
                     }
                     break;
                 case 59:
-                    if ($_CONFIG['forceDomainUrl'] != $value) {
-                        try {
-                            $useHttps = $_CONFIG['protocolHttpsFrontend'];
-                            $protocol = 'http';
-                            if ($useHttps == 'https') {
-                                $protocol = 'https';
-                            }
-                            // create request to port 443 (https), to check whether the request works or not
-                            $request     = new \HTTP_Request2($protocol . '://' . $_CONFIG['domainUrl'] . ASCMS_INSTANCE_OFFSET);
-
-                            // ignore ssl issues
-                            $request->setConfig(array(
-                                'ssl_verify_peer' => false,
-                            ));
-
-                            // send the request
-                            $objResponse = $request->send();
-
-                            // get the status code from the request
-                            $status = $objResponse->getStatus();
-                            if (in_array($status, array(500))) {
-                                $forceDomainUrlNotPossible = true;
-                            }
-                        } catch (\HTTP_Request2_Exception $e) {
-                            $forceDomainUrlNotPossible = true;
-                        }
-                        $value = ($value == 'on' && !isset($forceDomainUrlNotPossible)) ? 'on' : 'off';
+                    $useHttps = $_CONFIG['forceProtocolBackend'] == 'https';
+                    $protocol = 'http';
+                    if ($useHttps == 'https') {
+                        $protocol = 'https';
                     }
+                    $value = $this->checkAccessibility($protocol) ? $value : 'off';
+                    $_CONFIG['forceDomainUrl'] = $value;
                     break;
             }
-
             $objDatabase->Execute(' UPDATE `'.DBPREFIX.'settings`
                                     SET `setvalue` = "'.contrexx_input2db($value).'"
                                     WHERE `setid` = '.intval($id));
         }
-
-        if ($checkHttps) {
-            $httpsPossible = true;
-            try {
-                // create request to port 443 (https), to check whether the request works or not
-                $request     = new \HTTP_Request2('https://' . $_CONFIG['domainUrl'] . ASCMS_INSTANCE_OFFSET);
-
-                // ignore ssl issues
-                // otherwise, contrexx does not activate 'https' when the server doesn't have an ssl certificate installed
-                $request->setConfig(array(
-                    'ssl_verify_peer' => false,
-                ));
-
-                // send the request
-                // if this does not work, because there is no ssl support, an exception is thrown
-                $objResponse = $request->send();
-
-                // get the status code from the request
-                $status = $objResponse->getStatus();
-                if (in_array($status, array(500))) {
-                    // https is not available, 500 server error feedback
-                    $httpsPossible = false;
-                }
-            } catch (\HTTP_Request2_Exception $e) {
-                // https is not available, exception thrown
-                $httpsPossible = false;
-            }
-
-            if (!$httpsPossible) {
-                // reset settings to default when the https request failed
-                $objDatabase->Execute('
-                    UPDATE
-                        `'.DBPREFIX.'settings`
-                    SET
-                        `setvalue` = \'none\'
-                    WHERE
-                        `setid` IN (57,58)
-                        AND `setvalue` LIKE \'https\'
-                ');
-            }
-        }
-
+        
         if (isset($_POST['debugging'])) {
             $this->updateDebugSettings(!empty($_POST['debugging']) ? $_POST['debugging'] : null);
         }
         $this->strOkMessage = $_CORELANG['TXT_SETTINGS_UPDATED'];
+    }
+    
+    /**
+     * Checks whether the currently configured domain url is accessible 
+     * @param string $protocol the protocol to check for access
+     * @return bool true if the domain is accessable
+     */
+    protected function checkAccessibility($protocol = 'http') {
+        global $_CONFIG;
+        if (!in_array($protocol, array('http', 'https'))) {
+            return false;
+        }
+        
+        try {
+            // create request to port 443 (https), to check whether the request works or not
+            $request = new \HTTP_Request2($protocol . '://' . $_CONFIG['domainUrl'] . ASCMS_ADMIN_WEB_PATH . '/index.php?cmd=jsondata');
+
+            // ignore ssl issues
+            // otherwise, contrexx does not activate 'https' when the server doesn't have an ssl certificate installed
+            $request->setConfig(array(
+                'ssl_verify_peer' => false,
+            ));
+
+            // send the request
+            // if this does not work, because there is no ssl support, an exception is thrown
+            $objResponse = $request->send();
+
+            // get the status code from the request
+            $result = json_decode($objResponse->getBody());
+            
+            // get the status code from the request
+            $status = $objResponse->getStatus();
+            if (in_array($status, array(500))) {
+                return false;
+            }
+            // the request should return a json object with the status 'error' if it is a contrexx installation
+            if (!$result || $result->status != 'error') {
+                return false;
+            }
+        } catch (\HTTP_Request2_Exception $e) {
+            // https is not available, exception thrown
+            return false;
+        }
+        return true;
     }
 
     /**
