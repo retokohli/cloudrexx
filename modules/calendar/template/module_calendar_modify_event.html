@@ -320,13 +320,15 @@
 
     function checkRegistration()
     {
-        registrationMask = document.getElementById('registrationMore');
-        registrationMaskSelect = document.getElementsByName('registration')[0].checked;
-
-        if (registrationMaskSelect == true) {
-            registrationMask.style.display = 'block';
-        } else {
-            registrationMask.style.display = 'none';
+        var registrationMask = document.getElementById('registrationMore');
+        var registrationMaskSelect = document.getElementsByName('registration');
+        /*IE<9 has a problem on getElementByName if there are elements with an equal ID.
+         * so there my not only inputfields be found and we have to loop by*/
+        registrationMask.style.display = 'none';
+        for(var i = 0; i < registrationMaskSelect.length; i++){
+            if(registrationMaskSelect[i].checked == true){
+                registrationMask.style.display = 'block';
+            }
         }
     }
 
