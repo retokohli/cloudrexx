@@ -74,8 +74,23 @@ class FilesharingAdmin extends FilesharingLib
         }
 
         if ($_POST["shareFiles"]) {
-            if (FWValidator::isEmail($_POST["email"])) {
-                FilesharingLib::sendMail($objResult->fields["id"], $_POST["subject"], $_POST["email"], $_POST["message"]);
+            if(preg_match('/(;|,|\s)+/', $_POST["email"])){
+                foreach(explode(',', $_POST["email"]) as $emailsCommaSplitted){
+                    foreach(explode(';', $emailsCommaSplitted) as $emailsSemicolonSplitted){
+                        foreach(explode(' ', $emailsSemicolonSplitted) as $email){
+                            if(FWValidator::isEmail($email)){
+                                $emails[] = contrexx_input2raw($email);
+                            }
+                        }
+                    }
+                }
+            }else{
+                if(FWValidator::isEmail($_POST["email"])){
+                    $emails[] = contrexx_input2raw($_POST["email"]);
+                }
+            }
+            if (count($emails) > 0) {
+                FilesharingLib::sendMail($objResult->fields["id"], $_POST["subject"], $emails, $_POST["message"]);
             }
         } elseif ($_POST["saveExpiration"]) {
             if ($_POST["expiration"]) {
@@ -115,6 +130,7 @@ class FilesharingAdmin extends FilesharingLib
             'FILESHARING_MESSAGE_INFO' => $_ARRAYLANG["TXT_FILESHARING_MESSAGE_INFO"],
             'FILESHARING_SEND' => $_ARRAYLANG["TXT_FILESHARING_SEND"],
             'FILESHARING_SAVE' => $_ARRAYLANG["TXT_FILESHARING_SAVE"],
+            'TXT_CORE_MAILTEMPLATE_NOTE_TO' => $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_TO'],
         ));
     }
 
