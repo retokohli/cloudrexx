@@ -74,19 +74,9 @@ class FilesharingAdmin extends FilesharingLib
         }
 
         if ($_POST["shareFiles"]) {
-            if(preg_match('/(;|,|\s)+/', $_POST["email"])){
-                foreach(explode(',', $_POST["email"]) as $emailsCommaSplitted){
-                    foreach(explode(';', $emailsCommaSplitted) as $emailsSemicolonSplitted){
-                        foreach(explode(' ', $emailsSemicolonSplitted) as $email){
-                            if(FWValidator::isEmail($email)){
-                                $emails[] = contrexx_input2raw($email);
-                            }
-                        }
-                    }
-                }
-            }else{
-                if(FWValidator::isEmail($_POST["email"])){
-                    $emails[] = contrexx_input2raw($_POST["email"]);
+            foreach(preg_split('/[;,\s]+/', $_POST["email"]) as $email){
+                if(\FWValidator::isEmail($email)){
+                    $emails[] = contrexx_input2raw($email);
                 }
             }
             if (count($emails) > 0) {
