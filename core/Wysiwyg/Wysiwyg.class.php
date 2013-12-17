@@ -34,18 +34,28 @@ class Wysiwyg
             'toolbar' => 'Small',
             'width' => '100%',
             'height' => 200,
+            'fullPage' => 'false',
             'extraPlugins' => array(),
         ),
         'full' => array(
             'toolbar' => 'Full',
             'width' => '100%',
             'height' => 450,
+            'fullPage' => 'false',
+            'extraPlugins' => array(),
+        ),
+        'fullpage' => array(
+            'toolbar' => 'Full',
+            'width' => '100%',
+            'height' => 450,
+            'fullPage' => 'true',
             'extraPlugins' => array(),
         ),
         'bbcode' => array(
             'toolbar' => 'BBCode',
             'width' => '100%',
             'height' => 200,
+            'fullPage' => 'false',
             'extraPlugins' => array('bbcode'),
         ),
     );
@@ -104,7 +114,8 @@ class Wysiwyg
             "customConfig: CKEDITOR.getUrl('".$configPath."?langId=".$this->langId."')",
             "width: '" . $this->types[$this->type]['width'] . "'",
             "height: '" . $this->types[$this->type]['height'] . "'",
-            "toolbar: '" . $this->types[$this->type]['toolbar'] . "'"
+            "toolbar: '" . $this->types[$this->type]['toolbar'] . "'",
+            "fullPage: " . $this->types[$this->type]['fullPage']
         );
 
         $extraPlugins = array_merge($this->extraPlugins, $this->types[$this->type]['extraPlugins']);

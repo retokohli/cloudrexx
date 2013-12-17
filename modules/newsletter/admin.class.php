@@ -2141,7 +2141,7 @@ class newsletter extends NewsletterLib
             'NEWSLETTER_TEMPLATE_NAME' => htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET),
             'NEWSLETTER_TEMPLATE_DESCRIPTION' => htmlentities($description, ENT_QUOTES, CONTREXX_CHARSET),
 			'NEWSLETTER_TEMPLATE_TYPE' => $type,
-            'NEWSLETTER_TEMPLATE_HTML' => new \Cx\Core\Wysiwyg\Wysiwyg('template_edit_html', contrexx_raw2xhtml($html), 'full'),
+            'NEWSLETTER_TEMPLATE_HTML' => new \Cx\Core\Wysiwyg\Wysiwyg('template_edit_html', contrexx_raw2xhtml($html), 'fullpage'),
             'NEWSLETTER_TEMPLATE_TITLE_TEXT' => $id > 0 ? $_ARRAYLANG['TXT_NEWSLETTER_MODIFY_TEMPLATE'] : $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATE_ADD'],
 			'NEWSLETTER_TEMPLATE_TYPE_MENU' => $typeOps,
 			'NEWSLETTER_TEMPLATE_NEWS_IMPORT_DIRECTORY_DISPLAY' => $newsImportDirectoryDisplay,
