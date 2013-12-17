@@ -320,7 +320,7 @@ CODE
      * @param string $email the recipient's mail address
      * @param null|string $message the message for the recipient
      */
-    static public function sendMail($uploadId, $subject, $email, $message = null)
+    static public function sendMail($uploadId, $subject, $emails, $message = null)
     {
         global $objDatabase, $_CONFIG;
 
@@ -386,9 +386,11 @@ CODE
 
             $objMail->Subject = $subject;
             $objMail->Body = $objTemplate->get();
-            $objMail->AddAddress($email);
-            $objMail->Send();
-            $objMail->ClearAddresses();
+            foreach($emails as $email){
+                $objMail->AddAddress($email);
+                $objMail->Send();
+                $objMail->ClearAddresses();
+            }
         }
     }
 }
