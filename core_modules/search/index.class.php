@@ -262,9 +262,20 @@ class Search
                        AND tblLang.category_id=tblCat.id
                        AND tblLang.lang_id=".FRONTEND_LANG_ID."";
             case 'shop':
-                $querySelect = $queryCount = $queryOrder = NULL;
-                list($querySelect, $queryCount, $queryTail, $queryOrder) =
-                    \Products::getQueryParts(NULL, NULL, NULL, $term);
+                $flagIsReseller = false;
+                $objUser = \FWUser::getFWUserObject()->objUser;
+
+                if ($objUser->login()) {
+                    $objCustomer = \Customer::getById($objUser->getId());
+                    \SettingDb::init('shop', 'config');
+                    if ($objCustomer && $objCustomer->is_reseller()) {
+                        $flagIsReseller = true;
+                    }
+                }
+
+                $querySelect = $queryCount = $queryOrder = null;
+                list($querySelect, $queryCount, $queryTail, $queryOrder) = \Products::getQueryParts(null, null, null, $term, false, false, '', $flagIsReseller);
+
                 return $querySelect.$queryTail.$queryOrder;
             case 'gallery_cats':
                 return "
