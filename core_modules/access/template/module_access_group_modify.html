@@ -67,8 +67,8 @@ table.adminlist .rowLast td {
 }
 </style>
 <ul id="tabmenu">
-<li><a id="groupTab_modifyGroup1" {ACCESS_GENERAL_TAB_BUTTON_STATUS} href="javascript:void(0);" onclick="selectTab('modifyGroup1')" title="{TXT_ACCESS_GENERAL}">{TXT_ACCESS_GENERAL}</a></li>
-<li><a id="groupTab_modifyGroup2" {ACCESS_PERMISSION_TAB_BUTTON_STATUS} href="javascript:void(0);" onclick="selectTab('modifyGroup2')" title="{TXT_ACCESS_PERMISSIONS}">{TXT_ACCESS_PERMISSIONS}</a></li>
+<li><a id="groupTab_modifyGroup1" class="active" href="javascript:void(0);" onclick="selectTab('modifyGroup1')" title="{TXT_ACCESS_GENERAL}">{TXT_ACCESS_GENERAL}</a></li>
+<li><a id="groupTab_modifyGroup2" href="javascript:void(0);" onclick="selectTab('modifyGroup2')" title="{TXT_ACCESS_PERMISSIONS}">{TXT_ACCESS_PERMISSIONS}</a></li>
 </ul>
 <form action="?cmd=access&amp;act=group&amp;tpl=modify&amp;id={ACCESS_GROUP_ID}" method="post" id="access_group_form" onsubmit="accessSelectAllGroups(document.getElementById('access_group_associated_users'));">
 <input type="hidden" name="access_change_protection" value="1" />
