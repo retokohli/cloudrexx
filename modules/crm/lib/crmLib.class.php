@@ -3072,7 +3072,7 @@ CODE;
         if (!empty ($userId)) {
             $objFWUser  = FWUser::getFWUserObject();
             $objUser    = $objFWUser->objUser->getUser($userId);
-            $email      = $objUser->getEmail();
+            $email      = $objUser ? $objUser->getEmail() : '';
             if ($email) {
                 return $email;
             }
