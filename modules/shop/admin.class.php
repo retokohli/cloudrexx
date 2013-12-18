@@ -88,7 +88,7 @@ class Shopmanager extends ShopLibrary
     {
         global $objTemplate, $_ARRAYLANG;
 
-//DBG::activate(DBG_ERROR_FIREPHP | DBG_LOG);
+//\DBG::activate(DBG_ERROR_FIREPHP|DBG_LOG);
         if (!isset($_GET['act'])) {
             $_GET['act'] = '';
         }
@@ -335,7 +335,10 @@ class Shopmanager extends ShopLibrary
             if (!preg_match('/\.csv$/i', $file['name'])) {
                 Message::warning($_ARRAYLANG['TXT_SHOP_IMPORT_WARNING_EXTENSION_MISMATCH']);
             } else {
-                if (!preg_match('/application\\/vnd\.ms-excel|text\\/(?:plain|csv)/', $file['type'])) {
+                if (!preg_match('
+                    /application\\/vnd\.ms-excel
+                    |text\\/(?:plain|csv|comma-separated-values)
+                    /x', $file['type'])) {
                     Message::warning($_ARRAYLANG['TXT_SHOP_IMPORT_WARNING_TYPE_MISMATCH']);
                 }
             }
