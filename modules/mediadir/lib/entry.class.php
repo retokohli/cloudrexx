@@ -379,23 +379,29 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                         }
 
                         //get votes
-                        if($this->arrSettings['settingsAllowVotes'] == 1) {
+                        if($this->arrSettings['settingsAllowVotes']) {
                             $objVoting = new mediaDirectoryVoting();
                             $objVoting->getVotes($objTpl, $arrEntry['entryId']);
+                            if ($objTpl->blockExists('mediadirEntryVotes')) {
+                                $objTpl->parse('mediadirEntryVotes');
+                            }
                         } else {
-                            $objTpl->setVariable(array(
-                                $this->moduleLangVar.'_ENTRY_VOTES' => $_CORELANG['TXT_DEACTIVATED'],
-                            ));
+                            if ($objTpl->blockExists('mediadirEntryVotes')) {
+                                $objTpl->hideBlock('mediadirEntryVotes');
+                            }
                         }
 
                         //get comments
-                        if($this->arrSettings['settingsAllowComments'] == 1) {
+                        if($this->arrSettings['settingsAllowComments']) {
                             $objComment = new mediaDirectoryComment();
                             $objComment->getComments($objTpl, $arrEntry['entryId']);
+                            if ($objTpl->blockExists('mediadirEntryComments')) {
+                                $objTpl->parse('mediadirEntryComments');
+                            }
                         } else {
-                            $objTpl->setVariable(array(
-                                $this->moduleLangVar.'_ENTRY_COMMENTS' => $_CORELANG['TXT_DEACTIVATED'],
-                            ));
+                            if ($objTpl->blockExists('mediadirEntryComments')) {
+                                $objTpl->hideBlock('mediadirEntryComments');
+                            }
                         }
 
                         $i++;
