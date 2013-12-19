@@ -166,6 +166,16 @@ class CalendarEventManager extends CalendarLibrary
     public $countEvents; 
     
     /**
+     * show only upcoming events or all events
+     * possible options are all or upcoming
+     * 
+     * default is all
+     *
+     * @var string 
+     */
+    public $listType;
+    
+    /**
      * Loads the event manager configuration
      * 
      * @param integer $startDate     Start date Unix timestamp
@@ -181,7 +191,7 @@ class CalendarEventManager extends CalendarLibrary
      * @param boolean $onlyConfirmed only confirmed Entries
      * @param string  $author        author name
      */
-    function __construct($startDate=null,$endDate=null,$categoryId=null,$searchTerm=null,$showSeries=true,$needAuth=false,$onlyActive=false,$startPos=0,$numEvents='n',$sortDirection='ASC',$onlyConfirmed=true,$author=null){
+    function __construct($startDate=null, $endDate=null, $categoryId=null, $searchTerm=null, $showSeries=true, $needAuth=false, $onlyActive=false, $startPos=0, $numEvents='n', $sortDirection='ASC', $onlyConfirmed=true, $author=null, $listType = 'all') {
         $this->startDate = intval($startDate);
         $this->endDate = intval($endDate);
         $this->categoryId = intval($categoryId);
@@ -194,6 +204,7 @@ class CalendarEventManager extends CalendarLibrary
         $this->sortDirection = $sortDirection;   
         $this->onlyConfirmed = $onlyConfirmed;                  
         $this->author = $author;                  
+        $this->listType = $listType;
     }
     
     /**
@@ -283,11 +294,15 @@ class CalendarEventManager extends CalendarLibrary
                 $objEvent = new CalendarEvent(intval($objResult->fields['id']));
 
                 if($objInit->mode == 'frontend' || $this->showSeries) {
+                    $checkFutureEvents = true;
                     if(self::_addToEventList($objEvent)) {
                         $this->eventList[] = $objEvent;
+                        if ($this->listType == 'upcoming') {
+                            $checkFutureEvents = false;
+                        }
                     }
 
-                    if($objEvent->seriesStatus == 1 && $_GET['cmd'] != 'my_events') {
+                    if ($checkFutureEvents && $objEvent->seriesStatus == 1 && $_GET['cmd'] != 'my_events') {
                         self::_setNextSeriesElement($objEvent);
                     }
                 } else {
@@ -1332,6 +1347,10 @@ class CalendarEventManager extends CalendarLibrary
             && self::_addToEventList($objCloneEvent)
         ) {
             array_push($this->eventList, $objCloneEvent);    
+            if ($this->listType == 'upcoming') {
+                // if list type is set to upcoming the the will be shown only once
+                $getNextEvent = false;
+            }
         }
         
         if ($getNextEvent) {
