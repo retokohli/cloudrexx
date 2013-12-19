@@ -113,12 +113,10 @@ namespace Cx\Core
             $qb->add('select', 'p')
                 ->add('from', 'Cx\Core\ContentManager\Model\Entity\Page p')
                 ->add('where',
-                    $qb->expr()->andx(
-                        $qb->expr()->eq('p.lang', FRONTEND_LANG_ID),
 // TODO: what is the proper syntax for non-empty values?
 // TODO: add additional check for module != NULL
-                        $qb->expr()->neq('p.module', $qb->expr()->literal(''))
-                    ));
+                    $qb->expr()->neq('p.module', $qb->expr()->literal(''))
+                );
             $pages = $qb->getQuery()->getResult();
             foreach ($pages as $page) {
                 $arrCmInstalledModules[] = $page->getModule();
