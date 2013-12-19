@@ -2655,7 +2655,10 @@ EOF;
                     $setSearch = "&nbsp;";
                 }
 
-                if ($objResult->fields['name'] == "title" || $objResult->fields['name'] == "description") {
+                if (
+                        $objResult->fields['name'] == "title" ||
+                        ($objResult->fields['name'] == "description" && $this->descriptionFieldRequired())
+                   ) {
                     $setSearch =
                         '<input type="checkbox" '.
                         'disabled="disabled" checked="checked">';
@@ -2937,6 +2940,12 @@ EOF;
             //get post data
             foreach ($_POST['setvalue'] as $id => $value) {
                 //update settings
+                
+                // check for description field to be required
+                if ($id == 13 && $value == 1) {
+                    $objDatabase->Execute("UPDATE `".DBPREFIX."module_directory_inputfields` SET active='1', is_required='1', active_backend='1' WHERE name='description'");
+                }
+                
                 if (ini_get('allow_url_fopen') == false && $id == 19) {
                     $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_settings SET setvalue='0' WHERE setid=".intval($id));
                 } else {
@@ -2982,10 +2991,12 @@ EOF;
 
         if (isset($_POST['set_inputs_submit'])) {
             //update settings
+            
+            // title field should stay active, required and available for search
             $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='0' Where id !='1'");
             $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET is_search='0' Where id !='1'");
-            $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET is_required='0' Where id !='1' AND id !='2'");
-            $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active_backend='0' Where id !='1' AND id !='2'");
+            $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET is_required='0' Where id !='1'");
+            $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active_backend='0' Where id !='1'");
 
             //get post data
             if ($_POST['setStatus'] != "") {
@@ -3094,7 +3105,9 @@ EOF;
 
             //update settings
             $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='1' WHERE name='title'");
-            $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='1' WHERE name='description'");
+            if ($this->descriptionFieldRequired()) {
+                $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_inputfields SET active='1', is_required='1', active_backend='1' WHERE name='description'");
+            }
 
             $this->strOkMessage = $_ARRAYLANG['TXT_DIR_SETTINGS_SUCCESFULL_SAVE'];
         }
@@ -3120,6 +3133,16 @@ EOF;
                 $this->strOkMessage = $_ARRAYLANG['TXT_DIRECTORY_VOTING_RESTORED'];
             }
         }
+    }
+    
+    /**
+     * check whether the description field is required or not
+     * @return boolean true if the description field is required
+     */
+    protected function descriptionFieldRequired() {
+        global $objDatabase;
+        $objResultDescriptionSetting = $objDatabase->SelectLimit("SELECT `setvalue` FROM `" . DBPREFIX . "module_directory_settings` WHERE `setname` = 'description'", 1);
+        return $objResultDescriptionSetting->fields['setvalue'] == 1;
     }
 
 }
