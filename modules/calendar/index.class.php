@@ -706,9 +706,8 @@ UPLOADER;
         }
         
         $objEvent = new CalendarEvent(intval($_REQUEST['id']));
-        $objRegistrationManager = new CalendarRegistrationManager($objEvent->id,true,false);
-        $objRegistrationManager->getRegistrationList();
-        $numRegistrations = intval(count($objRegistrationManager->registrationList));
+
+        $numRegistrations = (int) $objEvent->registrationCount;
         
         $this->pageTitle = date("d.m.Y", (isset($_GET['date']) ? $_GET['date'] : $objEvent->startDate)).": ".html_entity_decode($objEvent->title, ENT_QUOTES, CONTREXX_CHARSET);
 

@@ -589,13 +589,8 @@ class CalendarEventManager extends CalendarLibrary
 
             $picThumb = file_exists(ASCMS_PATH.$objEvent->pic.".thumb") ? $objEvent->pic.".thumb" : $objEvent->pic;
             
-            $objRegistrationManager = new CalendarRegistrationManager($objEvent->id,true,false);  
-            $objRegistrationManager->getRegistrationList();
-            $numRegistrations = (int) count($objRegistrationManager->registrationList); 
-            
-            $objDeregistrationManager = new CalendarRegistrationManager($objEvent->id, false, true);  
-            $objDeregistrationManager->getRegistrationList();
-            $numDeregistration = count($objDeregistrationManager->registrationList);
+            $numRegistrations  = (int) $objEvent->registrationCount;                         
+            $numDeregistration = (int) $objEvent->cancellationCount;
 
             $objEscortManager = new CalendarRegistrationManager($objEvent->id, true, false);            
 
@@ -888,17 +883,10 @@ class CalendarEventManager extends CalendarLibrary
                 ));
                 
                 if($objInit->mode == 'backend') {
-                    $objRegistrationManager = new CalendarRegistrationManager($objEvent->id, true, false);  
-                    $objRegistrationManager->getRegistrationList();
-                    $objDeregistrationManager = new CalendarRegistrationManager($objEvent->id, false, true);  
-                    $objDeregistrationManager->getRegistrationList();
-                    $objWaitlistManager = new CalendarRegistrationManager($objEvent->id, false, false, true);
-                    $objWaitlistManager->getRegistrationList();
-                    
                     $objTpl->setVariable(array(
-                        $this->moduleLangVar.'_EVENT_COUNT_REG'      => count($objRegistrationManager->registrationList),
-                        $this->moduleLangVar.'_EVENT_COUNT_DEREG'    => count($objDeregistrationManager->registrationList),
-                        $this->moduleLangVar.'_EVENT_COUNT_WAITLIST' => count($objWaitlistManager->registrationList),                                                
+                        $this->moduleLangVar.'_EVENT_COUNT_REG'      => $objEvent->registrationCount,
+                        $this->moduleLangVar.'_EVENT_COUNT_DEREG'    => $objEvent->cancellationCount,
+                        $this->moduleLangVar.'_EVENT_COUNT_WAITLIST' => $objEvent->waitlistCount,                                                
                     ));    
                 }
                 
