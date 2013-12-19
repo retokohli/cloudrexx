@@ -120,7 +120,7 @@ function selectMultiAction()
 	            <table style="width: 100%; border-spacing: 0px;" class="adminlist" cellspacing="0" cellpadding="3">
 	                <tr>
 	                    <th colspan="2">{TXT_CALENDAR_EVENTS}</th>
-                        <th colspan="8">[ <a href="index.php?cmd={CALENDAR_MODULE_NAME}&amp;list=actual" style="text-decoration: {CALENDAR_LINKSTYLE_LIST_ACTUAL};">Aktuelle anzeigen</a> | <a href="index.php?cmd={CALENDAR_MODULE_NAME}&amp;list=all" style="text-decoration: {CALENDAR_LINKSTYLE_LIST_ALL};">Alle anzeigen</a> ]</th>
+                        <th colspan="8">[ <a href="index.php?cmd={CALENDAR_MODULE_NAME}&amp;list=actual" style="text-decoration: {CALENDAR_LINKSTYLE_LIST_ACTUAL};">{TXT_CALENDAR_UPCOMING_EVENTS}</a> | <a href="index.php?cmd={CALENDAR_MODULE_NAME}&amp;list=all" style="text-decoration: {CALENDAR_LINKSTYLE_LIST_ALL};">{TXT_CALENDAR_ALL_EVENTS}</a> ]</th>
 	                </tr>
 	                <tr class="row3">
 						<td style="width: 20px; text-align: center;"><b>#</b></td>
@@ -154,7 +154,7 @@ function selectMultiAction()
 					<!-- END eventList -->
                     <!-- BEGIN emptyEventList -->
                     <tr class="row1">
-                        <td colspan="9"><i>{TXT_CALENDAR_NO_EVENTS}</i></td>
+                        <td colspan="10"><i>{TXT_CALENDAR_NO_EVENTS}</i></td>
                     </tr>
                     <!-- END emptyEventList -->
 	            </table>          
