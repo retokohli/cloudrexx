@@ -1142,6 +1142,18 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
                 $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
             }
         }
+        
+        $objSettings = new mediaDirectorySettings();
+        if ($this->_objTpl->blockExists('mediadirTableHeaderComments')) {
+            if ($objSettings->arrSettings['settingsAllowComments']) {
+                $this->_objTpl->touchBlock('mediadirTableHeaderComments');
+            }
+        }
+        if ($this->_objTpl->blockExists('mediadirTableHeaderVotes')) {
+            if ($objSettings->arrSettings['settingsAllowVotes']) {
+                $this->_objTpl->touchBlock('mediadirTableHeaderVotes');
+            }
+        }
 
         switch ($_GET['act']) {
             case 'move_entry':
