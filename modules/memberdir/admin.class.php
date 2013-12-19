@@ -67,7 +67,7 @@ class MemberDirManager extends MemberDirLibrary
         global $objTemplate, $_ARRAYLANG;
 
         $objTemplate->setVariable("CONTENT_NAVIGATION","
-            <a href=\"index.php?cmd=memberdir\" class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_OVERVIEW']."</a>
+            <a href=\"index.php?cmd=memberdir\" class='".(($this->act == '' || $this->act == 'showdir') ? 'active' : '')."'>".$_ARRAYLANG['TXT_OVERVIEW']."</a>
             <a href=\"index.php?cmd=memberdir&amp;act=newDir\" class='".($this->act == 'newDir' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEW_DIR']."</a>
             <a href=\"index.php?cmd=memberdir&amp;act=new\" class='".($this->act == 'new' ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEW_MEMBER_SHORT']."</a>
             <a href=\"index.php?cmd=memberdir&amp;act=import\" class='".($this->act == 'import' ? 'active' : '')."'>".$_ARRAYLANG['TXT_IMPORT']."</a>
@@ -914,7 +914,7 @@ class MemberDirManager extends MemberDirLibrary
                 $query .= " `dirid` = '$dirid'";
             }
 
-            $query .= " ORDER BY id ASC";
+            $query .= " ORDER BY `0` ASC, id ASC";
         }
 
         $pos = (empty($_GET['pos'])) ? 0 : intval($_GET['pos']);
