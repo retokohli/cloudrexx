@@ -20,7 +20,7 @@ if (!$objResultRc1 || !$objResultRc2) {
 }
 if ($objResultRc1->fields['target'] != '_blank') {
     $version = 'rc1';
-} elseif ($objResultRc2->fields['order_id'] != 6) {
+} elseif ($objResultRc2->fields['order_id'] != 6 && $_CONFIG['coreCmsVersion'] == '3.0.0') {
     $version = 'rc2';
 } elseif ($_CONFIG['coreCmsVersion'] == '3.0.0') {
     $version = 'stable';
