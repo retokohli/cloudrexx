@@ -37,6 +37,9 @@ class JsonData {
         '\\Cx\\Core\\Json\\Adapter\\User' => array(
             'JsonUser',
         ),
+        '\\Cx\\Modules\\Crm\\Lib\\Controllers' => array(
+            'JsonCrm',
+        ),
     );
     
     /**

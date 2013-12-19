@@ -542,115 +542,44 @@ class CrmManager extends CrmLibrary
             }
         }
 
+        $searchFields = array(
+            'companyname_filter'  => isset($_REQUEST['companyname_filter']) ? contrexx_input2raw($_REQUEST['companyname_filter']) : '',
+            'contactSearch'       => isset($_GET['contactSearch']) ? (array) $_GET['contactSearch'] : array(1,2),
+            'advanced-search'     => isset($_REQUEST['advanced-search']) ? $_REQUEST['advanced-search'] : '',
+            's_name'              => isset($_REQUEST['s_name']) ? $_REQUEST['s_name'] : '',
+            's_email'             => isset($_REQUEST['s_email']) ? $_REQUEST['s_email'] : '',
+            's_address'           => isset($_REQUEST['s_address']) ? $_REQUEST['s_address'] : '',
+            's_city'              => isset($_REQUEST['s_city']) ? $_REQUEST['s_city'] : '',
+            's_postal_code'       => isset($_REQUEST['s_postal_code']) ? $_REQUEST['s_postal_code'] : '',
+            's_notes'             => isset($_REQUEST['s_notes']) ? $_REQUEST['s_notes'] : '',
+            'customer_type'       => isset($_REQUEST['customer_type']) ? $_REQUEST['customer_type'] : '',
+            'filter_membership'   => isset($_REQUEST['filter_membership']) ? $_REQUEST['filter_membership'] : '',
+            'term'                => isset($_REQUEST['term']) ? contrexx_input2raw($_REQUEST['term']) : '',
+            'sorto'               => isset($_REQUEST['sorto']) ? $_REQUEST['sorto'] : '',
+            'sortf'               => isset($_REQUEST['sortf']) ? $_REQUEST['sortf'] : '',
+        );
+        
         $searchLink = '';
-        $where = array();
 
         // This is the function to show the A-Z letters
-        $alphaFilter = isset($_REQUEST['companyname_filter']) ? contrexx_input2raw($_REQUEST['companyname_filter']) : '';
-        $this->parseLetterIndexList('index.php?cmd='.$this->moduleName.'&act=customers', 'companyname_filter', $alphaFilter);
-        $searchLink .= (!empty($alphaFilter)) ? "&companyname_filter=$alphaFilter" : '';
+        $this->parseLetterIndexList('index.php?cmd='.$this->moduleName.'&act=customers', 'companyname_filter', $searchFields['companyname_filter']);
+        $searchLink .= (!empty($searchFields['companyname_filter'])) ? "&companyname_filter=".$searchFields['companyname_filter'] : '';
 
-        if (!empty($alphaFilter)) {
-            $where[] = " (c.customer_name LIKE '".contrexx_input2raw($alphaFilter)."%')";
-        }
 
-        $searchContactTypeFilter = isset($_GET['contactSearch']) ? (array) $_GET['contactSearch'] : array(1,2);
-        $searchContactTypeFilter = array_map('intval', array_unique($searchContactTypeFilter));
-        $where[] = " c.contact_type IN (".implode(',', $searchContactTypeFilter).")";
+        $searchContactTypeFilter = array_map('intval', array_unique($searchFields['contactSearch']));
         foreach ($searchContactTypeFilter as $value) {
                 $searchLink .= "&contactSearch[]=$value";
         }
 
-        if (isset($_GET['advanced-search'])) {
-            if (isset($_GET['s_name']) && !empty($_GET['s_name'])) {
-                $where[] = " (c.customer_name LIKE '".contrexx_input2db($_GET['s_name'])."%' OR c.contact_familyname LIKE '".contrexx_input2db($_GET['s_name'])."%')";
+        if (isset($searchFields['advanced-search'])) {
+            $searchLink .= "&s_name={$searchFields['s_name']}&s_email={$searchFields['s_email']}&s_address={$searchFields['s_address']}&s_city={$searchFields['s_city']}&s_postal_code={$searchFields['s_postal_code']}&s_notes={$searchFields['s_notes']}";
             }
-            if (isset($_GET['s_email']) && !empty($_GET['s_email'])) {
-                $where[] = " (email.email LIKE '".contrexx_input2db($_GET['s_email'])."%')";
-            }
-            if (isset($_GET['s_address']) && !empty($_GET['s_address'])) {
-                $where[] = " (addr.address LIKE '".contrexx_input2db($_GET['s_address'])."%')";
-            }
-            if (isset($_GET['s_city']) && !empty($_GET['s_city'])) {
-                $where[] = " (addr.city LIKE '".contrexx_input2db($_GET['s_city'])."%')";
-            }
-            if (isset($_GET['s_postal_code']) && !empty($_GET['s_postal_code'])) {
-                $where[] = " (addr.zip LIKE '".contrexx_input2db($_GET['s_postal_code'])."%')";
-            }
-            if (isset($_GET['s_notes']) && !empty($_GET['s_notes'])) {
-                $where[] = " (c.notes LIKE '".contrexx_input2db($_GET['s_notes'])."%')";
-            }
-            $searchLink .= "&s_name={$_GET['s_name']}&s_email={$_GET['s_email']}&s_address={$_GET['s_address']}&s_city={$_GET['s_city']}&s_postal_code={$_GET['s_postal_code']}&s_notes={$_GET['s_notes']}";
-        }
-        if (isset($_GET['customer_type']) && !empty($_GET['customer_type'])) {
-            $where[] = " (c.customer_type = '".intval($_GET['customer_type'])."')";
-        }
-        if (isset($_GET['filter_membership']) && !empty($_GET['filter_membership'])) {
-            $where[] = " mem.membership_id = '".intval($_GET['filter_membership'])."'";
-        }
 
-        if (isset($_GET['term']) && !empty($_GET['term'])) {
-            $fullTextContact = array();
-            if (in_array(2, $searchContactTypeFilter))
-                $fullTextContact[]  =  'c.customer_name, c.contact_familyname';
-            if (in_array(1, $searchContactTypeFilter))
-                $fullTextContact[]  = 'c.customer_name';
-            if (empty($fullTextContact)) {
-                $fullTextContact[]  =  'c.customer_name, c.contact_familyname';
-            }
-            $where[] = " MATCH (".implode(',', $fullTextContact).") AGAINST ('".contrexx_input2db($_GET['term'])."' IN BOOLEAN MODE)";
-        }
+        $searchLink .= "&customer_type={$searchFields['customer_type']}&term={$searchFields['term']}&filter_membership={$searchFields['filter_membership']}";
 
-        //  Join where conditions
-        $filter = '';
-        if (!empty ($where))
-            $filter = " WHERE ".implode(' AND ', $where);
+        $sortLink = "&sorto={$searchFields['sorto']}&sortf={$searchFields['sortf']}";
 
-        $searchLink .= "&customer_type={$_GET['customer_type']}&term={$_GET['term']}&filter_membership={$_GET['filter_membership']}";
-
-        $sortingFields = array("c.customer_name" ,  "activities", "c.added_date");
-        $sorto = (isset ($_GET['sorto'])) ? (((int) $_GET['sorto'] == 0) ? 'DESC' : 'ASC') : 'DESC';
-        $sortf = (isset ($_GET['sortf']) && in_array($sortingFields[$_GET['sortf']], $sortingFields)) ? $sortingFields[$_GET['sortf']] : 'c.id';
-        $sortLink = "&sorto={$_GET['sorto']}&sortf={$_GET['sortf']}";
-
-        $query = "SELECT
-                           DISTINCT c.id,
-                           c.customer_id,
-                           c.customer_type,
-                           c.customer_name,
-                           c.contact_familyname,
-                           c.contact_type,
-                           c.contact_customer AS contactCustomerId,
-                           c.status,
-                           c.added_date,
-                           c.profile_picture,
-                           con.customer_name AS contactCustomer,
-                           email.email,
-                           phone.phone,
-                           t.label AS cType,
-                           Inloc.value AS industryType,
-                           ((SELECT count(1) AS notesCount FROM `".DBPREFIX."module_{$this->moduleName}_customer_comment` AS com WHERE com.customer_id = c.id ) +
-                           (SELECT count(1) AS tasksCount FROM `".DBPREFIX."module_{$this->moduleName}_task` AS task WHERE task.customer_id = c.id ) +
-                           (SELECT count(1) AS dealsCount FROM `".DBPREFIX."module_{$this->moduleName}_deals` AS deal WHERE deal.customer = c.id )) AS activities
-                       FROM `".DBPREFIX."module_{$this->moduleName}_contacts` AS c
-                       LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_contacts` AS con
-                         ON c.contact_customer =con.id
-                       LEFT JOIN ".DBPREFIX."module_{$this->moduleName}_customer_types AS t
-                         ON c.customer_type = t.id
-                       LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_customer_contact_emails` as email
-                         ON (c.id = email.contact_id AND email.is_primary = '1')
-                       LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_customer_contact_phone` as phone
-                         ON (c.id = phone.contact_id AND phone.is_primary = '1')
-                       LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_customer_contact_address` as addr
-                         ON (c.id = addr.contact_id AND addr.is_primary = '1')
-                       LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_customer_membership` as mem
-                         ON (c.id = mem.contact_id)
-                       LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_industry_types` AS Intype
-                         ON c.industry_type = Intype.id
-                       LEFT JOIN `".DBPREFIX."module_{$this->moduleName}_industry_type_local` AS Inloc
-                         ON Intype.id = Inloc.entry_id AND Inloc.lang_id = ".$_LANGID."
-                $filter
-                       ORDER BY $sortf $sorto";
+        $query = $this->getContactsQuery($searchFields, $searchFields['sortf'], $searchFields['sorto']);
 
         /* Start Paging ------------------------------------ */
         $intPos             = (isset($_GET['pos'])) ? intval($_GET['pos']) : 0;
@@ -761,7 +690,7 @@ class CrmManager extends CrmLibrary
                 'CRM_SEARCH_LINK'               =>  $searchLink,
                 'CRM_NAME_SORT'                 =>  "&sortf=0&sorto=$sortOrder",
                 'CRM_ACTIVITIES_SORT'           =>  "&sortf=1&sorto=$sortOrder",
-                'CRM_DATE_SORT'                 =>  "&sortf=4&sorto=$sortOrder",
+                'CRM_DATE_SORT'                 =>  "&sortf=2&sorto=$sortOrder",
 
                 'CRM_CUSTOMER_CHECKED'          =>  in_array(1, $searchContactTypeFilter) ? "checked" : '',
                 'CRM_CONTACT_CHECKED'           =>  in_array(2, $searchContactTypeFilter) ? "checked" : '',
