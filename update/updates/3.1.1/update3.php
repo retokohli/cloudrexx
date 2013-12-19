@@ -835,6 +835,28 @@ $updates310To310Sp1 = array(
         (57, 'forceProtocolFrontend', 'none', 1),
         (58, 'forceProtocolBackend', 'none', 1)
         ON DUPLICATE KEY UPDATE `setname` = VALUES(`setname`)",
+    array(
+        'table' => DBPREFIX.'languages',
+        'structure' => array(
+            'id'                     => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'lang'                   => array('type' => 'VARCHAR(5)', 'notnull' => true, 'default' => '', 'after' => 'id'),
+            'name'                   => array('type' => 'VARCHAR(250)', 'notnull' => true, 'default' => '', 'after' => 'lang'),
+            'charset'                => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => 'iso-8859-1', 'after' => 'name'),
+            'themesid'               => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'after' => 'charset'),
+            'print_themes_id'        => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'after' => 'themesid'),
+            'pdf_themes_id'          => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'print_themes_id'),
+            'frontend'               => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'pdf_themes_id'),
+            'backend'                => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'frontend'),
+            'is_default'             => array('type' => 'SET(\'true\',\'false\')', 'notnull' => true, 'default' => 'false', 'after' => 'backend'),
+            'mobile_themes_id'       => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'is_default'),
+            'fallback'               => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'mobile_themes_id'),
+            'app_themes_id'          => array('type' => 'INT(2)', 'after' => 'fallback'),
+        ),
+        'keys' => array(
+            'lang'                   => array('fields' => array('lang'), 'type' => 'UNIQUE'),
+            'defaultstatus'          => array('fields' => array('is_default')),
+        ),
+    ),
 );
 
 $updatesRc1ToSp4    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1);
@@ -1562,6 +1584,91 @@ if (file_exists(ASCMS_DOCUMENT_ROOT.ASCMS_BACKEND_PATH.'/index.php')) {
     }
 }
 
+/***************************************
+ *
+ * CALENDAR: FIX TABLE
+ * only for 3.1.0
+ *
+ **************************************/
+if (!$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0') &&
+            $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.1')) {
+    \Cx\Lib\UpdateUtil::table(
+        DBPREFIX.'module_calendar_event',
+        array(
+            'id'                                 => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'type'                               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'id'),
+            'startdate'                          => array('type' => 'INT(14)', 'notnull' => false, 'after' => 'type'),
+            'enddate'                            => array('type' => 'INT(14)', 'notnull' => false, 'after' => 'startdate'),
+            'use_custom_date_display'            => array('type' => 'TINYINT(1)', 'after' => 'enddate'),
+            'showStartDateList'                  => array('type' => 'INT(1)', 'after' => 'use_custom_date_display'),
+            'showEndDateList'                    => array('type' => 'INT(1)', 'after' => 'showStartDateList'),
+            'showStartTimeList'                  => array('type' => 'INT(1)', 'after' => 'showEndDateList'),
+            'showEndTimeList'                    => array('type' => 'INT(1)', 'after' => 'showStartTimeList'),
+            'showTimeTypeList'                   => array('type' => 'INT(1)', 'after' => 'showEndTimeList'),
+            'showStartDateDetail'                => array('type' => 'INT(1)', 'after' => 'showTimeTypeList'),
+            'showEndDateDetail'                  => array('type' => 'INT(1)', 'after' => 'showStartDateDetail'),
+            'showStartTimeDetail'                => array('type' => 'INT(1)', 'after' => 'showEndDateDetail'),
+            'showEndTimeDetail'                  => array('type' => 'INT(1)', 'after' => 'showStartTimeDetail'),
+            'showTimeTypeDetail'                 => array('type' => 'INT(1)', 'after' => 'showEndTimeDetail'),
+            'google'                             => array('type' => 'INT(11)', 'after' => 'showTimeTypeDetail'),
+            'access'                             => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'google'),
+            'priority'                           => array('type' => 'INT(1)', 'notnull' => true, 'default' => '3', 'after' => 'access'),
+            'price'                              => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'priority'),
+            'link'                               => array('type' => 'VARCHAR(255)', 'after' => 'price'),
+            'pic'                                => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'link'),
+            'attach'                             => array('type' => 'VARCHAR(255)', 'after' => 'pic'),
+            'place_mediadir_id'                  => array('type' => 'INT(11)', 'after' => 'attach'),
+            'catid'                              => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'place_mediadir_id'),
+            'show_in'                            => array('type' => 'VARCHAR(255)', 'after' => 'catid'),
+            'invited_groups'                     => array('type' => 'VARCHAR(45)', 'notnull' => false, 'after' => 'show_in'),
+            'invited_mails'                      => array('type' => 'mediumtext', 'notnull' => false, 'after' => 'invited_groups'),
+            'invitation_sent'                    => array('type' => 'INT(1)', 'after' => 'invited_mails'),
+            'invitation_email_template'          => array('type' => 'VARCHAR(255)', 'after' => 'invitation_sent'),
+            'registration'                       => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'invitation_email_template'),
+            'registration_form'                  => array('type' => 'INT(11)', 'after' => 'registration'),
+            'registration_num'                   => array('type' => 'VARCHAR(45)', 'notnull' => false, 'after' => 'registration_form'),
+            'registration_notification'          => array('type' => 'VARCHAR(1024)', 'notnull' => false, 'after' => 'registration_num'),
+            'email_template'                     => array('type' => 'INT(11)', 'after' => 'registration_notification'),
+            'ticket_sales'                       => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'email_template'),
+            'num_seating'                        => array('type' => 'text', 'after' => 'ticket_sales'),
+            'series_status'                      => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '0', 'after' => 'num_seating'),
+            'series_type'                        => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_status'),
+            'series_pattern_count'               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_type'),
+            'series_pattern_weekday'             => array('type' => 'VARCHAR(7)', 'after' => 'series_pattern_count'),
+            'series_pattern_day'                 => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_weekday'),
+            'series_pattern_week'                => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_day'),
+            'series_pattern_month'               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_week'),
+            'series_pattern_type'                => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_month'),
+            'series_pattern_dourance_type'       => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_type'),
+            'series_pattern_end'                 => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_dourance_type'),
+            'series_pattern_begin'               => array('type' => 'INT(11)', 'notnull' => true, 'default' => '0', 'after' => 'series_pattern_end'),
+            'series_pattern_exceptions'          => array('type' => 'longtext', 'after' => 'series_pattern_begin'),
+            'status'                             => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'series_pattern_exceptions'),
+            'confirmed'                          => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '1', 'after' => 'status'),
+            'author'                             => array('type' => 'VARCHAR(255)', 'after' => 'confirmed'),
+            'all_day'                            => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'author'),
+            'place'                              => array('type' => 'VARCHAR(255)', 'after' => 'all_day'),
+            'place_id'                           => array('type' => 'INT(11)', 'after' => 'place'),
+            'place_street'                       => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_id'),
+            'place_zip'                          => array('type' => 'VARCHAR(10)', 'notnull' => false, 'after' => 'place_street'),
+            'place_city'                         => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_zip'),
+            'place_country'                      => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'place_city'),
+            'place_link'                         => array('type' => 'VARCHAR(255)', 'after' => 'place_country'),
+            'place_map'                          => array('type' => 'VARCHAR(255)', 'after' => 'place_link'),
+            'org_name'                           => array('type' => 'VARCHAR(255)', 'after' => 'place_map'),
+            'org_street'                         => array('type' => 'VARCHAR(255)', 'after' => 'org_name'),
+            'org_zip'                            => array('type' => 'VARCHAR(10)', 'after' => 'org_street'),
+            'org_city'                           => array('type' => 'VARCHAR(255)', 'after' => 'org_zip'),
+            'org_link'                           => array('type' => 'VARCHAR(255)', 'after' => 'org_city'),
+            'org_email'                          => array('type' => 'VARCHAR(255)', 'after' => 'org_link')
+        ),
+        array(
+            'fk_contrexx_module_calendar_notes_contrexx_module_calendar_ca1' => array('fields' => array('catid'))
+        )
+    );
+}
+
+
 // fix tree
 \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Node')->recover();
 
@@ -1572,6 +1679,13 @@ require(dirname(__FILE__).'/config.inc.php');
 \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'settings` SET `setvalue` = \'' . $arrUpdate['cmsName'] . '\' WHERE `setname` = \'coreCmsName\'');
 \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'settings` SET `setvalue` = \'' . $arrUpdate['cmsStatus'] . '\' WHERE `setname` = \'coreCmsStatus\'');
 
+// define the missing placeholders which are used by settingsManager to locate the settings file
+if (!defined('ASCMS_INSTANCE_PATH')) {
+    define('ASCMS_INSTANCE_PATH', $_PATHCONFIG['ascms_root']);
+}
+if (!defined('ASCMS_INSTANCE_OFFSET')) {
+    define('ASCMS_INSTANCE_OFFSET', $_PATHCONFIG['ascms_root_offset']);
+}
 $objSettings = new \settingsManager();
 $objSettings->writeSettingsFile();
 require($documentRoot.'/config/settings.php');
