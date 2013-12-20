@@ -237,11 +237,10 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         'cx' => array(
             'jsfiles' => array(
                 'lib/javascript/cx/contrexxJs.js',
-                'lib/javascript/jquery/tools/jquery.tools.min.js',
                 'lib/javascript/cx/contrexxJs-tools.js',
                 'lib/javascript/jquery/jquery.includeMany-1.2.2.js' //to dynamically include javascript files
             ),
-            'dependencies' => array('jquery', 'md5'),
+            'dependencies' => array('jquery', 'md5', 'jquery-tools'),
             'lazyDependencies' => array('jqueryui'),
             //we insert the specialCode for the Contrexx-API later in getCode()
         ),
@@ -389,6 +388,18 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
     public static function activate($name, $options = null, $dependencies = true)
     {
         $name = strtolower($name);
+        // Catch circular dependencies
+        $index = array_search($name, self::$active);
+        if ($index !== false) {
+            // Move dependencies to the end of the array, so that the
+            // inclusion order is maintained.
+            // Note that the entire array is reversed for code generation,
+            // so dependencies are loaded first!
+            // See {@see getCode()} below.
+            self::$active[] = $name;
+            unset(self::$active[$index]);
+            return true;
+        }
         if (array_key_exists($name, self::$available) === false) {
             self::$error = $name.' is not a valid name for
                 an available javascript type';
@@ -404,6 +415,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 return false;
             }
         }
+        self::$active[] = $name;
         if (!empty($data['dependencies']) && $dependencies) {
             foreach ($data['dependencies'] as $dep) {
                 self::activate($dep);
@@ -411,9 +423,6 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         }
         if (isset($data['loadcallback']) && isset($options)) {
             self::$data['loadcallback']($options);
-        }
-        if (array_search($name, self::$active) === false) {
-            self::$active[] = $name;
         }
         return true;
     }
@@ -566,7 +575,9 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             // set cx.variables with lazy loading file paths
             ContrexxJavascript::getInstance()->setVariable('lazyLoadingFiles', $lazyLoadingFiles, 'contrexx');
 
-            foreach (self::$active as $name) {
+            // Note the "reverse" here.  Dependencies are at the end of the
+            // array, and must be loaded first!
+            foreach (array_reverse(self::$active) as $name) {
                 $data = self::$available[$name];
                 if (!isset($data['jsfiles'])) {
                     self::$error = "A JS entry should at least contain one js file...";
