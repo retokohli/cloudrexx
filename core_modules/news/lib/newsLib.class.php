@@ -123,7 +123,6 @@ class newsLibrary
         } else if (!is_array($categories)) {
             $categories = array(intval($categories));
         }
-
         $nestedSetCategories = $this->getNestedSetCategories($categories);
 
         if ($onlyCategoriesWithEntries) {
@@ -143,7 +142,7 @@ class newsLibrary
                 continue;
             }
             $selected = $category['id'] == $selectedCategory ? 'selected="selected"' : '';
-            $options .= '<option value="'.$category['id'].'" '.$selected.'>'.str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', ($category['level'] - $level)).contrexx_raw2xhtml($categoriesLang[$category['id']][FRONTEND_LANG_ID]).'</option>';
+            $options .= '<option value="'.$category['id'].'" '.$selected.'>'.str_repeat('&nbsp;&nbsp;&nbsp;&nbsp;', ($category['level'] - $level)).contrexx_raw2xhtml($categoriesLang[$category['id']][BACKEND_LANG_ID]).'</option>';
         }
 
         return $options;
