@@ -1214,7 +1214,9 @@ EOF;
                     content='".$intTemplateContent."',
                     recipients='".$intTemplateRecipients."',
                     lang_id='".$intTemplateLang."',
-                    action_id='".$intTemplateAction."'
+                    action_id='".$intTemplateAction."',
+                    is_default=0,
+                    active=0
                 ");
             if ($objAddTemplate === false) {
                 return false;

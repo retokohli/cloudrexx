@@ -675,7 +675,6 @@ class mediaDirectoryInputfield extends mediaDirectoryLibrary
         } else {
             $intOrder = $objOrderInputfield->RecordCount() + 1;
         }
-
         //insert new field
         $objAddInputfield = $objDatabase->Execute("
             INSERT INTO
@@ -685,11 +684,13 @@ class mediaDirectoryInputfield extends mediaDirectoryLibrary
                 `order` = '".intval($intOrder)."',
                 `type` = '1',
                 `show_in` = '1',
-                `verification` = '1'
+                `verification` = '1',
+                `search` = '0',
+                `required` = '0'
         ");
 
         $intInsertId = $objDatabase->Insert_ID();
-
+        $objDatabase->debug = 1;
         //insert blank field name
         $objAddInputfieldName = $objDatabase->Execute("
             INSERT INTO
@@ -697,7 +698,10 @@ class mediaDirectoryInputfield extends mediaDirectoryLibrary
             SET
                 `lang_id` = '".intval($_LANGID)."',
                 `form_id` = '".$this->intFormId."',
-                `field_id` = '".intval($intInsertId)."'
+                `field_id` = '".intval($intInsertId)."',
+                `field_name` = '',
+                `field_default_value` = '',
+                `field_info` = ''
         ");
 
         return $intInsertId;
