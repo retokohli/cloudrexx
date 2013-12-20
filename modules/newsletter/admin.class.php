@@ -317,6 +317,7 @@ class newsletter extends NewsletterLib
                     if (    $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_category WHERE id=$listid") !== false) {
                         $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_rel_cat_news WHERE category=$listid");
                         $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_rel_user_cat WHERE category=$listid");
+                        $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_access_user WHERE newsletterCategoryID=$listid");
                     } else {
                         $error=1;
                     }
@@ -402,9 +403,12 @@ class newsletter extends NewsletterLib
         global $objDatabase, $_ARRAYLANG;
         $listID = (!empty($_GET['id'])) ? intval($_GET['id']) : false;
         if ($listID) {
-            $query = "    DELETE FROM ".DBPREFIX."module_newsletter_rel_user_cat
-                        WHERE category = $listID";
-            if ($objDatabase->Execute($query) !== false) {
+            if ($objDatabase->Execute(
+                        "DELETE FROM ".DBPREFIX."module_newsletter_rel_user_cat WHERE category = $listID"
+                    ) !== false &&
+                $objDatabase->Execute(
+                        "DELETE FROM ".DBPREFIX."module_newsletter_access_user WHERE newsletterCategoryID=$listID"
+                    ) !== false) {
                 self::$strOkMessage = $_ARRAYLANG['TXT_NEWSLETTER_SUCCESSFULLY_FLUSHED'];
             } else {
                 self::$strErrMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETE_ERROR'];
@@ -423,6 +427,7 @@ class newsletter extends NewsletterLib
             if (($arrList = $this->_getList($listId)) !== false) {
                 $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_rel_cat_news WHERE category=".$listId);
                 $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_rel_user_cat WHERE category=".$listId);
+                $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_access_user WHERE newsletterCategoryID=$listId");
 
                 if ($objDatabase->Execute("DELETE FROM ".DBPREFIX."module_newsletter_category WHERE id=".$listId) !== false) {
                     self::$strOkMessage .= sprintf($_ARRAYLANG['TXT_NEWSLETTER_LIST_SUCCESSFULLY_DELETED'], $arrList['name']);
