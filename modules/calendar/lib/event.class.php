@@ -817,8 +817,8 @@ class CalendarEvent extends CalendarLibrary
         $convertBBCode = ($objInit->mode == 'frontend' && empty($id));
         
         $useCustomDateDisplay = isset($data['showDateSettings']) ? 1 : 0;
-        $showStartDateList    = isset($data['showStartDateList']) ? $data['showStartDateList'] : '';
-        $showEndDateList      = isset($data['showEndDateList']) ? $data['showEndDateList'] : '';
+        $showStartDateList    = isset($data['showStartDateList']) ? $data['showStartDateList'] : 0;
+        $showEndDateList      = isset($data['showEndDateList']) ? $data['showEndDateList'] : 0;
         
         if($objInit->mode == 'backend') {            
             // reset time values if "no time" is selected
@@ -876,7 +876,7 @@ class CalendarEvent extends CalendarLibrary
         $access                    = isset($data['access']) ? intval($data['access']) : 0;
         $priority                  = isset($data['priority']) ? intval($data['priority']) : 0;
         $placeMediadir             = isset($data['placeMediadir'][$_LANGID]) ? intval($data['placeMediadir'][$_LANGID]) : 0;
-        $price                     = isset($data['price']) ? contrexx_addslashes(contrexx_strip_tags($data['price'])) : '';
+        $price                     = isset($data['price']) ? contrexx_addslashes(contrexx_strip_tags($data['price'])) : 0;
         $link                      = isset($data['link']) ? contrexx_addslashes(contrexx_strip_tags($data['link'])) : '';
         $pic                       = isset($data['picture']) ? contrexx_addslashes(contrexx_strip_tags($data['picture'])) : '';
         $attach                    = isset($data['attachment']) ? contrexx_addslashes(contrexx_strip_tags($data['attachment'])) : '';     
@@ -983,7 +983,8 @@ class CalendarEvent extends CalendarLibrary
         $seriesPatternType              = 0;
         $seriesPatternDouranceType      = 0;
         $seriesPatternEnd               = 0;
-        $seriesExeptions = '';
+        $seriesExeptions                = '';
+        $seriesPatternEndDate           = 0;
         
         if($seriesStatus == 1) {
             if(!empty($data['seriesExeptions'])) {
@@ -1134,11 +1135,9 @@ class CalendarEvent extends CalendarLibrary
             'org_zip'                       => $orgZip,
             'org_city'                      => $orgCity,
             'org_link'                      => $orgLink,
-            'org_email'                     => $orgEmail
+            'org_email'                     => $orgEmail,
+            'invitation_sent'               => $update_invitation_sent ? 1 : 0,
         );
-        if ($update_invitation_sent) {
-            $formData['invitation_sent'] = '1';     
-        }
         
         if ($id != 0) {            
             $query = SQL::update("module_{$this->moduleTablePrefix}_event", $formData) ." WHERE id = '$id'";
