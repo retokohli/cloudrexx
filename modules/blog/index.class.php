@@ -550,6 +550,7 @@ class Blog extends BlogLibrary  {
 
                     $strMailSubject = str_replace('[SUBJECT]', $strSubject, $_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_INSERT_MAIL_SUBJECT']);
                     $strMailBody    = str_replace('[USERNAME]', $strName, $_ARRAYLANG['TXT_BLOG_FRONTEND_DETAILS_COMMENT_INSERT_MAIL_BODY']);
+                    $strMailBody    = str_replace('[DOMAIN]', ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET, $strMailBody);
                     $strMailBody    = str_replace('[SUBJECT]', $strSubject, $strMailBody);
                     $strMailBody    = str_replace('[COMMENT]', $strComment, $strMailBody);
 
