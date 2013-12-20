@@ -78,7 +78,7 @@ class JsonCrm implements JsonAdapter {
         );
         
         $objCrmLibrary = new \CrmLibrary();
-        echo $query         = $objCrmLibrary->getContactsQuery($searchFields);
+        $query         = $objCrmLibrary->getContactsQuery($searchFields);
         
         $objResult     = $objDatabase->Execute($query);
 
