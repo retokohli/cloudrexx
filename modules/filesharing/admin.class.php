@@ -74,6 +74,7 @@ class FilesharingAdmin extends FilesharingLib
         }
 
         if ($_POST["shareFiles"]) {
+            $emails = array();
             foreach(preg_split('/[;,\s]+/', $_POST["email"]) as $email){
                 if(\FWValidator::isEmail($email)){
                     $emails[] = contrexx_input2raw($email);
