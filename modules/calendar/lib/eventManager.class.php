@@ -622,9 +622,11 @@ class CalendarEventManager extends CalendarLibrary
                 $this->moduleLangVar.'_EVENT_ATTACHMENT_SOURCE' => $objEvent->attach,
                 $this->moduleLangVar.'_EVENT_PICTURE'           => $objEvent->pic != '' ? '<img src="'.$hostUri.$objEvent->pic.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',                                                          
                 $this->moduleLangVar.'_EVENT_PICTURE_SOURCE'    => $objEvent->pic,
-                $this->moduleLangVar.'_EVENT_THUMBNAIL'         => $picThumb != '' ? '<img src="'.$hostUri.$picThumb.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',   
+                $this->moduleLangVar.'_EVENT_PICTURE_THUMBNAIL' => $picThumb != '' ? '<img src="'.$hostUri.$picThumb.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',   
                 $this->moduleLangVar.'_EVENT_DESCRIPTION'       => $objEvent->description,    
                 $this->moduleLangVar.'_EVENT_SHORT_DESCRIPTION' => $parts[0].$points,
+                $this->moduleLangVar.'_EVENT_LINK'              => $objEvent->link ? "<a href='".$objEvent->link."' target='_blank' >".$objEvent->link."</a>" : "",
+                $this->moduleLangVar.'_EVENT_LINK_SOURCE'       => $objEvent->link,
                 $this->moduleLangVar.'_EVENT_PRIORITY'          => $priority,                                                           
                 $this->moduleLangVar.'_EVENT_PRIORITY_IMG'      => $priorityImg,                                                           
                 $this->moduleLangVar.'_EVENT_CATEGORY'          => $objCategory->name,
@@ -637,7 +639,54 @@ class CalendarEventManager extends CalendarLibrary
                 $this->moduleLangVar.'_EVENT_COUNT_SIGNOFF'     => $numDeregistration,
                 $this->moduleLangVar.'_EVENT_COUNT_SUBSCRIBER'  => $objEscortManager->getEscortData(),
                 $this->moduleLangVar.'_REGISTRATIONS_SUBSCRIBER'=> $objEvent->numSubscriber,
+
+                ////////////////////////////////////////////
+                // ALIASES for backward compatibility
+                ////////////////////////////////////////////
+                // alias for CALENDAR_EVENT_ID
+                $this->moduleLangVar.'_ID'                      => $objEvent->id,
+                // alias for CALENDAR_EVENT_START
+                $this->moduleLangVar.'_START'                   => date(parent::getDateFormat()." H:i", $objEvent->startDate),
+                // alias for CALENDAR_EVENT_END
+                $this->moduleLangVar.'_END'                     => date(parent::getDateFormat()." H:i", $objEvent->endDate),
+                // alias for CALENDAR_EVENT_START_DATE
+                $this->moduleLangVar.'_START_SHOW'              => date(parent::getDateFormat(), $objEvent->startDate),
+                // alias for CALENDAR_EVENT_START_TIME
+                $this->moduleLangVar.'_START_TIME'              => date("H:i", $objEvent->startDate),
+                // alias for CALENDAR_EVENT_END_DATE
+                $this->moduleLangVar.'_END_SHOW'                => date(parent::getDateFormat(), $objEvent->endDate),
+                // alias for CALENDAR_EVENT_END_TIME
+                $this->moduleLangVar.'_END_TIME'                => date("H:i", $objEvent->endDate),
+                // alias for CALENDAR_EVENT_TITLE
+                $this->moduleLangVar.'_TITLE'                   => $objEvent->title,
+                // alias for CALENDAR_EVENT_ATTACHMENT
+                $this->moduleLangVar.'_ATTACHMENT'              => $objEvent->attach != '' ? '<a href="'.$hostUri.$objEvent->attach.'" target="_blank" >'.$attachName.'</a>' : '',
+                // alias for CALENDAR_EVENT_ATTACHMENT_SOURCE
+                $this->moduleLangVar.'_SOURCE_ATTACHMENT'       => $objEvent->attach,
+                // alias for CALENDAR_EVENT_PICTURE
+                $this->moduleLangVar.'_PIC'                     => $objEvent->pic != '' ? '<img src="'.$hostUri.$objEvent->pic.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',
+                // alias for CALENDAR_EVENT_PICTURE_SOURCE
+                $this->moduleLangVar.'_PIC_SOURCE'              => $objEvent->pic,
+                // alias for CALENDAR_EVENT_PICTURE_THUMBNAIL
+                $this->moduleLangVar.'_PIC_THUMBNAIL'           => $picThumb != '' ? '<img src="'.$hostUri.$picThumb.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',
+                // alias for CALENDAR_EVENT_PICTURE_THUMBNAIL
+                $this->moduleLangVar.'_EVENT_THUMBNAIL'         => $picThumb != '' ? '<img src="'.$hostUri.$picThumb.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',
+                // alias for CALENDAR_EVENT_DESCRIPTION
+                $this->moduleLangVar.'_DESCRIPTION'             => $objEvent->description,
+                // alias for CALENDAR_EVENT_LINK
+                $this->moduleLangVar.'_LINK'                    => $objEvent->link ? "<a href='".$objEvent->link."' target='_blank' >".$objEvent->link."</a>" : "",
+                // alias for CALENDAR_EVENT_LINK_SOURCE
+                $this->moduleLangVar.'_LINK_SOURCE'             => $objEvent->link,
+                // alias for CALENDAR_EVENT_PRIORITY
+                $this->moduleLangVar.'_PRIORITY'                => $priority,
+                // alias for CALENDAR_EVENT_PRIORITY_IMG
+                $this->moduleLangVar.'_PRIORITY_IMG'            => $priorityImg,
+                // alias for CALENDAR_EVENT_CATEGORY
+                $this->moduleLangVar.'_CATEGORIE'               => $objCategory->name,
+                // alias for CALENDAR_EVENT_ACCESS
+                $this->moduleLangVar.'_ACCESS'                  => $_ARRAYLANG['TXT_CALENDAR_EVENT_ACCESS_'.$objEvent->access],
             ));
+
 
             //show date and time by user settings
             if($objTpl->blockExists('calendarDateDetail')) {
@@ -722,17 +771,39 @@ class CalendarEventManager extends CalendarLibrary
                 
                 $map_thumb_name = file_exists(ASCMS_PATH.$objEvent->place_map.".thumb") ? $objEvent->place_map.".thumb" : $objEvent->place_map;
                 $objTpl->setVariable(array(                                                          
-                    $this->moduleLangVar.'_EVENT_PLACE'           => $objEvent->place,
-                    $this->moduleLangVar.'_EVENT_LOCATION_ADDRESS'=> $objEvent->place_street,
-                    $this->moduleLangVar.'_EVENT_LOCATION_ZIP'    => $objEvent->place_zip,
-                    $this->moduleLangVar.'_EVENT_LOCATION_CITY'   => $objEvent->place_city,
-                    $this->moduleLangVar.'_EVENT_LOCATION_COUNTRY'=> $objEvent->place_country,                                                  
-                    $this->moduleLangVar.'_EVENT_LINK'            => $objEvent->place_country != '' ? "<a href='".$objEvent->place_country."' target='_blank' >".$objEvent->place_country."</a>" : "",
-                    $this->moduleLangVar.'_EVENT_LINK_SOURCE'     => $objEvent->place_country,
-                    $this->moduleLangVar.'_EVENT_LOCATION_MAP_LINK'        => $objEvent->place_map != '' ? '<a href="'.$objEvent->place_map.'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false">'.$_ARRAYLANG['TXT_CALENDAR_MAP'].'</a>' : "",
-                    $this->moduleLangVar.'_EVENT_LOCATION_MAP_THUMBNAIL'   => $objEvent->place_map != '' ? '<a href="'.$objEvent->place_map.'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false"><img src="'.$map_thumb_name.'" border="0" alt="'.$objEvent->place_map.'" /></a>' : "",
-                    $this->moduleLangVar.'_EVENT_LOCATION_MAP_SOURCE'      => $objEvent->place_map,
+                    $this->moduleLangVar.'_EVENT_PLACE'                 => $objEvent->place,
+                    $this->moduleLangVar.'_EVENT_LOCATION_ADDRESS'      => $objEvent->place_street,
+                    $this->moduleLangVar.'_EVENT_LOCATION_ZIP'          => $objEvent->place_zip,
+                    $this->moduleLangVar.'_EVENT_LOCATION_CITY'         => $objEvent->place_city,
+                    $this->moduleLangVar.'_EVENT_LOCATION_COUNTRY'      => $objEvent->place_country,                                                  
+                    $this->moduleLangVar.'_EVENT_LOCATION_LINK'         => $objEvent->place_link != '' ? "<a href='".$objEvent->place_link."' target='_blank' >".$objEvent->place_link."</a>" : "",
+                    $this->moduleLangVar.'_EVENT_LOCATION_LINK_SOURCE'  => $objEvent->place_link,
+                    $this->moduleLangVar.'_EVENT_LOCATION_MAP_LINK'     => $objEvent->place_map != '' ? '<a href="'.$objEvent->place_map.'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false">'.$_ARRAYLANG['TXT_CALENDAR_MAP'].'</a>' : "",
+                    $this->moduleLangVar.'_EVENT_LOCATION_MAP_THUMBNAIL'=> $objEvent->place_map != '' ? '<a href="'.$objEvent->place_map.'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false"><img src="'.$map_thumb_name.'" border="0" alt="'.$objEvent->place_map.'" /></a>' : "",
+                    $this->moduleLangVar.'_EVENT_LOCATION_MAP_SOURCE'   => $objEvent->place_map,
                     //$this->moduleLangVar.'_EVENT_MAP'             => $googleMap,
+
+                    ////////////////////////////////////////////
+                    // ALIASES for backward compatibility
+                    ////////////////////////////////////////////
+                    // alias for CALENDAR_EVENT_LOCATION_PLACE
+                    $this->moduleLangVar.'_PLACE'                       => $objEvent->place,
+                    // alias for CALENDAR_EVENT_LOCATION_ADDRESS
+                    $this->moduleLangVar.'_PLACE_STREET_NR'             => $objEvent->place_street,
+                    // alias for CALENDAR_EVENT_LOCATION_ZIP
+                    $this->moduleLangVar.'_PLACE_ZIP'                   => $objEvent->place_zip,
+                    // alias for CALENDAR_EVENT_LOCATION_CITY
+                    $this->moduleLangVar.'_PLACE_CITY'                  => $objEvent->place_city,
+                    // alias for CALENDAR_EVENT_LOCATION_LINK
+                    $this->moduleLangVar.'_PLACE_LINK'                  => $objEvent->place_link != '' ? "<a href='".$objEvent->place_link."' target='_blank' >".$objEvent->place_link."</a>" : "",
+                    // alias for CALENDAR_EVENT_LOCATION_LINK_SOURCE
+                    $this->moduleLangVar.'_PLACE_LINK_SOURCE'           => $objEvent->place_link,
+                    // alias for CALENDAR_EVENT_LOCATION_MAP_LINK
+                    $this->moduleLangVar.'_PLACE_MAP_LINK'              => $objEvent->place_map != '' ? '<a href="'.$objEvent->place_map.'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false">'.$_ARRAYLANG['TXT_CALENDAR_MAP'].'</a>' : "",
+                    // alias for CALENDAR_EVENT_LOCATION_MAP_THUMBNAIL
+                    $this->moduleLangVar.'_PLACE_MAP_THUMBNAIL'         => $objEvent->place_map != '' ? '<a href="'.$objEvent->place_map.'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false"><img src="'.$map_thumb_name.'" border="0" alt="'.$objEvent->place_map.'" /></a>' : "",
+                    // alias for CALENDAR_EVENT_LOCATION_MAP_SOURCE
+                    $this->moduleLangVar.'_PLACE_MAP_SOURCE'            => $objEvent->place_map,
                 ));
                 
                 $objTpl->parse('calendarEventAddress'); 
@@ -742,14 +813,34 @@ class CalendarEventManager extends CalendarLibrary
                 $objTpl->hideBlock('calendarEventHost');  
             } else {
                 $objTpl->setVariable(array(
-                    $this->moduleLangVar.'_EVENT_HOST'         => $objEvent->org_name,
-                    $this->moduleLangVar.'_EVENT_HOST_ADDRESS' => $objEvent->org_street,
-                    $this->moduleLangVar.'_EVENT_HOST_ZIP'     => $objEvent->org_zip,
-                    $this->moduleLangVar.'_EVENT_HOST_CITY'    => $objEvent->org_city,
-                    $this->moduleLangVar.'_EVENT_HOST_LINK'    => $objEvent->org_link != '' ? "<a href='".$objEvent->org_link."' target='_blank' >".$objEvent->org_link."</a>" : "",
+                    $this->moduleLangVar.'_EVENT_HOST'              => $objEvent->org_name,
+                    $this->moduleLangVar.'_EVENT_HOST_ADDRESS'      => $objEvent->org_street,
+                    $this->moduleLangVar.'_EVENT_HOST_ZIP'          => $objEvent->org_zip,
+                    $this->moduleLangVar.'_EVENT_HOST_CITY'         => $objEvent->org_city,
+                    $this->moduleLangVar.'_EVENT_HOST_LINK'         => $objEvent->org_link != '' ? "<a href='".$objEvent->org_link."' target='_blank' >".$objEvent->org_link."</a>" : "",
                     $this->moduleLangVar.'_EVENT_HOST_LINK_SOURCE'  => $objEvent->org_link,
                     $this->moduleLangVar.'_EVENT_HOST_EMAIL'        => $objEvent->org_email != '' ? "<a href='mailto:".$objEvent->org_email."' >".$objEvent->org_email."</a>" : "",
                     $this->moduleLangVar.'_EVENT_HOST_EMAIL_SOURCE' => $objEvent->org_email,
+
+                    ////////////////////////////////////////////
+                    // ALIASES for backward compatibility
+                    ////////////////////////////////////////////
+                    // alias for CALENDAR_EVENT_HOST
+                    $this->moduleLangVar.'_ORGANIZER'               => $objEvent->org_name,
+                    // alias for CALENDAR_EVENT_HOST_ADDRESS
+                    $this->moduleLangVar.'_ORGANIZER_STREET_NR'     => $objEvent->org_street,
+                    // alias for CALENDAR_EVENT_HOST_ZIP
+                    $this->moduleLangVar.'_ORGANIZER_ZIP'           => $objEvent->org_zip,
+                    // alias for CALENDAR_EVENT_HOST_CITY
+                    $this->moduleLangVar.'_ORGANIZER_PLACE'         => $objEvent->org_city,
+                    // alias for CALENDAR_EVENT_HOST_LINK
+                    $this->moduleLangVar.'_ORGANIZER_LINK'          => $objEvent->org_link != '' ? "<a href='".$objEvent->org_link."' target='_blank' >".$objEvent->org_link."</a>" : "",
+                    // alias for CALENDAR_EVENT_HOST_LINK_SOURCE
+                    $this->moduleLangVar.'_ORGANIZER_LINK_SOURCE'   => $objEvent->org_link,
+                    // alias for CALENDAR_EVENT_HOST_EMAIL
+                    $this->moduleLangVar.'_ORGANIZER_MAIL'        => $objEvent->org_email != '' ? "<a href='mailto:".$objEvent->org_email."' >".$objEvent->org_email."</a>" : "",
+                    // alias for CALENDAR_EVENT_HOST_EMAIL_SOURCE
+                    $this->moduleLangVar.'_ORGANIZER_MAIL_SOURCE' => $objEvent->org_email,
                 ));    
                 
                 $objTpl->parse('calendarEventHost');
@@ -836,38 +927,122 @@ class CalendarEventManager extends CalendarLibrary
                 }
                 $picThumb = file_exists(ASCMS_PATH."{$objEvent->pic}.thumb") ? "{$objEvent->pic}.thumb" : ($objEvent->pic != '' ? $objEvent->pic : '');
                 $objTpl->setVariable(array(
-                    $this->moduleLangVar.'_EVENT_ROW'            => $i%2==0 ? 'row1' : 'row2',
-                    $this->moduleLangVar.'_EVENT_LED'            => $objEvent->status==0 ? 'red' : 'green',
-                    $this->moduleLangVar.'_EVENT_STATUS'         => $objEvent->status==0 ? $_ARRAYLANG['TXT_CALENDAR_INACTIVE'] : $_ARRAYLANG['TXT_CALENDAR_ACTIVE'],
-                    $this->moduleLangVar.'_EVENT_ID'             => $objEvent->id,                                        
-                    $this->moduleLangVar.'_EVENT_TITLE'          => $objEvent->title,                                                         
-                    $this->moduleLangVar.'_EVENT_PICTURE'        => $objEvent->pic != '' ? '<img src="'.$objEvent->pic.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',                                                          
-                    $this->moduleLangVar.'_EVENT_PICTURE_SOURCE' => $objEvent->pic,
-                    $this->moduleLangVar.'_EVENT_THUMBNAIL'      => $objEvent->pic != '' ? '<img src="'.$picThumb.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',                                                               
-                    $this->moduleLangVar.'_EVENT_PRIORITY'       => $priority,                                                           
-                    $this->moduleLangVar.'_EVENT_PRIORITY_IMG'   => $priorityImg, 
-                    $this->moduleLangVar.'_EVENT_PLACE'          => $objEvent->place,
-                    $this->moduleLangVar.'_EVENT_DESCRIPTION'    => $objEvent->description,
+                    $this->moduleLangVar.'_EVENT_ROW'               => $i%2==0 ? 'row1' : 'row2',
+                    $this->moduleLangVar.'_EVENT_LED'               => $objEvent->status==0 ? 'red' : 'green',
+                    $this->moduleLangVar.'_EVENT_STATUS'            => $objEvent->status==0 ? $_ARRAYLANG['TXT_CALENDAR_INACTIVE'] : $_ARRAYLANG['TXT_CALENDAR_ACTIVE'],
+                    $this->moduleLangVar.'_EVENT_ID'                => $objEvent->id,                                        
+                    $this->moduleLangVar.'_EVENT_TITLE'             => $objEvent->title,                                                         
+                    $this->moduleLangVar.'_EVENT_PICTURE'           => $objEvent->pic != '' ? '<img src="'.$objEvent->pic.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',                                                          
+                    $this->moduleLangVar.'_EVENT_PICTURE_SOURCE'    => $objEvent->pic,
+                    $this->moduleLangVar.'_EVENT_PICTURE_THUMBNAIL' => $objEvent->pic != '' ? '<img src="'.$picThumb.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',                                                               
+                    $this->moduleLangVar.'_EVENT_PRIORITY'          => $priority,                                                           
+                    $this->moduleLangVar.'_EVENT_PRIORITY_IMG'      => $priorityImg, 
+                    $this->moduleLangVar.'_EVENT_PLACE'             => $objEvent->place,
+                    $this->moduleLangVar.'_EVENT_DESCRIPTION'       => $objEvent->description,
                     $this->moduleLangVar.'_EVENT_SHORT_DESCRIPTION' => $parts[0].$points,
-                    $this->moduleLangVar.'_EVENT_LINK'           => $objEvent->link ? "<a href='".$objEvent->link."' target='_blank' >".$objEvent->link."</a>" : "",
-                    $this->moduleLangVar.'_EVENT_LINK_SOURCE'    => $objEvent->link,
-                    $this->moduleLangVar.'_EVENT_ATTACHMENT'     => $objEvent->attach != '' ? '<a href="'.$hostUri.$objEvent->attach.'" target="_blank" >'.$attachName.'</a>' : '',
+                    $this->moduleLangVar.'_EVENT_LINK'              => $objEvent->link ? "<a href='".$objEvent->link."' target='_blank' >".$objEvent->link."</a>" : "",
+                    $this->moduleLangVar.'_EVENT_LINK_SOURCE'       => $objEvent->link,
+                    $this->moduleLangVar.'_EVENT_ATTACHMENT'        => $objEvent->attach != '' ? '<a href="'.$hostUri.$objEvent->attach.'" target="_blank" >'.$attachName.'</a>' : '',
                     $this->moduleLangVar.'_EVENT_ATTACHMENT_SOURCE' => $objEvent->attach,
-                    $this->moduleLangVar.'_EVENT_START'          => date(parent::getDateFormat()." H:i", $objEvent->startDate),
-                    $this->moduleLangVar.'_EVENT_END'            => date(parent::getDateFormat()." H:i", $objEvent->endDate),
-                    $this->moduleLangVar.'_EVENT_DATE'           => date(parent::getDateFormat(), $objEvent->startDate),
-                    $this->moduleLangVar.'_EVENT_START_DATE'     => date(parent::getDateFormat(), $objEvent->startDate),
-                    $this->moduleLangVar.'_EVENT_START_TIME'     => date("H:i", $objEvent->startDate),
-                    $this->moduleLangVar.'_EVENT_END_DATE'       => date(parent::getDateFormat(), $objEvent->endDate),
-                    $this->moduleLangVar.'_EVENT_END_TIME'       => date("H:i", $objEvent->endDate),    
-                    $this->moduleLangVar.'_EVENT_LANGUAGES'      => $languages,
-                    $this->moduleLangVar.'_EVENT_CATEGORY'       => $objCategory->name,
-                    $this->moduleLangVar.'_EVENT_DETAIL_LINK'    => $objEvent->type==0 ? self::_getDetailLink($objEvent) : $objEvent->arrData['redirect'][$_LANGID],
-                    $this->moduleLangVar.'_EVENT_EDIT_LINK'      => $editLink,                    
-                    $this->moduleLangVar.'_EVENT_DETAIL_TARGET'  => $objEvent->type==0 ? '_self' : '_blank',
-                    $this->moduleLangVar.'_EVENT_SERIES'         => $objEvent->seriesStatus == 1 ? '<img src="'.ASCMS_MODULE_WEB_PATH.'/'.$this->moduleName.'/View/Media/Repeat.png" border="0"/>' : '<i>'.$_ARRAYLANG['TXT_CALENDAR_NO_SERIES'].'</i>',
-                    $this->moduleLangVar.'_EVENT_FREE_PLACES'    => $objEvent->freePlaces,
-                    $this->moduleLangVar.'_EVENT_ACCESS'         => $_ARRAYLANG['TXT_CALENDAR_EVENT_ACCESS_'.$objEvent->access],
+                    $this->moduleLangVar.'_EVENT_START'             => date(parent::getDateFormat()." H:i", $objEvent->startDate),
+                    $this->moduleLangVar.'_EVENT_END'               => date(parent::getDateFormat()." H:i", $objEvent->endDate),
+                    $this->moduleLangVar.'_EVENT_DATE'              => date(parent::getDateFormat(), $objEvent->startDate),
+                    $this->moduleLangVar.'_EVENT_START_DATE'        => date(parent::getDateFormat(), $objEvent->startDate),
+                    $this->moduleLangVar.'_EVENT_START_TIME'        => date("H:i", $objEvent->startDate),
+                    $this->moduleLangVar.'_EVENT_END_DATE'          => date(parent::getDateFormat(), $objEvent->endDate),
+                    $this->moduleLangVar.'_EVENT_END_TIME'          => date("H:i", $objEvent->endDate),    
+                    $this->moduleLangVar.'_EVENT_LANGUAGES'         => $languages,
+                    $this->moduleLangVar.'_EVENT_CATEGORY'          => $objCategory->name,
+                    $this->moduleLangVar.'_EVENT_DETAIL_LINK'       => $objEvent->type==0 ? self::_getDetailLink($objEvent) : $objEvent->arrData['redirect'][$_LANGID],
+                    $this->moduleLangVar.'_EVENT_EDIT_LINK'         => $editLink,                    
+                    $this->moduleLangVar.'_EVENT_DETAIL_TARGET'     => $objEvent->type==0 ? '_self' : '_blank',
+                    $this->moduleLangVar.'_EVENT_SERIES'            => $objEvent->seriesStatus == 1 ? '<img src="'.ASCMS_MODULE_WEB_PATH.'/'.$this->moduleName.'/View/Media/Repeat.png" border="0"/>' : '<i>'.$_ARRAYLANG['TXT_CALENDAR_NO_SERIES'].'</i>',
+                    $this->moduleLangVar.'_EVENT_FREE_PLACES'       => $objEvent->freePlaces,
+                    $this->moduleLangVar.'_EVENT_ACCESS'            => $_ARRAYLANG['TXT_CALENDAR_EVENT_ACCESS_'.$objEvent->access],
+
+                    ////////////////////////////////////////////
+                    // ALIASES for backward compatibility
+                    ////////////////////////////////////////////
+                    // alias for CALENDAR_EVENT_ROW
+                    $this->moduleLangVar.'_ROW'                     => $i%2==0 ? 'row1' : 'row2',
+                    // alias for CALENDAR_EVENT_ID
+                    $this->moduleLangVar.'_ID'                      => $objEvent->id,                                        
+                    // alias for CALENDAR_EVENT_TITLE
+                    $this->moduleLangVar.'_TITLE'                   => $objEvent->title,
+                    // alias for CALENDAR_EVENT_TITLE
+                    $this->moduleLangVar.'_EVENT_NAME'              => $objEvent->title,
+                    // alias for CALENDAR_EVENT_PICTURE
+                    $this->moduleLangVar.'_EVENT_PIC'               => $objEvent->pic != '' ? '<img src="'.$objEvent->pic.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',                                                          
+                    // alias for CALENDAR_EVENT_PICTURE
+                    $this->moduleLangVar.'_PIC'                     => $objEvent->pic != '' ? '<img src="'.$objEvent->pic.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',                                                          
+                    // alias for CALENDAR_EVENT_PICTURE_SOURCE
+                    $this->moduleLangVar.'_EVENT_PIC_SOURCE'        => $objEvent->pic,
+                    // alias for CALENDAR_EVENT_PICTURE_SOURCE
+                    $this->moduleLangVar.'_PIC_SOURCE'              => $objEvent->pic,
+                    // alias for CALENDAR_EVENT_PICTURE_SOURCE
+                    $this->moduleLangVar.'_EVENT_THUMB_SOURCE'      => $objEvent->pic,
+                    // alias for CALENDAR_EVENT_PICTURE_THUMBNAIL
+                    $this->moduleLangVar.'_EVENT_THUMBNAIL'         => $objEvent->pic != '' ? '<img src="'.$picThumb.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',
+                    // alias for CALENDAR_EVENT_PICTURE_THUMBNAIL
+                    $this->moduleLangVar.'_EVENT_PIC_THUMBNAIL'     => $objEvent->pic != '' ? '<img src="'.$picThumb.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',
+                    // alias for CALENDAR_EVENT_PICTURE_THUMBNAIL
+                    $this->moduleLangVar.'_PIC_THUMBNAIL'           => $objEvent->pic != '' ? '<img src="'.$picThumb.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',
+                    // alias for CALENDAR_EVENT_PICTURE_THUMBNAIL
+                    $this->moduleLangVar.'_EVENT_THUMB'             => $objEvent->pic != '' ? '<img src="'.$picThumb.'" alt="'.$objEvent->title.'" title="'.$objEvent->title.'" />' : '',
+                    // alias for CALENDAR_EVENT_PRIORITY
+                    $this->moduleLangVar.'_PRIORITY'                => $priority,                                                           
+                    // alias for CALENDAR_EVENT_PRIORITY_IMG
+                    $this->moduleLangVar.'_PRIORITY_IMG'            => $priorityImg, 
+                    // alias for CALENDAR_EVENT_DESCRIPTION
+                    $this->moduleLangVar.'_DESCRIPTION'             => $objEvent->description,
+                    // alias for CALENDAR_EVENT_DESCRIPTION
+                    $this->moduleLangVar.'_EVENT_COMMENT'           => $objEvent->description,
+                    // alias for CALENDAR_EVENT_SHORT_DESCRIPTION
+                    $this->moduleLangVar.'_SHORT_DESCRIPTION'       => $parts[0].$points,
+                    // alias for CALENDAR_EVENT_SHORT_DESCRIPTION
+                    $this->moduleLangVar.'_EVENT_SHORT_COMMENT'     => $parts[0].$points,
+                    // alias for CALENDAR_EVENT_LINK
+                    $this->moduleLangVar.'_LINK'                    => $objEvent->link ? "<a href='".$objEvent->link."' target='_blank' >".$objEvent->link."</a>" : "",
+                    // alias for CALENDAR_EVENT_LINK_SOURCE
+                    $this->moduleLangVar.'_LINK_SOURCE'             => $objEvent->link,
+                    // alias for CALENDAR_EVENT_ATTACHMENT
+                    $this->moduleLangVar.'_ATTACHMENT'              => $objEvent->attach != '' ? '<a href="'.$hostUri.$objEvent->attach.'" target="_blank" >'.$attachName.'</a>' : '',
+                    // alias for CALENDAR_EVENT_ATTACHMENT_SOURCE
+                    $this->moduleLangVar.'_SOURCE_ATTACHMENT'       => $objEvent->attach,
+                    // alias for CALENDAR_EVENT_START
+                    $this->moduleLangVar.'_START'                   => date(parent::getDateFormat()." H:i", $objEvent->startDate),
+                    // alias for CALENDAR_EVENT_END
+                    $this->moduleLangVar.'_END'                     => date(parent::getDateFormat()." H:i", $objEvent->endDate),
+                    // alias for CALENDAR_EVENT_START_DATE
+                    $this->moduleLangVar.'_EVENT_START_SHOW'        => date(parent::getDateFormat(), $objEvent->startDate),
+                    // alias for CALENDAR_EVENT_START_DATE
+                    $this->moduleLangVar.'_START_SHOW'              => date(parent::getDateFormat(), $objEvent->startDate),
+                    // alias for CALENDAR_EVENT_START_DATE
+                    $this->moduleLangVar.'_EVENT_STARTDATE'         => date(parent::getDateFormat(), $objEvent->startDate),
+                    // alias for CALENDAR_EVENT_START_TIME
+                    $this->moduleLangVar.'_START_TIME'              => date("H:i", $objEvent->startDate),
+                    // alias for CALENDAR_EVENT_START_TIME
+                    $this->moduleLangVar.'_EVENT_STARTTIME'         => date("H:i", $objEvent->startDate),
+                    // alias for CALENDAR_EVENT_END_DATE
+                    $this->moduleLangVar.'_EVENT_END_SHOW'          => date(parent::getDateFormat(), $objEvent->endDate),
+                    // alias for CALENDAR_EVENT_END_DATE
+                    $this->moduleLangVar.'_END_SHOW'                => date(parent::getDateFormat(), $objEvent->endDate),
+                    // alias for CALENDAR_EVENT_END_DATE
+                    $this->moduleLangVar.'_EVENT_ENDDATE'           => date(parent::getDateFormat(), $objEvent->endDate),
+                    // alias for CALENDAR_EVENT_END_TIME
+                    $this->moduleLangVar.'_END_TIME'                => date("H:i", $objEvent->endDate),
+                    // alias for CALENDAR_EVENT_END_TIME
+                    $this->moduleLangVar.'_EVENT_ENDTIME'           => date("H:i", $objEvent->endDate),
+                    // alias for CALENDAR_EVENT_CATEGORY
+                    $this->moduleLangVar.'_CATEGORY'                => $objCategory->name,
+                    // alias for CALENDAR_EVENT_CATEGORY
+                    $this->moduleLangVar.'_CATEGORIE'               => $objCategory->name,
+                    // alias for CALENDAR_EVENT_CATEGORY
+                    $this->moduleLangVar.'_EVENT_CATEGORIE'         => $objCategory->name,
+                    // alias for CALENDAR_EVENT_DETAIL_LINK
+                    $this->moduleLangVar.'_DETAIL_LINK'             => $objEvent->type==0 ? self::_getDetailLink($objEvent) : $objEvent->arrData['redirect'][$_LANGID],
+                    // alias for CALENDAR_EVENT_ACCESS
+                    $this->moduleLangVar.'_ACCESS'                  => $_ARRAYLANG['TXT_CALENDAR_EVENT_ACCESS_'.$objEvent->access],
                 ));              
             
                 $arrInfo   = getimagesize(ASCMS_PATH.$objEvent->place_map);
@@ -876,17 +1051,59 @@ class CalendarEventManager extends CalendarLibrary
                 
                 $map_thumb_name = file_exists(ASCMS_PATH.$objEvent->place_map.".thumb") ? $objEvent->place_map.".thumb" : $objEvent->place_map;
                 $objTpl->setVariable(array(                                                          
-                    $this->moduleLangVar.'_EVENT_LOCATION_PLACE'         => $objEvent->place,
-                    $this->moduleLangVar.'_EVENT_LOCATION_ADDRESS'       => $objEvent->place_street,
-                    $this->moduleLangVar.'_EVENT_LOCATION_ZIP'           => $objEvent->place_zip,
-                    $this->moduleLangVar.'_EVENT_LOCATION_CITY'          => $objEvent->place_city,
-                    $this->moduleLangVar.'_EVENT_LOCATION_COUNTRY'       => $objEvent->place_country,                                                  
-                    $this->moduleLangVar.'_EVENT_LOCATION_LINK'          => $objEvent->place_link != '' ? "<a href='".$objEvent->place_link."' target='_blank' >".$objEvent->place_link."</a>" : "",
-                    $this->moduleLangVar.'_EVENT_LOCATION_LINK_SOURCE'   => $objEvent->place_link,
-                    $this->moduleLangVar.'_EVENT_LOCATION_MAP_LINK'      => $objEvent->place_map != '' ? '<a href="'.$objEvent->place_map.'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false">'.$_ARRAYLANG['TXT_CALENDAR_MAP'].'</a>' : "",
-                    $this->moduleLangVar.'_EVENT_LOCATION_MAP_THUMBNAIL' => $objEvent->place_map != '' ? '<a href="'.$objEvent->place_map.'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false"><img src="'.$map_thumb_name.'" border="0" alt="'.$objEvent->place_map.'" /></a>' : "",
-                    $this->moduleLangVar.'_EVENT_LOCATION_MAP_SOURCE'    => $objEvent->place_map,
+                    $this->moduleLangVar.'_EVENT_LOCATION_PLACE'        => $objEvent->place,
+                    $this->moduleLangVar.'_EVENT_LOCATION_ADDRESS'      => $objEvent->place_street,
+                    $this->moduleLangVar.'_EVENT_LOCATION_ZIP'          => $objEvent->place_zip,
+                    $this->moduleLangVar.'_EVENT_LOCATION_CITY'         => $objEvent->place_city,
+                    $this->moduleLangVar.'_EVENT_LOCATION_COUNTRY'      => $objEvent->place_country,                                                  
+                    $this->moduleLangVar.'_EVENT_LOCATION_LINK'         => $objEvent->place_link != '' ? "<a href='".$objEvent->place_link."' target='_blank' >".$objEvent->place_link."</a>" : "",
+                    $this->moduleLangVar.'_EVENT_LOCATION_LINK_SOURCE'  => $objEvent->place_link,
+                    $this->moduleLangVar.'_EVENT_LOCATION_MAP_LINK'     => $objEvent->place_map != '' ? '<a href="'.$objEvent->place_map.'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false">'.$_ARRAYLANG['TXT_CALENDAR_MAP'].'</a>' : "",
+                    $this->moduleLangVar.'_EVENT_LOCATION_MAP_THUMBNAIL'=> $objEvent->place_map != '' ? '<a href="'.$objEvent->place_map.'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false"><img src="'.$map_thumb_name.'" border="0" alt="'.$objEvent->place_map.'" /></a>' : "",
+                    $this->moduleLangVar.'_EVENT_LOCATION_MAP_SOURCE'   => $objEvent->place_map,
+
+                    ////////////////////////////////////////////
+                    // ALIASES for backward compatibility
+                    ////////////////////////////////////////////
+                    // alias for CALENDAR_EVENT_LOCATION_PLACE
+                    $this->moduleLangVar.'_EVENT_PLACE'                 => $objEvent->place,
+                    // alias for CALENDAR_EVENT_LOCATION_PLACE
+                    $this->moduleLangVar.'_PLACE'                       => $objEvent->place,
+                    // alias for CALENDAR_EVENT_LOCATION_ADDRESS
+                    $this->moduleLangVar.'_EVENT_PLACE_STREET_NR'       => $objEvent->place_street,
+                    // alias for CALENDAR_EVENT_LOCATION_ADDRESS
+                    $this->moduleLangVar.'_PLACE_STREET_NR'             => $objEvent->place_street,
+                    // alias for CALENDAR_EVENT_LOCATION_ZIP
+                    $this->moduleLangVar.'_EVENT_PLACE_ZIP'             => $objEvent->place_zip,
+                    // alias for CALENDAR_EVENT_LOCATION_ZIP
+                    $this->moduleLangVar.'_PLACE_ZIP'                   => $objEvent->place_zip,
+                    // alias for CALENDAR_EVENT_LOCATION_CITY
+                    $this->moduleLangVar.'_EVENT_PLACE_CITY'            => $objEvent->place_city,
+                    // alias for CALENDAR_EVENT_LOCATION_CITY
+                    $this->moduleLangVar.'_PLACE_CITY'                  => $objEvent->place_city,
+                    // alias for CALENDAR_EVENT_LOCATION_LINK
+                    $this->moduleLangVar.'_EVENT_PLACE_LINK'            => $objEvent->place_link != '' ? "<a href='".$objEvent->place_link."' target='_blank' >".$objEvent->place_link."</a>" : "",
+                    // alias for CALENDAR_EVENT_LOCATION_LINK
+                    $this->moduleLangVar.'_PLACE_LINK'                  => $objEvent->place_link != '' ? "<a href='".$objEvent->place_link."' target='_blank' >".$objEvent->place_link."</a>" : "",
+                    // alias for CALENDAR_EVENT_LOCATION_LINK_SOURCE
+                    $this->moduleLangVar.'_EVENT_PLACE_LINK_SOURCE'     => $objEvent->place_link,
+                    // alias for CALENDAR_EVENT_LOCATION_LINK_SOURCE
+                    $this->moduleLangVar.'_PLACE_LINK_SOURCE'           => $objEvent->place_link,
+                    // alias for CALENDAR_EVENT_LOCATION_MAP_LINK
+                    $this->moduleLangVar.'_EVENT_PLACE_MAP_LINK'        => $objEvent->place_map != '' ? '<a href="'.$objEvent->place_map.'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false">'.$_ARRAYLANG['TXT_CALENDAR_MAP'].'</a>' : "",
+                    // alias for CALENDAR_EVENT_LOCATION_MAP_LINK
+                    $this->moduleLangVar.'_PLACE_MAP_LINK'              => $objEvent->place_map != '' ? '<a href="'.$objEvent->place_map.'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false">'.$_ARRAYLANG['TXT_CALENDAR_MAP'].'</a>' : "",
+                    // alias for CALENDAR_EVENT_LOCATION_MAP_THUMBNAIL
+                    $this->moduleLangVar.'_EVENT_PLACE_MAP_THUMBNAIL'   => $objEvent->place_map != '' ? '<a href="'.$objEvent->place_map.'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false"><img src="'.$map_thumb_name.'" border="0" alt="'.$objEvent->place_map.'" /></a>' : "",
+                    // alias for CALENDAR_EVENT_LOCATION_MAP_THUMBNAIL
+                    $this->moduleLangVar.'_PLACE_MAP_THUMBNAIL'         => $objEvent->place_map != '' ? '<a href="'.$objEvent->place_map.'" onClick="window.open(this.href,\'\',\'resizable=no,location=no,menubar=no,scrollbars=no,status=no,toolbar=no,fullscreen=no,dependent=no,width='.$picWidth.',height='.$picHeight.',status\'); return false"><img src="'.$map_thumb_name.'" border="0" alt="'.$objEvent->place_map.'" /></a>' : "",
+                    // alias for CALENDAR_EVENT_LOCATION_MAP_SOURCE
+                    $this->moduleLangVar.'EVENT__PLACE_MAP_SOURCE'      => $objEvent->place_map,
+                    // alias for CALENDAR_EVENT_LOCATION_MAP_SOURCE
+                    $this->moduleLangVar.'_PLACE_MAP_SOURCE'            => $objEvent->place_map,
+                ));
                     
+                $objTpl->setVariable(array(                                                          
                     $this->moduleLangVar.'_EVENT_HOST'              => $objEvent->org_name,
                     $this->moduleLangVar.'_EVENT_HOST_ADDRESS'      => $objEvent->org_street,
                     $this->moduleLangVar.'_EVENT_HOST_ZIP'          => $objEvent->org_zip,
@@ -895,6 +1112,42 @@ class CalendarEventManager extends CalendarLibrary
                     $this->moduleLangVar.'_EVENT_HOST_LINK_SOURCE'  => $objEvent->org_link,
                     $this->moduleLangVar.'_EVENT_HOST_EMAIL'        => $objEvent->org_email != '' ? "<a href='mailto:".$objEvent->org_email."' >".$objEvent->org_email."</a>" : "",
                     $this->moduleLangVar.'_EVENT_HOST_EMAIL_SOURCE' => $objEvent->org_email,
+
+                    ////////////////////////////////////////////
+                    // ALIASES for backward compatibility
+                    ////////////////////////////////////////////
+                    // alias for CALENDAR_EVENT_HOST
+                    $this->moduleLangVar.'_EVENT_ORGANIZER'             => $objEvent->org_name,
+                    // alias for CALENDAR_EVENT_HOST
+                    $this->moduleLangVar.'_ORGANIZER'                   => $objEvent->org_name,
+                    // alias for CALENDAR_EVENT_HOST_ADDRESS
+                    $this->moduleLangVar.'_EVENT_ORGANIZER_STREET_NR'   => $objEvent->org_street,
+                    // alias for CALENDAR_EVENT_HOST_ADDRESS
+                    $this->moduleLangVar.'_ORGANIZER_STREET_NR'         => $objEvent->org_street,
+                    // alias for CALENDAR_EVENT_HOST_ZIP
+                    $this->moduleLangVar.'_EVENT_ORGANIZER_ZIP'         => $objEvent->org_zip,
+                    // alias for CALENDAR_EVENT_HOST_ZIP
+                    $this->moduleLangVar.'_ORGANIZER_ZIP'               => $objEvent->org_zip,
+                    // alias for CALENDAR_EVENT_HOST_CITY
+                    $this->moduleLangVar.'_EVENT_ORGANIZER_PLACE'       => $objEvent->org_city,
+                    // alias for CALENDAR_EVENT_HOST_CITY
+                    $this->moduleLangVar.'_ORGANIZER_PLACE'             => $objEvent->org_city,
+                    // alias for CALENDAR_EVENT_HOST_LINK
+                    $this->moduleLangVar.'_EVENT_ORGANIZER_LINK'        => $objEvent->org_link != '' ? "<a href='".$objEvent->org_link."' target='_blank' >".$objEvent->org_link."</a>" : "",
+                    // alias for CALENDAR_EVENT_HOST_LINK
+                    $this->moduleLangVar.'_ORGANIZER_LINK'              => $objEvent->org_link != '' ? "<a href='".$objEvent->org_link."' target='_blank' >".$objEvent->org_link."</a>" : "",
+                    // alias for CALENDAR_EVENT_HOST_LINK_SOURCE
+                    $this->moduleLangVar.'_EVENT_ORGANIZER_LINK_SOURCE' => $objEvent->org_link,
+                    // alias for CALENDAR_EVENT_HOST_LINK_SOURCE
+                    $this->moduleLangVar.'_ORGANIZER_LINK_SOURCE'       => $objEvent->org_link,
+                    // alias for CALENDAR_EVENT_HOST_EMAIL
+                    $this->moduleLangVar.'_EVENT_ORGANIZER_MAIL'        => $objEvent->org_email != '' ? "<a href='mailto:".$objEvent->org_email."' >".$objEvent->org_email."</a>" : "",
+                    // alias for CALENDAR_EVENT_HOST_EMAIL
+                    $this->moduleLangVar.'_ORGANIZER_MAIL'              => $objEvent->org_email != '' ? "<a href='mailto:".$objEvent->org_email."' >".$objEvent->org_email."</a>" : "",
+                    // alias for CALENDAR_EVENT_HOST_EMAIL_SOURCE
+                    $this->moduleLangVar.'_EVENT_ORGANIZER_MAIL_SOURCE' => $objEvent->org_email,
+                    // alias for CALENDAR_EVENT_HOST_EMAIL_SOURCE
+                    $this->moduleLangVar.'_ORGANIZER_MAIL_SOURCE'       => $objEvent->org_email,
                 ));
                 
                 if($objInit->mode == 'backend') {
