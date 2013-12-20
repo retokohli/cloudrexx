@@ -1195,21 +1195,11 @@ if (!$limit) {
             $lang_id = FWLanguage::getLangIdByIso639_1($lang_id);
         $status = $objOrder->status();
         $customer_id = $objOrder->customer_id();
+        $customer = Customer::getById($customer_id);
         $payment_id = $objOrder->payment_id();
         $shipment_id = $objOrder->shipment_id();
         $arrSubstitution = array (
-            // Must be present in the Order, so the Customer can be found
-            'CUSTOMER_ID' => $customer_id,
-            // Added the following customer parameters because they are necessary to create a user account
-            'CUSTOMER_FIRSTNAME' => $objOrder->billing_firstname(),
-            'CUSTOMER_LASTNAME' => $objOrder->billing_lastname(),
-            'CUSTOMER_COMPANY' => $objOrder->billing_company(),
-            'CUSTOMER_ADDRESS' => $objOrder->billing_address(),
-            'CUSTOMER_ZIP' => $objOrder->billing_zip(),
-            'CUSTOMER_CITY' => $objOrder->billing_city(),
             'CUSTOMER_COUNTRY_ID' => $objOrder->billing_country_id(),
-            'CUSTOMER_PHONE' => $objOrder->billing_phone(),
-            'CUSTOMER_FAX' => $objOrder->billing_fax(),
             'LANG_ID' => $lang_id,
             'NOW' => date(ASCMS_DATE_FORMAT_DATETIME),
             'TODAY' => date(ASCMS_DATE_FORMAT_DATE),
@@ -1232,6 +1222,7 @@ if (!$limit) {
             'ORDER_SUM' => sprintf('% 9.2f', $objOrder->sum()),
             'CURRENCY' => Currency::getCodeById($objOrder->currency_id()),
         );
+        $arrSubstitution += $customer->getSubstitutionArray();
         if ($shipment_id) {
             $arrSubstitution += array (
                 'SHIPMENT' => array(0 => array(
