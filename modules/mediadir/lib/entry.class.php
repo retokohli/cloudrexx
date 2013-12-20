@@ -343,6 +343,32 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 
                 		$objForm = new mediaDirectoryForm($arrEntry['entryFormId']);
 
+                        //get votes
+                        if($this->arrSettings['settingsAllowVotes']) {
+                            $objVoting = new mediaDirectoryVoting();
+                            $objVoting->getVotes($objTpl, $arrEntry['entryId']);
+                            if ($objTpl->blockExists('mediadirEntryVotes')) {
+                                $objTpl->parse('mediadirEntryVotes');
+                            }
+                        } else {
+                            if ($objTpl->blockExists('mediadirEntryVotes')) {
+                                $objTpl->hideBlock('mediadirEntryVotes');
+                            }
+                        }
+
+                        //get comments
+                        if($this->arrSettings['settingsAllowComments']) {
+                            $objComment = new mediaDirectoryComment();
+                            $objComment->getComments($objTpl, $arrEntry['entryId']);
+                            if ($objTpl->blockExists('mediadirEntryComments')) {
+                                $objTpl->parse('mediadirEntryComments');
+                            }
+                        } else {
+                            if ($objTpl->blockExists('mediadirEntryComments')) {
+                                $objTpl->hideBlock('mediadirEntryComments');
+                            }
+                        }
+
                         $objTpl->setVariable(array(
                             $this->moduleLangVar.'_ROW_CLASS' =>  $i%2==0 ? 'row1' : 'row2',
                             $this->moduleLangVar.'_ENTRY_ID' =>  $arrEntry['entryId'],
@@ -375,32 +401,6 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                         } else {
                             if(intval($objTpl->blockExists($this->moduleName.'EntriesSaveOrder')) != 0) {
                                 $objTpl->hideBlock($this->moduleName.'EntriesSaveOrder');
-                            }
-                        }
-
-                        //get votes
-                        if($this->arrSettings['settingsAllowVotes']) {
-                            $objVoting = new mediaDirectoryVoting();
-                            $objVoting->getVotes($objTpl, $arrEntry['entryId']);
-                            if ($objTpl->blockExists('mediadirEntryVotes')) {
-                                $objTpl->parse('mediadirEntryVotes');
-                            }
-                        } else {
-                            if ($objTpl->blockExists('mediadirEntryVotes')) {
-                                $objTpl->hideBlock('mediadirEntryVotes');
-                            }
-                        }
-
-                        //get comments
-                        if($this->arrSettings['settingsAllowComments']) {
-                            $objComment = new mediaDirectoryComment();
-                            $objComment->getComments($objTpl, $arrEntry['entryId']);
-                            if ($objTpl->blockExists('mediadirEntryComments')) {
-                                $objTpl->parse('mediadirEntryComments');
-                            }
-                        } else {
-                            if ($objTpl->blockExists('mediadirEntryComments')) {
-                                $objTpl->hideBlock('mediadirEntryComments');
                             }
                         }
 
