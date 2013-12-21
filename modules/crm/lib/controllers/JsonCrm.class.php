@@ -8,7 +8,7 @@
  * @subpackage  core_json
  */
 
-namespace Cx\Modules\Crm\Lib\Controllers;
+namespace Cx\Modules\crm\lib\controllers;
 use \Cx\Core\Json\JsonAdapter;
 
 /**
