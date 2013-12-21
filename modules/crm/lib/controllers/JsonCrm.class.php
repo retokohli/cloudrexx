@@ -8,7 +8,7 @@
  * @subpackage  core_json
  */
 
-namespace Cx\Modules\Crm\Lib\Controllers;
+namespace Cx\Modules\crm\lib\controllers;
 use \Cx\Core\Json\JsonAdapter;
 
 /**
@@ -62,7 +62,7 @@ class JsonCrm implements JsonAdapter {
 
         $searchFields = array(
             'companyname_filter'  => isset($_REQUEST['companyname_filter']) ? contrexx_input2raw($_REQUEST['companyname_filter']) : '',
-            'contactSearch'       => isset($_GET['contactSearch']) ? (array) $_GET['contactSearch'] : array(1,2),
+            'contactSearch'       => isset($_REQUEST['contactSearch']) ? (array) $_REQUEST['contactSearch'] : array(1,2),
             'advanced-search'     => $_REQUEST['advanced-search'],
             's_name'              => $_REQUEST['s_name'],
             's_email'             => $_REQUEST['s_email'],
