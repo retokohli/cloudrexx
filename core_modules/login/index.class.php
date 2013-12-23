@@ -232,7 +232,7 @@ class Login
 
         \Cx\Lib\SocialLogin::parseSociallogin($this->_objTpl);
         $arrSettings = User_Setting::getSettings();
-        if ($arrSettings['sociallogin']['status'] && !empty($_GET['provider'])) {
+        if (function_exists('curl_init') && $arrSettings['sociallogin']['status'] && !empty($_GET['provider'])) {
             $providerLogin = $this->loginWithProvider($_GET['provider']);
             if ($providerLogin) {
                 return $providerLogin;
