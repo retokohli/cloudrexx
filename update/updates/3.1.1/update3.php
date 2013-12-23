@@ -1117,7 +1117,7 @@ if ($version == 'rc1') {
 
 /***************************************
  *
- * INSTALLING CRM BEFORE WE DO THE TABLE-UPDATES
+ * INSTALLING CRM AND FRONTEND EDITING BEFORE WE DO THE TABLE-UPDATES
  *
  **************************************/
 if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
@@ -1186,6 +1186,14 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
         ))
     ) {
         return false;
+    }
+    
+    // install frontend editing
+    $frontendEditingModuleInfo = getModuleInfo('FrontendEditing');
+    try {
+        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO ".DBPREFIX."modules ( `id` , `name` , `description_variable` , `status` , `is_required` , `is_core` , `distributor` ) VALUES ( ".$frontendEditingModuleInfo['id']." , '".$frontendEditingModuleInfo['name']."', '".$frontendEditingModuleInfo['description_variable']."', '".$frontendEditingModuleInfo['status']."', '".$frontendEditingModuleInfo['is_required']."', '".$frontendEditingModuleInfo['is_core']."', 'Comvation AG') ON DUPLICATE KEY UPDATE `id` = `id`");
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 }
 
