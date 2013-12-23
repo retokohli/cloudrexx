@@ -1122,14 +1122,6 @@ if ($version == 'rc1') {
  **************************************/
 if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
     require_once(dirname(__FILE__).'/components/module/crm.php');
-    require_once(dirname(__FILE__).'/components/core/modules.php');
-    $crmModuleInfo = getModuleInfo('crm');
-    try {
-        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO ".DBPREFIX."modules ( `id` , `name` , `description_variable` , `status` , `is_required` , `is_core` , `distributor` ) VALUES ( ".$crmModuleInfo['id']." , '".$crmModuleInfo['name']."', '".$crmModuleInfo['description_variable']."', '".$crmModuleInfo['status']."', '".$crmModuleInfo['is_required']."', '".$crmModuleInfo['is_core']."', 'Comvation AG') ON DUPLICATE KEY UPDATE `id` = `id`");
-    } catch (\Cx\Lib\UpdateException $e) {
-        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-    }
-    \DBG::log('installing crm module');
     $crmInstall = _crmInstall();
     if ($crmInstall) {
         // crm install returns an error
@@ -1187,14 +1179,6 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
     ) {
         return false;
     }
-    
-    // install frontend editing
-    $frontendEditingModuleInfo = getModuleInfo('FrontendEditing');
-    try {
-        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO ".DBPREFIX."modules ( `id` , `name` , `description_variable` , `status` , `is_required` , `is_core` , `distributor` ) VALUES ( ".$frontendEditingModuleInfo['id']." , '".$frontendEditingModuleInfo['name']."', '".$frontendEditingModuleInfo['description_variable']."', '".$frontendEditingModuleInfo['status']."', '".$frontendEditingModuleInfo['is_required']."', '".$frontendEditingModuleInfo['is_core']."', 'Comvation AG') ON DUPLICATE KEY UPDATE `id` = `id`");
-    } catch (\Cx\Lib\UpdateException $e) {
-        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-    }
 }
 
 
@@ -1216,6 +1200,27 @@ foreach ($updates as $update) {
             setUpdateMsg('Update failed: ' . contrexx_raw2xhtml($update));
             return false;
         }
+    }
+}
+
+
+if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
+    // install crm
+    require_once(dirname(__FILE__).'/components/core/modules.php');
+    $crmModuleInfo = getModuleInfo('crm');
+    try {
+        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO ".DBPREFIX."modules ( `id` , `name` , `description_variable` , `status` , `is_required` , `is_core` , `distributor` ) VALUES ( ".$crmModuleInfo['id']." , '".$crmModuleInfo['name']."', '".$crmModuleInfo['description_variable']."', '".$crmModuleInfo['status']."', '".$crmModuleInfo['is_required']."', '".$crmModuleInfo['is_core']."', 'Comvation AG') ON DUPLICATE KEY UPDATE `id` = `id`");
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+    \DBG::log('installing crm module');
+    
+    // install frontend editing
+    $frontendEditingModuleInfo = getModuleInfo('FrontendEditing');
+    try {
+        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO ".DBPREFIX."modules ( `id` , `name` , `description_variable` , `status` , `is_required` , `is_core` , `distributor` ) VALUES ( ".$frontendEditingModuleInfo['id']." , '".$frontendEditingModuleInfo['name']."', '".$frontendEditingModuleInfo['description_variable']."', '".$frontendEditingModuleInfo['status']."', '".$frontendEditingModuleInfo['is_required']."', '".$frontendEditingModuleInfo['is_core']."', 'Comvation AG') ON DUPLICATE KEY UPDATE `id` = `id`");
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 }
 
