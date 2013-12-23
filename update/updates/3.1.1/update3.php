@@ -857,6 +857,253 @@ $updates310To310Sp1 = array(
             'defaultstatus'          => array('fields' => array('is_default')),
         ),
     ),
+    array(
+        'table' => DBPREFIX.'module_crm_contacts',
+        'structure' => array(
+            'id'                     => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'customer_id'            => array('type' => 'VARCHAR(256)', 'notnull' => false, 'after' => 'id'),
+            'customer_type'          => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'customer_id'),
+            'customer_name'          => array('type' => 'VARCHAR(256)', 'notnull' => false, 'after' => 'customer_type'),
+            'customer_website'       => array('type' => 'VARCHAR(256)', 'notnull' => false, 'after' => 'customer_name'),
+            'customer_addedby'       => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'customer_website'),
+            'customer_currency'      => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'customer_addedby'),
+            'contact_familyname'     => array('type' => 'VARCHAR(256)', 'notnull' => false, 'after' => 'customer_currency'),
+            'contact_role'           => array('type' => 'VARCHAR(256)', 'notnull' => false, 'after' => 'contact_familyname'),
+            'contact_customer'       => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'contact_role'),
+            'contact_language'       => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'contact_customer'),
+            'gender'                 => array('type' => 'TINYINT(2)', 'after' => 'contact_language'),
+            'notes'                  => array('type' => 'text', 'after' => 'gender'),
+            'industry_type'          => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'notes'),
+            'contact_type'           => array('type' => 'TINYINT(2)', 'notnull' => false, 'after' => 'industry_type'),
+            'user_account'           => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'contact_type'),
+            'datasource'             => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'user_account'),
+            'profile_picture'        => array('type' => 'VARCHAR(256)', 'after' => 'datasource'),
+            'status'                 => array('type' => 'TINYINT(2)', 'notnull' => true, 'default' => '1', 'after' => 'profile_picture'),
+            'added_date'             => array('type' => 'date', 'after' => 'status')
+        ),
+        'keys' => array(
+            'contact_customer'       => array('fields' => array('contact_customer')),
+            'customer_id'            => array('fields' => array('customer_id')),
+            'customer_name'          => array('fields' => array('customer_name')),
+            'contact_familyname'     => array('fields' => array('contact_familyname')),
+            'contact_role'           => array('fields' => array('contact_role')),
+            'customer_id_2'          => array('fields' => array('customer_id','customer_name','contact_familyname','contact_role','notes'), 'type' => 'FULLTEXT')
+        ),
+    ),
+    array(
+        'table' => DBPREFIX.'module_crm_currency',
+        'structure' => array(
+            'id'                     => array('type' => 'INT(10)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'name'                   => array('type' => 'VARCHAR(400)', 'after' => 'id'),
+            'active'                 => array('type' => 'INT(1)', 'notnull' => true, 'default' => '1', 'after' => 'name'),
+            'pos'                    => array('type' => 'INT(5)', 'notnull' => true, 'default' => '0', 'after' => 'active'),
+            'hourly_rate'            => array('type' => 'text', 'after' => 'pos'),
+            'default_currency'       => array('type' => 'TINYINT(1)', 'after' => 'hourly_rate')
+        ),
+        'keys' => array(
+            'name'                   => array('fields' => array('name' => 333)),
+            'name_2'                 => array('fields' => array('name'), 'type' => 'FULLTEXT')
+        ),
+    ),
+    array(
+        'table' => DBPREFIX.'module_crm_customer_comment',
+        'structure' => array(
+            'id'                 => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'customer_id'        => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'id'),
+            'notes_type_id'      => array('type' => 'INT(1)', 'after' => 'customer_id'),
+            'user_id'            => array('type' => 'INT(11)', 'after' => 'notes_type_id'),
+            'date'               => array('type' => 'date', 'after' => 'user_id'),
+            'comment'            => array('type' => 'text', 'after' => 'date'),
+            'added_date'         => array('type' => 'datetime', 'notnull' => false, 'after' => 'comment'),
+            'updated_by'         => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'added_date'),
+            'updated_on'         => array('type' => 'datetime', 'notnull' => false, 'after' => 'updated_by')
+        ),
+        'keys' => array(
+            'customer_id'        => array('fields' => array('customer_id')),
+            'comment'            => array('fields' => array('comment'), 'type' => 'FULLTEXT')
+        ),
+    ),
+    array(
+        'table' => DBPREFIX.'module_crm_customer_contact_address',
+        'structure' => array(
+            'id'                 => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'address'            => array('type' => 'VARCHAR(256)', 'after' => 'id'),
+            'city'               => array('type' => 'VARCHAR(256)', 'after' => 'address'),
+            'state'              => array('type' => 'VARCHAR(256)', 'after' => 'city'),
+            'zip'                => array('type' => 'VARCHAR(256)', 'after' => 'state'),
+            'country'            => array('type' => 'VARCHAR(256)', 'after' => 'zip'),
+            'Address_Type'       => array('type' => 'TINYINT(4)', 'after' => 'country'),
+            'is_primary'         => array('type' => 'ENUM(\'0\',\'1\')', 'after' => 'Address_Type'),
+            'contact_id'         => array('type' => 'INT(11)', 'after' => 'is_primary')
+        ),
+        'keys' => array(
+            'contact_id'         => array('fields' => array('contact_id')),
+            'address'            => array('fields' => array('address')),
+            'city'               => array('fields' => array('city')),
+            'state'              => array('fields' => array('state')),
+            'zip'                => array('fields' => array('zip')),
+            'country'            => array('fields' => array('country')),
+            'address_2'          => array('fields' => array('address','city','state','zip','country'), 'type' => 'FULLTEXT')
+        ),
+    ),
+    array(
+        'table' => DBPREFIX.'module_crm_customer_contact_emails',
+        'structure' => array(
+            'id'             => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'email'          => array('type' => 'VARCHAR(256)', 'after' => 'id'),
+            'email_type'     => array('type' => 'TINYINT(4)', 'after' => 'email'),
+            'is_primary'     => array('type' => 'ENUM(\'0\',\'1\')', 'default' => '0', 'after' => 'email_type'),
+            'contact_id'     => array('type' => 'INT(11)', 'after' => 'is_primary')
+        ),
+        'keys' => array(
+            'contact_id'     => array('fields' => array('contact_id')),
+            'email'          => array('fields' => array('email')),
+            'email_2'        => array('fields' => array('email'), 'type' => 'FULLTEXT')
+        ),
+    ),
+    array(
+        'table' => DBPREFIX.'module_crm_customer_contact_phone',
+        'structure' => array(
+            'id'             => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'phone'          => array('type' => 'VARCHAR(256)', 'after' => 'id'),
+            'phone_type'     => array('type' => 'TINYINT(4)', 'after' => 'phone'),
+            'is_primary'     => array('type' => 'ENUM(\'0\',\'1\')', 'default' => '0', 'after' => 'phone_type'),
+            'contact_id'     => array('type' => 'INT(11)', 'after' => 'is_primary')
+        ),
+        'keys' => array(
+            'contact_id'     => array('fields' => array('contact_id')),
+            'phone'          => array('fields' => array('phone')),
+            'phone_2'        => array('fields' => array('phone'), 'type' => 'FULLTEXT')
+        ),
+    ),
+    array(
+        'table' => DBPREFIX.'module_crm_customer_contact_social_network',
+        'structure' => array(
+            'id'             => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'url'            => array('type' => 'VARCHAR(256)', 'after' => 'id'),
+            'url_profile'    => array('type' => 'TINYINT(4)', 'after' => 'url'),
+            'is_primary'     => array('type' => 'ENUM(\'0\',\'1\')', 'default' => '0', 'after' => 'url_profile'),
+            'contact_id'     => array('type' => 'INT(11)', 'after' => 'is_primary')
+        ),
+        'keys' => array(
+            'contact_id'     => array('fields' => array('contact_id')),
+            'url'            => array('fields' => array('url')),
+            'url_2'          => array('fields' => array('url'), 'type' => 'FULLTEXT')
+        ),
+    ),
+    array(
+        'table' => DBPREFIX.'module_crm_customer_contact_websites',
+        'structure' => array(
+            'id'             => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'url'            => array('type' => 'VARCHAR(256)', 'after' => 'id'),
+            'url_type'       => array('type' => 'TINYINT(4)', 'after' => 'url'),
+            'url_profile'    => array('type' => 'TINYINT(4)', 'after' => 'url_type'),
+            'is_primary'     => array('type' => 'ENUM(\'0\',\'1\')', 'default' => '0', 'after' => 'url_profile'),
+            'contact_id'     => array('type' => 'INT(11)', 'after' => 'is_primary')
+        ),
+        'keys' => array(
+            'contact_id'     => array('fields' => array('contact_id')),
+            'url'            => array('fields' => array('url')),
+            'url_2'          => array('fields' => array('url'), 'type' => 'FULLTEXT')
+        ),
+    ),
+    array(
+        'table' => DBPREFIX.'module_crm_customer_types',
+        'structure' => array(
+            'id'             => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'label'          => array('type' => 'VARCHAR(250)', 'after' => 'id'),
+            'hourly_rate'    => array('type' => 'VARCHAR(256)', 'after' => 'label'),
+            'active'         => array('type' => 'INT(1)', 'after' => 'hourly_rate'),
+            'pos'            => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0', 'after' => 'active'),
+            'default'        => array('type' => 'TINYINT(2)', 'notnull' => true, 'default' => '0', 'after' => 'pos')
+        ),
+        'keys' => array(
+            'label'          => array('fields' => array('label')),
+            'label_2'        => array('fields' => array('label'), 'type' => 'FULLTEXT')
+        ),
+    ),
+    array(
+        'table' => DBPREFIX.'module_crm_industry_type_local',
+        'structure' => array(
+            'entry_id'       => array('type' => 'INT(11)'),
+            'lang_id'        => array('type' => 'INT(11)', 'after' => 'entry_id'),
+            'value'          => array('type' => 'VARCHAR(256)', 'after' => 'lang_id')
+        ),
+        'keys' => array(
+            'entry_id'       => array('fields' => array('entry_id')),
+            'value'          => array('fields' => array('value')),
+            'value_2'        => array('fields' => array('value'), 'type' => 'FULLTEXT')
+        ),
+    ),
+    array(
+        'table' => DBPREFIX.'module_crm_membership_local',
+        'structure' => array(
+            'entry_id'       => array('type' => 'INT(11)'),
+            'lang_id'        => array('type' => 'INT(11)', 'after' => 'entry_id'),
+            'value'          => array('type' => 'VARCHAR(256)', 'after' => 'lang_id')
+        ),
+        'keys' => array(
+            'entry_id'       => array('fields' => array('entry_id')),
+            'value'          => array('fields' => array('value')),
+            'value_2'        => array('fields' => array('value'), 'type' => 'FULLTEXT')
+        ),
+    ),
+    array(
+        'table' => DBPREFIX.'module_crm_notes',
+        'structure' => array(
+            'id'                 => array('type' => 'INT(1)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'name'               => array('type' => 'VARCHAR(255)', 'after' => 'id'),
+            'status'             => array('type' => 'TINYINT(1)', 'after' => 'name'),
+            'icon'               => array('type' => 'VARCHAR(255)', 'after' => 'status'),
+            'pos'                => array('type' => 'INT(1)', 'after' => 'icon'),
+            'system_defined'     => array('type' => 'TINYINT(2)', 'notnull' => true, 'default' => '0', 'after' => 'pos')
+        ),
+        'keys' => array(
+            'name'               => array('fields' => array('name')),
+            'name_2'             => array('fields' => array('name'), 'type' => 'FULLTEXT')
+        ),
+    ),
+    array(
+        'table' => DBPREFIX.'module_crm_task_types',
+        'structure' => array(
+            'id'                 => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'name'               => array('type' => 'VARCHAR(256)', 'after' => 'id'),
+            'status'             => array('type' => 'TINYINT(1)', 'after' => 'name'),
+            'sorting'            => array('type' => 'INT(11)', 'after' => 'status'),
+            'description'        => array('type' => 'text', 'after' => 'sorting'),
+            'icon'               => array('type' => 'VARCHAR(255)', 'after' => 'description'),
+            'system_defined'     => array('type' => 'TINYINT(4)', 'after' => 'icon')
+        ),
+        'keys' => array(
+            'name'               => array('fields' => array('name')),
+            'name_2'             => array('fields' => array('name'), 'type' => 'FULLTEXT')
+        ),
+    ),
+    array(
+        'table' => DBPREFIX.'languages',
+        'structure' => array(
+            'id'                     => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'lang'                   => array('type' => 'VARCHAR(5)', 'notnull' => true, 'default' => '', 'after' => 'id'),
+            'name'                   => array('type' => 'VARCHAR(250)', 'notnull' => true, 'default' => '', 'after' => 'lang'),
+            'charset'                => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => 'iso-8859-1', 'after' => 'name'),
+            'themesid'               => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'after' => 'charset'),
+            'print_themes_id'        => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'after' => 'themesid'),
+            'pdf_themes_id'          => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'print_themes_id'),
+            'frontend'               => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'pdf_themes_id'),
+            'backend'                => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'frontend'),
+            'is_default'             => array('type' => 'SET(\'true\',\'false\')', 'notnull' => true, 'default' => 'false', 'after' => 'backend'),
+            'mobile_themes_id'       => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'is_default'),
+            'fallback'               => array('type' => 'INT(2)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'mobile_themes_id'),
+            'app_themes_id'          => array('type' => 'INT(2)', 'after' => 'fallback')
+        ),
+        'keys' => array(
+            'lang'                   => array('fields' => array('lang'), 'type' => 'UNIQUE'),
+            'defaultstatus'          => array('fields' => array('is_default')),
+            'name'                   => array('fields' => array('name')),
+            'name_2'                 => array('fields' => array('name'), 'type' => 'FULLTEXT')
+
+        ),
+    ),
 );
 
 $updatesRc1ToSp4    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1);
