@@ -1131,7 +1131,57 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
     }
     \DBG::log('installing crm module');
     $crmInstall = _crmInstall();
-    if ($crmInstall) {
+    if (
+        $crmInstall &&
+        \MailTemplate::store('crm', array(
+            'key' => 'crm_user_account_created',
+            'lang_id' => '1',
+            'sender' => 'Ihr Firmenname',
+            'from' => 'info@example.com',
+            'to' => '[CRM_CONTACT_EMAIL]',
+            'reply' => 'info@example.com',
+            'cc' => '',
+            'bcc' => '',
+            'subject' => 'Ihr persönlicher Zugang',
+            'message' => 'Guten Tag,\r\n\r\nNachfolgend erhalten Sie Ihre persönlichen Zugansdaten zur Website http://www.example.com/\r\n\r\nBenutzername: [CRM_CONTACT_USERNAME]\r\nKennwort: [CRM_CONTACT_PASSWORD]',
+            'message_html' => '<div>Guten Tag,<br />\r\n<br />\r\nNachfolgend erhalten Sie Ihre pers&ouml;nlichen Zugangsdaten zur Website <a href=\"http://www.example.com/\">http://www.example.com/</a><br />\r\n<br />\r\nBenutzername: [CRM_CONTACT_USERNAME]<br />\r\nKennwort: [CRM_CONTACT_PASSWORD]</div>',
+            'html' => 'true',
+            'protected' => 'true',
+            'name' => 'Benachrichtigung über Benutzerkonto',
+        )) &&
+        \MailTemplate::store('crm', array(
+            'key' => 'crm_task_assigned',
+            'lang_id' => '1',
+            'sender' => 'Ihr Firmenname',
+            'from' => 'info@example.com',
+            'to' => '[CRM_ASSIGNED_USER_MAIL]',
+            'reply' => 'info@example.com',
+            'cc' => '',
+            'bcc' => '',
+            'subject' => 'Neue Aufgabe',
+            'message' => 'Der Mitarbeiter [CRM_TASK_CREATED_USER] hat eine neue Aufgabe erstellt und Ihnen zugewiesen: [CRM_TASK_URL]\r\n\r\nBeschreibung: [CRM_TASK_DESCRIPTION_TEXT_VERSION]\r\n\r\nFällig am: [CRM_TASK_DUE_DATE]\r\n',
+            'message_html' => '<div style=\"padding:0px; margin:0px; font-family:Tahoma, sans-serif; font-size:14px; width:620px; color: #333;\">\r\n<div style=\"padding: 0px 20px; border:1px solid #e0e0e0; margin-bottom: 10px; width:618px;\">\r\n<h1 style=\"background-color: #e0e0e0;color: #3d4a6b;font-size: 18px;font-weight: normal;padding: 15px 20px;margin-top: 0 !important;margin-bottom: 0 !important;margin-left: -20px !important;margin-right: -20px !important;-webkit-margin-before: 0 !important;-webkit-margin-after: 0 !important;-webkit-margin-start: -20px !important;-webkit-margin-end: -20px !important;\">Neue Aufgabe wurde Ihnen zugewiesen</h1>\r\n\r\n<p style=\"margin-top: 20px;word-wrap: break-word !important;\">Der Mitarbeiter [CRM_TASK_CREATED_USER] hat eine neue Aufgabe erstellt und Ihnen zugewiesen: [CRM_TASK_LINK]</p>\r\n\r\n<p style=\"margin-top: 20px;word-wrap: break-word !important;\">Beschreibung: [CRM_TASK_DESCRIPTION_HTML_VERSION]<br />\r\nF&auml;llig am: [CRM_TASK_DUE_DATE]</p>\r\n</div>\r\n</div>',
+            'html' => 'true',
+            'protected' => 'true',
+            'name' => 'Neue Aufgabe',
+        )) &&
+        \MailTemplate::store('crm', array(
+            'key' => 'crm_notify_staff_on_contact_added',
+            'lang_id' => '1',
+            'sender' => 'Ihr Firmenname',
+            'from' => 'info@example.com',
+            'to' => '[CRM_ASSIGNED_USER_MAIL]',
+            'reply' => 'info@example.com',
+            'cc' => '',
+            'bcc' => '',
+            'subject' => 'Neuer Kontakt erfasst',
+            'message' => 'Im CRM wurde ein neuer Kontakt erfasst: [CRM_CONTACT_DETAILS_URL]',
+            'message_html' => '<div style=\"padding:0px; margin:0px; font-family:Tahoma, sans-serif; font-size:14px; width:620px; color: #333;\">\r\n<div style=\"padding: 0px 20px; border:1px solid #e0e0e0; margin-bottom: 10px; width:618px;\">\r\n<h1 style=\"background-color: #e0e0e0;color: #3d4a6b;font-size: 18px;font-weight: normal;padding: 15px 20px;margin-top: 0 !important;margin-bottom: 0 !important;margin-left: -20px !important;margin-right: -20px !important;-webkit-margin-before: 0 !important;-webkit-margin-after: 0 !important;-webkit-margin-start: -20px !important;-webkit-margin-end: -20px !important;\">Neuer Kontakt im CRM</h1>\r\n\r\n<p style=\"margin-top: 20px;word-wrap: break-word !important;\">Neuer Kontakt: [CRM_CONTACT_DETAILS_LINK].</p>\r\n</div>\r\n</div>\r\n',
+            'html' => 'true',
+            'protected' => 'true',
+            'name' => 'Benachrichtigung an Mitarbeiter über neue Kontakte',
+        ))
+    ) {
         // crm install returns an error
         return $crmInstall;
     }
