@@ -133,7 +133,7 @@ class SocialLogin
     public static function parseSociallogin($objTpl, $prefix = 'login_')
     {
         $arrSettings = \User_Setting::getSettings();
-        if ($arrSettings['sociallogin']['status'] && !isset($_SESSION['user_id'])) {
+        if (function_exists('curl_init') && $arrSettings['sociallogin']['status'] && !isset($_SESSION['user_id'])) {
             if (!empty($_GET['redirect'])) {
                 $_SESSION['redirect'] = $_GET['redirect'];
             }
