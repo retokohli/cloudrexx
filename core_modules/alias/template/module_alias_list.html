@@ -19,11 +19,13 @@ function alias_delete(id, title)
     <tr>
       <th>{TXT_ALIAS_ALIASES}</th>
       <th colspan="2" style="text-align: right;">
+        <!-- BEGIN alias_show_legacy_pages -->
         <form action="" method="GET">
             <input type="hidden" name="cmd" value="alias" />
             <input type="checkbox" id="aliasLegacyPages" name="legacyPages" onchange="submit();" value="1" {ALIAS_SHOW_LEGACY_PAGE_ALIASES_CHECKED} />
             <label for="aliasLegacyPages">{TXT_ALIAS_SHOW_LEGACY_PAGE_ALIASES}</label>
         </form>
+        <!-- END alias_show_legacy_pages -->
       </th>
     </tr>
     <!-- BEGIN alias_data -->

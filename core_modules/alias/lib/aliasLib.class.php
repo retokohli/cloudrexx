@@ -34,6 +34,8 @@ class aliasLib
     protected $nodeRepository = null;
     
     protected $pageRepository = null;
+
+    protected $hasLegacyPages = false;
     
 
     function __construct($langId = 0)
@@ -58,8 +60,9 @@ class aliasLib
         $pages = array();
         foreach ($aliases as $page) {
             // skip legacy page aliases if legacy page is disabled
-            if (preg_match('/^legacy_page_/', $page->getSlug()) && !$legacyPages) {
-                continue;
+            if (preg_match('/^legacy_page_/', $page->getSlug())) {
+                $this->hasLegacyPages = true;
+                if (!$legacyPages) continue;
             }
             $i++;
             if ($i < $pos) {

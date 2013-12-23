@@ -67,7 +67,7 @@ class AliasAdmin extends aliasLib
         global $objTemplate, $_ARRAYLANG;
 
         $objTemplate->setVariable("CONTENT_NAVIGATION",
-            ("<a href='index.php?cmd=alias' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_ALIAS_ALIASES']."</a>"
+            ("<a href='index.php?cmd=alias' class='".($this->act == '' || $this->act == 'delete' ? 'active' : '')."'>".$_ARRAYLANG['TXT_ALIAS_ALIASES']."</a>"
             ."<a href='index.php?cmd=alias&amp;act=modify' class='".($this->act == 'modify' ? 'active' : '')."'>".$_ARRAYLANG['TXT_ALIAS_ADD_ALIAS']."</a>")
         );
     }
@@ -145,6 +145,13 @@ class AliasAdmin extends aliasLib
         }
 
         $arrAliases = $this->_getAliases($_CONFIG['corePagingLimit'], false, $showLegacyPagealiases);
+
+        if ($this->hasLegacyPages) {
+            $this->_objTpl->touchBlock('alias_show_legacy_pages');
+        } else {
+            $this->_objTpl->hideBlock('alias_show_legacy_pages');
+        }
+
         $nr = 1;
         if (count($arrAliases)) {
             $this->_objTpl->setVariable(array(
@@ -319,6 +326,7 @@ class AliasAdmin extends aliasLib
                     if (!$error) {
                         $this->arrStatusMsg['ok'][] = $aliasId ? $_ARRAYLANG['TXT_ALIAS_ALIAS_SUCCESSFULLY_UPDATED'] : $_ARRAYLANG['TXT_ALIAS_ALIAS_SUCCESSFULLY_ADDED'];   
                     }
+                    $_REQUEST['act'] = ''; // For the navigation
                     return $this->_list();
                 } else {
                     $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ALIAS_ONE_ALIAS_REQUIRED_MSG'];
@@ -365,6 +373,8 @@ class AliasAdmin extends aliasLib
                 preg_match('/\[\['.\Cx\Core\ContentManager\Model\Entity\Page::NODE_URL_PCRE.'\]\](\S*)?/ix', $target, $matches);
                 $targetURL = ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET . $this->_getURL($targetPage) . $matches[6];
             }
+        } else {
+            $targetURL = $target;
         }
 
         $this->_objTpl->setVariable(array(
