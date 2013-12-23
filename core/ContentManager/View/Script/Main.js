@@ -1845,8 +1845,17 @@ cx.cm.updateTranslationsIcons = function(args) {
 }
 
 cx.cm.updateActionMenu = function(args) {
+    // actions menu is always in frontend lang, not in page lang (so it is "per node")
+    if (args.page.lang != cx.cm.getCurrentLang()) {
+        args.page = cx.cm.getPageStatus(args.page.nodeId, cx.cm.getCurrentLang());
+    }
+    
     var node = jQuery("#node_" + args.page.nodeId);
     var menu = node.children(".jstree-wrapper").children(".actions").children(".actions-expanded").children("ul");
+    
+    if (!menu.length) {
+        return;
+    }
 
     // reset menu
     menu.html("");
@@ -2120,7 +2129,12 @@ cx.cm.getPageStatus = function(nodeId, lang) {
         type = "redirection";
     }
 
-    var name = page.children(".name").text();
+    var name = "";
+    if (page.children(".name").length) {
+        name = page.children(".name").text();
+    } else {
+        name = jQuery.trim(page.text());
+    }
 
     return {
         id: pageId,
