@@ -314,7 +314,8 @@ class JsonNode implements JsonAdapter {
         }
         
         // explicit recursive delete in order to ensure logs get written
-        $toDelete = array($node);
+        // MOVED code down below to NodeEventListener.class.php @method: preRemove();
+        /*$toDelete = array($node);
         while (count($toDelete)) {
             $childNodes = array();
             $currentNode = array_pop($toDelete);
@@ -338,7 +339,8 @@ class JsonNode implements JsonAdapter {
             } else {
                 $this->em->remove($currentNode);
             }
-        }
+        }*/
+        $this->em->remove($node);
         if ($flush) {
             $this->em->flush();
             $this->em->clear();
