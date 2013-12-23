@@ -97,8 +97,7 @@ class JS
                 'lib/javascript/shadowbox/shadowbox.js'
             ),
             'dependencies'  => array(
-                'jquery',
-                'cx',
+                'cx', // depends on jquery
             ),
             'specialcode'  => "
 Shadowbox.loadSkin('classic', cx.variables.get('basePath', 'contrexx')+'lib/javascript/shadowbox/src/skin/');
@@ -118,10 +117,7 @@ jQuery(document).ready(function(){
             'jsfiles' => array(
                 'lib/javascript/jquery/tools/jquery.tools.min.js',
             ),
-            'dependencies' => array(
-                'jquery',
-                'cx',
-            ),
+            'dependencies' => array('jquery'),
         ),
         'jquery-imgareaselect' => array(
             'jsfiles'          => array(
@@ -179,8 +175,7 @@ jQuery(document).ready(function(){
                 'lib/javascript/jquery/ui/css/jquery-ui.css'
             ),
             'dependencies'  => array(
-                'jquery',
-                'cx',
+                'cx', // depends on jquery
             ),
         ),
         //stuff to beautify forms.
@@ -240,7 +235,10 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 'lib/javascript/cx/contrexxJs-tools.js',
                 'lib/javascript/jquery/jquery.includeMany-1.2.2.js' //to dynamically include javascript files
             ),
-            'dependencies' => array('jquery', 'md5', 'jquery-tools'),
+            'dependencies' => array(
+                'md5', // depends on jquery
+                'jquery-tools', // depends on jquery
+            ),
             'lazyDependencies' => array('jqueryui'),
             //we insert the specialCode for the Contrexx-API later in getCode()
         ),
@@ -282,8 +280,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 'lib/javascript/user-live-search.js',
             ),
             'dependencies' => array(
-                'jquery',
-                'cx',
+                'cx', // depends on jquery
                 'jqueryui',
             ),
         ),
@@ -388,7 +385,6 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
     public static function activate($name, $options = null, $dependencies = true)
     {
         $name = strtolower($name);
-        // Catch circular dependencies
         $index = array_search($name, self::$active);
         if ($index !== false) {
             // Move dependencies to the end of the array, so that the
@@ -396,9 +392,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             // Note that the entire array is reversed for code generation,
             // so dependencies are loaded first!
             // See {@see getCode()} below.
-            self::$active[] = $name;
             unset(self::$active[$index]);
-            return true;
         }
         if (array_key_exists($name, self::$available) === false) {
             self::$error = $name.' is not a valid name for

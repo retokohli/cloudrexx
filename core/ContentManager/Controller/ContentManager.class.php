@@ -77,7 +77,6 @@ class ContentManager extends \Module
         global $_ARRAYLANG, $_CORELANG, $_CONFIG;
 
         \JS::activate('jqueryui');
-        \JS::activate('jquery-tools');
         \JS::activate('cx');
         \JS::activate('ckeditor');
         \JS::activate('cx-form');
