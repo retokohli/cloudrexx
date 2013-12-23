@@ -135,13 +135,22 @@ class SearchManager
                     $aliasLanguages = implode(', ', $languages);
 
                     $originalPage = $page;
+                    $link = 'index.php?cmd=content&amp;page=' . $page->getId();
                     if ($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS) {
                         $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-                        $originalPage = $pageRepo->getTargetPage($page);
+                        if ($originalPage->isTargetInternal()) {
+                            // is internal target, get target page
+                            $originalPage = $pageRepo->getTargetPage($page);
+                        } else {
+                            // is an external target, set the link to the external targets url
+                            $originalPage = new \Cx\Core\ContentManager\Model\Entity\Page();
+                            $originalPage->setTitle($page->getTarget());
+                            $link = $page->getTarget();
+                        }
                     }
 
                     $this->template->setVariable(array(
-                        'SEARCH_RESULT_ID'            => $originalPage->getId(),
+                        'SEARCH_RESULT_BACKEND_LINK'  => $link,
                         'SEARCH_RESULT_TITLE'         => $originalPage->getTitle(),
                         'SEARCH_RESULT_CONTENT_TITLE' => $originalPage->getContentTitle(),
                         'SEARCH_RESULT_SLUG'          => substr($page->getPath(), 1),
