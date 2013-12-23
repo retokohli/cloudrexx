@@ -600,15 +600,6 @@ class AccessLib
                         continue 2;
                     }
                     break;
-
-                case 'frontend_language':
-                    if (count(FWLanguage::getActiveFrontendLanguages()) == 1) {
-                        if ($this->_objTpl->blockExists('access_user_'.$attributeId)) {
-                            $this->_objTpl->hideBlock('access_user_'.$attributeId);
-                        }
-                        continue 2;
-                    }
-                    break;
             }
             $this->parseAccountAttribute($objUser, $attributeId, $edit);
         }
