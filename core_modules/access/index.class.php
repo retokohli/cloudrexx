@@ -338,12 +338,12 @@ class Access extends AccessLib
 
         $arrSettings = User_Setting::getSettings();
 
-        if ($arrSettings['sociallogin']['status']) {
+        if (function_exists('curl_init') && $arrSettings['sociallogin']['status']) {
             $this->parseNetworks($objFWUser->objUser);
         }
 
         if ($this->_objTpl->blockExists('access_user_networks')) {
-            $this->_objTpl->{$arrSettings['sociallogin']['status'] ? 'touchBlock' : 'hideBlock'}('access_user_networks');
+            $this->_objTpl->{function_exists('curl_init') && $arrSettings['sociallogin']['status'] ? 'touchBlock' : 'hideBlock'}('access_user_networks');
         }
         if ($this->_objTpl->blockExists('access_settings')) {
             $this->_objTpl->{$settingsDone ? 'hideBlock' : 'touchBlock'}('access_settings');

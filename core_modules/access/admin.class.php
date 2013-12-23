@@ -1980,7 +1980,7 @@ class AccessManager extends AccessLib
             $arrSettings['user_delete_account']['status'] = !empty($_POST['access_permissions_delete_account']) ? intval($_POST['access_permissions_delete_account']) : 0;
             $arrSettings['user_config_profile_access']['status'] = !empty($_POST['access_permissions_profile_access']) ? intval($_POST['access_permissions_profile_access']) : 0;
             $arrSettings['user_config_email_access']['status'] = !empty($_POST['access_permissions_email_access']) ? intval($_POST['access_permissions_email_access']) : 0;
-            $arrSettings['sociallogin']['status'] = !empty($_POST['access_sociallogin_activate']) ? intval($_POST['access_sociallogin_activate']) : 0;
+            $arrSettings['sociallogin']['status'] = function_exists('curl_init') && !empty($_POST['access_sociallogin_activate']) ? intval($_POST['access_sociallogin_activate']) : 0;
             $arrSettings['use_usernames']['status'] = !empty($_POST['access_permissions_use_usernames']) ? intval($_POST['access_permissions_use_usernames']) : 0;
             $arrSettings['sociallogin_show_signup']['status'] = !empty($_POST['access_sociallogin_show_signup']) ? intval($_POST['access_sociallogin_show_signup']) : 0;
             $arrSettings['sociallogin_assign_to_groups']['value'] = isset($_POST['access_user_associated_groups']) ? implode(',', $_POST['access_user_associated_groups']) : '';
