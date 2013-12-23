@@ -691,7 +691,7 @@ class CalendarUpdate31
                         'invited_groups'                     => array('type' => 'VARCHAR(45)', 'notnull' => false, 'after' => 'show_in'),
                         'invited_mails'                      => array('type' => 'mediumtext', 'notnull' => false, 'after' => 'invited_groups'),
                         'invitation_sent'                    => array('type' => 'INT(1)', 'after' => 'invited_mails'),
-                        'invitation_email_template'          => array('type' => 'INT(255)', 'after' => 'invitation_sent'),
+                        'invitation_email_template'          => array('type' => 'VARCHAR(255)', 'after' => 'invitation_sent'),
                         'registration'                       => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'invitation_email_template'),
                         'registration_form'                  => array('type' => 'INT(11)', 'after' => 'registration'),
                         'registration_num'                   => array('type' => 'VARCHAR(45)', 'notnull' => false, 'after' => 'registration_form'),
