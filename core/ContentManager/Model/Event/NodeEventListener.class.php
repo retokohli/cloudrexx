@@ -38,7 +38,7 @@ class NodeEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         $em      = $eventArgs->getEntityManager();
         $uow     = $em->getUnitOfWork();
         $entity  = $eventArgs->getEntity();
-        
+        $nodeRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
         $pages = $entity->getPages(true);
 
         foreach ($pages as $page) {
@@ -55,7 +55,11 @@ class NodeEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         //       Additionally, it will detach/remove $entity from UnitOfWork,
         //       which will UnitOfWork cause to skip the final remove() operation on $entity
         //       to prevent causing an issue with the already removed $entity.
-        $nodeRepo = $em->getRepository('\Cx\Core\ContentManager\Model\Entity\Node');
+        
+        // remove all child nodes
+        foreach ($entity->getChildren() as $childNode) {
+            $em->remove($childNode);
+        }
         $nodeRepo->removeFromTree($entity);
     }
 
