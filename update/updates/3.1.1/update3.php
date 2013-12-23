@@ -835,6 +835,7 @@ $updates310To310Sp1 = array(
         (57, 'forceProtocolFrontend', 'none', 1),
         (58, 'forceProtocolBackend', 'none', 1)
         ON DUPLICATE KEY UPDATE `setname` = VALUES(`setname`)",
+    'ALTER TABLE `' . DBPREFIX . 'module_crm_contacts` CONVERT TO CHARACTER SET `utf8`',
     array(
         'table' => DBPREFIX.'module_crm_contacts',
         'structure' => array(
