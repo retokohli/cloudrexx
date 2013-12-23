@@ -41,94 +41,6 @@ if ($objResultRc1->fields['target'] != '_blank') {
     return true;
 }
 
-function installCrm() {
-    global $_CORELANG, $objUpdate;
-    
-    $dir = 'module';
-    $file = 'crm.php';
-    if (in_array($file, $_SESSION['contrexx_update']['update']['done'])) {
-        return false;
-    }
-    $fileInfo = pathinfo(dirname(__FILE__).'/components/'.$dir.'/'.$file);
-
-    if ($fileInfo['extension'] != 'php') {
-        return false;
-    }
-    DBG::msg("--------- updating $file ------");
-
-    if (!include_once(dirname(__FILE__).'/components/'.$dir.'/'.$file)) {
-        setUpdateMsg($_CORELANG['TXT_UPDATE_ERROR'], 'title');
-        setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__).'/components/'.$dir.'/'.$file));
-        return false;
-    }
-
-    /*if (!in_array($fileInfo['filename'], $missedModules)) {
-        $function = '_'.$fileInfo['filename'].'Update';
-        if (function_exists($function)) {
-            $result = $function();
-            if ($result === false) {
-                if (empty($objUpdate->arrStatusMsg['title'])) {
-                    setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $file), 'title');
-                }
-                return false;
-            } elseif ($result === 'timeout') {
-                setUpdateMsg(1, 'timeout');
-                return false;
-            }
-        } else {
-            setUpdateMsg($_CORELANG['TXT_UPDATE_ERROR'], 'title');
-            setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UPDATE_COMPONENT_CORRUPT'], '.'.$fileInfo['filename'], $file));
-            return false;
-        }
-    } else {*/
-    $function = '_'.$fileInfo['filename'].'Install';
-    if (function_exists($function)) {
-        $result = $function();
-        if ($result === false) {
-            if (empty($objUpdate->arrStatusMsg['title'])) {
-                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $file), 'title');
-            }
-            return false;
-        } elseif ($result === 'timeout') {
-            setUpdateMsg(1, 'timeout');
-            return false;
-        } else {
-            // fetch module info from components/core/module.php
-            $arrModule = getModuleInfo($fileInfo['filename']);
-            if ($arrModule) {
-                try {
-                    \Cx\Lib\UpdateUtil::sql("INSERT INTO ".DBPREFIX."modules ( `id` , `name` , `description_variable` , `status` , `is_required` , `is_core` , `distributor` ) VALUES ( ".$arrModule['id']." , '".$arrModule['name']."', '".$arrModule['description_variable']."', '".$arrModule['status']."', '".$arrModule['is_required']."', '".$arrModule['is_core']."', 'Comvation AG') ON DUPLICATE KEY UPDATE `id` = `id`");
-                    return true;
-                } catch (\Cx\Lib\UpdateException $e) {
-                    return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-                }
-            } else {
-                DBG::msg('unable to register module '.$fileInfo['filename']);
-                return false;
-            }
-        }
-    } else {
-        setUpdateMsg($_CORELANG['TXT_UPDATE_ERROR'], 'title');
-        setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UPDATE_COMPONENT_CORRUPT'], './components/module/crm.php', 'crm.php'));
-        return false;
-    }
-    //}
-
-    $_SESSION['contrexx_update']['update']['done'][] = $file;
-    setUpdateMsg(1, 'timeout');
-    return false;
-}
-// crm has not yet been installed or is corrupt
-if (!\Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'module_crm_contacts')) {
-    if (!installCrm()) {
-        global $_CORELANG;
-
-        setUpdateMsg($_CORELANG['TXT_UPDATE_ERROR'], 'title');
-        setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UPDATE_COMPONENT_CORRUPT'], './module/crm.php', 'crm.php'));
-        return false;
-    }
-}
-
 $objResult = \Cx\Lib\UpdateUtil::sql('SELECT 1 FROM `'.DBPREFIX.'module_filesharing_mail_template` WHERE (`id` = 1 OR `id` = 2)');
 if (!$objResult) {
     die('ERROR: Could not execute query.');
@@ -1201,6 +1113,31 @@ if ($version == 'rc1') {
     $updates = $updates310To310Sp1;
 }
 
+
+
+/***************************************
+ *
+ * INSTALLING CRM BEFORE WE DO THE TABLE-UPDATES
+ *
+ **************************************/
+if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
+    require_once(dirname(__FILE__).'/components/module/crm.php');
+    require_once(dirname(__FILE__).'/components/core/modules.php');
+    $crmModuleInfo = getModuleInfo('crm');
+    try {
+        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO ".DBPREFIX."modules ( `id` , `name` , `description_variable` , `status` , `is_required` , `is_core` , `distributor` ) VALUES ( ".$crmModuleInfo['id']." , '".$crmModuleInfo['name']."', '".$crmModuleInfo['description_variable']."', '".$crmModuleInfo['status']."', '".$crmModuleInfo['is_required']."', '".$crmModuleInfo['is_core']."', 'Comvation AG') ON DUPLICATE KEY UPDATE `id` = `id`");
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+    \DBG::log('installing crm module');
+    $crmInstall = _crmInstall();
+    if ($crmInstall) {
+        // crm install returns an error
+        return $crmInstall;
+    }
+}
+
+
 foreach ($updates as $update) {
     if (is_array($update)) {
         try {
@@ -1736,22 +1673,7 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
         \DBG::dump($calendarMigration);
         return $calendarMigration;
     }
-
-    // install crm module
-    require_once(dirname(__FILE__).'/components/module/crm.php');
-    require_once(dirname(__FILE__).'/components/core/modules.php');
-    $crmModuleInfo = getModuleInfo('crm');
-    try {
-        \Cx\Lib\UpdateUtil::sql("INSERT IGNORE INTO ".DBPREFIX."modules ( `id` , `name` , `description_variable` , `status` , `is_required` , `is_core` , `distributor` ) VALUES ( ".$crmModuleInfo['id']." , '".$crmModuleInfo['name']."', '".$crmModuleInfo['description_variable']."', '".$crmModuleInfo['status']."', '".$crmModuleInfo['is_required']."', '".$crmModuleInfo['is_core']."', 'Comvation AG') ON DUPLICATE KEY UPDATE `id` = `id`");
-    } catch (\Cx\Lib\UpdateException $e) {
-        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-    }
-    $crmInstall = _crmInstall();
-    if ($crmInstall) {
-        // crm install returns an error
-        return $crmInstall;
-    }
-
+    
     // rewrite backendAreas
     require_once(dirname(__FILE__).'/components/core/backendAreas.php');
     $backendAreasUpdate = _updateBackendAreas();
