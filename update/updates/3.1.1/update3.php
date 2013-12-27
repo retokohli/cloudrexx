@@ -763,6 +763,7 @@ $updatesSp3ToSp4 = array(
 );
 
 $updatesSp4To310 = array(
+    "UPDATE `" . DBPREFIX . "modules` SET `is_core` = '1' WHERE `name` = 'upload'",
     "INSERT IGNORE INTO `" . DBPREFIX . "settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES
     (57, 'forceProtocolFrontend', 'none', 1),
     (58, 'forceProtocolBackend', 'none', 1),
