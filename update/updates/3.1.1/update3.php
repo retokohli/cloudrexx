@@ -1968,6 +1968,17 @@ if (!$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0') &&
     );
 }
 
+// fixing news container text setting which cannot be activated
+if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.1')) {
+    try {
+        $result = \Cx\Lib\UpdateUtil::sql('SELECT `name` FROM `'.DBPREFIX.'module_news_settings` WHERE `name` = "news_use_teaser_text"');
+        if ($result && ($result->RecordCount() == 0)) {
+            \Cx\Lib\UpdateUtil::sql('INSERT INTO `'.DBPREFIX.'module_news_settings` (`name`, `value`) VALUES ("news_use_teaser_text", 1)');
+        }
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+}
 
 // fix tree
 \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Node')->recover();
