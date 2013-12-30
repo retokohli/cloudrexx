@@ -2450,7 +2450,7 @@ class newsManager extends newsLibrary {
             'TXT_NEWS_CATEGORY_ORDER'                    => $_ARRAYLANG['TXT_NEWS_CATEGORY_ORDER'],
             'TXT_ACTION'                                 => $_ARRAYLANG['TXT_ACTION'],
             'TXT_ACCEPT_CHANGES'                         => $_ARRAYLANG['TXT_ACCEPT_CHANGES'],
-            'TXT_CONFIRM_DELETE_DATA'                    => $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'],
+            'TXT_CONFIRM_DELETE_WITH_SUBENTRIES'         => $_ARRAYLANG['TXT_CONFIRM_DELETE_WITH_SUBENTRIES'],
             'TXT_ACTION_IS_IRREVERSIBLE'                 => $_ARRAYLANG['TXT_ACTION_IS_IRREVERSIBLE'],
             'TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK' => $_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK'],
         ));
@@ -2641,34 +2641,46 @@ class newsManager extends newsLibrary {
 
 
     /**
-     * Delete a category
+     * Delete a category with its entries and subcategories
      *
      * @access  private
+     * @param   int  $catId Id of the Category
+     * @return  boolean true on success, false otherwise
      */
-    private function deleteCat()
+    private function deleteCat($catId = null)
     {
-        global $objDatabase, $_ARRAYLANG;
-
-        if (isset($_GET['catId'])) {
-            $catId = intval($_GET['catId']);
-            $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_news WHERE catid=".$catId);
-
-            if ($objResult !== false) {
-                if (count($this->objNestedSet->getSubBranch($catId, true)) > 0) {
-                    $this->strErrMessage = $_ARRAYLANG['TXT_NEWS_CATEGORY_NOT_DELETED_BECAUSE_OF_SUBCATEGORIES'];
-                } elseif (!$objResult->EOF) {
-                    $this->strErrMessage = $_ARRAYLANG['TXT_NEWS_CATEGORY_NOT_DELETED_BECAUSE_OF_ENTRIES'];
-                } else {
-                    if ($objDatabase->Execute('DELETE FROM `'.DBPREFIX.'module_news_categories_locale` WHERE `category_id`='.$catId) !== false &&
-                        $this->objNestedSet->deleteNode($catId) !== false
-                    ) {
-                        $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
-                    } else {
+        global $objDatabase, $_ARRAYLANG; 
+        
+        if (isset($_GET['catId']) || $catId !== null) {
+            $catId = $catId == null ? intval($_GET['catId']) : $catId;
+            $subcats = $this->objNestedSet->getSubBranch($catId, true);
+            if (count($subcats) > 0) {
+                foreach($subcats as $subcat){
+                    if(!$this->deleteCat(intval($subcat['id']))){
                         $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
+                        return false;
                     }
                 }
             }
+            $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."module_news WHERE catid=".$catId);
+            if (
+                    !$objResult->EOF &&
+                    !$objDatabase->Execute('DELETE FROM `'.DBPREFIX.'module_news` WHERE `catid`='.$catId) !== false
+                ) {
+                $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
+                return false;
+            }
+            if ($objDatabase->Execute('DELETE FROM `'.DBPREFIX.'module_news_categories_locale` WHERE `category_id`='.$catId) !== false &&
+                $this->objNestedSet->deleteNode($catId) !== false
+            ) {
+                $this->strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_DELETED_SUCCESSFUL'];
+                return true;
+            } else {
+                $this->strErrMessage = $_ARRAYLANG['TXT_DATABASE_QUERY_ERROR'];
+                return false;
+            }
         }
+        return false;
     }
 
 

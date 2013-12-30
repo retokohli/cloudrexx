@@ -3,7 +3,7 @@
 <!-- // confirm delete variable
 function deleteCategorie(id)
 {
-  if (confirm('{TXT_CONFIRM_DELETE_DATA}\n{TXT_ACTION_IS_IRREVERSIBLE} {TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK}'))
+  if (confirm('{TXT_CONFIRM_DELETE_WITH_SUBENTRIES}\n{TXT_ACTION_IS_IRREVERSIBLE} {TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK}'))
     window.location.replace("index.php?cmd=news&{CSRF_PARAM}&act=delcat&catId="+id);
 }
 

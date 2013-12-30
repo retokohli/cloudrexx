@@ -57,6 +57,7 @@ $_ARRAYLANG['TXT_CATEGORY_LIST'] = "Rubrikliste";
 $_ARRAYLANG['TXT_ID'] = "ID";
 $_ARRAYLANG['TXT_ACCEPT_CHANGES'] = "Änderungen übernehmen";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'] = "Datensatz wirklich löschen?";
+$_ARRAYLANG['TXT_CONFIRM_DELETE_WITH_SUBENTRIES'] = "Kategorie mit allen sich darin befindlichen Einträgen löschen?";
 $_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK'] = "Diese Aktion kann die Systemfunktionalität beinflussen!";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_NOT_DELETED_BECAUSE_OF_ENTRIES'] = "Die Rubrik konnte nicht gelöscht werden, da sich in dieser Rubrik noch Newsmeldungen befinden. Bitte löschen Sie zuerst alle Newsmeldungen, welche sich in dieser Rubrik befinden oder verschieben Sie die betroffenen Newsmeldungen in eine andere Rubrik, um den Löschvorgang anschliessend ausführen zu können.";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_NOT_DELETED_BECAUSE_OF_SUBCATEGORIES'] = "Die Rubrik konnte nicht gelöscht werden, da diese untergeordnete Rubriken enthält.";

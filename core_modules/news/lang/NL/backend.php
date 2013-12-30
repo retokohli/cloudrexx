@@ -51,6 +51,7 @@ $_ARRAYLANG['TXT_CATEGORY_LIST'] = "Categorielijst";
 $_ARRAYLANG['TXT_ID'] = "ID";
 $_ARRAYLANG['TXT_ACCEPT_CHANGES'] = "Veranderingen doorvoeren";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'] = "De selectie verwijderen?";
+$_ARRAYLANG['TXT_CONFIRM_DELETE_WITH_SUBENTRIES'] = "Wil je echt tot de categorie te verwijderen met alle bijbehorende data?";
 $_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK'] = "Deze actie kan de werking van het systeem beïnvloeden!";
 $_ARRAYLANG['TXT_PERFORM'] = "Uitvoeren";
 $_ARRAYLANG['TXT_DELETE'] = "Verwijderen";

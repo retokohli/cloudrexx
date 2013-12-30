@@ -57,6 +57,7 @@ $_ARRAYLANG['TXT_CATEGORY_LIST'] = "News Category List";
 $_ARRAYLANG['TXT_ID'] = "ID";
 $_ARRAYLANG['TXT_ACCEPT_CHANGES'] = "Accept Changes";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'] = "Do you really want to delete the data record?";
+$_ARRAYLANG['TXT_CONFIRM_DELETE_WITH_SUBENTRIES'] = "Do you really want to delete the category with all associated entries?";
 $_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK'] = "This action can have influence on the functionallity of the system!";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_NOT_DELETED_BECAUSE_OF_ENTRIES'] = "The category could not be deleted because it contains news messages. Delete all news messages or move them to another category first, so you will be able to delete this category.";
 $_ARRAYLANG['TXT_NEWS_CATEGORY_NOT_DELETED_BECAUSE_OF_SUBCATEGORIES'] = "The category could not be deleted because it contains sub-categories.";

@@ -51,6 +51,7 @@ $_ARRAYLANG['TXT_CATEGORY_LIST'] = "Lista de Categor&iacute;as";
 $_ARRAYLANG['TXT_ID'] = "ID";
 $_ARRAYLANG['TXT_ACCEPT_CHANGES'] = "Aceptar Cambios";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'] = "\¿Realmente desea eliminar los datos?";
+$_ARRAYLANG['TXT_CONFIRM_DELETE_WITH_SUBENTRIES'] = "\¿Realmente desea eliminar la categoría con todas las inscripciones asociadas?";
 $_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK'] = "\¡Esta acci&oacute;n puede tener influencia en el funcionamiento del sistema!";
 $_ARRAYLANG['TXT_PERFORM'] = "Mantenimiento";
 $_ARRAYLANG['TXT_DELETE'] = "Eliminar";
