@@ -51,6 +51,7 @@ $_ARRAYLANG['TXT_CATEGORY_LIST'] = "Список категорий";
 $_ARRAYLANG['TXT_ID'] = "ID";
 $_ARRAYLANG['TXT_ACCEPT_CHANGES'] = "Подтвердить изменения";
 $_ARRAYLANG['TXT_CONFIRM_DELETE_DATA'] = "Действительно удалить набор данных?";
+$_ARRAYLANG['TXT_CONFIRM_DELETE_WITH_SUBENTRIES'] = "Вы действительно хотите удалить категорию со всеми соответствующими записями?";
 $_ARRAYLANG['TXT_ATTENTION_SYSTEM_FUNCTIONALITY_AT_RISK'] = "Это действие может повредить функциональности системы!";
 $_ARRAYLANG['TXT_PERFORM'] = "Экспорт";
 $_ARRAYLANG['TXT_DELETE'] = "Удалить";
