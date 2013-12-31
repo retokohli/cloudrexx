@@ -1997,6 +1997,25 @@ foreach ($arrContentSites as $module) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 }
+    
+    
+$arrContentSites = array(
+    'media1', 'media2', 'media3', 'media4',
+);
+// replace source url to image
+foreach ($arrContentSites as $module) {
+    try {
+        \Cx\Lib\UpdateUtil::migrateContentPage(
+            $module,
+            '',
+            'images/modules/media/_base.gif',
+            'core_modules/media/View/Media/_base.gif',
+            '3.1.1'
+        );
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+}
 
 // fix tree
 \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Node')->recover();
