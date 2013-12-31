@@ -474,7 +474,7 @@ class CalendarSettings extends CalendarLibrary
         $objTpl->setVariable(array(
             $this->moduleLangVar.'_TEMPLATE_ACTION'          =>  $action,
             $this->moduleLangVar.'_TEMPLATE_LANG'            =>  $lang,
-            $this->moduleLangVar.'_TEMPLATE_CONTENT_HTML'    =>  new \Cx\Core\Wysiwyg\Wysiwyg('content_html', $objMail->content_html, 'full'),
+            $this->moduleLangVar.'_TEMPLATE_CONTENT_HTML'    =>  new \Cx\Core\Wysiwyg\Wysiwyg('content_html', $objMail->content_html, 'fullpage'),
         ));
     }
     
