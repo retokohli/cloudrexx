@@ -900,7 +900,7 @@ class newsletter extends NewsletterLib
         $this->_objTpl->setVariable(array(
             'NEWSLETTER_MAIL_ID' => ($copy ? 0 : $mailId),
             'NEWSLETTER_MAIL_SUBJECT' => htmlentities($mailSubject, ENT_QUOTES, CONTREXX_CHARSET),
-            'NEWSLETTER_MAIL_HTML_CONTENT' => new \Cx\Core\Wysiwyg\Wysiwyg('newsletter_mail_html_content', contrexx_raw2xhtml($mailHtmlContent), 'full'),
+            'NEWSLETTER_MAIL_HTML_CONTENT' => new \Cx\Core\Wysiwyg\Wysiwyg('newsletter_mail_html_content', contrexx_raw2xhtml($mailHtmlContent), 'fullpage'),
             'NEWSLETTER_MAIL_PRIORITY_MENU' => $this->_getMailPriorityMenu($mailPriority, 'name="newsletter_mail_priority" style="width:300px;"'),
             'NEWSLETTER_MAIL_TEMPLATE_MENU' => $this->_getTemplateMenu($mailTemplate, 'name="newsletter_mail_template" style="width:300px;" onchange="document.getElementById(\'newsletter_mail_form\').action=\'index.php?cmd=newsletter&amp;act='.$act.'&amp;id='.$mailId.'&amp;setFormat=1\';document.getElementById(\'newsletter_mail_form\').submit()"'),
             'NEWSLETTER_MAIL_SENDER_MAIL' => htmlentities($mailSenderMail, ENT_QUOTES, CONTREXX_CHARSET),
