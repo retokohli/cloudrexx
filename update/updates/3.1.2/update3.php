@@ -2010,7 +2010,7 @@ foreach ($arrContentSites as $module) {
             '',
             'images/modules/media/_base.gif',
             'core_modules/media/View/Media/_base.gif',
-            '3.1.1'
+            '3.1.2'
         );
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
