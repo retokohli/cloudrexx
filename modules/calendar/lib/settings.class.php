@@ -772,7 +772,7 @@ class CalendarSettings extends CalendarLibrary
                     foreach ($arrOptions as $key => $label) {
                         $checked = ($key+1)==$value ? 'checked="checked"' : '';
                         $output .= !$first && $addBreak ? "<br />" : '';
-                        $output .= '<label><input type="radio" '.$checked.' value="'.($key+1).'" name="settings['.$name.']" />&nbsp;'.$_ARRAYLANG[$label].'</label>&nbsp;&nbsp;&nbsp;';
+                        $output .= '<label><input type="radio" '.$checked.' value="'.($key+1).'" name="settings['.$name.']" />&nbsp;'.$_ARRAYLANG[$label].'</label>';
                         $first   = false;
                     }
                 }
@@ -784,7 +784,7 @@ class CalendarSettings extends CalendarLibrary
                     $arrOptions = explode(",",$options);
                     foreach ($arrOptions as $key => $label) {
                         $checked = $key==$value ? 'checked="checked"' : '';
-                        $output .= '<label><input type="checkbox" '.$checked.' value="'.$key.'" name="settings['.$name.']" />&nbsp;'.$_ARRAYLANG[$label].'</label>&nbsp;&nbsp;&nbsp;';
+                        $output .= '<label><input type="checkbox" '.$checked.' value="'.$key.'" name="settings['.$name.']" />&nbsp;'.$_ARRAYLANG[$label].'</label>';
                     }
                 } else {
                     $checked = $value=='1' ? 'checked="checked"' : '';
@@ -833,7 +833,7 @@ class CalendarSettings extends CalendarLibrary
                     $arrValue = explode(',', $value);
                     foreach ($arrOptions as $key => $label) {
                         $checked = in_array($key, $arrValue) ? 'checked="checked"' : '';
-                        $output .= '<label><input type="checkbox" '.$checked.' value="'.$key.'" name="settings['.$name.'][]" />&nbsp;'.$_ARRAYLANG[$label].'</label>&nbsp;&nbsp;&nbsp;';
+                        $output .= '<label><input type="checkbox" '.$checked.' value="'.$key.'" name="settings['.$name.'][]" />&nbsp;'.$_ARRAYLANG[$label].'</label>';
                     }
                 } else {
                     $checked = $value=='1' ? 'checked="checked"' : '';
@@ -850,7 +850,7 @@ class CalendarSettings extends CalendarLibrary
 	}
         
         if(!empty($info)) {
-            $infobox = '&nbsp;&nbsp;<span class="icon-info tooltip-trigger"></span><span class="tooltip-message">' . $_ARRAYLANG[$info] . '</span>';
+            $infobox = '&nbsp;<span class="icon-info tooltip-trigger"></span><span class="tooltip-message">' . $_ARRAYLANG[$info] . '</span>';
         } else {
             $infobox = '';
         }

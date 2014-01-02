@@ -537,6 +537,8 @@ UPLOADER;
             'TXT_'.$this->moduleLangVar.'_EVENT_REDIRECT'           => $_ARRAYLANG['TXT_CALENDAR_EVENT_TYPE_REDIRECT'],
             'TXT_'.$this->moduleLangVar.'_PLACE_DATA_DEFAULT'       => $_ARRAYLANG['TXT_CALENDAR_PLACE_DATA_DEFAULT'],
             'TXT_'.$this->moduleLangVar.'_PLACE_DATA_FROM_MEDIADIR' => $_ARRAYLANG['TXT_CALENDAR_PLACE_DATA_FROM_MEDIADIR'],
+            'TXT_'.$this->moduleLangVar.'_PREV'                     => $_ARRAYLANG['TXT_CALENDAR_PREV'],
+            'TXT_'.$this->moduleLangVar.'_NEXT'                     => $_ARRAYLANG['TXT_CALENDAR_NEXT'],
 
             $this->moduleLangVar.'_EVENT_TYPE_EVENT'                => $eventId != 0 ? ($objEvent->type == 0 ? 'selected="selected"' : '') : '',      
             $this->moduleLangVar.'_EVENT_TYPE_REDIRECT'             => $eventId != 0 ? ($objEvent->type == 1 ? 'selected="selected"' : '') : '',

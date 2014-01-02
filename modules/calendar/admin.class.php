@@ -492,6 +492,7 @@ class CalendarManager extends CalendarLibrary
             'TXT_'.$this->moduleLangVar.'_EVENT_EMAIL'                      => $_ARRAYLANG['TXT_CALENDAR_EVENT_EMAIL'],
             'TXT_'.$this->moduleLangVar.'_SELECT_EXCEPTION_DATE_INFO'       => $_ARRAYLANG['TXT_CALENDAR_SELECT_EXCEPTION_DATE_INFO'],
             'TXT_'.$this->moduleLangVar.'_OK'                               => $_ARRAYLANG['TXT_CALENDAR_OK'],    
+            'TXT_'.$this->moduleLangVar.'_CANCEL'                           => $_ARRAYLANG['TXT_CALENDAR_CANCEL'],    
             'TXT_'.$this->moduleLangVar.'_MANAGE'                           => $_ARRAYLANG['TXT_CALENDAR_MANAGE'],
             'TXT_'.$this->moduleLangVar.'_EVENT_SHOW_IN'                    => $_ARRAYLANG['TXT_CALENDAR_EVENT_SHOW_IN'],
             'TXT_'.$this->moduleLangVar.'_EVENT_TITLE'                      => $_ARRAYLANG['TXT_CALENDAR_EVENT_TITLE'],
@@ -504,6 +505,8 @@ class CalendarManager extends CalendarLibrary
             'TXT_'.$this->moduleLangVar.'_EVENT_USE_GOOGLEMAPS'             => $_ARRAYLANG['TXT_CALENDAR_EVENT_USE_GOOGLEMAPS'],
             'TXT_'.$this->moduleLangVar.'_PLACE_DATA_DEFAULT'               => $_ARRAYLANG['TXT_CALENDAR_PLACE_DATA_DEFAULT'],
             'TXT_'.$this->moduleLangVar.'_PLACE_DATA_FROM_MEDIADIR'         => $_ARRAYLANG['TXT_CALENDAR_PLACE_DATA_FROM_MEDIADIR'],
+            'TXT_'.$this->moduleLangVar.'_PREV'                             => $_ARRAYLANG['TXT_CALENDAR_PREV'],
+            'TXT_'.$this->moduleLangVar.'_NEXT'                             => $_ARRAYLANG['TXT_CALENDAR_NEXT'],
             
             $this->moduleLangVar.'_EVENT_ID'                                => $eventId,
             $this->moduleLangVar.'_EVENT_DEFAULT_LANG_ID'                   => $_LANGID,
