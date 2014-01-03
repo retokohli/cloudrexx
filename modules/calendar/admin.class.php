@@ -348,12 +348,12 @@ class CalendarManager extends CalendarLibrary
         $objMail = new CalendarMail();
         $objMail->getTemplateList();
                 
-        if($eventId != 0) {   
-            $this->_pageTitle = $_ARRAYLANG['TXT_CALENDAR_EVENT']." ".$_ARRAYLANG['TXT_CALENDAR_EDIT'];
+        $copy = isset($_REQUEST['copy']) && !empty($_REQUEST['copy']);
+        $this->_pageTitle = $copy || empty($eventId) ? $_ARRAYLANG['TXT_CALENDAR_INSERT_EVENT'] : $_ARRAYLANG['TXT_CALENDAR_EVENT']." ".$_ARRAYLANG['TXT_CALENDAR_EDIT'];
+        
+        if($eventId != 0) {
             $objEvent = new CalendarEvent($eventId);
             $objEvent->getData();  
-        } else {
-            $this->_pageTitle = $_ARRAYLANG['TXT_CALENDAR_INSERT_EVENT'];
         }
         
         //parse weekdays
@@ -556,7 +556,7 @@ class CalendarManager extends CalendarLibrary
             $this->moduleLangVar.'_EVENT_HOST_EMAIL'                        => $eventId != 0 ? $objEvent->org_email : '',
             $this->moduleLangVar.'_EVENT_HOST_TYPE_MANUAL'                  => $eventId != 0 ? ($objEvent->hostType == 1 ? "checked='checked'" : '') : "checked='checked'",
             $this->moduleLangVar.'_EVENT_HOST_TYPE_MEDIADIR'                => $eventId != 0 ? ($objEvent->hostType == 2 ? "checked='checked'" : '') : "",            
-            $this->moduleLangVar.'_EVENT_COPY'                              => isset($_REQUEST['copy']) && !empty($_REQUEST['copy']) ? 1 : 0,
+            $this->moduleLangVar.'_EVENT_COPY'                              => $copy ? 1 : 0,
         ));
         
         // parse invitation E-mail template
