@@ -603,4 +603,4 @@ $_ARRAYLANG['TXT_CALENDAR_UPCOMING_EVENTS'] = "Aktuelle anzeigen";
 $_ARRAYLANG['TXT_CALENDAR_ALL_EVENTS'] = "Alle anzeigen";
 $_ARRAYLANG['TXT_CALENDAR_PREV'] = "Zurück";
 $_ARRAYLANG['TXT_CALENDAR_NEXT'] = "Weiter";
-$_ARRAYLANG['TXT_CALENDAR_COPY'] = "Copy";
+$_ARRAYLANG['TXT_CALENDAR_COPY'] = "Als Vorlage für eine neue Veranstaltung verwenden";
