@@ -234,6 +234,7 @@ class CalendarManager extends CalendarLibrary
             'TXT_'.$this->moduleLangVar.'_ACTION'                   => $_ARRAYLANG['TXT_CALENDAR_ACTION'],
             'TXT_'.$this->moduleLangVar.'_EXPORT_ICAL_FORMAT'       => $_ARRAYLANG['TXT_CALENDAR_EXPORT_ICAL_FORMAT'],
             'TXT_'.$this->moduleLangVar.'_EDIT'                     => $_ARRAYLANG['TXT_CALENDAR_EDIT'],
+            'TXT_'.$this->moduleLangVar.'_COPY'                     => $_ARRAYLANG['TXT_CALENDAR_COPY'],
             'TXT_'.$this->moduleLangVar.'_DELETE'                   => $_ARRAYLANG['TXT_CALENDAR_DELETE'],
             'TXT_'.$this->moduleLangVar.'_LANGUAGES'                => $_ARRAYLANG['TXT_CALENDAR_LANGUAGES'],
             'TXT_SELECT_ALL'                                        => $_ARRAYLANG['TXT_CALENDAR_MARK_ALL'],
@@ -555,6 +556,7 @@ class CalendarManager extends CalendarLibrary
             $this->moduleLangVar.'_EVENT_HOST_EMAIL'                        => $eventId != 0 ? $objEvent->org_email : '',
             $this->moduleLangVar.'_EVENT_HOST_TYPE_MANUAL'                  => $eventId != 0 ? ($objEvent->hostType == 1 ? "checked='checked'" : '') : "checked='checked'",
             $this->moduleLangVar.'_EVENT_HOST_TYPE_MEDIADIR'                => $eventId != 0 ? ($objEvent->hostType == 2 ? "checked='checked'" : '') : "",            
+            $this->moduleLangVar.'_EVENT_COPY'                              => isset($_REQUEST['copy']) && !empty($_REQUEST['copy']) ? 1 : 0,
         ));
         
         // parse invitation E-mail template
