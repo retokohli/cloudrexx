@@ -292,6 +292,14 @@ class ShopSettings
         SettingDb::set('datatrans_request_type',
             trim(strip_tags(contrexx_input2raw($_POST['datatrans_request_type']))));
         SettingDb::set('datatrans_use_testserver', !empty($_POST['datatrans_use_testserver']));
+        // Paymill
+        SettingDb::set('paymill_active',
+            !empty($_POST['paymill_active']));
+        SettingDb::set('paymill_use_test_account', !empty($_POST['saferpay_use_test_account']));
+        SettingDb::set('paymill_private_key',
+            trim(strip_tags(contrexx_input2raw($_POST['paymill_private_key']))));
+        SettingDb::set('paymill_public_key',
+            trim(strip_tags(contrexx_input2raw($_POST['paymill_public_key']))));
         // LSV
         SettingDb::set('payment_lsv_active', !empty($_POST['payment_lsv_active']));
 // All preceding should be handled by Payment::settings()
