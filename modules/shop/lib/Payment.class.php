@@ -477,6 +477,10 @@ class Payment
         ));
         // Payment Service Providers
         $objTemplate->setVariable(array(
+            'SHOP_PAYMILL_STATUS' => SettingDb::getValue('paymill_active') ? Html::ATTRIBUTE_CHECKED : '',
+            'SHOP_PAYMILL_TEST_STATUS' => SettingDb::getValue('paymill_use_test_account') ? Html::ATTRIBUTE_CHECKED : '',
+            'SHOP_PAYMILL_PRIVATE_KEY' => SettingDb::getValue('paymill_private_key'),
+            'SHOP_PAYMILL_PUBLIC_KEY' => SettingDb::getValue('paymill_public_key'),
             'SHOP_SAFERPAY_ID' => SettingDb::getValue('saferpay_id'),
             'SHOP_SAFERPAY_STATUS' => (SettingDb::getValue('saferpay_active') ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_SAFERPAY_TEST_ID' => SettingDb::getValue('saferpay_use_test_account'),
