@@ -295,11 +295,15 @@ class ShopSettings
         // Paymill
         SettingDb::set('paymill_active',
             !empty($_POST['paymill_active']));
-        SettingDb::set('paymill_use_test_account', !empty($_POST['saferpay_use_test_account']));
-        SettingDb::set('paymill_private_key',
-            trim(strip_tags(contrexx_input2raw($_POST['paymill_private_key']))));
-        SettingDb::set('paymill_public_key',
-            trim(strip_tags(contrexx_input2raw($_POST['paymill_public_key']))));
+        SettingDb::set('paymill_use_test_account', !empty($_POST['paymill_use_test_account']));
+        SettingDb::set('paymill_test_private_key',
+            trim(strip_tags(contrexx_input2raw($_POST['paymill_test_private_key']))));
+        SettingDb::set('paymill_test_public_key',
+            trim(strip_tags(contrexx_input2raw($_POST['paymill_test_public_key']))));
+        SettingDb::set('paymill_live_private_key',
+            trim(strip_tags(contrexx_input2raw($_POST['paymill_live_private_key']))));
+        SettingDb::set('paymill_live_public_key',
+            trim(strip_tags(contrexx_input2raw($_POST['paymill_live_public_key']))));
         // LSV
         SettingDb::set('payment_lsv_active', !empty($_POST['payment_lsv_active']));
 // All preceding should be handled by Payment::settings()
