@@ -298,6 +298,9 @@ DBG::log($error);
                 $return = PayPal::getForm($account_email, $order_id,
                     $currency_code, $amount, $item_name);
                 break;
+            case 'paymill':                
+                $return =  self::_PaymillProcessor();
+                break;
             case 'dummy':
                 $return = Dummy::getForm();
                 break;
@@ -421,6 +424,43 @@ DBG::log($error);
     }
 
 
+    /**
+     * Returns the HTML code for the Paymill payment method.
+     * 
+     * @return  string  HTML code
+     */
+    static function _PaymillProcessor()
+    {
+        global $_ARRAYLANG;
+
+        /*
+        $arrShopOrder = array(
+        );
+
+        $landingPage = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->findOneByModuleCmdLang('shop'.MODULE_INDEX, 'success', FRONTEND_LANG_ID);
+        */
+        
+        $return = Paymill::getForm();
+
+        /* if (_PAYMENT_DEBUG && Paymill::$arrError) {
+            $strError =
+                '<font color="red"><b>'.
+                $_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALISE_YELLOWPAY'].
+                '<br /></b>';
+            if (_PAYMENT_DEBUG) {
+                $strError .= join('<br />', Paymill::$arrError); //.'<br />';
+            }
+            return $strError.'</font>';
+        }
+        if (empty ($return)) {
+            foreach (Paymill::$arrError as $error) {
+                DBG::log("Paymill Error: $error");
+            }
+        } */
+        
+        return $return;
+    }
+    
     /**
      * Returns the HTML code for the Yellowpay payment method.
      * @return  string  HTML code
