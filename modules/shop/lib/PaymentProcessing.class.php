@@ -298,7 +298,7 @@ DBG::log($error);
                 $return = PayPal::getForm($account_email, $order_id,
                     $currency_code, $amount, $item_name);
                 break;
-            case 'paymill':                
+            case 'paymill':    
                 $return =  self::_PaymillProcessor();
                 break;
             case 'dummy':
@@ -432,17 +432,18 @@ DBG::log($error);
     static function _PaymillProcessor()
     {
         global $_ARRAYLANG;
-
-        /*
+        
+        $landingPage = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->findOneByModuleCmdLang('shop'.MODULE_INDEX, 'success', FRONTEND_LANG_ID);
+        
         $arrShopOrder = array(
+            'order_id'  => $_SESSION['shop']['order_id'],
+            'amount'    => intval($_SESSION['shop']['grand_total_price']*100),
+            'currency'  => Currency::getActiveCurrencyCode(),
         );
 
-        $landingPage = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->findOneByModuleCmdLang('shop'.MODULE_INDEX, 'success', FRONTEND_LANG_ID);
-        */
-        
-        $return = Paymill::getForm();
+        $return = Paymill::getForm($arrShopOrder, $landingPage);
 
-        /* if (_PAYMENT_DEBUG && Paymill::$arrError) {
+         if (_PAYMENT_DEBUG && Paymill::$arrError) {
             $strError =
                 '<font color="red"><b>'.
                 $_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALISE_YELLOWPAY'].
@@ -456,7 +457,7 @@ DBG::log($error);
             foreach (Paymill::$arrError as $error) {
                 DBG::log("Paymill Error: $error");
             }
-        } */
+        }
         
         return $return;
     }
@@ -569,6 +570,14 @@ DBG::log("Yellowpay Error: $error");
         }
         if (empty($_REQUEST['handler'])) return false;
         switch ($_REQUEST['handler']) {
+            case 'paymill':
+                $arrShopOrder = array(
+                    'order_id'  => $_SESSION['shop']['order_id'],
+                    'amount'    => intval($_SESSION['shop']['grand_total_price']*100),
+                    'currency'  => Currency::getActiveCurrencyCode(),
+                    'note'      => $_SESSION['shop']['note']
+                );
+                return Paymill::processRequest($_POST['paymillToken'], $arrShopOrder);
             case 'saferpay':
                 $arrShopOrder = array(
                     'ACCOUNTID' => SettingDb::getValue('saferpay_id'));
