@@ -478,7 +478,8 @@ class Payment
         // Payment Service Providers
         $objTemplate->setVariable(array(
             'SHOP_PAYMILL_STATUS' => SettingDb::getValue('paymill_active') ? Html::ATTRIBUTE_CHECKED : '',
-            'SHOP_PAYMILL_TEST_STATUS' => SettingDb::getValue('paymill_use_test_account') ? Html::ATTRIBUTE_CHECKED : '',
+            'SHOP_PAYMILL_TEST_SELECTED' => SettingDb::getValue('paymill_use_test_account') == 0 ? Html::ATTRIBUTE_SELECTED : '',
+            'SHOP_PAYMILL_LIVE_SELECTED' => SettingDb::getValue('paymill_use_test_account') == 1 ? Html::ATTRIBUTE_SELECTED : '',
             'SHOP_PAYMILL_TEST_PRIVATE_KEY' => SettingDb::getValue('paymill_test_private_key'),
             'SHOP_PAYMILL_TEST_PUBLIC_KEY' => SettingDb::getValue('paymill_test_public_key'),
             'SHOP_PAYMILL_LIVE_PRIVATE_KEY' => SettingDb::getValue('paymill_live_private_key'),
