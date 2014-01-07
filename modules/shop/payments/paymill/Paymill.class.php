@@ -47,6 +47,8 @@ class Paymill {
             \$J(document).ready(function() {
                 // 3d secure credit card form
                 \$J("#card-tds-form").submit(function(event) {
+                    // Deactivate submit button to avoid further clicks
+                    $('.submit-button').attr("disabled", "disabled");
                     event.preventDefault();
                     try {
                         paymill.createToken({
@@ -64,7 +66,25 @@ class Paymill {
                 });
             });
             function PaymillResponseHandler(error, result) {
-                error ? logResponse(error.apierror) : logResponse(result.token);
+                if (error) {
+                    logResponse(error.apierror)
+                } else {
+                    logResponse(result.token);
+                    var form = \$J("#card-tds-form");
+                    // Token
+                    var token = result.token;
+
+                    // Insert token into form in order to submit to server
+                    form.append("<input type='hidden' name='paymillToken' value='" + token + "'/>");
+                    form.get(0).submit();
+                    
+                    \$J(".submit-button").removeAttr("disabled");
+            
+                    /*\$J.getJSON('index.php', {section: 'shop', cmd: 'success', handler: 'paymill', token: result.token}, function(data) {
+                        logResponse(data);
+                    });*/
+                }
+                 
             }
 
             function logResponse(res) {
@@ -77,19 +97,64 @@ class Paymill {
             }            
 FORMTEMPLATE;
     
+    public static function processRequest($token, $arrOrder) {
+        if (empty($token)) {
+            return array(
+                        'status'  => 'error',
+                        'message' => 'invalid token'
+                       );
+        }
+        
+        $testMode = intval(SettingDb::getValue('paymill_use_test_account')) == 0;
+        $apiKey   = $testMode ? SettingDb::getValue('paymill_test_private_key') : SettingDb::getValue('paymill_live_private_key');
+        
+        if ($token) {
+            $request = new Paymill\Request($apiKey);
+            $transaction = new Paymill\Models\Request\Transaction();
+            $transaction->setAmount($arrOrder['amount'])
+                        ->setCurrency($arrOrder['currency'])
+                        ->setToken($token)
+                        ->setDescription($arrOrder['note']);
+
+            try {
+                $response = $request->create($transaction);
+                $paymentId = $response->getId();
+                return array('status' => 'success', 'payment_id' => $paymentId);
+            } catch(PaymillException $e) {
+                //Do something with the error informations below
+                return array(
+                        'status' => 'error',
+                        'response_code' => $e->getResponseCode(),
+                        'status_code' => $e->getStatusCode(),
+                        'message'       => $e->getErrorMessage()
+                       );                
+            }
+        }
+    }
+    
     /**
      * Creates and returns the HTML Form for requesting the payment service.
      *
      * @access  public     
      * @return  string                      The HTML form code
      */
-    static function getForm()
+    static function getForm($arrOrder, $landingPage = null)
     {
         global $_ARRAYLANG;
         
+        if ((gettype($landingPage) != 'object') || (get_class($landingPage) != 'Cx\Core\ContentManager\Model\Entity\Page')) {
+            self::$arrError[] = 'No landing page passed.';
+        }
+
+        if (($sectionName = $landingPage->getModule()) && !empty($sectionName)) {
+            self::$sectionName = $sectionName;
+        } else {
+            self::$arrError[] = 'Passed landing page is not an application.';
+        }
+        
         JS::registerJS("https://bridge.paymill.com/");
         
-        $testMode = (int) SettingDb::getValue('paymill_use_test_account');
+        $testMode = intval(SettingDb::getValue('paymill_use_test_account')) == 0;        
         $apiKey   = $testMode ? SettingDb::getValue('paymill_test_public_key') : SettingDb::getValue('paymill_live_public_key');
         $mode     = $testMode ? 'true' : 'false';
         
@@ -105,37 +170,37 @@ APISETTING;
         $formContent .= self::fieldset('');
         
         $formContent .= self::openElement('div', 'class="row"');
-        $formContent .= self::getElement('label', '', 'Credit card number');
+        $formContent .= self::getElement('label', '', $_ARRAYLANG['TXT_SHOP_CREDIT_CARD_NUMBER']);
         $formContent .= Html::getInputText('', '4012888888881881', '', 'class="card-number size="20"');
         $formContent .= self::closeElement('div');
         
         $formContent .= self::openElement('div', 'class="row"');        
-        $formContent .= self::getElement('label', '', 'CVC');
+        $formContent .= self::getElement('label', '', $_ARRAYLANG['TXT_SHOP_CVC']);
         $formContent .= Html::getInputText('', '123', '', 'class ="card-cvc" size="4" maxlength="4"');
         $formContent .= self::closeElement('div');
         
         $formContent .= self::openElement('div', 'class="row"');
-        $formContent .= self::getElement('label', '', 'Card holder');
+        $formContent .= self::getElement('label', '', $_ARRAYLANG['TXT_SHOP_CARD_HOLDER']);
         $formContent .= Html::getInputText('', 'Max Mustermann', '', 'class="card-holdername" size="20"');
         $formContent .= self::closeElement('div');
         
         $formContent .= self::openElement('div', 'class="row"');
-        $formContent .= self::getElement('label', '', 'Expiry (MM/YYYY)');
+        $formContent .= self::getElement('label', '', $_ARRAYLANG['TXT_SHOP_CARD_EXPIRY']);
         $formContent .= Html::getInputText('', '12', '', 'class="card-expiry-month" size="2" maxlength="2"');
         $formContent .= Html::getInputText('', '2015', '', 'class="card-expiry-year" size="4" maxlength="4"');
         $formContent .= self::closeElement('div');
         
         $formContent .= self::openElement('div', 'class="row"');
         $formContent .= self::getElement('label', '', '&nbsp;');
-        $formContent .= Html::getInputButton('', 'Submit', 'submit', '', 'class="submit-button"');
+        $formContent .= Html::getInputButton('', $_ARRAYLANG['TXT_SHOP_BUY_NOW'], 'submit', '', 'class="submit-button"');
         $formContent .= self::closeElement('div');
         
-        $formContent .= Html::getHidden('', "123.45", '', 'class="card-amount" size="4"');
-        $formContent .= Html::getHidden('', "EUR", '', 'class="card-currency" size="4"');
+        $formContent .= Html::getHidden('', $arrOrder['amount'], '', 'class="card-amount" size="4"');
+        $formContent .= Html::getHidden('', $arrOrder['currency'], '', 'class="card-currency" size="4"');
         
         $formContent .= self::closeElement('fieldset');
         
-        $form = Html::getForm('', 'javascript:void(0)', $formContent, 'card-tds-form', 'POST');
+        $form = Html::getForm('', Cx\Core\Routing\Url::fromPage($landingPage)->toString(), $formContent, 'card-tds-form', 'POST');
         
         return $form;
     }
