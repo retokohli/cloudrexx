@@ -1552,6 +1552,9 @@ div.row2 {
     background-color: #1F97D8;
 }
 
+#shop form#card-tds-form .card-expiry-month {width: 50px}
+#shop form#card-tds-form .card-expiry-year {width: 55px}
+
 /***************************************************/
 /* CSS DEFINITIONS FOR E-CARD MODULE               */
 /***************************************************/
