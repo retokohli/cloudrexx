@@ -19,7 +19,7 @@
  * @package     contrexx
  * @subpackage  module_shop  
  */
-class Paymill {
+class PaymillHandler {
     /**
      * section name
      *
@@ -48,7 +48,7 @@ class Paymill {
                 // 3d secure credit card form
                 \$J("#card-tds-form").submit(function(event) {
                     // Deactivate submit button to avoid further clicks
-                    $('.submit-button').attr("disabled", "disabled");
+                    \$J('.submit-button').attr("disabled", "disabled");
                     event.preventDefault();
                     try {
                         paymill.createToken({
@@ -109,16 +109,20 @@ FORMTEMPLATE;
         $apiKey   = $testMode ? SettingDb::getValue('paymill_test_private_key') : SettingDb::getValue('paymill_live_private_key');
         
         if ($token) {
-            $request = new Paymill\Request($apiKey);
-            $transaction = new Paymill\Models\Request\Transaction();
-            $transaction->setAmount($arrOrder['amount'])
-                        ->setCurrency($arrOrder['currency'])
-                        ->setToken($token)
-                        ->setDescription($arrOrder['note']);
-
             try {
+                
+                $request     = new Paymill\Request($apiKey);
+                $transaction = new Paymill\Models\Request\Transaction();
+                $transaction->setAmount($arrOrder['amount'])
+                            ->setCurrency($arrOrder['currency'])
+                            ->setToken($token)
+                            ->setDescription($arrOrder['note']);
+                
+                DBG::log("Transactoin created with token:". $token);
                 $response = $request->create($transaction);
                 $paymentId = $response->getId();
+                DBG::log("Payment ID".$paymentId);
+                
                 return array('status' => 'success', 'payment_id' => $paymentId);
             } catch(PaymillException $e) {
                 //Do something with the error informations below
@@ -127,7 +131,7 @@ FORMTEMPLATE;
                         'response_code' => $e->getResponseCode(),
                         'status_code' => $e->getStatusCode(),
                         'message'       => $e->getErrorMessage()
-                       );                
+                       );
             }
         }
     }
@@ -171,23 +175,23 @@ APISETTING;
         
         $formContent .= self::openElement('div', 'class="row"');
         $formContent .= self::getElement('label', '', $_ARRAYLANG['TXT_SHOP_CREDIT_CARD_NUMBER']);
-        $formContent .= Html::getInputText('', '4012888888881881', '', 'class="card-number size="20"');
+        $formContent .= Html::getInputText('', '', '', 'class="card-number size="20"');
         $formContent .= self::closeElement('div');
         
         $formContent .= self::openElement('div', 'class="row"');        
         $formContent .= self::getElement('label', '', $_ARRAYLANG['TXT_SHOP_CVC']);
-        $formContent .= Html::getInputText('', '123', '', 'class ="card-cvc" size="4" maxlength="4"');
+        $formContent .= Html::getInputText('', '', '', 'class ="card-cvc" size="4" maxlength="4"');
         $formContent .= self::closeElement('div');
         
         $formContent .= self::openElement('div', 'class="row"');
         $formContent .= self::getElement('label', '', $_ARRAYLANG['TXT_SHOP_CARD_HOLDER']);
-        $formContent .= Html::getInputText('', 'Max Mustermann', '', 'class="card-holdername" size="20"');
+        $formContent .= Html::getInputText('', '', '', 'class="card-holdername" size="20"');
         $formContent .= self::closeElement('div');
         
         $formContent .= self::openElement('div', 'class="row"');
         $formContent .= self::getElement('label', '', $_ARRAYLANG['TXT_SHOP_CARD_EXPIRY']);
-        $formContent .= Html::getInputText('', '12', '', 'class="card-expiry-month" size="2" maxlength="2"');
-        $formContent .= Html::getInputText('', '2015', '', 'class="card-expiry-year" size="4" maxlength="4"');
+        $formContent .= Html::getInputText('', '', '', 'class="card-expiry-month" size="2" maxlength="2"');
+        $formContent .= Html::getInputText('', '', '', 'class="card-expiry-year" size="4" maxlength="4"');
         $formContent .= self::closeElement('div');
         
         $formContent .= self::openElement('div', 'class="row"');
@@ -197,10 +201,11 @@ APISETTING;
         
         $formContent .= Html::getHidden('', $arrOrder['amount'], '', 'class="card-amount" size="4"');
         $formContent .= Html::getHidden('', $arrOrder['currency'], '', 'class="card-currency" size="4"');
+        $formContent .= Html::getHidden('handler', 'paymill');
         
         $formContent .= self::closeElement('fieldset');
         
-        $form = Html::getForm('', Cx\Core\Routing\Url::fromPage($landingPage)->toString(), $formContent, 'card-tds-form', 'POST');
+        $form = Html::getForm('', Cx\Core\Routing\Url::fromPage($landingPage)->toString(), $formContent, 'card-tds-form', 'post');
         
         return $form;
     }

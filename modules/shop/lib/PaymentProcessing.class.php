@@ -441,20 +441,20 @@ DBG::log($error);
             'currency'  => Currency::getActiveCurrencyCode(),
         );
 
-        $return = Paymill::getForm($arrShopOrder, $landingPage);
+        $return = PaymillHandler::getForm($arrShopOrder, $landingPage);
 
-         if (_PAYMENT_DEBUG && Paymill::$arrError) {
+         if (_PAYMENT_DEBUG && PaymillHandler::$arrError) {
             $strError =
                 '<font color="red"><b>'.
                 $_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALISE_YELLOWPAY'].
                 '<br /></b>';
             if (_PAYMENT_DEBUG) {
-                $strError .= join('<br />', Paymill::$arrError); //.'<br />';
+                $strError .= join('<br />', PaymillHandler::$arrError); //.'<br />';
             }
             return $strError.'</font>';
         }
         if (empty ($return)) {
-            foreach (Paymill::$arrError as $error) {
+            foreach (PaymillHandler::$arrError as $error) {
                 DBG::log("Paymill Error: $error");
             }
         }
@@ -577,7 +577,15 @@ DBG::log("Yellowpay Error: $error");
                     'currency'  => Currency::getActiveCurrencyCode(),
                     'note'      => $_SESSION['shop']['note']
                 );
-                return Paymill::processRequest($_POST['paymillToken'], $arrShopOrder);
+                $response = PaymillHandler::processRequest($_REQUEST['paymillToken'], $arrShopOrder);
+                DBG::log(var_export($response, true));
+                if ($response['status'] === 'success') {
+                    return true;
+                } else {
+                    DBG::log("PaymentProcessing::checkIn(): WARNING: paymill: Payment verification failed; errors: ".var_export($response, true));
+                    return false;
+                }
+                
             case 'saferpay':
                 $arrShopOrder = array(
                     'ACCOUNTID' => SettingDb::getValue('saferpay_id'));
