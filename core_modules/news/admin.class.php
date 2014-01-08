@@ -805,7 +805,8 @@ class newsManager extends newsLibrary {
      */
     function valueFromDate($value = 0) {
         if ($value === null //user provided no POST
-            || $value === '0') //empty date field
+            || $value === '0'
+            || $value === 0) //empty date field
             return ''; //make an empty date 
         if ($value) {
             return date(ASCMS_DATE_FORMAT_DATETIME, $value);
