@@ -277,6 +277,11 @@ class CalendarLibrary
     {
         global $objDatabase, $_ARRAYLANG, $objInit;
         
+        // only initialize once
+        if ($this->arrSettings) {
+            return;
+        }
+        
     	$arrSettings = array();
         $arrDateSettings =  array(
                             'separatorDateList','separatorDateTimeList', 'separatorSeveralDaysList', 'separatorTimeList',
