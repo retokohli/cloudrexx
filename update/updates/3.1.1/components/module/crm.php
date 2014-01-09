@@ -1,0 +1,232 @@
+<?php
+
+function _crmUpdate() {
+    try {
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_crm_contacts',
+            array(
+                'id'                     => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'customer_id'            => array('type' => 'VARCHAR(256)', 'notnull' => false, 'after' => 'id'),
+                'customer_type'          => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'customer_id'),
+                'customer_name'          => array('type' => 'VARCHAR(256)', 'notnull' => false, 'after' => 'customer_type'),
+                'customer_website'       => array('type' => 'VARCHAR(256)', 'notnull' => false, 'after' => 'customer_name'),
+                'customer_addedby'       => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'customer_website'),
+                'customer_currency'      => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'customer_addedby'),
+                'contact_familyname'     => array('type' => 'VARCHAR(256)', 'notnull' => false, 'after' => 'customer_currency'),
+                'contact_role'           => array('type' => 'VARCHAR(256)', 'notnull' => false, 'after' => 'contact_familyname'),
+                'contact_customer'       => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'contact_role'),
+                'contact_language'       => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'contact_customer'),
+                'gender'                 => array('type' => 'TINYINT(2)', 'after' => 'contact_language'),
+                'notes'                  => array('type' => 'text', 'after' => 'gender'),
+                'industry_type'          => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'notes'),
+                'contact_type'           => array('type' => 'TINYINT(2)', 'notnull' => false, 'after' => 'industry_type'),
+                'user_account'           => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'contact_type'),
+                'datasource'             => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'user_account'),
+                'profile_picture'        => array('type' => 'VARCHAR(256)', 'after' => 'datasource'),
+                'status'                 => array('type' => 'TINYINT(2)', 'notnull' => true, 'default' => '1', 'after' => 'profile_picture'),
+                'added_date'             => array('type' => 'date', 'after' => 'status')
+            ),
+            array(
+                'contact_customer'       => array('fields' => array('contact_customer')),
+                'customer_id'            => array('fields' => array('customer_id')),
+                'customer_name'          => array('fields' => array('customer_name')),
+                'contact_familyname'     => array('fields' => array('contact_familyname')),
+                'contact_role'           => array('fields' => array('contact_role')),
+                'customer_id_2'          => array('fields' => array('customer_id','customer_name','contact_familyname','contact_role','notes'), 'type' => 'FULLTEXT')
+            )
+        );
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_crm_currency',
+            array(
+                'id'                     => array('type' => 'INT(10)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'name'                   => array('type' => 'VARCHAR(400)', 'after' => 'id'),
+                'active'                 => array('type' => 'INT(1)', 'notnull' => true, 'default' => '1', 'after' => 'name'),
+                'pos'                    => array('type' => 'INT(5)', 'notnull' => true, 'default' => '0', 'after' => 'active'),
+                'hourly_rate'            => array('type' => 'text', 'after' => 'pos'),
+                'default_currency'       => array('type' => 'TINYINT(1)', 'after' => 'hourly_rate')
+            ),
+            array(
+                'name'                   => array('fields' => array('name' => 333)),
+                'name_2'                 => array('fields' => array('name'), 'type' => 'FULLTEXT')
+            )
+        );
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_crm_customer_comment',
+            array(
+                'id'                 => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'customer_id'        => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'id'),
+                'notes_type_id'      => array('type' => 'INT(1)', 'after' => 'customer_id'),
+                'user_id'            => array('type' => 'INT(11)', 'after' => 'notes_type_id'),
+                'date'               => array('type' => 'date', 'after' => 'user_id'),
+                'comment'            => array('type' => 'text', 'after' => 'date'),
+                'added_date'         => array('type' => 'datetime', 'notnull' => false, 'after' => 'comment'),
+                'updated_by'         => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'added_date'),
+                'updated_on'         => array('type' => 'datetime', 'notnull' => false, 'after' => 'updated_by')
+            ),
+            array(
+                'customer_id'        => array('fields' => array('customer_id')),
+                'comment'            => array('fields' => array('comment'), 'type' => 'FULLTEXT')
+            )
+        );
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_crm_customer_contact_address',
+            array(
+                'id'                 => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'address'            => array('type' => 'VARCHAR(256)', 'after' => 'id'),
+                'city'               => array('type' => 'VARCHAR(256)', 'after' => 'address'),
+                'state'              => array('type' => 'VARCHAR(256)', 'after' => 'city'),
+                'zip'                => array('type' => 'VARCHAR(256)', 'after' => 'state'),
+                'country'            => array('type' => 'VARCHAR(256)', 'after' => 'zip'),
+                'Address_Type'       => array('type' => 'TINYINT(4)', 'after' => 'country'),
+                'is_primary'         => array('type' => 'ENUM(\'0\',\'1\')', 'after' => 'Address_Type'),
+                'contact_id'         => array('type' => 'INT(11)', 'after' => 'is_primary')
+            ),
+            array(
+                'contact_id'         => array('fields' => array('contact_id')),
+                'address'            => array('fields' => array('address')),
+                'city'               => array('fields' => array('city')),
+                'state'              => array('fields' => array('state')),
+                'zip'                => array('fields' => array('zip')),
+                'country'            => array('fields' => array('country')),
+                'address_2'          => array('fields' => array('address','city','state','zip','country'), 'type' => 'FULLTEXT')
+            )
+        );
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_crm_customer_contact_emails',
+            array(
+                'id'             => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'email'          => array('type' => 'VARCHAR(256)', 'after' => 'id'),
+                'email_type'     => array('type' => 'TINYINT(4)', 'after' => 'email'),
+                'is_primary'     => array('type' => 'ENUM(\'0\',\'1\')', 'default' => '0', 'after' => 'email_type'),
+                'contact_id'     => array('type' => 'INT(11)', 'after' => 'is_primary')
+            ),
+            array(
+                'contact_id'     => array('fields' => array('contact_id')),
+                'email'          => array('fields' => array('email')),
+                'email_2'        => array('fields' => array('email'), 'type' => 'FULLTEXT')
+            )
+        );
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_crm_customer_contact_phone',
+            array(
+                'id'             => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'phone'          => array('type' => 'VARCHAR(256)', 'after' => 'id'),
+                'phone_type'     => array('type' => 'TINYINT(4)', 'after' => 'phone'),
+                'is_primary'     => array('type' => 'ENUM(\'0\',\'1\')', 'default' => '0', 'after' => 'phone_type'),
+                'contact_id'     => array('type' => 'INT(11)', 'after' => 'is_primary')
+            ),
+            array(
+                'contact_id'     => array('fields' => array('contact_id')),
+                'phone'          => array('fields' => array('phone')),
+                'phone_2'        => array('fields' => array('phone'), 'type' => 'FULLTEXT')
+            )
+        );
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_crm_customer_contact_social_network',
+            array(
+                'id'             => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'url'            => array('type' => 'VARCHAR(256)', 'after' => 'id'),
+                'url_profile'    => array('type' => 'TINYINT(4)', 'after' => 'url'),
+                'is_primary'     => array('type' => 'ENUM(\'0\',\'1\')', 'default' => '0', 'after' => 'url_profile'),
+                'contact_id'     => array('type' => 'INT(11)', 'after' => 'is_primary')
+            ),
+            array(
+                'contact_id'     => array('fields' => array('contact_id')),
+                'url'            => array('fields' => array('url')),
+                'url_2'          => array('fields' => array('url'), 'type' => 'FULLTEXT')
+            )
+        );
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_crm_customer_contact_websites',
+            array(
+                'id'             => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'url'            => array('type' => 'VARCHAR(256)', 'after' => 'id'),
+                'url_type'       => array('type' => 'TINYINT(4)', 'after' => 'url'),
+                'url_profile'    => array('type' => 'TINYINT(4)', 'after' => 'url_type'),
+                'is_primary'     => array('type' => 'ENUM(\'0\',\'1\')', 'default' => '0', 'after' => 'url_profile'),
+                'contact_id'     => array('type' => 'INT(11)', 'after' => 'is_primary')
+            ),
+            array(
+                'contact_id'     => array('fields' => array('contact_id')),
+                'url'            => array('fields' => array('url')),
+                'url_2'          => array('fields' => array('url'), 'type' => 'FULLTEXT')
+            )
+        );
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_crm_customer_types',
+            array(
+                'id'             => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'label'          => array('type' => 'VARCHAR(250)', 'after' => 'id'),
+                'hourly_rate'    => array('type' => 'VARCHAR(256)', 'after' => 'label'),
+                'active'         => array('type' => 'INT(1)', 'after' => 'hourly_rate'),
+                'pos'            => array('type' => 'INT(10)', 'notnull' => true, 'default' => '0', 'after' => 'active'),
+                'default'        => array('type' => 'TINYINT(2)', 'notnull' => true, 'default' => '0', 'after' => 'pos')
+            ),
+            array(
+                'label'          => array('fields' => array('label')),
+                'label_2'        => array('fields' => array('label'), 'type' => 'FULLTEXT')
+            )
+        );
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_crm_industry_type_local',
+            array(
+                'entry_id'       => array('type' => 'INT(11)'),
+                'lang_id'        => array('type' => 'INT(11)', 'after' => 'entry_id'),
+                'value'          => array('type' => 'VARCHAR(256)', 'after' => 'lang_id')
+            ),
+            array(
+                'entry_id'       => array('fields' => array('entry_id')),
+                'value'          => array('fields' => array('value')),
+                'value_2'        => array('fields' => array('value'), 'type' => 'FULLTEXT')
+            )
+        );
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_crm_membership_local',
+            array(
+                'entry_id'       => array('type' => 'INT(11)'),
+                'lang_id'        => array('type' => 'INT(11)', 'after' => 'entry_id'),
+                'value'          => array('type' => 'VARCHAR(256)', 'after' => 'lang_id')
+            ),
+            array(
+                'entry_id'       => array('fields' => array('entry_id')),
+                'value'          => array('fields' => array('value')),
+                'value_2'        => array('fields' => array('value'), 'type' => 'FULLTEXT')
+            )
+        );
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_crm_notes',
+            array(
+                'id'                 => array('type' => 'INT(1)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'name'               => array('type' => 'VARCHAR(255)', 'after' => 'id'),
+                'status'             => array('type' => 'TINYINT(1)', 'after' => 'name'),
+                'icon'               => array('type' => 'VARCHAR(255)', 'after' => 'status'),
+                'pos'                => array('type' => 'INT(1)', 'after' => 'icon'),
+                'system_defined'     => array('type' => 'TINYINT(2)', 'notnull' => true, 'default' => '0', 'after' => 'pos')
+            ),
+            array(
+                'name'               => array('fields' => array('name')),
+                'name_2'             => array('fields' => array('name'), 'type' => 'FULLTEXT')
+            )
+        );
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'module_crm_task_types',
+            array(
+                'id'                 => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'name'               => array('type' => 'VARCHAR(256)', 'after' => 'id'),
+                'status'             => array('type' => 'TINYINT(1)', 'after' => 'name'),
+                'sorting'            => array('type' => 'INT(11)', 'after' => 'status'),
+                'description'        => array('type' => 'text', 'after' => 'sorting'),
+                'icon'               => array('type' => 'VARCHAR(255)', 'after' => 'description'),
+                'system_defined'     => array('type' => 'TINYINT(4)', 'after' => 'icon')
+            ),
+            array(
+                'name'               => array('fields' => array('name')),
+                'name_2'             => array('fields' => array('name'), 'type' => 'FULLTEXT')
+            )
+        );
+    } catch (\Cx\Lib\UpdateException $e) {
+        // we COULD do something else here..
+        DBG::trace();
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+}

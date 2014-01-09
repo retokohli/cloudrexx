@@ -1118,7 +1118,7 @@ if ($version == 'rc1') {
 
 /***************************************
  *
- * INSTALLING CRM AND FRONTEND EDITING BEFORE WE DO THE TABLE-UPDATES
+ * INSTALLING CRM BEFORE WE DO THE TABLE-UPDATES
  *
  **************************************/
 if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
@@ -1975,43 +1975,6 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.1')) {
         if ($result && ($result->RecordCount() == 0)) {
             \Cx\Lib\UpdateUtil::sql('INSERT INTO `'.DBPREFIX.'module_news_settings` (`name`, `value`) VALUES ("news_use_teaser_text", 1)');
         }
-    } catch (\Cx\Lib\UpdateException $e) {
-        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-    }
-}
-
-$arrContentSites = array(
-    'media1', 'media2', 'media3', 'media4',
-);
-// replace source url to image
-foreach ($arrContentSites as $module) {
-    try {
-        \Cx\Lib\UpdateUtil::migrateContentPage(
-            $module,
-            '',
-            'images/modules/media/_base.gif',
-            'core_modules/media/View/Media/_base.gif',
-            '3.1.1'
-        );
-    } catch (\Cx\Lib\UpdateException $e) {
-        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
-    }
-}
-    
-    
-$arrContentSites = array(
-    'media1', 'media2', 'media3', 'media4',
-);
-// replace source url to image
-foreach ($arrContentSites as $module) {
-    try {
-        \Cx\Lib\UpdateUtil::migrateContentPage(
-            $module,
-            '',
-            'images/modules/media/_base.gif',
-            'core_modules/media/View/Media/_base.gif',
-            '3.1.2'
-        );
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }

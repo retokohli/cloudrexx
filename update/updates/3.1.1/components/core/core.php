@@ -1458,7 +1458,10 @@ function _coreUpdate()
             ),
             array(
                 'lang'                   => array('fields' => array('lang'), 'type' => 'UNIQUE'),
-                'defaultstatus'          => array('fields' => array('is_default'))
+                'defaultstatus'          => array('fields' => array('is_default')),
+                'name'                   => array('fields' => array('name')),
+                'name_2'                 => array('fields' => array('name'), 'type' => 'FULLTEXT')
+
             )
         );
 
