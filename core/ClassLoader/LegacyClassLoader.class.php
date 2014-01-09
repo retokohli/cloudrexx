@@ -37,7 +37,7 @@ class LegacyClassLoader {
     public function autoload($name) {
         $parts = explode('\\', $name);
         // Let doctrine handle it's includes itself
-        if (in_array($parts[0], array('Symfony', 'doctrine', 'Doctrine', 'Gedmo', 'DoctrineExtension'))) {
+        if (in_array($parts[0], array('Symfony', 'doctrine', 'Doctrine', 'Gedmo', 'DoctrineExtension', 'Paymill'))) {
             return;
         // They come from doctrine, there's no need to load these, doctrine does it
         } else if (in_array($name, array('var', 'Column', 'MappedSuperclass', 'Table', 'index', 'Entity', 'Id', 'GeneratedValue'))) {
