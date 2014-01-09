@@ -1746,6 +1746,15 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
     if ($backendAreasUpdate !== true) {
         return $backendAreasUpdate;
     }
+} elseif ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.1')) {
+    $calendarComponentUpdateFile = dirname(__FILE__).'/components/module/calendar.php';
+    require_once($calendarComponentUpdateFile);
+    $CalendarUpdate31 = new CalendarUpdate31();
+    $calendarMigration = $CalendarUpdate31->migrateContentPages();
+    if ($calendarMigration !== true) {
+        \DBG::dump($calendarMigration);
+        return $calendarMigration;
+    }
 }
 
 /***************************************
