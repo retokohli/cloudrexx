@@ -976,6 +976,16 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
         self::reset();
         return true;
     }
+    
+    
+    static function adminView($section, $group = 'nonempty') {
+        \MailTemplate::storeFromPost($section);
+        if (!isset($_GET['key'])) {
+            return static::overview($section, $group, 0, false);
+        } else {
+            return static::edit($section, '', false);
+        }
+    }
 
 
     /**
@@ -990,7 +1000,7 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
      *                                  of templates to be shown
      * @return  \Cx\Core\Html\Sigma     The template object
      */
-    static function overview($section, $group, $limit=0)
+    static function overview($section, $group, $limit=0, $useDefaultActs = true)
     {
         global $_CORELANG;
 
@@ -1019,15 +1029,17 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
         Html::replaceUriParameter($uri, 'userFrontendLangId='.FRONTEND_LANG_ID);
 //echo("Made uri for sorting: ".htmlentities($uri)."<br />");
         Html::stripUriParam($uri, 'key');
-        Html::stripUriParam($uri, 'act');
         Html::stripUriParam($uri, 'delete_mailtemplate_key');
 // TODO: I guess that explicitly adding CSRF should not be necessary?!
 // TODO: And it doesn't seem to work like that, either?!
         CSRF::enhanceURI($uri);
         $uri_edit = $uri_overview = $uri;
 //echo("Made uri for sorting: ".htmlentities($uri)."<br />");
-        Html::replaceUriParameter($uri_edit, 'act=mailtemplate_edit');
-        Html::replaceUriParameter($uri_overview, 'act=mailtemplate_overview');
+        if ($useDefaultActs) {
+            Html::stripUriParam($uri, 'act');
+            Html::replaceUriParameter($uri_edit, 'act=mailtemplate_edit');
+            Html::replaceUriParameter($uri_overview, 'act=mailtemplate_overview');
+        }
         $objSorting = new Sorting(
             $uri_overview,
             array(
@@ -1063,6 +1075,7 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
                 $uri_overview, $_CORELANG['TXT_CORE_MAILTEMPLATE_PAGING'],
                 $count, $limit, true),
             'URI_BASE' => $uri,
+            'URI_EDIT' => $uri_edit,
             'CORE_MAILTEMPLATE_COLSPAN' => 5 + count($arrLanguageName),
         ));
         foreach ($arrLanguageName as $language_name) {
@@ -1143,7 +1156,7 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
      *                                  to be edited
      * @return  \Cx\Core\Html\Sigma     The template object
      */
-    static function edit($section, $key='')
+    static function edit($section, $key='', $useDefaultActs = true)
     {
         global $_CORELANG;
 
@@ -1170,7 +1183,11 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
             die("Failed to load template mailtemplate_edit.html");
         $uri = Html::getRelativeUri_entities();
         Html::stripUriParam($uri, 'key');
-        Html::stripUriParam($uri, 'act');
+        $uriAppendix = '';
+        if ($useDefaultActs) {
+            Html::stripUriParam($uri, 'act');
+            $uriAppendix = '&amp;act=mailtemplate_overview';
+        }
         $tab_index = SettingDb::tab_index();
         Html::replaceUriParameter($uri, 'active_tab='.$tab_index);
         Html::replaceUriParameter($uri, 'userFrontendLangId='.FRONTEND_LANG_ID);
@@ -1183,7 +1200,7 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
             'CORE_MAILTEMPLATE_CMD' =>
                 (isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : ''),
             'CORE_MAILTEMPLATE_ACTIVE_TAB' => $tab_index,
-            'URI_BASE' => $uri,
+            'URI_BASE' => $uri.$uriAppendix,
         ));
 
         $i = 0;
