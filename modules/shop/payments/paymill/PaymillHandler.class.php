@@ -56,9 +56,7 @@ class PaymillHandler {
                             exp_month:  \$J('#card-tds-form .card-expiry-month').val(),
                             exp_year:   \$J('#card-tds-form .card-expiry-year').val(),
                             cvc:        \$J('#card-tds-form .card-cvc').val(),
-                            cardholder: \$J('#card-tds-form .card-holdername').val(),
-                            amount:     \$J('#card-tds-form .card-amount').val(),
-                            currency:   \$J('#card-tds-form .card-currency').val()
+                            cardholder: \$J('#card-tds-form .card-holdername').val(),                            
                         }, PaymillResponseHandler);
                     } catch(e) {
                         logResponse(e.message);
@@ -67,9 +65,10 @@ class PaymillHandler {
             });
             function PaymillResponseHandler(error, result) {
                 if (error) {
-                    logResponse(error.apierror)
+                    logResponse(error.apierror);
+                    \$J(".submit-button").removeAttr("disabled");
                 } else {
-                    logResponse(result.token);
+                    //logResponse(result.token);
                     var form = \$J("#card-tds-form");
                     // Token
                     var token = result.token;
@@ -88,12 +87,15 @@ class PaymillHandler {
             }
 
             function logResponse(res) {
+                /*
                 // create console.log to avoid errors in old IE browsers
                 if (!window.console) console = {log:function(){}};
 
                 console.log(res);
                 if(PAYMILL_TEST_MODE)
                     \$J('.debug').text(res).show().fadeOut(8000);
+                */
+                \$J('.paymill-error-text').text(res).show().fadeOut(8000);
             }            
 FORMTEMPLATE;
     
@@ -169,7 +171,7 @@ APISETTING;
         JS::registerCode($code);
         JS::registerCode(self::$formScript);
                 
-        $formContent  = self::getElement('div', 'class="debug"');
+        $formContent  = self::getElement('div', 'class="paymill-error-text"');
         
         $formContent .= self::fieldset('');
         
@@ -188,19 +190,29 @@ APISETTING;
         $formContent .= Html::getInputText('', '', '', 'class="card-holdername" size="20"');
         $formContent .= self::closeElement('div');
         
+        $arrMonths = array();
+        for ($i=1;$i<=12;$i++) {
+            $month             = str_pad($i, 2, '0', STR_PAD_LEFT);
+            $arrMonths[$month] = $month;
+        }
+        
+        $arrYears    = array();
+        $currentYear = date('Y');
+        for ($i=$currentYear;$i<=($currentYear+6);$i++) {
+            $arrYears[$i] = $i;
+        }
+         
         $formContent .= self::openElement('div', 'class="row"');
         $formContent .= self::getElement('label', '', $_ARRAYLANG['TXT_SHOP_CARD_EXPIRY']);
-        $formContent .= Html::getInputText('', '', '', 'class="card-expiry-month" size="2" maxlength="2"');
-        $formContent .= Html::getInputText('', '', '', 'class="card-expiry-year" size="4" maxlength="4"');
+        $formContent .= Html::getSelect('card-expiry-month', $arrMonths, '', false, '', 'class="card-expiry-month"');
+        $formContent .= Html::getSelect('card-expiry-year', $arrYears, '', false, '', 'class="card-expiry-year"');        
         $formContent .= self::closeElement('div');
         
         $formContent .= self::openElement('div', 'class="row"');
         $formContent .= self::getElement('label', '', '&nbsp;');
         $formContent .= Html::getInputButton('', $_ARRAYLANG['TXT_SHOP_BUY_NOW'], 'submit', '', 'class="submit-button"');
         $formContent .= self::closeElement('div');
-        
-        $formContent .= Html::getHidden('', $arrOrder['amount'], '', 'class="card-amount" size="4"');
-        $formContent .= Html::getHidden('', $arrOrder['currency'], '', 'class="card-currency" size="4"');
+                
         $formContent .= Html::getHidden('handler', 'paymill');
         
         $formContent .= self::closeElement('fieldset');
