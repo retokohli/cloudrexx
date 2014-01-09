@@ -182,16 +182,6 @@ function _calendarUpdate()
         }
     }
     
-    // update cmd of details page
-    $em = \Env::em();
-    $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-    $calendarDetailPages = $pageRepo->findBy(array('module' => 21, 'cmd' => 'details'));
-    foreach ($calendarDetailPages as $page) {
-        $page->setCmd('detail');
-        $em->persist($page);
-    }
-    $em->flush();
-    
     // fix database table (field invitation_email_template had wrong type)
     // only for version 3.1.0 and hotfixes
     if (!$objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0') &&
@@ -394,6 +384,13 @@ class CalendarUpdate31
                 }
             }
         } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+        
+        // migrate old content pages to new ones
+        try {
+            $this->migrateContentPages();
+        } catch (\Exception $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
         }
 
@@ -1412,6 +1409,39 @@ class CalendarUpdate31
             \Cx\Lib\UpdateUtil::drop_table(CALENDAR_OLD_REGISTRATIONS_TABLE);
         } catch (\Cx\Lib\UpdateException $e) {
             return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+        return true;
+    }
+    
+    /**
+     * Updates the content pages of the calendar module
+     * @return bool
+     */
+    public function migrateContentPages()
+    {
+        $em = \Env::em();
+        $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+        
+        // all cmd changes of all calendar pages
+        // array key = old cmd, value = new cmd
+        $cmdMigrations = array(
+            'eventlist' => 'list',
+            'event' => 'detail',
+            'sign' => 'register',
+        );
+        
+        foreach($cmdMigrations as $oldCmd => $newCmd) {
+            $calendarPages = $pageRepo->findBy(
+                array(
+                    'module' => 'calendar',
+                    'cmd' => $oldCmd,
+                )
+            );
+            foreach ($calendarPages as $page) {
+                $page->setCmd($newCmd);
+                $em->persist($page);
+                $em->flush($page);
+            }
         }
         return true;
     }
