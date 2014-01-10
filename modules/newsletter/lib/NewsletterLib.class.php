@@ -346,10 +346,13 @@ class NewsletterLib
     }
 
 
-    function _isUniqueRecipientEmail($email, $recipientId)
+    function _isUniqueRecipientEmail($email, $recipientId, $copy = false)
     {
         global $objDatabase;
 
+        //reset the $recipientId on copy function 
+        $recipientId = $copy ? 0 : $recipientId;
+        
         $objRecipient = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_newsletter_user WHERE email='".contrexx_addslashes($email)."' AND id!=".$recipientId, 1);
         if ($objRecipient !== false && $objRecipient->RecordCount() == 0) {
             return true;
