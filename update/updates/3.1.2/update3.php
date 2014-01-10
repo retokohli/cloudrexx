@@ -781,7 +781,7 @@ $updatesSp4To310 = array(
         ),
     ),
     // set new access_id for filesharing
-    "UPDATE `" . DBPREFIX . "backend_areas` SET `access_id` = '8' WHERE `contrexx_backend_areas`.`area_id` = 187",
+    "UPDATE `" . DBPREFIX . "backend_areas` SET `access_id` = '8' WHERE `area_id` = 187",
     array(
         'table' => DBPREFIX.'component',
         'structure' => array(
