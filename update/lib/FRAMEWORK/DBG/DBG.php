@@ -305,7 +305,7 @@ class DBG
         }*/
         if (class_exists('\Cx\Lib\FileSystem\File')) {
             try {
-                self::$dbg_fh = new \Cx\Lib\FileSystem\File(dirname($_SERVER['SCRIPT_FILENAME']).'/'.$file.$suffix);
+                self::$dbg_fh = new \Cx\Lib\FileSystem\File(ASCMS_DOCUMENT_ROOT.'/update/'.$file.$suffix);
                 self::$dbg_fh->touch();
                 if (self::$dbg_fh->makeWritable()) {
                     return true;
@@ -316,7 +316,7 @@ class DBG
                 return false;
             }
         } else {
-            self::$dbg_fh = fopen(dirname($_SERVER['SCRIPT_FILENAME']).'/'.$file.$suffix, $mode);
+            self::$dbg_fh = fopen(ASCMS_DOCUMENT_ROOT.'/update/'.$file.$suffix, $mode);
             if (self::$dbg_fh) {
                 return true;
             } else {
