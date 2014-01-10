@@ -123,7 +123,7 @@ class LanguageManager
                 $this->modifyVariables();
             break;
             case 'add':
-                Permission::checkAccess(50, 'static');
+                Permission::checkAccess(22, 'static');
                 $this->addLanguage();
                 $this->languageOverview();
             break;
@@ -138,7 +138,7 @@ class LanguageManager
                 $this->listVariables();
                 break;
             default:                
-                Permission::checkAccess(50, 'static');
+                Permission::checkAccess(22, 'static');
                 $this->modifyLanguage();
                 $this->languageOverview();
         }
