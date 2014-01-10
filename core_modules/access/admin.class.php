@@ -646,7 +646,6 @@ class AccessManager extends AccessLib
                 `parent_area_id`
             FROM `".DBPREFIX."backend_areas`
             WHERE `is_active` = 1 AND `access_id` != '0'
-            GROUP BY `area_name`
             ORDER BY `parent_area_id`, `order_id`
             ");
         if ($objResult) {
