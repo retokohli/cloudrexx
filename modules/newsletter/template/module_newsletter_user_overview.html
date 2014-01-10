@@ -129,12 +129,12 @@ var cxDataList = function() {
             userFunctions = $(htmlUserFunctions);
     
             if (user.type == 'newsletter') {
-                userFunctions.append($(htmlAEditNewsletter.replace('[id]', user.id)).append($(htmlImageEdit)));                
                 userFunctions.append($(htmlACopyUser.replace('[id]', user.id)).append($(htmlImageCopy)));
+                userFunctions.append($(htmlAEditNewsletter.replace('[id]', user.id)).append($(htmlImageEdit)));                                
                 userFunctions.append($(htmlADelete.replace('[id]', user.id).replace('[email]', user.email)).append($(htmlImageDelete)));
             } else {
-                userFunctions.append($(htmlAEditAccess.replace('[id]', user.id)).append($(htmlImageEdit)));
                 userFunctions.append($(htmlACopyUser.replace('[id]', user.id)).append($(htmlImageCopy)));
+                userFunctions.append($(htmlAEditAccess.replace('[id]', user.id)).append($(htmlImageEdit)));                
                 userFunctions.append($(htmlImageIconSpacer));
             }
 
