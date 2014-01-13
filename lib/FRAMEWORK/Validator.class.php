@@ -217,9 +217,9 @@ class FWValidator
             # windows executables:
             'exe', 'bat', 'pif', 'com',
             # client scripts:
-            'vs', 'vbs', 'js',
+            'vs', 'vbs',
             # client script containers:
-            'html', 'xhtml', 'xml', 'svg', 'shtml', 'htm',
+            'xhtml', 'xml', 'svg', 'shtml',
             # server scripts:
             'php', 'php4', 'php5', 'phps', 'cgi', 'pl', 'jsp', 'jspx', 'asp', 'aspx',
             'jsp', 'jspx', 'jhtml', 'phtml', 'cfm',
