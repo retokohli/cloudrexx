@@ -334,6 +334,7 @@ abstract class Uploader
                 
                 //move everything uploaded to target dir
                 $h = opendir($tempPath);
+                $im = new \ImageManager();
                 while(false != ($f = readdir($h))) {
                     //skip . and ..
                     if($f == '.' || $f == '..')
@@ -341,6 +342,9 @@ abstract class Uploader
 
                     //TODO: if return value = 'error' => react
                     \Cx\Lib\FileSystem\FileSystem::move($tempWebPath.$f, $pathWeb.$f, true);
+                    if($im->_isImage($path.$f)){
+                        $im->_createThumb($path, $pathWeb, $f);
+                    }
                     $response->increaseUploadedFilesCount();
                 }
                 closedir($h);
