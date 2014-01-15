@@ -626,8 +626,13 @@ class MediaLibrary
                                 @unlink($path.$name);
                             }
                         } else {
+                            $fileName = $name;
+                            if (!\FWSystem::detectUTF8($name)) {
+                                $fileName = utf8_encode($name);
+                            }
+                        
                             $file['icon'][] = $this->_getIcon($path.$name);
-                            $file['name'][] = $name;
+                            $file['name'][] = $fileName;
                             $file['size'][] = $this->_getSize($path.$name);
                             $file['type'][] = $this->_getType($path.$name);
                             $file['date'][] = $this->_getDate($path.$name);
