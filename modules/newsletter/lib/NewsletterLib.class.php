@@ -490,7 +490,9 @@ class NewsletterLib
 // TODO: add language variable
         $menu .= '<option value="0"'.($selected == 0 ? ' selected="selected"' : '').'>'.$_ARRAYLANG['TXT_NEWSLETTER_UNKNOWN']."</option>\n";
         foreach ($arrTitles as $id => $title) {
-            $menu .= '<option value="'.$id.'"'.($selected == $id ? ' selected="selected"' : '').'>'.htmlentities($title, ENT_QUOTES, CONTREXX_CHARSET)."</option>\n";
+            if (!empty($id)) {
+                $menu .= '<option value="'.$id.'"'.($selected == $id ? ' selected="selected"' : '').'>'.htmlentities($title, ENT_QUOTES, CONTREXX_CHARSET)."</option>\n";
+            }
         }
         $menu .= "</select>\n";
 
