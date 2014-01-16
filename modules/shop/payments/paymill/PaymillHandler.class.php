@@ -42,6 +42,8 @@ class PaymillHandler {
      */
     public static $arrWarning = array();
     
+    private static $paymillJsBridge = "https://bridge.paymill.com";
+    
     private static $formScript = <<< FORMTEMPLATE
             
             \$J(document).ready(function() {
@@ -126,7 +128,7 @@ FORMTEMPLATE;
                 DBG::log("Payment ID".$paymentId);
                 
                 return array('status' => 'success', 'payment_id' => $paymentId);
-            } catch(PaymillException $e) {
+            } catch(\Paymill\Services\PaymillException $e) {
                 //Do something with the error informations below
                 return array(
                         'status' => 'error',
@@ -158,7 +160,7 @@ FORMTEMPLATE;
             self::$arrError[] = 'Passed landing page is not an application.';
         }
         
-        JS::registerJS("https://bridge.paymill.com/");
+        JS::registerJS(self::$paymillJsBridge);
         
         $testMode = intval(SettingDb::getValue('paymill_use_test_account')) == 0;        
         $apiKey   = $testMode ? SettingDb::getValue('paymill_test_public_key') : SettingDb::getValue('paymill_live_public_key');
