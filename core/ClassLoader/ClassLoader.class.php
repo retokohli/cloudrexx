@@ -62,7 +62,7 @@ class ClassLoader {
         }
         $parts = explode('\\', $name);
         // new classes should be in namespace \Cx\something
-        if (!in_array(current($parts), array('Cx', 'Doctrine', 'Gedmo', 'DoctrineExtension', 'Symfony', 'Paymill')) || count($parts) < 2) {
+        if (!in_array(current($parts), array('Cx', 'Doctrine', 'Gedmo', 'DoctrineExtension', 'Symfony')) || count($parts) < 2) {
             return false;
         }
         if (substr($name, 0, 8) == 'PHPUnit_') {
@@ -105,9 +105,6 @@ class ClassLoader {
         } else if ($parts[0] == 'Symfony') {
             $suffix = '';
             $parts = array_merge(array('Cx', 'Lib', 'doctrine', 'vendor'), $parts);
-        } else if ($parts[0] == 'Paymill') {
-            $suffix = '';
-            $parts = array_merge(array('Cx', 'Modules', 'shop', 'payments', 'paymill'), $parts);
         }
         
         // we don't need the Cx part
