@@ -4333,7 +4333,7 @@ $WhereStatement = '';
                     $arrLists = array();
                 
                     if (isset($_POST['newsletter_recipient_associated_list'])) {
-                        foreach ($_POST['newsletter_recipient_associated_list'] as $listId) {                    
+                        foreach (explode(',', $_POST['newsletter_recipient_associated_list']) as $listId) {                    
                             array_push($arrLists, intval($listId));
                         }                
                     }
@@ -4382,11 +4382,9 @@ $WhereStatement = '';
             $objImport->initFieldSelectTemplate($objTpl, $arrFields);
 
             $arrLists = array();
-            if (isset($_POST['newsletter_recipient_associated_list'])) {                
-                foreach ($_POST['newsletter_recipient_associated_list'] as $listId => $status) {
-                    if (intval($status) == 1) {
-                        array_push($arrLists, intval($listId));
-                    }
+            if (isset($_POST['newsletter_recipient_associated_list'])) {
+                foreach ($_POST['newsletter_recipient_associated_list'] as $listId) {
+                    array_push($arrLists, intval($listId));
                 }
             }
 
