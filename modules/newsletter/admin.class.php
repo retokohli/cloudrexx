@@ -4324,20 +4324,21 @@ $WhereStatement = '';
                 'TXT_IMPORT' => $_ARRAYLANG['TXT_IMPORT'],
                 'TXT_IMPORT_IN_CATEGORY' => $_ARRAYLANG['TXT_IMPORT_IN_CATEGORY'],
                 'TXT_ENTER_EMAIL_ADDRESS' => $_ARRAYLANG['TXT_ENTER_EMAIL_ADDRESS'],
-                'NEWSLETTER_CATEGORY_MENU' => $this->CategoryDropDown(),
+                'NEWSLETTER_CATEGORY_MENU' => $this->_getAssociatedListSelection(),
                 'NEWSLETTER_IMPORT_FRAME' => $objTpl->get(),
             ));
 
             if (isset($_POST['newsletter_import_plain'])) {
-                if ($_REQUEST['category'] == 'selectcategory') {
+                if (empty($_POST['newsletter_recipient_associated_list'])) {
                     self::$strErrMessage = $_ARRAYLANG['TXT_NEWSLETTER_SELECT_CATEGORY'];
                 } else {
-                    if ($_REQUEST['category'] == '') {
-                        $arrLists = array_keys(self::getLists());
-                    } else {
-                        $arrLists = array(intval($_REQUEST['category']));
+                    $arrLists = array();
+                
+                    if (isset($_POST['newsletter_recipient_associated_list'])) {
+                        foreach ($_POST['newsletter_recipient_associated_list'] as $listId) {                    
+                            array_push($arrLists, intval($listId));
+                        }                
                     }
-
                     $NLine = chr(13).chr(10);
                     $EmailList = str_replace(array(']','[',"\t","\n","\r"), ' ', $_REQUEST["Emails"]);
                     $EmailArray = explode("[ '\",;:<>".$NLine."]", contrexx_stripslashes($EmailList));
