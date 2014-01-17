@@ -4171,12 +4171,10 @@ $WhereStatement = '';
                 $arrLists = array();
                 
                 if (isset($_POST['newsletter_recipient_associated_list'])) {
-                    $listArr = explode(',',$_POST['newsletter_recipient_associated_list']);
-                    foreach ($listArr as $listId) {                    
+                    foreach ($_POST['newsletter_recipient_associated_list'] as $listId) {                    
                         array_push($arrLists, intval($listId));             
                     }                
-                }                
-                
+                }
                 $EmailCount = 0;
                 $arrBadEmails = array();
                 $ExistEmails = 0;
@@ -4322,7 +4320,7 @@ $WhereStatement = '';
             $this->_objTpl->setVariable(array(
                 'TXT_NEWSLETTER_IMPORT_FROM_FILE' => $_ARRAYLANG['TXT_NEWSLETTER_IMPORT_FROM_FILE'],
                 'TXT_IMPORT' => $_ARRAYLANG['TXT_IMPORT'],
-                'TXT_IMPORT_IN_CATEGORY' => $_ARRAYLANG['TXT_IMPORT_IN_CATEGORY'],
+                'TXT_NEWSLETTER_LIST' => $_ARRAYLANG['TXT_NEWSLETTER_LIST'],
                 'TXT_ENTER_EMAIL_ADDRESS' => $_ARRAYLANG['TXT_ENTER_EMAIL_ADDRESS'],
                 'NEWSLETTER_CATEGORY_MENU' => $this->_getAssociatedListSelection(),
                 'NEWSLETTER_IMPORT_FRAME' => $objTpl->get(),
@@ -4500,7 +4498,7 @@ $WhereStatement = '';
                             <input type="checkbox" 
                                  name="newsletter_recipient_associated_list['.intval($listId).']" 
                                  id="newsletter_mail_associated_list_'.intval($listId).'"
-                                 value="1" />
+                                 value="'.intval($listId).'" />
                             <a href="index.php?cmd=newsletter&amp;act=users&amp;newsletterListId='.intval($listId).'"
                                target="_blank" title="'.sprintf($_ARRAYLANG['TXT_NEWSLETTER_SHOW_RECIPIENTS_OF_LIST'], contrexx_raw2xhtml($arrList['name'])).'">
                                    '.contrexx_raw2xhtml($arrList['name']).'
