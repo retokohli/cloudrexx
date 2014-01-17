@@ -4325,7 +4325,6 @@ $WhereStatement = '';
                 'NEWSLETTER_CATEGORY_MENU' => $this->_getAssociatedListSelection(),
                 'NEWSLETTER_IMPORT_FRAME' => $objTpl->get(),
             ));
-            
             if (isset($_POST['newsletter_import_plain'])) {
                 if (empty($_POST['newsletter_recipient_associated_list'])) {
                     self::$strErrMessage = $_ARRAYLANG['TXT_NEWSLETTER_SELECT_CATEGORY'];
@@ -4336,10 +4335,9 @@ $WhereStatement = '';
                         foreach ($_POST['newsletter_recipient_associated_list'] as $listId) {                    
                             array_push($arrLists, intval($listId));
                         }                
-                    } 
-                    $NLine = chr(13).chr(10);
+                    }
                     $EmailList = str_replace(array(']','[',"\t","\n","\r"), ' ', $_REQUEST["Emails"]);
-                    $EmailArray = explode("[ '\",;:<>".$NLine."]", contrexx_stripslashes($EmailList));
+                    $EmailArray = preg_split('/[\s"\';,:<>\n]+/', contrexx_stripslashes($EmailList));
                     $EmailCount = 0;
                     $arrBadEmails = array();
                     $ExistEmails = 0;
