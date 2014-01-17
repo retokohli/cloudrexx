@@ -468,8 +468,8 @@ $_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_CAUSE_USED_UP'] = "Der eingegebene Guts
 $_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_FOR_AMOUNT'] = "Der eingegebene Gutscheincode ist erst ab einer Bestellsumme von %2\$s %1\$.2f gültig";
 // 3.1.0
 $_ARRAYLANG['TXT_SHOP_ORDERITEMS_AMOUNT_MIN'] = "Achtung!<br />Der Gesamtbetrag Ihrer Bestellung erreicht nicht den Mindestbestellwert von %2\$s %1\$0.2f.";
-$_ARRAYLANG['TXT_SHOP_CREDIT_CARD_NUMBER'] = "Credit card number";
-$_ARRAYLANG['TXT_SHOP_CVC'] = "CVC";
-$_ARRAYLANG['TXT_SHOP_CARD_HOLDER'] = "Card holder";
-$_ARRAYLANG['TXT_SHOP_CARD_EXPIRY'] = "Expiry (MM/YYYY)";
-$_ARRAYLANG['TXT_SHOP_BUY_NOW'] = "Buy now";
+$_ARRAYLANG['TXT_SHOP_CREDIT_CARD_NUMBER'] = "Kartennummer";
+$_ARRAYLANG['TXT_SHOP_CVC'] = "Prüfziffer (CVC)";
+$_ARRAYLANG['TXT_SHOP_CARD_HOLDER'] = "Kreditkarten-Inhaber";
+$_ARRAYLANG['TXT_SHOP_CARD_EXPIRY'] = "Karte gültig bis";
+$_ARRAYLANG['TXT_SHOP_BUY_NOW'] = "Zahlungspflichtig bestellen";

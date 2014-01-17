@@ -400,5 +400,5 @@ $_ARRAYLANG['TXT_FREE_OF_CHARGE'] = "Free of charge from";
 $_ARRAYLANG['TXT_SHOP_CREDIT_CARD_NUMBER'] = "Credit card number";
 $_ARRAYLANG['TXT_SHOP_CVC'] = "CVC";
 $_ARRAYLANG['TXT_SHOP_CARD_HOLDER'] = "Card holder";
-$_ARRAYLANG['TXT_SHOP_CARD_EXPIRY'] = "Expiry (MM/YYYY)";
+$_ARRAYLANG['TXT_SHOP_CARD_EXPIRY'] = "Expiry date";
 $_ARRAYLANG['TXT_SHOP_BUY_NOW'] = "Buy now";
