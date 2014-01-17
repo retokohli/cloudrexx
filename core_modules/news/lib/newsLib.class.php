@@ -107,6 +107,57 @@ class newsLibrary
     }
 
     /**
+     * Generates the formated ul/li of categories
+     * Used in the template's
+     * 
+     * @return string Formated ul/li of categories
+     */
+    public function getNewsCategories()
+    {
+        
+        $categoriesLang = $this->getCategoriesLangData();
+        
+        return $this->_buildNewsCategories($this->nestedSetRootId, $categoriesLang);
+    }
+    
+    /**
+     * Generates the formated ul/li of categories
+     * Used in the template's
+     * 
+     * @return string Formated ul/li of categories
+     */
+    function _buildNewsCategories($catId, $categoriesLang)
+    {
+        if ($this->categoryExists($catId)) {
+            
+            $category = $this->objNestedSet->pickNode($catId, true);            
+            if ($catId != $this->nestedSetRootId) {
+                $html .= "<li>";
+                
+                $newsUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('news');                
+                $newsUrl->setParam('category', $catId);
+                
+                $html .= '<a href="'.$newsUrl->toString().'" title="'.contrexx_raw2xhtml($categoriesLang[$catId][FRONTEND_LANG_ID]).'">'.contrexx_raw2xhtml($categoriesLang[$catId][FRONTEND_LANG_ID]).'</a>';
+            }
+            
+            $subCategories = $this->objNestedSet->getChildren($catId, true);
+            if (!empty($subCategories)) {
+                $html .= "<ul class='news_category_lvl_{$category['level']}'>";
+                foreach ($subCategories as $subCat) {
+                    $html .= $this->_buildNewsCategories($subCat['id'], $categoriesLang);
+                }
+                $html .= "</ul>";
+            }
+            
+            if ($catId != $this->nestedSetRootId) {
+                $html .= "</li>";
+            }
+        }
+        
+        return $html;
+    }
+
+    /**
      * Generates the category menu.
      *
      * @access  protected
