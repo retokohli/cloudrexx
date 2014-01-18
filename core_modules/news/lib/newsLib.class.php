@@ -107,6 +107,29 @@ class newsLibrary
     }
 
     /**
+     * Generates the formated ul/li of Archive list
+     * Used in the template's
+     * 
+     * @return string Formated ul/li of Archive list
+     */
+    public function getNewsArchiveList() {
+        $monthlyStats = $this->getMonthlyNewsStats();
+
+        $html = '';
+        if (!empty($monthlyStats)) {
+            $newsArchiveLink = \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'archive')->toString();
+            
+            $html  = '<ul class="news_archive">';
+            foreach ($monthlyStats as $key => $value) {
+                $html .= '<li><a href="'.$newsArchiveLink.'#'.$key.'" title="'.$value['name'].'">'.$value['name'].'</a></li>';
+            }
+            $html .= '</ul>';
+        }
+        
+        return $html;
+    }
+    
+    /**
      * Generates the formated ul/li of categories
      * Used in the template's
      * 
