@@ -483,6 +483,24 @@ class LegacyComponentHandler {
                             $themesPages['sidebar'] = str_replace($newsCategoriesPlaceholder, $newsCategories, $themesPages['sidebar']);
                             $page_template          = str_replace($newsCategoriesPlaceholder, $newsCategories, $page_template);
                         }
+                        
+                        // Get News Archives
+                        $modulespath = ASCMS_CORE_MODULE_PATH.'/news/lib/newsLib.class.php';
+                        $newsArchivePlaceholder = '{NEWS_ARCHIVES}';
+                        if (   file_exists($modulespath)
+                            && (   strpos(\Env::get('cx')->getPage()->getContent(), $newsArchivePlaceholder) !== false
+                                || strpos($themesPages['index'], $newsArchivePlaceholder) !== false
+                                || strpos($themesPages['sidebar'], $newsArchivePlaceholder) !== false
+                                || strpos($page_template, $newsArchivePlaceholder) !== false)
+                        ) {
+                            $newsLib = new \newsLibrary();
+                            $newsArchive = $newsLib->getNewsArchiveList();
+                            
+                            \Env::get('cx')->getPage()->setContent(str_replace($newsArchivePlaceholder, $newsArchive, \Env::get('cx')->getPage()->getContent()));
+                            $themesPages['index']   = str_replace($newsArchivePlaceholder, $newsArchive, $themesPages['index']);
+                            $themesPages['sidebar'] = str_replace($newsArchivePlaceholder, $newsArchive, $themesPages['sidebar']);
+                            $page_template          = str_replace($newsArchivePlaceholder, $newsArchive, $page_template);
+                        }
                     },
                     'Calendar' => function() {
                         global $modulespath, $eventsPlaceholder, $_CONFIG, $themesPages, $page_template,
