@@ -2047,64 +2047,15 @@ RSS2JSCODE;
      */
     private function getArchive()
     {
-        global $objDatabase, $_ARRAYLANG, $_CORELANG;
+        global $objDatabase, $_ARRAYLANG;
 
-        $objFWUser = FWUser::getFWUserObject();
         $categories = '';
-        $categoryFilter = '';
-
         if ($categories = substr($_REQUEST['cmd'], 7)) {
             $categories = $this->getCatIdsFromNestedSetArray($this->getNestedSetCategories(explode(',', $categories)));
         }
-
-        if (!empty($categories)) {
-            $categoryFilter .= ' AND (';
-            $first = true;
-            foreach ($categories as $category) {
-                if (!$first) {
-                    $categoryFilter .= 'OR ';
-                }
-                $categoryFilter .= 'n.catid='.intval($category).' ';
-                $first = false;
-            }
-            $categoryFilter .= ')';
-        }
-
-        $query = "SELECT            n.id             AS id,
-                                    n.date           AS date,
-                                    n.changelog      AS changelog,
-                                    n.redirect       AS newsredirect,
-                                    nl.title         AS newstitle,
-                                    n.catid          AS cat
-                            FROM    ".DBPREFIX."module_news AS n LEFT JOIN  ".DBPREFIX."module_news_locale AS nl ON nl.news_id = n.id
-                            WHERE   n.validated = '1'
-                                    AND n.status = 1
-                                    AND nl.lang_id = ".FRONTEND_LANG_ID."
-                                    AND nl.is_active=1
-                                    ".$categoryFilter."
-                                    " .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? (
-                                    ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?
-                                        " AND (frontend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") OR userid = ".$objFWUser->objUser->getId().") "
-                                        :   " AND frontend_access_id=0 ")
-                                    :   '')
-                            ."ORDER BY date DESC";
-
-        $objResult = $objDatabase->Execute($query);
-
-        if ($objResult !== false) {
-            $arrMonthTxt = explode(',', $_CORELANG['TXT_MONTH_ARRAY']);
-            while (!$objResult->EOF) {
-                $filterDate = $objResult->fields['date'];
-                $newsYear = date('Y', $filterDate);
-                $newsMonth = date('m', $filterDate);
-                if (!isset($monthlyStats[$newsYear.'_'.$newsMonth])) {
-                    $monthlyStats[$newsYear.'_'.$newsMonth]['name'] = $arrMonthTxt[date('n', $filterDate) - 1].' '.$newsYear;
-                }
-                $monthlyStats[$newsYear.'_'.$newsMonth]['news'][] = $objResult->fields;
-                $objResult->MoveNext();
-            }
-        }
-
+        
+        $monthlyStats = $this->getMonthlyNewsStats($categories);
+        
         if (!empty($monthlyStats)) {
             foreach ($monthlyStats as $key => $value) {
                 $this->_objTpl->setVariable(array(
