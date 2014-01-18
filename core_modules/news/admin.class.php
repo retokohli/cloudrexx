@@ -3010,6 +3010,7 @@ class newsManager extends newsLibrary {
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings
                               SET value='".intval($_POST['headlinesLimit'])."'
                             WHERE name = 'news_headlines_limit'");
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".intval($_POST['recentNewsMessageLimit'])."' WHERE name = 'recent_news_message_limit'");
             // Notify-user. 0 = disabled.
             $this->_store_settings_item('news_notify_user', intval($_POST['newsNotifySelectedUser']));
             // Notify-Group. 0 = disabled.
@@ -3219,6 +3220,7 @@ class newsManager extends newsLibrary {
             'NEWS_FEED_DESCRIPTION'                 => contrexx_raw2xhtml($newsFeedDescription),
             'NEWS_FEED_IMAGE'                       => contrexx_raw2xhtml($this->arrSettings['news_feed_image']),
             'NEWS_HEADLINES_LIMIT'                  =>(intval($this->arrSettings['news_headlines_limit'])),
+            'NEWS_RECENT_MESSAGES_LIMIT'            => (intval($this->arrSettings['recent_news_message_limit'])),
             'NEWS_FEED_PATH'                        => $newsFeedPath,
             'NEWS_SUBMIT_NEWS'                      => $this->arrSettings['news_submit_news'] == '1' ? 'checked="checked"' : '',
             'NEWS_SUBMIT_NEWS_CONFIGURATION_DISPLAY'=> $this->arrSettings['news_submit_news'] == '1' ? '' : 'none',
@@ -3290,6 +3292,7 @@ class newsManager extends newsLibrary {
             'TXT_NEWS_UNCHECK_ALL'                  => $_ARRAYLANG['TXT_NEWS_UNCHECK_ALL'],
             'TXT_NEWS_AVAILABLE_GROUPS'             => $_ARRAYLANG['TXT_NEWS_AVAILABLE_GROUPS'],
             'TXT_NEWS_ASSIGNED_GROUPS'              => $_ARRAYLANG['TXT_NEWS_ASSIGNED_GROUPS'],
+            'TXT_NEWS_RECENT_MESSAGES_LIMIT'        => $_ARRAYLANG['TXT_NEWS_RECENT_MESSAGES_LIMIT'],
             'NEWS_FILTER_AUTHOR_ACTIVE'             => ($this->arrSettings['news_assigned_author_groups']) ? 'checked="checked"' : '',
             'NEWS_FILTER_AUTHOR_INACTIVE'           => ($this->arrSettings['news_assigned_author_groups']) ? '' : 'checked="checked"',
             'NEWS_FILTER_AUTHOR_DISPLAY'            => ($this->arrSettings['news_assigned_author_groups']) ? 'block' : 'none',
