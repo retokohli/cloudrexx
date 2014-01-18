@@ -949,7 +949,7 @@ class newsManager extends newsLibrary {
 
                 $objResult = $objDatabase->Execute('INSERT
                                             INTO '.DBPREFIX.'module_news
-                                            SET date='.$date.',
+                                            SET date="'.$date.'",
                                                 redirect="'.$newsredirect.'",
                                                 source="'.$newssource.'",
                                                 url1="'.$newsurl1.'",
