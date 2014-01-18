@@ -964,4 +964,58 @@ class newsLibrary
         }
         return false;
     }
+    
+    /**
+     * Returns the news monthly stats by the given filters
+     * 
+     * @access protected
+     * @param  array     $category      category filter
+     * 
+     * @return array     $monthlyStats  Monthly status array
+     */
+    protected function getMonthlyNewsStats($categories) {
+        global $objDatabase, $_CORELANG;
+        
+        $categoryFilter = '';
+        if (!empty($categories)) {
+           $categoryFilter .= ' AND (n.catid = '.implode(' OR n.catid = ', array_map('intval', $categories)).')';            
+        }
+
+        $query = "SELECT            n.id             AS id,
+                                    n.date           AS date,
+                                    n.changelog      AS changelog,
+                                    n.redirect       AS newsredirect,
+                                    nl.title         AS newstitle,
+                                    n.catid          AS cat
+                            FROM    ".DBPREFIX."module_news AS n LEFT JOIN  ".DBPREFIX."module_news_locale AS nl ON nl.news_id = n.id
+                            WHERE   n.validated = '1'
+                                    AND n.status = 1
+                                    AND nl.lang_id = ".FRONTEND_LANG_ID."
+                                    AND nl.is_active=1
+                                    ".$categoryFilter."
+                                    " .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? (
+                                    ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?
+                                        " AND (frontend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") OR userid = ".$objFWUser->objUser->getId().") "
+                                        :   " AND frontend_access_id=0 ")
+                                    :   '')
+                            ."ORDER BY date DESC";
+
+        $objResult = $objDatabase->Execute($query);
+
+        if ($objResult !== false) {
+            $arrMonthTxt = explode(',', $_CORELANG['TXT_MONTH_ARRAY']);
+            while (!$objResult->EOF) {
+                $filterDate = $objResult->fields['date'];
+                $newsYear = date('Y', $filterDate);
+                $newsMonth = date('m', $filterDate);
+                if (!isset($monthlyStats[$newsYear.'_'.$newsMonth])) {
+                    $monthlyStats[$newsYear.'_'.$newsMonth]['name'] = $arrMonthTxt[date('n', $filterDate) - 1].' '.$newsYear;
+                }
+                $monthlyStats[$newsYear.'_'.$newsMonth]['news'][] = $objResult->fields;
+                $objResult->MoveNext();
+            }
+        }
+        
+        return $monthlyStats;
+    }
 }
