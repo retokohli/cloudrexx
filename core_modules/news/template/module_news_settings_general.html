@@ -142,6 +142,12 @@ function preSubmitCheck(){
       </td>
     </tr>
     <tr class="row2">
+      <td width="15%" nowrap="nowrap">{TXT_NEWS_RECENT_MESSAGES_LIMIT}</td>
+      <td width="85%" nowrap="nowrap">
+      	<input name="recentNewsMessageLimit" type="text" id="recentNewsMessageLimit" value="{NEWS_RECENT_MESSAGES_LIMIT}" style="width:400px;" maxlength="2" />
+      </td>
+    </tr>
+    <tr class="row1">
       <td width="15%" nowrap="nowrap" style="vertical-align: top;">{TXT_NEWS_TOP}</td>
       <td nowrap="nowrap">
         <input type="checkbox" name="newsUseTop" id="newsUseTop" {NEWS_USE_TOP_CHECKED} value="1" onclick="swapBlock('newsMessageTopConfig',this.checked)" />
@@ -156,7 +162,7 @@ function preSubmitCheck(){
           <input name="newsTopLimit" type="text" id="newsTopLimit" value="{NEWS_TOP_LIMIT}" style="width:30px;" />
       </td>
     </tr>
-    <tr class="row1">
+    <tr class="row2">
       <td width="15%" style="vertical-align: top;">{TXT_SUBMIT_NEWS}</td>
       <td>
         <input type="checkbox" name="newsSubmitNews" {NEWS_SUBMIT_NEWS} id="newsSubmitNews" value="1" onclick="swapBlock('news_submit_news_configuration',this.checked)" />
@@ -179,7 +185,7 @@ function preSubmitCheck(){
         </div>
       </td>
     </tr>
-    <tr class="row2">
+    <tr class="row1">
       <td width="15%" nowrap="nowrap" style="vertical-align:top;">{TXT_USE_TEASERS}</td>
       <td width="85%" nowrap="nowrap">
         <input type="checkbox" name="newsUseTeasers" id="newsUseTeasers" {NEWS_USE_TEASERS_CHECKED} value="1" onclick="swapBlock('news_teasers_configuration',this.checked);"/>
@@ -198,7 +204,7 @@ function preSubmitCheck(){
         </div>
       </td>
     </tr>
-    <tr class="row1">
+    <tr class="row2">
         <td width="15%" nowrap="nowrap">{TXT_USE_TEASER_TEXT}</td>
         <td width="85%" nowrap="nowrap">
             <input type="checkbox" name="newsUseTeaserText" id="newsUseTeaserText" {NEWS_USE_TEASER_TEXT_CHECKED} value="1" />
@@ -206,7 +212,7 @@ function preSubmitCheck(){
             <br />
         </td>
     </tr>
-    <tr class="row2">
+    <tr class="row1">
         <td width="15%" nowrap="nowrap">{TXT_USE_TYPES}</td>
         <td width="85%" nowrap="nowrap">
             <input type="checkbox" name="newsUseTypes" id="newsUseTypes" {NEWS_USE_TYPES_CHECKED} value="1" />
@@ -214,7 +220,7 @@ function preSubmitCheck(){
             <br />
         </td>
     </tr>
-    <tr class="row1">
+    <tr class="row2">
       <td nowrap="nowrap" style="vertical-align:top;">{TXT_NEWS_PROTECTION}</td>
       <td nowrap="nowrap">
         <input type="checkbox" name="newsMessageProtection" id="newsMessageProtection" {NEWS_MESSAGE_PROTECTION_CHECKED} value="1" onclick="swapBlock('newsMessageProtectionRestrictedConfig',this.checked)" />
@@ -227,7 +233,7 @@ function preSubmitCheck(){
         </div>
       </td>
     </tr>
-    <tr class="row2">
+    <tr class="row1">
         <td style="vertical-align: top;">{TXT_NEWS_COMMENTS}</td>
         <td>
             <input type="checkbox" name="newsCommentsAllow" id="newsCommentsAllow" value="1" {NEWS_SETTINGS_COMMENTS_STATUS_CHECKED} onclick="swapBlock('news_comments_configuration',this.checked);" />
@@ -257,7 +263,7 @@ function preSubmitCheck(){
             </div>
         </td>
     </tr>
-    <tr class="row1">
+    <tr class="row2">
         <td style="vertical-align: top;">{TXT_NEWS_AUTHOR_SELECTION}</td>
         <td>
             <input value="0" id="noFilterAuthor" name="newsFilterAuthor" type="radio" onclick="swapBlock('filterAuthorGroups',0);" {NEWS_FILTER_AUTHOR_INACTIVE} />
@@ -301,7 +307,7 @@ function preSubmitCheck(){
             </table>
         </td>
     </tr>
-    <tr class="row2">
+    <tr class="row1">
         <td style="vertical-align: top;">{TXT_NEWS_PUBLISHER_SELECTION}</td>
         <td>
             <input value="0" id="noFilterPublisher" name="newsFilterPublisher" type="radio" onclick="swapBlock('filterPublisherGroups',0);" {NEWS_FILTER_PUBLISHER_INACTIVE} />
