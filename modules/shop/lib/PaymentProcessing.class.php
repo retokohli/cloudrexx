@@ -299,8 +299,9 @@ DBG::log($error);
                     $currency_code, $amount, $item_name);
                 break;
             case 'paymill':    
-                $return =  self::_PaymillProcessor();
-                break;
+            case 'paymill_elv':
+                $return =  self::_PaymillProcessor(self::getPaymentProcessorName());
+                break;                
             case 'dummy':
                 $return = Dummy::getForm();
                 break;
@@ -429,7 +430,7 @@ DBG::log($error);
      * 
      * @return  string  HTML code
      */
-    static function _PaymillProcessor()
+    static function _PaymillProcessor($processMethod)
     {
         global $_ARRAYLANG;
         
@@ -441,9 +442,16 @@ DBG::log($error);
             'currency'  => Currency::getActiveCurrencyCode(),
         );
 
-        $return = PaymillHandler::getForm($arrShopOrder, $landingPage);
-
-         if (_PAYMENT_DEBUG && PaymillHandler::$arrError) {
+        switch ($processMethod) {
+            case 'paymill_cc':
+                $return = PaymillCCHandler::getForm($arrShopOrder, $landingPage);
+                break;
+            case 'paymill_elv':                
+                $return = PaymillELVHandler::getForm($arrShopOrder, $landingPage);
+                break;
+        }
+        
+        if (_PAYMENT_DEBUG && PaymillHandler::$arrError) {
             $strError =
                 '<font color="red"><b>'.
                 $_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALISE_YELLOWPAY'].
