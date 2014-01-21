@@ -28,12 +28,12 @@ class PaymillIBANHandler extends PaymillHandler {
 
                     \$J('.submit-button').attr("disabled", "disabled");
 
-                    if (paymill.validateHolder(\$J('.elv-holdername').val())) {
+                    if ("" === \$J('.elv-holdername').val()) {
                         logResponse(paymillFormErrors['invalid-card-holder']);
                         \$J(".submit-button").removeAttr("disabled");
                         return false;
                     }
-                    if (validateIBAN(\$J('.elv-iban').val())) {
+                    if ("" === \$J('.elv-iban').val()) {
                         logResponse(paymillFormErrors['invalid-iban']);
                         \$J(".submit-button").removeAttr("disabled");
                         return false;
@@ -82,11 +82,7 @@ class PaymillIBANHandler extends PaymillHandler {
                     \$J('.debug').text(res).show().fadeOut(8000);
                 */
                 \$J('.paymill-error-text').text(res).show().fadeOut(8000);
-            }
-            function validateIBAN(iban) {
-
-                return true;
-            }    
+            }              
 FORMTEMPLATE;
     
     /**
@@ -123,12 +119,7 @@ FORM_ERR_MSG;
         $testMode = intval(SettingDb::getValue('paymill_use_test_account')) == 0;
         $apiKey   = $testMode ? SettingDb::getValue('paymill_test_public_key') : SettingDb::getValue('paymill_live_public_key');
         $mode     = $testMode ? 'true' : 'false';
-        
-        $code = <<< APISETTING
-                var PAYMILL_PUBLIC_KEY = '$apiKey';
-                var PAYMILL_TEST_MODE  = $mode;
-APISETTING;
-        JS::registerCode($code);
+                
         JS::registerCode(self::$formScript);
                 
         $formContent  = self::getElement('div', 'class="paymill-error-text"');
