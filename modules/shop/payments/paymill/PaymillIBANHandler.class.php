@@ -120,6 +120,11 @@ FORM_ERR_MSG;
         $apiKey   = $testMode ? SettingDb::getValue('paymill_test_public_key') : SettingDb::getValue('paymill_live_public_key');
         $mode     = $testMode ? 'true' : 'false';
                 
+        $code = <<< APISETTING
+                var PAYMILL_PUBLIC_KEY = '$apiKey';
+                var PAYMILL_TEST_MODE  = $mode;
+APISETTING;
+        JS::registerCode($code);
         JS::registerCode(self::$formScript);
                 
         $formContent  = self::getElement('div', 'class="paymill-error-text"');
@@ -146,7 +151,7 @@ FORM_ERR_MSG;
         $formContent .= Html::getInputButton('', $_ARRAYLANG['TXT_SHOP_BUY_NOW'], 'submit', '', 'class="submit-button"');
         $formContent .= self::closeElement('div');
                 
-        $formContent .= Html::getHidden('handler', 'paymill');
+        $formContent .= Html::getHidden('handler', 'paymill_iban');
         
         $formContent .= self::closeElement('fieldset');
         
