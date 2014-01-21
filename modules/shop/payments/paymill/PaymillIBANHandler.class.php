@@ -19,7 +19,7 @@
  * @package     contrexx
  * @subpackage  module_shop  
  */
-class PaymillELVHandler extends PaymillHandler {
+class PaymillIBANHandler extends PaymillHandler {
     
    private static $formScript = <<< FORMTEMPLATE
             
@@ -33,20 +33,20 @@ class PaymillELVHandler extends PaymillHandler {
                         \$J(".submit-button").removeAttr("disabled");
                         return false;
                     }
-                    if (false == paymill.validateAccountNumber(\$J('.elv-account').val())) {
-                        logResponse(paymillFormErrors['invalid-account-number']);
+                    if (validateIBAN(\$J('.elv-iban').val())) {
+                        logResponse(paymillFormErrors['invalid-iban']);
                         \$J(".submit-button").removeAttr("disabled");
                         return false;
                     }
-                    if (false == paymill.validateBankCode(\$J('.elv-bankcode').val())) {
-                        logResponse(paymillFormErrors['invalid-bank-code']);
+                    if ("" === \$J('.elv-bic').val()) {
+                        logResponse(paymillFormErrors['invalid-bic']);
                         \$J(".submit-button").removeAttr("disabled");
                         return false;
                     }
 
                     var params = {
-                        number:         \$J('.elv-account').val(),
-                        bank:           \$J('.elv-bankcode').val(),
+                        iban:           \$J('.elv-iban').val(),
+                        bic:            \$J('.elv-bic').val(),
                         accountholder:  \$J('.elv-holdername').val()
                     };
 
@@ -82,7 +82,11 @@ class PaymillELVHandler extends PaymillHandler {
                     \$J('.debug').text(res).show().fadeOut(8000);
                 */
                 \$J('.paymill-error-text').text(res).show().fadeOut(8000);
-            }            
+            }
+            function validateIBAN(iban) {
+
+                return true;
+            }    
 FORMTEMPLATE;
     
     /**
@@ -111,8 +115,8 @@ FORMTEMPLATE;
                 var paymillFormErrors = new Object();
                 
                 paymillFormErrors['invalid-card-holder'] = '{$_ARRAYLANG['TXT_SHOP_PAYMILL_INVAILD_CARD_HOLDER']}';
-                paymillFormErrors['invalid-account-number'] = '{$_ARRAYLANG['TXT_SHOP_PAYMILL_INVALID_ACC_NUMBER']}';
-                paymillFormErrors['invalid-bank-code'] = '{$_ARRAYLANG['TXT_SHOP_PAYMILL_INVALID_BANK_CODE']}';
+                paymillFormErrors['invalid-iban'] = '{$_ARRAYLANG['TXT_SHOP_PAYMILL_INVALID_IBAN']}';
+                paymillFormErrors['invalid-bic'] = '{$_ARRAYLANG['TXT_SHOP_PAYMILL_INVALID_BIC']}';
 FORM_ERR_MSG;
         JS::registerCode($code);
         
@@ -132,13 +136,13 @@ APISETTING;
         $formContent .= self::fieldset('');
         
         $formContent .= self::openElement('div', 'class="row"');
-        $formContent .= self::getElement('label', '', $_ARRAYLANG['TXT_SHOP_PAYMILL_ELV_ACCOUNT_NUMBER']);
-        $formContent .= Html::getInputText('', '', '', 'class="elv-account"');
+        $formContent .= self::getElement('label', '', $_ARRAYLANG['TXT_SHOP_PAYMILL_IBAN']);
+        $formContent .= Html::getInputText('', '', '', 'class="elv-iban"');
         $formContent .= self::closeElement('div');
         
         $formContent .= self::openElement('div', 'class="row"');        
-        $formContent .= self::getElement('label', '', $_ARRAYLANG['TXT_SHOP_PAYMILL_ELV_BANK_CODE']);
-        $formContent .= Html::getInputText('', '', '', 'class ="elv-bankcode"');
+        $formContent .= self::getElement('label', '', $_ARRAYLANG['TXT_SHOP_PAYMILL_BIC']);
+        $formContent .= Html::getInputText('', '', '', 'class ="elv-bic"');
         $formContent .= self::closeElement('div');
         
         $formContent .= self::openElement('div', 'class="row"');

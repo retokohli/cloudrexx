@@ -300,6 +300,7 @@ DBG::log($error);
                 break;
             case 'paymill':    
             case 'paymill_elv':
+            case 'paymill_iban':
                 $return =  self::_PaymillProcessor(self::getPaymentProcessorName());
                 break;                
             case 'dummy':
@@ -446,8 +447,11 @@ DBG::log($error);
             case 'paymill_cc':
                 $return = PaymillCCHandler::getForm($arrShopOrder, $landingPage);
                 break;
-            case 'paymill_elv':                
+            case 'paymill_elv':
                 $return = PaymillELVHandler::getForm($arrShopOrder, $landingPage);
+                break;
+            case 'paymill_iban':
+                $return = PaymillIBANHandler::getForm($arrShopOrder, $landingPage);
                 break;
         }
         
