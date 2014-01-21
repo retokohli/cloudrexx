@@ -610,8 +610,13 @@ class MediaLibrary
             while ($name !== false) {
                 if (!in_array($name, $forbidden_files)) {
                     if (is_dir($path.$name)) {
+                        $dirName = $name;
+                        if (!\FWSystem::detectUtf8($dirName)) {
+                            $dirName = utf8_encode($dirName);
+                        }
+
                         $dir['icon'][] = $this->_getIcon($path.$name);
-                        $dir['name'][] = $name;
+                        $dir['name'][] = $dirName;
                         $dir['size'][] = $this->_getSize($path.$name);
                         $dir['type'][] = $this->_getType($path.$name);
                         $dir['date'][] = $this->_getDate($path.$name);
@@ -627,8 +632,8 @@ class MediaLibrary
                             }
                         } else {
                             $fileName = $name;
-                            if (!\FWSystem::detectUTF8($name)) {
-                                $fileName = utf8_encode($name);
+                            if (!\FWSystem::detectUtf8($fileName)) {
+                                $fileName = utf8_encode($fileName);
                             }
                         
                             $file['icon'][] = $this->_getIcon($path.$name);
