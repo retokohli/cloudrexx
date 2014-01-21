@@ -298,7 +298,7 @@ DBG::log($error);
                 $return = PayPal::getForm($account_email, $order_id,
                     $currency_code, $amount, $item_name);
                 break;
-            case 'paymill':    
+            case 'paymill_cc':    
             case 'paymill_elv':
             case 'paymill_iban':
                 $return =  self::_PaymillProcessor(self::getPaymentProcessorName());
