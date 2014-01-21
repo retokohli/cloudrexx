@@ -582,7 +582,9 @@ DBG::log("Yellowpay Error: $error");
         }
         if (empty($_REQUEST['handler'])) return false;
         switch ($_REQUEST['handler']) {
-            case 'paymill':
+            case 'paymill_cc':
+            case 'paymill_elv':
+            case 'paymill_iban':
                 $arrShopOrder = array(
                     'order_id'  => $_SESSION['shop']['order_id'],
                     'amount'    => intval($_SESSION['shop']['grand_total_price']*100),

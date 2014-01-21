@@ -149,7 +149,7 @@ APISETTING;
         $formContent .= Html::getInputButton('', $_ARRAYLANG['TXT_SHOP_BUY_NOW'], 'submit', '', 'class="submit-button"');
         $formContent .= self::closeElement('div');
                 
-        $formContent .= Html::getHidden('handler', 'paymill');
+        $formContent .= Html::getHidden('handler', 'paymill_cc');
         
         $formContent .= self::closeElement('fieldset');
         
