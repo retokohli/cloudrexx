@@ -28,7 +28,7 @@ class PaymillELVHandler extends PaymillHandler {
 
                     \$J('.submit-button').attr("disabled", "disabled");
 
-                    if (paymill.validateHolder(\$J('.elv-holdername').val())) {
+                    if ("" === \$J('.elv-holdername').val()) {
                         logResponse(paymillFormErrors['invalid-card-holder']);
                         \$J(".submit-button").removeAttr("disabled");
                         return false;
@@ -115,18 +115,9 @@ FORMTEMPLATE;
                 paymillFormErrors['invalid-bank-code'] = '{$_ARRAYLANG['TXT_SHOP_PAYMILL_INVALID_BANK_CODE']}';
 FORM_ERR_MSG;
         JS::registerCode($code);
-        
-        $testMode = intval(SettingDb::getValue('paymill_use_test_account')) == 0;
-        $apiKey   = $testMode ? SettingDb::getValue('paymill_test_public_key') : SettingDb::getValue('paymill_live_public_key');
-        $mode     = $testMode ? 'true' : 'false';
-        
-        $code = <<< APISETTING
-                var PAYMILL_PUBLIC_KEY = '$apiKey';
-                var PAYMILL_TEST_MODE  = $mode;
-APISETTING;
-        JS::registerCode($code);
-        JS::registerCode(self::$formScript);
                 
+        JS::registerCode(self::$formScript);
+
         $formContent  = self::getElement('div', 'class="paymill-error-text"');
         
         $formContent .= self::fieldset('');
