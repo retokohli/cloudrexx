@@ -972,7 +972,7 @@ class newsManager extends newsLibrary {
                                                 teaser_image_path="'.$newsTeaserImagePath.'",
                                                 teaser_image_thumbnail_path="'.$newsTeaserImageThumbnailPath.'",
                                                 userid='.$userid.',
-                                                changelog='.$date.',
+                                                changelog="'.$date.'",
                                                 allow_comments='.$newsCommentActive
                                         );
 
