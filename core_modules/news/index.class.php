@@ -244,9 +244,9 @@ class news extends newsLibrary {
         }
 
         // parse author
-        $this->parseUserAccountData($objResult->fields['authorid'], $objResult->fields['author'], 'news_author');
+        self::parseUserAccountData($this->_objTpl, $objResult->fields['authorid'], $objResult->fields['author'], 'news_author');
         // parse publisher
-        $this->parseUserAccountData($objResult->fields['publisherid'], $objResult->fields['publisher'], 'news_publisher');
+        self::parseUserAccountData($this->_objTpl, $objResult->fields['publisherid'], $objResult->fields['publisher'], 'news_publisher');
 
         // show comments
         $this->parseMessageCommentForm($newsid, $newstitle, $newsCommentActive);
@@ -415,7 +415,7 @@ class news extends newsLibrary {
 
         $i = 0;
         while (!$objResult->EOF) {
-            $this->parseUserAccountData($objResult->fields['userid'], $objResult->fields['poster_name'], 'news_comments_poster');
+            self::parseUserAccountData($this->_objTpl, $objResult->fields['userid'], $objResult->fields['poster_name'], 'news_comments_poster');
 
             $this->_objTpl->setVariable(array(
                'NEWS_COMMENTS_CSS'          => 'row'.($i % 2 + 1),
@@ -694,62 +694,6 @@ class news extends newsLibrary {
             'TXT_NEWS_RELATED_MESSAGES_OF_'.$placeholderPrefix => $_ARRAYLANG['TXT_NEWS_RELATED_MESSAGES_OF_'.$placeholderPrefix],
         ));
         $this->_objTpl->parse($relationTemplateBlock);
-    }
-
-    /**
-     * Parses a user's account and profile data specified by $userId.
-     * If the \Cx\Core\Html\Sigma template block specified by $blockName
-     * exists, then the user's data will be parsed inside this block.
-     * Otherwise, it will try to parse a template variable by the same
-     * name. For instance, if $blockName is set to news_publisher,
-     * it will first try to parse the template block news_publisher,
-     * if unable it will parse the template variable NEWS_PUBLISHER.
-     *
-     * @param   integer User-ID
-     * @param   string  User name/title that shall be used as fallback,
-     *                  if no user account specified by $userId could be found
-     * @param   string  Name of the \Cx\Core\Html\Sigma template block to parse.
-     *                  For instance if you have a block like:
-     *                      <!-- BEGIN/END news_publisher -->
-     *                  set $blockName to:
-     *                      news_publisher
-     */
-    private function parseUserAccountData($userId, $userTitle, $blockName)
-    {
-        $placeholderName = strtoupper($blockName);
-
-        if ($userId && $objUser = FWUser::getFWUserObject()->objUser->getUser($userId)) {
-            if ($this->_objTpl->blockExists($blockName)) {
-                // fill the template block user (i.e. news_publisher) with the user account's data 
-                $this->_objTpl->setVariable(array(
-                    $placeholderName.'_ID'          => $objUser->getId(),
-                    $placeholderName.'_USERNAME'    => contrexx_raw2xhtml($objUser->getUsername())
-                ));
-                
-                $objAccessLib = new AccessLib($this->_objTpl);
-                $objAccessLib->setModulePrefix($placeholderName.'_');
-                $objAccessLib->setAttributeNamePrefix($blockName.'_profile_attribute');
-
-                $objUser->objAttribute->first();
-                while (!$objUser->objAttribute->EOF) {
-                    $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
-                    $objAccessLib->parseAttribute($objUser, $objAttribute->getId(), 0, false, FALSE, false, false, false);
-                    $objUser->objAttribute->next();
-                }
-            } elseif ($this->_objTpl->placeholderExists($placeholderName)) {
-                // fill the placeholder (i.e. NEWS_PUBLISHER) with the user title
-                $userTitle = FWUser::getParsedUserTitle($userId);
-                $this->_objTpl->setVariable($placeholderName, contrexx_raw2xhtml($userTitle));
-            }
-        } elseif (!empty($userTitle)) {
-            if ($this->_objTpl->blockExists($blockName)) {
-                // replace template block (i.e. news_publisher) by the user title
-                $this->_objTpl->replaceBlock($blockName, contrexx_raw2xhtml($userTitle));
-            } elseif ($this->_objTpl->placeholderExists($placeholderName)) {
-                // fill the placeholder (i.e. NEWS_PUBLISHER) with the user title
-                $this->_objTpl->setVariable($placeholderName, contrexx_raw2xhtml($userTitle));
-            }
-        }
     }
 
     /**

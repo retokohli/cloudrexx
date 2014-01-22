@@ -1041,4 +1041,62 @@ class newsLibrary
         
         return $monthlyStats;
     }
+    
+    /**
+     * Parses a user's account and profile data specified by $userId.
+     * If the \Cx\Core\Html\Sigma template block specified by $blockName
+     * exists, then the user's data will be parsed inside this block.
+     * Otherwise, it will try to parse a template variable by the same
+     * name. For instance, if $blockName is set to news_publisher,
+     * it will first try to parse the template block news_publisher,
+     * if unable it will parse the template variable NEWS_PUBLISHER.
+     *
+     * @param   object  Template object \Cx\Core\Html\Sigma
+     * @param   integer User-ID
+     * @param   string  User name/title that shall be used as fallback,
+     *                  if no user account specified by $userId could be found
+     * @param   string  Name of the \Cx\Core\Html\Sigma template block to parse.
+     *                  For instance if you have a block like:
+     *                      <!-- BEGIN/END news_publisher -->
+     *                  set $blockName to:
+     *                      news_publisher
+     */
+    public static function parseUserAccountData($objTpl, $userId, $userTitle, $blockName)
+    {
+        $placeholderName = strtoupper($blockName);
+
+        if ($userId && $objUser = FWUser::getFWUserObject()->objUser->getUser($userId)) {
+            if ($objTpl->blockExists($blockName)) {
+                // fill the template block user (i.e. news_publisher) with the user account's data 
+                $objTpl->setVariable(array(
+                    $placeholderName.'_ID'          => $objUser->getId(),
+                    $placeholderName.'_USERNAME'    => contrexx_raw2xhtml($objUser->getUsername())
+                ));
+                
+                $objAccessLib = new AccessLib($objTpl);
+                $objAccessLib->setModulePrefix($placeholderName.'_');
+                $objAccessLib->setAttributeNamePrefix($blockName.'_profile_attribute');
+
+                $objUser->objAttribute->first();
+                while (!$objUser->objAttribute->EOF) {
+                    $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
+                    $objAccessLib->parseAttribute($objUser, $objAttribute->getId(), 0, false, FALSE, false, false, false);
+                    $objUser->objAttribute->next();
+                }
+            } elseif ($objTpl->placeholderExists($placeholderName)) {
+                // fill the placeholder (i.e. NEWS_PUBLISHER) with the user title
+                $userTitle = FWUser::getParsedUserTitle($userId);
+                $objTpl->setVariable($placeholderName, contrexx_raw2xhtml($userTitle));
+            }
+        } elseif (!empty($userTitle)) {
+            if ($objTpl->blockExists($blockName)) {
+                // replace template block (i.e. news_publisher) by the user title
+                $objTpl->replaceBlock($blockName, contrexx_raw2xhtml($userTitle));
+            } elseif ($objTpl->placeholderExists($placeholderName)) {
+                // fill the placeholder (i.e. NEWS_PUBLISHER) with the user title
+                $objTpl->setVariable($placeholderName, contrexx_raw2xhtml($userTitle));
+            }
+        }
+    }
+
 }
