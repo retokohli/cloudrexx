@@ -495,6 +495,7 @@ class InitCMS
         $this->templates['headlines2'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines2.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines2.html') : '';
         $this->templates['headlines3'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines3.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines3.html') : '';
         $this->templates['headlines4'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines4.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines4.html') : '';
+        $this->templates['news_recent_comments'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/news_recent_comments.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/news_recent_comments.html') : '';
         $this->templates['javascript'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/javascript.js') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/javascript.js') : '';
         //$this->templates['style'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/style.css') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/style.css') : '';
         $this->templates['buildin_style'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/buildin_style.css') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/buildin_style.css') : '';

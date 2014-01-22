@@ -501,6 +501,24 @@ class LegacyComponentHandler {
                             $themesPages['sidebar'] = str_replace($newsArchivePlaceholder, $newsArchive, $themesPages['sidebar']);
                             $page_template          = str_replace($newsArchivePlaceholder, $newsArchive, $page_template);
                         }
+                        // Get recent News Comments
+                        $modulespath = ASCMS_CORE_MODULE_PATH.'/news/lib/newsRecentComments.class.php';
+                        $newsCommentsPlaceholder = '{NEWS_RECENT_COMMENTS_FILE}';
+                        
+                        if (   file_exists($modulespath)
+                            && (   strpos(\Env::get('cx')->getPage()->getContent(), $newsCommentsPlaceholder) !== false
+                                || strpos($themesPages['index'], $newsCommentsPlaceholder) !== false
+                                || strpos($themesPages['sidebar'], $newsCommentsPlaceholder) !== false
+                                || strpos($page_template, $newsCommentsPlaceholder) !== false)
+                        ) {
+                            $newsLib = new \newsRecentComments($themesPages['news_recent_comments']);
+                            $newsComments = $newsLib->getRecentNewsComments();
+                            
+                            \Env::get('cx')->getPage()->setContent(str_replace($newsCommentsPlaceholder, $newsComments, \Env::get('cx')->getPage()->getContent()));
+                            $themesPages['index']   = str_replace($newsCommentsPlaceholder, $newsComments, $themesPages['index']);
+                            $themesPages['sidebar'] = str_replace($newsCommentsPlaceholder, $newsComments, $themesPages['sidebar']);
+                            $page_template          = str_replace($newsCommentsPlaceholder, $newsComments, $page_template);
+                        }
                     },
                     'Calendar' => function() {
                         global $modulespath, $eventsPlaceholder, $_CONFIG, $themesPages, $page_template,
