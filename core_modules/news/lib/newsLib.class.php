@@ -160,7 +160,7 @@ class newsLibrary
                 $newsUrl = \Cx\Core\Routing\Url::fromModuleAndCmd('news');                
                 $newsUrl->setParam('category', $catId);
                 
-                $html .= '<a href="'.$newsUrl->toString().'" title="'.contrexx_raw2xhtml($categoriesLang[$catId][FRONTEND_LANG_ID]).'">'.contrexx_raw2xhtml($categoriesLang[$catId][FRONTEND_LANG_ID]).'</a>';
+                $html .= '<a href="'.$newsUrl.'" title="'.contrexx_raw2xhtml($categoriesLang[$catId][FRONTEND_LANG_ID]).'">'.contrexx_raw2xhtml($categoriesLang[$catId][FRONTEND_LANG_ID]).'</a>';
             }
             
             $subCategories = $this->objNestedSet->getChildren($catId, true);
