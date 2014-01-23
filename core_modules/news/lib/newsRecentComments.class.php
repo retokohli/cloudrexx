@@ -65,10 +65,16 @@ class newsRecentComments extends newsLibrary
                               `".DBPREFIX."module_news` AS news
                         ON
                             `nComment`.newsid = `news`.id
+                        LEFT JOIN 
+                              `".DBPREFIX."module_news_locale` AS nLocale
+                        ON
+                            `news`.id = `nLocale`.news_id AND `nLocale`.lang_id = ". FRONTEND_LANG_ID ."
                         WHERE
                             `news`.status = 1
                         AND
                             `news`.allow_comments = 1
+                        AND
+                            `nLocale`.is_active = 1
                         AND
                             `nComment`.`is_active` = '1'
                         ORDER BY
