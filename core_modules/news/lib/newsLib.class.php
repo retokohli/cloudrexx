@@ -117,7 +117,7 @@ class newsLibrary
 
         $html = '';
         if (!empty($monthlyStats)) {
-            $newsArchiveLink = \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'archive')->toString();
+            $newsArchiveLink = \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'archive');
             
             $html  = '<ul class="news_archive">';
             foreach ($monthlyStats as $key => $value) {
