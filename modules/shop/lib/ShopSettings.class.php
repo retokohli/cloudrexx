@@ -67,7 +67,9 @@ class ShopSettings
         self::storeVat();
         if (SettingDb::changed()) {
             self::$changed = true;
-            if (SettingDb::updateAll() === false) return false;
+            if (SettingDb::updateAll() === false) {
+                return false;
+            }
         }
         if (self::$changed) {
             return (self::$success
@@ -123,7 +125,7 @@ class ShopSettings
         // Order amount lower limit (new in 3.1.0)
         SettingDb::set('orderitems_amount_min',
             empty($_POST['orderitems_amount_min'])
-                ? 0 : floatval($_POST['orderitems_amount_max']));
+                ? 0 : floatval($_POST['orderitems_amount_min']));
         // Order amount upper limit (applicable when using Saferpay)
         SettingDb::set('orderitems_amount_max',
             empty($_POST['orderitems_amount_max'])
@@ -155,7 +157,7 @@ class ShopSettings
             SettingDb::add('numof_products_per_page_backend',
                 intval($_POST['numof_products_per_page_backend']), 53,
                 SettingDb::TYPE_TEXT, null, 'config');
-        };
+        }
         if (!SettingDb::set('numof_orders_per_page_backend',
             intval($_POST['numof_orders_per_page_backend']))) {
             SettingDb::add('numof_orders_per_page_backend',
