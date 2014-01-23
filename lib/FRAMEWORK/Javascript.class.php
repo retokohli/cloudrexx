@@ -111,7 +111,6 @@ jQuery(document).ready(function(){
             'jsfiles'       => array(
                 'lib/javascript/jquery/jquery-1.6.1.min.js',
             ),
-            'specialcode'  => 'var $J = jQuery.noConflict();',
         ),
         'jquery-tools' => array(
             'jsfiles' => array(
@@ -295,6 +294,14 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
     private static $customJS = array();
 
     /**
+     * Holds the template JS files
+     * @static
+     * @access private
+     * @var array
+     */
+    private static $templateJS = array();
+
+    /**
      * The custom CSS files
      * @static
      * @access private
@@ -452,11 +459,12 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
      * then this one will be loaded instead.
      * @param string $file The path of $file must be specified relative to the document root of the website.
      *     I.e. modules/foo/bar.js
+     * @param bool $template is a javascript file which has been included from template
      *
      * External files are also suppored by providing a valid HTTP(S) URI as $file.
      * @return bool Returns TRUE if the file will be loaded, otherwiese FALSE.
      */
-    public static function registerJS($file)
+    public static function registerJS($file, $template = false)
     {
         // check whether the script has a query string and remove it
         // this is necessary to check whether the file exists in the filesystem or not
@@ -464,14 +472,6 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         $queryStringBegin = strpos($fileName, '?');
         if ($queryStringBegin) {
             $fileName = substr($fileName, 0, $queryStringBegin);
-        }
-
-        // $basename = strtolower(preg_replace("/\.[^\.]+$/", "", basename($file)));
-        // we assume, every javascript files ends with .js
-        $basename = strtolower(str_replace(".js", "", basename($fileName)));
-        if (array_search($basename, array_keys(self::$available)) !== false) {
-            self::activate($basename);
-            return true;
         }
 
         // if it is an local javascript file
@@ -483,7 +483,12 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         }
 
         // add original file name with query string to custom javascripts array
-        if (array_search($file, self::$customJS) === false) {
+        if (array_search($file, self::$customJS) !== false || array_search($file, self::$templateJS) !== false) {
+            return true;
+        }
+        if ($template) {
+            self::$templateJS[] = $file;
+        } else {
             self::$customJS[] = $file;
         }
         return true;
@@ -596,6 +601,8 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         }
 
         $retstring .= self::makeJSFiles(self::$customJS);
+        $retstring .= self::makeSpecialCode('$J = cx.jQuery = jQuery.noConflict();');
+        $retstring .= self::makeJSFiles(self::$templateJS);
         $retstring .= self::makeCSSFiles($cssfiles);
         $retstring .= self::makeCSSFiles(self::$customCSS);
         $retstring .= self::makeSpecialCode(self::$customCode);
@@ -692,14 +699,17 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
      */
     private static function makeSpecialCode($code)
     {
-        $retcode = "";
-        if (!empty($code)) {
-            $retcode .= "<script type=\"text/javascript\">\n/* <![CDATA[ */\n";
-            foreach ($code as $segment) {
-                $retcode .= $segment."\n";
-            }
-            $retcode .= "\n/* ]]> */\n</script>\n";
+        if (empty($code)) {
+            return '';
         }
+        
+        $retcode = "<script type=\"text/javascript\">\n/* <![CDATA[ */\n";
+        if (is_array($code)) {
+            $retcode .= implode("\r\n", $code);
+        } else {
+            $retcode .= $code;
+        }
+        $retcode .= "\n/* ]]> */\n</script>\n";
         return $retcode;
     }
 
@@ -711,14 +721,16 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         //make sure we include the alternative if provided
         foreach(self::$alternatives as $pattern => $alternative) {
             if(preg_match($pattern, basename($script)) > 0) {
-                $alternativeFound = true;
-                self::activate($alternative);
+                if ($alternative != 'jquery') {
+                    self::activate($alternative);
+                    $alternativeFound = true;
+                }
                 break;
             }
         }
         //only register the js if we didn't activate the alternative
         if(!$alternativeFound)
-            self::registerJS($script);
+            self::registerJS($script, true);
     }
 
 
