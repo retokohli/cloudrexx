@@ -10,7 +10,7 @@ function deleteMask(maskId)
 
 var switchState = function(id, obj, action, type)
 {
-    jQuery.get('index.php', {cmd : '{MODULE_NAME}', act : 'switchState', id : id, state : action, type : type}).success(function() {
+    cx.jQuery.get('index.php', {cmd : '{MODULE_NAME}', act : 'switchState', id : id, state : action, type : type}).success(function() {
         if (action) {
             path = 'images/icons/status_green.gif';
             action = 0;
@@ -18,8 +18,8 @@ var switchState = function(id, obj, action, type)
             path = 'images/icons/status_red.gif';
             action = 1;
         }
-        jQuery(obj).children('img:first').attr('src', path);
-        jQuery(obj).attr('onclick', 'switchState('+id+', this, '+action+', \''+type+'\')');
+        cx.jQuery(obj).children('img:first').attr('src', path);
+        cx.jQuery(obj).attr('onclick', 'switchState('+id+', this, '+action+', \''+type+'\')');
     });
 }
 //]]>

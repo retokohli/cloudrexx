@@ -3,10 +3,10 @@
 // needs prototype.js
 //<![CDATA[
 function showOrHide(element) {
-    if (jQuery(element).is(':hidden')) {
-        jQuery(element).show();
+    if (cx.jQuery(element).is(':hidden')) {
+        cx.jQuery(element).show();
     } else {
-        jQuery(element).hide();
+        cx.jQuery(element).hide();
     }
 }
 
@@ -46,7 +46,7 @@ function selectMultiAction() {
 
 var switchActive = function(id, obj, action)
 {
-    jQuery.get('index.php', {cmd: 'data', act: 'switchCategoryState', id: id, switchTo: action}).success(function() {
+    cx.jQuery.get('index.php', {cmd: 'data', act: 'switchCategoryState', id: id, switchTo: action}).success(function() {
         if (action) {
             path = 'images/icons/led_green.gif';
             action = 0;
@@ -54,16 +54,16 @@ var switchActive = function(id, obj, action)
             path = 'images/icons/led_red.gif';
             action = 1;
         }
-        jQuery(obj).children('img:first').attr('src', path);
-        jQuery(obj).attr('onclick', 'switchActive('+id+', this, '+action+')');
+        cx.jQuery(obj).children('img:first').attr('src', path);
+        cx.jQuery(obj).attr('onclick', 'switchActive('+id+', this, '+action+')');
     });
 }
 
 var switchAction = function(obj)
 {
-    var pageSelect = jQuery('#select_display');
-    var height = jQuery('#box_height');
-    var width = jQuery('#box_width');
+    var pageSelect = cx.jQuery('#select_display');
+    var height = cx.jQuery('#box_height');
+    var width = cx.jQuery('#box_width');
     if (obj.value == 'overlaybox') {
         pageSelect.hide();
         width.css('display', 'table-row');
@@ -81,7 +81,7 @@ var switchAction = function(obj)
 
 var saveOrder = function()
 {
-    jQuery.post('index.php?cmd=data&act=saveCategoryOrder', {
+    cx.jQuery.post('index.php?cmd=data&act=saveCategoryOrder', {
         'categories[]': $J('#entry_list').sortable('toArray')
     });
 }

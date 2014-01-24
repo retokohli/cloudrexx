@@ -111,7 +111,7 @@ cx.ready(function(){
                     data     : $J( "#addsurvey" ).serialize(),
                     dataType : "json",                    
                     beforeSend: function() {
-                        cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + jQuery('#loading').html() + "</div>");
+                        cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "</div>");
                     },
                     complete: function() {
                         cx.tools.StatusMessage.removeAllDialogs();
@@ -141,7 +141,7 @@ cx.ready(function(){
     });
     $J( ".edit_question" ).live('click', function(){
         var id = $J(this).attr("data-id");
-        cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + jQuery('#loading').html() + "</div>");
+        cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "</div>");
         $J.getJSON('index.php', {cmd : 'jsondata', object : 'survey' ,act : 'getSurveyQuestion', id : id }, function(data){            
             $J("#addsurvey #questionId").val(data.data.id);
             $J("#addsurvey #questionType").val(data.data.questionType);
@@ -160,7 +160,7 @@ cx.ready(function(){
     $J( ".delete_question" ).live('click', function(){
         var id = $J(this).attr("data-id");
         
-        cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + jQuery('#loading').html() + "</div>");
+        cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "</div>");
         $J.getJSON('index.php', {cmd : 'jsondata', object : 'survey' ,act : 'deleteQuestion', id : id }, function(data){
             getSurveyQuestions();
             cx.tools.StatusMessage.removeAllDialogs();
@@ -176,7 +176,7 @@ cx.ready(function(){
                 data     : sortFields,
                 dataType : "json",                    
                 beforeSend: function() {
-                    cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + jQuery('#loading').html() + "</div>");
+                    cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "</div>");
                 },
                 complete: function() {
                     cx.tools.StatusMessage.removeAllDialogs();
@@ -186,7 +186,7 @@ cx.ready(function(){
     });
 });
 function getSurveyQuestions() {
-    cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + jQuery('#loading').html() + "</div>");
+    cx.tools.StatusMessage.showMessage("<div id=\"loading\">" + cx.jQuery('#loading').html() + "</div>");
     $J.getJSON('index.php', {cmd : 'jsondata', object : 'survey' ,act : 'getSurveyQuestions', surveyId : '{SURVEY_ID}' }, function(data){
         $J("table.survey_questions_container tbody").html(data.data);
         cx.tools.StatusMessage.removeAllDialogs();
