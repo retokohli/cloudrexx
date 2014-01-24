@@ -285,8 +285,8 @@ function searchElement(elementId, term){
 function refreshSelector_$intId(fieldId,elementDeselectedId,elementSelectedId,pageSection,pageCmd,entryId){
     jQuery.get('index.php', {section : pageSection, cmd : pageCmd,  inputfield : 'refresh', field : fieldId, eid : entryId}).success(function(response) {
         var arrResponse = response.split(",");
-        jQuery('#'+elementDeselectedId).html(arrResponse[0]);
-        jQuery('#'+elementSelectedId).html(arrResponse[1]);
+        cx.jQuery('#'+elementDeselectedId).html(arrResponse[0]);
+        cx.jQuery('#'+elementSelectedId).html(arrResponse[1]);
     });
 }
 

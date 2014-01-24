@@ -14,7 +14,7 @@ function resetContextFields() {
             $J(".inputfieldContext option[value="+ $J(this).val() +"]")
                     .not(":selected")
                     .attr('disabled', 'disabled');
-            contexts = jQuery.removeFromArray($J(this).val(), contexts);
+            contexts = cx.jQuery.removeFromArray($J(this).val(), contexts);
         }
     });
     
@@ -23,8 +23,8 @@ function resetContextFields() {
     });
 }
 
-jQuery.removeFromArray = function(value, arr) {
-    return jQuery.grep(arr, function(elem, index) {
+cx.jQuery.removeFromArray = function(value, arr) {
+    return cx.jQuery.grep(arr, function(elem, index) {
         return elem !== value;
     });
 };
@@ -140,30 +140,30 @@ function openWindow(theURL,winName,features){
 
 var addInputfield = function(formId)
 {
-    jQuery.get('index.php', {cmd : '{MODULE_NAME}', act : 'settings', tpl : 'modify_form', id : formId, ajax : 'add'}).success(function() { refreshInputfields(formId); });
+    cx.jQuery.get('index.php', {cmd : '{MODULE_NAME}', act : 'settings', tpl : 'modify_form', id : formId, ajax : 'add'}).success(function() { refreshInputfields(formId); });
 }
 
 var moveInputfield = function(formId, fieldId, directionId)
 {
     //directionId: 1 = up | 2 = down
 
-    jQuery.get('index.php', {cmd : '{MODULE_NAME}', act : 'settings', tpl : 'modify_form', id : formId, ajax : 'move', field : fieldId, direction : directionId}).success(function() { refreshInputfields(formId); }).error(function(){ alert('Something went wrong...') });
+    cx.jQuery.get('index.php', {cmd : '{MODULE_NAME}', act : 'settings', tpl : 'modify_form', id : formId, ajax : 'move', field : fieldId, direction : directionId}).success(function() { refreshInputfields(formId); }).error(function(){ alert('Something went wrong...') });
 }
 
 var deleteInputfield = function(formId, fieldId)
 {
-    jQuery.get('index.php', {cmd : '{MODULE_NAME}', act : 'settings', tpl : 'modify_form', id : formId, ajax : 'delete', field : fieldId}).success(function() { refreshInputfields(formId); }).error(function(){ alert('Something went wrong...') });
+    cx.jQuery.get('index.php', {cmd : '{MODULE_NAME}', act : 'settings', tpl : 'modify_form', id : formId, ajax : 'delete', field : fieldId}).success(function() { refreshInputfields(formId); }).error(function(){ alert('Something went wrong...') });
 }
 
 
 var saveInputfield = function(success_function)
 {
-    jQuery.post('index.php?cmd={MODULE_NAME}&act=settings&tpl=modify_form&ajax=save', jQuery('#settingsInputfieldsForm').serialize()).success(success_function).error(function(){ alert('Something went wrong...') });
+    cx.jQuery.post('index.php?cmd={MODULE_NAME}&act=settings&tpl=modify_form&ajax=save', cx.jQuery('#settingsInputfieldsForm').serialize()).success(success_function).error(function(){ alert('Something went wrong...') });
 }
 
 var refreshInputfields = function(formId)
 {
-    jQuery.get('index.php', {cmd : '{MODULE_NAME}', act : 'settings', tpl : 'modify_form', id : formId, ajax : 'refresh'}).success(function(data) { jQuery('#inputfields_list').html(data); resetContextFields();}).error(function(){ alert('Something went wrong...') });
+    cx.jQuery.get('index.php', {cmd : '{MODULE_NAME}', act : 'settings', tpl : 'modify_form', id : formId, ajax : 'refresh'}).success(function(data) { cx.jQuery('#inputfields_list').html(data); resetContextFields();}).error(function(){ alert('Something went wrong...') });
 }
 </script>
 

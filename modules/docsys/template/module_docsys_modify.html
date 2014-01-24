@@ -18,19 +18,19 @@ cx.ready(function() {
     dateFormat: 'yy-mm-dd',
     onSelect: function(dateText, inst) {
       // adjust start or end date to avoid an invalid date range
-      var startDate = jQuery('input[name=startDate]').datepicker('getDate');
-      var endDate = jQuery('input[name=endDate]').datepicker('getDate');
+      var startDate = cx.jQuery('input[name=startDate]').datepicker('getDate');
+      var endDate = cx.jQuery('input[name=endDate]').datepicker('getDate');
       if ((startDate != null) && (endDate != null) && (startDate > endDate)) {
-        if (jQuery(this).attr('name') == 'startDate') {
-          jQuery('input[name=endDate]').datepicker('setDate', dateText);
+        if (cx.jQuery(this).attr('name') == 'startDate') {
+          cx.jQuery('input[name=endDate]').datepicker('setDate', dateText);
         } else {
-          jQuery('input[name=startDate]').datepicker('setDate', dateText);
+          cx.jQuery('input[name=startDate]').datepicker('setDate', dateText);
         }
       }
     }
   };
-  jQuery('input[name=startDate]').datetimepicker(datepickerOptions);
-  jQuery('input[name=endDate]').datetimepicker(datepickerOptions);
+  cx.jQuery('input[name=startDate]').datetimepicker(datepickerOptions);
+  cx.jQuery('input[name=endDate]').datetimepicker(datepickerOptions);
 });
 // -->
 </script>

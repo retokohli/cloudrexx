@@ -143,21 +143,21 @@ cx.ready(function() {
         dateFormat: 'yy-mm-dd',
         onSelect: function(dateText, inst) {
             // adjust start or end date to avoid an invalid date range
-            var startDate = jQuery('input[name=release_date]').datepicker('getDate');
-            var endDate = jQuery('input[name=release_date_end]').datepicker('getDate');
+            var startDate = cx.jQuery('input[name=release_date]').datepicker('getDate');
+            var endDate = cx.jQuery('input[name=release_date_end]').datepicker('getDate');
 
             if ((startDate != null) && (endDate != null) && (startDate > endDate)) {
-                if (jQuery(this).attr('name') == 'release_date') {
-                    jQuery('input[name=release_date_end]').datepicker('setDate', dateText);
+                if (cx.jQuery(this).attr('name') == 'release_date') {
+                    cx.jQuery('input[name=release_date_end]').datepicker('setDate', dateText);
                 } else {
-                    jQuery('input[name=release_date]').datepicker('setDate', dateText);
+                    cx.jQuery('input[name=release_date]').datepicker('setDate', dateText);
                 }
             }
         }
     };
 
-    jQuery('input[name=release_date]').datepicker(datepickerOptions);
-    jQuery('input[name=release_date_end]').datepicker(datepickerOptions);}
+    cx.jQuery('input[name=release_date]').datepicker(datepickerOptions);
+    cx.jQuery('input[name=release_date_end]').datepicker(datepickerOptions);}
 );
 
 var changeReleaseTime = function()

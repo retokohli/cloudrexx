@@ -336,8 +336,8 @@ cx.ready(function() {
         dateFormat: '$dateFormat',        
         timeFormat: 'hh:mm'
     };
-    jQuery('input[name=from]').datepicker(options);
-    jQuery('input[name=till]').datepicker(options);
+    cx.jQuery('input[name=from]').datepicker(options);
+    cx.jQuery('input[name=till]').datepicker(options);
 });
 
 </script>
@@ -464,17 +464,17 @@ cx.ready(function() {
         dateFormat: '$dateFormat',        
         timeFormat: 'hh:mm',
         onSelect: function(dateText, inst) {
-            startDateTime = jQuery(".startDate").datetimepicker("getDate").getTime() / 1000;
-            endDateTime   = jQuery(".endDate").datetimepicker("getDate").getTime() / 1000;                
+            startDateTime = cx.jQuery(".startDate").datetimepicker("getDate").getTime() / 1000;
+            endDateTime   = cx.jQuery(".endDate").datetimepicker("getDate").getTime() / 1000;                
 
             if (startDateTime > endDateTime) {
-                jQuery(".endDate").datetimepicker('setDate', jQuery(".startDate").val());
+                cx.jQuery(".endDate").datetimepicker('setDate', cx.jQuery(".startDate").val());
             }
         },
         showSecond: false
     };
-    jQuery('input[name=startDate]').datetimepicker(options);
-    jQuery('input[name=endDate]').datetimepicker(options);
+    cx.jQuery('input[name=startDate]').datetimepicker(options);
+    cx.jQuery('input[name=endDate]').datetimepicker(options);
     modifyEvent._handleAllDayEvent(\$J(".all_day"));
     showOrHidePlaceFields('$locationType', 'place');
     showOrHidePlaceFields('$hostType', 'host');
@@ -1005,7 +1005,7 @@ UPLOADER;
 <script type="text/javascript">
     cx.ready(function() {
             var ef = new ExtendedFileInput({
-                    field:  jQuery('#{$fieldName}'),
+                    field:  cx.jQuery('#{$fieldName}'),
                     instance: '{$uploaderInstanceName}',
                     widget: 'uploadWidget{$submissionId}'
             });

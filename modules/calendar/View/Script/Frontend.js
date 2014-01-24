@@ -104,18 +104,18 @@ var modifyEvent = {
       }
     },
     _handleAllDayEvent : function(elm){        
-      jQuery(".startDate").data('dateTime', jQuery(".startDate").datetimepicker("getDate").getTime());
-      jQuery(".endDate").data('dateTime', jQuery(".endDate").datetimepicker("getDate").getTime());
+      cx.jQuery(".startDate").data('dateTime', cx.jQuery(".startDate").datetimepicker("getDate").getTime());
+      cx.jQuery(".endDate").data('dateTime', cx.jQuery(".endDate").datetimepicker("getDate").getTime());
       if (elm.is(":checked")) {
          // new initialization instead of show up once
-         jQuery(".startDate").datepicker('setDate', new Date(jQuery(".startDate").data('dateTime')));
-         jQuery(".endDate").datepicker('setDate', new Date(jQuery(".endDate").data('dateTime')));
-         jQuery( ".startDate, .endDate" ).datetimepicker('disableTimepicker');
+         cx.jQuery(".startDate").datepicker('setDate', new Date(cx.jQuery(".startDate").data('dateTime')));
+         cx.jQuery(".endDate").datepicker('setDate', new Date(cx.jQuery(".endDate").data('dateTime')));
+         cx.jQuery( ".startDate, .endDate" ).datetimepicker('disableTimepicker');
       } else {
-         jQuery(".startDate, .endDate").datetimepicker('enableTimepicker');
+         cx.jQuery(".startDate, .endDate").datetimepicker('enableTimepicker');
       }
-      jQuery(".startDate").datepicker('setDate', new Date(jQuery(".startDate").data('dateTime')));
-      jQuery(".endDate").datepicker('setDate', new Date(jQuery(".endDate").data('dateTime')));
+      cx.jQuery(".startDate").datepicker('setDate', new Date(cx.jQuery(".startDate").data('dateTime')));
+      cx.jQuery(".endDate").datepicker('setDate', new Date(cx.jQuery(".endDate").data('dateTime')));
     },
     _isNumber : function(evt) {
       evt = (evt) ? evt : window.event;
