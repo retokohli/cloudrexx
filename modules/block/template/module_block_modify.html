@@ -5,7 +5,7 @@
             updateContent(0, true);
             switchEditor();
         });
-        jQuery("#blockLanguages li a:visible").first().click();
+        cx.jQuery("#blockLanguages li a:visible").first().click();
     });
 
     function switchEditor() {
@@ -341,12 +341,12 @@
      * also on startup and before sending the form
      */
     var changePageTitlesByLang = function(langCode, placeholder) {
-        var cachedLang = jQuery("input#" + placeholder + "CachedLang").val();
+        var cachedLang = cx.jQuery("input#" + placeholder + "CachedLang").val();
         var selectedOps, unselectedOps;
         // do not overwrite data on first call, but parse it into json object
         if (cachedLang == "") {
-            selectedOps = jQuery.parseJSON(cx.variables.get(placeholder + "PagesSelectedOptions", "block"));
-            unselectedOps = jQuery.parseJSON(cx.variables.get(placeholder + "PagesUnselectedOptions", "block"));
+            selectedOps = cx.jQuery.parseJSON(cx.variables.get(placeholder + "PagesSelectedOptions", "block"));
+            unselectedOps = cx.jQuery.parseJSON(cx.variables.get(placeholder + "PagesUnselectedOptions", "block"));
         } else {
             selectedOps = cx.variables.get(placeholder + "PagesSelectedOptions", "block");
             unselectedOps = cx.variables.get(placeholder + "PagesUnselectedOptions", "block");
@@ -356,15 +356,15 @@
             if (unselectedOps === "") {
                 unselectedOps = new Object();
             }
-            selectedOps[cachedLang] = jQuery.trim(jQuery('select[name="' + placeholder + 'SelectedPages[]"]').html());
-            unselectedOps[cachedLang] = jQuery.trim(jQuery('select[name="' + placeholder + 'NotSelectedPages[]"]').html());
+            selectedOps[cachedLang] = cx.jQuery.trim(cx.jQuery('select[name="' + placeholder + 'SelectedPages[]"]').html());
+            unselectedOps[cachedLang] = cx.jQuery.trim(cx.jQuery('select[name="' + placeholder + 'NotSelectedPages[]"]').html());
             var activeIds = new Array();
-            jQuery.each(selectedOps, function(lang, data) {
-                jQuery.each(jQuery(data), function(index, el) {
-                    activeIds[activeIds.length] = jQuery(el).attr("value");
+            cx.jQuery.each(selectedOps, function(lang, data) {
+                cx.jQuery.each(cx.jQuery(data), function(index, el) {
+                    activeIds[activeIds.length] = cx.jQuery(el).attr("value");
                 });
             });
-            jQuery("input#" + placeholder + "SelectedPagesList").val(activeIds.join(","));
+            cx.jQuery("input#" + placeholder + "SelectedPagesList").val(activeIds.join(","));
         }
 
         if (selectedOps[langCode] == undefined) {
@@ -374,11 +374,11 @@
             unselectedOps[langCode] = "";
         }
 
-        jQuery('select[name="' + placeholder + 'SelectedPages[]"]').html(selectedOps[langCode]);
-        jQuery('select[name="' + placeholder + 'NotSelectedPages[]"]').html(unselectedOps[langCode]);
+        cx.jQuery('select[name="' + placeholder + 'SelectedPages[]"]').html(selectedOps[langCode]);
+        cx.jQuery('select[name="' + placeholder + 'NotSelectedPages[]"]').html(unselectedOps[langCode]);
         cx.variables.set(placeholder + "PagesSelectedOptions", selectedOps, "block");
         cx.variables.set(placeholder + "PagesUnselectedOptions", unselectedOps, "block");
-        jQuery("input#" + placeholder + "CachedLang").val(langCode);
+        cx.jQuery("input#" + placeholder + "CachedLang").val(langCode);
     }
     // ]]>
 </script>
