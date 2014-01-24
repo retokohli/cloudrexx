@@ -1,5 +1,5 @@
 (function ($) {
-    cx.ready(function () {
+    $(document).ready(function () {
         /* Metanavigation Start */
         if ($('#select-language a').length > 1) {
             var activeLanguage = $('#select-language a.active');
