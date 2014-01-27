@@ -17,7 +17,7 @@ function accessSwitchCheckboxStatus(id)
 function accessChangeProtection(triggerLink, nodeId, lang, backend)
 {
     var lockedKey = 'locked';
-    var pageIsLocked = jQuery(triggerLink).attr('rel') == lockedKey;
+    var pageIsLocked = cx.jQuery(triggerLink).attr('rel') == lockedKey;
 	var msg = pageIsLocked ? '{ACCESS_UNPROTECT_PAGE_TXT}' : '{ACCESS_PROTECT_PAGE_TXT}';
 
 	if (confirm(msg+'\n\n{TXT_ACCESS_PROMT_EXEC_WARNING}')) {
@@ -27,16 +27,16 @@ function accessChangeProtection(triggerLink, nodeId, lang, backend)
             action = pageIsLocked ? 'unprotect' : 'protect';
         }
         data = {action: action, lang: lang, nodes: [nodeId]};
-        jQuery.post('index.php?cmd=jsondata&object=page&act=multipleSet', data, function(response) {
+        cx.jQuery.post('index.php?cmd=jsondata&object=page&act=multipleSet', data, function(response) {
             if (response.status == 'success') {
                 if (pageIsLocked) {
-                    jQuery(triggerLink).find('ins').removeClass(lockedKey);
-                    jQuery(triggerLink).attr('rel', '');
-                    jQuery('#access_webpage_access_id_'+nodeId+'_'+lang).css('display', 'none');
+                    cx.jQuery(triggerLink).find('ins').removeClass(lockedKey);
+                    cx.jQuery(triggerLink).attr('rel', '');
+                    cx.jQuery('#access_webpage_access_id_'+nodeId+'_'+lang).css('display', 'none');
                 } else {
-                    jQuery(triggerLink).find('ins').addClass(lockedKey);
-                    jQuery(triggerLink).attr('rel', lockedKey);
-                    jQuery('#access_webpage_access_id_'+nodeId+'_'+lang).css('display', '');
+                    cx.jQuery(triggerLink).find('ins').addClass(lockedKey);
+                    cx.jQuery(triggerLink).attr('rel', lockedKey);
+                    cx.jQuery('#access_webpage_access_id_'+nodeId+'_'+lang).css('display', '');
                 }
             }
         });
@@ -168,8 +168,8 @@ function accessChangeProtection(triggerLink, nodeId, lang, backend)
 					</tbody>
 				</table>
 				<img src="images/icons/arrow.gif" width="38" height="22" style="margin-left:5px;" alt="arrow" />
-				<a href="javascript:void(0);" onclick="jQuery('#site-tree').find('input[type=checkbox]').each(function(i,el){jQuery(el).attr('checked',true);})" title="{TXT_ACCESS_CHECK_ALL}">{TXT_ACCESS_CHECK_ALL}</a> /
-				<a href="javascript:void(0);" onclick="jQuery('#site-tree').find('input[type=checkbox]').each(function(i,el){jQuery(el).attr('checked',false);})" title="{TXT_ACCESS_UNCHECK_ALL}">{TXT_ACCESS_UNCHECK_ALL}</a>
+				<a href="javascript:void(0);" onclick="cx.jQuery('#site-tree').find('input[type=checkbox]').each(function(i,el){cx.jQuery(el).attr('checked',true);})" title="{TXT_ACCESS_CHECK_ALL}">{TXT_ACCESS_CHECK_ALL}</a> /
+				<a href="javascript:void(0);" onclick="cx.jQuery('#site-tree').find('input[type=checkbox]').each(function(i,el){cx.jQuery(el).attr('checked',false);})" title="{TXT_ACCESS_UNCHECK_ALL}">{TXT_ACCESS_UNCHECK_ALL}</a>
 				<br />
 			</div>
 			<!-- BEGIN access_permission_tabs -->

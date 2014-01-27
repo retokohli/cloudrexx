@@ -317,9 +317,9 @@ class LicenseCommunicator {
             $objJs = \ContrexxJavascript::getInstance();
             $objJs->setVariable("statusmessage_success", $_CORELANG['TXT_LICENSE_UPDATED'], "core_module/license");
             $jsCode = '
-                jQuery(document).ready(function() {
-                    var licenseMessage      = jQuery("#license_message");
-                    var cloneLicenseMessage = jQuery("#license_message").clone();
+                cx.jQuery(document).ready(function() {
+                    var licenseMessage      = cx.jQuery("#license_message");
+                    var cloneLicenseMessage = cx.jQuery("#license_message").clone();
                     var reloadManager       = true;
                     
                     var revertMessage = function(setClass, setHref, setTarget, setText) {
@@ -348,8 +348,8 @@ class LicenseCommunicator {
                 $jsCode .= '
                         if (data == "false" && allowUserAgent && ' . ($sm->isWritable() ? 'true' : 'false') . ') {
                             reloadManager = false;
-                            jQuery.getScript("http://updatesrv1.contrexx.com/?' . implode('&', $userAgentRequestArguments) . '", function() {
-                                jQuery.post(
+                            cx.jQuery.getScript("http://updatesrv1.contrexx.com/?' . implode('&', $userAgentRequestArguments) . '", function() {
+                                cx.jQuery.post(
                                     "../core_modules/License/versioncheck.php?force=true",
                                     {"response": JSON.stringify(licenseUpdateUserAgentRequestResponse)}
                                 ).success(function(data) {
@@ -364,15 +364,15 @@ class LicenseCommunicator {
                         }';
             }
             $jsCode .= '
-                        var data = jQuery.parseJSON(data);
+                        var data = cx.jQuery.parseJSON(data);
                         if (!data) {
                             revertMessage();
                             return;
                         }
                         revertMessage(data[\'class\'], data.link, data.target, data.text);
-                        jQuery("#jsstatemessage").html(cx.variables.get("statusmessage_success", "core_module/license"));
-                        jQuery("#jsstatemessage").addClass("okbox");
-                        jQuery("#jsstatemessage").show();
+                        cx.jQuery("#jsstatemessage").html(cx.variables.get("statusmessage_success", "core_module/license"));
+                        cx.jQuery("#jsstatemessage").addClass("okbox");
+                        cx.jQuery("#jsstatemessage").show();
                         if (reloadManager && ' . ($sm->isWritable() ? 'true' : 'false') . ' && data.status != "ERROR") {
                             setTimeout(function() {
                                 window.location.href = window.location.href;
@@ -385,7 +385,7 @@ class LicenseCommunicator {
                         licenseMessage.text("' . $_CORELANG['TXT_LICENSE_UPDATING'] . '");
                         licenseMessage.show();
 
-                        jQuery.get(
+                        cx.jQuery.get(
                             "../core_modules/License/versioncheck.php?force=true"
                         ).success(function(data) {
                             versionCheckResponseHandler(data, true);
@@ -395,7 +395,7 @@ class LicenseCommunicator {
                         return false;
                     }' . ($autoexec ? '()' : '') . ';
                     
-                    ' . ($intern ? 'jQuery("input[name=update]").click(performRequest);' : '') . '
+                    ' . ($intern ? 'cx.jQuery("input[name=update]").click(performRequest);' : '') . '
                 });
             ';
             \JS::registerCode($jsCode);
