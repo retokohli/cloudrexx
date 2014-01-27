@@ -21,14 +21,14 @@ function deletePages(form)
 }
 
 function addPlaceholder(object, placeholder) {
-    var el = jQuery(object);
+    var el = cx.jQuery(object);
     if (el.val() == "") {
         el.val(placeholder);
     }
 }
 
 function removePlaceholder(object, placeholder) {
-    var el = jQuery(object);
+    var el = cx.jQuery(object);
     if (el.val() == placeholder) {
         el.val("");
     }
