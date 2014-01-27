@@ -1318,8 +1318,8 @@ var _active_tab = '.
         }
 //DBG::log("Html::getDatePicker(): Options: $strOptions");
         JS::registerCode('
-jQuery(function() {
-  jQuery("#'.$id.'").datepicker({'.$strOptions.'});
+cx.jQuery(function() {
+  cx.jQuery("#'.$id.'").datepicker({'.$strOptions.'});
 });
 ');
         return self::getInputText($name, $date, $id, $attribute);
@@ -1705,7 +1705,7 @@ function itg_add_'.$index_tab.'(container_id) {
 //DBG::log("Html::makeRating($selector, [options]): Options: $strOptions");
         JS::activate('raty');
         JS::registerCode('
-jQuery(document).ready(function($) {
+cx.jQuery(document).ready(function($) {
   $("'.$selector.'").raty({'.$strOptions."\n  });\n});");
         return true;
     }
@@ -2116,7 +2116,7 @@ alert("closed: ID mismatch: "+id);
     _date = RegExp.$1;
     _id = "_0"+_date;
 //    Toggler.loading(id);
-    jQuery.ajax({
+    cx.jQuery.ajax({
       url: location.href,
       type: "get",
       data: "change=_0"+_date+"&number="+(element_checkbox.checked ? -1 : 0),
@@ -2188,7 +2188,7 @@ alert("click: invalid checkbox ID "+closed_id);
         }
         Toggler.loading("dummy"+_id);
 //        var _id = "_"+clicked_type_id+"_"+date;
-        jQuery.ajax({
+        cx.jQuery.ajax({
           url: location.href,
           type: "get",
           data: "click="+_id+"&status="+status+"&number="+number, //+"&price="+price
@@ -2224,7 +2224,7 @@ alert("change: ID mismatch: "+id);
     var price = document.getElementById("price"+_id).value;
 //alert("change: number "+number+", price "+price);
     Toggler.loading(id);
-    jQuery.ajax({
+    cx.jQuery.ajax({
       url: location.href,
       type: "get",
       data: "change="+id+"&number="+number+"&price="+price,
