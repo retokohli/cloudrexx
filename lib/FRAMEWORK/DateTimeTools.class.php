@@ -85,8 +85,8 @@ class DateTimeTools
 // TODO: Append the locale code ("-GB", "-US") as well!
             'jquery.ui.datepicker-'.$language_code.'.js');
         JS::registerCode('
-jQuery(function() {
-  jQuery.datepicker.setDefaults(jQuery.datepicker.regional["'.$language_code.'"]);
+cx.jQuery(function() {
+  cx.jQuery.datepicker.setDefaults(cx.jQuery.datepicker.regional["'.$language_code.'"]);
 });
 ');
     }
