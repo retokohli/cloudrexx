@@ -31,7 +31,7 @@ class newsletter extends NewsletterLib
     public $_objTpl;
     public $_pageTitle;
     public static $strErrMessage = '';
-    public static $strOkMessage = '';     
+    public static $strOkMessage = '';
     public $months = array();
     public $_arrMailPriority = array(
         1 => 'TXT_NEWSLETTER_VERY_HIGH',
@@ -60,7 +60,7 @@ class newsletter extends NewsletterLib
 
         $this->act = isset($_GET['act']) ? $_GET['act'] : '';
 
-        if (!isset($_REQUEST['standalone'])) {            
+        if (!isset($_REQUEST['standalone'])) {
             $objTemplate->setVariable(
                 "CONTENT_NAVIGATION",
                 "<a href='index.php?cmd=newsletter&amp;act=mails' class='".(($this->act == '' || $this->act == 'mails') ? 'active' : '')."'>".$_ARRAYLANG['TXT_NEWSLETTER_EMAIL_CAMPAIGNS']."</a>"
@@ -85,7 +85,7 @@ class newsletter extends NewsletterLib
      */
     function getPage()
     {
-        global $objTemplate, $_ARRAYLANG;
+        global $objTemplate;
 
         if (!isset($_GET['act'])) {
             $_GET['act'] = '';
@@ -178,7 +178,7 @@ class newsletter extends NewsletterLib
             case "interface":
                 Permission::checkAccess(176, 'static');
                 $this->interfaceSettings();
-                break;            
+                break;
             case "templates":
                 Permission::checkAccess(176, 'static');
                 $this->_templates();
@@ -273,7 +273,7 @@ class newsletter extends NewsletterLib
     function valueFromDate($value = 0, $format = 'd.m.Y H:i:s') {
         if($value === null //user provided no POST
             || $value === '0') //empty date field
-            return ''; //make an empty date 
+            return ''; //make an empty date
         if($value)
             return date($format,$value);
         else
@@ -377,7 +377,7 @@ class newsletter extends NewsletterLib
                     'NEWSLETTER_LIST_STATUS_MSG' => $arrList['status'] == 1 ? $_ARRAYLANG['TXT_NEWSLETTER_VISIBLE_STATUS_TXT'] : $_ARRAYLANG['TXT_NEWSLETTER_INVISIBLE_STATUS_TXT'],
                     'NEWSLETTER_NOTIFICATION_EMAIL' => trim($arrList['notification_email']) == '' ? '-' : contrexx_raw2xhtml($arrList['notification_email']),
                 ));
-    
+
                 if ($arrList['mail_sent'] > 0) {
                     $this->_objTpl->setVariable('NEWSLETTER_LIST_LAST_MAIL', date(ASCMS_DATE_FORMAT_DATE, $arrList['mail_sent'])." (".contrexx_raw2xhtml($arrList['mail_name']).")");
                     $this->_objTpl->touchBlock('newsletter_list_last_mail');
@@ -386,7 +386,7 @@ class newsletter extends NewsletterLib
                     $this->_objTpl->hideBlock('newsletter_list_last_mail');
                     $this->_objTpl->touchBlock('newsletter_list_no_last_mail');
                 }
-    
+
                 $this->_objTpl->parse('newsletter_lists');
                 $rowNr++;
             }
@@ -561,7 +561,7 @@ class newsletter extends NewsletterLib
 
     function _editMail($copy = false)
     {
-        global $objDatabase, $objInit, $_ARRAYLANG, $_CONFIG;
+        global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
         $mailId = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
         $arrAttachment = array();
@@ -571,9 +571,9 @@ class newsletter extends NewsletterLib
         $status = true;
 
         $mailSubject = isset($_POST['newsletter_mail_subject']) ? contrexx_stripslashes($_POST['newsletter_mail_subject']) : '';
-        
+
         $objMailSentDate = $objDatabase->Execute("SELECT `date_sent` FROM ".DBPREFIX."module_newsletter WHERE id=".$mailId);
-        $mailSendDate    = ($objMailSentDate) ? $objMailSentDate->fields['date_sent'] : 0;      
+        $mailSendDate    = ($objMailSentDate) ? $objMailSentDate->fields['date_sent'] : 0;
 
         $arrTemplates = $this->_getTemplates();
         $mailTemplate = isset($_POST['newsletter_mail_template']) ? intval($_POST['newsletter_mail_template']) : key($arrTemplates);
@@ -613,7 +613,7 @@ class newsletter extends NewsletterLib
                                 AND nl.is_active=1
                                 AND nl.lang_id='.FRONTEND_LANG_ID.'
                                 AND nc.lang_id='.FRONTEND_LANG_ID.'
-                                AND n.id IN ('.$selectedNews.') 
+                                AND n.id IN ('.$selectedNews.')
                     ORDER BY nc.name ASC, n.date DESC';
 
 			$objFWUser = FWUser::getFWUserObject();
@@ -690,7 +690,9 @@ class newsletter extends NewsletterLib
 						$content = $this->_getBodyContent($this->GetTemplateSource($importTemplate, 'html'));
 						$newstext = ltrim(strip_tags($objNews->fields['newscontent']));
 						$newsteasertext = ltrim(strip_tags($objNews->fields['teaser_text']));
-						$newslink = \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'details', '', array('newsid' => $objNews->fields['newsid']));;
+						$newslink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                            'news', 'details', '',
+                            array('newsid' => $objNews->fields['newsid']));
 						if ($objNews->fields['newsuid'] && ($objUser = $objFWUser->objUser->getUser($objNews->fields['newsuid']))) {
 							$author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
 						} else {
@@ -939,7 +941,7 @@ class newsletter extends NewsletterLib
             $this->_objTpl->touchBlock('associatedListToolTip');
             $this->_objTpl->touchBlock('associatedGroupToolTipAfterSent');
             $this->_objTpl->hideBlock('associatedGroupToolTipBeforeSend');
-            
+
             $this->_objTpl->setVariable(array(
                 'TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS' => $_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_ASSOCIATED_LISTS'],
                 'NEWSLETTER_LIST_DISABLED'                   => 'disabled="disabled"'
@@ -953,7 +955,7 @@ class newsletter extends NewsletterLib
             $this->_objTpl->hideBlock('associatedGroupToolTipAfterSent');
             $this->_objTpl->touchBlock('associatedGroupToolTipBeforeSend');
         }
-        
+
         $this->_objTpl->setVariable(array(
             'TXT_NEWSLETTER_EMAIL_ACCOUNT' => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ACCOUNT'],
             'TXT_NEWSLETTER_SUBJECT' => $_ARRAYLANG['TXT_NEWSLETTER_SUBJECT'],
@@ -1195,7 +1197,7 @@ class newsletter extends NewsletterLib
 
         $this->_objTpl->setGlobalVariable(array(
             'TXT_NEWSLETTER_SEND_EMAIL' => $_ARRAYLANG['TXT_NEWSLETTER_SEND_EMAIL'],
-            'TXT_NEWSLETTER_MODIFY_EMAIL' => $_ARRAYLANG['TXT_NEWSLETTER_MODIFY_EMAIL'],            
+            'TXT_NEWSLETTER_MODIFY_EMAIL' => $_ARRAYLANG['TXT_NEWSLETTER_MODIFY_EMAIL'],
             'TXT_NEWSLETTER_COPY_EMAIL' => $_ARRAYLANG['TXT_NEWSLETTER_COPY_EMAIL'],
             'TXT_NEWSLETTER_DELETE_EMAIL' => $_ARRAYLANG['TXT_NEWSLETTER_DELETE_EMAIL'],
         ));
@@ -1274,6 +1276,7 @@ class newsletter extends NewsletterLib
             if ($rowNr > 0) {
                 $this->_objTpl->touchBlock("newsletter_list_multiAction");
 //                if ($mailCount > $_CONFIG['corePagingLimit']) {
+// TODO: All calls to getPaging(): Shouldn't '&' be written as '&amp;'?
                 $paging = getPaging($mailCount, $pos, "&cmd=newsletter&act=mails", "", false, $_CONFIG['corePagingLimit']);
 //                }
                 $this->_objTpl->setVariable('NEWSLETTER_MAILS_PAGING', "<br />".$paging."<br />");
@@ -1509,7 +1512,7 @@ class newsletter extends NewsletterLib
         if ($mailSentDate > 0) {
             return false;
         }
-        
+
         $objRelList = $objDatabase->Execute("SELECT category FROM ".DBPREFIX."module_newsletter_rel_cat_news WHERE newsletter=".$mailId);
         if (!$objRelList) {
             return false;
@@ -1644,15 +1647,15 @@ class newsletter extends NewsletterLib
     function interfaceSettings()
     {
         global $objDatabase, $_ARRAYLANG;
-        
+
         JS::activate('jquery');
-        
+
         $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
-        $this->_objTpl->loadTemplateFile('newsletter_config_interface.html');        
+        $this->_objTpl->loadTemplateFile('newsletter_config_interface.html');
 
         $recipientAttributeStatus = array();
         if (isset($_POST['interfaceSettings'])) {
-            
+
             $recipientAttributeStatus = array(
                 'recipient_sex'           => array(
                     'active'              => (isset($_POST['recipientSex'])),
@@ -1665,7 +1668,7 @@ class newsletter extends NewsletterLib
                 'recipient_title'         => array(
                     'active'              => (isset($_POST['recipientTitle'])),
                     'required'            => (isset($_POST['requiredTitle'])),
-                    ),                
+                    ),
                 'recipient_firstname'     => array(
                     'active'              => (isset($_POST['recipientFirstName'])),
                     'required'            => (isset($_POST['requiredFirstName'])),
@@ -1681,19 +1684,19 @@ class newsletter extends NewsletterLib
                 'recipient_company'       => array(
                     'active'              => (isset($_POST['recipientCompany'])),
                     'required'            => (isset($_POST['requiredCompany'])),
-                    ),                
+                    ),
                 'recipient_industry'      => array(
                     'active'              => (isset($_POST['recipientIndustry'])),
                     'required'            => (isset($_POST['requiredIndustry'])),
-                    ),                
+                    ),
                 'recipient_address'       => array(
                     'active'              => (isset($_POST['recipientAddress'])),
                     'required'            => (isset($_POST['requiredAddress'])),
-                    ),                
+                    ),
                 'recipient_city'          => array(
                     'active'              => (isset($_POST['recipientCity'])),
                     'required'            => (isset($_POST['requiredCity'])),
-                    ),   
+                    ),
                 'recipient_zip'           => array(
                     'active'              => (isset($_POST['recipientZip'])),
                     'required'            => (isset($_POST['requiredZip'])),
@@ -1701,7 +1704,7 @@ class newsletter extends NewsletterLib
                 'recipient_country'       => array(
                     'active'              => (isset($_POST['recipientCountry'])),
                     'required'            => (isset($_POST['requiredCountry'])),
-                    ),                
+                    ),
                 'recipient_phone'         => array(
                     'active'              => (isset($_POST['recipientPhone'])),
                     'required'            => (isset($_POST['requiredPhone'])),
@@ -1717,7 +1720,7 @@ class newsletter extends NewsletterLib
                 'recipient_fax'           => array(
                     'active'              => (isset($_POST['recipientFax'])),
                     'required'            => (isset($_POST['requiredFax'])),
-                    ),                
+                    ),
                 'recipient_birthday'      => array(
                     'active'              => (isset($_POST['recipientBirthDay'])),
                     'required'            => (isset($_POST['requiredBirthDay'])),
@@ -1727,11 +1730,11 @@ class newsletter extends NewsletterLib
                     'required'            => (isset($_POST['requiredWebsite'])),
                     ),
             );
-                           
+
             $objUpdateStatus = $objDatabase->Execute("UPDATE ".DBPREFIX."module_newsletter_settings
                                                         SET `setvalue`='".json_encode($recipientAttributeStatus)."'
                                                       WHERE `setname` = 'recipient_attribute_status'");
-                    
+
             if ($objUpdateStatus) {
                 self::$strOkMessage = $_ARRAYLANG['TXT_DATA_RECORD_UPDATED_SUCCESSFUL'];
             } else {
@@ -1739,28 +1742,28 @@ class newsletter extends NewsletterLib
             }
         }
 
-        $objInterface = $objDatabase->Execute('SELECT `setvalue` 
+        $objInterface = $objDatabase->Execute('SELECT `setvalue`
                                                 FROM `'.DBPREFIX.'module_newsletter_settings`
                                                 WHERE `setname` = "recipient_attribute_status"');
         $recipientStatus = json_decode($objInterface->fields['setvalue'], true);
-        
-        foreach ($recipientStatus as $attributeName => $recipientStatusArray) {            
+
+        foreach ($recipientStatus as $attributeName => $recipientStatusArray) {
             $this->_objTpl->setVariable(array(
                  'NEWSLETTER_'.strtoupper($attributeName)                       =>  ($recipientStatusArray['active']) ? 'checked="checked"' : '',
                  'NEWSLETTER_'.strtoupper($attributeName).'_REQUIRED'           =>  ($recipientStatusArray['active'] && $recipientStatusArray['required']) ? 'checked="checked"' : '',
                  'NEWSLETTER_'.strtoupper($attributeName).'_MANTOTRY_DISPLAY'   =>  ($recipientStatusArray['active']) ? 'block' : 'none',
             ));
         }
-        
-        $this->_objTpl->setVariable(array(                             
+
+        $this->_objTpl->setVariable(array(
             'TXT_DISPATCH_SETINGS'          => $_ARRAYLANG['TXT_DISPATCH_SETINGS'],
             'TXT_NEWSLETTER_TEMPLATES' => $_ARRAYLANG['TXT_NEWSLETTER_TEMPLATES'],
-            'TXT_NEWSLETTER_INTERFACE'      => $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'],            
+            'TXT_NEWSLETTER_INTERFACE'      => $_ARRAYLANG['TXT_NEWSLETTER_INTERFACE'],
             'TXT_GENERATE_HTML'             => $_ARRAYLANG['TXT_GENERATE_HTML'],
-            'TXT_ACTIVATE_MAIL'             => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATION_EMAIL'],            
-            'TXT_CONFIRM_MAIL'              => $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_EMAIL'],            
-            'TXT_NOTIFICATION_MAIL'         => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_MAIL'],      
-            'TXT_NEWSLETTER_PROFILE_DETAILS' => $_ARRAYLANG['TXT_NEWSLETTER_PROFILE_DETAILS'], 
+            'TXT_ACTIVATE_MAIL'             => $_ARRAYLANG['TXT_NEWSLETTER_ACTIVATION_EMAIL'],
+            'TXT_CONFIRM_MAIL'              => $_ARRAYLANG['TXT_NEWSLETTER_CONFIRMATION_EMAIL'],
+            'TXT_NOTIFICATION_MAIL'         => $_ARRAYLANG['TXT_NEWSLETTER_NOTIFICATION_MAIL'],
+            'TXT_NEWSLETTER_PROFILE_DETAILS' => $_ARRAYLANG['TXT_NEWSLETTER_PROFILE_DETAILS'],
             'TXT_NEWSLETTER_SALUTATION'     => $_ARRAYLANG['TXT_NEWSLETTER_SALUTATION'],
             'TXT_NEWSLETTER_TITLE'          => $_ARRAYLANG['TXT_NEWSLETTER_TITLE'],
             'TXT_NEWSLETTER_POSITION'       => $_ARRAYLANG['TXT_NEWSLETTER_POSITION'],
@@ -1770,7 +1773,7 @@ class newsletter extends NewsletterLib
             'TXT_NEWSLETTER_PHONE_PRIVATE'  => $_ARRAYLANG['TXT_NEWSLETTER_PHONE_PRIVATE'],
             'TXT_NEWSLETTER_PHONE_MOBILE'   => $_ARRAYLANG['TXT_NEWSLETTER_PHONE_MOBILE'],
             'TXT_NEWSLETTER_FAX'            => $_ARRAYLANG['TXT_NEWSLETTER_FAX'],
-            'TXT_NEWSLETTER_WEBSITE'        => $_ARRAYLANG['TXT_NEWSLETTER_WEBSITE'],            
+            'TXT_NEWSLETTER_WEBSITE'        => $_ARRAYLANG['TXT_NEWSLETTER_WEBSITE'],
             'TXT_NEWSLETTER_EMAIL_ADDRESS'  => $_ARRAYLANG['TXT_NEWSLETTER_EMAIL_ADDRESS'],
             'TXT_NEWSLETTER_WEBSITE'        => $_ARRAYLANG['TXT_NEWSLETTER_WEBSITE'],
             'TXT_NEWSLETTER_SALUTATION'     => $_ARRAYLANG['TXT_NEWSLETTER_SALUTATION'],
@@ -1786,15 +1789,15 @@ class newsletter extends NewsletterLib
             'TXT_NEWSLETTER_CITY'           => $_ARRAYLANG['TXT_NEWSLETTER_CITY'],
             'TXT_NEWSLETTER_COUNTRY'        => $_ARRAYLANG['TXT_NEWSLETTER_COUNTRY'],
             'TXT_NEWSLETTER_PHONE'          => $_ARRAYLANG['TXT_NEWSLETTER_PHONE'],
-            'TXT_NEWSLETTER_BIRTHDAY'       => $_ARRAYLANG['TXT_NEWSLETTER_BIRTHDAY'], 
+            'TXT_NEWSLETTER_BIRTHDAY'       => $_ARRAYLANG['TXT_NEWSLETTER_BIRTHDAY'],
             'TXT_SAVE'                      => $_ARRAYLANG['TXT_SAVE'],
             'TXT_ACTIVE'                    => $_ARRAYLANG['TXT_ACTIVE'],
             'TXT_NEWSLETTER_MANDATORY_FIELD' => $_ARRAYLANG['TXT_NEWSLETTER_MANDATORY_FIELD'],
-        ));        
-        
-        
+        ));
+
+
     }
-    
+
     function ConfigDispatch()
     {
         global $objDatabase, $_ARRAYLANG;
@@ -2027,7 +2030,7 @@ class newsletter extends NewsletterLib
             if (isset($_POST['template_edit_description'])) {
                 $description = contrexx_stripslashes($_POST['template_edit_description']);
             }
-			
+
 			if (isset($_POST['template_edit_type'])) {
                 $type = contrexx_stripslashes($_POST['template_edit_type']);
             }
@@ -2389,9 +2392,9 @@ class newsletter extends NewsletterLib
     function _sendMailPage()
     {
         global $_ARRAYLANG;
-    
+
         JS::activate('cx');
-    
+
         if (isset($_POST['newsletter_mail_edit'])) {
             return $this->_editMail();
         } elseif (!isset($_REQUEST['id'])) {
@@ -2953,11 +2956,12 @@ class newsletter extends NewsletterLib
         $break = $this->getSetting('txt_break_after');
         $break = (intval($break) == 0 ? 80 : $break);
         $HTML_TemplateSource = $this->GetTemplateSource($template, 'html');
-        $TEXT_TemplateSource = $this->GetTemplateSource($template, 'text');
+// TODO: Unused
+//        $TEXT_TemplateSource = $this->GetTemplateSource($template, 'text');
         $newsletterUserData = $this->getNewsletterUserData($UserID, $type);
 
         $testDelivery = !$TmpEntry;
-        
+
         $NewsletterBody_HTML = $this->ParseNewsletter(
             $subject,
             $content,
@@ -3359,7 +3363,7 @@ class newsletter extends NewsletterLib
 
         // i believe this replaces image paths...
         $allImg = array();
-        preg_match_all("|src=\"(.*)\"|U", $content_text, $allImg, PREG_PATTERN_ORDER);
+        preg_match_all('/src="([^"]*)"/', $content_text, $allImg, PREG_PATTERN_ORDER);
         $size = sizeof($allImg[1]);
         $i = 0;
         $port = $_SERVER['SERVER_PORT'] != 80 ? ':'.intval($_SERVER['SERVER_PORT']) : '';
@@ -3419,7 +3423,7 @@ class newsletter extends NewsletterLib
         );
 
         if (!$id) return $arrUserData;
- 
+
         switch ($type) {
             case self::USER_TYPE_ACCESS:
                 $query = "
@@ -3577,11 +3581,12 @@ class newsletter extends NewsletterLib
 
     function _getNewsPage()
     {
-        global $objDatabase, $objInit, $_ARRAYLANG, $_CONFIG;
+        global $objDatabase, $objInit, $_ARRAYLANG;
 
 		JS::activate('cx');
 
-		$objFWUser = FWUser::getFWUserObject();
+// TODO: Unused
+//		$objFWUser = FWUser::getFWUserObject();
 
         $newsdate = time() - 86400 * 30;
         if (!empty($_POST['newsDate'])) {
@@ -3598,12 +3603,12 @@ class newsletter extends NewsletterLib
 			'NEWS_CREATE_DATE' => $this->valueFromDate($newsdate)
         ));
 
-		$query = "SELECT n.id, n.date, nl.title, nl.text, n.catid, cl.name as catname, n.userid, nl.teaser_text, 
-			n.teaser_image_path, n.teaser_image_thumbnail_path, tl.name as typename FROM ".DBPREFIX."module_news n 
-			LEFT JOIN ".DBPREFIX."module_news_locale nl ON n.id = nl.news_id AND nl.lang_id=".$objInit->userFrontendLangId." 
-			LEFT JOIN ".DBPREFIX."module_news_categories_locale cl ON n.catid = cl.category_id AND cl.lang_id=".$objInit->userFrontendLangId." 
-			LEFT JOIN ".DBPREFIX."module_news_types_locale tl ON n.typeid = tl.type_id AND tl.lang_id=".$objInit->userFrontendLangId." 
-			WHERE n.date > ".$newsdate." AND n.status = 1 AND n.validated = '1' 
+		$query = "SELECT n.id, n.date, nl.title, nl.text, n.catid, cl.name as catname, n.userid, nl.teaser_text,
+			n.teaser_image_path, n.teaser_image_thumbnail_path, tl.name as typename FROM ".DBPREFIX."module_news n
+			LEFT JOIN ".DBPREFIX."module_news_locale nl ON n.id = nl.news_id AND nl.lang_id=".$objInit->userFrontendLangId."
+			LEFT JOIN ".DBPREFIX."module_news_categories_locale cl ON n.catid = cl.category_id AND cl.lang_id=".$objInit->userFrontendLangId."
+			LEFT JOIN ".DBPREFIX."module_news_types_locale tl ON n.typeid = tl.type_id AND tl.lang_id=".$objInit->userFrontendLangId."
+			WHERE n.date > ".$newsdate." AND n.status = 1 AND n.validated = '1'
 			ORDER BY cl.name ASC, n.date DESC";
 
 			/*AND (n.startdate <> '0000-00-00 00:00:00' OR n.enddate <> '0000-00-00 00:00:00')*/
@@ -3619,7 +3624,8 @@ class newsletter extends NewsletterLib
 				if($current_category == $objNews->fields['catid'])
 					$this->_objTpl->hideBlock("news_category");
 				$current_category = $objNews->fields['catid'];
-                $newstext = ltrim(strip_tags($objNews->fields['text']));
+// TODO: Unused
+//                $newstext = ltrim(strip_tags($objNews->fields['text']));
 				$newsteasertext = ltrim(strip_tags($objNews->fields['teaser_text']));
                 //$newslink = $this->newsletterUri.ASCMS_PROTOCOL."://".$_SERVER['HTTP_HOST'].ASCMS_PATH_OFFSET."/index.php?section=news&cmd=details&newsid=".$objNews->fields['id'];
 				/*if ($objNews->fields['userid'] && ($objUser = $objFWUser->objUser->getUser($objNews->fields['userid']))) {
@@ -3627,9 +3633,6 @@ class newsletter extends NewsletterLib
                     } else {
                         $author = $_ARRAYLANG['TXT_ANONYMOUS'];
                     }*/
-
-
-
                 $image = $objNews->fields['teaser_image_path'];
                 $thumbnail = $objNews->fields['teaser_image_thumbnail_path'];
 
@@ -3642,7 +3645,6 @@ class newsletter extends NewsletterLib
                 } else {
                     $imageSrc = '';
                 }
-
                 $this->_objTpl->setVariable(array(
 					//'NEWS_CATEGORY_NAME' => $objNews->fields['catname'],
 					'NEWS_ID' => $objNews->fields['id'],
@@ -3668,7 +3670,7 @@ class newsletter extends NewsletterLib
 
     function _getNewsPreviewPage()
     {
-        global $objDatabase, $objInit, $_ARRAYLANG, $_CONFIG;
+        global $objDatabase, $_ARRAYLANG;
 
 		JS::activate('cx');
 
@@ -3709,7 +3711,7 @@ class newsletter extends NewsletterLib
                                 AND nl.is_active=1
                                 AND nl.lang_id='.FRONTEND_LANG_ID.'
                                 AND nc.lang_id='.FRONTEND_LANG_ID.'
-                                AND n.id IN ('.$selectedNews.') 
+                                AND n.id IN ('.$selectedNews.')
                     ORDER BY nc.name ASC, n.date DESC';
 
 			$objNews = $objDatabase->Execute($query);
@@ -3788,7 +3790,9 @@ class newsletter extends NewsletterLib
 						$content = $this->_getBodyContent($this->GetTemplateSource($importTemplate, 'html'));
 						$newstext = ltrim(strip_tags($objNews->fields['newscontent']));
 						$newsteasertext = substr(ltrim(strip_tags($objNews->fields['teaser_text'])), 0, 100);
-						$newslink = \Cx\Core\Routing\Url::fromModuleAndCmd('news', 'detals', '', array('newsid' => $objNews->fields['newsid']));;
+						$newslink = \Cx\Core\Routing\Url::fromModuleAndCmd(
+                            'news', 'detals', '',
+                            array('newsid' => $objNews->fields['newsid']));
 						if ($objNews->fields['newsuid'] && ($objUser = $objFWUser->objUser->getUser($objNews->fields['newsuid']))) {
 							$author = htmlentities($objUser->getUsername(), ENT_QUOTES, CONTREXX_CHARSET);
 						} else {
@@ -3859,7 +3863,7 @@ class newsletter extends NewsletterLib
 
     function exportuser()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $separator = ';';
         $listId = isset($_REQUEST['listId']) ? intval($_REQUEST['listId']) : 0;
@@ -3948,7 +3952,7 @@ $WhereStatement = '';
 
     function edituserSort()
     {
-        global $_CONFIG, $objDatabase;
+        global $_CONFIG;
 
         $output = array(
             'recipient_count'   => 0,
@@ -4052,7 +4056,7 @@ $WhereStatement = '';
                 $accessUserEmails[] = $user['email'];
             }
         }
-        
+
         // select stats of native newsletter recipients
         if (count($newsletterUserIds) > 0) {
             $objLinks = $objDatabase->Execute("SELECT
@@ -4169,7 +4173,7 @@ $WhereStatement = '';
                 self::$strErrMessage = $_ARRAYLANG['TXT_NEWSLETTER_SELECT_CATEGORY'];
             } else {
                 $arrLists = array();
-                
+
                 if (isset($_POST['newsletter_recipient_associated_list'])) {
                     foreach ($_POST['newsletter_recipient_associated_list'] as $listId) {                    
                         array_push($arrLists, intval($listId));             
@@ -4194,15 +4198,15 @@ $WhereStatement = '';
                     } else {
                         $EmailCount++;
                         $arrRecipientLists = $arrLists;
-                        
+
 // TODO: use FWUSER
                         if (in_array($arrRecipient['salutation'], $this->_getRecipientTitles())) {
                             $arrRecipientTitles = array_flip($this->_getRecipientTitles());
                             $recipientSalutationId = $arrRecipientTitles[$arrRecipient['salutation']];
                         } else {
                             $recipientSalutationId = $this->_addRecipientTitle($arrRecipient['salutation']);
-                        }                        
-                        
+                        }
+
                         // try to parse the imported birthday in a usable format
                         if (!empty($arrRecipient['birthday'])) {
                             $arrDate = date_parse($arrRecipient['birthday']);
@@ -4215,7 +4219,7 @@ $WhereStatement = '';
                                                                           `notes`
                                                                    FROM `".DBPREFIX."module_newsletter_user`
                                                                    WHERE `email` = '".addslashes($arrRecipient['email'])."'", 1);
-                        if ($objRecipient->RecordCount() == 1) {   
+                        if ($objRecipient->RecordCount() == 1) {
 
                             $recipientId       = $objRecipient->fields['id'];
                             $recipientLanguage = $objRecipient->fields['language'];
@@ -4247,17 +4251,28 @@ $WhereStatement = '';
                             if (!$this->_addRecipient($arrRecipient['email'], $arrRecipient['uri'], $arrRecipient['sex'], $recipientSalutationId, $arrRecipient['title'], $arrRecipient['lastname'], $arrRecipient['firstname'], $arrRecipient['position'], $arrRecipient['company'], $arrRecipient['industry_sector'], $arrRecipient['address'], $arrRecipient['zip'], $arrRecipient['city'], $arrRecipient['country_id'], $arrRecipient['phone_office'], $arrRecipient['phone_private'], $arrRecipient['phone_mobile'], $arrRecipient['fax'], $arrRecipient['notes'], $arrRecipient['birthday'], 1, $arrRecipientLists, $arrRecipient['language'])) {
                                 array_push($arrBadEmails, $arrRecipient['email']);
                             } elseif (!empty($recipientSendEmailId)) {
-                                $objRecipient = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_newsletter_user WHERE email='".contrexx_input2db($recipientEmail)."'", 1);
+                                $objRecipient = $objDatabase->SelectLimit("
+                                    SELECT id
+                                    FROM ".DBPREFIX."module_newsletter_user
+                                        WHERE email='".contrexx_input2db(
+// TODO: Undefined
+//                                        $recipientEmail
+// Should probably be
+                                        $arrRecipient['email']
+                                            )."'", 1);
                                 $recipientId  = $objRecipient->fields['id'];
-                                
+
                                 $this->insertTmpEmail($recipientSendEmailId, $arrRecipient['email'], self::USER_TYPE_NEWSLETTER);
 // setting TmpEntry=1 will set the newsletter status=1, this will force an imediate stop in the newsletter send procedere.
                                 if ($this->SendEmail($recipientId, $recipientSendEmailId, $arrRecipient['email'], 1, self::USER_TYPE_NEWSLETTER) == false) {
                                     self::$strErrMessage .= $_ARRAYLANG['TXT_SENDING_MESSAGE_ERROR'];
                                 } else {
-                                    $objUpdateCount    = $objDatabase->execute('UPDATE '.DBPREFIX.'module_newsletter 
-                                                                                      SET recipient_count = recipient_count+1
-                                                                                WHERE id='.intval($recipientSendEmailId));                                    
+// TODO: Unused
+//                                    $objUpdateCount    =
+                                    $objDatabase->execute('
+                                        UPDATE '.DBPREFIX.'module_newsletter
+                                        SET recipient_count = recipient_count+1
+                                        WHERE id='.intval($recipientSendEmailId));
                                 }
                             }
                         }
@@ -4279,14 +4294,14 @@ $WhereStatement = '';
                     'IMPORT_ADD_VALUE' => $this->_getEmailsDropDown(),
                     'IMPORT_ROWCLASS' => 'row1'
                 ));
-                $objTpl->parse("additional");            
+                $objTpl->parse("additional");
                 $objTpl->setVariable(array(
                     'IMPORT_ADD_NAME' => $_ARRAYLANG['TXT_NEWSLETTER_LIST'],
                     'IMPORT_ADD_VALUE' => $this->_getAssociatedListSelection(),
                     'IMPORT_ROWCLASS' => 'row2'
                 ));
                 $objTpl->parse("additional");
-                $this->_objTpl->setVariable('NEWSLETTER_USER_FILE', $objTpl->get());                
+                $this->_objTpl->setVariable('NEWSLETTER_USER_FILE', $objTpl->get());
             }
         } elseif (   (   empty($_FILES['importfile'])
                       || $_FILES['importfile']['size'] == 0)
@@ -4310,9 +4325,9 @@ $WhereStatement = '';
                 'IMPORT_ADD_VALUE' => $this->_getEmailsDropDown(),
                 'IMPORT_ROWCLASS' => 'row1'
             ));
-            $objTpl->parse("additional");            
+            $objTpl->parse("additional");
             $objTpl->setVariable(array(
-                'IMPORT_ADD_NAME' => $_ARRAYLANG['TXT_NEWSLETTER_LIST'],                
+                'IMPORT_ADD_NAME' => $_ARRAYLANG['TXT_NEWSLETTER_LIST'],
                 'IMPORT_ADD_VALUE' => $this->_getAssociatedListSelection(),
                 'IMPORT_ROWCLASS' => 'row2'
             ));
@@ -4392,33 +4407,33 @@ $WhereStatement = '';
                 'IMPORT_HIDDEN_VALUE' =>
                     (!empty($arrLists) ? implode(',', $arrLists) : ''),
             ));
-            $objTpl->parse('hidden_fields');            
+            $objTpl->parse('hidden_fields');
             $objTpl->setVariable(array(
                 'IMPORT_HIDDEN_NAME' => 'sendEmail',
                 'IMPORT_HIDDEN_VALUE' => (isset($_POST['sendEmail']) ? intval($_POST['sendEmail']) : 0),
-            ));            
+            ));
             $objTpl->parse('hidden_fields');
             $this->_objTpl->setVariable(array(
-                'TXT_REMOVE_PAIR' => $_ARRAYLANG['TXT_REMOVE_PAIR'],                
+                'TXT_REMOVE_PAIR' => $_ARRAYLANG['TXT_REMOVE_PAIR'],
                 'NEWSLETTER_USER_FILE' => $objTpl->get(),
-            ));            
+            ));
         }
     }
 
-    function _getEmailsDropDown($name='sendEmail', $selected=0, $attrs='') 
+    function _getEmailsDropDown($name='sendEmail', $selected=0, $attrs='')
     {
         global $objDatabase, $_ARRAYLANG;
-        
+
         $objNewsletterMails = $objDatabase->Execute('SELECT
                                                       id,
                                                       subject
-                                                      FROM '.DBPREFIX.'module_newsletter                                                      
+                                                      FROM '.DBPREFIX.'module_newsletter
                                                       ORDER BY status, id DESC');
-            
-            
+
+
         $ReturnVar = '<select name="'.$name.'"'.(!empty($attrs) ? ' '.$attrs : '').'>
         <option value="0">'.$_ARRAYLANG['TXT_NEWSLETTER_DO_NOT_SEND_EMAIL'].'</option>';
-        
+
         if ($objNewsletterMails !== false) {
             while (!$objNewsletterMails->EOF) {
                 $ReturnVar .= '<option value="'.$objNewsletterMails->fields['id'].'"'.($objNewsletterMails->fields['id'] == $selected ? 'selected="selected"' : '').'>'.contrexx_raw2xhtml($objNewsletterMails->fields['subject']).'</option>';
@@ -4486,22 +4501,25 @@ $WhereStatement = '';
     function _getAssociatedListSelection()
     {
         global $_ARRAYLANG;
-        
+
         $arrLists = self::getLists();
-        $listNr = 1;
+// TODO: Unused
+//        $listNr = 1;
+        $lists = '';
         foreach ($arrLists as $listId => $arrList) {
-            $column = $listNr % 3;
+// TODO: Unused
+//            $column = $listNr % 3;
             $lists .= ' <div style="float:left;width:33%;">
-                            <input type="checkbox" 
-                                 name="newsletter_recipient_associated_list['.intval($listId).']" 
+                            <input type="checkbox"
+                                 name="newsletter_recipient_associated_list['.intval($listId).']"
                                  id="newsletter_mail_associated_list_'.intval($listId).'"
                                  value="'.intval($listId).'" />
                             <a href="index.php?cmd=newsletter&amp;act=users&amp;newsletterListId='.intval($listId).'"
                                target="_blank" title="'.sprintf($_ARRAYLANG['TXT_NEWSLETTER_SHOW_RECIPIENTS_OF_LIST'], contrexx_raw2xhtml($arrList['name'])).'">
                                    '.contrexx_raw2xhtml($arrList['name']).'
                             </a>
-                        </div>';            
-        }        
+                        </div>';
+        }
         return $lists;
     }
     /**
@@ -4529,7 +4547,7 @@ $WhereStatement = '';
 
     function _users()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $this->_pageTitle = $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENTS'];
         $this->_objTpl->loadTemplateFile('module_newsletter_user.html');
@@ -4565,7 +4583,7 @@ $WhereStatement = '';
 
     function configOverview()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $_ARRAYLANG;
 
         $this->_pageTitle = $_ARRAYLANG['TXT_SETTINGS'];
         $this->_objTpl->loadTemplateFile('newsletter_configuration.html');
@@ -4627,7 +4645,7 @@ $WhereStatement = '';
         global $objDatabase, $_ARRAYLANG;
 
         $activeFrontendlang = FWLanguage::getActiveFrontendLanguages();
-        
+
         $copy = isset($_REQUEST['copy']) && $_REQUEST['copy'] == 1;
         $recipientId = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
         $recipientEmail = '';
@@ -4729,9 +4747,9 @@ $WhereStatement = '';
                 }
             }
         }
-        
+
         // Get interface settings
-        $objInterface = $objDatabase->Execute('SELECT `setvalue` 
+        $objInterface = $objDatabase->Execute('SELECT `setvalue`
                                                 FROM `'.DBPREFIX.'module_newsletter_settings`
                                                 WHERE `setname` = "recipient_attribute_status"');
         $recipientAttributeStatus = json_decode($objInterface->fields['setvalue'], true);
@@ -4754,7 +4772,7 @@ $WhereStatement = '';
                             }
                         } else {
                             if ($this->_addRecipient($recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, $recipientStatus, $arrAssociatedLists, $recipientLanguage)) {
-                                if (!empty($recipientSendEmailId)) {                                
+                                if (!empty($recipientSendEmailId)) {
                                     $objRecipient = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_newsletter_user WHERE email='".contrexx_input2db($recipientEmail)."'", 1);
                                     $recipientId  = $objRecipient->fields['id'];
 
@@ -4765,11 +4783,14 @@ $WhereStatement = '';
                                         $recipientId = isset($_REQUEST['id']) ? intval($_REQUEST['id']) : 0;
                                         self::$strErrMessage .= $_ARRAYLANG['TXT_SENDING_MESSAGE_ERROR'];
                                     } else {
-                                        $objRecipientCount = $objDatabase->execute('SELECT subject FROM '.DBPREFIX.'module_newsletter WHERE id='.intval($recipientSendEmailId));                                    
+                                        $objRecipientCount = $objDatabase->execute('SELECT subject FROM '.DBPREFIX.'module_newsletter WHERE id='.intval($recipientSendEmailId));
                                         $newsTitle         = $objRecipientCount->fields['subject'];
-                                        $objUpdateCount    = $objDatabase->execute('UPDATE '.DBPREFIX.'module_newsletter 
-                                                                                          SET recipient_count = recipient_count+1
-                                                                                    WHERE id='.intval($recipientSendEmailId));
+// TODO: Unused
+//                                        $objUpdateCount    =
+                                        $objDatabase->execute('
+                                            UPDATE '.DBPREFIX.'module_newsletter
+                                            SET recipient_count = recipient_count+1
+                                            WHERE id='.intval($recipientSendEmailId));
                                         self::$strOkMessage .= sprintf($_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_MAIL_SEND_SUCCESSFULLY'].'<br />', '<strong>'.$newsTitle.'</strong>');
                                     }
                                 }
@@ -4794,12 +4815,12 @@ $WhereStatement = '';
                                 array_push($arrAssociatedLists, $objList->fields['category']);
                                 $objList->MoveNext();
                             }
-                        }      
+                        }
                         $arrAssociatedLists = array_unique($arrAssociatedLists);
-                        
+
                         // set all attributes status to false to set the omitEmpty value to true
                         foreach ($recipientAttributeStatus as $attribute => $value) {
-                            $recipientAttributeStatus[$attribute]['active'] = false;                                                
+                            $recipientAttributeStatus[$attribute]['active'] = false;
                         }
 
                         if ($this->_updateRecipient($recipientAttributeStatus, $recipientId, $recipientEmail, $recipientUri, $recipientSex, $recipientSalutation, $recipientTitle, $recipientLastname, $recipientFirstname, $recipientPosition, $recipientCompany, $recipientIndustrySector, $recipientAddress, $recipientZip, $recipientCity, $recipientCountry, $recipientPhoneOffice, $recipientPhonePrivate, $recipientPhoneMobile, $recipientFax, $recipientNotes, $recipientBirthday, $recipientStatus, $arrAssociatedLists, $recipientLanguage)) {
@@ -4808,14 +4829,14 @@ $WhereStatement = '';
                             return $this->_userList();
                         } else {
                             self::$strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_ERROR_UPDATE_RECIPIENT'];
-                        }                    
+                        }
                     } else {
                         //reset the $recipientId on copy function                        
                         $objResult = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_newsletter_user WHERE email='".contrexx_input2db($recipientEmail)."' AND id!=".($copy ? 0 : $recipientId), 1);
                         self::$strErrMessage .= sprintf($_ARRAYLANG['TXT_NEWSLETTER_ERROR_EMAIL_ALREADY_EXISTS'], '<a href="index.php?cmd=newsletter&amp;act=users&amp;tpl=edit&amp;id=' . $objResult->fields['id'] . '" target="_blank">' . $_ARRAYLANG['TXT_NEWSLETTER_ERROR_EMAIL_ALREADY_EXISTS_CLICK_HERE'] . '</a>');
                     }
-                } else {                    
-                    self::$strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_MANDATORY_FIELD_ERROR'];                        
+                } else {
+                    self::$strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_MANDATORY_FIELD_ERROR'];
                 }
             } else {
                 self::$strErrMessage .= $_ARRAYLANG['TXT_NEWSLETTER_INVALIDE_EMAIL_ADDRESS'];
@@ -4877,7 +4898,7 @@ $WhereStatement = '';
             $this->_objTpl->parse('newsletter_mail_associated_list_'.$column);
             $listNr++;
         }
-        
+
         if (count($activeFrontendlang) > 1) {
             foreach ($activeFrontendlang as $lang) {
                 $selected = ($lang['id'] == $recipientLanguage) ? 'selected="selected"' : '';
@@ -4887,24 +4908,24 @@ $WhereStatement = '';
                     'NEWSLETTER_LANGUAGE_NAME'      => contrexx_raw2xhtml($lang['name']),
                     'NEWSLETTER_LANGUAGES_SELECTED' => $selected
                 ));
-                $this->_objTpl->parse('languages');            
+                $this->_objTpl->parse('languages');
             }
             $languageOptionDisplay = true;
         } else {
             $this->_objTpl->hideBlock('languageOption');
         }
-          
+
         if (empty($recipientId) || $copy) {
             $objNewsletterMails = $objDatabase->Execute('SELECT
                                                       id,
                                                       subject
-                                                      FROM '.DBPREFIX.'module_newsletter                                                      
+                                                      FROM '.DBPREFIX.'module_newsletter
                                                       ORDER BY status, id DESC');
-            
+
             while (!$objNewsletterMails->EOF) {
-                
+
                 $selected = ($recipientSendEmailId == $objNewsletterMails->fields['id']) ? 'selected="selected"' : '';
-                
+
                 $this->_objTpl->setVariable(array(
                     'NEWSLETTER_EMAIL_ID'       => contrexx_raw2xhtml($objNewsletterMails->fields['id']),
                     'NEWSLETTER_EMAIL_NAME'     => contrexx_raw2xhtml($objNewsletterMails->fields['subject']),
@@ -4912,16 +4933,16 @@ $WhereStatement = '';
                 ));
                 $this->_objTpl->parse('allMails');
                 $objNewsletterMails->MoveNext();
-            }            
+            }
             $recipientSendMailDisplay = true;
         } else {
             $this->_objTpl->hideBlock('sendEmail');
         }
-        
+
         // Display settings recipient general attributes
-        
+
         $sendMailRowClass = ($languageOptionDisplay) ? 'row2' : 'row1';
-        
+
         if ($languageOptionDisplay && $recipientSendMailDisplay) {
             $associatedListRowClass = 'row1';
         } elseif ($languageOptionDisplay || $recipientSendMailDisplay) {
@@ -4929,33 +4950,33 @@ $WhereStatement = '';
         } else {
             $associatedListRowClass = 'row1';
         }
-        
+
         $recipientNotesRowClass = ($associatedListRowClass == 'row1') ? 'row2' : 'row1';
-        
+
         $this->_objTpl->setVariable(array(
             'NEWSLETTER_SEND_EMAIL_ROWCLASS'       => $sendMailRowClass,
             'NEWSLETTER_ASSOCIATED_LISTS_ROWCLASS' => $associatedListRowClass,
             'NEWSLETTER_NOTES_ROWCLASS'            => $recipientNotesRowClass
         ));
-        
 
-        //display settings recipient profile detials        
+
+        //display settings recipient profile detials
         $recipientAttributeDisplay = false;
-        foreach ($recipientAttributeStatus as $attributeArr => $value) {            
+        foreach ($recipientAttributeStatus as $value) {
             if ($value['active']) {
                 $recipientAttributeDisplay = true;
                 break;
             }
         }
-        
+
         $profileRowCount = 0;
         $recipientAttributesArray = array(
             'recipient_sex',
             'recipient_salutation',
             'recipient_title',
             'recipient_firstname',
-            'recipient_lastname',            
-            'recipient_position',            
+            'recipient_lastname',
+            'recipient_position',
             'recipient_company',
             'recipient_industry',
             'recipient_address',
@@ -4971,16 +4992,16 @@ $WhereStatement = '';
             );
         if ($recipientAttributeDisplay) {
             foreach ($recipientAttributesArray as $attribute) {
-                if ($recipientAttributeStatus[$attribute]['active'] && $this->_objTpl->blockExists($attribute)) {                    
+                if ($recipientAttributeStatus[$attribute]['active'] && $this->_objTpl->blockExists($attribute)) {
                     $this->_objTpl->touchBlock($attribute);
                     $this->_objTpl->setVariable(array(
                         'NEWSLETTER_'.strtoupper($attribute).'_ROW_CLASS' => ($profileRowCount%2 == 0) ? 'row2' : 'row1',
                         'NEWSLETTER_'.strtoupper($attribute).'_MANDATORY' => ($recipientAttributeStatus[$attribute]['required']) ? '*' : '',
-                    ));                    
+                    ));
                     $profileRowCount++;
-                } else {                    
+                } else {
                     $this->_objTpl->hideBlock($attribute);
-                }                
+                }
             }
         } else {
             $this->_objTpl->hideBlock('recipientProfileAttributes');
@@ -5000,7 +5021,7 @@ $WhereStatement = '';
             'TXT_NEWSLETTER_PHONE_MOBILE'       => $_ARRAYLANG['TXT_NEWSLETTER_PHONE_MOBILE'],
             'TXT_NEWSLETTER_PHONE_PRIVATE'      => $_ARRAYLANG['TXT_NEWSLETTER_PHONE_PRIVATE'],
             'TXT_NEWSLETTER_FAX'                => $_ARRAYLANG['TXT_NEWSLETTER_FAX'],
-            
+
             'NEWSLETTER_RECIPIENT_STATUS'       => $recipientStatus == '1' ? 'checked="checked"' : '',
             'NEWSLETTER_RECIPIENT_NOTES'        => htmlentities($recipientNotes, ENT_QUOTES, CONTREXX_CHARSET),
             'NEWSLETTER_RECIPIENT_URI'          => htmlentities($recipientUri, ENT_QUOTES, CONTREXX_CHARSET),
@@ -5048,7 +5069,7 @@ $WhereStatement = '';
             'TXT_NEWSLETTER_RECIPIENT_YEAR' => $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_YEAR'],
 //            'JAVASCRIPTCODE' => $this->JSadduser(),
         ));
-        $this->_objTpl->parse('module_newsletter_user_edit');        
+        $this->_objTpl->parse('module_newsletter_user_edit');
         return true;
     }
 
@@ -5064,7 +5085,7 @@ $WhereStatement = '';
 
         $this->_pageTitle = $_ARRAYLANG['TXT_NEWSLETTER_USER_ADMINISTRATION'];
         $this->_objTpl->addBlockfile('NEWSLETTER_USER_FILE', 'module_newsletter_user_overview', 'module_newsletter_user_overview.html');
-        
+
         $limit = (!empty($_GET['limit'])) ? intval($_GET['limit']) : $_CONFIG['corePagingLimit'];
 
         $newsletterListId = isset($_REQUEST['newsletterListId']) ? intval($_REQUEST['newsletterListId']) : 0;
@@ -5279,7 +5300,7 @@ $WhereStatement = '';
                         $wrappedField = sprintf('`%1$s`', $field);
                         break;
                 }
-                    
+
                 $arrRecipientFields[$recipientType][] = $wrappedField;
             }
         }
@@ -5336,7 +5357,7 @@ $WhereStatement = '';
 
             // %8$s
             $order,
-        
+
             // %9$s
             ($limit ? sprintf('LIMIT %s, %s', $pagingPos, $limit) : ''),
 
@@ -5608,42 +5629,54 @@ function MultiAction() {
     }
 
     // TODO: we consider, that attribute values are all included in double quotes (""):  wysiwyg editor replaces them automatically
-    // In general, user can use single quotes (' ') or miss quotes 
+    // In general, user can use single quotes (' ') or miss quotes
     function _prepareNewsletterLinksForStore($MailId)
     {
         global $objDatabase;
 
-        $objMail = $objDatabase->SelectLimit("SELECT `content` FROM ".DBPREFIX."module_newsletter WHERE id=".$MailId, 1);
+        $objMail = $objDatabase->SelectLimit("
+            SELECT `content`
+            FROM ".DBPREFIX."module_newsletter
+            WHERE id=$MailId", 1);
         if ($objMail !== false && $objMail->RecordCount() == 1) {
             $htmlContent = $objMail->fields['content'];
             $linkIds = array();
 
-            if (preg_match_all("/<a([^>]+)>(.*)<\/a>/iU", $htmlContent, $matches)) {
+            $matches = NULL;
+            if (preg_match_all("/<a([^>]+)>(.*?)<\/a>/is", $htmlContent, $matches)) {
                 $tagCount = count($matches[0]);
                 $fullKey = 0;
                 $attrKey = 1;
                 $textKey = 2;
+                $rmatches = NULL;
                 for ($i = 0; $i < $tagCount; $i++) {
-                    if (!preg_match("/href\s*=\s*['\"][^#]/i", $matches[$attrKey][$i])) {
+// TODO: wouldn't that
+                   if (!preg_match("/href\s*=\s*['\"][^#]/i", $matches[$attrKey][$i])) {
+// be the same as
+//                     if (preg_match("/href\s*=\s*['\"][#]/i", $matches[$attrKey][$i])) {
+// ?
                         // we might have a placeholder link here, it will be parsed on send
                         continue;
                     }
                     $rel = '';
                     $href = '';
-                    if (preg_match("/rel\s*=\s*['\"]([^'\"]+)['\"]/i", $matches[$attrKey][$i], $rmatches)) {
-                        $rel = $rmatches[1];
+                    if (preg_match("/rel\s*=\s*(['\"])(.*?)\\1/i", $matches[$attrKey][$i], $rmatches)) {
+                        $rel = $rmatches[2];
                     }
-                    if (preg_match("/href\s*=\s*['\"]([^'\"]+)['\"]/i", $matches[$attrKey][$i], $rmatches)) {
-                        $href = html_entity_decode($rmatches[1], ENT_QUOTES, CONTREXX_CHARSET);
+                    if (preg_match("/href\s*=\s*(['\"])(.*?)\\1/i", $matches[$attrKey][$i], $rmatches)) {
+                        $href = html_entity_decode($rmatches[2], ENT_QUOTES, CONTREXX_CHARSET);
                     }
                     if ($rel) {
-                        if (preg_match("/newsletter_link_([0-9]+)/i", $rel, $rmatches)) {
+                        if (preg_match("/newsletter_link_(\d+)/i", $rel, $rmatches)) {
                             if (in_array($rmatches[1], $linkIds)) {
                                 $query = "INSERT INTO ".DBPREFIX."module_newsletter_email_link (email_id, title, url) VALUES
                                     (".intval($MailId).", '".contrexx_raw2db($matches[$textKey][$i])."', '".contrexx_raw2db($href)."')";
                                 if ($objDatabase->Execute($query)) {
                                     $linkId = $objDatabase->Insert_ID();
-                                    $matches[$attrKey][$i] = str_replace('newsletter_link_' . $rmatches[1], 'newsletter_link_'.$linkId, $matches[$attrKey][$i]);
+                                    $matches[$attrKey][$i] = str_replace(
+                                        'newsletter_link_'.$rmatches[1],
+                                        'newsletter_link_'.$linkId,
+                                        $matches[$attrKey][$i]);
                                 }
                             } else {
                                 // update existed link
@@ -5657,33 +5690,43 @@ function MultiAction() {
                         } else {
                             // insert new link into database and update rel attribute
                             $query = "INSERT INTO ".DBPREFIX."module_newsletter_email_link (email_id, title, url) VALUES
-                                (".intval($MailId).", '".contrexx_raw2db($matches[$textKey][$i])."', '".contrexx_raw2db($href)."')";
+                                (".intval($MailId).", '".
+                                contrexx_raw2db($matches[$textKey][$i])."', '".
+                                contrexx_raw2db($href)."')";
                             if ($objDatabase->Execute($query)) {
                                 $linkId = $objDatabase->Insert_ID();
-                                $matches[$attrKey][$i] = preg_replace("/rel\s*=\s*['\"]([^'\"]+)['\"]/i", "rel=\"\\1 newsletter_link_".$linkId."\"", $matches[$attrKey][$i]);
+                                $matches[$attrKey][$i] = preg_replace(
+                                    "/rel\s*=\s*(['\"])(.*?)\\1/i",
+                                    "rel=\"$2 newsletter_link_".$linkId."\"",
+                                    $matches[$attrKey][$i]);
                             }
                         }
                     } else {
                         // insert new link into database and create rel attribute
-                        $query = "INSERT INTO ".DBPREFIX."module_newsletter_email_link (email_id, title, url) VALUES 
-                            (".intval($MailId).", '".contrexx_raw2db($matches[$textKey][$i])."', '".contrexx_raw2db($href)."')";
+                        $query = "INSERT INTO ".DBPREFIX."module_newsletter_email_link (email_id, title, url) VALUES
+                            (".intval($MailId).", '".
+                            contrexx_raw2db($matches[$textKey][$i])."', '".
+                            contrexx_raw2db($href)."')";
                         if ($objDatabase->Execute($query)) {
                             $linkId = $objDatabase->Insert_ID();
                             $matches[$attrKey][$i] .= ' rel="newsletter_link_'.$linkId.'"';
                         }
                     }
                     $linkIds[] = $linkId;
-                    $htmlContent = preg_replace("/".self::prepareForRegExp($matches[$fullKey][$i])."/i", "<a ".$matches[$attrKey][$i].">".$matches[$textKey][$i]."</a>", $htmlContent, 1);
+                    $htmlContent = preg_replace(
+                        "/".preg_quote($matches[$fullKey][$i], '/')."/is",
+                        "<a ".$matches[$attrKey][$i].">".$matches[$textKey][$i]."</a>",
+                        $htmlContent, 1);
                 }
                 // update mail content
-                $query = "UPDATE ".DBPREFIX."module_newsletter 
+                $query = "UPDATE ".DBPREFIX."module_newsletter
                     SET content = '".contrexx_raw2db($htmlContent)."'
                     WHERE id = ".intval($MailId);
                 $objDatabase->Execute($query);
             }
             // remove deleted links from database; we can remove them, because we can't edit sent email
             if (count($linkIds) > 0) {
-                $query = "DELETE FROM ".DBPREFIX."module_newsletter_email_link 
+                $query = "DELETE FROM ".DBPREFIX."module_newsletter_email_link
                     WHERE id NOT IN (".implode(", ", $linkIds).") AND email_id = ".$MailId;
                 $objDatabase->Execute($query);
             }
@@ -5693,7 +5736,8 @@ function MultiAction() {
     function _prepareNewsletterLinksForCopy($MailHtmlContent)
     {
         $result = $MailHtmlContent;
-        if (preg_match_all("/<a([^>]+)>([^<]*)<\/a>/i", $result, $matches)) {
+        $matches = NULL;
+        if (preg_match_all("/<a([^>]+)>(.*?)<\/a>/is", $result, $matches)) {
             $tagCount = count($matches[0]);
             $fullKey = 0;
             $attrKey = 1;
@@ -5703,18 +5747,26 @@ function MultiAction() {
                    continue;
                 }
                 // remove newsletter_link_N from rel attribute
+// TODO: This code should go into the library as a private method.
+// See prepareNewsletterLinksForSend()
                 $matches[$attrKey][$i] = preg_replace("/newsletter_link_([0-9]+)/i", "", $matches[$attrKey][$i]);
                 // remove empty rel attribute
-                $matches[$attrKey][$i] = preg_replace("/\s*rel\s*=\s*['\"]\s*['\"]/i", "", $matches[$attrKey][$i]);
+                $matches[$attrKey][$i] = preg_replace("/\s*rel\s*=\s*(['\"])\s*\\1/i", "", $matches[$attrKey][$i]);
                 // remove left and right spaces
-                $matches[$attrKey][$i] = preg_replace("/([^=])\s*\"/i", "\\1\"", $matches[$attrKey][$i]);
+// TODO: These REs miserably fail when apostrophes (') are used
+// TODO: What do they *really* do?
+                $matches[$attrKey][$i] = preg_replace("/([^=])\s*\"/i", "$1\"", $matches[$attrKey][$i]);
                 $matches[$attrKey][$i] = preg_replace("/=\"\s*/i", "=\"", $matches[$attrKey][$i]);
-                $result = preg_replace("/".self::prepareForRegExp($matches[$fullKey][$i])."/i", "<a ".$matches[$attrKey][$i].">".$matches[$textKey][$i]."</a>", $result, 1);
+                $result = preg_replace(
+// TODO: The /s flag is probably unnecessary
+                    "/".preg_quote($matches[$fullKey][$i], '/')."/is",
+                    "<a ".$matches[$attrKey][$i].">".$matches[$textKey][$i]."</a>",
+                    $result, 1);
             }
         }
         return $result;
     }
-    
+
     function _showEmailFeedbackAnalysis()
     {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
@@ -5724,7 +5776,7 @@ function MultiAction() {
         $rowNr = 0;
         $pos = isset($_GET['pos']) ? intval($_GET['pos']) : 0;
         $mailId = isset($_GET['id']) ? intval($_GET['id']) : 0;
-        
+
         $email = '';
         $objMail = $objDatabase->SelectLimit("SELECT `subject` FROM ".DBPREFIX."module_newsletter WHERE id=".$mailId, 1);
         if ($objMail !== false && $objMail->RecordCount() == 1) {
@@ -5795,7 +5847,7 @@ function MultiAction() {
     private function getLinkData($linkId)
     {
         global $objDatabase;
-        
+
         $objLink = $objDatabase->SelectLimit('
             SELECT  email_id,
                     title
@@ -5810,8 +5862,8 @@ function MultiAction() {
             'link_title'    => $objLink->fields['title']
         );
     }
-    
-    function _showLinkFeedbackAnalysis() 
+
+    function _showLinkFeedbackAnalysis()
     {
 // TODO: refactor method
         die('Feature unavailable');
@@ -5839,7 +5891,7 @@ function MultiAction() {
             'TXT_NEWSLETTER_LINK_SOURCE'    => $_ARRAYLANG['TXT_NEWSLETTER_LINK_SOURCE'],
             'TXT_NEWSLETTER_FUNCTIONS'      => $_ARRAYLANG['TXT_NEWSLETTER_FUNCTIONS'],
             'TXT_NEWSLETTER_BACK'           => $_ARRAYLANG['TXT_NEWSLETTER_BACK'],
-            'TXT_NEWSLETTER_LINK_FEEDBACK'  => sprintf( $_ARRAYLANG['TXT_NEWSLETTER_LINK_FEEDBACK'], 
+            'TXT_NEWSLETTER_LINK_FEEDBACK'  => sprintf( $_ARRAYLANG['TXT_NEWSLETTER_LINK_FEEDBACK'],
                                                         contrexx_raw2xhtml($arrLinkData['link_title']),
                                                         contrexx_raw2xhtml($arrNewsletterData['subject']))
         ));
@@ -5850,7 +5902,7 @@ function MultiAction() {
             'TXT_NEWSLETTER_MODIFY_RECIPIENT' => $_ARRAYLANG['TXT_NEWSLETTER_MODIFY_RECIPIENT'],
             'NEWSLETTER_LINK_ID' => $linkId
         ));
-        
+
         // The amount of tracked links of the selected e-mail
         $objResultCount = $objDatabase->SelectLimit("SELECT COUNT(id) AS link_count FROM ".DBPREFIX."module_newsletter_email_link
             WHERE email_id = ".$arrLinkData['email_id'], 1);
@@ -5859,12 +5911,12 @@ function MultiAction() {
         } else {
             $linkCount = 0;
         }
-        
+
         $newsletterUserIds = array();
         $accessUserIds = array();
         $feedbackCount = array();
-        
-        $query = "SELECT                   
+
+        $query = "SELECT
                 CASE WHEN `s`.`type` = '".self::USER_TYPE_NEWSLETTER."'
                     THEN `nu`.`id`
                     ELSE `au`.`id` END AS `id`,
@@ -5916,9 +5968,9 @@ function MultiAction() {
                         tblLink.recipient_id,
                         COUNT(tblLink.id) AS link_count
                     FROM ".DBPREFIX."module_newsletter_email_link_feedback AS tblLink
-                    WHERE 
-                        tblLink.email_id = ".$arrLinkData['email_id']." 
-                        AND tblLink.recipient_id IN (".implode(", ", $newsletterUserIds).") 
+                    WHERE
+                        tblLink.email_id = ".$arrLinkData['email_id']."
+                        AND tblLink.recipient_id IN (".implode(", ", $newsletterUserIds).")
                         AND tblLink.recipient_type = '".self::USER_TYPE_NEWSLETTER."'
                     GROUP BY tblLink.recipient_id");
                 if ($objLinks !== false) {
@@ -5935,9 +5987,9 @@ function MultiAction() {
                         tblLink.recipient_id,
                         COUNT(tblLink.id) AS link_count
                     FROM ".DBPREFIX."module_newsletter_email_link_feedback AS tblLink
-                    WHERE 
-                        tblLink.email_id = ".$arrLinkData['email_id']." 
-                        AND tblLink.recipient_id IN (".implode(", ", $accessUserIds).") 
+                    WHERE
+                        tblLink.email_id = ".$arrLinkData['email_id']."
+                        AND tblLink.recipient_id IN (".implode(", ", $accessUserIds).")
                         # we only need to select by self::USER_TYPE_ACCESS here. stats of users with self::USER_TYPE_CORE are also created using self::USER_TYPE_ACCESS
                         AND tblLink.recipient_type = '".self::USER_TYPE_ACCESS."'
                     GROUP BY tblLink.recipient_id");
@@ -5954,7 +6006,7 @@ function MultiAction() {
                 if ($user['type'] == self::USER_TYPE_CORE) {
                     $user['type'] = self::USER_TYPE_ACCESS;
                 }
-                // The amount of valid requests from that certain recipient of the selected e-mail 
+                // The amount of valid requests from that certain recipient of the selected e-mail
                 $feedback = isset($feedbackCount[$user['id']][$user['type']]) ? $feedbackCount[$user['id']][$user['type']] : 0;
                 $this->_objTpl->setVariable(array(
                     'NEWSLETTER_RECIPIENT_ROW_CLASS' => $rowNr % 2 == 1 ? 'row1' : 'row2',
@@ -5984,7 +6036,7 @@ function MultiAction() {
         $this->_objTpl->setVariable('NEWSLETTER_EMAIL_ID', $arrLinkData['email_id']);
         return true;
     }
-    
+
     function _showRecipientEmailFeedbackAnalysis()
     {
 // TODO: refactor method
@@ -5993,14 +6045,14 @@ function MultiAction() {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
         $linkId = isset($_GET['link_id']) ? intval($_GET['link_id']) : 0;
-        
+
         $recipientId = isset($_REQUEST['recipient_id']) ? intval($_REQUEST['recipient_id']) : 0;
         $recipientType = isset($_REQUEST['recipient_type']) ? $_REQUEST['recipient_type'] : '';
         if ($recipientId > 0) {
             if ($recipientType == 'newsletter') {
                 $query = "SELECT lastname, firstname FROM ".DBPREFIX."module_newsletter_user WHERE id=".$recipientId;
             } elseif ($recipientType == 'access') {
-                $query = "SELECT tlbProfile.lastname, tlbProfile.firstname 
+                $query = "SELECT tlbProfile.lastname, tlbProfile.firstname
                     FROM ".DBPREFIX."access_users AS tlbUser
                         INNER JOIN ".DBPREFIX."access_user_profile AS tlbProfile ON tlbProfile.user_id = tlbUser.id
                     WHERE tlbUser.id=".$recipientId;
@@ -6013,10 +6065,10 @@ function MultiAction() {
                 return $this->_mails();
             }
         }
-        
+
         $mailId = 0;
         $mailTitle = '';
-        $query = "SELECT tlbMail.id, tlbMail.subject 
+        $query = "SELECT tlbMail.id, tlbMail.subject
             FROM ".DBPREFIX."module_newsletter_email_link AS tlbLink
                 INNER JOIN ".DBPREFIX."module_newsletter AS tlbMail ON tlbLink.email_id = tlbMail.id
             WHERE tlbLink.id=".$linkId;
@@ -6030,7 +6082,7 @@ function MultiAction() {
         $this->_objTpl->loadTemplateFile('module_newsletter_user_email_feedback.html');
         $this->_objTpl->setVariable('TXT_NEWSLETTER_USER_FEEDBACK_TITLE', sprintf($_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_EMAIL_FEEDBACK'], htmlentities(trim($recipientLastname." ".$recipientFirstname), ENT_QUOTES, CONTREXX_CHARSET), htmlentities($mailTitle, ENT_QUOTES, CONTREXX_CHARSET)));
         $this->_objTpl->setVariable('NEWSLETTER_LINK_ID', $linkId);
-        
+
         $this->_objTpl->setVariable(array(
             'TXT_NEWSLETTER_LINK_TITLE' => $_ARRAYLANG['TXT_NEWSLETTER_LINK_TITLE'],
             'TXT_NEWSLETTER_LINK_SOURCE' => $_ARRAYLANG['TXT_NEWSLETTER_LINK_SOURCE'],
@@ -6059,9 +6111,9 @@ function MultiAction() {
             FROM ".DBPREFIX."module_newsletter_email_link_feedback AS tblMailLinkFB
                 INNER JOIN ".DBPREFIX."module_newsletter AS tblMail ON tblMail.id = tblMailLinkFB.email_id
                 INNER JOIN ".DBPREFIX."module_newsletter_email_link  AS tblLink ON tblLink.id = tblMailLinkFB.link_id
-            WHERE 
-                tblMail.id = ".$mailId." 
-                AND tblMailLinkFB.recipient_id = ".$recipientId."  
+            WHERE
+                tblMail.id = ".$mailId."
+                AND tblMailLinkFB.recipient_id = ".$recipientId."
                 AND tblMailLinkFB.recipient_type = '".$recipientType."'
             ORDER BY tblLink.title ASC", $_CONFIG['corePagingLimit'], $pos);
         if ($objResult !== false) {
@@ -6089,10 +6141,10 @@ function MultiAction() {
 
         return true;
     }
-    
+
     function _showRecipientFeedbackAnalysis()
     {
-    
+
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
         if (   empty($_REQUEST['id'])
@@ -6290,5 +6342,3 @@ if (!class_exists('DBIterator')) {
     }
 
 }
-
-?>
