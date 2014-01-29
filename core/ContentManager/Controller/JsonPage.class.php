@@ -340,7 +340,7 @@ class JsonPage implements JsonAdapter {
         }
         
         // Block associations are only updated in the editing mode.
-        if (!empty($pageArray)) {
+        if (!empty($pageArray) && empty($dataPost['ignoreBlocks'])) {
             if (!isset($dataPost['pageBlocks'])) {
                 $dataPost['pageBlocks'] = array();
             }
