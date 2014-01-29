@@ -110,6 +110,7 @@ class LinkSanitizer {
 
     /**
      * Checks if a file, whose name contains parameters, exists.
+     * Exception for PHP files.
      *
      * @access  private
      * @param   string   $filePath
@@ -122,6 +123,7 @@ class LinkSanitizer {
 
         $arrUrl = parse_url($filePath);
         if (!empty($arrUrl['path'])
+            && substr($arrUrl['path'], -4) !== '.php'
             && file_exists($arrUrl['path'])) {
             return true;
         }
