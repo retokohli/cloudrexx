@@ -676,7 +676,8 @@ cx.fe.publishPage = function() {
         cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=jsondata&object=page&act=set",
         {
             action: "publish",
-            page: cx.fe.page
+            page: cx.fe.page,
+            ignoreBlocks: true
         },
         function(response) {
             var className = "success";
@@ -711,7 +712,8 @@ cx.fe.savePage = function() {
     cx.jQuery.post(
         cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=jsondata&object=page&act=set",
         {
-            page: cx.fe.page
+            page: cx.fe.page,
+            ignoreBlocks: true
         },
         function(response) {
             if (response.data != null) {
