@@ -28,6 +28,32 @@ class PaymillCCHandler extends PaymillHandler {
                 \$J("#card-tds-form").submit(function(event) {
                     // Deactivate submit button to avoid further clicks
                     \$J('.submit-button').attr("disabled", "disabled");
+           
+                    if (false === paymill.validateHolder(\$J('.card-holdername').val())) {
+                        logResponse(cx.variables.get('invalid-card-holdername', 'shop'));
+                        \$J(".submit-button").removeAttr("disabled");
+                        return false;
+                    }
+                    if ((false === paymill.validateCvc(\$J('.card-cvc').val()))) {
+                        if(VALIDATE_CVC){
+                            logResponse(cx.variables.get('invalid-card-cvc', 'shop'));
+                            \$J(".submit-button").removeAttr("disabled");
+                            return false;
+                        } else {
+                            \$J('.card-cvc').val("");
+                        }
+                    }
+                    if (false === paymill.validateCardNumber(\$J('.card-number').val())) {
+                        logResponse(cx.variables.get('invalid-card-number', 'shop'));                        
+                        \$J(".submit-button").removeAttr("disabled");
+                        return false;
+                    }                    
+                    if (false === paymill.validateExpiry(\$J('.card-expiry-month').val(), \$J('.card-expiry-year').val())) {
+                        logResponse(cx.variables.get('invalid-card-expiry-date', 'shop'));                        
+                        \$J(".submit-button").removeAttr("disabled");
+                        return false;
+                    }
+           
                     event.preventDefault();
                     try {
                         paymill.createToken({
@@ -39,6 +65,20 @@ class PaymillCCHandler extends PaymillHandler {
                         }, PaymillResponseHandler);
                     } catch(e) {
                         logResponse(e.message);
+                    }
+                });
+                \$J('.card-number').keyup(function() {
+                    var brand = detectCreditcardBranding(\$J('.card-number').val());
+                    brand = brand.replace(' ','-');
+                    \$J(".card-number")[0].className = \$J(".card-number")[0].className.replace(/paymill-card-number-.*/g, '');
+                    if (brand !== 'unknown') {
+                        \$J('.card-number').addClass("paymill-card-number-" + brand);
+                    }
+
+                    if (brand !== 'maestro') {
+                        VALIDATE_CVC = true;
+                    } else {
+                        VALIDATE_CVC = false;
                     }
                 });
             });
@@ -94,6 +134,8 @@ FORMTEMPLATE;
             self::$arrError[] = 'Passed landing page is not an application.';
         }
         
+        JS::registerCSS('modules/shop/payments/paymill/css/paymill_styles.css');
+        JS::registerJS('modules/shop/payments/paymill/js/creditcardBrandDetection.js');
         JS::registerJS(self::$paymillJsBridge);
         
         $testMode = intval(SettingDb::getValue('paymill_use_test_account')) == 0;        
@@ -103,10 +145,20 @@ FORMTEMPLATE;
         $code = <<< APISETTING
                 var PAYMILL_PUBLIC_KEY = '$apiKey';
                 var PAYMILL_TEST_MODE  = $mode;
+                var VALIDATE_CVC       = true;
 APISETTING;
         JS::registerCode($code);
         JS::registerCode(self::$formScript);
-                
+
+        \ContrexxJavascript::getInstance()->setVariable(array(
+                'invalid-card-holdername'   => $_ARRAYLANG['TXT_SHOP_PAYMILL_INVAILD_CARD_HOLDER'],
+                'invalid-card-cvc'          => $_ARRAYLANG['TXT_SHOP_PAYMILL_INVAILD_CARD_CVC'],
+                'invalid-card-number'       => $_ARRAYLANG['TXT_SHOP_PAYMILL_INVAILD_CARD_NUMBER'],
+                'invalid-card-expiry-date'  => $_ARRAYLANG['TXT_SHOP_PAYMILL_INVAILD_CARD_EXPIRY_DATE']
+            ),
+            'shop'
+        );
+        
         $formContent  = self::getElement('div', 'class="paymill-error-text"');
         
         $formContent .= self::fieldset('');

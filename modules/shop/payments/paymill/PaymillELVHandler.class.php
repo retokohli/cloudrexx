@@ -29,17 +29,17 @@ class PaymillELVHandler extends PaymillHandler {
                     \$J('.submit-button').attr("disabled", "disabled");
 
                     if ("" === \$J('.elv-holdername').val()) {
-                        logResponse(paymillFormErrors['invalid-card-holder']);
+                        logResponse(cx.variables.get('invalid-card-holder'));
                         \$J(".submit-button").removeAttr("disabled");
                         return false;
                     }
                     if (false == paymill.validateAccountNumber(\$J('.elv-account').val())) {
-                        logResponse(paymillFormErrors['invalid-account-number']);
+                        logResponse(cx.variables.get('invalid-account-number'));
                         \$J(".submit-button").removeAttr("disabled");
                         return false;
                     }
                     if (false == paymill.validateBankCode(\$J('.elv-bankcode').val())) {
-                        logResponse(paymillFormErrors['invalid-bank-code']);
+                        logResponse(cx.variables.get('invalid-bank-code'));
                         \$J(".submit-button").removeAttr("disabled");
                         return false;
                     }
@@ -107,14 +107,13 @@ FORMTEMPLATE;
         
         JS::registerJS(self::$paymillJsBridge);
         
-        $code = <<< FORM_ERR_MSG
-                var paymillFormErrors = new Object();
-                
-                paymillFormErrors['invalid-card-holder'] = '{$_ARRAYLANG['TXT_SHOP_PAYMILL_INVAILD_CARD_HOLDER']}';
-                paymillFormErrors['invalid-account-number'] = '{$_ARRAYLANG['TXT_SHOP_PAYMILL_INVALID_ACC_NUMBER']}';
-                paymillFormErrors['invalid-bank-code'] = '{$_ARRAYLANG['TXT_SHOP_PAYMILL_INVALID_BANK_CODE']}';
-FORM_ERR_MSG;
-        JS::registerCode($code);
+        \ContrexxJavascript::getInstance()->setVariable(array(
+                'invalid-card-holder'    => $_ARRAYLANG['TXT_SHOP_PAYMILL_INVAILD_CARD_HOLDER'],
+                'invalid-account-number' => $_ARRAYLANG['TXT_SHOP_PAYMILL_INVALID_ACC_NUMBER'],
+                'invalid-bank-code'      => $_ARRAYLANG['TXT_SHOP_PAYMILL_INVALID_BANK_CODE'],
+            ),
+            'shop'
+        );
                 
         $testMode = intval(SettingDb::getValue('paymill_use_test_account')) == 0;
         $apiKey   = $testMode ? SettingDb::getValue('paymill_test_public_key') : SettingDb::getValue('paymill_live_public_key');
