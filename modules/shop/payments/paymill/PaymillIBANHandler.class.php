@@ -29,17 +29,17 @@ class PaymillIBANHandler extends PaymillHandler {
                     \$J('.submit-button').attr("disabled", "disabled");
 
                     if ("" === \$J('.elv-holdername').val()) {
-                        logResponse(cx.variables.get('invalid-card-holder'));
+                        logResponse(cx.variables.get('invalid-card-holder', 'shop'));
                         \$J(".submit-button").removeAttr("disabled");
                         return false;
                     }
                     if ("" === \$J('.elv-iban').val()) {
-                        logResponse(cx.variables.get('invalid-iban'));
+                        logResponse(cx.variables.get('invalid-iban', 'shop'));
                         \$J(".submit-button").removeAttr("disabled");
                         return false;
                     }
                     if ("" === \$J('.elv-bic').val()) {
-                        logResponse(cx.variables.get('invalid-bic'));
+                        logResponse(cx.variables.get('invalid-bic', 'shop'));
                         \$J(".submit-button").removeAttr("disabled");
                         return false;
                     }

@@ -29,17 +29,17 @@ class PaymillELVHandler extends PaymillHandler {
                     \$J('.submit-button').attr("disabled", "disabled");
 
                     if ("" === \$J('.elv-holdername').val()) {
-                        logResponse(cx.variables.get('invalid-card-holder'));
+                        logResponse(cx.variables.get('invalid-card-holder', 'shop'));
                         \$J(".submit-button").removeAttr("disabled");
                         return false;
                     }
                     if (false == paymill.validateAccountNumber(\$J('.elv-account').val())) {
-                        logResponse(cx.variables.get('invalid-account-number'));
+                        logResponse(cx.variables.get('invalid-account-number', 'shop'));
                         \$J(".submit-button").removeAttr("disabled");
                         return false;
                     }
                     if (false == paymill.validateBankCode(\$J('.elv-bankcode').val())) {
-                        logResponse(cx.variables.get('invalid-bank-code'));
+                        logResponse(cx.variables.get('invalid-bank-code', 'shop'));
                         \$J(".submit-button").removeAttr("disabled");
                         return false;
                     }
