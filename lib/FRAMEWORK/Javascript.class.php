@@ -111,6 +111,7 @@ cx.jQuery(document).ready(function(){
             'jsfiles'       => array(
                 'lib/javascript/jquery/jquery-1.6.1.min.js',
             ),
+            'specialcode' => 'var $J = jQuery;',
         ),
         'jquery-tools' => array(
             'jsfiles' => array(
