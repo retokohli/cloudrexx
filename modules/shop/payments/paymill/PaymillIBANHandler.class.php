@@ -29,17 +29,17 @@ class PaymillIBANHandler extends PaymillHandler {
                     \$J('.submit-button').attr("disabled", "disabled");
 
                     if ("" === \$J('.elv-holdername').val()) {
-                        logResponse(paymillFormErrors['invalid-card-holder']);
+                        logResponse(cx.variables.get('invalid-card-holder'));
                         \$J(".submit-button").removeAttr("disabled");
                         return false;
                     }
                     if ("" === \$J('.elv-iban').val()) {
-                        logResponse(paymillFormErrors['invalid-iban']);
+                        logResponse(cx.variables.get('invalid-iban'));
                         \$J(".submit-button").removeAttr("disabled");
                         return false;
                     }
                     if ("" === \$J('.elv-bic').val()) {
-                        logResponse(paymillFormErrors['invalid-bic']);
+                        logResponse(cx.variables.get('invalid-bic'));
                         \$J(".submit-button").removeAttr("disabled");
                         return false;
                     }
@@ -107,14 +107,13 @@ FORMTEMPLATE;
         
         JS::registerJS(self::$paymillJsBridge);
         
-        $code = <<< FORM_ERR_MSG
-                var paymillFormErrors = new Object();
-                
-                paymillFormErrors['invalid-card-holder'] = '{$_ARRAYLANG['TXT_SHOP_PAYMILL_INVAILD_CARD_HOLDER']}';
-                paymillFormErrors['invalid-iban'] = '{$_ARRAYLANG['TXT_SHOP_PAYMILL_INVALID_IBAN']}';
-                paymillFormErrors['invalid-bic'] = '{$_ARRAYLANG['TXT_SHOP_PAYMILL_INVALID_BIC']}';
-FORM_ERR_MSG;
-        JS::registerCode($code);
+        \ContrexxJavascript::getInstance()->setVariable(array(
+                'invalid-card-holder' => $_ARRAYLANG['TXT_SHOP_PAYMILL_INVAILD_CARD_HOLDER'],
+                'invalid-iban'        => $_ARRAYLANG['TXT_SHOP_PAYMILL_INVALID_IBAN'],
+                'invalid-bic'         => $_ARRAYLANG['TXT_SHOP_PAYMILL_INVALID_BIC'],
+            ),
+            'shop'
+        );
         
         $testMode = intval(SettingDb::getValue('paymill_use_test_account')) == 0;
         $apiKey   = $testMode ? SettingDb::getValue('paymill_test_public_key') : SettingDb::getValue('paymill_live_public_key');
