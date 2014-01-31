@@ -474,14 +474,10 @@ class CalendarEvent extends CalendarLibrary
         
         parent::getSettings();
         
-        if($objInit->mode == 'backend') {
-            $lang_where = "";  
+        if($objInit->mode == 'backend' || $langId == null) {
+            $lang_where = "AND field.lang_id = '".intval($_LANGID)."' ";
         } else {
-            if($langId == null) {  
-                $lang_where = "AND field.lang_id = '".intval($_LANGID)."' ";   
-            } else {
-                $lang_where = "AND field.lang_id = '".intval($langId)."' ";   
-            }                                 
+            $lang_where = "AND field.lang_id = '".intval($langId)."' ";                             
         }                                                                  
         
 
@@ -559,7 +555,6 @@ class CalendarEvent extends CalendarLibrary
                      AND (event.id = field.event_id ".$lang_where.")                                           
                    LIMIT 1";
                                             
-        
         $objResult = $objDatabase->Execute($query);  
         
         if($this->arrSettings['showEventsOnlyInActiveLanguage'] == 2) {
