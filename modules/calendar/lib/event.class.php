@@ -494,16 +494,11 @@ class CalendarEvent extends CalendarLibrary
         
         parent::getSettings();
         
-        if($objInit->mode == 'backend') {
-            $lang_where = "";  
+        if($objInit->mode == 'backend' || $langId == null) {
+            $lang_where = "AND field.lang_id = '".intval($_LANGID)."' ";
         } else {
-            if($langId == null) {  
-                $lang_where = "AND field.lang_id = '".intval($_LANGID)."' ";   
-            } else {
-                $lang_where = "AND field.lang_id = '".intval($langId)."' ";   
-            }                                 
-        }                                                                  
-        
+            $lang_where = "AND field.lang_id = '".intval($langId)."' ";                             
+        }
 
         $query = "SELECT event.id AS id,
                          event.type AS type,
