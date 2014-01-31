@@ -44,7 +44,7 @@ var {$this->moduleName}Vote = function(votes, entry)
 {
     cx.jQuery('#voteForm_'+entry).html('<img src="images/modules/{$this->moduleName}/loading.gif" border="0" alt="loading..." />');
 
-    jQuery.get('index.php', {section : "{$this->moduleName}", vote : votes, eid : entry}).success(function(response) {
+    cx.jQuery.get('index.php', {section : "{$this->moduleName}", vote : votes, eid : entry}).success(function(response) {
         var status = response.substr(0,1);
         var votes = response.substr(1);
 

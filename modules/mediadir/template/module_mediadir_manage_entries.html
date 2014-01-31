@@ -57,7 +57,7 @@ function entriesDoAction(formId, objSelect)
 
 var switchState = function(id, obj, action, type)
 {
-    jQuery.get('index.php', {cmd : '{MODULE_NAME}', act : 'switchState', id : id, state : action, type : type}).success(function() {
+    cx.jQuery.get('index.php', {cmd : '{MODULE_NAME}', act : 'switchState', id : id, state : action, type : type}).success(function() {
         if (action) {
             path = 'images/icons/status_green.gif';
             action = 0;
