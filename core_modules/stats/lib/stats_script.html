@@ -27,9 +27,9 @@
 			});
 		});
 	}
-	else if (typeof jQuery != 'undefined') { // jQuery
+	else if (typeof cx.jQuery != 'undefined') { // jQuery
 		cx.jQuery(function(){
-			jQuery.get("[CORE_MODULE_URL]/stats/counter.php",
+			cx.jQuery.get("[CORE_MODULE_URL]/stats/counter.php",
 				stats_data
 			);
 		});
