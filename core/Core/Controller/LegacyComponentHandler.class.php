@@ -197,29 +197,9 @@ class LegacyComponentHandler {
                             }
                         }
                     },
-                ),
-                'preContentLoad' => array(
-                    'JsonData' => function() {
-                        global $section, $json, $adapter, $method, $arguments;
-
-                        if ($section == 'jsondata') {
-                        // TODO: move this code to /core/Json/...
-                        // TODO: handle expired sessions in any xhr callers.
-                            $json = new \Cx\Core\Json\JsonData();
-                        // TODO: Verify that the arguments are actually present!
-                            $adapter = contrexx_input2raw($_GET['object']);
-                            $method = contrexx_input2raw($_GET['act']);
-                        // TODO: Replace arguments by something reasonable
-                            $arguments = array('get' => $_GET, 'post' => $_POST);
-                            echo $json->jsondata($adapter, $method, $arguments);
-                            die();
-                        }
-                    },
                     'Newsletter' => function() {
-                        global $section, $newsletter, $isRegularPageRequest, $plainSection, $cl, $_CORELANG,
-                                $newsletter, $_ARRAYLANG, $page_template, $themesPages, $objInit;
-
-                        if ($section == "newsletter") {
+                        global $section, $command;
+                        if ($section == 'newsletter') {
                             if (\Newsletter::isTrackLink()) {
                                 //handle link tracker from newsletter, since user should be redirected to the link url
                                 /*
@@ -240,7 +220,28 @@ class LegacyComponentHandler {
                             // regular newsletter request (like subscribing, profile management, etc).
                             // must not abort by an exit call here!
                         }
+                    },
+                ),
+                'preContentLoad' => array(
+                    'JsonData' => function() {
+                        global $section, $json, $adapter, $method, $arguments;
 
+                        if ($section == 'jsondata') {
+                        // TODO: move this code to /core/Json/...
+                        // TODO: handle expired sessions in any xhr callers.
+                            $json = new \Cx\Core\Json\JsonData();
+                        // TODO: Verify that the arguments are actually present!
+                            $adapter = contrexx_input2raw($_GET['object']);
+                            $method = contrexx_input2raw($_GET['act']);
+                        // TODO: Replace arguments by something reasonable
+                            $arguments = array('get' => $_GET, 'post' => $_POST);
+                            echo $json->jsondata($adapter, $method, $arguments);
+                            die();
+                        }
+                    },
+                    'Newsletter' => function() {
+                        global $section, $isRegularPageRequest, $plainSection, $cl, $_CORELANG,
+                                $newsletter, $_ARRAYLANG, $page_template, $themesPages, $objInit;
                         // get Newsletter
                         /** @ignore */
                         if ($cl->loadFile(ASCMS_MODULE_PATH.'/newsletter/index.class.php')) {
