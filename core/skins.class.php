@@ -1753,7 +1753,7 @@ class skins
         
         // write component.yml file
         // this line will create a default component.yml file
-        $theme = $this->themeRepository->findOneBy(array('foldername' => $themeDirectory));
+        $this->themeRepository->convertThemeToComponent($themeDirectory);
 
         return true;
     }
