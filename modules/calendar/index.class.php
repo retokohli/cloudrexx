@@ -254,7 +254,7 @@ class Calendar extends CalendarLibrary
             $this->startDate = $dateObj->getTimestamp();
             
             // add months for the list view(month view)
-            if (isset($_GET['act']) && $_GET['act'] != "list" && empty($_REQUEST["dayID"])) {
+            if ((empty($_GET['act']) || $_GET['act'] != 'list') && empty($_REQUEST['dayID'])) {
                 $dateObj->modify("+{$this->boxCount} months");
             }
             
