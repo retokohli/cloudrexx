@@ -98,11 +98,13 @@ class ContentManager extends \Module
             var_dump($this->nodeRepository->recover());
         }
         $objCx    = \ContrexxJavascript::getInstance();
-        $objSkins = new \skins();
-        $objCx->setVariable('themeId', $objSkins->selectDefaultTheme(), 'contentmanager/theme');
-        foreach ($objSkins->getThemes() as $arrTheme) {
-            if ($arrTheme['id'] == $objSkins->selectDefaultTheme()) {
-                $objCx->setVariable('themeName', $arrTheme['foldername'], 'contentmanager/theme');
+        
+        $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
+        $defaultTheme = $themeRepo->getDefaultTheme();
+        $objCx->setVariable('themeId', $defaultTheme->getId(), 'contentmanager/theme');
+        foreach ($themeRepo->findAll() as $theme) {
+            if ($theme == $defaultTheme) {
+                $objCx->setVariable('themeName', $theme->getFoldername(), 'contentmanager/theme');
             }
         }
 
