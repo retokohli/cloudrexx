@@ -454,27 +454,31 @@ class InitCMS
             $this->customContentTemplate=$_GET['custom_content'];
         }
 
+        $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
+
         if (isset($_GET['preview']) && intval($_GET['preview'])){
-            $objRS = $objDatabase->SelectLimit("
-                SELECT id
-                                        FROM ".DBPREFIX."skins
-                 WHERE id=".intval($_GET['preview']), 1
-            );
-            if ($objRS->RecordCount()==1){
-                $this->currentThemesId=intval($_GET['preview']);
+            $id = intval($_GET['preview']);
+            $theme = $themeRepository->findById($id);
+            if ($theme){
+                $this->currentThemesId = $id;
             }
         }
 
-        $objResult = $objDatabase->SelectLimit("
-            SELECT  id,
-                                    themesname,
-                                    foldername
-                               FROM ".DBPREFIX."skins
-                              WHERE id = '$this->currentThemesId'",1);
-        if ($objResult !== false) {
-            while (!$objResult->EOF) {
-                $themesPath = $objResult->fields['foldername'];
-                $objResult->MoveNext();
+		// get theme object so we get the configured libraries
+        $theme = $themeRepository->findById($this->currentThemesId);
+        if ($theme && $theme->isComponent()) {
+            $themesPath = $theme->getFoldername();
+            $libraries = JS::getConfigurableLibraries();
+            foreach ($theme->getDependencies() as $libraryName => $libraryVersions) {
+                if (!isset($libraries[$libraryName])) continue;
+                $version = $libraryVersions[0];
+                $libraryData = $libraries[$libraryName]['versions'][$version];
+                foreach ($libraryData['jsfiles'] as $file) {
+                    \JS::registerJS($file, true);
+                }
+                foreach ($libraryData['cssfiles'] as $file) {
+                    \JS::registerCSS($file);
+                }
             }
         }
 

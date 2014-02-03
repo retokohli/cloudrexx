@@ -1,0 +1,6 @@
+DlcInfo:
+  name: 'Skeleton 3.0.0'
+  description: 'Basic html layout'
+  type: template
+  publisher: 'Comvation AG'
+  versions: [{ state: stable, number: 1, releaseDate: 01.01.2013 }]

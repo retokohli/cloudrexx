@@ -108,8 +108,47 @@ cx.jQuery(document).ready(function(){
 })"
         ),
         'jquery'     => array(
-            'jsfiles'       => array(
-                'lib/javascript/jquery/jquery-1.6.1.min.js',
+            'versions' => array(
+                '1.6.1' => array(
+            		'jsfiles'       => array(
+                        'lib/javascript/jquery/1.6.1/js/jquery.min.js',
+                     ),
+                ),
+                '1.6.4' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/jquery/1.6.4/js/jquery.min.js',
+                     ),
+                ),
+                '1.7.3' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/jquery/1.7.3/js/jquery.min.js',
+                     ),
+                ),
+                '1.8.3' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/jquery/1.8.3/js/jquery.min.js',
+                     ),
+                ),
+                '1.9.1' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/jquery/1.9.1/js/jquery.min.js',
+                     ),
+                ),
+                '1.10.1' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/jquery/1.10.1/js/jquery.min.js',
+                     ),
+                ),
+                '2.0.2' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/jquery/2.0.2/js/jquery.min.js',
+                     ),
+                ),
+                '2.0.3' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/jquery/2.0.3/js/jquery.min.js',
+                     ),
+                ),
             ),
             'specialcode' => 'var $J = jQuery;',
         ),
@@ -282,6 +321,65 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             'dependencies' => array(
                 'cx', // depends on jquery
                 'jqueryui',
+            ),
+        ),
+        'twitter-bootstrap' => array(
+            'versions' => array(
+                '2.3.2' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/twitter-bootstrap/2.3.2/js/bootstrap.min.js',
+                     ),
+                    'cssfiles' => array(
+                        'lib/javascript/twitter-bootstrap/2.3.2/css/bootstrap.min.css',
+                        'lib/javascript/twitter-bootstrap/2.3.2/css/bootstrap-responsive.min.css',
+                     ),
+                    'dependencies' => array('jquery' => '^([^1]\..*|1\.[^0-6]*\..*)$'), // jquery needs to be version 1.7.3 or higher
+                ),
+                '3.0.0' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/twitter-bootstrap/3.0.0/js/bootstrap.min.js',
+                     ),
+                    'cssfiles' => array(
+                        'lib/javascript/twitter-bootstrap/3.0.0/css/bootstrap.min.css',
+                     ),
+                    'dependencies' => array('jquery' => '^([^1]\..*|1\.[^0-6]*\..*)$'), // jquery needs to be version 1.7.3 or higher
+                ),
+                '3.0.1' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/twitter-bootstrap/3.0.1/js/bootstrap.min.js',
+                     ),
+                    'cssfiles' => array(
+                        'lib/javascript/twitter-bootstrap/3.0.1/css/bootstrap.min.css',
+                     ),
+                    'dependencies' => array('jquery' => '^([^1]\..*|1\.[^0-6]*\..*)$'), // jquery needs to be version 1.7.3 or higher
+                ),
+                '3.0.2' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/twitter-bootstrap/3.0.2/js/bootstrap.min.js',
+                     ),
+                    'cssfiles' => array(
+                        'lib/javascript/twitter-bootstrap/3.0.2/css/bootstrap.min.css',
+                     ),
+                    'dependencies' => array('jquery' => '^([^1]\..*|1\.[^0-6]*\..*)$'), // jquery needs to be version 1.7.3 or higher
+                ),
+                '3.0.3' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/twitter-bootstrap/3.0.3/js/bootstrap.min.js',
+                     ),
+                    'cssfiles' => array(
+                        'lib/javascript/twitter-bootstrap/3.0.3/css/bootstrap.min.css',
+                     ),
+                    'dependencies' => array('jquery' => '^([^1]\..*|1\.[^0-6]*\..*)$'), // jquery needs to be version 1.7.3 or higher
+                ),
+                '3.1.0' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/twitter-bootstrap/3.1.0/js/bootstrap.min.js',
+                     ),
+                    'cssfiles' => array(
+                        'lib/javascript/twitter-bootstrap/3.1.0/css/bootstrap.min.css',
+                     ),
+                    'dependencies' => array('jquery' => '^([^1]\..*|1\.[^0-6]*\..*)$'), // jquery needs to be version 1.7.3 or higher
+                ),
             ),
         ),
     );
@@ -579,9 +677,15 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             // array, and must be loaded first!
             foreach (array_reverse(self::$active) as $name) {
                 $data = self::$available[$name];
-                if (!isset($data['jsfiles'])) {
+                if (!isset($data['jsfiles']) && !isset($data['versions'])) {
                     self::$error = "A JS entry should at least contain one js file...";
                     return false;
+                }
+                // get js files which are specified or the js files from first version
+                if (!isset($data['jsfiles'])) {
+                    // get data from default version and load the files from there
+                    $versionData = current($data['versions']);
+                    $data = array_merge($data, $versionData);
                 }
                 $retstring .= self::makeJSFiles($data['jsfiles']);
                 if (!empty($data['cssfiles'])) {
@@ -602,8 +706,15 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         }
 
         $retstring .= self::makeJSFiles(self::$customJS);
+        
+        // if jquery is activated, do a noConflict
+        if (array_search('jquery', self::$active) !== false) {
         $retstring .= self::makeSpecialCode('$J = cx.jQuery = jQuery.noConflict();');
+        }
         $retstring .= self::makeJSFiles(self::$templateJS);
+        
+        // no conflict for normal jquery version which has been included in template or by theme dependency
+        $retstring .= self::makeSpecialCode('if (typeof jQuery != "undefined") { jQuery.noConflict(); }');
         $retstring .= self::makeCSSFiles($cssfiles);
         $retstring .= self::makeCSSFiles(self::$customCSS);
         $retstring .= self::makeSpecialCode(self::$customCode);
@@ -747,6 +858,21 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         JS::grabComments($content);
         $content = preg_replace_callback('/<script .*?src=(?:"|\')([^"\']*)(?:"|\').*?\/?>(?:<\/script>)?/i', array('JS', 'registerFromRegex'), $content);
         JS::restoreComments($content);
+    }
+    
+    /**
+     * Get an array of libraries which are ready to load in different versions
+     * @return array the libraries which are ready to configure for skin
+     */
+    public static function getConfigurableLibraries()
+    {
+        $configurableLibraries = array();
+        foreach (self::$available as $libraryName => $libraryInfo) {
+            if (isset($libraryInfo['versions'])) {
+                $configurableLibraries[$libraryName] = $libraryInfo;
+            }
+        }
+        return $configurableLibraries;
     }
 
 
