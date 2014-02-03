@@ -253,50 +253,66 @@ class ThemeRepository
             if ($theme->isComponent()) {
                 continue;
             }
-            try {
-                // check for old info file
-                $infoFile = new \Cx\Lib\FileSystem\File($themePath . '/info.xml');
-                $this->xmlParseFile($infoFile);
-                $themeInformation['DlcInfo'] = array(
-                    'name' => $theme->getFoldername(),
-                    'description' => $this->xmlDocument['THEME']['DESCRIPTION']['cdata'],
-                    'type' => 'template',
-                    'publisher' => $this->xmlDocument['THEME']['AUTHORS']['AUTHOR']['USER']['cdata'],
-                    'versions' => array(
-                        'state' => 'stable',
-                        'number' => $this->xmlDocument['THEME']['VERSION']['cdata'],
-                        'releaseDate' => '',
-                    ),
-                );
-                unset($this->xmlDocument);
-            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-                // create new data for new component.yml file
-                $themeInformation['DlcInfo'] = array(
-                    'name' => $theme->getFoldername(),
-                    'description' => '',
-                    'type' => 'template',
-                    'publisher' => 'Comvation AG',
-                    'versions' => array(
-                        'state' => 'stable',
-                        'number' => '1.0.0',
-                        'releaseDate' => '',
-                    ),
-                );
-            }
-            // write components yaml
-            $theme->setComponentData($themeInformation['DlcInfo']);
-            try {
-                $this->saveComponentData($theme);
-            } catch (\Cx\Lib\FileSystem\FileException $e) {
-                // could not write new component.yml file, try next time
-                throw new $e;
-            }
-            try {
-                // delete existing info.xml file
-                $infoFile->delete();
-            } catch (\Cx\Lib\FileSystem\FileException $e) {
-                // not critical, ignore
-            }
+            $this->convertThemeToComponent($theme);
+        }
+    }
+    
+    /**
+     * Generate a component.yml for one theme available on the system
+     * @param string|\Cx\Core\View\Model\Entity\Theme $theme
+     */
+    public function convertThemeToComponent($theme) {
+        if ($theme instanceof \Cx\Core\View\Model\Entity\Theme) {
+            $theme = $theme->getFoldername();
+        }
+        
+        $themePath = ASCMS_THEMES_PATH . '/' . $theme;
+        try {
+            // check for old info file
+            $infoFile = new \Cx\Lib\FileSystem\File($theme . '/info.xml');
+            $this->xmlParseFile($infoFile);
+            $themeInformation['DlcInfo'] = array(
+                'name' => $theme,
+                'description' => $this->xmlDocument['THEME']['DESCRIPTION']['cdata'],
+                'type' => 'template',
+                'publisher' => $this->xmlDocument['THEME']['AUTHORS']['AUTHOR']['USER']['cdata'],
+                'versions' => array(
+                    'state' => 'stable',
+                    'number' => $this->xmlDocument['THEME']['VERSION']['cdata'],
+                    'releaseDate' => '',
+                ),
+            );
+            unset($this->xmlDocument);
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            // create new data for new component.yml file
+            $themeInformation['DlcInfo'] = array(
+                'name' => $theme,
+                'description' => '',
+                'type' => 'template',
+                'publisher' => 'Comvation AG',
+                'versions' => array(
+                    'state' => 'stable',
+                    'number' => '1.0.0',
+                    'releaseDate' => '',
+                ),
+            );
+        }
+        $themeFolder = $theme;
+        $theme = new \Cx\Core\View\Model\Entity\Theme();
+        $theme->setFoldername($themeFolder);
+        // write components yaml
+        $theme->setComponentData($themeInformation['DlcInfo']);
+        try {
+            $this->saveComponentData($theme);
+        } catch (\Cx\Lib\FileSystem\FileException $e) {
+            // could not write new component.yml file, try next time
+            throw new $e;
+        }
+        try {
+            // delete existing info.xml file
+            $infoFile->delete();
+        } catch (\Cx\Lib\FileSystem\FileException $e) {
+            // not critical, ignore
         }
     }
     
