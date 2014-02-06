@@ -66,7 +66,7 @@ function() {
         });
 }
 );
-jQuery(document).ready(function($) {
+cx.jQuery(document).ready(function($) {
     \$J('a.toggle').click(function() {
         \$J('div.toggle').toggle();
         return false;

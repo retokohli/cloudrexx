@@ -18,18 +18,18 @@
             }
         },
         _handleAllDayEvent: function(elm) {
-            jQuery(".startDate").data('dateTime', jQuery(".startDate").datetimepicker("getDate").getTime());
-            jQuery(".endDate").data('dateTime', jQuery(".endDate").datetimepicker("getDate").getTime());
+            cx.jQuery(".startDate").data('dateTime', cx.jQuery(".startDate").datetimepicker("getDate").getTime());
+            cx.jQuery(".endDate").data('dateTime', cx.jQuery(".endDate").datetimepicker("getDate").getTime());
             if (elm.is(":checked")) {
                 // new initialization instead of show up once
-                jQuery(".startDate").datepicker('setDate', new Date(jQuery(".startDate").data('dateTime')));
-                jQuery(".endDate").datepicker('setDate', new Date(jQuery(".endDate").data('dateTime')));
-                jQuery(".startDate, .endDate").datetimepicker('disableTimepicker');
+                cx.jQuery(".startDate").datepicker('setDate', new Date(cx.jQuery(".startDate").data('dateTime')));
+                cx.jQuery(".endDate").datepicker('setDate', new Date(cx.jQuery(".endDate").data('dateTime')));
+                cx.jQuery(".startDate, .endDate").datetimepicker('disableTimepicker');
             } else {
-                jQuery(".startDate, .endDate").datetimepicker('enableTimepicker');
+                cx.jQuery(".startDate, .endDate").datetimepicker('enableTimepicker');
             }
-            jQuery(".startDate").datepicker('setDate', new Date(jQuery(".startDate").data('dateTime')));
-            jQuery(".endDate").datepicker('setDate', new Date(jQuery(".endDate").data('dateTime')));
+            cx.jQuery(".startDate").datepicker('setDate', new Date(cx.jQuery(".startDate").data('dateTime')));
+            cx.jQuery(".endDate").datepicker('setDate', new Date(cx.jQuery(".endDate").data('dateTime')));
         },
         _isNumber: function(evt) {
             evt = (evt) ? evt : window.event;
@@ -88,17 +88,17 @@
             dateFormat: '{CALENDAR_EVENT_DATE_FORMAT}',
             timeFormat: 'hh:mm',
             onSelect: function(dateText, inst) {
-                startDateTime = jQuery(".startDate").datetimepicker("getDate").getTime() / 1000;
-                endDateTime = jQuery(".endDate").datetimepicker("getDate").getTime() / 1000;
+                startDateTime = cx.jQuery(".startDate").datetimepicker("getDate").getTime() / 1000;
+                endDateTime = cx.jQuery(".endDate").datetimepicker("getDate").getTime() / 1000;
 
                 if (startDateTime > endDateTime) {
-                    jQuery(".endDate").datetimepicker('setDate', jQuery(".startDate").val());
+                    cx.jQuery(".endDate").datetimepicker('setDate', cx.jQuery(".startDate").val());
                 }
             },
             showSecond: false
         };
-        jQuery('input[name=startDate]').datetimepicker(options);
-        jQuery('input[name=endDate]').datetimepicker(options);
+        cx.jQuery('input[name=startDate]').datetimepicker(options);
+        cx.jQuery('input[name=endDate]').datetimepicker(options);
         modifyEvent._handleAllDayEvent($J(".all_day"));
         refreshDatePickers();
     });
@@ -156,14 +156,14 @@
             }
         }
 
-        if (jQuery('[name="seriesStatus"]').is(':checked') && document.getElementById('seriesTypeSelect').value == 2) {
+        if (cx.jQuery('[name="seriesStatus"]').is(':checked') && document.getElementById('seriesTypeSelect').value == 2) {
             var isChecked = false;
-            if (jQuery('#seriesMaskWeekly input:checked').length > 0) {
+            if (cx.jQuery('#seriesMaskWeekly input:checked').length > 0) {
                 isChecked = true;
             }
             if (!isChecked) {
                 status = false;
-                jQuery('#seriesMaskWeekly').children('table').css('border', '#ff0000 1px solid');
+                cx.jQuery('#seriesMaskWeekly').children('table').css('border', '#ff0000 1px solid');
                 document.getElementById('errorMessage').style.display = 'block';
             }
         }
@@ -445,7 +445,7 @@
         var options = {
             dateFormat: '{CALENDAR_EVENT_DATE_FORMAT}',
         };
-        jQuery('.event_date').datepicker(options);
+        cx.jQuery('.event_date').datepicker(options);
 
     }
 </script>      

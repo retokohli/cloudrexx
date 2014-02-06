@@ -2,40 +2,40 @@
 <script language="javascript" type="text/javascript">
 
 function init() {
-    jQuery('#filesharingManageGroup, #filesharingManageOff, #filesharingManageOn').change(function(){
+    cx.jQuery('#filesharingManageGroup, #filesharingManageOff, #filesharingManageOn').change(function(){
         // show div with groups
-        if (jQuery('#filesharingManageGroup').attr('checked') == 'checked') {
-            jQuery(this).siblings('.group_div').show();
+        if (cx.jQuery('#filesharingManageGroup').attr('checked') == 'checked') {
+            cx.jQuery(this).siblings('.group_div').show();
         } else {
-            jQuery(this).siblings('.group_div').hide();
+            cx.jQuery(this).siblings('.group_div').hide();
         }
     });
 };
 
 function SelectAllGroups(link) {
-    jQuery(link).siblings(".group_list").find("option").attr("selected", "selected");
+    cx.jQuery(link).siblings(".group_list").find("option").attr("selected", "selected");
     return false;
 };
 
 function DeselectAllGroups(link) {
-    jQuery(link).siblings(".group_list").find("option").removeAttr("selected");
+    cx.jQuery(link).siblings(".group_list").find("option").removeAttr("selected");
     return false;
 };
 
 function MoveRight(button) {
-    var right = jQuery(button).parent().parent().find(".group_list:last");
-    jQuery(button).parent().parent().find(".group_list:first").find("option:selected").appendTo(right);
+    var right = cx.jQuery(button).parent().parent().find(".group_list:last");
+    cx.jQuery(button).parent().parent().find(".group_list:first").find("option:selected").appendTo(right);
     return false;
 };
 
 function MoveLeft(button) {
-    var left = jQuery(button).parent().parent().find(".group_list:first");
-    jQuery(button).parent().parent().find(".group_list:last").find("option:selected").appendTo(left);
+    var left = cx.jQuery(button).parent().parent().find(".group_list:first");
+    cx.jQuery(button).parent().parent().find(".group_list:last").find("option:selected").appendTo(left);
     return false;
 };
 
 function BeforeSubmit() {
-    jQuery(".group_div").find(".group_list:first").find("option:selected").removeAttr("selected").end().end()
+    cx.jQuery(".group_div").find(".group_list:first").find("option:selected").removeAttr("selected").end().end()
     .find(".group_list:last").find("option").attr("selected", "selected");
 }
 

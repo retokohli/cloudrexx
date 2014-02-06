@@ -36,8 +36,8 @@ Articles.prototype.getCategory = function(id) {
             setRows();
             initSortableArea();
             cx.ready(function() {
-                jQuery('.article-edit-link').each(function() {
-                    jQuery(this).attr('href', jQuery(this).attr('href')+'&csrf='+cx.variables.get('csrf'));
+                cx.jQuery('.article-edit-link').each(function() {
+                    cx.jQuery(this).attr('href', cx.jQuery(this).attr('href')+'&csrf='+cx.variables.get('csrf'));
                 });
             });
         }
