@@ -1424,7 +1424,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                 var objTrigger = this.getTrigger();
                 var objTip = this.getTip();
                 objTip.html('');
-                var arrCssClasses = jQuery.trim(objTrigger.attr('class')).split(' ');
+                var arrCssClasses = cx.jQuery.trim(objTrigger.attr('class')).split(' ');
 
                 if (objTrigger.hasClass('publishing')) {
 
@@ -1447,7 +1447,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                     }
 
                     if (arrStatuses.length > 0) {
-                        arrTipMessage.push(cx.variables.get('TXT_CORE_CM_PUBLISHING_INFO_STATUSES', 'contentmanager/lang/tooltip')+jQuery.ucfirst(arrStatuses.join(', ')));
+                        arrTipMessage.push(cx.variables.get('TXT_CORE_CM_PUBLISHING_INFO_STATUSES', 'contentmanager/lang/tooltip')+cx.jQuery.ucfirst(arrStatuses.join(', ')));
                     }
                     if (!objTrigger.hasClass('inexistent')) {
                         if (objTrigger.hasClass('unpublished')) {
@@ -1494,10 +1494,10 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                     }
 
                     if (arrStatuses.length > 0) {
-                        arrTipMessage.push(cx.variables.get('TXT_CORE_CM_PAGE_INFO_STATUSES', 'contentmanager/lang/tooltip')+jQuery.ucfirst(arrStatuses.join(', ')));
+                        arrTipMessage.push(cx.variables.get('TXT_CORE_CM_PAGE_INFO_STATUSES', 'contentmanager/lang/tooltip')+cx.jQuery.ucfirst(arrStatuses.join(', ')));
                     }
                     if (arrTypes.length > 0) {
-                        arrTipMessage.push(cx.variables.get('TXT_CORE_CM_PUBLISHING_INFO_TYPES', 'contentmanager/lang/tooltip')+jQuery.ucfirst(arrTypes.join(', ')));
+                        arrTipMessage.push(cx.variables.get('TXT_CORE_CM_PUBLISHING_INFO_TYPES', 'contentmanager/lang/tooltip')+cx.jQuery.ucfirst(arrTypes.join(', ')));
                     }
                     if (!objTrigger.parent().hasClass('inexistent')) {
                         if (objTrigger.hasClass('invisible')) {
@@ -1525,7 +1525,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             }
         });
         
-        if (jQuery.browser.msie  && parseInt(jQuery.browser.version, 10) === 7) {
+        if (cx.jQuery.browser.msie  && parseInt(cx.jQuery.browser.version, 10) === 7) {
             zIndex = cx.jQuery('#site-tree li').length * 10;
             cx.jQuery('#site-tree li').each(function() {
                 cx.jQuery(this).children('.jstree-wrapper').css('zIndex', zIndex);
@@ -1655,7 +1655,7 @@ cx.cm.resizeEditorHeight = function() {
         ;
         if (restHeight > 400) {
             ckeditorHeight = restHeight - ckeditorSpacing;
-            if (jQuery.browser.msie && jQuery.browser.version == 9 ) {
+            if (cx.jQuery.browser.msie && cx.jQuery.browser.version == 9 ) {
                 ckeditorHeight = ckeditorHeight - 1;
             }
         } else if (restHeight < 400) {
