@@ -561,7 +561,7 @@ class Contact extends ContactLib
             <script type="text/javascript">
             cx.ready(function() {
                     var ef = new ExtendedFileInput({
-                            field:  jQuery('#contactFormFieldId_$fieldId'),
+                            field:  cx.jQuery('#contactFormFieldId_$fieldId'),
                             instance: '$uploaderInstanceName',
                             widget: '$uploaderWidgetName'
                     });
