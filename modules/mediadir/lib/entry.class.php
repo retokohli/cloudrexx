@@ -260,7 +260,6 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
             ".$strOffset."
         ";
 
-        echo($query);
         $objEntries = $objDatabase->Execute($query);
 
         $arrEntries = array();
