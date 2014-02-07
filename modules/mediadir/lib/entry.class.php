@@ -177,7 +177,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                 LIMIT 1
             ";
 
-            $strWhereFirstInputfield = "AND (rel_inputfield.`form_id` = entry.`form_id`) AND (rel_inputfield.`field_id` = (".$query.")) AND (rel_inputfield.`value` != '') AND (rel_inputfield.`lang_id` = '".$_LANGID."')";
+            $strWhereFirstInputfield = "AND (rel_inputfield.`form_id` = entry.`form_id`) AND (rel_inputfield.`field_id` = (".$query.")) AND (rel_inputfield.`lang_id` = '".$_LANGID."')";
         } else {
             $strWhereTerm = "AND ((rel_inputfield.`value` LIKE '%".$this->strSearchTerm."%') OR (entry.`id` = '".$this->strSearchTerm."')) ";
             $strWhereFirstInputfield = '';
@@ -260,6 +260,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
             ".$strOffset."
         ";
 
+        echo($query);
         $objEntries = $objDatabase->Execute($query);
 
         $arrEntries = array();
@@ -270,9 +271,9 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                 $arrEntryFields = array();
 
                 if(array_key_exists($objEntries->fields['id'], $arrEntries)) {
-                    $arrEntries[intval($objEntries->fields['id'])]['entryFields'][] = $objEntries->fields['value'];
+                    $arrEntries[intval($objEntries->fields['id'])]['entryFields'][] = !empty($objEntries->fields['value']) ? $objEntries->fields['value'] : '-';
                 } else {
-                    $arrEntryFields[] = $objEntries->fields['value'];
+                    $arrEntryFields[] = !empty($objEntries->fields['value']) ? $objEntries->fields['value'] : '-';
 
                     $arrEntry['entryId'] = intval($objEntries->fields['id']);
                     $arrEntry['entryOrder'] = intval($objEntries->fields['order']);
