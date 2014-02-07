@@ -5088,6 +5088,11 @@ $WhereStatement = '';
 
         $limit = (!empty($_GET['limit'])) ? intval($_GET['limit']) : $_CONFIG['corePagingLimit'];
 
+        //for User storage in Access-Module
+        if(isset($_GET['store']) && $_GET['store'] == 'true'){
+            self::$strOkMessage .= $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_UPDATED_SUCCESSFULLY'];
+        }
+        
         $newsletterListId = isset($_REQUEST['newsletterListId']) ? intval($_REQUEST['newsletterListId']) : 0;
         $this->_objTpl->setVariable(array(
             'TXT_TITLE' => $_ARRAYLANG['TXT_SEARCH'],
