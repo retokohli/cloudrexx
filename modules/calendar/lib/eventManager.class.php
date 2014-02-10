@@ -561,7 +561,8 @@ class CalendarEventManager extends CalendarLibrary
             }
 
             if ($objEvent->type && !empty($objEvent->arrData['redirect'][FRONTEND_LANG_ID])) {
-                \CSRF::header('Location: ' . $objEvent->arrData['redirect'][FRONTEND_LANG_ID]);
+                $redirect = html_entity_decode($objEvent->arrData['redirect'][FRONTEND_LANG_ID], ENT_QUOTES, CONTREXX_CHARSET);
+                \CSRF::header('Location: ' . $redirect);
                 exit();
             }
 
