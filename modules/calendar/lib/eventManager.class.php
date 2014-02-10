@@ -559,7 +559,12 @@ class CalendarEventManager extends CalendarLibrary
                 CSRF::header("Location: index.php?section=".$this->moduleName);
                 return;   
             }
-            
+
+            if ($objEvent->type && !empty($objEvent->arrData['redirect'][FRONTEND_LANG_ID])) {
+                \CSRF::header('Location: ' . $objEvent->arrData['redirect'][FRONTEND_LANG_ID]);
+                exit();
+            }
+
             if($objEvent->access == 1 && !FWUser::getFWUserObject()->objUser->login()){
                 $link = base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);           
                 CSRF::header("Location: ".CONTREXX_SCRIPT_PATH."?section=login&redirect=".$link);  
