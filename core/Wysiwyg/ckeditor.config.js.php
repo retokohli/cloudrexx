@@ -90,6 +90,7 @@ CKEDITOR.editorConfig = function( config )
         ['Cut','Copy','Paste','-','Scayt'],
         ['Undo','Redo']
     ];
+    config.extraPlugins = 'codemirror';
 };
 
 if (<?php
