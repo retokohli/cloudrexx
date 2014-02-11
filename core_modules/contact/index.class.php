@@ -304,8 +304,10 @@ class Contact extends ContactLib
 
                     case 'select':
                         $options = explode(',', $arrField['lang'][$_LANGID]['value']);
+                        $inexOffset = 0;
                         if ($arrField['is_required']) {
                             $options = array_merge(array($_ARRAYLANG['TXT_CONTACT_PLEASE_SELECT']), $options);
+                            $inexOffset = 1;
                         }
                         foreach ($options as $index => $option) {
                             if (preg_match($userProfileRegExp, $option)) {
@@ -314,10 +316,9 @@ class Contact extends ContactLib
                             } else {
                                 $this->objTemplate->setVariable($fieldId.'_VALUE', contrexx_raw2xhtml($option));
                             }
-
                             // pre-selection, based on $_POST value
                             if (!empty($_POST['contactFormField_'.$fieldId])) {
-                                if ($index == array_search($_POST['contactFormField_'.$fieldId], explode(',', $arrField['lang'][$_LANGID]['value']))) {
+                                if ($index == array_search($_POST['contactFormField_'.$fieldId], explode(',', $arrField['lang'][$_LANGID]['value']))+$inexOffset) {
                                     $this->objTemplate->setVariable('SELECTED_'.$fieldId, 'selected = "selected"');
                                 }
                             // pre-selection, based on $_GET value
@@ -433,6 +434,8 @@ class Contact extends ContactLib
             }
         }
         $saveCrmContact = $this->arrForms[$_GET['cmd']]['saveDataInCRM'];
+        
+        $this->objTemplate->setVariable('CONTACT_JAVASCRIPT', $this->_getJsSourceCode($formId, $arrFields) . $uploaderCode);
 
         if (isset($_POST['submitContactForm']) || isset($_POST['Submit'])) { //form submitted
             $this->checkLegacyMode();
@@ -471,8 +474,6 @@ class Contact extends ContactLib
             }
             $this->setCaptcha($useCaptcha);
         }
-
-        $this->objTemplate->setVariable('CONTACT_JAVASCRIPT', $this->_getJsSourceCode($formId, $arrFields) . $uploaderCode);
         
         return $this->objTemplate->get();
     }
