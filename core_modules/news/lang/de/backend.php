@@ -325,4 +325,6 @@ $_ARRAYLANG['TXT_NEWS_PREVIEW'] = "Vorschau öffnen";
 $_ARRAYLANG['TXT_NEWS_NUMBER_OF_COMMENTS'] = "Anzahl Kommentare";
 $_ARRAYLANG['TXT_NEWS_RECENT_MESSAGES_LIMIT'] = "Anzahl neuster Kommentare";
 $_ARRAYLANG['TXT_NEWS_SETTINGS_RECENT_MESSAGES_LIMIT_HELP'] = "Geben Sie die Anzahl neuster Kommentare an, welche im Design Template Block [[NEWS_RECENT_COMMENTS_FILE]] angezeigt werden sollen.";
+$_ARRAYLANG['TXT_NEWS_CATEGORIES'] = "Categories";
+$_ARRAYLANG['TXT_NEWS_CATEGORIES_PLACEHOLDERS_USAGE'] = "News categories can be integrated using the placeholder <strong>[[NEWS_CATEGORIES]]</strong>. <br /> The placeholder can be used in the design template or in a content page. <br /> This will list the nested ul/li-list of categories as links.";
 ?>

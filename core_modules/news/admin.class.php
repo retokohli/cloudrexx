@@ -3387,6 +3387,8 @@ class newsManager extends newsLibrary {
             'TXT_NEWS_TEXT_DESCRIPTION'                                 => $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'],
             'TXT_MORE_NEWS'                                             => $_CORELANG['TXT_MORE_NEWS'],
             'TXT_TEASER_PLACEHOLLDERS_USAGE'                            => $_ARRAYLANG['TXT_TEASER_PLACEHOLLDERS_USAGE'],
+            'TXT_NEWS_CATEGORIES'                                       => $_ARRAYLANG['TXT_NEWS_CATEGORIES'],
+            'TXT_NEWS_CATEGORIES_PLACEHOLDERS_USAGE'                    => $_ARRAYLANG['TXT_NEWS_CATEGORIES_PLACEHOLDERS_USAGE'],
             'TXT_NEWS_LASTUPDATE_DESCRIPTION'                           => $_ARRAYLANG['TXT_NEWS_LASTUPDATE_DESCRIPTION'],
             'TXT_NEWS_SOURCE_DESCRIPTION'                               => $_ARRAYLANG['TXT_NEWS_SOURCE_DESCRIPTION'],
             'TXT_NEWS_IMAGE_DESCRIPTION'                                => $_ARRAYLANG['TXT_NEWS_IMAGE_DESCRIPTION'],
