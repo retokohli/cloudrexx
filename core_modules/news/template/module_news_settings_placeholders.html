@@ -7,6 +7,7 @@
 <li><a id="placeholdersTab_news5" href="javascript:{}" onclick="selectTab('news5')" title="{TXT_TEASERS}">{TXT_TEASERS}</a></li>
 <li><a id="placeholdersTab_news6" href="javascript:{}" onclick="selectTab('news6')" title="{TXT_NEWS_CATEGORIES}">{TXT_NEWS_CATEGORIES}</a></li>
 <li><a id="placeholdersTab_news7" href="javascript:{}" onclick="selectTab('news7')" title="{TXT_NEWS_ARCHIVE_LIST}">{TXT_NEWS_ARCHIVE_LIST}</a></li>
+<li><a id="placeholdersTab_news8" href="javascript:{}" onclick="selectTab('news8')" title="{TXT_NEWS_RECENT_COMMENTS}">{TXT_NEWS_RECENT_COMMENTS}</a></li>
 </ul>
 <!-- start news1 div -->
 <div id="news1" class="placeholdersTab" style="display:block">
@@ -642,4 +643,81 @@
     </table>
 </div>
 <!-- end news7 div -->
+<!-- start news8 div -->
+<div id="news8" class="placeholdersTab" style="display:none">
+    <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
+        <tr>
+            <th colspan="2">{TXT_USAGE}</th>
+        </tr>
+        <tr class="row1">
+            <td colspan="2">                
+                {TXT_NEWS_RECENT_COMMENTS_PLACEHOLDERS_USAGE}                
+            </td>
+        </tr>
+    </table>
+    <br />    
+    <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
+        <tr>
+            <th colspan="2">{TXT_PLACEHOLDER_LIST}</th>
+        </tr>
+        <tr class="row1">
+            <td width="15%">[[NEWS_COMMENTS_CSS]]</td>
+            <td width="85%">{TXT_NEWS_COMMENTS_CSS_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_COMMENTS_TITLE]]</td>
+            <td>{TXT_NEWS_COMMENTS_TITLE_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_COMMENTS_MESSAGE]]</td>
+            <td>{TXT_NEWS_COMMENTS_MESSAGE_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_COMMENTS_LONG_DATE]]</td>
+            <td>{TXT_NEWS_COMMENTS_LONG_DATE_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_COMMENTS_DATE]]</td>
+            <td>{TXT_NEWS_COMMENTS_DATE_DESCRIPTION}</td>
+        </tr>
+        <tr class="row2">
+            <td>[[NEWS_COMMENTS_TIME]]</td>
+            <td>{TXT_NEWS_COMMENTS_TIME_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_COMMENT_LINK]]</td>
+            <td>{TXT_NEWS_COMMENT_LINK_DESCRIPTION}</td>
+        </tr>
+        <tr class="row1">
+            <td>[[NEWS_COMMENT_URL]]</td>
+            <td>{TXT_NEWS_COMMENT_URL_DESCRIPTION}</td>
+        </tr>
+    </table>
+    <br />  
+    <table border="0" cellpadding="3" cellspacing="0" width="100%" class="adminlist">
+        <tr>
+            <th>{TXT_EXAMPLE}</th>
+        </tr>
+        <tr class="row1">
+            <td>
+                &lt;!-- BEGIN news_comments --&gt; <br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;!-- BEGIN news_no_comment --&gt; <br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div id="news-no-comments"&gt;[[TXT_NEWS_COMMENTS_NONE_EXISTING]]&lt;/div&gt; <br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;!-- END news_no_comment --&gt; <br /><br />
+
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;!-- BEGIN news_comment_list --&gt; <br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;!-- BEGIN news_comment --&gt; <br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class="news-comment"&gt; <br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class="news-comment-poster"&gt;[[NEWS_COMMENTS_LONG_DATE]] | [[NEWS_COMMENTS_POSTER]]&lt;/div&gt; <br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class="news-comment-title"&gt;&lt;strong&gt;[[NEWS_COMMENTS_TITLE]]&lt;/strong&gt;&lt;/div&gt; <br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;div class="news-comment-message"&gt;[[NEWS_COMMENTS_MESSAGE]]&lt;/div&gt; <br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/div&gt; <br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;!-- END news_comment --&gt; <br />
+                &nbsp;&nbsp;&nbsp;&nbsp;&lt;!-- END news_comment_list --&gt; <br />
+                &lt;!-- END news_comments --&gt; <br />
+            </td>
+        </tr>
+    </table>
+</div>
+<!-- end news8 div -->
 <!-- END module_news_settings_placeholders.html -->
