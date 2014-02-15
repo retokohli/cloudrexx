@@ -1522,6 +1522,8 @@ function loadMd5SumOfOriginalCxFiles()
 
 function backupModifiedFile($file)
 {
+    global $_CONFIG;
+            
     $cxFilePath = dirname(substr($file, strlen(ASCMS_DOCUMENT_ROOT)));
     if ($cxFilePath == '/') {
         $cxFilePath = '';
@@ -1529,7 +1531,7 @@ function backupModifiedFile($file)
 
     $customizingPath = ASCMS_DOCUMENT_ROOT.'/customizing'.$cxFilePath;
     \Cx\Lib\FileSystem\FileSystem::make_folder($customizingPath);
-    $customizingFile = $customizingPath . '/'. basename($file);
+    $customizingFile = $customizingPath . '/'. basename($file).$_CONFIG['coreCmsVersion'];
 
     if (file_exists($customizingFile)) {
         $customizingFile .= '_backup_'.date('d.m.Y');
