@@ -192,14 +192,27 @@ class cmsSession
 
     function cmsSessionClose()
     {
+        // release the lock associated with the current session
+        $this->_objDb->Execute('SELECT RELEASE_LOCK("' . $this->sessionLock . '")');
+        
         return true;
     }
 
     function cmsSessionRead( $aKey )
     {
+        global $_DBCONFIG;
+        
         $this->sessionid = $aKey;
         $this->sessionPath = ASCMS_TEMP_WEB_PATH.'/'.$this->sessionPathPrefix.$this->sessionid;
 
+        // get the lock name, associated with the current session
+        $this->sessionLock = "{$_DBCONFIG['database']}.".DBPREFIX."sessions_{$this->sessionid}";
+        $objLock = $this->_objDb->Execute('SELECT GET_LOCK("' . $this->sessionLock . '", ' . $this->lifetime . ')');
+        
+        if (!$objLock || $objLock->fields['GET_LOCK("' . $this->sessionLock . '", ' . $this->lifetime . ')'] != 1) {
+            die('Could not obtain session lock!');
+        }
+        
         $objResult = $this->_objDb->Execute('SELECT `datavalue`, `user_id`, `status` FROM `'.DBPREFIX.'sessions` WHERE `sessionid` = "'.$aKey.'"');
         if ($objResult !== false) {
             if ($objResult->RecordCount() == 1) {
