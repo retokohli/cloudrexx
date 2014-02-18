@@ -96,9 +96,11 @@ abstract class SystemComponentBackendController extends Controller {
                     $act = '';
                     $txt = 'DEFAULT';
                 }
+                $actTxtKey = 'TXT_' . strtoupper($this->getType()) . '_' . strtoupper($this->getName() . '_ACT_' . $txt);
+                $actTitle = isset($_ARRAYLANG[$actTxtKey]) ? $_ARRAYLANG[$actTxtKey] : $actTxtKey;
                 $navigation->setVariable(array(
                     'HREF' => 'index.php?cmd=' . $this->getName() . $act,
-                    'TITLE' => $_ARRAYLANG['TXT_' . strtoupper($this->getType()) . '_' . strtoupper($this->getName() . '_ACT_' . $txt)],
+                    'TITLE' => $actTitle,
                 ));
                 $navigation->parse('tab_entry');
             }
@@ -120,9 +122,11 @@ abstract class SystemComponentBackendController extends Controller {
                     } else {
                         $txt .= strtoupper($subcommand);
                     }
+                    $actTxtKey = 'TXT_' . strtoupper($this->getType()) . '_' . strtoupper($this->getName() . '_ACT_' . $txt);
+                    $actTitle = isset($_ARRAYLANG[$actTxtKey]) ? $_ARRAYLANG[$actTxtKey] : $actTxtKey;
                     $navigation->setVariable(array(
                         'HREF' => 'index.php?cmd=' . $this->getName() . $act,
-                        'TITLE' => $_ARRAYLANG['TXT_' . strtoupper($this->getType()) . '_' . strtoupper($this->getName() . '_ACT_' . $txt)],
+                        'TITLE' => $actTitle,
                     ));
                     $navigation->parse('subnav_entry');
                     $first = false;
