@@ -105,9 +105,23 @@ class ReflectionComponent {
         } else if (is_string($arg1) && $arg2 && in_array($arg2, self::$componentTypes)) {
             $this->componentName = $arg1;
             $this->componentType = $arg2;
+
+            if (!$this->isValidComponentName($this->componentName)) {
+                throw new \BadMethodCallException("Provided component name \"{$this->componentName}\" is invalid. Component name must be written in CamelCase notation.");
+            }
+
             return;
         }
         throw new \BadMethodCallException('Pass a component or zip package filename or specify a component name and type');
+    }
+
+    /**
+     * Check if the provided string is a valid component name
+     * @param  string component name
+     * @return boolean True if sring $name is a valid component name
+     */
+    public function isValidComponentName($name) {
+        return preg_match('/^([A-Z][a-z0-9]*)+$/', $name);
     }
     
     /**
@@ -285,6 +299,7 @@ class ReflectionComponent {
         
         $this->fixNamespaces('Cx\Modules\Skeleton', $this->getDirectory());
         $this->fixLanguagePlaceholders('MODULE_SKELETON', $this->getDirectory());
+        $this->setComponentName($this->getDirectory());
         
         // activate component
         $this->activate();
@@ -921,6 +936,37 @@ class ReflectionComponent {
             $objFile->write($content);
         }
     }
+
+    /**
+     * Set the component's name in frontend and backend language files
+     * @param string $baseDir Directory in which the recursive replace should be done
+     */
+    public function setComponentName($baseDir) {
+        $componentNamePlaceholder = '{COMPONENT_NAME}';
+        
+        $directoryIterator = new \RecursiveDirectoryIterator($baseDir);
+        $iterator = new \RecursiveIteratorIterator($directoryIterator);
+        $files = new \RegexIterator($iterator, '/^.+(frontend|backend)\.php$/i', \RegexIterator::GET_MATCH);
+        
+        // recursive foreach frontend.php and backend.php file
+        foreach($files as $file) {
+            // prepare data
+            $file = current($file);
+            
+            // file_get_contents()
+            $objFile = new \Cx\Lib\FileSystem\File($file);
+            $content = $objFile->getData();
+            
+            $content = preg_replace(
+                '/'.preg_quote($componentNamePlaceholder).'/',
+                preg_quote($this->componentName),
+                $content
+            );
+            echo 'Replace ' . $componentNamePlaceholder . ' by ' . $this->componentName . ' in ' . $file . "\n";
+            
+            $objFile->write($content);
+        }
+    }
     
     /**
      * Relocates this component (copy or move)
@@ -982,6 +1028,8 @@ class ReflectionComponent {
         }
         $newComponent->fixNamespaces(SystemComponent::getBaseNamespaceForType($this->componentType) . '\\' . $this->componentName, $baseDir);
         $newComponent->fixLanguagePlaceholders(strtoupper($this->componentType . '_' . $this->componentName), $baseDir);
+        // renaming the component in backend navigation does not yet work
+        //$newComponent->setComponentName($baseDir);
         
         // add new component to db and activate it (component, modules, backend_areas, pages)
         $newComponent->activate();
