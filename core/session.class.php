@@ -27,6 +27,8 @@ class cmsSession
     var $sessionid;
     var $status;
     private $sessionPath;
+    private $sessionLock;
+    private $sessionLockTime = 10;
     private $sessionPathPrefix = 'session_';
     var $userId;
     var $_objDb;
@@ -207,9 +209,9 @@ class cmsSession
 
         // get the lock name, associated with the current session
         $this->sessionLock = "{$_DBCONFIG['database']}.".DBPREFIX."sessions_{$this->sessionid}";
-        $objLock = $this->_objDb->Execute('SELECT GET_LOCK("' . $this->sessionLock . '", ' . $this->lifetime . ')');
+        $objLock = $this->_objDb->Execute('SELECT GET_LOCK("' . $this->sessionLock . '", ' . $this->sessionLockTime . ')');
         
-        if (!$objLock || $objLock->fields['GET_LOCK("' . $this->sessionLock . '", ' . $this->lifetime . ')'] != 1) {
+        if (!$objLock || $objLock->fields['GET_LOCK("' . $this->sessionLock . '", ' . $this->sessionLockTime . ')'] != 1) {
             die('Could not obtain session lock!');
         }
         
