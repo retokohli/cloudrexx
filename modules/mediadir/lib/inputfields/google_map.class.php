@@ -140,7 +140,7 @@ function initialize() {
 
     map = new google.maps.Map(document.getElementById("$strMapId"));
 
-    map.setCenter(new google.maps.LatLng($strValueLon, $strValueLat));
+    map.setCenter(new google.maps.LatLng($strValueLat, $strValueLon));
     map.setZoom($strValueZoom);
     map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
 
@@ -148,7 +148,7 @@ function initialize() {
         marker = new google.maps.Marker({
             map: map
         });
-        setPosition(new google.maps.LatLng($strValueLon, $strValueLat));
+        setPosition(new google.maps.LatLng($strValueLat, $strValueLon));
     }
 
     geocoder = new google.maps.Geocoder();
@@ -183,8 +183,8 @@ function setPosition(position) {
     }
     marker.setPosition(position);
     elZoom.value = map.getZoom();
-    elLon.value = position.ob;
-    elLat.value = position.pb;
+    elLon.value = position.lng();
+    elLat.value = position.lat();
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
@@ -250,8 +250,8 @@ EOF;
         $strValueLon = $arrValues[0];
         $strValueLat = $arrValues[1];
         $strValueZoom = $arrValues[2];
-        $strValueLink = '<a href="http://maps.google.com/maps?q='.$arrValues[0].','.$arrValues[1].'" target="_blank">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLEMAPS_LINK'].'</a>';
-        $strValueLinkHref = 'http://maps.google.com/maps?q='.$arrValues[0].','.$arrValues[1];
+        $strValueLink = '<a href="http://maps.google.com/maps?q='.$arrValues[1].','.$arrValues[0].'" target="_blank">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLEMAPS_LINK'].'</a>';
+        $strValueLinkHref = 'http://maps.google.com/maps?q='.$arrValues[1].','.$arrValues[0];
 
         if(!empty($strValue)) {
             $objGoogleMap = new googleMap();
