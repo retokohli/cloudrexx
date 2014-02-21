@@ -87,7 +87,7 @@ class googleMap
 
     function setMapCenter($lon, $lat)
     {
-        $this->mapCenter = 'var center = new google.maps.LatLng('.$lon.', '.$lat.')';
+        $this->mapCenter = 'var center = new google.maps.LatLng('.$lat.', '.$lon.')';
     }
 
 
@@ -173,9 +173,9 @@ class googleMap
                 $divLatMinus = $marker['lat']-$dist;
                 $divLonPlus = $marker['lon']+$dist;
                 $divLonMinus = $marker['lon']-$dist;
-
-                $markers .= "
-                var point$id = new google.maps.LatLng(".$marker['lon'].", ".$marker['lat'].");
+                
+                $markers .= "                
+                var point$id = new google.maps.LatLng(".$marker['lat'].", ".$marker['lon'].");
                 var marker$id = new google.maps.Marker({
                         position: point$id,
                         map: map_".$this->mapIndex."
