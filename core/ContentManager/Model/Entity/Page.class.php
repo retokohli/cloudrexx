@@ -104,172 +104,172 @@ class Page extends \Cx\Model\Base\EntityBase
     /**
      * @var integer $id
      */
-    private $id;
+    protected $id;
 
     /**
      * @var integer $nodeIdShadowed
      */
-    private $nodeIdShadowed;
+    protected $nodeIdShadowed;
 
     /**
      * @var integer $lang
      */
-    private $lang;
+    protected $lang;
 
     /**
      * @var string $title
      */
-    private $title;
+    protected $title;
 
     /**
      * @var text $content
      */
-    private $content;
+    protected $content;
 
     /**
      * Disables the WYSIWYG editor
      * @var boolean $sourceMode
      */
-    private $sourceMode;
+    protected $sourceMode;
 
     /**
      * @var string $customContent
      */
-    private $customContent;
+    protected $customContent;
 
     /**
      * @var string $cssName
      */
-    private $cssName;
+    protected $cssName;
 
     /**
      * @var string $metatitle
      */
-    private $metatitle;
+    protected $metatitle;
 
     /**
      * @var string $metadesc
      */
-    private $metadesc;
+    protected $metadesc;
 
     /**
      * @var string $metakeys
      */
-    private $metakeys;
+    protected $metakeys;
 
     /**
      * @var string $metarobots
      */
-    private $metarobots;
+    protected $metarobots;
 
     /**
      * @var date $start
      */
-    private $start;
+    protected $start;
 
     /**
      * @var date $end
      */
-    private $end;
+    protected $end;
 
     /**
      * @var boolean $editingStatus
      */
-    private $editingStatus;
+    protected $editingStatus;
 
     /**
      * @var boolean $display
      */
-    private $display;
+    protected $display;
 
     /**
      * @var boolean $active
      */
-    private $active;
+    protected $active;
 
     /**
      * @var string $target
      */
-    private $target;
+    protected $target;
 
     /**
      * @var integer $module
      */
-    private $module;
+    protected $module;
 
     /**
      * @var string $cmd
      */
-    private $cmd;
+    protected $cmd;
 
     /**
      * @var Cx\Core\ContentManager\Model\Entity\Node
      */
-    private $node;
+    protected $node;
 
     /**
      * @var int $slugSuffix
      */
-    private $slugSuffix = 0;
+    protected $slugSuffix = 0;
 
     /**
      * @var int $slugBase
      */
-    private $slugBase = '';
+    protected $slugBase = '';
 
     /**
      * @var Cx\Core\ContentManager\Model\Entity\Skin
      */
-    private $skin;
+    protected $skin;
 
     /**
      * @var string $type
      */
-    private $type;
+    protected $type;
     /**
      * @var datetime $updatedAt
      */
-    private $updatedAt;
+    protected $updatedAt;
 
     /**
      * @var string $slug
      */
-    private $slug;
+    protected $slug;
     
     /**
      * @var string $contentTitle
      */
-    private $contentTitle;
+    protected $contentTitle;
     
     /**
      * @var string $linkTarget
      */
-    private $linkTarget;
+    protected $linkTarget;
     
     /**
      * @var integer $frontendAccessId
      */
-    private $frontendAccessId;
+    protected $frontendAccessId;
 
     /**
      * @var integer $backendAccessId
      */
-    private $backendAccessId;
+    protected $backendAccessId;
     
     /**
      * @var integer $protection
      */
-    private $protection;
+    protected $protection;
     
     /**
      * @var string $cssNavName
      */
-    private $cssNavName;
+    protected $cssNavName;
     
     /**
      * @var string $updatedBy
      */
-    private $updatedBy;
+    protected $updatedBy;
 
     /**
      * @var boolean Tells wheter this is a virtual (non DB) page or not

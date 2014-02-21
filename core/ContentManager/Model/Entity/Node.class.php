@@ -29,7 +29,7 @@ class NodeException extends \Exception {}
  * @package     contrexx
  * @subpackage  model_contentmanager
  */
-class Node extends \Cx\Model\Base\EntityBase
+class Node extends \Cx\Model\Base\EntityBase implements \Serializable
 {
     /**
      * @var integer $id
@@ -217,6 +217,15 @@ class Node extends \Cx\Model\Base\EntityBase
      */
     public function getPages($inactive_langs = false, $aliases = false)
     {
+        // used if the node has been loaded from cache without page objects
+        // only used for PageTree
+        if (!$this->pages) {
+            $q = \Env::em()->createQuery("SELECT p FROM Cx\Core\ContentManager\Model\Entity\Page p JOIN p.node n WHERE n = ?1")->useResultCache(true);
+            $q->setParameter(1, $this);
+            $this->pages = $q->getResult();
+        }
+        
+        
         if ($inactive_langs) {
             return $this->pages;
         }
@@ -390,5 +399,29 @@ class Node extends \Cx\Model\Base\EntityBase
             $copy->addParsedChild($child->copy(true, $copy));
         }
         return $copy;
+    }
+    
+    public function serialize() {
+        $parent = $this->getParent();
+        return serialize(
+            array(
+                $this->id,
+                $this->lft,
+                $this->rgt,
+                $this->lvl,
+                $parent ? $parent : null,
+            )
+        );
+    }
+    public function unserialize($data) {
+        $unserialized = unserialize($data);
+        $this->id = $unserialized[0];
+        $this->lft = $unserialized[1];
+        $this->rgt = $unserialized[2];
+        $this->lvl = $unserialized[3];
+        if ($unserialized[4]) {
+            $this->parent = $unserialized[4];
+        }
+        // don't load pages and children here, due to lazy loading
     }
 }
