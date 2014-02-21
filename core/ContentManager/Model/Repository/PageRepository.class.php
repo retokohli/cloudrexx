@@ -80,7 +80,26 @@ class PageRepository extends EntityRepository {
     public function findBy(array $criteria, $inactive_langs = false)
     {
         $activeLangs = \FWLanguage::getActiveFrontendLanguages();
-        $pages = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->loadAll($criteria);
+        
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('p')
+                ->from('\Cx\Core\ContentManager\Model\Entity\Page', 'p');
+        $i = 1;
+        foreach ($criteria as $key => $value) {
+            if ($i == 1) {
+                $qb->where('p.' . $key . ' = ?' . $i)->setParameter($i, $value);
+            } else {
+                $qb->andWhere('p.' . $key . ' = ?' . $i)->setParameter($i, $value);
+            }
+            $i++;
+        }
+        
+        try {
+            $q = $qb->getQuery()->useResultCache(true);
+            $pages = $q->getResult();
+        } catch (\Doctrine\ORM\NoResultException $e) {
+            $pages = array();
+        }
         if (!$inactive_langs) {
             foreach ($pages as $index=>$page) {
                 if (!in_array($page->getLang(), array_keys($activeLangs))) {
@@ -102,7 +121,26 @@ class PageRepository extends EntityRepository {
     public function findOneBy(array $criteria, $inactive_langs = false)
     {
         $activeLangs = \FWLanguage::getActiveFrontendLanguages();
-        $page = $this->_em->getUnitOfWork()->getEntityPersister($this->_entityName)->load($criteria);
+        
+        $qb = $this->_em->createQueryBuilder();
+        $qb->select('p')
+                ->from('\Cx\Core\ContentManager\Model\Entity\Page', 'p')->setMaxResults(1);
+        $i = 1;
+        foreach ($criteria as $key => $value) {
+            if ($i == 1) {
+                $qb->where('p.' . $key . ' = ?' . $i)->setParameter($i, $value);
+            } else {
+                $qb->andWhere('p.' . $key . ' = ?' . $i)->setParameter($i, $value);
+            }
+            $i++;
+        }
+        
+        try {
+            $q = $qb->getQuery()->useResultCache(true);
+            $page = $q->getSingleResult();
+        } catch (\Doctrine\ORM\NoResultException $e) {
+            $page = null;
+        }
         if (!$inactive_langs && $page) {
             if (!in_array($page->getLang(), array_keys($activeLangs))) {
                 return null;
@@ -855,7 +893,7 @@ class PageRepository extends EntityRepository {
            )
            ->setParameter('searchString', '%'.$string.'%')
            ->setParameter('searchStringEscaped', '%'.contrexx_raw2xhtml($string).'%');
-        $pages   = $qb->getQuery()->getResult();
+        $pages   = $qb->getQuery()->useResultCache(true)->getResult();
         $config  = \Env::get('config');
         $results = array();
         foreach($pages as $page) {
@@ -906,7 +944,7 @@ class PageRepository extends EntityRepository {
         $query = $this->em->createQuery("
             select p from Cx\Core\ContentManager\Model\Entity\Page p 
                  order by p.updatedAt asc
-        ");
+        ")->useResultCache(true);
         $query->setFirstResult($from);
         $query->setMaxResults($count);
 

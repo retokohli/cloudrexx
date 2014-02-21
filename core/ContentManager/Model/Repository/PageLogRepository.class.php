@@ -94,7 +94,7 @@ class PageLogRepository extends LogEntryRepository
         switch ($action) {
             case 'deleted':
                 $qb->setParameter('action', 'remove');
-                $logs = $qb->getQuery()->getResult();
+                $logs = $qb->getQuery()->useResultCache(true)->getResult();
                 $logsByNodeId = array();
                 
                 foreach ($logs as $log) {
@@ -112,7 +112,7 @@ class PageLogRepository extends LogEntryRepository
                 $qb->orWhere('l.action = :orAction')
                    ->setParameter('action', 'create')
                    ->setParameter('orAction', 'update');
-                $logs = $qb->getQuery()->getResult();
+                $logs = $qb->getQuery()->useResultCache(true)->getResult();
                 
                 foreach ($logs as $log) {
                     $page = $this->pageRepo->findOneById($log->getObjectId());
@@ -128,7 +128,7 @@ class PageLogRepository extends LogEntryRepository
             default: // create and update
                 $where = $action == 'updated' ? 'update' : 'create';
                 $qb->setParameter('action', $where);
-                $logs = $qb->getQuery()->getResult();
+                $logs = $qb->getQuery()->useResultCache(true)->getResult();
                 
                 foreach ($logs as $log) {
                     $page = $this->pageRepo->findOneById($log->getObjectId());
@@ -204,7 +204,7 @@ class PageLogRepository extends LogEntryRepository
         switch ($action) {
             case 'deleted':
                 $qb->setFirstResult($offset)->setMaxResults($limit);
-                $logs = $qb->getQuery()->getResult();
+                $logs = $qb->getQuery()->useResultCache(true)->getResult();
                 $logsByNodeId = array();
                 
                 // Structure the logs by node id and language
@@ -220,7 +220,7 @@ class PageLogRepository extends LogEntryRepository
                 // If setFirstResult() is called, setMaxResult must be also called. Otherwise there is a fatal error.
                 // The parameter for setMaxResult() method is a custom value set to 999999, because we need all pages.
                 $qb->setFirstResult($offset)->setMaxResults(999999);
-                $logs = $qb->getQuery()->getResult();
+                $logs = $qb->getQuery()->useResultCache(true)->getResult();
                 $i = 0;
                 
                 foreach ($logs as $log) {
@@ -259,7 +259,7 @@ class PageLogRepository extends LogEntryRepository
            ->andWhere('l.objectClass = :objectClass')
            ->setParameter('action', $action)
            ->setParameter('objectClass', 'Cx\Core\ContentManager\Model\Entity\Page');
-        $result = $qb->getQuery()->getResult();
+        $result = $qb->getQuery()->useResultCache(true)->getResult();
         
         return $result;
     }
@@ -286,7 +286,7 @@ class PageLogRepository extends LogEntryRepository
                 ->setParameter('objectClass', 'Cx\Core\ContentManager\Model\Entity\Page')
                 ->setParameter('objectId', $objectId);
 
-        $logs = $qb->getQuery()->getResult();
+        $logs = $qb->getQuery()->useResultCache(true)->getResult();
         
         if (is_array($logs)) {
             foreach ($logs as $log) {
