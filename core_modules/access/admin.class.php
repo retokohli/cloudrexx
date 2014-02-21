@@ -1357,7 +1357,8 @@ class AccessManager extends AccessLib
         $this->parseNewsletterLists($objUser);
         
         $cancelUrl = 'index.php?cmd=access&amp;act=user';
-        switch($_GET['source']){
+        $source = contrexx_input2raw($_GET['source']);
+        switch($source){
             case 'newsletter':
                 $cancelUrl = 'index.php?cmd=newsletter&act=users';
                 break;
@@ -1375,7 +1376,7 @@ class AccessManager extends AccessLib
             'ACCESS_JAVASCRIPT_FUNCTIONS'          => $this->getJavaScriptCode(),
             'CSS_DISPLAY_STATUS'                   => $cssDisplayStatus,
             'ACCESS_PASSWORT_COMPLEXITY'           => isset($_CONFIG['passwordComplexity']) ? $_CONFIG['passwordComplexity'] : 'off',
-            'SOURCE'                               => isset($_GET['source']) ? $_GET['source'] : '', //if source was newletter for ex.
+            'SOURCE'                               => isset($source) ? contrexx_input2xhtml($source) : '', //if source was newletter for ex.
             'CANCEL_URL'                           => $cancelUrl,
         ));
 
