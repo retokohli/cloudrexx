@@ -1355,6 +1355,14 @@ class AccessManager extends AccessLib
         }
 
         $this->parseNewsletterLists($objUser);
+        
+        $cancelUrl = 'index.php?cmd=access&amp;act=user';
+        $source = contrexx_input2raw($_GET['source']);
+        switch($source){
+            case 'newsletter':
+                $cancelUrl = 'index.php?cmd=newsletter&act=users';
+                break;
+        }
 
         $this->_objTpl->setVariable(array(
             'ACCESS_USER_ID'                       => $objUser->getId(),
@@ -1368,6 +1376,8 @@ class AccessManager extends AccessLib
             'ACCESS_JAVASCRIPT_FUNCTIONS'          => $this->getJavaScriptCode(),
             'CSS_DISPLAY_STATUS'                   => $cssDisplayStatus,
             'ACCESS_PASSWORT_COMPLEXITY'           => isset($_CONFIG['passwordComplexity']) ? $_CONFIG['passwordComplexity'] : 'off',
+            'SOURCE'                               => isset($source) ? contrexx_input2xhtml($source) : '', //if source was newletter for ex.
+            'CANCEL_URL'                           => $cancelUrl,
         ));
 
         $rowNr = 0;
@@ -1438,6 +1448,16 @@ class AccessManager extends AccessLib
         // add a category in the digital asset management module
         if (contrexx_isModuleInstalled('downloads')) {
             $this->processDigitalAssetManagementExtension($objUser);
+        }
+        
+        if(isset($_GET['source'])){
+            switch ($_GET['source']){
+                case 'newsletter':
+                    \CSRF::header('Location: index.php?cmd=newsletter&act=users&store=true');
+                    exit;
+                    break;
+                
+            }
         }
     }
 
