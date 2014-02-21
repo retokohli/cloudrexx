@@ -83,7 +83,7 @@ class ThemeRepository
                 $result->fields['themesname'],
                 $result->fields['foldername'],
                 $result->fields['expert'],
-                $languageId
+                null
             );
         }
         return null;
