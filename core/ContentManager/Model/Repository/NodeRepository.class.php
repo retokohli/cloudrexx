@@ -207,7 +207,7 @@ class NodeRepository extends NestedTreeRepository {
         $dql .= $type;
         $dql .= $group;
         $dql .= " ORDER BY node.{$config['left']} ASC";
-        return $this->_em->createQuery($dql);
+        return $this->_em->createQuery($dql)->useResultCache(true);
     }
 
     /**
@@ -261,7 +261,7 @@ class NodeRepository extends NestedTreeRepository {
         $dql .= $type;
         $dql .= $group;
         $dql .= " ORDER BY node.{$config['left']} ASC";
-        return $this->_em->createQuery($dql);
+        return $this->_em->createQuery($dql)->useResultCache(true);
     }
 
     /**
