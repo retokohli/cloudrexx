@@ -186,20 +186,19 @@ namespace Cx\Core\Model {
                 return $this->em;
             }
 
-            global $_DBCONFIG;
+            global $_DBCONFIG, $objCache;
 
             $config = new \Doctrine\ORM\Configuration();
 
-            switch ($this->cx->getCacheEngine()) {
-                case \Cx\Core\Core\Controller\Cx::CACHE_ENGINE_APC:
+            switch ($objCache->getUserCacheEngine()) {
+                case \Cache::CACHE_ENGINE_APC:
                     $cache = new \Doctrine\Common\Cache\ApcCache();
                     break;
-                case \Cx\Core\Core\Controller\Cx::CACHE_ENGINE_MEMCACHE:
+                case \Cache::CACHE_ENGINE_MEMCACHE:
                     $cache = new \Doctrine\Common\Cache\MemcacheCache();
-                    $memcache = \Env::get('memcache');
-                    $cache->setMemcache($memcache);
+                    $cache->setMemcache($objCache->getMemcache());
                     break;
-                case \Cx\Core\Core\Controller\Cx::CACHE_ENGINE_XCACHE:
+                case \Cache::CACHE_ENGINE_XCACHE:
                     $cache = new \Doctrine\Common\Cache\XcacheCache();
                     break;
                 default:

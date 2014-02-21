@@ -73,26 +73,6 @@ namespace Cx\Core\Core\Controller {
         const MODE_MINIMAL = 'minimal';
         
         /**
-         * Alternative PHP Cache extension
-         */
-        const CACHE_ENGINE_APC = 'apc';
-        
-        /**
-         * memcache(d) extension
-         */
-        const CACHE_ENGINE_MEMCACHE = 'memcache';
-        
-        /**
-         * xcache extension
-         */
-        const CACHE_ENGINE_XCACHE = 'xcache';
-        
-        /**
-         * No caching engine available
-         */
-        const CACHE_ENGINE_NONE = null;
-        
-        /**
          * Holds references to all currently loaded Cx instances
          * 
          * The first one is the normally used one, all others are special.
@@ -184,12 +164,6 @@ namespace Cx\Core\Core\Controller {
          * @var \Cx\Core\Event\Controller\EventManager
          */
         protected $eventManager = null;
-        
-        /**
-         * Used cache engine
-         * @var string|null Cache engine name, null for none
-         */
-        protected $cacheEngine = self::CACHE_ENGINE_NONE;
         
         /**
          * This creates instances of this class
@@ -480,8 +454,6 @@ namespace Cx\Core\Core\Controller {
          */
         protected function preInit() {
             $this->checkSystemState();
-            $this->tryToEnableCaching();
-            $this->tryToSetMemoryLimit();
             $this->adjustRequest();
         }
 
@@ -498,61 +470,6 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
-         * This tries to enable any known caching engine
-         */
-        protected function tryToEnableCaching() {
-            // APC
-            if (extension_loaded('apc')) {
-                if (ini_get('apc.enabled')) {
-                    $this->apcEnabled = true;
-                    $this->cacheEngine = self::CACHE_ENGINE_APC;
-                } else {
-                    ini_set('apc.enabled', 1);
-                    if (ini_get('apc.enabled')) {
-                        $this->apcEnabled = true;
-                        $this->cacheEngine = self::CACHE_ENGINE_APC;
-                    }
-                }
-            
-            // Memcache
-            } else if (extension_loaded('memcache')) {
-                $memcache = new \Memcache();
-                if (@$memcache->connect('127.0.0.1')) {
-                    \Env::set('memcache', $memcache);
-                    $this->cacheEngine = self::CACHE_ENGINE_MEMCACHE;
-                }
-            }
-            
-            // XCache
-            if (
-                $this->cacheEngine == self::CACHE_ENGINE_NONE &&
-                extension_loaded('xcache') &&
-                ini_get('xcache.size') > 0
-            ) {
-                $this->cacheEngine = self::CACHE_ENGINE_XCACHE;
-            }
-
-            // Disable eAccelerator if active
-            if (extension_loaded('eaccelerator')) {
-                ini_set('eaccelerator.enable', 0);
-                ini_set('eaccelerator.optimizer', 0);
-            }
-
-            // Disable zend opcache if it is enabled
-            // If save_comments is set to TRUE, doctrine2 will not work properly.
-            // It is not possible to set a new value for this directive with php.
-            if (
-                (
-                    extension_loaded('opcache') ||
-                    extension_loaded('Zend OPcache')
-                ) &&
-                ini_get('opcache.save_comments') != 1
-            ) {
-                ini_set('opcache.enable', 0);
-            }
-        }
-
-        /**
          * This tries to set the memory limit if its lower than 32 megabytes
          */
         protected function tryToSetMemoryLimit() {
@@ -562,7 +479,12 @@ namespace Cx\Core\Core\Controller {
                 return;
             }
             $this->memoryLimit = $memoryLimit[0];
-            if ($this->apcEnabled) {
+            
+            global $objCache;
+            if (
+                $objCache->getUserCacheEngine() == \Cache::CACHE_ENGINE_APC ||
+                $objCache->getOpCacheEngine() == \Cache::CACHE_ENGINE_APC
+            ) {
                 if ($this->memoryLimit < 32) {
                     ini_set('memory_limit', '32M');
                 }
@@ -670,12 +592,6 @@ namespace Cx\Core\Core\Controller {
             $this->cl = new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT, true, $this->customizingPath);
 
             /**
-             * Start contrexx static cache
-             */
-            $objCache = new \Cache();
-            $objCache->startCache();
-
-            /**
              * Environment repository
              */
             require_once($this->cl->getFilePath(ASCMS_CORE_PATH.'/Env.class.php'));
@@ -683,6 +599,15 @@ namespace Cx\Core\Core\Controller {
             \Env::set('ClassLoader', $this->cl);            
             \Env::set('config', $_CONFIG);
             \Env::set('ftpConfig', $_FTPCONFIG);
+
+            /**
+             * Start caching with op cache, user cache and contrexx caching
+             */
+            $objCache = new \Cache();
+            $this->tryToSetMemoryLimit();
+            
+            // start contrexx caching
+            $objCache->startContrexxCaching();
 
             /**
              * Include all the required files.
@@ -710,6 +635,8 @@ namespace Cx\Core\Core\Controller {
             // TODO: Get rid of InitCMS class, merge it with this class instead
             $objInit = new \InitCMS($this->mode == self::MODE_FRONTEND ? 'frontend' : 'backend', \Env::em());
             \Env::set('init', $objInit);
+            //$bla = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+            //$bla->findAll();
         }
         
         /**
@@ -1285,7 +1212,7 @@ namespace Cx\Core\Core\Controller {
 
                 echo $endcode;
 
-                $objCache->endCache($this->resolvedPage);
+                $objCache->endContrexxCaching($this->resolvedPage);
             } else {
                 // backend meta navigation
                 if ($this->template->blockExists('backend_metanavigation')) {
@@ -1431,14 +1358,6 @@ namespace Cx\Core\Core\Controller {
          */
         public function getUser() {
             return \FWUser::getFWUserObject();
-        }
-        
-        /**
-         * Returns the name of the used cache engine or null if none
-         * @return string|null Cache engine name
-         */
-        public function getCacheEngine() {
-            return $this->cacheEngine;
         }
         
         /**
