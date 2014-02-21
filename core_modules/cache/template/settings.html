@@ -1,61 +1,164 @@
 <!-- START settings.html -->
 <ul id="tabmenu">
-	<li><a id="setTab_Caching1" class="active" href="javascript:{}" onclick="selectTab('Caching1')" title="{TXT_TAB1}">{TXT_TAB1}</a></li>
-	<li><a id="setTab_Caching2" href="javascript:{}" onclick="selectTab('Caching2')" title="{TXT_TAB2}">{TXT_TAB2}</a></li>
-	<li><a id="setTab_Caching3" href="javascript:{}" onclick="selectTab('Caching3')" title="{TXT_TAB3}">{TXT_TAB3}</a></li>
+    <li><a id="setTab_Caching1" class="active" href="javascript:{}" onclick="selectTab('Caching1')" title="{TXT_CACHE_GENERAL}">{TXT_CACHE_GENERAL}</a></li>
+    <li><a id="setTab_Caching2" href="javascript:{}" onclick="selectTab('Caching2')" title="{TXT_CACHE_STATS}">{TXT_CACHE_STATS}</a></li>
 </ul>
 <div id="Caching1" class="setTab" style="display:block;">
-	<form name="frmSettings" method="post" action="index.php?cmd=settings&amp;act=cache_update">
-		<table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
-			<tr>
-				<th colspan="2">{TXT_TAB1}</th>
-			</tr>
-			<tr class="row2">
-				<td width="20%">{TXT_SETTINGS_STATUS}&nbsp;</td>
-				<td width="80%">
-					<label for="cachingStatus"><input type="radio" name="cachingStatus" value="on" {SETTINGS_STATUS_ON}>{TXT_SETTINGS_ON}</label>&nbsp;
-					<label for="cachingStatus"><input type="radio" name="cachingStatus" value="off" {SETTINGS_STATUS_OFF}>{TXT_SETTINGS_OFF}</label>&nbsp;
+    <form name="frmSettings" method="post" action="index.php?cmd=settings&amp;act=cache_update">
+        <table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
+            <tr>
+                <th colspan="2">{TXT_CACHE_CONTREXX_CACHING}</th>
+            </tr>
+            <tr class="row2">
+                <td width="200">{TXT_SETTINGS_STATUS}&nbsp;</td>
+                <td>
+                    <label for="cachingStatus"><input type="radio" name="cachingStatus" value="on" {SETTINGS_STATUS_ON}>{TXT_SETTINGS_ON}</label>&nbsp;
+                    <label for="cachingStatus"><input type="radio" name="cachingStatus" value="off" {SETTINGS_STATUS_OFF}>{TXT_SETTINGS_OFF}</label>&nbsp;
                     <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SETTINGS_STATUS_HELP}</span>
-				</td>
-			</tr>
-			<tr class="row1">
-				<td>{TXT_SETTINGS_EXPIRATION}</td>
-				<td>
-					<input type="text" name="cachingExpiration" value="{SETTINGS_EXPIRATION}" size="70" maxlength="250" />
+                </td>
+            </tr>
+            <tr class="row1">
+                <td>{TXT_SETTINGS_EXPIRATION}</td>
+                <td>
+                    <input type="text" name="cachingExpiration" value="{SETTINGS_EXPIRATION}" size="70" maxlength="250" />
                     <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SETTINGS_EXPIRATION_HELP}</span>
-				</td>
-			</tr>
-		</table>
-		<br />
-		<!-- BEGIN cache_submit_button --><input type="submit" name="frmSettings_Submit" value="{TXT_SETTINGS_SAVE}"><!-- END cache_submit_button -->
-	</form>
+                </td>
+            </tr>
+        </table>
+        <br />
+        <br />
+        
+        <table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
+            <colgroup>
+                <col width="20" />
+                <col width="180" />
+                <col width="70" />
+                <col width="70" />
+                <col />
+            </colgroup>
+            <tr>
+                <th colspan="5">{TXT_CACHE_OPCACHE}</th>
+            </tr>
+            <tr class="row3">
+                <td></td>
+                <td>{TXT_CACHE_ENGINE}</td>
+                <td>{TXT_CACHE_INSTALLATION_STATE}</td>
+                <td>{TXT_CACHE_ACTIVE_STATE}</td>
+                <td>{TXT_CACHE_CONFIGURATION_STATE}</td>
+            </tr>
+            <tr>
+                <td>
+                    <!-- BEGIN cache_opcache_apc -->
+                    <input type="radio" name="opcache" value="apc" {CHECKED_OPCACHE_APC} />
+                    <!-- END cache_opcache_apc -->
+                </td>
+                <td>APC</td>
+                <td><img src="images/icons/{APC_OPCACHE_INSTALLATION_ICON}" /></td>
+                <td><img src="images/icons/{APC_OPCACHE_ACTIVE_ICON}" /></td>
+                <td><img src="images/icons/{APC_OPCACHE_CONFIGURATION_ICON}" /></td>
+            </tr>
+            <tr>
+                <td>
+                    <!-- BEGIN cache_opcache_zendopcache -->
+                    <input type="radio" name="opcache" value="zendopcache" {CHECKED_OPCACHE_ZENDOPCACHE} />
+                    <!-- END cache_opcache_zendopcache -->
+                </td>
+                <td>Zend OPCache</td>
+                <td><img src="images/icons/{ZENDOPCACHE_OPCACHE_INSTALLATION_ICON}" /></td>
+                <td><img src="images/icons/{ZENDOPCACHE_OPCACHE_ACTIVE_ICON}" /></td>
+                <td><img src="images/icons/{ZENDOPCACHE_OPCACHE_CONFIGURATION_ICON}" /></td>
+            </tr>
+            <tr>
+                <td>
+                    <!-- BEGIN cache_opcache_xcache -->
+                    <input type="radio" name="opcache" value="xcache" {CHECKED_OPCACHE_XCACHE} />
+                    <!-- END cache_opcache_xcache -->
+                </td>
+                <td>xCache</td>
+                <td><img src="images/icons/{XCACHE_OPCACHE_INSTALLATION_ICON}" /></td>
+                <td><img src="images/icons/{XCACHE_OPCACHE_ACTIVE_ICON}" /></td>
+                <td><img src="images/icons/{XCACHE_OPCACHE_CONFIGURATION_ICON}" /></td>
+            </tr>
+        </table>
+        <br />
+        <br />
+        
+        <table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
+            <colgroup>
+                <col width="20" />
+                <col width="180" />
+                <col width="70" />
+                <col width="70" />
+                <col />
+            </colgroup>
+            <tr>
+                <th colspan="5">{TXT_CACHE_USERCACHE}</th>
+            </tr>
+            <tr class="row3">
+                <td></td>
+                <td>{TXT_CACHE_ENGINE}</td>
+                <td>{TXT_CACHE_INSTALLATION_STATE}</td>
+                <td>{TXT_CACHE_ACTIVE_STATE}</td>
+                <td>{TXT_CACHE_CONFIGURATION_STATE}</td>
+            </tr>
+            <tr>
+                <td>
+                    <!-- BEGIN cache_usercache_apc -->
+                    <input type="radio" name="usercache" value="apc" {CHECKED_USERCACHE_APC} />
+                    <!-- END cache_usercache_apc -->
+                </td>
+                <td>APC</td>
+                <td><img src="images/icons/{APC_USERCACHE_INSTALLATION_ICON}" /></td>
+                <td><img src="images/icons/{APC_USERCACHE_ACTIVE_ICON}" /></td>
+                <td><img src="images/icons/{APC_USERCACHE_CONFIGURATION_ICON}" /></td>
+            </tr>
+            <tr>
+                <td>
+                    <!-- BEGIN cache_usercache_memcache -->
+                    <input type="radio" name="usercache" value="memcache" {CHECKED_USERCACHE_MEMCACHE} />
+                    <!-- END cache_usercache_memcache -->
+                </td>
+                <td>Memcache</td>
+                <td><img src="images/icons/{MEMCACHE_USERCACHE_INSTALLATION_ICON}" /></td>
+                <td><img src="images/icons/{MEMCACHE_USERCACHE_ACTIVE_ICON}" /></td>
+                <td><img src="images/icons/{MEMCACHE_USERCACHE_CONFIGURATION_ICON}" /></td>
+            </tr>
+            <tr>
+                <td>
+                    <!-- BEGIN cache_usercache_xcache -->
+                    <input type="radio" name="usercache" value="xcache" {CHECKED_USERCACHE_XCACHE} />
+                    <!-- END cache_usercache_xcache -->
+                </td>
+                <td>xCache</td>
+                <td><img src="images/icons/{XCACHE_USERCACHE_INSTALLATION_ICON}" /></td>
+                <td><img src="images/icons/{XCACHE_USERCACHE_ACTIVE_ICON}" /></td>
+                <td><img src="images/icons/{XCACHE_USERCACHE_CONFIGURATION_ICON}" /></td>
+            </tr>
+        </table>
+        <!-- BEGIN cache_submit_button -->
+        <br /><input type="submit" name="frmSettings_Submit" value="{TXT_SETTINGS_SAVE}">
+        <!-- END cache_submit_button -->
+    </form>
 </div>
 <div id="Caching2" class="setTab" style="display:none;">
-	<table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
-		<tr>
-			<th colspan="2">{TXT_TAB2}</th>
-		</tr>
-		<tr class="row2">
-			<td width="20%">
-				<input type="button" name="frmEmpty_Submit" value="{TXT_EMPTY_BUTTON}" onclick="location.href='index.php?cmd=settings&{CSRF_PARAM}&amp;act=cache_empty'">
-			</td>
-			<td width="80%" align="justify">{TXT_EMPTY_DESC}</td>
-		</tr>
-	</table>
-</div>
-<div id="Caching3" class="setTab" style="display:none;">
-	<table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
-		<tr>
-			<th colspan="2">{TXT_TAB3}</th>
-		</tr>
-		<tr class="row2">
-			<td width="20%">{TXT_STATS_FILES}</td>
-			<td width="80%">{STATS_FILES}</td>
-		</tr>
-		<tr class="row1">
-			<td>{TXT_STATS_FOLDERSIZE}</td>
-			<td>{STATS_FOLDERSIZE} kB</td>
-		</tr>
-	</table>
+    <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+        <tr>
+            <th colspan="2">{TXT_CACHE_CONTREXX_CACHING}</th>
+        </tr>
+        <tr class="row2">
+            <td width="20%">{TXT_STATS_FILES}</td>
+            <td width="80%">{STATS_FILES}</td>
+        </tr>
+        <tr class="row1">
+            <td>{TXT_STATS_FOLDERSIZE}</td>
+            <td>{STATS_FOLDERSIZE} kB</td>
+        </tr>
+        <tr class="row2">
+            <td width="20%">
+                <input type="button" name="frmEmpty_Submit" value="{TXT_EMPTY_BUTTON}" onclick="location.href = 'index.php?cmd=settings&{CSRF_PARAM}&amp;act=cache_empty'">
+            </td>
+            <td width="80%" align="justify">{TXT_EMPTY_DESC}</td>
+        </tr>
+    </table>
 </div>
 <!-- END settings.html -->
