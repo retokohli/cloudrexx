@@ -99,7 +99,7 @@ var updateAddress = function(){
 var load = function() {
     var options = {
         zoom: 13,
-        center: new google.maps.LatLng(37.4419, -122.1419),
+        center: new google.maps.LatLng(-122.1419, 37.4419),
         mapTypeId: google.maps.MapTypeId.ROADMAP
     };
     
@@ -110,7 +110,7 @@ var load = function() {
 		lat = elLat.value;
 		latf = elLatFrac.value;
 		options.zoom = parseInt((elZoom.value != '') ? elZoom.value : 13);
-		options.center = new google.maps.LatLng(lon+'.'+lonf, lat+'.'+latf);
+		options.center = new google.maps.LatLng(lat+'.'+latf, lon+'.'+lonf);
 		point = options.center;
 	} else {
 		options.center = new google.maps.LatLng(

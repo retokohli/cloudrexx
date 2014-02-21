@@ -413,7 +413,7 @@ function initialize() {
 
     map = new google.maps.Map(document.getElementById("$strMapId"));
 
-    map.setCenter(new google.maps.LatLng($strValueLon, $strValueLat));
+    map.setCenter(new google.maps.LatLng($strValueLat, $strValueLon));
     map.setZoom($strValueZoom);
     map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
 
@@ -421,7 +421,7 @@ function initialize() {
         marker = new google.maps.Marker({
             map: map
         });
-        setPosition(new google.maps.LatLng($strValueLon, $strValueLat));
+        setPosition(new google.maps.LatLng($strValueLat, $strValueLon));
     }
 
     geocoder = new google.maps.Geocoder();
@@ -456,8 +456,8 @@ function setPosition(position) {
     }
     marker.setPosition(position);
     elZoom.value = map.getZoom();
-    elLon.value = position.ob;
-    elLat.value = position.pb;
+    elLon.value = position.lng();
+    elLat.value = position.lat();
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
