@@ -466,8 +466,8 @@ class InitCMS
 
 		// get theme object so we get the configured libraries
         $theme = $themeRepository->findById($this->currentThemesId);
+        $themesPath = $theme->getFoldername();
         if ($theme && $theme->isComponent()) {
-            $themesPath = $theme->getFoldername();
             $libraries = JS::getConfigurableLibraries();
             foreach ($theme->getDependencies() as $libraryName => $libraryVersions) {
                 if (!isset($libraries[$libraryName])) continue;
