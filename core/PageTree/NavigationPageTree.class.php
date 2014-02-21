@@ -39,6 +39,14 @@ class NavigationPageTree extends SigmaPageTree {
         }
     }
 
+    protected function getLastLevel() {
+        $match = array();
+        if (preg_match_all('/level_(\d)*/', trim($this->template->_blocks['navigation']), $match)) {
+            return intval(end($match[1]));
+        }
+        return 0;
+    }
+
     /**
      * @see PageTree::renderElement()
      */
