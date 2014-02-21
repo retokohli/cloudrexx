@@ -4642,7 +4642,7 @@ $WhereStatement = '';
 
     function _editUser()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
         $activeFrontendlang = FWLanguage::getActiveFrontendLanguages();
 
@@ -5062,7 +5062,7 @@ $WhereStatement = '';
             'TXT_NEWSLETTER_PHONE'          => $_ARRAYLANG['TXT_NEWSLETTER_PHONE'],
             'TXT_NEWSLETTER_BIRTHDAY'       => $_ARRAYLANG['TXT_NEWSLETTER_BIRTHDAY'],
             'TXT_NEWSLETTER_SAVE'           => $_ARRAYLANG['TXT_NEWSLETTER_SAVE'],
-            'TXT_CANCEL'                    => $_ARRAYLANG['TXT_CANCEL'],
+            'TXT_CANCEL'                    => $_CORELANG['TXT_CANCEL'],
             'TXT_NEWSLETTER_DO_NOT_SEND_EMAIL'     => $_ARRAYLANG['TXT_NEWSLETTER_DO_NOT_SEND_EMAIL'],
             'TXT_NEWSLETTER_INFO_ABOUT_SEND_EMAIL' => $_ARRAYLANG['TXT_NEWSLETTER_INFO_ABOUT_SEND_EMAIL'],
             'TXT_NEWSLETTER_RECIPIENT_DATE' => $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_DATE'],
