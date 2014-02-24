@@ -379,8 +379,8 @@ class mediaDirectorySettings extends mediaDirectoryLibrary
 
         $arrValues = explode(',', $this->arrSettings['settingsGoogleMapStartposition']);
 
-        $strValueLon = $arrValues[0];
-        $strValueLat = $arrValues[1];
+        $strValueLat = $arrValues[0];
+        $strValueLon = $arrValues[1];
         $strValueZoom = $arrValues[2];
 
         $strGoogleMap = '<table cellpadding="0" cellspacing="0" border="0" class="'.$this->moduleName.'TableGoogleMap">';
@@ -502,7 +502,7 @@ EOF;
                 UPDATE
                     ".DBPREFIX."module_".$this->moduleTablePrefix."_settings
                 SET
-                    value='".$strValueLon.",".$strValueLat.",".$strValueZoom."'
+                    value='".$strValueLat.",".$strValueLon.",".$strValueZoom."'
                 WHERE
                     name='settingsGoogleMapStartposition'
                 ");
