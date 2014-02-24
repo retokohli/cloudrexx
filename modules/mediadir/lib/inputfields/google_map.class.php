@@ -65,8 +65,8 @@ class mediaDirectoryInputfieldGoogle_map extends mediaDirectoryLibrary implement
                     $strValue  = htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET);
                     $arrValues = explode(',', $strValue);
 
-                    $strValueLon = empty($arrValues[0]) ? 0 : $arrValues[0];
-                    $strValueLat = empty($arrValues[1]) ? 0 : $arrValues[1];
+                    $strValueLat = empty($arrValues[0]) ? 0 : $arrValues[0];
+                    $strValueLon = empty($arrValues[1]) ? 0 : $arrValues[1];
                     $strValueZoom = empty($arrValues[2]) ? 0 : $arrValues[2];
                 } else {
                     $objSettingsRS = $objDatabase->Execute("SELECT value FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_settings WHERE name='settingsGoogleMapStartposition'");
@@ -75,8 +75,8 @@ class mediaDirectoryInputfieldGoogle_map extends mediaDirectoryLibrary implement
                     }
                     $arrValues = explode(',', $strValue);
 
-                    $strValueLon = empty($arrValues[0]) ? 0 : $arrValues[0];
-                    $strValueLat = empty($arrValues[1]) ? 0 : $arrValues[1];
+                    $strValueLat = empty($arrValues[0]) ? 0 : $arrValues[0];
+                    $strValueLon = empty($arrValues[1]) ? 0 : $arrValues[1];
                     $strValueZoom = empty($arrValues[2]) ? 0 : $arrValues[2];
                 }
 
@@ -206,7 +206,7 @@ EOF;
         $lat  = floatval($arrValue['lat']);
         $lon  = floatval($arrValue['lon']);
         $zoom = floatval($arrValue['zoom']);
-        $strValue = $lon.','.$lat.','.$zoom;
+        $strValue = $lat.','.$lon.','.$zoom;
 
         return $strValue;
     }
@@ -247,8 +247,8 @@ EOF;
         $strValue  = htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET);
         $arrValues = explode(',', $strValue);
 
-        $strValueLon = $arrValues[0];
-        $strValueLat = $arrValues[1];
+        $strValueLat = $arrValues[0];
+        $strValueLon = $arrValues[1];
         $strValueZoom = $arrValues[2];
         $strValueLink = '<a href="http://maps.google.com/maps?q='.$arrValues[1].','.$arrValues[0].'" target="_blank">'.$_ARRAYLANG['TXT_MEDIADIR_GOOGLEMAPS_LINK'].'</a>';
         $strValueLinkHref = 'http://maps.google.com/maps?q='.$arrValues[1].','.$arrValues[0];
