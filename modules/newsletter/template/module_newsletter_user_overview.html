@@ -10,9 +10,9 @@ var cxDataList = function() {
     var orderDirection = '';
     var sortButtons = [];
     var listId = {NEWSLETTER_LIST_ID};
-    var searchKeyword = '';
-    var filterAttribute = '';
-    var filterStatus = '';
+    var searchKeyword = '{NEWSLETTER_FILTER_KEYWORD}';
+    var filterAttribute = '{NEWSLETTER_FILTER_ATTRIBUTE}';
+    var filterStatus = '{NEWSLETTER_FILTER_STATUS}';
 
     var htmlRow = '<tr class="row[i]"></tr>';
     var htmlTd = '<td style="white-space:nowrap;"></td>';
@@ -113,6 +113,25 @@ var cxDataList = function() {
             success: updateUserlist
         });
     }
+    
+    var setFilterParamsInUrl = function() {
+        $('#tbluserlist tbody tr').each(function(){
+            var endOfNormalUrl;
+            if($(this).find('td:last a:first').attr('href').indexOf('&filterlistid=') != -1){
+                endOfNormalUrl = $(this).find('td:last a:first').attr('href').indexOf('&filterlistid=');
+            }else{
+                endOfNormalUrl = $(this).find('td:last a:first').attr('href').length;
+            }
+            $(this).find('td:last a:first').attr(
+                'href', 
+                $(this).find('td:last a:first').attr('href').substring(0, endOfNormalUrl)+
+                    '&newsletterListId='+listId+
+                    '&filterkeyword='+searchKeyword+
+                    '&filterattribute='+filterAttribute+
+                    '&filterStatus='+filterStatus
+            );
+        });
+    }
 
     var updateUserlist = function(data) {
         eval('response='+data);
@@ -157,6 +176,8 @@ var cxDataList = function() {
 
         $('#newsletterListLoading').css({display: 'none'});
         $('#recipientList').css({display: ''});
+        
+        setFilterParamsInUrl();
     }
 
 
@@ -270,7 +291,15 @@ var cxDataList = function() {
             setEntryLimit: setEntryLimitFunc
         }
     }
+    
+    var setFilterInputsByVars = function(){
+        $('#newsletterListId').val(listId);
+        $('#newsletterRecipientSearchKeyword').val(searchKeyword);
+        $('#newsletterRecipientFilterAttribute').val(filterAttribute);
+        $('#newsletterRecipientFilterStatus').val(filterStatus);
+    }
 
+    setFilterInputsByVars();
     registerSortButtons();
     setSortOrderDirection();
 

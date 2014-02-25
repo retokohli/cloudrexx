@@ -1357,10 +1357,17 @@ class AccessManager extends AccessLib
         $this->parseNewsletterLists($objUser);
         
         $cancelUrl = 'index.php?cmd=access&amp;act=user';
-        $source = isset($_GET['source']) ? contrexx_input2raw($_GET['source']) : '';
+        $urlParams = '';
+        $source = isset($_GET['source']) ? contrexx_input2raw($_GET['source']) : 'access';
         switch($source){
             case 'newsletter':
                 $cancelUrl = 'index.php?cmd=newsletter&act=users';
+                $urlParams =  //used for Filter here
+                    (!empty($_GET['newsletterListId']) ? '&newsletterListId='.contrexx_input2raw($_GET['newsletterListId']) : '').
+                    (!empty($_GET['filterkeyword']) ? '&filterkeyword='.contrexx_input2raw($_GET['filterkeyword']) : '').
+                    (!empty($_GET['filterattribute']) ? '&filterattribute='.contrexx_input2raw($_GET['filterattribute']) : '').
+                    (!empty($_GET['filterStatus']) ? '&filterStatus='.contrexx_input2raw($_GET['filterStatus']) : '')
+                ;
                 break;
         }
 
@@ -1378,6 +1385,7 @@ class AccessManager extends AccessLib
             'ACCESS_PASSWORT_COMPLEXITY'           => isset($_CONFIG['passwordComplexity']) ? $_CONFIG['passwordComplexity'] : 'off',
             'SOURCE'                               => $source, //if source was newletter for ex.
             'CANCEL_URL'                           => $cancelUrl,
+            'URL_PARAMS'                           => $urlParams,
         ));
 
         $rowNr = 0;
@@ -1453,10 +1461,14 @@ class AccessManager extends AccessLib
         if(isset($_GET['source'])){
             switch ($_GET['source']){
                 case 'newsletter':
-                    \CSRF::header('Location: index.php?cmd=newsletter&act=users&store=true');
-                    exit;
-                    break;
-                
+                    \CSRF::header('Location: 
+                        index.php?cmd=newsletter&act=users&store=true'. //and add Params for Newsletter Filter
+                        (!empty($_GET['newsletterListId']) ? '&newsletterListId='.contrexx_input2raw($_GET['newsletterListId']) : '').
+                        (!empty($_GET['filterkeyword']) ? '&filterkeyword='.contrexx_input2raw($_GET['filterkeyword']) : '').
+                        (!empty($_GET['filterattribute']) ? '&filterattribute='.contrexx_input2raw($_GET['filterattribute']) : '').
+                        (!empty($_GET['filterStatus']) ? '&filterStatus='.contrexx_input2raw($_GET['filterStatus']) : '')
+                    );
+                    exit;                
             }
         }
     }
