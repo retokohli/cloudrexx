@@ -1067,7 +1067,7 @@ class news extends newsLibrary {
                 $this->_objTpl->parse('news_status_message');
             }
             if ($this->_objTpl->blockExists('news_menu')) {
-                $this->_objTpl->hideblock('news_menu');
+                $this->_objTpl->parse('news_menu');
             }
             if ($this->_objTpl->blockExists('news_list')) {
                 $this->_objTpl->hideBlock('news_list');
@@ -1302,7 +1302,7 @@ class news extends newsLibrary {
                 $this->_objTpl->parse('news_status_message');
             }
             if ($this->_objTpl->blockExists('news_menu')) {
-                $this->_objTpl->hideblock('news_menu');
+                $this->_objTpl->parse('news_menu');
             }
             if ($this->_objTpl->blockExists('news_list')) {
                 $this->_objTpl->hideBlock('news_list');
