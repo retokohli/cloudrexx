@@ -5006,6 +5006,13 @@ $WhereStatement = '';
         } else {
             $this->_objTpl->hideBlock('recipientProfileAttributes');
         }
+        
+        $filterParams = 
+            (!empty($_GET['newsletterListId']) ? '&newsletterListId='.contrexx_input2raw($_GET['newsletterListId']) : '').
+            (!empty($_GET['filterkeyword']) ? '&filterkeyword='.contrexx_input2raw($_GET['filterkeyword']) : '').
+            (!empty($_GET['filterattribute']) ? '&filterattribute='.contrexx_input2raw($_GET['filterattribute']) : '').
+            (!empty($_GET['filterStatus']) ? '&filterStatus='.contrexx_input2raw($_GET['filterStatus']) : '')
+        ;
 
         $this->_objTpl->setVariable(array(
             'NEWSLETTER_RECIPIENT_ID'           => $recipientId,
@@ -5069,6 +5076,7 @@ $WhereStatement = '';
             'TXT_NEWSLETTER_RECIPIENT_MONTH'=> $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_MONTH'],
             'TXT_NEWSLETTER_RECIPIENT_YEAR' => $_ARRAYLANG['TXT_NEWSLETTER_RECIPIENT_YEAR'],
 //            'JAVASCRIPTCODE' => $this->JSadduser(),
+            'NEWSLETTER_FILTER_PARAMS'      => $filterParams,
         ));
         $this->_objTpl->parse('module_newsletter_user_edit');
         return true;
@@ -5110,7 +5118,10 @@ $WhereStatement = '';
             'TXT_NEWSLETTER_CANNOT_UNDO_OPERATION' => $_ARRAYLANG['TXT_NEWSLETTER_CANNOT_UNDO_OPERATION'],
             'NEWSLETTER_PAGING_LIMIT' => $limit,
             'NEWSLETTER_LIST_ID' => $newsletterListId,
-            'TXT_NEWSLETTER_USER_FEEDBACK' => $_ARRAYLANG['TXT_NEWSLETTER_USER_FEEDBACK']
+            'NEWSLETTER_FILTER_KEYWORD' => (!empty($_GET['filterkeyword']) ? contrexx_input2raw($_GET['filterkeyword']) : ''),
+            'NEWSLETTER_FILTER_ATTRIBUTE' => (!empty($_GET['filterattribute']) ? contrexx_input2raw($_GET['filterattribute']) : ''),
+            'NEWSLETTER_FILTER_STATUS' => (!empty($_GET['filterStatus']) ? contrexx_input2raw($_GET['filterStatus']) : ''),
+            'TXT_NEWSLETTER_USER_FEEDBACK' => $_ARRAYLANG['TXT_NEWSLETTER_USER_FEEDBACK'],
         ));
 
         $this->_objTpl->setVariable('NEWSLETTER_LIST_MENU', $this->CategoryDropDown('newsletterListId', $newsletterListId, "id='newsletterListId' onchange=\"newsletterList.setList(this.value)\""));
