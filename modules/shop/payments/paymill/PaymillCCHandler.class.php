@@ -169,8 +169,12 @@ APISETTING;
         $formContent .= self::closeElement('div');
         
         $formContent .= self::openElement('div', 'class="row"');        
-        $formContent .= self::getElement('label', '', $_ARRAYLANG['TXT_SHOP_CVC']);
-        $formContent .= Html::getInputText('', '', '', 'class ="card-cvc" size="4" maxlength="4"');
+        $formContent .= self::openElement('label');
+        $formContent .= $_ARRAYLANG['TXT_SHOP_CVC'] . '&nbsp;';
+        $formContent .= self::getElement('span', 'class="tooltip-trigger icon-info"');
+        $formContent .= self::getElement('span', 'class="tooltip-message"', $_ARRAYLANG['TXT_SHOP_CVC_TOOLTIP']);
+        $formContent .= self::closeElement('label');
+        $formContent .= Html::getInputText('', '', '', 'class ="card-cvc" size="4" maxlength="4"');        
         $formContent .= self::closeElement('div');
         
         $formContent .= self::openElement('div', 'class="row"');
