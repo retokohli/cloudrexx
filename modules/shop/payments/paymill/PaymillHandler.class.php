@@ -50,6 +50,8 @@ class PaymillHandler {
     public static $arrWarning = array();
     
     public static function processRequest($token, $arrOrder) {
+        global $_CONFIG;
+        
         if (empty($token)) {
             return array(
                         'status'  => 'error',
@@ -68,7 +70,8 @@ class PaymillHandler {
                 $transaction->setAmount($arrOrder['amount'])
                             ->setCurrency($arrOrder['currency'])
                             ->setToken($token)
-                            ->setDescription($arrOrder['note']);
+                            ->setDescription($arrOrder['note'])
+                            ->setSource('contrexx_'.$_CONFIG['coreCmsVersion']);
                 
                 DBG::log("Transactoin created with token:". $token);
                 $response = $request->create($transaction);

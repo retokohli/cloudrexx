@@ -56,7 +56,12 @@ class Transaction extends Base
      * @var string
      */
     private $_feePayment;
-
+    
+    /**
+     * @var string
+     */
+    private $_source;
+    
     /**
      * Creates an instance of the transaction request model
      */
@@ -65,6 +70,27 @@ class Transaction extends Base
         $this->_serviceResource = 'Transactions/';
     }
 
+    /**
+     * Returns source
+     * @return string
+     */
+    public function getSource()
+    {
+        return $this->_source;
+    }
+
+    /**
+     * Sets the source for the transaction.
+     * 
+     * @param string $source
+     * @return \Paymill\Models\Request\Transaction
+     */
+    public function setSource($source)
+    {
+        $this->_source = $source;
+        return $this;
+    }
+    
     /**
      * Returns the 'real' amount
      * @return string
@@ -272,6 +298,7 @@ class Transaction extends Base
                 $parameterArray['client'] = $this->getClient();
                 $parameterArray['fee_amount'] = $this->getFeeAmount();
                 $parameterArray['fee_payment'] = $this->getFeePayment();
+                $parameterArray['source'] = $this->getSource();
                 break;
             case 'update':
                 $parameterArray['description'] = $this->getDescription();
