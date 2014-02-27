@@ -140,15 +140,8 @@ class mediaDirectoryInputfieldLink extends mediaDirectoryLibrary implements inpu
 
         $strValue = strip_tags(htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
 
-        //make link name without "http://" and "www."
-        $strValueName = $strValue;
-        if (substr($strValueName, 0,7) == "http://") {
-            $strValueName = substr($strValueName,7);
-        }
-
-        /*if (substr($strValueName, 0,4) == "www.") {
-            $strValueName = substr($strValueName,4);
-        }*/
+        //make link name without protocol
+        $strValueName = preg_replace('#^.*://#', '', $strValue);
 
         if (strlen($strValueName) >= 55 ) {
             $strValueName = substr($strValueName, 0, 55)." [...]";
@@ -156,7 +149,7 @@ class mediaDirectoryInputfieldLink extends mediaDirectoryLibrary implements inpu
 
         //make link href with "http://"
         $strValueHref = $strValue;
-        if (substr($strValueHref, 0,7) != "http://") {
+        if (!preg_match('#^.*://#', $strValueHref)) {
             $strValueHref = "http://".$strValueHref;
         }
 
