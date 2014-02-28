@@ -36,6 +36,8 @@ if ($objResultRc1->fields['target'] != '_blank') {
     $version = 'sp4';
 } elseif ($_CONFIG['coreCmsVersion'] == '3.1.0') {
     $version = '310';
+} elseif ($_CONFIG['coreCmsVersion'] == '3.1.1') {
+    $version = '311';
 } else {
     // nothing to do
     return true;
@@ -1084,34 +1086,57 @@ $updates310To310Sp1 = array(
     ),
 );
 
-$updatesRc1ToSp4    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1);
-$updatesRc2ToSp4    = array_merge($updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1);
-$updatesStableToSp4 = array_merge($updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1);
-$updatesHotfixToSp4 = array_merge($updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1);
-$updatesSp1ToSp4    = array_merge($updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1);
-$updatesSp2ToSp4    = array_merge($updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1);
-$updatesSp3ToSp4    = array_merge($updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1);
-$updatesSp4To310    = array_merge($updatesSp4To310, $updates310To310Sp1);
-//$updates310To310Sp1 = $updates310To310Sp1;
+$updates310Sp1To310Sp2 = array(
+    '
+        INSERT IGNORE INTO `'.DBPREFIX.'settings` (`setid`, `setname`, `setvalue`, `setmodule`)
+        VALUES (119, "cacheUserCache", "off", 1)
+    ',
+    '
+        INSERT IGNORE INTO `'.DBPREFIX.'settings` (`setid`, `setname`, `setvalue`, `setmodule`)
+        VALUES (120, "cacheOPCache", "off", 1)
+    ',
+    '
+        INSERT IGNORE INTO `'.DBPREFIX.'settings` (`setid`, `setname`, `setvalue`, `setmodule`)
+        VALUES (121, "cacheUserCacheMemcacheConfig", "{\"ip\":\"127.0.0.1\",\"port\":11211}", 1)
+    ',
+    '
+        INSERT IGNORE INTO `'.DBPREFIX.'settings` (`setid`, `setname`, `setvalue`, `setmodule`)
+        VALUES (122, "cacheProxyCacheVarnishConfig", "{\"ip\":\"127.0.0.1\",\"port\":8080}", 1)
+    ',
+);
+
+$updatesRc1To310Sp2    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
+$updatesRc2To310Sp2    = array_merge($updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
+$updatesStableTo310Sp2 = array_merge($updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
+$updatesHotfixTo310Sp2 = array_merge($updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
+$updatesSp1To310Sp2    = array_merge($updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
+$updatesSp2To310Sp2    = array_merge($updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
+$updatesSp3To310Sp2    = array_merge($updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
+$updatesSp4To310Sp2    = array_merge($updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);
+$updates310To310Sp2    = array_merge($updates310To310Sp1, $updates310Sp1To310Sp2);
+//$updates310Sp1To310Sp2 = $updates310Sp1To310Sp2;
+
 
 if ($version == 'rc1') {
-    $updates = $updatesRc1ToSp4;
+    $updates = $updatesRc1To310Sp2;
 } elseif ($version == 'rc2') {
-    $updates = $updatesRc2ToSp4;
+    $updates = $updatesRc2To310Sp2;
 } elseif ($version == 'stable') {
-    $updates = $updatesStableToSp4;
+    $updates = $updatesStableTo310Sp2;
 } elseif ($version == 'hotfix') {
-    $updates = $updatesHotfixToSp4;
+    $updates = $updatesHotfixTo310Sp2;
 } elseif ($version == 'sp1') {
-    $updates = $updatesSp1ToSp4;
+    $updates = $updatesSp1To310Sp2;
 } elseif ($version == 'sp2') {
-    $updates = $updatesSp2ToSp4;
+    $updates = $updatesSp2To310Sp2;
 } elseif ($version == 'sp3') {
-    $updates = $updatesSp3ToSp4;
+    $updates = $updatesSp3To310Sp2;
 } elseif ($version == 'sp4') {
-    $updates = $updatesSp4To310;
+    $updates = $updatesSp4To310Sp2;
+} elseif ($version == '310') {
+    $updates = $updates310To310Sp2;
 } else {
-    $updates = $updates310To310Sp1;
+    $updates = $updates310Sp1To310Sp2;
 }
 
 

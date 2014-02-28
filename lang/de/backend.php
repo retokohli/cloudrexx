@@ -664,13 +664,60 @@ $_ARRAYLANG['TXT_CACHE_EMPTY_DESC'] = "Über den Button können Sie den aktuelle
 $_ARRAYLANG['TXT_CACHE_CONTREXX_CACHING'] = "Contrexx-Caching";
 $_ARRAYLANG['TXT_CACHE_OPCACHE'] = "Programmcode Cache Systeme";
 $_ARRAYLANG['TXT_CACHE_USERCACHE'] = "Datenbank Cache Systeme";
+$_ARRAYLANG['TXT_CACHE_PROXYCACHE'] = "Proxy Cache";
 $_ARRAYLANG['TXT_CACHE_ENGINE'] = "System";
 $_ARRAYLANG['TXT_CACHE_INSTALLATION_STATE'] = "Installiert";
 $_ARRAYLANG['TXT_CACHE_ACTIVE_STATE'] = "Aktiv";
 $_ARRAYLANG['TXT_CACHE_CONFIGURATION_STATE'] = "Konfiguriert";
 $_ARRAYLANG['TXT_CACHE_STATS'] = "Statistiken";
+$_ARRAYLANG['TXT_CACHE_INFORMATION'] = "Informationen";
+$_ARRAYLANG['TXT_CACHE_INFORMATION_CONTENT'] = '
+        <tr class="row3"><td colspan="2">APC</td></tr>
+        <tr>
+            <td>Aktivieren</td>
+            <td>APC ist aktiviert, sobald die PHP Direktive "apc.enabled" auf "On" gesetzt ist.</td>
+        </tr>
+        <tr>
+            <td>Konfigurieren</td>
+            <td>Wenn Sie APC als Datenbank Cache System einsetzen möchten, muss die PHP Direktive "apc.serializer" auf "php" gesetzt sein.
+        </tr>
+        <tr class="row3"><td colspan="2">Zend OPCache</td></tr>
+        <tr>
+            <td>Aktivieren</td>
+            <td>Zend OPCache ist aktiviert, sobald die PHP Direktive "opcache.enable" auf "On" gesetzt ist.</td>
+        </tr>
+        <tr>
+            <td>Konfigurieren</td>
+            <td>Um Zend OPCache zu verwenden, müssen die PHP Direktiven "opcache.save_comments" und "opcache.load_comments" auf "On" gesetzt sein.</td>
+        </tr>
+        <tr class="row3"><td colspan="2">xCache</td></tr>
+        <tr>
+            <td>Aktivieren</td>
+            <td>xCache ist aktiviert, sobald die PHP Direktive "xcache.cacher" auf "On" gesetzt ist.</td>
+        </tr>
+        <tr>
+            <td>Konfigurieren</td>
+            <td>Um xCache als Datenbank Cache System zu verwenden, muss die PHP Direktive "xcache.var_size" grösser 0 sein. Für den Programmcode Cache muss "xcache.size" grösser 0 sein.</td>
+        </tr>
+        <tr class="row3"><td colspan="2">Memcache</td></tr>
+        <tr>
+            <td>Aktivieren</td>
+            <td>Memcache(d) ist aktiviert, sobald der Memcache(d) Server läuft und die Konfigurationen korrekt gesetzt sind.</td>
+        </tr>
+        <tr>
+            <td>Konfigurieren</td>
+            <td>Um Memcache(d) zu verwenden, muss die Konfiguration (IP-Adresse und Port) korrekt konfiguriert sein.</td>
+        </tr>';
 $_ARRAYLANG['TXT_CACHE_STATS_FILES'] = "Gecachte Seiten";
 $_ARRAYLANG['TXT_CACHE_STATS_FOLDERSIZE'] = "Ordnergrösse";
+$_ARRAYLANG['TXT_STATS_CACHE_SIZE'] = 'Datenmenge der gespeicherten Daten';
+$_ARRAYLANG['TXT_STATS_CHACHE_SITE_COUNT'] = 'Gecachte Dateien';
+$_ARRAYLANG['TXT_STATS_CHACHE_ENTRIES_COUNT'] = 'Gecachte Datenbankeinträge';
+$_ARRAYLANG['TXT_CACHE_EMPTY_DESC_FILES_AND_ENRIES'] = "Über den Button können Sie den aktuellen Inhalt des Caches leeren. Der Cache der Dateien und Einträge baut sich anschliessend bei Aufrufen der Seite jeweils wieder neu auf.";
+$_ARRAYLANG['TXT_CACHE_EMPTY_DESC_FILES'] = "Über den Button können Sie den aktuellen Inhalt des Caches leeren. Der Cache der Dateien baut sich anschliessend bei Aufrufen der Seite jeweils wieder neu auf.";
+$_ARRAYLANG['TXT_CACHE_EMPTY_DESC_ENTRIES'] = "Über den Button können Sie den aktuellen Inhalt des Caches leeren. Der Cache der Einträge baut sich anschliessend bei Aufrufen der Seite jeweils wieder neu auf.";
+$_ARRAYLANG['TXT_CACHE_EMPTY_DESC_MEMCACHE'] = "Über den Button können Sie alle aktuell gecachten Einträge als veraltet markieren. Diese werden beim nächsten Aufruf der ensprechenden Site erneuert.";
+$_ARRAYLANG['TXT_CACHE_EMPTY_SUCCESS'] = "Der Cache wurde erfolgreich geleert";
 $_ARRAYLANG['TXT_CACHE_FOLDER_EMPTY'] = "Cache-Ordner wurde geleert.";
 $_ARRAYLANG['TXT_IMPORT'] = "Importieren";
 $_ARRAYLANG['TXT_CHOOSE_FILE'] = "Wählen Sie die Datei";
@@ -1226,6 +1273,8 @@ $_ARRAYLANG['TXT_CHECKOUT_MODULE'] = "Online-Zahlung";
 $_ARRAYLANG['TXT_CHECKOUT_MODULE_DESCRIPTION'] = "Einfache Lösung zur Abwicklung von Transaktionen über Yellowpay.";
 $_ARRAYLANG['TXT_FILESHARING_MODULE'] = "Datei Sharing";
 $_ARRAYLANG['TXT_FILESHARING_MODULE_DESCRIPTION'] = "Lade Dateien hoch und gib diese für deine Freunde und Geschäftsfreunde frei.";
+$_ARRAYLANG['TXT_DISPLAY_CONFIGURATION'] = 'Konfiguration einblenden';
+$_ARRAYLANG['TXT_HIDE_CONFIGURATION'] = 'Konfiguration ausblenden';
 
 // From 2.3(?) -- are these still in use?
 $_ARRAYLANG['TXT_CSRF_BUTTON'] = "Klicken Sie hier, um fortzufahren.";

@@ -45,7 +45,7 @@ class PageException extends \Exception {
  * @package     contrexx
  * @subpackage  model_contentmanager
  */
-class Page extends \Cx\Model\Base\EntityBase
+class Page extends \Cx\Model\Base\EntityBase implements \Serializable
 {
     const TYPE_CONTENT = 'content';
     const TYPE_APPLICATION = 'application';
@@ -1868,5 +1868,83 @@ class Page extends \Cx\Model\Base\EntityBase
      */
     public function isDraft() {
         return $this->getEditingStatus() != '';
+    }
+    
+    public function serialize() {
+        return serialize(
+            array(
+                $this->id,
+                $this->active,
+                $this->backendAccessId,
+                $this->caching,
+                $this->cmd,
+                $this->content,
+                $this->contentTitle,
+                $this->cssName,
+                $this->cssNavName,
+                $this->customContent,
+                $this->display,
+                $this->editingStatus,
+                $this->end,
+                $this->frontendAccessId,
+                $this->isVirtual,
+                $this->lang,
+                $this->linkTarget,
+                $this->metarobots,
+                $this->metatitle,
+                $this->module,
+                $this->node->getId(),
+                $this->nodeIdShadowed,
+                $this->protection,
+                $this->skin,
+                $this->slug,
+                $this->slugBase,
+                $this->slugSuffix,
+                $this->sourceMode,
+                $this->start,
+                $this->target,
+                $this->title,
+                $this->type,
+                $this->updatedAt,
+                $this->updatedBy,
+            )
+        );
+    }
+    public function unserialize($data) {
+        $unserialized = unserialize($data);
+        $this->id = $unserialized[0];
+        $this->active = $unserialized[1];
+        $this->backendAccessId = $unserialized[2];
+        $this->caching = $unserialized[3];
+        $this->cmd = $unserialized[4];
+        $this->content = $unserialized[5];
+        $this->contentTitle = $unserialized[6];
+        $this->cssName = $unserialized[7];
+        $this->cssNavName = $unserialized[8];
+        $this->customContent = $unserialized[9];
+        $this->display = $unserialized[10];
+        $this->editingStatus = $unserialized[11];
+        $this->end = $unserialized[12];
+        $this->frontendAccessId = $unserialized[13];
+        $this->isVirtual = $unserialized[14];
+        $this->lang = $unserialized[15];
+        $this->linkTarget = $unserialized[16];
+        $this->metarobots = $unserialized[17];
+        $this->metatitle = $unserialized[18];
+        $this->module = $unserialized[19];
+        $this->node = \Env::em()->getReference('Cx\Core\ContentManager\Model\Entity\Node', $unserialized[20]);
+        $this->nodeIdShadowed = $unserialized[21];
+        $this->protection = $unserialized[22];
+        $this->skin = $unserialized[23];
+        $this->slug = $unserialized[24];
+        $this->slugBase = $unserialized[25];
+        $this->slugSuffix = $unserialized[26];
+        $this->sourceMode = $unserialized[27];
+        $this->start = $unserialized[28];
+        $this->target = $unserialized[29];
+        $this->title = $unserialized[30];
+        $this->type = $unserialized[31];
+        $this->updatedAt = $unserialized[32];
+        $this->updatedBy = $unserialized[33];
     }
 }
