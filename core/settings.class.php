@@ -130,7 +130,7 @@ class settingsManager
             case 'cache_empty':
                 $boolShowStatus = false;
                 $objCache = new CacheManager();
-                $objCache->deleteAllFiles();
+                $objCache->forceClearCache(isset($_GET['cache']) ? contrexx_input2raw($_GET['cache']) : null);
                 $objCache->showSettings();
                 break;
 

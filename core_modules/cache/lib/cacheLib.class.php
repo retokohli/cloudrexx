@@ -51,6 +51,16 @@ class cacheLib
     const CACHE_ENGINE_ZEND_OPCACHE = 'zendopcache';
     
     /**
+     * file system user cache extension
+     */
+    const CACHE_ENGINE_FILESYSTEM = 'filesystem';
+    
+    /**
+     * cache off
+     */
+    const CACHE_ENGINE_OFF = 'off';
+    
+    /**
      * Used op cache engines
      * @var array Cache engine names, empty for none
      */
@@ -66,13 +76,27 @@ class cacheLib
     protected $userCacheEngine = null;
     protected $memcache = null;
 
-    function _deleteAllFiles()
+    function _deleteAllFiles($cacheEngine = 'all')
     {
         $handleDir = opendir($this->strCachePath);
         if ($handleDir) {
             while ($strFile = readdir($handleDir)) {
                 if ($strFile != '.' && $strFile != '..') {
-                    unlink($this->strCachePath . $strFile);
+                    switch ($cacheEngine) {
+                        case 'cxEntries':
+                            if(false !== strpos($strFile, 'db_')){
+                    			unlink($this->strCachePath . $strFile);
+                			}
+                            break;
+                        case 'cxPages':
+                            if(false === strpos($strFile, 'db_')){
+                                unlink($this->strCachePath . $strFile);
+                            }
+                            break;
+                        default:
+                            unlink($this->strCachePath . $strFile);
+                            break;
+                    }
                 }
             }
             closedir($handleDir);
@@ -134,7 +158,7 @@ class cacheLib
             $this->opCacheEngines[] = self::CACHE_ENGINE_XCACHE;
         }
     }
-    
+
     protected function initUserCaching() {
         // APC
         if ($this->isInstalled(self::CACHE_ENGINE_APC)) {
@@ -150,9 +174,18 @@ class cacheLib
         
         // Memcache
         if ($this->isInstalled(self::CACHE_ENGINE_MEMCACHE)) {
-            $memcache = new \Memcache();
-            if (@$memcache->connect('localhost', 11211)) {
-                $this->memcache = $memcache;
+            $memcacheConfiguration = $this->getMemcacheConfiguration();
+            unset($this->memcache); // needed for reinitialization
+            if (class_exists('\Memcache')) {
+                $memcache = new \Memcache();
+                if (@$memcache->connect($memcacheConfiguration['ip'], $memcacheConfiguration['port'])) {
+                    $this->memcache = $memcache;
+                }
+            } elseif (class_exists('\Memcached')) {
+                $memcache = new \Memcached();
+                if (@$memcache->addServer($memcacheConfiguration['ip'], $memcacheConfiguration['port'])) {
+                    $this->memcache = $memcache;
+                }
             }
             if ($this->isConfigured(self::CACHE_ENGINE_MEMCACHE)) {
                 $this->userCacheEngines[] = self::CACHE_ENGINE_MEMCACHE;
@@ -167,20 +200,42 @@ class cacheLib
         ) {
             $this->userCacheEngines[] = self::CACHE_ENGINE_XCACHE;
         }
+        
+        // Filesystem
+        if ($this->isConfigured(self::CACHE_ENGINE_FILESYSTEM)) {
+            $this->userCacheEngines[] = self::CACHE_ENGINE_FILESYSTEM;
+        }
     }
     
     protected function getActivatedCacheEngines() {
         global $_CONFIG;
         
-        if (in_array($_CONFIG['cacheUserCache'], $this->userCacheEngines)) {
+        if (isset($_CONFIG['cacheUserCache']) && in_array($_CONFIG['cacheUserCache'], $this->userCacheEngines)) {
             $this->userCacheEngine = $_CONFIG['cacheUserCache'];
         } else {
-            $this->userCacheEngine = current($this->userCacheEngines);
+            $this->userCacheEngine = self::CACHE_ENGINE_OFF;
         }
-        if (in_array($_CONFIG['cacheOPCache'], $this->opCacheEngines)) {
+        if (isset($_CONFIG['cacheOPCache']) && in_array($_CONFIG['cacheOPCache'], $this->opCacheEngines)) {
             $this->opCacheEngine = $_CONFIG['cacheOPCache'];
         } else {
-            $this->opCacheEngine = current($this->opCacheEngines);
+            $this->opCacheEngine = self::CACHE_ENGINE_OFF;
+        }
+        
+        // deactivate other op cache engines
+        foreach ($this->opCacheEngines as $engine) {
+            if ($engine != $this->opCacheEngine) {
+                switch ($engine) {
+                    case self::CACHE_ENGINE_APC:
+                        ini_set('apc.cache_by_default', 0);
+                        break;
+                    case self::CACHE_ENGINE_ZEND_OPCACHE:
+                        ini_set('opcache.enable', 0);
+                        break;
+                    case self::CACHE_ENGINE_XCACHE:
+                        ini_set('xcache.cacher', 0);
+                        break;
+                }
+            }
         }
     }
     
@@ -214,6 +269,8 @@ class cacheLib
                 return extension_loaded('memcache') || extension_loaded('memcached');
             case self::CACHE_ENGINE_XCACHE:
                 return extension_loaded('xcache');
+            case self::CACHE_ENGINE_FILESYSTEM:
+                return true;
         }
     }
     
@@ -233,6 +290,8 @@ class cacheLib
             case self::CACHE_ENGINE_XCACHE:
                 $setting = 'xcache.cacher';
                 break;
+            case self::CACHE_ENGINE_FILESYSTEM:
+                return true;
         }
         if (!empty($setting)) {
             $configurations = ini_get_all();
@@ -256,29 +315,140 @@ class cacheLib
                 return $this->memcache ? true : false;
             case self::CACHE_ENGINE_XCACHE:
                 if ($user) {
-                    return ini_get('xcache.var_size') > 0;
+                    return (
+                        ini_get('xcache.var_size') > 0 && 
+                        ini_get('xcache.admin.user') && 
+                        ini_get('xcache.admin.pass')
+                    );
                 }
                 return ini_get('xcache.size') > 0;
+            case self::CACHE_ENGINE_FILESYSTEM:
+                return is_writable(ASCMS_CACHE_PATH);
+        }
+    }
+    
+    protected function getMemcacheConfiguration() {
+        global $_CONFIG;
+        $ip = '127.0.0.1';
+        $port = '11211';
+        
+        if(!empty($_CONFIG['cacheUserCacheMemcacheConfig'])){
+            $settings = json_decode($_CONFIG['cacheUserCacheMemcacheConfig'], true);
+            $ip = $settings['ip'];
+            $port = $settings['port'];
+        }
+        
+        return array('ip' => $ip, 'port' => $port);
+    }
+    
+    protected function getVarnishConfiguration(){
+        global $_CONFIG;
+        $ip = '127.0.0.1';
+        $port = '8080';
+        
+        if(!empty($_CONFIG['cacheProxyCacheVarnishConfig'])){
+            $settings = json_decode($_CONFIG['cacheProxyCacheVarnishConfig'], true);
+            $ip = $settings['ip'];
+            $port = $settings['port'];
+        }
+        
+        return array('ip' => $ip, 'port' => $port);
+    }
+    
+    /**
+     * Flush all cache instances
+     * @see \Cx\Core\ContentManager\Model\Event\PageEventListener on update of page objects
+     */
+    public function clearCache($cacheEngine = null) {
+        $cacheEngine = $cacheEngine == null ? $this->userCacheEngine : $cacheEngine;
+        switch ($cacheEngine) {
+            case self::CACHE_ENGINE_APC:
+                $this->clearApc();
+                break;
+            case self::CACHE_ENGINE_MEMCACHE:
+                $this->clearMemcache();
+                break;
+            case self::CACHE_ENGINE_XCACHE:
+                $this->clearXcache();
+                break;
+            case self::CACHE_ENGINE_ZEND_OPCACHE:
+                $this->clearZendOpCache();
+            default:
+                break;
         }
     }
     
     /**
-     * Flush all user cache instances
-     * @see \Cx\Core\ContentManager\Model\Event\PageEventListener on update of page objects
+     * Clears APC cache if APC is installed
      */
-    public function clearUserCache() {
-        switch ($this->userCacheEngine) {
-            case self::CACHE_ENGINE_APC:
-                \apc_clear_cache();
-                break;
-            case self::CACHE_ENGINE_MEMCACHE:
-                $this->memcache->flush();
-                break;
-            case self::CACHE_ENGINE_XCACHE:
-                \xcache_clear_cache();
-                break;
-            default:
-                break;
+    private function clearApc(){
+        if($this->isInstalled(self::CACHE_ENGINE_APC)){
+            $apcInfo = \apc_cache_info();
+            foreach($apcInfo['entry_list'] as $entry) {
+                if(false !== strpos($entry['key'], $this->getCachePrefix()))
+                \apc_delete($entry['key']);
+            }
+            \apc_clear_cache(); // this only deletes the cached files
         }
+    }
+    
+    /**
+     * Clears all Memcachedata related to this Domain if Memcache is installed
+     */
+    private function clearMemcache(){
+        if(!$this->isInstalled(self::CACHE_ENGINE_MEMCACHE)){
+			return;
+		}
+        //$this->memcache->flush(); //<- not like this!!!
+        $keys = array();
+        $allSlabs = $this->memcache->getExtendedStats('slabs');
+
+        foreach ($allSlabs as $server => $slabs) {
+            if (is_array($slabs)) {
+                foreach (array_keys($slabs) as $slabId) {
+                    $dump = $this->memcache->getExtendedStats('cachedump', (int) $slabId);
+                    if ($dump) {
+                        foreach ($dump as $entries) {
+                            if ($entries) {
+                                $keys = array_merge($keys, array_keys($entries));
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        foreach($keys as $key){
+            if(strpos($key, $this->getCachePrefix()) !== false){
+                $this->memcache->delete($key);
+            }
+        }
+    }
+    
+    /**
+     * Clears XCache if configured. Configuration is needed to clear.
+     */
+    private function clearXcache(){
+        if($this->isConfigured(self::CACHE_ENGINE_XCACHE, true)){
+            \xcache_clear_cache();
+        }
+    }
+    
+    /**
+     * Clears Zend OPCache if installed
+     */
+    private function clearZendOpCache(){
+        if($this->isInstalled(self::CACHE_ENGINE_ZEND_OPCACHE)){
+            \opcache_reset();
+        }
+    }
+    
+    /**
+     * Retunrns the CachePrefix related to this Domain
+     * @global string $_DBCONFIG
+     * @return string CachePrefix
+     */
+    protected function getCachePrefix(){
+        global $_DBCONFIG;
+        return $_DBCONFIG['database'].'.'.DBPREFIX;
     }
 }
