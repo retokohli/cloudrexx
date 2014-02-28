@@ -2,6 +2,7 @@
 <ul id="tabmenu">
     <li><a id="setTab_Caching1" class="active" href="javascript:{}" onclick="selectTab('Caching1')" title="{TXT_CACHE_GENERAL}">{TXT_CACHE_GENERAL}</a></li>
     <li><a id="setTab_Caching2" href="javascript:{}" onclick="selectTab('Caching2')" title="{TXT_CACHE_STATS}">{TXT_CACHE_STATS}</a></li>
+    <li><a id="setTab_Caching3" href="javascript:{}" onclick="selectTab('Caching3')" title="{TXT_CACHE_INFORMATION}">{TXT_CACHE_INFORMATION}</a></li>
 </ul>
 <div id="Caching1" class="setTab" style="display:block;">
     <form name="frmSettings" method="post" action="index.php?cmd=settings&amp;act=cache_update">
@@ -48,6 +49,12 @@
             </tr>
             <tr>
                 <td>
+                    <input type="radio" name="opcache" value="off" {CHECKED_OPCACHE_OFF} />
+                </td>
+                <td colspan="4">{TXT_DEACTIVATED}</td>
+            </tr>
+            <tr>
+                <td>
                     <!-- BEGIN cache_opcache_apc -->
                     <input type="radio" name="opcache" value="apc" {CHECKED_OPCACHE_APC} />
                     <!-- END cache_opcache_apc -->
@@ -89,10 +96,11 @@
                 <col width="180" />
                 <col width="70" />
                 <col width="70" />
+                <col width="70" />
                 <col />
             </colgroup>
             <tr>
-                <th colspan="5">{TXT_CACHE_USERCACHE}</th>
+                <th colspan="6">{TXT_CACHE_USERCACHE}</th>
             </tr>
             <tr class="row3">
                 <td></td>
@@ -100,6 +108,13 @@
                 <td>{TXT_CACHE_INSTALLATION_STATE}</td>
                 <td>{TXT_CACHE_ACTIVE_STATE}</td>
                 <td>{TXT_CACHE_CONFIGURATION_STATE}</td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <input type="radio" name="usercache" value="off" {CHECKED_USERCACHE_OFF} />
+                </td>
+                <td colspan="5">{TXT_DEACTIVATED}</td>
             </tr>
             <tr>
                 <td>
@@ -111,6 +126,7 @@
                 <td><img src="images/icons/{APC_USERCACHE_INSTALLATION_ICON}" /></td>
                 <td><img src="images/icons/{APC_USERCACHE_ACTIVE_ICON}" /></td>
                 <td><img src="images/icons/{APC_USERCACHE_CONFIGURATION_ICON}" /></td>
+                <td></td>
             </tr>
             <tr>
                 <td>
@@ -122,6 +138,14 @@
                 <td><img src="images/icons/{MEMCACHE_USERCACHE_INSTALLATION_ICON}" /></td>
                 <td><img src="images/icons/{MEMCACHE_USERCACHE_ACTIVE_ICON}" /></td>
                 <td><img src="images/icons/{MEMCACHE_USERCACHE_CONFIGURATION_ICON}" /></td>
+                <td><a class="cx-expand cx-expandDown"><span class="cx-expandDownText">{TXT_DISPLAY_CONFIGURATION}</span><span class="cx-expandUpText">{TXT_HIDE_CONFIGURATION}</span></a></td>
+            </tr>
+            <tr class="cx-expanding">
+                <td></td>
+                <td colspan="5">
+                    <label for="memcacheSettingIp">IP:</label>&nbsp;<input type="text" id="memcacheSettingIp" name="memcacheSettingIp" value="{MEMCACHE_USERCACHE_CONFIG_IP}">
+                    <lable for="memcacheSettingPort">Port:</lable>&nbsp;<input type="text" id="memcacheSettingPort" name="memcacheSettingPort" value="{MEMCACHE_USERCACHE_CONFIG_PORT}">
+                </td>
             </tr>
             <tr>
                 <td>
@@ -133,8 +157,41 @@
                 <td><img src="images/icons/{XCACHE_USERCACHE_INSTALLATION_ICON}" /></td>
                 <td><img src="images/icons/{XCACHE_USERCACHE_ACTIVE_ICON}" /></td>
                 <td><img src="images/icons/{XCACHE_USERCACHE_CONFIGURATION_ICON}" /></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td>
+                    <!-- BEGIN cache_usercache_filesystem -->
+                    <input type="radio" name="usercache" value="filesystem" {CHECKED_USERCACHE_FILESYSTEM} />
+                    <!-- END cache_usercache_filesystem -->
+                </td>
+                <td>FileSystem</td>
+                <td></td>
+                <td></td>
+                <td><img src="images/icons/{FILESYSTEM_USERCACHE_CONFIGURATION_ICON}" /></td>
+                <td></td>
             </tr>
         </table>
+        <!--
+        <br />
+        <br />
+        <table width="100%" cellspacing="0" cellpadding="3" border="0" align="top" class="adminlist">
+            <colgroup>
+                <col width="100" />
+                <col />
+            </colgroup>
+            <tr>
+                <th colspan="2">Varnish</th>
+            </tr>
+            <tr class="row1">
+                <td>Webserver IP</td>
+                <td><input type="text" name="varnishCachingIp" id="varnishCachingIp" value="{VARNISH_PROXYCACHE_CONFIG_IP}"></td>
+            </tr>
+            <tr>
+                <td>Webserver Port</td>
+                <td><input type="text" name="varnishCachingPort" id="varnishCachingPort" value="{VARNISH_PROXYCACHE_CONFIG_PORT}"></td>
+            </tr>
+        </table>-->
         <!-- BEGIN cache_submit_button -->
         <br /><input type="submit" name="frmSettings_Submit" value="{TXT_SETTINGS_SAVE}">
         <!-- END cache_submit_button -->
@@ -146,19 +203,134 @@
             <th colspan="2">{TXT_CACHE_CONTREXX_CACHING}</th>
         </tr>
         <tr class="row2">
-            <td width="20%">{TXT_STATS_FILES}</td>
-            <td width="80%">{STATS_FILES}</td>
+            <td width="20%">{TXT_STATS_CHACHE_SITE_COUNT}</td>
+            <td width="80%">{STATS_CONTREXX_FILESYSTEM_CHACHE_PAGES_COUNT}</td>
         </tr>
         <tr class="row1">
             <td>{TXT_STATS_FOLDERSIZE}</td>
-            <td>{STATS_FOLDERSIZE} kB</td>
+            <td>{STATS_FOLDERSIZE_PAGES} kB</td>
         </tr>
         <tr class="row2">
             <td width="20%">
-                <input type="button" name="frmEmpty_Submit" value="{TXT_EMPTY_BUTTON}" onclick="location.href = 'index.php?cmd=settings&{CSRF_PARAM}&amp;act=cache_empty'">
+                <input type="button" name="frmEmpty_Submit" value="{TXT_EMPTY_BUTTON}" onclick="location.href = 'index.php?cmd=settings&{CSRF_PARAM}&amp;act=cache_empty&amp;cache=cxPages'">
             </td>
             <td width="80%" align="justify">{TXT_EMPTY_DESC}</td>
         </tr>
+    </table>
+    <br />
+    <!-- BEGIN apcCachingStats -->
+    <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+        <tr>
+            <th colspan="2">APC</th>
+        </tr>
+        <tr class="row2">
+            <td width="20%">{TXT_STATS_CHACHE_SITE_COUNT}</td>
+            <td width="80%">{STATS_APC_CHACHE_SITE_COUNT}</td>
+        </tr>
+        <tr class="row1">
+            <td width="20%">{TXT_STATS_CHACHE_ENTRIES_COUNT}</td>
+            <td width="80%">{STATS_APC_CHACHE_ENTRIES_COUNT}</td>
+        </tr>
+        <tr class="row2">
+            <td>{TXT_STATS_CACHE_SIZE}</td>
+            <td>{STATS_APC_SIZE} kB / {STATS_APC_MAX_SIZE} kB</td>
+        </tr>
+        <tr class="row1">
+            <td width="20%">
+                <input type="button" name="frmEmpty_Submit" value="{TXT_EMPTY_BUTTON}" onclick="location.href = 'index.php?cmd=settings&{CSRF_PARAM}&amp;act=cache_empty&amp;cache=apc'">
+            </td>
+            <td width="80%" align="justify">{TXT_EMPTY_DESC_APC}</td>
+        </tr>
+    </table>
+    <br />
+    <!-- END apcCachingStats -->
+    <!-- BEGIN zendOpCachingStats -->
+    <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+        <tr>
+            <th colspan="2">Zend OPCache</th>
+        </tr>
+        <tr class="row2">
+            <td width="20%">{TXT_STATS_CHACHE_SITE_COUNT}</td>
+            <td width="80%">{STATS_OPCACHE_CHACHE_SITE_COUNT}</td>
+        </tr>
+        <tr class="row1">
+            <td>{TXT_STATS_CACHE_SIZE}</td>
+            <td>{STATS_OPCACHE_SIZE} kB / {STATS_OPCACHE_MAX_SIZE} kB</td>
+        </tr>
+        <tr class="row2">
+            <td width="20%">
+                <input type="button" name="frmEmpty_Submit" value="{TXT_EMPTY_BUTTON}" onclick="location.href = 'index.php?cmd=settings&{CSRF_PARAM}&amp;act=cache_empty&amp;cache=zendop'">
+            </td>
+            <td width="80%" align="justify">{TXT_EMPTY_DESC_ZEND_OP}</td>
+        </tr>
+    </table>
+    <br />
+    <!-- END zendOpCachingStats -->
+    <!-- BEGIN memcacheCachingStats -->
+    <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+        <tr>
+            <th colspan="2">Memcache</th>
+        </tr>
+        <tr class="row2">
+            <td width="20%">{TXT_STATS_CHACHE_ENTRIES_COUNT}</td>
+            <td width="80%">{STATS_MEMCACHE_CHACHE_ENTRIES_COUNT}</td>
+        </tr>
+        <tr class="row1">
+            <td>{TXT_STATS_CACHE_SIZE}</td>
+            <td>{STATS_MEMCACHE_SIZE} mB / {STATS_MEMCACHE_MAX_SIZE} mB</td>
+        </tr>
+        <tr class="row2">
+            <td width="20%">
+                <input type="button" name="frmEmpty_Submit" value="{TXT_EMPTY_BUTTON}" onclick="location.href = 'index.php?cmd=settings&{CSRF_PARAM}&amp;act=cache_empty&amp;cache=memcache'">
+            </td>
+            <td width="80%" align="justify">{TXT_EMPTY_DESC_MEMCACHE}</td>
+        </tr>
+    </table>
+    <br />
+    <!-- END memcacheCachingStats -->
+    <!-- BEGIN xCacheCachingStats -->
+    <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+        <tr>
+            <th colspan="2">xCache</th>
+        </tr>
+        <tr class="row1">
+            <td width="20%">
+                <input type="button" name="frmEmpty_Submit" value="{TXT_EMPTY_BUTTON}" onclick="location.href = 'index.php?cmd=settings&{CSRF_PARAM}&amp;act=cache_empty&amp;cache=xcache'">
+            </td>
+            <td width="80%" align="justify">{TXT_EMPTY_DESC_XCACHE}</td>
+        </tr>
+    </table>
+    <br />
+    <!-- END xCacheCachingStats -->
+    <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+        <tr>
+            <th colspan="2">Contrexx File System</th>
+        </tr>
+        <tr class="row2">
+            <td width="20%">{TXT_STATS_CHACHE_ENTRIES_COUNT}</td>
+            <td width="80%">{STATS_CONTREXX_FILESYSTEM_CHACHE_ENTRIES_COUNT}</td>
+        </tr>
+        <tr class="row1">
+            <td>{TXT_STATS_FOLDERSIZE}</td>
+            <td>{STATS_FOLDERSIZE_ENTRIES} kB</td>
+        </tr>
+        <tr class="row2">
+            <td width="20%">
+                <input type="button" name="frmEmpty_Submit" value="{TXT_EMPTY_BUTTON}" onclick="location.href = 'index.php?cmd=settings&{CSRF_PARAM}&amp;act=cache_empty&amp;cache=cxEntries'">
+            </td>
+            <td width="80%" align="justify">{TXT_EMPTY_DESC}</td>
+        </tr>
+    </table>
+</div>
+<div id="Caching3" class="setTab" style="display:none;">
+    <table width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
+        <colgroup>
+            <col width="200" />
+        </colgroup>
+        <tr>
+            <th colspan="2">{TXT_CACHE_INFORMATION}</th>
+        </tr>
+        {TXT_CACHE_INFORMATION_CONTENT}
     </table>
 </div>
 <!-- END settings.html -->

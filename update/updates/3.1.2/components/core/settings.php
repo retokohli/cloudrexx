@@ -412,6 +412,26 @@ function _updateSettings()
 			'setvalue'	=> '0',
 			'setmodule'	=> 66
 		),
+                119     => array(
+			'setname'	=> 'cacheUserCache',
+			'setvalue'	=> 'off',
+			'setmodule'	=> 1
+                ),
+                120     => array(
+			'setname'	=> 'cacheOPCache',
+			'setvalue'	=> 'off',
+			'setmodule'	=> 1
+                ),
+                121     => array(
+			'setname'	=> 'cacheUserCacheMemcacheConfig',
+			'setvalue'	=> '{"ip":"127.0.0.1","port":11211}',
+			'setmodule'	=> 1
+                ),
+                122     => array(
+			'setname'	=> 'cacheProxyCacheVarnishConfig',
+			'setvalue'	=> '{"ip":"127.0.0.1","port":8080}',
+			'setmodule'	=> 1
+                ),
 	);
 
     $arrSettingsByName = array();
