@@ -79,7 +79,11 @@ class Paging
 
         // remove all parameters otherwise the url object has parameters like &act=add
         $requestUrl = clone \Env::get('Resolver')->getUrl();
+        $currentParams = $requestUrl->getParamArray();
         $requestUrl->removeAllParams();
+        if (isset($currentParams['section'])) {
+            $requestUrl->setParam('section', $currentParams['section']);
+        }
         $requestUrl->setParams($uri_parameter);
 
         $firstUrl = clone $requestUrl;
