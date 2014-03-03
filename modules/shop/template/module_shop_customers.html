@@ -42,7 +42,9 @@ function customersDoAction(strForm, strCheckbox, objSelect) {
   </ul>
 </div>
 <br />
-<form name="shop_filter" method="post" action="index.php?cmd=shop{MODULE_INDEX}&amp;act=customers">
+<form name="shop_filter" method="get" action="index.php">
+  <input type="hidden" name="cmd" value="shop{MODULE_INDEX}" />
+  <input type="hidden" name="act" value="customers" />
   <table width="100%" border="0" cellspacing="0" cellpadding="2" class="adminlist">
     <tr>
       <th>{TXT_SEARCH}</th>
