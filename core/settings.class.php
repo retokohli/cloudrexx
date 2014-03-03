@@ -685,7 +685,7 @@ class settingsManager
             foreach($arrInner as $strName => $strValue) {
                 $strBody .= sprintf("%-".$intMaxLen."s",'$_CONFIG[\''.$strName.'\']');
                 $strBody .= "= ";
-                $strBody .= (is_numeric($strValue) ? $strValue : '"'.str_replace('"', '\"', $strValue).'"').";\n";
+                $strBody .= ($this->isANumber($strValue) ? $strValue : '"'.str_replace('"', '\"', $strValue).'"').";\n";
             }
             $strBody .= "\n";
         }
@@ -703,7 +703,17 @@ class settingsManager
 
         return false;
     }
-
+    
+    /**
+     * Check whether the given string is a number or not.
+     * Integers with leading zero results in 0, this method prevents that.
+     * @param string $value The value to check
+     * @return bool true if the string is a number, false if not
+     */
+    protected function isANumber($value) {
+        // check whether the integer value has the same length like the entered string
+        return is_numeric($value) && strlen(intval($value)) == strlen($value);
+    }
 
     function smtp()
     {
