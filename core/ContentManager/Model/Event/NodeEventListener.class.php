@@ -65,7 +65,7 @@ class NodeEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     
     public function onFlush($eventArgs) {
         global $objCache;
-        $objCache->clearUserCache();
+        $objCache->clearCache();
     }
 
     public function onEvent($eventName, $eventArgs) {
