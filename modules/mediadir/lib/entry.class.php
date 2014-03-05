@@ -699,7 +699,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 
                 $arrValues = explode(',', $this->arrSettings['settingsGoogleMapStartposition']);
                 $objGoogleMap->setMapZoom($arrValues[2]);
-                $objGoogleMap->setMapCenter($arrValues[0], $arrValues[1]);
+                $objGoogleMap->setMapCenter($arrValues[1], $arrValues[0]);
 
                 foreach ($this->arrEntries as $key => $arrEntry) {
                 	if(($arrEntry['entryDurationStart'] < $intToday && $arrEntry['entryDurationEnd'] > $intToday) || $arrEntry['entryDurationType'] == 1) {
@@ -740,11 +740,14 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 	                        $arrValues = explode(',', $objRSMapKoordinates->fields['value']);
 	                    }
 
-	                    $strValueLon = empty($arrValues[0]) ? 0 : $arrValues[0];
-                            $strValueLat = empty($arrValues[1]) ? 0 : $arrValues[1];
+	                    $strValueLon = empty($arrValues[1]) ? 0 : $arrValues[1];
+                            $strValueLat = empty($arrValues[0]) ? 0 : $arrValues[0];
                            
-                            $clickFunction = 'window_info'.$intEntryId.'.open(map_'.$objGoogleMap->getMapIndex().', marker'.$intEntryId.');';
-	                    $objGoogleMap->addMapMarker($intEntryId, $strValueLon, $strValueLat, $strEntryTitle."<br />".$strEntryLink, false, $clickFunction, $strValueMouseover, $strValueMouseout);
+                            $mapIndex      = $objGoogleMap->getMapIndex();
+                            $clickFunction = "if (infowindow_$mapIndex) { infowindow_$mapIndex.close(); }
+                                infowindow_$mapIndex.setContent(info$intEntryId);
+                                infowindow_$mapIndex.open(map_$mapIndex, marker$intEntryId)";
+	                    $objGoogleMap->addMapMarker($intEntryId, $strValueLon, $strValueLat, $strEntryTitle."<br />".$strEntryLink, true, $clickFunction);
                     }
                 }
 
