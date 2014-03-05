@@ -160,7 +160,7 @@ class googleMap
                 }
 
                 if (!$marker['hideInfo']) {
-                    $showInfo = "var window_info$id = new google.maps.InfoWindow({content:info$id});window_info$id.open(map_".$this->mapIndex.", marker$id);";
+                    $showInfo = "infowindow_{$this->mapIndex}.setContent(info$id);infowindow_{$this->mapIndex}.open(map_{$this->mapIndex}, marker$id)";
                 } else {
                     $showInfo = '';
                 }
@@ -231,6 +231,7 @@ function $initialize() {
     $map.setZoom($this->mapZoom);
 
     $map.setMapTypeId(google.maps.MapTypeId.$this->mapType);
+    var infowindow_$this->mapIndex = new google.maps.InfoWindow();
 
     $markers
 }
