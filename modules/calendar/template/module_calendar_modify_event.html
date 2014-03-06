@@ -1055,10 +1055,15 @@
                 </tr>
                 <tr class="row2">
                     <td valign="top">{TXT_CALENDAR_EVENT_EMAIL_TEMPLATE}</td>
-                    <td>
-                        <select name="emailTemplate" style="width: 258px;">
-                            {CALENDAR_EVENT_EMAIL_TEMPLATE}
-                        </select>&nbsp;&nbsp;<span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_CALENDAR_EVENT_EMAIL_TEMPLATE_INFO}</span>
+                    <td>                                             
+                        <!-- BEGIN registration_email_template -->
+                        <div class="registrationEmailTemplate">
+                            <div class="language-icons">{CALENDAR_EVENT_REGISTRATION_EMAIL_LANG}</div>
+                            <select name="emailTemplate[{CALENDAR_EVENT_REGISTRATION_EMAIL_LANG_ID}]" style="width: 230px;">
+                                {CALENDAR_EVENT_REGISTRATION_EMAIL_TEMPLATE}
+                            </select>&nbsp;&nbsp;<span class="icon-info tooltip-trigger"></span><span class="tooltip-message">{TXT_CALENDAR_EVENT_EMAIL_TEMPLATE_INFO}</span>
+                        </div>
+                        <!-- END registration_email_template -->
                     </td>
                 </tr>
                 <!--                <tr class="row1">

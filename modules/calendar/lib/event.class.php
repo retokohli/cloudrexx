@@ -682,7 +682,7 @@ class CalendarEvent extends CalendarLibrary
                 $this->registrationForm = intval($objResult->fields['registration_form']);  
                 $this->numSubscriber = intval($objResult->fields['registration_num']); 
                 $this->notificationTo = htmlentities($objResult->fields['registration_notification'], ENT_QUOTES, CONTREXX_CHARSET);
-                $this->emailTemplate = intval($objResult->fields['email_template']);
+                $this->emailTemplate = json_decode($objResult->fields['email_template'], true);
                 $this->ticketSales = intval($objResult->fields['ticket_sales']);
                 $this->arrNumSeating = json_decode($objResult->fields['num_seating']);
                 $this->numSeating = implode(',', $this->arrNumSeating);
@@ -909,7 +909,7 @@ class CalendarEvent extends CalendarLibrary
         $registration_form         = isset($data['registrationForm']) ? intval($data['registrationForm']) : 0;      
         $registration_num          = isset($data['numSubscriber']) ? intval($data['numSubscriber']) : 0;      
         $registration_notification = isset($data['notificationTo']) ? contrexx_addslashes(contrexx_strip_tags($data['notificationTo'])) : '';
-        $email_template            = isset($data['emailTemplate']) ? intval($data['emailTemplate']) : 0;
+        $email_template            = isset($data['emailTemplate']) ? contrexx_input2db($data['emailTemplate']) : 0;
         $ticket_sales              = isset($data['ticketSales']) ? intval($data['ticketSales']) : 0;
         $num_seating               = isset($data['numSeating']) ? json_encode(explode(',', $data['numSeating'])) : '';
         $related_hosts             = isset($data['selectedHosts']) ? $data['selectedHosts'] : '';        
@@ -1129,7 +1129,7 @@ class CalendarEvent extends CalendarLibrary
             'registration_form'             => $registration_form, 
             'registration_num'              => $registration_num, 
             'registration_notification'     => $registration_notification,
-            'email_template'                => $email_template,
+            'email_template'                => json_encode($email_template),
             'ticket_sales'                  => $ticket_sales,
             'num_seating'                   => $num_seating,            
             'series_status'                 => $seriesStatus,
