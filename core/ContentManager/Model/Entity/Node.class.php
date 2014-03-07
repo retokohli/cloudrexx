@@ -196,6 +196,11 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
      */
     public function getChildren($lang = null)
     {
+        $repo = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
+        foreach ($this->children as &$child) {
+            if (!is_int($child)) continue;
+            $child = $repo->find($child);
+        }
         return $this->children;
 
     }
@@ -217,6 +222,11 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
      */
     public function getPages($inactive_langs = false, $aliases = false)
     {
+        $repo = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+        foreach ($this->pages as &$page) {
+            if (!is_int($page)) continue;
+            $page = $repo->find($page);
+        }
         if ($inactive_langs) {
             return $this->pages;
         }
@@ -279,6 +289,10 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
      */
     public function getParent()
     {
+        if (is_int($this->parent)) {
+            $repo = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
+            $this->parent = $repo->find($this->parent);
+        }
         return $this->parent;
     }
 
@@ -414,22 +428,20 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
             )
         );
     }
-    public function unserialize($data) {
-        $em = \Env::em();
-        
+    public function unserialize($data) {        
         $unserialized = unserialize($data);
         $this->id = $unserialized[0];
         $this->lft = $unserialized[1];
         $this->rgt = $unserialized[2];
         $this->lvl = $unserialized[3];
         if ($unserialized[4]) {
-            $this->parent = $em->getReference('Cx\Core\ContentManager\Model\Entity\Node', $unserialized[4]);
+            $this->parent = $unserialized[4];
         }
         foreach ($unserialized[5] as $childId) {
-            $this->children[] = $em->getReference('Cx\Core\ContentManager\Model\Entity\Node', $childId);
+            $this->children[] = $childId;
         }
         foreach ($unserialized[6] as $pageId) {
-            $this->pages[] = $em->getReference('Cx\Core\ContentManager\Model\Entity\Page', $pageId);
+            $this->pages[] = $pageId;
         }
     }
 }
