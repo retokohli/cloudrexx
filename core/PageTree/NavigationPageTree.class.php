@@ -38,7 +38,23 @@ class NavigationPageTree extends SigmaPageTree {
             $node = $node->getParent();
         }
     }
+    
+    /**
+     * Get the first level index which should be shown
+     * @return int the first level
+     */
+    protected function getFirstLevel() {
+        $match = array();
+        if (preg_match_all('/level_(\d)*/', trim($this->template->_blocks['navigation']), $match)) {
+            return intval(current($match[1]));
+        }
+        return 1;
+    }
 
+    /**
+     * Get the last level index which should be shown
+     * @return int the last level
+     */
     protected function getLastLevel() {
         $match = array();
         if (preg_match_all('/level_(\d)*/', trim($this->template->_blocks['navigation']), $match)) {

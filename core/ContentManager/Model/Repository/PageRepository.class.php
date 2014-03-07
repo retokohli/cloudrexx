@@ -695,21 +695,21 @@ class PageRepository extends EntityRepository {
         if (!$node) {
             throw new PageRepositoryException('No pages found!');
         }
+        $q = $this->em->createQuery("SELECT n FROM Cx\Core\ContentManager\Model\Entity\Node n JOIN n.pages p WHERE p.type != 'alias' AND n.parent = ?1 AND p.lang = ?2 AND p.slug = ?3")->useResultCache(true);      
         foreach ($parts as $index=>$slug) {
             if (empty($slug)) {
                 break;
             }
-            foreach ($node->getChildren() as $child) {
-                $childPage = $child->getPage($lang);
-                if (!$childPage) {
-                    continue;
-                }
-                if ($childPage->getSlug() == $slug) {
+            $q->setParameter(1, $node);
+            $q->setParameter(2, $lang);
+            $q->setParameter(3, $slug);
+            try {
+                $child = $q->getSingleResult();
                     $node = $child;
-                    $page = $childPage;
+                $page = $node->getPage($lang);
                     unset($parts[$index]);
+            } catch (\Doctrine\ORM\NoResultException $e) {
                     break;
-                }
             }
         }
         if (!$page) {

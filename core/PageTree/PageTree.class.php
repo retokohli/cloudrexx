@@ -267,10 +267,14 @@ $this->bytes = memory_get_peak_usage();
      */
     protected abstract function init();
     
+    protected function getFirstLevel() {
+        return 1; // show from first level
+    }
+    
     protected function getLastLevel() {
         return 0; // show all levels
     }
-    
+
     protected function getFullNavigation() {
         return false;
     }

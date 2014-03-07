@@ -974,6 +974,9 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
      */
     public function getNode()
     {
+        if (is_int($this->node)) {
+            $this->node = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Node')->find($this->node);      
+        }
         return $this->node;
     }
 
@@ -1932,7 +1935,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         $this->metarobots = $unserialized[17];
         $this->metatitle = $unserialized[18];
         $this->module = $unserialized[19];
-        $this->node = \Env::em()->getReference('Cx\Core\ContentManager\Model\Entity\Node', $unserialized[20]);
+        $this->node = $unserialized[20];
         $this->nodeIdShadowed = $unserialized[21];
         $this->protection = $unserialized[22];
         $this->skin = $unserialized[23];
