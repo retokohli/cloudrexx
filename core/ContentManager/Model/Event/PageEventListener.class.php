@@ -97,6 +97,9 @@ class PageEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     }
 
     public function postUpdate($eventArgs) {
+        global $objCache;
+        $objCache->clearCache();
+        
         $this->writeXmlSitemap($eventArgs);
     }
 

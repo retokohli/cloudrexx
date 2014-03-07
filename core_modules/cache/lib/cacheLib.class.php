@@ -373,6 +373,8 @@ class cacheLib
                 break;
             case self::CACHE_ENGINE_ZEND_OPCACHE:
                 $this->clearZendOpCache();
+            case self::CACHE_ENGINE_FILESYSTEM:
+                $this->_deleteAllFiles('cxPages');
             default:
                 break;
         }
@@ -397,8 +399,8 @@ class cacheLib
      */
     private function clearMemcache(){
         if(!$this->isInstalled(self::CACHE_ENGINE_MEMCACHE)){
-			return;
-		}
+            return;
+        }
         //$this->memcache->flush(); //<- not like this!!!
         $keys = array();
         $allSlabs = $this->memcache->getExtendedStats('slabs');
