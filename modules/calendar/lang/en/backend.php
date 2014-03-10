@@ -604,3 +604,4 @@ $_ARRAYLANG['TXT_CALENDAR_ALL_EVENTS'] = "All events";
 $_ARRAYLANG['TXT_CALENDAR_PREV'] = "Prev";
 $_ARRAYLANG['TXT_CALENDAR_NEXT'] = "Next";
 $_ARRAYLANG['TXT_CALENDAR_COPY'] = "Use as template for new event";
+$_ARRAYLANG['TXT_CALENDAR_DEFAULT'] = "Default";

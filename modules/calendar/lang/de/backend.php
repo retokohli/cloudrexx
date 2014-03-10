@@ -604,3 +604,4 @@ $_ARRAYLANG['TXT_CALENDAR_ALL_EVENTS'] = "Alle anzeigen";
 $_ARRAYLANG['TXT_CALENDAR_PREV'] = "Zurück";
 $_ARRAYLANG['TXT_CALENDAR_NEXT'] = "Weiter";
 $_ARRAYLANG['TXT_CALENDAR_COPY'] = "Als Vorlage für eine neue Veranstaltung verwenden";
+$_ARRAYLANG['TXT_CALENDAR_DEFAULT'] = "Default";
