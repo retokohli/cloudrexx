@@ -691,4 +691,8 @@ class CxCoreContentManagerModelEntityPageProxy extends \Cx\Core\ContentManager\M
         }
         
     }
+    
+    public function __toString() {
+        return strval($this->_identifier);
+    }
 }

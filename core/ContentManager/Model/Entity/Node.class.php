@@ -223,9 +223,9 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
     public function getPages($inactive_langs = false, $aliases = false)
     {
         $repo = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-        foreach ($this->pages as &$page) {
+        foreach ($this->pages as $i => $page) {
             if (!is_int($page)) continue;
-            $page = $repo->find($page);
+            $this->pages[$i] = $repo->find($page);
         }
         if ($inactive_langs) {
             return $this->pages;
@@ -413,7 +413,7 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
             $childrenArray[] = $child->getId();
         }
         $pagesArray = array();
-        foreach ($this->getPages() as $page) {
+        foreach ($this->getPages(true) as $page) {
             $pagesArray[] = $page->getId();
         }
         return serialize(
@@ -428,7 +428,13 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
             )
         );
     }
-    public function unserialize($data) {        
+    public function unserialize($data) {
+        $this->children = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->pages = new \Doctrine\Common\Collections\ArrayCollection();
+
+        //instance counter to provide unique ids
+        $this->instance = ++self::$instanceCounter;
+        
         $unserialized = unserialize($data);
         $this->id = $unserialized[0];
         $this->lft = $unserialized[1];
