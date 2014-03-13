@@ -458,7 +458,10 @@ class Url {
 
         // workaround for legacy ?page=123 requests by routing to an alias like /legacy_page_123
         $additionalParams = '';
-        if (isset($get['page']) && preg_match('/^\d+$/', $get['page'])) {
+        if (
+            isset($get['page']) && preg_match('/^\d+$/', $get['page']) &&
+            \Env::get('cx')->getMode() != \Cx\Core\Core\Controller\Cx::MODE_BACKEND
+        ) {
             $request = 'legacy_page_'.$get['page'];
             $additionalParams = 'external=permanent';
             unset($get['page']);
