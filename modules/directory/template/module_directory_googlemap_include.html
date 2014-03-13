@@ -152,11 +152,11 @@ var getStatusString = function(X, Y){
 	return '<span class="red">lat: </span>'+Y+'<br /><span class="red">lon: </span>'+X+'<span class="red"><br /> zoom: </span>'+map.getZoom();
 }
 
-var passValues = function(){
-	lon 	= point.ob.toString().split('.')[0];
-	lonfac 	= point.ob.toString().split('.')[1];
-	lat 	= point.pb.toString().split('.')[0];
-	latfac 	= point.pb.toString().split('.')[1];
+var passValues = function(){    
+	lon 	= point.lng().toString().split('.')[0];
+	lonfac 	= point.lng().toString().split('.')[1];
+	lat 	= point.lat().toString().split('.')[0];
+	latfac 	= point.lat().toString().split('.')[1];
 	if (!lonfac) {
 	    lonfac = 0;
 	}
