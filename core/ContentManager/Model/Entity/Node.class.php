@@ -197,9 +197,9 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
     public function getChildren($lang = null)
     {
         $repo = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Node');
-        foreach ($this->children as &$child) {
+        foreach ($this->children as $i => $child) {
             if (!is_int($child)) continue;
-            $child = $repo->find($child);
+            $this->children[$i] = $repo->find($child);
         }
         return $this->children;
 
