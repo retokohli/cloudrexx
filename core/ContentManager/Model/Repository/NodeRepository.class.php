@@ -36,7 +36,7 @@ class NodeRepository extends NestedTreeRepository {
         $this->em = $em;
     }
 
-	public function find($id) {
+    public function find($id, $lockMode = 0, $lockVersion = NULL) {
         return $this->findOneBy(array('id' => $id));
     }
 
@@ -79,7 +79,7 @@ class NodeRepository extends NestedTreeRepository {
      * @override
      */
     public function findOneBy(array $criteria)
-    {        
+    {
         $qb = $this->_em->createQueryBuilder();
         $qb->select('n')
                 ->from('\Cx\Core\ContentManager\Model\Entity\Node', 'n')->setMaxResults(1);
