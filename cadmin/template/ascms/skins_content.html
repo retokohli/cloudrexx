@@ -40,9 +40,6 @@
                                 <option value="">--- {TXT_SELECT_FILE} -------------------</option>
                                 {THEMES_PAGES_MENU}
                             </select>
-                            <br /><br />
-                            <input type="input" name="themesNewFileName" maxlength="50" style="width: 180px" /><br />
-                            <input type="submit" name="Submit" value="{TXT_CREATE_FILE}" style="WIDTH: 100px" />
                         </td>
                     </tr>
                 </table>
@@ -101,9 +98,8 @@
                                 <!-- BEGIN theme_library_version -->
                                 <option value="{THEME_LIBRARY_VERSION}" {THEME_LIBRARY_VERSION_SELECTED}>{THEME_LIBRARY_NAME} {THEME_LIBRARY_VERSION}</option>
                                 <!-- END theme_library_version -->
-                            </select>
+                            </select><br />
                             <!-- END theme_library -->
-                            <br />
                             <input type="submit" value="{TXT_SAVE}" />
                         </td>
                     </tr>
@@ -118,6 +114,9 @@
                                 {THEMES_PAGE_DEL_VALUE}
                             </select><br />
                             <input type="submit" name="Submit" value="{TXT_DELETE}" style="WIDTH: 100px"/>
+                            <br />
+                            <input type="input" name="themesNewFileName" maxlength="50" style="width: 240px;" /><br />
+                            <input type="submit" name="Submit" value="{TXT_CREATE_FILE}" />
                         </td>
                     </tr>
                 </table>

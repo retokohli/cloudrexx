@@ -109,34 +109,9 @@ cx.jQuery(document).ready(function(){
         ),
         'jquery'     => array(
             'versions' => array(
-                '1.6.1' => array(
-            		'jsfiles'       => array(
-                        'lib/javascript/jquery/1.6.1/js/jquery.min.js',
-                     ),
-                ),
-                '1.6.4' => array(
+                '2.0.3' => array(
                     'jsfiles' => array(
-                        'lib/javascript/jquery/1.6.4/js/jquery.min.js',
-                     ),
-                ),
-                '1.7.3' => array(
-                    'jsfiles' => array(
-                        'lib/javascript/jquery/1.7.3/js/jquery.min.js',
-                     ),
-                ),
-                '1.8.3' => array(
-                    'jsfiles' => array(
-                        'lib/javascript/jquery/1.8.3/js/jquery.min.js',
-                     ),
-                ),
-                '1.9.1' => array(
-                    'jsfiles' => array(
-                        'lib/javascript/jquery/1.9.1/js/jquery.min.js',
-                     ),
-                ),
-                '1.10.1' => array(
-                    'jsfiles' => array(
-                        'lib/javascript/jquery/1.10.1/js/jquery.min.js',
+                        'lib/javascript/jquery/2.0.3/js/jquery.min.js',
                      ),
                 ),
                 '2.0.2' => array(
@@ -144,9 +119,34 @@ cx.jQuery(document).ready(function(){
                         'lib/javascript/jquery/2.0.2/js/jquery.min.js',
                      ),
                 ),
-                '2.0.3' => array(
+                '1.10.1' => array(
                     'jsfiles' => array(
-                        'lib/javascript/jquery/2.0.3/js/jquery.min.js',
+                        'lib/javascript/jquery/1.10.1/js/jquery.min.js',
+                     ),
+                ),
+                '1.9.1' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/jquery/1.9.1/js/jquery.min.js',
+                     ),
+                ),
+                '1.8.3' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/jquery/1.8.3/js/jquery.min.js',
+                     ),
+                ),
+                '1.7.3' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/jquery/1.7.3/js/jquery.min.js',
+                     ),
+                ),
+                '1.6.4' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/jquery/1.6.4/js/jquery.min.js',
+                     ),
+                ),
+                '1.6.1' => array(
+            		'jsfiles'       => array(
+                        'lib/javascript/jquery/1.6.1/js/jquery.min.js',
                      ),
                 ),
             ),
@@ -325,40 +325,12 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         ),
         'twitter-bootstrap' => array(
             'versions' => array(
-                '2.3.2' => array(
+                '3.1.0' => array(
                     'jsfiles' => array(
-                        'lib/javascript/twitter-bootstrap/2.3.2/js/bootstrap.min.js',
+                        'lib/javascript/twitter-bootstrap/3.1.0/js/bootstrap.min.js',
                      ),
                     'cssfiles' => array(
-                        'lib/javascript/twitter-bootstrap/2.3.2/css/bootstrap.min.css',
-                        'lib/javascript/twitter-bootstrap/2.3.2/css/bootstrap-responsive.min.css',
-                     ),
-                    'dependencies' => array('jquery' => '^([^1]\..*|1\.[^0-6]*\..*)$'), // jquery needs to be version 1.7.3 or higher
-                ),
-                '3.0.0' => array(
-                    'jsfiles' => array(
-                        'lib/javascript/twitter-bootstrap/3.0.0/js/bootstrap.min.js',
-                     ),
-                    'cssfiles' => array(
-                        'lib/javascript/twitter-bootstrap/3.0.0/css/bootstrap.min.css',
-                     ),
-                    'dependencies' => array('jquery' => '^([^1]\..*|1\.[^0-6]*\..*)$'), // jquery needs to be version 1.7.3 or higher
-                ),
-                '3.0.1' => array(
-                    'jsfiles' => array(
-                        'lib/javascript/twitter-bootstrap/3.0.1/js/bootstrap.min.js',
-                     ),
-                    'cssfiles' => array(
-                        'lib/javascript/twitter-bootstrap/3.0.1/css/bootstrap.min.css',
-                     ),
-                    'dependencies' => array('jquery' => '^([^1]\..*|1\.[^0-6]*\..*)$'), // jquery needs to be version 1.7.3 or higher
-                ),
-                '3.0.2' => array(
-                    'jsfiles' => array(
-                        'lib/javascript/twitter-bootstrap/3.0.2/js/bootstrap.min.js',
-                     ),
-                    'cssfiles' => array(
-                        'lib/javascript/twitter-bootstrap/3.0.2/css/bootstrap.min.css',
+                        'lib/javascript/twitter-bootstrap/3.1.0/css/bootstrap.min.css',
                      ),
                     'dependencies' => array('jquery' => '^([^1]\..*|1\.[^0-6]*\..*)$'), // jquery needs to be version 1.7.3 or higher
                 ),
@@ -371,12 +343,40 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                      ),
                     'dependencies' => array('jquery' => '^([^1]\..*|1\.[^0-6]*\..*)$'), // jquery needs to be version 1.7.3 or higher
                 ),
-                '3.1.0' => array(
+                '3.0.2' => array(
                     'jsfiles' => array(
-                        'lib/javascript/twitter-bootstrap/3.1.0/js/bootstrap.min.js',
+                        'lib/javascript/twitter-bootstrap/3.0.2/js/bootstrap.min.js',
                      ),
                     'cssfiles' => array(
-                        'lib/javascript/twitter-bootstrap/3.1.0/css/bootstrap.min.css',
+                        'lib/javascript/twitter-bootstrap/3.0.2/css/bootstrap.min.css',
+                     ),
+                    'dependencies' => array('jquery' => '^([^1]\..*|1\.[^0-6]*\..*)$'), // jquery needs to be version 1.7.3 or higher
+                ),
+                '3.0.1' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/twitter-bootstrap/3.0.1/js/bootstrap.min.js',
+                     ),
+                    'cssfiles' => array(
+                        'lib/javascript/twitter-bootstrap/3.0.1/css/bootstrap.min.css',
+                     ),
+                    'dependencies' => array('jquery' => '^([^1]\..*|1\.[^0-6]*\..*)$'), // jquery needs to be version 1.7.3 or higher
+                ),
+                '3.0.0' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/twitter-bootstrap/3.0.0/js/bootstrap.min.js',
+                     ),
+                    'cssfiles' => array(
+                        'lib/javascript/twitter-bootstrap/3.0.0/css/bootstrap.min.css',
+                     ),
+                    'dependencies' => array('jquery' => '^([^1]\..*|1\.[^0-6]*\..*)$'), // jquery needs to be version 1.7.3 or higher
+                ),
+                '2.3.2' => array(
+                    'jsfiles' => array(
+                        'lib/javascript/twitter-bootstrap/2.3.2/js/bootstrap.min.js',
+                     ),
+                    'cssfiles' => array(
+                        'lib/javascript/twitter-bootstrap/2.3.2/css/bootstrap.min.css',
+                        'lib/javascript/twitter-bootstrap/2.3.2/css/bootstrap-responsive.min.css',
                      ),
                     'dependencies' => array('jquery' => '^([^1]\..*|1\.[^0-6]*\..*)$'), // jquery needs to be version 1.7.3 or higher
                 ),
