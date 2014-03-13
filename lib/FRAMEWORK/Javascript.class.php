@@ -684,7 +684,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 // get js files which are specified or the js files from first version
                 if (!isset($data['jsfiles'])) {
                     // get data from default version and load the files from there
-                    $versionData = current($data['versions']);
+                    $versionData = end($data['versions']);
                     $data = array_merge($data, $versionData);
                 }
                 $retstring .= self::makeJSFiles($data['jsfiles']);
