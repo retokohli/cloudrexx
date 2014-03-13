@@ -77,6 +77,10 @@ class ClassLoader {
                 if ($parts[2] == 'Events') {
                     $third = 'events';
                 }
+                if ($parts[2] == 'Proxies') {
+                    $third = 'proxies';
+                    $suffix = '';
+                }
                 $parts = array_merge(array('Cx', 'Model', $third), $parts);
                 
             // Exception for lib, its within /model/FRAMEWORK/
