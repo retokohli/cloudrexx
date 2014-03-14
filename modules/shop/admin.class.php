@@ -3129,7 +3129,7 @@ if ($test === NULL) {
                 'SHOP_ROWCLASS' => 'row'.(++$i % 2 + 1),
                 'SHOP_PRODUCT_ID' => $objProduct->id(),
                 'SHOP_PRODUCT_CODE' => $objProduct->code(),
-                'SHOP_PRODUCT_NAME' => $objProduct->name(),
+                'SHOP_PRODUCT_NAME' => contrexx_raw2xhtml($objProduct->name()),
                 'SHOP_PRODUCT_PRICE1' => Currency::formatPrice($objProduct->price()),
                 'SHOP_PRODUCT_PRICE2' => Currency::formatPrice($objProduct->resellerprice()),
                 'SHOP_PRODUCT_DISCOUNT' => Currency::formatPrice($objProduct->discountprice()),
@@ -3157,8 +3157,7 @@ if ($test === NULL) {
                 'SHOP_SHOW_PRODUCT_ON_START_PAGE_OLD' =>
                     ($objProduct->shown_on_startpage() ? '1' : ''),
 // This is used when the Product name can be edited right on the overview
-                'SHOP_PRODUCT_NAME' => htmlentities(
-                    $objProduct->name(), ENT_QUOTES, CONTREXX_CHARSET),
+                'SHOP_PRODUCT_NAME' => contrexx_raw2xhtml($objProduct->name()),
             ));
             // All languages active
             foreach ($arrLanguages as $lang_id => $arrLanguage) {

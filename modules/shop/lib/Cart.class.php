@@ -793,7 +793,7 @@ die("Cart::view(): ERROR: No template");
                     'SHOP_PRODUCT_ID' => $arrProduct['id'],
                     'SHOP_PRODUCT_CODE' => $arrProduct['product_id'],
                     'SHOP_PRODUCT_CART_ID' => $arrProduct['cart_id'],
-                    'SHOP_PRODUCT_TITLE' => str_replace('"', '&quot;', $arrProduct['title']),
+                    'SHOP_PRODUCT_TITLE' => str_replace('"', '&quot;', contrexx_raw2xhtml($arrProduct['title'])),
                     'SHOP_PRODUCT_PRICE' => $arrProduct['price'],  // items * qty
                     'SHOP_PRODUCT_PRICE_UNIT' => Currency::getActiveCurrencySymbol(),
                     'SHOP_PRODUCT_QUANTITY' => $arrProduct['quantity'],
