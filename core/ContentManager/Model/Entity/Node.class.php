@@ -409,11 +409,11 @@ class Node extends \Cx\Model\Base\EntityBase implements \Serializable
     public function serialize() {
         $parent = $this->getParent();
         $childrenArray = array();
-        foreach ($this->getChildren() as $child) {
+        foreach ($this->children as $child) {
             $childrenArray[] = $child->getId();
         }
         $pagesArray = array();
-        foreach ($this->getPages(true) as $page) {
+        foreach ($this->pages as $page) {
             $pagesArray[] = $page->getId();
         }
         return serialize(
