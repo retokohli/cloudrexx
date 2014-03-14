@@ -1060,6 +1060,10 @@ div.date img{
     width: 574px;
 }
 
+#page select.select_small {
+    width: 287px;
+}
+
 #page input[type=radio],
 #page input[type=checkbox],
 #page input[type=submit],
