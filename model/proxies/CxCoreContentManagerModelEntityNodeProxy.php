@@ -195,6 +195,6 @@ class CxCoreContentManagerModelEntityNodeProxy extends \Cx\Core\ContentManager\M
     }
     
     public function __toString() {
-        return strval($this->_identifier);
+        return strval($this->getId());
     }
 }

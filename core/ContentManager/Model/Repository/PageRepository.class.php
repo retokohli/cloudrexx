@@ -69,9 +69,9 @@ class PageRepository extends EntityRepository {
         return $this->findBy(array(), true);
     }
     
-    /*public function find($id, $lockMode = 0, $lockVersion = NULL) {
+    public function find($id, $lockMode = 0, $lockVersion = NULL) {
         return $this->findOneBy(array('id' => $id), true);
-    }*/
+    }
 
     /**
      * Finds entities by a set of criteria.
