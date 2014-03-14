@@ -360,6 +360,13 @@ class cacheLib
      * @see \Cx\Core\ContentManager\Model\Event\PageEventListener on update of page objects
      */
     public function clearCache($cacheEngine = null) {
+        if (!$this->strCachePath) {
+            if (is_dir(ASCMS_CACHE_PATH)) {
+                if (is_writable(ASCMS_CACHE_PATH)) {
+                    $this->strCachePath = ASCMS_CACHE_PATH . '/';
+                }
+            }
+        }
         $cacheEngine = $cacheEngine == null ? $this->userCacheEngine : $cacheEngine;
         switch ($cacheEngine) {
             case self::CACHE_ENGINE_APC:
@@ -374,7 +381,7 @@ class cacheLib
             case self::CACHE_ENGINE_ZEND_OPCACHE:
                 $this->clearZendOpCache();
             case self::CACHE_ENGINE_FILESYSTEM:
-                $this->_deleteAllFiles('cxPages');
+                $this->_deleteAllFiles('cxEntries');
             default:
                 break;
         }
