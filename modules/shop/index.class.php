@@ -1139,7 +1139,7 @@ die("Failed to update the Cart!");
                     ));
                 } else {
                     self::$objTemplate->setVariable(array(
-                        'TXT_SEE_LARGE_PICTURE' => $objProduct->name(),
+                        'TXT_SEE_LARGE_PICTURE' => contrexx_raw2xhtml($objProduct->name()),
                     ));
                 }
                 if ($arrProductImage['POPUP_LINK']) {
@@ -1246,7 +1246,7 @@ die("Failed to update the Cart!");
             self::$objTemplate->setVariable(array(
                 'SHOP_ROWCLASS' => 'row'.$row,
                 'SHOP_PRODUCT_ID' => $objProduct->id(),
-                'SHOP_PRODUCT_TITLE' => htmlentities($objProduct->name(), ENT_QUOTES, CONTREXX_CHARSET),
+                'SHOP_PRODUCT_TITLE' => contrexx_raw2xhtml($objProduct->name()),
                 'SHOP_PRODUCT_DESCRIPTION' => $short,
 // TODO: Test whether this produces double descriptions in some views
                 'SHOP_PRODUCT_DETAILDESCRIPTION' => ($longDescription
@@ -3237,7 +3237,7 @@ die("Shop::processRedirect(): This method is obsolete!");
                 return Message::error($_ARRAYLANG['TXT_ERROR_LOOKING_UP_ORDER']);
             }
             $product_id = $arrProduct['id'];
-            $name = $objProduct->name();
+            $name = contrexx_raw2xhtml($objProduct->name());
             $priceOptions = (!empty($arrProduct['optionPrice'])
                 ? $arrProduct['optionPrice'] : 0);
             $quantity = $arrProduct['quantity'];
