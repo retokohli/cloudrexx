@@ -185,7 +185,7 @@ class JsonPage implements JsonAdapter {
         // UPDATE
         if (!empty($pageId)) {
             // If we got a page id, the page already exists and can be updated.
-            $page = $this->pageRepo->find($pageId);
+            $page = $this->pageRepo->find($pageId, 0, null, false);
             $node = $page->getNode();
             
         // TRANSLATE
