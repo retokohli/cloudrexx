@@ -69,8 +69,8 @@ class PageRepository extends EntityRepository {
         return $this->findBy(array(), true);
     }
     
-    public function find($id, $lockMode = 0, $lockVersion = NULL) {
-        return $this->findOneBy(array('id' => $id), true);
+    public function find($id, $lockMode = 0, $lockVersion = NULL, $useResultCache = true) {
+        return $this->findOneBy(array('id' => $id), true, $useResultCache);
     }
 
     /**
@@ -122,7 +122,7 @@ class PageRepository extends EntityRepository {
      * @return object
      * @override
      */
-    public function findOneBy(array $criteria, $inactive_langs = false)
+    public function findOneBy(array $criteria, $inactive_langs = false, $useResultCache = true)
     {
         $activeLangs = \FWLanguage::getActiveFrontendLanguages();
         
@@ -140,7 +140,7 @@ class PageRepository extends EntityRepository {
         }
         
         try {
-            $q = $qb->getQuery()->useResultCache(true);
+            $q = $qb->getQuery()->useResultCache($useResultCache);
             $page = $q->getSingleResult();
         } catch (\Doctrine\ORM\NoResultException $e) {
             $page = null;
