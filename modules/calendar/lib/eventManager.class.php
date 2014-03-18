@@ -446,17 +446,28 @@ class CalendarEventManager extends CalendarLibrary
      * @return boolean true if the event is valid, false oterwise
      */
     function _addToEventList($objEvent) {
-        if($this->startDate == 0) {
+        if ($this->startDate == 0) {
             if($objEvent->endDate < $this->endDate || $this->endDate == 0) {
                 return true;
             } else {
                 return false;
             }
-        } else {
-            if(($objEvent->endDate >= $this->startDate) || ($objEvent->startDate >= $this->startDate)) {
-                return true;
+        } else { 
+            if ($this->endDate == 0) {
+                if(($objEvent->endDate >= $this->startDate) || ($objEvent->startDate >= $this->startDate)) {
+                    return true;
+                } else {
+                    return false;
+                }
             } else {
-                return false;
+                if(
+                     ($objEvent->startDate >= $this->startDate && $objEvent->startDate <= $this->endDate)
+                  || ($objEvent->endDate >= $this->startDate && $objEvent->endDate <= $this->endDate)  
+                ) {
+                    return true;
+                } else {
+                    return false;
+                }
             }
         }
     }
