@@ -1599,6 +1599,9 @@ $_ARRAYLANG['TXT_CORE_CM_METAKEYS_INFO'] = 'Search engines may use keywords as a
 $_ARRAYLANG['TXT_CORE_CM_THEMES'] = 'Theme';
 $_ARRAYLANG['TXT_CORE_CM_THEMES_INFO'] = 'The page is rendered within the selected theme.';
 $_ARRAYLANG['TXT_CORE_CM_CUSTOM_CONTENT'] = 'Content Template';
+$_ARRAYLANG['TXT_CORE_CM_USE_ALL_CHANNELS'] = "Use for all output channels";
+$_ARRAYLANG['TXT_CORE_CM_USE_SKIN_ALL_CHANNELS_INFO'] = "If option is set, then the selected Theme will be used for all output channels (Standard / Mobile / Print / PDF / App) instead of each channels default theme.";
+$_ARRAYLANG['TXT_CORE_CM_USE_CUSTOM_CONTENT_ALL_CHANNELS_INFO'] = "If option is set, then the selected Content Template will be used for all output channels (Standard / Mobile / Print / PDF / App). If option is not set, but a file by the same filename of the selected Content Template does exist in the channel's default theme, then that Content Template is used instead of the channels default Content Template (<span class='content_template_info'>content.html</span>).";
 $_ARRAYLANG['TXT_CORE_CM_CUSTOM_CONTENT_INFO'] = 'Use a custom content template. Custom templates are stored as content_<strong>name</strong>.html within the theme folder.';
 $_ARRAYLANG['TXT_CORE_CM_CSS_CLASS'] = 'Additional CSS Class';
 $_ARRAYLANG['TXT_CORE_CM_CSS_CLASS_INFO'] = 'The specified value can be accessed as [[CSS_NAME]] in the context of this page.';
