@@ -128,21 +128,29 @@ var load = function() {
         document.getElementById('gmap'),
         options
     );
-
+    
     marker = new google.maps.Marker({
         position: point,
-        map: map
+        map: map,
+        draggable:true,
+        animation: google.maps.Animation.DROP
+    });
+
+    google.maps.event.addListener(map, 'click', function(event) {
+        marker.setPosition( event.latLng );  // update marker
+        map.panTo( event.latLng );  // update map center
+        
+        point = event.latLng;
+        passValues();
+    }); 
+    
+    google.maps.event.addListener(marker, 'dragend', function(event){
+        point = event.latLng;
+        passValues();
     });
     
     geocoder = new google.maps.Geocoder();
 
-    google.maps.event.addListener(map, 'idle', function() {
-        if(isBackend){
-            point = map.getCenter();
-            passValues();
-            marker.setPosition(point);
-        }
-    });
     passValues();
     var loclayer = document.getElementById("loclayer");
     loclayer.parentNode.removeChild(loclayer);
