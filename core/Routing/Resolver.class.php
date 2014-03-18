@@ -275,7 +275,7 @@ class Resolver {
                                 }*/
 
 
-                            \Env::get('init')->setCustomizedTheme($page->getSkin(), $page->getCustomContent());
+                            \Env::get('init')->setCustomizedTheme($page->getSkin(), $page->getCustomContent(), $page->getUseSkinForAllChannels());
 
                             $themesPages = \Env::get('init')->getTemplates();
 

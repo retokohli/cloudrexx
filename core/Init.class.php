@@ -742,7 +742,7 @@ class InitCMS
      * @param   int $themesId     The optional theme ID
      * @param   string $customContent   The optional custom content template (like 'content_without_h1.html')
      */
-    public function setCustomizedTheme($themesId=0, $customContent='')
+    public function setCustomizedTheme($themesId=0, $customContent='', $useThemeForAllChannels = false)
     {
         global $objDatabase;
 
@@ -750,7 +750,7 @@ class InitCMS
         $this->customContentTemplate = $customContent;
 
         //only set customized theme if not in printview AND no mobile devic
-        if (!isset($_GET['printview']) && !$this->isInMobileView()) {
+        if ($useThemeForAllChannels || (!isset($_GET['printview']) && !$this->isInMobileView())) {
             $themesId=intval($themesId);
             if ($themesId>0){
                 $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."skins WHERE id = $themesId");
