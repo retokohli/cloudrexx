@@ -132,22 +132,24 @@ var load = function() {
     marker = new google.maps.Marker({
         position: point,
         map: map,
-        draggable:true,
+        draggable: isBackend ? true : false,
         animation: google.maps.Animation.DROP
     });
 
-    google.maps.event.addListener(map, 'click', function(event) {
-        marker.setPosition( event.latLng );  // update marker
-        map.panTo( event.latLng );  // update map center
-        
-        point = event.latLng;
-        passValues();
-    }); 
-    
-    google.maps.event.addListener(marker, 'dragend', function(event){
-        point = event.latLng;
-        passValues();
-    });
+    if ( isBackend ) {
+        google.maps.event.addListener(map, 'click', function(event) {
+            marker.setPosition( event.latLng );  // update marker
+            map.panTo( event.latLng );  // update map center
+
+            point = event.latLng;
+            passValues();
+        }); 
+
+        google.maps.event.addListener(marker, 'dragend', function(event){
+            point = event.latLng;
+            passValues();
+        });
+    }
     
     geocoder = new google.maps.Geocoder();
 
