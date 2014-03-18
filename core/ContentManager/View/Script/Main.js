@@ -469,13 +469,13 @@ cx.ready(function() {
     //add callback to reload custom content templates available as soon as template or module changes
     cx.jQuery('#page select[name="page[skin]"]').bind('change', function() {
         if (parseInt(cx.jQuery(this).val()) == 0) {
-            cx.jQuery('input[name="useSkinForAllChannels"]').removeAttr('checked');
-            cx.jQuery('input[name="useSkinForAllChannels"]').attr('disabled', 'disabled');
+            cx.jQuery('input[name="page[useSkinForAllChannels]"]').removeAttr('checked');
+            cx.jQuery('input[name="page[useSkinForAllChannels]"]').attr('disabled', 'disabled');
         } else {            
             if (parseInt(cx.cm.pageSkin) == 0) {
-                cx.jQuery('input[name="useSkinForAllChannels"]').attr('checked', 'checked');
+                cx.jQuery('input[name="page[useSkinForAllChannels]"]').attr('checked', 'checked');
             }
-            cx.jQuery('input[name="useSkinForAllChannels"]').removeAttr('disabled');
+            cx.jQuery('input[name="page[useSkinForAllChannels]"]').removeAttr('disabled');
         }
         
         cx.cm.pageSkin = cx.jQuery(this).val();
@@ -485,13 +485,13 @@ cx.ready(function() {
     
     cx.jQuery('#page select[name="page[customContent]"]').bind('change', function() {
         if (cx.jQuery(this).val() == '') {
-            cx.jQuery('input[name="useCustomContentForAllChannels"]').removeAttr('checked');
-            cx.jQuery('input[name="useCustomContentForAllChannels"]').attr('disabled', 'disabled');
+            cx.jQuery('input[name="page[useCustomContentForAllChannels]"]').removeAttr('checked');
+            cx.jQuery('input[name="page[useCustomContentForAllChannels]"]').attr('disabled', 'disabled');
         } else {            
             if (cx.cm.pageContentTemplate == '') {
-                cx.jQuery('input[name="useCustomContentForAllChannels"]').attr('checked', 'checked');
+                cx.jQuery('input[name="page[useCustomContentForAllChannels]"]').attr('checked', 'checked');
             }
-            cx.jQuery('input[name="useCustomContentForAllChannels"]').removeAttr('disabled');
+            cx.jQuery('input[name="page[useCustomContentForAllChannels]"]').removeAttr('disabled');
         }        
         
         cx.cm.pageContentTemplate = cx.jQuery(this).val();
@@ -2662,12 +2662,25 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
     cx.jQuery('#page input[name="page[start]"]').val(page.start);
     cx.jQuery('#page input[name="page[end]"]').val(page.end);
 
-    cx.jQuery('#page select[name="page[skin]"]').val(page.skin);
+    cx.jQuery('#page select[name="page[skin]"]').val(page.skin);    
     cx.cm.pageSkin = page.skin;
+    
+    if (page.useSkinForAllChannels == '1') {
+        cx.jQuery('#page input[name="page[useSkinForAllChannels]"]').attr('checked', 'checked');
+    } else {
+        cx.jQuery('#page input[name="page[useSkinForAllChannels]"]').removeAttr('checked');
+    }
     cx.jQuery('#page select[name="page[skin]"]').trigger('change');
     
     cx.jQuery('#page select[name="page[customContent]"]').val(page.customContent);
-    cx.cm.pageContentTemplate = page.customContent;    
+    cx.cm.pageContentTemplate = page.customContent;
+    
+    if (page.useCustomContentForAllChannels == '1') {
+        cx.jQuery('#page input[name="page[useCustomContentForAllChannels]"]').attr('checked', 'checked');
+    } else {
+        cx.jQuery('#page input[name="page[useCustomContentForAllChannels]"]').removeAttr('checked');
+    }
+    cx.jQuery('#page select[name="page[customContent]"]').trigger('change');
     
     cx.jQuery('#page input[name="page[cssName]"]').val(page.cssName);
 
