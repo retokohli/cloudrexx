@@ -138,6 +138,9 @@ class CacheManager extends cacheLib
             'TXT_DEACTIVATED' => $_CORELANG['TXT_DEACTIVATED'],
             'TXT_DISPLAY_CONFIGURATION' => $_CORELANG['TXT_DISPLAY_CONFIGURATION'],
             'TXT_HIDE_CONFIGURATION' => $_CORELANG['TXT_HIDE_CONFIGURATION'],
+            'TXT_CACHE_VARNISH'    => $_CORELANG['TXT_CACHE_VARNISH'],
+            'TXT_CACHE_PROXY_IP'    => $_CORELANG['TXT_CACHE_PROXY_IP'],
+            'TXT_CACHE_PROXY_PORT'  => $_CORELANG['TXT_CACHE_PROXY_PORT']
         ));
 
         if ($this->objSettings->isWritable()) {
