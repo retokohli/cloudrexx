@@ -385,6 +385,34 @@ class cacheLib
             default:
                 break;
         }
+        
+        $this->clearVarnishCache();
+    }
+    
+    /**
+     * Clears Varnish cache
+     */
+    private function clearVarnishCache()
+    {
+        global $_CONFIG;
+
+        $varnishConfiguration = $this->getVarnishConfiguration();
+        $varnishSocket = fsockopen($varnishConfiguration['ip'], $varnishConfiguration['port'], $errno, $errstr);
+
+        if (!$varnishSocket) {
+            DBG::log("Varnish error: $errstr ($errno) on server {$varnishConfiguration['ip']}:{$varnishConfiguration['port']}");
+        }
+
+        $requestDomain = $_CONFIG['domainUrl'];
+        $domainOffset  = ASCMS_PATH_OFFSET;
+
+        $request  = "BAN $domainOffset HTTP/1.0\r\n";
+        $request .= "Host: $requestDomain\r\n";
+        $request .= "User-Agent: Contrexx Varnish Cache Clear\r\n";
+        $request .= "Connection: Close\r\n\r\n";
+
+        fwrite($varnishSocket, $request);
+        fclose($varnishSocket);
     }
     
     /**
