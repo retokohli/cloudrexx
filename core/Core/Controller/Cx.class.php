@@ -1157,7 +1157,7 @@ namespace Cx\Core\Core\Controller {
                         "<link rel=\"stylesheet\" href=\"$moduleStyleFile\" type=\"text/css\" media=\"screen, projection\" />"
                     );
 
-                if (isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
+                if (!$this->resolvedPage->getUseSkinForAllChannels() && isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
                     $this->cl->loadFile(ASCMS_CORE_PATH.'/pdf.class.php');
                     $pageTitle = $this->resolvedPage->getTitle();
                     $objPDF          = new \PDF();
