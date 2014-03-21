@@ -156,7 +156,10 @@ cx.ready(function() {
     cx.cm.pageSkin = 0;
     // initialise the page custom template
     cx.cm.pageContentTemplate = '';
-    
+
+    // Disable the option use for all channels by default
+    cx.jQuery('input[name="page[useSkinForAllChannels]"], input[name="page[useCustomContentForAllChannels]"]').attr('disabled', 'disabled');
+            
     cx.jQuery('#page_target_browse').click(function() {
         url = '?cmd=fileBrowser&csrf='+cx.variables.get('csrf', 'contrexx')+'&standalone=true&type=webpages';
         opts = 'width=800,height=600,resizable=yes,status=no,scrollbars=yes';
