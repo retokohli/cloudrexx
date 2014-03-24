@@ -38,6 +38,7 @@ class InitCMS
     public $userFrontendLangId;
 
     public $currentThemesId;
+    public $channelThemeId;
     public $customContentTemplate = null;
     public $arrLang = array();
     public $arrLangNames = array();
@@ -219,7 +220,8 @@ class InitCMS
         else {
             $this->currentThemesId = $this->arrLang[$this->frontendLangId]['themesid'];
         }
-
+        
+        $this->channelThemeId = $this->currentThemesId;
         // Set charset of frontend language
         $this->frontendLangCharset = $this->arrLang[$this->frontendLangId]['charset'];
     }
@@ -446,7 +448,7 @@ class InitCMS
      * @return  array           The array of template strings
      * @access  public
      */
-    function getTemplates()
+    function getTemplates($page)
     {
         global $objDatabase;
 
@@ -510,7 +512,7 @@ class InitCMS
         $this->templates['blog_content'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/blog.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/blog.html') : '';
         $this->templates['immo'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/immo.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/immo.html') : '';
 
-        if (!$this->hasCustomContent() || !$this->loadCustomContent()) {
+        if (!$this->hasCustomContent() || !$this->loadCustomContent($page)) {
             // load default content layout if page doesn't have a custom content
             // layout or if it failed to be loaded
             $this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/content.html');
@@ -519,10 +521,27 @@ class InitCMS
         return $this->templates;
     }
 
-    private function loadCustomContent()
+    private function loadCustomContent($page)
     {
         global $objDatabase;
 
+        // OPTION USE FOR OUTPUT CHANNEL
+        
+        $themeRepository   = new \Cx\Core\View\Model\Repository\ThemeRepository();        
+        if ($page->getUseCustomContentForAllChannels()) {
+            $themeFolder = $themeRepository->findById($page->getSkin())->getFoldername();
+            if (file_exists(ASCMS_THEMES_PATH.'/'.$themeFolder.'/'.$page->getCustomContent())) {
+                $this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themeFolder.'/'.$page->getCustomContent());
+                return true;
+            }
+        } elseif (!empty($this->customContentTemplate)) {
+            $themeFolder = $themeRepository->findById($this->channelThemeId)->getFoldername();
+            if (file_exists(ASCMS_THEMES_PATH.'/'.$themeFolder.'/'.$page->getCustomContent())) {
+                $this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themeFolder.'/'.$page->getCustomContent());
+                return true;
+            }
+        }
+        
         //only include the custom template if it really exists.
         //if the user selected custom_x.html as a page's custom template, a print-view request will
         //try to get the file "themes/<printtheme>/custom_x.html" - we do not know if this file
