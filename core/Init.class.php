@@ -702,9 +702,9 @@ class InitCMS
             $langId = $mode == 'backend' ? $this->getBackendDefaultLangId() : $this->getFrontendDefaultLangId();
             $path = $this->arrModulePath[$module].$this->arrLang[$langId]['lang'].'/'.$mode.'.php';
 
-            if (!file_exists($path)) {
+            if (!file_exists(\Env::get('ClassLoader')->getFilePath($path))) {
                 $path = \Env::get('ClassLoader')->getFilePath($path, $isCustomized);
-                if (!file_exists($path)) {
+                if (!file_exists(\Env::get('ClassLoader')->getFilePath($path))) {
                     return '';
                 }
             }
@@ -725,7 +725,9 @@ class InitCMS
         
         $isCustomized = false;
         $customizedPath = \Env::get('ClassLoader')->getFilePath($path, $isCustomized);
-        require $path;
+        if (file_exists($path) || !file_exists($customizedPath)) {
+            require $path;
+        }
         if ($isCustomized) {
             require $customizedPath;
         }
