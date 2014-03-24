@@ -277,7 +277,7 @@ class Resolver {
 
                             \Env::get('init')->setCustomizedTheme($page->getSkin(), $page->getCustomContent(), $page->getUseSkinForAllChannels());
 
-                            $themesPages = \Env::get('init')->getTemplates();
+                            $themesPages = \Env::get('init')->getTemplates($page);
 
                             //replace the {NODE_<ID>_<LANG>}- placeholders
                             \LinkGenerator::parseTemplate($themesPages);
