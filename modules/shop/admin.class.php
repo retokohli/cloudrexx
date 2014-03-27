@@ -3529,7 +3529,8 @@ if ($test === NULL) {
                 //.','.SettingDb::getValue('email_confirmation'),
             'substitution' => &$arrSubstitution,
         );
-        return MailTemplate::send($arrMailTemplate);
+        if (!MailTemplate::send($arrMailTemplate)) return false;
+        return $arrSubstitution['CUSTOMER_EMAIL'];
     }
 
 
