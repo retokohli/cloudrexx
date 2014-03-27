@@ -1881,7 +1881,7 @@ class Installer
             // this is required to allow the License system (versioncheck.php) to update
             // the license section template
             // We might have some overhead, since versioncheck.php does more or less the same again
-            $documentRoot = dirname($basePath);
+            $documentRoot = realpath(dirname($basePath));
             require_once($documentRoot.'/core/Core/init.php');
             init('minimal');
             
