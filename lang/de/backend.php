@@ -673,44 +673,19 @@ $_ARRAYLANG['TXT_CACHE_INSTALLATION_STATE'] = "Installiert";
 $_ARRAYLANG['TXT_CACHE_ACTIVE_STATE'] = "Aktiv";
 $_ARRAYLANG['TXT_CACHE_CONFIGURATION_STATE'] = "Konfiguriert";
 $_ARRAYLANG['TXT_CACHE_STATS'] = "Statistiken";
-$_ARRAYLANG['TXT_CACHE_INFORMATION'] = "Informationen";
-$_ARRAYLANG['TXT_CACHE_INFORMATION_CONTENT'] = '
-        <tr class="row3"><td colspan="2">APC</td></tr>
-        <tr>
-            <td>Aktivieren</td>
-            <td>APC ist aktiviert, sobald die PHP Direktive "apc.enabled" auf "On" gesetzt ist.</td>
-        </tr>
-        <tr>
-            <td>Konfigurieren</td>
-            <td>Wenn Sie APC als Datenbank Cache System einsetzen möchten, muss die PHP Direktive "apc.serializer" auf "php" gesetzt sein.
-        </tr>
-        <tr class="row3"><td colspan="2">Zend OPCache</td></tr>
-        <tr>
-            <td>Aktivieren</td>
-            <td>Zend OPCache ist aktiviert, sobald die PHP Direktive "opcache.enable" auf "On" gesetzt ist.</td>
-        </tr>
-        <tr>
-            <td>Konfigurieren</td>
-            <td>Um Zend OPCache zu verwenden, müssen die PHP Direktiven "opcache.save_comments" und "opcache.load_comments" auf "On" gesetzt sein.</td>
-        </tr>
-        <tr class="row3"><td colspan="2">xCache</td></tr>
-        <tr>
-            <td>Aktivieren</td>
-            <td>xCache ist aktiviert, sobald die PHP Direktive "xcache.cacher" auf "On" gesetzt ist.</td>
-        </tr>
-        <tr>
-            <td>Konfigurieren</td>
-            <td>Um xCache als Datenbank Cache System zu verwenden, muss die PHP Direktive "xcache.var_size" grösser 0 sein. Für den Programmcode Cache muss "xcache.size" grösser 0 sein.</td>
-        </tr>
-        <tr class="row3"><td colspan="2">Memcache</td></tr>
-        <tr>
-            <td>Aktivieren</td>
-            <td>Memcache(d) ist aktiviert, sobald der Memcache(d) Server läuft und die Konfigurationen korrekt gesetzt sind.</td>
-        </tr>
-        <tr>
-            <td>Konfigurieren</td>
-            <td>Um Memcache(d) zu verwenden, muss die Konfiguration (IP-Adresse und Port) korrekt konfiguriert sein.</td>
-        </tr>';
+$_ARRAYLANG['TXT_CACHE_APC'] = "APC";
+$_ARRAYLANG['TXT_CACHE_ZEND_OPCACHE'] = "Zend OPCache";
+$_ARRAYLANG['TXT_CACHE_XCACHE'] = "xCache";
+$_ARRAYLANG['TXT_CACHE_MEMCACHE'] = "Memcache";
+$_ARRAYLANG['TXT_CACHE_FILESYSTEM'] = "FileSystem";
+$_ARRAYLANG['TXT_CACHE_APC_ACTIVE_INFO'] = 'APC ist aktiviert, sobald die PHP Direktive "apc.enabled" auf "On" gesetzt ist.';
+$_ARRAYLANG['TXT_CACHE_APC_CONFIG_INFO'] = 'Wenn Sie APC als Datenbank Cache System einsetzen möchten, muss die PHP Direktive "apc.serializer" auf "php" gesetzt sein.';
+$_ARRAYLANG['TXT_CACHE_ZEND_OPCACHE_ACTIVE_INFO'] = 'Zend OPCache ist aktiviert, sobald die PHP Direktive "opcache.enable" auf "On" gesetzt ist.';
+$_ARRAYLANG['TXT_CACHE_ZEND_OPCACHE_CONFIG_INFO'] = 'Um Zend OPCache zu verwenden, müssen die PHP Direktiven "opcache.save_comments" und "opcache.load_comments" auf "On" gesetzt sein.';
+$_ARRAYLANG['TXT_CACHE_XCACHE_ACTIVE_INFO'] = 'xCache ist aktiviert, sobald die PHP Direktive "xcache.cacher" auf "On" gesetzt ist.';
+$_ARRAYLANG['TXT_CACHE_XCACHE_CONFIG_INFO'] = 'Um xCache als Datenbank Cache System zu verwenden, muss die PHP Direktive "xcache.var_size" grösser 0 sein. Für den Programmcode Cache muss "xcache.size" grösser 0 sein.';
+$_ARRAYLANG['TXT_CACHE_MEMCACHE_ACTIVE_INFO'] = 'Memcache(d) ist aktiviert, sobald der Memcache(d) Server läuft und die Konfigurationen korrekt gesetzt sind.';
+$_ARRAYLANG['TXT_CACHE_MEMCACHE_CONFIG_INFO'] = 'Um Memcache(d) zu verwenden, muss die Konfiguration (IP-Adresse und Port) korrekt konfiguriert sein.';        
 $_ARRAYLANG['TXT_CACHE_STATS_FILES'] = "Gecachte Seiten";
 $_ARRAYLANG['TXT_CACHE_STATS_FOLDERSIZE'] = "Ordnergrösse";
 $_ARRAYLANG['TXT_STATS_CACHE_SIZE'] = 'Datenmenge der gespeicherten Daten';

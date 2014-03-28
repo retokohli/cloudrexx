@@ -669,44 +669,19 @@ $_ARRAYLANG['TXT_CACHE_INSTALLATION_STATE'] = "Installed";
 $_ARRAYLANG['TXT_CACHE_ACTIVE_STATE'] = "Active";
 $_ARRAYLANG['TXT_CACHE_CONFIGURATION_STATE'] = "Configured";
 $_ARRAYLANG['TXT_CACHE_STATS'] = "Statistics";
-$_ARRAYLANG['TXT_CACHE_INFORMATION'] = "Information";
-$_ARRAYLANG['TXT_CACHE_INFORMATION_CONTENT'] = '
-        <tr class="row3"><td colspan="2">APC</td></tr>
-        <tr>
-            <td>Activate</td>
-            <td>APC is active, as soon as the php directive "apc.enabled" has been set to "On".</td>
-        </tr>
-        <tr>
-            <td>Configure</td>
-            <td>If you want to use apc as a database cache engine, you have to set the php directive "apc.serializer" to "php".
-        </tr>
-        <tr class="row3"><td colspan="2">Zend OPCache</td></tr>
-        <tr>
-            <td>Activate</td>
-            <td>Zend OPCache is active, as soon as the php directive "opcache.enable" has been set to "On".</td>
-        </tr>
-        <tr>
-            <td>Configure</td>
-            <td>If you want to use the zend opcache as cache engine, the php directives "opcache.save_comments" and "opcache.load_comments" has to be set to "On".</td>
-        </tr>
-        <tr class="row3"><td colspan="2">xCache</td></tr>
-        <tr>
-            <td>Activate</td>
-            <td>xCache is active, as soon as the php directive "xcache.cacher" has been set to "On".</td>
-        </tr>
-        <tr>
-            <td>Configure</td>
-            <td>If you want to use xCache as a database cache engine, you have to set the php directive "xcache.var_size" to a value bigger than 0. For the program code cache the php directive "xcache.size" has to be bigger than 0.</td>
-        </tr>
-        <tr class="row3"><td colspan="2">Memcache</td></tr>
-        <tr>
-            <td>Activate</td>
-            <td>Memcache(d) is active, as soon as the Memcache(d) server is running and the configuration is correct.</td>
-        </tr>
-        <tr>
-            <td>Configure</td>
-            <td>If you want to use Memcache(d), the configuration (IP address and port number) has to be correct.</td>
-        </tr>';
+$_ARRAYLANG['TXT_CACHE_APC'] = "APC";
+$_ARRAYLANG['TXT_CACHE_ZEND_OPCACHE'] = "Zend OPCache";
+$_ARRAYLANG['TXT_CACHE_XCACHE'] = "xCache";
+$_ARRAYLANG['TXT_CACHE_MEMCACHE'] = "Memcache";
+$_ARRAYLANG['TXT_CACHE_FILESYSTEM'] = "FileSystem";
+$_ARRAYLANG['TXT_CACHE_APC_ACTIVE_INFO'] = 'APC is active, as soon as the php directive "apc.enabled" has been set to "On".';
+$_ARRAYLANG['TXT_CACHE_APC_CONFIG_INFO'] = 'If you want to use apc as a database cache engine, you have to set the php directive "apc.serializer" to "php".';
+$_ARRAYLANG['TXT_CACHE_ZEND_OPCACHE_ACTIVE_INFO'] = 'Zend OPCache is active, as soon as the php directive "opcache.enable" has been set to "On".';
+$_ARRAYLANG['TXT_CACHE_ZEND_OPCACHE_CONFIG_INFO'] = 'If you want to use the zend opcache as cache engine, the php directives "opcache.save_comments" and "opcache.load_comments" has to be set to "On".';
+$_ARRAYLANG['TXT_CACHE_XCACHE_ACTIVE_INFO'] = 'xCache is active, as soon as the php directive "xcache.cacher" has been set to "On".';
+$_ARRAYLANG['TXT_CACHE_XCACHE_CONFIG_INFO'] = 'If you want to use xCache as a database cache engine, you have to set the php directive "xcache.var_size" to a value bigger than 0. For the program code cache the php directive "xcache.size" has to be bigger than 0.';
+$_ARRAYLANG['TXT_CACHE_MEMCACHE_ACTIVE_INFO'] = 'Memcache(d) is active, as soon as the Memcache(d) server is running and the configuration is correct.';
+$_ARRAYLANG['TXT_CACHE_MEMCACHE_CONFIG_INFO'] = 'If you want to use Memcache(d), the configuration (IP address and port number) has to be correct.';
 $_ARRAYLANG['TXT_CACHE_STATS_FILES'] = "Cached Pages";
 $_ARRAYLANG['TXT_CACHE_STATS_FOLDERSIZE'] = "Folder size";
 $_ARRAYLANG['TXT_STATS_CACHE_SIZE'] = 'Ammount of stored Data';
