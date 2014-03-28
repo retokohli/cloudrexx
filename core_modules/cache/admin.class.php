@@ -110,8 +110,19 @@ class CacheManager extends cacheLib
             'TXT_CACHE_PROXYCACHE' => $_CORELANG['TXT_CACHE_PROXYCACHE'],
             'TXT_CACHE_EMPTY' => $_CORELANG['TXT_CACHE_EMPTY'],
             'TXT_CACHE_STATS' => $_CORELANG['TXT_CACHE_STATS'],
-            'TXT_CACHE_INFORMATION' => $_CORELANG['TXT_CACHE_INFORMATION'],
-            'TXT_CACHE_INFORMATION_CONTENT' => $_CORELANG['TXT_CACHE_INFORMATION_CONTENT'],
+            'TXT_CACHE_APC' => $_CORELANG['TXT_CACHE_APC'],
+            'TXT_CACHE_ZEND_OPCACHE' => $_CORELANG['TXT_CACHE_ZEND_OPCACHE'],
+            'TXT_CACHE_XCACHE' => $_CORELANG['TXT_CACHE_XCACHE'],
+            'TXT_CACHE_MEMCACHE' => $_CORELANG['TXT_CACHE_MEMCACHE'],
+            'TXT_CACHE_FILESYSTEM' => $_CORELANG['TXT_CACHE_FILESYSTEM'],
+            'TXT_CACHE_APC_ACTIVE_INFO' => $_CORELANG['TXT_CACHE_APC_ACTIVE_INFO'],
+            'TXT_CACHE_APC_CONFIG_INFO' => $_CORELANG['TXT_CACHE_APC_CONFIG_INFO'],
+            'TXT_CACHE_ZEND_OPCACHE_ACTIVE_INFO' => $_CORELANG['TXT_CACHE_ZEND_OPCACHE_ACTIVE_INFO'],
+            'TXT_CACHE_ZEND_OPCACHE_CONFIG_INFO' => $_CORELANG['TXT_CACHE_ZEND_OPCACHE_CONFIG_INFO'],
+            'TXT_CACHE_XCACHE_ACTIVE_INFO' => $_CORELANG['TXT_CACHE_XCACHE_ACTIVE_INFO'],
+            'TXT_CACHE_XCACHE_CONFIG_INFO' => $_CORELANG['TXT_CACHE_XCACHE_CONFIG_INFO'],
+            'TXT_CACHE_MEMCACHE_ACTIVE_INFO' => $_CORELANG['TXT_CACHE_MEMCACHE_ACTIVE_INFO'],
+            'TXT_CACHE_MEMCACHE_CONFIG_INFO' => $_CORELANG['TXT_CACHE_MEMCACHE_CONFIG_INFO'],
             'TXT_CACHE_ENGINE' => $_CORELANG['TXT_CACHE_ENGINE'],
             'TXT_CACHE_INSTALLATION_STATE' => $_CORELANG['TXT_CACHE_INSTALLATION_STATE'],
             'TXT_CACHE_ACTIVE_STATE' => $_CORELANG['TXT_CACHE_ACTIVE_STATE'],
@@ -227,6 +238,12 @@ class CacheManager extends cacheLib
         $this->objTpl->setVariable(array(
             'SETTINGS_STATUS_ON' => ($this->arrSettings['cacheEnabled'] == 'on') ? 'checked' : '',
             'SETTINGS_STATUS_OFF' => ($this->arrSettings['cacheEnabled'] == 'off') ? 'checked' : '',
+            'SETTINGS_OP_CACHE_STATUS_ON'   => ($this->arrSettings['cacheOpStatus'] == 'on') ? 'checked' : '',
+            'SETTINGS_OP_CACHE_STATUS_OFF'  => ($this->arrSettings['cacheOpStatus'] == 'off') ? 'checked' : '',
+            'SETTINGS_DB_CACHE_STATUS_ON'   => ($this->arrSettings['cacheDbStatus'] == 'on') ? 'checked' : '',
+            'SETTINGS_DB_CACHE_STATUS_OFF'  => ($this->arrSettings['cacheDbStatus'] == 'off') ? 'checked' : '',
+            'SETTINGS_VARNISH_CACHE_STATUS_ON'  => ($this->arrSettings['cacheVarnishStatus'] == 'on') ? 'checked' : '',
+            'SETTINGS_VARNISH_CACHE_STATUS_OFF' => ($this->arrSettings['cacheVarnishStatus'] == 'off') ? 'checked' : '',            
             'SETTINGS_EXPIRATION' => intval($this->arrSettings['cacheExpiration']),
             'STATS_CONTREXX_FILESYSTEM_CHACHE_PAGES_COUNT' => $intFilesPages,
             'STATS_FOLDERSIZE_PAGES'                => number_format($intFoldersizePages / 1024, 2, '.', '\''),
@@ -282,6 +299,10 @@ class CacheManager extends cacheLib
         
         $objDatabase->Execute('UPDATE '.DBPREFIX.'settings SET setvalue="' . contrexx_input2db($_POST['usercache']) . '" WHERE setname="cacheUserCache"');
         $objDatabase->Execute('UPDATE '.DBPREFIX.'settings SET setvalue="' . contrexx_input2db($_POST['opcache']) . '" WHERE setname="cacheOPCache"');
+        
+        $objDatabase->Execute('UPDATE '.DBPREFIX.'settings SET setvalue="' . contrexx_input2db($_POST['cacheOpStatus']) . '" WHERE setname="cacheOpStatus"');
+        $objDatabase->Execute('UPDATE '.DBPREFIX.'settings SET setvalue="' . contrexx_input2db($_POST['cacheDbStatus']) . '" WHERE setname="cacheDbStatus"');
+        $objDatabase->Execute('UPDATE '.DBPREFIX.'settings SET setvalue="' . contrexx_input2db($_POST['cacheVarnishStatus']) . '" WHERE setname="cacheVarnishStatus"');        
         
         $_CONFIG['cacheUserCache'] = contrexx_input2raw($_POST['usercache']);
         $_CONFIG['cacheOPCache'] = contrexx_input2raw($_POST['opcache']);
