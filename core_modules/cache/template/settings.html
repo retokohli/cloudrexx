@@ -2,8 +2,8 @@
 <script type="text/javascript">
     var cacheSystem = {
       _switchStatus : function( elm ) {
-          status = elm.val();
-          rowClass = elm.data( 'id' );
+          var status   = elm.val();
+          var rowClass = elm.data( 'id' );          
           if ( status == 'on' ) {
               $J( "div.setting_"+ rowClass).css( "display", "block" );
               $J( "tr.setting_"+ rowClass).css( "display", "table-row" );
@@ -12,7 +12,7 @@
           }
       }
     };
-    $J(function(){
+    $J(function(){        
         $J( ".cache_status" ).click(function(){
             cacheSystem._switchStatus( $J(this) );
         });
