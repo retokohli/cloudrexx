@@ -862,7 +862,8 @@ class newsManager extends newsLibrary {
             $locales['active'] = \FWLanguage::getActiveFrontendLanguages();
         }
 
-        if (isset($_POST['newsDate'])) {
+        $date = strtotime('now');
+        if (isset($_POST['newsDate']) && !empty($_POST['newsDate'])) {
             $date = $this->dateFromInput($_POST['newsDate']);
         }
         
