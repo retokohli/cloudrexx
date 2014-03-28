@@ -862,7 +862,8 @@ class newsManager extends newsLibrary {
             $locales['active'] = \FWLanguage::getActiveFrontendLanguages();
         }
 
-        if (isset($_POST['newsDate'])) {
+        $date = strtotime('now');
+        if (isset($_POST['newsDate']) && !empty($_POST['newsDate'])) {
             $date = $this->dateFromInput($_POST['newsDate']);
         }
         
@@ -949,7 +950,7 @@ class newsManager extends newsLibrary {
 
                 $objResult = $objDatabase->Execute('INSERT
                                             INTO '.DBPREFIX.'module_news
-                                            SET date='.$date.',
+                                            SET date="'.$date.'",
                                                 redirect="'.$newsredirect.'",
                                                 source="'.$newssource.'",
                                                 url1="'.$newsurl1.'",
