@@ -468,7 +468,7 @@ class MediaLibrary
             }
             
             // Rotate image
-            if (isset($arrData['d'])) {
+            if (!empty($arrData['d'])) {
                 $this->_objImage->rotateImage(intval($arrData['d']));
             }
             
