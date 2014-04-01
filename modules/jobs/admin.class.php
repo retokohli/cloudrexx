@@ -720,6 +720,7 @@ class jobsManager extends jobsLibrary
             'status' => array('val' => $status, 'omitEmpty' => true),
             'userid' => array('val' => $userid, 'omitEmpty' => true),
             'changelog' => array('val' => $date, 'omitEmpty' => true),
+            'catId' => array('val' => $catId, 'omitEmpty' => true),
         ))." WHERE id = $id;";
       
         if (!$objDatabase->Execute($query) or $dberr) {
