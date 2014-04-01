@@ -1338,6 +1338,10 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             wrapper.prepend(translations);
             cx.jQuery(node).before(wrapper);
         });
+        if (cx.jQuery(".translations").first().children(".translation").length <= 1) {
+            cx.jQuery(".translations").hide();
+            cx.jQuery(".translation").html("");
+        }
 
         cx.jQuery('.jstree-wrapper').hover(
             function(e) {
