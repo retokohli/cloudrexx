@@ -391,9 +391,13 @@ class mediaDirectory extends mediaDirectoryLibrary
                 }
 
                 $objEntries->listEntries($this->_objTpl, 2);
+                
+                $urlParams = $_GET;
+                unset($urlParams['pos']);
+                unset($urlParams['section']);
 
                 if($intNumEntries > $intLimitEnd) {
-                    $strPaging = getPaging($intNumEntries, $intLimitStart, null, "<b>".$_ARRAYLANG['TXT_MEDIADIR_ENTRIES']."</b>", true, $intLimitEnd);
+                    $strPaging = getPaging($intNumEntries, $intLimitStart, $urlParams, "<b>".$_ARRAYLANG['TXT_MEDIADIR_ENTRIES']."</b>", true, $intLimitEnd);
                     $this->_objTpl->setGlobalVariable(array(
                         $this->moduleLangVar.'_PAGING' =>  $strPaging
                     ));
