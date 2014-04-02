@@ -4032,6 +4032,7 @@ CREATE TABLE `contrexx_modules` (
   `is_required` tinyint(1) NOT NULL default '0',
   `is_core` tinyint(4) NOT NULL default '0',
   `is_active` tinyint(1) NOT NULL default '0',
+  `is_licensed` tinyint(1) NOT NULL,
   UNIQUE KEY `id` (`id`)
 ) ENGINE=MyISAM;
 SET character_set_client = @saved_cs_client;
