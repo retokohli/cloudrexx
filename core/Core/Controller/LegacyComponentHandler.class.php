@@ -1666,7 +1666,7 @@ class LegacyComponentHandler {
                         if (!in_array($plainCmd, array('login', 'license', 'noaccess', ''))) {
                             $query = '
                                 SELECT
-                                    modules.is_active
+                                    modules.is_licensed
                                 FROM
                                     '.DBPREFIX.'modules AS modules,
                                     '.DBPREFIX.'backend_areas AS areas
@@ -1678,7 +1678,7 @@ class LegacyComponentHandler {
                                     )
                             ';
                             $res = $objDatabase->Execute($query);
-                            if (!$res->fields['is_active']) {
+                            if (!$res->fields['is_licensed']) {
                                 $plainCmd = 'license';
                             }
                         }

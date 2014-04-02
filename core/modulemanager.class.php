@@ -86,6 +86,11 @@ class modulemanager
                 $this->modModules();
                 $this->showModules();
                 break;
+            case "changestatus":
+                Permission::checkAccess(23, 'static');
+                $this->changeModuleStatus();
+                $this->showModules();
+                break;
             default:
                 Permission::checkAccess(23, 'static');
                 $this->showModules();
@@ -106,6 +111,29 @@ class modulemanager
     }
 
 
+    function changeModuleStatus()
+    {
+        global $objDatabase, $_CORELANG;
+        
+        $moduleId = isset($_GET['id']) ? contrexx_input2raw($_GET['id']) : 0;
+        $status   = isset($_GET['status']) ? contrexx_input2raw($_GET['status']) : 0;
+        
+        $query = "UPDATE 
+                    `".DBPREFIX."modules`
+                  SET
+                    `is_active` = '". contrexx_raw2db($status) ."'
+                  WHERE 
+                    `id` = '" . contrexx_raw2db($moduleId) . "'";
+        $objResult = $objDatabase->Execute($query);
+        
+        if ($objResult) {            
+            $this->strOkMessage = $status ? $_CORELANG['TXT_MODULE_ACTIVATED_SUCCESSFULLY'] : $_CORELANG['TXT_MODULE_DEACTIVATED_SUCCESSFULLY'];
+        } else {
+            $this->errorHandling();
+            return false;
+        }
+    }
+    
     function getModules()
     {
         global $objDatabase;
@@ -157,7 +185,8 @@ class modulemanager
                 m.description_variable,
                 m.is_core,
                 m.is_required,
-                m.is_active
+                m.is_active,
+                m.is_licensed
             FROM
                 '.DBPREFIX.'modules AS m
             WHERE
@@ -168,22 +197,36 @@ class modulemanager
         ';
         $i = 0;
         $objResult = $objDatabase->Execute($query);
+        
+        $statusLink = '<a href="index.php?cmd=modulemanager&act=changestatus&id=%d&status=%d"> %s </a>';
+        $statusIcon = '<img src="images/icons/%s" alt="" />';
+        
         if ($objResult) {
             while (!$objResult->EOF) {
-                $class = (++$i % 2 ? 'row1' : 'row2');
+                $class = (++$i % 2 ? 'row1' : 'row2');                                  
                 if (   in_array($objResult->fields['id'], $arrayInstalledModules)
                     || $objResult->fields['id'] == 6) {
+                    $moduleStatusLink = $objResult->fields['is_active'] 
+                                        ? sprintf($statusLink, (int) $objResult->fields['id'], 0, sprintf($statusIcon, 'led_green.gif'))
+                                        : sprintf($statusLink, (int) $objResult->fields['id'], 1, sprintf($statusIcon, 'led_red.gif'));
+                    
                     $objTemplate->setVariable(array(
                         'MODULE_REMOVE'  => "<input type='checkbox' name='removeModule[".$objResult->fields['id']."]' value='0' />",
                         'MODULE_INSTALL' => "&nbsp;",
-                        'MODULE_STATUS'  => ($objResult->fields['is_active'] ? "<img src='images/icons/led_green.gif' alt='' />" : "<img src='images/icons/led_orange.gif' alt='' />")
+                        'MODULE_STATUS'  => $moduleStatusLink
                     ));
                 } else  {
+                    $moduleStatusLink = $objResult->fields['is_licensed'] 
+                                        ? ( $objResult->fields['is_active'] 
+                                           ? sprintf($statusLink, $objResult->fields['id'], 0, sprintf($statusIcon, 'led_green.gif'))
+                                           : sprintf($statusLink, $objResult->fields['id'], 1, sprintf($statusIcon, 'led_red.gif'))
+                                          )
+                                        : sprintf($statusLink, $objResult->fields['id'], 1, sprintf($statusIcon, 'led_red.gif'));
                     $objTemplate->setVariable(array(
                         'MODULE_INSTALL' => ($objResult->fields['is_active'] ? "<input type='checkbox' name='installModule[".$objResult->fields['id']."]' value='1' />" : ''),
                         'MODULE_REMOVE'  => "&nbsp;",
-                        'MODULE_STATUS'  => "<img src='images/icons/led_red.gif' alt='' />"
-                    ));
+                        'MODULE_STATUS'  => $moduleStatusLink
+                    ));                                       
                 }
 
                 /*
@@ -210,11 +253,11 @@ class modulemanager
                 if ($objResult->fields['is_required'] == 1) {
                     $class = 'highlighted';
                     $objTemplate->setVariable(array(
-                        'MODULE_REQUIRED' => $_CORELANG['TXT_REQUIRED'],
+                        'MODULE_REQUIRED' => $_CORELANG['TXT_REQUIRED'] . ' ' . (!$objResult->fields['is_licensed'] ? $_CORELANG['TXT_LICENSE_NOT_LICENSED'] : ''),
                         'MODULE_REMOVE'   => '&nbsp;'
                     ));
                 } else {
-                    $objTemplate->setVariable('MODULE_REQUIRED', $objResult->fields['is_active'] ? $_CORELANG['TXT_OPTIONAL'] : $_CORELANG['TXT_LICENSE_NOT_LICENSED']);
+                    $objTemplate->setVariable('MODULE_REQUIRED', $_CORELANG['TXT_OPTIONAL']);
                 }
 
                 if (isset($_CORELANG[$objResult->fields['description_variable']])) {

@@ -423,7 +423,7 @@ class License {
             UPDATE
                 '.DBPREFIX.'modules
             SET
-                `is_active` = \'0\'
+                `is_licensed` = \'0\'
             WHERE
                 `distributor` = \'Comvation AG\'
         ';
@@ -432,7 +432,7 @@ class License {
             UPDATE
                 '.DBPREFIX.'modules
             SET
-                `is_active` = \'1\'
+                `is_licensed` = \'1\'
             WHERE
                 `name` IN(\'' . implode('\', \'', $this->getLegalComponentsList()) . '\')
         ';
@@ -488,7 +488,7 @@ class License {
             WHERE
                 `distributor` != \'Comvation AG\'
                 OR
-                `is_active` = \'1\'
+                `is_licensed` = \'1\'
         ';
         $result = $objDb->execute($query);
         $activeComponents = array();
