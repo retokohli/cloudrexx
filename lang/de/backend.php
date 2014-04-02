@@ -1768,3 +1768,6 @@ $_ARRAYLANG['TXT_CORE_MODULE_NEWS_SETTINGS'] = 'Einstellungen';
 $_ARRAYLANG['TXT_CORE_CANNOT_USE_AS_ALIAS'] = 'Bestehende Dateien oder Ordner aus dem Root-Verzeichnis und aktivierte Sprachen (z.B. de, en) können nicht als Alias verwendet werden.';
 $_ARRAYLANG['TXT_CORE_REMOVE_ALIAS_TO_ACTIVATE_LANGUAGE'] = 'Um diese Sprache zu aktivieren, muss folgendes Alias gelöscht oder umbennent werden, da es für das virtuelle Sprachverzeichnis verwendet wird';
 $_ARRAYLANG['TXT_SURVEY_MODULE'] = "Umfragen";
+
+$_ARRAYLANG['TXT_MODULE_ACTIVATED_SUCCESSFULLY']   = "Module activated successfully";
+$_ARRAYLANG['TXT_MODULE_DEACTIVATED_SUCCESSFULLY'] = "Module deactivated successfully";

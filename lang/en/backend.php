@@ -1689,3 +1689,6 @@ $_ARRAYLANG['TXT_CORE_MODULE_NEWS_SETTINGS'] = 'Settings';
 $_ARRAYLANG['TXT_CORE_CANNOT_USE_AS_ALIAS'] = 'Existing files or folders from the root directory and activated languages (e.g. en, de) can\'t be used as an alias.';
 $_ARRAYLANG['TXT_CORE_REMOVE_ALIAS_TO_ACTIVATE_LANGUAGE'] = 'To enable this language, the following alias must be deleted or renamed, because it is used for the virtual directory';
 $_ARRAYLANG['TXT_SURVEY_MODULE'] = "Surveys";
+
+$_ARRAYLANG['TXT_MODULE_ACTIVATED_SUCCESSFULLY']   = "Module activated successfully";
+$_ARRAYLANG['TXT_MODULE_DEACTIVATED_SUCCESSFULLY'] = "Module deactivated successfully";
