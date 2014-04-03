@@ -537,8 +537,8 @@ class Url {
         // relative URL
         if (!count($matches)) {
             
-            $absoluteUrl = $_SERVER['HTTP_REFERER'];
-            preg_match('#(http(?:s)?://)((?:[^/]*))([/$](?:.*)/)?#', $absoluteUrl, $matches);
+            $absoluteUrl = self::fromRequest();
+            preg_match('#(http(?:s)?://)((?:[^/]*))([/$](?:.*)/)?#', $absoluteUrl->toString(true), $matches);
             
             // starting with a /?
             if (substr($url, 0, 1) == '/') {
