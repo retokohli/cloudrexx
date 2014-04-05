@@ -432,7 +432,7 @@ class modulemanager
     function removeModules()
     {
         global $objDatabase;
-return false;
+
         if (isset($_POST['removeModule']) && is_array($_POST['removeModule'])) {
             foreach (array_keys($_POST['removeModule']) as $moduleId) {
                 
