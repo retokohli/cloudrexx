@@ -805,7 +805,7 @@ cx.fe.history.load = function(pos) {
     }
 
     cx.jQuery("#fe_history .fe_box").html(
-        "<div class=\"historyInit\"><img src=\"" + cx.variables.get("basePath", "contrexx") + "/lib/javascript/jquery/jstree/themes/default/throbber.gif\" alt=\"Loading...\" /></div>"
+        "<div class=\"historyInit\"><img src=\"" + cx.variables.get("basePath", "contrexx") + "lib/javascript/jquery/jstree/themes/default/throbber.gif\" alt=\"Loading...\" /></div>"
     );
     cx.jQuery("#fe_history .fe_box").load(
         cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=jsondata&object=page&act=getHistoryTable&page=" + cx.fe.page.id + "&pos=" + pos + "&limit=10" + hideDrafts,
