@@ -198,8 +198,11 @@ class modulemanager
         $i = 0;
         $objResult = $objDatabase->Execute($query);
         
-        $statusLink = '<a href="index.php?cmd=modulemanager&act=changestatus&id=%d&status=%d"> %s </a>';
+        $statusLink = '<a href="index.php?cmd=modulemanager&amp;act=changestatus&amp;id=%d&amp;status=%d"> %s </a>';
         $statusIcon = '<img src="images/icons/%s" alt="" />';
+        
+        $moduleLink = '<a href="index.php?cmd=%s"> %s </a>';
+        $moduleArchiveLink = '<a href="index.php?cmd=%s&amp;archive=%s"> %s </a>';
         
         if ($objResult) {
             while (!$objResult->EOF) {
@@ -247,6 +250,25 @@ class modulemanager
                 } else {
                     $literalName = ucfirst($objResult->fields['name']);
                 }
+                
+                if (!in_array($objResult->fields['name'], array('agb', 'error', 'home', 'ids', 'imprint', 'login', 'privacy', 'search', 'sitemap'))   
+                    && (   in_array($objResult->fields['id'], $arrayInstalledModules)
+                        || $objResult->fields['id'] == 6)
+                    ) {
+                        switch ($objResult->fields['name']) {
+                            case 'media1':
+                            case 'media2':
+                            case 'media3':
+                            case 'media4':
+                                $archiveId   = substr($objResult->fields['name'], 5,1);
+                                $literalName = sprintf($moduleArchiveLink, 'media', 'archive'.$archiveId, $literalName);
+                                break;
+                            default:
+                                $literalName = sprintf($moduleLink, $objResult->fields['name'], $literalName);
+                                break;
+                        }
+                }
+                
                 $objTemplate->setVariable('MODULE_NAME', $literalName . ' (' . $objResult->fields['name'] . ')');
 
                 // Required Modules
