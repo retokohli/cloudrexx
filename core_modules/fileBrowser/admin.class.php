@@ -124,7 +124,7 @@ class FileBrowser {
      */
     function _checkForModule($strModuleName) {
         global $objDatabase;
-        if (($objRS = $objDatabase->SelectLimit("SELECT `status` FROM ".DBPREFIX."modules WHERE name = '".$strModuleName."' AND `is_active` = '1'", 1)) != false) {
+        if (($objRS = $objDatabase->SelectLimit("SELECT `status` FROM ".DBPREFIX."modules WHERE name = '".$strModuleName."' AND `is_active` = '1' AND `is_licensed` = '1'", 1)) != false) {
             if ($objRS->RecordCount() > 0) {
                 if ($objRS->fields['status'] == 'n') {
                     return false;
@@ -788,7 +788,7 @@ class FileBrowser {
 
         $menu = "<select name=\"".$name."\" ".$attrs.">";
         foreach ($this->_arrMediaTypes as $type => $text) {
-            if (!$this->_checkForModule($text)) {
+            if (!$this->_checkForModule($type)) {
                 continue;
             }
             $text = $_ARRAYLANG[$text];
