@@ -943,9 +943,48 @@ namespace Cx\Core\Core\Controller {
             }
             
             $this->ch->callPreContentParseHooks();
-            
-            $this->ch->loadComponent($this, $plainSection, $this->resolvedPage);
-            
+            try {
+                $this->ch->loadComponent($this, $plainSection, $this->resolvedPage);
+            } catch (\Exception $e) {
+                // catch backend exceptions per component
+                // todo: same for frontend
+                if ($this->mode == self::MODE_BACKEND) {
+                    $errorTemplate = new \Cx\Core\Html\Sigma(ASCMS_CORE_PATH.'/Core/View/Template');
+                    $errorTemplate->loadTemplateFile('Error.html');
+                    $errorTemplate->setVariable(array(
+                        'COMPONENT_NAME'    => $plainSection,
+                        'EXCEPTION_CLASS'   => get_class($e),
+                        'EXCEPTION_MESSAGE' => $e->getMessage(),
+                        // add stacktrace
+                    ));
+                    foreach ($e->getTrace() as $stacktraceEntry) {
+                        $errorTemplate->setVariable(array(
+                            'STACKTRACE_FILE'       => $stacktraceEntry['file'],
+                            'STACKTRACE_LINE'       => $stacktraceEntry['line'],
+                            'STACKTRACE_FUNCTION'   => $stacktraceEntry['function'],
+                            'STACKTRACE_CLASS'      => $stacktraceEntry['class'],
+                            'STACKTRACE_TYPE'       => $stacktraceEntry['type'],
+                        ));
+                        foreach ($stacktraceEntry['args'] as $argument) {
+                            switch (gettype($argument)) {
+                                case 'array':
+                                case 'object':
+                                    $argument = gettype($argument);
+                                    break;
+                                default:
+                                    break;
+                            }
+                            $errorTemplate->setVariable(array(
+                                'STACKTRACE_ARGUMENT'   => $argument,
+                            ));
+                        }
+                        $errorTemplate->parse('stacktrace_entry');
+                    }
+                    $this->getTemplate()->setVariable('ADMIN_CONTENT', $errorTemplate->get());
+                } else {
+                    throw $e;
+                }
+            }
             // This would be a postContentParseHook:
             \Message::show();
             
