@@ -90,9 +90,19 @@ class SystemComponentController extends Controller {
             if (isset($this->controllers[$class])) {
                 continue;
             }
-            new $class($this);
+            $class = $this->getNamespace() . '\\Controller\\' . $class . 'Controller';
+            new $class($this, $this->cx);
         }
         return $this->getControllers();
+    }
+    
+    public function getController($controllerClass) {
+        $this->getControllers(false);
+        $controllerClass = $this->getNamespace() . '\\Controller\\' . $controllerClass . 'Controller';
+        if (!isset($this->controllers[$controllerClass])) {
+            return null;
+        }
+        return $this->controllers[$controllerClass];
     }
     
     /**
