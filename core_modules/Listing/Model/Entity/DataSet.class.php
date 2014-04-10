@@ -34,6 +34,7 @@ class DataSetException extends \Exception {}
 class DataSet implements \Iterator {
     protected static $yamlInterface = null;
     protected $data = array();
+    protected $dataType = 'array';
 
     public function __construct($data, callable $converter = null) {
         if (is_callable($converter)) {
@@ -52,23 +53,33 @@ class DataSet implements \Iterator {
                         $convertedData[$key][$attribute] = $property;
                     }
                 } else if (is_object($value)) {
-                    $convertedData[$key] = $this->convertObject($value);
+                    if ($this->dataType == 'array') {
+                        $this->dataType = get_class($value);
+                    }
+                    $convertedObject = $this->convertObject($value, $key);
+                    $convertedData[$key] = $convertedObject;
                 } else {
                     throw new DataSetException('Supplied argument could not be converted to DataSet');
                 }
             }
         } else if (is_object($data)) {
-            $convertedData[0] = $this->convertObject($data);
+            $this->dataType = get_class($data);
+            $convertedData = $this->convertObject($data);
         } else {
             throw new DataSetException('Supplied argument could not be converted to DataSet');
         }
         return $convertedData;
     }
 
-    protected function convertObject($object) {
+    protected function convertObject($object, &$key) {
         $data = array();
         if ($object instanceof \Cx\Model\Base\EntityBase) {
             $em = \Env::get('em');
+            $identifiers = $em->getClassMetadata(get_class($object))->getIdentifierValues($object);
+            if (is_array($identifiers)) {
+                $identifiers = implode('/', $identifiers);
+            }
+            $key = $identifiers;
             foreach ($em->getClassMetadata(get_class($object))->getColumnNames() as $field) {
                 $value = $em->getClassMetadata(get_class($object))->getFieldValue($object, $field);
                 if ($value instanceof \DateTime) {
@@ -147,6 +158,28 @@ class DataSet implements \Iterator {
      */
     public static function load($filename) {
         return self::importFromFile(self::getYamlInterface(), $filename);
+    }
+    
+    public function getDataType() {
+        return $this->dataType;
+    }
+    
+    public function entryExists($key) {
+        return isset($this->data[$key]);
+    }
+    
+    public function getEntry($key) {
+        if (!$this->entryExists($key)) {
+            throw new DataSetException('No such entry');
+        }
+        return $this->data[$key];
+    }
+    
+    public function toArray() {
+        if (count($this->data) == 1) {
+            return current($this->data);
+        }
+        return $this->data;
     }
 
     public function current() {
