@@ -103,6 +103,30 @@ class DBG
             self::stack();
         }
     }
+    
+    public static function activateIf($condition, $mode = null) {
+        if (
+            (!is_callable($condition) && $condition) ||
+            (is_callable($condition) && $condition())
+        ) {
+            static::activate($mode);
+        }
+    }
+    
+    public static function isIp($ip) {
+        return $_SERVER['REMOTE_ADDR'] == $ip;
+    }
+    
+    public static function hasCookie($cookieName) {
+        return isset($_COOKIE[$cookieName]);
+    }
+    
+    public static function hasCookieValue($cookieName, $cookieValue) {
+        if (!static::hasCookie($cookieName)) {
+            return false;
+        }
+        return $_COOKIE[$cookieName] == $cookieValue;
+    }
 
 
     /**
