@@ -252,7 +252,7 @@ class ReflectionComponent {
             ASCMS_PATH_OFFSET,
             '',
             true
-        );        
+        );
         
         // Activate (if type is system or application)
         if ($this->componentType != 'core' && $this->componentType != 'core_module' && $this->componentType != 'module') {
@@ -267,8 +267,8 @@ class ReflectionComponent {
             \DBG::msg($e->getMessage());
         }
         
-        // init DB structure from doctrine yaml files
-        // load DB data from /data yaml files
+        // init DB structure from doctrine yaml files (rxqcmv1)
+        // load DB data from /data yaml files (rxqcmv1)
         
         // Activate this component
         $this->activate();
@@ -277,13 +277,29 @@ class ReflectionComponent {
     /**
      * Create zip install package for this component
      * @param string $path Path to store zip file at
+     * @todo add data files (db)
+     * @todo create meta.yml
      */
     public function pack($path) {
-        // Create temp working folder
+        // Create temp working folder and
+        // Copy ZIP contents
+        $filesystem = new \Cx\Lib\FileSystem\FileSystem();
+        $filesystem->copyDir(
+            $this->getDirectory(false),
+            preg_replace('#' . ASCMS_DOCUMENT_ROOT . '#', '', $this->getDirectory(false)),
+            'files',
+            ASCMS_TEMP_PATH . '/appcache',
+            ASCMS_TEMP_WEB_PATH . '/appcache',
+            '',
+            true
+        );
+        
         // Copy contents to folder
         // Create data files
         // Create meta.yml
         // Compress
+        $file = new \PclZip($path);
+        $list = $file->pack(PCLZIP_OPT_PATH, ASCMS_TEMP_PATH . '/appcache');
     }
     
     /**
@@ -327,8 +343,9 @@ class ReflectionComponent {
     
     /**
      * List dependencies from this component to other parts of the system
-     * @todo List files for matches
+     * @todo List files for matches (rxqcmv1)
      * @todo Make this work for legacy components too
+     * @todo Make this work for zip packages too (rxqcmv1)
      * @return array Returns an array like array({dependency}=>{number_of_times_used})
      */
     public function getDependencies() {
@@ -376,8 +393,8 @@ class ReflectionComponent {
     
     /**
      * This adds all necessary DB entries in order to activate this component (if they do not exist)
-     * @todo Backend navigation entry (from meta.yml)
-     * @todo Pages (from meta.yml)
+     * @todo Backend navigation entry (from meta.yml) (rxqcmv1)
+     * @todo Pages (from meta.yml) (rxqcmv1)
      */
     public function activate() {
         if (!$this->exists()) {
@@ -835,7 +852,7 @@ class ReflectionComponent {
      * @param string $oldBaseNs Base namespace of old component
      * @param string $baseDir Directory in which the recursive replace should be done
      * @return bool
-     * @todo Test references update in DB
+     * @todo Test references update in DB (rxqcmv1)
      */
     public function fixNamespaces($oldBaseNs, $baseDir) {
         // calculate new proper base NS
@@ -978,7 +995,7 @@ class ReflectionComponent {
      * - Alter or copy pages
      * - Create DB entries for new component
      * - Activate new component
-     * @todo Test copy of pages
+     * @todo Test copy of pages (rxqcmv1)
      * @param string $newName New component name
      * @param string $newType New component type, one of 'core', 'core_module' and 'module'
      * @param boolean $customized Copy/move to customizing folder?
