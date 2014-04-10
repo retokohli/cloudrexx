@@ -201,4 +201,16 @@ class DataSet implements \Iterator {
     public function rewind() {
         return reset($this->data);
     }
+    
+    public function length() {
+        return count($this->data);
+    }
+    
+    public function count() {
+        return $this->length();
+    }
+    
+    public function size() {
+        return $this->length();
+    }
 }
