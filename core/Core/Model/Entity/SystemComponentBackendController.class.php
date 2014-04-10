@@ -56,7 +56,6 @@ abstract class SystemComponentBackendController extends Controller {
             $filename = 'Default.html';
             $testFilename = 'Default';
         }
-        $actTemplate->loadTemplateFile($filename);
         foreach ($cmd as $index=>$name) {
             if ($index == 0) {
                 continue;
@@ -69,6 +68,7 @@ abstract class SystemComponentBackendController extends Controller {
                 break;
             }
         }
+        $actTemplate->loadTemplateFile($filename);
         
         // todo: Messages
         $this->parsePage($actTemplate, $cmd);
