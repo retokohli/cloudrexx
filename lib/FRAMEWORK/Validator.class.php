@@ -222,7 +222,7 @@ class FWValidator
             'xhtml', 'xml', 'svg', 'shtml',
             # server scripts:
             'php', 'php4', 'php5', 'phps', 'cgi', 'pl', 'jsp', 'jspx', 'asp', 'aspx',
-            'jsp', 'jspx', 'jhtml', 'phtml', 'cfm',
+            'jsp', 'jspx', 'jhtml', 'phtml', 'cfm', 'htaccess','py',
         );
         $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
         if (in_array($ext, $evil)) return false;
