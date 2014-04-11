@@ -333,18 +333,18 @@ class MediaLibrary
 
         $obj_file = new File();
         // file or dir
+        $fileName = !empty($_POST['renName']) ? $_POST['renName'] : 'empty';
         if (empty($_POST['oldExt'])) {
-            $fileName = $_POST['renName'];
-            $oldName  = $_POST['oldName'];
+            $oldName = $_POST['oldName'];
         } else {
-            // TODO: $_POST['renName'] may be empty
-            $ext      =
-                (   !empty($_POST['renExt'])
-                 && FWValidator::is_file_ending_harmless(
-                        $_POST['renName'].$_POST['renExt'])
-                    ? $_POST['renExt'] : 'txt');
-            $fileName = $_POST['renName'].'.'.$ext;
-            $oldName  = $_POST['oldName'].'.'.$_POST['oldExt'];
+            $ext
+                = (!empty($_POST['renExt'])
+            && FWValidator::is_file_ending_harmless(
+                $_POST['renName'] . '.' . $_POST['renExt']
+            )
+                ? $_POST['renExt'] : 'txt');
+            $fileName = $fileName . '.' . $ext;
+            $oldName = $_POST['oldName'] . '.' . $_POST['oldExt'];
         }
 
         \Cx\Lib\FileSystem\FileSystem::clean_path($fileName);
