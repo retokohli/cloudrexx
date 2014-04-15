@@ -169,10 +169,9 @@ class LegacyComponentHandler {
                 ),
                 'postResolve' => array(
                     'Upload' => function() {
-                        global $url, $sessionObj;
+                        global $url;
 
-                        if (isset($_REQUEST['section']) && $_REQUEST['section'] == 'upload') {
-                            if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new \cmsSession();
+                        if (isset($_REQUEST['section']) && $_REQUEST['section'] == 'upload') {                            
                             $objUploadModule = new \Upload();
                             $objUploadModule->getPage();
                             //execution never reaches this point
@@ -1099,12 +1098,11 @@ class LegacyComponentHandler {
                     },
 
                     'login' => function() {
-                        global $cl, $_CORELANG, $objTemplate, $sessionObj;
+                        global $cl, $_CORELANG, $objTemplate;
 
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/login/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new \cmsSession();
                         $objLogin = new \Login(\Env::get('cx')->getPage()->getContent());
                         \Env::get('cx')->getPage()->setContent($objLogin->getContent());
                     },
@@ -1190,7 +1188,6 @@ class LegacyComponentHandler {
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/data/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        //if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new \cmsSession();
                         #if (!isset($objAuth) || !is_object($objAuth)) $objAuth = &new Auth($type = 'frontend');
 
                         $objData = new \Data(\Env::get('cx')->getPage()->getContent());
@@ -1596,10 +1593,8 @@ class LegacyComponentHandler {
             'backend' => array(
                 'preResolve' => array(
                     'Session' => function() {
-                        global $sessionObj;
-
-                        if (empty($sessionObj)) $sessionObj = new \cmsSession();
-                        $sessionObj->cmsSessionStatusUpdate('backend');
+                        
+                        $_SESSION->cmsSessionStatusUpdate('backend');
                     },
                     'Js' => function() {
                         // Load the JS helper class and set the offset

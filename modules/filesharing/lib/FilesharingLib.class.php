@@ -99,12 +99,10 @@ CODE
      */
     public static function getTemporaryFilePaths($uploadId)
     {
-        global $sessionObj;
-        if (!isset($sessionObj)) $sessionObj = new cmsSession();
 
         return array(
-            $sessionObj->getTempPath() . '/',
-            $sessionObj->getWebTempPath() . '/',
+            $_SESSION->getTempPath() . '/',
+            $_SESSION->getWebTempPath() . '/',
             'filesharing_' . $uploadId,
         );
     }

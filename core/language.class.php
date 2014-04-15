@@ -700,6 +700,10 @@ class LanguageManager
 
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'language_list', 'language_list.html');
         $this->pageTitle = $_CORELANG['TXT_VARIABLE_LIST'];
+        
+        if (!isset($_SESSION['lang'])) {
+            $_SESSION['lang'] = array();
+        }
 
         if (!isset($_SESSION['lang']['term'])) $_SESSION['lang']['term']="";
         if (!isset($_SESSION['lang']['langId'])) $_SESSION['lang']['langId']="";

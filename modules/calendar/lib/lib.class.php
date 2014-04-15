@@ -640,16 +640,18 @@ EOF;
      * @return $id  integer
      */
     protected function handleUniqueId($key) {
-        global $sessionObj;
-        if (!isset($sessionObj)) $sessionObj = new cmsSession();
         
         $id = 0;
         if (isset($_REQUEST[$key])) { //an id is specified - we're handling a page reload
             $id = intval($_REQUEST[$key]);
         } else { //generate a new id
-            if (!isset($_SESSION['calendar_last_id']))
-                $_SESSION['calendar_last_id'] = 0;
-            $id = ++$_SESSION['calendar_last_id'];
+            if (!isset($_SESSION['calendar_last_id'])) {
+                $_SESSION['calendar_last_id'] = 1;
+            } else {
+                $_SESSION['calendar_last_id'] += 1;
+            }
+                
+            $id = $_SESSION['calendar_last_id'];
         }
         
         $this->_objTpl->setVariable("{$this->moduleLangVar}_".  strtoupper($key), $id);   
@@ -667,13 +669,10 @@ EOF;
      * 
      * @return array('path','webpath', 'dirname')
      */
-    public static function getTemporaryUploadPath($fieldName, $submissionId) {
-        global $sessionObj;
+    public static function getTemporaryUploadPath($fieldName, $submissionId) {        
 
-        if (!isset($sessionObj)) $sessionObj = new cmsSession();
-        
-        $tempPath = $sessionObj->getTempPath();
-        $tempWebPath = $sessionObj->getWebTempPath();
+        $tempPath = $_SESSION->getTempPath();
+        $tempWebPath = $_SESSION->getWebTempPath();
         if($tempPath === false || $tempWebPath === false)
             throw new Exception('could not get temporary session folder');
 

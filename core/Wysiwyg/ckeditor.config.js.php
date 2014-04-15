@@ -10,8 +10,7 @@ if (strpos(dirname(__FILE__), 'customizing') === false) {
 require_once($contrexx_path . '/core/Core/init.php');
 init('minimal');
 
-$sessionObj = new cmsSession();
-$sessionObj->cmsSessionStatusUpdate('backend');
+$_SESSION->cmsSessionStatusUpdate('backend');
 $CSRF = '&'.CSRF::key().'='.CSRF::code();
 
 

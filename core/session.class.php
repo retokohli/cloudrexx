@@ -22,8 +22,8 @@
  * @package     contrexx
  * @subpackage  core
  */
-class cmsSession
-{
+class cmsSession extends RecursiveArrayAccess {
+
     var $sessionid;
     var $status;
     private $sessionPath;
@@ -63,13 +63,56 @@ class cmsSession
 
             //earliest possible point to set debugging according to session.
             $this->restoreDebuggingParams();
-            
+
             $this->cmsSessionExpand();
         } else {
             $this->cmsSessionError();
         }
     }
-
+    
+    function __destruct() {
+        // Don't write session data to databse.
+        // This is used to prevent an unwanted session overwrite by a continuous
+        // script request (javascript) that only checks for a certain event to happen.
+        if ($this->discardChanges) return true;
+        
+        $sessionId = $this->sessionid;
+        
+        foreach ($this->data as $k => $v) {
+            $sessionVar = contrexx_input2db($k);
+            $sessionVal = contrexx_input2db(serialize($v));
+            
+            $query = "REPLACE INTO 
+                        `" . DBPREFIX . "session_variable` 
+                        (`sessionid`, `variable_key`, `variable_value`) 
+                      VALUES 
+                        ('$sessionId', '$sessionVar', '$sessionVal')";
+            
+            $this->_objDb->Execute($query);            
+        }
+    }
+    
+    function readData() {
+        $sessionId  = contrexx_input2db($this->sessionid);
+        
+        $query = "SELECT 
+                    `variable_key`,
+                    `variable_value` 
+                  FROM 
+                    `". DBPREFIX ."session_variable` 
+                  WHERE 
+                    `sessionid` = '$sessionId' 
+                  ";
+        $objResult = $this->_objDb->Execute($query);
+                
+        if ($objResult && $objResult->RecordCount() > 0) {
+            while (!$objResult->EOF) {
+                $this->data[$objResult->fields['variable_key']] = unserialize($objResult->fields['variable_value']);
+                $objResult->MoveNext();
+            }            
+        }
+    }
+    
     /**
      * Initializes the database.
      *
@@ -78,7 +121,7 @@ class cmsSession
     private function initDatabase()
     {
         $this->_objDb = \Env::get('db');
-        
+
         $this->setAdodbDebugMode();
     }
 
@@ -121,10 +164,10 @@ class cmsSession
         if (isset($_POST['remember_me'])) {
             $this->rememberMe = true;
             if ($this->sessionExists($sessionId)) {//remember me status for new sessions will be stored in cmsSessionRead() (when creating the appropriate db entry)
-                $objResult = $this->_objDb->Execute('UPDATE `'.DBPREFIX.'sessions` SET `remember_me` = 1 WHERE `sessionid` = "'.contrexx_input2db($sessionId).'"');
+                $objResult = $this->_objDb->Execute('UPDATE `' . DBPREFIX . 'sessions` SET `remember_me` = 1 WHERE `sessionid` = "' . contrexx_input2db($sessionId) . '"');
             }
         } else {
-            $objResult = $this->_objDb->Execute('SELECT `remember_me` FROM `'.DBPREFIX.'sessions` WHERE `sessionid` = "'.contrexx_input2db($sessionId).'"');
+            $objResult = $this->_objDb->Execute('SELECT `remember_me` FROM `' . DBPREFIX . 'sessions` WHERE `sessionid` = "' . contrexx_input2db($sessionId) . '"');
             if ($objResult && ($objResult->RecordCount() > 0)) {
                 if ($objResult->fields['remember_me'] == 1) {
                     $this->rememberMe = true;
@@ -140,9 +183,8 @@ class cmsSession
      * @param   string      $session
      * @return  boolean
      */
-    private function sessionExists($sessionId)
-    {
-        $objResult = $this->_objDb->Execute('SELECT 1 FROM `'.DBPREFIX.'sessions` WHERE `sessionid` = "'.contrexx_input2db($sessionId).'"');
+    private function sessionExists($sessionId) {
+        $objResult = $this->_objDb->Execute('SELECT 1 FROM `' . DBPREFIX . 'sessions` WHERE `sessionid` = "' . contrexx_input2db($sessionId) . '"');
         if ($objResult && ($objResult->RecordCount() > 0)) {
             return true;
         } else {
@@ -196,7 +238,7 @@ class cmsSession
     {
         // release the lock associated with the current session
         $this->_objDb->Execute('SELECT RELEASE_LOCK("' . $this->sessionLock . '")');
-        
+
         return true;
     }
 
@@ -205,7 +247,7 @@ class cmsSession
         global $_DBCONFIG;
         
         $this->sessionid = $aKey;
-        $this->sessionPath = ASCMS_TEMP_WEB_PATH.'/'.$this->sessionPathPrefix.$this->sessionid;
+        $this->sessionPath = ASCMS_TEMP_WEB_PATH . '/' . $this->sessionPathPrefix . $this->sessionid;
 
         // get the lock name, associated with the current session
         $this->sessionLock = "{$_DBCONFIG['database']}.".DBPREFIX."sessions_{$this->sessionid}";
@@ -215,31 +257,33 @@ class cmsSession
             die('Could not obtain session lock!');
         }
         
-        $objResult = $this->_objDb->Execute('SELECT `datavalue`, `user_id`, `status` FROM `'.DBPREFIX.'sessions` WHERE `sessionid` = "'.$aKey.'"');
+        $objResult = $this->_objDb->Execute('SELECT `user_id`, `status` FROM `' . DBPREFIX . 'sessions` WHERE `sessionid` = "' . $aKey . '"');
         if ($objResult !== false) {
             if ($objResult->RecordCount() == 1) {
                 $this->userId = $objResult->fields['user_id'];
                 $this->status = $objResult->fields['status'];
-                return $objResult->fields['datavalue'];
             } else {
                 $this->_objDb->Execute('
-                    INSERT INTO `'.DBPREFIX.'sessions` (`sessionid`, `remember_me`, `startdate`, `lastupdated`, `status`, `user_id`)
-                    VALUES ("'.$aKey.'", '.($this->rememberMe ? 1 : 0).', "'.time().'", "'.time().'", "'.$this->status.'", '.intval($this->userId).')
+                    INSERT INTO `' . DBPREFIX . 'sessions` (`sessionid`, `remember_me`, `startdate`, `lastupdated`, `status`, `user_id`)
+                    VALUES ("' . $aKey . '", ' . ($this->rememberMe ? 1 : 0) . ', "' . time() . '", "' . time() . '", "' . $this->status . '", ' . intval($this->userId) . ')
                 ');
                 return '';
-           }
+            }
         }
+
+        $this->readData();
+        
+        return '';
     }
 
-    function cmsSessionWrite( $aKey, $aVal )
-    {
+    function cmsSessionWrite($aKey, $aVal) {
         // Don't write session data to databse.
         // This is used to prevent an unwanted session overwrite by a continuous
         // script request (javascript) that only checks for a certain event to happen.
         if ($this->discardChanges) return true;
-
-        $aVal = addslashes( $aVal );
-        $query = "UPDATE ".DBPREFIX."sessions SET datavalue = '".$aVal."', lastupdated = '".time()."' WHERE sessionid = '".$aKey."'";
+        
+        $aVal = addslashes($aVal);
+        $query = "UPDATE " . DBPREFIX . "sessions SET lastupdated = '" . time() . "' WHERE sessionid = '" . $aKey . "'";
 
         // We must deactivate the debugging of the database here,
         // because at this stage the database driver used in DBG
@@ -252,9 +296,11 @@ class cmsSession
         return true;
     }
 
-    function cmsSessionDestroy( $aKey , $destroyCookie = true)
-    {
-        $query = "DELETE FROM ".DBPREFIX."sessions WHERE sessionid = '".$aKey."'";
+    function cmsSessionDestroy($aKey, $destroyCookie = true) {
+        $query = "DELETE FROM " . DBPREFIX . "sessions WHERE sessionid = '" . $aKey . "'";
+        $this->_objDb->Execute($query);
+
+        $query = "DELETE FROM " . DBPREFIX . "session_variable WHERE sessionid = '" . $aKey . "'";
         $this->_objDb->Execute($query);
 
         if (\Cx\Lib\FileSystem\FileSystem::exists($this->sessionPath)) {
@@ -262,15 +308,14 @@ class cmsSession
         }
 
         if ($destroyCookie) {
-            setcookie("PHPSESSID", '', time()-3600, '/');
+            setcookie("PHPSESSID", '', time() - 3600, '/');
         }
 
         return true;
     }
 
-    function cmsSessionDestroyByUserId($userId)
-    {
-        $objResult = $this->_objDb->Execute('SELECT `sessionid` FROM `'.DBPREFIX.'sessions` WHERE `user_id` = '.intval($userId));
+    function cmsSessionDestroyByUserId($userId) {
+        $objResult = $this->_objDb->Execute('SELECT `sessionid` FROM `' . DBPREFIX . 'sessions` WHERE `user_id` = ' . intval($userId));
         if ($objResult) {
             while (!$objResult->EOF) {
                 if ($objResult->fields['sessionid'] != $this->sessionid) {
@@ -283,30 +328,28 @@ class cmsSession
         return true;
     }
 
-    function cmsSessionGc()
-    {
-        $this->_objDb->Execute('DELETE FROM `'.DBPREFIX.'sessions` WHERE ((`remember_me` = 0) AND (`lastupdated` < '.(time()-$this->defaultLifetime).'))');
-        $this->_objDb->Execute('DELETE FROM `'.DBPREFIX.'sessions` WHERE ((`remember_me` = 1) AND (`lastupdated` < '.(time()-$this->defaultLifetimeRememberMe).'))');
+    function cmsSessionGc() {
+        $this->_objDb->Execute('DELETE FROM `' . DBPREFIX . 'sessions` WHERE ((`remember_me` = 0) AND (`lastupdated` < ' . (time() - $this->defaultLifetime) . '))');
+        $this->_objDb->Execute('DELETE FROM `' . DBPREFIX . 'sessions` WHERE ((`remember_me` = 1) AND (`lastupdated` < ' . (time() - $this->defaultLifetimeRememberMe) . '))');
         return true;
     }
 
     function cmsSessionUserUpdate($userId=0)
     {
         $this->userId = $userId;
-        $this->_objDb->Execute('UPDATE `'.DBPREFIX.'sessions` SET `user_id` = '.$userId.' WHERE `sessionid` = "'.$this->sessionid.'"');
+        $this->_objDb->Execute('UPDATE `' . DBPREFIX . 'sessions` SET `user_id` = ' . $userId . ' WHERE `sessionid` = "' . $this->sessionid . '"');
         return true;
     }
 
-    function cmsSessionStatusUpdate($status="")
-    {
-        $this->status=$status;
-        $query = "UPDATE ".DBPREFIX."sessions SET status ='".$status."' WHERE sessionid = '".$this->sessionid."'";
+    function cmsSessionStatusUpdate($status = "") {
+        $this->status = $status;
+        $query = "UPDATE " . DBPREFIX . "sessions SET status ='" . $status . "' WHERE sessionid = '" . $this->sessionid . "'";
         $this->_objDb->Execute($query);
         return true;
     }
 
     function cmsSessionError() {
-        die ("Session Handler Error");
+        die("Session Handler Error");
     }
 
     public function getTempPath()
@@ -321,7 +364,7 @@ class cmsSession
             return false;
         }
 
-        return ASCMS_PATH.$this->sessionPath;
+        return ASCMS_PATH . $this->sessionPath;
     }
 
     /**
@@ -332,17 +375,16 @@ class cmsSession
      */
     public function getWebTempPath() {
         $tp = $this->getTempPath();
-        if(!$tp)
+        if (!$tp)
             return false;
         return $this->sessionPath;
     }
 
-    public function cleanTempPaths()
-    {
+    public function cleanTempPaths() {
         $dirs = array();
         if ($dh = opendir(ASCMS_TEMP_PATH)) {
             while (($file = readdir($dh)) !== false) {
-                if (is_dir(ASCMS_TEMP_PATH.'/'.$file)) {
+                if (is_dir(ASCMS_TEMP_PATH . '/' . $file)) {
                     $dirs[] = $file;
                 }
             }
@@ -351,9 +393,9 @@ class cmsSession
 
         // depending on the php setting session.hash_function and session.hash_bits_per_character
         // the length of the session-id varies between 22 and 40 characters.
-        $sessionPaths = preg_grep('#^'.$this->sessionPathPrefix.'[0-9A-Z,-]{22,40}$#i', $dirs);
+        $sessionPaths = preg_grep('#^' . $this->sessionPathPrefix . '[0-9A-Z,-]{22,40}$#i', $dirs);
         $sessions = array();
-        $query = 'SELECT `sessionid` FROM `'.DBPREFIX.'sessions`';
+        $query = 'SELECT `sessionid` FROM `' . DBPREFIX . 'sessions`';
         $objResult = $this->_objDb->Execute($query);
         while (!$objResult->EOF) {
             $sessions[] = $objResult->fields['sessionid'];
@@ -362,7 +404,7 @@ class cmsSession
 
         foreach ($sessionPaths as $sessionPath) {
             if (!in_array(substr($sessionPath, strlen($this->sessionPathPrefix)), $sessions)) {
-                \Cx\Lib\FileSystem\FileSystem::delete_folder(ASCMS_TEMP_WEB_PATH.'/'.$sessionPath, true);
+                \Cx\Lib\FileSystem\FileSystem::delete_folder(ASCMS_TEMP_WEB_PATH . '/' . $sessionPath, true);
             }
         }
     }
@@ -375,8 +417,8 @@ class cmsSession
      * Use this method when doing multiple ajax-requests simultaneously
      * to prevent an unwanted session overwrite.
      */
-    public function discardChanges()
-    {
+    public function discardChanges() {
         $this->discardChanges = true;
     }
+
 }

@@ -1527,7 +1527,7 @@ class User extends User_Profile
      */
     public function store()
     {
-        global $objDatabase, $_CORELANG, $sessionObj;
+        global $objDatabase, $_CORELANG;
 
         if (!$this->validateUsername()) {
             return false;
@@ -1563,7 +1563,7 @@ class User extends User_Profile
             }
             if (!empty($this->password)) {
                 // deletes all sessions which are using this user (except the session changing the password)
-                $sessionObj->cmsSessionDestroyByUserId($this->id);
+                $_SESSION->cmsSessionDestroyByUserId($this->id);
             }
         } else {
             if ($objDatabase->Execute("
@@ -1840,14 +1840,13 @@ class User extends User_Profile
 
 
     public function login($backend = false)
-    {
-        global $sessionObj;
+    {        
 
         if ($this->loggedIn) return true;
-        if(isset($sessionObj)
-            && is_object($sessionObj)
-            && $sessionObj->userId
-            && $this->load($sessionObj->userId)
+        if(isset($_SESSION)
+            && is_object($_SESSION)
+            && $_SESSION->userId
+            && $this->load($_SESSION->userId)
             && $this->getActiveStatus()
             && $this->hasModeAccess($backend)
             && $this->updateLastActivityTime()) {

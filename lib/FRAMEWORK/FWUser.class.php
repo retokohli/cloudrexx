@@ -77,13 +77,15 @@ class FWUser extends User_Setting
      */
     function checkAuth()
     {
-        global $sessionObj, $_CORELANG, $objInit;
+        global $_CORELANG, $objInit;
 
         $username = isset($_POST['USERNAME']) && $_POST['USERNAME'] != '' ? contrexx_stripslashes($_POST['USERNAME']) : null;
         $password = isset($_POST['PASSWORD']) && $_POST['PASSWORD'] != '' ? md5(contrexx_stripslashes($_POST['PASSWORD'])) : null;
 
+        if (!isset($_SESSION['auth'])) {
+            $_SESSION['auth'] = array();
+        }
         if (isset($username) && isset($password)) {
-            if (empty($sessionObj)) $sessionObj = new cmsSession();
             if ($this->objUser->auth($username, $password, $this->isBackendMode(), FWCaptcha::getInstance()->check())) {
                 if ($this->isBackendMode()) {
                     $this->log();
@@ -94,8 +96,8 @@ class FWUser extends User_Setting
             $_SESSION['auth']['loginLastAuthFailed'] = 1;
             User::registerFailedLogin($username);
             $this->arrStatusMsg['error'][] = $_CORELANG['TXT_PASSWORD_OR_USERNAME_IS_INCORRECT'];
-            $sessionObj->cmsSessionUserUpdate();
-            $sessionObj->cmsSessionStatusUpdate($this->isBackendMode() ? 'backend' : 'frontend');
+            $_SESSION->cmsSessionUserUpdate();
+            $_SESSION->cmsSessionStatusUpdate($this->isBackendMode() ? 'backend' : 'frontend');
         }
         return false;
     }
@@ -122,9 +124,9 @@ class FWUser extends User_Setting
      * @param mixed $objUser the user to be logged in
      */
     function loginUser($objUser) {
-        global $sessionObj, $objInit;
+        global $objInit;
 
-        $sessionObj->cmsSessionUserUpdate($objUser->getId());
+        $_SESSION->cmsSessionUserUpdate($objUser->getId());
         $objUser->registerSuccessfulLogin();
         unset($_SESSION['auth']['loginLastAuthFailed']);
         // Store frontend lang_id in cookie

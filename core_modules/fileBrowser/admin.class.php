@@ -151,7 +151,8 @@ class FileBrowser {
 
     function _getPath() {
         
-        if (!isset($_SESSION['fileBrowser']['path'])) {
+        if (!isset($_SESSION['fileBrowser'])) {
+            $_SESSION['fileBrowser'] = array();
             $_SESSION['fileBrowser']['path'] = array();
         }
         

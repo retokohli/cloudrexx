@@ -2851,12 +2851,9 @@ CODE;
      * @throws ContactException
      */
     protected static function getTemporaryUploadPath($submissionId, $fieldId, $dir) {
-        global $sessionObj;
 
-        if (!isset($sessionObj)) $sessionObj = new cmsSession();
-
-        $tempPath = $sessionObj->getTempPath();
-        $tempWebPath = $sessionObj->getWebTempPath();
+        $tempPath = $_SESSION->getTempPath();
+        $tempWebPath = $_SESSION->getWebTempPath();
         if($tempPath === false || $tempWebPath === false)
             throw new ContactException('could not get temporary session folder');
 

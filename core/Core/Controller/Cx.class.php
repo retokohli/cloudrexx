@@ -454,9 +454,16 @@ namespace Cx\Core\Core\Controller {
          */
         protected function preInit() {
             $this->checkSystemState();
-            $this->adjustRequest();
+            $this->adjustRequest();            
         }
 
+        /**
+         * Start the session using the new cmsSession object
+         */
+        protected function startSession() {
+            $_SESSION = new \cmsSession();
+        }
+        
         /**
          * Check whether the system is running
          * @throws \Exception
@@ -637,6 +644,8 @@ namespace Cx\Core\Core\Controller {
             \Env::set('init', $objInit);
             //$bla = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
             //$bla->findAll();
+            
+            $this->startSession();
         }
         
         /**
