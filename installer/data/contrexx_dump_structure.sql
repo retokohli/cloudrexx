@@ -4038,6 +4038,16 @@ CREATE TABLE `contrexx_modules` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_session_variable` (
+  `sessionid` varchar(32) NOT NULL default '',
+  `lastused` timestamp NOT NULL,
+  `variable_key` varchar(40) NOT NULL default '',
+  `variable_value` text,
+  UNIQUE KEY `sessvar` (`sessionid`,`variable_key`)
+) ENGINE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_sessions` (
   `sessionid` varchar(255) NOT NULL default '',
   `remember_me` int(1) NOT NULL default '0',
