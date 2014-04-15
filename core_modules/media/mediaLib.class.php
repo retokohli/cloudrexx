@@ -166,7 +166,7 @@ class MediaLibrary
             if (isset($_SESSION['mediaCopyFile'])) {
                 unset($_SESSION['mediaCopyFile']);
             }
-
+            $_SESSION['mediaCutFile'] = array();
             $_SESSION['mediaCutFile'][] = $this->path;
             $_SESSION['mediaCutFile'][] = $this->webPath;
             $_SESSION['mediaCutFile'][] = $_POST['formSelected'];
@@ -189,6 +189,7 @@ class MediaLibrary
                 unset($_SESSION['mediaCopyFile']);
             }
 
+            $_SESSION['mediaCopyFile'] = array();
             $_SESSION['mediaCopyFile'][] = $this->path;
             $_SESSION['mediaCopyFile'][] = $this->webPath;
             $_SESSION['mediaCopyFile'][] = $_POST['formSelected'];

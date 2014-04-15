@@ -27,8 +27,6 @@ class FWCaptcha {
 
     private function __construct($config)
     {
-        global $sessionObj;
-        if (!isset($sessionObj)) $sessionObj = new cmsSession();
 
 // TODO: move to basic configuration screen (/cadmin/index.php?cmd=settings)
         $captchaConfig = array(

@@ -1,5 +1,5 @@
 <?php
-global $sessionObj, $_CONFIG, $_CORELANG, $objUser, $objDatabase;
+global $_CONFIG, $_CORELANG, $objUser, $objDatabase;
 
 if (!isset($objUser) || !isset($objDatabase) || !isset($license)) {
     require_once dirname(dirname(dirname(__FILE__))).'/core/Core/init.php';
@@ -7,7 +7,6 @@ if (!isset($objUser) || !isset($objDatabase) || !isset($license)) {
 }
 
 // Init user
-if (empty($sessionObj)) $sessionObj = new \cmsSession();
 if (!isset($objUser)) {
     $objUser = $cx->getUser()->objUser;
 }

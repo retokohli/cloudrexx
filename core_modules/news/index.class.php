@@ -1833,6 +1833,11 @@ RSS2JSCODE;
     {
         global $objDatabase, $_ARRAYLANG, $_CORELANG, $_CONFIG;
 
+        if (!isset($_SESSION['news'])) {
+            $_SESSION['news'] = array();
+            $_SESSION['news']['comments'] = array();
+        }
+        
         // just comment
         if ($this->checkForCommentFlooding($newsMessageId)) {
             return array(   

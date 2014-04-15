@@ -170,6 +170,9 @@ class Paging
         if (empty($parameter_name)) {
             $parameter_name = self::getParametername();//'pos';
         }
+        if (!isset($_SESSION['paging'])) {
+            $_SESSION['paging'] = array();
+        }        
         if (!isset($_SESSION['paging'][$parameter_name]))
             $_SESSION['paging'][$parameter_name] = 0;
         if (isset($_REQUEST[$parameter_name])) {

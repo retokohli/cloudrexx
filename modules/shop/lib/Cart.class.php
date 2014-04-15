@@ -172,7 +172,7 @@ class Cart
             return;
         }
         $quantity = intval($arrNewProduct['quantity']);
-        $products = &$_SESSION['shop']['cart']['items'];
+        $products = $_SESSION['shop']['cart']['items']->toArray();        
         $cart_id = null;
         // Add as a new product if true
         $new = true;
@@ -322,6 +322,7 @@ class Cart
                 }
             }
         }
+        $_SESSION['shop']['cart']['items'] = $products;
 //DBG::log("Cart::add_product(): New options: ".var_export($products[$cart_id]['options'], true));
 //DBG::log("Cart::add_product(): Leaving");
     }
@@ -405,14 +406,13 @@ class Cart
         $total_price = 0;
         $total_vat_amount = 0;
         $total_weight = 0;
-        $total_discount_amount = 0;
-        $products = &$_SESSION['shop']['cart']['items'];
+        $total_discount_amount = 0;        
 //DBG::log("Cart::update(): Products: ".var_export($products, true));
         // Loop 1: Collect necessary Product data
-        foreach ($products as $cart_id => &$product) {
+        foreach ($_SESSION['shop']['cart']['items'] as $cart_id => $product) {
             $objProduct = Product::getById($product['id']);
             if (!$objProduct) {
-                unset($products[$cart_id]);
+                unset($_SESSION['shop']['cart']['items'][$cart_id]);
                 continue;
             }
             // Limit Products in the cart to the stock available if the
@@ -423,7 +423,7 @@ class Cart
             }
             // Remove Products with quatities of zero or less
             if ($product['quantity'] <= 0) {
-                unset($products[$cart_id]);
+                unset($_SESSION['shop']['cart']['items'][$cart_id]);
                 continue;
             }
             $options_price = 0;

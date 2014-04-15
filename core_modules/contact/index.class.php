@@ -483,18 +483,20 @@ class Contact extends ContactLib
      * generates an unique id for each form and user.
      * @see Contact::$submissionId
      */
-    protected function handleUniqueId() {
-        global $sessionObj;
-        if (!isset($sessionObj)) $sessionObj = new cmsSession();
+    protected function handleUniqueId() {        
         
         $id = 0;
         if(isset($_REQUEST['unique_id'])) { //an id is specified - we're handling a page reload
             $id = intval($_REQUEST['unique_id']);
         }
         else { //generate a new id
-            if(!isset($_SESSION['contact_last_id']))
-                $_SESSION['contact_last_id'] = 0;
-            $id = ++$_SESSION['contact_last_id'];
+            if(!isset($_SESSION['contact_last_id'])) {
+                $_SESSION['contact_last_id'] = 1;
+            } else {
+                $_SESSION['contact_last_id'] += 1;
+            }
+            
+            $id = $_SESSION['contact_last_id'];
         }
         $this->objTemplate->setVariable('CONTACT_UNIQUE_ID', $id);
         $this->submissionId = $id;
@@ -1585,12 +1587,9 @@ CODE;
      * @throws ContactException
      */
     protected static function getTemporaryUploadPath($submissionId, $fieldId) {
-        global $sessionObj;
-
-        if (!isset($sessionObj)) $sessionObj = new cmsSession();
         
-        $tempPath = $sessionObj->getTempPath();
-        $tempWebPath = $sessionObj->getWebTempPath();
+        $tempPath = $_SESSION->getTempPath();
+        $tempWebPath = $_SESSION->getWebTempPath();
         if($tempPath === false || $tempWebPath === false)
             throw new ContactException('could not get temporary session folder');
 
