@@ -602,14 +602,17 @@ class BlogAdmin extends BlogLibrary {
                 ));
 
                 //Check active languages
-                $langState = array();
-                foreach ($arrEntryValues['translation'] as $intLangId => $arrEntryTranslations) {
-                    if ($arrEntryTranslations['is_active'] && key_exists($intLangId,$this->_arrLanguages)) {
-                        $langState[$intLangId] = 'active';
+                $strActiveLanguages = '';
+                if (count(\FWLanguage::getActiveFrontendLanguages()) > 1) {
+                    $langState = array();
+                    foreach ($arrEntryValues['translation'] as $intLangId => $arrEntryTranslations) {
+                        if ($arrEntryTranslations['is_active'] && key_exists($intLangId,$this->_arrLanguages)) {
+                            $langState[$intLangId] = 'active';
+                        }
                     }
+                    $strActiveLanguages = \Html::getLanguageIcons($langState, 'index.php?cmd=blog&amp;act=editEntry&amp;id=' . $intEntryId . '&amp;langId=%1$d');
                 }
-                $strActiveLanguages = \Html::getLanguageIcons($langState, 'index.php?cmd=blog&amp;act=editEntry&amp;id=' . $intEntryId . '&amp;langId=%1$d');
-
+                
                 $this->_objTpl->setVariable(array(
                     'ENTRY_ROWCLASS'        =>  ($intRowClass % 2 == 0) ? 'row1' : 'row2',
                     'ENTRY_ID'              =>  $intEntryId,
