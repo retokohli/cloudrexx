@@ -584,11 +584,15 @@ class newsManager extends newsLibrary {
                     $this->_objTpl->hideBlock('news_type_data');
                 }
 
-                $langState = array();
-                foreach ($news['lang'] as $langId => $langValues) {
-                    $langState[$langId] = 'active';
+                $langString = '';
+                if (count(\FWLanguage::getActiveFrontendLanguages()) > 1) {
+                    $langState = array();
+                    foreach ($news['lang'] as $langId => $langValues) {
+                        $langState[$langId] = 'active';
+                    }
+                    $langString  = \Html::getLanguageIcons($langState, 'index.php?cmd=news&amp;act=edit&amp;newsId=' . $newsId . '&amp;langId=%1$d');
                 }
-                $langString  = \Html::getLanguageIcons($langState, 'index.php?cmd=news&amp;act=edit&amp;newsId=' . $newsId . '&amp;langId=%1$d');
+                
                 $previewLink = \Cx\Core\Routing\Url::fromModuleAndCmd('news', $this->findCmdById('details', $news['catid']), '', array('newsid' => $newsId));
                 $previewLink .= '&newsPreview=1';
 
@@ -740,11 +744,14 @@ class newsManager extends newsLibrary {
                     $selectedInterfaceLanguage = key($news['lang']);
                 }
 
-                $langState = array();
-                foreach ($news['lang'] as $langId => $langValues) {
-                    $langState[$langId] = 'active';
+                $langString = '';
+                if (count(\FWLanguage::getActiveFrontendLanguages()) > 1) {
+                    $langState = array();
+                    foreach ($news['lang'] as $langId => $langValues) {
+                        $langState[$langId] = 'active';
+                    }
+                    $langString = \Html::getLanguageIcons($langState, 'index.php?cmd=news&amp;act=edit&amp;newsId=' . $newsId . '&amp;langId=%1$d');
                 }
-                $langString = \Html::getLanguageIcons($langState, 'index.php?cmd=news&amp;act=edit&amp;newsId=' . $newsId . '&amp;langId=%1$d');
                 
                 $this->_objTpl->setVariable(array(
                     'NEWS_ID'               => $newsId,

@@ -823,13 +823,16 @@ class CalendarEventManager extends CalendarLibrary
                 
                 $showIn = explode(",",$objEvent->showIn);
                 
-                $langState = array();
-                foreach ($this->arrFrontendLanguages as $langKey => $arrLang) {
-                    if (in_array($arrLang['id'], $showIn)) {
-                        $langState[$langKey] = 'active';
+                $languages = '';
+                if (count(\FWLanguage::getActiveFrontendLanguages()) > 1) {
+                    $langState = array();
+                    foreach ($this->arrFrontendLanguages as $langKey => $arrLang) {
+                        if (in_array($arrLang['id'], $showIn)) {
+                            $langState[$langKey] = 'active';
+                        }
                     }
+                    $languages = \Html::getLanguageIcons($langState, 'index.php?cmd=calendar&amp;act=modify_event&amp;id=' . $objEvent->id . '&amp;langId=%1$d'.($type == 'confirm' ? "&amp;confirm=1" : ""));
                 }
-                $languages = \Html::getLanguageIcons($langState, 'index.php?cmd=calendar&amp;act=modify_event&amp;id=' . $objEvent->id . '&amp;langId=%1$d'.($type == 'confirm' ? "&amp;confirm=1" : ""));
                 
                 list ($priority, $priorityImg) = $this->getPriorityImage($objEvent);
                 
