@@ -12,6 +12,8 @@
  * @todo        Edit PHP DocBlocks!
  */
 
+use \Cx\Core\Model\RecursiveArrayAccess as RecursiveArrayAccess;
+
 /**
  * Session
  *
@@ -37,15 +39,36 @@ class cmsSession extends RecursiveArrayAccess {
     private $defaultLifetimeRememberMe;
     private $rememberMe = false;
     private $discardChanges = false;
-
-    function __construct($status='')
+    
+    public static $instance;
+    
+    public static function getInstance()
     {
-        global $_CONFIG;
+        if (!isset(self::$instance))
+        {
+            $class = __CLASS__;
+            self::$instance = new $class();
+            $_SESSION = self::$instance;
+            
+            // read the session data
+            $_SESSION->readData();
+            
+            //earliest possible point to set debugging according to session.
+            $_SESSION->restoreDebuggingParams();
+
+            $_SESSION->cmsSessionExpand();
+        }
+        
+        return self::$instance;
+    }
+
+    protected function __construct($status='')
+    {        
 
         if (ini_get('session.auto_start')) {
             session_destroy();
         }
-
+                
         $this->status = $status;
         $this->initDatabase();
         $this->initRememberMe();
@@ -60,11 +83,7 @@ class cmsSession extends RecursiveArrayAccess {
             array(& $this, 'cmsSessionGc')))
         {
             session_start();
-
-            //earliest possible point to set debugging according to session.
-            $this->restoreDebuggingParams();
-
-            $this->cmsSessionExpand();
+            
         } else {
             $this->cmsSessionError();
         }
@@ -78,17 +97,26 @@ class cmsSession extends RecursiveArrayAccess {
         
         $sessionId = $this->sessionid;
         
+        $rows = array();
         foreach ($this->data as $k => $v) {
             $sessionVar = contrexx_input2db($k);
             $sessionVal = contrexx_input2db(serialize($v));
             
-            $query = "REPLACE INTO 
+            $rows[] = "('$sessionId', '$sessionVar', '$sessionVal')";
+        }
+        
+        if (!empty($rows)) {
+            $strRows = implode(', ', $rows);
+            $query = "INSERT INTO 
                         `" . DBPREFIX . "session_variable` 
                         (`sessionid`, `variable_key`, `variable_value`) 
                       VALUES 
-                        ('$sessionId', '$sessionVar', '$sessionVal')";
-            
-            $this->_objDb->Execute($query);            
+                        $strRows 
+                      ON DUPLICATE KEY 
+                        UPDATE 
+                            `variable_value` = VALUES(variable_value)";
+
+            $this->_objDb->Execute($query);
         }
     }
     
@@ -110,7 +138,7 @@ class cmsSession extends RecursiveArrayAccess {
                 $this->data[$objResult->fields['variable_key']] = unserialize($objResult->fields['variable_value']);
                 $objResult->MoveNext();
             }            
-        }
+        }        
     }
     
     /**
@@ -147,7 +175,7 @@ class cmsSession extends RecursiveArrayAccess {
      * @access  private
      */
     private function restoreDebuggingParams()
-    {
+    {                
         if (isset($_SESSION['debugging']) && $_SESSION['debugging']) {
             DBG::activate(DBG::getMode() | $_SESSION['debugging_flags']);
         }
@@ -271,8 +299,6 @@ class cmsSession extends RecursiveArrayAccess {
             }
         }
 
-        $this->readData();
-        
         return '';
     }
 
@@ -296,7 +322,7 @@ class cmsSession extends RecursiveArrayAccess {
         return true;
     }
 
-    function cmsSessionDestroy($aKey, $destroyCookie = true) {
+    function cmsSessionDestroy($aKey, $destroyCookie = true) {          
         $query = "DELETE FROM " . DBPREFIX . "sessions WHERE sessionid = '" . $aKey . "'";
         $this->_objDb->Execute($query);
 
@@ -310,7 +336,9 @@ class cmsSession extends RecursiveArrayAccess {
         if ($destroyCookie) {
             setcookie("PHPSESSID", '', time() - 3600, '/');
         }
-
+        // do not write the session data
+        $this->discardChanges = true;
+        
         return true;
     }
 
