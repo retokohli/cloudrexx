@@ -210,7 +210,7 @@ class Livecam extends LivecamLibrary
         JS::activate('jqueryui');
         JS::registerCode("
             cx.ready(function() {
-                cx.jQuery('input[name=date]').datepicker({dateFormat: 'yy-mm-dd'});
+                jQuery('input[name=date]').datepicker({dateFormat: 'yy-mm-dd'});
             });
         ");
 
@@ -272,7 +272,7 @@ class Livecam extends LivecamLibrary
         JS::activate('jqueryui');
         JS::registerCode("
             cx.ready(function() {
-                cx.jQuery('input[name=date]').datepicker({dateFormat: 'yy-mm-dd'});
+                jQuery('input[name=date]').datepicker({dateFormat: 'yy-mm-dd'});
             });
         ");
 

@@ -18,7 +18,7 @@
                 return
             }
             if ($J(this).val() == "delete") {
-                if(confirm('{TXT_CRM_ARE_YOU_SURE_DELETE_ENTRIES}')) {
+                if(confirm('Are you Sure Want to delete the Entry')) {
                     $J("#taskTypeOverview").submit();
                 }
             } else if ($J(this).val() != 0)

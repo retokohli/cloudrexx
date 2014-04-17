@@ -2,6 +2,9 @@
 <script language="JavaScript" type="text/javascript">
     <!-- // confirm delete page
     function reloadThemesPage(){
+        document.themesForm.action = 'index.php?cmd=skins&act=templates';
+        document.themesForm.themesDelName.value='';
+        document.themesForm.themesDelFileName.value='';
         document.themesForm.submit();
     }
     // -->
@@ -40,6 +43,27 @@
                                 <option value="">--- {TXT_SELECT_FILE} -------------------</option>
                                 {THEMES_PAGES_MENU}
                             </select>
+                            <br /><br />
+                            <input type="input" name="themesNewFileName" maxlength="50" style="width: 180px" /><br />
+                            <input type="submit" name="Submit" value="{TXT_CREATE_FILE}" style="WIDTH: 100px" />
+                        </td>
+                    </tr>
+                    <tr valign="top" class="row1">
+                        <th width="180" nowrap="nowrap">{TXT_MANAGE_FILES}</th>
+                    </tr>
+                    <tr valign="top" class="row1">
+                        <td>
+                            <select name="themesDelFileName" style="WIDTH: 180px">
+                                <option value="" selected>--- {TXT_SELECT_FILE} ---</option>
+                                {THEMES_PAGE_DEL_VALUE}
+                            </select><br />
+                            <input type="submit" name="Submit" value="{TXT_DELETE}" style="WIDTH: 100px"/>
+                            <br /><br />
+                            <select name="themesDelName" style="WIDTH: 180px">
+                                <option value="" selected>--- {TXT_SELECT_THEME} ---</option>
+                                {THEMES_MENU_DEL}
+                            </select><br />
+                            <input type="submit" name="Submit" value="{TXT_DELETE}" style="WIDTH: 100px"/>
                         </td>
                     </tr>
                 </table>
@@ -60,7 +84,7 @@
                         </th>
                     </tr>
                     <tr class="row1">
-                        <td colspan="2" style="padding-right: 19px;">
+                        <td colspan="2">
                             <input type="hidden" name="themes" value="{THEMES_SELECTED_THEME}" />
                             <input type="hidden" name="themesPage" value="{THEMES_SELECTED_PAGENAME}" />
                             <!-- BEGIN template_content -->                             
@@ -80,46 +104,6 @@
                     <input type="submit" value='{TXT_STORE}' name="Submit" />
                     <!-- END file_actions_bottom -->
                 </div>
-            </form>
-        </td>
-        <td width="240" valign="top" nowrap>
-            <form action="index.php?cmd=skins&amp;act=templates" method="post">
-                <input type="hidden" name="themes" value="{THEMES_SELECTED_THEME}" />
-                <table summary="" width="240" border="0" cellspacing="0" cellpadding="3" class="adminlist">
-                    <!-- BEGIN theme_libraries -->
-                    <tr>
-                        <th colspan="2" nowrap="nowrap">{TXT_TEMPLATE_USED_LIBRARIES}</th>
-                    </tr>
-                    <tr valign="top" class="row1">
-                        <td width="240">
-                            <!-- BEGIN theme_library -->
-                            <select name="libraryVersion[{THEME_LIBRARY_NAME}]" style="width: 100%">
-                                <option value="">{THEME_LIBRARY_NAME} {TXT_THEME_LIBRARY_NOT_USED}</option>
-                                <!-- BEGIN theme_library_version -->
-                                <option value="{THEME_LIBRARY_VERSION}" {THEME_LIBRARY_VERSION_SELECTED}>{THEME_LIBRARY_NAME} {THEME_LIBRARY_VERSION}</option>
-                                <!-- END theme_library_version -->
-                            </select><br />
-                            <!-- END theme_library -->
-                            <input type="submit" value="{TXT_SAVE}" />
-                        </td>
-                    </tr>
-                    <!-- END theme_libraries -->
-                    <tr>
-                        <th nowrap="nowrap">{TXT_MANAGE_FILES}</th>
-                    </tr>
-                    <tr valign="top" class="row1">
-                        <td>
-                            <select name="themesDelFileName" style="width: 100%">
-                                <option value="" selected>--- {TXT_SELECT_FILE} ---</option>
-                                {THEMES_PAGE_DEL_VALUE}
-                            </select><br />
-                            <input type="submit" name="Submit" value="{TXT_DELETE}" style="WIDTH: 100px"/>
-                            <br />
-                            <input type="input" name="themesNewFileName" maxlength="50" style="width: 240px;" /><br />
-                            <input type="submit" name="Submit" value="{TXT_CREATE_FILE}" />
-                        </td>
-                    </tr>
-                </table>
             </form>
         </td>
     </tr>

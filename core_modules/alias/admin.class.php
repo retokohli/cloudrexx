@@ -67,7 +67,7 @@ class AliasAdmin extends aliasLib
         global $objTemplate, $_ARRAYLANG;
 
         $objTemplate->setVariable("CONTENT_NAVIGATION",
-            ("<a href='index.php?cmd=alias' class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_ALIAS_ALIASES']."</a>"
+            ("<a href='index.php?cmd=alias' class='".($this->act == '' || $this->act == 'delete' ? 'active' : '')."'>".$_ARRAYLANG['TXT_ALIAS_ALIASES']."</a>"
             ."<a href='index.php?cmd=alias&amp;act=modify' class='".($this->act == 'modify' ? 'active' : '')."'>".$_ARRAYLANG['TXT_ALIAS_ADD_ALIAS']."</a>")
         );
     }
@@ -115,7 +115,7 @@ class AliasAdmin extends aliasLib
 
     function _list()
     {
-        global $_CORELANG, $_ARRAYLANG, $_CONFIG;
+        global $_ARRAYLANG, $_CONFIG;
 
         $showLegacyPagealiases = isset($_GET['legacyPages']) && $_GET['legacyPages'];
 
@@ -125,7 +125,6 @@ class AliasAdmin extends aliasLib
             'TXT_ALIAS_ALIASES' => $_ARRAYLANG['TXT_ALIAS_ALIASES'],
             'TXT_ALIAS_SHOW_LEGACY_PAGE_ALIASES' => $_ARRAYLANG['TXT_ALIAS_SHOW_LEGACY_PAGE_ALIASES'],
             'ALIAS_SHOW_LEGACY_PAGE_ALIASES_CHECKED' => $showLegacyPagealiases ? 'checked="checked"' : '',
-            'ALIAS_SHOW_LEGACY_PAGE_VALUE' => intval($showLegacyPagealiases),
         ));
 
         // show warning message if contrexx is running on an IIS webserver and the web.config seems not be be registred in the server configuration
@@ -144,21 +143,15 @@ class AliasAdmin extends aliasLib
                 DBG::msg($objException->getMessage());
             }
         }
-        
-        // Alias search was triggerd
-        if(!empty($_GET['term'])){
-            $slug = '%' . $_GET['term'] . '%';
-            $this->_objTpl->setVariable('ALIAS_SEARCH_TERM', contrexx_input2xhtml($_GET['term']));
+
+        $arrAliases = $this->_getAliases($_CONFIG['corePagingLimit'], false, $showLegacyPagealiases);
+
+        if ($this->hasLegacyPages) {
+            $this->_objTpl->touchBlock('alias_show_legacy_pages');
         } else {
-            $slug = null;
+            $this->_objTpl->hideBlock('alias_show_legacy_pages');
         }
-        
-        // search for aliases
-        $this->_objTpl->setVariable(array(
-            'TXT_SEARCH'        => $_CORELANG['TXT_SEARCH'],
-        ));
-        
-        $arrAliases = $this->_getAliases($_CONFIG['corePagingLimit'], false, $showLegacyPagealiases, $slug);
+
         $nr = 1;
         if (count($arrAliases)) {
             $this->_objTpl->setVariable(array(
@@ -213,9 +206,8 @@ class AliasAdmin extends aliasLib
             $this->_objTpl->parse('alias_data');
             $this->_objTpl->hideBlock('alias_no_data');
 
-            $aliasesCount = $this->_getAliasesCount($showLegacyPagealiases, $slug);
-            if ($aliasesCount > count($arrAliases)) {
-                $this->_objTpl->setVariable('ALIAS_PAGING', '<br />'.getPaging($aliasesCount, !empty($_GET['pos']) ? intval($_GET['pos']) : 0, '&cmd=alias&legacyPages=' . ($showLegacyPagealiases ? 1 : 0) . (isset($_GET['term']) ? '&term=' . $_GET['term'] : ''), $_ARRAYLANG['TXT_ALIAS_ALIASES']));
+            if ($this->_getAliasesCount($showLegacyPagealiases) > count($arrAliases)) {
+                $this->_objTpl->setVariable('ALIAS_PAGING', '<br />'.getPaging($this->_getAliasesCount($showLegacyPagealiases), !empty($_GET['pos']) ? intval($_GET['pos']) : 0, '&cmd=alias&legacyPages=' . ($showLegacyPagealiases ? 1 : 0), $_ARRAYLANG['TXT_ALIAS_ALIASES']));
             }
         } else {
             $this->_objTpl->setVariable('TXT_ALIAS_NO_ALIASES_MSG', $_ARRAYLANG['TXT_ALIAS_NO_ALIASES_MSG']);
@@ -334,6 +326,7 @@ class AliasAdmin extends aliasLib
                     if (!$error) {
                         $this->arrStatusMsg['ok'][] = $aliasId ? $_ARRAYLANG['TXT_ALIAS_ALIAS_SUCCESSFULLY_UPDATED'] : $_ARRAYLANG['TXT_ALIAS_ALIAS_SUCCESSFULLY_ADDED'];   
                     }
+                    $_REQUEST['act'] = ''; // For the navigation
                     return $this->_list();
                 } else {
                     $this->arrStatusMsg['error'][] = $_ARRAYLANG['TXT_ALIAS_ONE_ALIAS_REQUIRED_MSG'];
@@ -380,6 +373,8 @@ class AliasAdmin extends aliasLib
                 preg_match('/\[\['.\Cx\Core\ContentManager\Model\Entity\Page::NODE_URL_PCRE.'\]\](\S*)?/ix', $target, $matches);
                 $targetURL = ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET . $this->_getURL($targetPage) . $matches[6];
             }
+        } else {
+            $targetURL = $target;
         }
 
         $this->_objTpl->setVariable(array(

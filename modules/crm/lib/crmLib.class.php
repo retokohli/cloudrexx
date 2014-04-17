@@ -12,16 +12,12 @@
  * @link       www.contrexx.com
  */
 
-define('CRM_MODULE_LIB_PATH', ASCMS_MODULE_PATH.'/crm/lib/');
-define('CRM_ACCESS_PROFILE_IMG_WEB_PATH', ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/crm/profile');
-define('CRM_ACCESS_PROFILE_IMG_PATH',     ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/crm/profile');
-define('CRM_ACCESS_OTHER_IMG_WEB_PATH', ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDER.'/crm');
-define('CRM_ACCESS_OTHER_IMG_PATH',     ASCMS_DOCUMENT_ROOT.ASCMS_IMAGES_FOLDER.'/crm');
-define('CRM_MEDIA_PATH', ASCMS_MEDIA_PATH.'/crm/');
+require_once  ASCMS_MODULE_PATH  . '/crm/lib/constants.php';
 
-define('CRM_EVENT_ON_USER_ACCOUNT_CREATED', 'crm_user_account_created');
-define('CRM_EVENT_ON_TASK_CREATED', 'crm_task_assigned');
-define('CRM_EVENT_ON_ACCOUNT_UPDATED', 'crm_notify_staff_on_contact_added');
+require_once CRM_MODULE_LIB_PATH . '/events/Event.class.php';
+require_once CRM_MODULE_LIB_PATH . '/events/EventDispatcher.class.php';
+require_once CRM_MODULE_LIB_PATH . '/events/handlers/InterfaceEventHandler.class.php';
+require_once CRM_MODULE_LIB_PATH . '/events/handlers/DefaultEventHandler.class.php';
 
 /**
  * Library Class CRM
@@ -272,6 +268,7 @@ class CrmLibrary
      */
     function __construct()
     {
+        $this->load          = new loader();
         $this->_arrLanguages = $this->createLanguageArray();
         $this->isPmInstalled = contrexx_isModuleActive($this->pm_moduleName);
     }
@@ -1909,7 +1906,7 @@ class CrmLibrary
         global $_ARRAYLANG, $objDatabase;
 
         if (!isset($this->model_industry_types))
-            $this->model_industry_types = new IndustryType();
+            $this->model_industry_types = $this->load->model('IndustryType', __CLASS__);
         if (!isset($this->model_industry_types->arrIndustryTypes))
             $this->model_industry_types->arrIndustryTypes = $this->model_industry_types->getIndustryTypes(null, null, true);
 
@@ -2069,7 +2066,7 @@ class CrmLibrary
         $settings = $this->getSettings();
 
         if (!isset($this->contact))
-            $this->contact = new crmContact();
+            $this->contact = $this->load->model('crmContact', __CLASS__);
 
         $objFWUser = FWUser::getFWUserObject();
 
@@ -2226,7 +2223,7 @@ class CrmLibrary
                 $availableLangId          = $this->getEmailTempLang($availableMailTempLangAry, $email);
                 $info['lang_id']          = $availableLangId;  
                 
-                $dispatcher = CrmEventDispatcher::getInstance();
+                $dispatcher = EventDispatcher::getInstance();
                 $dispatcher->triggerEvent(CRM_EVENT_ON_USER_ACCOUNT_CREATED, null, $info);
             }
             $this->contact->account_id = $objUser->getId();
@@ -2389,7 +2386,7 @@ class CrmLibrary
     {
         global $objDatabase;
 
-        $this->contact = new crmContact();
+        $this->contact = $this->load->model('crmContact', __CLASS__);
         $objFWUser = FWUser::getFWUserObject();
 
         $fieldValues = array();
@@ -2529,7 +2526,7 @@ class CrmLibrary
     {
         global $objDatabase, $_LANGID;
 
-        $this->contact = new crmContact();
+        $this->contact = $this->load->model('crmContact', __CLASS__);
 
         if (!empty ($userAccountId)) {
             $userExists = $objDatabase->Execute("SELECT id FROM `".DBPREFIX."module_{$this->moduleName}_contacts` WHERE user_account = {$userAccountId}");
@@ -2830,7 +2827,7 @@ class CrmLibrary
             <script type="text/javascript">
             cx.ready(function() {
                     var ef = new ExtendedFileInput({
-                            field:  cx.jQuery('#contactFormFieldId_$fieldId'),
+                            field:  jQuery('#contactFormFieldId_$fieldId'),
                             instance: '$uploaderInstanceName',
                             widget: '$uploaderWidgetName'
                     });
@@ -2851,9 +2848,12 @@ CODE;
      * @throws ContactException
      */
     protected static function getTemporaryUploadPath($submissionId, $fieldId, $dir) {
+        global $sessionObj;
 
-        $tempPath = $_SESSION->getTempPath();
-        $tempWebPath = $_SESSION->getWebTempPath();
+        if (!isset($sessionObj)) $sessionObj = new cmsSession();
+
+        $tempPath = $sessionObj->getTempPath();
+        $tempWebPath = $sessionObj->getWebTempPath();
         if($tempPath === false || $tempWebPath === false)
             throw new ContactException('could not get temporary session folder');
 
@@ -2913,7 +2913,7 @@ CODE;
                 $availableLangId          = $this->getEmailTempLang($availableMailTempLangAry, $emails);
                 $info['lang_id']          = $availableLangId;
                 
-                $dispatcher = CrmEventDispatcher::getInstance();
+                $dispatcher = EventDispatcher::getInstance();
                 $dispatcher->triggerEvent(CRM_EVENT_ON_ACCOUNT_UPDATED, null, $info);
             }
         }
@@ -3210,4 +3210,49 @@ CODE;
         JS::registerCSS("modules/crm/View/Style/main.css");
     }
 
+}
+
+/**
+ * Library Loader Class CRM
+ * Loader will access class singleton and set object
+ *
+ * @category   Sample_Category
+ * @package    contrexx
+ * @subpackage module_crm
+ * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
+ * @copyright  2012 and CONTREXX CMS - COMVATION AG
+ * @license    trial license
+ * @link       www.contrexx.com
+ */
+class loader {
+    /**
+     * Load the model under the library files
+     *
+     * @param String $model_name model name
+     * @param String $class      Class name
+     *
+     * @return object
+     */
+    function model($model_name, $class)
+    {
+        require(CRM_MODULE_LIB_PATH.'models/'.$model_name.'.php');
+        $class::init()->$model_name = new $model_name;
+        return $class::init()->$model_name;
+    }
+
+    /**
+     * Load the controller under the library files
+     *
+     * @param String          $controller_name controller name
+     * @param String          $class           Class name
+     * @param Template Object $objTpl          Template object
+     *
+     * @return object
+     */
+    function controller($controller_name, $class, $objTpl)
+    {
+        require(CRM_MODULE_LIB_PATH.'controllers/'.$controller_name.'.class.php');
+        $class::init()->$controller_name = new $controller_name($objTpl);
+        return $class::init()->$controller_name;
+    }
 }

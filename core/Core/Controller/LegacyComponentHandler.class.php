@@ -71,7 +71,7 @@ class LegacyComponentHandler {
     public function isActive($frontend, $componentName) {
         $cx = \Env::get('cx');
         $cn = strtolower($componentName);
-        $mc = \Cx\Core\ModuleChecker::getInstance($cx->getDb()->getEntityManager(), $cx->getDb()->getAdoDb(), $cx->getClassLoader());
+        $mc = new \Cx\Core\ModuleChecker($cx->getDb()->getEntityManager(), $cx->getDb()->getAdoDb(), $cx->getClassLoader());
 
         if (!in_array($cn, $mc->getModules())) {
             return true;
@@ -169,9 +169,10 @@ class LegacyComponentHandler {
                 ),
                 'postResolve' => array(
                     'Upload' => function() {
-                        global $url;
+                        global $url, $sessionObj;
 
-                        if (isset($_REQUEST['section']) && $_REQUEST['section'] == 'upload') {                            
+                        if (isset($_REQUEST['section']) && $_REQUEST['section'] == 'upload') {
+                            if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new \cmsSession();
                             $objUploadModule = new \Upload();
                             $objUploadModule->getPage();
                             //execution never reaches this point
@@ -196,9 +197,29 @@ class LegacyComponentHandler {
                             }
                         }
                     },
+                ),
+                'preContentLoad' => array(
+                    'JsonData' => function() {
+                        global $section, $json, $adapter, $method, $arguments;
+
+                        if ($section == 'jsondata') {
+                        // TODO: move this code to /core/Json/...
+                        // TODO: handle expired sessions in any xhr callers.
+                            $json = new \Cx\Core\Json\JsonData();
+                        // TODO: Verify that the arguments are actually present!
+                            $adapter = contrexx_input2raw($_GET['object']);
+                            $method = contrexx_input2raw($_GET['act']);
+                        // TODO: Replace arguments by something reasonable
+                            $arguments = array('get' => $_GET, 'post' => $_POST);
+                            echo $json->jsondata($adapter, $method, $arguments);
+                            die();
+                        }
+                    },
                     'Newsletter' => function() {
-                        global $section, $command;
-                        if ($section == 'newsletter') {
+                        global $section, $newsletter, $isRegularPageRequest, $plainSection, $cl, $_CORELANG,
+                                $newsletter, $_ARRAYLANG, $page_template, $themesPages, $objInit;
+
+                        if ($section == "newsletter") {
                             if (\Newsletter::isTrackLink()) {
                                 //handle link tracker from newsletter, since user should be redirected to the link url
                                 /*
@@ -219,28 +240,7 @@ class LegacyComponentHandler {
                             // regular newsletter request (like subscribing, profile management, etc).
                             // must not abort by an exit call here!
                         }
-                    },
-                ),
-                'preContentLoad' => array(
-                    'JsonData' => function() {
-                        global $section, $json, $adapter, $method, $arguments;
 
-                        if ($section == 'jsondata') {
-                        // TODO: move this code to /core/Json/...
-                        // TODO: handle expired sessions in any xhr callers.
-                            $json = new \Cx\Core\Json\JsonData();
-                        // TODO: Verify that the arguments are actually present!
-                            $adapter = contrexx_input2raw($_GET['object']);
-                            $method = contrexx_input2raw($_GET['act']);
-                        // TODO: Replace arguments by something reasonable
-                            $arguments = array('get' => $_GET, 'post' => $_POST);
-                            echo $json->jsondata($adapter, $method, $arguments);
-                            die();
-                        }
-                    },
-                    'Newsletter' => function() {
-                        global $section, $isRegularPageRequest, $plainSection, $cl, $_CORELANG,
-                                $newsletter, $_ARRAYLANG, $page_template, $themesPages, $objInit;
                         // get Newsletter
                         /** @ignore */
                         if ($cl->loadFile(ASCMS_MODULE_PATH.'/newsletter/index.class.php')) {
@@ -464,60 +464,6 @@ class LegacyComponentHandler {
                             $themesPages['index']   = str_replace($topNewsPlaceholder, $homeTopNews, $themesPages['index']);
                             $themesPages['sidebar'] = str_replace($topNewsPlaceholder, $homeTopNews, $themesPages['sidebar']);
                             $page_template          = str_replace($topNewsPlaceholder, $homeTopNews, $page_template);
-                        }
-                        
-                        // Get News categories
-                        $modulespath = ASCMS_CORE_MODULE_PATH.'/news/lib/newsLib.class.php';
-                        $newsCategoriesPlaceholder = '{NEWS_CATEGORIES}';
-                        if (   file_exists($modulespath)
-                            && (   strpos(\Env::get('cx')->getPage()->getContent(), $newsCategoriesPlaceholder) !== false
-                                || strpos($themesPages['index'], $newsCategoriesPlaceholder) !== false
-                                || strpos($themesPages['sidebar'], $newsCategoriesPlaceholder) !== false
-                                || strpos($page_template, $newsCategoriesPlaceholder) !== false)
-                        ) {
-                            $newsLib = new \newsLibrary();
-                            $newsCategories = $newsLib->getNewsCategories();
-                            
-                            \Env::get('cx')->getPage()->setContent(str_replace($newsCategoriesPlaceholder, $newsCategories, \Env::get('cx')->getPage()->getContent()));
-                            $themesPages['index']   = str_replace($newsCategoriesPlaceholder, $newsCategories, $themesPages['index']);
-                            $themesPages['sidebar'] = str_replace($newsCategoriesPlaceholder, $newsCategories, $themesPages['sidebar']);
-                            $page_template          = str_replace($newsCategoriesPlaceholder, $newsCategories, $page_template);
-                        }
-                        
-                        // Get News Archives
-                        $modulespath = ASCMS_CORE_MODULE_PATH.'/news/lib/newsLib.class.php';
-                        $newsArchivePlaceholder = '{NEWS_ARCHIVES}';
-                        if (   file_exists($modulespath)
-                            && (   strpos(\Env::get('cx')->getPage()->getContent(), $newsArchivePlaceholder) !== false
-                                || strpos($themesPages['index'], $newsArchivePlaceholder) !== false
-                                || strpos($themesPages['sidebar'], $newsArchivePlaceholder) !== false
-                                || strpos($page_template, $newsArchivePlaceholder) !== false)
-                        ) {
-                            $newsLib = new \newsLibrary();
-                            $newsArchive = $newsLib->getNewsArchiveList();
-                            
-                            \Env::get('cx')->getPage()->setContent(str_replace($newsArchivePlaceholder, $newsArchive, \Env::get('cx')->getPage()->getContent()));
-                            $themesPages['index']   = str_replace($newsArchivePlaceholder, $newsArchive, $themesPages['index']);
-                            $themesPages['sidebar'] = str_replace($newsArchivePlaceholder, $newsArchive, $themesPages['sidebar']);
-                            $page_template          = str_replace($newsArchivePlaceholder, $newsArchive, $page_template);
-                        }
-                        // Get recent News Comments
-                        $modulespath = ASCMS_CORE_MODULE_PATH.'/news/lib/newsRecentComments.class.php';
-                        $newsCommentsPlaceholder = '{NEWS_RECENT_COMMENTS_FILE}';
-                        
-                        if (   file_exists($modulespath)
-                            && (   strpos(\Env::get('cx')->getPage()->getContent(), $newsCommentsPlaceholder) !== false
-                                || strpos($themesPages['index'], $newsCommentsPlaceholder) !== false
-                                || strpos($themesPages['sidebar'], $newsCommentsPlaceholder) !== false
-                                || strpos($page_template, $newsCommentsPlaceholder) !== false)
-                        ) {
-                            $newsLib = new \newsRecentComments($themesPages['news_recent_comments']);
-                            $newsComments = $newsLib->getRecentNewsComments();
-                            
-                            \Env::get('cx')->getPage()->setContent(str_replace($newsCommentsPlaceholder, $newsComments, \Env::get('cx')->getPage()->getContent()));
-                            $themesPages['index']   = str_replace($newsCommentsPlaceholder, $newsComments, $themesPages['index']);
-                            $themesPages['sidebar'] = str_replace($newsCommentsPlaceholder, $newsComments, $themesPages['sidebar']);
-                            $page_template          = str_replace($newsCommentsPlaceholder, $newsComments, $page_template);
                         }
                     },
                     'Calendar' => function() {
@@ -1098,11 +1044,12 @@ class LegacyComponentHandler {
                     },
 
                     'login' => function() {
-                        global $cl, $_CORELANG, $objTemplate;
+                        global $cl, $_CORELANG, $objTemplate, $sessionObj;
 
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/login/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new \cmsSession();
                         $objLogin = new \Login(\Env::get('cx')->getPage()->getContent());
                         \Env::get('cx')->getPage()->setContent($objLogin->getContent());
                     },
@@ -1188,6 +1135,7 @@ class LegacyComponentHandler {
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/data/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        //if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new \cmsSession();
                         #if (!isset($objAuth) || !is_object($objAuth)) $objAuth = &new Auth($type = 'frontend');
 
                         $objData = new \Data(\Env::get('cx')->getPage()->getContent());
@@ -1576,16 +1524,6 @@ class LegacyComponentHandler {
                         \Env::get('cx')->getPage()->setContent($objFileshare->getPage());
                     },
 
-                    'survey' => function() {
-                        global $cl, $_CORELANG;
-
-                        /** @ignore */
-                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/survey/index.class.php'))
-                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objSurvey = new \survey(\Env::get('cx')->getPage()->getContent());
-                        \Env::get('cx')->getPage()->setContent($objSurvey->getPage());
-                    },
-
                     'home' => function() {
                     },
                 ),
@@ -1593,8 +1531,10 @@ class LegacyComponentHandler {
             'backend' => array(
                 'preResolve' => array(
                     'Session' => function() {
-                        
-                        $_SESSION->cmsSessionStatusUpdate('backend');
+                        global $sessionObj;
+
+                        if (empty($sessionObj)) $sessionObj = new \cmsSession();
+                        $sessionObj->cmsSessionStatusUpdate('backend');
                     },
                     'Js' => function() {
                         // Load the JS helper class and set the offset
@@ -1661,7 +1601,7 @@ class LegacyComponentHandler {
                         if (!in_array($plainCmd, array('login', 'license', 'noaccess', ''))) {
                             $query = '
                                 SELECT
-                                    modules.is_licensed
+                                    modules.is_active
                                 FROM
                                     '.DBPREFIX.'modules AS modules,
                                     '.DBPREFIX.'backend_areas AS areas
@@ -1673,7 +1613,7 @@ class LegacyComponentHandler {
                                     )
                             ';
                             $res = $objDatabase->Execute($query);
-                            if (!$res->fields['is_licensed']) {
+                            if (!$res->fields['is_active']) {
                                 $plainCmd = 'license';
                             }
                         }
@@ -2156,7 +2096,7 @@ class LegacyComponentHandler {
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/survey/admin.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $subMenuTitle = $_CORELANG['TXT_SURVEY'];
-                        $objSurvey = new \survey();
+                        $objSurvey = new \SurveyAdmin();
                         $objSurvey->getPage();
                     },
                     'calendar' => function() {

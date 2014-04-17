@@ -226,15 +226,6 @@ class Url {
      * @param   mixed       $value
      */
     public function setParam($key, $value) {
-        if ($value === null) {
-            $params = $this->getParamArray();
-            if (isset($params[$key])) {
-                unset($params[$key]);
-                $this->removeAllParams();
-                $this->addParamsToPath($params);
-                return;
-            }
-        }
         if (!empty($key)) {
             $this->setParams(array($key => $value));
         }
@@ -458,10 +449,7 @@ class Url {
 
         // workaround for legacy ?page=123 requests by routing to an alias like /legacy_page_123
         $additionalParams = '';
-        if (
-            isset($get['page']) && preg_match('/^\d+$/', $get['page']) &&
-            \Env::get('cx')->getMode() != \Cx\Core\Core\Controller\Cx::MODE_BACKEND
-        ) {
+        if (isset($get['page']) && preg_match('/^\d+$/', $get['page'])) {
             $request = 'legacy_page_'.$get['page'];
             $additionalParams = 'external=permanent';
             unset($get['page']);
@@ -537,8 +525,8 @@ class Url {
         // relative URL
         if (!count($matches)) {
             
-            $absoluteUrl = self::fromRequest();
-            preg_match('#(http(?:s)?://)((?:[^/]*))([/$](?:.*)/)?#', $absoluteUrl->toString(true), $matches);
+            $absoluteUrl = $_SERVER['HTTP_REFERER'];
+            preg_match('#(http(?:s)?://)((?:[^/]*))([/$](?:.*)/)?#', $absoluteUrl, $matches);
             
             // starting with a /?
             if (substr($url, 0, 1) == '/') {
@@ -654,7 +642,7 @@ class Url {
      */
     public static function fromPage($page, $parameters = array(), $protocol = '') {
         global $_CONFIG;
-        
+
         if ($protocol == '') {
             $protocol = ASCMS_PROTOCOL;
         }

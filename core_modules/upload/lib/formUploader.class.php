@@ -23,13 +23,14 @@ class FormUploader extends Uploader
      * @override
      */     
     public function handleRequest()
-    {        
+    {
+        global $sessionObj;
         global $_FILES;
 
         //get a writable directory
         $targetDir = '/upload_'.$this->uploadId;
-        $tempPath = $_SESSION->getTempPath();
-        $webTempPath = $_SESSION->getWebTempPath();
+        $tempPath = $sessionObj->getTempPath();
+        $webTempPath = $sessionObj->getWebTempPath();
 
 
         //make sure target directory exists

@@ -1,11 +1,11 @@
 var shopUseJsCart = true;
 
-cx.jQuery(function() {
+jQuery(function() {
     //hideCart();
     showCart('<ul><li class="loading">' +
         cx.variables.get('TXT_SHOP_CART_IS_LOADING', 'shop/cart') +
         '</li></ul>');
-    cx.jQuery.ajax(cx.variables.get('url', 'shop/cart')
+    jQuery.ajax(cx.variables.get('url', 'shop/cart')
         + '&r=' + Math.random(), {
         dataType: 'json',
         success: shopUpdateCart,
@@ -17,13 +17,13 @@ cx.jQuery(function() {
 });
 
 function hideCart() {
-    var cart = cx.jQuery('#shopJsCart')
+    var cart = jQuery('#shopJsCart')
     if (!cart) return;
     cart.hide();
 }
 
 function showCart(html) {
-    var cart = cx.jQuery('#shopJsCart')
+    var cart = jQuery('#shopJsCart')
     if (!cart) return;
     cart.html(html).show();
 }
@@ -32,7 +32,7 @@ function shopUpdateCart(data, textStatus, jqXHR) {
     try {
         objCart = data;
 //console.log('Cart: '+objCart.toSource());
-        if (cx.jQuery('#shopJsCart').length == 0) {
+        if (jQuery('#shopJsCart').length == 0) {
 //console.log('No shopJsCart!');
             return;
         }
@@ -43,7 +43,7 @@ function shopUpdateCart(data, textStatus, jqXHR) {
             return;
         }
         cart = '';
-        cx.jQuery.each(objCart.items, function(n, i) {
+        jQuery.each(objCart.items, function(n, i) {
             cartProduct = cartProductsTpl.replace('{SHOP_JS_PRODUCT_QUANTITY}', i.quantity);
             cartProduct = cartProduct.replace('{SHOP_JS_PRODUCT_TITLE}', i.title + i.options_cart);
             cartProduct = cartProduct.replace('{SHOP_JS_PRODUCT_PRICE}', i.price);

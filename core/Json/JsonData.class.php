@@ -24,6 +24,8 @@ use \Cx\Core\Json\Adapter\JsonContentManager;
  * @subpackage  core_json
  */
 class JsonData {
+    
+    const PHP_SESSION_ID_COOKIE_NAME = 'PHPSESSID';
     /**
      * List of adapter class names.
      * @deprecated Use component framework instead (SystemComponentController->getControllersAccessableByJson())
@@ -35,12 +37,6 @@ class JsonData {
         ),
         '\\Cx\\Core\\Json\\Adapter\\User' => array(
             'JsonUser',
-        ),
-        '\\Cx\\Core\\Json\\Adapter\\Calendar' => array(
-            'JsonCalendar',
-        ),
-        '\\Cx\\modules\\survey\\controllers' => array(
-            'JsonSurvey',
         ),
         '\\Cx\\modules\\crm\\lib\\controllers' => array(
             'JsonCrm',
@@ -179,14 +175,6 @@ class JsonData {
         }
     }
     
-    public function setSessionId($sessionId) {
-        $this->sessionId = $sessionId;
-    }
-    
-    public function getSessionId() {
-        return $this->sessionId;
-    }
-    
     /**
      * Fetches a json response via HTTP request
      * @todo Support cookies (to allow login and similiar features)
@@ -202,7 +190,7 @@ class JsonData {
             $request->addPostParameter($name, $value);
         }
         if ($this->sessionId !== null) {
-            $request->addCookie(session_name(), $this->sessionId);
+            $request->addCookie(static::PHP_SESSION_ID_COOKIE_NAME, $this->sessionId);
         }
         $request->setConfig(array(
             'ssl_verify_host' => false,
@@ -212,7 +200,7 @@ class JsonData {
         //echo '<pre>';var_dump($response->getBody());echo '<br /><br />';
         $cookies = $response->getCookies();
         foreach ($cookies as &$cookie) {
-            if ($cookie['name'] === session_name()) {
+            if ($cookie['name'] === static::PHP_SESSION_ID_COOKIE_NAME) {
                 $this->sessionId = $cookie['value'];
                 break;
             }
@@ -220,7 +208,6 @@ class JsonData {
         if ($response->getStatus() != 200) {
             return false;
         }
-        
         return json_decode($response->getBody());
     }
     

@@ -87,7 +87,7 @@ class googleMap
 
     function setMapCenter($lon, $lat)
     {
-        $this->mapCenter = 'var center = new google.maps.LatLng('.$lat.', '.$lon.')';
+        $this->mapCenter = 'var center = new google.maps.LatLng('.$lon.', '.$lat.')';
     }
 
 
@@ -160,7 +160,7 @@ class googleMap
                 }
 
                 if (!$marker['hideInfo']) {
-                    $showInfo = "infowindow_{$this->mapIndex}.setContent(info$id);infowindow_{$this->mapIndex}.open(map_{$this->mapIndex}, marker$id)";
+                    $showInfo = "var window_info$id = new google.maps.InfoWindow({content:info$id});window_info$id.open(map_".$this->mapIndex.", marker$id);";
                 } else {
                     $showInfo = '';
                 }
@@ -173,9 +173,9 @@ class googleMap
                 $divLatMinus = $marker['lat']-$dist;
                 $divLonPlus = $marker['lon']+$dist;
                 $divLonMinus = $marker['lon']-$dist;
-                
-                $markers .= "                
-                var point$id = new google.maps.LatLng(".$marker['lat'].", ".$marker['lon'].");
+
+                $markers .= "
+                var point$id = new google.maps.LatLng(".$marker['lon'].", ".$marker['lat'].");
                 var marker$id = new google.maps.Marker({
                         position: point$id,
                         map: map_".$this->mapIndex."
@@ -231,7 +231,6 @@ function $initialize() {
     $map.setZoom($this->mapZoom);
 
     $map.setMapTypeId(google.maps.MapTypeId.$this->mapType);
-    var infowindow_$this->mapIndex = new google.maps.InfoWindow();
 
     $markers
 }

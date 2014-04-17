@@ -185,7 +185,7 @@ class JsonPage implements JsonAdapter {
         // UPDATE
         if (!empty($pageId)) {
             // If we got a page id, the page already exists and can be updated.
-            $page = $this->pageRepo->find($pageId, 0, null, false);
+            $page = $this->pageRepo->find($pageId);
             $node = $page->getNode();
             
         // TRANSLATE
@@ -340,7 +340,7 @@ class JsonPage implements JsonAdapter {
         }
         
         // Block associations are only updated in the editing mode.
-        if (!empty($pageArray) && empty($dataPost['ignoreBlocks'])) {
+        if (!empty($pageArray)) {
             if (!isset($dataPost['pageBlocks'])) {
                 $dataPost['pageBlocks'] = array();
             }
@@ -763,9 +763,7 @@ class JsonPage implements JsonAdapter {
             'slug' => array('type' => 'String'),
             'caching' => array('type' => 'boolean'),
             'skin' => array('type' => 'integer'),
-            'useSkinForAllChannels' => array('type' => 'integer'),
             'customContent' => array('type' => 'String'),
-            'useCustomContentForAllChannels' => array('type' => 'integer'),
             'cssName' => array('type' => 'String'),
             'cssNavName' => array('type' => 'String'),
         );
@@ -1084,9 +1082,7 @@ class JsonPage implements JsonAdapter {
             'accessData' => $accessData,
             // Advanced Settings
             'skin' => $page->getSkin(),
-            'useSkinForAllChannels' => $page->getUseSkinForAllChannels(),
             'customContent' => $page->getCustomContent(),
-            'useCustomContentForAllChannels' => $page->getUseCustomContentForAllChannels(),
             'cssName' => $page->getCssName(),
             'cssNavName' => $page->getCssNavName(),
             'caching' => $page->getCaching(),

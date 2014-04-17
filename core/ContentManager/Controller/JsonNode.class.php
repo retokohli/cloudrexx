@@ -195,7 +195,6 @@ class JsonNode implements JsonAdapter {
         if ($arguments['post']['position']) {
             $this->nodeRepo->moveDown($moved_node, $arguments['post']['position'], true);
         }
-        \Env::get('cx')->getEvents()->triggerEvent('model/onFlush', array(new \Doctrine\ORM\Event\LifecycleEventArgs($moved_node, $this->em)));
 
         foreach ($moved_node->getPages() as $page) {
             $page->setupPath($page->getLang());
@@ -542,7 +541,7 @@ class JsonNode implements JsonAdapter {
             }
             
             $state = array();
-            if (count($node->getChildren()) > 0) {
+            if (!$node->getChildren()->isEmpty()) {
                 if ($toggled) {
                     $state = array('state' => 'open');
                 } else {

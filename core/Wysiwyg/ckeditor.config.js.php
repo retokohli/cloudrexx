@@ -10,7 +10,8 @@ if (strpos(dirname(__FILE__), 'customizing') === false) {
 require_once($contrexx_path . '/core/Core/init.php');
 init('minimal');
 
-$_SESSION->cmsSessionStatusUpdate('backend');
+$sessionObj = new cmsSession();
+$sessionObj->cmsSessionStatusUpdate('backend');
 $CSRF = '&'.CSRF::key().'='.CSRF::code();
 
 
@@ -89,7 +90,6 @@ CKEDITOR.editorConfig = function( config )
         ['Cut','Copy','Paste','-','Scayt'],
         ['Undo','Redo']
     ];
-    config.extraPlugins = 'codemirror';
 };
 
 if (<?php

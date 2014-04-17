@@ -1,52 +1,52 @@
 <!-- START module_media_settings.html -->
 <script language="javascript" type="text/javascript">
 
-cx.jQuery(function() {
+jQuery(function() {
     for(var i = 1; i <= 4; i++)
     {
-        cx.jQuery('#mediaSettings' + i + 'Group').change(function(){
+        jQuery('#mediaSettings' + i + 'Group').change(function(){
             // show div with groups
-            cx.jQuery(this).siblings('.group_div').show();
+            jQuery(this).siblings('.group_div').show();
         });
-        cx.jQuery('#mediaSettings' + i + 'Off, #mediaSettings' + i + 'On').change(function(){
+        jQuery('#mediaSettings' + i + 'Off, #mediaSettings' + i + 'On').change(function(){
             // hide div with groups
-            cx.jQuery(this).siblings('.group_div').hide();
+            jQuery(this).siblings('.group_div').hide();
         });
-        cx.jQuery('#mediaManage'+ i +'Group').change(function(){
+        jQuery('#mediaManage'+ i +'Group').change(function(){
             // show div with groups
-            cx.jQuery(this).siblings('.group_div').show();
+            jQuery(this).siblings('.group_div').show();
         });
-        cx.jQuery('#mediaManage' + i + 'Off, #mediaManage' + i + 'On').change(function(){
+        jQuery('#mediaManage' + i + 'Off, #mediaManage' + i + 'On').change(function(){
             // hide div with groups
-            cx.jQuery(this).siblings('.group_div').hide();
+            jQuery(this).siblings('.group_div').hide();
         });
     }
 });
 
 function SelectAllGroups(link) {
-    cx.jQuery(link).siblings(".group_list").find("option").attr("selected", "selected");
+    jQuery(link).siblings(".group_list").find("option").attr("selected", "selected");
     return false;
 };
 
 function DeselectAllGroups(link) {
-    cx.jQuery(link).siblings(".group_list").find("option").removeAttr("selected");
+    jQuery(link).siblings(".group_list").find("option").removeAttr("selected");
     return false;
 };
 
 function MoveRight(button) {
-    var right = cx.jQuery(button).parent().parent().find(".group_list:last");
-    cx.jQuery(button).parent().parent().find(".group_list:first").find("option:selected").appendTo(right);
+    var right = jQuery(button).parent().parent().find(".group_list:last");
+    jQuery(button).parent().parent().find(".group_list:first").find("option:selected").appendTo(right);
     return false;  
 };
 
 function MoveLeft(button) {
-    var left = cx.jQuery(button).parent().parent().find(".group_list:first");
-    cx.jQuery(button).parent().parent().find(".group_list:last").find("option:selected").appendTo(left);
+    var left = jQuery(button).parent().parent().find(".group_list:first");
+    jQuery(button).parent().parent().find(".group_list:last").find("option:selected").appendTo(left);
     return false;  
 };
 
 function BeforeSubmit() {
-    cx.jQuery(".group_div").find(".group_list:first").find("option:selected").removeAttr("selected").end().end()
+    jQuery(".group_div").find(".group_list:first").find("option:selected").removeAttr("selected").end().end()
     .find(".group_list:last").find("option").attr("selected", "selected");
 }
 

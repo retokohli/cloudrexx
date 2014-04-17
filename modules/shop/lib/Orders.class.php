@@ -1199,6 +1199,7 @@ if (!$limit) {
         $payment_id = $objOrder->payment_id();
         $shipment_id = $objOrder->shipment_id();
         $arrSubstitution = array (
+            // Must be present in the Order, so the Customer can be found
             'CUSTOMER_COUNTRY_ID' => $objOrder->billing_country_id(),
             'LANG_ID' => $lang_id,
             'NOW' => date(ASCMS_DATE_FORMAT_DATETIME),

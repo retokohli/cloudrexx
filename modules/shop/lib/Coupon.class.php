@@ -1152,7 +1152,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
                         'readonly="readonly"'.
                         ' style="width: 200px;"'.
                         ' onfocus="this.select();"'.
-                        ' onblur="cx.jQuery(\'#'.$coupon_uri_id.'\').hide();"'
+                        ' onblur="jQuery(\'#'.$coupon_uri_id.'\').hide();"'
                     ).'</div>',
                 'SHOP_DISCOUNT_COUPON_START_TIME' =>
                     ($objCoupon->start_time
@@ -1253,8 +1253,8 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
             'SHOP_DISCOUNT_COUPON_CODE_CREATE' => Html::getInputButton(
                 'code_create', $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_CODE_NEW'],
                 'button', false,
-                'onclick="cx.jQuery(\'#code\').val(\''.Coupon::getNewCode().'\');'.
-                    'cx.jQuery(this).css(\'display\', \'none\');"'),
+                'onclick="jQuery(\'#code\').val(\''.Coupon::getNewCode().'\');'.
+                    'jQuery(this).css(\'display\', \'none\');"'),
             'SHOP_DISCOUNT_COUPON_START_TIME' =>
                 Html::getDatepicker('start_date', array(
                     'defaultDate' => date(ASCMS_DATE_FORMAT_DATE,

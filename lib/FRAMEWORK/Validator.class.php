@@ -81,7 +81,6 @@ define('VALIDATOR_REGEX_URI_JS',
  */
 class FWValidator
 {
-    
     /**
      * Regular Expression for e-mail addresses
      * @author Kevin Riesen
@@ -119,7 +118,7 @@ class FWValidator
      * @since 3.1.1
      */
     const REGEX_URI_JS = VALIDATOR_REGEX_URI_JS;
-    
+        
     /**
      * Validate an E-mail address
      *
@@ -217,12 +216,12 @@ class FWValidator
             # windows executables:
             'exe', 'bat', 'pif', 'com',
             # client scripts:
-            'vs', 'vbs',
+            'vs', 'vbs', 'js',
             # client script containers:
-            'xhtml', 'xml', 'svg', 'shtml',
+            'html', 'xhtml', 'xml', 'svg', 'shtml', 'htm',
             # server scripts:
             'php', 'php4', 'php5', 'phps', 'cgi', 'pl', 'jsp', 'jspx', 'asp', 'aspx',
-            'jsp', 'jspx', 'jhtml', 'phtml', 'cfm', 'htaccess','py',
+            'jsp', 'jspx', 'jhtml', 'phtml', 'cfm',
         );
         $ext = strtolower(pathinfo($file, PATHINFO_EXTENSION));
         if (in_array($ext, $evil)) return false;

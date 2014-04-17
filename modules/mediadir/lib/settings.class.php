@@ -379,8 +379,8 @@ class mediaDirectorySettings extends mediaDirectoryLibrary
 
         $arrValues = explode(',', $this->arrSettings['settingsGoogleMapStartposition']);
 
-        $strValueLat = $arrValues[0];
-        $strValueLon = $arrValues[1];
+        $strValueLon = $arrValues[0];
+        $strValueLat = $arrValues[1];
         $strValueZoom = $arrValues[2];
 
         $strGoogleMap = '<table cellpadding="0" cellspacing="0" border="0" class="'.$this->moduleName.'TableGoogleMap">';
@@ -413,7 +413,7 @@ function initialize() {
 
     map = new google.maps.Map(document.getElementById("$strMapId"));
 
-    map.setCenter(new google.maps.LatLng($strValueLat, $strValueLon));
+    map.setCenter(new google.maps.LatLng($strValueLon, $strValueLat));
     map.setZoom($strValueZoom);
     map.setMapTypeId(google.maps.MapTypeId.ROADMAP);
 
@@ -421,7 +421,7 @@ function initialize() {
         marker = new google.maps.Marker({
             map: map
         });
-        setPosition(new google.maps.LatLng($strValueLat, $strValueLon));
+        setPosition(new google.maps.LatLng($strValueLon, $strValueLat));
     }
 
     geocoder = new google.maps.Geocoder();
@@ -456,8 +456,8 @@ function setPosition(position) {
     }
     marker.setPosition(position);
     elZoom.value = map.getZoom();
-    elLon.value = position.lng();
-    elLat.value = position.lat();
+    elLon.value = position.ob;
+    elLat.value = position.pb;
 }
 
 google.maps.event.addDomListener(window, 'load', initialize);
@@ -502,7 +502,7 @@ EOF;
                 UPDATE
                     ".DBPREFIX."module_".$this->moduleTablePrefix."_settings
                 SET
-                    value='".$strValueLat.",".$strValueLon.",".$strValueZoom."'
+                    value='".$strValueLon.",".$strValueLat.",".$strValueZoom."'
                 WHERE
                     name='settingsGoogleMapStartposition'
                 ");
@@ -1345,7 +1345,7 @@ EOF;
             case 'delete':
                 $objInputfields = new mediaDirectoryInputfield(intval($_GET['id']));
                 $intInsertId = $objInputfields->deleteInputfield($_GET['field']);
-
+                
                 die('1');
                 break;
 

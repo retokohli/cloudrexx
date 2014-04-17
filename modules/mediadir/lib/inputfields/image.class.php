@@ -163,7 +163,9 @@ function getInputfield($intView, $arrInputfield, $intEntryId=null)
 
     function checkThumbnail($strPathImage)
     {
-        $this->createThumbnail($strPathImage);
+        if (!file_exists(ASCMS_PATH.$strPathImage.".thumb")) {
+            $this->createThumbnail($strPathImage);
+        }
     }
 
     function deleteImage($strPathImage)
@@ -266,7 +268,7 @@ function getInputfield($intView, $arrInputfield, $intEntryId=null)
 
             $objImage->loadImage(ASCMS_PATH.$strPathImage);
             $objImage->resizeImage($thumbWidth, $thumbHeight, 100);
-            $objImage->saveNewImage(ASCMS_PATH.$strPathImage . '.thumb', true);
+            $objImage->saveNewImage(ASCMS_PATH.$strPathImage . '.thumb');
         }
     }
 

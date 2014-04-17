@@ -212,7 +212,7 @@ class Products
             ($flagShowInactive
                 ? ''
                 : ' AND `product`.`active`=1
-                    AND (`product`.`stock_visible`=0 OR `product`.`stock`>0)
+                    AND `product`.`stock`>0
                     AND `category`.`active`=1
                     AND (
                         `product`.`date_start` < CURRENT_DATE()
@@ -223,6 +223,9 @@ class Products
                      OR `product`.`date_end` = 0
                     )'
             ).
+// TODO: Possibly use
+//                  AND (`product`.`stock_visible`=0 OR `product`.`stock`>0)
+// instead
             // Limit Products visible to resellers or non-resellers
             ($flagIsReseller === true
               ? ' AND `b2b`=1'

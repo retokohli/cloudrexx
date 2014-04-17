@@ -66,7 +66,7 @@ function() {
         });
 }
 );
-cx.jQuery(document).ready(function($) {
+jQuery(document).ready(function($) {
     \$J('a.toggle').click(function() {
         \$J('div.toggle').toggle();
         return false;
@@ -99,10 +99,12 @@ CODE
      */
     public static function getTemporaryFilePaths($uploadId)
     {
+        global $sessionObj;
+        if (!isset($sessionObj)) $sessionObj = new cmsSession();
 
         return array(
-            $_SESSION->getTempPath() . '/',
-            $_SESSION->getWebTempPath() . '/',
+            $sessionObj->getTempPath() . '/',
+            $sessionObj->getWebTempPath() . '/',
             'filesharing_' . $uploadId,
         );
     }

@@ -368,10 +368,7 @@ class CalendarRegistration extends CalendarLibrary
         
         if ($objInit->mode == 'frontend') {
             $objMailManager = new CalendarMailManager();
-            
-            $templateId     = $objEvent->emailTemplate[FRONTEND_LANG_ID];
-            $objMailManager->sendMail(intval($_REQUEST['id']), CalendarMailManager::MAIL_CONFIRM_REG, $this->id, $templateId);
-            
+            $objMailManager->sendMail(intval($_REQUEST['id']), CalendarMailManager::MAIL_CONFIRM_REG, $this->id, $objEvent->emailTemplate);
             $objMailManager->sendMail(intval($_REQUEST['id']), CalendarMailManager::MAIL_ALERT_REG, $this->id);
         }
         

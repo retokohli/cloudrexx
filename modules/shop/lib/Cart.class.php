@@ -172,7 +172,7 @@ class Cart
             return;
         }
         $quantity = intval($arrNewProduct['quantity']);
-        $products = $_SESSION['shop']['cart']['items']->toArray();        
+        $products = &$_SESSION['shop']['cart']['items'];
         $cart_id = null;
         // Add as a new product if true
         $new = true;
@@ -322,7 +322,6 @@ class Cart
                 }
             }
         }
-        $_SESSION['shop']['cart']['items'] = $products;
 //DBG::log("Cart::add_product(): New options: ".var_export($products[$cart_id]['options'], true));
 //DBG::log("Cart::add_product(): Leaving");
     }
@@ -406,13 +405,14 @@ class Cart
         $total_price = 0;
         $total_vat_amount = 0;
         $total_weight = 0;
-        $total_discount_amount = 0;        
+        $total_discount_amount = 0;
+        $products = &$_SESSION['shop']['cart']['items'];
 //DBG::log("Cart::update(): Products: ".var_export($products, true));
         // Loop 1: Collect necessary Product data
-        foreach ($_SESSION['shop']['cart']['items'] as $cart_id => $product) {
+        foreach ($products as $cart_id => &$product) {
             $objProduct = Product::getById($product['id']);
             if (!$objProduct) {
-                unset($_SESSION['shop']['cart']['items'][$cart_id]);
+                unset($products[$cart_id]);
                 continue;
             }
             // Limit Products in the cart to the stock available if the
@@ -423,7 +423,7 @@ class Cart
             }
             // Remove Products with quatities of zero or less
             if ($product['quantity'] <= 0) {
-                unset($_SESSION['shop']['cart']['items'][$cart_id]);
+                unset($products[$cart_id]);
                 continue;
             }
             $options_price = 0;
@@ -793,7 +793,7 @@ die("Cart::view(): ERROR: No template");
                     'SHOP_PRODUCT_ID' => $arrProduct['id'],
                     'SHOP_PRODUCT_CODE' => $arrProduct['product_id'],
                     'SHOP_PRODUCT_CART_ID' => $arrProduct['cart_id'],
-                    'SHOP_PRODUCT_TITLE' => str_replace('"', '&quot;', contrexx_raw2xhtml($arrProduct['title'])),
+                    'SHOP_PRODUCT_TITLE' => str_replace('"', '&quot;', $arrProduct['title']),
                     'SHOP_PRODUCT_PRICE' => $arrProduct['price'],  // items * qty
                     'SHOP_PRODUCT_PRICE_UNIT' => Currency::getActiveCurrencySymbol(),
                     'SHOP_PRODUCT_QUANTITY' => $arrProduct['quantity'],

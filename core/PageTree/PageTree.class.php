@@ -95,33 +95,21 @@ $this->bytes = memory_get_peak_usage();
         $content = '';
         $nodeStack = array();
         array_push($nodeStack, $node);
-        $q = $this->em->createQuery("SELECT n FROM Cx\Core\ContentManager\Model\Entity\Node n JOIN n.pages p WHERE p.type != 'alias' AND n.parent = ?1 AND p.lang = ?2")->useResultCache(true);
-        
-        $lastLevel = $this->getLastLevel();
         while (count($nodeStack)) {
             $node = array_pop($nodeStack);
             if (is_callable($node)) {
                 $content .= $node();
                 continue;
             }
-            $page = $node->getPage($this->lang);
-            if (
-                    $node->getLvl() == $lastLevel ||
-                    (
-                        !$this->getFullNavigation() && // don't show full navigation
-                        $page && // don't be on root node
-                        !in_array($page->getId(), $this->pageIdsAtCurrentPath) // I am not on active page
-                    )
-               ) {
-                // hide children
-                $children = array();
-            } else {
-                $q->setParameter(1, $node);
-                $q->setParameter(2, $this->lang);
-                $children = $q->getResult();
-            }
+            $children = $node->getChildren();
+            
             $children2 = array();
             foreach ($children as $child) {
+                $page = $child->getPage($this->lang);
+                if (!$page) {
+                    // do not add children node has no pages (root node)
+                    continue;
+                }
                 $children2[$child->getLft()] = $child;
             }
             ksort($children2);
@@ -129,12 +117,12 @@ $this->bytes = memory_get_peak_usage();
             unset($children2);
             
             $page = $node->getPage($this->lang);
+            
             $hasChilds = false;
             if ($this->skipInvisible) {
                 if (!$page || ($page->isVisible() && $page->isActive())) {
                     foreach ($children as $child) {
-                        $childPage = $child->getPage($this->lang);
-                        if ($childPage && $childPage->isVisible() && $childPage->isActive()) {
+                        if ($child->getPage($this->lang) && $child->getPage($this->lang)->isVisible() && $child->getPage($this->lang)->isActive()) {
                             $hasChilds = true;
                             break;
                         }
@@ -143,8 +131,7 @@ $this->bytes = memory_get_peak_usage();
             } else {
                 if (!$page || $page->isActive()) {
                     foreach ($children as $child) {
-                        $childPage = $child->getPage($this->lang);
-                        if ($childPage && $childPage->isActive()) {
+                        if ($child->getPage($this->lang) && $child->getPage($this->lang)->isActive()) {
                             $hasChilds = true;
                             break;
                         }
@@ -175,10 +162,9 @@ $this->bytes = memory_get_peak_usage();
             }
             
             try {
-                $parentPage = $page->getParent();
                 // if parent is invisible or unpublished and parent node is not start node
-                if ($parentPage &&
-                        (!$parentPage->isVisible() || !$parentPage->isActive()) &&
+                if ($page->getParent() &&
+                        (!$page->getParent()->isVisible() || !$page->getParent()->isActive()) &&
                         $page->getNode()->getParent()->getId() != $this->rootNode->getId()
                     ) {
                     continue;
@@ -266,16 +252,4 @@ $this->bytes = memory_get_peak_usage();
      * Called on construction. Override if you do not want to override the ctor.
      */
     protected abstract function init();
-    
-    protected function getFirstLevel() {
-        return 1; // show from first level
-    }
-    
-    protected function getLastLevel() {
-        return 0; // show all levels
-    }
-
-    protected function getFullNavigation() {
-        return false;
-    }
 }

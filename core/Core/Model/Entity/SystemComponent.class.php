@@ -111,7 +111,7 @@ class SystemComponent
      */
     public function isActive() {
         $cx = \Env::get('cx');
-        $mc = \Cx\Core\ModuleChecker::getInstance($cx->getDb()->getEntityManager(), $cx->getDb()->getAdoDb(), $cx->getClassLoader());
+        $mc = new \Cx\Core\ModuleChecker($cx->getDb()->getEntityManager(), $cx->getDb()->getAdoDb(), $cx->getClassLoader());
 
         if (!in_array($this->getName(), $mc->getModules())) {
             return true;

@@ -952,9 +952,6 @@ $_ARRAYLANG['TXT_SHOP_PSP_INTERNAL_LSV'] = "LSV (intern)";
 $_ARRAYLANG['TXT_SHOP_PSP_INTERNAL_CREDITCARD'] = "Kreditkarte (intern)";
 $_ARRAYLANG['TXT_SHOP_PSP_DATATRANS'] = "Datatrans";
 $_ARRAYLANG['TXT_SHOP_PSP_MOBILESOLUTIONS'] = "PostFinance Mobile";
-$_ARRAYLANG['TXT_SHOP_PSP_PAYMILL_CC'] = "Paymill (credit card)";
-$_ARRAYLANG['TXT_SHOP_PSP_PAYMILL_ELV'] = "Paymill (ELV)";
-$_ARRAYLANG['TXT_SHOP_PSP_PAYMILL_IBAN'] = "Paymill (IBAN/BIC)";
 // 20130522
 $_ARRAYLANG['TXT_SHOP_IMPORT_WARNING_EXTENSION_MISMATCH'] = "Die Dateierweiterung der hochgeladenen Datei ist nicht \".csv\". Stellen Sie vor dem Import sicher, ob es sich tatsächlich um eine CSV Datei handelt. Insbesondere sind von Excel erzeugte Dateien mit der Endung \".xls\" oder \".xlsx\" <b>keine</b> CSV Dateien!";
 $_ARRAYLANG['TXT_SHOP_IMPORT_WARNING_TYPE_MISMATCH'] = "Der Dateityp der hochgeladenen Datei entspricht keinem der erwarteten Parameter. Stellen Sie vor dem Import sicher, ob es sich tatsächlich um eine CSV Datei handelt. Insbesondere sind von Excel erzeugte Dateien mit der Endung \".xls\" oder \".xlsx\" <b>keine</b> CSV Dateien!";
@@ -964,12 +961,3 @@ $_ARRAYLANG['TXT_SHOP_ERROR_CREATING_PRODUCT_THUMBNAIL'] = "Fehler beim erzeugen
 // 3.1.0
 $_ARRAYLANG['TXT_SHOP_ORDERITEMS_AMOUNT_MIN'] = "Minimaler Betrag für bestellte Artikel";
 $_ARRAYLANG['TXT_SHOP_ORDERITEMS_AMOUNT_MIN_NOTE'] = "Hinweis: Lassen Sie den Wert leer oder setzen Sie ihn auf 0 (Null), um die Beschränkung ausser Kraft zu setzen.";
-
-$_ARRAYLANG['TXT_SHOP_PAYMILL'] = "Paymill";
-$_ARRAYLANG['TXT_SHOP_PAYMILL_PRIVATE_KEY'] = "Private key";
-$_ARRAYLANG['TXT_SHOP_PAYMILL_PUBLIC_KEY'] = "Public key";
-$_ARRAYLANG['TXT_SHOP_PAYMILL_TEST_ACCOUNT'] = "Einstellungen Test-Konto";
-$_ARRAYLANG['TXT_SHOP_PAYMILL_LIVE_ACCOUNT'] = "Einstellungen Live-Konto";
-$_ARRAYLANG['TXT_SHOP_MODE'] = "Modus";
-$_ARRAYLANG['TXT_SHOP_TEST'] = "Test";
-$_ARRAYLANG['TXT_SHOP_LIVE'] = "Live";

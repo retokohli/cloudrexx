@@ -263,9 +263,9 @@ class ImageManager
         }
 		
         if (function_exists('imagecopyresampled')) { //resampled is gd2 only
-            imagecopyresampled($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth, $this->newImageHeight, $this->orgImageWidth, $this->orgImageHeight);
+            imagecopyresampled($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth + 1, $this->newImageHeight + 1, $this->orgImageWidth, $this->orgImageHeight);
         } else {
-            imagecopyresized($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth, $this->newImageHeight, $this->orgImageWidth, $this->orgImageHeight);
+            imagecopyresized($this->newImage, $this->orgImage, 0, 0, 0, 0, $this->newImageWidth + 1, $this->newImageHeight + 1, $this->orgImageWidth, $this->orgImageHeight);
         }
 		
 		if ($this->newImage) {

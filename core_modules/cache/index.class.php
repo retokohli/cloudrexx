@@ -3,7 +3,7 @@
  * Cache
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
- * @version     3.1.2
+ * @version     1.0.1
  * @package     contrexx
  * @subpackage  coremodule_cache
  */
@@ -12,7 +12,7 @@
  * Cache
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Comvation Development Team <info@comvation.com>
- * @version     3.1.2
+ * @version     1.0.1
  * @package     contrexx
  * @subpackage  coremodule_cache
  */
@@ -31,17 +31,9 @@ class Cache extends cacheLib
     /**
      * Constructor
      *
-     * @global array $_CONFIG
+     * @global     array        $_CONFIG
      */
-    public function __construct()
-    {
-        $this->initContrexxCaching();
-        $this->initOPCaching();
-        $this->initUserCaching();
-        $this->getActivatedCacheEngines();
-    }
-    
-    protected function initContrexxCaching()
+    function __construct()
     {
         global $_CONFIG;
 
@@ -104,7 +96,7 @@ class Cache extends cacheLib
     /**
      * Start caching functions. If this page is already cached, load it, otherwise create new file
      */
-    public function startContrexxCaching()
+    public function startCache()
     {
         if (!$this->boolIsEnabled) {
             return null;
@@ -130,7 +122,7 @@ class Cache extends cacheLib
     /**
      * End caching functions. Check for a sessionId: if not set, write pagecontent to a file.
      */
-    public function endContrexxCaching($page)
+    public function endCache($page)
     {
         if (!$this->boolIsEnabled) {
             return null;
@@ -199,7 +191,7 @@ class Cache extends cacheLib
     /**
      * Delete all cache files from tmp directory
      */
-    public function cleanContrexxCaching()
+    public function deleteAllFiles()
     {
         $this->_deleteAllFiles();
     }

@@ -82,14 +82,6 @@ namespace Cx\Core
          */
         private $arrInstalledModules = array();
 
-        private static $instance = null;
-
-        public static function getInstance($em, $db, $cl) {
-            if (!self::$instance) {
-                self::$instance = new static($em, $db, $cl);
-            }
-            return self::$instance;
-        }
 
         /**
          * Constructor
@@ -99,7 +91,7 @@ namespace Cx\Core
          * @param   ADONewConnection                  $db
          * @param   \Cx\Core\ClassLoader\ClassLoader  $cl
          */
-        private function __construct($em, $db, $cl){
+        public function __construct($em, $db, $cl){
             $this->em = $em;
             $this->db = $db;
             $this->cl = $cl;
@@ -125,7 +117,7 @@ namespace Cx\Core
 // TODO: add additional check for module != NULL
                     $qb->expr()->neq('p.module', $qb->expr()->literal(''))
                 );
-            $pages = $qb->getQuery()->useResultCache(true)->getResult();
+            $pages = $qb->getQuery()->getResult();
             foreach ($pages as $page) {
                 $arrCmInstalledModules[] = $page->getModule();
                 if ($page->isActive()) {

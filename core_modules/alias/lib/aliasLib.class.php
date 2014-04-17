@@ -34,6 +34,8 @@ class aliasLib
     protected $nodeRepository = null;
     
     protected $pageRepository = null;
+
+    protected $hasLegacyPages = false;
     
 
     function __construct($langId = 0)
@@ -46,34 +48,21 @@ class aliasLib
     }
 
     
-    function _getAliases($limit = null, $all = false, $legacyPages = false, $slug = null)
+    function _getAliases($limit = null, $all = false, $legacyPages = false)
     {
         $pos = !$all && isset($_GET['pos']) ? intval($_GET['pos']) : 0;
+
+        $aliases = $this->pageRepository->findBy(array(
+            'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS,
+        ), true);
         
-        if(!$slug){
-            // show all entries
-            $aliases = $this->pageRepository->findBy(array(
-                'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS,
-            ), true);
-        } else {
-            // query builder for filtering entries
-            $qb = $this->pageRepository->createQueryBuilder('p');
-            $aliases = 
-                $qb->select('p')
-                ->add('where', $qb->expr()->andX(
-                    $qb->expr()->eq('p.type', ':type'),
-                    $qb->expr()->like('p.slug', ':slug')
-                ))->setParameters(array(
-                    'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_ALIAS,
-                    'slug' => $slug,
-                ))->getQuery()->getResult();
-        }
         $i = 0;
         $pages = array();
         foreach ($aliases as $page) {
             // skip legacy page aliases if legacy page is disabled
-            if (preg_match('/^legacy_page_/', $page->getSlug()) && !$legacyPages) {
-                continue;
+            if (preg_match('/^legacy_page_/', $page->getSlug())) {
+                $this->hasLegacyPages = true;
+                if (!$legacyPages) continue;
             }
             $i++;
             if ($i < $pos) {
@@ -89,9 +78,9 @@ class aliasLib
     }
 
 
-    function _getAliasesCount($showLegacyPagealiases, $slug)
+    function _getAliasesCount($showLegacyPagealiases)
     {
-        return count($this->_getAliases(null, true, $showLegacyPagealiases, $slug));
+        return count($this->_getAliases(null, true, $showLegacyPagealiases));
     }
     
 

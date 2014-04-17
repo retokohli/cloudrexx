@@ -216,7 +216,7 @@ class Product
         // Assign & check
         $this->code         = trim(strip_tags($code));
         $this->category_id  = trim(strip_tags($category_id));
-        $this->name         = trim($name);
+        $this->name         = trim(strip_tags($name));
         $this->distribution = trim(strip_tags($distribution));
         $this->price        = floatval($price);
         $this->ord          = intval($ord);
@@ -272,7 +272,7 @@ class Product
     function name($name=null)
     {
         if (isset($name) && $name != '') {
-            $this->name = trim($name);
+            $this->name = trim(strip_tags($name));
         }
         return $this->name;
     }

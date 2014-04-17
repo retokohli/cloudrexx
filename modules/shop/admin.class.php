@@ -88,7 +88,7 @@ class Shopmanager extends ShopLibrary
     {
         global $objTemplate, $_ARRAYLANG;
 
-//\DBG::activate(DBG_ERROR_FIREPHP|DBG_LOG);
+//DBG::activate(DBG_ERROR_FIREPHP | DBG_LOG);
         if (!isset($_GET['act'])) {
             $_GET['act'] = '';
         }
@@ -335,10 +335,7 @@ class Shopmanager extends ShopLibrary
             if (!preg_match('/\.csv$/i', $file['name'])) {
                 Message::warning($_ARRAYLANG['TXT_SHOP_IMPORT_WARNING_EXTENSION_MISMATCH']);
             } else {
-                if (!preg_match('
-                    /application\\/vnd\.ms-excel
-                    |text\\/(?:plain|csv|comma-separated-values)
-                    /x', $file['type'])) {
+                if (!preg_match('/application\\/vnd\.ms-excel|text\\/(?:plain|csv)/', $file['type'])) {
                     Message::warning($_ARRAYLANG['TXT_SHOP_IMPORT_WARNING_TYPE_MISMATCH']);
                 }
             }
@@ -3129,7 +3126,7 @@ if ($test === NULL) {
                 'SHOP_ROWCLASS' => 'row'.(++$i % 2 + 1),
                 'SHOP_PRODUCT_ID' => $objProduct->id(),
                 'SHOP_PRODUCT_CODE' => $objProduct->code(),
-                'SHOP_PRODUCT_NAME' => contrexx_raw2xhtml($objProduct->name()),
+                'SHOP_PRODUCT_NAME' => $objProduct->name(),
                 'SHOP_PRODUCT_PRICE1' => Currency::formatPrice($objProduct->price()),
                 'SHOP_PRODUCT_PRICE2' => Currency::formatPrice($objProduct->resellerprice()),
                 'SHOP_PRODUCT_DISCOUNT' => Currency::formatPrice($objProduct->discountprice()),
@@ -3157,7 +3154,8 @@ if ($test === NULL) {
                 'SHOP_SHOW_PRODUCT_ON_START_PAGE_OLD' =>
                     ($objProduct->shown_on_startpage() ? '1' : ''),
 // This is used when the Product name can be edited right on the overview
-                'SHOP_PRODUCT_NAME' => contrexx_raw2xhtml($objProduct->name()),
+                'SHOP_PRODUCT_NAME' => htmlentities(
+                    $objProduct->name(), ENT_QUOTES, CONTREXX_CHARSET),
             ));
             // All languages active
             foreach ($arrLanguages as $lang_id => $arrLanguage) {
@@ -3529,8 +3527,7 @@ if ($test === NULL) {
                 //.','.SettingDb::getValue('email_confirmation'),
             'substitution' => &$arrSubstitution,
         );
-        if (!MailTemplate::send($arrMailTemplate)) return false;
-        return $arrSubstitution['CUSTOMER_EMAIL'];
+        return MailTemplate::send($arrMailTemplate);
     }
 
 

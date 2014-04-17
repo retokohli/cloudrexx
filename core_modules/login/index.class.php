@@ -218,7 +218,7 @@ class Login
     */
     function _login()
     {
-        global $_CORELANG;
+        global $_CORELANG, $sessionObj;
 
         $objFWUser = FWUser::getFWUserObject();
 
@@ -241,7 +241,8 @@ class Login
         if (isset($_POST['login']) && $objFWUser->objUser->login()) {
             if ($objFWUser->checkLogin()) {
                 $objFWUser->objUser->reset();
-                $objFWUser->logoutAndDestroySession();                
+                $objFWUser->logoutAndDestroySession();
+                $sessionObj = new \cmsSession();
             } else {
                 $_GET['relogin'] = 'true';
             }

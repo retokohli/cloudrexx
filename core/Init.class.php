@@ -38,7 +38,6 @@ class InitCMS
     public $userFrontendLangId;
 
     public $currentThemesId;
-    public $channelThemeId;
     public $customContentTemplate = null;
     public $arrLang = array();
     public $arrLangNames = array();
@@ -220,8 +219,7 @@ class InitCMS
         else {
             $this->currentThemesId = $this->arrLang[$this->frontendLangId]['themesid'];
         }
-        
-        $this->channelThemeId = $this->currentThemesId;
+
         // Set charset of frontend language
         $this->frontendLangCharset = $this->arrLang[$this->frontendLangId]['charset'];
     }
@@ -448,7 +446,7 @@ class InitCMS
      * @return  array           The array of template strings
      * @access  public
      */
-    function getTemplates($page)
+    function getTemplates()
     {
         global $objDatabase;
 
@@ -456,31 +454,27 @@ class InitCMS
             $this->customContentTemplate=$_GET['custom_content'];
         }
 
-        $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
-
         if (isset($_GET['preview']) && intval($_GET['preview'])){
-            $id = intval($_GET['preview']);
-            $theme = $themeRepository->findById($id);
-            if ($theme){
-                $this->currentThemesId = $id;
+            $objRS = $objDatabase->SelectLimit("
+                SELECT id
+                                        FROM ".DBPREFIX."skins
+                 WHERE id=".intval($_GET['preview']), 1
+            );
+            if ($objRS->RecordCount()==1){
+                $this->currentThemesId=intval($_GET['preview']);
             }
         }
 
-		// get theme object so we get the configured libraries
-        $theme = $themeRepository->findById($this->currentThemesId);
-        $themesPath = $theme->getFoldername();
-        if ($theme && $theme->isComponent()) {
-            $libraries = JS::getConfigurableLibraries();
-            foreach ($theme->getDependencies() as $libraryName => $libraryVersions) {
-                if (!isset($libraries[$libraryName])) continue;
-                $version = $libraryVersions[0];
-                $libraryData = $libraries[$libraryName]['versions'][$version];
-                foreach ($libraryData['jsfiles'] as $file) {
-                    \JS::registerJS($file, true);
-                }
-                foreach ($libraryData['cssfiles'] as $file) {
-                    \JS::registerCSS($file);
-                }
+        $objResult = $objDatabase->SelectLimit("
+            SELECT  id,
+                                    themesname,
+                                    foldername
+                               FROM ".DBPREFIX."skins
+                              WHERE id = '$this->currentThemesId'",1);
+        if ($objResult !== false) {
+            while (!$objResult->EOF) {
+                $themesPath = $objResult->fields['foldername'];
+                $objResult->MoveNext();
             }
         }
 
@@ -501,7 +495,6 @@ class InitCMS
         $this->templates['headlines2'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines2.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines2.html') : '';
         $this->templates['headlines3'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines3.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines3.html') : '';
         $this->templates['headlines4'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines4.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines4.html') : '';
-        $this->templates['news_recent_comments'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/news_recent_comments.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/news_recent_comments.html') : '';
         $this->templates['javascript'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/javascript.js') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/javascript.js') : '';
         //$this->templates['style'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/style.css') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/style.css') : '';
         $this->templates['buildin_style'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/buildin_style.css') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/buildin_style.css') : '';
@@ -512,7 +505,7 @@ class InitCMS
         $this->templates['blog_content'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/blog.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/blog.html') : '';
         $this->templates['immo'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/immo.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/immo.html') : '';
 
-        if (!$this->hasCustomContent() || !$this->loadCustomContent($page)) {
+        if (!$this->hasCustomContent() || !$this->loadCustomContent()) {
             // load default content layout if page doesn't have a custom content
             // layout or if it failed to be loaded
             $this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/content.html');
@@ -521,27 +514,10 @@ class InitCMS
         return $this->templates;
     }
 
-    private function loadCustomContent($page)
+    private function loadCustomContent()
     {
         global $objDatabase;
 
-        // OPTION USE FOR OUTPUT CHANNEL
-        
-        $themeRepository   = new \Cx\Core\View\Model\Repository\ThemeRepository();        
-        if ($page->getUseCustomContentForAllChannels()) {
-            $themeFolder = $themeRepository->findById($page->getSkin())->getFoldername();
-            if (file_exists(ASCMS_THEMES_PATH.'/'.$themeFolder.'/'.$page->getCustomContent())) {
-                $this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themeFolder.'/'.$page->getCustomContent());
-                return true;
-            }
-        } elseif (!empty($this->customContentTemplate)) {
-            $themeFolder = $themeRepository->findById($this->channelThemeId)->getFoldername();
-            if (file_exists(ASCMS_THEMES_PATH.'/'.$themeFolder.'/'.$page->getCustomContent())) {
-                $this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themeFolder.'/'.$page->getCustomContent());
-                return true;
-            }
-        }
-        
         //only include the custom template if it really exists.
         //if the user selected custom_x.html as a page's custom template, a print-view request will
         //try to get the file "themes/<printtheme>/custom_x.html" - we do not know if this file
@@ -721,9 +697,9 @@ class InitCMS
             $langId = $mode == 'backend' ? $this->getBackendDefaultLangId() : $this->getFrontendDefaultLangId();
             $path = $this->arrModulePath[$module].$this->arrLang[$langId]['lang'].'/'.$mode.'.php';
 
-            if (!file_exists(\Env::get('ClassLoader')->getFilePath($path))) {
+            if (!file_exists($path)) {
                 $path = \Env::get('ClassLoader')->getFilePath($path, $isCustomized);
-                if (!file_exists(\Env::get('ClassLoader')->getFilePath($path))) {
+                if (!file_exists($path)) {
                     return '';
                 }
             }
@@ -744,9 +720,7 @@ class InitCMS
         
         $isCustomized = false;
         $customizedPath = \Env::get('ClassLoader')->getFilePath($path, $isCustomized);
-        if (file_exists($path) || !file_exists($customizedPath)) {
-            require $path;
-        }
+        require $path;
         if ($isCustomized) {
             require $customizedPath;
         }
@@ -763,7 +737,7 @@ class InitCMS
      * @param   int $themesId     The optional theme ID
      * @param   string $customContent   The optional custom content template (like 'content_without_h1.html')
      */
-    public function setCustomizedTheme($themesId=0, $customContent='', $useThemeForAllChannels = false)
+    public function setCustomizedTheme($themesId=0, $customContent='')
     {
         global $objDatabase;
 
@@ -771,7 +745,7 @@ class InitCMS
         $this->customContentTemplate = $customContent;
 
         //only set customized theme if not in printview AND no mobile devic
-        if ($useThemeForAllChannels || (!isset($_GET['printview']) && !$this->isInMobileView())) {
+        if (!isset($_GET['printview']) && !$this->isInMobileView()) {
             $themesId=intval($themesId);
             if ($themesId>0){
                 $objResult = $objDatabase->Execute("SELECT id FROM ".DBPREFIX."skins WHERE id = $themesId");

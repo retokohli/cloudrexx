@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Main script for Contrexx
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -71,6 +70,26 @@ namespace Cx\Core\Core\Controller {
          * This mode is BETA at this time
          */
         const MODE_MINIMAL = 'minimal';
+        
+        /**
+         * Alternative PHP Cache extension
+         */
+        const CACHE_ENGINE_APC = 'apc';
+        
+        /**
+         * memcache(d) extension
+         */
+        const CACHE_ENGINE_MEMCACHE = 'memcache';
+        
+        /**
+         * xcache extension
+         */
+        const CACHE_ENGINE_XCACHE = 'xcache';
+        
+        /**
+         * No caching engine available
+         */
+        const CACHE_ENGINE_NONE = null;
         
         /**
          * Holds references to all currently loaded Cx instances
@@ -164,6 +183,12 @@ namespace Cx\Core\Core\Controller {
          * @var \Cx\Core\Event\Controller\EventManager
          */
         protected $eventManager = null;
+        
+        /**
+         * Used cache engine
+         * @var string|null Cache engine name, null for none
+         */
+        protected $cacheEngine = self::CACHE_ENGINE_NONE;
         
         /**
          * This creates instances of this class
@@ -329,13 +354,41 @@ namespace Cx\Core\Core\Controller {
             }
 
             /**
+             * Handle multisite installations
+             * CUSTOMIZING from ppay.com
+             */
+            require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/core_modules/MultiSite/Model/Repository/InstanceRepository.class.php';
+            require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/core/Core/Model/Entity/EntityBase.class.php';
+            require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/core_modules/License/Person.class.php';
+            require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/core_modules/MultiSite/Model/Entity/Instance.class.php';
+            $multiSiteRepo = new \Cx\Core_Modules\MultiSite\Model\Repository\InstanceRepository();
+            $subdomain = current(explode('.', $_SERVER['HTTP_HOST']));
+            global $multiSiteInstanceOffset, $multiSiteInstanceName;
+            $multiSiteInstanceOffset = '';
+            $multiSiteInstanceName = '';
+            foreach ($multiSiteRepo->findAll($_PATHCONFIG['ascms_root'].$_PATHCONFIG['ascms_root_offset'].'/instances') as $instance) {
+                if ($subdomain == strtolower($instance->getName())) {
+                    //\DBG::activate(DBG_PHP);
+                    $_PATHCONFIG['ascms_root_offset'] .= '/instances/'.$instance->getName();
+                    $multiSiteInstanceOffset .= '/instances/'.$instance->getName();
+                    $multiSiteInstanceName = $instance->getName();
+                    $pathconfigBackup = $_PATHCONFIG;
+                    require_once $_PATHCONFIG['ascms_root'].$_PATHCONFIG['ascms_root_offset'].'/config/configuration.php';
+                    //$_PATHCONFIG = $pathconfigBackup;
+                    break;
+                }
+            }
+            /**
+             * End CUSTOMIZING
+             */
+
+            /**
              * User configuration settings
              *
              * This file is re-created by the CMS itself. It initializes the
              * {@link $_CONFIG[]} global array.
              */
-            $incSettingsStatus = include_once $_PATHCONFIG['ascms_root'].$_PATHCONFIG['ascms_root_offset'].'/config/settings.php';
-            
+            $incSettingsStatus = include_once $_PATHCONFIG['ascms_root'].$_PATHCONFIG['ascms_root_offset'].$multiSiteInstanceOffset.'/config/settings.php';
             @ini_set('default_charset', $_CONFIG['coreCharacterEncoding']);
             
             // Set output url seperator
@@ -352,7 +405,7 @@ namespace Cx\Core\Core\Controller {
              * Set constants
              * -------------------------------------------------------------------------
              */
-            require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/config/set_constants.php';
+            require_once $_PATHCONFIG['ascms_root'].$_PATHCONFIG['ascms_root_offset'].'/config/set_constants.php';
 
             // Check if the system is installed
             if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
@@ -431,13 +484,13 @@ namespace Cx\Core\Core\Controller {
                     if (!isset($_GET['__cap'])) {
                         break;
                     }
-                    if (!preg_match('#^' . ASCMS_INSTANCE_OFFSET . '(/[a-z]{2})?(/admin|' . ASCMS_BACKEND_PATH . ')#', $_GET['__cap'])) {
+                    if (!preg_match('#^' . ASCMS_PATH_OFFSET . '(/[a-z]{2})?(/admin|' . ASCMS_BACKEND_PATH . ')#', $_GET['__cap'])) {
                         break;
                     }
                     // this does not belong here:
-                    if (!preg_match('#^' . ASCMS_INSTANCE_OFFSET . ASCMS_BACKEND_PATH . '/#', $_GET['__cap'])) {
+                    if (!preg_match('#^' . ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH . '/#', $_GET['__cap'])) {
                         // do not use \CSRF::header() here, since ClassLoader is not loaded at this time
-                        header('Location: ' . ASCMS_INSTANCE_OFFSET . ASCMS_BACKEND_PATH . '/');
+                        header('Location: ' . ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH . '/');
                         die();
                     }
                     $mode = self::MODE_BACKEND;
@@ -453,17 +506,38 @@ namespace Cx\Core\Core\Controller {
          * Early initializations. Tries to enable APC and increase RAM size
          */
         protected function preInit() {
+            global $_CONFIG, $_PATHCONFIG, $multiSiteInstanceOffset;
+
+            // check whether the instance exists or not
+            //$domain = substr($_CONFIG['domainUrl'], 2);
+            $domain = $_CONFIG['domainUrl'];
+            $hostNameParts = explode('.', $_SERVER['HTTP_HOST']);
+            $subdomain = null;
+            if (count($hostNameParts) > 2) {
+                current($hostNameParts);
+            }
+            if (!$subdomain || $subdomain == 'a' || $subdomain == 'staging' || $subdomain == 'dev') {
+                /*if ($this->getMode() == static::MODE_FRONTEND) {
+                    \header("Location: http://www." . $domain);
+                    exit;
+                }*/
+            } elseif (
+                // if these paths match, this is not an instance but a full installation
+                $_PATHCONFIG['ascms_root'] == $_PATHCONFIG['ascms_installation_root'] &&
+                $_PATHCONFIG['ascms_root_offset'] == $_PATHCONFIG['ascms_installation_offset']
+            ) {
+                // we don't want the frontend of the codebase to be accessible
+                if ($this->getMode() == static::MODE_FRONTEND) {
+                    \header("Location: http://www." . $domain . "/de/Existiert-nicht?instance=" . $subdomain);
+                    exit;
+                }
+            }
             $this->checkSystemState();
-            $this->adjustRequest();            
+            $this->tryToEnableCaching();
+            $this->tryToSetMemoryLimit();
+            $this->adjustRequest();
         }
 
-        /**
-         * Start the session using the new cmsSession object
-         */
-        protected function startSession() {
-            $_SESSION = new \cmsSession();
-        }
-        
         /**
          * Check whether the system is running
          * @throws \Exception
@@ -477,6 +551,61 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
+         * This tries to enable any known caching engine
+         */
+        protected function tryToEnableCaching() {
+            // APC
+            if (extension_loaded('apc')) {
+                if (ini_get('apc.enabled')) {
+                    $this->apcEnabled = true;
+                    $this->cacheEngine = self::CACHE_ENGINE_APC;
+                } else {
+                    ini_set('apc.enabled', 1);
+                    if (ini_get('apc.enabled')) {
+                        $this->apcEnabled = true;
+                        $this->cacheEngine = self::CACHE_ENGINE_APC;
+                    }
+                }
+            
+            // Memcache
+            } else if (extension_loaded('memcache')) {
+                $memcache = new \Memcache();
+                if (@$memcache->connect('127.0.0.1')) {
+                    \Env::set('memcache', $memcache);
+                    $this->cacheEngine = self::CACHE_ENGINE_MEMCACHE;
+                }
+            }
+            
+            // XCache
+            if (
+                $this->cacheEngine == self::CACHE_ENGINE_NONE &&
+                extension_loaded('xcache') &&
+                ini_get('xcache.size') > 0
+            ) {
+                $this->cacheEngine = self::CACHE_ENGINE_XCACHE;
+            }
+
+            // Disable eAccelerator if active
+            if (extension_loaded('eaccelerator')) {
+                ini_set('eaccelerator.enable', 0);
+                ini_set('eaccelerator.optimizer', 0);
+            }
+
+            // Disable zend opcache if it is enabled
+            // If save_comments is set to TRUE, doctrine2 will not work properly.
+            // It is not possible to set a new value for this directive with php.
+            if (
+                (
+                    extension_loaded('opcache') ||
+                    extension_loaded('Zend OPcache')
+                ) &&
+                ini_get('opcache.save_comments') != 1
+            ) {
+                ini_set('opcache.enable', 0);
+            }
+        }
+
+        /**
          * This tries to set the memory limit if its lower than 32 megabytes
          */
         protected function tryToSetMemoryLimit() {
@@ -486,12 +615,7 @@ namespace Cx\Core\Core\Controller {
                 return;
             }
             $this->memoryLimit = $memoryLimit[0];
-            
-            global $objCache;
-            if (
-                $objCache->getUserCacheEngine() == \Cache::CACHE_ENGINE_APC ||
-                $objCache->getOpCacheEngine() == \Cache::CACHE_ENGINE_APC
-            ) {
+            if ($this->apcEnabled) {
                 if ($this->memoryLimit < 32) {
                     ini_set('memory_limit', '32M');
                 }
@@ -599,6 +723,12 @@ namespace Cx\Core\Core\Controller {
             $this->cl = new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT, true, $this->customizingPath);
 
             /**
+             * Start contrexx static cache
+             */
+            $objCache = new \Cache();
+            $objCache->startCache();
+
+            /**
              * Environment repository
              */
             require_once($this->cl->getFilePath(ASCMS_CORE_PATH.'/Env.class.php'));
@@ -606,15 +736,6 @@ namespace Cx\Core\Core\Controller {
             \Env::set('ClassLoader', $this->cl);            
             \Env::set('config', $_CONFIG);
             \Env::set('ftpConfig', $_FTPCONFIG);
-
-            /**
-             * Start caching with op cache, user cache and contrexx caching
-             */
-            $objCache = new \Cache();
-            $this->tryToSetMemoryLimit();
-            
-            // start contrexx caching
-            $objCache->startContrexxCaching();
 
             /**
              * Include all the required files.
@@ -642,10 +763,6 @@ namespace Cx\Core\Core\Controller {
             // TODO: Get rid of InitCMS class, merge it with this class instead
             $objInit = new \InitCMS($this->mode == self::MODE_FRONTEND ? 'frontend' : 'backend', \Env::em());
             \Env::set('init', $objInit);
-            //$bla = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-            //$bla->findAll();
-            
-            $this->startSession();
         }
         
         /**
@@ -678,7 +795,7 @@ namespace Cx\Core\Core\Controller {
             if (!$this->request) {
                 // this makes \Env::get('Resolver')->getUrl() return a sensful result
                 $request = !empty($_GET['__cap']) ? $_GET['__cap'] : '';
-                $offset = ASCMS_INSTANCE_OFFSET;
+                $offset = ASCMS_PATH_OFFSET;
 
                 switch ($this->mode) {
                     case self::MODE_FRONTEND:
@@ -952,48 +1069,9 @@ namespace Cx\Core\Core\Controller {
             }
             
             $this->ch->callPreContentParseHooks();
-            try {
-                $this->ch->loadComponent($this, $plainSection, $this->resolvedPage);
-            } catch (\Exception $e) {
-                // catch backend exceptions per component
-                // todo: same for frontend
-                if ($this->mode == self::MODE_BACKEND) {
-                    $errorTemplate = new \Cx\Core\Html\Sigma(ASCMS_CORE_PATH.'/Core/View/Template');
-                    $errorTemplate->loadTemplateFile('Error.html');
-                    $errorTemplate->setVariable(array(
-                        'COMPONENT_NAME'    => $plainSection,
-                        'EXCEPTION_CLASS'   => get_class($e),
-                        'EXCEPTION_MESSAGE' => $e->getMessage(),
-                        // add stacktrace
-                    ));
-                    foreach ($e->getTrace() as $stacktraceEntry) {
-                        $errorTemplate->setVariable(array(
-                            'STACKTRACE_FILE'       => $stacktraceEntry['file'],
-                            'STACKTRACE_LINE'       => $stacktraceEntry['line'],
-                            'STACKTRACE_FUNCTION'   => $stacktraceEntry['function'],
-                            'STACKTRACE_CLASS'      => $stacktraceEntry['class'],
-                            'STACKTRACE_TYPE'       => $stacktraceEntry['type'],
-                        ));
-                        foreach ($stacktraceEntry['args'] as $argument) {
-                            switch (gettype($argument)) {
-                                case 'array':
-                                case 'object':
-                                    $argument = gettype($argument);
-                                    break;
-                                default:
-                                    break;
-                            }
-                            $errorTemplate->setVariable(array(
-                                'STACKTRACE_ARGUMENT'   => $argument,
-                            ));
-                        }
-                        $errorTemplate->parse('stacktrace_entry');
-                    }
-                    $this->getTemplate()->setVariable('ADMIN_CONTENT', $errorTemplate->get());
-                } else {
-                    throw $e;
-                }
-            }
+            
+            $this->ch->loadComponent($this, $plainSection, $this->resolvedPage);
+            
             // This would be a postContentParseHook:
             \Message::show();
             
@@ -1205,7 +1283,7 @@ namespace Cx\Core\Core\Controller {
                         "<link rel=\"stylesheet\" href=\"$moduleStyleFile\" type=\"text/css\" media=\"screen, projection\" />"
                     );
 
-                if (!$this->resolvedPage->getUseSkinForAllChannels() && isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
+                if (isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
                     $this->cl->loadFile(ASCMS_CORE_PATH.'/pdf.class.php');
                     $pageTitle = $this->resolvedPage->getTitle();
                     $objPDF          = new \PDF();
@@ -1260,7 +1338,7 @@ namespace Cx\Core\Core\Controller {
 
                 echo $endcode;
 
-                $objCache->endContrexxCaching($this->resolvedPage);
+                $objCache->endCache($this->resolvedPage);
             } else {
                 // backend meta navigation
                 if ($this->template->blockExists('backend_metanavigation')) {
@@ -1406,6 +1484,14 @@ namespace Cx\Core\Core\Controller {
          */
         public function getUser() {
             return \FWUser::getFWUserObject();
+        }
+        
+        /**
+         * Returns the name of the used cache engine or null if none
+         * @return string|null Cache engine name
+         */
+        public function getCacheEngine() {
+            return $this->cacheEngine;
         }
         
         /**

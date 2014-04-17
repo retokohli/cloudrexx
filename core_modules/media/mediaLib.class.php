@@ -166,7 +166,7 @@ class MediaLibrary
             if (isset($_SESSION['mediaCopyFile'])) {
                 unset($_SESSION['mediaCopyFile']);
             }
-            $_SESSION['mediaCutFile'] = array();
+
             $_SESSION['mediaCutFile'][] = $this->path;
             $_SESSION['mediaCutFile'][] = $this->webPath;
             $_SESSION['mediaCutFile'][] = $_POST['formSelected'];
@@ -189,7 +189,6 @@ class MediaLibrary
                 unset($_SESSION['mediaCopyFile']);
             }
 
-            $_SESSION['mediaCopyFile'] = array();
             $_SESSION['mediaCopyFile'][] = $this->path;
             $_SESSION['mediaCopyFile'][] = $this->webPath;
             $_SESSION['mediaCopyFile'][] = $_POST['formSelected'];
@@ -334,16 +333,17 @@ class MediaLibrary
 
         $obj_file = new File();
         // file or dir
-        $fileName = !empty($_POST['renName']) ? $_POST['renName'] : 'empty';
         if (empty($_POST['oldExt'])) {
+            $fileName = $_POST['renName'];
             $oldName  = $_POST['oldName'];
         } else {
+            // TODO: $_POST['renName'] may be empty
             $ext      =
                 (   !empty($_POST['renExt'])
-                && FWValidator::is_file_ending_harmless(
-                    $_POST['renName'].'.'.$_POST['renExt'])
+                 && FWValidator::is_file_ending_harmless(
+                        $_POST['renName'].$_POST['renExt'])
                     ? $_POST['renExt'] : 'txt');
-            $fileName = $fileName.'.'.$ext;
+            $fileName = $_POST['renName'].'.'.$ext;
             $oldName  = $_POST['oldName'].'.'.$_POST['oldExt'];
         }
 
@@ -409,7 +409,7 @@ class MediaLibrary
             }
             
             // Rotate image
-            if (!empty($arrData['d'])) {
+            if (isset($arrData['d'])) {
                 $this->_objImage->rotateImage(intval($arrData['d']));
             }
             
@@ -450,7 +450,6 @@ class MediaLibrary
         $newName = $arrData['newName'];
         $newFile = $newName.'.'.$arrData['orgExt'];
         \Cx\Lib\FileSystem\FileSystem::clean_path($newFile);
-        
         // If new image name is set, image will be copied. Otherwise, image will be overwritten
         if ($newName != '') {
             $this->fileLog = $objFile->copyFile($this->path, $orgFile, $this->path, $newFile);
@@ -469,7 +468,7 @@ class MediaLibrary
             }
             
             // Rotate image
-            if (!empty($arrData['d'])) {
+            if (isset($arrData['d'])) {
                 $this->_objImage->rotateImage(intval($arrData['d']));
             }
             
@@ -611,13 +610,8 @@ class MediaLibrary
             while ($name !== false) {
                 if (!in_array($name, $forbidden_files)) {
                     if (is_dir($path.$name)) {
-                        $dirName = $name;
-                        if (!\FWSystem::detectUtf8($dirName)) {
-                            $dirName = utf8_encode($dirName);
-                        }
-
                         $dir['icon'][] = $this->_getIcon($path.$name);
-                        $dir['name'][] = $dirName;
+                        $dir['name'][] = $name;
                         $dir['size'][] = $this->_getSize($path.$name);
                         $dir['type'][] = $this->_getType($path.$name);
                         $dir['date'][] = $this->_getDate($path.$name);
@@ -632,13 +626,8 @@ class MediaLibrary
                                 @unlink($path.$name);
                             }
                         } else {
-                            $fileName = $name;
-                            if (!\FWSystem::detectUtf8($fileName)) {
-                                $fileName = utf8_encode($fileName);
-                            }
-                        
                             $file['icon'][] = $this->_getIcon($path.$name);
-                            $file['name'][] = $fileName;
+                            $file['name'][] = $name;
                             $file['size'][] = $this->_getSize($path.$name);
                             $file['type'][] = $this->_getType($path.$name);
                             $file['date'][] = $this->_getDate($path.$name);
@@ -1234,6 +1223,38 @@ END;
            files are present in $tempPath                                   */
 	 
         return array($data['path'],$data['webPath']);
+    }
+
+    // replaces some characters
+    protected static function cleanFileName($string)
+    {
+        //contrexx file name policies
+        $string = FWValidator::getCleanFileName($string);
+
+        //media library special changes; code depends on those
+        // replace $change with ''
+        $change = array('+');
+        // replace $signs1 with $signs
+        $signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
+        $signs2 = array('_', 'ae', 'oe', 'ue', 'c');
+
+        foreach ($change as $str) {
+            $string = str_replace($str, '_', $string);
+        }
+        for ($x = 0; $x < count($signs1); $x++) {
+            $string = str_replace($signs1[$x], $signs2[$x], $string);
+        }
+
+        $string = str_replace('__', '_', $string);
+        if (strlen($string) > 60) {
+            $info       = pathinfo($string);
+            $stringExt  = $info['extension'];
+
+            $stringName = substr($string, 0, strlen($string) - (strlen($stringExt) + 1));
+            $stringName = substr($stringName, 0, 60 - (strlen($stringExt) + 1));
+            $string     = $stringName.'.'.$stringExt;
+        }
+        return $string;
     }
     
     /**

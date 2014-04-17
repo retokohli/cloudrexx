@@ -86,7 +86,8 @@ class UploadLib
         die();
     }
 
-    public function response($uploadId) {        
+    public function response($uploadId) {
+        global $sessionObj;
 
         if(isset($_SESSION['upload']['handlers'][$uploadId]['response_data'])) {
             $r = UploadResponse::fromSession($_SESSION['upload']['handlers'][$uploadId]['response_data']);
@@ -98,7 +99,7 @@ class UploadLib
         }
 
         // don't write session-data to database
-        $_SESSION->discardChanges();
+        $sessionObj->discardChanges();
         echo '{}';
         die();
     }

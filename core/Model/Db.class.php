@@ -186,33 +186,21 @@ namespace Cx\Core\Model {
                 return $this->em;
             }
 
-            global $_DBCONFIG, $objCache;
+            global $_DBCONFIG;
 
             $config = new \Doctrine\ORM\Configuration();
 
-            switch ($objCache->getUserCacheEngine()) {
-                case \Cache::CACHE_ENGINE_APC:
+            switch ($this->cx->getCacheEngine()) {
+                case \Cx\Core\Core\Controller\Cx::CACHE_ENGINE_APC:
                     $cache = new \Doctrine\Common\Cache\ApcCache();
-                    $cache->setNamespace($_DBCONFIG['database'] . '.' . DBPREFIX);
                     break;
-                case \Cache::CACHE_ENGINE_MEMCACHE:
-                    $memcache = $objCache->getMemcache();
-                    if ($memcache instanceof \Memcache) {
-                        $cache = new \Doctrine\Common\Cache\MemcacheCache();
-                        $cache->setMemcache($memcache);
-                    } elseif ($memcache instanceof \Memcached) {
-                        $cache = new \Cx\Core_Modules\Cache\lib\Doctrine\CacheDriver\MemcachedCache();
-                        $cache->setMemcache($memcache);
-                    }
-                    $cache->setNamespace($_DBCONFIG['database'] . '.' . DBPREFIX);
+                case \Cx\Core\Core\Controller\Cx::CACHE_ENGINE_MEMCACHE:
+                    $cache = new \Doctrine\Common\Cache\MemcacheCache();
+                    $memcache = \Env::get('memcache');
+                    $cache->setMemcache($memcache);
                     break;
-                case \Cache::CACHE_ENGINE_XCACHE:
+                case \Cx\Core\Core\Controller\Cx::CACHE_ENGINE_XCACHE:
                     $cache = new \Doctrine\Common\Cache\XcacheCache();
-                    $cache->setNamespace($_DBCONFIG['database'] . '.' . DBPREFIX);
-                    break;
-                case \Cache::CACHE_ENGINE_FILESYSTEM:
-                    $cache = new \Cx\Core_Modules\Cache\lib\Doctrine\CacheDriver\FileSystemCache();
-                    $cache->setPath(ASCMS_CACHE_PATH);
                     break;
                 default:
                     $cache = new \Doctrine\Common\Cache\ArrayCache();

@@ -151,23 +151,27 @@ class mediaDirectoryExport extends mediaDirectoryLibrary
                         switch($arrField['id']) {
                             case 1:
                                 $arrCategories = self::getCategoriesLevels(1, $intEntryId);
-                                $strFieldValue = join($this->elementSeparator, $arrCategories);  
+                                $strCategories = join($this->elementSeparator, $arrCategories);
+                                print $strCategories.$this->csvSeparator;   
                                 break;
                             case 2:
                                 $arrLevels = self::getCategoriesLevels(2, $intEntryId);
-                                $strFieldValue = join($this->elementSeparator, $arrLevels);
+                                $strLevels = join($this->elementSeparator, $arrLevels);
+                                print $strLevels.$this->csvSeparator;  
                                 break;
                             default:
                                 $strFieldValue = $arrEntriesData[$intEntryId][$arrField['id']];
                                 $strFieldValue = strip_tags($strFieldValue);
                                 $strFieldValue = self::escapeCsvValue($strFieldValue);
                                 $strFieldValue = html_entity_decode($strFieldValue, ENT_QUOTES, CONTREXX_CHARSET);  
+                                
+                                if(CONTREXX_CHARSET == 'UTF-8') {  
+                                    $strFieldValue = utf8_decode($strFieldValue);      
+                                } 
+                                                                                                   
+                                print $strFieldValue.$this->csvSeparator;
                                 break;
-                        }
-                        if(CONTREXX_CHARSET == 'UTF-8') {  
-                            $strFieldValue = utf8_decode($strFieldValue);      
-                        }
-                        print $strFieldValue.$this->csvSeparator;     
+                        }     
                     }   
                 }
                 

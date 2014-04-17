@@ -98,13 +98,11 @@ class ContentManager extends \Module
             var_dump($this->nodeRepository->recover());
         }
         $objCx    = \ContrexxJavascript::getInstance();
-        
-        $themeRepo = new \Cx\Core\View\Model\Repository\ThemeRepository();
-        $defaultTheme = $themeRepo->getDefaultTheme();
-        $objCx->setVariable('themeId', $defaultTheme->getId(), 'contentmanager/theme');
-        foreach ($themeRepo->findAll() as $theme) {
-            if ($theme == $defaultTheme) {
-                $objCx->setVariable('themeName', $theme->getFoldername(), 'contentmanager/theme');
+        $objSkins = new \skins();
+        $objCx->setVariable('themeId', $objSkins->selectDefaultTheme(), 'contentmanager/theme');
+        foreach ($objSkins->getThemes() as $arrTheme) {
+            if ($arrTheme['id'] == $objSkins->selectDefaultTheme()) {
+                $objCx->setVariable('themeName', $arrTheme['foldername'], 'contentmanager/theme');
             }
         }
 
@@ -154,7 +152,7 @@ class ContentManager extends \Module
             //access tab
             'TXT_CORE_CM_ACCESS_PROTECTION_FRONTEND', 'TXT_CORE_CM_ACCESS_PROTECTION_BACKEND', 'TXT_CORE_CM_ACCESS_PROTECTION_AVAILABLE_GROUPS', 'TXT_CORE_CM_ACCESS_PROTECTION_ASSIGNED_GROUPS',
             //advanced tab
-            'TXT_CORE_CM_THEMES', 'TXT_CORE_CM_THEMES_INFO', 'TXT_CORE_CM_CUSTOM_CONTENT', 'TXT_CORE_CM_CUSTOM_CONTENT_INFO', 'TXT_CORE_CM_CSS_CLASS', 'TXT_CORE_CM_CSS_CLASS_INFO', 'TXT_CORE_CM_CACHE', 'TXT_CORE_CM_NAVIGATION', 'TXT_CORE_CM_LINK_TARGET', 'TXT_CORE_CM_LINK_TARGET_INO', 'TXT_CORE_CM_SLUG', 'TXT_CORE_CM_SLUG_INFO', 'TXT_CORE_CM_ALIAS', 'TXT_CORE_CM_ALIAS_INFO', 'TXT_CORE_CM_CSS_NAV_CLASS', 'TXT_CORE_CM_CSS_NAV_CLASS_INFO', 'TXT_CORE_CM_SOURCE_MODE', 'TXT_RECURSIVE_CHANGE', 'TXT_CORE_CM_USE_ALL_CHANNELS', 'TXT_CORE_CM_USE_SKIN_ALL_CHANNELS_INFO', 'TXT_CORE_CM_USE_CUSTOM_CONTENT_ALL_CHANNELS_INFO',
+            'TXT_CORE_CM_THEMES', 'TXT_CORE_CM_THEMES_INFO', 'TXT_CORE_CM_CUSTOM_CONTENT', 'TXT_CORE_CM_CUSTOM_CONTENT_INFO', 'TXT_CORE_CM_CSS_CLASS', 'TXT_CORE_CM_CSS_CLASS_INFO', 'TXT_CORE_CM_CACHE', 'TXT_CORE_CM_NAVIGATION', 'TXT_CORE_CM_LINK_TARGET', 'TXT_CORE_CM_LINK_TARGET_INO', 'TXT_CORE_CM_SLUG', 'TXT_CORE_CM_SLUG_INFO', 'TXT_CORE_CM_ALIAS', 'TXT_CORE_CM_ALIAS_INFO', 'TXT_CORE_CM_CSS_NAV_CLASS', 'TXT_CORE_CM_CSS_NAV_CLASS_INFO', 'TXT_CORE_CM_SOURCE_MODE', 'TXT_RECURSIVE_CHANGE',
             //blocks tab
             'TXT_CORE_CM_BLOCKS', 'TXT_CORE_CM_BLOCKS_AVAILABLE', 'TXT_CORE_CM_BLOCKS_ASSIGNED',
             //settings tab
@@ -320,12 +318,6 @@ class ContentManager extends \Module
         $this->template->setVariable('FALLBACK_ARRAY', json_encode($this->getFallbackArray()));
         $this->template->setVariable('LANGUAGE_LABELS', json_encode($this->getLangLabels()));
         $this->template->setVariable('EDIT_VIEW_CSS_CLASS', $editViewCssClass);
-        
-        if (count(\FWLanguage::getActiveFrontendLanguages()) < 2) {
-            $this->template->hideBlock('content_manager_language_selection');
-        } else {
-            $this->template->touchBlock('content_manager_language_selection');
-        }
 
         $editmodeTemplate = new \Cx\Core\Html\Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
         $editmodeTemplate->loadTemplateFile('content_editmode.html');

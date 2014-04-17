@@ -698,11 +698,13 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
                 $objSubCategoriesRS->MoveNext();
             };
         }
-        
-        $whereCategory = '';
-        if ($intCategoryId && $intCategoryId > 0) {
-            $whereCategory = " AND `rel_categories`.`category_id` = " . intval($intCategoryId);
-        }
+
+        /*if(isset($intLevelId) && $intLevelId != 0) {
+            $whereLevel = "AND cat.entry_id == level.entry_id AND level.level_id ='$intLevelId'";
+        } else {
+            $whereLevel = '';
+        }*/
+		// TODO: what for was the assigement within the if condition just above
         $objCountEntriesRS = $objDatabase->Execute("
                                                 SELECT COUNT(*) as c
                                                     FROM
@@ -714,7 +716,6 @@ class mediaDirectoryCategory extends mediaDirectoryLibrary
                                                 WHERE
                                                     `entries`.`active` = 1
                                                 AND ((`entries`.`duration_type`=2 AND `entries`.`duration_start` <= ".time()." AND `entries`.`duration_end` >= ".time().") OR (`entries`.`duration_type`=1))
-                                                " . $whereCategory . "
                                                 GROUP BY
                                                     `rel_categories`.`category_id`");
 

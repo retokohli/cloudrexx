@@ -244,9 +244,9 @@ class news extends newsLibrary {
         }
 
         // parse author
-        self::parseUserAccountData($this->_objTpl, $objResult->fields['authorid'], $objResult->fields['author'], 'news_author');
+        $this->parseUserAccountData($objResult->fields['authorid'], $objResult->fields['author'], 'news_author');
         // parse publisher
-        self::parseUserAccountData($this->_objTpl, $objResult->fields['publisherid'], $objResult->fields['publisher'], 'news_publisher');
+        $this->parseUserAccountData($objResult->fields['publisherid'], $objResult->fields['publisher'], 'news_publisher');
 
         // show comments
         $this->parseMessageCommentForm($newsid, $newstitle, $newsCommentActive);
@@ -415,7 +415,7 @@ class news extends newsLibrary {
 
         $i = 0;
         while (!$objResult->EOF) {
-            self::parseUserAccountData($this->_objTpl, $objResult->fields['userid'], $objResult->fields['poster_name'], 'news_comments_poster');
+            $this->parseUserAccountData($objResult->fields['userid'], $objResult->fields['poster_name'], 'news_comments_poster');
 
             $this->_objTpl->setVariable(array(
                'NEWS_COMMENTS_CSS'          => 'row'.($i % 2 + 1),
@@ -694,6 +694,62 @@ class news extends newsLibrary {
             'TXT_NEWS_RELATED_MESSAGES_OF_'.$placeholderPrefix => $_ARRAYLANG['TXT_NEWS_RELATED_MESSAGES_OF_'.$placeholderPrefix],
         ));
         $this->_objTpl->parse($relationTemplateBlock);
+    }
+
+    /**
+     * Parses a user's account and profile data specified by $userId.
+     * If the \Cx\Core\Html\Sigma template block specified by $blockName
+     * exists, then the user's data will be parsed inside this block.
+     * Otherwise, it will try to parse a template variable by the same
+     * name. For instance, if $blockName is set to news_publisher,
+     * it will first try to parse the template block news_publisher,
+     * if unable it will parse the template variable NEWS_PUBLISHER.
+     *
+     * @param   integer User-ID
+     * @param   string  User name/title that shall be used as fallback,
+     *                  if no user account specified by $userId could be found
+     * @param   string  Name of the \Cx\Core\Html\Sigma template block to parse.
+     *                  For instance if you have a block like:
+     *                      <!-- BEGIN/END news_publisher -->
+     *                  set $blockName to:
+     *                      news_publisher
+     */
+    private function parseUserAccountData($userId, $userTitle, $blockName)
+    {
+        $placeholderName = strtoupper($blockName);
+
+        if ($userId && $objUser = FWUser::getFWUserObject()->objUser->getUser($userId)) {
+            if ($this->_objTpl->blockExists($blockName)) {
+                // fill the template block user (i.e. news_publisher) with the user account's data 
+                $this->_objTpl->setVariable(array(
+                    $placeholderName.'_ID'          => $objUser->getId(),
+                    $placeholderName.'_USERNAME'    => contrexx_raw2xhtml($objUser->getUsername())
+                ));
+                
+                $objAccessLib = new AccessLib($this->_objTpl);
+                $objAccessLib->setModulePrefix($placeholderName.'_');
+                $objAccessLib->setAttributeNamePrefix($blockName.'_profile_attribute');
+
+                $objUser->objAttribute->first();
+                while (!$objUser->objAttribute->EOF) {
+                    $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
+                    $objAccessLib->parseAttribute($objUser, $objAttribute->getId(), 0, false, FALSE, false, false, false);
+                    $objUser->objAttribute->next();
+                }
+            } elseif ($this->_objTpl->placeholderExists($placeholderName)) {
+                // fill the placeholder (i.e. NEWS_PUBLISHER) with the user title
+                $userTitle = FWUser::getParsedUserTitle($userId);
+                $this->_objTpl->setVariable($placeholderName, contrexx_raw2xhtml($userTitle));
+            }
+        } elseif (!empty($userTitle)) {
+            if ($this->_objTpl->blockExists($blockName)) {
+                // replace template block (i.e. news_publisher) by the user title
+                $this->_objTpl->replaceBlock($blockName, contrexx_raw2xhtml($userTitle));
+            } elseif ($this->_objTpl->placeholderExists($placeholderName)) {
+                // fill the placeholder (i.e. NEWS_PUBLISHER) with the user title
+                $this->_objTpl->setVariable($placeholderName, contrexx_raw2xhtml($userTitle));
+            }
+        }
     }
 
     /**
@@ -1011,7 +1067,7 @@ class news extends newsLibrary {
                 $this->_objTpl->parse('news_status_message');
             }
             if ($this->_objTpl->blockExists('news_menu')) {
-                $this->_objTpl->parse('news_menu');
+                $this->_objTpl->hideblock('news_menu');
             }
             if ($this->_objTpl->blockExists('news_list')) {
                 $this->_objTpl->hideBlock('news_list');
@@ -1246,7 +1302,7 @@ class news extends newsLibrary {
                 $this->_objTpl->parse('news_status_message');
             }
             if ($this->_objTpl->blockExists('news_menu')) {
-                $this->_objTpl->parse('news_menu');
+                $this->_objTpl->hideblock('news_menu');
             }
             if ($this->_objTpl->blockExists('news_list')) {
                 $this->_objTpl->hideBlock('news_list');
@@ -1833,11 +1889,6 @@ RSS2JSCODE;
     {
         global $objDatabase, $_ARRAYLANG, $_CORELANG, $_CONFIG;
 
-        if (!isset($_SESSION['news'])) {
-            $_SESSION['news'] = array();
-            $_SESSION['news']['comments'] = array();
-        }
-        
         // just comment
         if ($this->checkForCommentFlooding($newsMessageId)) {
             return array(   
@@ -1996,15 +2047,64 @@ RSS2JSCODE;
      */
     private function getArchive()
     {
-        global $objDatabase, $_ARRAYLANG;
+        global $objDatabase, $_ARRAYLANG, $_CORELANG;
 
+        $objFWUser = FWUser::getFWUserObject();
         $categories = '';
+        $categoryFilter = '';
+
         if ($categories = substr($_REQUEST['cmd'], 7)) {
             $categories = $this->getCatIdsFromNestedSetArray($this->getNestedSetCategories(explode(',', $categories)));
         }
-        
-        $monthlyStats = $this->getMonthlyNewsStats($categories);
-        
+
+        if (!empty($categories)) {
+            $categoryFilter .= ' AND (';
+            $first = true;
+            foreach ($categories as $category) {
+                if (!$first) {
+                    $categoryFilter .= 'OR ';
+                }
+                $categoryFilter .= 'n.catid='.intval($category).' ';
+                $first = false;
+            }
+            $categoryFilter .= ')';
+        }
+
+        $query = "SELECT            n.id             AS id,
+                                    n.date           AS date,
+                                    n.changelog      AS changelog,
+                                    n.redirect       AS newsredirect,
+                                    nl.title         AS newstitle,
+                                    n.catid          AS cat
+                            FROM    ".DBPREFIX."module_news AS n LEFT JOIN  ".DBPREFIX."module_news_locale AS nl ON nl.news_id = n.id
+                            WHERE   n.validated = '1'
+                                    AND n.status = 1
+                                    AND nl.lang_id = ".FRONTEND_LANG_ID."
+                                    AND nl.is_active=1
+                                    ".$categoryFilter."
+                                    " .($this->arrSettings['news_message_protection'] == '1' && !Permission::hasAllAccess() ? (
+                                    ($objFWUser = FWUser::getFWUserObject()) && $objFWUser->objUser->login() ?
+                                        " AND (frontend_access_id IN (".implode(',', array_merge(array(0), $objFWUser->objUser->getDynamicPermissionIds())).") OR userid = ".$objFWUser->objUser->getId().") "
+                                        :   " AND frontend_access_id=0 ")
+                                    :   '')
+                            ."ORDER BY date DESC";
+
+        $objResult = $objDatabase->Execute($query);
+
+        if ($objResult !== false) {
+            $arrMonthTxt = explode(',', $_CORELANG['TXT_MONTH_ARRAY']);
+            while (!$objResult->EOF) {
+                $filterDate = $objResult->fields['date'];
+                $newsYear = date('Y', $filterDate);
+                $newsMonth = date('m', $filterDate);
+                if (!isset($monthlyStats[$newsYear.'_'.$newsMonth])) {
+                    $monthlyStats[$newsYear.'_'.$newsMonth]['name'] = $arrMonthTxt[date('n', $filterDate) - 1].' '.$newsYear;
+                }
+                $monthlyStats[$newsYear.'_'.$newsMonth]['news'][] = $objResult->fields;
+                $objResult->MoveNext();
+            }
+        }
+
         if (!empty($monthlyStats)) {
             foreach ($monthlyStats as $key => $value) {
                 $this->_objTpl->setVariable(array(

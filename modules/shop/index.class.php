@@ -82,9 +82,10 @@ class Shop extends ShopLibrary
 //DBG::log("Shop::init(): Entered");
         if (self::$initialized) {
 die("Shop::init(): ERROR: Shop::init() called more than once!");
-        }        
-        if (!isset($_SESSION['shop'])) {
-            $_SESSION['shop'] = array();
+        }
+        if (self::use_session()) {
+            global $sessionObj;
+            if (empty($sessionObj)) $sessionObj = new cmsSession();
         }
         if (   empty($_REQUEST['section'])
             || $_REQUEST['section'] != 'shop'.MODULE_INDEX) {
@@ -156,7 +157,11 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
 // TODO: This should be set up in a more elegant way
         Vat::is_reseller(self::$objCustomer && self::$objCustomer->is_reseller());
         // The coupon code may be set when entering the Shop already
-        if (isset($_REQUEST['coupon_code'])) {            
+        if (isset($_REQUEST['coupon_code'])) {
+            global $sessionObj;
+            if (!$sessionObj) {
+                $sessionObj = new \cmsSession();
+            }
             $_SESSION['shop']['coupon_code'] =
                 trim(strip_tags(contrexx_input2raw($_REQUEST['coupon_code'])));
 //DBG::log("Coupon Code: Set to ".$_SESSION['shop']['coupon_code']);
@@ -1133,9 +1138,9 @@ die("Failed to update the Cart!");
                         'TXT_SEE_LARGE_PICTURE' => $_ARRAYLANG['TXT_SEE_LARGE_PICTURE'],
                     ));
                 } else {
-                    self::$objTemplate->setVariable(
-                        'TXT_SEE_LARGE_PICTURE',
-                        contrexx_raw2xhtml($objProduct->name()));
+                    self::$objTemplate->setVariable(array(
+                        'TXT_SEE_LARGE_PICTURE' => $objProduct->name(),
+                    ));
                 }
                 if ($arrProductImage['POPUP_LINK']) {
                     self::$objTemplate->setVariable(
@@ -1241,7 +1246,7 @@ die("Failed to update the Cart!");
             self::$objTemplate->setVariable(array(
                 'SHOP_ROWCLASS' => 'row'.$row,
                 'SHOP_PRODUCT_ID' => $objProduct->id(),
-                'SHOP_PRODUCT_TITLE' => contrexx_raw2xhtml($objProduct->name()),
+                'SHOP_PRODUCT_TITLE' => htmlentities($objProduct->name(), ENT_QUOTES, CONTREXX_CHARSET),
                 'SHOP_PRODUCT_DESCRIPTION' => $short,
 // TODO: Test whether this produces double descriptions in some views
                 'SHOP_PRODUCT_DETAILDESCRIPTION' => ($longDescription
@@ -1853,12 +1858,12 @@ die("Failed to update the Cart!");
      * with it, the $flagUpload parameter *MUST* be set to true.  Note that this
      * will force the respective product form to use mutipart/form-data encoding
      * and disable the JSON cart for the complete page.
-     * //@param   boolean $flagUpload         Force the POST cart to be used if true
+     * @param   boolean $flagUpload         Force the POST cart to be used if true
      * @global  array   $_ARRAYLANG         Language array
      * @global  array   $_CONFIGURATION     Core configuration array, see {@link /config/settings.php}
-     * @todo    Reimplement the $flagUpload parameter
+     *
      */
-    static function registerJavascriptCode()//$flagUpload=false)
+    static function registerJavascriptCode($flagUpload=false)
     {
         global $_ARRAYLANG;//, $_CONFIGURATION;
 
@@ -1901,7 +1906,7 @@ die("Failed to update the Cart!");
     {
         if (self::$objCustomer) return true;
         $objUser = FWUser::getFWUserObject()->objUser;
-        
+        global $sessionObj;
         if ($objUser->login()) {
             self::$objCustomer = Customer::getById($objUser->getId());
             if (self::$objCustomer) {
@@ -1909,7 +1914,7 @@ die("Failed to update the Cart!");
                 $_SESSION['shop']['username'] = self::$objCustomer->username();
                 $_SESSION['shop']['email'] = self::$objCustomer->email();
 //DBG::log("Shop::_authenticate(): Success! (".self::$objCustomer->firstname().' '.self::$objCustomer->lastname().', '.self::$objCustomer->username().', email '.self::$objCustomer->email().")");
-                $_SESSION->cmsSessionUserUpdate(self::$objCustomer->id());
+                $sessionObj->cmsSessionUserUpdate(self::$objCustomer->id());
                 return true;
             }
         }
@@ -3087,7 +3092,8 @@ die("Shop::processRedirect(): This method is obsolete!");
                 // to order without registration.  The generated one
                 // defaults to length 8, fulfilling the requirements for
                 // complex passwords.  And it's kept absolutely secret.
-                $password = (empty($_SESSION['shop']['password'])
+                $password = ((empty($_SESSION['shop']['password']) || 
+                        SettingDb::getValue('register') == ShopLibrary::REGISTER_OPTIONAL)
                     ? User::make_password()
                     : $_SESSION['shop']['password']);
 //\DBG::log("Password: $password (session: {$_SESSION['shop']['password']})");

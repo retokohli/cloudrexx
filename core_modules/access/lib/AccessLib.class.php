@@ -153,7 +153,7 @@ class AccessLib
         JS::activate('jqueryui');
         JS::registerCode("
             cx.ready(function() {
-                cx.jQuery('.access_date').datepicker({dateFormat: 'dd.mm.yy'});
+                jQuery('.access_date').datepicker({dateFormat: 'dd.mm.yy'});
             });
         ");
         $this->arrAttributeTypeTemplates = array(

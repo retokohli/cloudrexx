@@ -51,22 +51,8 @@ abstract class SystemComponentBackendController extends Controller {
         
         $actTemplate = new \Cx\Core\Html\Sigma($this->getDirectory() . '/View/Template');
         $filename = $cmd[0] . '.html';
-        $testFilename = $cmd[0];
         if (!\Env::get('ClassLoader')->getFilePath($actTemplate->getRoot() . '/' . $filename)) {
             $filename = 'Default.html';
-            $testFilename = 'Default';
-        }
-        foreach ($cmd as $index=>$name) {
-            if ($index == 0) {
-                continue;
-            }
-            
-            $testFilename .= $name;
-            if (\Env::get('ClassLoader')->getFilePath($actTemplate->getRoot() . '/' . $testFilename . '.html')) {
-                $filename = $testFilename . '.html';
-            } else {
-                break;
-            }
         }
         $actTemplate->loadTemplateFile($filename);
         
@@ -96,11 +82,9 @@ abstract class SystemComponentBackendController extends Controller {
                     $act = '';
                     $txt = 'DEFAULT';
                 }
-                $actTxtKey = 'TXT_' . strtoupper($this->getType()) . '_' . strtoupper($this->getName() . '_ACT_' . $txt);
-                $actTitle = isset($_ARRAYLANG[$actTxtKey]) ? $_ARRAYLANG[$actTxtKey] : $actTxtKey;
                 $navigation->setVariable(array(
                     'HREF' => 'index.php?cmd=' . $this->getName() . $act,
-                    'TITLE' => $actTitle,
+                    'TITLE' => $_ARRAYLANG['TXT_' . strtoupper($this->getType()) . '_' . strtoupper($this->getName() . '_ACT_' . $txt)],
                 ));
                 $navigation->parse('tab_entry');
             }
@@ -122,11 +106,9 @@ abstract class SystemComponentBackendController extends Controller {
                     } else {
                         $txt .= strtoupper($subcommand);
                     }
-                    $actTxtKey = 'TXT_' . strtoupper($this->getType()) . '_' . strtoupper($this->getName() . '_ACT_' . $txt);
-                    $actTitle = isset($_ARRAYLANG[$actTxtKey]) ? $_ARRAYLANG[$actTxtKey] : $actTxtKey;
                     $navigation->setVariable(array(
                         'HREF' => 'index.php?cmd=' . $this->getName() . $act,
-                        'TITLE' => $actTitle,
+                        'TITLE' => $_ARRAYLANG['TXT_' . strtoupper($this->getType()) . '_' . strtoupper($this->getName() . '_ACT_' . $txt)],
                     ));
                     $navigation->parse('subnav_entry');
                     $first = false;

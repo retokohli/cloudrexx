@@ -1876,14 +1876,13 @@ class Order
         // Coupon
         $objCoupon = Coupon::getByOrderId($order_id);
         if ($objCoupon) {
-            $discount = $objCoupon->discount_amount() != 0 ? $objCoupon->discount_amount() : $total_net_price/100*$objCoupon->discount_rate();
             $objTemplate->setVariable(array(
                 'SHOP_COUPON_NAME' => $_ARRAYLANG['TXT_SHOP_DISCOUNT_COUPON_CODE'],
                 'SHOP_COUPON_CODE' => $objCoupon->code(),
                 'SHOP_COUPON_AMOUNT' => Currency::formatPrice(
-                    -$discount),
+                    -$objCoupon->discount_amount()),
             ));
-            $total_net_price -= $discount;
+            $total_net_price -= $objCoupon->discount_amount();
 //DBG::log("Order::view_detail(): Coupon: ".var_export($objCoupon, true));
         }
         $objTemplate->setVariable(array(

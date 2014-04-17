@@ -70,10 +70,10 @@ class UploadFactory
     }
 
     protected function initSession() {
-        if (!isset($_SESSION['upload'])) {
-            $_SESSION['upload'] = array();
-            $_SESSION['upload']['handlers'] = array();
-        }        
+        global $sessionObj;
+        if(empty($sessionObj)) { //session hasn't been initialized so far
+            $sessionObj = new cmsSession();
+        }
     }
 
     /**
@@ -260,21 +260,15 @@ class UploadFactory
         
         if($id == 0) { //new instance, handle initializing
             $id = 1;
-            if(!isset($_SESSION['upload']['folder_widget_current_id'])) {
+            if(!isset($_SESSION['upload']['folder_widget_current_id']))
                 $_SESSION['upload']['folder_widget_current_id'] = 1;
-            } else {
-                $_SESSION['upload']['folder_widget_current_id'] += 1;
-                $id = $_SESSION['upload']['folder_widget_current_id'];
-            }              
+            else
+                $id = ++$_SESSION['upload']['folder_widget_current_id'];
           
-            if (!isset($_SESSION['upload']['folder_widgets'])) {
-                $_SESSION['upload']['folder_widgets'] = array();
-            }
-            $_SESSION['upload']['folder_widgets'][$id] = array();
             $_SESSION['upload']['folder_widgets'][$id]['path'] = $folder;
             $theWidget->setId($id);
         }
-        
+
         return $theWidget;
     }
 

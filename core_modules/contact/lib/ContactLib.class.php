@@ -1304,7 +1304,7 @@ class ContactLib
 
         $code = "<script type=\"text/javascript\">\n";
         $code .= "/* <![CDATA[ */\n";
-        $code .= 'cx.ready(function() { cx.jQuery(\'.date\').datetimepicker(); });';
+        $code .= 'cx.ready(function() { jQuery(\'.date\').datetimepicker(); });';
 
         $code .= "fields = new Array();\n";
 

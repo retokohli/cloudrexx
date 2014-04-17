@@ -67,9 +67,7 @@ class ShopSettings
         self::storeVat();
         if (SettingDb::changed()) {
             self::$changed = true;
-            if (SettingDb::updateAll() === false) {
-                return false;
-        }
+            if (SettingDb::updateAll() === false) return false;
         }
         if (self::$changed) {
             return (self::$success
@@ -125,7 +123,7 @@ class ShopSettings
         // Order amount lower limit (new in 3.1.0)
         SettingDb::set('orderitems_amount_min',
             empty($_POST['orderitems_amount_min'])
-                ? 0 : floatval($_POST['orderitems_amount_min']));
+                ? 0 : floatval($_POST['orderitems_amount_max']));
         // Order amount upper limit (applicable when using Saferpay)
         SettingDb::set('orderitems_amount_max',
             empty($_POST['orderitems_amount_max'])
@@ -157,7 +155,7 @@ class ShopSettings
             SettingDb::add('numof_products_per_page_backend',
                 intval($_POST['numof_products_per_page_backend']), 53,
                 SettingDb::TYPE_TEXT, null, 'config');
-        }
+        };
         if (!SettingDb::set('numof_orders_per_page_backend',
             intval($_POST['numof_orders_per_page_backend']))) {
             SettingDb::add('numof_orders_per_page_backend',
@@ -294,18 +292,6 @@ class ShopSettings
         SettingDb::set('datatrans_request_type',
             trim(strip_tags(contrexx_input2raw($_POST['datatrans_request_type']))));
         SettingDb::set('datatrans_use_testserver', !empty($_POST['datatrans_use_testserver']));
-        // Paymill
-        SettingDb::set('paymill_active',
-            !empty($_POST['paymill_active']));
-        SettingDb::set('paymill_use_test_account', !empty($_POST['paymill_use_test_account']));
-        SettingDb::set('paymill_test_private_key',
-            trim(strip_tags(contrexx_input2raw($_POST['paymill_test_private_key']))));
-        SettingDb::set('paymill_test_public_key',
-            trim(strip_tags(contrexx_input2raw($_POST['paymill_test_public_key']))));
-        SettingDb::set('paymill_live_private_key',
-            trim(strip_tags(contrexx_input2raw($_POST['paymill_live_private_key']))));
-        SettingDb::set('paymill_live_public_key',
-            trim(strip_tags(contrexx_input2raw($_POST['paymill_live_public_key']))));
         // LSV
         SettingDb::set('payment_lsv_active', !empty($_POST['payment_lsv_active']));
 // All preceding should be handled by Payment::settings()

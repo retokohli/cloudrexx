@@ -1,46 +1,41 @@
 <?php
 
-/**
- * Data Set
- *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
- * @subpackage  core_module_listing
- */
-
 namespace Cx\Core_Modules\Listing\Model\Entity;
 
-/**
- * Data Set Exception
- *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
- * @subpackage  core_module_listing
- */
-
 class DataSetException extends \Exception {}
-
-/**
- * Data Set
- *
- * @copyright   CONTREXX CMS - COMVATION AG
- * @author      COMVATION Development Team <info@comvation.com>
- * @package     contrexx
- * @subpackage  core_module_listing
- */
 
 class DataSet implements \Iterator {
     protected static $yamlInterface = null;
     protected $data = array();
     protected $dataType = 'array';
 
-    public function __construct($data, callable $converter = null) {
+    public function __construct($data = array(), callable $converter = null) {
+        if (!count($data)) {
+            return;
+        }
         if (is_callable($converter)) {
             $this->data = $converter($data);
         } else {
             $this->data = $this->convert($data);
+        }
+    }
+    
+    public function add($key, $value, &$convertedData = null) {
+        if ($convertedData === null) {
+            $convertedData = &$this->data;
+        }
+        if (is_array($value)) {
+            foreach ($value as $attribute=>$property) {
+                $convertedData[$key][$attribute] = $property;
+            }
+        } else if (is_object($value)) {
+            if ($this->dataType == 'array') {
+                $this->dataType = get_class($value);
+            }
+            $convertedObject = $this->convertObject($value, $key);
+            $convertedData[$key] = $convertedObject;
+        } else {
+            throw new DataSetException('Supplied argument could not be converted to DataSet');
         }
     }
 
@@ -48,19 +43,7 @@ class DataSet implements \Iterator {
         $convertedData = array();
         if (is_array($data)) {
             foreach ($data as $key=>$value) {
-                if (is_array($value)) {
-                    foreach ($value as $attribute=>$property) {
-                        $convertedData[$key][$attribute] = $property;
-                    }
-                } else if (is_object($value)) {
-                    if ($this->dataType == 'array') {
-                        $this->dataType = get_class($value);
-                    }
-                    $convertedObject = $this->convertObject($value, $key);
-                    $convertedData[$key] = $convertedObject;
-                } else {
-                    throw new DataSetException('Supplied argument could not be converted to DataSet');
-                }
+                $this->add($key, $value, $convertedData);
             }
         } else if (is_object($data)) {
             $this->dataType = get_class($data);
@@ -202,15 +185,81 @@ class DataSet implements \Iterator {
         return reset($this->data);
     }
     
-    public function length() {
-        return count($this->data);
+    public function count() {
+        return $this->size();
     }
     
-    public function count() {
-        return $this->length();
+    public function length() {
+        return $this->size();
     }
     
     public function size() {
-        return $this->length();
+        return count($this->data);
+    }
+    
+    public function limit($length, $offset) {
+        $i = 0;
+        $result = new static();
+        foreach ($this as $key=>$value) {
+            if ($i < $offset || $i >= ($offset + $length)) {
+                $i++;
+                continue;
+            }
+            $result->add($key, $value);
+            $i++;
+        }
+        return $result;
+    }
+    
+    /**
+     * Sort this DataSet by the fields and in the order specified
+     * 
+     * $order has the following syntax:
+     * array(
+     *     {fieldname} => SORT_ASC|SORT_DESC,
+     *     [{fieldname2} => SORT_ASC|SORT_DESC,
+     *     [...]]
+     * )
+     * @todo Cleanup and efficiency
+     * @todo Allow sorting by multiple fields (not possible yet)
+     * @param array $order Fields and order to sort
+     * @return DataSet Sorted DataSet (new instance)
+     */
+    public function sort($order) {
+        $sortField = key($order);
+        $sortOrder = current($order);
+        //echo 'Sorting ' . $sortField . ' by ' . $sortOrder;
+        
+        $data = $this->toArray();
+        
+        // Obtain a list of columns (this could be done more efficient)
+        $colData = $this->flip($data);
+        if (!isset($colData[$sortField])) {
+            return clone $this;
+        }
+        // Sort the data with volume descending, edition ascending
+        // Add $data as the last parameter, to sort by the common key
+        array_multisort($colData[$sortField], $sortOrder, $data);
+        
+        return new static($data);
+    }
+    
+    /**
+     * Flips an 2 dimensional array
+     * @todo Rethink this method, may return a new DataSet instance and remove param
+     * @todo Does not work with only one entry
+     * @param array $arr Array to flip
+     * @return array Flipped array
+     */
+    private function flip($arr) {
+        $out = array();
+
+        foreach ($arr as $key => $subarr) {
+            foreach ($subarr as $subkey => $subvalue) {
+                 $out[$subkey][$key] = $subvalue;
+            }
+        }
+
+        return $out;
     }
 }

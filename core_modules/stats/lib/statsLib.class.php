@@ -95,8 +95,9 @@ class statsLibrary
 
         $counterTag = '';
 
+        JS::activate('jquery');
+
         if ($this->arrConfig['make_statistics']['status']) {
-            JS::activate('jquery');
             $searchTerm = '';
             $searchTermPlain = '';
             if (isset($_REQUEST['term']) && !empty($_REQUEST['term']) && $_REQUEST['section'] == "search") {

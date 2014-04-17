@@ -1,8 +1,8 @@
 <?php
 /**
- * CrmEventHandler Interface CRM
+ * EventHandler Interface CRM
  *
- * @category   CrmEventHandler
+ * @category   EventHandler
  * @package    contrexx
  * @subpackage module_crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
@@ -12,9 +12,9 @@
  */
 
 /**
- * CrmEventHandler Interface CRM
+ * EventHandler Interface CRM
  *
- * @category   CrmEventHandler
+ * @category   EventHandler
  * @package    contrexx
  * @subpackage module_crm
  * @author     SoftSolutions4U Development Team <info@softsolutions4u.com>
@@ -22,7 +22,7 @@
  * @license    trial license
  * @link       www.contrexx.com
  */
-interface CrmEventHandler
+interface EventHandler
 {
     /**
      * Event handler
@@ -31,6 +31,6 @@ interface CrmEventHandler
      *
      * @return null
      */
-    function handleEvent(CrmEvent $event);
+    function handleEvent(Event $event);
 }
  

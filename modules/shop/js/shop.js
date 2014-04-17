@@ -12,7 +12,7 @@ function deleteProduct(product_index) {
 }
 
 function toggleOptions(productId, event) {
-    cx.jQuery(event).toggleClass('active');
+    jQuery(event).toggleClass('active');
     if (document.getElementById('product_options_layer' + productId)) {
         if (document.getElementById('product_options_layer' + productId).style.display == 'none') {
             document.getElementById('product_options_layer' + productId).style.display = 'block';
@@ -48,7 +48,7 @@ function checkProductOption(objForm, productId, strAttributeIds) {
         var attribute_id = arrAttributeIds[i];
 
         // See if there is a hidden field marking the Attribute as mandatory
-        element_mandatory = cx.jQuery('#productOption-' + productId + '-' + attribute_id);
+        element_mandatory = jQuery('#productOption-' + productId + '-' + attribute_id);
         if (!element_mandatory.length) {
             continue;
         }
@@ -58,13 +58,13 @@ function checkProductOption(objForm, productId, strAttributeIds) {
         // 5 (mandatory text), 7 (mandatory file).
         option_name = element_mandatory.val();
         // get options from form
-        elements_option = cx.jQuery('[id^="productOption-' + productId + '-' + attribute_id + '-"]');
+        elements_option = jQuery('[id^="productOption-' + productId + '-' + attribute_id + '-"]');
         if (!elements_option.length) {
             continue;
         }
         var is_valid_element = false;
         // Verify value according to the 'attributeVerification' regex
-        var re_verify = cx.jQuery('#attributeVerification-' + productId + '-' + attribute_id);
+        var re_verify = jQuery('#attributeVerification-' + productId + '-' + attribute_id);
         var elType = null;
         elements_option.each(function(index, element) {
             elType = element.type;
@@ -184,7 +184,7 @@ function addProductToCart(objForm) {
     }
 // Optional:  to consistently show up-to-date contents of the cart *only*
 //  hideCart();
-    cx.jQuery.ajax(cx.variables.get('url', 'shop/cart')
+    jQuery.ajax(cx.variables.get('url', 'shop/cart')
         + '&r=' + Math.random()
         + updateProduct, {
         data: objProduct,
@@ -196,13 +196,13 @@ function addProductToCart(objForm) {
 }
 
 function showUpdateMessage() {
-    cx.jQuery('body').append('<div id="shop-product-added-info-wrapper" style="display: none;"><div id="shop-product-added-info-box">' +
+    jQuery('body').append('<div id="shop-product-added-info-wrapper" style="display: none;"><div id="shop-product-added-info-box">' +
         cx.variables.get('TXT_SHOP_PRODUCT_ADDED_TO_CART', 'shop') +
     '</div></div>'
 )
     ;
-    cx.jQuery('#shop-product-added-info-wrapper').fadeIn(200).delay(1000).fadeOut(200, function() {
-        cx.jQuery(this).remove();
+    jQuery('#shop-product-added-info-wrapper').fadeIn(200).delay(1000).fadeOut(200, function() {
+        jQuery(this).remove();
     });
 }
 

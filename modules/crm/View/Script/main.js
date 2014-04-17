@@ -2,10 +2,10 @@
     var
     dropdownToggleHash = {};
 
-    cx.jQuery.extend({
+    jQuery.extend({
         dropdownToggle: function(options) {
             // default options
-            options = cx.jQuery.extend({
+            options = jQuery.extend({
                 //switcherSelector: "#id" or ".class",          - button
                 //dropdownID: "id",                             - drop panel
                 //anchorSelector: "#id" or ".class",            - near field
@@ -26,13 +26,13 @@
                 addLeft = addLeft || 0;
                 position = position || "absolute";
 
-                var targetPos = cx.jQuery(anchorSelector || switcherObj).offset();
-                var dropdownItem = cx.jQuery("#" + dropdownID);
+                var targetPos = jQuery(anchorSelector || switcherObj).offset();
+                var dropdownItem = jQuery("#" + dropdownID);
 
                 var elemPosLeft = targetPos.left;
-                var elemPosTop = targetPos.top + cx.jQuery(anchorSelector || switcherObj).outerHeight();
+                var elemPosTop = targetPos.top + jQuery(anchorSelector || switcherObj).outerHeight();
 
-                var w = cx.jQuery(window);
+                var w = jQuery(window);
                 var topPadding = w.scrollTop();
                 var leftPadding = w.scrollLeft();
 
@@ -67,22 +67,22 @@
             };
 
             var _registerAutoHide = function(event, switcherSelector, dropdownSelector, hideFunction) {
-                if (cx.jQuery(dropdownSelector).is(":visible")) {
-                    var $targetElement = cx.jQuery((event.target) ? event.target : event.srcElement);
+                if (jQuery(dropdownSelector).is(":visible")) {
+                    var $targetElement = jQuery((event.target) ? event.target : event.srcElement);
                     if (!$targetElement.parents().andSelf().is(switcherSelector + ", " + dropdownSelector)) {
                         if (typeof hideFunction === "function")
                             hideFunction($targetElement);
-                        cx.jQuery(dropdownSelector).hide();
+                        jQuery(dropdownSelector).hide();
                     }
                 }
             };
 
             if (options.switcherSelector && options.dropdownID) {
                 var toggleFunc = function(e) {
-                    _toggle(cx.jQuery(this), options.dropdownID, options.addTop, options.addLeft, options.fixWinSize, options.position, options.anchorSelector, options.showFunction, options.alwaysUp);
+                    _toggle(jQuery(this), options.dropdownID, options.addTop, options.addLeft, options.fixWinSize, options.position, options.anchorSelector, options.showFunction, options.alwaysUp);
                 };
                 if (!dropdownToggleHash.hasOwnProperty(options.switcherSelector + options.dropdownID)) {
-                    cx.jQuery(options.switcherSelector).live("click", toggleFunc);
+                    jQuery(options.switcherSelector).live("click", toggleFunc);
                     dropdownToggleHash[options.switcherSelector + options.dropdownID] = true;
                 }
             }
@@ -94,8 +94,8 @@
                     _registerAutoHide(e, allSwitcherSelectors, "#" + options.dropdownID, options.hideFunction);
 
                 };
-                cx.jQuery(document).unbind("click", hideFunc);
-                cx.jQuery(document).bind("click", hideFunc);
+                jQuery(document).unbind("click", hideFunc);
+                jQuery(document).bind("click", hideFunc);
             }
 
             return {

@@ -45,7 +45,7 @@ class PageException extends \Exception {
  * @package     contrexx
  * @subpackage  model_contentmanager
  */
-class Page extends \Cx\Model\Base\EntityBase implements \Serializable
+class Page extends \Cx\Model\Base\EntityBase
 {
     const TYPE_CONTENT = 'content';
     const TYPE_APPLICATION = 'application';
@@ -104,182 +104,172 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     /**
      * @var integer $id
      */
-    protected $id;
+    private $id;
 
     /**
      * @var integer $nodeIdShadowed
      */
-    protected $nodeIdShadowed;
+    private $nodeIdShadowed;
 
     /**
      * @var integer $lang
      */
-    protected $lang;
+    private $lang;
 
     /**
      * @var string $title
      */
-    protected $title;
+    private $title;
 
     /**
      * @var text $content
      */
-    protected $content;
+    private $content;
 
     /**
      * Disables the WYSIWYG editor
      * @var boolean $sourceMode
      */
-    protected $sourceMode;
+    private $sourceMode;
 
     /**
      * @var string $customContent
      */
-    protected $customContent;
-    
-    /**
-     * @var integer $useCustomContentForAllChannels
-     */
-    protected $useCustomContentForAllChannels;
+    private $customContent;
 
     /**
      * @var string $cssName
      */
-    protected $cssName;
+    private $cssName;
 
     /**
      * @var string $metatitle
      */
-    protected $metatitle;
+    private $metatitle;
 
     /**
      * @var string $metadesc
      */
-    protected $metadesc;
+    private $metadesc;
 
     /**
      * @var string $metakeys
      */
-    protected $metakeys;
+    private $metakeys;
 
     /**
      * @var string $metarobots
      */
-    protected $metarobots;
+    private $metarobots;
 
     /**
      * @var date $start
      */
-    protected $start;
+    private $start;
 
     /**
      * @var date $end
      */
-    protected $end;
+    private $end;
 
     /**
      * @var boolean $editingStatus
      */
-    protected $editingStatus;
+    private $editingStatus;
 
     /**
      * @var boolean $display
      */
-    protected $display;
+    private $display;
 
     /**
      * @var boolean $active
      */
-    protected $active;
+    private $active;
 
     /**
      * @var string $target
      */
-    protected $target;
+    private $target;
 
     /**
      * @var integer $module
      */
-    protected $module;
+    private $module;
 
     /**
      * @var string $cmd
      */
-    protected $cmd;
+    private $cmd;
 
     /**
      * @var Cx\Core\ContentManager\Model\Entity\Node
      */
-    protected $node;
+    private $node;
 
     /**
      * @var int $slugSuffix
      */
-    protected $slugSuffix = 0;
+    private $slugSuffix = 0;
 
     /**
      * @var int $slugBase
      */
-    protected $slugBase = '';
+    private $slugBase = '';
 
     /**
      * @var Cx\Core\ContentManager\Model\Entity\Skin
      */
-    protected $skin;
-    
-    /**
-     * @var integer $useSkinForAllChannels
-     */
-    protected $useSkinForAllChannels;
+    private $skin;
 
     /**
      * @var string $type
      */
-    protected $type;
+    private $type;
     /**
      * @var datetime $updatedAt
      */
-    protected $updatedAt;
+    private $updatedAt;
 
     /**
      * @var string $slug
      */
-    protected $slug;
+    private $slug;
     
     /**
      * @var string $contentTitle
      */
-    protected $contentTitle;
+    private $contentTitle;
     
     /**
      * @var string $linkTarget
      */
-    protected $linkTarget;
+    private $linkTarget;
     
     /**
      * @var integer $frontendAccessId
      */
-    protected $frontendAccessId;
+    private $frontendAccessId;
 
     /**
      * @var integer $backendAccessId
      */
-    protected $backendAccessId;
+    private $backendAccessId;
     
     /**
      * @var integer $protection
      */
-    protected $protection;
+    private $protection;
     
     /**
      * @var string $cssNavName
      */
-    protected $cssNavName;
+    private $cssNavName;
     
     /**
      * @var string $updatedBy
      */
-    protected $updatedBy;
+    private $updatedBy;
 
     /**
      * @var boolean Tells wheter this is a virtual (non DB) page or not
@@ -504,27 +494,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     {
         return $this->customContent;
     }
-    
-    /**
-     * Get useCustomContentForAllChannels
-     *
-     * @return integer $useCustomContentForAllChannels
-     */
-    public function setUseCustomContentForAllChannels($useCustomContentForAllChannels)
-    {
-        $this->useCustomContentForAllChannels = $useCustomContentForAllChannels;
-    }
-    
-    /**
-     * Get useCustomContentForAllChannels
-     *
-     * @return integer $useCustomContentForAllChannels
-     */
-    public function getUseCustomContentForAllChannels()
-    {
-        return $this->useCustomContentForAllChannels;
-    }
-    
+
     /**
      * Set cssName
      *
@@ -1004,9 +974,6 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
      */
     public function getNode()
     {
-        if (is_int($this->node)) {
-            $this->node = \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Node')->find($this->node);      
-        }
         return $this->node;
     }
 
@@ -1029,27 +996,6 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     {
         return $this->skin;
     }
-    
-    /**
-     * Set useSkinForAllChannels
-     *
-     * @return integer $useSkinForAllChannels
-     */
-    public function setUseSkinForAllChannels($useSkinForAllChannels)
-    {
-        $this->useSkinForAllChannels = $useSkinForAllChannels;
-    }
-    
-    /**
-     * Get useSkinForAllChannels
-     *
-     * @return integer $useSkinForAllChannels
-     */
-    public function getUseSkinForAllChannels()
-    {
-        return $this->useSkinForAllChannels;
-    }
-    
     /**
      * @var boolean $caching
      */
@@ -1922,83 +1868,5 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
      */
     public function isDraft() {
         return $this->getEditingStatus() != '';
-    }
-    
-    public function serialize() {
-        return serialize(
-            array(
-                $this->id,
-                $this->active,
-                $this->backendAccessId,
-                $this->caching,
-                $this->cmd,
-                $this->content,
-                $this->contentTitle,
-                $this->cssName,
-                $this->cssNavName,
-                $this->customContent,
-                $this->display,
-                $this->editingStatus,
-                $this->end,
-                $this->frontendAccessId,
-                $this->isVirtual,
-                $this->lang,
-                $this->linkTarget,
-                $this->metarobots,
-                $this->metatitle,
-                $this->module,
-                $this->node->getId(),
-                $this->nodeIdShadowed,
-                $this->protection,
-                $this->skin,
-                $this->slug,
-                $this->slugBase,
-                $this->slugSuffix,
-                $this->sourceMode,
-                $this->start,
-                $this->target,
-                $this->title,
-                $this->type,
-                $this->updatedAt,
-                $this->updatedBy,
-            )
-        );
-    }
-    public function unserialize($data) {
-        $unserialized = unserialize($data);
-        $this->id = $unserialized[0];
-        $this->active = $unserialized[1];
-        $this->backendAccessId = $unserialized[2];
-        $this->caching = $unserialized[3];
-        $this->cmd = $unserialized[4];
-        $this->content = $unserialized[5];
-        $this->contentTitle = $unserialized[6];
-        $this->cssName = $unserialized[7];
-        $this->cssNavName = $unserialized[8];
-        $this->customContent = $unserialized[9];
-        $this->display = $unserialized[10];
-        $this->editingStatus = $unserialized[11];
-        $this->end = $unserialized[12];
-        $this->frontendAccessId = $unserialized[13];
-        $this->isVirtual = $unserialized[14];
-        $this->lang = $unserialized[15];
-        $this->linkTarget = $unserialized[16];
-        $this->metarobots = $unserialized[17];
-        $this->metatitle = $unserialized[18];
-        $this->module = $unserialized[19];
-        $this->node = $unserialized[20];
-        $this->nodeIdShadowed = $unserialized[21];
-        $this->protection = $unserialized[22];
-        $this->skin = $unserialized[23];
-        $this->slug = $unserialized[24];
-        $this->slugBase = $unserialized[25];
-        $this->slugSuffix = $unserialized[26];
-        $this->sourceMode = $unserialized[27];
-        $this->start = $unserialized[28];
-        $this->target = $unserialized[29];
-        $this->title = $unserialized[30];
-        $this->type = $unserialized[31];
-        $this->updatedAt = $unserialized[32];
-        $this->updatedBy = $unserialized[33];
     }
 }

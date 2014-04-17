@@ -259,21 +259,19 @@ class CalendarMail extends CalendarLibrary
     public function getTemplateList() {
         global $objDatabase;
         
-        $query = 'SELECT `id`,
-                         `action_id`,
-                         `lang_id`
+        $query = 'SELECT `id`
                   FROM '.DBPREFIX.'module_'.$this->moduleTablePrefix.'_mail
-                  ORDER BY `action_id` ASC, `lang_id` ASC, `status` DESC, `title` ASC';
+                  WHERE `status` = 1';
         
         $objResult = $objDatabase->Execute($query);
         
         if ($objResult !== false) {
             while (!$objResult->EOF) {
                 $objMail = new CalendarMail(intval($objResult->fields['id']));
-                $this->templateList[$objResult->fields['action_id']][$objResult->fields['lang_id']][] = $objMail;
+                $this->templateList[] = $objMail;   
                 $objResult->MoveNext();
             }
-        }        
+        }
     }
     
     /**
@@ -284,61 +282,18 @@ class CalendarMail extends CalendarLibrary
      * 
      * @return string Html drop down with the mail templates
      */
-    function getTemplateDropdown($selectedId=null, $actionId=null, $languageId=null) {
-        global $_ARRAYLANG;
-        
+    function getTemplateDropdown($selectedId=null, $actionId=null) {
         parent::getSettings();
-        parent::getFrontendLanguages();
-                
-        if (empty($selectedId)) {
-            if (empty($this->templateList[$actionId][$languageId])) {                
-                // if no templates are available in associated language (or template is deactivated), select default template
-                foreach ($this->arrFrontendLanguages as $lang_id=> $lang) {
-                    foreach ($this->templateList[$actionId][$lang_id] as $objMail) {
-                        if ($objMail->is_default) {                            
-                            $selectedId = $objMail->id;
-                            break;
-                        }
-                    }
-                    if (!empty($selectedId)) {
-                        break;
-                    }
-                }
-            } else {
-                // if default template is set for associated language, select default template
-                foreach ($this->templateList[$actionId][$languageId] as $objMail) {
-                    if ($objMail->is_default) {
-                        $selectedId = $objMail->id;
-                        break;
-                    }
-                }
-                // if templates are available in associated language, select first template of own language
-                if (empty($selectedId)) {
-                    $mail = reset($this->templateList[$actionId][$languageId]);
-                    $selectedId = $mail->id;
-                }
-            }
-        }
+        $arrOptions = array();
+        
+        foreach ($this->templateList as $objMail) {
+            if ($actionId != null && $actionId != $objMail->action_id) continue;            
 
-        $options = '';
-        foreach ($this->arrFrontendLanguages as $lang_id=> $lang) {
-            if (!empty($this->templateList[$actionId][$lang_id])) {
-                $options .= '<optgroup label="'. $lang['name'] .'">';
-            
-                foreach ($this->templateList[$actionId][$lang_id] as $objMail) {
-                    
-                    $options .= "<option value='{$objMail->id}'
-                                    ".($selectedId == $objMail->id ? "selected='selected'" : '') ."
-                                    style='". (!$objMail->status ? "color : #A0A0A0;" : '') ."'
-                                 >
-                                    {$objMail->title}
-                                   ". ($objMail->is_default ? " (". $_ARRAYLANG["TXT_{$this->moduleLangVar}_DEFAULT"] .")" : '') ."
-                                   ". (!$objMail->status ? " (". $_ARRAYLANG["TXT_{$this->moduleLangVar}_INACTIVE"] .")" : '') ."
-                                 </option>";
-                }
-                $options .= '</optgroup>';
-            }
+            $selectedId = empty($selectedId) && $objMail->is_default ? $objMail->id : $selectedId;            
+            $arrOptions[$objMail->id] = $objMail->title;
         }
+        
+        $options = parent::buildDropdownmenu($arrOptions, $selectedId);
         
         return $options;
     }

@@ -1106,18 +1106,6 @@ table tr.reset td {
     background-position: 21px 0px;
 }
 
-.cx-expand{
-    padding: 0 0 0 13px;
-}
-
-.cx-expand.cx-expandUp{
-    background: url("../../../images/icons/advancedsearch-up.png") no-repeat left 3px;
-}
-
-.cx-expand.cx-expandDown{
-    background: url("../../../images/icons/advancedsearch-down.png") no-repeat left 3px;
-}
-
 
 /* Text alignment -- Shop */
 .a_left {

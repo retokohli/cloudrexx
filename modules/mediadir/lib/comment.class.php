@@ -56,11 +56,11 @@ class mediaDirectoryComment extends mediaDirectoryLibrary
         
 var $strFunctionComment = function(entry)
 {
-    var elEntry = cx.jQuery('#commentForm_'+entry);
+    var elEntry = jQuery('#commentForm_'+entry);
     elEntry.children().hide();
     elEntry.prepend('<img src="images/modules/$strSection/loading.gif" border="0" alt="loading..." />');
 
-    jQuery.post('index.php?section=$strSection&comment=add&eid='+entry, cx.jQuery('#commentFormInputs_'+entry).serialize()).success(function(response) {
+    jQuery.post('index.php?section=$strSection&comment=add&eid='+entry, jQuery('#commentFormInputs_'+entry).serialize()).success(function(response) {
         var arrResponse = response.split("-");
         var status = arrResponse[0];
         var section = arrResponse[1];
@@ -70,54 +70,54 @@ var $strFunctionComment = function(entry)
             $strFunctionRefreshComment(entry,section,cmd);
         } else if (status == 'captcha') {
             elEntry.children('img:first').remove();
-            cx.jQuery('#commentForm_'+entry+' #commentCaptcha')[0].css('border', '#ff0000 1px solid');
+            jQuery('#commentForm_'+entry+' #commentCaptcha')[0].css('border', '#ff0000 1px solid');
             elEntry.children().show();
         } else {
-            cx.jQuery('#commentForm_'+entry).attr('class', '$strCommentErr');
-            cx.jQuery('#commentForm_'+entry).html('$strErrMessage');
+            jQuery('#commentForm_'+entry).attr('class', '$strCommentErr');
+            jQuery('#commentForm_'+entry).html('$strErrMessage');
         }
     }).error(function(){
-        cx.jQuery('#commentForm_'+entry).attr('class', '$strCommentErr');
-        cx.jQuery('#commentForm_'+entry).html('$strErrMessage');
+        jQuery('#commentForm_'+entry).attr('class', '$strCommentErr');
+        jQuery('#commentForm_'+entry).html('$strErrMessage');
     });
 }
 
 var $strFunctionRefreshComment = function(entry,section,cmd)
 {
     jQuery.get('index.php', {section : '$strSection', comment : 'refresh', eid : entry, pageSection : section, pageCmd : cmd}).success(function(response) {
-        cx.jQuery('#$strNewAddedComment'+entry).attr('class', '$strNewComment');
-        cx.jQuery('#$strNewAddedComment'+entry).html(response);
-        cx.jQuery('#$strNewAddedComment'+entry).css('display', 'block');
+        jQuery('#$strNewAddedComment'+entry).attr('class', '$strNewComment');
+        jQuery('#$strNewAddedComment'+entry).html(response);
+        jQuery('#$strNewAddedComment'+entry).css('display', 'block');
 
-        cx.jQuery('#commentForm_'+entry).attr('class', '$strCommentOk');
-        cx.jQuery('#commentForm_'+entry).html('$strOkMessage');
+        jQuery('#commentForm_'+entry).attr('class', '$strCommentOk');
+        jQuery('#commentForm_'+entry).html('$strOkMessage');
     });
 }
 
 var $strFunctionCheckCommentForm = function(entry)
 {
     var isOk = true;
-    var commentName = cx.jQuery('#commentName').val();
-    var commentComment = cx.jQuery('#commentComment').val();
+    var commentName = jQuery('#commentName').val();
+    var commentComment = jQuery('#commentComment').val();
 
     errorCSSBorderStyle = '#ff0000 1px solid';
 
     if (commentName == '') {
     	isOk = false;
-    	cx.jQuery('#commentName').css({'border': errorCSSBorderStyle});
+    	jQuery('#commentName').css({'border': errorCSSBorderStyle});
     } else {
-        cx.jQuery('#commentName').css({'border': ''});
+        jQuery('#commentName').css({'border': ''});
     }
 
     if(commentComment == '') {
     	isOk = false;
-    	cx.jQuery('#commentComment').css({'border': errorCSSBorderStyle});
+    	jQuery('#commentComment').css({'border': errorCSSBorderStyle});
     } else {
-        cx.jQuery('#commentComment').css({'border': ''});
+        jQuery('#commentComment').css({'border': ''});
     }
 
     if (!isOk) {
-		cx.jQuery('#$strCommentErrMessage').css({'display': 'block'});
+		jQuery('#$strCommentErrMessage').css({'display': 'block'});
 	} else {
 	   $strFunctionComment(entry);
 	}
