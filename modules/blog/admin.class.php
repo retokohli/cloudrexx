@@ -611,6 +611,9 @@ class BlogAdmin extends BlogLibrary {
                         }
                     }
                     $strActiveLanguages = \Html::getLanguageIcons($langState, 'index.php?cmd=blog&amp;act=editEntry&amp;id=' . $intEntryId . '&amp;langId=%1$d');
+                    $this->_objTpl->touchBlock('txt_languages_block');
+                } else {
+                    $this->_objTpl->hideBlock('txt_languages_block');
                 }
                 
                 $this->_objTpl->setVariable(array(

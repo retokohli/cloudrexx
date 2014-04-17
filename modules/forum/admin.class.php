@@ -204,6 +204,9 @@ class ForumAdmin extends ForumLibrary {
                         }
                     }
                     $strLanguages = \Html::getLanguageIcons($langState, 'index.php?cmd=forum&amp;act=category_edit&amp;id=' . $arrValues['id']);
+                    $this->_objTpl->touchBlock('txt_languages_block');
+                } else {
+                    $this->_objTpl->hideBlock('txt_languages_block');
                 }
                 
                 $this->_objTpl->setVariable(array(

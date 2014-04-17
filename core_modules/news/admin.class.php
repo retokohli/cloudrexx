@@ -591,6 +591,9 @@ class newsManager extends newsLibrary {
                         $langState[$langId] = 'active';
                     }
                     $langString  = \Html::getLanguageIcons($langState, 'index.php?cmd=news&amp;act=edit&amp;newsId=' . $newsId . '&amp;langId=%1$d');
+                    $this->_objTpl->touchBlock('txt_languages_block');
+                } else {
+                    $this->_objTpl->hideBlock('txt_languages_block');
                 }
                 
                 $previewLink = \Cx\Core\Routing\Url::fromModuleAndCmd('news', $this->findCmdById('details', $news['catid']), '', array('newsid' => $newsId));
@@ -751,6 +754,9 @@ class newsManager extends newsLibrary {
                         $langState[$langId] = 'active';
                     }
                     $langString = \Html::getLanguageIcons($langState, 'index.php?cmd=news&amp;act=edit&amp;newsId=' . $newsId . '&amp;langId=%1$d');
+                    $this->_objTpl->touchBlock('txt_languages_block_invalidated');
+                } else {
+                    $this->_objTpl->hideBlock('txt_languages_block_invalidated');
                 }
                 
                 $this->_objTpl->setVariable(array(
