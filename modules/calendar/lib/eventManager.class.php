@@ -832,6 +832,18 @@ class CalendarEventManager extends CalendarLibrary
                         }
                     }
                     $languages = \Html::getLanguageIcons($langState, 'index.php?cmd=calendar&amp;act=modify_event&amp;id=' . $objEvent->id . '&amp;langId=%1$d'.($type == 'confirm' ? "&amp;confirm=1" : ""));
+                    
+                    if($type == 'confirm' && $objTpl->blockExists('txt_languages_block_confirm_list')) {
+                        $objTpl->touchBlock('txt_languages_block_confirm_list');
+                    } elseif ($objTpl->blockExists('txt_languages_block')) {
+                        $objTpl->touchBlock('txt_languages_block');
+                    }
+                } else {
+                    if($type == 'confirm' && $objTpl->blockExists('txt_languages_block_confirm_list')) {
+                        $objTpl->hideBlock('txt_languages_block_confirm_list');
+                    } elseif ($objTpl->blockExists('txt_languages_block')) {
+                        $objTpl->hideBlock('txt_languages_block');
+                    }
                 }
                 
                 list ($priority, $priorityImg) = $this->getPriorityImage($objEvent);
