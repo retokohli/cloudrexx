@@ -10,6 +10,8 @@
  * @subpackage  core 
  */
 
+namespace Cx\Core\Model;
+
 /**
  * Wrapper class for the recursive array
  *
@@ -21,7 +23,7 @@
  * 
  * @see         /core/session.class.php
  */
-class RecursiveArrayAccess implements ArrayAccess, Countable, Iterator {
+class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
 
     /**
      * Internal data array.

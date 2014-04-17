@@ -461,7 +461,7 @@ namespace Cx\Core\Core\Controller {
          * Start the session using the new cmsSession object
          */
         protected function startSession() {
-            $_SESSION = new \cmsSession();
+            \cmsSession::getInstance();
         }
         
         /**
