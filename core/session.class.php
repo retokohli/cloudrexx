@@ -94,23 +94,21 @@ class cmsSession extends RecursiveArrayAccess {
         // This is used to prevent an unwanted session overwrite by a continuous
         // script request (javascript) that only checks for a certain event to happen.
         if ($this->discardChanges) return true;
-        
-        $sessionId = $this->sessionid;
-        
+    
         $rows = array();
         foreach ($this->data as $k => $v) {
-            $sessionVar = contrexx_input2db($k);
-            $sessionVal = contrexx_input2db(serialize($v));
-            
-            $rows[] = "('$sessionId', '$sessionVar', '$sessionVal')";
+            $sessionVar = contrexx_raw2db($k);
+            $sessionVal = contrexx_raw2db(serialize($v));
+        
+            $rows[] = "('$this->sessionid', '$sessionVar', '$sessionVal')";
         }
         
         if (!empty($rows)) {
             $strRows = implode(', ', $rows);
             $query = "INSERT INTO 
-                        `" . DBPREFIX . "session_variable` 
-                        (`sessionid`, `variable_key`, `variable_value`) 
-                      VALUES 
+                    `" . DBPREFIX . "session_variable` 
+                    (`sessionid`, `variable_key`, `variable_value`) 
+                  VALUES 
                         $strRows 
                       ON DUPLICATE KEY 
                         UPDATE 
@@ -119,9 +117,8 @@ class cmsSession extends RecursiveArrayAccess {
             $this->_objDb->Execute($query);
         }
     }
-    
-    function readData() {
-        $sessionId  = contrexx_input2db($this->sessionid);
+        
+    function readData() {        
         
         $query = "SELECT 
                     `variable_key`,
@@ -129,7 +126,7 @@ class cmsSession extends RecursiveArrayAccess {
                   FROM 
                     `". DBPREFIX ."session_variable` 
                   WHERE 
-                    `sessionid` = '$sessionId' 
+                    `sessionid` = '{$this->sessionid}' 
                   ";
         $objResult = $this->_objDb->Execute($query);
                 
