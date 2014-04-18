@@ -38,7 +38,12 @@ class FWUser extends User_Setting
      */
     public $objGroup;
 
-
+    /**
+     * Host names which are allowed to redirect on the logout function.
+     * @var array
+     */
+    protected $allowedHosts = array();
+            
     function __construct($backend = false)
     {
         parent::__construct();
@@ -151,21 +156,88 @@ class FWUser extends User_Setting
      */
     function logout()
     {
-        $this->logoutAndDestroySession();
+        global $_CONFIG;
+        
+         $this->logoutAndDestroySession();
 
-        if ($this->backendMode) {
-            $pathOffset = ASCMS_PATH_OFFSET;
+        $pathOffset = ASCMS_PATH_OFFSET;
+        if ($this->backendMode) {            
             CSRF::header('Location: '.(!empty($pathOffset)
                 ? $pathOffset
                 : '/'));
         } else {
-            CSRF::header('Location: '.(!empty($_REQUEST['redirect'])
-                ? urldecode($_REQUEST['redirect'])
+            $redirect = '';
+            if (!empty($_REQUEST['redirect'])) {
+                $redirect = $baseUrl = ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . (!empty($pathOffset) ? $pathOffset : '/');
+                $rawUrl   = trim($this->getRawUrL(urldecode($_REQUEST['redirect']), $baseUrl));
+                
+                if (
+                        self::hostFromUri($baseUrl) == self::hostFromUri($rawUrl) 
+                     || (!empty($this->allowedHosts) && in_array($rawUrl, array_map(array($this, 'hostFromUri'), $this->allowedHosts)))
+                   ) {
+                    $redirect = $rawUrl;
+                }
+            }
+
+            CSRF::header('Location: '.(!empty($redirect)
+                ? $redirect
                 : CONTREXX_DIRECTORY_INDEX.'?section=login'));
         }
         exit;
     }
 
+    /**
+     * Returns the host name from the given url
+     * www will be striped from the given url
+     * 
+     * @param string $uri url string
+     * @return string
+     */
+    public static function hostFromUri($uri)
+    {
+        extract(parse_url($uri));
+        
+        return str_ireplace('www.', '', $scheme.'://'.$host);
+    }
+
+    /**
+     * Return the Absolute URL associated of the given string.
+     *     
+     * @return string The URL     
+     */
+    public function getRawUrL($url, $baseUrl)
+    {
+        /* return if already absolute URL */
+        if (parse_url($url, PHP_URL_SCHEME) != '') return $url;
+
+        /* queries and anchors */
+        if ($url[0]=='#' || $url[0]=='?') return $baseUrl.$url;
+
+        /* parse base URL and convert to local variables:
+           $scheme, $host, $path */
+        extract(parse_url($baseUrl));
+
+        /* remove non-directory element from path */
+        $path = preg_replace('#/[^/]*$#', '', $path);
+
+        /* destroy path if relative url points to root */
+        if ($url[0] == '/') $path = '';
+
+        /* dirty absolute URL // with port number if exists */
+        if (parse_url($baseUrl, PHP_URL_PORT) != ''){
+            $abs = "$host:".parse_url($baseUrl, PHP_URL_PORT)."$path/$url";
+        }else{
+            $abs = "$host$path/$url";
+        }
+        /* replace '//' or '/./' or '/foo/../' with '/' */
+        $re = array('#(/\.?/)#', '#/(?!\.\.)[^/]+/\.\./#');
+        for($n=1; $n>0; $abs=preg_replace($re, '/', $abs, -1, $n)) {}
+
+        /* absolute URL is ready! */
+        return $scheme.'://'.$abs;        
+        
+    }
+    
     /**
      * Logs the user off and destroys the session.
      */
