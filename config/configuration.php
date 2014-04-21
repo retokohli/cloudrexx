@@ -60,3 +60,13 @@ $_FTPCONFIG['path']	= '/httpdocs'; // Ftp path to cms (must not include ascms_ro
 */
 // Set character encoding
 $_CONFIG['coreCharacterEncoding'] = 'UTF-8'; // example 'UTF-8'
+
+
+/**
+* -------------------------------------------------------------------------
+* Credentials for plesk panel to call API RPC
+* -------------------------------------------------------------------------
+*/
+$_CONFIG['pleskHost'] = 'cloudrexx.com'; // Plesk Host
+$_CONFIG['pleskLogin'] = 'comvation_cloudrexx'; //Plesk Login 
+$_CONFIG['pleskPassword'] = 'dAim39@1'; //Plesk Password 
