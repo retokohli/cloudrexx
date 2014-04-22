@@ -242,7 +242,7 @@ class Calendar extends CalendarLibrary
 
 
         // get datepicker-time
-        if (isset($_GET['cmd']) && $_GET['cmd'] == 'boxes') {
+         if (isset($_REQUEST["yearID"]) ||  isset($_REQUEST["monthID"]) || isset($_REQUEST["dayID"])) {
             $year  = isset($_REQUEST["yearID"]) ? (int) $_REQUEST["yearID"] : date('Y');
             $month = isset($_REQUEST["monthID"]) ? (int) $_REQUEST["monthID"] : date('m');
             $day   = isset($_REQUEST["dayID"]) ? (int) $_REQUEST["dayID"] : date('d');
@@ -262,7 +262,7 @@ class Calendar extends CalendarLibrary
             $dateObj->setTime(23, 59, 59);
             $this->endDate = $dateObj->getTimestamp();
             
-        } elseif ($_REQUEST["yearID"] || $_REQUEST["monthID"] || $_REQUEST["dayID"]) {
+             } elseif ($_REQUEST["yearID"] && $_REQUEST["monthID"] && $_REQUEST["dayID"]) {
             $year = $_REQUEST["yearID"] ? $_REQUEST["yearID"] : date('Y', mktime());
             $month = $_REQUEST["monthID"] ? $_REQUEST["monthID"] : date('m', mktime());
             $day = $_REQUEST["dayID"] ? $_REQUEST["dayID"] : date('d', mktime());
@@ -299,7 +299,6 @@ class Calendar extends CalendarLibrary
         } else {
             $this->author = null;
         }
-        
         $this->objEventManager = new CalendarEventManager($this->startDate,$this->endDate,$this->categoryId,$this->searchTerm,true,$this->needAuth,true,$this->startPos,$this->numEvents,$this->sortDirection,true,$this->author);
         
         if($_GET['cmd'] != 'detail') {
@@ -359,7 +358,8 @@ EOF;
             $this->moduleLangVar.'_SEARCH_CATEGORIES' =>  $objCategoryManager->getCategoryDropdown(intval($_GET['catid']), 1),
             $this->moduleLangVar.'_JAVASCRIPT'  => $javascript
         ));
-        
+         self::showThreeBoxes();
+         
         if($this->objEventManager->countEvents > $this->arrSettings['numPaging'] && (isset($_GET['search']) || $_GET['cmd'] == 'list' || $_GET['cmd'] == 'eventlist' || $_GET['cmd'] == 'archive')) {
             $pagingCmd = !empty($_GET['cmd']) ? '&amp;cmd='.$_GET['cmd'] : '';
             $pagingCategory = !empty($_GET['catid']) ? '&amp;catid='.intval($_GET['catid']) : '';
@@ -1096,11 +1096,17 @@ JAVASCRIPT;
     function showThreeBoxes()
     {
         global $_ARRAYLANG;
-        
+
+        $objEventManager = new CalendarEventManager($this->startDate,$this->endDate,$this->categoryId,$this->searchTerm,true,$this->needAuth,true,0,'n',$this->sortDirection,true,$this->author);
+        $objEventManager->getEventList();  
         $this->_objTpl->setTemplate($this->pageContent);
-        
-        $this->objEventManager->calendarBoxUrl         = Cx\Core\Routing\Url::fromModuleAndCmd('calendar', 'boxes')->toString()."?act=list";
-        $this->objEventManager->calendarBoxMonthNavUrl = Cx\Core\Routing\Url::fromModuleAndCmd('calendar', 'boxes')->toString();
+        if ($_REQUEST['cmd'] == 'boxes') {
+            $objEventManager->calendarBoxUrl         = Cx\Core\Routing\Url::fromModuleAndCmd('calendar', 'boxes')->toString()."?act=list";
+            $objEventManager->calendarBoxMonthNavUrl = Cx\Core\Routing\Url::fromModuleAndCmd('calendar', 'boxes')->toString();
+        } else {
+            $objEventManager->calendarBoxUrl         = Cx\Core\Routing\Url::fromModuleAndCmd('calendar', '')->toString()."?act=list";
+            $objEventManager->calendarBoxMonthNavUrl = Cx\Core\Routing\Url::fromModuleAndCmd('calendar', '')->toString();
+        }
         
         if (empty($_GET['catid'])) {
             $catid = 0;
@@ -1126,7 +1132,7 @@ JAVASCRIPT;
             $year  = date("Y");
         }
                 
-        $calendarbox = $this->objEventManager->getBoxes($this->boxCount, $year, $month, $day, $catid);
+        $calendarbox = $objEventManager->getBoxes($this->boxCount, $year, $month, $day, $catid);
 
         $objCategoryManager = new CalendarCategoryManager(true);
         $objCategoryManager->getCategoryList();
@@ -1134,7 +1140,7 @@ JAVASCRIPT;
         $this->_objTpl->setVariable(array(
             "TXT_{$this->moduleLangVar}_ALL_CAT" => $_ARRAYLANG['TXT_CALENDAR_ALL_CAT'],
             "{$this->moduleLangVar}_BOX"	 => $calendarbox,
-            "{$this->moduleLangVar}_JAVA_SCRIPT" => $this->objEventManager->getCalendarBoxJS(),
+            "{$this->moduleLangVar}_JAVA_SCRIPT" => $objEventManager->getCalendarBoxJS(),
             "{$this->moduleLangVar}_CATEGORIES"	 => $objCategoryManager->getCategoryDropdown($catid, 1),            
         ));        
     }

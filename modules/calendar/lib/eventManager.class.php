@@ -992,7 +992,6 @@ class CalendarEventManager extends CalendarLibrary
                             'TXT_'.$this->moduleLangVar.'_CLOCK_LIST'        => $this->clock,
                         ));
                         $objTpl->parse('calendarDateList');
-
                         //part 2
                         $part = 2;
                         $this->getMultiDateBlock($objEvent, $this->arrSettings['separatorDateTimeList'], $this->arrSettings['separatorSeveralDaysList'], ($this->arrSettings['showClockList'] == 1), $part);
@@ -1383,7 +1382,6 @@ class CalendarEventManager extends CalendarLibrary
                         $getNextEvent = false;
                     }
                 }
-
                 break;
             case 2:
                 $objCloneEvent->seriesData['seriesPatternEnd'] = $objCloneEvent->seriesData['seriesPatternEnd']-1;
@@ -1397,11 +1395,10 @@ class CalendarEventManager extends CalendarLibrary
                 $isAllowedEvent = (boolean) $objCloneEvent->seriesData['seriesPatternEnd']; 
                 break;
             case 3:
-                if($objCloneEvent->startDate <= $objCloneEvent->seriesData['seriesPatternEndDate']) {
+                if($objCloneEvent->startDate <= $objCloneEvent->seriesData['seriesPatternEnd']) {
                     $getNextEvent = true;
                 } else {
-                    $isAllowedEvent = false;
-                    $getNextEvent   = false;
+                    $getNextEvent = false;
                 }
                 break;
         }
