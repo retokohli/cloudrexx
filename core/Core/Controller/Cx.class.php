@@ -352,36 +352,7 @@ namespace Cx\Core\Core\Controller {
                 $_PATHCONFIG['ascms_installation_root'] = $_PATHCONFIG['ascms_root'];
                 $_PATHCONFIG['ascms_installation_offset'] = $_PATHCONFIG['ascms_root_offset'];
             }
-
-            /**
-             * Handle multisite installations
-             * CUSTOMIZING from ppay.com
-             */
-            require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/core_modules/MultiSite/Model/Repository/InstanceRepository.class.php';
-            require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/core/Core/Model/Entity/EntityBase.class.php';
-            require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/core_modules/License/Person.class.php';
-            require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/core_modules/MultiSite/Model/Entity/Instance.class.php';
-            $multiSiteRepo = new \Cx\Core_Modules\MultiSite\Model\Repository\InstanceRepository();
-            $subdomain = current(explode('.', $_SERVER['HTTP_HOST']));
-            global $multiSiteInstanceOffset, $multiSiteInstanceName;
-            $multiSiteInstanceOffset = '';
-            $multiSiteInstanceName = '';
-            foreach ($multiSiteRepo->findAll($_PATHCONFIG['ascms_root'].$_PATHCONFIG['ascms_root_offset'].'/instances') as $instance) {
-                if ($subdomain == strtolower($instance->getName())) {
-                    //\DBG::activate(DBG_PHP);
-                    $_PATHCONFIG['ascms_root_offset'] .= '/instances/'.$instance->getName();
-                    $multiSiteInstanceOffset .= '/instances/'.$instance->getName();
-                    $multiSiteInstanceName = $instance->getName();
-                    $pathconfigBackup = $_PATHCONFIG;
-                    require_once $_PATHCONFIG['ascms_root'].$_PATHCONFIG['ascms_root_offset'].'/config/configuration.php';
-                    //$_PATHCONFIG = $pathconfigBackup;
-                    break;
-                }
-            }
-            /**
-             * End CUSTOMIZING
-             */
-
+            
             /**
              * User configuration settings
              *
@@ -419,6 +390,7 @@ namespace Cx\Core\Core\Controller {
             if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
                 $this->customizingPath = ASCMS_CUSTOMIZING_PATH;
             }
+            
         }
 
         /**
