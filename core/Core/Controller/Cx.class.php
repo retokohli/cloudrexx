@@ -991,7 +991,6 @@ namespace Cx\Core\Core\Controller {
          */
         protected function setPreContentLoadPlaceholders($objTemplate) {
             global $themesPages, $page_template, $_CONFIG;
-
             $objTemplate->setTemplate($themesPages['index']);
             $objTemplate->addBlock('CONTENT_FILE', 'page_template', $page_template);
 
