@@ -39,10 +39,11 @@ class FWUser extends User_Setting
     public $objGroup;
 
     /**
-     * Host names which are allowed to redirect on the logout function.
+     * Host names which are allowed to redirect on the login/logout function.
+     * eg : (http://example.com, http://www.example.com)
      * @var array
      */
-    protected $allowedHosts = array();
+    public static $allowedHosts = array();
             
     function __construct($backend = false)
     {
@@ -153,28 +154,20 @@ class FWUser extends User_Setting
      * If no redirect parameter is present, the frontend login page is shown.
      */
     function logout()
-    {
-        global $_CONFIG;
+    {        
         
          $this->logoutAndDestroySession();
-
-        $pathOffset = ASCMS_PATH_OFFSET;
-        if ($this->backendMode) {            
+        
+        if ($this->backendMode) {
+            $pathOffset = ASCMS_PATH_OFFSET;
+            
             CSRF::header('Location: '.(!empty($pathOffset)
                 ? $pathOffset
                 : '/'));
         } else {
             $redirect = '';
             if (!empty($_REQUEST['redirect'])) {
-                $redirect = $baseUrl = ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . (!empty($pathOffset) ? $pathOffset : '/');
-                $rawUrl   = trim($this->getRawUrL(urldecode($_REQUEST['redirect']), $baseUrl));
-                
-                if (
-                        self::hostFromUri($baseUrl) == self::hostFromUri($rawUrl) 
-                     || (!empty($this->allowedHosts) && in_array($rawUrl, array_map(array($this, 'hostFromUri'), $this->allowedHosts)))
-                   ) {
-                    $redirect = $rawUrl;
-                }
+                $redirect = self::getRedirectUrl($_REQUEST['redirect']);
             }
 
             CSRF::header('Location: '.(!empty($redirect)
@@ -182,6 +175,25 @@ class FWUser extends User_Setting
                 : CONTREXX_DIRECTORY_INDEX.'?section=login'));
         }
         exit;
+    }
+
+    public static function getRedirectUrl($redirectUrl)
+    {
+        global $_CONFIG;
+        
+        $pathOffset = ASCMS_PATH_OFFSET;
+        
+        $redirect = $baseUrl = ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . (!empty($pathOffset) ? $pathOffset : '/');
+        $rawUrl   = trim(self::getRawUrL(urldecode($redirectUrl), $baseUrl));
+
+        if (
+                self::hostFromUri($baseUrl) == self::hostFromUri($rawUrl) 
+             || (!empty(self::$allowedHosts) && in_array(self::hostFromUri($rawUrl), array_map(array('FWUser', 'hostFromUri'), self::$allowedHosts)))
+           ) {            
+            $redirect = $rawUrl;
+        }
+
+        return $redirect;
     }
 
     /**
@@ -203,7 +215,7 @@ class FWUser extends User_Setting
      *     
      * @return string The URL     
      */
-    public function getRawUrL($url, $baseUrl)
+    public static function getRawUrL($url, $baseUrl)
     {
         /* return if already absolute URL */
         if (parse_url($url, PHP_URL_SCHEME) != '') return $url;

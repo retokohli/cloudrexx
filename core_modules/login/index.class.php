@@ -253,7 +253,10 @@ class Login
             if (isset($_SESSION['redirect'])) {
                 unset($_SESSION['redirect']);
             }
-            CSRF::header('Location: '.(empty($redirect) ? $groupRedirect : base64_decode($redirect)));
+            if (!empty($redirect)) {
+                $redirect = \FWUser::getRedirectUrl(urlencode(base64_decode($redirect)));
+            }
+            CSRF::header('Location: '.(empty($redirect) ? $groupRedirect : $redirect));
             exit;
         } else {
             if (isset($_POST['login'])) {

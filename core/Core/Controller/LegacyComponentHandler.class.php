@@ -1726,7 +1726,8 @@ class LegacyComponentHandler {
 
 
                         if (isset($_POST['redirect']) && preg_match('/\.php/', $_POST['redirect'])) {
-                            \CSRF::header('location: '.$_POST['redirect']);
+                            $redirect = \FWUser::getRedirectUrl(urlencode($_POST['redirect']));
+                            \CSRF::header('location: '.$redirect);
                         }
                     },
                     'Csrf' => function() {
