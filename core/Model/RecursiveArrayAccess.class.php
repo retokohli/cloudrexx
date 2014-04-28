@@ -33,14 +33,26 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
     protected $data = array();
 
     /**
+     * Path of the current array
+     * 
+     * @var string
+     */
+    protected $arrayPath;
+    
+    /**
      * Default object constructor.
      *
      * @param array $data
      */
-    protected function __construct($data = array()) {
-        foreach ($data as $key => $value) {
-            $this[$key] = $value;
-        }
+    protected function __construct($data, $path = '')
+    {                
+        $this->arrayPath = $path;
+
+        if (is_array($data)) {
+            foreach ($data as $key => $value) {                    
+                $this[$key] = $value;
+            }
+        }       
     }
 
     /**
@@ -95,9 +107,10 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
      * @return null
      */
     public function offsetSet($offset, $data) {
-        if (is_array($data)) {
-            $data = new self($data);
+        if ( is_array( $data ) ) {
+            $data = new static($data, ($this->arrayPath) ? $this->arrayPath . '/' . $offset : $offset);
         }
+        
         if ($offset === null) { // don't forget this!
             $this->data[] = $data;
         } else {
