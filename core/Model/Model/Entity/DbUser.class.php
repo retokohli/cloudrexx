@@ -8,6 +8,7 @@ class DbUser{
     
     protected $id;
     protected $name;
+    protected $dbPassword;
     
     /**
      * Set db user id 
