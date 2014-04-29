@@ -39,4 +39,19 @@ class DbUser{
     public function getName(){
         return $this->name;
     }
+    
+    /**
+    * set db password 
+    * @param string $dbPassword password for the dbUser to be created
+    */
+    public function setDbPassword($dbPassword=''){
+        $this->dbPassword = $dbPassword;     
+    } 
+    
+    /**
+    * get db password 
+    */
+    public function getDbPassword(){
+        return $this->dbPassword;
+    }
 }
