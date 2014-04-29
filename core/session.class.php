@@ -46,9 +46,8 @@ class cmsSession extends RecursiveArrayAccess {
     public static function getInstance()
     {
         if (!isset(self::$instance))
-        {
-            $class = __CLASS__;
-            self::$instance = new $class(null, null, true);
+        {            
+            self::$instance = new static(null, null, true);
             $_SESSION = self::$instance;
             
             // read the session data
@@ -256,8 +255,7 @@ class cmsSession extends RecursiveArrayAccess {
     }
 
     function cmsSessionRead( $aKey )
-    {
-        global $_DBCONFIG;
+    {        
         
         $this->sessionid = $aKey;        
         $this->sessionPath = ASCMS_TEMP_WEB_PATH . '/' . $this->sessionPathPrefix . $this->sessionid;
