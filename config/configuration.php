@@ -22,7 +22,7 @@ define('CONTEXX_INSTALLED', true);
 * -------------------------------------------------------------------------
 */
 $_DBCONFIG['host'] = 'localhost'; // This is normally set to localhost
-$_DBCONFIG['database'] = 'cloudrexx'; // Database name
+$_DBCONFIG['database'] = 'cloudrex'; // Database name
 $_DBCONFIG['tablePrefix'] = 'contrexx_'; // Database table prefix
 $_DBCONFIG['user'] = 'root'; // Database username
 $_DBCONFIG['password'] = 'cdn123'; // Database password
