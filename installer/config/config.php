@@ -414,6 +414,7 @@ $arrDatabaseTables = array(
 	'module_u2u_sent_messages',
 	'module_u2u_settings',
 	'module_u2u_user_log',
+    'user_info',
 	'voting_additionaldata',
 	'voting_email',
 	'voting_rel_email_system',
