@@ -55,11 +55,10 @@ exit
 
 REM here the windows part starts
 
+SETLOCAL EnableExtensions EnableDelayedExpansion
 
-REM todo: PHP
-REM todo: Make directory and file checks work
-REM todo: read php location if workbench is installed
-REM todo: load workbench if installed
+SET download_url=http://updatesrv1.contrexx.com/
+SET filename=workbench-#.tar.gz
 
 REM find work dir
 IF NOT "%1" == "" (
@@ -73,34 +72,46 @@ IF NOT EXIST %installation_path% (
     EXIT
 )
 
+for /f "delims=" %%a in ('FINDSTR "coreCmsVersion" %installation_path%\config\settings.php') DO @SET version=%%a
+SET contrexx_version=%version:~-7,-2%
+SET filename=%filename:#=!contrexx_version!%
+REM ECHO %filename%
+
 REM start or install workbench
-IF EXIST $INSTALLATION_PATH/workbench.config (
+
+IF EXIST %installation_path%\workbench.config (
     REM read php location
     REM load workbench
-    exit
+    EXIT
 ) ELSE (
     SET php_path=C:\xampp\php\php.exe
+    REM SET php_path="C:\wamp\bin\php\php5.3.5\php.exe"
     
     :whileNotPHP
-    IF NOT EXIST %php_path% (
-        SET /p php_path=PHP could not be found, please enter the correct path to php or leave empty to abort: 
-        IF "%php_path == "" (
-            REM EXIT
-        )
-        REM GOTO :whileNotPHP
+    IF NOT EXIST "!php_path!" (	    
+            SET /p php_path= "PHP could not be found, please enter the correct path to php or leave empty to abort: "
+
+            GOTO :whileNotPHP
     )
+	
+    SET /P answer= "This will install the current version of the Contrexx Workbench into the following path (%installation_path%). Are you sure? [Y,n] "
 
-    SET php_code= ^
-        print_r($_SERVER['argv']);
-
-    START /WAIT /B %php_path% -r "%php_code%" %installation_path%
-        REM check for contrexx installation
-        REM find contrexx version
-        REM This will install the current version of the Contrexx Workbench into the following path ($INSTALLATION_PATH). Are you sure? [Y,n]
-        REM What name should be used as distributor for components?
+    IF "%answer%" == "n" (
+        REM "QUIT THE PROCESS"
+        REM EXIT
+    ) ELSE (
+        SET /p distributer= "What name should be used as distributor for components? "
+        ECHO Downloading workbench...
+	
+        SET php_code= "require_once '%installation_path%/core/Core/init.php';init('minimal');"
+        REM ECHO !php_code!
+		
+        START /WAIT "Contrexx Workbench" !php_path! -r !php_code!
+	
         REM download workbench for version using PEAR's HTTP2
         REM uncompress zip file using zip library of contrexx
-        REM write workbench.config
+        REM write workbench.config	
+    )
 )
 PAUSE
 
