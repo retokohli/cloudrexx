@@ -58,7 +58,7 @@ REM here the windows part starts
 SETLOCAL EnableExtensions EnableDelayedExpansion
 
 SET download_url=http://updatesrv1.contrexx.com/
-SET filename=workbench-#.tar.gz
+SET filename=workbench-#.zip
 
 REM find work dir
 IF NOT "%1" == "" (
@@ -67,28 +67,31 @@ IF NOT "%1" == "" (
 ) ELSE (
     SET installation_path=%CD%
 )
-IF NOT EXIST %installation_path% (
-    ECHO Path not found %installation_path%
+IF NOT EXIST !installation_path! (
+    ECHO Path not found !installation_path!
     EXIT
 )
 
-for /f "delims=" %%a in ('FINDSTR "coreCmsVersion" %installation_path%\config\settings.php') DO @SET version=%%a
+for /f "delims=" %%a in ('FINDSTR "coreCmsVersion" !installation_path!\config\settings.php') DO @SET version=%%a
 SET contrexx_version=%version:~-7,-2%
 SET filename=%filename:#=!contrexx_version!%
 REM ECHO %filename%
 
 REM start or install workbench
+:startWorkBench
+IF EXIST "!installation_path!\workbench.config" (	
+    for /f "delims=" %%G in ('FINDSTR "php" !installation_path!\workbench.config') DO (
+            SET php_path=%%G
+            SET php_path=!php_path:~4!
+    )
 
-IF EXIST %installation_path%\workbench.config (
-    REM read php location
-    REM load workbench
-    EXIT
+    START /WAIT /B "Contrexx Workbench" !php_path! -f !installation_path!\core_modules\Workbench\console.php 	
 ) ELSE (
     SET php_path=C:\xampp\php\php.exe
-    REM SET php_path="C:\wamp\bin\php\php5.3.5\php.exe"
+    REM SET php_path=C:\wamp\bin\php\php5.3.5\php.exe
     
     :whileNotPHP
-    IF NOT EXIST "!php_path!" (	    
+    IF NOT EXIST "!php_path!" (
             SET /p php_path= "PHP could not be found, please enter the correct path to php or leave empty to abort: "
 
             GOTO :whileNotPHP
@@ -96,21 +99,47 @@ IF EXIST %installation_path%\workbench.config (
 	
     SET /P answer= "This will install the current version of the Contrexx Workbench into the following path (%installation_path%). Are you sure? [Y,n] "
 
-    IF "%answer%" == "n" (
-        REM "QUIT THE PROCESS"
-        REM EXIT
+    IF "!answer!" == "n" (
+        ECHO "Exit from workbench installation"        
     ) ELSE (
         SET /p distributer= "What name should be used as distributor for components? "
         ECHO Downloading workbench...
 	
-        SET php_code= "require_once '%installation_path%/core/Core/init.php';init('minimal');"
-        REM ECHO !php_code!
-		
-        START /WAIT "Contrexx Workbench" !php_path! -r !php_code!
-	
-        REM download workbench for version using PEAR's HTTP2
-        REM uncompress zip file using zip library of contrexx
-        REM write workbench.config	
+        SET php_code=^
+            require_once '!installation_path!/core/Core/init.php';^
+            \DBG::activate(DBG_LOG^);^
+            init(minimal^);^
+            $url = '!download_url!!filename!';^
+            try {^
+                $request  = new \HTTP_Request2($url^);^
+                $response = $request-^>send(^);^
+                if (404 == $response-^>getStatus(^)^) {^
+                    return false;^
+                } else {^
+                    file_put_contents('!installation_path!\!filename!', $response-^>getBody(^)^);^
+                    $archive=new \PclZip('!installation_path!\!filename!'^);^
+                    if (($files = $archive-^>extract(PCLZIP_OPT_PATH, '!installation_path!', PCLZIP_OPT_REMOVE_PATH, '!filename!'^)^) ^^!= 0^) {^
+                        if (^^!in_array($file['status'],array('ok','filtered','already_a_directory'^)^)^) {^
+                            \DBG::log($archive-^>errorInfo(true^)^);^
+                            return false;^
+                        }^
+                    }^
+                }^
+            } catch (\Exception $e^) {^
+                \DBG::msg($e-^>getMessage(^)^);^
+                return false;^
+            }
+
+        REM ECHO "!php_code!"
+
+        START /WAIT /B "Contrexx Workbench" !php_path! -r "!php_code!"        
+
+        (
+        Echo php=!php_path!
+        Echo distributer=!distributer!
+        ) > !installation_path!\workbench.config
+
+        GOTO :startWorkBench
     )
 )
 PAUSE
