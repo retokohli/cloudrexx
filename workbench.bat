@@ -62,11 +62,16 @@ SET filename=workbench-#.zip
 
 REM find work dir
 IF NOT "%1" == "" (
-    SET installation_path=%1
-    SHIFT
+    IF EXIST %1\NUL (
+        SET installation_path=%1
+        SHIFT
+    ) ELSE (
+        SET installation_path=%CD%
+    )
 ) ELSE (
     SET installation_path=%CD%
 )
+
 IF NOT EXIST !installation_path! (
     ECHO Path not found !installation_path!
     EXIT
@@ -77,15 +82,25 @@ SET contrexx_version=%version:~-7,-2%
 SET filename=%filename:#=!contrexx_version!%
 REM ECHO %filename%
 
+
+:getCommandLineArgs
+if "%1"=="" (GOTO :startWorkBench)
+SET commandline_args=!commandline_args! %1
+SHIFT	
+GOTO :getCommandLineArgs
+
+
 REM start or install workbench
 :startWorkBench
-IF EXIST "!installation_path!\workbench.config" (	
+IF EXIST "!installation_path!\workbench.config" (
+		
     for /f "delims=" %%G in ('FINDSTR "php" !installation_path!\workbench.config') DO (
             SET php_path=%%G
             SET php_path=!php_path:~4!
     )
 
-    START /WAIT /B "Contrexx Workbench" !php_path! -f !installation_path!\core_modules\Workbench\console.php 	
+    START /WAIT /B "Contrexx Workbench" !php_path! -f !installation_path!\core_modules\Workbench\console.php !commandline_args!
+	
 ) ELSE (
     SET php_path=C:\xampp\php\php.exe
     REM SET php_path=C:\wamp\bin\php\php5.3.5\php.exe
@@ -100,7 +115,8 @@ IF EXIST "!installation_path!\workbench.config" (
     SET /P answer= "This will install the current version of the Contrexx Workbench into the following path (%installation_path%). Are you sure? [Y,n] "
 
     IF "!answer!" == "n" (
-        ECHO "Exit from workbench installation"        
+        ECHO "Exit from workbench installation"
+        EXIT
     ) ELSE (
         SET /p distributer= "What name should be used as distributor for components? "
         ECHO Downloading workbench...
@@ -129,7 +145,7 @@ IF EXIST "!installation_path!\workbench.config" (
                 \DBG::msg($e-^>getMessage(^)^);^
                 return false;^
             }
-
+						
         REM ECHO "!php_code!"
 
         START /WAIT /B "Contrexx Workbench" !php_path! -r "!php_code!"        
