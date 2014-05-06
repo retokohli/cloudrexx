@@ -93,13 +93,13 @@ GOTO :getCommandLineArgs
 REM start or install workbench
 :startWorkBench
 IF EXIST "!installation_path!\workbench.config" (
-		
+
     for /f "delims=" %%G in ('FINDSTR "php" !installation_path!\workbench.config') DO (
-            SET php_path=%%G
-            SET php_path=!php_path:~4!
+        SET php_path=%%G
+        SET php_path=!php_path:~4!
     )
 
-    START /WAIT /B "Contrexx Workbench" !php_path! -f !installation_path!\core_modules\Workbench\console.php !commandline_args!
+    START /B /WAIT "Contrexx Workbench" !php_path! -f !installation_path!\core_modules\Workbench\console.php !commandline_args!
 	
 ) ELSE (
     SET php_path=C:\xampp\php\php.exe
@@ -115,7 +115,7 @@ IF EXIST "!installation_path!\workbench.config" (
     SET /P answer= "This will install the current version of the Contrexx Workbench into the following path (%installation_path%). Are you sure? [Y,n] "
 
     IF "!answer!" == "n" (
-        ECHO "Exit from workbench installation"
+	    ECHO "Exit from workbench installation"
         EXIT
     ) ELSE (
         SET /p distributer= "What name should be used as distributor for components? "
@@ -123,7 +123,7 @@ IF EXIST "!installation_path!\workbench.config" (
 	
         SET php_code=^
             require_once '!installation_path!/core/Core/init.php';^
-            \DBG::activate(DBG_LOG^);^
+            \DBG::deactivate(^);^
             init(minimal^);^
             $url = '!download_url!!filename!';^
             try {^
@@ -135,20 +135,25 @@ IF EXIST "!installation_path!\workbench.config" (
                     file_put_contents('!installation_path!\!filename!', $response-^>getBody(^)^);^
                     $archive=new \PclZip('!installation_path!\!filename!'^);^
                     if (($files = $archive-^>extract(PCLZIP_OPT_PATH, '!installation_path!', PCLZIP_OPT_REMOVE_PATH, '!filename!'^)^) ^^!= 0^) {^
-                        if (^^!in_array($file['status'],array('ok','filtered','already_a_directory'^)^)^) {^
-                            \DBG::log($archive-^>errorInfo(true^)^);^
-                            return false;^
+                        foreach ($files as $file^) {^
+                            if (^^!in_array($file['status'],array('ok','filtered','already_a_directory'^)^)^) {^
+                                    \DBG::log($archive-^>errorInfo(true^)^);^
+                                    return false;^
+                            }^
                         }^
                     }^
                 }^
             } catch (\Exception $e^) {^
                 \DBG::msg($e-^>getMessage(^)^);^
                 return false;^
-            }
-						
+            }^
+            @unlink('!installation_path!\!filename!'^);
+
         REM ECHO "!php_code!"
 
-        START /WAIT /B "Contrexx Workbench" !php_path! -r "!php_code!"        
+        START /B /WAIT "Contrexx Workbench" !php_path! -r "!php_code!"
+
+        ECHO Creating config file...
 
         (
         Echo php=!php_path!
