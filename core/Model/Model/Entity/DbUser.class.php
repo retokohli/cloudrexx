@@ -1,6 +1,6 @@
 <?php
 
-namespace \Cx\Core\Model\Model\Entity\DbUser;
+namespace \Cx\Core\Model\Model\Entity;
 /*
  * DbUser class
  * */

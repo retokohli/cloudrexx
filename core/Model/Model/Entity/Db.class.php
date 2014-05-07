@@ -1,5 +1,5 @@
 <?php
-namespace \Cx\Core\Model\Model\Entity\Db;
+namespace \Cx\Core\Model\Model\Entity;
 /*
  * Db class
  * */
