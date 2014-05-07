@@ -468,7 +468,7 @@ class InitCMS
          *Add by manish
          * check front end user login or register and select theme
          **/
-         if(empty($sessionObj))
+        /* if(empty($sessionObj))
            $sessionObj=new cmsSession();
      
        
@@ -482,6 +482,7 @@ class InitCMS
                   $this->currentThemesId=$userObjResult->fields['theme_id'];
             }
         }
+        */
         
         /*** end of condition **/
         
