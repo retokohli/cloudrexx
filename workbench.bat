@@ -74,7 +74,7 @@ IF NOT "%1" == "" (
 
 IF NOT EXIST !installation_path! (
     ECHO Path not found !installation_path!
-    EXIT
+    GOTO :EOF
 )
 
 for /f "delims=" %%a in ('FINDSTR "coreCmsVersion" !installation_path!\config\settings.php') DO @SET version=%%a
@@ -107,24 +107,23 @@ IF EXIST "!installation_path!\workbench.config" (
     
     :whileNotPHP
     IF NOT EXIST "!php_path!" (
-            SET /p php_path= "PHP could not be found, please enter the correct path to php or leave empty to abort: "
+        SET /p php_path= "PHP could not be found, please enter the correct path to php or leave empty to abort: "
 
-            GOTO :whileNotPHP
+        GOTO :whileNotPHP
     )
 	
     SET /P answer= "This will install the current version of the Contrexx Workbench into the following path (%installation_path%). Are you sure? [Y,n] "
 
     IF "!answer!" == "n" (
-	    ECHO "Exit from workbench installation"
-        EXIT
+        ECHO Exit from workbench installation
+        EXIT /B
     ) ELSE (
-        SET /p distributer= "What name should be used as distributor for components? "
         ECHO Downloading workbench...
 	
         SET php_code=^
             require_once '!installation_path!/core/Core/init.php';^
             \DBG::deactivate(^);^
-            init(minimal^);^
+            init('minimal'^);^
             $url = '!download_url!!filename!';^
             try {^
                 $request  = new \HTTP_Request2($url^);^
@@ -132,33 +131,45 @@ IF EXIST "!installation_path!\workbench.config" (
                 if (404 == $response-^>getStatus(^)^) {^
                     return false;^
                 } else {^
-                    file_put_contents('!installation_path!\!filename!', $response-^>getBody(^)^);^
-                    $archive=new \PclZip('!installation_path!\!filename!'^);^
-                    if (($files = $archive-^>extract(PCLZIP_OPT_PATH, '!installation_path!', PCLZIP_OPT_REMOVE_PATH, '!filename!'^)^) ^^!= 0^) {^
+                    try {^
+                        $file = new \Cx\Lib\FileSystem\File(ASCMS_DOCUMENT_ROOT . '/!filename!'^);^
+                        $file-^>touch(^);^
+                        $file-^>write($response-^>getBody(^)^);^
+                    } catch(\Cx\Lib\FileSystem\FileSystemException $e^) {}^
+                    ^echo 'Extracting Files..'. PHP_EOL;^
+                    $archive=new \PclZip(ASCMS_DOCUMENT_ROOT . '/!filename!'^);^
+                    if (($files = $archive-^>extract(PCLZIP_OPT_PATH, ASCMS_DOCUMENT_ROOT, PCLZIP_OPT_REMOVE_PATH, '!filename!'^)^) ^^!= 0^) {^
                         foreach ($files as $file^) {^
                             if (^^!in_array($file['status'],array('ok','filtered','already_a_directory'^)^)^) {^
-                                    \DBG::log($archive-^>errorInfo(true^)^);^
-                                    return false;^
+                                \DBG::log($archive-^>errorInfo(true^)^);^
+                                return false;^
                             }^
                         }^
                     }^
                 }^
+		try {^
+                    $file = new \Cx\Lib\FileSystem\File(ASCMS_DOCUMENT_ROOT.'/'.ASCMS_PATH_OFFSET.'/!filename!'^);^
+                    $file-^>delete(^);^
+                } catch(\Cx\Lib\FileSystem\FileSystemException $e^) {}^
+                ^echo 'What name should be used as distributor for components? ';^
+                $handle = fopen ('php://stdin','r'^);^
+                $line = fgets($handle^);^
+                $distributer = trim($line^);^
+                ^echo 'Creating Configuration file..'. PHP_EOL;^
+                try {^
+                    $workBenchConfig = 'php=!php_path!'. PHP_EOL. 'distributer='. $distributer;^
+                    $file = new \Cx\Lib\FileSystem\File(ASCMS_DOCUMENT_ROOT . '/workbench.config'^);^
+                    $file-^>touch(^);^
+                    $file-^>write($workBenchConfig^);^
+                } catch(\Cx\Lib\FileSystem\FileSystemException $e^) {}^
             } catch (\Exception $e^) {^
                 \DBG::msg($e-^>getMessage(^)^);^
                 return false;^
             }^
-            @unlink('!installation_path!\!filename!'^);
-
+            
         REM ECHO "!php_code!"
 
         START /B /WAIT "Contrexx Workbench" !php_path! -r "!php_code!"
-
-        ECHO Creating config file...
-
-        (
-        Echo php=!php_path!
-        Echo distributer=!distributer!
-        ) > !installation_path!\workbench.config
 
         GOTO :startWorkBench
     )
@@ -167,4 +178,3 @@ PAUSE
 
 
 REM here the windows part ends
-
