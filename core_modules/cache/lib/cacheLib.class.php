@@ -78,6 +78,10 @@ class cacheLib
 
     function _deleteAllFiles($cacheEngine = 'all')
     {
+        
+        \Env::get('cache')->deleteAll();
+        
+        /*
         $handleDir = opendir($this->strCachePath);
         if ($handleDir) {
             while ($strFile = readdir($handleDir)) {
@@ -100,7 +104,7 @@ class cacheLib
                 }
             }
             closedir($handleDir);
-        }
+        } */
     }
 
     /**
