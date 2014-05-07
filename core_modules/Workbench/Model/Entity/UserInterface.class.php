@@ -62,7 +62,7 @@ abstract class UserInterface {
             /* FUTURE COMMANDS */
             //'get' => new GetCommand($this), // Get workbench configuration variables
             //'set' => new SetCommand($this), // Set workbench configuration variables
-            //'test' => new TestCommand($this), // run UnitTests
+            'test' => new TestCommand($this), // run UnitTests
             //'treenav' => new TreeNavCommand($this), // recursive tree view of backend navigation
             //'addnav' => new AddNavCommand($this), // add a backend navigation entry
             //'rmnav' => new RmNavCommand($this), // remove a backend navigation entry

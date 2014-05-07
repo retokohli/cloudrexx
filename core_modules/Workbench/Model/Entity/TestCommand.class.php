@@ -55,5 +55,19 @@ class TestCommand extends Command {
          * Create test code
          *  - behat --snippets
          */
+        global $argv;
+
+        // php phpunit.php --bootstrap ../cx_bootstrap.php --testdox ../test/core/
+        //\DBG::activate(DBG_PHP);
+        $argv = array(
+            'phpunit.php',
+            //'--bootstrap',
+            //'../cx_bootstrap.php',
+            '--testdox',
+            ASCMS_DOCUMENT_ROOT.'/testing/tests/core/',
+        );
+        chdir(ASCMS_DOCUMENT_ROOT.'/testing/PHPUnit/');
+        echo shell_exec('php phpunit.php --bootstrap ../cx_bootstrap.php --testdox ../tests/core/');
+        //require_once(ASCMS_DOCUMENT_ROOT.'/testing/PHPUnit/phpunit.php');
     }
 }
