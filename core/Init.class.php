@@ -448,7 +448,7 @@ class InitCMS
      */
     function getTemplates()
     {
-        global $objDatabase;
+        global $objDatabase,$sessionObj;
 
         if (isset($_GET['custom_content']) && preg_match('/^[a-zA-Z0-9_]+$/', $_GET['custom_content'])) {
             $this->customContentTemplate=$_GET['custom_content'];
@@ -464,7 +464,27 @@ class InitCMS
                 $this->currentThemesId=intval($_GET['preview']);
             }
         }
-
+        /**
+         *Add by manish
+         * check front end user login or register and select theme
+         **/
+         if(empty($sessionObj))
+           $sessionObj=new cmsSession();
+     
+       
+        if(!empty($sessionObj))
+        {
+            if($sessionObj->status=='frontend' && !empty($sessionObj->userId))
+            {
+                $userQuery = "SELECT * FROM ".DBPREFIX."users where id='".$sessionObj->userId."'";
+                $userObjResult = $objDatabase->Execute($userQuery);
+                if(!empty($userObjResult->fields['theme_id']))
+                  $this->currentThemesId=$userObjResult->fields['theme_id'];
+            }
+        }
+        
+        /*** end of condition **/
+        
         $objResult = $objDatabase->SelectLimit("
             SELECT  id,
                                     themesname,
