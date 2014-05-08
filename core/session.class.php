@@ -40,6 +40,9 @@ class cmsSession extends RecursiveArrayAccess {
     private $rememberMe = false;
     private $discardChanges = false;
     
+    private $locks = array();
+    private $sessionLockTime = 10;
+    
     /*
      * Get instance of the class from the out side world
      */
@@ -105,9 +108,9 @@ class cmsSession extends RecursiveArrayAccess {
                 }
             }            
             // END Array implementations 
-        }        
+        }
     }
-        
+    
     function readData() {        
         
         $query = "SELECT 
@@ -250,7 +253,14 @@ class cmsSession extends RecursiveArrayAccess {
     }
 
     function cmsSessionClose()
-    {
+    {        
+        // release all locks
+        if (!empty($_SESSION->locks)) {
+            foreach ($_SESSION->locks as $key => $value) {
+                $this->releaseLock($key);
+            }
+        }
+        
         return true;
     }
 
@@ -411,7 +421,29 @@ class cmsSession extends RecursiveArrayAccess {
             }
         }
     }
+    
+    static function getLockName($key)
+    {
+        global $_DBCONFIG;
+        
+        return $_DBCONFIG['database'].DBPREFIX."sessions_".$_SESSION->sessionid.'_'.$key;
+    }
 
+    public function getLock($lockName, $lifeTime = 60)
+    {
+        $objLock = \Env::get('db')->Execute('SELECT GET_LOCK("' . $lockName . '", ' . $lifeTime . ')');
+
+        if (!$objLock || $objLock->fields['GET_LOCK("' . $lockName . '", ' . $lifeTime . ')'] != 1) {
+            die('Could not obtain session lock!');
+        }     
+    }
+    
+    public function releaseLock($key)
+    {
+        unset($_SESSION->locks[$key]);
+        \Env::get('db')->Execute('SELECT RELEASE_LOCK("' . self::getLockName($key) . '")');
+    }
+    
     /**
      * Discard changes made to the $_SESSION-array.
      *
@@ -423,29 +455,37 @@ class cmsSession extends RecursiveArrayAccess {
     public function discardChanges() {
         $this->discardChanges = true;
     }
-
+    
     public function offsetGet($offset) {
         
         if (isset($this->data[$offset])) {
-            // TO-DO: check the db, whether the current offset value is modified or not ?
-             
-            /* $query = "SELECT
-                        `sessionid`,
-                        `lastused`,
-                        `variable_value`
-                      FROM
-                        `" . DBPREFIX . "session_variable`
-                      WHERE
-                        `variable_key` = '$offset'
-                      AND      
-                        `sessionid`   = '{$_SESSION->sessionid}'";
-            $objResult = \Env::get('db')->SelectLimit($query, 1);
             
-            if ($objResult && $objResult->RecordCount() > 0) {
-                return unserialize($objResult->fields['variable_value']);
+            if ($this->arrayPath && !empty($this->arrayPath)) {
+                list($lockKey) = explode('/', $this->arrayPath);
             } else {
-                return $this->data[$offset];
-            } */
+                $lockKey = $offset;
+            }
+            if (!isset($_SESSION->locks[$lockKey])) {
+
+                $_SESSION->locks[$lockKey] = 1;
+                $this->getLock(self::getLockName($lockKey), $this->sessionLockTime);
+
+                $query = "SELECT
+                            `sessionid`,
+                            `lastused`,
+                            `variable_value`
+                          FROM
+                            `" . DBPREFIX . "session_variable`
+                          WHERE
+                            `variable_key` = '$offset'
+                          AND
+                            `sessionid`   = '{$_SESSION->sessionid}'";
+                $objResult = \Env::get('db')->SelectLimit($query, 1);
+
+                if ($objResult && $objResult->RecordCount() > 0) {
+                    return unserialize($objResult->fields['variable_value']);
+                }
+            }
             
             return $this->data[$offset];
         } else {
@@ -470,9 +510,14 @@ class cmsSession extends RecursiveArrayAccess {
         $sessionVar = contrexx_raw2db($offset);
         $sessionVal = contrexx_raw2db(serialize($_SESSION[$offset]));
 
+        if (!isset($_SESSION->locks[$offset])) {
+            $_SESSION->locks[$offset] = 1;
+            $this->getLock(self::getLockName($offset), $this->sessionLockTime);
+        }
+        
         $query = "REPLACE INTO 
                      `" . DBPREFIX . "session_variable` 
-                   SET                   
+                   SET
                     `sessionid`   = '{$_SESSION->sessionid}',
                     `variable_key` = '$sessionVar',
                     `variable_value` = '$sessionVal'";
