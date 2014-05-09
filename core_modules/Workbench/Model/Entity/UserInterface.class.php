@@ -51,8 +51,7 @@ abstract class UserInterface {
             'db' => new DbCommand($this), // wrapper for doctrine commandline tools
             'install' => new InstallCommand($this), // install component from zip, todo: install from repo
             'create' => new CreateCommand($this), // create new component
-            'delete' => new DeleteCommand($this), // delete a component
-            // rename delete to uninstall
+            'uninstall' => new UninstallCommand($this), // delete a component            
             'activate' => new ActivateCommand($this), // activate a component
             'deactivate' => new DeactivateCommand($this), // deactivate a component
             'move' => new MoveCommand($this), // convert component types (core to core_module, etc.) and rename components
