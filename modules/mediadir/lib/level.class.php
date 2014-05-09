@@ -161,7 +161,7 @@ class mediaDirectoryLevel extends mediaDirectoryLibrary
                 if ($objLevelAttributes !== false) {
                     while (!$objLevelAttributes->EOF) {
                         $arrLevelName[$objLevelAttributes->fields['lang_id']] = htmlspecialchars($objLevelAttributes->fields['name'], ENT_QUOTES, CONTREXX_CHARSET);
-                        $arrLevelDesc[$objLevelAttributes->fields['lang_id']] = htmlspecialchars($objLevelAttributes->fields['description'], ENT_QUOTES, CONTREXX_CHARSET);
+                        $arrLevelDesc[$objLevelAttributes->fields['lang_id']] = $objLevelAttributes->fields['description'];
 
                         $objLevelAttributes->MoveNext();
                     }
@@ -241,7 +241,7 @@ class mediaDirectoryLevel extends mediaDirectoryLibrary
                         $this->moduleLangVar.'_LEVEL_ID' => $arrLevel['levelId'],
                         $this->moduleLangVar.'_LEVEL_ORDER' => $arrLevel['levelOrder'],
                         $this->moduleLangVar.'_LEVEL_NAME' => contrexx_raw2xhtml($arrLevel['levelName'][0]),
-                        $this->moduleLangVar.'_LEVEL_DESCRIPTION' => contrexx_raw2xhtml($arrLevel['levelDescription'][0]),
+                        $this->moduleLangVar.'_LEVEL_DESCRIPTION' => $arrLevel['levelDescription'][0],
                         $this->moduleLangVar.'_LEVEL_PICTURE' => $arrLevel['levelPicture'],
                         $this->moduleLangVar.'_LEVEL_NUM_ENTRIES' => $arrLevel['levelNumEntries'],
                         $this->moduleLangVar.'_LEVEL_ICON' => $spacer.$strLevelIcon,
@@ -308,7 +308,7 @@ class mediaDirectoryLevel extends mediaDirectoryLibrary
                         $this->moduleLangVar.'_CATEGORY_LEVEL_ID' => $arrLevel['levelId'],
                         $this->moduleLangVar.'_CATEGORY_LEVEL_NAME' => contrexx_raw2xhtml($arrLevel['levelName'][0]),
                         $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => $strIndexHeaderTag.'<a href="index.php?section='.$this->moduleName.$strLevelCmd.'&amp;lid='.$arrLevel['levelId'].'">'.contrexx_raw2xhtml($arrLevel['levelName'][0]).'</a>',
-                        $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION' => contrexx_raw2xhtml($arrLevel['catDescription'][0]),
+                        $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION' => $arrLevel['levelDescription'][0],
                         $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrLevel[$intLevelId]['levelPicture'].'" border="0" alt="'.contrexx_raw2xhtml($arrLevel[$intLevelId]['levelName'][0]).'" />',
                         $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrLevel[$intLevelId]['levelPicture'],
                         $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => $arrLevel['levelNumEntries'],
@@ -418,7 +418,7 @@ class mediaDirectoryLevel extends mediaDirectoryLibrary
                     $this->moduleLangVar.'_CATEGORY_LEVEL_ID' => $arrLevels[$intLevelId]['levelId'],
                     $this->moduleLangVar.'_CATEGORY_LEVEL_NAME' => contrexx_raw2xhtml($arrLevels[$intLevelId]['levelName'][0]),
                     $this->moduleLangVar.'_CATEGORY_LEVEL_LINK' => '<a href="index.php?section='.$this->moduleName.'&amp;cid='.$arrLevels[$intCategoryId]['levelId'].'">'.contrexx_raw2xhtml($arrLevels[$intLevelId]['levelName'][0]).'</a>',
-                    $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION' => contrexx_raw2xhtml($arrLevels[$intLevelId]['levelDescription'][0]),
+                    $this->moduleLangVar.'_CATEGORY_LEVEL_DESCRIPTION' => $arrLevels[$intLevelId]['levelDescription'][0],
                     $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE' => '<img src="'.$arrLevels[$intLevelId]['levelPicture'].'.thumb" border="0" alt="'.contrexx_raw2xhtml($arrLevels[$intLevelId]['levelName'][0]).'" />',
                     $this->moduleLangVar.'_CATEGORY_LEVEL_PICTURE_SOURCE' => $arrLevels[$intLevelId]['levelPicture'],
                     $this->moduleLangVar.'_CATEGORY_LEVEL_NUM_ENTRIES' => $arrLevels[$intLevelId]['levelNumEntries'],
@@ -594,38 +594,15 @@ class mediaDirectoryLevel extends mediaDirectoryLibrary
             ");
 
             if($objUpdateAttributes !== false) {
-                $objDefaultLang = $objDatabase->Execute("
-                    SELECT
-                        `level_name` AS `name`,
-                        `level_description` AS `description`
-                    FROM
-                        ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names
-                    WHERE
-                        lang_id=".$_LANGID."
-                        AND `level_id` = '".$intId."'
-                    LIMIT
-                        1
-                ");
-
-                if ($objDefaultLang !== false) {
-                    $strOldDefaultName = $objDefaultLang->fields['name'];
-                    $strOldDefaultDescription = $objDefaultLang->fields['description'];
-                }
-
-                $objDeleteNames = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names WHERE level_id='".$intId."'");
+                
+                $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_".$this->moduleTablePrefix."_level_names WHERE level_id='".$intId."'");
 
                 if($objInsertNames !== false) {
                     foreach ($this->arrFrontendLanguages as $key => $arrLang) {
+                        if(empty($arrName[0])) $arrName[0] = "[[".$_ARRAYLANG['TXT_MEDIADIR_NEW_LEVEL']."]]";
+                        
                         $strName = $arrName[$arrLang['id']];
                         $strDescription = $arrDescription[$arrLang['id']];
-
-                        if($arrLang['id'] == $_LANGID) {
-                            if($arrName[0] != $strOldDefaultName) $strName = $arrName[0];
-                            if($arrName[$arrLang['id']] != $strOldDefaultName) $strName = $arrName[$arrLang['id']];
-
-                            if($arrDescription[0] != $strOldDefaultDescription) $strDescription = $arrDescription[0];
-                            if($arrDescription[$arrLang['id']] != $strOldDefaultDescription) $strDescription = $arrDescription[$arrLang['id']];
-                        }
 
                         if(empty($strName)) $strName = $arrName[0];
                         if(empty($strDescription)) $strDescription = $arrDescription[0];
