@@ -10,13 +10,13 @@ namespace Cx\Core_Modules\Workbench\Model\Entity;
  * Command to delete components
  * @author Michael Ritter <michael.ritter@comvation.com>
  */
-class DeleteCommand extends Command {
+class UninstallCommand extends Command {
     
     /**
      * Command name
      * @var string
      */
-    protected $name = 'delete';
+    protected $name = 'uninstall';
     
     /**
      * Command description
