@@ -1491,7 +1491,7 @@ namespace Cx\Core\Core\Controller {
         public function getDb() {
             return $this->db;
         }
-        
+
         /**
          * Returns the license for this instance
          * @return \Cx\Core_Modules\License\License

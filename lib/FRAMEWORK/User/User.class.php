@@ -2540,8 +2540,8 @@ class User extends User_Profile
                     ++$have_digit;
                     continue;
                 }
-                if ($use_special && $have_other < 1 && mt_rand(0, 6) < 1) {
-                    $password .= substr($special, mt_rand(0, strlen($special))-1, 1);
+                if ($use_special && $have_other == 0) {
+                    $password .= substr($special, mt_rand(0, strlen($special))-1, 1);                   
                     ++$have_other;
                 }
             }

@@ -70,3 +70,4 @@ $_CONFIG['coreCharacterEncoding'] = 'UTF-8'; // example 'UTF-8'
 $_CONFIG['pleskHost'] = 'cloudrexx.com'; // Plesk Host
 $_CONFIG['pleskLogin'] = 'comvation_cloudrexx'; //Plesk Login 
 $_CONFIG['pleskPassword'] = 'dAim39@1'; //Plesk Password 
+$_CONFIG['pleskIp'] = '80.74.136.182'; //Plesk Password 

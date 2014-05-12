@@ -1,5 +1,6 @@
 <?php
-namespace \Cx\Core\Model\Model\Entity;
+
+namespace Cx\Core\Model\Model\Entity;
 /*
  * Customer class
   * */
@@ -40,7 +41,7 @@ class Customer{
     /* getCustomerInfo get id of customer
      * @return $customerId id of the created customer
      * */
-    public function getCustomerId($id){
+    public function getCustomerId(){
         return $this->customerId;
     }
     
