@@ -13,7 +13,7 @@
 
 
 # find work dir
-if [ "$1" != "" ]; then
+if [ "$1" != "" ] && [ -d "$1" ]; then
     INSTALLATION_PATH="$1"
     COMMANDLINE_ARGS=${@:2}
 else
@@ -40,7 +40,7 @@ else
         PHP_PATH=$path
     done
     #$PHP_PATH -r "`awk 'seen&&/"/{seen=0} seen{print} /-r "/{seen = 1}' "$(basename $0)"`"
-    $PHP_PATH -r "`awk 'seen{print} /php_code=/{seen = 1} !/[\^]/{seen=0}' "$(basename $0)"`"
+    $PHP_PATH -r "`awk 'escape=0; /php_code=/{seen=1;escape=1} !/[\^]/{seen=0} seen && !escape {gsub(/[\^]/,""); print}' "$(basename $0)"`"
     # maybe rename this file to "workbench"
 fi
 
@@ -166,7 +166,7 @@ IF EXIST "!installation_path!\workbench.config" (
                 \DBG::msg($e-^>getMessage(^)^);^
                 return false;^
             }^
-            
+
         REM ECHO "!php_code!"
 
         START /B /WAIT "Contrexx Workbench" !php_path! -r "!php_code!"
