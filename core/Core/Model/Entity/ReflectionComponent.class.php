@@ -436,7 +436,7 @@ class ReflectionComponent {
         ';
         $result = $cx->getDb()->getAdoDb()->query($query);
         if (!$result->EOF) {
-            $id = $result->fields['id'];
+            $id = $result->fields['id'];            
             $query = '
                 UPDATE
                     `' . DBPREFIX . 'modules`
@@ -444,7 +444,8 @@ class ReflectionComponent {
                     `status` = \'y\',
                     `is_required` = ' . ((int) ($this->componentType == 'core')) . ',
                     `is_core` = ' . ((int) ($this->componentType == 'core' || $this->componentType == 'core_module')) . ',
-                    `is_active` = 1
+                    `is_active` = 1,
+                    `is_licensed` = 1
                 WHERE
                     `id` = ' . $id . '
             ';
@@ -476,7 +477,8 @@ class ReflectionComponent {
                         `status`,
                         `is_required`,
                         `is_core`,
-                        `is_active`
+                        `is_active`,
+                        `is_licensed`
                     )
                 VALUES
                     (
@@ -487,6 +489,7 @@ class ReflectionComponent {
                         \'y\',
                         ' . ((int) ($this->componentType == 'core')) . ',
                         ' . ((int) ($this->componentType == 'core' || $this->componentType == 'core_module')) . ',
+                        1,
                         1
                     )
             ';
@@ -735,7 +738,8 @@ class ReflectionComponent {
             UPDATE
                 `' . DBPREFIX . 'modules`
             SET
-                `is_active` = 0
+                `is_active` = 0,
+                `is_licensed` = 0
             WHERE
                 `name` = \'' . $this->componentName . '\'
         ';
