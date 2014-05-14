@@ -148,7 +148,7 @@ class Calendar extends CalendarLibrary
     function getCalendarPage()
     {
         self::loadEventManager();
-        
+
 
         if(isset($_GET['export'])) {
             $objEvent = new CalendarEvent(intval($_GET['export']));
@@ -173,12 +173,12 @@ class Calendar extends CalendarLibrary
                     self::boxesEventList();
                 } else {
                     self::showThreeBoxes();
-                }                
+                }
                 break;
             case 'category':
                 self::showCategoryView();
                 break;
-            case 'add':                
+            case 'add':
                 parent::checkAccess('add_event');
                 self::modifyEvent();
                 break;
@@ -206,7 +206,7 @@ class Calendar extends CalendarLibrary
 
     /**
      * Loads the event manager
-     * 
+     *
      * @return null
      */
     function loadEventManager()
@@ -242,33 +242,38 @@ class Calendar extends CalendarLibrary
 
 
         // get datepicker-time
-         if (isset($_REQUEST["yearID"]) ||  isset($_REQUEST["monthID"]) || isset($_REQUEST["dayID"])) {
+         if ((isset($_REQUEST["yearID"]) ||  isset($_REQUEST["monthID"]) || isset($_REQUEST["dayID"])) && $_GET['cmd'] != 'boxes') {
             $year  = isset($_REQUEST["yearID"]) ? (int) $_REQUEST["yearID"] : date('Y');
             $month = isset($_REQUEST["monthID"]) ? (int) $_REQUEST["monthID"] : date('m');
             $day   = isset($_REQUEST["dayID"]) ? (int) $_REQUEST["dayID"] : date('d');
-            
+
             $dateObj = new DateTime("{$year}-{$month}-{$day}");
-            
+
             $dateObj->modify("first day of this month");
             $dateObj->setTime(0, 0, 0);
             $this->startDate = $dateObj->getTimestamp();
-            
+
             // add months for the list view(month view)
             if ((empty($_GET['act']) || $_GET['act'] != 'list') && empty($_REQUEST['dayID'])) {
                 $dateObj->modify("+{$this->boxCount} months");
+
             }
-            
-            $dateObj->modify("last day of this month");
-            $dateObj->setTime(23, 59, 59);
-            $this->endDate = $dateObj->getTimestamp();
-            
-             } elseif ($_REQUEST["yearID"] && $_REQUEST["monthID"] && $_REQUEST["dayID"]) {
+
+             $dateObj->modify("last day of this month");
+             $dateObj->setTime(23, 59, 59);
+             $this->endDate = $dateObj->getTimestamp();
+
+
+         } elseif ($_GET["yearID"] && $_GET["monthID"] && $_GET["dayID"]) {
+
             $year = $_REQUEST["yearID"] ? $_REQUEST["yearID"] : date('Y', mktime());
             $month = $_REQUEST["monthID"] ? $_REQUEST["monthID"] : date('m', mktime());
             $day = $_REQUEST["dayID"] ? $_REQUEST["dayID"] : date('d', mktime());
+
             $this->startDate = mktime(0, 0, 0, $month, $day, $year);
             $this->endDate = mktime(23, 59, 59, $month, $day, $year);
         }
+
         
         $this->searchTerm = !empty($_GET['term']) ? contrexx_addslashes($_GET['term']) : null;
         $this->categoryId = !empty($_GET['catid']) ? intval($_GET['catid']) : null;
