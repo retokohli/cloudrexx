@@ -11,6 +11,7 @@
 
 # here the linux part starts
 
+FILENAME="workbench-%s.zip"
 
 # find work dir
 if [ "$1" != "" ] && [ -d "$1" ]; then
@@ -24,9 +25,17 @@ if [ ! -d "$INSTALLATION_PATH" ]; then
     echo "Path not found: $INSTALLATION_PATH"
 fi
 
+if [ ! -f "$INSTALLATION_PATH/config/settings.php" ]; then
+    echo "$INSTALLATION_PATH is not a Contrexx installation directory"
+    exit
+fi
+
+CONTREXX_VERSION=`grep "'coreCmsVersion'" "$INSTALLATION_PATH/config/settings.php" | awk '{print substr($3, 2, index($3,";")-3)}'`
+FILENAME=`printf "$FILENAME" $CONTREXX_VERSION`
+
 # start or install workbench
 if [ -f "$INSTALLATION_PATH/workbench.config" ]; then
-    PHP_PATH=`awk -F= '/php=/{print $2}' workbench.config`
+    PHP_PATH=`awk -F= '/php=/{print $2}' $INSTALLATION_PATH/workbench.config`
     $PHP_PATH "$INSTALLATION_PATH/core_modules/Workbench/console.php" $COMMANDLINE_ARGS
     exit
 else
@@ -39,9 +48,25 @@ else
         fi
         PHP_PATH=$path
     done
-    #$PHP_PATH -r "`awk 'seen&&/"/{seen=0} seen{print} /-r "/{seen = 1}' "$(basename $0)"`"
-    $PHP_PATH -r "`awk 'escape=0; /php_code=/{seen=1;escape=1} !/[\^]/{seen=0} seen && !escape {gsub(/[\^]/,""); print}' "$(basename $0)"`"
-    # maybe rename this file to "workbench"
+    
+    $PHP_PATH -r "`awk -v installation_path=$INSTALLATION_PATH -v file_name=$FILENAME -v php_path=$PHP_PATH '
+escape=0;
+/php_code=/{
+    seen=1;escape=1
+}
+!/[\^]/{
+    seen=0
+}
+seen && !escape {
+    gsub(/!installation_path!/, installation_path);
+    gsub(/!filename!/, file_name);
+    gsub(/!php_path!/, php_path);
+    gsub(/[\^]/,"");
+    print
+}
+' "$(basename $0)"`"
+
+    ./$(basename $0) $INSTALLATION_PATH $COMMANDLINE_ARGS
 fi
 
 
@@ -57,7 +82,6 @@ REM here the windows part starts
 
 SETLOCAL EnableExtensions EnableDelayedExpansion
 
-SET download_url=http://updatesrv1.contrexx.com/
 SET filename=workbench-#.zip
 
 REM find work dir
@@ -124,7 +148,7 @@ IF EXIST "!installation_path!\workbench.config" (
             require_once '!installation_path!/core/Core/init.php';^
             \DBG::deactivate(^);^
             init('minimal'^);^
-            $url = '!download_url!!filename!';^
+            $url = 'http://updatesrv1.contrexx.com/!filename!';^
             try {^
                 $request  = new \HTTP_Request2($url^);^
                 $response = $request-^>send(^);^
@@ -137,11 +161,12 @@ IF EXIST "!installation_path!\workbench.config" (
                         $file-^>write($response-^>getBody(^)^);^
                     } catch(\Cx\Lib\FileSystem\FileSystemException $e^) {}^
                     ^echo 'Extracting Files..'. PHP_EOL;^
-                    $archive=new \PclZip(ASCMS_DOCUMENT_ROOT . '/!filename!'^);^
-                    if (($files = $archive-^>extract(PCLZIP_OPT_PATH, ASCMS_DOCUMENT_ROOT, PCLZIP_OPT_REMOVE_PATH, '!filename!'^)^) ^^!= 0^) {^
+                    $archive=new \PclZip(ASCMS_DOCUMENT_ROOT . '/!filename!'^);^                    
+                    if (($files = $archive-^>extract(PCLZIP_OPT_PATH, ASCMS_DOCUMENT_ROOT, PCLZIP_OPT_REMOVE_PATH, '!filename!'^)^) ^^!= 0^) {^                        
                         foreach ($files as $file^) {^
                             if (^^!in_array($file['status'],array('ok','filtered','already_a_directory'^)^)^) {^
                                 \DBG::log($archive-^>errorInfo(true^)^);^
+                                \DBG::log('Status '.$file['status']^);^
                                 return false;^
                             }^
                         }^
