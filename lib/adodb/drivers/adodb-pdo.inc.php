@@ -437,16 +437,16 @@ class ADODB_pdo_base extends ADODB_pdo {
 		$ret = ADOConnection::SelectLimit($sql,$nrows,$offset,$inputarr,$secs2cache);
 		return $ret;
 	}
-	
-	function MetaTables()
-	{
-		return false;
-	}
-	
-	function MetaColumns()
-	{
-		return false;
-	}
+
+    function MetaTables($type=false,$showSchema=false,$mask=false)
+    {
+        return false;
+    }
+
+    function MetaColumns($table,$normalize=true)
+    {
+        return false;
+    }
 }
 
 class ADOPDOStatement {
