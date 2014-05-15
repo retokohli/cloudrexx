@@ -35,8 +35,8 @@ FILENAME=`printf "$FILENAME" $CONTREXX_VERSION`
 
 # start or install workbench
 if [ -f "$INSTALLATION_PATH/workbench.config" ]; then
-    PHP_PATH=`awk -F= '/php=/{print $2}' $INSTALLATION_PATH/workbench.config`
-    $PHP_PATH "$INSTALLATION_PATH/core_modules/Workbench/console.php" $COMMANDLINE_ARGS
+    PHP_PATH=`awk -F= '/php=/{gsub(/^[ \t]+|[ \t]+$/,"");print $1}' $INSTALLATION_PATH/workbench.config`    
+    $PHP_PATH -f "$INSTALLATION_PATH/core_modules/Workbench/console.php" $COMMANDLINE_ARGS
     exit
 else
     PHP_PATH="php"
@@ -49,7 +49,7 @@ else
         PHP_PATH=$path
     done
     
-    $PHP_PATH -r "`awk -v installation_path=$INSTALLATION_PATH -v file_name=$FILENAME -v php_path=$PHP_PATH '
+    PHP_CODE=`awk -v installation_path=$INSTALLATION_PATH -v file_name=$FILENAME -v php_path=$PHP_PATH '
 escape=0;
 /php_code=/{
     seen=1;escape=1
@@ -64,7 +64,9 @@ seen && !escape {
     gsub(/[\^]/,"");
     print
 }
-' "$(basename $0)"`"
+' "$(basename $0)"`
+
+    echo $PHP_PATH -r "$PHP_CODE"
 
     ./$(basename $0) $INSTALLATION_PATH $COMMANDLINE_ARGS
 fi
