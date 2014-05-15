@@ -718,8 +718,12 @@ namespace Cx\Core\Core\Controller {
             if ($this->mode != self::MODE_BACKEND) {
                 \CSRF::setFrontendMode();
             }
-            
-            $this->db = new \Cx\Core\Model\Db($this);
+            //create objects of the db
+            $objDb = new \Cx\Core\Model\Model\Entity\Db;
+            //create objects of the dbUser
+            $objDbUser = new \Cx\Core\Model\Model\Entity\DbUser;
+            $cacheEngine = $this->getCacheEngine();
+            $this->db = new \Cx\Core\Model\Db($objDb, $objDbUser, $cacheEngine); //pass these objects to the db class construct
             $objDatabase = $this->db->getAdoDb();
             \Env::set('db', $objDatabase);
             $em = $this->db->getEntityManager();
