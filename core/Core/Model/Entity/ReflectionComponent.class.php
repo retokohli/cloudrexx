@@ -105,8 +105,9 @@ class ReflectionComponent {
         } else if (is_string($arg1) && $arg2 && in_array($arg2, self::$componentTypes)) {
             $this->componentName = $arg1;
             $this->componentType = $arg2;
-
-            if (!$this->isValidComponentName($this->componentName)) {
+            
+            // look for the valid component name or legacy
+            if (!$this->isValidComponentName($this->componentName) && !$this->isValid()) {
                 throw new \BadMethodCallException("Provided component name \"{$this->componentName}\" is invalid. Component name must be written in CamelCase notation.");
             }
 
@@ -788,22 +789,25 @@ class ReflectionComponent {
         ';
         $res = $adoDb->execute($query);
         $moduleId = $res->fields['id'];
-        $query = '
-            DELETE FROM
-                `' . DBPREFIX . 'modules`
-            WHERE
-                `id` = \'' . $moduleId . '\'
-        ';
-        $adoDb->execute($query);
         
-        // backend_areas
-        $query = '
-            DELETE FROM
-                `' . DBPREFIX . 'backend_areas`
-            WHERE
-                `module_id` = \'' . $moduleId . '\'
-        ';
-        $adoDb->execute($query);
+        if (!empty($moduleId)) {
+            $query = '
+                DELETE FROM
+                    `' . DBPREFIX . 'modules`
+                WHERE
+                    `id` = \'' . $moduleId . '\'
+            ';
+            $adoDb->execute($query);
+
+            // backend_areas
+            $query = '
+                DELETE FROM
+                    `' . DBPREFIX . 'backend_areas`
+                WHERE
+                    `module_id` = \'' . $moduleId . '\'
+            ';
+            $adoDb->execute($query);
+        }
         
         // module tables (LIKE DBPREFIX . strtolower($moduleName)%)
         $query = '
@@ -818,6 +822,8 @@ class ReflectionComponent {
                     `' . current($result->fields) . '`
             ';
             $adoDb->execute($query);
+            
+            $result->MoveNext();
         }
                 
         // pages
