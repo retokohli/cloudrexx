@@ -22,13 +22,13 @@ class UninstallCommand extends Command {
      * Command description
      * @var string
      */
-    protected $description = 'Deletes a component (core, core_module, lib, module)';
+    protected $description = 'Uninstall a component (core, core_module, lib, module)';
     
     /**
      * Command synopsis
      * @var string
      */
-    protected $synopsis = 'workbench(.bat) delete [core|core_module|lib|module] {component_name}';
+    protected $synopsis = 'workbench(.bat) uninstall [core|core_module|lib|module] {component_name}';
     
     /**
      * Command help text
