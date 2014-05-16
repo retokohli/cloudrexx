@@ -10,25 +10,25 @@ namespace Cx\Core_Modules\Workbench\Model\Entity;
  * Command to pack components into a zip file
  * @author Michael Ritter <michael.ritter@comvation.com>
  */
-class PackCommand extends Command {
+class ExportCommand extends Command {
     
     /**
      * Command name
      * @var string
      */
-    protected $name = 'pack';
+    protected $name = 'export';
     
     /**
      * Command description
      * @var string
      */
-    protected $description = 'Packs a component (core, core_module, lib, module, template, etc.)';
+    protected $description = 'Export a component (core, core_module, lib, module, template, etc.)';
     
     /**
      * Command synopsis
      * @var string
      */
-    protected $synopsis = 'workbench(.bat) pack [core|core_module|lib|module] {component_name} ([customized|uncustomized]) {path to zip package}';
+    protected $synopsis = 'workbench(.bat) export [core|core_module|lib|module] {component_name} ([customized|uncustomized]) {path to zip package}';
     
     /**
      * Command help text
@@ -40,8 +40,8 @@ class PackCommand extends Command {
      * Execute this command
      * @param array $arguments Array of commandline arguments
      */
-    public function execute(array $arguments) {
-        $comp = new \Cx\Core\Core\Model\Entity\ReflectionComponent($arguments[2], $arguments[3]);
+    public function execute(array $arguments) {        
+        $comp = new \Cx\Core\Core\Model\Entity\ReflectionComponent($arguments[3], $arguments[2]);
         $customized = false;
         if (isset($arguments[5])) {
             if ($arguments[5] == 'customized') {
