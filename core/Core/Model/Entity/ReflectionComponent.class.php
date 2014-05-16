@@ -217,6 +217,7 @@ class ReflectionComponent {
      * Installs this component from a zip file (if available)
      * @todo DB stuff (structure and data)
      * @todo check dependency versions
+     * @todo activate templates
      */
     public function install() {
         // Check (not already installed (different version), all dependencies installed)
@@ -256,6 +257,7 @@ class ReflectionComponent {
         );
         
         // Activate (if type is system or application)
+        // TODO: templates need to be activated too!
         if ($this->componentType != 'core' && $this->componentType != 'core_module' && $this->componentType != 'module') {
             return;
         }
@@ -268,8 +270,17 @@ class ReflectionComponent {
             \DBG::msg($e->getMessage());
         }
         
-        // init DB structure from doctrine yaml files (rxqcmv1)
-        // load DB data from /data yaml files (rxqcmv1)
+        if (isset($meta['DlcInfo']['FrameworkVersion'])) {
+            if ($meta['DlcInfo']['FrameworkVersion'] < 3.1) {
+                //copy code from installer to load db from sql:
+                    // load /data/structure.sql
+                    // load /data/fixtures.sql
+            } else {
+                // init DB structure from doctrine yaml files
+                //doctrine orm:schema-tool:update --force
+                // load DB data from /data/fixture.yml/sql
+            }
+        }
         
         // Activate this component
         $this->activate();
@@ -280,10 +291,11 @@ class ReflectionComponent {
      * @param string $path Path to store zip file at
      * @todo add data files (db)
      * @todo create meta.yml
+     * @todo allow template files
+     * @todo test $customized
      */
-    public function pack($path) {
-        // Create temp working folder and
-        // Copy ZIP contents
+    public function pack($path, $customized = false) {
+        // Create temp working folder and copy ZIP contents
         $filesystem = new \Cx\Lib\FileSystem\FileSystem();
         $filesystem->copyDir(
             $this->getDirectory(false),
@@ -295,8 +307,25 @@ class ReflectionComponent {
             true
         );
         
-        // Copy contents to folder
-        // Create data files
+        if ($customized) {
+            // overwrite with contents of $this->getDirectory(true, true)
+            $filesystem->copyDir(
+                $this->getDirectory(true, true),
+                preg_replace('#' . ASCMS_DOCUMENT_ROOT . '#', '', $this->getDirectory(true, true)),
+                'files',
+                ASCMS_TEMP_PATH . '/appcache',
+                ASCMS_TEMP_WEB_PATH . '/appcache',
+                '',
+                true
+            );
+        }
+        
+        // Copy additional contents to folder:
+            // If this is still an AdoDb component:
+                // create $this->getDirectory(false)./data/structure.sql
+                // create $this->getDirectory(false)./data/fixtures.sql
+            // If this is a doctrine component:
+                // create $this->getDirectory(false)./data/fixtures.yml/sql
         // Create meta.yml
         // Compress
         $file = new \PclZip($path);
@@ -437,7 +466,7 @@ class ReflectionComponent {
         ';
         $result = $cx->getDb()->getAdoDb()->query($query);
         if (!$result->EOF) {
-            $id = $result->fields['id'];            
+            $id = $result->fields['id'];
             $query = '
                 UPDATE
                     `' . DBPREFIX . 'modules`
