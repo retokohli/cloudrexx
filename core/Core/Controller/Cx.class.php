@@ -270,7 +270,7 @@ namespace Cx\Core\Core\Controller {
                  * Request is not initialized for CLI mode
                  */
                 $this->postInit();
-                
+
                 /**
                  * Since we have a valid state now, we can start executing
                  * all of the component's hook methods.
@@ -684,7 +684,7 @@ namespace Cx\Core\Core\Controller {
          * @global type $objInit 
          */
         protected function init() {
-            global $_CONFIG, $_FTPCONFIG, $objDatabase, $objInit, $objCache;
+            global $_CONFIG, $_FTPCONFIG, $objDatabase, $objInit, $objCache, $_DBCONFIG;
 
             /**
              * This needs to be initialized before loading config/doctrine.php
@@ -718,10 +718,25 @@ namespace Cx\Core\Core\Controller {
             if ($this->mode != self::MODE_BACKEND) {
                 \CSRF::setFrontendMode();
             }
+            
             //create objects of the db
             $objDb = new \Cx\Core\Model\Model\Entity\Db;
+            
+            //setting database configuration values to the db object
+            $objDb->setHost($_DBCONFIG['host']);
+            $objDb->setName($_DBCONFIG['database']);
+            $objDb->setTablePrefix($_DBCONFIG['tablePrefix']);
+            $objDb->setDbType($_DBCONFIG['dbType']);
+            $objDb->setCharset($_DBCONFIG['charset']);
+            $objDb->setCollation($_DBCONFIG['collation']);
+            $objDb->setTimezone($_DBCONFIG['timezone']);
             //create objects of the dbUser
             $objDbUser = new \Cx\Core\Model\Model\Entity\DbUser;
+            
+            //setting database user configuration values to the dbUser object
+            $objDbUser->setName($_DBCONFIG['user']);
+            $objDbUser->setPassword($_DBCONFIG['password']);
+            
             $cacheEngine = $this->getCacheEngine();
             $this->db = new \Cx\Core\Model\Db($objDb, $objDbUser, $cacheEngine); //pass these objects to the db class construct
             $objDatabase = $this->db->getAdoDb();

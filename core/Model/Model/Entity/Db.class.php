@@ -28,22 +28,22 @@ class Db{
     /*
      * Protected db type
      * */
-    protected $dbType = 'mysql';
+    protected $dbType;
     
     /*
      * Protected db timezone
      * */
-    protected $timezone = 'Europe/Zurich';
+    protected $timezone;
     
     /*
      * Protected db character set
      * */
-    protected $charset = 'utf8';
+    protected $charset;
     
     /*
      * Protected db collation
      * */
-    protected $collation = 'utf8_unicode_ci';
+    protected $collation;
 
 
     /**
@@ -146,7 +146,7 @@ class Db{
     * @param string $Collation the db
     */
     public function setCollation($collation){
-        $this->charset = $collation;
+        $this->collation = $collation;
     }
     
     /**

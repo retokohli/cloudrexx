@@ -127,12 +127,11 @@ namespace Cx\Core\Model {
             $offsetMinutes = round((abs($offset)-$offsetHours*3600) / 60); 
             $offsetString = ($offset > 0 ? '+' : '-').($offsetHours < 10 ? '0' : '').$offsetHours.':'.($offsetMinutes < 10 ? '0' : '').$offsetMinutes;
             
-            $dbCharSet = $this->db->getCharset();
-
+            $dbCharSet = $this->db->getCharset();    
             $this->pdo = new \PDO(
                 'mysql:dbname=' . $this->db->getName() . ';charset=' . $dbCharSet . ';host=' . preg_replace('/:/', ';port=', $this->db->getHost()),
                 $this->dbUser->getName(),
-                $this->dbUser->getDbPassword(),
+                $this->dbUser->getPassword(),
                 array(
                     // Setting the connection character set in the DSN (see below new \PDO()) prior to PHP 5.3.6 did not work.
                     // We will have to manually do it by executing the SET NAMES query when connection to the database.
@@ -205,7 +204,6 @@ namespace Cx\Core\Model {
             //global $_DBCONFIG;
 
             $config = new \Doctrine\ORM\Configuration();
-
             switch ($this->cacheEngine) {
                 case \Cx\Core\Core\Controller\Cx::CACHE_ENGINE_APC:
                     $cache = new \Doctrine\Common\Cache\ApcCache();
@@ -259,7 +257,6 @@ namespace Cx\Core\Model {
             $treeListener = new \Gedmo\Tree\TreeListener();
             $evm->addEventSubscriber($treeListener);
             $config->setMetadataDriverImpl($chainDriverImpl);
-
             //table prefix
             $prefixListener = new \DoctrineExtension\TablePrefixListener($this->db->getTablePrefix());
             $evm->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $prefixListener);
@@ -270,7 +267,7 @@ namespace Cx\Core\Model {
 
             //resolve enum, set errors
             $conn = $em->getConnection();
-            $conn->setCharset($this->db->getCharset()); 
+            $conn->setCharset($this->db->getCharset());
             $conn->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
             $conn->getDatabasePlatform()->registerDoctrineTypeMapping('set', 'string');
             
