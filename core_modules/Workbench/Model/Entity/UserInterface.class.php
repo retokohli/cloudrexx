@@ -49,7 +49,7 @@ abstract class UserInterface {
         $this->commands = array(
             /* EXISTING COMMANDS */
             'db' => new DbCommand($this), // wrapper for doctrine commandline tools
-            'install' => new InstallCommand($this), // install component from zip, todo: install from repo
+            'import' => new ImportCommand($this), // install component from zip, todo: install from repo
             'create' => new CreateCommand($this), // create new component
             'uninstall' => new UninstallCommand($this), // delete a component            
             'activate' => new ActivateCommand($this), // activate a component
