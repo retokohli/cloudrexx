@@ -10,13 +10,13 @@ namespace Cx\Core_Modules\Workbench\Model\Entity;
  * Command to install components
  * @author Michael Ritter <michael.ritter@comvation.com>
  */
-class InstallCommand extends Command {
+class ImportCommand extends Command {
     
     /**
      * Command name
      * @var string
      */
-    protected $name = 'install';
+    protected $name = 'import';
     
     /**
      * Command description
@@ -28,7 +28,7 @@ class InstallCommand extends Command {
      * Command synopsis
      * @var string
      */
-    protected $synopsis = 'workbench(.bat) install {path to zip package}';
+    protected $synopsis = 'workbench(.bat) import {path to zip package}';
     
     /**
      * Command help text
