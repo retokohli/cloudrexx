@@ -47,10 +47,10 @@ $_PATHCONFIG['ascms_installation_offset'] = $_PATHCONFIG['ascms_root_offset']; /
 * -------------------------------------------------------------------------
 */
 $_FTPCONFIG['is_activated'] = FALSE; // Ftp support true or false
-$_FTPCONFIG['host']	= 'localhost';// This is normally set to localhost
+$_FTPCONFIG['host']	= 'cloudrexx.com';// This is normally set to localhost
 $_FTPCONFIG['port'] = 21; // Ftp remote port
-$_FTPCONFIG['username'] = 'root'; // Ftp login username
-$_FTPCONFIG['password']	= '123456'; // Ftp login password
+$_FTPCONFIG['username'] = 'cloudrexx_h1'; // Ftp login username
+$_FTPCONFIG['password']	= 'E@7nld33'; // Ftp login password
 $_FTPCONFIG['path']	= '/httpdocs'; // Ftp path to cms (must not include ascms_root_offset)
 
 /**
@@ -67,8 +67,10 @@ $_CONFIG['coreCharacterEncoding'] = 'UTF-8'; // example 'UTF-8'
 * Credentials for plesk panel to call API RPC
 * -------------------------------------------------------------------------
 */
+
 $_CONFIG['pleskHost'] = 'cloudrexx.com'; // Plesk Host
 $_CONFIG['pleskLogin'] = 'comvation_cloudrexx'; //Plesk Login 
-$_CONFIG['pleskPassword'] = 'jJtw317'; //Plesk Password 
-$_CONFIG['pleskIp'] = '80.74.136.182'; //Plesk IP 
-$_CONFIG['pleskUse'] = TRUE; //Plesk use to check whether to use plesk API or not
+$_CONFIG['pleskPassword'] = 'dAim39@1'; //Plesk Password 
+$_CONFIG['pleskIp'] = '80.74.136.182'; //Plesk Password 
+$_CONFIG['pleskUse'] = false; // To check whether we use plesk API or not
+
