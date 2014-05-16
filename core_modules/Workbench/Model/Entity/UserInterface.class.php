@@ -71,7 +71,7 @@ abstract class UserInterface {
             //'update' => new UpdateCommand($this), // port a component to this version of contrexx
             //'upgrade' => new UpgradeCommand($this), // upgrade a component to current or current beta version
             //'push' => new PushCommand($this), // Pushes this installation to a FTP server
-            //'pack' => new PackCommand($this), // Create install/update package of current installation
+            'pack' => new PackCommand($this), // Create install/update package of current installation
         );
     }
     
