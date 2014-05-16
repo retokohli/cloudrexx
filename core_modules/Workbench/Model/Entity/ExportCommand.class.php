@@ -50,5 +50,7 @@ class ExportCommand extends Command {
             $arguments[4] = $arguments[5];
         }
         $comp->pack($arguments[4], $customized);
+        
+        $this->interface->show('Done');
     }
 }

@@ -294,13 +294,15 @@ class ReflectionComponent {
      * @todo allow template files
      * @todo test $customized
      */
-    public function pack($path, $customized = false) {
+    public function pack($path, $customized = false) {        
         // Create temp working folder and copy ZIP contents
         $filesystem = new \Cx\Lib\FileSystem\FileSystem();
+        // clean up tmp dir
+        $filesystem->delete_folder(ASCMS_TEMP_PATH . '/appcache', true);
         $filesystem->copyDir(
             $this->getDirectory(false),
             preg_replace('#' . ASCMS_DOCUMENT_ROOT . '#', '', $this->getDirectory(false)),
-            'files',
+            '',
             ASCMS_TEMP_PATH . '/appcache',
             ASCMS_TEMP_WEB_PATH . '/appcache',
             '',
@@ -312,7 +314,7 @@ class ReflectionComponent {
             $filesystem->copyDir(
                 $this->getDirectory(true, true),
                 preg_replace('#' . ASCMS_DOCUMENT_ROOT . '#', '', $this->getDirectory(true, true)),
-                'files',
+                '',
                 ASCMS_TEMP_PATH . '/appcache',
                 ASCMS_TEMP_WEB_PATH . '/appcache',
                 '',
@@ -329,7 +331,7 @@ class ReflectionComponent {
         // Create meta.yml
         // Compress
         $file = new \PclZip($path);
-        $list = $file->pack(PCLZIP_OPT_PATH, ASCMS_TEMP_PATH . '/appcache');
+        $file->create(ASCMS_TEMP_PATH . '/appcache', PCLZIP_OPT_REMOVE_PATH, ASCMS_TEMP_PATH . '/appcache');
     }
     
     /**
