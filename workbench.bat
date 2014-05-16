@@ -66,7 +66,7 @@ seen && !escape {
 }
 ' "$(basename $0)"`
 
-    echo $PHP_PATH -r "$PHP_CODE"
+    $PHP_PATH -r "$PHP_CODE"
 
     ./$(basename $0) $INSTALLATION_PATH $COMMANDLINE_ARGS
 fi
