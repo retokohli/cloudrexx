@@ -294,7 +294,13 @@ class ReflectionComponent {
      * @todo allow template files
      * @todo test $customized
      */
-    public function pack($path, $customized = false) {        
+    public function pack($path, $customized = false) {
+        
+        $pathParts = explode('.', $path);	
+        if (empty($path) || end($pathParts) != 'zip') {
+            throw new ReflectionComponentException('Invalid file name passed.Provide a valid zip file name');
+        }
+        
         // Create temp working folder and copy ZIP contents
         $filesystem = new \Cx\Lib\FileSystem\FileSystem();
         // clean up tmp dir
