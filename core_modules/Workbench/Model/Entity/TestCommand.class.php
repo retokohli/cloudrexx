@@ -28,7 +28,7 @@ class TestCommand extends Command {
      * Command synopsis
      * @var string
      */
-    protected $synopsis = 'workbench(.bat) db ??';
+    protected $synopsis = 'workbench(.bat) test ([{component_name}|{component_type}]) ({some_crazy_arguments_for_phpunit})';
     
     /**
      * Command help text
@@ -66,8 +66,54 @@ class TestCommand extends Command {
             '--testdox',
             ASCMS_DOCUMENT_ROOT.'/testing/tests/core/',
         );*/
-        chdir(ASCMS_DOCUMENT_ROOT.'/testing/PHPUnit/');
-        echo shell_exec('php phpunit.php --bootstrap ../cx_bootstrap.php --testdox ../tests/core/');
-        //require_once(ASCMS_DOCUMENT_ROOT.'/testing/PHPUnit/phpunit.php');
+        
+        $arrComponentTypes = array('core', 'core_module', 'module');        
+        $testingFolders     = array();
+        
+        // check for the component type
+        if (isset($arguments[2]) && in_array($arguments[2], $arrComponentTypes)) {
+            $testingFolders = $this->getTestingFoldersByType($arguments[2]);
+        } elseif (!empty ($arguments[2])) {
+            // check whether it a valid component
+            $componentName = $arguments[2];
+            $componentType = '';
+            
+            foreach ($arrComponentTypes as $cType) {
+                $componentPath = ASCMS_DOCUMENT_ROOT . "/" . \Cx\Core\Core\Model\Entity\SystemComponent::getPathForType($cType) . '/' . $componentName;
+                if (file_exists($componentPath)) {
+                    $componentType = $cType;
+                    $testingFolder = $componentPath . '/Testing/';
+                    if (file_exists($testingFolder)) {
+                        $testingFolders[] = $testingFolder;
+                    }
+                    break;
+                }
+            }
+        }
+        
+        // get all testing folder when component type or name not specificed
+        if (empty($testingFolders)) {
+            foreach ($arrComponentTypes as $cType) {
+                $testingFolders = array_merge($testingFolders, $this->getTestingFoldersByType($cType));
+            }
+        }
+        
+        //chdir(ASCMS_DOCUMENT_ROOT.'/testing/PHPUnit/');
+        //echo shell_exec('php phpunit.php --bootstrap ../cx_bootstrap.php --testdox ../tests/core/');
+    }
+    
+    function getTestingFoldersByType($componentType) {
+        $testingFolders = array();
+        
+        $componentPath = ASCMS_DOCUMENT_ROOT . \Cx\Core\Core\Model\Entity\SystemComponent::getPathForType($componentType);
+            
+        foreach (glob("$componentPath/*", GLOB_BRACE) as $folder) {
+            $testingFolder = $folder . '/Testing/';
+            if (file_exists($testingFolder)) {                    
+                $testingFolders[] = $testingFolder;
+            }
+        }
+        
+        return $testingFolders;
     }
 }
