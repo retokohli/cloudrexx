@@ -1,7 +1,4 @@
 <?php
-ini_set('display_startup_errors',1);
-ini_set('display_errors',1);
-error_reporting(1);
 /**
  * This file loads everything needed to load Contrexx. Just require this file
  * and execute \init($mode); while $mode is optional. $mode can be one of

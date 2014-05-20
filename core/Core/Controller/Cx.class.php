@@ -683,7 +683,7 @@ namespace Cx\Core\Core\Controller {
          * @global type $objDatabase
          * @global type $objInit 
          */
-        protected function init() {
+        protected function init() { 
             global $_CONFIG, $_FTPCONFIG, $objDatabase, $objInit, $objCache, $_DBCONFIG;
 
             /**
