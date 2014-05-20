@@ -181,10 +181,10 @@ IF EXIST "!installation_path!\workbench.config" (
                 ^echo 'What name should be used as distributor for components? ';^
                 $handle = fopen ('php://stdin','r'^);^
                 $line = fgets($handle^);^
-                $distributer = trim($line^);^
+                $distributor = trim($line^);^
                 ^echo 'Creating Configuration file..'. PHP_EOL;^
                 try {^
-                    $workBenchConfig = 'php=!php_path!'. PHP_EOL. 'distributer='. $distributer;^
+                    $workBenchConfig = 'php=!php_path!'. PHP_EOL. 'distributor='. $distributor;^
                     $file = new \Cx\Lib\FileSystem\File(ASCMS_DOCUMENT_ROOT . '/workbench.config'^);^
                     $file-^>touch(^);^
                     $file-^>write($workBenchConfig^);^
