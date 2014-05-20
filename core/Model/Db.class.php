@@ -126,7 +126,6 @@ namespace Cx\Core\Model {
             $offsetHours = round(abs($offset)/3600); 
             $offsetMinutes = round((abs($offset)-$offsetHours*3600) / 60); 
             $offsetString = ($offset > 0 ? '+' : '-').($offsetHours < 10 ? '0' : '').$offsetHours.':'.($offsetMinutes < 10 ? '0' : '').$offsetMinutes;
-            echo $this->dbUser->getPassword();
             $dbCharSet = $this->db->getCharset();    
             $this->pdo = new \PDO(
                 'mysql:dbname=' . $this->db->getName() . ';charset=' . $dbCharSet . ';host=' . preg_replace('/:/', ';port=', $this->db->getHost()),
