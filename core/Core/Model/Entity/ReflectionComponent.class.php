@@ -161,6 +161,44 @@ class ReflectionComponent {
     }
     
     /**
+     * Returns wheter this component installed or not
+     * @param string $componentName 
+     * @return boolean True if it exists, false otherwise
+     */
+    public function isInstalled($componentName) {
+        $cx = \Env::get('cx');
+        
+        $query = '
+            SELECT
+                `id`
+            FROM
+                `' . DBPREFIX . 'component`
+            WHERE
+                `name` = \'' . $componentName . '\'
+        ';
+        $result = $cx->getDb()->getAdoDb()->query($query);
+        if ($result && $result->RecordCount()) {
+            return true;
+        }        
+        
+        $query = '
+            SELECT
+                `id`
+            FROM
+                `' . DBPREFIX . 'modules`
+            WHERE
+                `name` = \'' . $componentName . '\'
+        ';
+        $result = $cx->getDb()->getAdoDb()->query($query);
+        
+        if ($result && $result->RecordCount()) {
+            return true;
+        }
+        
+        return false;
+    }
+
+    /**
      * Returns wheter this component is valid or not. A valid component will work as expected
      * @return boolean True if valid, false otherwise
      */
@@ -221,6 +259,9 @@ class ReflectionComponent {
      */
     public function install() {
         // Check (not already installed (different version), all dependencies installed)
+        if ($this->isInstalled($this->componentName)) {
+            throw new SystemComponentException('Component is already Exists');
+        }
         if (!$this->packageFile) {
             throw new SystemComponentException('Package file not available');
         }
@@ -380,8 +421,8 @@ class ReflectionComponent {
      * Creates this component using a skeleton
      */
     public function create() {
-        if ($this->exists()) {
-            return;
+        if ($this->isInstalled($this->componentName)) {
+            throw new SystemComponentException('Component is already Exists');
         }
         
         // copy skeleton component
@@ -913,6 +954,9 @@ class ReflectionComponent {
      * @return ReflectionComponent ReflectionComponent for new component
      */
     public function move($newName, $newType, $customized = false) {
+        if ($this->isInstalled($newName)) {
+            throw new SystemComponentException('Component is already Exists');
+        }
         return $this->internalRelocate($newName, $newType, $customized, false);
     }
     
@@ -927,6 +971,9 @@ class ReflectionComponent {
      * @return ReflectionComponent ReflectionComponent for new component (aka "the copy")
      */
     public function copy($newName, $newType, $customized = false) {
+        if ($this->isInstalled($newName)) {
+            throw new SystemComponentException('Component is already Exists');
+        }
         return $this->internalRelocate($newName, $newType, $customized, true);
     }
     
