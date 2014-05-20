@@ -336,8 +336,24 @@ class ReflectionComponent {
                 // create $this->getDirectory(false)./data/fixtures.yml/sql
         // Create meta.yml
         $objMetaComponent = new MetaComponent($this->componentName, $this->componentType);
-        $objMetaComponent->setComponentPublisher('rittor');
-        $objMetaComponent->setDependencies(array(
+        $publisher = '';
+        $query = '
+            SELECT
+                `distributor`
+            FROM
+                `'.DBPREFIX.'modules`
+            WHERE
+                `name` = "' . $this->componentName . '"
+            LIMIT 1
+        ';
+        $result = \Env::get('cx')->getDb()->getAdoDb()->query($query);
+        
+        if (!$result->EOF) {
+            $publisher = $result->fields['distributor'];
+        }
+        $objMetaComponent->setComponentPublisher($publisher);
+
+        /*$objMetaComponent->setDependencies(array(
             'name'  => 'Core',
             'type'  => 'core',
             'minimumVersionNumber' => '3.0.0.0',
@@ -347,10 +363,10 @@ class ReflectionComponent {
             'state' => 'beta',
             'number' => '3.1.0.0',
             'releaseDate' => 'unknown'
-        ));
-        $objMetaComponent->setRating(1);
+        ));*/
+        $objMetaComponent->setRating(0);
         $objMetaComponent->setDownloads(0);
-        $objMetaComponent->setPrice(0);
+        $objMetaComponent->setPrice(0.0);
         $objMetaComponent->setPricePer(0);
         
         $objMetaComponent->writeToFile(ASCMS_TEMP_PATH . '/appcache/meta.yml');
