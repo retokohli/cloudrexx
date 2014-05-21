@@ -8,7 +8,7 @@
  * @subpackage  modules_skeleton
  */
 
-namespace Cx\Modules\Skeleton\Controller;
+namespace Cx\Core_Modules\MediaBrowser\Controller;
 
 /**
  * Specific FrontendController for this Component. Use this to easily create a frontent view
@@ -36,5 +36,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         // Controller routes all calls to undeclared methods to your
         // ComponentController. So you can do things like
         $this->getName();
+        
+        
     }
 }
