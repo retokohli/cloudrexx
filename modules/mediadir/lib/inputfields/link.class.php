@@ -139,7 +139,11 @@ class mediaDirectoryInputfieldLink extends mediaDirectoryLibrary implements inpu
         ");
 
         $strValue = strip_tags(htmlspecialchars($objInputfieldValue->fields['value'], ENT_QUOTES, CONTREXX_CHARSET));
-
+        
+        // replace the links
+        $strValue = preg_replace('/\\[\\[([A-Z0-9_-]+)\\]\\]/', '{\\1}', $strValue);
+        \LinkGenerator::parseTemplate($strValue, true);
+        
         //make link name without protocol
         $strValueName = preg_replace('#^.*://#', '', $strValue);
 
