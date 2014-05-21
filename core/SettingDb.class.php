@@ -790,7 +790,7 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
             $objTemplateLocal->setVariable(array(
                 'CORE_SETTINGDB_SECTION' => $section,
             ));
-            $objTemplateLocal->parse('core_settingdb_section');
+            //$objTemplateLocal->parse('core_settingdb_section');
         }
         return true;
     }
