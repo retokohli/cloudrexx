@@ -107,6 +107,7 @@ define('ASCMS_ECARD_THUMBNAIL_WEB_PATH',    ASCMS_PATH_OFFSET.ASCMS_IMAGES_FOLDE
 define('ASCMS_MODEL_FOLDER',                '/model');
 define('ASCMS_MODEL_PATH',                  ASCMS_DOCUMENT_ROOT.ASCMS_MODEL_FOLDER);
 define('ASCMS_MODEL_PROXIES_PATH',          ASCMS_MODEL_PATH.'/proxies');
+define('ASCMS_TESTING_FOLDER',              '/Testing');
 
 // This is like the usual *_WEB_PATH, relative to ASCMS_PATH.
 // Like this, only one path needs to be defined for each purpose,
