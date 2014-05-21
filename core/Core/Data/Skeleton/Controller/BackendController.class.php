@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Specific BackendController for this Component. Use this to easily create a backend view
  *
@@ -9,7 +8,7 @@
  * @subpackage  modules_skeleton
  */
 
-namespace Cx\Core_Modules\MediaBrowser\Controller;
+namespace Cx\Modules\Skeleton\Controller;
 
 /**
  * Specific BackendController for this Component. Use this to easily create a backend view
@@ -20,27 +19,15 @@ namespace Cx\Core_Modules\MediaBrowser\Controller;
  * @subpackage  modules_skeleton
  */
 class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController {
-
-    /**
-     * Act param for the URL Reguest;
-     * 
-     * @var string $act
-     */
-    private $act = '';
-
+    
     /**
      * Returns a list of available commands (?act=XY)
      * @return array List of acts
      */
     public function getCommands() {
-        return array(
-            'Browser' => array(
-                'View1',
-                'View2'
-            )
-        );
+        return array();
     }
-
+    
     /**
      * Use this to parse your backend page
      * 
@@ -51,62 +38,12 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * @param array $cmd CMD separated by slashes
      */
     public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd) {
+        // this class inherits from Controller, therefore you can get access to
+        // Cx like this:
         $this->cx;
-        $this->template = $template;
-
-        // default css and js
-
         
-        
-        // get the act
-        $act = $cmd[0];
-        // get the submenu of act
-        $this->submenuName = $this->getSubmenuName($cmd);
-        // initiat the right controller
-        // DELETE FOR PRODUCTION
         // Controller routes all calls to undeclared methods to your
         // ComponentController. So you can do things like
-        //$this->getName();
-        // DELETE FOR PRODUCTION
-        // Trigger the specific controller
-        $this->routeToController($act);
+        $this->getName();
     }
-    
-  
-    /**
-     * Trigger a controller according the act param from the url
-     * 
-     * @param   string $act
-     */
-    public function routeToController($act){
-        $act = ucfirst($act);
-        if(!empty($act)){
-            $controllerName = __NAMESPACE__.'\\'.$act.'Controller';
-            if (!$controllerName && !class_exists($controllerName)) {
-                return;
-            }else{
-
-            }
-            //  instantiate the view specific controller
-            new $controllerName($this->getSystemComponentController(), $this->cx, $this->template, $this->submenuName);
-        }else{
-            // instantiate the defautl View Controller
-            new \Cx\Core_Modules\MediaBrowser\Controller\DefaultController($this->getSystemComponentController(), $this->cx, $this->template);
-        }
-        
-    }
-    
-    /**
-     * Returns the submenu page if the url contains any
-     * 
-     * @param   array   $cmd
-     * @return  string
-     */
-    private function getSubmenuName($cmd){
-        if(count($cmd) > 1){
-            $submenu = ucfirst($cmd[1]);
-            return $submenu;
-        }
-        return null;
-    }        
 }
