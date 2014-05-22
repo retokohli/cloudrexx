@@ -770,9 +770,15 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
                         (is_numeric($value) ? 'text-align: right;' : '').
                         '"');
             }
-
+            
+            //add Tooltip
+            $toolTips='';
+            if (isset($_ARRAYLANG[$prefix.strtoupper($name).'_TOOLTIP'])) {
+                // generate tooltip for configuration option
+                $toolTips='  <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">'.$_ARRAYLANG[$prefix.strtoupper($name).'_TOOLTIP'].'</span>';
+            }
             $objTemplateLocal->setVariable(array(
-                'CORE_SETTINGDB_NAME' => $_ARRAYLANG[$prefix.strtoupper($name)],
+                'CORE_SETTINGDB_NAME' => $_ARRAYLANG[$prefix.strtoupper($name)].$toolTips,
                 'CORE_SETTINGDB_VALUE' => $element,
                 'CORE_SETTINGDB_ROWCLASS2' => (++$i % 2 ? '1' : '2'),
             ));
