@@ -339,7 +339,7 @@ class ReflectionComponent {
         
         $pathParts = explode('.', $path);	
         if (empty($path) || end($pathParts) != 'zip') {
-            throw new ReflectionComponentException('Invalid file name passed.Provide a valid zip file name');
+            throw new ReflectionComponentException('Invalid file name passed. Provide a valid zip file name');
         }
         
         // Create temp working folder and copy ZIP contents
@@ -374,9 +374,22 @@ class ReflectionComponent {
                 // create $this->getDirectory(false)./data/structure.sql
                 // create $this->getDirectory(false)./data/fixtures.sql
             // If this is a doctrine component:
-                // create $this->getDirectory(false)./data/fixtures.yml/sql
-        // Create meta.yml
-        $objMetaComponent = new MetaComponent($this->componentName, $this->componentType);
+                // create $this->getDirectory(false)./data/fixtures.yml/sql                
+        // Create meta.yml        
+        $this->writeMetaDataToFile(ASCMS_TEMP_PATH . '/appcache/meta.yml');
+        
+        // Compress
+        $file = new \PclZip($path);
+        $file->create(ASCMS_TEMP_PATH . '/appcache', PCLZIP_OPT_REMOVE_PATH, ASCMS_TEMP_PATH . '/appcache');
+    }
+    
+    /**
+     * Write the meta information of the component to the file
+     * 
+     * @param \Cx\Lib\FileSystem\File $file Path to meta file
+     */
+    private function writeMetaDataToFile($file)
+    {
         $publisher = '';
         $query = '
             SELECT
@@ -392,29 +405,30 @@ class ReflectionComponent {
         if (!$result->EOF) {
             $publisher = $result->fields['distributor'];
         }
-        $objMetaComponent->setComponentPublisher($publisher);
-
-        /*$objMetaComponent->setDependencies(array(
-            'name'  => 'Core',
-            'type'  => 'core',
-            'minimumVersionNumber' => '3.0.0.0',
-            'maximumVersionNumber' => 0
-        ));
-        $objMetaComponent->setVersions(array(
-            'state' => 'beta',
-            'number' => '3.1.0.0',
-            'releaseDate' => 'unknown'
-        ));*/
-        $objMetaComponent->setRating(0);
-        $objMetaComponent->setDownloads(0);
-        $objMetaComponent->setPrice(0.0);
-        $objMetaComponent->setPricePer(0);
         
-        $objMetaComponent->writeToFile(ASCMS_TEMP_PATH . '/appcache/meta.yml');
+        $content = array(
+            'DlcInfo' => array(
+                 'name' => $this->componentName,
+                 'type' => $this->componentType,
+                 'publisher' => $publisher,
+                 'dependencies' => null,
+                 'versions' => null,
+                 'rating' => 0,
+                 'downloads' => 0,
+                 'price' => 0.0,
+                 'pricePer' => 0,
+            )
+        );
         
-        // Compress
-        $file = new \PclZip($path);
-        $file->create(ASCMS_TEMP_PATH . '/appcache', PCLZIP_OPT_REMOVE_PATH, ASCMS_TEMP_PATH . '/appcache');
+        try {
+            $file = new \Cx\Lib\FileSystem\File($file);
+            $file->touch();
+            $file->write(
+                    \Symfony\Component\Yaml\Yaml::dump($content, 3)
+            );
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            \DBG::msg($e->getMessage());
+        }
     }
     
     /**
