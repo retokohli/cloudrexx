@@ -49,7 +49,20 @@ class ExportCommand extends Command {
             }
             $arguments[4] = $arguments[5];
         }
-        $comp->pack($arguments[4], $customized);
+        $zipPath = $arguments[4];
+        
+        $pathParts = explode('.', $zipPath);
+        if (empty($zipPath) || end($pathParts) != 'zip') {
+            throw new CommandException('Invalid file name passed. Provide a valid zip file name');
+        }
+        
+        if (file_exists($zipPath)) {
+            if (!$this->interface->yesNo('Provided zip file is already exists. Do you want to overwrite it?')) {
+                return;
+            }
+        }
+        
+        $comp->pack($zipPath, $customized);
         
         $this->interface->show('Done');
     }
