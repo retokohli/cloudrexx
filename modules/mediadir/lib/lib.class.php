@@ -628,7 +628,33 @@ function ExpandMinimizeMultiple(toggleId, toggleKey){
     elm1.style.display = (elm1.style.display=='none') ? 'block' : 'none';
     elm2.style.display = (elm2.style.display=='none') ? 'block' : 'none';
 }  
-         
+                
+function updateWysiwygEditor(fieldId, toggleKey){
+    defaultLang = '$_LANGID';
+    activeLang = new Array($arrActiveLang);
+    
+    \$minimized = \$J('#mediadirInputfield_' + fieldId + '_' + toggleKey + '_Minimized');
+    \$expand    = \$J('#mediadirInputfield_' + fieldId + '_' + toggleKey + '_Expanded');
+        
+    elmMaster  = CKEDITOR.instances['mediadirInputfield['+ fieldId +'][0]'];
+    elmDefault = CKEDITOR.instances['mediadirInputfield['+ fieldId +']['+ defaultLang +']'];
+    
+    for(i=0;i<activeLang.length;i++) {
+        elmCurrent = CKEDITOR.instances['mediadirInputfield['+ fieldId +']['+ activeLang[i] +']'];
+        if(elmCurrent.getData() == '') {
+            elmCurrent.setData(elmMaster.getData());
+        }
+    }
+    if(\$minimized.is(":visible")) {
+       elmDefault.setData(elmMaster.getData());
+    } else {
+       elmMaster.setData(elmDefault.getData());
+    }
+    for ( instance in CKEDITOR.instances )
+    {
+        CKEDITOR.instances[instance].updateElement();
+    }
+}
 EOF;
 
         return $strSelectorJavascript;
