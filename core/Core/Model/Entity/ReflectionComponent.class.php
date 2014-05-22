@@ -336,6 +336,7 @@ class ReflectionComponent {
      * @todo test $customized
      */
     public function pack($path, $customized = false) {
+        global $_DBCONFIG;
         
         $pathParts = explode('.', $path);	
         if (empty($path) || end($pathParts) != 'zip') {
@@ -374,13 +375,60 @@ class ReflectionComponent {
                 // create $this->getDirectory(false)./data/structure.sql
                 // create $this->getDirectory(false)./data/fixtures.sql
             // If this is a doctrine component:
-                // create $this->getDirectory(false)./data/fixtures.yml/sql                
+                // create $this->getDirectory(false)./data/fixtures.yml/sql 
+        // load tables
+        $db = \Env::get('cx')->getDb()->getAdoDb();
+        $objResult = $db->query('SHOW TABLES LIKE "'. DBPREFIX .'module_'. $this->componentName .'_%"');
+        
+        $componentTables = array();
+        while (!$objResult->EOF) {            
+            $componentTables[] = $objResult->fields['Tables_in_'. $_DBCONFIG['database'] .' ('. DBPREFIX .'module_'. $this->componentName .'_%)'];
+            $objResult->MoveNext();
+        }
+        
+        
+        // check whether its a doctrine component
+        if (!file_exists($this->getDirectory(false)."/Model/Yaml")) {
+            \Cx\Lib\FileSystem\FileSystem::make_folder(ASCMS_TEMP_PATH . '/appcache/Data');            
+            $this->writeTableStructureToFile($componentTables, ASCMS_TEMP_PATH . '/appcache/Data/Structure.sql');
+        }
+        
         // Create meta.yml        
         $this->writeMetaDataToFile(ASCMS_TEMP_PATH . '/appcache/meta.yml');
         
         // Compress
         $file = new \PclZip($path);
         $file->create(ASCMS_TEMP_PATH . '/appcache', PCLZIP_OPT_REMOVE_PATH, ASCMS_TEMP_PATH . '/appcache');
+    }
+    
+    /**
+     * Write the table sturctures to the file
+     * 
+     * @param array  $arrayTables Table name to export structure
+     * @param string $path        File path
+     * 
+     * @return null
+     */
+    private function writeTableStructureToFile($arrayTables, $path)
+    {
+        if (empty($arrayTables) || empty($path)) {
+            return;
+        }
+        $db = \Env::get('cx')->getDb()->getAdoDb();
+        
+        try {
+            $file = new \Cx\Lib\FileSystem\File($path);
+            $file->touch();
+            foreach ($arrayTables as $table) {
+                $objResult = $db->query('SHOW CREATE TABLE '. $table);
+                while (!$objResult->EOF) {
+                    $file->append($objResult->fields['Create Table'] . ";" . PHP_EOL . PHP_EOL);
+                    $objResult->MoveNext();
+                }
+            }
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            \DBG::msg($e->getMessage());
+        }
     }
     
     /**
