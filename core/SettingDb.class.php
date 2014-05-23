@@ -578,6 +578,7 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
                 'CORE_SETTINGDB_TAB_CLASS' => (self::$tab_index == $active_tab ? 'active' : ''),
                 'CORE_SETTINGDB_TAB_DISPLAY' => (self::$tab_index++ == $active_tab ? 'block' : 'none'),
             ));
+            $objTemplateLocal->touchBlock('core_settingdb_header');
             $objTemplateLocal->touchBlock('core_settingdb_tab_row');
             $objTemplateLocal->parse('core_settingdb_tab_row');
             $objTemplateLocal->touchBlock('core_settingdb_tab_div');
