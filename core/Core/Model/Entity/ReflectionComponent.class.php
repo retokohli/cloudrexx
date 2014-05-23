@@ -56,6 +56,13 @@ class ReflectionComponent {
      * @var string ZIP package filename
      */
     protected $packageFile = null;
+    
+    /**
+     * Database object
+     * 
+     * @var object
+     */
+    private $db = null;
 
     /**
      * Two different ways to instanciate this are supported:
@@ -68,6 +75,9 @@ class ReflectionComponent {
      * @throws \BadMethodCallException
      */
     public function __construct($arg1, $arg2 = null) {
+        
+        $this->db = \Env::get('cx')->getDb()->getAdoDb();
+        
         if (is_a($arg1, 'Cx\Core\Core\Model\Entity\SystemComponent')) {
             $this->componentName = $arg1->getName();
             $this->componentType = $arg1->getType();
@@ -336,7 +346,6 @@ class ReflectionComponent {
      * @todo test $customized
      */
     public function pack($path, $customized = false) {
-        global $_DBCONFIG;
         
         $pathParts = explode('.', $path);	
         if (empty($path) || end($pathParts) != 'zip') {
@@ -376,16 +385,34 @@ class ReflectionComponent {
                 // create $this->getDirectory(false)./data/fixtures.sql
             // If this is a doctrine component:
                 // create $this->getDirectory(false)./data/fixtures.yml/sql 
+        // Write database structure and data into the files
+        $this->writeDatabaseStructureAndData();                
+               
+        // Create meta.yml        
+        $this->writeMetaDataToFile(ASCMS_TEMP_PATH . '/appcache/meta.yml');
+        
+        // Compress
+        $file = new \PclZip($path);
+        $file->create(ASCMS_TEMP_PATH . '/appcache', PCLZIP_OPT_REMOVE_PATH, ASCMS_TEMP_PATH . '/appcache');
+    }
+    
+    /**
+     * Write db structure and data into a file 
+     * 
+     * @global type $_DBCONFIG
+     */
+    private function writeDatabaseStructureAndData()
+    {
+        global $_DBCONFIG;
+        
         // load tables
-        $db = \Env::get('cx')->getDb()->getAdoDb();
-        $objResult = $db->query('SHOW TABLES LIKE "'. DBPREFIX .'module_'. $this->componentName .'_%"');
+        $objResult = $this->db->query('SHOW TABLES LIKE "'. DBPREFIX .'module_'. $this->componentName .'_%"');
         
         $componentTables = array();
-        while (!$objResult->EOF) {            
+        while (!$objResult->EOF) {
             $componentTables[] = $objResult->fields['Tables_in_'. $_DBCONFIG['database'] .' ('. DBPREFIX .'module_'. $this->componentName .'_%)'];
             $objResult->MoveNext();
         }
-        
         
         // check whether its a doctrine component
         if (!file_exists($this->getDirectory(false)."/Model/Yaml")) {
@@ -393,12 +420,141 @@ class ReflectionComponent {
             $this->writeTableStructureToFile($componentTables, ASCMS_TEMP_PATH . '/appcache/Data/Structure.sql');
         }
         
-        // Create meta.yml        
-        $this->writeMetaDataToFile(ASCMS_TEMP_PATH . '/appcache/meta.yml');
+        $this->writeTableDataToFile($componentTables, ASCMS_TEMP_PATH . '/appcache/Data/Data.sql');
+    }
+    
+    /**
+     * Write the component data into the file
+     * 
+     * @param type $arrayTables
+     * @param type $path
+     * @return type
+     */
+    private function writeTableDataToFile($arrayTables, $path)
+    {
+        if (empty($arrayTables) || empty($path)) {
+            return;
+        }        
         
-        // Compress
-        $file = new \PclZip($path);
-        $file->create(ASCMS_TEMP_PATH . '/appcache', PCLZIP_OPT_REMOVE_PATH, ASCMS_TEMP_PATH . '/appcache');
+        try {
+            $objFile = new \Cx\Lib\FileSystem\File($path);
+            $objFile->touch();
+            foreach ($arrayTables as $table) {
+                $query = 'SELECT * FROM '.$table;
+                $this->writeTableDataToFileFromQuery($table, $query, $objFile);
+            }
+            
+            // Dump the core data's to the file            
+            $objFile->append("-- Backend Areas".PHP_EOL);
+            $table = DBPREFIX .'backend_areas';
+            $query = 'SELECT b.*
+                        FROM 
+                            `'. DBPREFIX .'backend_areas` AS b 
+                        LEFT JOIN 
+                            `'. DBPREFIX .'modules` AS m
+                        ON 
+                            m.`id` = b.`module_id`
+                        WHERE 
+                            m.`name` = "' . $this->componentName . '"';
+            $this->writeTableDataToFileFromQuery($table, $query, $objFile);
+            
+            $objFile->append("-- Access group static ids".PHP_EOL);
+            $table = DBPREFIX .'access_group_static_ids';
+            $query = 'SELECT a.*
+                        FROM 
+                            `'. DBPREFIX .'access_group_static_ids` AS a
+                        LEFT JOIN
+                            `'. DBPREFIX .'backend_areas` AS b 
+                        ON 
+                            b.`access_id` = a.`access_id`
+                        LEFT JOIN 
+                            `'. DBPREFIX .'modules` AS m
+                        ON 
+                            m.`id` = b.`module_id`
+                        WHERE 
+                            m.`name` = "' . $this->componentName . '"';
+            $this->writeTableDataToFileFromQuery($table, $query, $objFile);
+            
+            $objFile->append("-- Mail template".PHP_EOL);
+            $table = DBPREFIX .'core_mail_template';
+            $query = 'SELECT * FROM `'. DBPREFIX .'core_mail_template` WHERE `section` = "'. $this->componentName .'"';
+            $this->writeTableDataToFileFromQuery($table, $query, $objFile);
+            
+            $objFile->append("-- Mail text".PHP_EOL);
+            $table = DBPREFIX .'core_text';
+            $query = 'SELECT * FROM `'. DBPREFIX .'core_text` WHERE `section` = "'. $this->componentName .'"';
+            $this->writeTableDataToFileFromQuery($table, $query, $objFile);
+            
+            $objFile->append("-- Core Settings".PHP_EOL);
+            $table = DBPREFIX .'core_setting';
+            $query = 'SELECT * FROM `'. DBPREFIX .'core_setting` WHERE `section` = "'. $this->componentName .'"';
+            $this->writeTableDataToFileFromQuery($table, $query, $objFile);
+            
+            $objFile->append("-- Settings".PHP_EOL);
+            $table = DBPREFIX .'settings';
+            $query = 'SELECT * FROM `'. DBPREFIX .'settings` WHERE `setname` LIKE "'. $this->componentName .'%"';
+            $this->writeTableDataToFileFromQuery($table, $query, $objFile);
+            
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            \DBG::msg($e->getMessage());
+        }
+    }
+    
+    /**
+     * write the database table data's in to the given file object
+     * 
+     * @see self::writeTableDataToFile()
+     * 
+     * @param string $table   Table name
+     * @param string $query   query to the records
+     * @param object $objFile File object
+     * 
+     * @return null
+     */
+    private function writeTableDataToFileFromQuery($table, $query, $objFile)
+    {
+        $fields       = $this->getColumnsFromTable($table);
+        $columnString = '`'. implode('`, `', $fields) .'`';
+        
+        $objResult = $this->db->query($query);
+        if ($objResult) {
+            while (!$objResult->EOF) {
+                $datas = array();
+                foreach ($fields as $field) {
+                    $data    = str_replace("\r\n", "\\r\\n", addslashes($objResult->fields[$field]));
+                    $datas[] = $data;
+                }
+
+                $dataString = '\'' . implode('\', \'', $datas) . '\'';
+
+                $dataLine = 'INSERT INTO '.$table.' (' . $columnString . ') VALUES ('. $dataString .');' . PHP_EOL;
+                $objFile->append($dataLine);
+
+                $objResult->MoveNext();
+            }
+        }
+    }
+    
+    /**
+     * Returns the tables column's
+     * 
+     * @see self::writeTableDataToFileFromQuery()
+     * 
+     * @param string $tableName table name
+     * 
+     * @return array Array of table columns
+     */
+    private function getColumnsFromTable($tableName)
+    {
+        $fields = array();
+        
+        $objCoulmns = $this->db->query('SHOW COLUMNS FROM `' . $tableName . '`');
+        while (!$objCoulmns->EOF) {
+            $fields[] = $objCoulmns->fields['Field'];
+            $objCoulmns->MoveNext();
+        }
+        
+        return $fields;
     }
     
     /**
@@ -414,13 +570,12 @@ class ReflectionComponent {
         if (empty($arrayTables) || empty($path)) {
             return;
         }
-        $db = \Env::get('cx')->getDb()->getAdoDb();
         
         try {
             $file = new \Cx\Lib\FileSystem\File($path);
             $file->touch();
             foreach ($arrayTables as $table) {
-                $objResult = $db->query('SHOW CREATE TABLE '. $table);
+                $objResult = $this->db->query('SHOW CREATE TABLE '. $table);
                 while (!$objResult->EOF) {
                     $file->append($objResult->fields['Create Table'] . ";" . PHP_EOL . PHP_EOL);
                     $objResult->MoveNext();
@@ -448,7 +603,7 @@ class ReflectionComponent {
                 `name` = "' . $this->componentName . '"
             LIMIT 1
         ';
-        $result = \Env::get('cx')->getDb()->getAdoDb()->query($query);
+        $result = $this->db->query($query);
         
         if (!$result->EOF) {
             $publisher = $result->fields['distributor'];
