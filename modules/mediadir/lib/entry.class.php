@@ -165,18 +165,24 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
         if(empty($this->strSearchTerm)) {
             $query = "
                 SELECT
-                    inputfield.`id` AS `id`
+                    first_rel_inputfield.`field_id` AS `id`
                 FROM
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS first_rel_inputfield
+                LEFT JOIN
                     ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields AS inputfield
+                ON 
+                    first_rel_inputfield.`field_id` = inputfield.`id`
                 WHERE
                     (inputfield.`type` != 16 AND inputfield.`type` != 17 AND inputfield.`type` != 30)
                 AND
-                    (inputfield.`form` = entry.`form_id`)
+                    (first_rel_inputfield.`entry_id` = entry.`id`)
+                AND 
+                    (first_rel_inputfield.`form_id` = entry.`form_id`)
                 ORDER BY
                     inputfield.`order` ASC
                 LIMIT 1
             ";
-
+                        
             $strWhereFirstInputfield = "AND (rel_inputfield.`form_id` = entry.`form_id`) AND (rel_inputfield.`field_id` = (".$query.")) AND (rel_inputfield.`lang_id` = '".$_LANGID."')";
         } else {
             $strWhereTerm = "AND ((rel_inputfield.`value` LIKE '%".$this->strSearchTerm."%') OR (entry.`id` = '".$this->strSearchTerm."')) ";
@@ -232,7 +238,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                 entry.`duration_notification` AS `duration_notification`,
                 entry.`translation_status` AS `translation_status`,
                 entry.`ready_to_confirm` AS `ready_to_confirm`,
-                rel_inputfield.`value` AS `value`
+                rel_inputfield.`value` AS `value`                
             FROM
                 ".DBPREFIX."module_".$this->moduleTablePrefix."_entries AS entry,
                 ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS rel_inputfield
