@@ -165,13 +165,19 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
         if(empty($this->strSearchTerm)) {
             $query = "
                 SELECT
-                    inputfield.`id` AS `id`
+                    first_rel_inputfield.`field_id` AS `id`
                 FROM
+                    ".DBPREFIX."module_".$this->moduleTablePrefix."_rel_entry_inputfields AS first_rel_inputfield
+                LEFT JOIN
                     ".DBPREFIX."module_".$this->moduleTablePrefix."_inputfields AS inputfield
+                ON 
+                    first_rel_inputfield.`field_id` = inputfield.`id`
                 WHERE
                     (inputfield.`type` != 16 AND inputfield.`type` != 17 AND inputfield.`type` != 30)
                 AND
-                    (inputfield.`form` = entry.`form_id`)
+                    (first_rel_inputfield.`entry_id` = entry.`id`)
+                AND 
+                    (first_rel_inputfield.`form_id` = entry.`form_id`)
                 ORDER BY
                     inputfield.`order` ASC
                 LIMIT 1
