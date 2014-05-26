@@ -77,7 +77,7 @@ class Setting{
      * @return  boolean               True on success, false otherwise
      * @global  ADOConnection   $objDatabase
      */
-    static function init($section, $group=null,$engine = 'FileSystem')
+    static function init($section, $group=null,$engine = 'Database')
     {
         
         if($engine=="Database"){
