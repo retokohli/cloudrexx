@@ -86,21 +86,21 @@ class ReflectionComponent {
         $arg1Parts = explode('.', $arg1);
 		if (file_exists($arg1) && end($arg1Parts) == 'zip') {
             // clean up tmp dir
-            \Cx\Lib\FileSystem\FileSystem::delete_folder(ASCMS_TEMP_PATH . '/appcache', true);
+            \Cx\Lib\FileSystem\FileSystem::delete_folder(ASCMS_APP_CACHE_FOLDER, true);
         
             // Uncompress package using PCLZip
             $file = new \PclZip($arg1);
-            $list = $file->extract(PCLZIP_OPT_PATH, ASCMS_TEMP_PATH . '/appcache');
+            $list = $file->extract(PCLZIP_OPT_PATH, ASCMS_APP_CACHE_FOLDER);
             
             // Check for meta.yml, if none: throw Exception
-            if (!file_exists(ASCMS_TEMP_PATH . '/appcache/meta.yml')) {
+            if (!file_exists(ASCMS_APP_CACHE_FOLDER . '/meta.yml')) {
                 throw new ReflectionComponentException('This ain\'t no package file: "' . $arg1 . '"');
             }
             
             // Read meta info
             $metaTypes = array('core'=>'core', 'core_module'=>'system', 'module'=>'application', 'lib'=>'other');
             $yaml = new \Symfony\Component\Yaml\Yaml();
-            $content = file_get_contents(ASCMS_TEMP_PATH . '/appcache/meta.yml');
+            $content = file_get_contents(ASCMS_APP_CACHE_FOLDER . '/meta.yml');
             $meta = $yaml->load($content);
             $type = array_search($meta['DlcInfo']['type'], $metaTypes);
             if (!$type) {
@@ -275,7 +275,7 @@ class ReflectionComponent {
         if (!$this->packageFile) {
             throw new SystemComponentException('Package file not available');
         }
-        if (!file_exists(ASCMS_TEMP_PATH . '/appcache/meta.yml')) {
+        if (!file_exists(ASCMS_APP_CACHE_FOLDER . '/meta.yml')) {
             throw new ReflectionComponentException('Invalid package file');
         }
         if ($this->exists()) {
@@ -284,7 +284,7 @@ class ReflectionComponent {
         
         // Read meta file
         $yaml = new \Symfony\Component\Yaml\Yaml();
-        $content = file_get_contents(ASCMS_TEMP_PATH . '/appcache/meta.yml');
+        $content = file_get_contents(ASCMS_APP_CACHE_FOLDER . '/meta.yml');
         $meta = $yaml->load($content);
         
         // Check dependencies
@@ -298,8 +298,8 @@ class ReflectionComponent {
         // Copy ZIP contents
         $filesystem = new \Cx\Lib\FileSystem\FileSystem();
         $filesystem->copyDir(
-            ASCMS_TEMP_PATH . '/appcache',
-            ASCMS_TEMP_WEB_PATH . '/appcache',
+            ASCMS_APP_CACHE_FOLDER,
+            ASCMS_APP_CACHE_FOLDER_WEB_PATH,
             'files',
             ASCMS_DOCUMENT_ROOT,
             ASCMS_PATH_OFFSET,
@@ -315,7 +315,7 @@ class ReflectionComponent {
         
         // Copy ZIP contents (also copy meta.yml into component folder if type is system or application)
         try {
-            $objFile = new \Cx\Lib\FileSystem\File(ASCMS_TEMP_PATH . '/appcache/meta.yml');
+            $objFile = new \Cx\Lib\FileSystem\File(ASCMS_APP_CACHE_FOLDER . '/meta.yml');
             $objFile->copy($this->getDirectory(false) . '/meta.yml');
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             \DBG::msg($e->getMessage());
@@ -355,13 +355,13 @@ class ReflectionComponent {
         // Create temp working folder and copy ZIP contents
         $filesystem = new \Cx\Lib\FileSystem\FileSystem();
         // clean up tmp dir
-        $filesystem->delete_folder(ASCMS_TEMP_PATH . '/appcache', true);
+        $filesystem->delete_folder(ASCMS_APP_CACHE_FOLDER, true);
         $filesystem->copyDir(
             $this->getDirectory(false),
             preg_replace('#' . ASCMS_DOCUMENT_ROOT . '#', '', $this->getDirectory(false)),
             '',
-            ASCMS_TEMP_PATH . '/appcache',
-            ASCMS_TEMP_WEB_PATH . '/appcache',
+            ASCMS_APP_CACHE_FOLDER,
+            ASCMS_APP_CACHE_FOLDER_WEB_PATH,
             '',
             true
         );
@@ -372,8 +372,8 @@ class ReflectionComponent {
                 $this->getDirectory(true, true),
                 preg_replace('#' . ASCMS_DOCUMENT_ROOT . '#', '', $this->getDirectory(true, true)),
                 '',
-                ASCMS_TEMP_PATH . '/appcache',
-                ASCMS_TEMP_WEB_PATH . '/appcache',
+                ASCMS_APP_CACHE_FOLDER,
+                ASCMS_APP_CACHE_FOLDER_WEB_PATH,
                 '',
                 true
             );
@@ -389,11 +389,11 @@ class ReflectionComponent {
         $this->writeDatabaseStructureAndData();                
                
         // Create meta.yml        
-        $this->writeMetaDataToFile(ASCMS_TEMP_PATH . '/appcache/meta.yml');
+        $this->writeMetaDataToFile(ASCMS_APP_CACHE_FOLDER . '/meta.yml');
         
         // Compress
         $file = new \PclZip($path);
-        $file->create(ASCMS_TEMP_PATH . '/appcache', PCLZIP_OPT_REMOVE_PATH, ASCMS_TEMP_PATH . '/appcache');
+        $file->create(ASCMS_APP_CACHE_FOLDER, PCLZIP_OPT_REMOVE_PATH, ASCMS_APP_CACHE_FOLDER);
     }
     
     /**
@@ -416,11 +416,11 @@ class ReflectionComponent {
         
         // check whether its a doctrine component
         if (!file_exists($this->getDirectory(false)."/Model/Yaml")) {
-            \Cx\Lib\FileSystem\FileSystem::make_folder(ASCMS_TEMP_PATH . '/appcache/Data');            
-            $this->writeTableStructureToFile($componentTables, ASCMS_TEMP_PATH . '/appcache/Data/Structure.sql');
+            \Cx\Lib\FileSystem\FileSystem::make_folder(ASCMS_APP_CACHE_FOLDER . '/Data');            
+            $this->writeTableStructureToFile($componentTables, ASCMS_APP_CACHE_FOLDER . '/Data/Structure.sql');
         }
         
-        $this->writeTableDataToFile($componentTables, ASCMS_TEMP_PATH . '/appcache/Data/Data.sql');
+        $this->writeTableDataToFile($componentTables, ASCMS_APP_CACHE_FOLDER . '/Data/Data.sql');
     }
     
     /**
