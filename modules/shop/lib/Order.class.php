@@ -1720,7 +1720,7 @@ class Order
         }
         Vat::is_reseller($objCustomer->is_reseller());
         Vat::is_home_country(
-            SettingDb::getValue('country_id') == $objOrder->country_id());
+            \Cx\Core\Setting\Controller\Setting::getValue('country_id') == $objOrder->country_id());
         $objTemplate->setGlobalVariable($_ARRAYLANG
           + array(
             'SHOP_CURRENCY' =>

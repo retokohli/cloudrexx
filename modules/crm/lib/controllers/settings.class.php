@@ -1203,15 +1203,15 @@ class Settings extends CrmLibrary
             $_REQUEST['active_tab'] = 2;
         }
         $objTemplate = null;
-        $result &= SettingDb::show_external(
+        $result &= \Cx\Core\Setting\Controller\Setting::show_external(
             $objTemplate,
             $_CORELANG['TXT_CORE_MAILTEMPLATES'],
             MailTemplate::overview('crm', 'config',
-                SettingDb::getValue('numof_mailtemplate_per_page_backend')
+                \Cx\Core\Setting\Controller\Setting::getValue('numof_mailtemplate_per_page_backend')
             )->get()
         );
         
-        $result &= SettingDb::show_external(
+        $result &= \Cx\Core\Setting\Controller\Setting::show_external(
             $objTemplate,
             (empty($_REQUEST['key'])
               ? $_CORELANG['TXT_CORE_MAILTEMPLATE_ADD']
@@ -1219,7 +1219,7 @@ class Settings extends CrmLibrary
             MailTemplate::edit('crm')->get()
         );
 
-        $result &= SettingDb::show_external(
+        $result &= \Cx\Core\Setting\Controller\Setting::show_external(
             $objTemplate,
             $_ARRAYLANG['TXT_CRM_PLACEHOLDERS'],
             $this->getCrmModulePlaceHolders()

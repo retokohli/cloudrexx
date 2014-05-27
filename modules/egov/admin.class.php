@@ -215,10 +215,10 @@ class eGov extends eGovLibrary
             ? 'checked="checked"' : '');
 
         // PostFinance uses SettingDb
-        SettingDb::init('egov', 'config');
+        \Cx\Core\Setting\Controller\Setting::init('egov', 'config');
 // TODO: Temporary fix for the upgrade to SettingDb.
 // Remove when the whole module is migrated.
-        $postfinance_shop_id = SettingDb::getValue('postfinance_shop_id');
+        $postfinance_shop_id = \Cx\Core\Setting\Controller\Setting::getValue('postfinance_shop_id');
         if (empty ($postfinance_shop_id)) {
             self::errorHandler();
         }
@@ -226,7 +226,7 @@ class eGov extends eGovLibrary
          * @var     \Cx\Core\Html\Sigma
          */
         $objTemplateLocal = new \Cx\Core\Html\Sigma();
-        if (SettingDb::show_section($objTemplateLocal,
+        if (\Cx\Core\Setting\Controller\Setting::show_section($objTemplateLocal,
                 $_ARRAYLANG['TXT_EGOV_POSTFINANCE'], 'TXT_EGOV_')) {
             $objTemplateLocal->parse('core_settingdb_sections');
             $template = $objTemplateLocal->get('core_settingdb_sections');
@@ -1411,8 +1411,8 @@ class eGov extends eGovLibrary
                SET `value`='".(isset($_REQUEST['PayPal_IPN']) ? 1 : 0)."'
              WHERE `name`='set_paypal_ipn'
         ") ? true : false);
-        SettingDb::init('egov', 'config');
-        $result_settingdb = SettingDb::storeFromPost(true);
+        \Cx\Core\Setting\Controller\Setting::init('egov', 'config');
+        $result_settingdb = \Cx\Core\Setting\Controller\Setting::storeFromPost(true);
         if ($result_settingdb === false) {
             self::errorHandler();
             $result = false;

@@ -108,11 +108,11 @@ class Db implements Engine{
          global $objDatabase;
 
         if (empty($section)) {
-die("SettingDb::init($section, $group): ERROR: Missing \$section parameter!");
+die("self::init($section, $group): ERROR: Missing \$section parameter!");
 //                return false;
         }
         self::flush();
-//echo("SettingDb::init($section, $group): Entered<br />");
+//echo("self::init($section, $group): Entered<br />");
         $objResult = $objDatabase->Execute("
             SELECT `name`, `group`, `value`,
                    `type`, `values`, `ord`
@@ -137,6 +137,7 @@ die("SettingDb::init($section, $group): ERROR: Missing \$section parameter!");
 //echo("Setting ".$objResult->fields['name']." = ".$objResult->fields['value']."<br />");
             $objResult->MoveNext();
         }
+        
     }
     
      /**
@@ -189,14 +190,14 @@ die("SettingDb::init($section, $group): ERROR: Missing \$section parameter!");
     static function getValue($name)
     {
         if (is_null(self::$arrSettings)) {
-DBG::log("SettingDb::getValue($name): ERROR: no settings loaded");
+\DBG::log("self::getValue($name): ERROR: no settings loaded");
             return null;
         }
-//echo("SettingDb::getValue($name): Value is ".(isset(self::$arrSettings[$name]['value']) ? self::$arrSettings[$name]['value'] : 'NOT FOUND')."<br />");
+//echo("self::getValue($name): Value is ".(isset(self::$arrSettings[$name]['value']) ? self::$arrSettings[$name]['value'] : 'NOT FOUND')."<br />");
         if (isset(self::$arrSettings[$name]['value'])) {
             return self::$arrSettings[$name]['value'];
         };
-//DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current group ".var_export(self::$group, true).")");
+//DBG::log("self::getValue($name): ERROR: unknown setting '$name' (current group ".var_export(self::$group, true).")");
         return null;
     }
 
@@ -224,19 +225,19 @@ DBG::log("SettingDb::getValue($name): ERROR: no settings loaded");
 
         if (!isset(self::$section)) {
 // TODO: Error message
-DBG::log("SettingDb::add(): ERROR: Empty section!");
+\DBG::log("self::add(): ERROR: Empty section!");
             return false;
         }
         // Fail if the name is invalid
         if (empty($name)) {
-DBG::log("SettingDb::add(): ERROR: Empty name!");
+\DBG::log("self::add(): ERROR: Empty name!");
             return false;
         }
         // This can only be done with a non-empty group!
         // Use the current group, if present, otherwise fail
         if (!$group) {
             if (!self::$group) {
-DBG::log("SettingDb::add(): ERROR: Empty group!");
+\DBG::log("self::add(): ERROR: Empty group!");
                 return false;
             }
             $group = self::$group;
@@ -249,7 +250,7 @@ DBG::log("SettingDb::add(): ERROR: Empty group!");
         // Note that getValue() returns null if the entry is not present
         $old_value = self::getValue($name);
         if (isset($old_value)) {
-//DBG::log("SettingDb::add(): ERROR: Setting '$name' already exists and is non-empty ($old_value)");
+//DBG::log("self::add(): ERROR: Setting '$name' already exists and is non-empty ($old_value)");
             return false;
         }
 
@@ -269,7 +270,7 @@ DBG::log("SettingDb::add(): ERROR: Empty group!");
             )";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-DBG::log("SettingDb::add(): ERROR: Query failed: $query");
+\DBG::log("self::add(): ERROR: Query failed: $query");
             return false;
         }
         return true;
@@ -343,8 +344,8 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
     {
         global $_CORELANG;
 
-//echo("SettingDb::storeFromPost(): POST:<br />".nl2br(htmlentities(var_export($_POST, true)))."<hr />");
-//echo("SettingDb::storeFromPost(): FILES:<br />".nl2br(htmlentities(var_export($_FILES, true)))."<hr />");
+//echo("self::storeFromPost(): POST:<br />".nl2br(htmlentities(var_export($_POST, true)))."<hr />");
+//echo("self::storeFromPost(): FILES:<br />".nl2br(htmlentities(var_export($_FILES, true)))."<hr />");
         // There may be several tabs for different groups being edited, so
         // load the full set of settings for the module.
         // Note that this is why setting names should be unique.
@@ -396,7 +397,7 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
                     if ($result_upload === true) {
                         $value = $target_path;
                     } else {
-//echo("SettingDb::storeFromPost(): Error uploading file for setting $name to $target_path<br />");
+//echo("self::storeFromPost(): Error uploading file for setting $name to $target_path<br />");
 // TODO: Add error message
                         \Message::error(\File::getErrorString());
                         $result = false;
@@ -418,7 +419,7 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
             }
             self::set($name, $value);
         }
-//echo("SettingDb::storeFromPost(): So far, the result is ".($result ? 'okay' : 'no good')."<br />");
+//echo("self::storeFromPost(): So far, the result is ".($result ? 'okay' : 'no good')."<br />");
         $result_update = self::updateAll();
         if ($result_update === false) {
             \Message::error($_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING']);
@@ -550,11 +551,11 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
 // TODO: The index array structure is wrong here!
         $table_index =  array();
         \Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
-//echo("SettingDb::errorHandler(): Created table ".DBPREFIX."core_setting<br />");
+//echo("self::errorHandler(): Created table ".DBPREFIX."core_setting<br />");
 
-        // Use SettingDb::add(); in your module code to add settings; example:
-//        SettingDb::init('core', 'country');
-//        SettingDb::add('numof_countries_per_page_backend', 30, 1, SettingDb::TYPE_TEXT);
+        // Use self::add(); in your module code to add settings; example:
+//        self::init('core', 'country');
+//        self::add('numof_countries_per_page_backend', 30, 1, self::TYPE_TEXT);
 
         // More to come...
 
@@ -614,16 +615,16 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
     static function set($name, $value)
     {
         if (!isset(self::$arrSettings[$name])) {
-//DBG::log("SettingDb::set($name, $value): Unknown, changed: ".self::$changed);
+//DBG::log("self::set($name, $value): Unknown, changed: ".self::$changed);
             return false;
         }
         if (self::$arrSettings[$name]['value'] == $value) {
-//DBG::log("SettingDb::set($name, $value): Identical, changed: ".self::$changed);
+//DBG::log("self::set($name, $value): Identical, changed: ".self::$changed);
             return null;
         }
         self::$changed = true;
         self::$arrSettings[$name]['value'] = $value;
-//DBG::log("SettingDb::set($name, $value): Added/updated, changed: ".self::$changed);
+//DBG::log("self::set($name, $value): Added/updated, changed: ".self::$changed);
         return true;
     }
     
@@ -686,17 +687,17 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
 
 // TODO: Add error messages for individual errors
         if (empty(self::$section)) {
-DBG::log("SettingDb::update(): ERROR: Empty section!");
+\DBG::log("self::update(): ERROR: Empty section!");
             return false;
         }
         // Fail if the name is invalid
         // or the setting does not exist
         if (empty($name)) {
-DBG::log("SettingDb::update(): ERROR: Empty name!");
+\DBG::log("self::update(): ERROR: Empty name!");
             return false;
         }
         if (!isset(self::$arrSettings[$name])) {
-DBG::log("SettingDb::update(): ERROR: Unknown setting name '$name'!");
+\DBG::log("self::update(): ERROR: Unknown setting name '$name'!");
             return false;
         }
         $objResult = $objDatabase->Execute("

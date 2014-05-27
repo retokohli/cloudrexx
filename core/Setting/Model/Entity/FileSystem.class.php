@@ -105,13 +105,25 @@ class FileSystem implements Engine{
      */
     static function init($section, $group=null) {
         
+        $file = new \Cx\Lib\FileSystem\File(ASCMS_CORE_PATH .'/Setting/Data/'.$section.'.yml');
+        $file->touch();
         $yaml = new \Symfony\Component\Yaml\Yaml();
-        $content = file_get_contents(ASCMS_CORE_PATH.'/Setting/Data/MultiSite.yml');
-        //echo  '<pre>'.$content;
-        $arr = $yaml->load($content);
-        echo '<pre>'.var_export($arr, true);
-       // echo '<pre>'.$yaml->dump($arr, 1000);
-         die;
+        $content = file_get_contents(ASCMS_CORE_PATH.'/Setting/Data/'.$section.'.yml');
+        $settingResult = $yaml->load($content);
+        self::flush();
+        self::$section=$section;
+        self::$group=$group;
+        if(!empty($settingResult))
+        {   $i=0;
+            //$settingResult=array_reverse($settingResult,true);
+            for($i==0;$i<count($settingResult);++$i)
+            {
+               
+               self::$arrSettings[$settingResult[$i]['name']]= $settingResult[$i];
+            }
+            
+        }
+        
     }
     
      /**
@@ -164,14 +176,14 @@ class FileSystem implements Engine{
     static function getValue($name)
     {
         if (is_null(self::$arrSettings)) {
-DBG::log("SettingDb::getValue($name): ERROR: no settings loaded");
+\DBG::log("self::getValue($name): ERROR: no settings loaded");
             return null;
         }
-//echo("SettingDb::getValue($name): Value is ".(isset(self::$arrSettings[$name]['value']) ? self::$arrSettings[$name]['value'] : 'NOT FOUND')."<br />");
+
         if (isset(self::$arrSettings[$name]['value'])) {
             return self::$arrSettings[$name]['value'];
         };
-//DBG::log("SettingDb::getValue($name): ERROR: unknown setting '$name' (current group ".var_export(self::$group, true).")");
+
         return null;
     }
 
@@ -195,23 +207,24 @@ DBG::log("SettingDb::getValue($name): ERROR: no settings loaded");
      */
     static function add( $name, $value, $ord=false, $type='text', $values='', $group=null)
     {
-        global $objDatabase;
+        
 
         if (!isset(self::$section)) {
 // TODO: Error message
-DBG::log("SettingDb::add(): ERROR: Empty section!");
+\DBG::log("self::add(): ERROR: Empty section!");
             return false;
         }
         // Fail if the name is invalid
         if (empty($name)) {
-DBG::log("SettingDb::add(): ERROR: Empty name!");
+\DBG::log("self::add(): ERROR: Empty name!");
             return false;
         }
+
         // This can only be done with a non-empty group!
         // Use the current group, if present, otherwise fail
         if (!$group) {
             if (!self::$group) {
-DBG::log("SettingDb::add(): ERROR: Empty group!");
+\DBG::log("self::add(): ERROR: Empty group!");
                 return false;
             }
             $group = self::$group;
@@ -224,29 +237,25 @@ DBG::log("SettingDb::add(): ERROR: Empty group!");
         // Note that getValue() returns null if the entry is not present
         $old_value = self::getValue($name);
         if (isset($old_value)) {
-//DBG::log("SettingDb::add(): ERROR: Setting '$name' already exists and is non-empty ($old_value)");
+//DBG::log("self::add(): ERROR: Setting '$name' already exists and is non-empty ($old_value)");
             return false;
         }
-
-        // Not present, insert it
-        $query = "
-            INSERT INTO `".DBPREFIX."core_setting` (
-                `section`, `group`, `name`, `value`,
-                `type`, `values`, `ord`
-            ) VALUES (
-                '".addslashes(self::$section)."',
-                '".addslashes($group)."',
-                '".addslashes($name)."',
-                '".addslashes($value)."',
-                '".addslashes($type)."',
-                '".addslashes($values)."',
-                ".intval($ord)."
-            )";
-        $objResult = $objDatabase->Execute($query);
-        if (!$objResult) {
-DBG::log("SettingDb::add(): ERROR: Query failed: $query");
-            return false;
-        }
+         $file = new \Cx\Lib\FileSystem\File(ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml');
+         $file->touch();
+         $yaml = new \Symfony\Component\Yaml\Yaml();
+         $file->append(
+            $yaml->dump( Array(  Array
+                                    (   'name'=>addslashes($name),
+                                        'section' => addslashes(self::$section),
+                                        'group' => addslashes($group),
+                                        'value' => addslashes($value),
+                                        'type' => addslashes($type),
+                                        'values' =>addslashes($values),
+                                        'ord' => intval($ord)
+                                    )
+                              )
+                      ));
+        
         return true;
     }
 
@@ -267,16 +276,8 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
      */
     static function delete($name=null, $group=null)
     {
-        global $objDatabase;
-
-        // Fail if both parameter values are empty
-        if (empty($name) && empty($group)) return false;
-        $objResult = $objDatabase->Execute("
-            DELETE FROM `".DBPREFIX."core_setting`
-             WHERE 1".
-            ($name ? " AND `name`='".addslashes($name)."'" : '').
-            ($group  ? " AND `group`='".addslashes($group)."'"   : ''));
-        if (!$objResult) return self::errorHandler();
+        $file = new \Cx\Lib\FileSystem\File(ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml');
+        $file->delete(); 
         self::flush();
         return true;
     }
@@ -318,8 +319,8 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
     {
         global $_CORELANG;
 
-//echo("SettingDb::storeFromPost(): POST:<br />".nl2br(htmlentities(var_export($_POST, true)))."<hr />");
-//echo("SettingDb::storeFromPost(): FILES:<br />".nl2br(htmlentities(var_export($_FILES, true)))."<hr />");
+//echo("self::storeFromPost(): POST:<br />".nl2br(htmlentities(var_export($_POST, true)))."<hr />");
+//echo("self::storeFromPost(): FILES:<br />".nl2br(htmlentities(var_export($_FILES, true)))."<hr />");
         // There may be several tabs for different groups being edited, so
         // load the full set of settings for the module.
         // Note that this is why setting names should be unique.
@@ -371,7 +372,7 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
                     if ($result_upload === true) {
                         $value = $target_path;
                     } else {
-//echo("SettingDb::storeFromPost(): Error uploading file for setting $name to $target_path<br />");
+//echo("self::storeFromPost(): Error uploading file for setting $name to $target_path<br />");
 // TODO: Add error message
                         \Message::error(\File::getErrorString());
                         $result = false;
@@ -393,7 +394,7 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
             }
             self::set($name, $value);
         }
-//echo("SettingDb::storeFromPost(): So far, the result is ".($result ? 'okay' : 'no good')."<br />");
+//echo("self::storeFromPost(): So far, the result is ".($result ? 'okay' : 'no good')."<br />");
         $result_update = self::updateAll();
         if ($result_update === false) {
             \Message::error($_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING']);
@@ -512,66 +513,9 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
      */
     static function errorHandler()
     {
-        $table_name = DBPREFIX.'core_setting';
-        $table_structure = array(
-            'section' => array('type' => 'VARCHAR(32)', 'default' => '', 'primary' => true),
-            'name' => array('type' => 'VARCHAR(255)', 'default' => '', 'primary' => true),
-            'group' => array('type' => 'VARCHAR(32)', 'default' => '', 'primary' => true),
-            'type' => array('type' => 'VARCHAR(32)', 'default' => 'text'),
-            'value' => array('type' => 'TEXT', 'default' => ''),
-            'values' => array('type' => 'TEXT', 'notnull' => true, 'default' => null),
-            'ord' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0'),
-        );
-// TODO: The index array structure is wrong here!
-        $table_index =  array();
-        \Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
-//echo("SettingDb::errorHandler(): Created table ".DBPREFIX."core_setting<br />");
-
-        // Use SettingDb::add(); in your module code to add settings; example:
-//        SettingDb::init('core', 'country');
-//        SettingDb::add('numof_countries_per_page_backend', 30, 1, SettingDb::TYPE_TEXT);
-
-        // More to come...
-
-        // Always!
+        $file = new \Cx\Lib\FileSystem\File(ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml');
+        $file->touch();
         return false;
-    }
-
-
-    /**
-     * Returns the settings from the old settings table for the given module ID,
-     * if available
-     *
-     * If the module ID is missing or invalid, or if the settings cannot be
-     * read for some other reason, returns null.
-     * Don't drop the table after migrating your settings, other modules
-     * might still need it!  Instead, try this method only after you failed
-     * to get your settings from SettingDb.
-     * @param   integer   $module_id      The module ID
-     * @return  array                     The settings array on success,
-     *                                    null otherwise
-     * @static
-     */
-    static function __getOldSettings($module_id)
-    {
-        global $objDatabase;
-
-        $module_id = intval($module_id);
-        if ($module_id <= 0) return null;
-        $objResult = $objDatabase->Execute('
-            SELECT `setname`, `setvalue`
-              FROM `'.DBPREFIX.'settings`
-             WHERE `setmodule`='.$module_id);
-        if (!$objResult) {
-            return null;
-        }
-        $arrConfig = array();
-        while (!$objResult->EOF) {
-            $arrConfig[$objResult->fields['setname']] =
-                $objResult->fields['setvalue'];
-            $objResult->MoveNext();
-        }
-        return $arrConfig;
     }
     
     /**
@@ -589,16 +533,16 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
     static function set($name, $value)
     {
         if (!isset(self::$arrSettings[$name])) {
-//DBG::log("SettingDb::set($name, $value): Unknown, changed: ".self::$changed);
+//DBG::log("self::set($name, $value): Unknown, changed: ".self::$changed);
             return false;
         }
         if (self::$arrSettings[$name]['value'] == $value) {
-//DBG::log("SettingDb::set($name, $value): Identical, changed: ".self::$changed);
+//DBG::log("self::set($name, $value): Identical, changed: ".self::$changed);
             return null;
         }
         self::$changed = true;
         self::$arrSettings[$name]['value'] = $value;
-//DBG::log("SettingDb::set($name, $value): Added/updated, changed: ".self::$changed);
+//DBG::log("self::set($name, $value): Added/updated, changed: ".self::$changed);
         return true;
     }
     
@@ -627,9 +571,8 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
             return null;
         }
         $success = true;
-        foreach (self::$arrSettings as $name => $arrSetting) {
-            $success &= self::update($name, $arrSetting['value']);
-        }
+        
+        $success &= self::update(self::$arrSettings);
         if ($success) {
             self::$changed = false;
 //            return Message::ok($_CORELANG['TXT_CORE_SETTINGDB_STORED_SUCCESSFULLY']);
@@ -655,35 +598,25 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
      * @static
      * @global  mixed     $objDatabase    Database connection object
      */
-    static function update($name)
+    static function update($arrSettings)
     {
-        global $objDatabase;
-
-// TODO: Add error messages for individual errors
-        if (empty(self::$section)) {
-DBG::log("SettingDb::update(): ERROR: Empty section!");
-            return false;
-        }
-        // Fail if the name is invalid
-        // or the setting does not exist
-        if (empty($name)) {
-DBG::log("SettingDb::update(): ERROR: Empty name!");
-            return false;
-        }
-        if (!isset(self::$arrSettings[$name])) {
-DBG::log("SettingDb::update(): ERROR: Unknown setting name '$name'!");
-            return false;
-        }
-        $objResult = $objDatabase->Execute("
-            UPDATE `".DBPREFIX."core_setting`
-               SET `value`='".addslashes(self::$arrSettings[$name]['value'])."'
-             WHERE `name`='".addslashes($name)."'
-               AND `section`='".addslashes(self::$section)."'".
-            (self::$group
-                ? " AND `group`='".addslashes(self::$group)."'" : ''));
-        if (!$objResult) return self::errorHandler();
-        self::$changed = true;
-        return true;
+         
+        $file = new \Cx\Lib\FileSystem\File(ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml');
+        $file->delete();
+        $file->touch();
+        $yaml = new \Symfony\Component\Yaml\Yaml();
+        
+        if(!empty($arrSettings))
+        {
+            foreach($arrSettings as $value)
+            {
+               $file->append($yaml->dump(Array( $value )));
+            }
+        
+         return true;
+        }else{
+        return false;
+       }
     }
 
 }

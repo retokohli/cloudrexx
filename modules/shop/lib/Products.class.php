@@ -670,9 +670,9 @@ DBG::log("ERROR: Failed to delete Products in Category ID $category_id");
                     ASCMS_SHOP_IMAGES_PATH.'/',
                     ASCMS_SHOP_IMAGES_WEB_PATH.'/',
                     $imageName,
-                    SettingDb::getValue('thumbnail_max_width'),
-                    SettingDb::getValue('thumbnail_max_height'),
-                    SettingDb::getValue('thumbnail_quality')
+                    \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_width'),
+                    \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_height'),
+                    \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_quality')
                 );
                 $width  = $objImageManager->orgImageWidth;
                 $height = $objImageManager->orgImageHeight;
@@ -1078,7 +1078,7 @@ DBG::log("ERROR: Failed to delete Products in Category ID $category_id");
             3 => $_ARRAYLANG['TXT_SHOP_PRODUCT_SORTING_PRODUCTCODE'],
         );
         return Html::getOptions($arrAvailableOrder,
-            SettingDb::getValue('product_sorting'));
+            \Cx\Core\Setting\Controller\Setting::getValue('product_sorting'));
     }
 
 

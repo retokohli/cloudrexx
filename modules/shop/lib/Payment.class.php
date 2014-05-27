@@ -477,56 +477,56 @@ class Payment
         ));
         // Payment Service Providers
         $objTemplate->setVariable(array(
-            'SHOP_SAFERPAY_ID' => SettingDb::getValue('saferpay_id'),
-            'SHOP_SAFERPAY_STATUS' => (SettingDb::getValue('saferpay_active') ? Html::ATTRIBUTE_CHECKED : ''),
-            'SHOP_SAFERPAY_TEST_ID' => SettingDb::getValue('saferpay_use_test_account'),
-            'SHOP_SAFERPAY_TEST_STATUS' => (SettingDb::getValue('saferpay_use_test_account') ? Html::ATTRIBUTE_CHECKED : ''),
-            'SHOP_SAFERPAY_FINALIZE_PAYMENT' => (SettingDb::getValue('saferpay_finalize_payment')
+            'SHOP_SAFERPAY_ID' => \Cx\Core\Setting\Controller\Setting::getValue('saferpay_id'),
+            'SHOP_SAFERPAY_STATUS' => (\Cx\Core\Setting\Controller\Setting::getValue('saferpay_active') ? Html::ATTRIBUTE_CHECKED : ''),
+            'SHOP_SAFERPAY_TEST_ID' => \Cx\Core\Setting\Controller\Setting::getValue('saferpay_use_test_account'),
+            'SHOP_SAFERPAY_TEST_STATUS' => (\Cx\Core\Setting\Controller\Setting::getValue('saferpay_use_test_account') ? Html::ATTRIBUTE_CHECKED : ''),
+            'SHOP_SAFERPAY_FINALIZE_PAYMENT' => (\Cx\Core\Setting\Controller\Setting::getValue('saferpay_finalize_payment')
                 ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_SAFERPAY_WINDOW_MENUOPTIONS' => Saferpay::getWindowMenuoptions(
-                SettingDb::getValue('saferpay_window_option')),
-            'SHOP_YELLOWPAY_SHOP_ID' => SettingDb::getValue('postfinance_shop_id'),
+                \Cx\Core\Setting\Controller\Setting::getValue('saferpay_window_option')),
+            'SHOP_YELLOWPAY_SHOP_ID' => \Cx\Core\Setting\Controller\Setting::getValue('postfinance_shop_id'),
             'SHOP_YELLOWPAY_STATUS' =>
-                (SettingDb::getValue('postfinance_active')
+                (\Cx\Core\Setting\Controller\Setting::getValue('postfinance_active')
                     ? Html::ATTRIBUTE_CHECKED : ''),
-//                    'SHOP_YELLOWPAY_HASH_SEED' => SettingDb::getValue('postfinance_hash_seed'),
+//                    'SHOP_YELLOWPAY_HASH_SEED' => \Cx\Core\Setting\Controller\Setting::getValue('postfinance_hash_seed'),
 // Replaced by
-            'SHOP_YELLOWPAY_HASH_SIGNATURE_IN' => SettingDb::getValue('postfinance_hash_signature_in'),
-            'SHOP_YELLOWPAY_HASH_SIGNATURE_OUT' => SettingDb::getValue('postfinance_hash_signature_out'),
+            'SHOP_YELLOWPAY_HASH_SIGNATURE_IN' => \Cx\Core\Setting\Controller\Setting::getValue('postfinance_hash_signature_in'),
+            'SHOP_YELLOWPAY_HASH_SIGNATURE_OUT' => \Cx\Core\Setting\Controller\Setting::getValue('postfinance_hash_signature_out'),
 // OBSOLETE
 //            'SHOP_YELLOWPAY_ACCEPTED_PAYMENT_METHODS_CHECKBOXES' =>
 //                Yellowpay::getKnownPaymentMethodCheckboxes(
-//                    SettingDb::getValue('postfinance_accepted_payment_methods')),
+//                    \Cx\Core\Setting\Controller\Setting::getValue('postfinance_accepted_payment_methods')),
             'SHOP_YELLOWPAY_AUTHORIZATION_TYPE_OPTIONS' =>
                 Yellowpay::getAuthorizationMenuoptions(
-                    SettingDb::getValue('postfinance_authorization_type')),
+                    \Cx\Core\Setting\Controller\Setting::getValue('postfinance_authorization_type')),
             'SHOP_YELLOWPAY_USE_TESTSERVER_CHECKED' =>
-                (SettingDb::getValue('postfinance_use_testserver')
+                (\Cx\Core\Setting\Controller\Setting::getValue('postfinance_use_testserver')
                     ? Html::ATTRIBUTE_CHECKED : ''),
             // Added 20100222 -- Reto Kohli
-            'SHOP_POSTFINANCE_MOBILE_WEBUSER' => SettingDb::getValue('postfinance_mobile_webuser'),
-            'SHOP_POSTFINANCE_MOBILE_SIGN' => SettingDb::getValue('postfinance_mobile_sign'),
+            'SHOP_POSTFINANCE_MOBILE_WEBUSER' => \Cx\Core\Setting\Controller\Setting::getValue('postfinance_mobile_webuser'),
+            'SHOP_POSTFINANCE_MOBILE_SIGN' => \Cx\Core\Setting\Controller\Setting::getValue('postfinance_mobile_sign'),
             'SHOP_POSTFINANCE_MOBILE_IJUSTWANTTOTEST_CHECKED' =>
-                (SettingDb::getValue('postfinance_mobile_ijustwanttotest')
+                (\Cx\Core\Setting\Controller\Setting::getValue('postfinance_mobile_ijustwanttotest')
                   ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_POSTFINANCE_MOBILE_STATUS' =>
-                (SettingDb::getValue('postfinance_mobile_status')
+                (\Cx\Core\Setting\Controller\Setting::getValue('postfinance_mobile_status')
                   ? Html::ATTRIBUTE_CHECKED : ''),
-            'SHOP_DATATRANS_AUTHORIZATION_TYPE_OPTIONS' => Datatrans::getReqtypeMenuoptions(SettingDb::getValue('datatrans_request_type')),
-            'SHOP_DATATRANS_MERCHANT_ID' => SettingDb::getValue('datatrans_merchant_id'),
-            'SHOP_DATATRANS_STATUS' => (SettingDb::getValue('datatrans_active') ? Html::ATTRIBUTE_CHECKED : ''),
+            'SHOP_DATATRANS_AUTHORIZATION_TYPE_OPTIONS' => Datatrans::getReqtypeMenuoptions(\Cx\Core\Setting\Controller\Setting::getValue('datatrans_request_type')),
+            'SHOP_DATATRANS_MERCHANT_ID' => \Cx\Core\Setting\Controller\Setting::getValue('datatrans_merchant_id'),
+            'SHOP_DATATRANS_STATUS' => (\Cx\Core\Setting\Controller\Setting::getValue('datatrans_active') ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_DATATRANS_USE_TESTSERVER_YES_CHECKED' =>
-                (SettingDb::getValue('datatrans_use_testserver') ? Html::ATTRIBUTE_CHECKED : ''),
+                (\Cx\Core\Setting\Controller\Setting::getValue('datatrans_use_testserver') ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_DATATRANS_USE_TESTSERVER_NO_CHECKED' =>
-                (SettingDb::getValue('datatrans_use_testserver') ? '' : Html::ATTRIBUTE_CHECKED),
+                (\Cx\Core\Setting\Controller\Setting::getValue('datatrans_use_testserver') ? '' : Html::ATTRIBUTE_CHECKED),
             // Not supported
             //'SHOP_DATATRANS_ACCEPTED_PAYMENT_METHODS_CHECKBOXES' => 0,
-            'SHOP_PAYPAL_EMAIL' => SettingDb::getValue('paypal_account_email'),
-            'SHOP_PAYPAL_STATUS' => (SettingDb::getValue('paypal_active') ? Html::ATTRIBUTE_CHECKED : ''),
+            'SHOP_PAYPAL_EMAIL' => \Cx\Core\Setting\Controller\Setting::getValue('paypal_account_email'),
+            'SHOP_PAYPAL_STATUS' => (\Cx\Core\Setting\Controller\Setting::getValue('paypal_active') ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_PAYPAL_DEFAULT_CURRENCY_MENUOPTIONS' => PayPal::getAcceptedCurrencyCodeMenuoptions(
-                SettingDb::getValue('paypal_default_currency')),
+                \Cx\Core\Setting\Controller\Setting::getValue('paypal_default_currency')),
             // LSV settings
-            'SHOP_PAYMENT_LSV_STATUS' => (SettingDb::getValue('payment_lsv_active') ? Html::ATTRIBUTE_CHECKED : ''),
+            'SHOP_PAYMENT_LSV_STATUS' => (\Cx\Core\Setting\Controller\Setting::getValue('payment_lsv_active') ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_PAYMENT_DEFAULT_CURRENCY' => Currency::getDefaultCurrencySymbol(),
             'SHOP_CURRENCY_CODE' => Currency::getCurrencyCodeById(
                 Currency::getDefaultCurrencyId()),

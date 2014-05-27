@@ -267,7 +267,7 @@ class Search
 
                 if ($objUser->login()) {
                     $objCustomer = \Customer::getById($objUser->getId());
-                    \SettingDb::init('shop', 'config');
+                    \Cx\Core\Setting\Controller\Setting::init('shop', 'config');
                     if ($objCustomer && $objCustomer->is_reseller()) {
                         $flagIsReseller = true;
                     }

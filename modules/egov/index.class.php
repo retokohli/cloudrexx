@@ -448,7 +448,7 @@ class eGov extends eGovLibrary
             $FormFields .= 'contactFormField_Quantity='.$_REQUEST['contactFormField_Quantity'];
         }
 
-        SettingDb::init('egov', 'config');
+        \Cx\Core\Setting\Controller\Setting::init('egov', 'config');
 
         $arrOrder = array(
             'ORDERID'   => $order_id,
@@ -519,8 +519,8 @@ $yellowpayForm
         $result = isset($_REQUEST['result']) ? $_REQUEST['result'] : 0;
         $order_id = Yellowpay::getOrderId();
         if ($result < 0) {
-            SettingDb::init('egov', 'config');
-            if (Yellowpay::checkIn(SettingDb::getValue('postfinance_hash_signature_out'))) {
+            \Cx\Core\Setting\Controller\Setting::init('egov', 'config');
+            if (Yellowpay::checkIn(\Cx\Core\Setting\Controller\Setting::getValue('postfinance_hash_signature_out'))) {
                 // Silently process yellowpay notifications and die().
                 if (abs($_REQUEST['result']) == 1) {
                     $this->updateOrder($order_id);

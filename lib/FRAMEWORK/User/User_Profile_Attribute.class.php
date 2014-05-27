@@ -1797,7 +1797,7 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
      *
      * If the $langId parameter is empty, the language is taken from the
      * global LANG_ID constant.
-     * Used by {@see SettingDb::show()},
+     * Used by {@see \Cx\Core\Setting\Controller\Setting::show()},
      * {@see Shopmanager::view_settings_general()}
      * @param   integer     $langId         The optional language ID
      * @return  array                       An array with attribute names

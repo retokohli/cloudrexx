@@ -1111,7 +1111,7 @@ DBG::log("Coupon::getByOrderId($order_id): ERROR: Query failed");
                 $objSorting->getHeaderForField('payment_id'),
         ));
         $count = 0;
-        $limit = SettingDb::getValue('numof_coupon_per_page_backend');
+        $limit = \Cx\Core\Setting\Controller\Setting::getValue('numof_coupon_per_page_backend');
         if (empty ($limit)) self::errorHandler ();
         $arrCoupons = self::getArray(
             Paging::getPosition(), $limit, $count,

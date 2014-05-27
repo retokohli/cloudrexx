@@ -305,11 +305,11 @@ class Filesharing extends FilesharingLib
     {
         global $_ARRAYLANG;
 
-        SettingDb::init('filesharing', 'config');
-        $permissionNeeded = SettingDb::getValue('permission');
+        \Cx\Core\Setting\Controller\Setting::init('filesharing', 'config');
+        $permissionNeeded = \Cx\Core\Setting\Controller\Setting::getValue('permission');
         if (!$permissionNeeded) {
-            SettingDb::add('permission', 'off');
-            $permissionNeeded = SettingDb::getValue('permission');
+            \Cx\Core\Setting\Controller\Setting::add('permission', 'off');
+            $permissionNeeded = \Cx\Core\Setting\Controller\Setting::getValue('permission');
         }
 
         if ($permissionNeeded == 'off' || (is_numeric($permissionNeeded) && !Permission::checkAccess($permissionNeeded, 'dynamic'))) {

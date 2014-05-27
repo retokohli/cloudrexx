@@ -846,8 +846,8 @@ class LegacyComponentHandler {
                         // Optionally limit to the first instance
                         // && MODULE_INDEX == ''
                         ) {
-                            \SettingDb::init('shop', 'config');
-                            if (\SettingDb::getValue('shopnavbar_on_all_pages')) {
+                            \Cx\Core\Setting\Controller\Setting::init('shop', 'config');
+                            if (\Cx\Core\Setting\Controller\Setting::getValue('shopnavbar_on_all_pages')) {
                                 \Shop::init();
                                 \Shop::setNavbar();
                             }

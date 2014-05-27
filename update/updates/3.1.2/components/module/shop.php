@@ -838,7 +838,7 @@ function _shopUpdate()
 
         //ShopSettings::errorHandler(); // Called by Coupon::errorHandler();Customer::errorHandler();Order::errorHandler();ShopCategory::errorHandler();
         // Prerequisites:
-        //        SettingDb::errorHandler();
+        //        \Cx\Core\Setting\Controller\Setting::errorHandler();
 
 
         Currency::errorHandler();
@@ -892,7 +892,7 @@ function _shopUpdate()
 
         //Yellowpay::errorHandler(); // Called by Payment::errorHandler();
         // Prerequisites:
-        //        SettingDb::errorHandler();
+        //        \Cx\Core\Setting\Controller\Setting::errorHandler();
 
 
         PaymentProcessing::errorHandler();

@@ -83,19 +83,38 @@ class Setting{
         if($engine=="Database"){
             
             \Cx\Core\Setting\Model\Entity\Db::init($section, $group);
-            self::$engineType='\Cx\Core\Setting\Model\Entity\Db';
+            self::setEngineType('\Cx\Core\Setting\Model\Entity\Db');
              
         }elseif($engine=="FileSystem"){
             
             \Cx\Core\Setting\Model\Entity\FileSystem::init($section, $group);
-            self::$engineType='\Cx\Core\Setting\Model\Entity\FileSystem';
+            self::setEngineType('\Cx\Core\Setting\Model\Entity\FileSystem');
         }else{
             throw new SettingException('Invalid arguments supplied');
             return false;
         }
         return true;
     }
-     
+    
+    /**
+     * Get engineType
+     *
+     * @return string $engineType
+     */ 
+    static function getEngineType(){
+        
+        return self::$engineType;
+    }
+    
+    /**
+     * Set engineType
+     *
+     * @param string $engineType
+     */
+    static function setEngineType($engineType){
+        
+         self::$engineType=$engineType;
+    }
     /**
      * Should be called whenever there's a problem with the settings table
      *
@@ -105,7 +124,7 @@ class Setting{
      */
     static function errorHandler()
     {
-        $engineType=self::$engineType;
+        $engineType=self::getEngineType();
         $engineType::errorHandler();  
     }
     
@@ -144,7 +163,7 @@ class Setting{
      * $uriBase *SHOULD* be the URI for the current module page.
      * If you want your settings to be stored, you *MUST* handle the post
      * request, check for the 'bsubmit' index in the $_POST array, and call
-     * {@see SettingDb::store()}.
+     * {@see \Cx\Core\Setting\Controller\Setting::store()}.
      * @param   \Cx\Core\Html\Sigma $objTemplateLocal   Template object
      * @param   string              $uriBase      The base URI for the module.
      * @param   string              $section      The optional section header
@@ -163,7 +182,7 @@ class Setting{
     {
         global $_CORELANG;
         
-        $engineType=self::$engineType;
+        $engineType=self::getEngineType();
 
 //$objTemplate->setCurrentBlock();
 //echo(nl2br(htmlentities(var_export($objTemplate->getPlaceholderList()))));
@@ -181,7 +200,7 @@ class Setting{
 
         if ($objTemplateLocal->blockExists('core_settingdb_row'))
             $objTemplateLocal->setCurrentBlock('core_settingdb_row');
-//echo("SettingDb::show(objTemplateLocal, $prefix): got Array: ".var_export(self::$arrSettings, true)."<br />");
+//echo("\Cx\Core\Setting\Controller\Setting::show(objTemplateLocal, $prefix): got Array: ".var_export(self::$arrSettings, true)."<br />");
         if (!is_array($engineType::$arrSettings)) {
 //die("No Settings array");
             return \Message::error($_CORELANG['TXT_CORE_SETTINGDB_ERROR_RETRIEVING']);
@@ -237,7 +256,7 @@ class Setting{
      */
     static function show_section(&$objTemplateLocal, $section='', $prefix='TXT_')
     {
-        global $_ARRAYLANG, $_CORELANG; $engineType=self::$engineType;
+        global $_ARRAYLANG, $_CORELANG; $engineType=self::getEngineType();
 
         $engineType::verify_template($objTemplateLocal);
         // This is set to multipart if necessary
@@ -316,7 +335,7 @@ class Setting{
                 continue 2;
 
               case self::TYPE_FILEUPLOAD:
-//echo("SettingDb::show_section(): Setting up upload for $name, $value<br />");
+//echo("\Cx\Core\Setting\Controller\Setting::show_section(): Setting up upload for $name, $value<br />");
                 $element =
                     \Html::getInputFileupload(
                         // Set the ID only if the $value is non-empty.
@@ -344,7 +363,7 @@ class Setting{
                         'document.getElementById("'.$name.'").value=1;'.
                         'document.formSettings_'.$engineType::$tab_index.'.submit();'.
                       '}\'';
-//DBG::log("SettingDb::show_section(): Event: $event");
+//DBG::log("\Cx\Core\Setting\Controller\Setting::show_section(): Event: $event");
                 $element =
                     \Html::getInputButton(
                         // The button itself gets a dummy name attribute value
@@ -356,7 +375,7 @@ class Setting{
                     // The posted value is set to 1 when confirmed,
                     // before the form is posted
                     \Html::getHidden($name, 0, '');
-//DBG::log("SettingDb::show_section(): Element: $element");
+//DBG::log("\Cx\Core\Setting\Controller\Setting::show_section(): Element: $element");
                 break;
 
               case self::TYPE_TEXTAREA:
@@ -413,7 +432,7 @@ class Setting{
                 'CORE_SETTINGDB_ROWCLASS2' => (++$i % 2 ? '1' : '2'),
             ));
             $objTemplateLocal->parseCurrentBlock();
-//echo("SettingDb::show(objTemplateLocal, $prefix): shown $name => $value<br />");
+//echo("\Cx\Core\Setting\Controller\Setting::show(objTemplateLocal, $prefix): shown $name => $value<br />");
         }
 
         // Set form encoding to multipart if necessary
@@ -422,7 +441,7 @@ class Setting{
 
         if (   !empty($section)
             && $objTemplateLocal->blockExists('core_settingdb_section')) {
-//echo("SettingDb::show(objTemplateLocal, $header, $prefix): creating section $header<br />");
+//echo("\Cx\Core\Setting\Controller\Setting::show(objTemplateLocal, $header, $prefix): creating section $header<br />");
             $objTemplateLocal->setVariable(array(
                 'CORE_SETTINGDB_SECTION' => $section,
             ));
@@ -446,13 +465,13 @@ class Setting{
     static function show_external(
         &$objTemplateLocal, $tab_name, $content
     ) {
-        $engineType=self::$engineType;
+        $engineType=self::getEngineType();
         
         if (   empty($objTemplateLocal)
             || !$objTemplateLocal->blockExists('core_settingdb_row')) {
             $objTemplateLocal = new \Cx\Core\Html\Sigma(ASCMS_DOCUMENT_ROOT.'/core/Setting/View/Template/Generic');
             if (!$objTemplateLocal->loadTemplateFile('Form.html'))
-                die("Failed to load template settingDb.html");
+                die("Failed to load template Form.html");
         }
 
         $active_tab = (isset($_REQUEST['active_tab']) ? $_REQUEST['active_tab'] : 1);
@@ -488,7 +507,7 @@ class Setting{
      */
     static function storeFromPost()
     {
-        $engineType=self::$engineType;
+        $engineType=self::getEngineType();
         $engineType::storeFromPost();  
     }
    
@@ -504,38 +523,38 @@ class Setting{
      */
     static function getValue($name)
     {
-        $engineType=self::$engineType;
+        $engineType=self::getEngineType();
         return $engineType::getValue($name);  
     }
     
      
     static function add( $name, $value, $ord=false, $type='text', $values='', $group=null)
     {
-        $engineType=self::$engineType;
+        $engineType=self::getEngineType();
         return $engineType::add( $name, $value, $ord=false, $type='text', $values='', $group=null);  
     }
     
     static function deleteModule()
     {
-        $engineType=self::$engineType;
+        $engineType=self::getEngineType();
         return $engineType::deleteModule();  
     } 
     
     static function set($name, $value)
     {
-        $engineType=self::$engineType;
+        $engineType=self::getEngineType();
         return $engineType::set($name, $value);  
     }
     
     static function updateAll()
     {
-        $engineType=self::$engineType;
+        $engineType=self::getEngineType();
         return $engineType::updateAll();  
     }
     
     static function update($name)
     {
-        $engineType=self::$engineType;
+        $engineType=self::getEngineType();
         return $engineType::update($name);  
     }
 }
