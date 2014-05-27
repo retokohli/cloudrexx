@@ -98,9 +98,20 @@ class TestCommand extends Command {
                 $testingFolders = array_merge($testingFolders, $this->getTestingFoldersByType($cType, $useCustomizing));
             }
         }
-             
-        //chdir(ASCMS_DOCUMENT_ROOT.'/testing/PHPUnit/');
-        //echo shell_exec('php phpunit.php --bootstrap ../cx_bootstrap.php --testdox ../tests/core/');
+        
+        $workbench = new \Cx\Core_Modules\Workbench\Controller\Workbench();
+        $phpPath   = $workbench->getConfigEntry('php');
+        
+        $phpUnitTestPath = ASCMS_DOCUMENT_ROOT.'/testing/PHPUnit/phpunit.php';        
+        if(!file_exists($phpUnitTestPath)) {
+            $this->interface->show("PhpUnit test is not found in ". ASCMS_DOCUMENT_ROOT.'/testing/PHPUnit');
+            return;
+        }
+        
+        chdir(ASCMS_DOCUMENT_ROOT.'/testing/PHPUnit/');
+        foreach ($testingFolders as $testingFolder) {
+            echo shell_exec($phpPath . ' ' . $phpUnitTestPath .' --bootstrap ../cx_bootstrap.php --testdox ' . $testingFolder);
+        }
         
         $this->interface->show('Done');
     }
