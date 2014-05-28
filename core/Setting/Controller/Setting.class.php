@@ -41,10 +41,8 @@ class Setting{
     const TYPE_TEXTAREA = 'textarea';
     const TYPE_EMAIL = 'email';
     const TYPE_BUTTON = 'button';
-// 20110224
     const TYPE_CHECKBOX = 'checkbox';
     const TYPE_CHECKBOXGROUP = 'checkboxgroup';
-// 20120508
     const TYPE_RADIO = 'radio';
 // Not implemented
 //    const TYPE_SUBMIT = 'submit';
@@ -57,8 +55,11 @@ class Setting{
     const DEFAULT_INPUT_WIDTH = 300;
 
     
-   
-    private static $engineType = null;
+    /**
+     * Default \Cx\Core\Setting\Model\Entity\Db
+     *
+     */
+    private static $engineType = '\Cx\Core\Setting\Model\Entity\Db'; 
     
     /**
      * Initialize the settings entries from the database with key/value pairs
@@ -80,12 +81,12 @@ class Setting{
     static function init($section, $group=null,$engine = 'Database')
     {
         
-        if($engine=="Database"){
+        if($engine=="Database"){ //default
             
             \Cx\Core\Setting\Model\Entity\Db::init($section, $group);
             self::setEngineType('\Cx\Core\Setting\Model\Entity\Db');
              
-        }elseif($engine=="FileSystem"){
+        }elseif($engine=="FileSystem"){ //optional
             
             \Cx\Core\Setting\Model\Entity\FileSystem::init($section, $group);
             self::setEngineType('\Cx\Core\Setting\Model\Entity\FileSystem');
@@ -113,8 +114,10 @@ class Setting{
      */
     static function setEngineType($engineType){
         
-         self::$engineType=$engineType;
+        self::$engineType=$engineType;
     }
+    
+    
     /**
      * Should be called whenever there's a problem with the settings table
      *
@@ -181,15 +184,9 @@ class Setting{
     static function show(&$objTemplateLocal, $uriBase, $section='', $tab_name='', $prefix='TXT_') 
     {
         global $_CORELANG;
-        
         $engineType=self::getEngineType();
-
-//$objTemplate->setCurrentBlock();
-//echo(nl2br(htmlentities(var_export($objTemplate->getPlaceholderList()))));
-
+        
         $engineType::verify_template($objTemplateLocal);
-// TODO: Test if everything works without this line
-//        Html::replaceUriParameter($uriBase, 'act=settings');
         \Html::replaceUriParameter($uriBase, 'active_tab='.$engineType::$tab_index);
         // Default headings and elements
         $objTemplateLocal->setGlobalVariable(
@@ -198,15 +195,15 @@ class Setting{
             'URI_BASE' => $uriBase,
         ));
 
-        if ($objTemplateLocal->blockExists('core_settingdb_row'))
-            $objTemplateLocal->setCurrentBlock('core_settingdb_row');
-//echo("\Cx\Core\Setting\Controller\Setting::show(objTemplateLocal, $prefix): got Array: ".var_export(self::$arrSettings, true)."<br />");
+        if ($objTemplateLocal->blockExists('core_settingdb_row')){
+                $objTemplateLocal->setCurrentBlock('core_settingdb_row');
+        }        
         if (!is_array($engineType::$arrSettings)) {
-//die("No Settings array");
+        //die("No Settings array");
             return \Message::error($_CORELANG['TXT_CORE_SETTINGDB_ERROR_RETRIEVING']);
         }
         if (empty($engineType::$arrSettings)) {
-//die("No Settings found");
+            //die("No Settings found");
             \Message::warning(
                 sprintf(
                     $_CORELANG['TXT_CORE_SETTINGDB_WARNING_NONE_FOUND_FOR_TAB_AND_SECTION'],
@@ -222,7 +219,7 @@ class Setting{
             $active_tab = (isset($_REQUEST['active_tab']) ? $_REQUEST['active_tab'] : 1);
             $objTemplateLocal->setGlobalVariable(array(
                 'CORE_SETTINGDB_TAB_NAME' => $tab_name,
-//                'CORE_SETTINGDB_TAB_INDEX' => self::$tab_index,
+            //  'CORE_SETTINGDB_TAB_INDEX' => self::$tab_index,
                 'CORE_SETTINGDB_TAB_CLASS' => ($engineType::$tab_index == $active_tab ? 'active' : ''),
                 'CORE_SETTINGDB_TAB_DISPLAY' => ($engineType::$tab_index++ == $active_tab ? 'block' : 'none'),
             ));
@@ -462,13 +459,12 @@ class Setting{
      * @param   string              $content            The external content
      * @return  boolean                                 True on success
      */
-    static function show_external(
-        &$objTemplateLocal, $tab_name, $content
-    ) {
+    static function show_external( &$objTemplateLocal, $tab_name, $content)
+    {
         $engineType=self::getEngineType();
         
-        if (   empty($objTemplateLocal)
-            || !$objTemplateLocal->blockExists('core_settingdb_row')) {
+        if (empty($objTemplateLocal)|| !$objTemplateLocal->blockExists('core_settingdb_row')) 
+        {
             $objTemplateLocal = new \Cx\Core\Html\Sigma(ASCMS_DOCUMENT_ROOT.'/core/Setting/View/Template/Generic');
             if (!$objTemplateLocal->loadTemplateFile('Form.html'))
                 die("Failed to load template Form.html");
@@ -477,17 +473,18 @@ class Setting{
         $active_tab = (isset($_REQUEST['active_tab']) ? $_REQUEST['active_tab'] : 1);
         // The tabindex must be set in the form name in any case
         $objTemplateLocal->setGlobalVariable(array(
-            'CORE_SETTINGDB_TAB_INDEX' => $engineType::$tab_index,
-            'CORE_SETTINGDB_EXTERNAL' => $content,
-        ));
+                                                    'CORE_SETTINGDB_TAB_INDEX' => $engineType::$tab_index,
+                                                    'CORE_SETTINGDB_EXTERNAL' => $content,
+                                                ));
         // Set up the tab, if any
-        if (!empty($tab_name)) {
+        if (!empty($tab_name)) 
+        {
             $objTemplateLocal->setGlobalVariable(array(
-                'CORE_SETTINGDB_TAB_NAME' => $tab_name,
-//                'CORE_SETTINGDB_TAB_INDEX' => self::$tab_index,
-                'CORE_SETTINGDB_TAB_CLASS' => ($engineType::$tab_index == $active_tab ? 'active' : ''),
-                'CORE_SETTINGDB_TAB_DISPLAY' => ($engineType::$tab_index++ == $active_tab ? 'block' : 'none'),
-            ));
+                                                        'CORE_SETTINGDB_TAB_NAME' => $tab_name,
+                                        //                'CORE_SETTINGDB_TAB_INDEX' => self::$tab_index,
+                                                        'CORE_SETTINGDB_TAB_CLASS' => ($engineType::$tab_index == $active_tab ? 'active' : ''),
+                                                        'CORE_SETTINGDB_TAB_DISPLAY' => ($engineType::$tab_index++ == $active_tab ? 'block' : 'none'),
+                                                ));
             $objTemplateLocal->touchBlock('core_settingdb_tab_row');
             $objTemplateLocal->parse('core_settingdb_tab_row');
             $objTemplateLocal->touchBlock('core_settingdb_tab_div_external');
@@ -527,34 +524,211 @@ class Setting{
         return $engineType::getValue($name);  
     }
     
-     
+    /**
+     * Add a new record to the settings
+     *
+     * The class *MUST* have been initialized by calling {@see init()}
+     * or {@see getArray()} before this method is called.
+     * The present $group stored in the class is used as a default.
+     * If the current class $group is empty, it *MUST* be specified in the call.
+     * @param   string    $name     The setting name
+     * @param   string    $value    The value
+     * @param   integer   $ord      The ordinal value for sorting,
+     *                              defaults to 0
+     * @param   string    $type     The element type for displaying,
+     *                              defaults to 'text'
+     * @param   string    $values   The values for type 'dropdown',
+     *                              defaults to the empty string
+     * @param   string    $group      The optional group
+     * @return  boolean             True on success, false otherwise
+     */ 
     static function add( $name, $value, $ord=false, $type='text', $values='', $group=null)
     {
         $engineType=self::getEngineType();
         return $engineType::add( $name, $value, $ord=false, $type='text', $values='', $group=null);  
     }
     
+    /**
+     * Deletes all entries for the current section
+     *
+     * This is for testing purposes only.  Use with care!
+     * The static $section determines the module affected.
+     * @return    boolean               True on success, false otherwise
+     */
     static function deleteModule()
     {
         $engineType=self::getEngineType();
         return $engineType::deleteModule();  
     } 
     
+    /**
+     * Updates a setting
+     *
+     * If the setting name exists and the new value is not equal to
+     * the old one, it is updated, and $changed set to true.
+     * Otherwise, nothing happens, and false is returned
+     * @see init(), updateAll()
+     * @param   string    $name       The settings name
+     * @param   string    $value      The settings value
+     * @return  boolean               True if the value has been changed,
+     *                                false otherwise, null on noop
+     */
     static function set($name, $value)
     {
         $engineType=self::getEngineType();
         return $engineType::set($name, $value);  
     }
     
+    /**
+     * Stores all settings entries present in the $arrSettings object
+     * array variable
+     *
+     * Returns boolean true if all records were stored successfully,
+     * null if nothing changed (noop), false otherwise.
+     * Upon success, also resets the $changed class variable to false.
+     * The class *MUST* have been initialized before calling this
+     * method using {@see init()}, and the new values been {@see set()}.
+     * Note that this method does not work for adding new settings.
+     * See {@see add()} on how to do this.
+     * @return  boolean                   True on success, null on noop,
+     *                                    false otherwise
+     */
     static function updateAll()
     {
         $engineType=self::getEngineType();
         return $engineType::updateAll();  
     }
     
+    /**
+     * Updates the value for the given name in the settings table
+     *
+     * The class *MUST* have been initialized before calling this
+     * method using {@see init()}, and the new value been {@see set()}.
+     * Sets $changed to true and returns true if the value has been
+     * updated successfully.
+     * Note that this method does not work for adding new settings.
+     * See {@see add()} on how to do this.
+     * Also note that the loaded setting is not updated, only the database!
+     * @param   string    $name   The settings name
+     * @return  boolean           True on successful update or if
+     *                            unchanged, false on failure
+     * @static
+     * @global  mixed     $objDatabase    Database connection object
+     */
     static function update($name)
     {
         $engineType=self::getEngineType();
         return $engineType::update($name);  
+    }
+    
+    /**
+     * Returns the current value of the changed flag.
+     *
+     * If it returns true, you probably want to call {@see updateAll()}.
+     * @return  boolean           True if values have been changed in memory,
+     *                            false otherwise
+     */
+    static function changed()
+    {
+        $engineType=self::getEngineType();
+        return $engineType::changed();  
+    }
+    
+    /**
+     * Joins the strings in the array with commas into a single values string
+     *
+     * Commas within the strings are escaped by a backslash (\).
+     * The array keys are prepended to the values, separated by a colon.
+     * Colons within the strings are escaped by a backslash (\).
+     * Note that keys *MUST NOT* contain either commas or colons!
+     * @param   array     $arrValues    The array of strings
+     * @return  string                  The concatenated values string
+     * @todo    Untested!  May or may not work as described.
+     */
+    static function joinValues($arrValues)
+    {
+        $engineType=self::getEngineType();
+        return $engineType::joinValues($arrValues);
+    }
+    
+    /**
+     * Returns the settings array for the given section and group
+     *
+     * See {@see init()} on how the arguments are used.
+     * If the method is called successively using the same $group argument,
+     * the current settings are returned without calling {@see init()}.
+     * Thus, changes made by calling {@see set()} will be preserved.
+     * @param   string    $section    The section
+     * @param   string    $group        The optional group
+     * @return  array                 The settings array on success,
+     *                                false otherwise
+     */
+     static function getArray($section, $group=null)
+    {
+        $engineType=self::getEngineType();
+        return $engineType::getArray($section,$group);
+    }
+    
+    /**
+     * Optionally sets and returns the value of the tab index
+     * @param   integer             The optional new tab index
+     * @return  integer             The current tab index
+     */
+    static function tab_index($tab_index=null)
+    {
+        $engineType=self::getEngineType();
+        return $engineType::tab_index($tab_index);
+    }
+    
+    /**
+     * Delete one or more records from the database table
+     *
+     * For maintenance/update purposes only.
+     * At least one of the parameter values must be non-empty.
+     * It will fail if both are empty.  Mind that in this case,
+     * no records will be deleted.
+     * Does {@see flush()} the currently loaded settings on success.
+     * @param   string    $name     The optional setting name.
+     *                              Defaults to null
+     * @param   string    $group      The optional group.
+     *                              Defaults to null
+     * @return  boolean             True on success, false otherwise
+     */
+    static function delete($name=null, $group=null)
+    {
+        $engineType=self::getEngineType();
+        return $engineType::delete($name, $group);
+    }
+    
+    /**
+     * Splits the string value at commas and returns an array of strings
+     *
+     * Commas escaped by a backslash (\) are ignored and replaced by a
+     * single comma.
+     * The values themselves may be composed of pairs of key and value,
+     * separated by a colon.  Colons escaped by a backslash (\) are ignored
+     * and replaced by a single colon.
+     * Leading and trailing whitespace is removed from both keys and values.
+     * Note that keys *MUST NOT* contain commas or colons!
+     * @param   string    $strValues    The string to be split
+     * @return  array                   The array of strings
+     */
+    static function splitValues($strValues)
+    {
+        $engineType=self::getEngineType();
+        return $engineType::splitValues($strValues);
+    }
+    
+    /**
+     * Flush the stored settings
+     *
+     * Resets the class to its initial state.
+     * Does *NOT* clear the section, however.
+     * @return  void
+     */
+    static function flush()
+    {
+        $engineType=self::getEngineType();
+        return $engineType::flush();
     }
 }
