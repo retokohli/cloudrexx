@@ -84,7 +84,7 @@ class ReflectionComponent {
             return;
         }
         $arg1Parts = explode('.', $arg1);
-		if (file_exists($arg1) && end($arg1Parts) == 'zip') {
+	if (file_exists($arg1) && end($arg1Parts) == 'zip') {
             // clean up tmp dir
             \Cx\Lib\FileSystem\FileSystem::delete_folder(ASCMS_APP_CACHE_FOLDER, true);
         
@@ -406,11 +406,11 @@ class ReflectionComponent {
         global $_DBCONFIG;
         
         // load tables
-        $objResult = $this->db->query('SHOW TABLES LIKE "'. DBPREFIX .'module_'. $this->componentName .'_%"');
+        $objResult = $this->db->query('SHOW TABLES LIKE "'. DBPREFIX .'module_'. strtolower($this->componentName) .'_%"');
         
         $componentTables = array();
         while (!$objResult->EOF) {
-            $componentTables[] = $objResult->fields['Tables_in_'. $_DBCONFIG['database'] .' ('. DBPREFIX .'module_'. $this->componentName .'_%)'];
+            $componentTables[] = $objResult->fields['Tables_in_'. $_DBCONFIG['database'] .' ('. DBPREFIX .'module_'. strtolower($this->componentName) .'_%)'];
             $objResult->MoveNext();
         }
         
