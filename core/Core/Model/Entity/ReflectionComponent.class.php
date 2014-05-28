@@ -172,10 +172,10 @@ class ReflectionComponent {
     
     /**
      * Returns wheter this component installed or not
-     * @param string $componentName 
+     *
      * @return boolean True if it exists, false otherwise
      */
-    public function isInstalled($componentName) {
+    public function isInstalled() {
         $cx = \Env::get('cx');
         
         $query = '
@@ -184,7 +184,7 @@ class ReflectionComponent {
             FROM
                 `' . DBPREFIX . 'component`
             WHERE
-                `name` = \'' . $componentName . '\'
+                `name` = \'' . $this->componentName . '\'
         ';
         $result = $cx->getDb()->getAdoDb()->query($query);
         if ($result && $result->RecordCount()) {
@@ -197,7 +197,7 @@ class ReflectionComponent {
             FROM
                 `' . DBPREFIX . 'modules`
             WHERE
-                `name` = \'' . $componentName . '\'
+                `name` = \'' . $this->componentName . '\'
         ';
         $result = $cx->getDb()->getAdoDb()->query($query);
         
@@ -269,7 +269,7 @@ class ReflectionComponent {
      */
     public function install() {
         // Check (not already installed (different version), all dependencies installed)
-        if ($this->isInstalled($this->componentName)) {
+        if ($this->isInstalled()) {
             throw new SystemComponentException('Component is already Exists');
         }
         if (!$this->packageFile) {
@@ -638,7 +638,7 @@ class ReflectionComponent {
      * Creates this component using a skeleton
      */
     public function create() {
-        if ($this->isInstalled($this->componentName)) {
+        if ($this->isInstalled()) {
             throw new SystemComponentException('Component is already Exists');
         }
         
@@ -1171,7 +1171,7 @@ class ReflectionComponent {
      * @return ReflectionComponent ReflectionComponent for new component
      */
     public function move($newName, $newType, $customized = false) {
-        if ($this->isInstalled($newName)) {
+        if ($this->isInstalled()) {
             throw new SystemComponentException('Component is already Exists');
         }
         return $this->internalRelocate($newName, $newType, $customized, false);
@@ -1188,7 +1188,7 @@ class ReflectionComponent {
      * @return ReflectionComponent ReflectionComponent for new component (aka "the copy")
      */
     public function copy($newName, $newType, $customized = false) {
-        if ($this->isInstalled($newName)) {
+        if ($this->isInstalled()) {
             throw new SystemComponentException('Component is already Exists');
         }
         return $this->internalRelocate($newName, $newType, $customized, true);
