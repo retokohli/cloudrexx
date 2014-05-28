@@ -162,12 +162,27 @@ class ReflectionComponent {
     }
     
     /**
-     * Returns wheter this component exists or not
-     * @param boolean $allowCustomizing (optional) Set to false if you want to ignore customizings
+     * Returns wheter this component exists or not in the system
+     * Note : It not depends the component type
+     * 
+     * @param boolean $allowCustomizing (optional) Set to false if you want to ignore customizings     
      * @return boolean True if it exists, false otherwise
      */
     public function exists($allowCustomizing = true) {
-        return file_exists($this->getDirectory($allowCustomizing));
+        foreach (self::$componentTypes as $componentType) {
+            $basepath      = ASCMS_DOCUMENT_ROOT . \Cx\Core\Core\Model\Entity\SystemComponent::getPathForType($componentType);
+            $componentPath = $basepath . '/' . $this->componentName;
+            
+            if (!$allowCustomizing) {
+                if (file_exists($componentPath)) {
+                    return true;
+                }
+            }
+            if (\Env::get('cx')->getClassLoader()->getFilePath($componentPath)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     /**
@@ -269,9 +284,6 @@ class ReflectionComponent {
      */
     public function install() {
         // Check (not already installed (different version), all dependencies installed)
-        if ($this->isInstalled()) {
-            throw new SystemComponentException('Component is already Exists');
-        }
         if (!$this->packageFile) {
             throw new SystemComponentException('Package file not available');
         }
@@ -638,7 +650,7 @@ class ReflectionComponent {
      * Creates this component using a skeleton
      */
     public function create() {
-        if ($this->isInstalled()) {
+        if ($this->exists()) {
             throw new SystemComponentException('Component is already Exists');
         }
         
@@ -1171,9 +1183,6 @@ class ReflectionComponent {
      * @return ReflectionComponent ReflectionComponent for new component
      */
     public function move($newName, $newType, $customized = false) {
-        if ($this->isInstalled()) {
-            throw new SystemComponentException('Component is already Exists');
-        }
         return $this->internalRelocate($newName, $newType, $customized, false);
     }
     
@@ -1188,9 +1197,6 @@ class ReflectionComponent {
      * @return ReflectionComponent ReflectionComponent for new component (aka "the copy")
      */
     public function copy($newName, $newType, $customized = false) {
-        if ($this->isInstalled()) {
-            throw new SystemComponentException('Component is already Exists');
-        }
         return $this->internalRelocate($newName, $newType, $customized, true);
     }
     
@@ -1352,6 +1358,10 @@ class ReflectionComponent {
     protected function internalRelocate($newName, $newType, $customized, $copy) {
         // create new ReflectionComponent
         $newComponent = new self($newName, $newType);
+        
+        if ($newComponent->exists()) {
+            throw new SystemComponentException('The target component is already Exists. Please provide different component name or use uninstall command to remove old component..');
+        }
         
         // move or copy pages before removing DB entries
         $em = \Env::get('cx')->getDb()->getEntityManager();
