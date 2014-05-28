@@ -1,0 +1,41 @@
+<div id="filebrowser">
+    <div class="tabMediaBrowserHeader"><i class="icon-folderLarge"></i>Datei wählen</div>
+    <div class="tabMediaBrowserBreadcrumbs">
+        <ul>
+            <li data-ng-repeat="pathpart in path">
+                <a data-ng-click="clickPath($index)" href="#/filebrowser">{{pathpart.name}}</a>
+            </li>
+        </ul>
+    </div>
+    <div class="tabMediaBrowserContent">
+        <div class="mediaBrowserListCtrl">
+            <div class="loadingPlatform">
+                <i class="icon-loading"></i>
+                <div class="loadingText1">Loading</div>
+            </div>
+
+
+            <table class="adminlist filelist">
+                <tbody>
+                    <tr data-ng-repeat="file in files" data-ng-class="{active: true === file.datainfo.active}" data-ng-if="file.datainfo.cleansize > 0"
+                        class="files">
+                        <td width="3%" class="col_1"><i class="icon-fileType icon-fileType{{file.datainfo.extension}}"></i></td>
+                        <td width="77%" class="col_2">
+                            <a data-ng-click="clickFile(file, $index)"
+                               preview-image="{{file.datainfo.preview}}" 
+                               >{{file.datainfo.name}}</a>
+                        </td>
+                        <td  class="fileSize" width="20%" class="col_3">{{file.datainfo.size}}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div> 
+    </div>
+    <div class="tabMediaBrowserFooter">
+
+
+        <button type="submit" class="btn btn-primary" data-ng-click="go('#/uploader')">Hochladen</button>
+        <button type="submit" class="btn btn-primary" disabled="disabled">Bild auswählen</button>
+        <button type="submit" class="btn btn-primary" data-dismiss="modal" data-target=".media-browser-modal">Abbrechen</button>
+    </div>
+</div>

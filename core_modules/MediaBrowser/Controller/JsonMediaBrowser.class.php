@@ -37,7 +37,7 @@ class JsonMediaBrowser implements JsonAdapter {
      * @return array List of method names
      */
     public function getAccessableMethods() {
-        return array('getFiles');
+        return array('getFiles', 'getSites', 'getSources');
     }
 
     /**
@@ -46,6 +46,33 @@ class JsonMediaBrowser implements JsonAdapter {
      */
     public function getMessagesAsString() {
         return '';
+    }
+
+    public function getSources() {
+        global $_ARRAYLANG, $_CORELANG;
+
+        // standard
+        $return[] = array(
+            'name' => 'Dateien',
+            'value' => 'files',
+            'path' => array_values(array_filter(explode('/', MediaBrowserConfiguration::get()->mediaTypePaths['files'][1])))
+        );
+
+        foreach (MediaBrowserConfiguration::get()->mediaTypes as $type => $name) {
+            if (!$this->_checkForModule($type)) {
+                continue;
+            }
+            $name = $_ARRAYLANG[$name];
+            if (empty($name)) {
+                $name = $_CORELANG[$name];
+            }
+            $return[] = array(
+                'name' => $name,
+                'value' => $type,
+                'path' => array_values(array_filter(explode('/', MediaBrowserConfiguration::get()->mediaTypePaths[$type][1])))
+            );
+        }
+        return $return;
     }
 
     public function getFiles($params) {
@@ -70,18 +97,31 @@ class JsonMediaBrowser implements JsonAdapter {
         $r = array();
         $i = 0;
         foreach ($ritit as $splFileInfo) {
-            if ($splFileInfo->isDir()) {
-                $extension = 'dir';
-            } else {
-                $extension = pathinfo($splFileInfo->getFilename(), PATHINFO_EXTENSION);
+            $extension = 'Dir';
+            if (!$splFileInfo->isDir()) {
+                $extension = ucfirst(pathinfo($splFileInfo->getFilename(), PATHINFO_EXTENSION));
+            }
+
+            // set preview if image
+            $preview = 'none';
+            switch (ucfirst($extension)) {
+                case 'Jpg':
+                case 'Jpeg':
+                case 'Gif':
+                case 'Png':
+                    $preview = ASCMS_PATH_OFFSET . str_replace(ASCMS_DOCUMENT_ROOT, '', $splFileInfo->getRealPath()) . '.thumb';
+                    break;
             }
 
             $fileInfos = array(
                 'name' => $splFileInfo->getFilename(),
-                'size' => $splFileInfo->getSize(),
-                'extension' => ucfirst($extension),
+                'size' => $this->formatBytes($splFileInfo->getSize()),
+                'cleansize' => $splFileInfo->getSize(),
+                'extension' => $extension,
+                'preview' => $preview,
                 'active' => false // preselect in mediabrowser or mark a folder
             );
+
 
             // filters
             if (
@@ -102,35 +142,137 @@ class JsonMediaBrowser implements JsonAdapter {
             }
             $r = array_merge_recursive($r, $path);
         }
-
         return ($r);
     }
 
-    private
-            function directoryToArray($directory, $recursive) {
-        $array_items = array();
-        if ($handle = opendir($directory)) {
-            while (false !== ($file = readdir($handle))) {
-                if ($file != "." && $file != "..") {
+    public function getSites($params) {
+        $jd = new \Cx\Core\Json\JsonData();
+        $data = $jd->data('node', 'getTree', array('get' => array('recursive' => 'true')));
+        $pageStack = array();
+        $ref = 0;
+        $data['data']['tree'] = array_reverse($data['data']['tree']);
+        foreach ($data['data']['tree'] as &$entry) {
+            $entry['attr']['level'] = 0;
+            array_push($pageStack, $entry);
+        }
+        while (count($pageStack)) {
+            $entry = array_pop($pageStack);
+            $page = $entry['data'][0];
+            $arrPage['level'] = $entry['attr']['level'];
+            $arrPage['node_id'] = $entry['attr']['rel_id'];
+            $children = $entry['children'];
+            $children = array_reverse($children);
+            foreach ($children as &$entry) {
+                $entry['attr']['level'] = $arrPage['level'] + 1;
+                array_push($pageStack, $entry);
+            }
+            $arrPage['catname'] = $page['title'];
+            $arrPage['catid'] = $page['attr']['id'];
+            $arrPage['lang'] = BACKEND_LANG_ID;
+            $arrPage['protected'] = $page['attr']['protected'];
+            $arrPage['type'] = \Cx\Core\ContentManager\Model\Entity\Page::TYPE_CONTENT;
+            $arrPage['alias'] = $page['title'];
+            $arrPage['frontend_access_id'] = $page['attr']['frontend_access_id'];
+            $arrPage['backend_access_id'] = $page['attr']['backend_access_id'];
 
-
-
-                    if (is_dir($directory . "/" . $file)) {
-                        if ($recursive) {
-                            $array_items = array_merge($array_items, $this->directoryToArray($directory . "/" . $file, $recursive));
-                        }
-                        $file = $directory . "/" . $file;
-                        $array_items[] = preg_replace("/\/\//si", "/", $file);
-                        echo 'voila: ' . $file;
-                    } else {
-                        $file = $directory . "/" . $file;
-                        $array_items[] = preg_replace("/\/\//si", "/", $file);
-                    }
+            // JsonNode does not provide those
+            //$arrPage['level'] = ;
+            //$arrPage['type'] = ;
+            //$arrPage['parcat'] = ;
+            //$arrPage['displaystatus'] = ;
+            //$arrPage['moduleid'] = ;
+            //$arrPage['startdate'] = ;
+            //$arrPage['enddate'] = ;
+            // But we can simulate level and type for our purposes: (level above)
+            $jsondata = json_decode($page['attr']['data-href']);
+            $path = $jsondata->path;
+            if (trim($jsondata->module) != '') {
+                $arrPage['type'] = \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION;
+                $module = explode(' ', $jsondata->module, 2);
+                $arrPage['modulename'] = $module[0];
+                if (count($module) > 1) {
+                    $arrPage['cmd'] = $module[1];
                 }
             }
-            closedir($handle);
+
+            $url = "'" . '[[' . \Cx\Core\ContentManager\Model\Entity\Page::PLACEHOLDER_PREFIX;
+
+// TODO: This only works for regular application pages. Pages of type fallback that are linked to an application
+//       will be parsed using their node-id ({NODE_<ID>})
+            if (($arrPage['type'] == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION) && ($this->_mediaMode !== 'alias')) {
+                $url .= $arrPage['modulename'];
+                if (!empty($arrPage['cmd'])) {
+                    $url .= '_' . $arrPage['cmd'];
+                }
+
+                $url = strtoupper($url);
+            } else {
+                $url .= $arrPage['node_id'];
+            }
+
+            // if language != current language or $alwaysReturnLanguage
+            if ($this->_frontendLanguageId != $_FRONTEND_LANGID ||
+                    (isset($_GET['alwaysReturnLanguage']) &&
+                    $_GET['alwaysReturnLanguage'] == 'true')) {
+                $url .= '_' . $this->_frontendLanguageId;
+            }
+            $url .= "]]'";
+
+            $return[] = array(
+                'click' => "javascript:{setUrl($url,null,null,'" . \FWLanguage::getLanguageCodeById($this->_frontendLanguageId) . $path . "','page')}",
+                'name' => $arrPage['catname'],
+                'extension' => 'Html',
+                'level' => $arrPage['level']
+            );
+            $rowNr++;
         }
-        return $array_items;
+        return $return;
+    }
+
+    private function formatBytes($bytes, $unit = "", $decimals = 2) {
+        $units = array('B' => 0, 'KB' => 1, 'MB' => 2, 'GB' => 3, 'TB' => 4,
+            'PB' => 5, 'EB' => 6, 'ZB' => 7, 'YB' => 8);
+
+        $value = 0;
+        if ($bytes > 0) {
+            // Generate automatic prefix by bytes 
+            // If wrong prefix given
+            if (!array_key_exists($unit, $units)) {
+                $pow = floor(log($bytes) / log(1024));
+                $unit = array_search($pow, $units);
+            }
+
+            // Calculate byte value by prefix
+            $value = ($bytes / pow(1024, floor($units[$unit])));
+        }
+
+        // If decimals is not numeric or decimals is less than 0 
+        // then set default value
+        if (!is_numeric($decimals) || $decimals < 0) {
+            $decimals = 2;
+        }
+
+        // Format output
+        return sprintf('%.' . $decimals . 'f ' . $unit, $value);
+    }
+
+    /**
+     * checks whether a module is available and active
+     *
+     * @return bool
+     */
+    function _checkForModule($strModuleName) {
+        global $objDatabase;
+        if (($objRS = $objDatabase->SelectLimit("SELECT `status` FROM " . DBPREFIX . "modules WHERE name = '" . $strModuleName . "' AND `is_active` = '1' AND `is_licensed` = '1'", 1)) != false) {
+            if ($objRS->RecordCount() > 0) {
+                if ($objRS->fields['status'] == 'n') {
+                    return false;
+                }
+                return true;
+            }
+            return false;
+        }
+        return true;
     }
 
 }
