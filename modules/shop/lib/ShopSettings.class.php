@@ -71,8 +71,8 @@ class ShopSettings
         }
         if (self::$changed) {
             return (self::$success
-                ? Message::ok($_CORELANG['TXT_CORE_\Cx\Core\Setting\Controller\Setting_STORED_SUCCESSFULLY'])
-                : Message::error($_CORELANG['TXT_CORE_\Cx\Core\Setting\Controller\Setting_ERROR_STORING'])
+                ? Message::ok($_CORELANG['TXT_CORE_SETTINGDB_STORED_SUCCESSFULLY'])
+                : Message::error($_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING'])
             );
         }
         return null;

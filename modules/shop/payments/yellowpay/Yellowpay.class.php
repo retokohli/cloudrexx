@@ -452,9 +452,9 @@ class Yellowpay
         }
 
         if (empty($arrSettings)) {
-            $\Cx\Core\Setting\Controller\Setting = \Cx\Core\Setting\Controller\Setting::getArray(self::$sectionName, 'config');
-            if (!empty($\Cx\Core\Setting\Controller\Setting) && $\Cx\Core\Setting\Controller\Setting['postfinance_active']['value']) {
-                $arrSettings = $\Cx\Core\Setting\Controller\Setting;
+            $SettingDb = \Cx\Core\Setting\Controller\Setting::getArray(self::$sectionName, 'config');
+            if (!empty($SettingDb) && $SettingDb['postfinance_active']['value']) {
+                $arrSettings = $SettingDb;
             } else {
                 self::$arrError[] = "Could not load settings.";
             }
