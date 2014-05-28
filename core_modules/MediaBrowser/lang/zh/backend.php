@@ -1,34 +1,11 @@
 <?php
 /**
- * This is the english language file for backend mode.
- * This file is included by Contrexx and all entries are set as placeholder
- * values for backend ACT template by SystemComponentBackendController
- *
- * @copyright   CONTREXX CMS - Comvation AG Thun
- * @author      Michael Ritter <michael.ritter@comvation.com>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
  * @package     contrexx
- * @subpackage  modules_skeleton
+ * @subpackage  coremodule_filebrowser
  */
-
-
-global $_ARRAYLANG;
-
-// Let's start with module info:
-$_ARRAYLANG['TXT_CORE_MODULE_MEDIABROWSER'] = 'MediaBrowser';
-$_ARRAYLANG['TXT_CORE_MODULE_MEDIABROWSER_DESCRIPTION'] = 'To manage files and sites innovative.';
-
-// Here come the ACTs:
-$_ARRAYLANG['TXT_CORE_MODULE_MEDIABROWSER_ACT_DEFAULT'] = 'Modal Tests';
-$_ARRAYLANG['TXT_CORE_MODULE_MEDIABROWSER_ACT_BROWSER'] = 'MediaBrowser';
-$_ARRAYLANG['TXT_CORE_MODULE_MEDIABROWSER_ACT_BROWSER_DEFAULT'] = 'Uploader';
-$_ARRAYLANG['TXT_CORE_MODULE_MEDIABROWSER_ACT_BROWSER_VIEW1'] = 'Browser';
-$_ARRAYLANG['TXT_CORE_MODULE_MEDIABROWSER_ACT_BROWSER_VIEW2'] = 'Webseiten';
-
-// Now our content specific values:
-$_ARRAYLANG['TXT_CORE_MODULE_MEDIABROWSER_CONGRATULATIONS'] = 'Tests';
-
-
-// BROWSR LANG
 $_ARRAYLANG['TXT_CLOSE'] = "Close";
 $_ARRAYLANG['TXT_FILEBROWSER_MEDIA_1'] = "Media Archive #1";
 $_ARRAYLANG['TXT_FILEBROWSER_MEDIA_2'] = "Media Archive #2";
@@ -50,3 +27,4 @@ $_ARRAYLANG['TXT_FILEBROWSER_UPLOAD_FILE_MULTI'] = "Upload file(s)";
 $_ARRAYLANG['TXT_FILEBROWSER_MEDIADIR'] = "Media Directory";
 $_ARRAYLANG['TXT_FILEBROWSER_DOWNLOADS'] = "Digital Asset Management";
 $_ARRAYLANG['TXT_FILEBROWSER_START_FILE_UPLOADER'] = "or start File Uploader...";
+?>

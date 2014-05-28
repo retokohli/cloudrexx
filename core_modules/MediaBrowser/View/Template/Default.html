@@ -1,10 +1,116 @@
 <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.9.0/jquery.min.js"></script>
-<h1 style="float: none;">Beispielseite mit MediaBrowser</h1>
-<p>test</p>
+<h1 style="float: none;">Beispielseite mit Uploadern</h1>
+
 
 {MB_EXAMPLE_BUTTON}
 
 
-<button class="btn btn-primary" data-toggle="modal" data-target=".media-browser-modal">MediaBrowser ALL</button>
+<h3>MediaBrowser mit allen Inhalten</h3>
+<button data-cx-mb="">MediaBrowser ALL</button>
+<p><code>&lt;button data-cx-mb=""&gt;MediaBrowser ALL&lt;/button&gt;</code></p>
+<p>"mb" zu beliebigen Element hinzufügen. Der MediaBrowser öffnet sich bei Klick auf das entsprechende Element. </p>
+<hr />
 
-<button class="btn btn-primary" data-toggle="modal" data-target=".media-browser-modal-upload">MediaBrowser Upload Only</button>
+<h3>Attribute data-cx-mb-startview: | default: filebrowser</h3>
+<button data-cx-mb="" data-cx-mb-startview="sitestructure">MediaBrowser</button>
+<p><code>&lt;button data-cx-mb="" data-cx-mb-startview=&quot;sitestructure&quot;&gt;MediaBrowser&lt;/button&gt;</code></p>
+<p>"mb-startview" definiert das StartView des MediaBrowsers: Verfügbar sind: 'sitestructure, 'uploader' sowie 'filebrowser' </p>
+<hr />
+
+
+<h3>Attribute data-cx-mb-views: | default: all</h3>
+<button data-cx-mb="" data-cx-mb-views="sitestructure,uploader">MediaBrowser</button>
+<p><code>&lt;button data-cx-mb="" data-cx-mb-views=&quot;sitestructure,uploader&quot;&gt;MediaBrowser&lt;/button&gt;</code></p>
+<p>
+    "mb-views" definiert welche Views angezeigt werden sollen. Verfügbar sind: 'sitestructure, 'uploader' sowie 'filebrowser'. Wird nur ein View angegeben, so wird die Navigation ausgeblendet.
+</p>
+<hr />
+
+
+<h3>Attribute data-cx-mb-startmediatype | default: files</h3>
+<button data-cx-mb="" data-cx-mb-startmediatype="gallery">MediaBrowser</button>
+<p><code>&lt;button data-cx-mb="" data-cx-mb-startmediatype=&quot;gallery&quot;&gt;MediaBrowser&lt;/button&gt;</code></p>
+<p>
+    "mb-startmediatype" definiert welche Dateien vorgeladen werden.
+</p>
+<hr />
+
+<h3>Attribute data-cx-mb-mediatypes | default: all</h3>
+<button data-cx-mb="" data-cx-mb-startmediatype="gallery" data-cx-mb-mediatypes="files, gallery">MediaBrowser</button>
+<p><code>&lt;button data-cx-mb="" data-cx-mb-startmediatype=&quot;gallery&quot; data-cx-mb-mediatypes=&quot;files, gallery&quot;&gt;MediaBrowser&lt;/button&gt;</code></p>
+<p>
+    "mb-mediatypes" definiert welche Sources angezeigt werden sollen. Wird der Parameter nicht angegeben, so werden alle angezeigt.
+</p>
+<hr />
+
+<h3>Attribute data-cx-mb-multipleselect | default: false</h3>
+<button data-cx-mb="" data-cx-mb-multipleselect="true" data-cx-mb-views="filebrowser">MediaBrowser</button>
+<p><code>&lt;button data-cx-mb="" data-cx-mb-multipleselect=&quot;true&quot; data-cx-mb-views=&quot;filebrowser&quot;&gt;MediaBrowser&lt;/button&gt;</code></p>
+<p>
+    "mb-multipleselect": können mehrere Dateien ausgewählt werden oder nur eine?
+</p>
+<hr />
+
+
+<h3>Attribute data-cx-mb-cb-js-modalopened | default: null</h3>
+<button data-cx-mb="" data-cx-mb-cb-js-modalopened="testFunction" data-cx-mb-cb-js-modalclosed="testFunction">MediaBrowser</button>
+
+<script>
+    function testFunction(data) { alert('data: ' + data); }
+</script>
+
+<p>
+    <code>
+        &lt;button data-cx-mb=&quot;&quot; data-cx-mb-cb-js-modalopened=&quot;testFunction&quot; data-cx-mb-cb-js-modalclosed=&quot;testFunction&quot;&gt;MediaBrowser&lt;/button&gt;<br /> <br />
+        &lt;script&gt;<br/>    &nbsp;&nbsp;&nbsp;&nbsp;function testFunction(data) { alert('data: ' + data);  }<br/> &lt;/script&gt;
+    </code>
+</p>
+<p>
+    Neben 'modalopened' gibt es folgende Auslöser:
+</p>
+<table>
+    <tr>
+        <td><b>Name</b></td><td><b>Auslöser</b></td>
+    </tr>
+    <tr>
+        <td>modalopened</td><td>Nachdem Öffnen des Modals.</td>
+    </tr><tr>
+        <td>modalclosed</td><td>Nachdem dem Schliessen des Modals.</td>
+    </tr><tr>
+        <td>fileuploaded</td><td>Nachdem dem Upload einer Datei.</td>
+    </tr><tr>
+        <td>preupload</td><td>Kurz vor dem Uploaden einer Datei.</td>
+    </tr><tr>
+        <td>mediaselected</td><td>Nach der Auswahl einer Seite/Datei.</td>
+    </tr><tr>
+        <td>tabswitched</td><td>Nachdem switchen eines MenüTabs.</td>
+    </tr>
+</table>
+
+<hr />
+
+
+<h3>Hinweise</h3>
+<ul>
+    <li>Anstelle des "data-cx-mb" kann auch direkt "cx-mb" verwendet werden, ist jedoch in einigen älteren Browsern invalid.</li>
+</ul>
+<hr />
+
+
+<!-- Der neue Fileuploader setzt die Verwendung von angularjs voraus. Nachfolgend einige Beispiele, wie er verwendet werden kann !-->
+<h3>Single File Upload</h3>
+<button pl-upload pl-auto-upload="true">Upload Files</button>
+
+
+<h3>Multiple Files Upload</h3>
+<a pl-upload pl-auto-upload="false" pl-files-model="multiFiles" pl-progress-model="multiPercent" pl-instance="uploader">Pick Files</a>
+<a class="input-block-level" data-ng-click="uploader.start()">Upload Files</a>
+
+
+<h3>Passing Parameter to upload script</h3>
+<a pl-upload pl-multi-params-model="multiParams" pl-progress-model="paramsPercent">Upload Files</a>
+
+<h3>Events on upload</h3>
+<a  pl-upload on-file-added="loading=true" on-file-uploaded="loading=false">Upload</a>
+
+

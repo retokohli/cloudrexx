@@ -1,0 +1,18 @@
+<div id="sitestructure">
+    <div class="tabMediaBrowserHeader"><i class="icon-sitestructureLarge"></i>Seitenstruktur</div>
+
+    <div class="tabMediaBrowserContent">
+        <div class="sitestructureCtrl">
+            <div data-ng-repeat="site in sites" class="data-row">
+                <div style="paddidata-ng-left: {{site.level * 30}}px" class="col-icon"><i class="icon-fileType icon-fileType{{site.extension}}"></i></div>
+                <div class="col-name">
+                    <a data-dismiss="modal" data-target=".media-browser-modal" href="#">{{site.name}}</a>
+                </div>
+            </div>
+        </div> 
+    </div>
+    <div class="tabMediaBrowserFooter">
+        <button type="submit" class="btn btn-primary" disabled="disabled">Seite auswählen</button>
+        <button type="submit" class="btn btn-primary" data-dismiss="modal" data-target=".media-browser-modal">Abbrechen</button>
+    </div>
+</div>

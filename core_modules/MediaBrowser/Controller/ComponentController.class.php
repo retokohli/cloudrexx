@@ -37,6 +37,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 $data = $objFile->getData();
 
                 $template->_blocks['__global__'] = str_replace('</body>', $data.'</body>', $template->_blocks['__global__']);
+                
+                // add ng-app="contrexxApp" as Attribute to <html>
+                $template->_blocks['__global__'] = str_replace('<html', '<html ng-app="contrexxApp"', $template->_blocks['__global__']);
             } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
                 echo ($e->getMessage());
             }
@@ -48,8 +51,10 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             \JS::registerJS('lib/plupload/js/moxie.min.js');
             \JS::registerJS('lib/plupload/js/plupload.dev.js'); /* todo change to min */
             \JS::registerJS(substr(ASCMS_CORE_MODULE_FOLDER . '/MediaBrowser/View/Script/angular.min.js', 1));
+            \JS::registerJS(substr(ASCMS_CORE_MODULE_FOLDER . '/MediaBrowser/View/Script/angular-route.min.js', 1));
             \JS::registerJS(substr(ASCMS_CORE_MODULE_FOLDER . '/MediaBrowser/View/Script/bootstrap.min.js', 1));
             \JS::registerJS(substr(ASCMS_CORE_MODULE_FOLDER . '/MediaBrowser/View/Script/mediabrowser.js', 1));
+            \JS::registerJS(substr(ASCMS_CORE_MODULE_FOLDER . '/MediaBrowser/View/Script/standalone-directives.js', 1));
         }
     }
 
