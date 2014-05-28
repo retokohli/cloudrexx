@@ -37,6 +37,11 @@ class TestCommand extends Command {
     protected $help = 'To be defined';
     
     /**
+     * Array of testing folders
+     */
+    protected $testingFolders = array();
+
+    /**
      * Execute this command
      * @param array $arguments Array of commandline arguments
      */
@@ -70,32 +75,27 @@ class TestCommand extends Command {
         $systemConfig      = \Env::get('config');
         $useCustomizing    = isset($systemConfig['useCustomizings']) && $systemConfig['useCustomizings'] == 'on';
         
-        $arrComponentTypes = array('core', 'core_module', 'module');        
-        $testingFolders    = array();
+        $arrComponentTypes = array('core', 'core_module', 'module');                
         
         // check for the component type
         if (isset($arguments[2]) && in_array($arguments[2], $arrComponentTypes)) {
-            $testingFolders = $this->getTestingFoldersByType($arguments[2], $useCustomizing);
+            $this->getTestingFoldersByType($arguments[2], $useCustomizing);
         } elseif (!empty ($arguments[2])) {
             // check whether it a valid component
-            $componentName = $arguments[2];
-            $componentType = '';
+            $componentName = $arguments[2];            
             
             foreach ($arrComponentTypes as $cType) {
                 $componentFolder        = $this->getModuleFolder($componentName, $cType, $useCustomizing);
-                $componentTestingFolder = $componentFolder . ASCMS_TESTING_FOLDER;
-                if (!empty($componentFolder) && file_exists($componentFolder) && file_exists($componentTestingFolder)) {
-                    $componentType = $cType;
-                    $testingFolders[$componentName] = $componentTestingFolder;
+                if ($this->addTestingFolderToArray($componentName, $componentFolder)) {
                     break;
-                }                
+                }                                
             }
         }
         
         // get all testing folder when component type or name not specificed
-        if (empty($testingFolders)) {
+        if (empty($this->testingFolders)) {
             foreach ($arrComponentTypes as $cType) {
-                $testingFolders = array_merge($testingFolders, $this->getTestingFoldersByType($cType, $useCustomizing));
+                $this->getTestingFoldersByType($cType, $useCustomizing);
             }
         }
         
@@ -109,7 +109,7 @@ class TestCommand extends Command {
         }
         
         chdir(ASCMS_DOCUMENT_ROOT.'/testing/PHPUnit/');
-        foreach ($testingFolders as $testingFolder) {
+        foreach ($this->testingFolders as $testingFolder) {
             echo shell_exec($phpPath . ' ' . $phpUnitTestPath .' --bootstrap ../cx_bootstrap.php --testdox ' . $testingFolder);
         }
         
@@ -123,24 +123,17 @@ class TestCommand extends Command {
      * 
      * @return array Testing folders by given component type
      */
-    function getTestingFoldersByType($componentType, $useCustomizing) {
+    private function getTestingFoldersByType($componentType, $useCustomizing) {
         
         $cx = \Env::get('cx');
         $em = $cx->getDb()->getEntityManager();        
-        
-        $testingFolders = array();
         
         $systemComponentRepo = $em->getRepository('Cx\\Core\\Core\\Model\\Entity\\SystemComponent');
         $systemComponents = $systemComponentRepo->findBy(array('type'=>$componentType));
         
         if (!empty($systemComponents)) {
             foreach ($systemComponents as $systemComponent) {
-                $componentFolder        = $systemComponent->getDirectory($useCustomizing);
-                $componentTestingFolder = $componentFolder . ASCMS_TESTING_FOLDER;
-                
-                if (file_exists($componentFolder) && file_exists($componentTestingFolder)) {
-                    $testingFolders[$systemComponent->getName()] = $componentTestingFolder;
-                }                
+                $this->addTestingFolderToArray($systemComponent->getName(), $systemComponent->getDirectory($useCustomizing));
             }
         }
         
@@ -165,17 +158,12 @@ class TestCommand extends Command {
             }
             
             foreach ($arrModules as $component) {
-                if (!array_key_exists($component, $testingFolders)) {
-                    $componentFolder        = $this->getModuleFolder($component, $componentType, $useCustomizing);
-                    $componentTestingFolder = $componentFolder . ASCMS_TESTING_FOLDER;
-                    if (!empty($componentFolder) && file_exists($componentFolder) && file_exists($componentTestingFolder)) {
-                        $testingFolders[$component] = $componentTestingFolder;
-                    }
+                if (!array_key_exists($component, $this->testingFolders)) {
+                    $componentFolder = $this->getModuleFolder($component, $componentType, $useCustomizing);
+                    $this->addTestingFolderToArray($component, $componentFolder);
                 }
             }
         }
-
-        return $testingFolders;
     }
     
     /**
@@ -187,7 +175,7 @@ class TestCommand extends Command {
      * 
      * @return string module folder name
      */
-    function getModuleFolder($componentName, $componentType, $allowCustomizing = true)
+    private function getModuleFolder($componentName, $componentType, $allowCustomizing = true)
     {
         $basepath      = ASCMS_DOCUMENT_ROOT . \Cx\Core\Core\Model\Entity\SystemComponent::getPathForType($componentType);
         $componentPath = $basepath . '/' . $componentName;
@@ -196,6 +184,25 @@ class TestCommand extends Command {
             return $componentPath;
         }
         
-        return \Env::get('ClassLoader')->getFilePath($componentPath);
+        return \Env::get('cx')->getClassLoader()->getFilePath($componentPath);
+    }
+    
+    /**
+     * Added module testing folder to a array
+     * 
+     * @param string $componentName Component name
+     * @param string $componentFolder Module Fodler path
+     *      
+     * @return boolean true if added successfully otherwise false
+     */
+    private function addTestingFolderToArray($componentName, $componentFolder)
+    {
+        $componentTestingFolder = $componentFolder . ASCMS_TESTING_FOLDER;
+        if (!empty($componentFolder) && file_exists($componentFolder) && file_exists($componentTestingFolder)) {
+            $this->testingFolders[$componentName] = $componentTestingFolder;
+            return true;
+        }
+        
+        return false;        
     }
 }
