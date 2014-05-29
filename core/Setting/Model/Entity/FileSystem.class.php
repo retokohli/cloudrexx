@@ -572,7 +572,12 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
         }
         $success = true;
         
-        $success &= self::update(self::$arrSettings);
+        foreach (self::$arrSettings as $name => $arrSetting) {
+            
+            self::set($name, self::$arrSettings[$name]['value']);
+        }
+         $success &= self::updateFileData();
+       // $success &= self::update(self::$arrSettings);
         if ($success) {
             self::$changed = false;
 //            return Message::ok($_CORELANG['TXT_CORE_SETTINGDB_STORED_SUCCESSFULLY']);
@@ -598,25 +603,48 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
      * @static
      * @global  mixed     $objDatabase    Database connection object
      */
-    static function update($arrSettings)
+    static function update($name)
     {
-         
-        $file = new \Cx\Lib\FileSystem\File(ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml');
-        $file->delete();
-        $file->touch();
-        $yaml = new \Symfony\Component\Yaml\Yaml();
         
-        if(!empty($arrSettings))
+        // TODO: Add error messages for individual errors
+        if (empty(self::$section)) {
+\DBG::log("self::update(): ERROR: Empty section!");
+            return false;
+        }
+        // Fail if the name is invalid
+        // or the setting does not exist
+        if (empty($name)) {
+\DBG::log("self::update(): ERROR: Empty name!");
+            return false;
+        }
+        if (!isset(self::$arrSettings[$name])) {
+\DBG::log("self::update(): ERROR: Unknown setting name '$name'!");
+            return false;
+        }
+        self::set($name, self::$arrSettings[$name]['value']);
+      
+      self::updateFileData();  
+    }
+    
+    static protected function updateFileData()
+    {
+        if(!empty(self::$arrSettings))
         {
-            foreach($arrSettings as $value)
-            {
-               $file->append($yaml->dump(Array( $value )));
-            }
-        
-         return true;
+            $file = new \Cx\Lib\FileSystem\File(ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml');
+            $file->delete();
+            $file->touch();
+            $yaml = new \Symfony\Component\Yaml\Yaml();
+            
+           
+                foreach(self::$arrSettings as $value)
+                {
+                   $file->append($yaml->dump(Array( $value )));
+                }
+            
+            return true;
         }else{
-        return false;
-       }
+            return false;
+        }
     }
 
 }
