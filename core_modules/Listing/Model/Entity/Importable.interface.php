@@ -1,6 +1,6 @@
 <?php
 
-namespace Cx\Core_Modules\Listing\Model;
+namespace Cx\Core_Modules\Listing\Model\Entity;
 
 interface Importable {
 

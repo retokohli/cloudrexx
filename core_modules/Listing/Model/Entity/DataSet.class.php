@@ -79,8 +79,8 @@ class DataSet implements \Iterator {
     }
 
     protected static function getYamlInterface() {
-        if (self::$yamlInterface) {
-            self::$yamlInterface = new \Cx\Core_Modules\Listing\Model\YamlInterface();
+        if (empty(self::$yamlInterface)) {
+            self::$yamlInterface = new \Cx\Core_Modules\Listing\Model\Entity\Yaml();
         }
         return self::$yamlInterface;
     }
@@ -89,7 +89,7 @@ class DataSet implements \Iterator {
         return $this->export(self::getYamlInterface());
     }
 
-    public static function import(Cx\Core_Modules\Listing\Model\Importable $importInterface, $content) {
+    public static function import(\Cx\Core_Modules\Listing\Model\Entity\Importable $importInterface, $content) {
         return new static($importInterface->import($content));
     }
 
@@ -100,12 +100,12 @@ class DataSet implements \Iterator {
      * @throws \Cx\Lib\FileSystem\FileSystemException
      * @return type 
      */
-    public static function importFromFile(Cx\Core_Modules\Listing\Model\Importable $importInterface, $filename) {
+    public static function importFromFile(\Cx\Core_Modules\Listing\Model\Entity\Importable $importInterface, $filename) {
         $objFile = new \Cx\Lib\FileSystem\File($filename);
         return self::import($importInterface, $objFile->getData());
     }
 
-    public function export(Cx\Core_Modules\Listing\Model\Exportable $exportInterface) {
+    public function export(\Cx\Core_Modules\Listing\Model\Entity\Exportable $exportInterface) {
         return $exportInterface->export($this);
     }
 
@@ -115,7 +115,7 @@ class DataSet implements \Iterator {
      * @param type $filename 
      * @throws \Cx\Lib\FileSystem\FileSystemException
      */
-    public function exportToFile(Cx\Core_Modules\Listing\Model\Exportable $exportInterface, $filename) {
+    public function exportToFile(\Cx\Core_Modules\Listing\Model\Entity\Exportable $exportInterface, $filename) {
         $objFile = new \Cx\Lib\FileSystem\File($filename);
         $objFile->write($this->export($exportInterface));
     }

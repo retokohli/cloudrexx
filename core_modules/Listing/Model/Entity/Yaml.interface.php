@@ -1,8 +1,8 @@
 <?php
 
-namespace Cx\Core_Modules\Listing\Model;
+namespace  Cx\Core_Modules\Listing\Model\Entity;
 
-class YamlInterface implements Exportable, Importable {
+class Yaml implements Exportable, Importable {
     protected $yaml;
     
     public function __construct() {
