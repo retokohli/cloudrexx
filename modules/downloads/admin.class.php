@@ -871,8 +871,8 @@ class downloads extends DownloadsLibrary
         //$categoryId = !empty($_REQUEST['category_id']) ? intval($_REQUEST['category_id']) : 0;
         $actualSearchTerm = !empty($_GET['search_term']) ? $_GET['search_term'] : Null;
         $searchTerm = ($actualSearchTerm == $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD']) ? Null : $actualSearchTerm;
-        $pagingLink = !empty($_GET['search_term']) ? '&search_term='.$_GET['search_term'].'&downloads_category_parent_id=0' : '';
-
+        $pagingLink = !empty($_GET['search_term']) ? '&search_term='.$_GET['search_term'] : '';
+        $pagingLink .= (!empty($_GET['act']) && $_GET['act'] == 'downloads') ? '&downloads_category_parent_id=0' : '';
         if (isset($_GET['downloads_download_select_action'])) {
             switch ($_GET['downloads_download_select_action']) {
                 case 'order':
