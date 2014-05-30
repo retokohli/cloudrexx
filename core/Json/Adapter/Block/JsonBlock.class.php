@@ -11,6 +11,11 @@
 namespace Cx\Core\Json\Adapter\Block;
 use \Cx\Core\Json\JsonAdapter;
 
+class NoPermissionException extends \Exception {}
+class NotEnoughArgumentsException extends \Exception {}
+class NoBlockFoundException extends \Exception {}
+class BlockCouldNotBeSavedException extends \Exception {}
+
 /**
  * JSON Adapter for Block module
  * @copyright   Comvation AG
@@ -38,7 +43,7 @@ class JsonBlock implements JsonAdapter {
      * @return array List of method names
      */
     public function getAccessableMethods() {
-        return array('getBlocks');
+        return array('getBlocks', 'getBlockContent', 'saveBlockContent');
     }
 
     /**
@@ -72,5 +77,110 @@ class JsonBlock implements JsonAdapter {
             );
         }
         return $data;
+    }
+    
+    /**
+     * Get the block content as html
+     * 
+     * @param array $params all given params from http request
+     * @throws \Cx\Core\Json\Adapter\Block\NoPermissionException
+     * @throws \Cx\Core\Json\Adapter\Block\NotEnoughArgumentsException
+     * @throws \Cx\Core\Json\Adapter\Block\NoBlockFoundException
+     * @return string the html content of the block
+     */
+    public function getBlockContent($params) {
+        global $_CORELANG, $objDatabase;
+        
+        // security check
+        if (   !\FWUser::getFWUserObject()->objUser->login()
+            || !\Permission::checkAccess(76, 'static', true)) {
+            throw new \Cx\Core\Json\Adapter\Block\NoPermissionException($_CORELANG['TXT_ACCESS_DENIED_DESCRIPTION']);
+        }
+        
+        // check for necessary arguments
+        if (empty($params['get']['block']) || empty($params['get']['lang'])) {
+            throw new \Cx\Core\Json\Adapter\Block\NotEnoughArgumentsException('not enough arguments');
+        }
+        
+        // get id and langugage id
+        $id = intval($params['get']['block']);
+        $lang = \FWLanguage::getLanguageIdByCode($params['get']['lang']);
+        if (!$lang) {
+            $lang = FRONTEND_LANG_ID;
+        }
+        
+        // database query to get the html content of a block by block id and
+        // language id
+        $query = "SELECT
+                      c.content
+                  FROM
+                      `".DBPREFIX."module_block_blocks` b
+                  INNER JOIN
+                      `".DBPREFIX."module_block_rel_lang_content` c
+                  ON c.block_id = b.id
+                  WHERE
+                      b.id = ".$id."
+                  AND
+                      (c.lang_id = ".$lang." AND c.active = 1)";
+
+        $result = $objDatabase->Execute($query);
+        
+        // nothing found
+        if ($result === false || $result->RecordCount() == 0) {
+            throw new \Cx\Core\Json\Adapter\Block\NoBlockFoundException('no block content found with id: ' . $id);
+        }
+        return array('content' => $result->fields['content']);
+    }
+    
+    /**
+     * Save the block content
+     * 
+     * @param array $params all given params from http request
+     * @throws \Cx\Core\Json\Adapter\Block\NoPermissionException
+     * @throws \Cx\Core\Json\Adapter\Block\NotEnoughArgumentsException
+     * @throws \Cx\Core\Json\Adapter\Block\BlockCouldNotBeSavedException
+     * @return boolean true if everything finished with success
+     */
+    public function saveBlockContent($params) {
+        global $_CORELANG, $objDatabase;
+        
+        // security check
+        if (   !\FWUser::getFWUserObject()->objUser->login()
+            || !\Permission::checkAccess(76, 'static', true)) {
+            throw new \Cx\Core\Json\Adapter\Block\NoPermissionException($_CORELANG['TXT_ACCESS_DENIED_DESCRIPTION']);
+        }
+        
+        // check arguments
+        if (empty($params['get']['block']) || empty($params['get']['lang'])) {
+            throw new \Cx\Core\Json\Adapter\Block\NotEnoughArgumentsException('not enough arguments');
+        }
+        
+        // get language and block id
+        $id = intval($params['get']['block']);
+        $lang = \FWLanguage::getLanguageIdByCode($params['get']['lang']);
+        if (!$lang) {
+            $lang = FRONTEND_LANG_ID;
+        }
+        $content = $params['post']['content'];
+        
+        // query to update content in database
+        $query = "UPDATE `".DBPREFIX."module_block_rel_lang_content`
+                      SET content = '".\contrexx_input2db($content)."'
+                  WHERE
+                      block_id = ".$id." AND lang_id = ".$lang;
+        $result = $objDatabase->Execute($query);
+        
+        // error handling
+        if ($result === false) {
+            throw new \Cx\Core\Json\Adapter\Block\BlockCouldNotBeSavedException('block could not be saved');
+        }
+        \LinkGenerator::parseTemplate($content);
+        
+        $ls = new \LinkSanitizer(ASCMS_PATH_OFFSET.\Env::get('virtualLanguageDirectory').'/', $content);
+        $content = $ls->replace();
+        
+        $this->messages[] = $_CORELANG['TXT_CORE_SAVED_BLOCK'];
+        
+        return array('content' => $content);
     }
 }

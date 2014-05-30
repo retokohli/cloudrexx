@@ -1262,6 +1262,7 @@ $_ARRAYLANG['TXT_CORE_DRAFT'] = "Draft";
 
 $_ARRAYLANG['TXT_CORE_SAVED_AS_DRAFT'] = "Saved as draft";
 $_ARRAYLANG['TXT_CORE_SAVED'] = "Saved";
+$_ARRAYLANG['TXT_CORE_SAVED_BLOCK'] = "Saved the block";
 $_ARRAYLANG['TXT_CORE_DRAFT_SUBMITTED'] = "Draft submitted for publishing";
 $_ARRAYLANG['TXT_CORE_CM_ACTION_PUBLISH_DRAFT'] = "Publish draft";
 
