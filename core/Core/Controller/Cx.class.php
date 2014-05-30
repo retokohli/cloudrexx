@@ -330,7 +330,7 @@ namespace Cx\Core\Core\Controller {
          * @throws \Exception If the CMS is deactivated, an exception is thrown
          */
         protected function loadConfig() {
-            global $_CONFIG, $_PATHCONFIG, $_DBCONFIG;
+            global $_CONFIG, $_PATHCONFIG, $_DBCONFIG, $multiSiteInstanceOffset;
 
             /**
              * Should we overwrite path configuration?
