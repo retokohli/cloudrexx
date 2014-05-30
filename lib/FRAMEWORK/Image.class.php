@@ -73,6 +73,9 @@ class ImageManager
 		
         if ($this->orgImageType) {
             $getImage             = $this->_getImageSize($this->orgImageFile);
+            if (!$getImage){
+                return false;
+            }
             $this->orgImageWidth  = $getImage[0];
             $this->orgImageHeight = $getImage[1];
             $this->orgImage       = $this->_imageCreateFromFile($this->orgImageFile);
@@ -145,7 +148,10 @@ class ImageManager
     {
         $_objImage = new ImageManager();
         $file      = basename($file);
-        $tmpSize   = getimagesize($strPath.$file);
+        $tmpSize   = $this->_getImageSize($strPath.$file);
+        if (!$tmpSize){
+            return false;
+        }
         $factor = 1;
         if ($tmpSize[0] > $tmpSize[1]) {
            $factor = $maxSize / $tmpSize[0];
@@ -198,7 +204,10 @@ class ImageManager
         if (empty($fileNew))       $fileNew       = $file;
         if (empty($strPathNew))    $strPathNew    = $strPath;
         if (empty($strWebPathNew)) $strWebPathNew = $strWebPath;
-        $tmpSize = getimagesize($strPath.$file);
+        $tmpSize = $this->_getImageSize($strPath.$file);
+        if (!$tmpSize){
+            return false;
+        }
         // reset the ImageManager
         $this->imageCheck = 1;
         $width       = $tmpSize[0];
@@ -576,7 +585,10 @@ class ImageManager
     {
         $this->_checkTrailingSlash($path);
         if (!is_file($path.$fileName)) return false;
-        $size   = getimagesize($path.$fileName);
+        $size   = $this->_getImageSize($path.$fileName);
+        if (!$size){
+            return false;
+        }
         $height = $size[1];
         $width  = $size[0];
         $imgdim = null;
@@ -606,7 +618,7 @@ class ImageManager
      */
     function _imageCreateFromFile($file)
     {
-        $arrSizeInfo = getimagesize($file);
+        $arrSizeInfo = $this->_getImageSize($file);
         if (!is_array($arrSizeInfo)) return false;
         $type = $this->_isImage($file);
         $potentialRequiredMemory = $arrSizeInfo[0] * $arrSizeInfo[1] * 1.8;
@@ -695,7 +707,7 @@ class ImageManager
         if (function_exists('exif_imagetype')) {
             $type = exif_imagetype($file);
         } elseif (function_exists('getimagesize')) {
-            $img  = @getimagesize($file);
+            $img  = $this->_getImageSize($file);
             if ($img === false) {
                 return false;
             }
@@ -723,8 +735,10 @@ class ImageManager
      */
     function _getImageSize($file)
     {
-        $getImageSize = @getimagesize($file);
-        if ($getImageSize) return $getImageSize;
+        if ($this->_isImage($file)){
+            $getImageSize = getimagesize($file);
+            if ($getImageSize) return $getImageSize;
+        }
         return false;
     }
 
