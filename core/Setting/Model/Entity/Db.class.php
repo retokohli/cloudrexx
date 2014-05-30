@@ -108,11 +108,11 @@ class Db implements Engine{
          global $objDatabase;
 
         if (empty($section)) {
-die("self::init($section, $group): ERROR: Missing \$section parameter!");
-//                return false;
+            die("self::init($section, $group): ERROR: Missing \$section parameter!");
+            //return false;
         }
         self::flush();
-//echo("self::init($section, $group): Entered<br />");
+        //echo("self::init($section, $group): Entered<br />");
         $objResult = $objDatabase->Execute("
             SELECT `name`, `group`, `value`,
                    `type`, `values`, `ord`
@@ -134,7 +134,7 @@ die("self::init($section, $group): ERROR: Missing \$section parameter!");
                 'values' => $objResult->fields['values'],
                 'ord' => $objResult->fields['ord'],
             );
-//echo("Setting ".$objResult->fields['name']." = ".$objResult->fields['value']."<br />");
+        //echo("Setting ".$objResult->fields['name']." = ".$objResult->fields['value']."<br />");
             $objResult->MoveNext();
         }
         
@@ -190,14 +190,14 @@ die("self::init($section, $group): ERROR: Missing \$section parameter!");
     static function getValue($name)
     {
         if (is_null(self::$arrSettings)) {
-\DBG::log("self::getValue($name): ERROR: no settings loaded");
+        \DBG::log("self::getValue($name): ERROR: no settings loaded");
             return null;
         }
-//echo("self::getValue($name): Value is ".(isset(self::$arrSettings[$name]['value']) ? self::$arrSettings[$name]['value'] : 'NOT FOUND')."<br />");
+        //echo("self::getValue($name): Value is ".(isset(self::$arrSettings[$name]['value']) ? self::$arrSettings[$name]['value'] : 'NOT FOUND')."<br />");
         if (isset(self::$arrSettings[$name]['value'])) {
             return self::$arrSettings[$name]['value'];
         };
-//DBG::log("self::getValue($name): ERROR: unknown setting '$name' (current group ".var_export(self::$group, true).")");
+        //DBG::log("self::getValue($name): ERROR: unknown setting '$name' (current group ".var_export(self::$group, true).")");
         return null;
     }
 
@@ -213,33 +213,33 @@ die("self::init($section, $group): ERROR: Missing \$section parameter!");
         global $objDatabase;
 
         if (!isset(self::$section)) {
-// TODO: Error message
-\DBG::log("self::add(): ERROR: Empty section!");
+            // TODO: Error message
+            \DBG::log("self::add(): ERROR: Empty section!");
             return false;
         }
         // Fail if the name is invalid
         if (empty($name)) {
-\DBG::log("self::add(): ERROR: Empty name!");
+            \DBG::log("self::add(): ERROR: Empty name!");
             return false;
         }
         // This can only be done with a non-empty group!
         // Use the current group, if present, otherwise fail
         if (!$group) {
             if (!self::$group) {
-\DBG::log("self::add(): ERROR: Empty group!");
+                \DBG::log("self::add(): ERROR: Empty group!");
                 return false;
             }
             $group = self::$group;
         }
         // Initialize if necessary
-        if (is_null(self::$arrSettings) || self::$group != $group)
+        if (is_null(self::$arrSettings) || self::$group != $group){
             self::init(self::$section, $group);
-
+        }
         // Such an entry exists already, fail.
         // Note that getValue() returns null if the entry is not present
         $old_value = self::getValue($name);
         if (isset($old_value)) {
-//DBG::log("self::add(): ERROR: Setting '$name' already exists and is non-empty ($old_value)");
+            //DBG::log("self::add(): ERROR: Setting '$name' already exists and is non-empty ($old_value)");
             return false;
         }
 
@@ -259,7 +259,7 @@ die("self::init($section, $group): ERROR: Missing \$section parameter!");
             )";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-\DBG::log("self::add(): ERROR: Query failed: $query");
+            \DBG::log("self::add(): ERROR: Query failed: $query");
             return false;
         }
         return true;
@@ -306,16 +306,17 @@ die("self::init($section, $group): ERROR: Missing \$section parameter!");
      */
     static function verify_template(&$objTemplateLocal)
     {
-        // "instanceof" considers subclasses of Sigma to be a Sigma, too!
+        //"instanceof" considers subclasses of Sigma to be a Sigma, too!
         if (!($objTemplateLocal instanceof \Cx\Core\Html\Sigma)) {
             $objTemplateLocal = new \Cx\Core\Html\Sigma(ASCMS_DOCUMENT_ROOT.'/core/Setting/View/Template/Generic');
         }
         if (!$objTemplateLocal->blockExists('core_settingdb_row')) {
             $objTemplateLocal->setRoot(ASCMS_DOCUMENT_ROOT.'/core/Setting/View/Template/Generic');
-//            $objTemplateLocal->setCacheRoot('.');
-            if (!$objTemplateLocal->loadTemplateFile('Form.html'))
+        //$objTemplateLocal->setCacheRoot('.');
+            if (!$objTemplateLocal->loadTemplateFile('Form.html')){
                 die("Failed to load template Form.html");
-//die(nl2br(contrexx_raw2xhtml(var_export($objTemplateLocal, true))));
+            }
+            //die(nl2br(contrexx_raw2xhtml(var_export($objTemplateLocal, true))));
         }
     }
 
@@ -333,14 +334,15 @@ die("self::init($section, $group): ERROR: Missing \$section parameter!");
     {
         global $_CORELANG;
 
-//echo("self::storeFromPost(): POST:<br />".nl2br(htmlentities(var_export($_POST, true)))."<hr />");
-//echo("self::storeFromPost(): FILES:<br />".nl2br(htmlentities(var_export($_FILES, true)))."<hr />");
+        //echo("self::storeFromPost(): POST:<br />".nl2br(htmlentities(var_export($_POST, true)))."<hr />");
+        //echo("self::storeFromPost(): FILES:<br />".nl2br(htmlentities(var_export($_FILES, true)))."<hr />");
+        
         // There may be several tabs for different groups being edited, so
         // load the full set of settings for the module.
         // Note that this is why setting names should be unique.
-// TODO: You *MUST* call this yourself *before* in order to
-// properly initialize the section!
-//        self::init();
+        // TODO: You *MUST* call this yourself *before* in order to
+        // properly initialize the section!
+        // self::init();
         unset($_POST['bsubmit']);
         $result = true;
         // Compare POST with current settings and only store what was changed.
@@ -348,20 +350,20 @@ die("self::init($section, $group): ERROR: Missing \$section parameter!");
             $value = (isset ($_POST[$name])
                 ? contrexx_input2raw($_POST[$name])
                 : null);
-//            if (preg_match('/^'.preg_quote(CSRF::key(), '/').'$/', $name))
-//                continue;
+            //if (preg_match('/^'.preg_quote(CSRF::key(), '/').'$/', $name))
+            //continue;
             switch (self::$arrSettings[$name]['type']) {
               case \Cx\Core\Setting\Controller\Setting::TYPE_FILEUPLOAD:
                 // An empty folder path has been posted, indicating that the
                 // current file should be removed
                 if (empty($value)) {
-//echo("Empty value, deleting file...<br />");
+                    //echo("Empty value, deleting file...<br />");
                     if (self::$arrSettings[$name]['value']) {
                         if (\File::delete_file(self::$arrSettings[$name]['value'])) {
-//echo("File deleted<br />");
+                    //echo("File deleted<br />");
                             $value = '';
                         } else {
-//echo("Failed to delete file<br />");
+                    //echo("Failed to delete file<br />");
                             \Message::error(\File::getErrorString());
                             $result = false;
                         }
@@ -371,7 +373,7 @@ die("self::init($section, $group): ERROR: Missing \$section parameter!");
                     if (empty($_FILES[$name]['name'])) continue;
                     // $value is the target folder path
                     $target_path = $value.'/'.$_FILES[$name]['name'];
-// TODO: Test if this works in all browsers:
+                    // TODO: Test if this works in all browsers:
                     // The path input field name is the same as the
                     // file upload input field name!
                     $result_upload = \File::upload_file_http(
@@ -381,13 +383,13 @@ die("self::init($section, $group): ERROR: Missing \$section parameter!");
                         self::$arrSettings[$name]['values']
                     );
                     // If no file has been uploaded at all, ignore the no-change
-// TODO: Noop is not implemented in File::upload_file_http()
-//                    if ($result_upload === '') continue;
+                    // TODO: Noop is not implemented in File::upload_file_http()
+                    // if ($result_upload === '') continue;
                     if ($result_upload === true) {
                         $value = $target_path;
                     } else {
-//echo("self::storeFromPost(): Error uploading file for setting $name to $target_path<br />");
-// TODO: Add error message
+                    //echo("self::storeFromPost(): Error uploading file for setting $name to $target_path<br />");
+                    // TODO: Add error message
                         \Message::error(\File::getErrorString());
                         $result = false;
                     }
@@ -399,16 +401,16 @@ die("self::init($section, $group): ERROR: Missing \$section parameter!");
                 $value = (is_array($value)
                     ? join(',', array_keys($value))
                     : $value);
-// 20120508
+                    // 20120508
               case \Cx\Core\Setting\Controller\Setting::TYPE_RADIO:
                   break;
               default:
-                // Regular value of any other type
+                    // Regular value of any other type
                 break;
             }
             self::set($name, $value);
         }
-//echo("self::storeFromPost(): So far, the result is ".($result ? 'okay' : 'no good')."<br />");
+                    //echo("self::storeFromPost(): So far, the result is ".($result ? 'okay' : 'no good')."<br />");
         $result_update = self::updateAll();
         if ($result_update === false) {
             \Message::error($_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING']);
@@ -437,7 +439,7 @@ die("self::init($section, $group): ERROR: Missing \$section parameter!");
         global $objDatabase;
 
         if (empty(self::$section)) {
-// TODO: Error message
+            // TODO: Error message
             return false;
         }
         $objResult = $objDatabase->Execute("
@@ -463,10 +465,10 @@ die("self::init($section, $group): ERROR: Missing \$section parameter!");
      */
     static function splitValues($strValues)
     {
-/*
-Example:
-postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:Mastercard,visa:Visa,americanexpress:American Express,paypal:Paypal,invoice:Invoice,voucher:Voucher
-*/
+        /*
+        Example:
+        postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:Mastercard,visa:Visa,americanexpress:American Express,paypal:Paypal,invoice:Invoice,voucher:Voucher
+        */
         $arrValues = array();
         $match = array();
         foreach (
@@ -478,7 +480,7 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
             if (preg_match('/^(.+?)\s*(?<!\\\\):\s*(.+$)/', $value, $match)) {
                 $key = $match[1];
                 $value = $match[2];
-//DBG::log("Split $key and $value");
+            //DBG::log("Split $key and $value");
             }
             str_replace(array('\\,', '\\:'), array(',', ':'), $value);
             if (isset($key)) {
@@ -486,9 +488,9 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
             } else {
                 $arrValues[] = $value;
             }
-//DBG::log("Split $key and $value");
+            //DBG::log("Split $key and $value");
         }
-//DBG::log("Array: ".var_export($arrValues, true));
+            //DBG::log("Array: ".var_export($arrValues, true));
         return $arrValues;
     }
 
@@ -537,18 +539,18 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
             'values' => array('type' => 'TEXT', 'notnull' => true, 'default' => null),
             'ord' => array('type' => 'INT(10)', 'unsigned' => true, 'default' => '0'),
         );
-// TODO: The index array structure is wrong here!
+        // TODO: The index array structure is wrong here!
         $table_index =  array();
         \Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
-//echo("self::errorHandler(): Created table ".DBPREFIX."core_setting<br />");
+        //echo("self::errorHandler(): Created table ".DBPREFIX."core_setting<br />");
 
-        // Use self::add(); in your module code to add settings; example:
-//        self::init('core', 'country');
-//        self::add('numof_countries_per_page_backend', 30, 1, self::TYPE_TEXT);
+        //Use self::add(); in your module code to add settings; example:
+        //self::init('core', 'country');
+        //self::add('numof_countries_per_page_backend', 30, 1, self::TYPE_TEXT);
 
-        // More to come...
+        //More to come...
 
-        // Always!
+        //Always!
         return false;
     }
 
@@ -604,17 +606,17 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
     static function set($name, $value)
     {
         if (!isset(self::$arrSettings[$name])) {
-//DBG::log("self::set($name, $value): Unknown, changed: ".self::$changed);
+            //DBG::log("self::set($name, $value): Unknown, changed: ".self::$changed);
             return false;
         }
         if (self::$arrSettings[$name]['value'] == $value) {
-//DBG::log("self::set($name, $value): Identical, changed: ".self::$changed);
+            //DBG::log("self::set($name, $value): Identical, changed: ".self::$changed);
             return null;
         }
         self::$changed = true;
         self::$arrSettings[$name]['value'] = $value;
-//DBG::log("self::set($name, $value): Added/updated, changed: ".self::$changed);
-        return true;
+            //DBG::log("self::set($name, $value): Added/updated, changed: ".self::$changed);
+            return true;
     }
     
     /**
@@ -633,12 +635,12 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
      */
     static function updateAll()
     {
-//        global $_CORELANG;
+        //        global $_CORELANG;
 
         if (!self::$changed) {
-// TODO: These messages are inapropriate when settings are stored by another piece of code, too.
-// Find a way around this.
-//            Message::information($_CORELANG['TXT_CORE_SETTINGDB_INFORMATION_NO_CHANGE']);
+            // TODO: These messages are inapropriate when settings are stored by another piece of code, too.
+            // Find a way around this.
+            // Message::information($_CORELANG['TXT_CORE_SETTINGDB_INFORMATION_NO_CHANGE']);
             return null;
         }
         $success = true;
@@ -647,10 +649,10 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
         }
         if ($success) {
             self::$changed = false;
-//            return Message::ok($_CORELANG['TXT_CORE_SETTINGDB_STORED_SUCCESSFULLY']);
+            //return Message::ok($_CORELANG['TXT_CORE_SETTINGDB_STORED_SUCCESSFULLY']);
             return true;
         }
-//        return Message::error($_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING']);
+        //return Message::error($_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING']);
         return false;
     }
     
@@ -674,19 +676,19 @@ postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:M
     {
         global $objDatabase;
 
-// TODO: Add error messages for individual errors
+        // TODO: Add error messages for individual errors
         if (empty(self::$section)) {
-\DBG::log("self::update(): ERROR: Empty section!");
+            \DBG::log("self::update(): ERROR: Empty section!");
             return false;
         }
         // Fail if the name is invalid
         // or the setting does not exist
         if (empty($name)) {
-\DBG::log("self::update(): ERROR: Empty name!");
+            \DBG::log("self::update(): ERROR: Empty name!");
             return false;
         }
         if (!isset(self::$arrSettings[$name])) {
-\DBG::log("self::update(): ERROR: Unknown setting name '$name'!");
+            \DBG::log("self::update(): ERROR: Unknown setting name '$name'!");
             return false;
         }
         $objResult = $objDatabase->Execute("
