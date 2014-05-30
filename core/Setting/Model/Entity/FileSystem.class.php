@@ -636,6 +636,9 @@ class FileSystem implements Engine{
         {
             $filename=ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
          
+            $objFile = new \Cx\Lib\FileSystem\File($filename);
+            $objFile->delete(); 
+            
             foreach(self::$arrSettings as $value)
             {
                 $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet(array($value));
