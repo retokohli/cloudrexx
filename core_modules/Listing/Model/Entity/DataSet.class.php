@@ -86,11 +86,27 @@ class DataSet implements \Iterator {
     }
 
     public function toYaml() {
-        return $this->export(self::getYamlInterface());
+        
+        if($this->export(self::getYamlInterface())){
+            
+            return $this->export(self::getYamlInterface());
+            
+        }else{
+            
+            throw new DataSetException('Supplied argument could not be converted to DataSet');
+        }
     }
 
     public static function import(\Cx\Core_Modules\Listing\Model\Entity\Importable $importInterface, $content) {
-        return new static($importInterface->import($content));
+        if(new static($importInterface->import($content))){
+            
+            return new static($importInterface->import($content));
+            
+        }else{
+            
+            throw new DataSetException('Supplied argument could not be converted to DataSet');
+            
+        }
     }
 
     /**
@@ -103,7 +119,14 @@ class DataSet implements \Iterator {
     public static function importFromFile(\Cx\Core_Modules\Listing\Model\Entity\Importable $importInterface, $filename) {
         try {
                 $objFile = new \Cx\Lib\FileSystem\File($filename);
-                return self::import($importInterface, $objFile->getData());
+                
+                if(self::import($importInterface, $objFile->getData()))
+                {
+                    return self::import($importInterface, $objFile->getData());
+                    
+                }else{
+                    throw new DataSetException('Supplied argument could not be converted to DataSet');
+                }
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
                 \DBG::msg($e->getMessage());
         }
@@ -111,7 +134,13 @@ class DataSet implements \Iterator {
     }
 
     public function export(\Cx\Core_Modules\Listing\Model\Entity\Exportable $exportInterface) {
-        return $exportInterface->export($this->data);
+        if($exportInterface->export($this->data))
+        {
+            return $exportInterface->export($this->data);
+        }else{
+            
+            throw new DataSetException('Supplied argument could not be converted to DataSet');
+        }
     }
 
     /**
@@ -122,9 +151,17 @@ class DataSet implements \Iterator {
      */
     public function exportToFile(\Cx\Core_Modules\Listing\Model\Entity\Exportable $exportInterface, $filename) {
         try {
-                $objFile = new \Cx\Lib\FileSystem\File($filename);
-                $objFile->touch();
-                $objFile->append($this->export($exportInterface));
+                if($this->export($exportInterface))
+                {
+                    $objFile = new \Cx\Lib\FileSystem\File($filename);
+                    $objFile->touch();
+                    $objFile->append($this->export($exportInterface));
+                    
+                }else{
+                    
+                    throw new DataSetException('Supplied argument could not be converted to DataSet');
+                }
+                
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
                 \DBG::msg($e->getMessage());
         }
@@ -141,7 +178,14 @@ class DataSet implements \Iterator {
     }
 
     public static function fromYaml($data) {
-        return self::import(self::getYamlInterface(), $data);
+        
+        if(self::import(self::getYamlInterface(), $data)){
+            
+            return self::import(self::getYamlInterface(), $data);
+        }else{
+            
+            throw new DataSetException('Supplied argument could not be converted to DataSet');
+        }
     }
 
     /**
@@ -151,7 +195,12 @@ class DataSet implements \Iterator {
      * @return type 
      */
     public static function load($filename) {
-        return self::importFromFile(self::getYamlInterface(), $filename);
+        if(self::importFromFile(self::getYamlInterface(), $filename)){
+            
+            return self::importFromFile(self::getYamlInterface(), $filename);
+        }else{
+            throw new DataSetException('Supplied argument could not be converted to DataSet');
+        }
     }
     
     public function getDataType() {
