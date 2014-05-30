@@ -102,12 +102,12 @@ class DataSet implements \Iterator {
      */
     public static function importFromFile(\Cx\Core_Modules\Listing\Model\Entity\Importable $importInterface, $filename) {
         try {
-            $objFile = new \Cx\Lib\FileSystem\File($filename);
-            $objFile->touch();
+                $objFile = new \Cx\Lib\FileSystem\File($filename);
+                return self::import($importInterface, $objFile->getData());
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
                 \DBG::msg($e->getMessage());
         }
-        return self::import($importInterface, $objFile->getData());
+        
     }
 
     public function export(\Cx\Core_Modules\Listing\Model\Entity\Exportable $exportInterface) {
@@ -122,12 +122,13 @@ class DataSet implements \Iterator {
      */
     public function exportToFile(\Cx\Core_Modules\Listing\Model\Entity\Exportable $exportInterface, $filename) {
         try {
-            $objFile = new \Cx\Lib\FileSystem\File($filename);
-            $objFile->touch();
+                $objFile = new \Cx\Lib\FileSystem\File($filename);
+                $objFile->touch();
+                $objFile->append($this->export($exportInterface));
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
                 \DBG::msg($e->getMessage());
         }
-        $objFile->append($this->export($exportInterface));
+        
     }
 
     /**
