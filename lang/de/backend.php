@@ -1586,6 +1586,7 @@ $_ARRAYLANG['TXT_CORE_DRAFT'] = "Entwurf";
 
 $_ARRAYLANG['TXT_CORE_SAVED_AS_DRAFT'] = "Seite als Entwurf gespeichert";
 $_ARRAYLANG['TXT_CORE_SAVED'] = "Seite gespeichert";
+$_ARRAYLANG['TXT_CORE_SAVED_BLOCK'] = "Inhaltscontainer gespeichert";
 $_ARRAYLANG['TXT_CORE_DRAFT_SUBMITTED'] = "Entwurf zur Ver&ouml;ffentlichung freigegeben";
 $_ARRAYLANG['TXT_CORE_CM_ACTION_PUBLISH_DRAFT'] = "Entwurf veröffentlichen";
 

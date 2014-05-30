@@ -294,7 +294,8 @@
 }
 
 #fe_content.fe_outline,
-#fe_title.fe_outline {
+#fe_title.fe_outline,
+.fe_block.fe_outline {
     outline: 1px #0873bb dashed;
     *border: 1px #0873bb dashed;
     *margin: -1px;
