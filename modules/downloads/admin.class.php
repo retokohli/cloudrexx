@@ -869,8 +869,9 @@ class downloads extends DownloadsLibrary
         $orderBy = !empty($_GET['by']) ? $_GET['by'] : 'order';
         $arrOrder['special'] = 'tblD.`'.$orderBy.'` '.$orderDirection;
         //$categoryId = !empty($_REQUEST['category_id']) ? intval($_REQUEST['category_id']) : 0;
-        $searchTerm = !empty($_GET['search_term']) ? $_GET['search_term'] : Null;
-        $searchTerm = ($searchTerm == $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD']) ? Null : $searchTerm;
+        $actualSearchTerm = !empty($_GET['search_term']) ? $_GET['search_term'] : Null;
+        $searchTerm = ($actualSearchTerm == $_ARRAYLANG['TXT_DOWNLOADS_SEARCH_DOWNLOAD']) ? Null : $actualSearchTerm;
+        $pagingLink = !empty($_GET['search_term']) ? '&search_term='.$_GET['search_term'].'&downloads_category_parent_id=0' : '';
 
         if (isset($_GET['downloads_download_select_action'])) {
             switch ($_GET['downloads_download_select_action']) {
@@ -961,7 +962,13 @@ class downloads extends DownloadsLibrary
 
         $downloadCount = $objDownload->getFilteredSearchDownloadCount();
         if ($downloadCount > $_CONFIG['corePagingLimit']) {
-            $this->objTemplate->setVariable('DOWNLOADS_DOWNLOAD_PAGING', getPaging($downloadCount, $limitOffset, "&cmd=downloads&sort=".htmlspecialchars($orderDirection)."&by=".htmlspecialchars($orderBy), "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>"));
+            $sorting = '';
+            if (!$actualSearchTerm){
+                $sorting = "&sort=".htmlspecialchars($orderDirection)."&by=".htmlspecialchars($orderBy);
+            }
+
+            $this->objTemplate->setVariable('DOWNLOADS_DOWNLOAD_PAGING', getPaging($downloadCount, $limitOffset, '&cmd=downloads&act=downloads'.$sorting.$pagingLink, "<b>".$_ARRAYLANG['TXT_DOWNLOADS_DOWNLOADS']."</b>"));
+
         }
 
 
