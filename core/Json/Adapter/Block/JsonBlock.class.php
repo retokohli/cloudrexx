@@ -129,7 +129,9 @@ class JsonBlock implements JsonAdapter {
         if ($result === false || $result->RecordCount() == 0) {
             throw new \Cx\Core\Json\Adapter\Block\NoBlockFoundException('no block content found with id: ' . $id);
         }
-        return array('content' => $result->fields['content']);
+
+        $ls = new \LinkSanitizer(ASCMS_PATH_OFFSET.\Env::get('virtualLanguageDirectory').'/', $result->fields['content']);
+        return array('content' => $ls->replace());
     }
     
     /**
@@ -177,10 +179,8 @@ class JsonBlock implements JsonAdapter {
         \LinkGenerator::parseTemplate($content);
         
         $ls = new \LinkSanitizer(ASCMS_PATH_OFFSET.\Env::get('virtualLanguageDirectory').'/', $content);
-        $content = $ls->replace();
-        
         $this->messages[] = $_CORELANG['TXT_CORE_SAVED_BLOCK'];
         
-        return array('content' => $content);
+        return array('content' => $ls->replace());
     }
 }
