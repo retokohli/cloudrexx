@@ -418,6 +418,9 @@ class Filesharing extends FilesharingLib
         if($this->objTemplate->blockExists('upload_form')) {
             $this->objTemplate->hideBlock("upload_form");
         }
+        if($this->objTemplate->blockExists('confirm_delete')) {
+            $this->objTemplate->hideBlock('confirm_delete');
+        }
     }
 
     /**
