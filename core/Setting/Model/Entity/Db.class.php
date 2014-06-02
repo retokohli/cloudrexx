@@ -83,7 +83,7 @@ class Db implements Engine{
 
     /**
      * Optionally sets and returns the value of the tab index
-     * @param   integer             The optional new tab index
+     * @param   integer $tab_index  The optional new tab index
      * @return  integer             The current tab index
      */
     static function tab_index($tab_index=null)
@@ -329,13 +329,24 @@ class Db implements Engine{
         return true;
     }
     
-    /**
+     /**
      * Add a new record to the settings
      *
      * The class *MUST* have been initialized by calling {@see init()}
      * or {@see getArray()} before this method is called.
      * The present $group stored in the class is used as a default.
-     */
+     * If the current class $group is empty, it *MUST* be specified in the call.
+     * @param   string    $name     The setting name
+     * @param   string    $value    The value
+     * @param   integer   $ord      The ordinal value for sorting,
+     *                              defaults to 0
+     * @param   string    $type     The element type for displaying,
+     *                              defaults to 'text'
+     * @param   string    $values   The values for type 'dropdown',
+     *                              defaults to the empty string
+     * @param   string    $group    The optional group
+     * @return  boolean             True on success, false otherwise
+     */ 
     static function add( $name, $value, $ord=false, $type='text', $values='', $group=null)
     {
         global $objDatabase;

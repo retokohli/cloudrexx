@@ -83,7 +83,7 @@ class FileSystem implements Engine{
 
     /**
      * Optionally sets and returns the value of the tab index
-     * @param   integer             The optional new tab index
+     * @param   integer  $tab_index The optional new tab index
      * @return  integer             The current tab index
      */
     static function tab_index($tab_index=null)
@@ -308,7 +308,7 @@ class FileSystem implements Engine{
       self::updateFileData();  
     }
     
-    /**
+     /**
      * Add a new record to the settings
      *
      * The class *MUST* have been initialized by calling {@see init()}
@@ -323,9 +323,9 @@ class FileSystem implements Engine{
      *                              defaults to 'text'
      * @param   string    $values   The values for type 'dropdown',
      *                              defaults to the empty string
-     * @param   string    $group      The optional group
+     * @param   string    $group    The optional group
      * @return  boolean             True on success, false otherwise
-     */
+     */ 
     static function add( $name, $value, $ord=false, $type='text', $values='', $group=null)
     {
         if (!isset(self::$section)) {
@@ -540,6 +540,42 @@ class FileSystem implements Engine{
         $file = new \Cx\Lib\FileSystem\File(ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml');
         $file->touch();
         return false;
+    }
+    
+    /**
+     * Returns the settings from the old settings table for the given module ID,
+     * if available
+     *
+     * If the module ID is missing or invalid, or if the settings cannot be
+     * read for some other reason, returns null.
+     * Don't drop the table after migrating your settings, other modules
+     * might still need it!  Instead, try this method only after you failed
+     * to get your settings from SettingDb.
+     * @param   integer   $module_id      The module ID
+     * @return  array                     The settings array on success,
+     *                                    null otherwise
+     * @static
+     */
+    static function __getOldSettings($module_id)
+    {
+        global $objDatabase;
+
+        $module_id = intval($module_id);
+        if ($module_id <= 0) return null;
+        $objResult = $objDatabase->Execute('
+            SELECT `setname`, `setvalue`
+              FROM `'.DBPREFIX.'settings`
+             WHERE `setmodule`='.$module_id);
+        if (!$objResult) {
+            return null;
+        }
+        $arrConfig = array();
+        while (!$objResult->EOF) {
+            $arrConfig[$objResult->fields['setname']] =
+                $objResult->fields['setvalue'];
+            $objResult->MoveNext();
+        }
+        return $arrConfig;
     }
     
     /**

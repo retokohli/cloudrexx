@@ -72,6 +72,32 @@ class Setting{
      */
     private static $engineType = '\Cx\Core\Setting\Model\Entity\Db'; 
     
+    
+    /**
+     * Returns the current value of the changed flag.
+     *
+     * If it returns true, you probably want to call {@see updateAll()}.
+     * @return  boolean           True if values have been changed in memory,
+     *                            false otherwise
+     */
+    static function changed()
+    {
+        $engineType=self::getEngineType();
+        return $engineType::changed();  
+    }
+    
+    /**
+     * Optionally sets and returns the value of the tab index
+     * @param   integer  $tab_index The optional new tab index
+     * @return  integer             The current tab index
+     */
+    static function tab_index($tab_index=null)
+    {
+        $engineType=self::getEngineType();
+        return $engineType::tab_index($tab_index);
+    }
+    
+    
     /**
      * Initialize the settings entries from the database with key/value pairs
      * for the current section and the given group
@@ -86,6 +112,8 @@ class Setting{
      * @param   string    $section    The section
      * @param   string    $group      The optional group.
      *                                Defaults to null
+     * @param   string    $engine     The Engine type Database or File system
+     *                                Default to set Database 
      * @return  boolean               True on success, false otherwise
      * @global  ADOConnection   $objDatabase
      */
@@ -109,37 +137,155 @@ class Setting{
     }
     
     /**
-     * Get engineType
+     * Flush the stored settings
      *
-     * @return string $engineType
-     */ 
-    static function getEngineType(){
-        
-        return self::$engineType;
-    }
-    
-    /**
-     * Set engineType
-     *
-     * @param string $engineType
+     * Resets the class to its initial state.
+     * Does *NOT* clear the section, however.
+     * @return  void
      */
-    static function setEngineType($engineType){
-        
-        self::$engineType=$engineType;
-    }
-    
-    
-    /**
-     * Should be called whenever there's a problem with the settings table
-     *
-     * Tries to fix or recreate the settings table.
-     * @return  boolean             False, always.
-     * @static
-     */
-    static function errorHandler()
+    static function flush()
     {
         $engineType=self::getEngineType();
-        $engineType::errorHandler();  
+        return $engineType::flush();
+    }
+    
+    /**
+     * Returns the settings array for the given section and group
+     *
+     * See {@see init()} on how the arguments are used.
+     * If the method is called successively using the same $group argument,
+     * the current settings are returned without calling {@see init()}.
+     * Thus, changes made by calling {@see set()} will be preserved.
+     * @param   string    $section    The section
+     * @param   string    $group      The optional group
+     * @return  array                 The settings array on success,
+     *                                false otherwise
+     */
+     static function getArray($section, $group=null)
+    {
+        $engineType=self::getEngineType();
+        return $engineType::getArray($section,$group);
+    }
+    
+     /**
+     * Returns the settings value stored in the object for the name given.
+     *
+     * If the settings have not been initialized (see {@see init()}), or
+     * if no setting of that name is present in the current set, null
+     * is returned.
+     * @param   string    $name       The settings name
+     * @return  mixed                 The settings value, if present,
+     *                                null otherwise
+     */
+    static function getValue($name)
+    {
+        $engineType=self::getEngineType();
+        return $engineType::getValue($name);  
+    }
+    
+     /**
+     * Updates a setting
+     *
+     * If the setting name exists and the new value is not equal to
+     * the old one, it is updated, and $changed set to true.
+     * Otherwise, nothing happens, and false is returned
+     * @see init(), updateAll()
+     * @param   string    $name       The settings name
+     * @param   string    $value      The settings value
+     * @return  boolean               True if the value has been changed,
+     *                                false otherwise, null on noop
+     */
+    static function set($name, $value)
+    {
+        $engineType=self::getEngineType();
+        return $engineType::set($name, $value);  
+    }
+    
+    /**
+     * Stores all settings entries present in the $arrSettings object
+     * array variable
+     *
+     * Returns boolean true if all records were stored successfully,
+     * null if nothing changed (noop), false otherwise.
+     * Upon success, also resets the $changed class variable to false.
+     * The class *MUST* have been initialized before calling this
+     * method using {@see init()}, and the new values been {@see set()}.
+     * Note that this method does not work for adding new settings.
+     * See {@see add()} on how to do this.
+     * @return  boolean                   True on success, null on noop,
+     *                                    false otherwise
+     */
+    static function updateAll()
+    {
+        $engineType=self::getEngineType();
+        return $engineType::updateAll();  
+    }
+    
+    /**
+     * Updates the value for the given name in the settings table
+     *
+     * The class *MUST* have been initialized before calling this
+     * method using {@see init()}, and the new value been {@see set()}.
+     * Sets $changed to true and returns true if the value has been
+     * updated successfully.
+     * Note that this method does not work for adding new settings.
+     * See {@see add()} on how to do this.
+     * Also note that the loaded setting is not updated, only the database!
+     * @param   string    $name   The settings name
+     * @return  boolean           True on successful update or if
+     *                            unchanged, false on failure
+     * @static
+     * @global  mixed     $objDatabase    Database connection object
+     */
+    static function update($name)
+    {
+        $engineType=self::getEngineType();
+        return $engineType::update($name);  
+    }
+    
+     /**
+     * Add a new record to the settings
+     *
+     * The class *MUST* have been initialized by calling {@see init()}
+     * or {@see getArray()} before this method is called.
+     * The present $group stored in the class is used as a default.
+     * If the current class $group is empty, it *MUST* be specified in the call.
+     * @param   string    $name     The setting name
+     * @param   string    $value    The value
+     * @param   integer   $ord      The ordinal value for sorting,
+     *                              defaults to 0
+     * @param   string    $type     The element type for displaying,
+     *                              defaults to 'text'
+     * @param   string    $values   The values for type 'dropdown',
+     *                              defaults to the empty string
+     * @param   string    $group    The optional group
+     * @return  boolean             True on success, false otherwise
+     */ 
+    static function add( $name, $value, $ord=false, $type='text', $values='', $group=null)
+    {
+        $engineType=self::getEngineType();
+        return $engineType::add( $name, $value, $ord, $type, $values, $group);  
+    }
+    
+    
+    /**
+     * Delete one or more records from the database table
+     *
+     * For maintenance/update purposes only.
+     * At least one of the parameter values must be non-empty.
+     * It will fail if both are empty.  Mind that in this case,
+     * no records will be deleted.
+     * Does {@see flush()} the currently loaded settings on success.
+     * @param   string    $name     The optional setting name.
+     *                              Defaults to null
+     * @param   string    $group      The optional group.
+     *                              Defaults to null
+     * @return  boolean             True on success, false otherwise
+     */
+    static function delete($name=null, $group=null)
+    {
+        $engineType=self::getEngineType();
+        return $engineType::delete($name, $group);
     }
     
     /**
@@ -276,7 +422,7 @@ class Setting{
             // Determine HTML element for type and apply values and selected
             $element = '';
             $value = $arrSetting['value'];
-            $values = $engineType::splitValues($arrSetting['values']);
+            $values = self::splitValues($arrSetting['values']);
             $type = $arrSetting['type'];
             // Not implemented yet:
             // Warn if some mandatory value is empty
@@ -298,7 +444,7 @@ class Setting{
             switch ($type) {
               // Dropdown menu
               case self::TYPE_DROPDOWN:
-                $arrValues = $engineType::splitValues($arrSetting['values']);
+                $arrValues = self::splitValues($arrSetting['values']);
 //DBG::log("Values: ".var_export($arrValues, true));
                 $element = \Html::getSelect(
                     $name, $arrValues, $value,
@@ -393,21 +539,21 @@ class Setting{
                 break;
 
               case self::TYPE_CHECKBOX:
-                $arrValues = $engineType::splitValues($arrSetting['values']);
+                $arrValues = self::splitValues($arrSetting['values']);
                 $value_true = current($arrValues);
                 $element =
                     \Html::getCheckbox($name, $value_true, false,
                         in_array($value, $arrValues));
                 break;
               case self::TYPE_CHECKBOXGROUP:
-                $checked = $engineType::splitValues($value);
+                $checked = self::splitValues($value);
                 $element =
                     \Html::getCheckboxGroup($name, $values, $values, $checked,
                         '', '', '<br />', '', '');
                 break;
 // 20120508 UNTESTED!
               case self::TYPE_RADIO:
-                $checked = $engineType::splitValues($value);
+                $checked = self::splitValues($value);
                 $element =
                     \Html::getRadioGroup($name, $values, $values);
                 break;
@@ -642,47 +788,6 @@ class Setting{
     }
 
    
-   
-     /**
-     * Returns the settings value stored in the object for the name given.
-     *
-     * If the settings have not been initialized (see {@see init()}), or
-     * if no setting of that name is present in the current set, null
-     * is returned.
-     * @param   string    $name       The settings name
-     * @return  mixed                 The settings value, if present,
-     *                                null otherwise
-     */
-    static function getValue($name)
-    {
-        $engineType=self::getEngineType();
-        return $engineType::getValue($name);  
-    }
-    
-    /**
-     * Add a new record to the settings
-     *
-     * The class *MUST* have been initialized by calling {@see init()}
-     * or {@see getArray()} before this method is called.
-     * The present $group stored in the class is used as a default.
-     * If the current class $group is empty, it *MUST* be specified in the call.
-     * @param   string    $name     The setting name
-     * @param   string    $value    The value
-     * @param   integer   $ord      The ordinal value for sorting,
-     *                              defaults to 0
-     * @param   string    $type     The element type for displaying,
-     *                              defaults to 'text'
-     * @param   string    $values   The values for type 'dropdown',
-     *                              defaults to the empty string
-     * @param   string    $group      The optional group
-     * @return  boolean             True on success, false otherwise
-     */ 
-    static function add( $name, $value, $ord=false, $type='text', $values='', $group=null)
-    {
-        $engineType=self::getEngineType();
-        return $engineType::add( $name, $value, $ord, $type, $values, $group);  
-    }
-    
     /**
      * Deletes all entries for the current section
      *
@@ -695,145 +800,6 @@ class Setting{
         $engineType=self::getEngineType();
         return $engineType::deleteModule();  
     } 
-    
-    /**
-     * Updates a setting
-     *
-     * If the setting name exists and the new value is not equal to
-     * the old one, it is updated, and $changed set to true.
-     * Otherwise, nothing happens, and false is returned
-     * @see init(), updateAll()
-     * @param   string    $name       The settings name
-     * @param   string    $value      The settings value
-     * @return  boolean               True if the value has been changed,
-     *                                false otherwise, null on noop
-     */
-    static function set($name, $value)
-    {
-        $engineType=self::getEngineType();
-        return $engineType::set($name, $value);  
-    }
-    
-    /**
-     * Stores all settings entries present in the $arrSettings object
-     * array variable
-     *
-     * Returns boolean true if all records were stored successfully,
-     * null if nothing changed (noop), false otherwise.
-     * Upon success, also resets the $changed class variable to false.
-     * The class *MUST* have been initialized before calling this
-     * method using {@see init()}, and the new values been {@see set()}.
-     * Note that this method does not work for adding new settings.
-     * See {@see add()} on how to do this.
-     * @return  boolean                   True on success, null on noop,
-     *                                    false otherwise
-     */
-    static function updateAll()
-    {
-        $engineType=self::getEngineType();
-        return $engineType::updateAll();  
-    }
-    
-    /**
-     * Updates the value for the given name in the settings table
-     *
-     * The class *MUST* have been initialized before calling this
-     * method using {@see init()}, and the new value been {@see set()}.
-     * Sets $changed to true and returns true if the value has been
-     * updated successfully.
-     * Note that this method does not work for adding new settings.
-     * See {@see add()} on how to do this.
-     * Also note that the loaded setting is not updated, only the database!
-     * @param   string    $name   The settings name
-     * @return  boolean           True on successful update or if
-     *                            unchanged, false on failure
-     * @static
-     * @global  mixed     $objDatabase    Database connection object
-     */
-    static function update($name)
-    {
-        $engineType=self::getEngineType();
-        return $engineType::update($name);  
-    }
-    
-    /**
-     * Returns the current value of the changed flag.
-     *
-     * If it returns true, you probably want to call {@see updateAll()}.
-     * @return  boolean           True if values have been changed in memory,
-     *                            false otherwise
-     */
-    static function changed()
-    {
-        $engineType=self::getEngineType();
-        return $engineType::changed();  
-    }
-    
-    /**
-     * Joins the strings in the array with commas into a single values string
-     *
-     * Commas within the strings are escaped by a backslash (\).
-     * The array keys are prepended to the values, separated by a colon.
-     * Colons within the strings are escaped by a backslash (\).
-     * Note that keys *MUST NOT* contain either commas or colons!
-     * @param   array     $arrValues    The array of strings
-     * @return  string                  The concatenated values string
-     * @todo    Untested!  May or may not work as described.
-     */
-    static function joinValues($arrValues)
-    {
-        $engineType=self::getEngineType();
-        return $engineType::joinValues($arrValues);
-    }
-    
-    /**
-     * Returns the settings array for the given section and group
-     *
-     * See {@see init()} on how the arguments are used.
-     * If the method is called successively using the same $group argument,
-     * the current settings are returned without calling {@see init()}.
-     * Thus, changes made by calling {@see set()} will be preserved.
-     * @param   string    $section    The section
-     * @param   string    $group        The optional group
-     * @return  array                 The settings array on success,
-     *                                false otherwise
-     */
-     static function getArray($section, $group=null)
-    {
-        $engineType=self::getEngineType();
-        return $engineType::getArray($section,$group);
-    }
-    
-    /**
-     * Optionally sets and returns the value of the tab index
-     * @param   integer             The optional new tab index
-     * @return  integer             The current tab index
-     */
-    static function tab_index($tab_index=null)
-    {
-        $engineType=self::getEngineType();
-        return $engineType::tab_index($tab_index);
-    }
-    
-    /**
-     * Delete one or more records from the database table
-     *
-     * For maintenance/update purposes only.
-     * At least one of the parameter values must be non-empty.
-     * It will fail if both are empty.  Mind that in this case,
-     * no records will be deleted.
-     * Does {@see flush()} the currently loaded settings on success.
-     * @param   string    $name     The optional setting name.
-     *                              Defaults to null
-     * @param   string    $group      The optional group.
-     *                              Defaults to null
-     * @return  boolean             True on success, false otherwise
-     */
-    static function delete($name=null, $group=null)
-    {
-        $engineType=self::getEngineType();
-        return $engineType::delete($name, $group);
-    }
     
     /**
      * Splits the string value at commas and returns an array of strings
@@ -855,15 +821,75 @@ class Setting{
     }
     
     /**
-     * Flush the stored settings
+     * Joins the strings in the array with commas into a single values string
      *
-     * Resets the class to its initial state.
-     * Does *NOT* clear the section, however.
-     * @return  void
+     * Commas within the strings are escaped by a backslash (\).
+     * The array keys are prepended to the values, separated by a colon.
+     * Colons within the strings are escaped by a backslash (\).
+     * Note that keys *MUST NOT* contain either commas or colons!
+     * @param   array     $arrValues    The array of strings
+     * @return  string                  The concatenated values string
+     * @todo    Untested!  May or may not work as described.
      */
-    static function flush()
+    static function joinValues($arrValues)
     {
         $engineType=self::getEngineType();
-        return $engineType::flush();
+        return $engineType::joinValues($arrValues);
     }
+    
+    /**
+     * Should be called whenever there's a problem with the settings table
+     *
+     * Tries to fix or recreate the settings table.
+     * @return  boolean             False, always.
+     * @static
+     */
+    static function errorHandler()
+    {
+        $engineType=self::getEngineType();
+        return $engineType::errorHandler();  
+    }
+    
+    /**
+     * Returns the settings from the old settings table for the given module ID,
+     * if available
+     *
+     * If the module ID is missing or invalid, or if the settings cannot be
+     * read for some other reason, returns null.
+     * Don't drop the table after migrating your settings, other modules
+     * might still need it!  Instead, try this method only after you failed
+     * to get your settings from SettingDb.
+     * @param   integer   $module_id      The module ID
+     * @return  array                     The settings array on success,
+     *                                    null otherwise
+     * @static
+     */
+    static function __getOldSettings($module_id)
+    {
+      $engineType=self::getEngineType();
+      return $engineType::__getOldSettings($module_id);  
+    }
+    
+    /**
+     * Get engineType
+     *
+     * @return string $engineType
+     */ 
+    static function getEngineType(){
+        
+        return self::$engineType;
+    }
+    
+    /**
+     * Set engineType
+     *
+     * @param string $engineType
+     */
+    static function setEngineType($engineType){
+        
+        self::$engineType=$engineType;
+    }
+    
+    
+    
 }
