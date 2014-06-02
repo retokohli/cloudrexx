@@ -70,7 +70,7 @@ class Db implements Engine{
      */
     static function changed()
     {
-        return \Cx\Core\Setting\Model\Entity\Db::$changed;
+        return self::$changed;
     }
 
     /**
@@ -89,9 +89,9 @@ class Db implements Engine{
     static function tab_index($tab_index=null)
     {
         if (isset($tab_index)) {
-            \Cx\Core\Setting\Model\Entity\Db::$tab_index = intval($tab_index);
+            self::$tab_index = intval($tab_index);
         }
-        return \Cx\Core\Setting\Model\Entity\Db::$tab_index;
+        return self::$tab_index;
     }
     
     /**
@@ -119,8 +119,8 @@ class Db implements Engine{
             die("\Cx\Core\Setting\Model\Entity\Db::init($section, $group): ERROR: Missing \$section parameter!");
             //return false;
         }
-        \Cx\Core\Setting\Model\Entity\Db::flush();
-        //echo("\Cx\Core\Setting\Model\Entity\Db::init($section, $group): Entered<br />");
+        self::flush();
+        //echo("self::init($section, $group): Entered<br />");
         $objResult = $objDatabase->Execute("
             SELECT `name`, `group`, `value`,
                    `type`, `values`, `ord`
@@ -128,13 +128,13 @@ class Db implements Engine{
              WHERE `section`='".addslashes($section)."'".
              ($group ? " AND `group`='".addslashes($group)."'" : '')."
              ORDER BY `group` ASC, `ord` ASC, `name` ASC");
-        if (!$objResult) return \Cx\Core\Setting\Model\Entity\Db::errorHandler();
+        if (!$objResult) return self::errorHandler();
         // Set the current group to the empty string if empty
-        \Cx\Core\Setting\Model\Entity\Db::$section = $section;
-        \Cx\Core\Setting\Model\Entity\Db::$group = $group;
-        \Cx\Core\Setting\Model\Entity\Db::$arrSettings = array();
+        self::$section = $section;
+        self::$group = $group;
+        self::$arrSettings = array();
         while (!$objResult->EOF) {
-            \Cx\Core\Setting\Model\Entity\Db::$arrSettings[$objResult->fields['name']] = array(
+            self::$arrSettings[$objResult->fields['name']] = array(
                 'section' => $section,
                 'group' => $objResult->fields['group'],
                 'value' => $objResult->fields['value'],
@@ -157,10 +157,10 @@ class Db implements Engine{
      */
     static function flush()
     {
-        \Cx\Core\Setting\Model\Entity\Db::$arrSettings = null;
-        \Cx\Core\Setting\Model\Entity\Db::$section = null;
-        \Cx\Core\Setting\Model\Entity\Db::$group = null;
-        \Cx\Core\Setting\Model\Entity\Db::$changed = null;
+        self::$arrSettings = null;
+        self::$section = null;
+        self::$group = null;
+        self::$changed = null;
     }
     
     /**
@@ -177,11 +177,11 @@ class Db implements Engine{
      */
     static function getArray($section, $group=null)
     {
-        if (\Cx\Core\Setting\Model\Entity\Db::$section !== $section
-         || \Cx\Core\Setting\Model\Entity\Db::$group !== $group) {
-            if (!\Cx\Core\Setting\Model\Entity\Db::init($section, $group)) return false;
+        if (self::$section !== $section
+         || self::$group !== $group) {
+            if (!self::init($section, $group)) return false;
         }
-        return \Cx\Core\Setting\Model\Entity\Db::$arrSettings;
+        return self::$arrSettings;
     }
     
     /**
@@ -190,7 +190,7 @@ class Db implements Engine{
      */
     static function getArraySetting()
     {
-       return \Cx\Core\Setting\Model\Entity\Db::$arrSettings;
+       return self::$arrSettings;
     }
 
     /**
@@ -205,15 +205,15 @@ class Db implements Engine{
      */
     static function getValue($name)
     {
-        if (is_null(\Cx\Core\Setting\Model\Entity\Db::$arrSettings)) {
+        if (is_null(self::$arrSettings)) {
         \DBG::log("\Cx\Core\Setting\Model\Entity\Db::getValue($name): ERROR: no settings loaded");
             return null;
         }
-        //echo("\Cx\Core\Setting\Model\Entity\Db::getValue($name): Value is ".(isset(\Cx\Core\Setting\Model\Entity\Db::$arrSettings[$name]['value']) ? \Cx\Core\Setting\Model\Entity\Db::$arrSettings[$name]['value'] : 'NOT FOUND')."<br />");
-        if (isset(\Cx\Core\Setting\Model\Entity\Db::$arrSettings[$name]['value'])) {
-            return \Cx\Core\Setting\Model\Entity\Db::$arrSettings[$name]['value'];
+        //echo("self::getValue($name): Value is ".(isset(self::$arrSettings[$name]['value']) ? self::$arrSettings[$name]['value'] : 'NOT FOUND')."<br />");
+        if (isset(self::$arrSettings[$name]['value'])) {
+            return self::$arrSettings[$name]['value'];
         };
-        //DBG::log("\Cx\Core\Setting\Model\Entity\Db::getValue($name): ERROR: unknown setting '$name' (current group ".var_export(\Cx\Core\Setting\Model\Entity\Db::$group, true).")");
+        // \DBG::log("\Cx\Core\Setting\Model\Entity\Db::getValue($name): ERROR: unknown setting '$name' (current group ".var_export(self::$group, true).")");
         return null;
     }
 
@@ -231,17 +231,17 @@ class Db implements Engine{
      */
     static function set($name, $value)
     {
-        if (!isset(\Cx\Core\Setting\Model\Entity\Db::$arrSettings[$name])) {
-            //DBG::log("\Cx\Core\Setting\Model\Entity\Db::set($name, $value): Unknown, changed: ".\Cx\Core\Setting\Model\Entity\Db::$changed);
+        if (!isset(self::$arrSettings[$name])) {
+            // \DBG::log("\Cx\Core\Setting\Model\Entity\Db::set($name, $value): Unknown, changed: ".self::$changed);
             return false;
         }
-        if (\Cx\Core\Setting\Model\Entity\Db::$arrSettings[$name]['value'] == $value) {
-            //DBG::log("\Cx\Core\Setting\Model\Entity\Db::set($name, $value): Identical, changed: ".\Cx\Core\Setting\Model\Entity\Db::$changed);
+        if (self::$arrSettings[$name]['value'] == $value) {
+            // \DBG::log("\Cx\Core\Setting\Model\Entity\Db::set($name, $value): Identical, changed: ".self::$changed);
             return null;
         }
-        \Cx\Core\Setting\Model\Entity\Db::$changed = true;
-        \Cx\Core\Setting\Model\Entity\Db::$arrSettings[$name]['value'] = $value;
-            //DBG::log("\Cx\Core\Setting\Model\Entity\Db::set($name, $value): Added/updated, changed: ".\Cx\Core\Setting\Model\Entity\Db::$changed);
+        self::$changed = true;
+        self::$arrSettings[$name]['value'] = $value;
+            // \DBG::log("\Cx\Core\Setting\Model\Entity\Db::set($name, $value): Added/updated, changed: ".self::$changed);
             return true;
     }
     
@@ -263,18 +263,18 @@ class Db implements Engine{
     {
         //        global $_CORELANG;
 
-        if (!\Cx\Core\Setting\Model\Entity\Db::$changed) {
+        if (!self::$changed) {
             // TODO: These messages are inapropriate when settings are stored by another piece of code, too.
             // Find a way around this.
             // Message::information($_CORELANG['TXT_CORE_SETTINGDB_INFORMATION_NO_CHANGE']);
             return null;
         }
         $success = true;
-        foreach (\Cx\Core\Setting\Model\Entity\Db::$arrSettings as $name => $arrSetting) {
-            $success &= \Cx\Core\Setting\Model\Entity\Db::update($name, $arrSetting['value']);
+        foreach (self::$arrSettings as $name => $arrSetting) {
+            $success &= self::update($name, $arrSetting['value']);
         }
         if ($success) {
-            \Cx\Core\Setting\Model\Entity\Db::$changed = false;
+            self::$changed = false;
             //return Message::ok($_CORELANG['TXT_CORE_SETTINGDB_STORED_SUCCESSFULLY']);
             return true;
         }
@@ -303,7 +303,7 @@ class Db implements Engine{
         global $objDatabase;
 
         // TODO: Add error messages for individual errors
-        if (empty(\Cx\Core\Setting\Model\Entity\Db::$section)) {
+        if (empty(self::$section)) {
             \DBG::log("\Cx\Core\Setting\Model\Entity\Db::update(): ERROR: Empty section!");
             return false;
         }
@@ -313,19 +313,19 @@ class Db implements Engine{
             \DBG::log("\Cx\Core\Setting\Model\Entity\Db::update(): ERROR: Empty name!");
             return false;
         }
-        if (!isset(\Cx\Core\Setting\Model\Entity\Db::$arrSettings[$name])) {
+        if (!isset(self::$arrSettings[$name])) {
             \DBG::log("\Cx\Core\Setting\Model\Entity\Db::update(): ERROR: Unknown setting name '$name'!");
             return false;
         }
         $objResult = $objDatabase->Execute("
             UPDATE `".DBPREFIX."core_setting`
-               SET `value`='".addslashes(\Cx\Core\Setting\Model\Entity\Db::$arrSettings[$name]['value'])."'
+               SET `value`='".addslashes(self::$arrSettings[$name]['value'])."'
              WHERE `name`='".addslashes($name)."'
-               AND `section`='".addslashes(\Cx\Core\Setting\Model\Entity\Db::$section)."'".
-            (\Cx\Core\Setting\Model\Entity\Db::$group
-                ? " AND `group`='".addslashes(\Cx\Core\Setting\Model\Entity\Db::$group)."'" : ''));
-        if (!$objResult) return \Cx\Core\Setting\Model\Entity\Db::errorHandler();
-        \Cx\Core\Setting\Model\Entity\Db::$changed = true;
+               AND `section`='".addslashes(self::$section)."'".
+            (self::$group
+                ? " AND `group`='".addslashes(self::$group)."'" : ''));
+        if (!$objResult) return self::errorHandler();
+        self::$changed = true;
         return true;
     }
     
@@ -340,7 +340,7 @@ class Db implements Engine{
     {
         global $objDatabase;
 
-        if (!isset(\Cx\Core\Setting\Model\Entity\Db::$section)) {
+        if (!isset(self::$section)) {
             // TODO: Error message
             \DBG::log("\Cx\Core\Setting\Model\Entity\Db::add(): ERROR: Empty section!");
             return false;
@@ -353,21 +353,21 @@ class Db implements Engine{
         // This can only be done with a non-empty group!
         // Use the current group, if present, otherwise fail
         if (!$group) {
-            if (!\Cx\Core\Setting\Model\Entity\Db::$group) {
+            if (!self::$group) {
                 \DBG::log("\Cx\Core\Setting\Model\Entity\Db::add(): ERROR: Empty group!");
                 return false;
             }
-            $group = \Cx\Core\Setting\Model\Entity\Db::$group;
+            $group = self::$group;
         }
         // Initialize if necessary
-        if (is_null(\Cx\Core\Setting\Model\Entity\Db::$arrSettings) || \Cx\Core\Setting\Model\Entity\Db::$group != $group){
-            \Cx\Core\Setting\Model\Entity\Db::init(\Cx\Core\Setting\Model\Entity\Db::$section, $group);
+        if (is_null(self::$arrSettings) || self::$group != $group){
+            self::init(self::$section, $group);
         }
         // Such an entry exists already, fail.
         // Note that getValue() returns null if the entry is not present
-        $old_value = \Cx\Core\Setting\Model\Entity\Db::getValue($name);
+        $old_value = self::getValue($name);
         if (isset($old_value)) {
-            //DBG::log("\Cx\Core\Setting\Model\Entity\Db::add(): ERROR: Setting '$name' already exists and is non-empty ($old_value)");
+            // \DBG::log("\Cx\Core\Setting\Model\Entity\Db::add(): ERROR: Setting '$name' already exists and is non-empty ($old_value)");
             return false;
         }
 
@@ -377,7 +377,7 @@ class Db implements Engine{
                 `section`, `group`, `name`, `value`,
                 `type`, `values`, `ord`
             ) VALUES (
-                '".addslashes(\Cx\Core\Setting\Model\Entity\Db::$section)."',
+                '".addslashes(self::$section)."',
                 '".addslashes($group)."',
                 '".addslashes($name)."',
                 '".addslashes($value)."',
@@ -419,8 +419,8 @@ class Db implements Engine{
              WHERE 1".
             ($name ? " AND `name`='".addslashes($name)."'" : '').
             ($group  ? " AND `group`='".addslashes($group)."'"   : ''));
-        if (!$objResult) return \Cx\Core\Setting\Model\Entity\Db::errorHandler();
-        \Cx\Core\Setting\Model\Entity\Db::flush();
+        if (!$objResult) return self::errorHandler();
+        self::flush();
         return true;
     }
 
@@ -435,14 +435,14 @@ class Db implements Engine{
     {
         global $objDatabase;
 
-        if (empty(\Cx\Core\Setting\Model\Entity\Db::$section)) {
+        if (empty(self::$section)) {
             // TODO: Error message
             return false;
         }
         $objResult = $objDatabase->Execute("
             DELETE FROM `".DBPREFIX."core_setting`
-             WHERE `section`='".\Cx\Core\Setting\Model\Entity\Db::$section."'");
-        if (!$objResult) return \Cx\Core\Setting\Model\Entity\Db::errorHandler();
+             WHERE `section`='".self::$section."'");
+        if (!$objResult) return self::errorHandler();
         return true;
     }
 
@@ -477,7 +477,7 @@ class Db implements Engine{
             if (preg_match('/^(.+?)\s*(?<!\\\\):\s*(.+$)/', $value, $match)) {
                 $key = $match[1];
                 $value = $match[2];
-            //DBG::log("Split $key and $value");
+            // \DBG::log("Split $key and $value");
             }
             str_replace(array('\\,', '\\:'), array(',', ':'), $value);
             if (isset($key)) {
@@ -485,9 +485,9 @@ class Db implements Engine{
             } else {
                 $arrValues[] = $value;
             }
-            //DBG::log("Split $key and $value");
+            // \DBG::log("Split $key and $value");
         }
-            //DBG::log("Array: ".var_export($arrValues, true));
+            // \DBG::log("Array: ".var_export($arrValues, true));
         return $arrValues;
     }
 
@@ -539,11 +539,11 @@ class Db implements Engine{
         // TODO: The index array structure is wrong here!
         $table_index =  array();
         \Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
-        //echo("\Cx\Core\Setting\Model\Entity\Db::errorHandler(): Created table ".DBPREFIX."core_setting<br />");
+        //echo("self::errorHandler(): Created table ".DBPREFIX."core_setting<br />");
 
-        //Use \Cx\Core\Setting\Model\Entity\Db::add(); in your module code to add settings; example:
-        //\Cx\Core\Setting\Model\Entity\Db::init('core', 'country');
-        //\Cx\Core\Setting\Model\Entity\Db::add('numof_countries_per_page_backend', 30, 1, \Cx\Core\Setting\Model\Entity\Db::TYPE_TEXT);
+        //Use self::add(); in your module code to add settings; example:
+        //self::init('core', 'country');
+        //self::add('numof_countries_per_page_backend', 30, 1, self::TYPE_TEXT);
 
         //More to come...
 

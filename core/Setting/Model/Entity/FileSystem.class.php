@@ -70,7 +70,7 @@ class FileSystem implements Engine{
      */
     static function changed()
     {
-        return \Cx\Core\Setting\Model\Entity\FileSystem::$changed;
+        return self::$changed;
     }
 
     /**
@@ -89,9 +89,9 @@ class FileSystem implements Engine{
     static function tab_index($tab_index=null)
     {
         if (isset($tab_index)) {
-            \Cx\Core\Setting\Model\Entity\FileSystem::$tab_index = intval($tab_index);
+            self::$tab_index = intval($tab_index);
         }
-        return \Cx\Core\Setting\Model\Entity\FileSystem::$tab_index;
+        return self::$tab_index;
     }
     
     /**
@@ -114,9 +114,9 @@ class FileSystem implements Engine{
     static function init($section, $group=null) {
         //File Path
         $filename=ASCMS_CORE_PATH .'/Setting/Data/'.$section.'.yml';
-        \Cx\Core\Setting\Model\Entity\FileSystem::flush();
-        \Cx\Core\Setting\Model\Entity\FileSystem::$section=$section;
-        \Cx\Core\Setting\Model\Entity\FileSystem::$group=$group;
+        self::flush();
+        self::$section=$section;
+        self::$group=$group;
        
         //call DataSet importFromFile method @return array
         $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::importFromFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $filename);
@@ -124,7 +124,7 @@ class FileSystem implements Engine{
         {
             foreach($objDataSet as $value)
             {
-                \Cx\Core\Setting\Model\Entity\FileSystem::$arrSettings[$value['name']]= $value;
+                self::$arrSettings[$value['name']]= $value;
              
             }
         }
@@ -140,10 +140,10 @@ class FileSystem implements Engine{
      */
     static function flush()
     {
-        \Cx\Core\Setting\Model\Entity\FileSystem::$arrSettings = null;
-        \Cx\Core\Setting\Model\Entity\FileSystem::$section = null;
-        \Cx\Core\Setting\Model\Entity\FileSystem::$group = null;
-        \Cx\Core\Setting\Model\Entity\FileSystem::$changed = null;
+        self::$arrSettings = null;
+        self::$section = null;
+        self::$group = null;
+        self::$changed = null;
     }
     
     /** 
@@ -160,11 +160,11 @@ class FileSystem implements Engine{
      */
     static function getArray($section, $group=null)
     {
-        if (\Cx\Core\Setting\Model\Entity\FileSystem::$section !== $section
-         || \Cx\Core\Setting\Model\Entity\FileSystem::$group !== $group) {
-            if (!\Cx\Core\Setting\Model\Entity\FileSystem::init($section, $group)) return false;
+        if (self::$section !== $section
+         || self::$group !== $group) {
+            if (!self::init($section, $group)) return false;
         }
-        return \Cx\Core\Setting\Model\Entity\FileSystem::$arrSettings;
+        return self::$arrSettings;
     }
 
     /**
@@ -173,7 +173,7 @@ class FileSystem implements Engine{
      */
     static function getArraySetting()
     {
-       return \Cx\Core\Setting\Model\Entity\FileSystem::$arrSettings;
+       return self::$arrSettings;
     }
 
     /**
@@ -188,13 +188,13 @@ class FileSystem implements Engine{
      */
     static function getValue($name)
     {
-        if (is_null(\Cx\Core\Setting\Model\Entity\FileSystem::$arrSettings)) {
+        if (is_null(self::$arrSettings)) {
         \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::getValue($name): ERROR: no settings loaded");
             return null;
         }
 
-        if (isset(\Cx\Core\Setting\Model\Entity\FileSystem::$arrSettings[$name]['value'])) {
-            return \Cx\Core\Setting\Model\Entity\FileSystem::$arrSettings[$name]['value'];
+        if (isset(self::$arrSettings[$name]['value'])) {
+            return self::$arrSettings[$name]['value'];
         };
 
         return null;
@@ -214,17 +214,17 @@ class FileSystem implements Engine{
      */
     static function set($name, $value)
     {
-        if (!isset(\Cx\Core\Setting\Model\Entity\FileSystem::$arrSettings[$name])) {
-        //DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::set($name, $value): Unknown, changed: ".\Cx\Core\Setting\Model\Entity\FileSystem::$changed);
+        if (!isset(self::$arrSettings[$name])) {
+        // \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::set($name, $value): Unknown, changed: ".self::$changed);
             return false;
         }
-        if (\Cx\Core\Setting\Model\Entity\FileSystem::$arrSettings[$name]['value'] == $value) {
-        //DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::set($name, $value): Identical, changed: ".\Cx\Core\Setting\Model\Entity\FileSystem::$changed);
+        if (self::$arrSettings[$name]['value'] == $value) {
+        // \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::set($name, $value): Identical, changed: ".self::$changed);
             return null;
         }
-        \Cx\Core\Setting\Model\Entity\FileSystem::$changed = true;
-        \Cx\Core\Setting\Model\Entity\FileSystem::$arrSettings[$name]['value'] = $value;
-        //DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::set($name, $value): Added/updated, changed: ".\Cx\Core\Setting\Model\Entity\FileSystem::$changed);
+        self::$changed = true;
+        self::$arrSettings[$name]['value'] = $value;
+        // \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::set($name, $value): Added/updated, changed: ".self::$changed);
         return true;
     }
     
@@ -246,7 +246,7 @@ class FileSystem implements Engine{
     {
         //        global $_CORELANG;
 
-        if (!\Cx\Core\Setting\Model\Entity\FileSystem::$changed) {
+        if (!self::$changed) {
         // TODO: These messages are inapropriate when settings are stored by another piece of code, too.
         // Find a way around this.
         //            Message::information($_CORELANG['TXT_CORE_SETTINGDB_INFORMATION_NO_CHANGE']);
@@ -254,14 +254,14 @@ class FileSystem implements Engine{
         }
         $success = true;
         
-        foreach (\Cx\Core\Setting\Model\Entity\FileSystem::$arrSettings as $name => $arrSetting) {
+        foreach (self::$arrSettings as $name => $arrSetting) {
             
-            \Cx\Core\Setting\Model\Entity\FileSystem::set($name, \Cx\Core\Setting\Model\Entity\FileSystem::$arrSettings[$name]['value']);
+            self::set($name, self::$arrSettings[$name]['value']);
         }
-         $success &= \Cx\Core\Setting\Model\Entity\FileSystem::updateFileData();
-       // $success &= \Cx\Core\Setting\Model\Entity\FileSystem::update(\Cx\Core\Setting\Model\Entity\FileSystem::$arrSettings);
+         $success &= self::updateFileData();
+       // $success &= self::update(self::$arrSettings);
         if ($success) {
-            \Cx\Core\Setting\Model\Entity\FileSystem::$changed = false;
+            self::$changed = false;
         //            return Message::ok($_CORELANG['TXT_CORE_SETTINGDB_STORED_SUCCESSFULLY']);
             return true;
         }
@@ -289,7 +289,7 @@ class FileSystem implements Engine{
     {
         
         // TODO: Add error messages for individual errors
-        if (empty(\Cx\Core\Setting\Model\Entity\FileSystem::$section)) {
+        if (empty(self::$section)) {
             \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::update(): ERROR: Empty section!");
             return false;
         }
@@ -299,13 +299,13 @@ class FileSystem implements Engine{
             \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::update(): ERROR: Empty name!");
             return false;
         }
-        if (!isset(\Cx\Core\Setting\Model\Entity\FileSystem::$arrSettings[$name])) {
+        if (!isset(self::$arrSettings[$name])) {
             \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::update(): ERROR: Unknown setting name '$name'!");
             return false;
         }
-        \Cx\Core\Setting\Model\Entity\FileSystem::set($name, \Cx\Core\Setting\Model\Entity\FileSystem::$arrSettings[$name]['value']);
+        self::set($name, self::$arrSettings[$name]['value']);
       
-      \Cx\Core\Setting\Model\Entity\FileSystem::updateFileData();  
+      self::updateFileData();  
     }
     
     /**
@@ -328,7 +328,7 @@ class FileSystem implements Engine{
      */
     static function add( $name, $value, $ord=false, $type='text', $values='', $group=null)
     {
-        if (!isset(\Cx\Core\Setting\Model\Entity\FileSystem::$section)) {
+        if (!isset(self::$section)) {
             // TODO: Error message
             \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::add(): ERROR: Empty section!");
             return false;
@@ -343,30 +343,30 @@ class FileSystem implements Engine{
         // This can only be done with a non-empty group!
         // Use the current group, if present, otherwise fail
         if (!$group) {
-            if (!\Cx\Core\Setting\Model\Entity\FileSystem::$group) {
+            if (!self::$group) {
                 \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::add(): ERROR: Empty group!");
                 return false;
             }
-            $group = \Cx\Core\Setting\Model\Entity\FileSystem::$group;
+            $group = self::$group;
         }
         
         // Initialize if necessary
-        if (is_null(\Cx\Core\Setting\Model\Entity\FileSystem::$arrSettings) || \Cx\Core\Setting\Model\Entity\FileSystem::$group != $group){
-            \Cx\Core\Setting\Model\Entity\FileSystem::init(\Cx\Core\Setting\Model\Entity\FileSystem::$section, $group);
+        if (is_null(self::$arrSettings) || self::$group != $group){
+            self::init(self::$section, $group);
         }
         
         // Such an entry exists already, fail.
         // Note that getValue() returns null if the entry is not present
-        $old_value = \Cx\Core\Setting\Model\Entity\FileSystem::getValue($name);
+        $old_value = self::getValue($name);
         if (isset($old_value)) {
-            //DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::add(): ERROR: Setting '$name' already exists and is non-empty ($old_value)");
+            // \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::add(): ERROR: Setting '$name' already exists and is non-empty ($old_value)");
             return false;
         }
         
-        $filename=ASCMS_CORE_PATH .'/Setting/Data/'.\Cx\Core\Setting\Model\Entity\FileSystem::$section.'.yml';
+        $filename=ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
          
         $addValue[] =   Array(  'name'=> addslashes($name),
-                                'section'=> addslashes(\Cx\Core\Setting\Model\Entity\FileSystem::$section),
+                                'section'=> addslashes(self::$section),
                                 'group'=> addslashes($group),
                                 'value'=> addslashes($value),
                                 'type' => addslashes($type),
@@ -446,14 +446,14 @@ class FileSystem implements Engine{
     {
         global $objDatabase;
 
-        if (empty(\Cx\Core\Setting\Model\Entity\FileSystem::$section)) {
+        if (empty(self::$section)) {
         // TODO: Error message
             return false;
         }
         $objResult = $objDatabase->Execute("
             DELETE FROM `".DBPREFIX."core_setting`
-             WHERE `section`='".\Cx\Core\Setting\Model\Entity\FileSystem::$section."'");
-        if (!$objResult) return \Cx\Core\Setting\Model\Entity\FileSystem::errorHandler();
+             WHERE `section`='".self::$section."'");
+        if (!$objResult) return self::errorHandler();
         return true;
     }
 
@@ -488,7 +488,7 @@ class FileSystem implements Engine{
             if (preg_match('/^(.+?)\s*(?<!\\\\):\s*(.+$)/', $value, $match)) {
                 $key = $match[1];
                 $value = $match[2];
-        //DBG::log("Split $key and $value");
+        // \DBG::log("Split $key and $value");
             }
             str_replace(array('\\,', '\\:'), array(',', ':'), $value);
             if (isset($key)) {
@@ -496,9 +496,9 @@ class FileSystem implements Engine{
             } else {
                 $arrValues[] = $value;
             }
-        //DBG::log("Split $key and $value");
+        // \DBG::log("Split $key and $value");
         }
-        //DBG::log("Array: ".var_export($arrValues, true));
+        // \DBG::log("Array: ".var_export($arrValues, true));
         return $arrValues;
     }
 
@@ -537,7 +537,7 @@ class FileSystem implements Engine{
      */
     static function errorHandler()
     {
-        $file = new \Cx\Lib\FileSystem\File(ASCMS_CORE_PATH .'/Setting/Data/'.\Cx\Core\Setting\Model\Entity\FileSystem::$section.'.yml');
+        $file = new \Cx\Lib\FileSystem\File(ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml');
         $file->touch();
         return false;
     }
@@ -551,14 +551,14 @@ class FileSystem implements Engine{
      */
     static private function updateFileData()
     {
-        if(!empty(\Cx\Core\Setting\Model\Entity\FileSystem::$arrSettings))
+        if(!empty(self::$arrSettings))
         {
-            $filename=ASCMS_CORE_PATH .'/Setting/Data/'.\Cx\Core\Setting\Model\Entity\FileSystem::$section.'.yml';
+            $filename=ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
          
             $objFile = new \Cx\Lib\FileSystem\File($filename);
             $objFile->delete(); 
             
-            foreach(\Cx\Core\Setting\Model\Entity\FileSystem::$arrSettings as $value)
+            foreach(self::$arrSettings as $value)
             {
                 $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet(array($value));
                 $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $filename);
