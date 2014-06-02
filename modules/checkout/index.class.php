@@ -331,8 +331,11 @@ class Checkout extends CheckoutLibrary {
 
         //get country options
         if (!empty($this->arrCountries)) {
-            $arrSelectOptions['countries'][] = '<option value="0">'.$_ARRAYLANG['TXT_CHECKOUT_CONTACT_COUNTRY'].$htmlRequiredField.'</option>';
+            //$arrSelectOptions['countries'][] = '<option value="0">'.$_ARRAYLANG['TXT_CHECKOUT_CONTACT_COUNTRY'].$htmlRequiredField.'</option>';
             foreach ($this->arrCountries as $id => $name) {
+                if (\Country::getAlpha2ById($id) != 'CH') {
+                    continue;
+                }
                 $selected = $id == $arrFieldValues['contact_country'] ? ' selected="selected"' : '';
                 $arrSelectOptions['countries'][] = '<option value="'.$id.'"'.$selected.'>'.contrexx_raw2xhtml($name).'</option>';
             }
