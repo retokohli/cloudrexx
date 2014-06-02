@@ -1,25 +1,33 @@
 <?php
 /**
- * Specific Setting for this Component. Use this to interact with the classes "Db" and "FileSystem"
+ * Manages settings stored in the database or file system
  *
- * @copyright   Comvation AG
- * @author      Manish Thakur <manishthakur@cdnsol.com>
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
+ * @version     3.0.0
  * @package     contrexx
- * @subpackage  Setting
+ * @subpackage  core_setting
+ * @todo        Edit PHP DocBlocks!
+ */
+
+/**
+ * Manages settings stored in the database or file system
+ *
+ * Before trying to access a modules' settings, *DON'T* forget to call
+ * {@see Setting::init()} before calling getValue() for the first time!
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
+ * @version     3.0.0
+ * @package     contrexx
+ * @subpackage  core_setting
+ * @todo        Edit PHP DocBlocks!
  */
 
 namespace Cx\Core\Setting\Controller;
 
 class SettingException extends \Exception {}
 
-/**
- * Specific Setting for this Component. Use this to easily using "Db" and "FileSystem"
- *
- * @copyright   Comvation AG
- * @author      Manish Thakur <manishthakur@cdnsol.com>
- * @package     contrexx
- * @subpackage  Setting
- */
+
 class Setting{
      
     /**
@@ -41,11 +49,13 @@ class Setting{
     const TYPE_TEXTAREA = 'textarea';
     const TYPE_EMAIL = 'email';
     const TYPE_BUTTON = 'button';
+    // 20110224
     const TYPE_CHECKBOX = 'checkbox';
     const TYPE_CHECKBOXGROUP = 'checkboxgroup';
+    // 20120508
     const TYPE_RADIO = 'radio';
-// Not implemented
-//    const TYPE_SUBMIT = 'submit';
+    // Not implemented
+    //const TYPE_SUBMIT = 'submit';
 
     /**
      * Default width for input fields
@@ -54,6 +64,7 @@ class Setting{
      */
     const DEFAULT_INPUT_WIDTH = 300;
 
+    const TYPE_PASSWORD = 'password';
     
     /**
      * Default \Cx\Core\Setting\Model\Entity\Db
@@ -81,7 +92,7 @@ class Setting{
     static function init($section, $group=null,$engine = 'Database')
     {
         
-        if($engine=="Database"){ //default
+        if($engine=="Database" || empty($engine)){ //default
             
             \Cx\Core\Setting\Model\Entity\Db::init($section, $group);
             self::setEngineType('\Cx\Core\Setting\Model\Entity\Db');
@@ -185,8 +196,8 @@ class Setting{
     {
         global $_CORELANG;
         $engineType=self::getEngineType();
-        
-        $engineType::verify_template($objTemplateLocal);
+        $arrSettings=$engineType::getArraySetting();
+        self::verify_template($objTemplateLocal);
         \Html::replaceUriParameter($uriBase, 'active_tab='.$engineType::$tab_index);
         // Default headings and elements
         $objTemplateLocal->setGlobalVariable(
@@ -198,11 +209,11 @@ class Setting{
         if ($objTemplateLocal->blockExists('core_settingdb_row')){
                 $objTemplateLocal->setCurrentBlock('core_settingdb_row');
         }        
-        if (!is_array($engineType::$arrSettings)) {
+        if (!is_array($arrSettings)) {
         //die("No Settings array");
             return \Message::error($_CORELANG['TXT_CORE_SETTINGDB_ERROR_RETRIEVING']);
         }
-        if (empty($engineType::$arrSettings)) {
+        if (empty($arrSettings)) {
             //die("No Settings found");
             \Message::warning(
                 sprintf(
@@ -254,14 +265,14 @@ class Setting{
     static function show_section(&$objTemplateLocal, $section='', $prefix='TXT_')
     {
         global $_ARRAYLANG, $_CORELANG; $engineType=self::getEngineType();
-
-        $engineType::verify_template($objTemplateLocal);
+        $arrSettings=$engineType::getArraySetting();
+        self::verify_template($objTemplateLocal);
         // This is set to multipart if necessary
         $enctype = '';
         $i = 0;
         if ($objTemplateLocal->blockExists('core_settingdb_row'))
             $objTemplateLocal->setCurrentBlock('core_settingdb_row');
-        foreach ($engineType::$arrSettings as $name => $arrSetting) {
+        foreach ($arrSettings as $name => $arrSetting) {
             // Determine HTML element for type and apply values and selected
             $element = '';
             $value = $arrSetting['value'];
@@ -404,7 +415,11 @@ class Setting{
 // More...
 //              case self::TYPE_:
 //                break;
-
+                case self::TYPE_PASSWORD:
+                $element =
+                    \Html::getInputPassword($name, $value, 'style="width: '.self::DEFAULT_INPUT_WIDTH.'px;"');
+                break;
+                
               // Default to text input fields
               case self::TYPE_TEXT:
               case self::TYPE_EMAIL:
@@ -494,6 +509,31 @@ class Setting{
     }
     
     /**
+     * Ensures that a valid template is available
+     *
+     * Die()s if the template given is invalid, and settingDb.html cannot be
+     * loaded to replace it.
+     * @param   \Cx\Core\Html\Sigma $objTemplateLocal   The template,
+     *                                                  by reference
+     */
+    static function verify_template(&$objTemplateLocal)
+    {
+        //"instanceof" considers subclasses of Sigma to be a Sigma, too!
+        if (!($objTemplateLocal instanceof \Cx\Core\Html\Sigma)) {
+            $objTemplateLocal = new \Cx\Core\Html\Sigma(ASCMS_DOCUMENT_ROOT.'/core/Setting/View/Template/Generic');
+        }
+        if (!$objTemplateLocal->blockExists('core_settingdb_row')) {
+            $objTemplateLocal->setRoot(ASCMS_DOCUMENT_ROOT.'/core/Setting/View/Template/Generic');
+        //$objTemplateLocal->setCacheRoot('.');
+            if (!$objTemplateLocal->loadTemplateFile('Form.html')){
+                die("Failed to load template Form.html");
+            }
+            //die(nl2br(contrexx_raw2xhtml(var_export($objTemplateLocal, true))));
+        }
+    }
+
+
+    /**
      * Update and store all settings found in the $_POST array
      *
      * Note that you *MUST* call {@see init()} beforehand, or your settings
@@ -504,9 +544,104 @@ class Setting{
      */
     static function storeFromPost()
     {
+        global $_CORELANG;
+
+        //echo("self::storeFromPost(): POST:<br />".nl2br(htmlentities(var_export($_POST, true)))."<hr />");
+        //echo("self::storeFromPost(): FILES:<br />".nl2br(htmlentities(var_export($_FILES, true)))."<hr />");
+        
+        // There may be several tabs for different groups being edited, so
+        // load the full set of settings for the module.
+        // Note that this is why setting names should be unique.
+        // TODO: You *MUST* call this yourself *before* in order to
+        // properly initialize the section!
+        // self::init();
+        
         $engineType=self::getEngineType();
-        $engineType::storeFromPost();  
+        $arrSettings=$engineType::getArraySetting();
+        unset($_POST['bsubmit']);
+        $result = true;
+        // Compare POST with current settings and only store what was changed.
+        foreach (array_keys($arrSettings) as $name) {
+            $value = (isset ($_POST[$name])
+                ? contrexx_input2raw($_POST[$name])
+                : null);
+            //if (preg_match('/^'.preg_quote(CSRF::key(), '/').'$/', $name))
+            //continue;
+            switch ($arrSettings[$name]['type']) {
+              case self::TYPE_FILEUPLOAD:
+                // An empty folder path has been posted, indicating that the
+                // current file should be removed
+                if (empty($value)) {
+                    //echo("Empty value, deleting file...<br />");
+                    if ($arrSettings[$name]['value']) {
+                        if (\File::delete_file($arrSettings[$name]['value'])) {
+                    //echo("File deleted<br />");
+                            $value = '';
+                        } else {
+                    //echo("Failed to delete file<br />");
+                            \Message::error(\File::getErrorString());
+                            $result = false;
+                        }
+                    }
+                } else {
+                    // No file uploaded.  Skip.
+                    if (empty($_FILES[$name]['name'])) continue;
+                    // $value is the target folder path
+                    $target_path = $value.'/'.$_FILES[$name]['name'];
+                    // TODO: Test if this works in all browsers:
+                    // The path input field name is the same as the
+                    // file upload input field name!
+                    $result_upload = \File::upload_file_http(
+                        $name, $target_path,
+                        \Filetype::MAXIMUM_UPLOAD_FILE_SIZE,
+                        // The allowed file types
+                        $arrSettings[$name]['values']
+                    );
+                    // If no file has been uploaded at all, ignore the no-change
+                    // TODO: Noop is not implemented in File::upload_file_http()
+                    // if ($result_upload === '') continue;
+                    if ($result_upload === true) {
+                        $value = $target_path;
+                    } else {
+                    //echo("self::storeFromPost(): Error uploading file for setting $name to $target_path<br />");
+                    // TODO: Add error message
+                        \Message::error(\File::getErrorString());
+                        $result = false;
+                    }
+                }
+                break;
+              case self::TYPE_CHECKBOX:
+                  break;
+              case self::TYPE_CHECKBOXGROUP:
+                $value = (is_array($value)
+                    ? join(',', array_keys($value))
+                    : $value);
+                    // 20120508
+              case self::TYPE_RADIO:
+                  break;
+              default:
+                    // Regular value of any other type
+                break;
+            }
+            self::set($name, $value);
+        }
+                    //echo("self::storeFromPost(): So far, the result is ".($result ? 'okay' : 'no good')."<br />");
+        $result_update = self::updateAll();
+        if ($result_update === false) {
+            \Message::error($_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING']);
+        } elseif ($result_update === true) {
+            \Message::ok($_CORELANG['TXT_CORE_SETTINGDB_STORED_SUCCESSFULLY']);
+        }
+        // If nothing bad happened above, return the result of updateAll(),
+        // which may be true, false, or the empty string
+        if ($result === true) {
+            return $result_update;
+        }
+        // There has been an error anyway
+        return false;
     }
+
+   
    
      /**
      * Returns the settings value stored in the object for the name given.
@@ -545,7 +680,7 @@ class Setting{
     static function add( $name, $value, $ord=false, $type='text', $values='', $group=null)
     {
         $engineType=self::getEngineType();
-        return $engineType::add( $name, $value, $ord=false, $type='text', $values='', $group=null);  
+        return $engineType::add( $name, $value, $ord, $type, $values, $group);  
     }
     
     /**

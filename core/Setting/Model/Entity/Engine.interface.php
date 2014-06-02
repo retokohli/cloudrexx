@@ -26,10 +26,6 @@ interface Engine {
     
     public static function getValue($name);
     
-    public static function verify_template(&$objTemplateLocal);
-    
-    public static function storeFromPost();
-    
     public static function deleteModule();
     
     public static function splitValues($strValues);

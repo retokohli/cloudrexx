@@ -1,12 +1,20 @@
 <?php
-
+/**
+ * Specific Setting for this Component. Use this to interact with the Setting.class.php
+ *
+ * @copyright   Comvation AG
+ * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
+ * @package     contrexx
+ * @subpackage  core_setting
+ * @todo        Edit PHP DocBlocks!
+ */
+ 
 namespace Cx\Core\Setting\Model\Entity;
-use \Cx\Core\Setting\Model\Entity\Engine;
 
 class Db implements Engine{
     
     /**
-     * The array of currently loaded settings settings, like
+     * The array of currently loaded settings, like
      *  array(
      *    'name' => array(
      *      'section' => section,
@@ -22,7 +30,7 @@ class Db implements Engine{
      * @static
      * @access  private
      */
-    public static $arrSettings = null;
+    private static $arrSettings = null;
     
     /**
      * The group last used to {@see init()} the settings.
@@ -62,7 +70,7 @@ class Db implements Engine{
      */
     static function changed()
     {
-        return self::$changed;
+        return \Cx\Core\Setting\Model\Entity\Db::$changed;
     }
 
     /**
@@ -81,9 +89,9 @@ class Db implements Engine{
     static function tab_index($tab_index=null)
     {
         if (isset($tab_index)) {
-            self::$tab_index = intval($tab_index);
+            \Cx\Core\Setting\Model\Entity\Db::$tab_index = intval($tab_index);
         }
-        return self::$tab_index;
+        return \Cx\Core\Setting\Model\Entity\Db::$tab_index;
     }
     
     /**
@@ -108,11 +116,11 @@ class Db implements Engine{
          global $objDatabase;
 
         if (empty($section)) {
-            die("self::init($section, $group): ERROR: Missing \$section parameter!");
+            die("\Cx\Core\Setting\Model\Entity\Db::init($section, $group): ERROR: Missing \$section parameter!");
             //return false;
         }
-        self::flush();
-        //echo("self::init($section, $group): Entered<br />");
+        \Cx\Core\Setting\Model\Entity\Db::flush();
+        //echo("\Cx\Core\Setting\Model\Entity\Db::init($section, $group): Entered<br />");
         $objResult = $objDatabase->Execute("
             SELECT `name`, `group`, `value`,
                    `type`, `values`, `ord`
@@ -120,13 +128,13 @@ class Db implements Engine{
              WHERE `section`='".addslashes($section)."'".
              ($group ? " AND `group`='".addslashes($group)."'" : '')."
              ORDER BY `group` ASC, `ord` ASC, `name` ASC");
-        if (!$objResult) return self::errorHandler();
+        if (!$objResult) return \Cx\Core\Setting\Model\Entity\Db::errorHandler();
         // Set the current group to the empty string if empty
-        self::$section = $section;
-        self::$group = $group;
-        self::$arrSettings = array();
+        \Cx\Core\Setting\Model\Entity\Db::$section = $section;
+        \Cx\Core\Setting\Model\Entity\Db::$group = $group;
+        \Cx\Core\Setting\Model\Entity\Db::$arrSettings = array();
         while (!$objResult->EOF) {
-            self::$arrSettings[$objResult->fields['name']] = array(
+            \Cx\Core\Setting\Model\Entity\Db::$arrSettings[$objResult->fields['name']] = array(
                 'section' => $section,
                 'group' => $objResult->fields['group'],
                 'value' => $objResult->fields['value'],
@@ -149,10 +157,10 @@ class Db implements Engine{
      */
     static function flush()
     {
-        self::$arrSettings = null;
-        self::$section = null;
-        self::$group = null;
-        self::$changed = null;
+        \Cx\Core\Setting\Model\Entity\Db::$arrSettings = null;
+        \Cx\Core\Setting\Model\Entity\Db::$section = null;
+        \Cx\Core\Setting\Model\Entity\Db::$group = null;
+        \Cx\Core\Setting\Model\Entity\Db::$changed = null;
     }
     
     /**
@@ -169,13 +177,21 @@ class Db implements Engine{
      */
     static function getArray($section, $group=null)
     {
-        if (self::$section !== $section
-         || self::$group !== $group) {
-            if (!self::init($section, $group)) return false;
+        if (\Cx\Core\Setting\Model\Entity\Db::$section !== $section
+         || \Cx\Core\Setting\Model\Entity\Db::$group !== $group) {
+            if (!\Cx\Core\Setting\Model\Entity\Db::init($section, $group)) return false;
         }
-        return self::$arrSettings;
+        return \Cx\Core\Setting\Model\Entity\Db::$arrSettings;
     }
-
+    
+    /**
+     * Returns the settings array for the given section and group
+     * @return  array
+     */
+    static function getArraySetting()
+    {
+       return \Cx\Core\Setting\Model\Entity\Db::$arrSettings;
+    }
 
     /**
      * Returns the settings value stored in the object for the name given.
@@ -189,18 +205,130 @@ class Db implements Engine{
      */
     static function getValue($name)
     {
-        if (is_null(self::$arrSettings)) {
-        \DBG::log("self::getValue($name): ERROR: no settings loaded");
+        if (is_null(\Cx\Core\Setting\Model\Entity\Db::$arrSettings)) {
+        \DBG::log("\Cx\Core\Setting\Model\Entity\Db::getValue($name): ERROR: no settings loaded");
             return null;
         }
-        //echo("self::getValue($name): Value is ".(isset(self::$arrSettings[$name]['value']) ? self::$arrSettings[$name]['value'] : 'NOT FOUND')."<br />");
-        if (isset(self::$arrSettings[$name]['value'])) {
-            return self::$arrSettings[$name]['value'];
+        //echo("\Cx\Core\Setting\Model\Entity\Db::getValue($name): Value is ".(isset(\Cx\Core\Setting\Model\Entity\Db::$arrSettings[$name]['value']) ? \Cx\Core\Setting\Model\Entity\Db::$arrSettings[$name]['value'] : 'NOT FOUND')."<br />");
+        if (isset(\Cx\Core\Setting\Model\Entity\Db::$arrSettings[$name]['value'])) {
+            return \Cx\Core\Setting\Model\Entity\Db::$arrSettings[$name]['value'];
         };
-        //DBG::log("self::getValue($name): ERROR: unknown setting '$name' (current group ".var_export(self::$group, true).")");
+        //DBG::log("\Cx\Core\Setting\Model\Entity\Db::getValue($name): ERROR: unknown setting '$name' (current group ".var_export(\Cx\Core\Setting\Model\Entity\Db::$group, true).")");
         return null;
     }
 
+     /**
+     * Updates a setting
+     *
+     * If the setting name exists and the new value is not equal to
+     * the old one, it is updated, and $changed set to true.
+     * Otherwise, nothing happens, and false is returned
+     * @see init(), updateAll()
+     * @param   string    $name       The settings name
+     * @param   string    $value      The settings value
+     * @return  boolean               True if the value has been changed,
+     *                                false otherwise, null on noop
+     */
+    static function set($name, $value)
+    {
+        if (!isset(\Cx\Core\Setting\Model\Entity\Db::$arrSettings[$name])) {
+            //DBG::log("\Cx\Core\Setting\Model\Entity\Db::set($name, $value): Unknown, changed: ".\Cx\Core\Setting\Model\Entity\Db::$changed);
+            return false;
+        }
+        if (\Cx\Core\Setting\Model\Entity\Db::$arrSettings[$name]['value'] == $value) {
+            //DBG::log("\Cx\Core\Setting\Model\Entity\Db::set($name, $value): Identical, changed: ".\Cx\Core\Setting\Model\Entity\Db::$changed);
+            return null;
+        }
+        \Cx\Core\Setting\Model\Entity\Db::$changed = true;
+        \Cx\Core\Setting\Model\Entity\Db::$arrSettings[$name]['value'] = $value;
+            //DBG::log("\Cx\Core\Setting\Model\Entity\Db::set($name, $value): Added/updated, changed: ".\Cx\Core\Setting\Model\Entity\Db::$changed);
+            return true;
+    }
+    
+    /**
+     * Stores all settings entries present in the $arrSettings object
+     * array variable
+     *
+     * Returns boolean true if all records were stored successfully,
+     * null if nothing changed (noop), false otherwise.
+     * Upon success, also resets the $changed class variable to false.
+     * The class *MUST* have been initialized before calling this
+     * method using {@see init()}, and the new values been {@see set()}.
+     * Note that this method does not work for adding new settings.
+     * See {@see add()} on how to do this.
+     * @return  boolean                   True on success, null on noop,
+     *                                    false otherwise
+     */
+    static function updateAll()
+    {
+        //        global $_CORELANG;
+
+        if (!\Cx\Core\Setting\Model\Entity\Db::$changed) {
+            // TODO: These messages are inapropriate when settings are stored by another piece of code, too.
+            // Find a way around this.
+            // Message::information($_CORELANG['TXT_CORE_SETTINGDB_INFORMATION_NO_CHANGE']);
+            return null;
+        }
+        $success = true;
+        foreach (\Cx\Core\Setting\Model\Entity\Db::$arrSettings as $name => $arrSetting) {
+            $success &= \Cx\Core\Setting\Model\Entity\Db::update($name, $arrSetting['value']);
+        }
+        if ($success) {
+            \Cx\Core\Setting\Model\Entity\Db::$changed = false;
+            //return Message::ok($_CORELANG['TXT_CORE_SETTINGDB_STORED_SUCCESSFULLY']);
+            return true;
+        }
+        //return Message::error($_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING']);
+        return false;
+    }
+    
+    /**
+     * Updates the value for the given name in the settings table
+     *
+     * The class *MUST* have been initialized before calling this
+     * method using {@see init()}, and the new value been {@see set()}.
+     * Sets $changed to true and returns true if the value has been
+     * updated successfully.
+     * Note that this method does not work for adding new settings.
+     * See {@see add()} on how to do this.
+     * Also note that the loaded setting is not updated, only the database!
+     * @param   string    $name   The settings name
+     * @return  boolean           True on successful update or if
+     *                            unchanged, false on failure
+     * @static
+     * @global  mixed     $objDatabase    Database connection object
+     */
+    static function update($name)
+    {
+        global $objDatabase;
+
+        // TODO: Add error messages for individual errors
+        if (empty(\Cx\Core\Setting\Model\Entity\Db::$section)) {
+            \DBG::log("\Cx\Core\Setting\Model\Entity\Db::update(): ERROR: Empty section!");
+            return false;
+        }
+        // Fail if the name is invalid
+        // or the setting does not exist
+        if (empty($name)) {
+            \DBG::log("\Cx\Core\Setting\Model\Entity\Db::update(): ERROR: Empty name!");
+            return false;
+        }
+        if (!isset(\Cx\Core\Setting\Model\Entity\Db::$arrSettings[$name])) {
+            \DBG::log("\Cx\Core\Setting\Model\Entity\Db::update(): ERROR: Unknown setting name '$name'!");
+            return false;
+        }
+        $objResult = $objDatabase->Execute("
+            UPDATE `".DBPREFIX."core_setting`
+               SET `value`='".addslashes(\Cx\Core\Setting\Model\Entity\Db::$arrSettings[$name]['value'])."'
+             WHERE `name`='".addslashes($name)."'
+               AND `section`='".addslashes(\Cx\Core\Setting\Model\Entity\Db::$section)."'".
+            (\Cx\Core\Setting\Model\Entity\Db::$group
+                ? " AND `group`='".addslashes(\Cx\Core\Setting\Model\Entity\Db::$group)."'" : ''));
+        if (!$objResult) return \Cx\Core\Setting\Model\Entity\Db::errorHandler();
+        \Cx\Core\Setting\Model\Entity\Db::$changed = true;
+        return true;
+    }
+    
     /**
      * Add a new record to the settings
      *
@@ -212,34 +340,34 @@ class Db implements Engine{
     {
         global $objDatabase;
 
-        if (!isset(self::$section)) {
+        if (!isset(\Cx\Core\Setting\Model\Entity\Db::$section)) {
             // TODO: Error message
-            \DBG::log("self::add(): ERROR: Empty section!");
+            \DBG::log("\Cx\Core\Setting\Model\Entity\Db::add(): ERROR: Empty section!");
             return false;
         }
         // Fail if the name is invalid
         if (empty($name)) {
-            \DBG::log("self::add(): ERROR: Empty name!");
+            \DBG::log("\Cx\Core\Setting\Model\Entity\Db::add(): ERROR: Empty name!");
             return false;
         }
         // This can only be done with a non-empty group!
         // Use the current group, if present, otherwise fail
         if (!$group) {
-            if (!self::$group) {
-                \DBG::log("self::add(): ERROR: Empty group!");
+            if (!\Cx\Core\Setting\Model\Entity\Db::$group) {
+                \DBG::log("\Cx\Core\Setting\Model\Entity\Db::add(): ERROR: Empty group!");
                 return false;
             }
-            $group = self::$group;
+            $group = \Cx\Core\Setting\Model\Entity\Db::$group;
         }
         // Initialize if necessary
-        if (is_null(self::$arrSettings) || self::$group != $group){
-            self::init(self::$section, $group);
+        if (is_null(\Cx\Core\Setting\Model\Entity\Db::$arrSettings) || \Cx\Core\Setting\Model\Entity\Db::$group != $group){
+            \Cx\Core\Setting\Model\Entity\Db::init(\Cx\Core\Setting\Model\Entity\Db::$section, $group);
         }
         // Such an entry exists already, fail.
         // Note that getValue() returns null if the entry is not present
-        $old_value = self::getValue($name);
+        $old_value = \Cx\Core\Setting\Model\Entity\Db::getValue($name);
         if (isset($old_value)) {
-            //DBG::log("self::add(): ERROR: Setting '$name' already exists and is non-empty ($old_value)");
+            //DBG::log("\Cx\Core\Setting\Model\Entity\Db::add(): ERROR: Setting '$name' already exists and is non-empty ($old_value)");
             return false;
         }
 
@@ -249,7 +377,7 @@ class Db implements Engine{
                 `section`, `group`, `name`, `value`,
                 `type`, `values`, `ord`
             ) VALUES (
-                '".addslashes(self::$section)."',
+                '".addslashes(\Cx\Core\Setting\Model\Entity\Db::$section)."',
                 '".addslashes($group)."',
                 '".addslashes($name)."',
                 '".addslashes($value)."',
@@ -259,7 +387,7 @@ class Db implements Engine{
             )";
         $objResult = $objDatabase->Execute($query);
         if (!$objResult) {
-            \DBG::log("self::add(): ERROR: Query failed: $query");
+            \DBG::log("\Cx\Core\Setting\Model\Entity\Db::add(): ERROR: Query failed: $query");
             return false;
         }
         return true;
@@ -291,141 +419,10 @@ class Db implements Engine{
              WHERE 1".
             ($name ? " AND `name`='".addslashes($name)."'" : '').
             ($group  ? " AND `group`='".addslashes($group)."'"   : ''));
-        if (!$objResult) return self::errorHandler();
-        self::flush();
+        if (!$objResult) return \Cx\Core\Setting\Model\Entity\Db::errorHandler();
+        \Cx\Core\Setting\Model\Entity\Db::flush();
         return true;
     }
-
-    /**
-     * Ensures that a valid template is available
-     *
-     * Die()s if the template given is invalid, and settingDb.html cannot be
-     * loaded to replace it.
-     * @param   \Cx\Core\Html\Sigma $objTemplateLocal   The template,
-     *                                                  by reference
-     */
-    static function verify_template(&$objTemplateLocal)
-    {
-        //"instanceof" considers subclasses of Sigma to be a Sigma, too!
-        if (!($objTemplateLocal instanceof \Cx\Core\Html\Sigma)) {
-            $objTemplateLocal = new \Cx\Core\Html\Sigma(ASCMS_DOCUMENT_ROOT.'/core/Setting/View/Template/Generic');
-        }
-        if (!$objTemplateLocal->blockExists('core_settingdb_row')) {
-            $objTemplateLocal->setRoot(ASCMS_DOCUMENT_ROOT.'/core/Setting/View/Template/Generic');
-        //$objTemplateLocal->setCacheRoot('.');
-            if (!$objTemplateLocal->loadTemplateFile('Form.html')){
-                die("Failed to load template Form.html");
-            }
-            //die(nl2br(contrexx_raw2xhtml(var_export($objTemplateLocal, true))));
-        }
-    }
-
-
-    /**
-     * Update and store all settings found in the $_POST array
-     *
-     * Note that you *MUST* call {@see init()} beforehand, or your settings
-     * will be unknown and thus not be stored.
-     * Sets up an error message on failure.
-     * @return  boolean                 True on success, null on noop,
-     *                                  or false on failure
-     */
-    static function storeFromPost()
-    {
-        global $_CORELANG;
-
-        //echo("self::storeFromPost(): POST:<br />".nl2br(htmlentities(var_export($_POST, true)))."<hr />");
-        //echo("self::storeFromPost(): FILES:<br />".nl2br(htmlentities(var_export($_FILES, true)))."<hr />");
-        
-        // There may be several tabs for different groups being edited, so
-        // load the full set of settings for the module.
-        // Note that this is why setting names should be unique.
-        // TODO: You *MUST* call this yourself *before* in order to
-        // properly initialize the section!
-        // self::init();
-        unset($_POST['bsubmit']);
-        $result = true;
-        // Compare POST with current settings and only store what was changed.
-        foreach (array_keys(self::$arrSettings) as $name) {
-            $value = (isset ($_POST[$name])
-                ? contrexx_input2raw($_POST[$name])
-                : null);
-            //if (preg_match('/^'.preg_quote(CSRF::key(), '/').'$/', $name))
-            //continue;
-            switch (self::$arrSettings[$name]['type']) {
-              case \Cx\Core\Setting\Controller\Setting::TYPE_FILEUPLOAD:
-                // An empty folder path has been posted, indicating that the
-                // current file should be removed
-                if (empty($value)) {
-                    //echo("Empty value, deleting file...<br />");
-                    if (self::$arrSettings[$name]['value']) {
-                        if (\File::delete_file(self::$arrSettings[$name]['value'])) {
-                    //echo("File deleted<br />");
-                            $value = '';
-                        } else {
-                    //echo("Failed to delete file<br />");
-                            \Message::error(\File::getErrorString());
-                            $result = false;
-                        }
-                    }
-                } else {
-                    // No file uploaded.  Skip.
-                    if (empty($_FILES[$name]['name'])) continue;
-                    // $value is the target folder path
-                    $target_path = $value.'/'.$_FILES[$name]['name'];
-                    // TODO: Test if this works in all browsers:
-                    // The path input field name is the same as the
-                    // file upload input field name!
-                    $result_upload = \File::upload_file_http(
-                        $name, $target_path,
-                        \Filetype::MAXIMUM_UPLOAD_FILE_SIZE,
-                        // The allowed file types
-                        self::$arrSettings[$name]['values']
-                    );
-                    // If no file has been uploaded at all, ignore the no-change
-                    // TODO: Noop is not implemented in File::upload_file_http()
-                    // if ($result_upload === '') continue;
-                    if ($result_upload === true) {
-                        $value = $target_path;
-                    } else {
-                    //echo("self::storeFromPost(): Error uploading file for setting $name to $target_path<br />");
-                    // TODO: Add error message
-                        \Message::error(\File::getErrorString());
-                        $result = false;
-                    }
-                }
-                break;
-              case \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX:
-                  break;
-              case \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOXGROUP:
-                $value = (is_array($value)
-                    ? join(',', array_keys($value))
-                    : $value);
-                    // 20120508
-              case \Cx\Core\Setting\Controller\Setting::TYPE_RADIO:
-                  break;
-              default:
-                    // Regular value of any other type
-                break;
-            }
-            self::set($name, $value);
-        }
-                    //echo("self::storeFromPost(): So far, the result is ".($result ? 'okay' : 'no good')."<br />");
-        $result_update = self::updateAll();
-        if ($result_update === false) {
-            \Message::error($_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING']);
-        } elseif ($result_update === true) {
-            \Message::ok($_CORELANG['TXT_CORE_SETTINGDB_STORED_SUCCESSFULLY']);
-        }
-        // If nothing bad happened above, return the result of updateAll(),
-        // which may be true, false, or the empty string
-        if ($result === true) {
-            return $result_update;
-        }
-        // There has been an error anyway
-        return false;
-    }
-
 
     /**
      * Deletes all entries for the current section
@@ -438,14 +435,14 @@ class Db implements Engine{
     {
         global $objDatabase;
 
-        if (empty(self::$section)) {
+        if (empty(\Cx\Core\Setting\Model\Entity\Db::$section)) {
             // TODO: Error message
             return false;
         }
         $objResult = $objDatabase->Execute("
             DELETE FROM `".DBPREFIX."core_setting`
-             WHERE `section`='".self::$section."'");
-        if (!$objResult) return self::errorHandler();
+             WHERE `section`='".\Cx\Core\Setting\Model\Entity\Db::$section."'");
+        if (!$objResult) return \Cx\Core\Setting\Model\Entity\Db::errorHandler();
         return true;
     }
 
@@ -542,11 +539,11 @@ class Db implements Engine{
         // TODO: The index array structure is wrong here!
         $table_index =  array();
         \Cx\Lib\UpdateUtil::table($table_name, $table_structure, $table_index);
-        //echo("self::errorHandler(): Created table ".DBPREFIX."core_setting<br />");
+        //echo("\Cx\Core\Setting\Model\Entity\Db::errorHandler(): Created table ".DBPREFIX."core_setting<br />");
 
-        //Use self::add(); in your module code to add settings; example:
-        //self::init('core', 'country');
-        //self::add('numof_countries_per_page_backend', 30, 1, self::TYPE_TEXT);
+        //Use \Cx\Core\Setting\Model\Entity\Db::add(); in your module code to add settings; example:
+        //\Cx\Core\Setting\Model\Entity\Db::init('core', 'country');
+        //\Cx\Core\Setting\Model\Entity\Db::add('numof_countries_per_page_backend', 30, 1, \Cx\Core\Setting\Model\Entity\Db::TYPE_TEXT);
 
         //More to come...
 
@@ -591,116 +588,6 @@ class Db implements Engine{
         return $arrConfig;
     }
     
-    /**
-     * Updates a setting
-     *
-     * If the setting name exists and the new value is not equal to
-     * the old one, it is updated, and $changed set to true.
-     * Otherwise, nothing happens, and false is returned
-     * @see init(), updateAll()
-     * @param   string    $name       The settings name
-     * @param   string    $value      The settings value
-     * @return  boolean               True if the value has been changed,
-     *                                false otherwise, null on noop
-     */
-    static function set($name, $value)
-    {
-        if (!isset(self::$arrSettings[$name])) {
-            //DBG::log("self::set($name, $value): Unknown, changed: ".self::$changed);
-            return false;
-        }
-        if (self::$arrSettings[$name]['value'] == $value) {
-            //DBG::log("self::set($name, $value): Identical, changed: ".self::$changed);
-            return null;
-        }
-        self::$changed = true;
-        self::$arrSettings[$name]['value'] = $value;
-            //DBG::log("self::set($name, $value): Added/updated, changed: ".self::$changed);
-            return true;
-    }
-    
-    /**
-     * Stores all settings entries present in the $arrSettings object
-     * array variable
-     *
-     * Returns boolean true if all records were stored successfully,
-     * null if nothing changed (noop), false otherwise.
-     * Upon success, also resets the $changed class variable to false.
-     * The class *MUST* have been initialized before calling this
-     * method using {@see init()}, and the new values been {@see set()}.
-     * Note that this method does not work for adding new settings.
-     * See {@see add()} on how to do this.
-     * @return  boolean                   True on success, null on noop,
-     *                                    false otherwise
-     */
-    static function updateAll()
-    {
-        //        global $_CORELANG;
-
-        if (!self::$changed) {
-            // TODO: These messages are inapropriate when settings are stored by another piece of code, too.
-            // Find a way around this.
-            // Message::information($_CORELANG['TXT_CORE_SETTINGDB_INFORMATION_NO_CHANGE']);
-            return null;
-        }
-        $success = true;
-        foreach (self::$arrSettings as $name => $arrSetting) {
-            $success &= self::update($name, $arrSetting['value']);
-        }
-        if ($success) {
-            self::$changed = false;
-            //return Message::ok($_CORELANG['TXT_CORE_SETTINGDB_STORED_SUCCESSFULLY']);
-            return true;
-        }
-        //return Message::error($_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING']);
-        return false;
-    }
-    
-    /**
-     * Updates the value for the given name in the settings table
-     *
-     * The class *MUST* have been initialized before calling this
-     * method using {@see init()}, and the new value been {@see set()}.
-     * Sets $changed to true and returns true if the value has been
-     * updated successfully.
-     * Note that this method does not work for adding new settings.
-     * See {@see add()} on how to do this.
-     * Also note that the loaded setting is not updated, only the database!
-     * @param   string    $name   The settings name
-     * @return  boolean           True on successful update or if
-     *                            unchanged, false on failure
-     * @static
-     * @global  mixed     $objDatabase    Database connection object
-     */
-    static function update($name)
-    {
-        global $objDatabase;
-
-        // TODO: Add error messages for individual errors
-        if (empty(self::$section)) {
-            \DBG::log("self::update(): ERROR: Empty section!");
-            return false;
-        }
-        // Fail if the name is invalid
-        // or the setting does not exist
-        if (empty($name)) {
-            \DBG::log("self::update(): ERROR: Empty name!");
-            return false;
-        }
-        if (!isset(self::$arrSettings[$name])) {
-            \DBG::log("self::update(): ERROR: Unknown setting name '$name'!");
-            return false;
-        }
-        $objResult = $objDatabase->Execute("
-            UPDATE `".DBPREFIX."core_setting`
-               SET `value`='".addslashes(self::$arrSettings[$name]['value'])."'
-             WHERE `name`='".addslashes($name)."'
-               AND `section`='".addslashes(self::$section)."'".
-            (self::$group
-                ? " AND `group`='".addslashes(self::$group)."'" : ''));
-        if (!$objResult) return self::errorHandler();
-        self::$changed = true;
-        return true;
-    }
+   
 
 }
