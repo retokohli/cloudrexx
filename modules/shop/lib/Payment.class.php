@@ -182,8 +182,17 @@ class Payment
                 && (   self::$arrPayments[$objResult->fields['id']]['processor_id'] != 2
                     || count($arrCurrencies))
             ) {
-                $arrPaymentId[$objResult->fields['id']] =
-                    $objResult->fields['id'];
+                $paymentId = $objResult->fields['id'];
+                // the processor with the id 3 is postfinance and 11 is postfinance mobile
+                // if it is one of them, it should only be able to order when it is Switzerland
+                if (
+                    in_array(self::$arrPayments[$paymentId]['processor_id'], array(3, 11)) &&
+                    \Country::getAlpha2ById($countryId) != 'CH'
+                ) {
+                    $objResult->MoveNext();
+                    continue;
+                }
+                $arrPaymentId[$paymentId] = $paymentId;
             }
             $objResult->MoveNext();
         }
