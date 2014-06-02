@@ -79,6 +79,8 @@ class CheckoutManager extends CheckoutLibrary {
 
         parent::__construct();
 
+        $this->arrStatusMessages['warning'][] = $_ARRAYLANG['TXT_CHECKOUT_SETTINGS_PSP_YELLOWPAY_ONLY_FOR_SWITZERLAND'];
+
         $_GET['act'] = !empty($_GET['act']) ? $_GET['act'] : '';
         $_GET['tpl'] = !empty($_GET['tpl']) ? $_GET['tpl'] : '';
 
