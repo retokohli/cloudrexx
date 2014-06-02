@@ -1,22 +1,18 @@
 <?php
 
 /**
- * Engine for setting requests
+ * Specific Setting for this Component. Use this to interact with the Setting.class.php
+ *
  * @copyright   Comvation AG
- * @author      Manish Thakur <manishthakur@cdnsol.com>
+ * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
  * @package     contrexx
- * @subpackage  Setting
+ * @subpackage  core_setting
+ * @todo        Edit PHP DocBlocks!
  */
 
 namespace Cx\Core\Setting\Model\Entity;
 
-/**
- * Engine for setting requests
- * @copyright   Comvation AG
- * @author      Manish Thakur <manishthakur@cdnsol.com>
- * @package     contrexx
- * @subpackage  Setting
- */
+
 interface Engine {
     
     
