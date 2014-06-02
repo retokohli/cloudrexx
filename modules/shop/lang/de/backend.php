@@ -667,6 +667,7 @@ $_ARRAYLANG['TXT_SHOP_PARENT_CATEGORY'] = "Übergeordnete Rubrik";
 $_ARRAYLANG['TXT_SHOP_PAYMENT_ANY'] = "beliebig";
 $_ARRAYLANG['TXT_SHOP_PAYMENT_ERROR_CANNOT_DELETE_LAST_ACTIVE'] = "Die einzige aktive Zahlungsart kann nicht gelöscht werden";
 $_ARRAYLANG['TXT_SHOP_PAYMENT_NONE'] = "-";
+$_ARRAYLANG['TXT_SHOP_PAYMENT_POSTFINANCE_ONLY_FOR_SWITZERLAND'] = "Nur Kunden mit Domizil in der Schweiz können mit der Zahlungsmethode Postfinance bezahlen!";
 $_ARRAYLANG['TXT_SHOP_PAYPAL_DEFAULT_CURRENCY'] = "Standard Währung";
 $_ARRAYLANG['TXT_SHOP_PAYPAL_ITEM_NAME'] = "Wareneinkauf";
 $_ARRAYLANG['TXT_SHOP_PHONE'] = "Telefon";

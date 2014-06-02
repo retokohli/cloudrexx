@@ -666,6 +666,7 @@ $_ARRAYLANG['TXT_SHOP_PARENT_CATEGORY'] = "Parent category";
 $_ARRAYLANG['TXT_SHOP_PAYMENT_ANY'] = "any";
 $_ARRAYLANG['TXT_SHOP_PAYMENT_ERROR_CANNOT_DELETE_LAST_ACTIVE'] = "You may not delete the only active payment method";
 $_ARRAYLANG['TXT_SHOP_PAYMENT_NONE'] = "-";
+$_ARRAYLANG['TXT_SHOP_PAYMENT_POSTFINANCE_ONLY_FOR_SWITZERLAND'] = "Only clients with the domicile in Switzerland can pay with Postfinance!";
 $_ARRAYLANG['TXT_SHOP_PAYPAL_DEFAULT_CURRENCY'] = "Default currency";
 $_ARRAYLANG['TXT_SHOP_PAYPAL_ITEM_NAME'] = "Purchase of goods";
 $_ARRAYLANG['TXT_SHOP_PHONE'] = "Phone";
