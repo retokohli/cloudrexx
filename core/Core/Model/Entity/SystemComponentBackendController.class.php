@@ -147,7 +147,7 @@ abstract class SystemComponentBackendController extends Controller {
         }
         
         // finish
-        $actTemplate->setVariable($_ARRAYLANG);
+        $actTemplate->setGlobalVariable($_ARRAYLANG);
         \CSRF::add_placeholder($actTemplate);
         $page->setContent($actTemplate->get());
         $cachedRoot = $this->cx->getTemplate()->getRoot();
