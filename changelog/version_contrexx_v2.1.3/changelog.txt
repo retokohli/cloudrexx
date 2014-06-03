@@ -1,0 +1,109 @@
+////////////////////////////////////////
+// CHANGELOG 2.1.2-2.1.3 ///////////////
+////////////////////////////////////////
+
+****************************************
+* Neue Funktionen / Änderungen *********
+****************************************
+Allgemein
+- Neue Platzhalter für Datumsfragmente:
+  DATE_YEAR, DATE_MONTH, DATE_DAY, DATE_TIME
+- Einige Sicherheitsprobleme behoben
+- Neu, über den Modul Manager installierte Module, erscheinen nicht in der
+  Inhalts Navigation.
+
+Modul: Dokumenten System
+- Uhrzeit- (nicht nur Datums-) gesteuerte Veröffentlichung von Dokumenten.
+
+News Manager
+- Bei den Teasern kann der neue Platzhalter [[TEASER_FULL_TEXT]] verwendet
+  werden, um den kompletten Inhalt der News Meldungen auszugeben.
+
+
+****************************************
+* Behobene Fehler **********************
+****************************************
+Allgemein
+- Die Inhaltsnavigation wird bei einer Designvorschau angezeigt.
+- Erstellung des XML Sitemaps funktioniert besser.
+- Session-Handling verbessert.
+
+Alias Verwaltung
+- Aliase welche Leerzeichen enthalten werden in der Inhalts-Navigation
+  korrekt ausgegeben.
+
+Benutzerverwaltung
+- Ein Benutzer kann nur authentifiziert werden, sofern er bei mindestens einer
+  aktiven Gruppe Mitglied ist.
+- Beim Speichern einer Benutzergruppe gehen die Modul-Spezifischen Berechtigungen
+  nicht verloren.
+- Die Funktion "Kennwort Zurücksetzen" funktioniert mit Benutzern, welche
+  automatisch über den Online Shop erstellt wurden.
+
+Block System
+- Inhaltsplatzhalter werden beim Bearbeiten eines Blocks angezeigt.
+
+FileBrowser
+- Die Bild-Vorschau funktioniert bei Bildern mit Sonderzeichen im Dateinamen.
+
+Media Archive
+- Dateien mit Sonderzeichen im Dateinamen werden unterstützt.
+
+News Manager
+- Der JavaScript RSS Feed news_de.js funktioniert korrekt.
+- Ein Thumbnail einer News Meldung wird auch dann angezeigt, wenn kein
+  normales Bild definiert wurde.
+- Die Angabe des Publikationsdatums funktioniert korrekt.
+
+Volltextsuche
+- Die News Meldungen werden mit einer entsprechenden Relevanz bewertet.
+
+Modul: Bildergalerie
+- Keine weisse Seite mehr, wenn man versucht ein Bild zu rotieren und die
+  ImageRotate() Funktion nicht verfügbar ist.
+
+Modul: Datenlisten
+- Das Kopieren von Einträgen funktioniert.
+
+Modul: Digital Asset Management
+- Die Auflistung der Kategorien erfolgt in einem ersten Schritt anhand der
+  benutzerdefinierten Sortierung und danach nach alphabetischer Reihenfolge.
+- Zeilenumbrüche beim Beschreibungstext eines Downloads werden angezeigt.
+- Der Download von Dateien, welche Leerzeichen im Dateinamen enthalten,
+  funktioniert.
+- Nach der Authentifizierung erfolgt die Weiterleitung auf einen geschützten
+  Download korrekt.
+
+Modul: FileUploader
+- Das Hochladen von Dateien funktioniert im Layout & Design Manager.
+
+Modul: Kalender
+- Vergangene Termine/Veranstaltungen können angezeigt werden.
+
+Modul: Newsletter
+- Die versandten Newsletter sind kompatibel mit der Verwenden von Virtuellen
+  Sprachverzeichnissen.
+- Die Anzahl totaler Empfänger eines Newsletter wird nun zwischengespeichert,
+  damit die Auflistung der Newsletter Übersicht schneller erfolgt.
+
+Modul: Podcast
+- Das Paging funktioniert korrekt.
+
+Modul: Seitenempfehlung
+- Die Vorschaufunktion funktioniert.
+
+Modul: Shop
+- Beim Bestellungsprozess stehen nur aktive Versandarten zur Verfügung.
+- Die detaillierte Produkte Ansicht aus dem Warenkorb heraus funktioniert.
+- Bilder mit Sonderzeichen im Dateinamen werden unterstützt.
+
+Modul: Statistik
+- Um die Ladegeschwindigkeit zu erhöhen, wird der Counter neu mittels
+  AJAX aktualisiert, falls möglich
+
+Modul: Wissensdatenbank
+- Verbesserung der WYSIWYG-Editor Einbindung bei der Bearbeitungsmaske
+  eines Artikels.
+
+Update
+- Update-SQL-Query im Kalendermodul gefixt

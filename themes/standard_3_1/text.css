@@ -1,0 +1,274 @@
+/* Start CSS Reset */
+html, body, div, span, applet, object, iframe,
+h1, h2, h3, h4, h5, h6, p, blockquote, pre,
+a, abbr, acronym, address, big, cite, code,
+del, dfn, em, img, ins, kbd, q, s, samp,
+small, strike, strong, sub, sup, tt, var,
+b, u, i, center,
+dl, dt, dd, ol, ul, li,
+fieldset, form, label, legend,
+table, caption, tbody, tfoot, thead, tr, th, td,
+article, aside, canvas, details, embed, 
+figure, figcaption, footer, header, hgroup, 
+menu, nav, output, ruby, section, summary,
+time, mark, audio, video {
+	margin: 0;
+	padding: 0;
+	border: 0;
+	font-size: 100%;
+	font: inherit;
+	vertical-align: baseline;
+}
+
+/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, 
+footer, header, hgroup, menu, nav, section {
+	display: block;
+}
+
+body {
+	line-height: 1;
+}
+
+ol, ul {
+	list-style: none;
+}
+
+blockquote, q {
+	quotes: none;
+}
+
+blockquote:before, blockquote:after,
+q:before, q:after {
+	content: '';
+	content: none;
+}
+
+table {
+	border-collapse: collapse;
+	border-spacing: 0;
+}
+/* End CSS Reset */
+
+@font-face {
+  font-family: 'Ubuntu';
+  src: url('fonts/ubuntu.eot'); /* here you go, IE */
+}
+
+@font-face {
+  font-family: 'Ubuntu';
+  src: url('fonts/ubuntu.ttf') format('truetype');
+}
+
+body {
+    color: #505050;
+    font-family: Arial, Helvetica;
+    font-size: 14px;
+    line-height: 1.5em;
+    background: #F1F1F1 url('images/bg.gif') repeat-x;
+}
+
+a {
+    color: #066196;
+    text-decoration: none;
+}
+
+a:hover {
+    color: #323F55;
+}
+
+p {
+    padding: 0 0 10px 0;
+}
+
+b,
+strong {
+    font-weight: bold;
+}
+
+ul.horizontal-list li {
+    float: left;
+    padding: 0 10px 0 0;
+    margin: 0 10px 0 0;
+    background: url('images/divider.gif') no-repeat right 7px;
+}
+
+ul.horizontal-list li.last {
+    padding: 0 !important;
+    margin: 0 !important;
+    background: none !important;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    padding: 10px 0 10px 0;
+    line-height: 1.4;
+    color: #151515;
+    font-family: 'Ubuntu';
+}
+
+h1 {
+    font-size: 34px;
+}
+
+h1.first {
+    padding-top: 0;
+}
+
+h2 {
+    font-size: 22px;
+}
+
+h3 {
+    font-size: 18px;
+}
+
+h4 {
+    font-size: 17px;
+}
+
+h5 {
+    font-size: 16px;
+}
+
+h6 {
+    font-size: 15px;
+}
+
+input,
+button,
+select,
+textarea {
+    width: 300px;
+    padding: 7px 12px 8px 12px;
+    margin: 0;
+    color: #7D7D7D;
+    font-family: Arial;
+    border: 1px solid #DDDDDD;
+    background: #FFFFFF;
+    outline: 0;
+}
+
+select {
+    width: 326px;
+    padding: 6px 6px 7px 6px;
+}
+
+input:hover,
+input:focus,
+select:hover,
+select:focus,
+textarea:hover,
+textarea:focus {
+    border: 1px solid #BBBBBB;
+    background: #FCFCFC;
+    outline: 0;
+}
+
+input[type=submit],
+input[type=button],
+input[type=reset],
+input[type=radio],
+input[type=checkbox],
+button {
+    width: auto;
+}
+
+input[type=radio] {
+    float: left;
+    margin: 3px 10px 3px 0;
+    padding: 0;
+    border: 0 none;
+}
+
+input[type=checkbox] {
+    float: left;
+    margin: 4px 10px 4px 0;
+    padding: 0;
+    border: 0 none;
+}
+
+input[type=text] {
+    line-height: 17px;
+}
+
+button,
+input[type=submit],
+input[type=button],
+input[type=reset] {
+    padding: 8px 10px 7px 10px;
+    color: #414141;
+    font-size: 13px;
+    line-height: 17px;
+    text-decoration: none;
+    cursor: pointer;
+    border: 0;
+    border-radius: 5px;
+    -moz-border-radius: 5px;
+    -webkit-border-radius: 5px;
+    -o-border-radius: 5px;
+    border-color: white #F8F8F8 #F2F2F2 #F8F8F8;
+    box-shadow: 1px 1px 2px #C5C5C5;
+    -moz-box-shadow: 1px 1px 2px #C5C5C5;
+    -webkit-box-shadow: 1px 1px 2px #C5C5C5;
+    -o-box-shadow: 1px 1px 2px #C5C5C5;
+    background: #F5F5F5;
+    transition: all ease .2s;
+    -moz-transition: all ease .2s;
+    -webkit-transition: all ease .2s;
+    -o-transition: all ease .2s;
+}
+
+.loginbutton,
+.loginbutton:link,
+.loginbutton:hover,
+.loginbutton:visited {
+    display: block;
+    float: left;
+    color: transparent;
+    height: 26px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    width: 189px;
+}
+
+.loginbutton:hover {
+    text-decoration: underline;
+}
+
+.loginbutton.facebook {
+    background: url("images/facebook_login.png") no-repeat;
+}
+
+.loginbutton.google {
+    background: url("images/google_login.png") no-repeat;;
+}
+
+.loginbutton.twitter {
+    background: url("images/twitter_login.png") no-repeat;
+}
+
+button[disabled=disabled],
+input[disabled=disabled] {
+    opacity: 0.6;
+    cursor: default;
+}
+
+.ie7 button,
+.ie8 button {
+    border: 1px solid #DDDDDD;
+}
+
+button:hover,
+input[type=submit]:hover,
+input[type=reset]:hover {
+    background: #E8E8E8;
+}
+
+button[disabled=disabled]:hover,
+input[disabled=disabled]:hover {
+    background: #F5F5F5;
+}
+
+legend {
+    display: none;
+}
