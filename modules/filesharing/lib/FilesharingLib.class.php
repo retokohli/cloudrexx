@@ -329,7 +329,10 @@ CODE
          */
         $objResult = $objDatabase->Execute("SELECT `id` FROM " . DBPREFIX . "module_filesharing WHERE `upload_id` = '" . intval($uploadId) . "'");
         if ($objResult !== false && $objResult->RecordCount() > 0) {
-            $files[] = $objResult->fields["id"];
+            while (!$objResult->EOF) {
+                $files[] = $objResult->fields["id"];
+                $objResult->MoveNext();
+            }
         }
 
         if (!is_int($uploadId) && empty($files)) {
