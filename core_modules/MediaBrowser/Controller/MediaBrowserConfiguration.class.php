@@ -13,7 +13,7 @@ namespace Cx\Core_Modules\MediaBrowser\Controller;
 
 class MediaBrowserConfiguration {
 
-    // implemented for expansion purposes
+// implemented for expansion purposes
     public static function get() {
         return new self();
     }
@@ -51,5 +51,4 @@ class MediaBrowserConfiguration {
         'podcast' => array(ASCMS_PODCAST_IMAGES_PATH, ASCMS_PODCAST_IMAGES_WEB_PATH,),
         'blog' => array(ASCMS_BLOG_IMAGES_PATH, ASCMS_BLOG_IMAGES_WEB_PATH,),
     );
-
 }

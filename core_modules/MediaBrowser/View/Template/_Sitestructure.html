@@ -1,10 +1,12 @@
 <div id="sitestructure">
-    <div class="tabMediaBrowserHeader"><i class="icon-sitestructureLarge"></i>Seitenstruktur</div>
+    <div class="fileOptions">
+        <input type="search"  id="fileSearch" placeholder="Search.. " ng-model="searchSites">
+    </div>
 
     <div class="tabMediaBrowserContent">
         <div class="sitestructureCtrl">
-            <div data-ng-repeat="site in sites" class="data-row">
-                <div style="paddidata-ng-left: {{site.level * 30}}px" class="col-icon"><i class="icon-fileType icon-fileType{{site.extension}}"></i></div>
+            <div data-ng-repeat="site in sites | filter:searchSites" class="data-row">
+                <div style="padding-left: {{site.level * 30}}px" class="col-icon"><i class="icon-fileType icon-fileType{{site.extension}}"></i></div>
                 <div class="col-name">
                     <a data-dismiss="modal" data-target=".media-browser-modal" href="#">{{site.name}}</a>
                 </div>
