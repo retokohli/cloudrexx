@@ -6,234 +6,371 @@
  * @copyright   Comvation AG
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
  * @package     contrexx
- * @subpackage  modules_skeleton
+ * @subpackage  coremodule_uploader
  */
 
 namespace Cx\Core_Modules\Uploader\Controller;
 
+/**
+ * UploaderExceptions thrown by uploader
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_uploader
+ */
+class UploaderException extends \Exception {
+    
+}
+
+define('PLUPLOAD_MOVE_ERR', 103);
+define('PLUPLOAD_INPUT_ERR', 101);
+define('PLUPLOAD_OUTPUT_ERR', 102);
+define('PLUPLOAD_TMPDIR_ERR', 100);
+define('PLUPLOAD_TYPE_ERR', 104);
+define('PLUPLOAD_UNKNOWN_ERR', 111);
+define('PLUPLOAD_SECURITY_ERR', 105);
+
 class UploaderController {
 
-    public function __construct() {
-        
+    public static $conf;
+    private static $_error = null;
+    private static $_errors = array(
+        PLUPLOAD_MOVE_ERR => "Failed to move uploaded file.",
+        PLUPLOAD_INPUT_ERR => "Failed to open input stream.",
+        PLUPLOAD_OUTPUT_ERR => "Failed to open output stream.",
+        PLUPLOAD_TMPDIR_ERR => "Failed to open temp directory.",
+        PLUPLOAD_TYPE_ERR => "File type not allowed.",
+        PLUPLOAD_UNKNOWN_ERR => "Failed due to unknown error.",
+        PLUPLOAD_SECURITY_ERR => "File didn't pass security check."
+    );
+
+    /**
+     * Retrieve the error code
+     *
+     * @return int Error code
+     */
+    static function getErrorCode() {
+        if (!self::$_error) {
+            return null;
+        }
+
+        if (!isset(self::$_errors[self::$_error])) {
+            return PLUPLOAD_UNKNOWN_ERR;
+        }
+
+        return self::$_error;
     }
 
-    public function handleRequest() {
-        // HTTP headers for no cache etc
-        header('Content-type: text/plain; charset=UTF-8');
+    /**
+     * Retrieve the error message
+     *
+     * @return string Error message
+     */
+    static function getErrorMessage() {
+        if ($code = self::getErrorCode()) {
+            return self::$_errors[$code];
+        }
+        return '';
+    }
+
+    /**
+     * 
+     */
+    static function handleRequest($conf = array()) {
+        // 5 minutes execution time
+        @set_time_limit(5 * 60);
+
+        self::$_error = null; // start fresh
+
+        $conf = self::$conf = array_merge(array(
+            'file_data_name' => 'file',
+            'tmp_dir' => $_SESSION->getTempPath(),
+            'target_dir' => 'images/content/',
+            'cleanup' => true,
+            'max_file_age' => 5 * 3600,
+            'chunk' => isset($_REQUEST['chunk']) ? intval($_REQUEST['chunk']) : 0,
+            'chunks' => isset($_REQUEST['chunks']) ? intval($_REQUEST['chunks']) : 0,
+            'fileName' => isset($_REQUEST['name']) ? $_REQUEST['name'] : false,
+            'allow_extensions' => false,
+            'delay' => 0,
+            'cb_sanitizieFileName' => array(__CLASS__, 'sanitizieFileName'),
+            'cb_check_file' => false,
+                ), $conf);
+
+        try {
+            if (!$conf['fileName']) {
+                if (!empty($_FILES)) {
+                    $conf['fileName'] = $_FILES[$conf['file_data_name']]['name'];
+                } else {
+                    throw new UploaderException('', PLUPLOAD_INPUT_ERR);
+                }
+            }
+
+            // Cleanup outdated temp files and folders
+            if ($conf['cleanup']) {
+                self::cleanup();
+            }
+
+            // Fake network congestion
+            if ($conf['delay']) {
+                usleep($conf['delay']);
+            }
+
+            // callback function for sanitizie filename
+            if (is_callable($conf['cb_sanitizieFileName'])) {
+                $fileName = call_user_func($conf['cb_sanitizieFileName'], $conf['fileName']);
+            } else {
+                $fileName = $conf['fileName'];
+            }
+
+            // Check if file type is allowed
+            if ($conf['allow_extensions']) {
+                if (is_string($conf['allow_extensions'])) {
+                    $conf['allow_extensions'] = preg_split('{\s*,\s*}', $conf['allow_extensions']);
+                }
+
+                if (!in_array(strtolower(pathinfo($fileName, PATHINFO_EXTENSION)), $conf['allow_extensions'])) {
+                    throw new UploaderException('', PLUPLOAD_TYPE_ERR);
+                }
+            }
+
+            $file_path = rtrim($conf['tmp_dir'], DIRECTORY_SEPARATOR) . DIRECTORY_SEPARATOR . $fileName;
+            $tmp_path = $file_path . ".part";
+
+            // Write file or chunk to appropriate temp location
+            if ($conf['chunks']) {
+                self::writeFileTo("$file_path.dir.part" . DIRECTORY_SEPARATOR . $conf['chunk']);
+
+                // Check if all chunks already uploaded
+                if ($conf['chunk'] == $conf['chunks'] - 1) {
+                    self::writeChunksToFile("$file_path.dir.part", $tmp_path);
+                }
+            } else {
+                self::writeFileTo($tmp_path);
+            }
+
+            // Upload complete write a temp file to the final destination
+            if (!$conf['chunks'] || $conf['chunk'] == $conf['chunks'] - 1) {
+                if (is_callable($conf['cb_check_file']) && !call_user_func($conf['cb_check_file'], $tmp_path)) {
+                    @unlink($tmp_path);
+                    throw new UploaderException('', PLUPLOAD_SECURITY_ERR);
+                }
+
+                $new_path = $conf['target_dir'] . $fileName;
+                \Cx\Lib\FileSystem\FileSystem::move($tmp_path, $new_path, true);
+
+
+                //TODO: if return value = 'error' => react
+                /* \Cx\Lib\FileSystem\FileSystem::move($tempWebPath . $f, $pathWeb . $f, true);
+                 *             $im = new \ImageManager();
+                  if ($im->_isImage($path . $f)) {
+                  $im->_createThumb($path, $pathWeb, $f);
+                  } */
+
+                //delete the folder
+                //\Cx\Lib\FileSystem\FileSystem::delete_folder($tmp_path, true);
+
+                /* $im = new \ImageManager();
+                  if ($im->_isImage($new_path)) {
+                  $im->_createThumb($new_path, '', $pathWeb, $f);
+
+
+
+                  // function _createThumb($strPath, $strWebPath, $file, $maxSize=80, $quality=90, $thumb_name='')
+
+                  } */
+                $rootPath = ASCMS_DOCUMENT_ROOT . $conf['target_dir'];
+                $rootPathFull = ASCMS_DOCUMENT_ROOT . $new_path;
+                $filePathinfo = pathinfo($rootPathFull);
+                $fileExtension = $filePathinfo['extension'];
+                $fileNamePlain = $filePathinfo['filename'];
+
+                $im = new \ImageManager();
+                if ($im->_isImage($rootPathFull)) {
+                    foreach (UploaderConfiguration::get()->thumbnails as $thumbnail) {
+                        $im->_createThumb($rootPath, $conf['target_dir'], $fileName, $thumbnail['size'], $thumbnail['quality'], $fileNamePlain . $thumbnail['value'] . '.' . $fileExtension);
+                    }
+                }
+
+                return array(
+                    'name' => $fileName,
+                    'path' => $file_path,
+                    'size' => filesize($file_path)
+                );
+            }
+
+            // ok so far
+            return true;
+        } catch (UploaderException $ex) {
+            self::$_error = $ex->getCode();
+            return array('error' => $ex->getCode());
+        }
+    }
+
+    /**
+     * Writes either a multipart/form-data message or a binary stream 
+     * to the specified file.
+     *
+     * @throws UploaderException In case of error generates exception with the corresponding code
+     *
+     * @param string $file_path The path to write the file to
+     * @param string [$file_data_name='file'] The name of the multipart field
+     */
+    static function writeFileTo($file_path, $file_data_name = false) {
+        if (!$file_data_name) {
+            $file_data_name = self::$conf['file_data_name'];
+        }
+
+        $base_dir = dirname($file_path);
+        if (!file_exists($base_dir) && !@mkdir($base_dir, 0777, true)) {
+            throw new UploaderException('', PLUPLOAD_TMPDIR_ERR);
+        }
+
+        if (!empty($_FILES) && isset($_FILES[$file_data_name])) {
+            if ($_FILES[$file_data_name]["error"] || !is_uploaded_file($_FILES[$file_data_name]["tmp_name"])) {
+                throw new UploaderException('', PLUPLOAD_MOVE_ERR);
+            }
+            move_uploaded_file($_FILES[$file_data_name]["tmp_name"], $file_path);
+        } else {
+            // Handle binary streams
+            if (!$in = @fopen("php://input", "rb")) {
+                throw new UploaderException('', PLUPLOAD_INPUT_ERR);
+            }
+
+            if (!$out = @fopen($file_path, "wb")) {
+                throw new UploaderException('', PLUPLOAD_OUTPUT_ERR);
+            }
+
+            while ($buff = fread($in, 4096)) {
+                fwrite($out, $buff);
+            }
+
+            @fclose($out);
+            @fclose($in);
+        }
+    }
+
+    /**
+     * Combine chunks from the specified folder into the single file.
+     *
+     * @throws UploaderException In case of error generates exception with the corresponding code
+     *
+     * @param string $chunk_dir Temp directory with the chunks
+     * @param string $file_path The file to write the chunks to
+     */
+    static function writeChunksToFile($chunk_dir, $file_path) {
+        if (!$out = @fopen($file_path, "wb")) {
+            throw new UploaderException('', PLUPLOAD_OUTPUT_ERR);
+        }
+
+        for ($i = 0; $i < self::$conf['chunks']; $i++) {
+            $chunk_path = $chunk_dir . DIRECTORY_SEPARATOR . $i;
+            if (!file_exists($chunk_path)) {
+                throw new UploaderException('', PLUPLOAD_MOVE_ERR);
+            }
+
+            if (!$in = @fopen($chunk_path, "rb")) {
+                throw new UploaderException('', PLUPLOAD_INPUT_ERR);
+            }
+
+            while ($buff = fread($in, 4096)) {
+                fwrite($out, $buff);
+            }
+            @fclose($in);
+
+            // chunk is not required anymore
+            @unlink($chunk_path);
+        }
+        @fclose($out);
+
+        // Cleanup
+        self::rrmdir($chunk_dir);
+    }
+
+    static function noCacheHeaders() {
+        // Make sure this file is not cached (as it might happen on iOS devices, for example)
         header("Expires: Mon, 26 Jul 1997 05:00:00 GMT");
         header("Last-Modified: " . gmdate("D, d M Y H:i:s") . " GMT");
         header("Cache-Control: no-store, no-cache, must-revalidate");
         header("Cache-Control: post-check=0, pre-check=0", false);
         header("Pragma: no-cache");
+    }
 
-        // Get parameters
-        $chunk = isset($_REQUEST["chunk"]) ? $_REQUEST["chunk"] : 0;
-        $chunks = isset($_REQUEST["chunks"]) ? $_REQUEST["chunks"] : 0;
-        $fileName = isset($_REQUEST["name"]) ? $_REQUEST["name"] : '';
-        $fileCount = $_GET['files'];
+    static function corsHeaders($headers = array(), $origin = '*') {
+        $allow_origin_present = false;
 
-
-        if (\FWValidator::is_file_ending_harmless($fileName)) {
-            try {
-                $this->addChunk($fileName, $chunk, $chunks);
-            } catch (UploaderException $e) {
-                die('{"jsonrpc" : "2.0", "error" : {"code": 101, "message": "' . $e->getMessage() . '"}, "id" : "id"}');
-            }
-        } else {
-            if ($chunk == 0) {
-                // only count first chunk
-                // TODO: there must be a way to cancel the upload process on the client side
-                $this->addHarmfulFileToResponse($fileName);
+        if (!empty($headers)) {
+            foreach ($headers as $header => $value) {
+                if (strtolower($header) == 'access-control-allow-origin') {
+                    $allow_origin_present = true;
+                }
+                header("$header: $value");
             }
         }
 
-        if ($chunk == $chunks - 1) //upload finished
-            $this->handleCallback($fileCount);
-
-        die('{"jsonrpc" : "2.0", "result" : null, "id" : "id"}');
-    }
-
-    /**
-     * Set up uploader to only allow one single file to be uploaded
-     */
-    public function restrictUpload2SingleFile() {
-        if (!isset($_SESSION['upload']['handlers'][$this->uploadId])) {
-            $_SESSION['upload']['handlers'][$this->uploadId] = array();
+        if ($origin && !$allow_origin_present) {
+            header("Access-Control-Allow-Origin: $origin");
         }
-        // limit upload to 1 file at a time
-        \ContrexxJavascript::getInstance()->setVariable('restrictUpload2SingleFile', true, "upload/widget_$this->uploadId");
-        $_SESSION['upload']['handlers'][$this->uploadId]['singleFileMode'] = true;
+
+        // other CORS headers if any...
+        if ($_SERVER['REQUEST_METHOD'] == 'OPTIONS') {
+            exit; // finish preflight CORS requests here
+        }
     }
 
-    protected function addHarmfulFileToResponse($fileName) {
-        global $_ARRAYLANG;
-
-        $response = null;
-        //the response data.
-        if (isset($_SESSION['upload']['handlers'][$this->uploadId]['response_data']))
-            $response = UploadResponse::fromSession($_SESSION['upload']['handlers'][$this->uploadId]['response_data']);
-        else
-            $response = new UploadResponse();
-
-        $response->addMessage(UploadResponse::STATUS_ERROR, $_ARRAYLANG['TXT_CORE_EXTENSION_NOT_ALLOWED'], $fileName);
-        $_SESSION['upload']['handlers'][$this->uploadId]['response_data'] = $response->toSessionValue();
+    private static function cleanup() {
+        // Remove old temp files	
+        if (file_exists(self::$conf['tmp_dir'])) {
+            foreach (glob(self::$conf['tmp_dir'] . '/*.part') as $tmpFile) {
+                if (time() - filemtime($tmpFile) < self::$conf['max_file_age']) {
+                    continue;
+                }
+                if (is_dir($tmpFile)) {
+                    self::rrmdir($tmpFile);
+                } else {
+                    @unlink($tmpFile);
+                }
+            }
+        }
     }
 
     /**
-     * Add a chunk to a file. Creates the file on first chunk, appends else.
+     * Sanitizes a filename replacing whitespace with dashes
      *
-     * @param string $fileName upload name
-     * @param int $chunk current chunk's number
-     * @param int $chunks total chunks
-     * @throws UploaderException thrown if upload becomes unusable
+     * Removes special characters that are illegal in filenames on certain
+     * operating systems and special characters requiring special escaping
+     * to manipulate at the command line. Replaces spaces and consecutive
+     * dashes with a single dash. Trim period, dash and underscore from beginning
+     * and end of filename.
+     *
+     * @author WordPress
+     *
+     * @param string $filename The filename to be sanitized
+     * @return string The sanitized filename
      */
-    protected function addChunk($fileName, $chunk, $chunks) {
-
-        //get a writable directory
-        $tempPath = $_SESSION->getTempPath();
-        $webTempPath = $_SESSION->getWebTempPath();
-        $dirName = 'upload_' . $this->uploadId;
-
-        $targetDir = $tempPath . '/' . $dirName;
-        if (!file_exists($targetDir))
-            \Cx\Lib\FileSystem\FileSystem::make_folder($webTempPath . '/' . $dirName);
-
-        $cleanupTargetDir = false; // Remove old files
-        $maxFileAge = 60 * 60; // Temp file age in seconds
-        // 5 minutes execution time
-        @set_time_limit(5 * 60);
-
-        // remember the "raw" file name, we want to store all original
-        // file names in the session.
-        $originalFileName = $fileName;
-
-        // Clean the fileName for security reasons
-        // we're using a-zA-Z0-9 instead of \w because of the umlauts.
-        // linux excludes them from \w, windows includes them. we do not want different
-        // behaviours on different operating systems.
-        $fileName = preg_replace('/[^a-zA-Z0-9\._-]+/', '', $fileName);
-
-        //try to retrieve session file name for chunked uploads
-        if ($chunk > 0) {
-            if (isset($_SESSION['upload']['handlers'][$this->uploadId]['fileName']))
-                $fileName = $_SESSION['upload']['handlers'][$this->uploadId]['fileName'];
-            else
-                throw new UploaderException('Session lost.');
-        }
-        else { //first chunk, store original file name in session
-            $originalFileNames = array();
-            if (isset($_SESSION['upload']['handlers'][$this->uploadId]['originalFileNames']))
-                $originalFileNames = $_SESSION['upload']['handlers'][$this->uploadId]['originalFileNames'];
-            $originalFileNames[$fileName] = $originalFileName;
-            $_SESSION['upload']['handlers'][$this->uploadId]['originalFileNames'] = $originalFileNames;
-        }
-
-        // Make sure the fileName is unique (for chunked uploads only on first chunk, since we're using the same name)
-        if (file_exists($targetDir . DIRECTORY_SEPARATOR . $fileName) && $chunk == 0) {
-            $ext = strrpos($fileName, '.');
-            $fileName_a = substr($fileName, 0, $ext);
-            $fileName_b = substr($fileName, $ext);
-
-            $count = 1;
-            while (file_exists($targetDir . DIRECTORY_SEPARATOR . $fileName_a . '_' . $count . $fileName_b))
-                $count++;
-
-            $fileName = $fileName_a . '_' . $count . $fileName_b;
-        }
-        //$fileName contains now the name we'll use for the whole upload process, so store it.
-        $_SESSION['upload']['handlers'][$this->uploadId]['fileName'] = $fileName;
-
-        // Remove old temp files
-        if (is_dir($targetDir) && ($dir = opendir($targetDir))) {
-            while (($file = readdir($dir)) !== false) {
-                $filePath = $targetDir . DIRECTORY_SEPARATOR . $file;
-
-                // Remove temp files if they are older than the max age
-                if (preg_match('/\\.tmp$/', $file) && (filemtime($filePath) < time() - $maxFileAge))
-                    @unlink($filePath);
-            }
-
-            closedir($dir);
-        } else
-            throw new UploaderException('Failed to open temp directory.');
-
-        $contentType = '';
-        // Look for the content type header
-        if (isset($_SERVER["HTTP_CONTENT_TYPE"]))
-            $contentType = $_SERVER["HTTP_CONTENT_TYPE"];
-
-        if (isset($_SERVER["CONTENT_TYPE"]))
-            $contentType = $_SERVER["CONTENT_TYPE"];
-
-        if (strpos($contentType, "multipart") !== false) {
-            if (isset($_FILES['file']['tmp_name']) && is_uploaded_file($_FILES['file']['tmp_name'])) {
-                // Open temp file
-                $out = fopen($targetDir . DIRECTORY_SEPARATOR . $fileName, $chunk == 0 ? "wb" : "ab");
-                if ($out) {
-                    // Read binary input stream and append it to temp file
-                    $in = fopen($_FILES['file']['tmp_name'], "rb");
-
-                    if ($in) {
-                        while ($buff = fread($in, 4096))
-                            fwrite($out, $buff);
-                    } else
-                        throw new UploaderException('Failed to open input stream.');
-
-                    fclose($out);
-                    unlink($_FILES['file']['tmp_name']);
-                } else
-                    throw new UploaderException('Failed to open output stream.');
-            } else
-                throw new UploaderException('Failed to move uploaded file.');
-        } else {
-            // Open temp file
-            $out = fopen($targetDir . DIRECTORY_SEPARATOR . $fileName, $chunk == 0 ? "wb" : "ab");
-            if ($out) {
-                // Read binary input stream and append it to temp file
-                $in = fopen("php://input", "rb");
-
-                if ($in) {
-                    while ($buff = fread($in, 4096))
-                        fwrite($out, $buff);
-                } else
-                    throw new UploaderException('Failed to open input stream.');
-
-                fclose($out);
-            } else {
-                throw new UploaderException('Failed to open output stream.');
-            }
-        }
-
-        // Send HTTP header to force the browser to send the next file-chunt
-        // through a new connection. File-chunks that are sent through the
-        // same connection get dropped by the web-server.
-        header('Connection: close');
+    private static function sanitizieFileName($filename) {
+        $special_chars = array("?", "[", "]", "/", "\\", "=", "<", ">", ":", ";", ",", "'", "\"", "&", "$", "#", "*", "(", ")", "|", "~", "`", "!", "{", "}");
+        $filename = str_replace($special_chars, '', $filename);
+        $filename = preg_replace('/[\s-]+/', '-', $filename);
+        $filename = trim($filename, '.-_');
+        return $filename;
     }
-    
-        /**
-     * Checks $fileCount against $_SESSION[upload][handlers][x][uploadedCount].
-     * Takes appropriate action (calls callback if they equal).
-     * @param integer $fileCount files in current uploado
+
+    /**
+     * Concise way to recursively remove a directory 
+     * http://www.php.net/manual/en/function.rmdir.php#108113
+     *
+     * @param string $dir Directory to remove
      */
-    public function handleCallback($fileCount) {
-        if($fileCount == 1) { //one file, all done.
-            $this->notifyCallback();
+    private static function rrmdir($dir) {
+        foreach (glob($dir . '/*') as $file) {
+            if (is_dir($file))
+                self::rrmdir($file);
+            else
+                unlink($file);
         }
-        else {
-            if(!isset($_SESSION['upload']['handlers'][$this->uploadId]['uploadedCount'])) { //multiple files, first file
-                $_SESSION['upload']['handlers'][$this->uploadId]['uploadedCount'] = 1;
-            }
-            else {
-                $count = $_SESSION['upload']['handlers'][$this->uploadId]['uploadedCount'] + 1;
-                if($count == $fileCount) { //all files uploaded
-                    unset($_SESSION['upload']['handlers'][$this->uploadId]['uploadedCount']);
-                    $this->notifyCallback();
-                }
-                else {
-                    $_SESSION['upload']['handlers'][$this->uploadId]['uploadedCount'] = $count;
-                }
-            }
-        }
+        rmdir($dir);
     }
 
 }

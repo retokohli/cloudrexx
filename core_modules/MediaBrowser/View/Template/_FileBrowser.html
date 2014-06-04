@@ -1,5 +1,4 @@
 <div id="filebrowser">
-    <div class="tabMediaBrowserHeader"><i class="icon-folderLarge"></i>Datei wählen</div>
     <div class="tabMediaBrowserBreadcrumbs">
         <ul>
             <li data-ng-repeat="pathpart in path">
@@ -7,17 +6,26 @@
             </li>
         </ul>
     </div>
-    <div class="tabMediaBrowserContent">
+    <div class="fileOptions">
+        <input type="search"  id="fileSearch" placeholder="Search.. " ng-model="searchFile">
+        <div class="fileActions">
+            <ul> 
+                <li><a ng-click="createFolder()"><i class="icon-addfolder"></i></a></li>
+                
+            </ul>
+        </div>
+    </div>
+
+    <div class="tabMediaBrowserContent contentWithOptions">
         <div class="mediaBrowserListCtrl">
             <div class="loadingPlatform">
                 <i class="icon-loading"></i>
                 <div class="loadingText1">Loading</div>
             </div>
 
-
             <table class="adminlist filelist">
                 <tbody>
-                    <tr data-ng-repeat="file in files" data-ng-class="{active: true === file.datainfo.active}" data-ng-if="file.datainfo.cleansize > 0"
+                    <tr data-ng-repeat="file in files | filter:searchFile" data-ng-class="{active: true === file.datainfo.active}" data-ng-if="file.datainfo.cleansize > 0"
                         class="files">
                         <td width="3%" class="col_1"><i class="icon-fileType icon-fileType{{file.datainfo.extension}}"></i></td>
                         <td width="77%" class="col_2">

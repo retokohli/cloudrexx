@@ -109,7 +109,8 @@ class JsonMediaBrowser implements JsonAdapter {
                 case 'Jpeg':
                 case 'Gif':
                 case 'Png':
-                    $preview = ASCMS_PATH_OFFSET . str_replace(ASCMS_DOCUMENT_ROOT, '', $splFileInfo->getRealPath()) . '.thumb';
+                    $preview = ASCMS_PATH_OFFSET . str_replace(ASCMS_DOCUMENT_ROOT, '', $splFileInfo->getRealPath());
+                    $preview = str_replace('.' . lcfirst($extension), \Cx\Core_Modules\Uploader\Controller\UploaderConfiguration::get()->thumbnails[0][value] . '.' . lcfirst($extension), $preview);
                     break;
             }
 
@@ -122,7 +123,6 @@ class JsonMediaBrowser implements JsonAdapter {
                 'active' => false // preselect in mediabrowser or mark a folder
             );
 
-
             // filters
             if (
                     $fileInfos['name'] == '.' ||
@@ -131,6 +131,17 @@ class JsonMediaBrowser implements JsonAdapter {
                     $fileInfos['name'] == 'index.php' ||
                     (0 === strpos($fileInfos['name'], '.'))
             ) {
+                continue;
+            }
+            
+            // filter thumbnail images
+            $thumbFilter = false;
+            foreach (\Cx\Core_Modules\Uploader\Controller\UploaderConfiguration::get()->thumbnails as $thumbnail) {
+                if (false !== strpos($fileInfos['name'], $thumbnail['value'].'.')) {
+                        $thumbFilter = true;
+                }
+            }
+            if ($thumbFilter) {
                 continue;
             }
 

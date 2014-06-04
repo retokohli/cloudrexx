@@ -1,70 +1,51 @@
 jQuery(document).ready(function() {
-    // drag modal window
-    jQuery(".media-browser-modal").draggable({
-        handle: ".modal-header"
-    });
-
-
     // drag and drop overlay
-    jQuery(".mediaBrowserMain").bind('dragover', dragover);
-    jQuery(".mediaBrowserMain").bind('drop', drop);
-    jQuery('.media-browser-drag-overlay').bind('dragleave', dragleave);
+    jQuery("html, .mediaBrowserMain").bind('dragover', dragover);
+    jQuery('html, .mediaBrowserMain').bind('dragleave', dragleave);
+
     var tid;
     function dragover(event) {
         clearTimeout(tid);
         event.stopPropagation();
         event.preventDefault();
-        jQuery('.media-browser-drag-overlay').show();
-
+        jQuery('.modal-content').addClass('modal-drag-overlay');
     }
 
     function dragleave(event) {
         tid = setTimeout(function() {
             event.stopPropagation();
-            jQuery('.media-browser-drag-overlay').hide();
+            jQuery('.modal-content').removeClass('modal-drag-overlay');
+
         }, 300);
     }
 
-    function drop(event) {
-        readfiles(event.originalEvent.dataTransfer.files);
-        event.stopPropagation();
-        event.preventDefault();
-        jQuery('.media-browser-drag-overlay').hide();
-    }
-
-
+    //function filesDropped() { } -> in angular controller mainctrl
 });
+
+
 /* MEDIABROWSER ANGULARJS */
 var mediaBrowserApp = angular.module('contrexxApp', ['ngRoute', 'plupload.module']);
 
-
 mediaBrowserApp.config(['$routeProvider', '$locationProvider', function($routeProvider) {
         $routeProvider.
-                when('/uploader', {templateUrl: '/trunk/core_modules/MediaBrowser/View/Template/_Uploader.html', controller: 'UploaderCtrl'}).
+                when('/uploader', {templateUrl: '/trunk/core_modules/MediaBrowser/View/Template/_Uploader.html', controller: 'UploaderCtrl'}).// todo adapt path 
                 when('/sitestructure', {templateUrl: '/trunk/core_modules/MediaBrowser/View/Template/_Sitestructure.html', controller: 'SitestructureCtrl'}).
                 when('/filebrowser', {templateUrl: '/trunk/core_modules/MediaBrowser/View/Template/_FileBrowser.html', controller: 'MediaBrowserListCtrl'}).
-                /*when('/uploader', {templateUrl: '../Template/_Uploader.html', controller: 'UploaderCtrl'}).
-                 when('/sitestructure', {templateUrl: '../Template/_Sitestructure.html', controller: 'SitestructureCtrl'}).
-                 when('/filebrowser', {templateUrl: '../Template/_FileBrowser.html', controller: 'MediaBrowserListCtrl'}).*/
                 otherwise({redirectTo: '/uploader'});
-        //$locationProvider.html5Mode(false);
     }]);
-/* CONTROLLERS */
 
+/* CONTROLLERS */
 mediaBrowserApp.controller('MainCtrl', ['$scope', '$rootScope', '$location', '$http',
     function($scope, $rootScope, $location, $http) {
-
         // configuration 
         $rootScope.configuration = {selectmultiple: false};
-
+        $rootScope.sources = [];
 
         // get files by json | todo: outsource in service & get everything in one json
         $http.get('index.php?cmd=jsondata&object=MediaBrowser&act=getFiles&csrf=' + cx.variables.get('csrf')).success(function(jsonadapter) {
             jQuery(".loadingPlatform").hide();
             jQuery(".filelist").show();
-            //$rootScope.path = [{name: 'images', path: 'images', standard: true}, {name: 'content', path: 'content', standard: true}]
             $rootScope.path = [{name: 'Dateien', path: 'files', standard: true}]
-
             $rootScope.dataFiles = jsonadapter.data;
             $rootScope.files = $rootScope.dataFiles;
         });
@@ -77,6 +58,7 @@ mediaBrowserApp.controller('MainCtrl', ['$scope', '$rootScope', '$location', '$h
 
         // get sources by json
         $http.get('index.php?cmd=jsondata&object=MediaBrowser&act=getSources&csrf=' + cx.variables.get('csrf')).success(function(jsonadapter) {
+            $rootScope.sources = [];
 
             $rootScope.dataSources = jsonadapter.data;
             $rootScope.sources = $rootScope.dataSources;
@@ -86,7 +68,7 @@ mediaBrowserApp.controller('MainCtrl', ['$scope', '$rootScope', '$location', '$h
 
         $rootScope.dataTabs = [
             {link: '#/uploader', label: 'Hochladen', icon: 'icon-upload'},
-            {link: '#/filebrowser', label: 'Datei wählen', icon: 'icon-folder'},
+            {link: '#/filebrowser', label: 'Ablage', icon: 'icon-folder'},
             {link: '#/sitestructure', label: 'Seitenstruktur', icon: 'icon-sitestructure'}
         ];
 
@@ -98,6 +80,7 @@ mediaBrowserApp.controller('MainCtrl', ['$scope', '$rootScope', '$location', '$h
             $rootScope.changeLocation(tab.link);
         }
 
+        // return active if is selected
         $scope.tabClass = function(tab) {
             if ($scope.selectedTab === tab) {
                 return "active-tab";
@@ -141,20 +124,41 @@ mediaBrowserApp.controller('MainCtrl', ['$scope', '$rootScope', '$location', '$h
         };
 
 
+        $rootScope.getPathAsString = function() {
+            var pathstring = '';
+            $rootScope.path.forEach(function(path) {
+                pathstring += path.path + '/';
+            });
+            return pathstring;
+        }
+
+        $rootScope.createFolder = function() {
+            var dirName = prompt("Verzeichnisname", "");
+            
+            $http.get('index.php?cmd=jsondata&object=Uploader&act=createDir&path='+$rootScope.getPathAsString()+'&dir='+dirName+'&csrf=' + cx.variables.get('csrf')).success(function(jsonadapter) {
+                alert('dirCreated');
+            });
+            
+            //$rootScope.tabs.forEach(function(tab) {
+
+
+            // client side: 
+        };
+
+
     }]);
 
 
 mediaBrowserApp.controller('UploaderCtrl', ['$scope', '$rootScope', '$http',
     function($scope, $rootScope, $http) {
 
-
         // PLUPLOADER INTEGRATION 
         $scope.uploader = new plupload.Uploader({
             runtimes: 'html5,flash,silverlight,html4',
-            browse_button: 'selectFileFromComputer', // you can pass in id...
-            container: 'mediaBrowserMain', // ... or DOM Element itself
+            browse_button: 'selectFileFromComputer',
+            container: 'mediaBrowserMain',
             drop_element: "mediaBrowserMain",
-            url: '../?csrf=' + cx.variables.get('csrf') + '&cmd=jsondata&object=Uploader&act=test',
+            url: '?csrf=' + cx.variables.get('csrf') + '&cmd=jsondata&object=Uploader&act=upload',
             flash_swf_url: '/lib/plupload/js/Moxie.swf',
             silverlight_xap_url: '/lib/plupload/js/Moxie.xap',
             filters: {
@@ -163,6 +167,9 @@ mediaBrowserApp.controller('UploaderCtrl', ['$scope', '$rootScope', '$http',
                     {title: "Image files", extensions: "jpg,gif,png"},
                     {title: "Zip files", extensions: "zip"}
                 ]
+            },
+            multipart_params: {
+                "path": ''
             },
             init: {
                 PostInit: function() {
@@ -174,11 +181,15 @@ mediaBrowserApp.controller('UploaderCtrl', ['$scope', '$rootScope', '$http',
                      };*/
                 },
                 FilesAdded: function(up, files) {
+
+                    $scope.uploader.settings.multipart_params.path = $rootScope.getPathAsString();
+                    //alert(JSON.stringify($rootScope.path));
                     setTimeout(function() {
                         up.start();
                     }, 100);
                     jQuery('.uploadStart').hide();
                     jQuery('.uploadFilesAdded').show();
+                    jQuery('.modal-content').removeClass('modal-drag-overlay');
                     /*plupload.each(files, function(file) {
                      jQuery(".uploadFiles").append('<li id="' + file.id + '">' + file.name + '<b></b></li>');
                      
@@ -207,7 +218,6 @@ mediaBrowserApp.controller('MediaBrowserListCtrl', ['$scope', '$rootScope', '$ht
         // __construct
 
         $scope.extendPath = function(dirName) {
-            // $rootScope.files = $rootScope.dataFiles[$rootScope.path[0]];
             if (Array.isArray($rootScope.path)) {
                 $rootScope.path.push({name: dirName, path: dirName, standard: false});
             }
@@ -284,25 +294,16 @@ mediaBrowserApp.directive('previewImage', function() {
         restrict: 'A',
         link: function(scope, el, attrs) {
             if (attrs.previewImage !== 'none') {
-                jQuery.ajax({
-                    url: attrs.previewImage,
-                    type: 'HEAD',
-                    success: function()
-                    {
-                        $(el).popover({
-                            trigger: 'hover',
-                            html: true,
-                            content: '<img src="' + attrs.previewImage + '" />',
-                            placement: 'right'
-                        });
-                    }
+                $(el).popover({
+                    trigger: 'hover',
+                    html: true,
+                    content: '<img src="' + attrs.previewImage + '" />',
+                    placement: 'right'
                 });
             }
         }
     };
 });
-
-
 
 /* button to modal */
 mediaBrowserApp.directive('cxMb', function() {

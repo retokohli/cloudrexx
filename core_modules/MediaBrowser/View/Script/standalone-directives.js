@@ -1,3 +1,5 @@
+// from: http://plupload-angular-directive.sahusoft.info/#/home
+
 'use strict';
 
 angular.module('plupload.module', [])

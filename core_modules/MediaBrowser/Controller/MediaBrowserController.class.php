@@ -1,7 +1,6 @@
 <?php
 
 /**
- * Specific FrontendController for this Component. Use this to easily create a frontent view
  *
  * @copyright   Comvation AG
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
@@ -11,49 +10,42 @@
 
 namespace Cx\Core_Modules\MediaBrowser\Controller;
 
-abstract class MediaBrowserStatus {
 
-    const Upload = 0;
-    const Medias = 1;
-    const SimpleMedias = 2;
-
-}
-
-class MediaBrowserController {
-
-    private $mode = MediaBrowserStatus::Medias;
+class MediaBrowserController {  
     
-    
+    private $_attr = array();
     
     private function __construct() {
         \Env::set('MediaBrowser', $this);
-        
-        //Cx\Core_Modules\MediaBrowser\Controller\ComponentController::
-
-
-        
-        
+        //Cx\Core_Modules\MediaBrowser\Controller\ComponentController::    
     }
 
-    public static function create() {
+    public static function initialize() {
         return new self();
     }
-
-    public function setMode($uploaderStatus) {
-        $this->mode = $uploaderStatus;
+    
+    public function setAttr($name, $value) {
+        array_push($this->_attr, array('name' => $name, 'value' => $value));
     }
 
     public function setCallback(callable $callbackFunction) {
         // todo
     }
 
-    public function getButton() {
-        // is a finisher | todo
-        return '';
+    public function getAttributesAsString() {
+        $attrs = 'data-cx-mb=""';
+        foreach ($this->_attr as $attr) {
+            $attrs .= ' data-cx-'.$attr["name"].'="'.$attr["value"].'"';
+        }
+        return $attrs;
+    }
+    
+    public function getButton($text) {
+        return '<button '.$this->getAttributesAsString().'>'.$text.'<button>';
     }
 
+    // todo | wirklich nötig?
     public function showModal() {
-        // is a finisher | todo
     }
 
 }
