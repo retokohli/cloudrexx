@@ -44,14 +44,14 @@ class DbUser{
     * set db password 
     * @param string $dbPassword password for the dbUser to be created
     */
-    public function setPassword($dbPassword=''){
-        $this->dbPassword = $dbPassword;     
+    public function setPassword($password=''){
+        $this->password = $password;     
     } 
     
     /**
     * get db password 
     */
     public function getPassword(){
-        return $this->dbPassword;
+        return $this->password;
     }
 }
