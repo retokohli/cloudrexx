@@ -83,27 +83,6 @@ class Db extends Engine{
         
     }
     
-    /** 
-     * Returns the settings array for the given section and group
-     *
-     * See {@see init()} on how the arguments are used.
-     * If the method is called successively using the same $group argument,
-     * the current settings are returned without calling {@see init()}.
-     * Thus, changes made by calling {@see set()} will be preserved.
-     * @param   string    $section    The section
-     * @param   string    $group        The optional group
-     * @return  array                 The settings array on success,
-     *                                false otherwise
-     */
-    static function getArray($section, $group=null)
-    {
-        if (self::$section !== $section
-         || self::$group !== $group) {
-            if (!self::init($section, $group)) return false;
-        }
-        return self::$arrSettings;
-    }
-    
     /**
      * Stores all settings entries present in the $arrSettings object
      * array variable

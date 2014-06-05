@@ -28,7 +28,7 @@ namespace Cx\Core\Setting\Model\Entity;
  */
 class FileSystem extends Engine{
     
-     /**
+    /**
      * change counter for the {@see update()} 
      * @var     integer
      * @access  private
@@ -55,8 +55,8 @@ class FileSystem extends Engine{
         //File Path
         $filename=ASCMS_CORE_PATH .'/Setting/Data/'.$section.'.yml';
         self::flush();
-        self::$section=$section;
-        self::$group=$group;
+        self::$section = $section;
+        self::$group = $group;
        
         //call DataSet importFromFile method @return array
         $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::importFromFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $filename);
@@ -71,28 +71,6 @@ class FileSystem extends Engine{
         }
         
     }
-    
-    /** 
-     * Returns the settings array for the given section and group
-     *
-     * See {@see init()} on how the arguments are used.
-     * If the method is called successively using the same $group argument,
-     * the current settings are returned without calling {@see init()}.
-     * Thus, changes made by calling {@see set()} will be preserved.
-     * @param   string    $section    The section
-     * @param   string    $group        The optional group
-     * @return  array                 The settings array on success,
-     *                                false otherwise
-     */
-    static function getArray($section, $group=null)
-    {
-        if (self::$section !== $section
-         || self::$group !== $group) {
-            if (!self::init($section, $group)) return false;
-        }
-        return self::$arrSettings;
-    }
-    
     
     /**
      * Stores all settings entries present in the $arrSettings object
@@ -110,7 +88,7 @@ class FileSystem extends Engine{
      */
     static function updateAll()
     {
-        //        global $_CORELANG;
+        //global $_CORELANG;
 
         if (!self::$changed) {
         // TODO: These messages are inapropriate when settings are stored by another piece of code, too.
@@ -127,11 +105,11 @@ class FileSystem extends Engine{
        
         if ($success) {
             
-             self::$changed = false;
-        //            return Message::ok($_CORELANG['TXT_CORE_SETTINGDB_STORED_SUCCESSFULLY']);
+            self::$changed = false;
+            //return Message::ok($_CORELANG['TXT_CORE_SETTINGDB_STORED_SUCCESSFULLY']);
             return true;
         }
-        //        return Message::error($_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING']);
+        //return Message::error($_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING']);
         return false;
     }
     
@@ -168,33 +146,31 @@ class FileSystem extends Engine{
             \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::update(): ERROR: Unknown setting name '$name'!");
             return false;
         }
-        
-         if(!empty(self::$arrSettings))
-            {
-                try {
-                        $fileName=ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
-                        $file = new \Cx\Lib\FileSystem\File($fileName);
-                            
-                        if(self::$change_index==1)
-                        {
-                            $file->delete();
-                            foreach(self::$arrSettings as $value){
-                                $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet(array($value));
-                                $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $fileName);
-                            }
-                        }
-                        return true;
-                } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-                        \DBG::msg($e->getMessage());
-                } 
-                
-            }else{
-                return false;
-            }
+        if(!empty(self::$arrSettings)){
+            try {
+                $fileName=ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
+                $file = new \Cx\Lib\FileSystem\File($fileName);
+                    
+                if(self::$change_index==1)
+                {
+                    $file->delete();
+                    foreach(self::$arrSettings as $value){
+                        $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet(array($value));
+                        $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $fileName);
+                    }
+                }
+                return true;
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                \DBG::msg($e->getMessage());
+            } 
+            
+        }else{
+            return false;
+        }
     }
     
      /**
-     * Add a new record to the settings
+     * Add a new record to the settings    
      *
      * The class *MUST* have been initialized by calling {@see init()}
      * or {@see getArray()} before this method is called.
@@ -248,18 +224,19 @@ class FileSystem extends Engine{
             return false;
         }
         
-        $filename=ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
+        $filename = ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
          
-        $addValue[] =   Array(  'name'=> addslashes($name),
-                                'section'=> addslashes(self::$section),
-                                'group'=> addslashes($group),
-                                'value'=> addslashes($value),
-                                'type' => addslashes($type),
-                                'values'=> addslashes($values),
-                                'ord'=> intval($ord)
-                            );
+        $addValue[] =   Array(  
+                            'name'=> addslashes($name),
+                            'section'=> addslashes(self::$section),
+                            'group'=> addslashes($group),
+                            'value'=> addslashes($value),
+                            'type' => addslashes($type),
+                            'values'=> addslashes($values),
+                            'ord'=> intval($ord)
+                        );
                               
-        $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet($addValue);
+        $objDataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($addValue);
         $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $filename);
         
         return true;
@@ -267,7 +244,7 @@ class FileSystem extends Engine{
 
 
     /**
-     * Delete one or more records from the database table
+     * Delete one or more records from the database table    
      *
      * For maintenance/update purposes only.
      * At least one of the parameter values must be non-empty.
@@ -285,39 +262,39 @@ class FileSystem extends Engine{
         // Fail if both parameter values are empty
         if(empty($name) && empty($group) && empty(self::$section))return false;
          
-            $arrSetting=array();
+        $arrSetting=array();
+        
+        $filename=ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
+        
+        $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::importFromFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $filename);
+        
+        // if get blank or invalid array
+        if(empty($objDataSet))return false;
+        
+        foreach($objDataSet as $value)
+        {
+            if($value['group']!=$group || $value['name']!=$name){
+                $arrSetting[$value['name']]= $value;
+            }
+        }
+        // if get blank array    
+        if(empty($arrSetting))return false;
             
-            $filename=ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
+        try {
+            $objFile = new \Cx\Lib\FileSystem\File($filename);
+            $objFile->delete(); 
             
-            $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::importFromFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $filename);
-            
-            // if get blank or invalid array
-            if(empty($objDataSet))return false;
-            
-            foreach($objDataSet as $value)
+            foreach($arrSetting as $value)
             {
-                if($value['group']!=$group || $value['name']!=$name)
-                    $arrSetting[$value['name']]= $value;
-             
+                $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet(array($value));
+                $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $filename);
             }
-            // if get blank array    
-            if(empty($arrSetting))return false;
             
-            try {
-                    $objFile = new \Cx\Lib\FileSystem\File($filename);
-                    $objFile->delete(); 
-                    
-                    foreach($arrSetting as $value)
-                    {
-                        $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet(array($value));
-                        $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $filename);
-                    }
-                    
-                    return true;
-            
-            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-                    \DBG::msg($e->getMessage());
-            }
+            return true;
+        
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            \DBG::msg($e->getMessage());
+        }
             
     }
 
@@ -333,14 +310,14 @@ class FileSystem extends Engine{
         if (empty(self::$section))return false;
         
         try {
-                $filename=ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
-                $objFile = new \Cx\Lib\FileSystem\File($filename);
-                $objFile->delete();       
-                return true;
+            $filename=ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
+            $objFile = new \Cx\Lib\FileSystem\File($filename);
+            $objFile->delete();       
+            return true;
             
-            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-                    \DBG::msg($e->getMessage());
-            }
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            \DBG::msg($e->getMessage());
+        }
     }
 
     /**
@@ -353,11 +330,11 @@ class FileSystem extends Engine{
     static function errorHandler()
     {
         try {
-                $file = new \Cx\Lib\FileSystem\File(ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml');
-                $file->touch();
-                return false;
+            $file = new \Cx\Lib\FileSystem\File(ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml');
+            $file->touch();
+            return false;
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-                \DBG::msg($e->getMessage());
+            \DBG::msg($e->getMessage());
         }
        
     }

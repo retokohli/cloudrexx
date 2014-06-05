@@ -124,6 +124,27 @@ abstract class Engine {
         self::$changed = null;
     }
     
+    /** 
+     * Returns the settings array for the given section and group
+     *
+     * See {@see init()} on how the arguments are used.
+     * If the method is called successively using the same $group argument,
+     * the current settings are returned without calling {@see init()}.
+     * Thus, changes made by calling {@see set()} will be preserved.
+     * @param   string    $section    The section
+     * @param   string    $group        The optional group
+     * @return  array                 The settings array on success,
+     *                                false otherwise
+     */
+    static function getArray($section, $group=null)
+    {
+        if (self::$section !== $section
+         || self::$group !== $group) {
+            if (!parent::init($section, $group)) return false;
+        }
+        return self::$arrSettings;
+    }
+    
     /**
      * Returns the settings array for the given section and group
      * @return  array
@@ -146,7 +167,7 @@ abstract class Engine {
     static function getValue($name)
     {
         if (is_null(self::$arrSettings)) {
-        \DBG::log("\Cx\Core\Setting\Model\Entity\Engine::getValue($name): ERROR: no settings loaded");
+            \DBG::log("\Cx\Core\Setting\Model\Entity\Engine::getValue($name): ERROR: no settings loaded");
             return null;
         }
 

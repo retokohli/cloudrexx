@@ -1,6 +1,6 @@
 <?php
 /**
- * Manages settings stored in the database or file system
+ * Manages settings stored in the database or file system    
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
@@ -14,7 +14,7 @@
 namespace Cx\Core\Setting\Controller;
 
 /**
- * Manages settings stored in the database or file system
+ * Manages settings stored in the database or file system    
  *
  * Before trying to access a modules' settings, *DON'T* forget to call
  * {@see Setting::init()} before calling getValue() for the first time!
@@ -32,13 +32,13 @@ class SettingException extends \Exception {}
 class Setting{
      
     /**
-     * Upload path for documents
+     * Upload path for documents    
      * Used externally only, see hotelcard module for an example.
      */
     const FILEUPLOAD_FOLDER_PATH = 'media';
 
     /**
-     * Setting types
+     * Setting types    
      * See {@see show()} for examples on how to extend these.
      */
     const TYPE_DROPDOWN = 'dropdown';
@@ -59,7 +59,7 @@ class Setting{
     //const TYPE_SUBMIT = 'submit';
 
     /**
-     * Default width for input fields
+     * Default width for input fields   
      *
      * Note that textareas often use twice that value.
      */
@@ -68,14 +68,14 @@ class Setting{
     const TYPE_PASSWORD = 'password';
     
     /**
-     * Default \Cx\Core\Setting\Model\Entity\Db
+     * Default \Cx\Core\Setting\Model\Entity\Db    
      *
      */
     private static $engineType = '\Cx\Core\Setting\Model\Entity\Db'; 
     
     
     /**
-     * Returns the current value of the changed flag.
+     * Returns the current value of the changed flag.    
      *
      * If it returns true, you probably want to call {@see updateAll()}.
      * @return  boolean           True if values have been changed in memory,
@@ -88,7 +88,7 @@ class Setting{
     }
     
     /**
-     * Optionally sets and returns the value of the tab index
+     * Optionally sets and returns the value of the tab index    
      * @param   integer  $tab_index The optional new tab index
      * @return  integer             The current tab index
      */
@@ -100,7 +100,7 @@ class Setting{
     
     
     /**
-     * Initialize the settings entries from the database with key/value pairs
+     * Initialize the settings entries from the database with key/value pairs    
      * for the current section and the given group
      *
      * An empty $group value is ignored.  All records with the section are
@@ -790,7 +790,7 @@ class Setting{
 
    
     /**
-     * Deletes all entries for the current section
+     * Deletes all entries for the current section    
      *
      * This is for testing purposes only.  Use with care!
      * The static $section determines the module affected.
@@ -803,7 +803,7 @@ class Setting{
     } 
     
     /**
-     * Splits the string value at commas and returns an array of strings
+     * Splits the string value at commas and returns an array of strings    
      *
      * Commas escaped by a backslash (\) are ignored and replaced by a
      * single comma.
@@ -847,7 +847,7 @@ class Setting{
     }
     
     /**
-     * Joins the strings in the array with commas into a single values string
+     * Joins the strings in the array with commas into a single values string    
      *
      * Commas within the strings are escaped by a backslash (\).
      * The array keys are prepended to the values, separated by a colon.
@@ -871,7 +871,7 @@ class Setting{
     }
     
     /**
-     * Should be called whenever there's a problem with the settings table
+     * Should be called whenever there's a problem with the settings table    
      *
      * Tries to fix or recreate the settings table.
      * @return  boolean             False, always.
@@ -884,7 +884,7 @@ class Setting{
     }
     
     /**
-     * Returns the settings from the old settings table for the given module ID,
+     * Returns the settings from the old settings table for the given module ID,    
      * if available
      *
      * If the module ID is missing or invalid, or if the settings cannot be
@@ -920,7 +920,7 @@ class Setting{
     }
     
     /**
-     * Get engineType
+     * Get engineType    
      *
      * @return string $engineType
      */ 
@@ -930,7 +930,7 @@ class Setting{
     }
     
     /**
-     * Set engineType
+     * Set engineType    
      *
      * @param string $engineType
      */
