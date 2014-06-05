@@ -130,7 +130,7 @@ class PageEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         $objCache->clearCache();
         
         foreach ($uow->getScheduledEntityUpdates() AS $entity) {
-            \cacheLib::deleteCacheFileByPageId($entity->getId());
+            // \cacheLib::deleteCacheFileByPageId($entity->getId());
             $this->checkValidPersistingOperation($pageRepo, $entity);
         }
     }
