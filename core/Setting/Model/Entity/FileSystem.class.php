@@ -50,7 +50,6 @@ class FileSystem extends Engine{
      * @param   string    $group      The optional group.
      *                                Defaults to null
      * @return  boolean               True on success, false otherwise
-     * @global  ADOConnection   $objDatabase
      */
     static function init($section, $group=null) {
         //File Path
@@ -150,7 +149,6 @@ class FileSystem extends Engine{
      * @return  boolean           True on successful update or if
      *                            unchanged, false on failure
      * @static
-     * @global  mixed     $objDatabase    Database connection object
      */
     static function update($name)
     {
