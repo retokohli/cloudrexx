@@ -2,98 +2,33 @@
 /**
  * Specific Setting for this Component. Use this to interact with the Setting.class.php
  *
- * @copyright   Comvation AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
+ * @author      Manish Thakur <manishthakur@cdnsol.com>
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  core_setting
  * @todo        Edit PHP DocBlocks!
  */
- 
+
 namespace Cx\Core\Setting\Model\Entity;
 
-class Db implements Engine{
+/**
+ * Manages settings stored in the database or file system
+ *
+ * Before trying to access a modules' settings, *DON'T* forget to call
+ * {@see Setting::init()} before calling getValue() for the first time!
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
+ * @author      Manish Thakur <manishthakur@cdnsol.com>
+ * @version     3.0.0
+ * @package     contrexx
+ * @subpackage  core_setting
+ * @todo        Edit PHP DocBlocks!
+ */
+class Db extends Engine{
     
-    /**
-     * The array of currently loaded settings, like
-     *  array(
-     *    'name' => array(
-     *      'section' => section,
-     *      'group' => group,
-     *      'value' => current value,
-     *      'type' => element type (text, dropdown, ... [more to come]),
-     *      'values' => predefined values (for dropdown),
-     *      'ord' => ordinal number (for sorting),
-     *    ),
-     *    ... more ...
-     *  );
-     * @var     array
-     * @static
-     * @access  private
-     */
-    private static $arrSettings = null;
-    
-    /**
-     * The group last used to {@see init()} the settings.
-     * Defaults to null (ignored).
-     * @var     string
-     * @static
-     * @access  private
-     */
-    private static $group = null;
-
-    /**
-     * The section last used to {@see init()} the settings.
-     * Defaults to null (which will cause an error in most methods).
-     * @var     string
-     * @static
-     * @access  private
-     */
-    private static $section = null;
-    
-     /**
-     * Changed flag
-     *
-     * This flag is set to true as soon as any change to the settings is detected.
-     * It is cleared whenever {@see updateAll()} is called.
-     * @var     boolean
-     * @static
-     * @access  private
-     */
-    private static $changed = false;
-    
-    /**
-     * Returns the current value of the changed flag.
-     *
-     * If it returns true, you probably want to call {@see updateAll()}.
-     * @return  boolean           True if values have been changed in memory,
-     *                            false otherwise
-     */
-    static function changed()
-    {
-        return self::$changed;
-    }
-
-    /**
-     * Tab counter for the {@see show()} and {@see show_external()}
-     * @var     integer
-     * @access  private
-     */
-    public static $tab_index = 1;
-
-
-    /**
-     * Optionally sets and returns the value of the tab index
-     * @param   integer $tab_index  The optional new tab index
-     * @return  integer             The current tab index
-     */
-    static function tab_index($tab_index=null)
-    {
-        if (isset($tab_index)) {
-            self::$tab_index = intval($tab_index);
-        }
-        return self::$tab_index;
-    }
-    
+   
     /**
      * Initialize the settings entries from the database with key/value pairs
      * for the current section and the given group
@@ -148,22 +83,7 @@ class Db implements Engine{
         
     }
     
-     /**
-     * Flush the stored settings
-     *
-     * Resets the class to its initial state.
-     * Does *NOT* clear the section, however.
-     * @return  void
-     */
-    static function flush()
-    {
-        self::$arrSettings = null;
-        self::$section = null;
-        self::$group = null;
-        self::$changed = null;
-    }
-    
-    /**
+    /** 
      * Returns the settings array for the given section and group
      *
      * See {@see init()} on how the arguments are used.
@@ -182,67 +102,6 @@ class Db implements Engine{
             if (!self::init($section, $group)) return false;
         }
         return self::$arrSettings;
-    }
-    
-    /**
-     * Returns the settings array for the given section and group
-     * @return  array
-     */
-    static function getArraySetting()
-    {
-       return self::$arrSettings;
-    }
-
-    /**
-     * Returns the settings value stored in the object for the name given.
-     *
-     * If the settings have not been initialized (see {@see init()}), or
-     * if no setting of that name is present in the current set, null
-     * is returned.
-     * @param   string    $name       The settings name
-     * @return  mixed                 The settings value, if present,
-     *                                null otherwise
-     */
-    static function getValue($name)
-    {
-        if (is_null(self::$arrSettings)) {
-        \DBG::log("\Cx\Core\Setting\Model\Entity\Db::getValue($name): ERROR: no settings loaded");
-            return null;
-        }
-        //echo("self::getValue($name): Value is ".(isset(self::$arrSettings[$name]['value']) ? self::$arrSettings[$name]['value'] : 'NOT FOUND')."<br />");
-        if (isset(self::$arrSettings[$name]['value'])) {
-            return self::$arrSettings[$name]['value'];
-        };
-        // \DBG::log("\Cx\Core\Setting\Model\Entity\Db::getValue($name): ERROR: unknown setting '$name' (current group ".var_export(self::$group, true).")");
-        return null;
-    }
-
-     /**
-     * Updates a setting
-     *
-     * If the setting name exists and the new value is not equal to
-     * the old one, it is updated, and $changed set to true.
-     * Otherwise, nothing happens, and false is returned
-     * @see init(), updateAll()
-     * @param   string    $name       The settings name
-     * @param   string    $value      The settings value
-     * @return  boolean               True if the value has been changed,
-     *                                false otherwise, null on noop
-     */
-    static function set($name, $value)
-    {
-        if (!isset(self::$arrSettings[$name])) {
-            // \DBG::log("\Cx\Core\Setting\Model\Entity\Db::set($name, $value): Unknown, changed: ".self::$changed);
-            return false;
-        }
-        if (self::$arrSettings[$name]['value'] == $value) {
-            // \DBG::log("\Cx\Core\Setting\Model\Entity\Db::set($name, $value): Identical, changed: ".self::$changed);
-            return null;
-        }
-        self::$changed = true;
-        self::$arrSettings[$name]['value'] = $value;
-            // \DBG::log("\Cx\Core\Setting\Model\Entity\Db::set($name, $value): Added/updated, changed: ".self::$changed);
-            return true;
     }
     
     /**
@@ -271,7 +130,7 @@ class Db implements Engine{
         }
         $success = true;
         foreach (self::$arrSettings as $name => $arrSetting) {
-            $success &= self::update($name, $arrSetting['value']);
+            $success &= self::update($name);
         }
         if ($success) {
             self::$changed = false;
@@ -457,77 +316,6 @@ class Db implements Engine{
         return true;
     }
 
-
-    /**
-     * Splits the string value at commas and returns an array of strings
-     *
-     * Commas escaped by a backslash (\) are ignored and replaced by a
-     * single comma.
-     * The values themselves may be composed of pairs of key and value,
-     * separated by a colon.  Colons escaped by a backslash (\) are ignored
-     * and replaced by a single colon.
-     * Leading and trailing whitespace is removed from both keys and values.
-     * Note that keys *MUST NOT* contain commas or colons!
-     * @param   string    $strValues    The string to be split
-     * @return  array                   The array of strings
-     */
-    static function splitValues($strValues)
-    {
-        /*
-        Example:
-        postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:Mastercard,visa:Visa,americanexpress:American Express,paypal:Paypal,invoice:Invoice,voucher:Voucher
-        */
-        $arrValues = array();
-        $match = array();
-        foreach (
-            preg_split(
-                '/\s*(?<!\\\\),\s*/', $strValues,
-                null, PREG_SPLIT_NO_EMPTY) as $value
-        ) {
-            $key = null;
-            if (preg_match('/^(.+?)\s*(?<!\\\\):\s*(.+$)/', $value, $match)) {
-                $key = $match[1];
-                $value = $match[2];
-            // \DBG::log("Split $key and $value");
-            }
-            str_replace(array('\\,', '\\:'), array(',', ':'), $value);
-            if (isset($key)) {
-                $arrValues[$key] = $value;
-            } else {
-                $arrValues[] = $value;
-            }
-            // \DBG::log("Split $key and $value");
-        }
-            // \DBG::log("Array: ".var_export($arrValues, true));
-        return $arrValues;
-    }
-
-
-    /**
-     * Joins the strings in the array with commas into a single values string
-     *
-     * Commas within the strings are escaped by a backslash (\).
-     * The array keys are prepended to the values, separated by a colon.
-     * Colons within the strings are escaped by a backslash (\).
-     * Note that keys *MUST NOT* contain either commas or colons!
-     * @param   array     $arrValues    The array of strings
-     * @return  string                  The concatenated values string
-     * @todo    Untested!  May or may not work as described.
-     */
-    static function joinValues($arrValues)
-    {
-        $strValues = '';
-        foreach ($arrValues as $key => $value) {
-            $value = str_replace(
-                array(',', ':'), array('\\,', '\\:'), $value);
-            $strValues .=
-                ($strValues ? ',' : '').
-                "$key:$value";
-        }
-        return $strValues;
-    }
-
-
     /**
      * Should be called whenever there's a problem with the settings table
      *
@@ -561,44 +349,6 @@ class Db implements Engine{
         //Always!
         return false;
     }
-
-
-    /**
-     * Returns the settings from the old settings table for the given module ID,
-     * if available
-     *
-     * If the module ID is missing or invalid, or if the settings cannot be
-     * read for some other reason, returns null.
-     * Don't drop the table after migrating your settings, other modules
-     * might still need it!  Instead, try this method only after you failed
-     * to get your settings from SettingDb.
-     * @param   integer   $module_id      The module ID
-     * @return  array                     The settings array on success,
-     *                                    null otherwise
-     * @static
-     */
-    static function __getOldSettings($module_id)
-    {
-        global $objDatabase;
-
-        $module_id = intval($module_id);
-        if ($module_id <= 0) return null;
-        $objResult = $objDatabase->Execute('
-            SELECT `setname`, `setvalue`
-              FROM `'.DBPREFIX.'settings`
-             WHERE `setmodule`='.$module_id);
-        if (!$objResult) {
-            return null;
-        }
-        $arrConfig = array();
-        while (!$objResult->EOF) {
-            $arrConfig[$objResult->fields['setname']] =
-                $objResult->fields['setvalue'];
-            $objResult->MoveNext();
-        }
-        return $arrConfig;
-    }
-    
    
 
 }

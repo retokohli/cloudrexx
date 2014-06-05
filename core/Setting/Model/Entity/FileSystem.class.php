@@ -2,8 +2,10 @@
 /**
  * Specific Setting for this Component. Use this to interact with the Setting.class.php
  *
- * @copyright   Comvation AG
+ * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
+ * @author      Manish Thakur <manishthakur@cdnsol.com>
+ * @version     3.0.0
  * @package     contrexx
  * @subpackage  core_setting
  * @todo        Edit PHP DocBlocks!
@@ -11,88 +13,27 @@
  
 namespace Cx\Core\Setting\Model\Entity;
 
-class FileSystem implements Engine{
-    
-    /**
-     * The array of currently loaded settings, like
-     *  array(
-     *    'name' => array(
-     *      'section' => section,
-     *      'group' => group,
-     *      'value' => current value,
-     *      'type' => element type (text, dropdown, ... [more to come]),
-     *      'values' => predefined values (for dropdown),
-     *      'ord' => ordinal number (for sorting),
-     *    ),
-     *    ... more ...
-     *  );
-     * @var     array
-     * @static
-     * @access  private
-     */
-    private static $arrSettings = null;
-    
-    /**
-     * The group last used to {@see init()} the settings.
-     * Defaults to null (ignored).
-     * @var     string
-     * @static
-     * @access  private
-     */
-    private static $group = null;
-
-    /**
-     * The section last used to {@see init()} the settings.
-     * Defaults to null (which will cause an error in most methods).
-     * @var     string
-     * @static
-     * @access  private
-     */
-    private static $section = null;
+/**
+ * Manages settings stored in the database or file system
+ *
+ * Before trying to access a modules' settings, *DON'T* forget to call
+ * {@see Setting::init()} before calling getValue() for the first time!
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
+ * @author      Manish Thakur <manishthakur@cdnsol.com>
+ * @version     3.0.0
+ * @package     contrexx
+ * @subpackage  core_setting
+ * @todo        Edit PHP DocBlocks!
+ */
+class FileSystem extends Engine{
     
      /**
-     * Changed flag
-     *
-     * This flag is set to true as soon as any change to the settings is detected.
-     * It is cleared whenever {@see updateAll()} is called.
-     * @var     boolean
-     * @static
-     * @access  private
-     */
-    private static $changed = false;
-    
-    /**
-     * Returns the current value of the changed flag.
-     *
-     * If it returns true, you probably want to call {@see updateAll()}.
-     * @return  boolean           True if values have been changed in memory,
-     *                            false otherwise
-     */
-    static function changed()
-    {
-        return self::$changed;
-    }
-
-    /**
-     * Tab counter for the {@see show()} and {@see show_external()}
+     * change counter for the {@see update()} 
      * @var     integer
      * @access  private
      */
-    public static $tab_index = 1;
-
-
-    /**
-     * Optionally sets and returns the value of the tab index
-     * @param   integer  $tab_index The optional new tab index
-     * @return  integer             The current tab index
-     */
-    static function tab_index($tab_index=null)
-    {
-        if (isset($tab_index)) {
-            self::$tab_index = intval($tab_index);
-        }
-        return self::$tab_index;
-    }
+    private static $change_index = 1;
     
     /**
      * Initialize the settings entries from the file with key/value pairs
@@ -120,6 +61,7 @@ class FileSystem implements Engine{
        
         //call DataSet importFromFile method @return array
         $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::importFromFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $filename);
+        //echo "<pre>"; print_r($objDataSet); die;
         if(!empty($objDataSet))
         {
             foreach($objDataSet as $value)
@@ -129,21 +71,6 @@ class FileSystem implements Engine{
             }
         }
         
-    }
-    
-    /** 
-     * Flush the stored settings
-     *
-     * Resets the class to its initial state.
-     * Does *NOT* clear the section, however.
-     * @return  void
-     */
-    static function flush()
-    {
-        self::$arrSettings = null;
-        self::$section = null;
-        self::$group = null;
-        self::$changed = null;
     }
     
     /** 
@@ -166,67 +93,7 @@ class FileSystem implements Engine{
         }
         return self::$arrSettings;
     }
-
-    /**
-     * Returns the settings array for the given section and group
-     * @return  array
-     */
-    static function getArraySetting()
-    {
-       return self::$arrSettings;
-    }
-
-    /**
-     * Returns the settings value stored in the object for the name given.
-     *
-     * If the settings have not been initialized (see {@see init()}), or
-     * if no setting of that name is present in the current set, null
-     * is returned.
-     * @param   string    $name       The settings name
-     * @return  mixed                 The settings value, if present,
-     *                                null otherwise
-     */
-    static function getValue($name)
-    {
-        if (is_null(self::$arrSettings)) {
-        \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::getValue($name): ERROR: no settings loaded");
-            return null;
-        }
-
-        if (isset(self::$arrSettings[$name]['value'])) {
-            return self::$arrSettings[$name]['value'];
-        };
-
-        return null;
-    }
     
-    /**
-     * Updates a setting
-     *
-     * If the setting name exists and the new value is not equal to
-     * the old one, it is updated, and $changed set to true.
-     * Otherwise, nothing happens, and false is returned
-     * @see init(), updateAll()
-     * @param   string    $name       The settings name
-     * @param   string    $value      The settings value
-     * @return  boolean               True if the value has been changed,
-     *                                false otherwise, null on noop
-     */
-    static function set($name, $value)
-    {
-        if (!isset(self::$arrSettings[$name])) {
-        // \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::set($name, $value): Unknown, changed: ".self::$changed);
-            return false;
-        }
-        if (self::$arrSettings[$name]['value'] == $value) {
-        // \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::set($name, $value): Identical, changed: ".self::$changed);
-            return null;
-        }
-        self::$changed = true;
-        self::$arrSettings[$name]['value'] = $value;
-        // \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::set($name, $value): Added/updated, changed: ".self::$changed);
-        return true;
-    }
     
     /**
      * Stores all settings entries present in the $arrSettings object
@@ -249,19 +116,19 @@ class FileSystem implements Engine{
         if (!self::$changed) {
         // TODO: These messages are inapropriate when settings are stored by another piece of code, too.
         // Find a way around this.
-        //            Message::information($_CORELANG['TXT_CORE_SETTINGDB_INFORMATION_NO_CHANGE']);
+        // Message::information($_CORELANG['TXT_CORE_SETTINGDB_INFORMATION_NO_CHANGE']);
             return null;
         }
         $success = true;
         
         foreach (self::$arrSettings as $name => $arrSetting) {
-            
-            self::set($name, self::$arrSettings[$name]['value']);
+            $success &= self::update($name);
+            self::$change_index++;
         }
-         $success &= self::updateFileData();
-       // $success &= self::update(self::$arrSettings);
+       
         if ($success) {
-            self::$changed = false;
+            
+             self::$changed = false;
         //            return Message::ok($_CORELANG['TXT_CORE_SETTINGDB_STORED_SUCCESSFULLY']);
             return true;
         }
@@ -303,9 +170,29 @@ class FileSystem implements Engine{
             \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::update(): ERROR: Unknown setting name '$name'!");
             return false;
         }
-        self::set($name, self::$arrSettings[$name]['value']);
-      
-      self::updateFileData();  
+        
+         if(!empty(self::$arrSettings))
+            {
+                try {
+                        $fileName=ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
+                        $file = new \Cx\Lib\FileSystem\File($fileName);
+                            
+                        if(self::$change_index==1)
+                        {
+                            $file->delete();
+                            foreach(self::$arrSettings as $value){
+                                $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet(array($value));
+                                $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $fileName);
+                            }
+                        }
+                        return true;
+                } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                        \DBG::msg($e->getMessage());
+                } 
+                
+            }else{
+                return false;
+            }
     }
     
      /**
@@ -397,42 +284,43 @@ class FileSystem implements Engine{
      */
     static function delete($name=null, $group=null)
     { 
-        if(!empty($name) && !empty($group))
-        {
+        // Fail if both parameter values are empty
+        if(empty($name) && empty($group) && empty(self::$section))return false;
+         
             $arrSetting=array();
             
-            $filename=ASCMS_CORE_PATH .'/Setting/Data/'.$group.'.yml';
+            $filename=ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
             
             $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::importFromFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $filename);
-            if(!empty($objDataSet))
+            
+            // if get blank or invalid array
+            if(empty($objDataSet))return false;
+            
+            foreach($objDataSet as $value)
             {
-                foreach($objDataSet as $value)
-                {
+                if($value['group']!=$group || $value['name']!=$name)
                     $arrSetting[$value['name']]= $value;
-                 
-                }
+             
+            }
+            // if get blank array    
+            if(empty($arrSetting))return false;
+            
+            try {
+                    $objFile = new \Cx\Lib\FileSystem\File($filename);
+                    $objFile->delete(); 
+                    
+                    foreach($arrSetting as $value)
+                    {
+                        $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet(array($value));
+                        $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $filename);
+                    }
+                    
+                    return true;
+            
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                    \DBG::msg($e->getMessage());
             }
             
-            unset($arrSetting[$name]);
-        
-            $objFile = new \Cx\Lib\FileSystem\File($filename);
-            $objFile->delete(); 
-            
-            foreach($arrSetting as $value)
-            {
-                $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet(array($value));
-                $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $filename);
-            }
-            
-            return true;
-            
-            
-        }else{
-            return false;
-        }
-        
-        
-        
     }
 
     /**
@@ -444,89 +332,18 @@ class FileSystem implements Engine{
      */
     static function deleteModule()
     {
-        global $objDatabase;
-
-        if (empty(self::$section)) {
-        // TODO: Error message
-            return false;
-        }
-        $objResult = $objDatabase->Execute("
-            DELETE FROM `".DBPREFIX."core_setting`
-             WHERE `section`='".self::$section."'");
-        if (!$objResult) return self::errorHandler();
-        return true;
-    }
-
-
-    /**
-     * Splits the string value at commas and returns an array of strings
-     *
-     * Commas escaped by a backslash (\) are ignored and replaced by a
-     * single comma.
-     * The values themselves may be composed of pairs of key and value,
-     * separated by a colon.  Colons escaped by a backslash (\) are ignored
-     * and replaced by a single colon.
-     * Leading and trailing whitespace is removed from both keys and values.
-     * Note that keys *MUST NOT* contain commas or colons!
-     * @param   string    $strValues    The string to be split
-     * @return  array                   The array of strings
-     */
-    static function splitValues($strValues)
-    {
-        /*
-        Example:
-        postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:Mastercard,visa:Visa,americanexpress:American Express,paypal:Paypal,invoice:Invoice,voucher:Voucher
-        */
-        $arrValues = array();
-        $match = array();
-        foreach (
-            preg_split(
-                '/\s*(?<!\\\\),\s*/', $strValues,
-                null, PREG_SPLIT_NO_EMPTY) as $value
-        ) {
-            $key = null;
-            if (preg_match('/^(.+?)\s*(?<!\\\\):\s*(.+$)/', $value, $match)) {
-                $key = $match[1];
-                $value = $match[2];
-        // \DBG::log("Split $key and $value");
+        if (empty(self::$section))return false;
+        
+        try {
+                $filename=ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
+                $objFile = new \Cx\Lib\FileSystem\File($filename);
+                $objFile->delete();       
+                return true;
+            
+            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                    \DBG::msg($e->getMessage());
             }
-            str_replace(array('\\,', '\\:'), array(',', ':'), $value);
-            if (isset($key)) {
-                $arrValues[$key] = $value;
-            } else {
-                $arrValues[] = $value;
-            }
-        // \DBG::log("Split $key and $value");
-        }
-        // \DBG::log("Array: ".var_export($arrValues, true));
-        return $arrValues;
     }
-
-
-    /**
-     * Joins the strings in the array with commas into a single values string
-     *
-     * Commas within the strings are escaped by a backslash (\).
-     * The array keys are prepended to the values, separated by a colon.
-     * Colons within the strings are escaped by a backslash (\).
-     * Note that keys *MUST NOT* contain either commas or colons!
-     * @param   array     $arrValues    The array of strings
-     * @return  string                  The concatenated values string
-     * @todo    Untested!  May or may not work as described.
-     */
-    static function joinValues($arrValues)
-    {
-        $strValues = '';
-        foreach ($arrValues as $key => $value) {
-            $value = str_replace(
-                array(',', ':'), array('\\,', '\\:'), $value);
-            $strValues .=
-                ($strValues ? ',' : '').
-                "$key:$value";
-        }
-        return $strValues;
-    }
-
 
     /**
      * Should be called whenever there's a problem with the settings
@@ -537,73 +354,14 @@ class FileSystem implements Engine{
      */
     static function errorHandler()
     {
-        $file = new \Cx\Lib\FileSystem\File(ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml');
-        $file->touch();
-        return false;
+        try {
+                $file = new \Cx\Lib\FileSystem\File(ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml');
+                $file->touch();
+                return false;
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+                \DBG::msg($e->getMessage());
+        }
+       
     }
     
-    /**
-     * Returns the settings from the old settings table for the given module ID,
-     * if available
-     *
-     * If the module ID is missing or invalid, or if the settings cannot be
-     * read for some other reason, returns null.
-     * Don't drop the table after migrating your settings, other modules
-     * might still need it!  Instead, try this method only after you failed
-     * to get your settings from SettingDb.
-     * @param   integer   $module_id      The module ID
-     * @return  array                     The settings array on success,
-     *                                    null otherwise
-     * @static
-     */
-    static function __getOldSettings($module_id)
-    {
-        global $objDatabase;
-
-        $module_id = intval($module_id);
-        if ($module_id <= 0) return null;
-        $objResult = $objDatabase->Execute('
-            SELECT `setname`, `setvalue`
-              FROM `'.DBPREFIX.'settings`
-             WHERE `setmodule`='.$module_id);
-        if (!$objResult) {
-            return null;
-        }
-        $arrConfig = array();
-        while (!$objResult->EOF) {
-            $arrConfig[$objResult->fields['setname']] =
-                $objResult->fields['setvalue'];
-            $objResult->MoveNext();
-        }
-        return $arrConfig;
-    }
-    
-    /**
-     * Updates the value for the given name in the settings file
-     *
-     * Sets $changed to true and returns true if the value has been
-     * updated successfully.
-     * Note that this method does not work for adding new settings.
-     */
-    static private function updateFileData()
-    {
-        if(!empty(self::$arrSettings))
-        {
-            $filename=ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
-         
-            $objFile = new \Cx\Lib\FileSystem\File($filename);
-            $objFile->delete(); 
-            
-            foreach(self::$arrSettings as $value)
-            {
-                $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet(array($value));
-                $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $filename);
-            }
-            
-            return true;
-        }else{
-            return false;
-        }
-    }
-
 }

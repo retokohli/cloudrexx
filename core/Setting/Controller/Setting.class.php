@@ -4,11 +4,14 @@
  *
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
+ * @author      Manish Thakur <manishthakur@cdnsol.com>
  * @version     3.0.0
  * @package     contrexx
  * @subpackage  core_setting
  * @todo        Edit PHP DocBlocks!
  */
+ 
+namespace Cx\Core\Setting\Controller;
 
 /**
  * Manages settings stored in the database or file system
@@ -17,14 +20,12 @@
  * {@see Setting::init()} before calling getValue() for the first time!
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
+ * @author      Manish Thakur <manishthakur@cdnsol.com>
  * @version     3.0.0
  * @package     contrexx
  * @subpackage  core_setting
  * @todo        Edit PHP DocBlocks!
- */
-
-namespace Cx\Core\Setting\Controller;
-
+ */ 
 class SettingException extends \Exception {}
 
 
@@ -816,8 +817,33 @@ class Setting{
      */
     static function splitValues($strValues)
     {
-        $engineType=self::getEngineType();
-        return $engineType::splitValues($strValues);
+        /*
+        Example:
+        postfinance:Postfinance Card,postfinanceecom:Postfinance E-Commerce,mastercard:Mastercard,visa:Visa,americanexpress:American Express,paypal:Paypal,invoice:Invoice,voucher:Voucher
+        */
+        $arrValues = array();
+        $match = array();
+        foreach (
+            preg_split(
+                '/\s*(?<!\\\\),\s*/', $strValues,
+                null, PREG_SPLIT_NO_EMPTY) as $value
+        ) {
+            $key = null;
+            if (preg_match('/^(.+?)\s*(?<!\\\\):\s*(.+$)/', $value, $match)) {
+                $key = $match[1];
+                $value = $match[2];
+            // \DBG::log("Split $key and $value");
+            }
+            str_replace(array('\\,', '\\:'), array(',', ':'), $value);
+            if (isset($key)) {
+                $arrValues[$key] = $value;
+            } else {
+                $arrValues[] = $value;
+            }
+            // \DBG::log("Split $key and $value");
+        }
+            // \DBG::log("Array: ".var_export($arrValues, true));
+        return $arrValues;
     }
     
     /**
@@ -833,8 +859,15 @@ class Setting{
      */
     static function joinValues($arrValues)
     {
-        $engineType=self::getEngineType();
-        return $engineType::joinValues($arrValues);
+        $strValues = '';
+        foreach ($arrValues as $key => $value) {
+            $value = str_replace(
+                array(',', ':'), array('\\,', '\\:'), $value);
+            $strValues .=
+                ($strValues ? ',' : '').
+                "$key:$value";
+        }
+        return $strValues;
     }
     
     /**
@@ -866,8 +899,24 @@ class Setting{
      */
     static function __getOldSettings($module_id)
     {
-      $engineType=self::getEngineType();
-      return $engineType::__getOldSettings($module_id);  
+        global $objDatabase;
+
+        $module_id = intval($module_id);
+        if ($module_id <= 0) return null;
+        $objResult = $objDatabase->Execute('
+            SELECT `setname`, `setvalue`
+              FROM `'.DBPREFIX.'settings`
+             WHERE `setmodule`='.$module_id);
+        if (!$objResult) {
+            return null;
+        }
+        $arrConfig = array();
+        while (!$objResult->EOF) {
+            $arrConfig[$objResult->fields['setname']] =
+                $objResult->fields['setvalue'];
+            $objResult->MoveNext();
+        }
+        return $arrConfig;
     }
     
     /**
