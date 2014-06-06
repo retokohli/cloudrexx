@@ -13,11 +13,11 @@
 global $_ARRAYLANG;
 
 // Let's start with module info:
-$_ARRAYLANG['TXT_MODULE_SKELETON'] = 'New module';
+$_ARRAYLANG['TXT_MODULE_SKELETON'] = '{COMPONENT_NAME}';
 $_ARRAYLANG['TXT_MODULE_SKELETON_DESCRIPTION'] = 'This is a new module with some sample content to show how to start.';
 
 // Here come the ACTs:
-$_ARRAYLANG['TXT_MODULE_SKELETON_ACT_DEFAULT'] = 'Crongatulations';
+$_ARRAYLANG['TXT_MODULE_SKELETON_ACT_DEFAULT'] = 'Congratulations';
 
 // Now our content specific values:
 $_ARRAYLANG['TXT_MODULE_SKELETON_CONGRATULATIONS'] = 'Congratulations';

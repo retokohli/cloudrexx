@@ -140,6 +140,10 @@ class Message
         if (empty($_SESSION['messages'])) {
             $_SESSION['messages'] = array();
         }
+        if (empty($_SESSION['messages'][$class])) {
+            $_SESSION['messages'][$class] = array();
+        }
+        
         $_SESSION['messages'][$class][] = $message;
     }
 

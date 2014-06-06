@@ -629,6 +629,7 @@ class CalendarWebserviceEvent
                          event.series_pattern_type AS series_pattern_type,
                          event.series_pattern_dourance_type AS series_pattern_dourance_type,
                          event.series_pattern_end AS series_pattern_end,
+                         event.series_pattern_end_date AS series_pattern_end_date,
                          event.series_pattern_begin AS series_pattern_begin,
                          event.series_pattern_exceptions AS series_pattern_exceptions,
                          field.title AS title,
@@ -705,8 +706,9 @@ class CalendarWebserviceEvent
                     $this->seriesData['seriesPatternType'] = intval($row['series_pattern_type']); 
                     $this->seriesData['seriesPatternDouranceType'] = intval($row['series_pattern_dourance_type']); 
                     $this->seriesData['seriesPatternEnd'] = intval($row['series_pattern_end']); 
+                    $this->seriesData['seriesPatternEndDate'] = strtotime($row['series_pattern_end_date']); 
                     $this->seriesData['seriesPatternBegin'] = intval($row['series_pattern_begin']); 
-                    $this->seriesData['seriesPatternExceptions'] = explode(",", $row['series_pattern_exceptions']);
+                    $this->seriesData['seriesPatternExceptions'] = array_map('strtotime', (array) explode(",", $row['series_pattern_exceptions']));
                 }   
                   
                 $this->invitedGroups = explode(',', $row['invited_groups']);     

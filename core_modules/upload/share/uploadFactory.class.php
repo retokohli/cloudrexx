@@ -260,11 +260,17 @@ class UploadFactory
         
         if($id == 0) { //new instance, handle initializing
             $id = 1;
-            if(!isset($_SESSION['upload']['folder_widget_current_id']))
+            if(!isset($_SESSION['upload']['folder_widget_current_id'])) {
                 $_SESSION['upload']['folder_widget_current_id'] = 1;
-            else
-                $id = ++$_SESSION['upload']['folder_widget_current_id'];
+            } else {
+                $_SESSION['upload']['folder_widget_current_id'] += 1;
+                $id = $_SESSION['upload']['folder_widget_current_id'];
+            }              
           
+            if (!isset($_SESSION['upload']['folder_widgets'])) {
+                $_SESSION['upload']['folder_widgets'] = array();
+            }
+            $_SESSION['upload']['folder_widgets'][$id] = array();
             $_SESSION['upload']['folder_widgets'][$id]['path'] = $folder;
             $theWidget->setId($id);
         }

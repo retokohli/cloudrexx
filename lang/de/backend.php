@@ -1586,6 +1586,7 @@ $_ARRAYLANG['TXT_CORE_DRAFT'] = "Entwurf";
 
 $_ARRAYLANG['TXT_CORE_SAVED_AS_DRAFT'] = "Seite als Entwurf gespeichert";
 $_ARRAYLANG['TXT_CORE_SAVED'] = "Seite gespeichert";
+$_ARRAYLANG['TXT_CORE_SAVED_BLOCK'] = "Inhaltscontainer gespeichert";
 $_ARRAYLANG['TXT_CORE_DRAFT_SUBMITTED'] = "Entwurf zur Ver&ouml;ffentlichung freigegeben";
 $_ARRAYLANG['TXT_CORE_CM_ACTION_PUBLISH_DRAFT'] = "Entwurf veröffentlichen";
 
@@ -1649,7 +1650,10 @@ $_ARRAYLANG['TXT_CORE_CM_METAKEYS'] = 'Stichworte';
 $_ARRAYLANG['TXT_CORE_CM_METAKEYS_INFO'] = 'Werden von Suchmaschinen als zus&auml;tzliche Stichworte aufgenommen. Beispiele: Muster, Pizza, Europa, K&auml;se';
 $_ARRAYLANG['TXT_CORE_CM_THEMES'] = 'Theme';
 $_ARRAYLANG['TXT_CORE_CM_THEMES_INFO'] = 'Die Seite wird im ausgew&auml;hlten Theme angezeigt.';
-$_ARRAYLANG['TXT_CORE_CM_CUSTOM_CONTENT'] = 'Content Template';
+$_ARRAYLANG['TXT_CORE_CM_CUSTOM_CONTENT'] = 'Inhaltsvorlage';
+$_ARRAYLANG['TXT_CORE_CM_USE_ALL_CHANNELS'] = "Use for all output channels";
+$_ARRAYLANG['TXT_CORE_CM_USE_SKIN_ALL_CHANNELS_INFO'] = "Wird das Kontrollkästchen aktiviert, so wird das ausgewählte Theme für alle Ausgabemedien (Standard / Mobile / Druck / PDF / App) anstelle des Standard-Themes des jeweiligen Ausgabemediums verwendet.";
+$_ARRAYLANG['TXT_CORE_CM_USE_CUSTOM_CONTENT_ALL_CHANNELS_INFO'] = "Wird das Kontrollkästchen aktiviert, so wird die ausgewählte Inhaltsvorlage für alle Ausgabemedien (Standard / Mobile / Druck / PDF / App) verwendet. Wenn das Kontrollkästchen nicht aktiviert ist, im Standard-Theme des jeweiligen Ausgabemediums aber eine Datei mit demselben Namen wie jener der ausgewählten Inhaltsvorlage vorhanden ist, so wird diese Inhaltsvorlage verwendet, anstelle der standard Inhaltsvorlage (<span class='content_template_info'>content.html</span>)";
 $_ARRAYLANG['TXT_CORE_CM_CUSTOM_CONTENT_INFO'] = 'Andere Inhaltsvorlage verwenden. Weitere Inhaltsvorlagen k&ouml;nnen Sie als content_<strong>name</strong>.html im Theme-Ordner anlegen.';
 $_ARRAYLANG['TXT_CORE_CM_CSS_CLASS'] = 'Zus&auml;tzliche CSS-Klasse';
 $_ARRAYLANG['TXT_CORE_CM_CSS_CLASS_INFO'] = 'Der angegebene Wert wird innerhalb der gew&auml;hlten Seite als [[CSS_NAME]] zur Verf&uuml;gung gestellt.';
@@ -1764,6 +1768,7 @@ $_ARRAYLANG['TXT_CORE_MODULE_NEWS_SETTINGS'] = 'Einstellungen';
 
 $_ARRAYLANG['TXT_CORE_CANNOT_USE_AS_ALIAS'] = 'Bestehende Dateien oder Ordner aus dem Root-Verzeichnis und aktivierte Sprachen (z.B. de, en) können nicht als Alias verwendet werden.';
 $_ARRAYLANG['TXT_CORE_REMOVE_ALIAS_TO_ACTIVATE_LANGUAGE'] = 'Um diese Sprache zu aktivieren, muss folgendes Alias gelöscht oder umbennent werden, da es für das virtuelle Sprachverzeichnis verwendet wird';
+$_ARRAYLANG['TXT_SURVEY_MODULE'] = "Umfragen";
 
 $_ARRAYLANG['TXT_MODULE_ACTIVATED_SUCCESSFULLY']   = "Module activated successfully";
 $_ARRAYLANG['TXT_MODULE_DEACTIVATED_SUCCESSFULLY'] = "Module deactivated successfully";

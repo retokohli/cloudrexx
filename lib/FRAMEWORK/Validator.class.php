@@ -81,6 +81,7 @@ define('VALIDATOR_REGEX_URI_JS',
  */
 class FWValidator
 {
+    
     /**
      * Regular Expression for e-mail addresses
      * @author Kevin Riesen

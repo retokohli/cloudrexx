@@ -763,7 +763,9 @@ class JsonPage implements JsonAdapter {
             'slug' => array('type' => 'String'),
             'caching' => array('type' => 'boolean'),
             'skin' => array('type' => 'integer'),
+            'useSkinForAllChannels' => array('type' => 'integer'),
             'customContent' => array('type' => 'String'),
+            'useCustomContentForAllChannels' => array('type' => 'integer'),
             'cssName' => array('type' => 'String'),
             'cssNavName' => array('type' => 'String'),
         );
@@ -1082,7 +1084,9 @@ class JsonPage implements JsonAdapter {
             'accessData' => $accessData,
             // Advanced Settings
             'skin' => $page->getSkin(),
+            'useSkinForAllChannels' => $page->getUseSkinForAllChannels(),
             'customContent' => $page->getCustomContent(),
+            'useCustomContentForAllChannels' => $page->getUseCustomContentForAllChannels(),
             'cssName' => $page->getCssName(),
             'cssNavName' => $page->getCssNavName(),
             'caching' => $page->getCaching(),

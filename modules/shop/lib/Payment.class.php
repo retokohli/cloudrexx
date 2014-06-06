@@ -486,6 +486,15 @@ class Payment
         ));
         // Payment Service Providers
         $objTemplate->setVariable(array(
+            'SHOP_PAYMILL_STATUS' => SettingDb::getValue('paymill_active') ? Html::ATTRIBUTE_CHECKED : '',
+            'SHOP_PAYMILL_TEST_SELECTED' => SettingDb::getValue('paymill_use_test_account') == 0 ? Html::ATTRIBUTE_SELECTED : '',
+            'SHOP_PAYMILL_LIVE_SELECTED' => SettingDb::getValue('paymill_use_test_account') == 1 ? Html::ATTRIBUTE_SELECTED : '',
+            'SHOP_PAYMILL_TEST_PRIVATE_KEY' => SettingDb::getValue('paymill_test_private_key'),
+            'SHOP_PAYMILL_TEST_PUBLIC_KEY' => SettingDb::getValue('paymill_test_public_key'),
+            'SHOP_PAYMILL_LIVE_PRIVATE_KEY' => SettingDb::getValue('paymill_live_private_key'),
+            'SHOP_PAYMILL_LIVE_PUBLIC_KEY' => SettingDb::getValue('paymill_live_public_key'),
+            'SHOP_PAYMILL_PRIVATE_KEY' => SettingDb::getValue('paymill_private_key'),
+            'SHOP_PAYMILL_PUBLIC_KEY' => SettingDb::getValue('paymill_public_key'),
             'SHOP_SAFERPAY_ID' => SettingDb::getValue('saferpay_id'),
             'SHOP_SAFERPAY_STATUS' => (SettingDb::getValue('saferpay_active') ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_SAFERPAY_TEST_ID' => SettingDb::getValue('saferpay_use_test_account'),

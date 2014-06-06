@@ -9,6 +9,7 @@
  */
 
 namespace Cx\Core\Json\Adapter\User;
+
 use \Cx\Core\Json\JsonAdapter;
 
 /**
@@ -19,6 +20,7 @@ use \Cx\Core\Json\JsonAdapter;
  * @subpackage  core_json
  */
 class JsonUser implements JsonAdapter {
+
     /**
      * List of messages
      * @var Array 
@@ -38,7 +40,7 @@ class JsonUser implements JsonAdapter {
      * @return array List of method names
      */
     public function getAccessableMethods() {
-        return array('getUserById', 'getUsers');
+        return array('getUserById', 'getUsers', 'loginUser', 'logoutUser', 'lostPassword', 'setPassword');
     }
 
     /**
@@ -115,4 +117,82 @@ class JsonUser implements JsonAdapter {
         
         return $arrUsers;
     }
+
+    /**
+     * Logs the current User in.
+     * 
+     * @param string $_POST['USERNAME']
+     * @param string $_POST['PASSWORD']
+     * @return false on failure and array with userdata on success
+     */
+    public function loginUser() {
+        $objFWUser = \FWUser::getFWUserObject();
+        if ($objFWUser->checkLogin()) {
+            $objFWUser->loginUser($objFWUser->objUser);
+            return array($objFWUser->objUser->getUsername(),
+                $objFWUser->objUser->getAssociatedGroupIds(),
+                $objFWUser->objUser->getAdminStatus(),
+                $objFWUser->objUser->getBackendLanguage()
+            );
+        }
+        return false;
+    }
+
+    /**
+     * Logs the current User out.
+     * 
+     * @return boolean
+     */
+    public function logoutUser() {
+        \FWUser::getFWUserObject()->logoutAndDestroySession();
+        return true;
+    }
+
+    /**
+     * Sends a Email with a new tomporary Password to the user with given email
+     * 
+     * @param string $arguments['get']['email'] || $arguments['post']['email']
+     * @return boolean
+     */
+    public function lostPassword($arguments) {
+        if (empty($arguments['get']['email']) && empty($arguments['post']['email'])) {
+            return false;
+        }
+        $email = contrexx_stripslashes(!empty($arguments['get']['email']) ? $arguments['get']['email'] : $arguments['post']['email']);
+        $objFWUser = \FWUser::getFWUserObject();
+        if ($objFWUser->restorePassword($email)) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Set a new Password for a specific user if the admin has enough permissions
+     * 
+     * @param string $arguments['get']['userId'] || $arguments['post']['userId']
+     * @param string $arguments['get']['password'] || $arguments['post']['password']
+     * @param string $arguments['get']['repeatPassword'] || $arguments['post']['repeatPassword']
+     * @return boolean
+     */
+    public function setPassword($arguments) {
+        if ((empty($arguments['get']['userId']) && empty($arguments['post']['userId'])) ||
+                (empty($arguments['get']['password']) && empty($arguments['post']['password'])) ||
+                (empty($arguments['get']['repeatPassword']) && empty($arguments['post']['repeatPassword']))) {
+            return false;
+        }
+        $objFWUser = \FWUser::getFWUserObject();
+        $arrPermissionIds = $objFWUser->objGroup->getGroups()->getStaticPermissionIds();
+        if (!$objFWUser->objUser->login()) {
+            return false;
+        }
+        if ($objFWUser->objUser->getAdminStatus() || (in_array('18', $arrPermissionIds) && in_array('36', $arrPermissionIds))) {
+            $password = contrexx_stripslashes(!empty($arguments['get']['password']) ? $arguments['get']['password'] : $arguments['post']['password']);
+            $password2 = contrexx_stripslashes(!empty($arguments['get']['repeatPassword']) ? $arguments['get']['repeatPassword'] : $arguments['post']['repeatPassword']);
+            $userId = !empty($arguments['get']['userId']) ? $arguments['get']['userId'] : $arguments['post']['userId'];
+            $user = $objFWUser->objUser->getUser($userId);
+            return $user->setPassword($password, $password2) && $user->store();
+        }
+        return false;
+    }
+
 }

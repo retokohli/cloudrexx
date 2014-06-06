@@ -45,6 +45,7 @@ CKEDITOR.editorConfig = function( config )
     config.filebrowserBrowseUrl      = CKEDITOR.getUrl('<?php echo $linkBrowser; ?>');
     config.filebrowserImageBrowseUrl = CKEDITOR.getUrl('<?php echo $defaultBrowser; ?>');
     config.filebrowserFlashBrowseUrl = CKEDITOR.getUrl('<?php echo $defaultBrowser; ?>');
+    config.baseHref = 'http://<?php echo $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET; ?>/';
 
     config.templates_files = [ '<?php echo $defaultTemplateFilePath; ?>' ];
 
@@ -90,6 +91,7 @@ CKEDITOR.editorConfig = function( config )
         ['Cut','Copy','Paste','-','Scayt'],
         ['Undo','Redo']
     ];
+    config.extraPlugins = 'codemirror';
 };
 
 if (<?php

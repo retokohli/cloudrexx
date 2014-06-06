@@ -466,6 +466,60 @@ class LegacyComponentHandler {
                             $themesPages['sidebar'] = str_replace($topNewsPlaceholder, $homeTopNews, $themesPages['sidebar']);
                             $page_template          = str_replace($topNewsPlaceholder, $homeTopNews, $page_template);
                         }
+                        
+                        // Get News categories
+                        $modulespath = ASCMS_CORE_MODULE_PATH.'/news/lib/newsLib.class.php';
+                        $newsCategoriesPlaceholder = '{NEWS_CATEGORIES}';
+                        if (   file_exists($modulespath)
+                            && (   strpos(\Env::get('cx')->getPage()->getContent(), $newsCategoriesPlaceholder) !== false
+                                || strpos($themesPages['index'], $newsCategoriesPlaceholder) !== false
+                                || strpos($themesPages['sidebar'], $newsCategoriesPlaceholder) !== false
+                                || strpos($page_template, $newsCategoriesPlaceholder) !== false)
+                        ) {
+                            $newsLib = new \newsLibrary();
+                            $newsCategories = $newsLib->getNewsCategories();
+                            
+                            \Env::get('cx')->getPage()->setContent(str_replace($newsCategoriesPlaceholder, $newsCategories, \Env::get('cx')->getPage()->getContent()));
+                            $themesPages['index']   = str_replace($newsCategoriesPlaceholder, $newsCategories, $themesPages['index']);
+                            $themesPages['sidebar'] = str_replace($newsCategoriesPlaceholder, $newsCategories, $themesPages['sidebar']);
+                            $page_template          = str_replace($newsCategoriesPlaceholder, $newsCategories, $page_template);
+                        }
+                        
+                        // Get News Archives
+                        $modulespath = ASCMS_CORE_MODULE_PATH.'/news/lib/newsLib.class.php';
+                        $newsArchivePlaceholder = '{NEWS_ARCHIVES}';
+                        if (   file_exists($modulespath)
+                            && (   strpos(\Env::get('cx')->getPage()->getContent(), $newsArchivePlaceholder) !== false
+                                || strpos($themesPages['index'], $newsArchivePlaceholder) !== false
+                                || strpos($themesPages['sidebar'], $newsArchivePlaceholder) !== false
+                                || strpos($page_template, $newsArchivePlaceholder) !== false)
+                        ) {
+                            $newsLib = new \newsLibrary();
+                            $newsArchive = $newsLib->getNewsArchiveList();
+                            
+                            \Env::get('cx')->getPage()->setContent(str_replace($newsArchivePlaceholder, $newsArchive, \Env::get('cx')->getPage()->getContent()));
+                            $themesPages['index']   = str_replace($newsArchivePlaceholder, $newsArchive, $themesPages['index']);
+                            $themesPages['sidebar'] = str_replace($newsArchivePlaceholder, $newsArchive, $themesPages['sidebar']);
+                            $page_template          = str_replace($newsArchivePlaceholder, $newsArchive, $page_template);
+                        }
+                        // Get recent News Comments
+                        $modulespath = ASCMS_CORE_MODULE_PATH.'/news/lib/newsRecentComments.class.php';
+                        $newsCommentsPlaceholder = '{NEWS_RECENT_COMMENTS_FILE}';
+                        
+                        if (   file_exists($modulespath)
+                            && (   strpos(\Env::get('cx')->getPage()->getContent(), $newsCommentsPlaceholder) !== false
+                                || strpos($themesPages['index'], $newsCommentsPlaceholder) !== false
+                                || strpos($themesPages['sidebar'], $newsCommentsPlaceholder) !== false
+                                || strpos($page_template, $newsCommentsPlaceholder) !== false)
+                        ) {
+                            $newsLib = new \newsRecentComments($themesPages['news_recent_comments']);
+                            $newsComments = $newsLib->getRecentNewsComments();
+                            
+                            \Env::get('cx')->getPage()->setContent(str_replace($newsCommentsPlaceholder, $newsComments, \Env::get('cx')->getPage()->getContent()));
+                            $themesPages['index']   = str_replace($newsCommentsPlaceholder, $newsComments, $themesPages['index']);
+                            $themesPages['sidebar'] = str_replace($newsCommentsPlaceholder, $newsComments, $themesPages['sidebar']);
+                            $page_template          = str_replace($newsCommentsPlaceholder, $newsComments, $page_template);
+                        }
                     },
                     'Calendar' => function() {
                         global $modulespath, $eventsPlaceholder, $_CONFIG, $themesPages, $page_template,
@@ -1136,7 +1190,6 @@ class LegacyComponentHandler {
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/data/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        //if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new \cmsSession();
                         #if (!isset($objAuth) || !is_object($objAuth)) $objAuth = &new Auth($type = 'frontend');
 
                         $objData = new \Data(\Env::get('cx')->getPage()->getContent());
@@ -1523,6 +1576,16 @@ class LegacyComponentHandler {
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $objFileshare = new \Filesharing(\Env::get('cx')->getPage()->getContent());
                         \Env::get('cx')->getPage()->setContent($objFileshare->getPage());
+                    },
+
+                    'survey' => function() {
+                        global $cl, $_CORELANG;
+
+                        /** @ignore */
+                        if (!$cl->loadFile(ASCMS_MODULE_PATH.'/survey/index.class.php'))
+                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        $objSurvey = new \survey(\Env::get('cx')->getPage()->getContent());
+                        \Env::get('cx')->getPage()->setContent($objSurvey->getPage());
                     },
 
                     'home' => function() {
@@ -2098,7 +2161,7 @@ class LegacyComponentHandler {
                         if (!$cl->loadFile(ASCMS_MODULE_PATH.'/survey/admin.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                         $subMenuTitle = $_CORELANG['TXT_SURVEY'];
-                        $objSurvey = new \SurveyAdmin();
+                        $objSurvey = new \survey();
                         $objSurvey->getPage();
                     },
                     'calendar' => function() {

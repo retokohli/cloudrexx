@@ -138,6 +138,11 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     protected $customContent;
 
     /**
+     * @var integer $useCustomContentForAllChannels
+     */
+    protected $useCustomContentForAllChannels;
+
+    /**
      * @var string $cssName
      */
     protected $cssName;
@@ -221,6 +226,11 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
      * @var Cx\Core\ContentManager\Model\Entity\Skin
      */
     protected $skin;
+
+    /**
+     * @var integer $useSkinForAllChannels
+     */
+    protected $useSkinForAllChannels;
 
     /**
      * @var string $type
@@ -495,6 +505,26 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
         return $this->customContent;
     }
 
+    /**
+     * Get useCustomContentForAllChannels
+     *
+     * @return integer $useCustomContentForAllChannels
+     */
+    public function setUseCustomContentForAllChannels($useCustomContentForAllChannels)
+    {
+        $this->useCustomContentForAllChannels = $useCustomContentForAllChannels;
+    }
+    
+    /**
+     * Get useCustomContentForAllChannels
+     *
+     * @return integer $useCustomContentForAllChannels
+     */
+    public function getUseCustomContentForAllChannels()
+    {
+        return $this->useCustomContentForAllChannels;
+    }
+    
     /**
      * Set cssName
      *
@@ -999,6 +1029,27 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     {
         return $this->skin;
     }
+    
+    /**
+     * Set useSkinForAllChannels
+     *
+     * @return integer $useSkinForAllChannels
+     */
+    public function setUseSkinForAllChannels($useSkinForAllChannels)
+    {
+        $this->useSkinForAllChannels = $useSkinForAllChannels;
+    }
+    
+    /**
+     * Get useSkinForAllChannels
+     *
+     * @return integer $useSkinForAllChannels
+     */
+    public function getUseSkinForAllChannels()
+    {
+        return $this->useSkinForAllChannels;
+    }
+    
     /**
      * @var boolean $caching
      */

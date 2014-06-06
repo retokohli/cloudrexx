@@ -68,7 +68,7 @@
     </ul>
 </div>
 <br>
-<div id="newContact"  style="margin-bottom: 5px;display:none;float:left;width: 100%;background-color: #FFCCCC;border: 1px solid;color: #FF0000;font-size: 12px;line-height: 14px;padding: 5px;"></div>
+<div id="newContact" class="alertbox"  style="display:none;"></div>
 <form id="access" name="newContact" onsubmit="membershipSelectAll()" action="" method="post">
     <div id="edit_contact">
         <div id="contact_form" style="float: left;width: 100%;">
@@ -568,7 +568,7 @@
                                     <!-- END customerwebsiteContainer -->
                                 </div>
                             </td>
-                            <td>{TXT_CRM_CUSTOMERTYPE}</td>
+                            <td>{TXT_CRM_CUSTOMERTYPE}&nbsp;<font color="red">*</font></td>
                             <td>
                                 <select tabindex="8" name="customer_type" id="customer_type" style="width: 262px !important;">
                                     <option value="">--{TXT_CRM_PLEASE_SELECT}--</option>

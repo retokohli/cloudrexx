@@ -87,6 +87,11 @@ Cx\Core\ContentManager\Model\Entity\Page:
       gedmo:
         - versioned
     
+    useCustomContentForAllChannels:
+      type: integer      
+      gedmo:
+        - versioned
+    
     cssName:
       nullable: true
       type: string
@@ -104,6 +109,11 @@ Cx\Core\ContentManager\Model\Entity\Page:
     skin:
       type: integer
       nullable: true
+      gedmo:
+        - versioned
+    
+    useSkinForAllChannels:
+      type: integer      
       gedmo:
         - versioned
 

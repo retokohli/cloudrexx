@@ -49,8 +49,9 @@ abstract class UserInterface {
         $this->commands = array(
             /* EXISTING COMMANDS */
             'db' => new DbCommand($this), // wrapper for doctrine commandline tools
+            'import' => new ImportCommand($this), // install component from zip, todo: install from repo
             'create' => new CreateCommand($this), // create new component
-            'delete' => new DeleteCommand($this), // delete a component
+            'uninstall' => new UninstallCommand($this), // delete a component            
             'activate' => new ActivateCommand($this), // activate a component
             'deactivate' => new DeactivateCommand($this), // deactivate a component
             'move' => new MoveCommand($this), // convert component types (core to core_module, etc.) and rename components
@@ -60,18 +61,17 @@ abstract class UserInterface {
             /* FUTURE COMMANDS */
             //'get' => new GetCommand($this), // Get workbench configuration variables
             //'set' => new SetCommand($this), // Set workbench configuration variables
-            //'test' => new TestCommand($this), // run UnitTests
+            'test' => new TestCommand($this), // run UnitTests
             //'treenav' => new TreeNavCommand($this), // recursive tree view of backend navigation
             //'addnav' => new AddNavCommand($this), // add a backend navigation entry
             //'rmnav' => new RmNavCommand($this), // remove a backend navigation entry
             //'mvnav' => new MvNavCommand($this), // move a backend navigation entry (remove and add new)
             //'export' => new ExportCommand($this), // export contrexx files without workbench
             //'publish' => new PublishCommand($this), // publish component to contrexx app repo (after successful unit testing)
-            //'install' => new InstallCommand($this), // install a component from contrexx app repo
             //'update' => new UpdateCommand($this), // port a component to this version of contrexx
             //'upgrade' => new UpgradeCommand($this), // upgrade a component to current or current beta version
             //'push' => new PushCommand($this), // Pushes this installation to a FTP server
-            //'pack' => new PackCommand($this), // Create install/update package of current installation
+            'export' => new ExportCommand($this), // Create install/update package of current installation
         );
     }
     

@@ -1356,8 +1356,8 @@ class AccessManager extends AccessLib
 
         $this->parseNewsletterLists($objUser);
         
-        $cancelUrl = 'index.php?cmd=access&amp;act=user';
         $urlParams = '';
+        $cancelUrl = 'index.php?cmd=access&amp;act=user';
         $source = isset($_GET['source']) ? contrexx_input2raw($_GET['source']) : 'access';
         switch($source){
             case 'newsletter':

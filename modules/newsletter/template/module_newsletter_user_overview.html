@@ -18,12 +18,14 @@ var cxDataList = function() {
     var htmlTd = '<td style="white-space:nowrap;"></td>';
     var htmlInput = '<input type="checkbox" name="userid[]" value="[id]" />';
     var htmlAEditNewsletter = '<a href="index.php?cmd=newsletter&act=users&tpl=edit&id=[id]" title="{TXT_NEWSLETTER_MODIFY_RECIPIENT}"></a>';
+    var htmlACopyUser = '<a href="index.php?cmd=newsletter&act=users&tpl=edit&copy=1&id=[id]" title="{TXT_NEWSLETTER_MODIFY_RECIPIENT}"></a>';
     var htmlAEditAccess = '<a href="index.php?cmd=access&act=user&tpl=modify&id=[id]&source=newsletter" title="{TXT_NEWSLETTER_MODIFY_RECIPIENT}"></a>';
     var htmlADelete = '<a href="javascript:void(0)" onclick="DeleteUser([id],\'[email]\')" title="{TXT_NEWSLETTER_DELETE_RECIPIENT}"></a>';
     var htmlUserFunctions = '<td style="text-align:right;"></td>';
     var htmlImageLedRed = '<img src="images/icons/led_red.gif" title="{TXT_OPEN_ISSUE}" alt="{TXT_OPEN_ISSUE}" border="0" />';
     var htmlImageLedGreen = '<img src="images/icons/led_green.gif" title="{TXT_ACTIVE}" alt="{TXT_ACTIVE}" border="0" />';
     var htmlImageEdit = '<img src="images/icons/edit.gif" title="{TXT_NEWSLETTER_MODIFY_RECIPIENT}" alt="{TXT_NEWSLETTER_MODIFY_RECIPIENT}" border="0" />';
+    var htmlImageCopy = '<img src="images/icons/copy.gif" title="{TXT_NEWSLETTER_COPY_RECIPIENT}" alt="{TXT_NEWSLETTER_COPY_RECIPIENT}" border="0" />';
     var htmlImageIconSpacer = '<img src="images/icons/pixel.gif" width="17" height="17" border="0" />';
     var htmlImageDelete = '<img src="images/icons/delete.gif" title="{TXT_NEWSLETTER_DELETE_RECIPIENT}" alt="{TXT_NEWSLETTER_DELETE_RECIPIENT}" border="0" />';
     var htmlAFeedback = '<a href="index.php?cmd=newsletter&act=users&tpl=feedback&id=[id]&recipient_type=[type]" title="{TXT_NEWSLETTER_FEEDBACK_OVERVIEW}"></a>';
@@ -146,10 +148,12 @@ var cxDataList = function() {
             userFunctions = $(htmlUserFunctions);
     
             if (user.type == 'newsletter') {
-                userFunctions.append($(htmlAEditNewsletter.replace('[id]', user.id)).append($(htmlImageEdit)));
+                userFunctions.append($(htmlACopyUser.replace('[id]', user.id)).append($(htmlImageCopy)));
+                userFunctions.append($(htmlAEditNewsletter.replace('[id]', user.id)).append($(htmlImageEdit)));                                
                 userFunctions.append($(htmlADelete.replace('[id]', user.id).replace('[email]', user.email)).append($(htmlImageDelete)));
             } else {
-                userFunctions.append($(htmlAEditAccess.replace('[id]', user.id)).append($(htmlImageEdit)));
+                userFunctions.append($(htmlACopyUser.replace('[id]', user.id)).append($(htmlImageCopy)));
+                userFunctions.append($(htmlAEditAccess.replace('[id]', user.id)).append($(htmlImageEdit)));                
                 userFunctions.append($(htmlImageIconSpacer));
             }
 
