@@ -106,7 +106,7 @@ $this->bytes = memory_get_peak_usage();
             }
             $page = $node->getPage($this->lang);
             if (
-                    $node->getLvl() == $lastLevel ||
+                    ($node->getLvl() == $lastLevel && $lastLevel > 0) ||
                     (
                         !$this->getFullNavigation() && // don't show full navigation
                         $page && // don't be on root node
