@@ -20,7 +20,7 @@ namespace Cx\Core_Modules\cache\lib\Doctrine\CacheDriver;
  */
 class FilesystemCache extends FileCache
 {
-    const EXTENSION = '.doctrinecache.data';
+    const EXTENSION = '.tmp';
 
     /**
      * {@inheritdoc}
@@ -103,5 +103,19 @@ class FilesystemCache extends FileCache
         }
 
         return file_put_contents($filename, $lifeTime . PHP_EOL . $data) !== false;
+    }
+    
+    /**
+     * {@inheritdoc}
+     */
+    protected function doFlush()
+    {
+        foreach (new \DirectoryIterator($this->directory) as $file) {            
+            if ($file->isDir() && !$file->isDot()) {
+                \Cx\Lib\FileSystem\FileSystem::delete_folder($file->getPath() .'/'. $file->getFilename(), true);
+            }
+        }
+        
+        return true;
     }
 }
