@@ -68,4 +68,8 @@ class SitemapPageTree extends SigmaPageTree {
     protected function preRenderElement($level, $hasChilds, $lang, $page) {
         
     }
+
+    protected function getFullNavigation(){
+        return true;
+    }
 }
