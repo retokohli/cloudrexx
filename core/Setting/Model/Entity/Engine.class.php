@@ -28,7 +28,7 @@ namespace Cx\Core\Setting\Model\Entity;
  */
 abstract class Engine {
     
-     /**
+    /**
      * The array of currently loaded settings, like
      *  array(
      *    'name' => array(
@@ -46,7 +46,6 @@ abstract class Engine {
      * @access  protected
      */
     protected static $arrSettings = null;
-    
     /**
      * The group last used to {@see init()} the settings.
      * Defaults to null (ignored).
@@ -55,7 +54,6 @@ abstract class Engine {
      * @access  protected
      */
     protected static $group = null;
-
     /**
      * The section last used to {@see init()} the settings.
      * Defaults to null (which will cause an error in most methods).
@@ -64,8 +62,7 @@ abstract class Engine {
      * @access  protected
      */
     protected static $section = null;
-    
-     /**
+    /**
      * Changed flag
      *
      * This flag is set to true as soon as any change to the settings is detected.
@@ -75,7 +72,6 @@ abstract class Engine {
      * @access  protected
      */
     protected static $changed = false;
-    
     /**
      * Returns the current value of the changed flag.
      *
@@ -87,15 +83,12 @@ abstract class Engine {
     {
         return self::$changed;
     }
-
     /**
      * Tab counter for the {@see show()} and {@see show_external()}
      * @var     integer
      * @access  public
      */
     public static $tab_index = 1;
-
-
     /**
      * Optionally sets and returns the value of the tab index
      * @param   integer $tab_index  The optional new tab index
@@ -108,7 +101,6 @@ abstract class Engine {
         }
         return self::$tab_index;
     }
-    
     /**
      * Flush the stored settings
      *
@@ -123,7 +115,6 @@ abstract class Engine {
         self::$group = null;
         self::$changed = null;
     }
-    
     /** 
      * Returns the settings array for the given section and group
      *
@@ -144,7 +135,6 @@ abstract class Engine {
         }
         return self::$arrSettings;
     }
-    
     /**
      * Returns the settings array for the given section and group
      * @return  array
@@ -153,7 +143,6 @@ abstract class Engine {
     {
        return self::$arrSettings;
     }
-    
     /**
      * Returns the settings value stored in the object for the name given.
      *
@@ -170,14 +159,11 @@ abstract class Engine {
             \DBG::log("\Cx\Core\Setting\Model\Entity\Engine::getValue($name): ERROR: no settings loaded");
             return null;
         }
-
         if (isset(self::$arrSettings[$name]['value'])) {
             return self::$arrSettings[$name]['value'];
         };
-
         return null;
     }
-    
     /**
      * Updates a setting
      *
@@ -205,7 +191,6 @@ abstract class Engine {
         // \DBG::log("\Cx\Core\Setting\Model\Entity\Engine::set($name, $value): Added/updated, changed: ".self::$changed);
         return true;
     }
-    
     /**
      * Stores all settings entries present in the $arrSettings object
      * array variable
@@ -221,7 +206,6 @@ abstract class Engine {
      *                                    false otherwise
      */
     public abstract static function updateAll();
-    
     /**
      * Updates the value for the given name in the settings table
      *
@@ -239,8 +223,6 @@ abstract class Engine {
      * @global  mixed     $objDatabase    Database connection object
      */
     public abstract static function update($name);
-    
-    
     /**
      * Add a new record to the settings
      *
@@ -260,7 +242,6 @@ abstract class Engine {
      * @return  boolean             True on success, false otherwise
      */ 
     public abstract static function add($name, $value, $ord=false, $type='text', $values='', $group=null);
-    
     /**
      * Delete one or more records from the database table
      *
@@ -276,7 +257,6 @@ abstract class Engine {
      * @return  boolean             True on success, false otherwise
      */
     public abstract static function delete($name=null, $group=null);
-    
     /**
      * Deletes all entries for the current section
      *
@@ -285,7 +265,6 @@ abstract class Engine {
      * @return    boolean               True on success, false otherwise
      */
     public abstract static function deleteModule();
-    
     /**
      * Should be called whenever there's a problem with the settings
      *
@@ -294,7 +273,4 @@ abstract class Engine {
      * @static
      */
     public abstract static function errorHandler();
-    
-   
-    
 }

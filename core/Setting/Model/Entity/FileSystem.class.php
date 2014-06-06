@@ -27,14 +27,6 @@ namespace Cx\Core\Setting\Model\Entity;
  * @todo        Edit PHP DocBlocks!
  */
 class FileSystem extends Engine{
-    
-    /**
-     * change counter for the {@see update()} 
-     * @var     integer
-     * @access  private
-     */
-    private static $change_index = 1;
-    
     /**
      * Initialize the settings entries from the file with key/value pairs
      * for the current section and the given group
@@ -57,21 +49,16 @@ class FileSystem extends Engine{
         self::flush();
         self::$section = $section;
         self::$group = $group;
-       
         //call DataSet importFromFile method @return array
         $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::importFromFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $filename);
-        //echo "<pre>"; print_r($objDataSet); die;
         if(!empty($objDataSet))
         {
             foreach($objDataSet as $value)
             {
                 self::$arrSettings[$value['name']]= $value;
-             
             }
         }
-        
     }
-    
     /**
      * Stores all settings entries present in the $arrSettings object
      * array variable
@@ -89,22 +76,29 @@ class FileSystem extends Engine{
     static function updateAll()
     {
         //global $_CORELANG;
-
         if (!self::$changed) {
         // TODO: These messages are inapropriate when settings are stored by another piece of code, too.
         // Find a way around this.
         // Message::information($_CORELANG['TXT_CORE_SETTINGDB_INFORMATION_NO_CHANGE']);
             return null;
         }
-        $success = true;
-        
-        foreach (self::$arrSettings as $name => $arrSetting) {
-            $success &= self::update($name);
-            self::$change_index++;
+        // TODO: Add error messages for section errors
+        if (empty(self::$section)) {
+            \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::updateAll(): ERROR: Empty section!");
+            return false;
         }
-       
+        // TODO: Add error messages for setting array errors
+        if (empty(self::$arrSettings)) {
+            \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::updateAll(): ERROR: Empty section!");
+            return false;
+        }
+        $success = true;
+        //File Path
+        $fileName=ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
+        //call DataSet exportToFile method to update file
+        $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet(self::$arrSettings);
+        $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $fileName);
         if ($success) {
-            
             self::$changed = false;
             //return Message::ok($_CORELANG['TXT_CORE_SETTINGDB_STORED_SUCCESSFULLY']);
             return true;
@@ -112,9 +106,8 @@ class FileSystem extends Engine{
         //return Message::error($_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING']);
         return false;
     }
-    
     /**
-     * Updates the value for the given name in the settings table
+     * Updates the value for the given name in the settings
      *
      * The class *MUST* have been initialized before calling this
      * method using {@see init()}, and the new value been {@see set()}.
@@ -122,7 +115,7 @@ class FileSystem extends Engine{
      * updated successfully.
      * Note that this method does not work for adding new settings.
      * See {@see add()} on how to do this.
-     * Also note that the loaded setting is not updated, only the database!
+     * Also note that the loaded setting is not updated,
      * @param   string    $name   The settings name
      * @return  boolean           True on successful update or if
      *                            unchanged, false on failure
@@ -130,7 +123,6 @@ class FileSystem extends Engine{
      */
     static function update($name)
     {
-        
         // TODO: Add error messages for individual errors
         if (empty(self::$section)) {
             \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::update(): ERROR: Empty section!");
@@ -147,29 +139,15 @@ class FileSystem extends Engine{
             return false;
         }
         if(!empty(self::$arrSettings)){
-            try {
-                $fileName=ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
-                $file = new \Cx\Lib\FileSystem\File($fileName);
-                    
-                if(self::$change_index==1)
-                {
-                    $file->delete();
-                    foreach(self::$arrSettings as $value){
-                        $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet(array($value));
-                        $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $fileName);
-                    }
-                }
-                return true;
-            } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-                \DBG::msg($e->getMessage());
-            } 
-            
+            $fileName=ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
+            $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet(self::$arrSettings);
+            $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $fileName);
+            return true;
         }else{
             return false;
         }
     }
-    
-     /**
+    /**
      * Add a new record to the settings    
      *
      * The class *MUST* have been initialized by calling {@see init()}
@@ -194,13 +172,11 @@ class FileSystem extends Engine{
             \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::add(): ERROR: Empty section!");
             return false;
         }
-        
         // Fail if the name is invalid
         if (empty($name)) {
             \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::add(): ERROR: Empty name!");
             return false;
         }
-
         // This can only be done with a non-empty group!
         // Use the current group, if present, otherwise fail
         if (!$group) {
@@ -210,12 +186,10 @@ class FileSystem extends Engine{
             }
             $group = self::$group;
         }
-        
         // Initialize if necessary
         if (is_null(self::$arrSettings) || self::$group != $group){
             self::init(self::$section, $group);
         }
-        
         // Such an entry exists already, fail.
         // Note that getValue() returns null if the entry is not present
         $old_value = self::getValue($name);
@@ -223,10 +197,8 @@ class FileSystem extends Engine{
             // \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::add(): ERROR: Setting '$name' already exists and is non-empty ($old_value)");
             return false;
         }
-        
         $filename = ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
-         
-        $addValue[] =   Array(  
+        $addValue =   Array(  
                             'name'=> addslashes($name),
                             'section'=> addslashes(self::$section),
                             'group'=> addslashes($group),
@@ -235,16 +207,15 @@ class FileSystem extends Engine{
                             'values'=> addslashes($values),
                             'ord'=> intval($ord)
                         );
-                              
-        $objDataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($addValue);
-        $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $filename);
-        
+        self::$arrSettings[addslashes($name)]=$addValue;
+        if(!empty(self::$arrSettings)){                     
+            $objDataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet(self::$arrSettings);
+            $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $filename);
+        }
         return true;
     }
-
-
     /**
-     * Delete one or more records from the database table    
+     * Delete one or more records from the File   
      *
      * For maintenance/update purposes only.
      * At least one of the parameter values must be non-empty.
@@ -263,12 +234,9 @@ class FileSystem extends Engine{
         if(empty($name) && empty($group) && empty(self::$section))return false;
          
         $arrSetting=array();
-        
         $filename=ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
-        
         $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::importFromFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $filename);
-        
-        // if get blank or invalid array
+        // if get blank or invalid file
         if(empty($objDataSet))return false;
         
         foreach($objDataSet as $value)
@@ -279,25 +247,11 @@ class FileSystem extends Engine{
         }
         // if get blank array    
         if(empty($arrSetting))return false;
-            
-        try {
-            $objFile = new \Cx\Lib\FileSystem\File($filename);
-            $objFile->delete(); 
-            
-            foreach($arrSetting as $value)
-            {
-                $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet(array($value));
-                $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $filename);
-            }
-            
-            return true;
         
-        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-            \DBG::msg($e->getMessage());
-        }
-            
+        $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet($arrSetting);
+        $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $filename);
+        return true;                   
     }
-
     /**
      * Deletes all entries for the current section
      *
@@ -308,18 +262,15 @@ class FileSystem extends Engine{
     static function deleteModule()
     {
         if (empty(self::$section))return false;
-        
         try {
             $filename=ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
             $objFile = new \Cx\Lib\FileSystem\File($filename);
             $objFile->delete();       
             return true;
-            
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             \DBG::msg($e->getMessage());
         }
     }
-
     /**
      * Should be called whenever there's a problem with the settings
      *
@@ -337,6 +288,5 @@ class FileSystem extends Engine{
             \DBG::msg($e->getMessage());
         }
        
-    }
-    
+    } 
 }

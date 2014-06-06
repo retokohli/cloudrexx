@@ -27,8 +27,6 @@ namespace Cx\Core\Setting\Model\Entity;
  * @todo        Edit PHP DocBlocks!
  */
 class Db extends Engine{
-    
-   
     /**
      * Initialize the settings entries from the database with key/value pairs
      * for the current section and the given group
@@ -47,8 +45,7 @@ class Db extends Engine{
      * @global  ADOConnection   $objDatabase
      */
     static function init($section, $group=null) {
-        
-         global $objDatabase;
+        global $objDatabase;
 
         if (empty($section)) {
             die("\Cx\Core\Setting\Model\Entity\Db::init($section, $group): ERROR: Missing \$section parameter!");
@@ -80,9 +77,7 @@ class Db extends Engine{
         //echo("Setting ".$objResult->fields['name']." = ".$objResult->fields['value']."<br />");
             $objResult->MoveNext();
         }
-        
     }
-    
     /**
      * Stores all settings entries present in the $arrSettings object
      * array variable
@@ -119,7 +114,6 @@ class Db extends Engine{
         //return Message::error($_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING']);
         return false;
     }
-    
     /**
      * Updates the value for the given name in the settings table
      *
@@ -137,9 +131,8 @@ class Db extends Engine{
      * @global  mixed     $objDatabase    Database connection object
      */
     static function update($name)
-    {
+    {   
         global $objDatabase;
-
         // TODO: Add error messages for individual errors
         if (empty(self::$section)) {
             \DBG::log("\Cx\Core\Setting\Model\Entity\Db::update(): ERROR: Empty section!");
@@ -166,8 +159,7 @@ class Db extends Engine{
         self::$changed = true;
         return true;
     }
-    
-     /**
+    /**
      * Add a new record to the settings
      *
      * The class *MUST* have been initialized by calling {@see init()}
@@ -188,7 +180,6 @@ class Db extends Engine{
     static function add( $name, $value, $ord=false, $type='text', $values='', $group=null)
     {
         global $objDatabase;
-
         if (!isset(self::$section)) {
             // TODO: Error message
             \DBG::log("\Cx\Core\Setting\Model\Entity\Db::add(): ERROR: Empty section!");
@@ -241,8 +232,6 @@ class Db extends Engine{
         }
         return true;
     }
-
-
     /**
      * Delete one or more records from the database table
      *
@@ -272,7 +261,6 @@ class Db extends Engine{
         self::flush();
         return true;
     }
-
     /**
      * Deletes all entries for the current section
      *
@@ -294,7 +282,6 @@ class Db extends Engine{
         if (!$objResult) return self::errorHandler();
         return true;
     }
-
     /**
      * Should be called whenever there's a problem with the settings table
      *
@@ -328,6 +315,4 @@ class Db extends Engine{
         //Always!
         return false;
     }
-   
-
 }

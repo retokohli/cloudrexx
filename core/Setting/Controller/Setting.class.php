@@ -86,7 +86,6 @@ class Setting{
         $engineType=self::getEngineType();
         return $engineType::changed();  
     }
-    
     /**
      * Optionally sets and returns the value of the tab index    
      * @param   integer  $tab_index The optional new tab index
@@ -97,8 +96,6 @@ class Setting{
         $engineType=self::getEngineType();
         return $engineType::tab_index($tab_index);
     }
-    
-    
     /**
      * Initialize the settings entries from the database with key/value pairs    
      * for the current section and the given group
@@ -122,12 +119,9 @@ class Setting{
     {
         
         if($engine=="Database" || empty($engine)){ //default
-            
             \Cx\Core\Setting\Model\Entity\Db::init($section, $group);
             self::setEngineType('\Cx\Core\Setting\Model\Entity\Db');
-             
         }elseif($engine=="FileSystem"){ //optional
-            
             \Cx\Core\Setting\Model\Entity\FileSystem::init($section, $group);
             self::setEngineType('\Cx\Core\Setting\Model\Entity\FileSystem');
         }else{
@@ -136,7 +130,6 @@ class Setting{
         }
         return true;
     }
-    
     /**
      * Flush the stored settings
      *
@@ -149,7 +142,6 @@ class Setting{
         $engineType=self::getEngineType();
         return $engineType::flush();
     }
-    
     /**
      * Returns the settings array for the given section and group
      *
@@ -167,8 +159,7 @@ class Setting{
         $engineType=self::getEngineType();
         return $engineType::getArray($section,$group);
     }
-    
-     /**
+    /**
      * Returns the settings value stored in the object for the name given.
      *
      * If the settings have not been initialized (see {@see init()}), or
@@ -183,8 +174,7 @@ class Setting{
         $engineType=self::getEngineType();
         return $engineType::getValue($name);  
     }
-    
-     /**
+    /**
      * Updates a setting
      *
      * If the setting name exists and the new value is not equal to
@@ -201,7 +191,6 @@ class Setting{
         $engineType=self::getEngineType();
         return $engineType::set($name, $value);  
     }
-    
     /**
      * Stores all settings entries present in the $arrSettings object
      * array variable
@@ -221,7 +210,6 @@ class Setting{
         $engineType=self::getEngineType();
         return $engineType::updateAll();  
     }
-    
     /**
      * Updates the value for the given name in the settings table
      *
@@ -243,8 +231,7 @@ class Setting{
         $engineType=self::getEngineType();
         return $engineType::update($name);  
     }
-    
-     /**
+    /**
      * Add a new record to the settings
      *
      * The class *MUST* have been initialized by calling {@see init()}
@@ -267,8 +254,6 @@ class Setting{
         $engineType=self::getEngineType();
         return $engineType::add( $name, $value, $ord, $type, $values, $group);  
     }
-    
-    
     /**
      * Delete one or more records from the database table
      *
@@ -288,7 +273,6 @@ class Setting{
         $engineType=self::getEngineType();
         return $engineType::delete($name, $group);
     }
-    
     /**
      * Display the settings present in the $arrSettings class array
      *
@@ -393,9 +377,6 @@ class Setting{
 
         return true;
     }
-
-
-
     /**
      * Display a section of settings present in the $arrSettings class array
      *
@@ -608,8 +589,6 @@ class Setting{
         }
         return true;
     }
-
-
     /**
      * Adds an external settings view to the current template
      *
@@ -654,7 +633,6 @@ class Setting{
         }
         return true;
     }
-    
     /**
      * Ensures that a valid template is available
      *
@@ -678,8 +656,6 @@ class Setting{
             //die(nl2br(contrexx_raw2xhtml(var_export($objTemplateLocal, true))));
         }
     }
-
-
     /**
      * Update and store all settings found in the $_POST array
      *
@@ -787,8 +763,6 @@ class Setting{
         // There has been an error anyway
         return false;
     }
-
-   
     /**
      * Deletes all entries for the current section    
      *
@@ -801,7 +775,6 @@ class Setting{
         $engineType=self::getEngineType();
         return $engineType::deleteModule();  
     } 
-    
     /**
      * Splits the string value at commas and returns an array of strings    
      *
@@ -845,7 +818,6 @@ class Setting{
             // \DBG::log("Array: ".var_export($arrValues, true));
         return $arrValues;
     }
-    
     /**
      * Joins the strings in the array with commas into a single values string    
      *
@@ -869,7 +841,6 @@ class Setting{
         }
         return $strValues;
     }
-    
     /**
      * Should be called whenever there's a problem with the settings table    
      *
@@ -882,7 +853,6 @@ class Setting{
         $engineType=self::getEngineType();
         return $engineType::errorHandler();  
     }
-    
     /**
      * Returns the settings from the old settings table for the given module ID,    
      * if available
@@ -918,27 +888,20 @@ class Setting{
         }
         return $arrConfig;
     }
-    
     /**
      * Get engineType    
      *
      * @return string $engineType
      */ 
     static function getEngineType(){
-        
         return self::$engineType;
     }
-    
     /**
      * Set engineType    
      *
      * @param string $engineType
      */
     static function setEngineType($engineType){
-        
         self::$engineType=$engineType;
-    }
-    
-    
-    
+    }   
 }
