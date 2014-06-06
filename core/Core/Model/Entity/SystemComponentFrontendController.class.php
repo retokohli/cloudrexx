@@ -47,7 +47,7 @@ abstract class SystemComponentFrontendController extends Controller {
         // parse page
         
         $componentTemplate->setVariable($_ARRAYLANG);
-        $this->parsePage($componentTemplate);
+        $this->parsePage($componentTemplate, $page->getCmd());
         \CSRF::add_placeholder($componentTemplate);
         $page->setContent($componentTemplate->get());
     }
@@ -60,5 +60,5 @@ abstract class SystemComponentFrontendController extends Controller {
      * To show messages, use \Message class
      * @param \Cx\Core\Html\Sigma $template Template containing content of resolved page
      */
-    public abstract function parsePage(\Cx\Core\Html\Sigma $template);
+    public abstract function parsePage(\Cx\Core\Html\Sigma $template, $cmd);
 }

@@ -166,7 +166,7 @@ class MediaLibrary
             if (isset($_SESSION['mediaCopyFile'])) {
                 unset($_SESSION['mediaCopyFile']);
             }
-
+            $_SESSION['mediaCutFile'] = array();
             $_SESSION['mediaCutFile'][] = $this->path;
             $_SESSION['mediaCutFile'][] = $this->webPath;
             $_SESSION['mediaCutFile'][] = $_POST['formSelected'];
@@ -189,6 +189,7 @@ class MediaLibrary
                 unset($_SESSION['mediaCopyFile']);
             }
 
+            $_SESSION['mediaCopyFile'] = array();
             $_SESSION['mediaCopyFile'][] = $this->path;
             $_SESSION['mediaCopyFile'][] = $this->webPath;
             $_SESSION['mediaCopyFile'][] = $_POST['formSelected'];
@@ -335,16 +336,15 @@ class MediaLibrary
         // file or dir
         $fileName = !empty($_POST['renName']) ? $_POST['renName'] : 'empty';
         if (empty($_POST['oldExt'])) {
-            $oldName = $_POST['oldName'];
+            $oldName  = $_POST['oldName'];
         } else {
-            $ext
-                = (!empty($_POST['renExt'])
-            && FWValidator::is_file_ending_harmless(
-                $_POST['renName'] . '.' . $_POST['renExt']
-            )
-                ? $_POST['renExt'] : 'txt');
-            $fileName = $fileName . '.' . $ext;
-            $oldName = $_POST['oldName'] . '.' . $_POST['oldExt'];
+            $ext      =
+                (   !empty($_POST['renExt'])
+                && FWValidator::is_file_ending_harmless(
+                    $_POST['renName'].'.'.$_POST['renExt'])
+                    ? $_POST['renExt'] : 'txt');
+            $fileName = $fileName.'.'.$ext;
+            $oldName  = $_POST['oldName'].'.'.$_POST['oldExt'];
         }
 
         \Cx\Lib\FileSystem\FileSystem::clean_path($fileName);
@@ -450,6 +450,7 @@ class MediaLibrary
         $newName = $arrData['newName'];
         $newFile = $newName.'.'.$arrData['orgExt'];
         \Cx\Lib\FileSystem\FileSystem::clean_path($newFile);
+        
         // If new image name is set, image will be copied. Otherwise, image will be overwritten
         if ($newName != '') {
             $this->fileLog = $objFile->copyFile($this->path, $orgFile, $this->path, $newFile);
@@ -1233,38 +1234,6 @@ END;
            files are present in $tempPath                                   */
 	 
         return array($data['path'],$data['webPath']);
-    }
-
-    // replaces some characters
-    protected static function cleanFileName($string)
-    {
-        //contrexx file name policies
-        $string = FWValidator::getCleanFileName($string);
-
-        //media library special changes; code depends on those
-        // replace $change with ''
-        $change = array('+');
-        // replace $signs1 with $signs
-        $signs1 = array(' ', 'ä', 'ö', 'ü', 'ç');
-        $signs2 = array('_', 'ae', 'oe', 'ue', 'c');
-
-        foreach ($change as $str) {
-            $string = str_replace($str, '_', $string);
-        }
-        for ($x = 0; $x < count($signs1); $x++) {
-            $string = str_replace($signs1[$x], $signs2[$x], $string);
-        }
-
-        $string = str_replace('__', '_', $string);
-        if (strlen($string) > 60) {
-            $info       = pathinfo($string);
-            $stringExt  = $info['extension'];
-
-            $stringName = substr($string, 0, strlen($string) - (strlen($stringExt) + 1));
-            $stringName = substr($stringName, 0, 60 - (strlen($stringExt) + 1));
-            $string     = $stringName.'.'.$stringExt;
-        }
-        return $string;
     }
     
     /**

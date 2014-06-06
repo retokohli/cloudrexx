@@ -1522,6 +1522,8 @@ function loadMd5SumOfOriginalCxFiles()
 
 function backupModifiedFile($file)
 {
+    global $_CONFIG;
+            
     $cxFilePath = dirname(substr($file, strlen(ASCMS_DOCUMENT_ROOT)));
     if ($cxFilePath == '/') {
         $cxFilePath = '';
@@ -1529,7 +1531,7 @@ function backupModifiedFile($file)
 
     $customizingPath = ASCMS_DOCUMENT_ROOT.'/customizing'.$cxFilePath;
     \Cx\Lib\FileSystem\FileSystem::make_folder($customizingPath);
-    $customizingFile = $customizingPath . '/'. basename($file);
+    $customizingFile = $customizingPath . '/'. basename($file)."_".$_CONFIG['coreCmsVersion'];
 
     if (file_exists($customizingFile)) {
         $customizingFile .= '_backup_'.date('d.m.Y');
@@ -1658,6 +1660,12 @@ function copyCxFilesToRoot($src, $dst)
             $_SESSION['contrexx_update']['copiedCxFilesTotal']++;
 
             try {
+                
+                // rename the file if its exists on customizing
+                if (!renameCustomizingFile($dstPath)) {
+                    return false;
+                }
+                    
                 if (!verifyMd5SumOfFile($dstPath, $srcPath)) {
                     if (!backupModifiedFile($dstPath)) {
                         return false;
@@ -1679,6 +1687,47 @@ function copyCxFilesToRoot($src, $dst)
     }
 
     closedir($dir);
+    return true;
+}
+
+function renameCustomizingFile($file) 
+{
+    global $_CONFIG;
+    
+    $cxFilePath = dirname(substr($file, strlen(ASCMS_DOCUMENT_ROOT)));
+    if ($cxFilePath == '/') {
+        $cxFilePath = '';
+    }
+
+    $customizingPath = ASCMS_DOCUMENT_ROOT.'/customizing'.$cxFilePath;
+    
+    $customizingFile = $customizingPath . '/'. basename($file);
+
+    if (file_exists($customizingFile)) {
+        $customizingFile .= "_".$_CONFIG['coreCmsVersion'];
+        
+        $suffix = '';
+        $idx = 0;
+        while (file_exists($customizingFile.$suffix)) {
+            $idx++;
+            $suffix = '_'.$idx;
+        }
+    
+        $customizingFile .= $suffix;
+    } else {
+        return true;
+    }
+
+    try {
+        $objFile = new \Cx\Lib\FileSystem\File($file);
+        $objFile->copy($customizingFile);        
+    } catch (\Exception $e) {
+        setUpdateMsg('Error on renaming customizing file:<br />' . $file);
+        setUpdateMsg('Error: ' . $e->getMessage());
+        setUpdateMsg('<br />Häufigste Ursache dieses Problems ist, dass zur Ausführung dieses Vorgangs die benötigten Schreibrechte nicht vorhanden sind. Prüfen Sie daher, ob die FTP-Konfiguration in der Datei <strong>config/configuration.php</strong> korrekt eingerichtet ist.');
+        return false;
+    }
+
     return true;
 }
 

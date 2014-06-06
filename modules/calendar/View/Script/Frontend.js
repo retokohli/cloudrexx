@@ -167,4 +167,19 @@ $J(function(){
             $J(".event-redirect").show();
         }
     });
+    $J( ".eventLocationType" ).click(function(){
+        showOrHidePlaceFields($J(this).val(), 'place');
+	});
+    $J( ".eventHostType" ).click(function(){
+        showOrHidePlaceFields($J(this).val(), 'host');
+    });
 });
+function showOrHidePlaceFields(inputValue, type) {        
+    if (inputValue == '1') {
+        $J( "div.event_"+type+"_manual" ).css("display", "table-row");
+        $J( "div.event_"+type+"_mediadir" ).css("display", "none");
+    } else {
+        $J( "div.event_"+type+"_manual" ).css("display", "none");
+        $J( "div.event_"+type+"_mediadir" ).css("display", "table-row");
+    }
+}

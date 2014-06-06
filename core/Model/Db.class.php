@@ -211,14 +211,13 @@ namespace Cx\Core\Model {
                     $cache->setNamespace($_DBCONFIG['database'] . '.' . DBPREFIX);
                     break;
                 case \Cache::CACHE_ENGINE_FILESYSTEM:
-                    $cache = new \Cx\Core_Modules\Cache\lib\Doctrine\CacheDriver\FileSystemCache();
-                    $cache->setPath(ASCMS_CACHE_PATH);
+                    $cache = new \Cx\Core_Modules\cache\lib\Doctrine\CacheDriver\FileSystemCache(ASCMS_CACHE_PATH);                    
                     break;
                 default:
                     $cache = new \Doctrine\Common\Cache\ArrayCache();
                     break;
             }
-            
+            \Env::set('cache', $cache);
             $config->setResultCacheImpl($cache);
             $config->setMetadataCacheImpl($cache);
             $config->setQueryCacheImpl($cache);

@@ -298,6 +298,11 @@ DBG::log($error);
                 $return = PayPal::getForm($account_email, $order_id,
                     $currency_code, $amount, $item_name);
                 break;
+            case 'paymill_cc':    
+            case 'paymill_elv':
+            case 'paymill_iban':
+                $return =  self::_PaymillProcessor(self::getPaymentProcessorName());
+                break;                
             case 'dummy':
                 $return = Dummy::getForm();
                 break;
@@ -422,6 +427,54 @@ DBG::log($error);
 
 
     /**
+     * Returns the HTML code for the Paymill payment method.
+     * 
+     * @return  string  HTML code
+     */
+    static function _PaymillProcessor($processMethod)
+    {
+        global $_ARRAYLANG;
+        
+        $landingPage = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page')->findOneByModuleCmdLang('shop'.MODULE_INDEX, 'success', FRONTEND_LANG_ID);
+        
+        $arrShopOrder = array(
+            'order_id'  => $_SESSION['shop']['order_id'],
+            'amount'    => intval($_SESSION['shop']['grand_total_price']*100),
+            'currency'  => Currency::getActiveCurrencyCode(),
+        );
+
+        switch ($processMethod) {
+            case 'paymill_cc':
+                $return = PaymillCCHandler::getForm($arrShopOrder, $landingPage);
+                break;
+            case 'paymill_elv':
+                $return = PaymillELVHandler::getForm($arrShopOrder, $landingPage);
+                break;
+            case 'paymill_iban':
+                $return = PaymillIBANHandler::getForm($arrShopOrder, $landingPage);
+                break;
+        }
+        
+        if (_PAYMENT_DEBUG && PaymillHandler::$arrError) {
+            $strError =
+                '<font color="red"><b>'.
+                $_ARRAYLANG['TXT_SHOP_PSP_FAILED_TO_INITIALISE_YELLOWPAY'].
+                '<br /></b>';
+            if (_PAYMENT_DEBUG) {
+                $strError .= join('<br />', PaymillHandler::$arrError); //.'<br />';
+            }
+            return $strError.'</font>';
+        }
+        if (empty ($return)) {
+            foreach (PaymillHandler::$arrError as $error) {
+                DBG::log("Paymill Error: $error");
+            }
+        }
+        
+        return $return;
+    }
+    
+    /**
      * Returns the HTML code for the Yellowpay payment method.
      * @return  string  HTML code
      */
@@ -529,6 +582,24 @@ DBG::log("Yellowpay Error: $error");
         }
         if (empty($_REQUEST['handler'])) return false;
         switch ($_REQUEST['handler']) {
+            case 'paymill_cc':
+            case 'paymill_elv':
+            case 'paymill_iban':
+                $arrShopOrder = array(
+                    'order_id'  => $_SESSION['shop']['order_id'],
+                    'amount'    => intval($_SESSION['shop']['grand_total_price']*100),
+                    'currency'  => Currency::getActiveCurrencyCode(),
+                    'note'      => $_SESSION['shop']['note']
+                );
+                $response = PaymillHandler::processRequest($_REQUEST['paymillToken'], $arrShopOrder);
+                DBG::log(var_export($response, true));
+                if ($response['status'] === 'success') {
+                    return true;
+                } else {
+                    DBG::log("PaymentProcessing::checkIn(): WARNING: paymill: Payment verification failed; errors: ".var_export($response, true));
+                    return false;
+                }
+                
             case 'saferpay':
                 $arrShopOrder = array(
                     'ACCOUNTID' => SettingDb::getValue('saferpay_id'));

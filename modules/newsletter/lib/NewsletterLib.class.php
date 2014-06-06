@@ -34,7 +34,7 @@ class NewsletterLib
     const USER_TYPE_CORE = 'core';
 
     public $_arrRecipientTitles = null;
-   
+
     /**
      * List of present Lists
      * @see     getListIdByName()
@@ -56,7 +56,7 @@ class NewsletterLib
 
         $arrLists = array();
         $objList = $objDatabase->Execute('
-            SELECT 
+            SELECT
                     id,
                     status,
                     name,
@@ -75,9 +75,9 @@ class NewsletterLib
 
                 if ($extendedInfo) {
                     $objMail = $objDatabase->SelectLimit('
-                        SELECT 
-                                   tblNewsletter.id, 
-                                   tblNewsletter.subject, 
+                        SELECT
+                                   tblNewsletter.id,
+                                   tblNewsletter.subject,
                                    tblNewsletter.date_sent
                         FROM       '.DBPREFIX.'module_newsletter AS tblNewsletter
                         INNER JOIN '.DBPREFIX.'module_newsletter_rel_cat_news AS tblRel
@@ -86,8 +86,8 @@ class NewsletterLib
                         ORDER BY   date_sent DESC', 1);
                     if ($objMail !== false && $objMail->RecordCount() == 1) {
                         $mailSend = $objMail->fields['date_sent'];
-                        $mailId   = ($mailSend > 0)     
-                                        ? $objMail->fields['id'] 
+                        $mailId   = ($mailSend > 0)
+                                        ? $objMail->fields['id']
                                         : 0;
                         $mailName = $objMail->fields['subject'];
                     }
@@ -249,7 +249,7 @@ class NewsletterLib
         $arrLists, $language
     ) {
         global $objDatabase;
-        
+
         $query = SQL::update('module_newsletter_user', array(
             'email' => contrexx_addslashes($email),
             'uri' => array('val' => contrexx_addslashes($uri), 'omitEmpty' => !$recipientAttributeStatus['recipient_website']['active']),
@@ -346,10 +346,13 @@ class NewsletterLib
     }
 
 
-    function _isUniqueRecipientEmail($email, $recipientId)
+    function _isUniqueRecipientEmail($email, $recipientId, $copy = false)
     {
         global $objDatabase;
 
+        //reset the $recipientId on copy function 
+        $recipientId = $copy ? 0 : $recipientId;
+        
         $objRecipient = $objDatabase->SelectLimit("SELECT id FROM ".DBPREFIX."module_newsletter_user WHERE email='".contrexx_addslashes($email)."' AND id!=".$recipientId, 1);
         if ($objRecipient !== false && $objRecipient->RecordCount() == 0) {
             return true;
@@ -476,7 +479,7 @@ class NewsletterLib
 
 
 // TODO: Merge with user_profile_attribute_title
-    function _getRecipientTitleMenu($selected = 0, $attrs)
+    function _getRecipientTitleMenu($selected=0, $attrs='')
     {
         global $_ARRAYLANG;
 
@@ -487,7 +490,9 @@ class NewsletterLib
 // TODO: add language variable
         $menu .= '<option value="0"'.($selected == 0 ? ' selected="selected"' : '').'>'.$_ARRAYLANG['TXT_NEWSLETTER_UNKNOWN']."</option>\n";
         foreach ($arrTitles as $id => $title) {
-            $menu .= '<option value="'.$id.'"'.($selected == $id ? ' selected="selected"' : '').'>'.htmlentities($title, ENT_QUOTES, CONTREXX_CHARSET)."</option>\n";
+            if (!empty($id)) {
+                $menu .= '<option value="'.$id.'"'.($selected == $id ? ' selected="selected"' : '').'>'.htmlentities($title, ENT_QUOTES, CONTREXX_CHARSET)."</option>\n";
+            }
         }
         $menu .= "</select>\n";
 
@@ -498,12 +503,9 @@ class NewsletterLib
 // TODO: Merge with user_profile_attribute_title
     function _getRecipientTitles()
     {
-        global $objDatabase;
-
         if (!is_array($this->_arrRecipientTitles)) {
             $this->_initRecipientTitles();
         }
-
         return $this->_arrRecipientTitles;
     }
 
@@ -562,7 +564,7 @@ class NewsletterLib
      * Create and select the date dropdowns for choosing the birthday
      *
      * @param (array|string) $birthday
-     */    
+     */
     function _createDatesDropdown($birthday = '') {
         if (!empty($birthday)) {
             $birthday = (is_array($birthday)) ? $birthday : explode('-', $birthday);
@@ -604,7 +606,7 @@ class NewsletterLib
             $this->_objTpl->parse('birthday_year');
         }
     }
-  
+
     protected function getCountryMenu($selectedCountry = 0, $mantatory = false)
     {
         global $objDatabase, $_ARRAYLANG;
@@ -614,7 +616,7 @@ class NewsletterLib
               FROM ".DBPREFIX."lib_country
              ORDER BY `name`");
         $menu  = '<select name="newsletter_country_id" size="1">';
-        $menu .= "<option value='0'>".(($mantatory) ? $_ARRAYLANG['TXT_NEWSLETTER_PLEASE_SELECT'] : $_ARRAYLANG['TXT_NEWSLETTER_NOT_SPECIFIED'])."</option>";        
+        $menu .= "<option value='0'>".(($mantatory) ? $_ARRAYLANG['TXT_NEWSLETTER_PLEASE_SELECT'] : $_ARRAYLANG['TXT_NEWSLETTER_NOT_SPECIFIED'])."</option>";
         while (!$objResult->EOF) {
             $menu .= '<option value="'.$objResult->fields['id'].'"'.($objResult->fields['id'] == $selectedCountry ? ' selected="selected"' : '').'>'.htmlentities($objResult->fields['name'], ENT_QUOTES, CONTREXX_CHARSET).'</option>';
             $objResult->MoveNext();
@@ -655,7 +657,7 @@ class NewsletterLib
      * @return  boolean                 True on success, false otherwise
      * @static
      */
-    static function _addList($listName, $listStatus=false, $notificationMail)
+    static function _addList($listName, $listStatus=false, $notificationMail='')
     {
         global $objDatabase;
 
@@ -671,42 +673,46 @@ class NewsletterLib
         }
         return false;
     }
-    
+
     function _validateRecipientAttributes($recipientAttributeStatus, $recipient_website, $recipient_sex, $recipient_salutation,
             $recipient_title, $recipient_lastname, $recipient_firstname, $recipient_position, $recipient_company, $recipient_industry,
             $recipient_address, $recipient_zip, $recipient_city, $recipient_country, $recipient_phone, $recipient_private, $recipient_mobile,
             $recipient_fax, $recipient_birthday)
-    {        
+    {
         foreach ($recipientAttributeStatus as $attributeName => $recipientStatusArray) {
             if ($recipientStatusArray['active'] && $recipientStatusArray['required']) {
                 if ($attributeName == 'recipient_birthday') {
                     $birthday = explode("-", ${$attributeName});
-                    
+
                     if (checkdate($birthday[1], $birthday[0], $birthday[2])) {
                         continue;
                     } else {
                         return false;
-                    }                    
+                    }
                 }
                 $value = trim(${$attributeName});
                 if (empty($value)) {
                     return false;
                 }
-            }        
+            }
         }
         return true;
     }
 
     protected static function prepareNewsletterLinksForSend($MailId, $MailHtmlContent, $UserId, $realUser)
     {
-        global $objDatabase, $_CONFIG;
+        global $objDatabase;
 
         $result = $MailHtmlContent;
-        if (preg_match_all("/<a([^>]+)>(.*)<\/a>/iU", $result, $matches)) {
+        $matches = NULL;
+        if (preg_match_all("/<a([^>]+)>(.*?)<\/a>/is", $result, $matches)) {
             // get all links info
             $arrLinks = array();
-            $objLinks = $objDatabase->Execute("SELECT `id`, `title`, `url` FROM ".DBPREFIX."module_newsletter_email_link WHERE `email_id` = ".$MailId);
-            if ($objLinks !== false) {
+            $objLinks = $objDatabase->Execute("
+                SELECT `id`, `title`, `url`
+                FROM ".DBPREFIX."module_newsletter_email_link
+                WHERE `email_id`=$MailId");
+            if ($objLinks) {
                 while (!$objLinks->EOF) {
                     $arrLinks[$objLinks->fields['id']] = array('title' => $objLinks->fields['title'], 'url' => $objLinks->fields['url']);
                     $objLinks->MoveNext();
@@ -719,21 +725,23 @@ class NewsletterLib
                 $fullKey = 0;
                 $attrKey = 1;
                 $textKey = 2;
+                $rmatches = NULL;
                 for ($i = 0; $i < $tagCount; $i++) {
-                    if (!preg_match("/newsletter_link_([0-9]+)/i", $matches[$attrKey][$i], $rmatches)) {
+                    if (!preg_match("/newsletter_link_(\d+)/i",
+                            $matches[$attrKey][$i], $rmatches)) {
                        continue;
                     }
                     $linkId = $rmatches[1];
                     $url = '';
-                    if (preg_match("/href\s*=\s*['\"]([^'\"]+)['\"]/i", $matches[$attrKey][$i], $rmatches)) {
-                        $url = $rmatches[1];
+                    if (preg_match("/href\s*=\s*(['\"])(.*?)\\1/i", $matches[$attrKey][$i], $rmatches)) {
+                        $url = $rmatches[2];
                     }
                     // remove newsletter_link_N from rel attribute
                     $matches[$attrKey][$i] = preg_replace("/newsletter_link_".$linkId."/i", "", $matches[$attrKey][$i]);
                     // remove empty rel attribute
-                    $matches[$attrKey][$i] = preg_replace("/\s*rel=\s*['\"]\s*['\"]/i", "", $matches[$attrKey][$i]);
+                    $matches[$attrKey][$i] = preg_replace("/\s*rel=\s*(['\"])\s*\\1/i", "", $matches[$attrKey][$i]);
                     // remove left and right spaces
-                    $matches[$attrKey][$i] = preg_replace("/([^=])\s*\"/i", "\\1\"", $matches[$attrKey][$i]);
+                    $matches[$attrKey][$i] = preg_replace("/([^=])\s*\"/i", "$1\"", $matches[$attrKey][$i]);
                     $matches[$attrKey][$i] = preg_replace("/=\"\s*/i", "=\"", $matches[$attrKey][$i]);
                     // replace href attribute
                     if (isset($arrLinks[$linkId])) {
@@ -744,24 +752,29 @@ class NewsletterLib
                             'l'                     => $linkId,
                             ($realUser ? 'r' : 'm') => $UserId,
                         );
-                        $newUrl = \Cx\Core\Routing\Url::fromDocumentRoot($arrParameters, null, null)->toString();
-                        $matches[$attrKey][$i] = preg_replace("/href\s*=\s*['\"][^'\"]+['\"]/i", "href=\"".$newUrl."\"", $matches[$attrKey][$i]);
+                        $newUrl = \Cx\Core\Routing\Url::fromDocumentRoot(
+                            $arrParameters, null, null)->toString();
+                        $matches[$attrKey][$i] = preg_replace(
+                            "/href\s*=\s*(['\"]).*?\\1/i",
+                            "href=\"".$newUrl."\"", $matches[$attrKey][$i]);
                     }
-                    $result = preg_replace("/".self::prepareForRegExp($matches[$fullKey][$i])."/i", "<a ".$matches[$attrKey][$i].">".$matches[$textKey][$i]."</a>", $result, 1);
+                    $result = preg_replace(
+                        "/".preg_quote($matches[$fullKey][$i], '/')."/is",
+                        "<a ".$matches[$attrKey][$i].">".$matches[$textKey][$i]."</a>",
+                        $result, 1);
                 }
             }
         }
         return $result;
     }
 
+// TODO: This should not be used anymore.  See {@see preg_quote()}!
     protected static function prepareForRegExp($Text)
     {
         $search  = array('\\', '/', '^', '$', '.', '[', ']', '|', '(', ')', '?', '*', '+', '{', '}', '-');
-        $replace = array('\\\\', '\/', '\^', '\$', '\.', '\[', '\]', '\|', '\(', '\)', '\?', '\*', '\+', '\{', '\}', '\-');
+        $replace = array('\\\\', '\\/', '\\^', '\\$', '\\.', '\\[', '\\]', '\\|', '\\(', '\\)', '\\?', '\\*', '\\+', '\\{', '\\}', '\\-');
         $Text = str_replace($search, $replace, $Text);
         return $Text;
     }
 
 }
-
-?>

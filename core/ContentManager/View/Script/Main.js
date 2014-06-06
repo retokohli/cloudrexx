@@ -125,6 +125,8 @@ reloadCustomContentTemplates = function() {
     select.empty();
     select.append(cx.jQuery("<option value=\"\" selected=\"selected\">(Default)</option>"));
     
+    cx.jQuery('#page select[name="page[customContent]"]').trigger('change');
+    
     // Default skin
     if (skinId == 0) {
         skinId = cx.variables.get('defaultTemplates', 'contentmanager/themes')[cx.cm.getCurrentLang()];
@@ -150,6 +152,13 @@ cx.ready(function() {
     cx.cm.all_opened = false;
     // are we opening all nodes at the moment?
     cx.cm.is_opening = false;
+    // initialise the page skin
+    cx.cm.pageSkin = 0;
+    // initialise the page custom template
+    cx.cm.pageContentTemplate = '';
+
+    // Disable the option use for all channels by default
+    cx.jQuery('input[name="page[useSkinForAllChannels]"], input[name="page[useCustomContentForAllChannels]"]').attr('disabled', 'disabled');
     
     cx.jQuery('#page_target_browse').click(function() {
         url = '?cmd=fileBrowser&csrf='+cx.variables.get('csrf', 'contrexx')+'&standalone=true&type=webpages';
@@ -462,7 +471,33 @@ cx.ready(function() {
 
     //add callback to reload custom content templates available as soon as template or module changes
     cx.jQuery('#page select[name="page[skin]"]').bind('change', function() {
+        if (parseInt(cx.jQuery(this).val()) == 0) {
+            cx.jQuery('input[name="page[useSkinForAllChannels]"]').removeAttr('checked');
+            cx.jQuery('input[name="page[useSkinForAllChannels]"]').attr('disabled', 'disabled');
+        } else {            
+            if (parseInt(cx.cm.pageSkin) == 0) {
+                cx.jQuery('input[name="page[useSkinForAllChannels]"]').attr('checked', 'checked');
+            }
+            cx.jQuery('input[name="page[useSkinForAllChannels]"]').removeAttr('disabled');
+        }
+        
+        cx.cm.pageSkin = cx.jQuery(this).val();
+        
         reloadCustomContentTemplates();
+    });
+
+    cx.jQuery('#page select[name="page[customContent]"]').bind('change', function() {
+        if (cx.jQuery(this).val() == '') {
+            cx.jQuery('input[name="page[useCustomContentForAllChannels]"]').removeAttr('checked');
+            cx.jQuery('input[name="page[useCustomContentForAllChannels]"]').attr('disabled', 'disabled');
+        } else {            
+            if (cx.cm.pageContentTemplate == '') {
+                cx.jQuery('input[name="page[useCustomContentForAllChannels]"]').attr('checked', 'checked');
+            }
+            cx.jQuery('input[name="page[useCustomContentForAllChannels]"]').removeAttr('disabled');
+        }        
+        
+        cx.cm.pageContentTemplate = cx.jQuery(this).val();
     });
 
     cx.jQuery('#page_skin_view, #page_skin_edit').click(function(event) {
@@ -1303,6 +1338,10 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             wrapper.prepend(translations);
             cx.jQuery(node).before(wrapper);
         });
+        if (cx.jQuery(".translations").first().children(".translation").length <= 1) {
+            cx.jQuery(".translations").hide();
+            cx.jQuery(".translation").html("");
+        }
 
         cx.jQuery('.jstree-wrapper').hover(
             function(e) {
@@ -2631,9 +2670,32 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
     cx.jQuery('#page input[name="page[end]"]').val(page.end);
 
     cx.jQuery('#page select[name="page[skin]"]').val(page.skin);
-    reloadCustomContentTemplates();
+    cx.cm.pageSkin = page.skin;
+    
+    if (page.useSkinForAllChannels == '1') {
+        cx.jQuery('#page input[name="page[useSkinForAllChannels]"]').attr('checked', 'checked');
+    } else {
+        cx.jQuery('#page input[name="page[useSkinForAllChannels]"]').removeAttr('checked');
+    }
+    cx.jQuery('#page select[name="page[skin]"]').trigger('change');
+    
     cx.jQuery('#page select[name="page[customContent]"]').val(page.customContent);
+    cx.cm.pageContentTemplate = page.customContent;
+    
+    if (page.useCustomContentForAllChannels == '1') {
+        cx.jQuery('#page input[name="page[useCustomContentForAllChannels]"]').attr('checked', 'checked');
+    } else {
+        cx.jQuery('#page input[name="page[useCustomContentForAllChannels]"]').removeAttr('checked');
+    }
+    cx.jQuery('#page select[name="page[customContent]"]').trigger('change');
+    
     cx.jQuery('#page input[name="page[cssName]"]').val(page.cssName);
+
+    if (page.module === 'home') {
+        cx.jQuery(".content_template_info").html('home.html');
+    } else {
+        cx.jQuery(".content_template_info").html('content.html');
+    }
 
     cx.jQuery('#page input[name="page[caching]"]').prop('checked', page.caching);
 

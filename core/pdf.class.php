@@ -84,7 +84,7 @@ class PDF extends HTML2FPDF
         $pdf->DisplayPreferences('HideWindowUI');
         $pdf->AddPage();
         $pdf->WriteHTML($this->content);
-        $pdf->Output($this->_replaceCharacters($this->title));
+        $pdf->Output(\Cx\Lib\FileSystem\FileSystem::replaceCharacters($this->title));
 
     }
 
@@ -123,38 +123,6 @@ class PDF extends HTML2FPDF
         $source = str_replace("src='/images", "src='images", $source);
 
         return $source;
-    }
-
-    function _replaceCharacters($string){
-        global $_CONFIG;
-
-        // replace $change with ''
-        $change = array('+', '�', '"', '@', '*', '#', '�', '%', '�', '&', '�', '/', '|', '(', '�', ')', '=', '?', '\'', '�', '`', '^', '~', '!', '�', '[', ']', '{', '}', '�', '$', '-', '<', '>', '\\', ';', ',', ':');
-
-        //echo $string;
-
-        // replace $signs1 with $signs
-        if ($_CONFIG['coreCharacterEncoding'] == 'UTF-8') {
-            $signs1 = array(' ', '�', '�', '�', '�');
-        } else {
-            $signs1 = array(' ', '�', '�', '�', '�');
-        }
-
-        $signs2 = array('_', 'ae', 'oe', 'ue', 'c');
-
-        $string = strtolower($string);
-
-        foreach($change as $str){
-            $string = str_replace($str, '', $string);
-        }
-
-        for($x = 0; $x < count($signs1); $x++){
-            $string = str_replace($signs1[$x], $signs2[$x], $string);
-        }
-
-        $string = str_replace('__', '_', $string);
-
-        return $string;
     }
 }
 

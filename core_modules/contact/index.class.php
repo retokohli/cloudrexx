@@ -316,6 +316,7 @@ class Contact extends ContactLib
                             } else {
                                 $this->objTemplate->setVariable($fieldId.'_VALUE', contrexx_raw2xhtml($option));
                             }
+
                             // pre-selection, based on $_POST value
                             if (!empty($_POST['contactFormField_'.$fieldId])) {
                                 if ($index == array_search($_POST['contactFormField_'.$fieldId], explode(',', $arrField['lang'][$_LANGID]['value']))+$inexOffset) {
@@ -435,8 +436,6 @@ class Contact extends ContactLib
         }
         $saveCrmContact = $this->arrForms[$_GET['cmd']]['saveDataInCRM'];
         
-        $this->objTemplate->setVariable('CONTACT_JAVASCRIPT', $this->_getJsSourceCode($formId, $arrFields) . $uploaderCode);
-
         if (isset($_POST['submitContactForm']) || isset($_POST['Submit'])) { //form submitted
             $this->checkLegacyMode();
 
@@ -475,6 +474,8 @@ class Contact extends ContactLib
             $this->setCaptcha($useCaptcha);
         }
         
+        $this->objTemplate->setVariable('CONTACT_JAVASCRIPT', $this->_getJsSourceCode($formId, $arrFields) . $uploaderCode);
+        
         return $this->objTemplate->get();
     }
 
@@ -491,9 +492,13 @@ class Contact extends ContactLib
             $id = intval($_REQUEST['unique_id']);
         }
         else { //generate a new id
-            if(!isset($_SESSION['contact_last_id']))
-                $_SESSION['contact_last_id'] = 0;
-            $id = ++$_SESSION['contact_last_id'];
+            if(!isset($_SESSION['contact_last_id'])) {
+                $_SESSION['contact_last_id'] = 1;
+            } else {
+                $_SESSION['contact_last_id'] += 1;
+            }
+            
+            $id = $_SESSION['contact_last_id'];
         }
         $this->objTemplate->setVariable('CONTACT_UNIQUE_ID', $id);
         $this->submissionId = $id;

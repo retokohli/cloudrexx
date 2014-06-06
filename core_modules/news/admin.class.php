@@ -584,11 +584,18 @@ class newsManager extends newsLibrary {
                     $this->_objTpl->hideBlock('news_type_data');
                 }
 
-                $langState = array();
-                foreach ($news['lang'] as $langId => $langValues) {
-                    $langState[$langId] = 'active';
+                $langString = '';
+                if (count(\FWLanguage::getActiveFrontendLanguages()) > 1) {
+                    $langState = array();
+                    foreach ($news['lang'] as $langId => $langValues) {
+                        $langState[$langId] = 'active';
+                    }
+                    $langString  = \Html::getLanguageIcons($langState, 'index.php?cmd=news&amp;act=edit&amp;newsId=' . $newsId . '&amp;langId=%1$d');
+                    $this->_objTpl->touchBlock('txt_languages_block');
+                } else {
+                    $this->_objTpl->hideBlock('txt_languages_block');
                 }
-                $langString  = \Html::getLanguageIcons($langState, 'index.php?cmd=news&amp;act=edit&amp;newsId=' . $newsId . '&amp;langId=%1$d');
+                
                 $previewLink = \Cx\Core\Routing\Url::fromModuleAndCmd('news', $this->findCmdById('details', $news['catid']), '', array('newsid' => $newsId));
                 $previewLink .= '&newsPreview=1';
 
@@ -740,11 +747,17 @@ class newsManager extends newsLibrary {
                     $selectedInterfaceLanguage = key($news['lang']);
                 }
 
-                $langState = array();
-                foreach ($news['lang'] as $langId => $langValues) {
-                    $langState[$langId] = 'active';
+                $langString = '';
+                if (count(\FWLanguage::getActiveFrontendLanguages()) > 1) {
+                    $langState = array();
+                    foreach ($news['lang'] as $langId => $langValues) {
+                        $langState[$langId] = 'active';
+                    }
+                    $langString = \Html::getLanguageIcons($langState, 'index.php?cmd=news&amp;act=edit&amp;newsId=' . $newsId . '&amp;langId=%1$d');
+                    $this->_objTpl->touchBlock('txt_languages_block_invalidated');
+                } else {
+                    $this->_objTpl->hideBlock('txt_languages_block_invalidated');
                 }
-                $langString = \Html::getLanguageIcons($langState, 'index.php?cmd=news&amp;act=edit&amp;newsId=' . $newsId . '&amp;langId=%1$d');
                 
                 $this->_objTpl->setVariable(array(
                     'NEWS_ID'               => $newsId,
@@ -973,7 +986,7 @@ class newsManager extends newsLibrary {
                                                 teaser_image_path="'.$newsTeaserImagePath.'",
                                                 teaser_image_thumbnail_path="'.$newsTeaserImageThumbnailPath.'",
                                                 userid='.$userid.',
-                                                changelog='.$date.',
+                                                changelog="'.$date.'",
                                                 allow_comments='.$newsCommentActive
                                         );
 
@@ -3011,6 +3024,7 @@ class newsManager extends newsLibrary {
             $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings
                               SET value='".intval($_POST['headlinesLimit'])."'
                             WHERE name = 'news_headlines_limit'");
+            $objDatabase->Execute("UPDATE ".DBPREFIX."module_news_settings SET value='".intval($_POST['recentNewsMessageLimit'])."' WHERE name = 'recent_news_message_limit'");
             // Notify-user. 0 = disabled.
             $this->_store_settings_item('news_notify_user', intval($_POST['newsNotifySelectedUser']));
             // Notify-Group. 0 = disabled.
@@ -3220,6 +3234,7 @@ class newsManager extends newsLibrary {
             'NEWS_FEED_DESCRIPTION'                 => contrexx_raw2xhtml($newsFeedDescription),
             'NEWS_FEED_IMAGE'                       => contrexx_raw2xhtml($this->arrSettings['news_feed_image']),
             'NEWS_HEADLINES_LIMIT'                  =>(intval($this->arrSettings['news_headlines_limit'])),
+            'NEWS_RECENT_MESSAGES_LIMIT'            => (intval($this->arrSettings['recent_news_message_limit'])),
             'NEWS_FEED_PATH'                        => $newsFeedPath,
             'NEWS_SUBMIT_NEWS'                      => $this->arrSettings['news_submit_news'] == '1' ? 'checked="checked"' : '',
             'NEWS_SUBMIT_NEWS_CONFIGURATION_DISPLAY'=> $this->arrSettings['news_submit_news'] == '1' ? '' : 'none',
@@ -3274,6 +3289,7 @@ class newsManager extends newsLibrary {
             'TXT_NEWS_SETTINGS_COMMENTS_NOTIFICATION_HELP'   => $_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_NOTIFICATION_HELP'],
             'TXT_NEWS_SETTINGS_COMMENTS_TIMEOUT'             => $_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_TIMEOUT'],
             'TXT_NEWS_SETTINGS_COMMENTS_TIMEOUT_HELP'        => $_ARRAYLANG['TXT_NEWS_SETTINGS_COMMENTS_TIMEOUT_HELP'],
+            'TXT_NEWS_SETTINGS_RECENT_MESSAGES_LIMIT_HELP'   => $_ARRAYLANG['TXT_NEWS_SETTINGS_RECENT_MESSAGES_LIMIT_HELP'],
             'TXT_NEWS_DEFAULT_TEASERS'       => $_ARRAYLANG['TXT_NEWS_DEFAULT_TEASERS'],
             'TXT_NEWS_DEFAULT_TEASERS_HELP'       => $_ARRAYLANG['TXT_NEWS_DEFAULT_TEASERS_HELP'],
             'TXT_NEWS_EXTENDED'                     => $_ARRAYLANG['TXT_NEWS_EXTENDED'],
@@ -3291,6 +3307,7 @@ class newsManager extends newsLibrary {
             'TXT_NEWS_UNCHECK_ALL'                  => $_ARRAYLANG['TXT_NEWS_UNCHECK_ALL'],
             'TXT_NEWS_AVAILABLE_GROUPS'             => $_ARRAYLANG['TXT_NEWS_AVAILABLE_GROUPS'],
             'TXT_NEWS_ASSIGNED_GROUPS'              => $_ARRAYLANG['TXT_NEWS_ASSIGNED_GROUPS'],
+            'TXT_NEWS_RECENT_MESSAGES_LIMIT'        => $_ARRAYLANG['TXT_NEWS_RECENT_MESSAGES_LIMIT'],
             'NEWS_FILTER_AUTHOR_ACTIVE'             => ($this->arrSettings['news_assigned_author_groups']) ? 'checked="checked"' : '',
             'NEWS_FILTER_AUTHOR_INACTIVE'           => ($this->arrSettings['news_assigned_author_groups']) ? '' : 'checked="checked"',
             'NEWS_FILTER_AUTHOR_DISPLAY'            => ($this->arrSettings['news_assigned_author_groups']) ? 'block' : 'none',
@@ -3360,7 +3377,11 @@ class newsManager extends newsLibrary {
             'TXT_NEWS_CAT_DROPDOWNMENU_DESCRIPTION'                     => $_ARRAYLANG['TXT_NEWS_CAT_DROPDOWNMENU_DESCRIPTION'],
             'TXT_NEWS_TYPE_DROPDOWNMENU_DESCRIPTION'                    => $_ARRAYLANG['TXT_NEWS_TYPE_DROPDOWNMENU_DESCRIPTION'],
             'TXT_NEWS_DATE_DESCRIPTION'                                 => $_ARRAYLANG['TXT_NEWS_DATE_DESCRIPTION'],
+            'TXT_NEWS_TIME_DESCRIPTION'                                 => $_ARRAYLANG['TXT_NEWS_TIME_DESCRIPTION'],
             'TXT_NEWS_LONG_DATE_DESCRIPTION'                            => $_ARRAYLANG['TXT_NEWS_LONG_DATE_DESCRIPTION'],
+            'TXT_NEWS_LINK_TITLE_DESCRIPTION'                           => $_ARRAYLANG['TXT_NEWS_LINK_TITLE_DESCRIPTION'],
+            'TXT_NEWS_LINK_URL_DESCRIPTION'                             => $_ARRAYLANG['TXT_NEWS_LINK_URL_DESCRIPTION'],
+            'TXT_NEWS_PUBLISHER_DESCRIPTION'                             => $_ARRAYLANG['TXT_NEWS_PUBLISHER_DESCRIPTION'],
             'TXT_NEWS_AUTHOR_DESCRIPTION'                               => $_ARRAYLANG['TXT_NEWS_AUTHOR_DESCRIPTION'],
             'TXT_NEWS_LINK_DESCRIPTION'                                 => $_ARRAYLANG['TXT_NEWS_LINK_DESCRIPTION'],
             'TXT_NEWS_CATEGORY_DESCRIPTION'                             => $_ARRAYLANG['TXT_NEWS_CATEGORY_DESCRIPTION'],
@@ -3380,6 +3401,20 @@ class newsManager extends newsLibrary {
             'TXT_NEWS_TEXT_DESCRIPTION'                                 => $_ARRAYLANG['TXT_NEWS_TEXT_DESCRIPTION'],
             'TXT_MORE_NEWS'                                             => $_CORELANG['TXT_MORE_NEWS'],
             'TXT_TEASER_PLACEHOLLDERS_USAGE'                            => $_ARRAYLANG['TXT_TEASER_PLACEHOLLDERS_USAGE'],
+            'TXT_NEWS_CATEGORIES'                                       => $_ARRAYLANG['TXT_NEWS_CATEGORIES'],
+            'TXT_NEWS_CATEGORIES_PLACEHOLDERS_USAGE'                    => $_ARRAYLANG['TXT_NEWS_CATEGORIES_PLACEHOLDERS_USAGE'],
+            'TXT_NEWS_ARCHIVE_LIST'                                     => $_ARRAYLANG['TXT_NEWS_ARCHIVE_LIST'],
+            'TXT_NEWS_ARCHIVE_LIST_PLACEHOLDERS_USAGE'                  => $_ARRAYLANG['TXT_NEWS_ARCHIVE_LIST_PLACEHOLDERS_USAGE'],
+            'TXT_NEWS_RECENT_COMMENTS'                                  => $_ARRAYLANG['TXT_NEWS_RECENT_COMMENTS'],
+            'TXT_NEWS_RECENT_COMMENTS_PLACEHOLDERS_USAGE'               => $_ARRAYLANG['TXT_NEWS_RECENT_COMMENTS_PLACEHOLDERS_USAGE'],
+            'TXT_NEWS_COMMENTS_CSS_DESCRIPTION'                         => $_ARRAYLANG['TXT_NEWS_COMMENTS_CSS_DESCRIPTION'],
+            'TXT_NEWS_COMMENTS_TITLE_DESCRIPTION'                       => $_ARRAYLANG['TXT_NEWS_COMMENTS_TITLE_DESCRIPTION'],
+            'TXT_NEWS_COMMENTS_MESSAGE_DESCRIPTION'                     => $_ARRAYLANG['TXT_NEWS_COMMENTS_MESSAGE_DESCRIPTION'],
+            'TXT_NEWS_COMMENTS_LONG_DATE_DESCRIPTION'                   => $_ARRAYLANG['TXT_NEWS_COMMENTS_LONG_DATE_DESCRIPTION'],
+            'TXT_NEWS_COMMENTS_DATE_DESCRIPTION'                        => $_ARRAYLANG['TXT_NEWS_COMMENTS_DATE_DESCRIPTION'],
+            'TXT_NEWS_COMMENTS_TIME_DESCRIPTION'                        => $_ARRAYLANG['TXT_NEWS_COMMENTS_TIME_DESCRIPTION'],
+            'TXT_NEWS_COMMENT_LINK_DESCRIPTION'                         => $_ARRAYLANG['TXT_NEWS_COMMENT_LINK_DESCRIPTION'],
+            'TXT_NEWS_COMMENT_URL_DESCRIPTION'                          => $_ARRAYLANG['TXT_NEWS_COMMENT_URL_DESCRIPTION'],
             'TXT_NEWS_LASTUPDATE_DESCRIPTION'                           => $_ARRAYLANG['TXT_NEWS_LASTUPDATE_DESCRIPTION'],
             'TXT_NEWS_SOURCE_DESCRIPTION'                               => $_ARRAYLANG['TXT_NEWS_SOURCE_DESCRIPTION'],
             'TXT_NEWS_IMAGE_DESCRIPTION'                                => $_ARRAYLANG['TXT_NEWS_IMAGE_DESCRIPTION'],
@@ -3394,6 +3429,11 @@ class newsManager extends newsLibrary {
             'TXT_NEWS_AUTHOR_DESCRIPTION'                               => $_ARRAYLANG['TXT_NEWS_AUTHOR_DESCRIPTION'],
             'TXT_TOP_NEWS_PLACEHOLDERS_USAGE'                           => $_ARRAYLANG['TXT_TOP_NEWS_PLACEHOLDERS_USAGE'],
             'TXT_NEWS_COMMENTS'                                         => $_ARRAYLANG['TXT_NEWS_COMMENTS'],            
+            'TXT_NEWS_COMMENT_BLOCK_COMMENT_POSTER'                     => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_POSTER'],
+            'TXT_NEWS_COMMENT_BLOCK_COMMENT_POSTER_NAME'                => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_POSTER_NAME'],
+            'TXT_NEWS_COMMENT_BLOCK_COMMENT_POSTER_ID'                  => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_POSTER_ID'],
+            'TXT_NEWS_COMMENT_BLOCK_COMMENT_TIME'                       => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_TIME'],
+            'TXT_NEWS_COMMENT_BLOCK_COMMENT_TITLE'                      => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_TITLE'],
             'TXT_NEWS_COMMENT_BLOCK_COMMENT_LIST'                       => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_LIST'],
             'TXT_NEWS_COMMENT_BLOCK_COMMENT_LIST_TITLE'                 => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT_LIST_TITLE'],
             'TXT_NEWS_COMMENT_BLOCK_COMMENT'                            => $_ARRAYLANG['TXT_NEWS_COMMENT_BLOCK_COMMENT'],

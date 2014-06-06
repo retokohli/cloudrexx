@@ -51,8 +51,22 @@ abstract class SystemComponentBackendController extends Controller {
         
         $actTemplate = new \Cx\Core\Html\Sigma($this->getDirectory() . '/View/Template');
         $filename = $cmd[0] . '.html';
+        $testFilename = $cmd[0];
         if (!\Env::get('ClassLoader')->getFilePath($actTemplate->getRoot() . '/' . $filename)) {
             $filename = 'Default.html';
+            $testFilename = 'Default';
+        }
+        foreach ($cmd as $index=>$name) {
+            if ($index == 0) {
+                continue;
+            }
+            
+            $testFilename .= $name;
+            if (\Env::get('ClassLoader')->getFilePath($actTemplate->getRoot() . '/' . $testFilename . '.html')) {
+                $filename = $testFilename . '.html';
+            } else {
+                break;
+            }
         }
         $actTemplate->loadTemplateFile($filename);
         
@@ -133,7 +147,7 @@ abstract class SystemComponentBackendController extends Controller {
         }
         
         // finish
-        $actTemplate->setVariable($_ARRAYLANG);
+        $actTemplate->setGlobalVariable($_ARRAYLANG);
         \CSRF::add_placeholder($actTemplate);
         $page->setContent($actTemplate->get());
         $cachedRoot = $this->cx->getTemplate()->getRoot();

@@ -83,6 +83,9 @@ class Shop extends ShopLibrary
         if (self::$initialized) {
 die("Shop::init(): ERROR: Shop::init() called more than once!");
         }
+        if (!isset($_SESSION['shop'])) {
+            $_SESSION['shop'] = array();
+		}
         if (self::use_session()) {
             global $sessionObj;
             if (empty($sessionObj)) $sessionObj = new cmsSession();
@@ -1138,9 +1141,9 @@ die("Failed to update the Cart!");
                         'TXT_SEE_LARGE_PICTURE' => $_ARRAYLANG['TXT_SEE_LARGE_PICTURE'],
                     ));
                 } else {
-                    self::$objTemplate->setVariable(array(
-                        'TXT_SEE_LARGE_PICTURE' => contrexx_raw2xhtml($objProduct->name()),
-                    ));
+                    self::$objTemplate->setVariable(
+                        'TXT_SEE_LARGE_PICTURE',
+                        contrexx_raw2xhtml($objProduct->name()));
                 }
                 if ($arrProductImage['POPUP_LINK']) {
                     self::$objTemplate->setVariable(
@@ -1858,12 +1861,12 @@ die("Failed to update the Cart!");
      * with it, the $flagUpload parameter *MUST* be set to true.  Note that this
      * will force the respective product form to use mutipart/form-data encoding
      * and disable the JSON cart for the complete page.
-     * @param   boolean $flagUpload         Force the POST cart to be used if true
+     * //@param   boolean $flagUpload         Force the POST cart to be used if true
      * @global  array   $_ARRAYLANG         Language array
      * @global  array   $_CONFIGURATION     Core configuration array, see {@link /config/settings.php}
-     *
+     * @todo    Reimplement the $flagUpload parameter
      */
-    static function registerJavascriptCode($flagUpload=false)
+    static function registerJavascriptCode()//$flagUpload=false)
     {
         global $_ARRAYLANG;//, $_CONFIGURATION;
 
@@ -3237,7 +3240,7 @@ die("Shop::processRedirect(): This method is obsolete!");
                 return Message::error($_ARRAYLANG['TXT_ERROR_LOOKING_UP_ORDER']);
             }
             $product_id = $arrProduct['id'];
-            $name = contrexx_raw2xhtml($objProduct->name());
+            $name = $objProduct->name();
             $priceOptions = (!empty($arrProduct['optionPrice'])
                 ? $arrProduct['optionPrice'] : 0);
             $quantity = $arrProduct['quantity'];

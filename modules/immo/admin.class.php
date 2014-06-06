@@ -89,6 +89,11 @@ class Immo extends ImmoLib
         if(function_exists('mysql_set_charset')) {
             mysql_set_charset("utf8"); //this is important for umlauts
         }
+        
+        // initialise the session array
+        if (!isset($_SESSION['immo'])) {
+            $_SESSION['immo'] = array();
+        }
         // Run parent constructor
         parent::__construct();
     }

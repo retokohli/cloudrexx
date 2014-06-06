@@ -69,6 +69,9 @@ abstract class Uploader
      */
     public function restrictUpload2SingleFile()
     {
+        if (!isset($_SESSION['upload']['handlers'][$this->uploadId])) {
+            $_SESSION['upload']['handlers'][$this->uploadId] = array();
+        }
         // limit upload to 1 file at a time
         \ContrexxJavascript::getInstance()->setVariable('restrictUpload2SingleFile', true, "upload/widget_$this->uploadId");
         $_SESSION['upload']['handlers'][$this->uploadId]['singleFileMode'] = true;
@@ -153,6 +156,9 @@ abstract class Uploader
     public function setUploadId($id)
     {
         $this->uploadId = $id;
+        if (!isset($_SESSION['upload']['handlers'][$this->uploadId])) {
+            $_SESSION['upload']['handlers'][$this->uploadId] = array();
+        }
         if(isset($_SESSION['upload']['handlers'][$this->uploadId]['callback']))
             $this->callbackData = $_SESSION['upload']['handlers'][$this->uploadId]['callback'];
     }

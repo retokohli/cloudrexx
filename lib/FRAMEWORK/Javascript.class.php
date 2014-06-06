@@ -103,7 +103,7 @@ class JS
 Shadowbox.loadSkin('classic', cx.variables.get('basePath', 'contrexx')+'lib/javascript/shadowbox/src/skin/');
 Shadowbox.loadLanguage('en', cx.variables.get('basePath', 'contrexx')+'lib/javascript/shadowbox/src/lang');
 Shadowbox.loadPlayer(['flv', 'html', 'iframe', 'img', 'qt', 'swf', 'wmp'], cx.variables.get('basePath', 'contrexx')+'lib/javascript/shadowbox/src/player');
-jQuery(document).ready(function(){
+cx.jQuery(document).ready(function(){
   Shadowbox.init();
 })"
         ),
@@ -244,8 +244,8 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                 'jquery',
             ),
             // When invoking jcrop, add code like this to create the widget:
-            // jQuery(window).load(function(){
-            //   jQuery("#my_image").Jcrop({ [option: value, ...] });
+            // cx.jQuery(window).load(function(){
+            //   cx.jQuery("#my_image").Jcrop({ [option: value, ...] });
             // });
             // where option may be any of
             // aspectRatio   decimal
@@ -299,9 +299,9 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             ),
             'dependencies' => array('jquery'),
             'specialcode'  => '
-                $J(document).ready(function() {
-                    if($J(".chzn-select").length > 0) {
-                        $J(".chzn-select").chosen({
+                cx.jQuery(document).ready(function() {
+                    if(cx.jQuery(".chzn-select").length > 0) {
+                        cx.jQuery(".chzn-select").chosen({
                             disable_search: true
                         });
                     }

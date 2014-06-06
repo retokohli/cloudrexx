@@ -73,9 +73,6 @@ class ImageManager
 		
         if ($this->orgImageType) {
             $getImage             = $this->_getImageSize($this->orgImageFile);
-            if (!$getImage){
-                return false;
-            }
             $this->orgImageWidth  = $getImage[0];
             $this->orgImageHeight = $getImage[1];
             $this->orgImage       = $this->_imageCreateFromFile($this->orgImageFile);
@@ -144,14 +141,11 @@ class ImageManager
      * @param   int     $quality
      * @return  boolean
      */
-    function _createThumb($strPath, $strWebPath, $file, $maxSize=80, $quality=90)
+    function _createThumb($strPath, $strWebPath, $file, $maxSize=80, $quality=90, $thumb_name='')
     {
         $_objImage = new ImageManager();
         $file      = basename($file);
-        $tmpSize   = $this->_getImageSize($strPath.$file);
-        if (!$tmpSize){
-            return false;
-        }
+        $tmpSize   = getimagesize($strPath.$file);
         $factor = 1;
         if ($tmpSize[0] > $tmpSize[1]) {
            $factor = $maxSize / $tmpSize[0];
@@ -162,7 +156,9 @@ class ImageManager
         $thumbHeight = $tmpSize[1] * $factor;
         if (!$_objImage->loadImage($strPath.$file)) return false;
         if (!$_objImage->resizeImage($thumbWidth, $thumbHeight, $quality)) return false;
+        if (!(strlen($thumb_name) > 0)) {
         $thumb_name = self::getThumbnailFilename($file);
+        }
         if (!$_objImage->saveNewImage($strPath.$thumb_name)) return false;
         if (!\Cx\Lib\FileSystem\FileSystem::makeWritable($strPath.$thumb_name)) return false;
         return true;
@@ -585,10 +581,7 @@ class ImageManager
     {
         $this->_checkTrailingSlash($path);
         if (!is_file($path.$fileName)) return false;
-        $size   = $this->_getImageSize($path.$fileName);
-        if (!$size){
-            return false;
-        }
+        $size   = getimagesize($path.$fileName);
         $height = $size[1];
         $width  = $size[0];
         $imgdim = null;
@@ -618,7 +611,7 @@ class ImageManager
      */
     function _imageCreateFromFile($file)
     {
-        $arrSizeInfo = $this->_getImageSize($file);
+        $arrSizeInfo = getimagesize($file);
         if (!is_array($arrSizeInfo)) return false;
         $type = $this->_isImage($file);
         $potentialRequiredMemory = $arrSizeInfo[0] * $arrSizeInfo[1] * 1.8;
@@ -707,7 +700,7 @@ class ImageManager
         if (function_exists('exif_imagetype')) {
             $type = exif_imagetype($file);
         } elseif (function_exists('getimagesize')) {
-            $img  = $this->_getImageSize($file);
+            $img  = @getimagesize($file);
             if ($img === false) {
                 return false;
             }
@@ -735,10 +728,8 @@ class ImageManager
      */
     function _getImageSize($file)
     {
-        if ($this->_isImage($file)){
-            $getImageSize = getimagesize($file);
-            if ($getImageSize) return $getImageSize;
-        }
+        $getImageSize = @getimagesize($file);
+        if ($getImageSize) return $getImageSize;
         return false;
     }
 
