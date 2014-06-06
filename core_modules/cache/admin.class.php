@@ -490,11 +490,11 @@ class CacheManager extends cacheLib
      * @global     object    $objTemplate
      * @global     array    $_CORELANG
      */
-    function deleteAllFiles($cacheEngine = 'all')
+    function deleteAllFiles()
     {
         global $_CORELANG, $objTemplate;
 
-        $this->_deleteAllFiles($cacheEngine);
+        $this->_deleteAllFiles();
 
         $objTemplate->SetVariable('CONTENT_OK_MESSAGE', $_CORELANG['TXT_CACHE_FOLDER_EMPTY']);
     }
@@ -512,7 +512,7 @@ class CacheManager extends cacheLib
         switch ($cacheEngine) {
             case 'cxEntries':
             case 'cxPages':
-                $this->deleteAllFiles($cacheEngine);
+                $this->deleteAllFiles();
                 break;
             case self::CACHE_ENGINE_APC:
             case 'apc':
