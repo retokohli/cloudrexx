@@ -1086,7 +1086,6 @@ CREATE TABLE `contrexx_module_crm_customer_contact_address` (
   KEY `city` (`city`),
   KEY `state` (`state`),
   KEY `zip` (`zip`),
-  KEY `zip_2` (`zip`),
   KEY `country` (`country`),
   FULLTEXT KEY `address_2` (`address`,`city`,`state`,`zip`,`country`)
 ) ENGINE=MyISAM ;
