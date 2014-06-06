@@ -155,7 +155,7 @@ class DataSet implements \Iterator {
                 {
                     $objFile = new \Cx\Lib\FileSystem\File($filename);
                     $objFile->touch();
-                    $objFile->append($this->export($exportInterface));
+                    $objFile->write($this->export($exportInterface));
                     
                 }else{
                     
