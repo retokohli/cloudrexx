@@ -1210,6 +1210,23 @@ EOF
         }
     }
 
+    try {
+        // add some necessary buttons to the confirmation page
+        // fix of http://bugs.contrexx.com/contrexx/ticket/2015
+        Cx\Lib\UpdateUtil::migrateContentPageUsingRegexCallback(
+            array('module' => 'shop', 'cmd' => 'confirm'),
+            '/.*/s',
+            function($content) {
+                $content .= '<a href="{NODE_SHOP_ACCOUNT}">{TXT_ORDER_BACK_TO_ACCOUNT}</a><br />
+                             <a href="{NODE_SHOP_CART}">{TXT_ORDER_BACK_TO_CART}</a>';
+            },
+            array('content'),
+            '3.2.0'
+        );
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+
     return true;
 }
 
