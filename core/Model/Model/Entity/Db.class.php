@@ -45,7 +45,33 @@ class Db{
      * */
     protected $collation;
 
-
+    /*
+     * Constructor function for Db class
+     * */
+    function __construct($dbConfig=array()){
+        if(!empty($dbConfig['host'])){
+            $this->setHost($dbConfig['host']);
+        }
+        if(!empty($dbConfig['database'])){
+            $this->setName($dbConfig['database']); 
+        }
+        if(!empty($dbConfig['tablePrefix'])){
+            $this->setTablePrefix($dbConfig['tablePrefix']);
+        }
+        if(!empty($dbConfig['dbType'])){
+            $this->setDbType($dbConfig['dbType']);
+        }
+        if(!empty($dbConfig['charset'])){
+            $this->setCharset($dbConfig['charset']);
+        }
+        if(!empty($dbConfig['collation'])){
+            $this->setCollation($dbConfig['collation']);
+        }
+        if(!empty($dbConfig['timezone'])){
+            $this->setTimezone($dbConfig['timezone']);
+        }
+    }
+    
     /**
      * Set db id 
      * @param string $id id of the dbUser

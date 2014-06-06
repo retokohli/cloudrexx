@@ -10,6 +10,14 @@ class DbUser{
     protected $name;
     protected $password;
     
+    function __construct($dbConfig=array()){
+        if(!empty($dbConfig['user'])){
+            $this->setName($dbConfig['user']);
+        }
+        if(!empty($dbConfig['password'])){
+            $this->setPassword($dbConfig['password']); 
+        }
+    }
     /**
      * Set db user id 
      * @param string $id id of the dbUser
