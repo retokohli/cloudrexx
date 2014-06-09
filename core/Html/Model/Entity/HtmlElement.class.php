@@ -56,13 +56,39 @@ class HtmlElement {
         return $this->children;
     }
     
-    public function addChild(HtmlElement $element) {
+    public function addChild(HtmlElement $element, HtmlElement $reference = null, $before = false) {
         $this->output = null;
-        $this->children[] = $element;
+        if (!$reference) {
+            $this->children[] = $element;
+            return true;
+        }
+        
+        $key = array_search($reference, $this->children);
+        if ($key === false) {
+            return false;
+        }
+        
+        if (!$before) {
+            $key++;
+        }
+        array_splice($this->children, $key, 0, array($element));
+        return true;
     }
     
-    public function addChildren(array $elements) {
-        $this->children += $elements;
+    public function addChildren(array $elements, HtmlElement $reference = null, $before = false) {
+        $this->output = null;
+        if (!$reference) {
+            $this->children += $elements;
+            return true;
+        }
+        foreach ($elements as $element) {
+            if (!$this->addChild($element, $reference, $before)) {
+                return false;
+            }
+            $before = false;
+            $reference = $element;
+        }
+        return true;
     }
     
     /* addChildAfter, removeChild, getNthChild */
