@@ -456,13 +456,6 @@ namespace Cx\Core\Core\Controller {
             $this->checkSystemState();
             $this->adjustRequest();            
         }
-
-        /**
-         * Start the session using the new cmsSession object
-         */
-        protected function startSession() {
-            \cmsSession::getInstance();
-        }
         
         /**
          * Check whether the system is running
@@ -643,9 +636,7 @@ namespace Cx\Core\Core\Controller {
             $objInit = new \InitCMS($this->mode == self::MODE_FRONTEND ? 'frontend' : 'backend', \Env::em());
             \Env::set('init', $objInit);
             //$bla = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-            //$bla->findAll();
-            
-            $this->startSession();
+            //$bla->findAll();            
         }
         
         /**

@@ -83,15 +83,16 @@ class FWUser extends User_Setting
      */
     function checkAuth()
     {
-        global $_CORELANG, $objInit;
+        global $sessionObj, $_CORELANG, $objInit;
 
         $username = isset($_POST['USERNAME']) && $_POST['USERNAME'] != '' ? contrexx_stripslashes($_POST['USERNAME']) : null;
         $password = isset($_POST['PASSWORD']) && $_POST['PASSWORD'] != '' ? md5(contrexx_stripslashes($_POST['PASSWORD'])) : null;
 
-        if (!isset($_SESSION['auth'])) {
-            $_SESSION['auth'] = array();
-        }
         if (isset($username) && isset($password)) {
+            if (empty($sessionObj)) $sessionObj = cmsSession::getInstance();
+            if (!isset($_SESSION['auth'])) {
+                $_SESSION['auth'] = array();
+            }
             if ($this->objUser->auth($username, $password, $this->isBackendMode(), FWCaptcha::getInstance()->check())) {
                 if ($this->isBackendMode()) {
                     $this->log();

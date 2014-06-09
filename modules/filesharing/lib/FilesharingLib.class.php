@@ -99,7 +99,9 @@ CODE
      */
     public static function getTemporaryFilePaths($uploadId)
     {
-
+        global $sessionObj;
+        if (!isset($sessionObj)) $sessionObj = \cmsSession::getInstance();
+        
         return array(
             $_SESSION->getTempPath() . '/',
             $_SESSION->getWebTempPath() . '/',

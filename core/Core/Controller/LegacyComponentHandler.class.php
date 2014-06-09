@@ -169,9 +169,10 @@ class LegacyComponentHandler {
                 ),
                 'postResolve' => array(
                     'Upload' => function() {
-                        global $url;
+                        global $url, $sessionObj;
 
-                        if (isset($_REQUEST['section']) && $_REQUEST['section'] == 'upload') {                            
+                        if (isset($_REQUEST['section']) && $_REQUEST['section'] == 'upload') {
+                            if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = \cmsSession::getInstance(); // initialize session object                            
                             $objUploadModule = new \Upload();
                             $objUploadModule->getPage();
                             //execution never reaches this point
@@ -1098,11 +1099,12 @@ class LegacyComponentHandler {
                     },
 
                     'login' => function() {
-                        global $cl, $_CORELANG, $objTemplate;
+                        global $cl, $_CORELANG, $objTemplate, $sessionObj;
 
                         /** @ignore */
                         if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/login/index.class.php'))
                             die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
+                        if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = \cmsSession::getInstance();                        
                         $objLogin = new \Login(\Env::get('cx')->getPage()->getContent());
                         \Env::get('cx')->getPage()->setContent($objLogin->getContent());
                     },
@@ -1593,7 +1595,9 @@ class LegacyComponentHandler {
             'backend' => array(
                 'preResolve' => array(
                     'Session' => function() {
-                        
+                        global $sessionObj;
+
+                        if (empty($sessionObj)) $sessionObj = \cmsSession::getInstance();
                         $_SESSION->cmsSessionStatusUpdate('backend');
                     },
                     'Js' => function() {

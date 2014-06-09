@@ -484,6 +484,8 @@ class Contact extends ContactLib
      * @see Contact::$submissionId
      */
     protected function handleUniqueId() {        
+        global $sessionObj;
+        if (!isset($sessionObj)) $sessionObj = \cmsSession::getInstance();
         
         $id = 0;
         if(isset($_REQUEST['unique_id'])) { //an id is specified - we're handling a page reload
@@ -1587,6 +1589,9 @@ CODE;
      * @throws ContactException
      */
     protected static function getTemporaryUploadPath($submissionId, $fieldId) {
+        global $sessionObj;
+
+        if (!isset($sessionObj)) $sessionObj = \cmsSession::getInstance();
         
         $tempPath = $_SESSION->getTempPath();
         $tempWebPath = $_SESSION->getWebTempPath();
