@@ -956,7 +956,7 @@ class newsLibrary
                 'lang' => $lang,
                 'module' => $module,
             ));
-        $page = $qb->getQuery()->getResult();
+        $page = $qb->getQuery()->useResultCache(true)->getResult();
 
         if (!empty($page[0][0])) {
             // a page having the given id in cmd was found
