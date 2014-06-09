@@ -40,7 +40,9 @@ class FormGenerator {
             if (is_array($entity) && isset($entity[$field])) {
                 $value = $entity[$field];
             } else {
-                $value = $metadata->getFieldValue($entity, $field);
+// TODO: what is $metadata good for?
+                //$value = $metadata->getFieldValue($entity, $field);
+                $value = '';
             }
             //$this->addFieldsForMetadata($metadata->fieldMappings[$field], $value);
             $label = new \Cx\Core\Html\Model\Entity\HtmlElement('label');
