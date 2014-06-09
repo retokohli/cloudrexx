@@ -2851,7 +2851,10 @@ CODE;
      * @throws ContactException
      */
     protected static function getTemporaryUploadPath($submissionId, $fieldId, $dir) {
+        global $sessionObj;
 
+        if (!isset($sessionObj)) $sessionObj = \cmsSession::getInstance();
+        
         $tempPath = $_SESSION->getTempPath();
         $tempWebPath = $_SESSION->getWebTempPath();
         if($tempPath === false || $tempWebPath === false)

@@ -640,6 +640,8 @@ EOF;
      * @return $id  integer
      */
     protected function handleUniqueId($key) {
+        global $sessionObj;
+        if (!isset($sessionObj)) $sessionObj = \cmsSession::getInstance();
         
         $id = 0;
         if (isset($_REQUEST[$key])) { //an id is specified - we're handling a page reload
@@ -670,7 +672,10 @@ EOF;
      * @return array('path','webpath', 'dirname')
      */
     public static function getTemporaryUploadPath($fieldName, $submissionId) {        
+        global $sessionObj;
 
+        if (!isset($sessionObj)) $sessionObj = \cmsSession::getInstance();
+        
         $tempPath = $_SESSION->getTempPath();
         $tempWebPath = $_SESSION->getWebTempPath();
         if($tempPath === false || $tempWebPath === false)

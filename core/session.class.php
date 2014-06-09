@@ -456,15 +456,51 @@ class cmsSession extends RecursiveArrayAccess {
         $this->discardChanges = true;
     }
     
+    /**
+     * write the current state of session array to database.
+     * 
+     * @param string $offset Session key value to store
+     */
+    private function writeSessionToDb($offset)
+    {                
+        $offset = $this->getLockKey() ?: $offset; 
+        
+        $sessionVar = contrexx_raw2db($offset);
+        $sessionVal = contrexx_raw2db(serialize($_SESSION[$offset]));
+        
+        $query = "REPLACE INTO 
+                     `" . DBPREFIX . "session_variable` 
+                   SET
+                    `sessionid`   = '{$_SESSION->sessionid}',
+                    `variable_key` = '$sessionVar',
+                    `variable_value` = '$sessionVal'";
+        
+        \Env::get('db')->Execute($query);
+    }
+
+
+    /**
+     * Used to get the top key the current array using arrayPath
+     * 
+     * @return session variable name to lock
+     */
+    private function getLockKey() {
+        $lockKey = null;
+        if ($this->arrayPath && !empty($this->arrayPath)) {
+            list($lockKey) = explode('/', $this->arrayPath);
+        }
+        
+        return $lockKey;
+    }
+    
+    /**
+     * {@inheritdoc}
+     */
     public function offsetGet($offset) {
         
         if (isset($this->data[$offset])) {
-            
-            if ($this->arrayPath && !empty($this->arrayPath)) {
-                list($lockKey) = explode('/', $this->arrayPath);
-            } else {
-                $lockKey = $offset;
-            }
+                        
+            $lockKey = $this->getLockKey() ?: $offset;
             if (!isset($_SESSION->locks[$lockKey])) {
 
                 $_SESSION->locks[$lockKey] = 1;
@@ -477,13 +513,13 @@ class cmsSession extends RecursiveArrayAccess {
                           FROM
                             `" . DBPREFIX . "session_variable`
                           WHERE
-                            `variable_key` = '$offset'
+                            `variable_key` = '$lockKey'
                           AND
                             `sessionid`   = '{$_SESSION->sessionid}'";
                 $objResult = \Env::get('db')->SelectLimit($query, 1);
 
                 if ($objResult && $objResult->RecordCount() > 0) {
-                    return unserialize($objResult->fields['variable_value']);
+                    return $this->data[$offset] = unserialize($objResult->fields['variable_value']);
                 }
             }
             
@@ -494,34 +530,40 @@ class cmsSession extends RecursiveArrayAccess {
         
     }
     
-    public function offsetSet($offset, $data) {              
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetSet($offset, $data) {
+        
+        // Try to lock the variable if its not locked previously
+        $lockKey = $this->getLockKey() ?: $offset;
+        if (!isset($_SESSION->locks[$lockKey])) {
+            // get or initialize the session value before write content into it 
+            // because it might changed with some other session
+            $_SESSION[$lockKey];
+        }
         
         parent::offsetSet($offset, $data);
-        
+
         // Don't write session data to databse.
         // This is used to prevent an unwanted session overwrite by a continuous
         // script request (javascript) that only checks for a certain event to happen.
         if ($_SESSION->discardChanges) return true;
         
-        if (!empty($this->arrayPath)) {
-            list($offset) = explode('/', $this->arrayPath);
-        }
-                
-        $sessionVar = contrexx_raw2db($offset);
-        $sessionVal = contrexx_raw2db(serialize($_SESSION[$offset]));
-
-        if (!isset($_SESSION->locks[$offset])) {
-            $_SESSION->locks[$offset] = 1;
-            $this->getLock(self::getLockName($offset), $this->sessionLockTime);
-        }
-        
-        $query = "REPLACE INTO 
-                     `" . DBPREFIX . "session_variable` 
-                   SET
-                    `sessionid`   = '{$_SESSION->sessionid}',
-                    `variable_key` = '$sessionVar',
-                    `variable_value` = '$sessionVal'";
-        
-        \Env::get('db')->Execute($query);
+        $this->writeSessionToDb($offset);
     }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetUnset($offset) {
+        parent::offsetUnset($offset);
+        
+        if (!empty($this->arrayPath)) {
+            $this->writeSessionToDb($offset);
+        } else {
+            $query = "DELETE FROM `" . DBPREFIX . "session_variable` WHERE `sessionid`   = '{$_SESSION->sessionid}' AND `variable_key` = '$offset'";
+            \Env::get('db')->Execute($query);
+        }
+    }    
 }

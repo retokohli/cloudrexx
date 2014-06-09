@@ -82,7 +82,11 @@ class Shop extends ShopLibrary
 //DBG::log("Shop::init(): Entered");
         if (self::$initialized) {
 die("Shop::init(): ERROR: Shop::init() called more than once!");
-        }        
+        }
+        if (self::use_session()) {
+            global $sessionObj;
+            if (empty($sessionObj)) $sessionObj = \cmsSession::getInstance();
+        }
         if (!isset($_SESSION['shop'])) {
             $_SESSION['shop'] = array();
         }
@@ -156,7 +160,11 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
 // TODO: This should be set up in a more elegant way
         Vat::is_reseller(self::$objCustomer && self::$objCustomer->is_reseller());
         // The coupon code may be set when entering the Shop already
-        if (isset($_REQUEST['coupon_code'])) {            
+        if (isset($_REQUEST['coupon_code'])) {      
+            global $sessionObj;
+            if (!$sessionObj) {
+                $sessionObj = \cmsSession::getInstance();
+            }
             $_SESSION['shop']['coupon_code'] =
                 trim(strip_tags(contrexx_input2raw($_REQUEST['coupon_code'])));
 //DBG::log("Coupon Code: Set to ".$_SESSION['shop']['coupon_code']);
