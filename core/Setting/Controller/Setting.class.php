@@ -364,6 +364,7 @@ class Setting{
             //  'CORE_SETTINGDB_TAB_INDEX' => self::$tab_index,
                 'CORE_SETTINGDB_TAB_CLASS' => ($engineType::$tab_index == $active_tab ? 'active' : ''),
                 'CORE_SETTINGDB_TAB_DISPLAY' => ($engineType::$tab_index++ == $active_tab ? 'block' : 'none'),
+                'CORE_SETTINGDB_CURRENT_TAB'=>'tab-'.$active_tab
             ));
             $objTemplateLocal->touchBlock('core_settingdb_header');
             $objTemplateLocal->touchBlock('core_settingdb_tab_row');
@@ -685,70 +686,70 @@ class Setting{
         $result = true;
         // Compare POST with current settings and only store what was changed.
         foreach (array_keys($arrSettings) as $name) {
-            $value = (isset ($_POST[$name])
-                ? contrexx_input2raw($_POST[$name])
-                : null);
-            //if (preg_match('/^'.preg_quote(CSRF::key(), '/').'$/', $name))
-            //continue;
-            switch ($arrSettings[$name]['type']) {
-              case self::TYPE_FILEUPLOAD:
-                // An empty folder path has been posted, indicating that the
-                // current file should be removed
-                if (empty($value)) {
-                    //echo("Empty value, deleting file...<br />");
-                    if ($arrSettings[$name]['value']) {
-                        if (\File::delete_file($arrSettings[$name]['value'])) {
-                    //echo("File deleted<br />");
-                            $value = '';
+            if (isset ($_POST[$name])) {
+                $value=contrexx_input2raw($_POST[$name]);
+                //if (preg_match('/^'.preg_quote(CSRF::key(), '/').'$/', $name))
+                //continue;
+                switch ($arrSettings[$name]['type']) {
+                  case self::TYPE_FILEUPLOAD:
+                    // An empty folder path has been posted, indicating that the
+                    // current file should be removed
+                    if (empty($value)) {
+                        //echo("Empty value, deleting file...<br />");
+                        if ($arrSettings[$name]['value']) {
+                            if (\File::delete_file($arrSettings[$name]['value'])) {
+                        //echo("File deleted<br />");
+                                $value = '';
+                            } else {
+                        //echo("Failed to delete file<br />");
+                                \Message::error(\File::getErrorString());
+                                $result = false;
+                            }
+                        }
+                    } else {
+                        // No file uploaded.  Skip.
+                        if (empty($_FILES[$name]['name'])) continue;
+                        // $value is the target folder path
+                        $target_path = $value.'/'.$_FILES[$name]['name'];
+                        // TODO: Test if this works in all browsers:
+                        // The path input field name is the same as the
+                        // file upload input field name!
+                        $result_upload = \File::upload_file_http(
+                            $name, $target_path,
+                            \Filetype::MAXIMUM_UPLOAD_FILE_SIZE,
+                            // The allowed file types
+                            $arrSettings[$name]['values']
+                        );
+                        // If no file has been uploaded at all, ignore the no-change
+                        // TODO: Noop is not implemented in File::upload_file_http()
+                        // if ($result_upload === '') continue;
+                        if ($result_upload === true) {
+                            $value = $target_path;
                         } else {
-                    //echo("Failed to delete file<br />");
+                        //echo("self::storeFromPost(): Error uploading file for setting $name to $target_path<br />");
+                        // TODO: Add error message
                             \Message::error(\File::getErrorString());
                             $result = false;
                         }
                     }
-                } else {
-                    // No file uploaded.  Skip.
-                    if (empty($_FILES[$name]['name'])) continue;
-                    // $value is the target folder path
-                    $target_path = $value.'/'.$_FILES[$name]['name'];
-                    // TODO: Test if this works in all browsers:
-                    // The path input field name is the same as the
-                    // file upload input field name!
-                    $result_upload = \File::upload_file_http(
-                        $name, $target_path,
-                        \Filetype::MAXIMUM_UPLOAD_FILE_SIZE,
-                        // The allowed file types
-                        $arrSettings[$name]['values']
-                    );
-                    // If no file has been uploaded at all, ignore the no-change
-                    // TODO: Noop is not implemented in File::upload_file_http()
-                    // if ($result_upload === '') continue;
-                    if ($result_upload === true) {
-                        $value = $target_path;
-                    } else {
-                    //echo("self::storeFromPost(): Error uploading file for setting $name to $target_path<br />");
-                    // TODO: Add error message
-                        \Message::error(\File::getErrorString());
-                        $result = false;
-                    }
+                    break;
+                  case self::TYPE_CHECKBOX:
+                      break;
+                  case self::TYPE_CHECKBOXGROUP:
+                    $value = (is_array($value)
+                        ? join(',', array_keys($value))
+                        : $value);
+                        // 20120508
+                  case self::TYPE_RADIO:
+                      break;
+                  default:
+                        // Regular value of any other type
+                    break;
                 }
-                break;
-              case self::TYPE_CHECKBOX:
-                  break;
-              case self::TYPE_CHECKBOXGROUP:
-                $value = (is_array($value)
-                    ? join(',', array_keys($value))
-                    : $value);
-                    // 20120508
-              case self::TYPE_RADIO:
-                  break;
-              default:
-                    // Regular value of any other type
-                break;
-            }
-            self::set($name, $value);
+                self::set($name, $value);
+            }    
         }
-                    //echo("self::storeFromPost(): So far, the result is ".($result ? 'okay' : 'no good')."<br />");
+        //echo("self::storeFromPost(): So far, the result is ".($result ? 'okay' : 'no good')."<br />");
         $result_update = self::updateAll();
         if ($result_update === false) {
             \Message::error($_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING']);

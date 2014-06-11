@@ -79,6 +79,14 @@ class Db extends Engine{
         }
     }
     /**
+     * Returns the settings array for the given section and group
+     * @return  array
+     */
+    static function getArraySetting()
+    {
+       return self::$arrSettings;
+    }
+    /**
      * Stores all settings entries present in the $arrSettings object
      * array variable
      *

@@ -27,25 +27,6 @@ namespace Cx\Core\Setting\Model\Entity;
  * @todo        Edit PHP DocBlocks!
  */
 class FileSystem extends Engine{
-    
-    /**
-     * The array of currently loaded optional setting, like
-     *  array(
-     *    'name' => array(
-     *      'section' => section,
-     *      'group' => group,
-     *      'value' => current value,
-     *      'type' => element type (text, dropdown, ... [more to come]),
-     *      'values' => predefined values (for dropdown),
-     *      'ord' => ordinal number (for sorting),
-     *    ),
-     *    ... more ...
-     *  );
-     * @var     array
-     * @static
-     * @access  private
-     */
-    private static $arrSetting = null;
     /**
      * Initialize the settings entries from the file with key/value pairs
      * for the current section and the given group
@@ -70,16 +51,29 @@ class FileSystem extends Engine{
         self::$group = $group;
         //call DataSet importFromFile method @return array
         $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::importFromFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $filename);
-        if(!empty($objDataSet))
-        {
-            foreach($objDataSet as $value)
-            {
-                if($value['group']==$group){
-                    self::$arrSettings[$value['name']]= $value;
-                }
-                self::$arrSetting[$value['name']]= $value; 
+        if (!empty($objDataSet)) {
+            foreach ($objDataSet as $value) {
+                self::$arrSettings[$value['name']]= $value;
             }
         }
+    }
+    /**
+     * Returns the settings array for the given section and group
+     * @return  array
+     */
+    static function getArraySetting()
+    { 
+        $settingArray=array();
+        if (!empty(self::$group)) {
+            foreach (self::$arrSettings as $value) {
+                if ($value['group']==self::$group) {
+                    $settingArray[$value['name']]= $value;
+                }
+            }
+        } else {
+            $settingArray=self::$arrSettings;
+        }
+        return $settingArray;
     }
     /**
      * Stores all settings entries present in the $arrSettings object
@@ -96,7 +90,7 @@ class FileSystem extends Engine{
      *                                    false otherwise
      */
     static function updateAll()
-    {
+    { 
         //global $_CORELANG;
         if (!self::$changed) {
         // TODO: These messages are inapropriate when settings are stored by another piece of code, too.
@@ -117,22 +111,8 @@ class FileSystem extends Engine{
         $success = true;
         //File Path
         $fileName=ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
-        $settingsArray=array();
-        if(!empty(self::$arrSetting)&& !empty($_POST))
-        {
-            foreach(self::$arrSetting as $key=>$value)
-            {
-                $settingsArray[$value['name']]= $value;
-                if(isset($_POST[$key])){
-                    $settingsArray[$key]['value'] = $_POST[$key];    
-                }
-            }
-        }else{
-            return false;
-        }
-        
         //call DataSet exportToFile method to update file
-        $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet($settingsArray);
+        $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet(self::$arrSettings);
         $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $fileName);
         if ($success) {
             self::$changed = false;
@@ -243,9 +223,9 @@ class FileSystem extends Engine{
                             'values'=> addslashes($values),
                             'ord'=> intval($ord)
                         );
-        self::$arrSetting[addslashes($name)]=$addValue;
-        if(!empty(self::$arrSetting)){                     
-            $objDataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet(self::$arrSetting);
+        self::$arrSettings[addslashes($name)]=$addValue;
+        if (!empty(self::$arrSettings)) {                     
+            $objDataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet(self::$arrSettings);
             $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $filename);
         }
         return true;
@@ -267,22 +247,21 @@ class FileSystem extends Engine{
     static function delete($name=null, $group=null)
     { 
         // Fail if both parameter values are empty
-        if(empty($name) && empty($group) && empty(self::$section))return false;
+        if (empty($name) && empty($group) && empty(self::$section)) return false;
          
         $arrSetting=array();
         $filename=ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
         $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::importFromFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $filename);
         // if get blank or invalid file
-        if(empty($objDataSet))return false;
+        if (empty($objDataSet)) return false;
         
-        foreach($objDataSet as $value)
-        {
-            if($value['group']!=$group || $value['name']!=$name){
+        foreach ($objDataSet as $value) {
+            if ($value['group']!=$group || $value['name']!=$name) {
                 $arrSetting[$value['name']]= $value;
             }
         }
         // if get blank array    
-        if(empty($arrSetting))return false;
+        if (empty($arrSetting)) return false;
         
         $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet($arrSetting);
         $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $filename);

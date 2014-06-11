@@ -139,10 +139,7 @@ abstract class Engine {
      * Returns the settings array for the given section and group
      * @return  array
      */
-    static function getArraySetting()
-    {
-       return self::$arrSettings;
-    }
+    public abstract static function getArraySetting();
     /**
      * Returns the settings value stored in the object for the name given.
      *
