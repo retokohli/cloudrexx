@@ -489,12 +489,12 @@ class Payment
             'SHOP_PAYMILL_STATUS' => SettingDb::getValue('paymill_active') ? Html::ATTRIBUTE_CHECKED : '',
             'SHOP_PAYMILL_TEST_SELECTED' => SettingDb::getValue('paymill_use_test_account') == 0 ? Html::ATTRIBUTE_SELECTED : '',
             'SHOP_PAYMILL_LIVE_SELECTED' => SettingDb::getValue('paymill_use_test_account') == 1 ? Html::ATTRIBUTE_SELECTED : '',
-            'SHOP_PAYMILL_TEST_PRIVATE_KEY' => SettingDb::getValue('paymill_test_private_key'),
-            'SHOP_PAYMILL_TEST_PUBLIC_KEY' => SettingDb::getValue('paymill_test_public_key'),
-            'SHOP_PAYMILL_LIVE_PRIVATE_KEY' => SettingDb::getValue('paymill_live_private_key'),
-            'SHOP_PAYMILL_LIVE_PUBLIC_KEY' => SettingDb::getValue('paymill_live_public_key'),
-            'SHOP_PAYMILL_PRIVATE_KEY' => SettingDb::getValue('paymill_private_key'),
-            'SHOP_PAYMILL_PUBLIC_KEY' => SettingDb::getValue('paymill_public_key'),
+            'SHOP_PAYMILL_TEST_PRIVATE_KEY' => contrexx_raw2xhtml(SettingDb::getValue('paymill_test_private_key')),
+            'SHOP_PAYMILL_TEST_PUBLIC_KEY' => contrexx_raw2xhtml(SettingDb::getValue('paymill_test_public_key')),
+            'SHOP_PAYMILL_LIVE_PRIVATE_KEY' => contrexx_raw2xhtml(SettingDb::getValue('paymill_live_private_key')),
+            'SHOP_PAYMILL_LIVE_PUBLIC_KEY' => contrexx_raw2xhtml(SettingDb::getValue('paymill_live_public_key')),
+            'SHOP_PAYMILL_PRIVATE_KEY' => contrexx_raw2xhtml(SettingDb::getValue('paymill_private_key')),
+            'SHOP_PAYMILL_PUBLIC_KEY' => contrexx_raw2xhtml(SettingDb::getValue('paymill_public_key')),
             'SHOP_SAFERPAY_ID' => SettingDb::getValue('saferpay_id'),
             'SHOP_SAFERPAY_STATUS' => (SettingDb::getValue('saferpay_active') ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_SAFERPAY_TEST_ID' => SettingDb::getValue('saferpay_use_test_account'),
@@ -509,8 +509,8 @@ class Payment
                     ? Html::ATTRIBUTE_CHECKED : ''),
 //                    'SHOP_YELLOWPAY_HASH_SEED' => SettingDb::getValue('postfinance_hash_seed'),
 // Replaced by
-            'SHOP_YELLOWPAY_HASH_SIGNATURE_IN' => SettingDb::getValue('postfinance_hash_signature_in'),
-            'SHOP_YELLOWPAY_HASH_SIGNATURE_OUT' => SettingDb::getValue('postfinance_hash_signature_out'),
+            'SHOP_YELLOWPAY_HASH_SIGNATURE_IN' => contrexx_raw2xhtml(SettingDb::getValue('postfinance_hash_signature_in')),
+            'SHOP_YELLOWPAY_HASH_SIGNATURE_OUT' => contrexx_raw2xhtml(SettingDb::getValue('postfinance_hash_signature_out')),
 // OBSOLETE
 //            'SHOP_YELLOWPAY_ACCEPTED_PAYMENT_METHODS_CHECKBOXES' =>
 //                Yellowpay::getKnownPaymentMethodCheckboxes(
@@ -522,8 +522,8 @@ class Payment
                 (SettingDb::getValue('postfinance_use_testserver')
                     ? Html::ATTRIBUTE_CHECKED : ''),
             // Added 20100222 -- Reto Kohli
-            'SHOP_POSTFINANCE_MOBILE_WEBUSER' => SettingDb::getValue('postfinance_mobile_webuser'),
-            'SHOP_POSTFINANCE_MOBILE_SIGN' => SettingDb::getValue('postfinance_mobile_sign'),
+            'SHOP_POSTFINANCE_MOBILE_WEBUSER' => contrexx_raw2xhtml(SettingDb::getValue('postfinance_mobile_webuser')),
+            'SHOP_POSTFINANCE_MOBILE_SIGN' => contrexx_raw2xhtml(SettingDb::getValue('postfinance_mobile_sign')),
             'SHOP_POSTFINANCE_MOBILE_IJUSTWANTTOTEST_CHECKED' =>
                 (SettingDb::getValue('postfinance_mobile_ijustwanttotest')
                   ? Html::ATTRIBUTE_CHECKED : ''),
@@ -539,7 +539,7 @@ class Payment
                 (SettingDb::getValue('datatrans_use_testserver') ? '' : Html::ATTRIBUTE_CHECKED),
             // Not supported
             //'SHOP_DATATRANS_ACCEPTED_PAYMENT_METHODS_CHECKBOXES' => 0,
-            'SHOP_PAYPAL_EMAIL' => SettingDb::getValue('paypal_account_email'),
+            'SHOP_PAYPAL_EMAIL' => contrexx_raw2xhtml(SettingDb::getValue('paypal_account_email')),
             'SHOP_PAYPAL_STATUS' => (SettingDb::getValue('paypal_active') ? Html::ATTRIBUTE_CHECKED : ''),
             'SHOP_PAYPAL_DEFAULT_CURRENCY_MENUOPTIONS' => PayPal::getAcceptedCurrencyCodeMenuoptions(
                 SettingDb::getValue('paypal_default_currency')),
