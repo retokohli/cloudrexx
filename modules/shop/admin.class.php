@@ -3064,10 +3064,11 @@ if ($test === NULL) {
             '`product`.`stock`' => $_ARRAYLANG['TXT_SHOP_PRODUCT_STOCK'],
         );
         $objSorting = new Sorting($url, $arrSorting, false, 'order_shop_product');
-        $count = $limit =
-            SettingDb::getValue('numof_products_per_page_backend');
+        $limit = SettingDb::getValue('numof_products_per_page_backend');
         $tries = 2;
         while ($tries--) {
+            // have to set $count again because it will be set to 0 in Products::getByShopParams
+            $count = $limit;
             // Mind that $count is handed over by reference.
             $arrProducts = Products::getByShopParams(
                 $count, Paging::getPosition(),
