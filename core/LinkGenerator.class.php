@@ -171,7 +171,7 @@ class LinkGenerator {
                 $qb->orWhere($expr);
             }
 
-            $pages = $qb->getQuery()->useResultCache(true)->getResult();
+            $pages = $qb->getQuery()->getResult();
             foreach($pages as $page) {
                 // build placeholder's value -> URL
                 $url = \Cx\Core\Routing\Url::fromPage($page);

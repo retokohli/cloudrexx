@@ -699,7 +699,7 @@ class PageRepository extends EntityRepository {
         if (!$node) {
             throw new PageRepositoryException('No pages found!');
         }
-        $q = $this->em->createQuery("SELECT n FROM Cx\Core\ContentManager\Model\Entity\Node n JOIN n.pages p WHERE p.type != 'alias' AND n.parent = ?1 AND p.lang = ?2 AND p.slug = ?3")->useResultCache(true);      
+        $q = $this->em->createQuery("SELECT n FROM Cx\Core\ContentManager\Model\Entity\Node n JOIN n.pages p WHERE p.type != 'alias' AND n.parent = ?1 AND p.lang = ?2 AND p.slug = ?3");      
         foreach ($parts as $index=>$slug) {
             if (empty($slug)) {
                 break;
@@ -897,7 +897,7 @@ class PageRepository extends EntityRepository {
            )
            ->setParameter('searchString', '%'.$string.'%')
            ->setParameter('searchStringEscaped', '%'.contrexx_raw2xhtml($string).'%');
-        $pages   = $qb->getQuery()->useResultCache(true)->getResult();
+        $pages   = $qb->getQuery()->getResult();
         $config  = \Env::get('config');
         $results = array();
         foreach($pages as $page) {
@@ -948,7 +948,7 @@ class PageRepository extends EntityRepository {
         $query = $this->em->createQuery("
             select p from Cx\Core\ContentManager\Model\Entity\Page p 
                  order by p.updatedAt asc
-        ")->useResultCache(true);
+        ");
         $query->setFirstResult($from);
         $query->setMaxResults($count);
 

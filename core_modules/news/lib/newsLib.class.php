@@ -930,7 +930,7 @@ class newsLibrary
      * @return  string      $cmd
      */
     protected function findCmdById($cmdName, $cmdId, $cmdSeparator=',', $module='news', $lang=FRONTEND_LANG_ID)
-    {
+    {        
         $qb = \Env::get('em')->createQueryBuilder();
         $qb ->select('p', 'LENGTH(p.cmd) AS length')
             ->from('\Cx\Core\ContentManager\Model\Entity\Page', 'p')
@@ -956,7 +956,7 @@ class newsLibrary
                 'lang' => $lang,
                 'module' => $module,
             ));
-        $page = $qb->getQuery()->useResultCache(true)->getResult();
+        $page = $qb->getQuery()->getResult();
 
         if (!empty($page[0][0])) {
             // a page having the given id in cmd was found

@@ -146,7 +146,7 @@ class modulemanager
                 ->from('Cx\Core\ContentManager\Model\Entity\Page', 'p')
                 ->where('p.module IS NOT NULL');
 //                ->andWhere($qb->expr()->eq('p.lang', $this->langId));
-        $pages   = $qb->getQuery()->useResultCache(true)->getResult();
+        $pages   = $qb->getQuery()->getResult();
         
         foreach ($pages as $page) {
             if (!in_array($page->getModule(), $arrayInstalledModules)) {

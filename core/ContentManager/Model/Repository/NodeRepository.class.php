@@ -63,7 +63,7 @@ class NodeRepository extends NestedTreeRepository {
         }
         
         try {
-            $q = $qb->getQuery()->useResultCache(true);
+            $q = $qb->getQuery();
             $nodes = $q->getResult();
         } catch (\Doctrine\ORM\NoResultException $e) {
             $nodes = array();
@@ -94,7 +94,7 @@ class NodeRepository extends NestedTreeRepository {
         }
         
         try {
-            $q = $qb->getQuery()->useResultCache(true);
+            $q = $qb->getQuery();
             $node = $q->getSingleResult();
         } catch (\Doctrine\ORM\NoResultException $e) {
             $node = null;
@@ -273,7 +273,7 @@ class NodeRepository extends NestedTreeRepository {
         $dql .= $type;
         $dql .= $group;
         $dql .= " ORDER BY node.{$config['left']} ASC";
-        return $this->_em->createQuery($dql)->useResultCache(true);
+        return $this->_em->createQuery($dql);
     }
 
     /**
@@ -327,7 +327,7 @@ class NodeRepository extends NestedTreeRepository {
         $dql .= $type;
         $dql .= $group;
         $dql .= " ORDER BY node.{$config['left']} ASC";
-        return $this->_em->createQuery($dql)->useResultCache(true);
+        return $this->_em->createQuery($dql);
     }
 
     /**
