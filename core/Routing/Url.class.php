@@ -449,7 +449,7 @@ class Url {
 
         //cut offset
         $request = substr($request, strlen($pathOffset)+1);
-        $host = $_CONFIG['domainUrl'];
+        $host = !empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_CONFIG['domainUrl'];
         $protocol = ASCMS_PROTOCOL;
 
 
@@ -578,7 +578,7 @@ class Url {
         if ($protocol == '') {
             $protocol = ASCMS_PROTOCOL;
         }
-        $host = $_CONFIG['domainUrl'];
+        $host = !empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_CONFIG['domainUrl'];
         $offset = ASCMS_INSTANCE_OFFSET;
         $langDir = \FWLanguage::getLanguageCodeById($lang);
         $parameters = '';
@@ -658,7 +658,7 @@ class Url {
         if ($protocol == '') {
             $protocol = ASCMS_PROTOCOL;
         }
-        $host = $_CONFIG['domainUrl'];
+        $host = !empty($_SERVER['HTTP_HOST']) ? $_SERVER['HTTP_HOST'] : $_CONFIG['domainUrl'];
         $offset = ASCMS_INSTANCE_OFFSET;
         $path = $page->getPath();
         $langDir = \FWLanguage::getLanguageCodeById($page->getLang());
