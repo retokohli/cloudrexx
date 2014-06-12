@@ -225,8 +225,10 @@ class Shopmanager extends ShopLibrary
         }
         if (!empty($_POST['name'])) $name = contrexx_input2raw($_POST['name']);
         if (!empty($_POST['url'])) $url = contrexx_input2raw($_REQUEST['url']);
-// TODO: Paging
+
+        $currentUrl = clone \Env::get('Resolver')->getUrl();
         self::$objTemplate->setVariable(array(
+            'SHOP_MANUFACTURER_PAGING' => Paging::get($currentUrl, $_ARRAYLANG['TXT_SHOP_MANUFACTURER'], $count, $limit),
             'SHOP_EDIT_MANUFACTURER' => ($manufacturer_id
                 ? $_ARRAYLANG['TXT_SHOP_MANUFACTURER_EDIT']
                 : $_ARRAYLANG['TXT_SHOP_MANUFACTURER_ADD']),
