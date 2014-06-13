@@ -1316,7 +1316,7 @@ class CrmLibrary
         $orderBy = '';
         $orderQuery = '';
         if (isset($filter['term']) && !empty($filter['term'])) {
-            $gender     = ($filter['term'] == 'male' || $filter['term'] == 'Männlich') ? 2 : (($filter['term'] == 'female' || $filter['term'] == 'Weiblich') ? 1 : '');
+            $gender     = ($filter['term'] == 'male' || $filter['term'] == 'MÃ¤nnlich') ? 2 : (($filter['term'] == 'female' || $filter['term'] == 'Weiblich') ? 1 : '');
             switch (true) {
             case (preg_match("/(^|[\n ])([a-z0-9&\-_\.]+?)@([\w\-]+\.([\w\-\.]+)+)/i", $filter['term'])):
                 $filter['term'] = '"'.$filter['term'].'"';
@@ -2851,9 +2851,12 @@ CODE;
      * @throws ContactException
      */
     protected static function getTemporaryUploadPath($submissionId, $fieldId, $dir) {
+        global $sessionObj;
 
-        $tempPath = $_SESSION->getTempPath();
-        $tempWebPath = $_SESSION->getWebTempPath();
+        if (!isset($sessionObj)) $sessionObj = new cmsSession();
+
+        $tempPath = $sessionObj->getTempPath();
+        $tempWebPath = $sessionObj->getWebTempPath();
         if($tempPath === false || $tempWebPath === false)
             throw new ContactException('could not get temporary session folder');
 
