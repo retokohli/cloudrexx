@@ -95,7 +95,7 @@ $this->bytes = memory_get_peak_usage();
         $content = '';
         $nodeStack = array();
         array_push($nodeStack, $node);
-        $q = $this->em->createQuery("SELECT n FROM Cx\Core\ContentManager\Model\Entity\Node n JOIN n.pages p WHERE p.type != 'alias' AND n.parent = ?1 AND p.lang = ?2")->useResultCache(true);
+        $q = $this->em->createQuery("SELECT n FROM Cx\Core\ContentManager\Model\Entity\Node n JOIN n.pages p WHERE p.type != 'alias' AND n.parent = ?1 AND p.lang = ?2");
         
         $lastLevel = $this->getLastLevel();
         while (count($nodeStack)) {
