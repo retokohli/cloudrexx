@@ -321,13 +321,9 @@ class ContentManager extends \Module
         $this->template->setVariable('LANGUAGE_LABELS', json_encode($this->getLangLabels()));
         $this->template->setVariable('EDIT_VIEW_CSS_CLASS', $editViewCssClass);
         
-        if (count(\FWLanguage::getActiveFrontendLanguages()) < 2) {
-            $this->template->hideBlock('content_manager_language_selection');
-        } else {
-            $this->template->touchBlock('content_manager_language_selection');
-        }
+        $this->template->touchBlock('content_manager_language_selection');
 
-        $editmodeTemplate = new \Cx\Core\Html\Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
+            $editmodeTemplate = new \Cx\Core\Html\Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
         $editmodeTemplate->loadTemplateFile('content_editmode.html');
         $editmodeTemplate->setVariable(array(
             'TXT_EDITMODE_TEXT'    => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_TEXT'],
