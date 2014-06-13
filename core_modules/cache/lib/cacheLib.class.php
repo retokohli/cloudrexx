@@ -76,48 +76,12 @@ class cacheLib
     protected $userCacheEngine = null;
     protected $memcache = null;
 
-    function _deleteAllFiles($cacheEngine = 'all')
-    {
-        
-        \Env::get('cache')->deleteAll();
-        
-        /*
-        $handleDir = opendir($this->strCachePath);
-        if ($handleDir) {
-            while ($strFile = readdir($handleDir)) {
-                if ($strFile != '.' && $strFile != '..') {
-                    switch ($cacheEngine) {
-                        case 'cxEntries':
-                            if(false !== strpos($strFile, 'db_')){
-                    			unlink($this->strCachePath . $strFile);
-                			}
-                            break;
-                        case 'cxPages':
-                            if(false === strpos($strFile, 'db_')){
-                                unlink($this->strCachePath . $strFile);
-                            }
-                            break;
-                        default:
-                            unlink($this->strCachePath . $strFile);
-                            break;
-                    }
-                }
-            }
-            closedir($handleDir);
-        } */
-    }
-
     /**
-     * Delete cache file of page by page id
-     *
-     * @param int $pageId the page id of cached page
+     * Delete all cached file's of the cache system   
      */
-    static public function deleteCacheFileByPageId($pageId)
+    function _deleteAllFiles()
     {
-        foreach (glob(ASCMS_CACHE_PATH . "/*" . $pageId) as $filename) {
-            $File = new \Cx\Lib\FileSystem\File($filename);
-            $File->delete();
-        }
+        \Env::get('cache')->flushAll();
     }
     
     protected function initOPCaching() {
@@ -385,7 +349,7 @@ class cacheLib
             case self::CACHE_ENGINE_ZEND_OPCACHE:
                 $this->clearZendOpCache();
             case self::CACHE_ENGINE_FILESYSTEM:
-                $this->_deleteAllFiles('cxEntries');
+                $this->_deleteAllFiles();
             default:
                 break;
         }

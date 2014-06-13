@@ -261,7 +261,7 @@ namespace Cx\Core\Model {
 
             $config->setSqlLogger(new \Cx\Lib\DBG\DoctrineSQLLogger());
 
-            $em = \Doctrine\ORM\EntityManager::create($connectionOptions, $config, $evm);
+            $em = \Cx\Core\Model\Controller\EntityManager::create($connectionOptions, $config, $evm);
 
             //resolve enum, set errors
             $conn = $em->getConnection();

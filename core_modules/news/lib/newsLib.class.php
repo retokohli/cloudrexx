@@ -930,7 +930,7 @@ class newsLibrary
      * @return  string      $cmd
      */
     protected function findCmdById($cmdName, $cmdId, $cmdSeparator=',', $module='news', $lang=FRONTEND_LANG_ID)
-    {
+    {        
         $qb = \Env::get('em')->createQueryBuilder();
         $qb ->select('p', 'LENGTH(p.cmd) AS length')
             ->from('\Cx\Core\ContentManager\Model\Entity\Page', 'p')

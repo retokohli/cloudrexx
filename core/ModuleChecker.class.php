@@ -125,7 +125,7 @@ namespace Cx\Core
 // TODO: add additional check for module != NULL
                     $qb->expr()->neq('p.module', $qb->expr()->literal(''))
                 );
-            $pages = $qb->getQuery()->useResultCache(true)->getResult();
+            $pages = $qb->getQuery()->getResult();
             foreach ($pages as $page) {
                 $arrCmInstalledModules[] = $page->getModule();
                 if ($page->isActive()) {
