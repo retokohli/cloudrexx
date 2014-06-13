@@ -30,7 +30,9 @@ class EntityManager extends \Doctrine\ORM\EntityManager {
     {
         $query = new \Doctrine\ORM\Query($this);
         $query->useResultCache(true);
-        
+        if (strpos($dql, 'SELECT') !== false) {
+            $query->useResultCache(true);
+        }
         if ( ! empty($dql)) {
             $query->setDql($dql);
         }
