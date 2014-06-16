@@ -1193,6 +1193,16 @@ EOF
     catch (Cx\Lib\UpdateException $e) {
         return Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
+    
+    //update settingsDB for missing values
+    if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.0.0')) {
+        try {
+            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `' . DBPREFIX . 'core_setting` (`section`, `name`, `group`, `type`, `value`)
+                                    VALUES (\'shop\', \'orderitems_amount_min\', \'config\', \'text\', \'0\')');
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+    }
 
     // add access id 4 for user groups which had access to 13 or 161
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0')) {
