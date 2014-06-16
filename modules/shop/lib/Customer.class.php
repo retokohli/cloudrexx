@@ -282,24 +282,39 @@ class Customer extends User
      */
     function is_reseller($is_reseller=null)
     {
+        // get defined groups in shop
         $group_reseller = SettingDb::getValue('usergroup_id_reseller');
         if (empty($group_reseller)) {
             self::errorHandler();
             $group_reseller = SettingDb::getValue('usergroup_id_reseller');
         }
-        if (isset($is_reseller)) {
-            if ($is_reseller) {
-                $this->setGroups(array($group_reseller));
-            } else {
-                $group_customer = SettingDb::getValue('usergroup_id_customer');
-                if (empty($group_customer)) {
-                    self::errorHandler();
-                    $group_customer = SettingDb::getValue('usergroup_id_customer');
-                }
-                $this->setGroups(array($group_customer));
-            }
+        $group_customer = SettingDb::getValue('usergroup_id_customer');
+        if (empty($group_customer)) {
+            self::errorHandler();
+            $group_customer = SettingDb::getValue('usergroup_id_customer');
         }
-        return (in_array($group_reseller, $this->getAssociatedGroupIds()));
+
+        // return the value
+        if (!isset($is_reseller)) {
+            return (in_array($group_reseller, $this->getAssociatedGroupIds()));
+        }
+
+        // clean up associated groups by removing all shop groups from array
+        $groups = $this->getAssociatedGroupIds();
+        foreach ($groups as $i => $groupId) {
+            if (!in_array($groupId, array($group_reseller, $group_customer))) {
+                continue;
+            }
+            unset($groups[$i]);
+        }
+
+        // add selected shop group
+        if ($is_reseller) {
+            $groups[] = $group_reseller;
+        } else {
+            $groups[] = $group_customer;
+        }
+        $this->setGroups($groups);
     }
 
     /**
