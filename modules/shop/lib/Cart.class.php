@@ -909,7 +909,7 @@ die("Cart::view(): ERROR: No template");
             && SettingDb::getValue('orderitems_amount_min') > self::get_price()
         ) {
             $objTemplate->setVariable(
-                'TXT_SHOP_NOTE_AMOUNT_TOO_LOW',
+                'MESSAGE_TEXT',
                     sprintf(
                         $_ARRAYLANG['TXT_SHOP_ORDERITEMS_AMOUNT_MIN'],
                         Currency::formatPrice(
@@ -920,7 +920,7 @@ die("Cart::view(): ERROR: No template");
             && SettingDb::getValue('orderitems_amount_max') < self::get_price()
         ) {
             $objTemplate->setVariable(
-                'TXT_SHOP_NOTE_AMOUNT_LIMIT_REACHED',
+                'MESSAGE_TEXT',
                     sprintf(
                         $_ARRAYLANG['TXT_SHOP_ORDERITEMS_AMOUNT_MAX'],
                         Currency::formatPrice(

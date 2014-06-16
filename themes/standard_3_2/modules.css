@@ -1599,8 +1599,12 @@ and (max-device-width : 1024px) {
     background: #0A85C8;
 }
 
-#shop .continue-button {
+#shop .cart-buttons input[type="submit"]{
     margin: 0;
+}
+
+#shop .continue-button {
+    margin: 0 0 0 10px;
 }
 
 #shop .cart-links {
