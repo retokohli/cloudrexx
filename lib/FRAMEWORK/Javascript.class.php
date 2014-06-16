@@ -673,6 +673,8 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
             // set cx.variables with lazy loading file paths
             ContrexxJavascript::getInstance()->setVariable('lazyLoadingFiles', $lazyLoadingFiles, 'contrexx');
 
+            
+            $jsScripts[] = array();
             // Note the "reverse" here.  Dependencies are at the end of the
             // array, and must be loaded first!
             foreach (array_reverse(self::$active) as $name) {
@@ -687,36 +689,39 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
                     $versionData = end($data['versions']);
                     $data = array_merge($data, $versionData);
                 }
-                $retstring .= self::makeJSFiles($data['jsfiles']);
+                $jsScripts[] = self::makeJSFiles($data['jsfiles']);
                 if (!empty($data['cssfiles'])) {
                     $cssfiles = array_merge($cssfiles, $data['cssfiles']);
                 }
                 if (isset($data['specialcode']) && strlen($data['specialcode']) > 0) {
-                    $retstring .= self::makeSpecialCode(array($data['specialcode']));
+                    $jsScripts[] = self::makeSpecialCode(array($data['specialcode']));
                 }
                 if (isset($data['makecallback'])) {
                     self::$data['makecallback']();
                 }
                 // Special case contrexx-API: fetch specialcode if activated
                 if ($name == 'cx') {
-                    $retstring .= self::makeSpecialCode(
+                    $jsScripts[] = self::makeSpecialCode(
                         array(ContrexxJavascript::getInstance()->initJs()));
                 }
             }
         }
 
-        $retstring .= self::makeJSFiles(self::$customJS);
+        $jsScripts[] = self::makeJSFiles(self::$customJS);
         
         // if jquery is activated, do a noConflict
         if (array_search('jquery', self::$active) !== false) {
-        $retstring .= self::makeSpecialCode('$J = cx.jQuery = jQuery.noConflict();');
+        $jsScripts[] = self::makeSpecialCode('$J = cx.jQuery = jQuery.noConflict();');
         }
-        $retstring .= self::makeJSFiles(self::$templateJS);
+        $jsScripts[] = self::makeJSFiles(self::$templateJS);
         
         // no conflict for normal jquery version which has been included in template or by theme dependency
-        $retstring .= self::makeSpecialCode('if (typeof jQuery != "undefined") { jQuery.noConflict(); }');
+        $jsScripts[] = self::makeSpecialCode('if (typeof jQuery != "undefined") { jQuery.noConflict(); }');
         $retstring .= self::makeCSSFiles($cssfiles);
         $retstring .= self::makeCSSFiles(self::$customCSS);
+        // Add javscript files
+        $retstring .= implode(' ', $jsScripts);
+        $retstring .= self::makeJSFiles(self::$customJS);
         $retstring .= self::makeSpecialCode(self::$customCode);
         return $retstring;
     }
