@@ -648,6 +648,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
 //        $specialcode = array();
         $lazyLoadingFiles = array();
         $retstring  = '';
+        $jsScripts = array();
         if (count(self::$active) > 0) {
             // check for lazy dependencies, if there are lazy dependencies, activate cx
             // cx provides the lazy loading mechanism
@@ -672,9 +673,7 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
 
             // set cx.variables with lazy loading file paths
             ContrexxJavascript::getInstance()->setVariable('lazyLoadingFiles', $lazyLoadingFiles, 'contrexx');
-
             
-            $jsScripts[] = array();
             // Note the "reverse" here.  Dependencies are at the end of the
             // array, and must be loaded first!
             foreach (array_reverse(self::$active) as $name) {
