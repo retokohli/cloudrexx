@@ -37,22 +37,68 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
      * 
      * @var string
      */
-    protected $arrayPath;
+    protected $offset;
+    
+    /**
+     * Callable funtion on offsetSet
+     * 
+     * @var callable
+     */
+    protected $callableOnSet;    
+    /**
+     * Callable funtion on offsetGet
+     * 
+     * @var callable
+     */
+    protected $callableOnGet;
+    
+    /**
+     * Callable funtion on offsetUnset
+     * 
+     * @var callable
+     */
+    protected $callableOnUnset;
+    
+    /**
+     * 
+     * 
+     * @var integer
+     */
+    protected $id;
+    
+    /**
+     *
+     * @var type 
+     */
+    protected $parentId;
     
     /**
      * Default object constructor.
      *
      * @param array $data
      */
-    protected function __construct($data, $path = '')
-    {                
-        $this->arrayPath = $path;
-
+    protected function __construct($data, $offset = '', $parentId = 0, $callableOnSet = null, $callableOnGet = null, $callableOnUnset = null)
+    {
+        $this->offset   = $offset;
+        $this->parentId = intval($parentId);
+        
+        if ($callableOnSet)
+            $this->callableOnSet = $callableOnSet;
+        if ($callableOnGet)
+            $this->callableOnGet = $callableOnGet;        
+        if ($callableOnUnset)
+            $this->callableOnUnset = $callableOnUnset;
+        
+        if ($this->callableOnUnset)
+            call_user_func($this->callableOnUnset, $this->offset, $this->parentId);
+        if ($this->callableOnSet)
+            call_user_func($this->callableOnSet, $this);
+        
         if (is_array($data)) {
-            foreach ($data as $key => $value) {                    
+            foreach ($data as $key => $value) {
                 $this[$key] = $value;
             }
-        }       
+        }
     }
 
     /**
@@ -106,9 +152,24 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
      *
      * @return null
      */
-    public function offsetSet($offset, $data) {
+    public function offsetSet($offset, $data, $callableOnSet = null, $callableOnGet = null, $callableOnUnset = null) {
+        
+        if ($callableOnSet)
+            $this->callableOnSet = $callableOnSet;
+        if ($callableOnGet)
+            $this->callableOnGet = $callableOnGet;        
+        if ($callableOnUnset)
+            $this->callableOnUnset = $callableOnUnset;
+        
         if ( is_array( $data ) ) {
-            $data = new static($data, ($this->arrayPath) ? $this->arrayPath . '/' . $offset : $offset);
+            $data = new self(
+                            $data,
+                            $offset,
+                            $this->id,
+                            isset($this->callableOnSet) ? $this->callableOnSet : null,
+                            isset($this->callableOnGet) ? $this->callableOnGet : null,
+                            isset($this->callableOnUnset) ? $this->callableOnUnset : null
+                    );
         }
         
         if ($offset === null) { // don't forget this!
@@ -116,6 +177,8 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
         } else {
             $this->data[$offset] = $data;
         }
+        if ($this->callableOnSet)
+            call_user_func($this->callableOnSet, $this);
     }
 
     /**
@@ -128,7 +191,13 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
      * @return null
      */
     public function offsetUnset($offset) {
+        if ($this->callableOnSet)
+            call_user_func($this->callableOnUnset, $offset, $this->id);
+        
         unset($this->data[$offset]);
+        
+        if ($this->callableOnSet)
+            call_user_func($this->callableOnSet, $this);
     }
 
     /********************************/
