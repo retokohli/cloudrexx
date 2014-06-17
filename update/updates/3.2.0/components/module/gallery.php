@@ -117,5 +117,7 @@ function _galleryUpdate()
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
 
+    // remove the script tag at the beginning of the gallery page
+    \Cx\Lib\UpdateUtil::migrateContentPageUsingRegex(array('module' => 'gallery'), '/^\s*(<script[^>]+>.+?Shadowbox.+?<\/script>)+/sm', '', array('content'), '3.0.3');
     return true;
 }
