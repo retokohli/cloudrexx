@@ -1651,7 +1651,7 @@ $_ARRAYLANG['TXT_CORE_CM_METAKEYS_INFO'] = 'Werden von Suchmaschinen als zus&aum
 $_ARRAYLANG['TXT_CORE_CM_THEMES'] = 'Theme';
 $_ARRAYLANG['TXT_CORE_CM_THEMES_INFO'] = 'Die Seite wird im ausgew&auml;hlten Theme angezeigt.';
 $_ARRAYLANG['TXT_CORE_CM_CUSTOM_CONTENT'] = 'Inhaltsvorlage';
-$_ARRAYLANG['TXT_CORE_CM_USE_ALL_CHANNELS'] = "Use for all output channels";
+$_ARRAYLANG['TXT_CORE_CM_USE_ALL_CHANNELS'] = "Für alle Ausgabemedien verwenden";
 $_ARRAYLANG['TXT_CORE_CM_USE_SKIN_ALL_CHANNELS_INFO'] = "Wird das Kontrollkästchen aktiviert, so wird das ausgewählte Theme für alle Ausgabemedien (Standard / Mobile / Druck / PDF / App) anstelle des Standard-Themes des jeweiligen Ausgabemediums verwendet.";
 $_ARRAYLANG['TXT_CORE_CM_USE_CUSTOM_CONTENT_ALL_CHANNELS_INFO'] = "Wird das Kontrollkästchen aktiviert, so wird die ausgewählte Inhaltsvorlage für alle Ausgabemedien (Standard / Mobile / Druck / PDF / App) verwendet. Wenn das Kontrollkästchen nicht aktiviert ist, im Standard-Theme des jeweiligen Ausgabemediums aber eine Datei mit demselben Namen wie jener der ausgewählten Inhaltsvorlage vorhanden ist, so wird diese Inhaltsvorlage verwendet, anstelle der standard Inhaltsvorlage (<span class='content_template_info'>content.html</span>)";
 $_ARRAYLANG['TXT_CORE_CM_CUSTOM_CONTENT_INFO'] = 'Andere Inhaltsvorlage verwenden. Weitere Inhaltsvorlagen k&ouml;nnen Sie als content_<strong>name</strong>.html im Theme-Ordner anlegen.';
