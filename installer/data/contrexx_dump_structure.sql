@@ -4038,11 +4038,14 @@ SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_session_variable` (
+  `id` int(11) NOT NULL auto_increment,
+  `parent_id` int(11) NOT NULL,
   `sessionid` varchar(32) NOT NULL default '',
   `lastused` timestamp NOT NULL,
-  `variable_key` varchar(40) NOT NULL default '',
-  `variable_value` text,
-  UNIQUE KEY `sessvar` (`sessionid`,`variable_key`)
+  `key` varchar(40) NOT NULL default '',
+  `value` text,
+  PRIMARY KEY  (`id`),
+  UNIQUE KEY `key_index` (`parent_id`,`key`)
 ) ENGINE=MyISAM;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
@@ -4054,7 +4057,6 @@ CREATE TABLE `contrexx_sessions` (
   `lastupdated` varchar(14) NOT NULL default '',
   `status` varchar(20) NOT NULL default '',
   `user_id` int(10) unsigned NOT NULL default '0',
-  `datavalue` text,
   PRIMARY KEY  (`sessionid`),
   KEY `LastUpdated` (`lastupdated`)
 ) ENGINE=MyISAM;
