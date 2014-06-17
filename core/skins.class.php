@@ -1179,20 +1179,20 @@ class skins
 
         $themesFile = isset($_POST['themesDelFileName']) ? $_POST['themesDelFileName'] : '';
         $themes = isset($_POST['themes']) ? $_POST['themes'] : '';
-        //path traversal security check
-        if (strpos(realpath($this->path.'/'.$themes.'/'.$themesFile), realpath($this->path.'/'.$themes)) !== 0) {
-            $themesFile = '';
-        }
-        $themes = str_replace(array('..','/'), '', $themes);
 
-        if (($themesFile!="") AND ($themes!="")){
-            if ($_POST['themesPage'] != $themesFile) {
-                if (\Cx\Lib\FileSystem\FileSystem::delete_file($this->path.$themes.'/'.$themesFile)) {
-                    $this->strOkMessage = $themesFile.": ".$_CORELANG['TXT_STATUS_SUCCESSFULLY_DELETE'];
-                }
-             } else {
-                $this->strErrMessage = $_CORELANG['TXT_STATUS_FILE_CURRENTLY_OPEN'];
-             }
+        if (empty($themesFile) || empty($themes)) {
+            return;
+        }
+
+        $directory = new RecursiveDirectoryIterator($this->path.$themes);
+        $iterator = new RecursiveIteratorIterator($directory);
+        $objects = new RegexIterator($iterator, '/^.+'.$themesFile.'$/i', RecursiveRegexIterator::GET_MATCH);
+
+        // iterate through all objects in the folder and search for matching files
+        foreach ($objects as $object) {
+            if (\Cx\Lib\FileSystem\FileSystem::delete_file(current($object))) {
+                $this->strOkMessage = $themesFile.": ".$_CORELANG['TXT_STATUS_SUCCESSFULLY_DELETE'];
+            }
         }
     }
 
@@ -1632,22 +1632,22 @@ class skins
         if ($themes != "") {
             $file = $this->path.$themes;
             if (file_exists($file)) {
-                $themesPage = opendir ($file);
-                $page = readdir($themesPage);
-                while ($page) {
-                    $extension = preg_split("/\./",$page);
+                $directory = new RecursiveDirectoryIterator($file);
+                $objects = new RecursiveIteratorIterator($directory);
+
+                foreach ($objects as $name => $object) {
+                    $fileName = $object->getFileName();
+                    $extension = preg_split("/\./", $fileName);
                     $x = count($extension)-1;
                     if (in_array($extension[$x], $this->fileextensions)) {
-                        if (($page != ".") && ($page != "..") && (!in_array($page, $this->filenames))) {
-                            $fdmd .="<option value='".$page."'>".$page."</option>\n";
+                        if (($fileName != ".") && ($fileName != "..") && (!in_array($fileName, $this->filenames))) {
+                            $fdmd .="<option value='".$fileName."'>".$fileName."</option>\n";
                         }
                     }
-                    $page = readdir($themesPage);
                 }
-                closedir($themesPage);
+            } else {
+                $fdmd .="<option value='1'>".$_CORELANG['TXT_CHOOSE_DESIGN']."</option>\n";
             }
-        } else {
-            $fdmd .="<option value='1'>".$_CORELANG['TXT_CHOOSE_DESIGN']."</option>\n";
         }
         return $fdmd;
     }
