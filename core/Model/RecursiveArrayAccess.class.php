@@ -139,7 +139,11 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
      * @return mixed Can return all value types.
      */
     public function offsetGet($offset) {
-        return isset($this->data[$offset]) ? $this->data[$offset] : null;
+        if ($this->callableOnGet) {
+            return call_user_func($this->callableOnGet, $offset, $this);
+        } else {
+            return isset($this->data[$offset]) ? $this->data[$offset] : null;
+        }
     }
 
     /**

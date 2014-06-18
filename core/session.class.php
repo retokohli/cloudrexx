@@ -41,7 +41,7 @@ class cmsSession extends RecursiveArrayAccess {
     private $discardChanges = false;
     
     private $locks = array();
-    private $sessionLockTime = 10;
+    private static $sessionLockTime = 10;
     
     /*
      * Get instance of the class from the out side world
@@ -130,7 +130,7 @@ class cmsSession extends RecursiveArrayAccess {
             while (!$objResult->EOF) {
                 $objData        = unserialize($objResult->fields['value']);
                 foreach ($objData->data as $key => $value) {
-                    $this->data[$key] = is_object($value) ? $this->getDataFromKeyAndParentKey($key, $objData->id) : $value; 
+                    $this->data[$key] = is_object($value) ? self::getDataFromKeyAndParentKey($key, $objData->id) : $value; 
                 }
                 $this->id       = $objData->id;
                 $this->parentId = $objData->parentId;
@@ -140,7 +140,7 @@ class cmsSession extends RecursiveArrayAccess {
         }
     }
     
-    function getDataFromKeyAndParentKey($key, $parentId) {
+    static function getDataFromKeyAndParentKey($key, $parentId) {
         
         $query = "SELECT 
                     `key`,
@@ -149,7 +149,7 @@ class cmsSession extends RecursiveArrayAccess {
                   FROM 
                     `". DBPREFIX ."session_variable` 
                   WHERE 
-                    `sessionid` = '{$this->sessionid}' 
+                    `sessionid` = '{$_SESSION->sessionid}' 
                   AND 
                     `parent_id` = '$parentId'
                   AND 
@@ -163,7 +163,7 @@ class cmsSession extends RecursiveArrayAccess {
                 $data = $objData = unserialize($objResult->fields['value']);
                 
                 foreach ($objData->data as $key => $value) {
-                     $data->data[$key] = is_object($value) ? $this->getDataFromKeyAndParentKey($key, $objData->id) : $value; 
+                     $data->data[$key] = is_object($value) ? self::getDataFromKeyAndParentKey($key, $objData->id) : $value; 
                 }
                 $objResult->MoveNext();
             }
@@ -468,7 +468,7 @@ class cmsSession extends RecursiveArrayAccess {
         return $_DBCONFIG['database'].DBPREFIX."sessions_".$_SESSION->sessionid.'_'.$key;
     }
 
-    public function getLock($lockName, $lifeTime = 60)
+    public static function getLock($lockName, $lifeTime = 60)
     {
         $objLock = \Env::get('db')->Execute('SELECT GET_LOCK("' . $lockName . '", ' . $lifeTime . ')');
 
@@ -496,20 +496,6 @@ class cmsSession extends RecursiveArrayAccess {
     }
     
     /**
-     * Used to get the top key the current array using arrayPath
-     * 
-     * @return session variable name to lock
-     */
-    private function getLockKey() {
-        $lockKey = null;
-        if ($this->arrayPath && !empty($this->arrayPath)) {
-            list($lockKey) = explode('/', $this->arrayPath);
-        }
-        
-        return $lockKey;
-    }
-    
-    /**
      * {@inheritdoc}
      */
     public function offsetSet($offset, $data) {
@@ -517,6 +503,13 @@ class cmsSession extends RecursiveArrayAccess {
             self::updateToDb($this);
         }
         parent::offsetSet($offset, $data, array('\cmsSession', 'updateToDb'), array('\cmsSession', 'getFromDb'), array('\cmsSession', 'removeFromSession'));
+    }
+    
+    /**
+     * {@inheritdoc}
+     */
+    public function offsetGet($offset) {
+        return self::getFromDb($offset, $this);
     }
     
     /**
@@ -548,6 +541,33 @@ class cmsSession extends RecursiveArrayAccess {
     }
 
     /**
+     * Get lock and values from database
+     * 
+     * @param string $offset Offset
+     * @param object $arrObj object array
+     */
+    public static function getFromDb($offset, $arrObj) {
+        if (isset($arrObj->data[$offset])) {
+            $lockKey = $arrObj->id .'-'. $offset;
+            if (!isset($_SESSION->locks[$lockKey])) {
+                $_SESSION->locks[$lockKey] = 1;
+                self::getLock(self::getLockName($lockKey), self::$sessionLockTime);
+            }
+            
+            if (is_object($arrObj->data[$offset])) {
+                $arrObj->data[$offset] = self::getDataFromKeyAndParentKey($offset, $arrObj->id);
+            } else {
+                foreach ($arrObj->data as $key => $value) {
+                     $arrObj->data[$key] = is_object($value) ? self::getDataFromKeyAndParentKey($key, $arrObj->id) : $value;
+                }
+            }
+            
+            return $arrObj->data[$offset];
+        }
+        return null;
+    }
+
+    /**
      * Update given object to database
      * 
      * @param object $arrObj object array
@@ -572,6 +592,7 @@ class cmsSession extends RecursiveArrayAccess {
             \Env::get('db')->Execute($query);
             
             $arrObj->id = \Env::get('db')->Insert_ID();
+            self::updateToDb($arrObj); // needs to update into database again for the id changes
         }
     }
     
