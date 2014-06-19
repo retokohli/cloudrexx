@@ -224,7 +224,14 @@ namespace Cx\Core\Model {
 
             $config->setProxyDir(ASCMS_MODEL_PROXIES_PATH);
             $config->setProxyNamespace('Cx\Model\Proxies');
-            $config->setAutoGenerateProxyClasses(false);
+            
+            /**
+             * This should be set to true if workbench is present and active.
+             * Just checking for workbench.config is not really a good solution.
+             * Since ConfigurationFactory used by EM caches auto generation
+             * config value, there's no possibility to set this later.
+             */
+            $config->setAutoGenerateProxyClasses(file_exists(ASCMS_DOCUMENT_ROOT.'/workbench.config'));
             
             $connectionOptions = array(
                 'pdo' => $this->getPdoConnection(),
