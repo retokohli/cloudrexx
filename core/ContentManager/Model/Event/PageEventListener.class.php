@@ -98,7 +98,9 @@ class PageEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
 
     public function postUpdate($eventArgs) {
         global $objCache;
-        $objCache->clearCache();
+        if ($objCache) {
+            $objCache->clearCache();
+        }
         
         $this->writeXmlSitemap($eventArgs);
     }
@@ -127,7 +129,9 @@ class PageEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
 
         global $objCache;
-        $objCache->clearCache();
+        if ($objCache) {
+            $objCache->clearCache();
+        }
         
         foreach ($uow->getScheduledEntityUpdates() AS $entity) {            
             $this->checkValidPersistingOperation($pageRepo, $entity);
