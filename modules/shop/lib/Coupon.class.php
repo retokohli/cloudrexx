@@ -407,23 +407,6 @@ DBG::log("Coupon::get($code): ERROR: Query failed");
 //DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Deduct amounts redeemed");
             return null;
         }
-        // Unlimited uses
-        if ($objCoupon->uses > 1e9) return $objCoupon;
-        // Deduct the number of times the Coupon has been redeemed already:
-        // - If the Coupon's customer_id is empty, subtract all uses
-        // - Otherwise, subtract the current customer's uses only
-        $objCoupon->uses(
-            $objCoupon->uses
-          - $objCoupon->getUsedCount(
-              ($objCoupon->customer_id
-                ? $customer_id : null)));
-        if ($objCoupon->uses <= 0) {
-//DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Fully redeemed");
-            if (!self::hasMessage('TXT_SHOP_COUPON_UNAVAILABLE_CAUSE_USED_UP')) {
-                Message::information($_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_CAUSE_USED_UP']);
-            }
-            return null;
-        }
         if ($objCoupon->minimum_amount > floatval($order_amount)) {
 //DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Order amount too low");
             if (!self::hasMessage('TXT_SHOP_COUPON_UNAVAILABLE_FOR_AMOUNT')) {
@@ -434,6 +417,24 @@ DBG::log("Coupon::get($code): ERROR: Query failed");
             return null;
         }
 //DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Found ".(var_export($objCoupon, true)));
+        // Unlimited uses
+        if ($objCoupon->uses > 1e9) return $objCoupon;
+
+        // Deduct the number of times the Coupon has been redeemed already:
+        // - If the Coupon's customer_id is empty, subtract all uses
+        // - Otherwise, subtract the current customer's uses only
+        $objCoupon->uses(
+            $objCoupon->uses
+            - $objCoupon->getUsedCount(
+                ($objCoupon->customer_id
+                    ? $customer_id : null)));
+        if ($objCoupon->uses <= 0) {
+//DBG::log("Coupon::available($code, $order_amount, $customer_id, $product_id, $payment_id): Fully redeemed");
+            if (!self::hasMessage('TXT_SHOP_COUPON_UNAVAILABLE_CAUSE_USED_UP')) {
+                Message::information($_ARRAYLANG['TXT_SHOP_COUPON_UNAVAILABLE_CAUSE_USED_UP']);
+            }
+            return null;
+        }
         return $objCoupon;
     }
 
