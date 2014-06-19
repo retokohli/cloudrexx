@@ -1401,6 +1401,15 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
         foreach ($arrNames as $langId => $name) {
             $this->arrName[intval($langId)] = $name;
         }
+
+        // add text for inactive languages too
+        $defaultLangId = \FWLanguage::getDefaultLangId();
+        foreach (\FWLanguage::getLanguageArray() as $langId => $langInfo) {
+            if (!isset($arrNames[$langId])) {
+                $this->arrName[$langId] = $this->arrName[$defaultLangId];
+            }
+        }
+
         $this->arrAttributes[$this->id]['names'] = $this->arrName;
     }
 
