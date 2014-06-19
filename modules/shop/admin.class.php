@@ -45,6 +45,9 @@ class Shopmanager extends ShopLibrary
         global $_ARRAYLANG, $objTemplate;
 
         SettingDb::init('shop', 'config');
+
+        $this->checkProfileAttributes();
+
         self::$defaultImage = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.ShopLibrary::noPictureName;
         self::$objTemplate = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/shop/template');
         self::$objTemplate->setErrorHandling(PEAR_ERROR_DIE);
@@ -55,6 +58,79 @@ class Shopmanager extends ShopLibrary
             'SHOP_CURRENCY' => Currency::getActiveCurrencySymbol(),
             'CSRF_PARAM' => CSRF::param()
         ));
+    }
+
+    protected function checkProfileAttributes() {
+        $objUser = FWUser::getFWUserObject()->objUser;
+
+        $index_notes = SettingDb::getValue('user_profile_attribute_notes');
+        if ($index_notes) {
+            $objProfileAttribute = $objUser->objAttribute->getById($index_notes);
+            $attributeNames = $objProfileAttribute->getAttributeNames($index_notes);
+            if (empty($attributeNames)) {
+                $index_notes = false;
+            }
+        }
+        if (!$index_notes) {
+//DBG::log("Customer::errorHandler(): Adding notes attribute...");
+//            $objProfileAttribute = new User_Profile_Attribute();
+            $objProfileAttribute = $objUser->objAttribute->getById(0);
+//DBG::log("Customer::errorHandler(): NEW notes attribute: ".var_export($objProfileAttribute, true));
+            $objProfileAttribute->setNames(array(
+                1 => 'Notizen',
+                2 => 'Notes',
+// TODO: Translate
+                3 => 'Notes', 4 => 'Notes', 5 => 'Notes', 6 => 'Notes',
+            ));
+            $objProfileAttribute->setType('text');
+            $objProfileAttribute->setMultiline(true);
+            $objProfileAttribute->setParent(0);
+            $objProfileAttribute->setProtection(array(1));
+//DBG::log("Customer::errorHandler(): Made notes attribute: ".var_export($objProfileAttribute, true));
+            if (!$objProfileAttribute->store()) {
+                throw new Cx\Lib\Update_DatabaseException(
+                    "Failed to create User_Profile_Attribute 'notes'");
+            }
+//DBG::log("Customer::errorHandler(): Stored notes attribute, ID ".$objProfileAttribute->getId());
+            if (!(SettingDb::set('user_profile_attribute_notes', $objProfileAttribute->getId())
+                && SettingDb::update('user_profile_attribute_notes'))) {
+                throw new Cx\Lib\Update_DatabaseException(
+                    "Failed to update User_Profile_Attribute 'notes' setting");
+            }
+//DBG::log("Customer::errorHandler(): Stored notes attribute ID setting");
+        }
+
+        $index_group = SettingDb::getValue('user_profile_attribute_customer_group_id');
+        if ($index_group) {
+            $objProfileAttribute = $objUser->objAttribute->getById($index_notes);
+            $attributeNames = $objProfileAttribute->getAttributeNames($index_group);
+            if (empty($attributeNames)) {
+                $index_group = false;
+            }
+        }
+        if (!$index_group) {
+//            $objProfileAttribute = new User_Profile_Attribute();
+            $objProfileAttribute = $objUser->objAttribute->getById(0);
+            $objProfileAttribute->setNames(array(
+                1 => 'Kundenrabattgruppe',
+                2 => 'Discount group',
+// TODO: Translate
+                3 => 'Kundenrabattgruppe', 4 => 'Kundenrabattgruppe',
+                5 => 'Kundenrabattgruppe', 6 => 'Kundenrabattgruppe',
+            ));
+            $objProfileAttribute->setType('text');
+            $objProfileAttribute->setParent(0);
+            $objProfileAttribute->setProtection(array(1));
+            if (!$objProfileAttribute->store()) {
+                throw new Cx\Lib\Update_DatabaseException(
+                    "Failed to create User_Profile_Attribute 'notes'");
+            }
+            if (!(SettingDb::set('user_profile_attribute_customer_group_id', $objProfileAttribute->getId())
+                && SettingDb::update('user_profile_attribute_customer_group_id'))) {
+                throw new Cx\Lib\Update_DatabaseException(
+                    "Failed to update User_Profile_Attribute 'customer_group_id' setting");
+            }
+        }
     }
 
 
