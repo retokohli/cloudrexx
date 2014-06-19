@@ -168,7 +168,9 @@ function addProductToCart(objForm) {
                     }
                     break;
                 case 'select-one':
-                    objProduct.options[optionId] = formElement.value;
+                    if(formElement.value != 0){
+                        objProduct.options[optionId] = formElement.value;
+                    }
                     break;
                 case 'text':
                     if (formElement.value != '') {
