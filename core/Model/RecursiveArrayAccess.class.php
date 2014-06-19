@@ -82,12 +82,9 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
         $this->offset   = $offset;
         $this->parentId = intval($parentId);
         
-        if ($callableOnSet)
-            $this->callableOnSet = $callableOnSet;
-        if ($callableOnGet)
-            $this->callableOnGet = $callableOnGet;        
-        if ($callableOnUnset)
-            $this->callableOnUnset = $callableOnUnset;
+        $this->callableOnSet   = $callableOnSet;
+        $this->callableOnGet   = $callableOnGet;        
+        $this->callableOnUnset = $callableOnUnset;
         
         if ($this->callableOnUnset)
             call_user_func($this->callableOnUnset, $this->offset, $this->parentId);
