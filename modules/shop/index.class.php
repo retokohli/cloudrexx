@@ -913,15 +913,19 @@ die("Failed to update the Cart!");
         }
         // Validate parameters
         if ($product_id && empty($category_id)) {
-            if (isset($_SESSION['shop']['previous_category_id'])) {
-                $category_id = $_SESSION['shop']['previous_category_id'];
+            $objProduct = Product::getById($product_id);
+            if ($objProduct) {
+                $category_id = $objProduct->category_id();
             }
-            if (!$category_id) {
-                $objProduct = Product::getById($product_id);
-                if ($objProduct) {
-                    $category_id = $objProduct->category_id();
+            if (isset($_SESSION['shop']['previous_category_id'])) {
+                $category_id_previous = $_SESSION['shop']['previous_category_id'];
+                foreach (preg_split('/\s*,\s*/', $category_id) as $id) {
+                    if ($category_id_previous == intval($id)){
+                        $category_id = $category_id_previous;
+                    }
                 }
             }
+
         }
         $objCategory = null;
         if ($category_id && empty($product_id)) {
