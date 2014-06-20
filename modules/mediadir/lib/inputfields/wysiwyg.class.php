@@ -255,6 +255,16 @@ class mediaDirectoryInputfieldWysiwyg extends mediaDirectoryLibrary implements i
         $strJavascriptCheck = <<<EOF
 
             case 'wysiwyg':
+                //we update here beause of bug #2126 
+                updateWysiwygEditor(
+                    //faster than a regex in JS
+                    parseInt(
+                        inputFields[field][0].substr(
+                            inputFields[field][0].indexOf('[')+1
+                        )
+                    ),
+                    'ELEMENT'
+                );
                 break;
 EOF;
         return $strJavascriptCheck;
