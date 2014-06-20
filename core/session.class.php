@@ -132,7 +132,7 @@ class cmsSession extends RecursiveArrayAccess {
             $_SESSION = self::$instance;
             
             // read the session data
-             $_SESSION->readData();
+            $_SESSION->readData();            
             
             //earliest possible point to set debugging according to session.
             $_SESSION->restoreDebuggingParams();
@@ -176,32 +176,56 @@ class cmsSession extends RecursiveArrayAccess {
      * Read the data from database and assign it into $_SESSION array
      */
     function readData() {
-        
+        $this->data = self::getDataFromKey(0);
+        $this->callableOnSet   = array('\cmsSession', 'updateToDb');                    
+        $this->callableOnGet   = array('\cmsSession', 'getFromDb');
+        $this->callableOnUnset = array('\cmsSession', 'removeFromSession');
+    }
+    
+    /**
+     * Read the data from database using variable id
+     * 
+     * @param integer $varId
+     * 
+     * @return \Cx\Core\Model\RecursiveArrayAccess
+     */
+    public static function getDataFromKey($varId) 
+    {
         $query = "SELECT 
+                    `id`,
                     `key`,
                     `value`,
                     `lastused`
                   FROM 
                     `". DBPREFIX ."session_variable` 
                   WHERE 
-                    `sessionid` = '{$this->sessionid}' 
+                    `sessionid` = '{$_SESSION->sessionid}' 
                   AND 
-                    `parent_id` = '0'
-                  ";
+                    `parent_id` = '$varId'";
+                    
         $objResult = \Env::get('db')->Execute($query);
-                
+        
+        $data = array();
         if ($objResult && $objResult->RecordCount() > 0) {
             while (!$objResult->EOF) {
-                $objData        = unserialize($objResult->fields['value']);
-                foreach ($objData->data as $key => $value) {
-                    $this->data[$key] = is_object($value) ? self::getDataFromKeyAndParentKey($key, $objData->id) : $value; 
+                $dataKey   = $objResult->fields['key'];
+                $dataValue = unserialize($objResult->fields['value']);
+                if ($dataValue) {
+                    $data[$dataKey] = $dataValue;
+                } else {
+                    $data[$dataKey]       = new RecursiveArrayAccess(null, $dataKey, $varId);
+                    $data[$dataKey]->id   = $objResult->fields['id'];
+                    $data[$dataKey]->data = self::getDataFromKey($objResult->fields['id']);
+                    $data[$dataKey]->callableOnSet   = array('\cmsSession', 'updateToDb');                    
+                    $data[$dataKey]->callableOnGet   = array('\cmsSession', 'getFromDb');
+                    $data[$dataKey]->callableOnUnset = array('\cmsSession', 'removeFromSession');
                 }
-                $this->id       = $objData->id;
-                $this->parentId = $objData->parentId;
                 
                 $objResult->MoveNext();
             }
         }
+
+        return $data;
     }
     
     /**
@@ -710,14 +734,6 @@ class cmsSession extends RecursiveArrayAccess {
                 self::getLock(self::getLockName($lockKey), self::$sessionLockTime);
             }
             
-            if (is_object($arrObj->data[$offset])) {                
-                $arrObj->data[$offset] = self::getDataFromKeyAndParentKey($offset, $arrObj->id);                
-            } else {
-                foreach ($arrObj->data as $key => $value) {
-                     $arrObj->data[$key] = is_object($value) ? self::getDataFromKeyAndParentKey($key, $arrObj->id) : $value;
-                }
-            }
-            
             return $arrObj->data[$offset];
         }
         return null;
@@ -730,26 +746,30 @@ class cmsSession extends RecursiveArrayAccess {
      * @param object $arrObj session object array
      */
     public static function updateToDb($arrObj) {
-        if ($arrObj->id) {
-            $query = 'UPDATE 
-                            '. DBPREFIX .'session_variable
-                      SET                         
-                        `value` = "'. contrexx_input2db(serialize($arrObj)) .'"
-                      WHERE `id` = "'. $arrObj->id . '"';
-
-            \Env::get('db')->Execute($query);
-        } else {
+        
+        if (!$arrObj->id && !empty($arrObj->offset)) {
             $query = 'INSERT INTO 
                             '. DBPREFIX .'session_variable
                         SET 
                         `parent_id` = "'. $arrObj->parentId .'",
                         `sessionid` = "'. $_SESSION->sessionid .'",
                         `key` = "'. contrexx_input2db($arrObj->offset) .'",
-                        `value` = "'. contrexx_input2db(serialize($arrObj)) .'"';
+                        `value` = "'. contrexx_input2db(serialize(null)) .'"';
             \Env::get('db')->Execute($query);
             
             $arrObj->id = \Env::get('db')->Insert_ID();
-            self::updateToDb($arrObj); // needs to update into database again for the id changes
+        }
+        
+        foreach ($arrObj->data as $key => $value) {
+            $query = 'INSERT INTO 
+                            '. DBPREFIX .'session_variable
+                        SET 
+                        `parent_id` = "'. $arrObj->id .'",
+                        `sessionid` = "'. $_SESSION->sessionid .'",
+                        `key` = "'. contrexx_input2db($key) .'",
+                        `value` = "'. contrexx_input2db(serialize(is_a($value, 'Cx\Core\Model\RecursiveArrayAccess') ? null : $value)) .'"';
+
+            \Env::get('db')->Execute($query);
         }
     }
     
