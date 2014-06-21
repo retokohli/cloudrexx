@@ -155,6 +155,10 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
      */
     public function offsetSet($offset, $data, $callableOnSet = null, $callableOnGet = null, $callableOnUnset = null) {
         
+        if ($offset === null) {
+            $offset = count($this->data);            
+        }
+        
         if ($callableOnSet)
             $this->callableOnSet = $callableOnSet;
         if ($callableOnGet)
@@ -173,11 +177,8 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
                     );
         }
         
-        if ($offset === null) { // don't forget this!
-            $this->data[] = $data;
-        } else {
-            $this->data[$offset] = $data;
-        }
+        $this->data[$offset] = $data;
+
         if ($this->callableOnSet)
             call_user_func($this->callableOnSet, $this);
     }

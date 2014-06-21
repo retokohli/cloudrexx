@@ -365,8 +365,8 @@ class CSRF {
 
     private static function __reduce($code)
     {
-        foreach (array_keys($_SESSION[self::$sesskey]) as $key) {
-            $_SESSION[self::$sesskey][$key] -=
+        foreach (array_keys($_SESSION[self::$sesskey]->toArray()) as $key) {
+            $_SESSION[self::$sesskey][$key] = $_SESSION[self::$sesskey][$key] -
                 ($code == $key
                     ? self::$active_decrease : self::$unused_decrease);
         }
@@ -383,7 +383,7 @@ class CSRF {
 
     private static function __cleanup()
     {
-        foreach ($_SESSION[self::$sesskey] as $key => $count) {
+        foreach ($_SESSION[self::$sesskey]->toArray() as $key => $count) {
             if ($count < 0) {
                 unset($_SESSION[self::$sesskey][$key]);
             }
@@ -402,7 +402,7 @@ class CSRF {
         if (!isset($_SESSION[self::$sesskey])) {
             $_SESSION[self::$sesskey] = array();
         }
-        $csrfdata                 = $_SESSION[self::$sesskey];
+        $csrfdata                 = $_SESSION[self::$sesskey]->toArray();
         $csrfdata[$key]           = $value;
         $_SESSION[self::$sesskey] = $csrfdata;
     }
