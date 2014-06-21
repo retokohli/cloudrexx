@@ -209,8 +209,8 @@ class cmsSession extends RecursiveArrayAccess {
         if ($objResult && $objResult->RecordCount() > 0) {
             while (!$objResult->EOF) {
                 $dataKey   = $objResult->fields['key'];
-                $dataValue = unserialize($objResult->fields['value']);
-                if ($dataValue) {
+                $dataValue = unserialize($objResult->fields['value']);                
+                if (!is_null($dataValue)) {
                     $data[$dataKey] = $dataValue;
                 } else {
                     $data[$dataKey]       = new RecursiveArrayAccess(null, $dataKey, $varId);
@@ -221,47 +221,6 @@ class cmsSession extends RecursiveArrayAccess {
                     $data[$dataKey]->callableOnUnset = array('\cmsSession', 'removeFromSession');
                 }
                 
-                $objResult->MoveNext();
-            }
-        }
-
-        return $data;
-    }
-    
-    /**
-     * Returns the data's of given key and parent id
-     * 
-     * @access public
-     * @param string  $key      array key to fetch
-     * @param integer $parentId parent id of the given key
-     * @return mixed all data's of given key and parent id
-     */
-    public static function getDataFromKeyAndParentKey($key, $parentId) 
-    {
-        
-        $query = "SELECT 
-                    `key`,
-                    `value`,
-                    `lastused`
-                  FROM 
-                    `". DBPREFIX ."session_variable` 
-                  WHERE 
-                    `sessionid` = '{$_SESSION->sessionid}' 
-                  AND 
-                    `parent_id` = '$parentId'
-                  AND 
-                    `key` = '$key'
-                  ";
-        $objResult = \Env::get('db')->Execute($query);
-        $data = array();
-        
-        if ($objResult && $objResult->RecordCount() > 0) {
-            while (!$objResult->EOF) {
-                $data = $objData = unserialize($objResult->fields['value']);
-                
-                foreach ($objData->data as $key => $value) {
-                     $data->data[$key] = is_object($value) ? self::getDataFromKeyAndParentKey($key, $objData->id) : $value; 
-                }
                 $objResult->MoveNext();
             }
         }
@@ -734,6 +693,33 @@ class cmsSession extends RecursiveArrayAccess {
                 self::getLock(self::getLockName($lockKey), self::$sessionLockTime);
             }
             
+            $query = 'SELECT 
+                        `id`,
+                        `value`
+                      FROM 
+                        `'. DBPREFIX .'session_variable` 
+                      WHERE 
+                        `parent_id` = "'. intval($arrObj->id).'" 
+                      AND 
+                        `key` = "'. contrexx_input2db($offset) .'" 
+                      LIMIT 0, 1';
+            $objResult = \Env::get('db')->Execute($query);
+
+            $dataValue = unserialize($objResult->fields['value']);   
+            
+            if (!is_null($dataValue)) {
+                $arrObj->data[$offset] = $dataValue;
+            } else {
+                $data       = new RecursiveArrayAccess(null, $offset, $arrObj->id);
+                $data->id   = $objResult->fields['id'];
+                $data->data = self::getDataFromKey($objResult->fields['id']);
+                $data->callableOnSet   = array('\cmsSession', 'updateToDb');
+                $data->callableOnGet   = array('\cmsSession', 'getFromDb');
+                $data->callableOnUnset = array('\cmsSession', 'removeFromSession');
+                
+                $arrObj->data[$offset] = $data;
+            }
+
             return $arrObj->data[$offset];
         }
         return null;
@@ -747,27 +733,29 @@ class cmsSession extends RecursiveArrayAccess {
      */
     public static function updateToDb($arrObj) {
         
-        if (!$arrObj->id && !empty($arrObj->offset)) {
+        if (empty($arrObj->id) && (string) $arrObj->offset != '') {
             $query = 'INSERT INTO 
                             '. DBPREFIX .'session_variable
                         SET 
-                        `parent_id` = "'. $arrObj->parentId .'",
+                        `parent_id` = "'. intval($arrObj->parentId) .'",
                         `sessionid` = "'. $_SESSION->sessionid .'",
                         `key` = "'. contrexx_input2db($arrObj->offset) .'",
                         `value` = "'. contrexx_input2db(serialize(null)) .'"';
             \Env::get('db')->Execute($query);
-            
+
             $arrObj->id = \Env::get('db')->Insert_ID();
         }
-        
+
         foreach ($arrObj->data as $key => $value) {
             $query = 'INSERT INTO 
                             '. DBPREFIX .'session_variable
                         SET 
-                        `parent_id` = "'. $arrObj->id .'",
+                        `parent_id` = "'. intval($arrObj->id) .'",
                         `sessionid` = "'. $_SESSION->sessionid .'",
                         `key` = "'. contrexx_input2db($key) .'",
-                        `value` = "'. contrexx_input2db(serialize(is_a($value, 'Cx\Core\Model\RecursiveArrayAccess') ? null : $value)) .'"';
+                        `value` = "'. contrexx_input2db(serialize(is_a($value, 'Cx\Core\Model\RecursiveArrayAccess') ? null : $value)) .'"
+                      ON DUPLICATE KEY UPDATE 
+                         `value` = "'. contrexx_input2db(serialize(is_a($value, 'Cx\Core\Model\RecursiveArrayAccess') ? null : $value)) .'"';
 
             \Env::get('db')->Execute($query);
         }
@@ -788,7 +776,7 @@ class cmsSession extends RecursiveArrayAccess {
                   WHERE 
                     `sessionid` = '{$_SESSION->sessionid}' 
                   AND 
-                    `parent_id` = '$parentId'
+                    `parent_id` = '". intval($parentId) ."'
                   AND 
                     `key` = '". contrexx_input2db($offset) ."'";
 
