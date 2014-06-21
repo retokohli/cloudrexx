@@ -400,6 +400,7 @@ class CSRF {
     private static function __setkey($key, $value)
     {
         if (!isset($_SESSION[self::$sesskey])) {
+            \cmsSession::getInstance();
             $_SESSION[self::$sesskey] = array();
         }
         $csrfdata                 = $_SESSION[self::$sesskey]->toArray();
