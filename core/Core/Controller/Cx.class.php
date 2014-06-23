@@ -542,10 +542,11 @@ namespace Cx\Core\Core\Controller {
             // Memcache
             } else if (extension_loaded('memcache')) {
                 $memcache = new \Memcache();
-                if (@$memcache->connect('127.0.0.1')) {
+// TODO: Temporary fix for cloudrexx. Do not merge into Trunk or final product (issue might have been already solved by the new caching system) - 06/23/14 TD
+                /*if (@$memcache->connect('127.0.0.1')) {
                     \Env::set('memcache', $memcache);
                     $this->cacheEngine = self::CACHE_ENGINE_MEMCACHE;
-                }
+                }*/
             }
             
             // XCache
