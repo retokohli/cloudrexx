@@ -85,7 +85,15 @@ function executeContrexxUpdate() {
             'dependencies'  => array (),
         ),
     );
-
+        
+    if (!\Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'session_variable') && $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.2.0')) {
+        if (!migrateSessionTable()) {
+            return false;
+        }
+        setUpdateMsg(1, 'timeout');
+        return false;
+    }
+    
     $_SESSION['contrexx_update']['copyFilesFinished'] = !empty($_SESSION['contrexx_update']['copyFilesFinished']) ? $_SESSION['contrexx_update']['copyFilesFinished'] : false;
 
     // Copy cx files to the root directory
@@ -1791,6 +1799,12 @@ function getHtAccessTemplate()
     }
 
     return $htAccessTemplate;
+}
+
+function migrateSessionTable()
+{
+    
+    return true;
 }
 
 class License {
