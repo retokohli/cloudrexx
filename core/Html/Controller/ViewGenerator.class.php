@@ -165,7 +165,7 @@ class ViewGenerator {
         if ($renderObject instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             if (!count($renderObject) || !count(current($renderObject))) {
                 // make this configurable
-                $tpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_PATH.'/Html/View/Template');
+                $tpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_PATH.'/Html/View/Template/Generic');
                 $tpl->loadTemplateFile('NoEntries.html');
                 return $tpl->get();
             }
