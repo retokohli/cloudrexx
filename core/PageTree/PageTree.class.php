@@ -97,16 +97,24 @@ $this->bytes = memory_get_peak_usage();
         array_push($nodeStack, $node);
         
         $q = $this->em->createQuery("SELECT n FROM Cx\Core\ContentManager\Model\Entity\Node n JOIN n.pages p WHERE p.type != 'alias' AND n.lft > ?1 AND n.rgt < ?2 AND p.lang = ?3 ORDER BY n.lft  ASC");
-        
+
         $q->setParameter(1, $node->getLft());
         $q->setParameter(2, $node->getRgt());
         $q->setParameter(3, $this->lang);
         
         $children = $q->getResult();
-        
+        $nodeMetaData = $this->em->getMetadataFactory()->getMetadataFor('Cx\Core\ContentManager\Model\Entity\Node');
+        $unitOfWork = $this->em->getUnitOfWork();
+
         $nodeArray = array();
         foreach ($children as $child) {
-            $nodeArray[$child->getParent()->getId()][] = $child;
+            $entityIdentifier = $nodeMetaData->getFieldValue($child, 'parent');
+            if (is_object($entityIdentifier)) {
+                $entityIdentifier = $unitOfWork->getEntityIdentifier($entityIdentifier);
+                $entityIdentifier = $entityIdentifier['id'];
+            }
+
+            $nodeArray[$entityIdentifier][] = $child;
         }
         
         $lastLevel = $this->getLastLevel();
@@ -130,8 +138,7 @@ $this->bytes = memory_get_peak_usage();
             } else {
                 $children = isset($nodeArray[$node->getId()]) ? $nodeArray[$node->getId()] : array();
             }
-            
-            $page = $node->getPage($this->lang);
+
             $hasChilds = false;
             if ($this->skipInvisible) {
                 if (!$page || ($page->isVisible() && $page->isActive())) {
