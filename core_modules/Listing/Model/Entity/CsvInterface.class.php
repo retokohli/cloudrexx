@@ -1,7 +1,23 @@
 <?php
+/**
+ * Csv interface
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_module_listing
+ */
 
 namespace Cx\Core_Modules\Listing\Model;
 
+/**
+ * Csv interface
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  core_module_listing
+ */
 class CsvInterface implements Exportable, Importable {
     protected $lineEnding;
     protected $separator;
