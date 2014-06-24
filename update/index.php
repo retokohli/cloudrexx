@@ -108,8 +108,8 @@ Env::set('ftpConfig', $_FTPCONFIG);
 // Library and core files
 require_once(UPDATE_CORE . '/database.php');
 require_once(UPDATE_CORE . '/validator.inc.php');
-require_once(UPDATE_CORE . '/session.class.php');
 require_once(UPDATE_CORE . '/Init.class.php');
+require_once(UPDATE_CORE . '/Model/RecursiveArrayAccess.class.php');
 
 require_once(UPDATE_LIB . '/PEAR/HTML/Template/Sigma/Sigma.php');
 require_once(UPDATE_LIB . '/adodb/adodb.inc.php');
@@ -117,15 +117,25 @@ require_once(UPDATE_LIB . '/FRAMEWORK/Language.class.php');
 require_once(UPDATE_LIB . '/FRAMEWORK/cxjs/ContrexxJavascript.class.php');
 require_once(UPDATE_LIB . '/FRAMEWORK/Javascript.class.php');
 
+// Update files
+require_once(UPDATE_PATH . '/ContrexxUpdate.class.php');
+require_once(UPDATE_LIB . '/FRAMEWORK/UpdateUtil.class.php');
+
 $objDatabase = getDatabaseObject($errorMsg);
 if (!$objDatabase) {
     die($errorMsg);
 }
 Env::set('db', $objDatabase);
 
-// Start session
-$sessionObj = new cmsSession();
-$sessionObj->cmsSessionStatusUpdate('backend');
+if (!\Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'session_variable')) {
+    require_once(UPDATE_CORE . '/session.class.php');
+    // Start session
+    $sessionObj = new cmsSession();
+    $sessionObj->cmsSessionStatusUpdate('backend');
+} else {
+    require_once(UPDATE_CORE . '/session32.class.php');
+    \cmsSession::getInstance();
+}
 
 // Initialize base system
 $objInit = new InitCMS('update', Env::em());
@@ -135,10 +145,6 @@ JS::activate('cx');
 JS::activate('jquery-tools');
 JS::registerJS('lib/contrexxUpdate.php');
 JS::registerJS('lib/javascript/html2dom.js');
-
-// Update files
-require_once(UPDATE_PATH . '/ContrexxUpdate.class.php');
-require_once(UPDATE_LIB . '/FRAMEWORK/UpdateUtil.class.php');
 
 // Debugging
 try {
