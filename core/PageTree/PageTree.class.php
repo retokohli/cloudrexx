@@ -95,7 +95,19 @@ $this->bytes = memory_get_peak_usage();
         $content = '';
         $nodeStack = array();
         array_push($nodeStack, $node);
-        $q = $this->em->createQuery("SELECT n FROM Cx\Core\ContentManager\Model\Entity\Node n JOIN n.pages p WHERE p.type != 'alias' AND n.parent = ?1 AND p.lang = ?2");
+        
+        $q = $this->em->createQuery("SELECT n FROM Cx\Core\ContentManager\Model\Entity\Node n JOIN n.pages p WHERE p.type != 'alias' AND n.lft > ?1 AND n.rgt < ?2 AND p.lang = ?3 ORDER BY n.lft  ASC");
+        
+        $q->setParameter(1, $node->getLft());
+        $q->setParameter(2, $node->getRgt());
+        $q->setParameter(3, $this->lang);
+        
+        $children = $q->getResult();
+        
+        $nodeArray = array();
+        foreach ($children as $child) {
+            $nodeArray[$child->getParent()->getId()][] = $child;
+        }
         
         $lastLevel = $this->getLastLevel();
         while (count($nodeStack)) {
@@ -116,17 +128,8 @@ $this->bytes = memory_get_peak_usage();
                 // hide children
                 $children = array();
             } else {
-                $q->setParameter(1, $node);
-                $q->setParameter(2, $this->lang);
-                $children = $q->getResult();
+                $children = isset($nodeArray[$node->getId()]) ? $nodeArray[$node->getId()] : array();
             }
-            $children2 = array();
-            foreach ($children as $child) {
-                $children2[$child->getLft()] = $child;
-            }
-            ksort($children2);
-            $children = $children2;
-            unset($children2);
             
             $page = $node->getPage($this->lang);
             $hasChilds = false;
