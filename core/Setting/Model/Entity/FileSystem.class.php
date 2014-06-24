@@ -50,7 +50,7 @@ class FileSystem extends Engine{
         self::$section = $section;
         self::$group = $group;
         //call DataSet importFromFile method @return array
-        $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::importFromFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $filename);
+        $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::importFromFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), $filename);
         if (!empty($objDataSet)) {
             foreach ($objDataSet as $value) {
                 self::$arrSettings[$value['name']]= $value;
@@ -113,7 +113,7 @@ class FileSystem extends Engine{
         $fileName=ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
         //call DataSet exportToFile method to update file
         $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet(self::$arrSettings);
-        $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $fileName);
+        $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), $fileName);
         if ($success) {
             self::$changed = false;
             //return Message::ok($_CORELANG['TXT_CORE_SETTINGDB_STORED_SUCCESSFULLY']);
@@ -157,7 +157,7 @@ class FileSystem extends Engine{
         if(!empty(self::$arrSettings)){
             $fileName=ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
             $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet(self::$arrSettings);
-            $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $fileName);
+            $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), $fileName);
             return true;
         }else{
             return false;
@@ -226,7 +226,7 @@ class FileSystem extends Engine{
         self::$arrSettings[addslashes($name)]=$addValue;
         if (!empty(self::$arrSettings)) {                     
             $objDataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet(self::$arrSettings);
-            $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $filename);
+            $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), $filename);
         }
         return true;
     }
@@ -251,7 +251,7 @@ class FileSystem extends Engine{
          
         $arrSetting=array();
         $filename=ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
-        $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::importFromFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $filename);
+        $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::importFromFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), $filename);
         // if get blank or invalid file
         if (empty($objDataSet)) return false;
         
@@ -264,7 +264,7 @@ class FileSystem extends Engine{
         if (empty($arrSetting)) return false;
         
         $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet($arrSetting);
-        $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\Yaml(), $filename);
+        $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), $filename);
         return true;                   
     }
     /**
