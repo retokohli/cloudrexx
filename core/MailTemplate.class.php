@@ -993,12 +993,12 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
     }
 
 
-    static function adminView($section, $group = 'nonempty') {
+    static function adminView($section, $group = 'nonempty',$act='mailtemplate_overview') {
         \MailTemplate::storeFromPost($section);
         if (!isset($_GET['key'])) {
             return static::overview($section, $group, 0, false);
         } else {
-            return static::edit($section, '', false);
+            return static::edit($section, '', false,$act);
         }
     }
 
@@ -1158,7 +1158,7 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
      *                                  to be edited
      * @return  \Cx\Core\Html\Sigma     The template object
      */
-    static function edit($section, $key='', $useDefaultActs = true)
+    static function edit($section, $key='', $useDefaultActs = true,$act)
     {
         global $_CORELANG;
 
@@ -1203,6 +1203,7 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
                 (isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : ''),
             'CORE_MAILTEMPLATE_ACTIVE_TAB' => $tab_index,
             'URI_BASE' => $uri.$uriAppendix,
+            'ACT' => $act
         ));
 
         $i = 0;

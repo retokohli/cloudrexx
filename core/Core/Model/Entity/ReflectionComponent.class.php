@@ -1,35 +1,14 @@
 <?php
 /**
  * Represents an abstraction of a component
- *
- * @copyright   Comvation AG
- * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
- * @subpackage  core_core
- * @version     3.1.0
+ * @author Michael Ritter <michael.ritter@comvation.com>
  */
 
 namespace Cx\Core\Core\Model\Entity;
 
 /**
- * ReflectionComponentException
- *
- * @copyright   Comvation AG
- * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
- * @subpackage  core_core
- * @version     3.1.0
- */
-class ReflectionComponentException extends \Exception {}
-
-/**
  * Represents an abstraction of a component
- *
- * @copyright   Comvation AG
- * @author      Michael Ritter <michael.ritter@comvation.com>
- * @package     contrexx
- * @subpackage  core_core
- * @version     3.1.0
+ * @author Michael Ritter <michael.ritter@comvation.com>
  */
 class ReflectionComponent {
     /**
@@ -52,76 +31,23 @@ class ReflectionComponent {
     protected $componentType = null;
     
     /**
-     * Fully qualified filename for/of the package file
-     * @var string ZIP package filename
-     */
-    protected $packageFile = null;
-
-    /**
      * Two different ways to instanciate this are supported:
      * 1. Supply an instance of \Cx\Core\Core\Model\Entity\Component
-     * 2. Supply a install package zip filename
-     * 3. Supply a component name and type
+     * 2. Supply a component name and type
      * @param mixed $arg1 Either an instance of \Cx\Core\Core\Model\Entity\Component or the name of a component
-     * @param string|null $arg2 (only if a component name was supplied as $arg1) Component type (one of core_module, module, core, lib)
-     * @throws ReflectionComponentException
-     * @throws \BadMethodCallException
+     * @param string $arg2 (only if a component name was supplied as $arg1) Component type (one of core_module, module, core, lib)
      */
     public function __construct($arg1, $arg2 = null) {
         if (is_a($arg1, 'Cx\Core\Core\Model\Entity\SystemComponent')) {
             $this->componentName = $arg1->getName();
             $this->componentType = $arg1->getType();
             return;
-        }
-        $arg1Parts = explode('.', $arg1);
-		if (file_exists($arg1) && end($arg1Parts) == 'zip') {
-            // clean up tmp dir
-            \Cx\Lib\FileSystem\FileSystem::delete_folder(ASCMS_TEMP_PATH . '/appcache', true);
-        
-            // Uncompress package using PCLZip
-            $file = new \PclZip($arg1);
-            $list = $file->extract(PCLZIP_OPT_PATH, ASCMS_TEMP_PATH . '/appcache');
-            
-            // Check for meta.yml, if none: throw Exception
-            if (!file_exists(ASCMS_TEMP_PATH . '/appcache/meta.yml')) {
-                throw new ReflectionComponentException('This ain\'t no package file: "' . $arg1 . '"');
-            }
-            
-            // Read meta info
-            $metaTypes = array('core'=>'core', 'core_module'=>'system', 'module'=>'application', 'lib'=>'other');
-            $yaml = new \Symfony\Component\Yaml\Yaml();
-            $content = file_get_contents(ASCMS_TEMP_PATH . '/appcache/meta.yml');
-            $meta = $yaml->load($content);
-            $type = array_search($meta['DlcInfo']['type'], $metaTypes);
-            if (!$type) {
-                $type = 'lib';
-            }
-            
-            // initialize ReflectionComponent
-            $this->packageFile = $arg1;
-            $this->componentName = $meta['DlcInfo']['name'];
-            $this->componentType = $type;
-            return;
         } else if (is_string($arg1) && $arg2 && in_array($arg2, self::$componentTypes)) {
             $this->componentName = $arg1;
             $this->componentType = $arg2;
-
-            if (!$this->isValidComponentName($this->componentName)) {
-                throw new \BadMethodCallException("Provided component name \"{$this->componentName}\" is invalid. Component name must be written in CamelCase notation.");
-            }
-
             return;
         }
-        throw new \BadMethodCallException('Pass a component or zip package filename or specify a component name and type');
-    }
-
-    /**
-     * Check if the provided string is a valid component name
-     * @param  string component name
-     * @return boolean True if sring $name is a valid component name
-     */
-    public function isValidComponentName($name) {
-        return preg_match('/^([A-Z][a-z0-9]*)+$/', $name);
+        throw new \BadMethodCallException('Pass a component or specify a component name and type');
     }
     
     /**
@@ -213,96 +139,6 @@ class ReflectionComponent {
     }
     
     /**
-     * Installs this component from a zip file (if available)
-     * @todo DB stuff (structure and data)
-     * @todo check dependency versions
-     */
-    public function install() {
-        // Check (not already installed (different version), all dependencies installed)
-        if (!$this->packageFile) {
-            throw new SystemComponentException('Package file not available');
-        }
-        if (!file_exists(ASCMS_TEMP_PATH . '/appcache/meta.yml')) {
-            throw new ReflectionComponentException('Invalid package file');
-        }
-        if ($this->exists()) {
-            throw new SystemComponentException('Component is already installed');
-        }
-        
-        // Read meta file
-        $yaml = new \Symfony\Component\Yaml\Yaml();
-        $content = file_get_contents(ASCMS_TEMP_PATH . '/appcache/meta.yml');
-        $meta = $yaml->load($content);
-        
-        // Check dependencies
-        foreach ($meta['DlcInfo']['dependencies'] as $dependencyInfo) {
-            $dependency = new static($dependencyInfo['name'], $dependencyInfo['type']);
-            if (!$dependency->exists()) {
-                throw new SystemComponentException('Dependency "' . $dependency->getName() . '" not met');
-            }
-        }
-        
-        // Copy ZIP contents
-        $filesystem = new \Cx\Lib\FileSystem\FileSystem();
-        $filesystem->copyDir(
-            ASCMS_TEMP_PATH . '/appcache',
-            ASCMS_TEMP_WEB_PATH . '/appcache',
-            'files',
-            ASCMS_DOCUMENT_ROOT,
-            ASCMS_PATH_OFFSET,
-            '',
-            true
-        );
-        
-        // Activate (if type is system or application)
-        if ($this->componentType != 'core' && $this->componentType != 'core_module' && $this->componentType != 'module') {
-            return;
-        }
-        
-        // Copy ZIP contents (also copy meta.yml into component folder if type is system or application)
-        try {
-            $objFile = new \Cx\Lib\FileSystem\File(ASCMS_TEMP_PATH . '/appcache/meta.yml');
-            $objFile->copy($this->getDirectory(false) . '/meta.yml');
-        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-            \DBG::msg($e->getMessage());
-        }
-        
-        // init DB structure from doctrine yaml files (rxqcmv1)
-        // load DB data from /data yaml files (rxqcmv1)
-        
-        // Activate this component
-        $this->activate();
-    }
-    
-    /**
-     * Create zip install package for this component
-     * @param string $path Path to store zip file at
-     * @todo add data files (db)
-     * @todo create meta.yml
-     */
-    public function pack($path) {
-        // Create temp working folder and
-        // Copy ZIP contents
-        $filesystem = new \Cx\Lib\FileSystem\FileSystem();
-        $filesystem->copyDir(
-            $this->getDirectory(false),
-            preg_replace('#' . ASCMS_DOCUMENT_ROOT . '#', '', $this->getDirectory(false)),
-            'files',
-            ASCMS_TEMP_PATH . '/appcache',
-            ASCMS_TEMP_WEB_PATH . '/appcache',
-            '',
-            true
-        );
-        
-        // Copy contents to folder
-        // Create data files
-        // Create meta.yml
-        // Compress
-        $file = new \PclZip($path);
-        $list = $file->pack(PCLZIP_OPT_PATH, ASCMS_TEMP_PATH . '/appcache');
-    }
-    
-    /**
      * Creates this component using a skeleton
      */
     public function create() {
@@ -312,10 +148,6 @@ class ReflectionComponent {
         
         // copy skeleton component
         \Cx\Lib\FileSystem\FileSystem::copy_folder(ASCMS_CORE_PATH.'/Core/Data/Skeleton', $this->getDirectory(false));
-        
-        $this->fixNamespaces('Cx\Modules\Skeleton', $this->getDirectory());
-        $this->fixLanguagePlaceholders('MODULE_SKELETON', $this->getDirectory());
-        $this->setComponentName($this->getDirectory());
         
         // activate component
         $this->activate();
@@ -342,70 +174,15 @@ class ReflectionComponent {
     }
     
     /**
-     * List dependencies from this component to other parts of the system
-     * @todo List files for matches (rxqcmv1)
-     * @todo Make this work for legacy components too
-     * @todo Make this work for zip packages too (rxqcmv1)
-     * @return array Returns an array like array({dependency}=>{number_of_times_used})
-     */
-    public function getDependencies() {
-        if ($this->isLegacy()) {
-            return array('unknown');
-        }
-        $dependencies = array();
-        
-        $directoryIterator = new \RecursiveDirectoryIterator($this->getDirectory());
-        $iterator = new \RecursiveIteratorIterator($directoryIterator);
-        $files = new \RegexIterator($iterator, '/^.+\.php$/i', \RegexIterator::GET_MATCH);
-        
-        // recursive foreach .php file
-        $componentNs = SystemComponent::getBaseNamespaceForType($this->componentType) . '\\' . $this->componentName;
-        $matches = array();
-        foreach($files as $file) {
-            $file = current($file);
-            // search for namespaces other than Component's
-            
-            $objFile = new \Cx\Lib\FileSystem\File($file);
-            $content = $objFile->getData();
-            
-            preg_match_all('/(?:[A-Za-z_]+)?\\\\[A-Za-z_\\\\]+/', $content, $matches);
-            foreach ($matches[0] as $match) {
-                if (substr($match, 0, 1) != '\\') {
-                    $match = '\\' . $match;
-                }
-                $matchBaseNs = substr($match, 0, strlen('\\' . $componentNs));
-                if ($matchBaseNs != '\\' . $componentNs && strlen($match) > 2) {
-                    if (preg_match('/\\\\r\\\\n/', $match)) {
-                        continue;
-                    }
-                    if (preg_match('/\\\\(?:Doctrine|Gedmo)/', $match)) {
-                        $match = '\\Doctrine\\...';
-                    }
-                    $dependencies[] = preg_replace('/\\\\\\\\/', '\\', $match);
-                }
-            }
-        }
-        
-        $dependencies = array_count_values($dependencies);
-        arsort($dependencies);
-        return $dependencies;
-    }
-    
-    /**
      * This adds all necessary DB entries in order to activate this component (if they do not exist)
-     * @todo Backend navigation entry (from meta.yml) (rxqcmv1)
-     * @todo Pages (from meta.yml) (rxqcmv1)
+     * @todo Add pages (if component is a module)
      */
     public function activate() {
-        if (!$this->exists()) {
-            throw new \Cx\Core\Core\Controller\ComponentException('No such component: "' . $this->componentName . '" of type "' . $this->componentType . '"');
-        }
-        
         $cx = \Env::get('cx');
-        $em = $cx->getDb()->getEntityManager();
         
         // component
         if (!$this->isLegacy()) {
+            $em = $cx->getDb()->getEntityManager();
             $componentRepo = $em->getRepository('Cx\\Core\\Core\\Model\\Entity\\SystemComponent');
             if (!$componentRepo->findOneBy(array(
                 'name' => $this->componentName,
@@ -442,7 +219,7 @@ class ReflectionComponent {
                     `' . DBPREFIX . 'modules`
                 SET
                     `status` = \'y\',
-                    `is_required` = ' . ((int) ($this->componentType == 'core')) . ',
+                    `is_required` = ' . ((int) $this->componentType == 'core') . ',
                     `is_core` = ' . ((int) ($this->componentType == 'core' || $this->componentType == 'core_module')) . ',
                     `is_active` = 1
                 WHERE
@@ -455,7 +232,7 @@ class ReflectionComponent {
                 FROM
                     `' . DBPREFIX . 'modules`
                 WHERE
-                    `id` >= 900
+                    `id` > 900
                 ORDER BY
                     `id` DESC
                 LIMIT 1
@@ -485,7 +262,7 @@ class ReflectionComponent {
                         \'' . $distributor . '\',
                         \'TXT_' . strtoupper($this->componentType) . '_' . strtoupper($this->componentName) . '_DESCRIPTION\',
                         \'y\',
-                        ' . ((int) ($this->componentType == 'core')) . ',
+                        ' . ((int) $this->componentType == 'core') . ',
                         ' . ((int) ($this->componentType == 'core' || $this->componentType == 'core_module')) . ',
                         1
                     )
@@ -509,7 +286,7 @@ class ReflectionComponent {
                 UPDATE
                     `'.DBPREFIX.'backend_areas`
                 SET
-                    `module_id` = ' . $id . '
+                    `module_id` = ' . $id . ',
                 WHERE
                     `area_id` = ' . $result->fields['area_id'] . '
             ';
@@ -541,7 +318,7 @@ class ReflectionComponent {
                 FROM
                     `'.DBPREFIX.'backend_areas`
                 WHERE
-                    `access_id` >= 900
+                    `access_id` > 900
                 ORDER BY
                     `access_id` DESC
                 LIMIT 1
@@ -571,7 +348,7 @@ class ReflectionComponent {
                         \'navigation\',
                         \'backend\',
                         \'TXT_' . strtoupper($this->componentType) . '_' . strtoupper($this->componentName) . '\',
-                        ' . ((int) ($parent == 2)) . ',
+                        ' . ((int) $parent == 2) . ',
                         \'index.php?cmd=' . $this->componentName . '\',
                         \'_self\',
                         ' . $id . ',
@@ -587,144 +364,16 @@ class ReflectionComponent {
             // only modules need a frontend page to be active
             return;
         }
-        
-        // we will not use modulemanager here in order to be able to replace
-        // modulemanager by this in a later release
-        
-        // does the module repository have something for us?
-        if (!$this->loadPagesFromModuleRepository($id)) {
-        
-            $nodeRepo = $em->getRepository('\Cx\Core\ContentManager\Model\Entity\Node');
-            $pageRepo = $em->getRepository('\Cx\Core\ContentManager\Model\Entity\Page');
-        
+            // we will not use modulemanager here in order to be able to replace
+            // modulemanager by this in a later release
+            // 
+            // does the module repository have something for us?
             // if not: create an empty page
-            $parcat = $nodeRepo->getRoot();
-            $newnode = new \Cx\Core\ContentManager\Model\Entity\Node();
-            $newnode->setParent($parcat); // replace root node by parent!
-            $em->persist($newnode);
-            $em->flush();
-            $nodeRepo->moveDown($newnode, true); // move to the end of this level
-            foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
-                if ($lang['is_default'] === 'true' || $lang['fallback'] == null) {
-                    $type = \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION;
-                } else {
-                    $type = \Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK;
-                }
-                $page = $pageRepo->createPage(
-                    $newnode,
-                    $lang['id'],
-                    $this->componentName,
-                    $type,
-                    $this->componentName,
-                    '',
-                    false,
-                    ''
-                );
-                $em->persist($page);
-            }
-            $em->flush();
-        }
-    }
-
-    /**
-     * Loads pages from module repository
-     * @param int $moduleId the module id
-     * @return boolean True on success, false if no pages found in repo
-     */
-    protected function loadPagesFromModuleRepository($moduleId) {
-        $cx = \Env::get('cx');
-        $em = $cx->getDb()->getEntityManager();
-        
-        $id = $moduleId;
-        
-        $nodeRepo = $em->getRepository('\Cx\Core\ContentManager\Model\Entity\Node');
-        $pageRepo = $em->getRepository('\Cx\Core\ContentManager\Model\Entity\Page');
-
-        $module_name = $this->componentName;
-            
-        // get content from repo
-        $query = '
-            SELECT
-                `id`,
-                `moduleid`,
-                `content`,
-                `title`,
-                `cmd`,
-                `expertmode`,
-                `parid`,
-                `displaystatus`,
-                `username`,
-                `displayorder`
-            FROM
-                `'.DBPREFIX.'module_repository`
-            WHERE
-                `moduleid` = ' . $id . '
-            ORDER BY
-                `parid` ASC
-        ';
-        $objResult = $cx->getDb()->getAdoDb()->query($query);
-        if ($objResult->EOF) {
-            // no pages
-            return false;
-        }
-
-        $paridarray = array();
-        while (!$objResult->EOF) {
-            // define parent node
-            $root = false;
-            if (isset($paridarray[$objResult->fields['parid']])) {
-                $parcat = $paridarray[$objResult->fields['parid']];
-            } else {
-                $root = true;
-                $parcat = $nodeRepo->getRoot();
-            }
-
-            // create node
-            $newnode = new \Cx\Core\ContentManager\Model\Entity\Node();
-            $newnode->setParent($parcat); // replace root node by parent!
-            $em->persist($newnode);
-            $em->flush();
-            $nodeRepo->moveDown($newnode, true); // move to the end of this level
-            $paridarray[$objResult->fields['id']] = $newnode;
-
-            // add content to default lang
-            // add content to all langs without fallback
-            // link content to all langs with fallback
-            foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
-                if ($lang['is_default'] === 'true' || $lang['fallback'] == null) {
-                    $page = $pageRepo->createPage(
-                        $newnode,
-                        $lang['id'],
-                        $objResult->fields['title'],
-                        \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
-                        $module_name,
-                        $objResult->fields['cmd'],
-                        !$root && $objResult->fields['displaystatus'],
-                        $objResult->fields['content']
-                    );
-                } else {
-                    $page = $pageRepo->createPage(
-                        $newnode,
-                        $lang['id'],
-                        $objResult->fields['title'],
-                        \Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK,
-                        $module_name,
-                        $objResult->fields['cmd'],
-                        !$root && $objResult->fields['displaystatus'],
-                        ''
-                    );
-                }
-                $em->persist($page);
-            }
-            $em->flush();
-            $objResult->MoveNext();
-        }
-
-        return true;
     }
     
     /**
      * This deactivates the component (does not remove any DB entries, except for pages)
+     * @todo Test Doctrine Page remove()
      */
     public function deactivate() {
         $cx = \Env::get('cx');
@@ -745,17 +394,17 @@ class ReflectionComponent {
         $em = $cx->getDb()->getEntityManager();
         $pageRepo = $em->getRepository('Cx\\Core\\ContentManager\\Model\\Entity\\Page');
         $pages = $pageRepo->findBy(array(
+            'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
             'module' => $this->componentName,
         ));
         foreach ($pages as $page) {
-            $em->remove($page);
+            $em->remove($page); // <-- does this work?
         }
-        $em->flush();
     }
     
     /**
      * This completely removes this component from DB
-     * @todo Test removing components tables (including doctrine schema)
+     * @todo Remove components tables (including doctrine schema)
      */
     protected function removeFromDb() {
         $cx = \Env::get('cx');
@@ -801,21 +450,6 @@ class ReflectionComponent {
         ';
         $adoDb->execute($query);
         
-        // module tables (LIKE DBPREFIX . strtolower($moduleName)%)
-        $query = '
-            SHOW TABLES
-            LIKE
-                \'' . DBPREFIX . 'module_' . strtolower($this->componentName) . '%\'
-        ';
-        $result = $adoDb->execute($query);
-        while (!$result->EOF) {
-            $query = '
-                DROP TABLE
-                    `' . current($result->fields) . '`
-            ';
-            $adoDb->execute($query);
-        }
-                
         // pages
         $this->deactivate();
     }
@@ -851,8 +485,7 @@ class ReflectionComponent {
      * Fix the namespace of all files of this component
      * @param string $oldBaseNs Base namespace of old component
      * @param string $baseDir Directory in which the recursive replace should be done
-     * @return bool
-     * @todo Test references update in DB (rxqcmv1)
+     * @todo Update references in DB
      */
     public function fixNamespaces($oldBaseNs, $baseDir) {
         // calculate new proper base NS
@@ -899,90 +532,7 @@ class ReflectionComponent {
             );
             $objFile->write($content);
         }
-        
-        // fix namespaces in DB
-        // at the moment, only log_entry stores namespaces so we can simply:
-        $em = \Env::get('cx')->getDb()->getEntityManager();
-        $query = $em->createQuery('SELECT FROM Cx\Core\ContentManager\Model\Entity\LogEntry l WHERE l.object_class LIKE \'' . $ns . '%\'')->useResultCache(true);
-        foreach ($query->getResult() as $log) {
-            $object_class = $log->getObjectClass();
-            $object_class = preg_replace(
-                '/' . preg_quote($oldNs . '\\', '/') . '/',
-                $ns . '\\',
-                $object_class
-            );
-            $log->setObjectClass($object_class);
-            $em->persist($log);
-        }
-        $em->flush();
-        
         return true;
-    }
-    
-    /**
-     * Fix the language variables of all files of this component
-     * @param string $oldBaseIndex Base language var index of old component
-     * @param string $baseDir Directory in which the recursive replace should be done
-     */
-    public function fixLanguagePlaceholders($oldBaseIndex, $baseDir) {
-        $baseIndex = strtoupper($this->componentType . '_' . $this->componentName);
-        
-        $directoryIterator = new \RecursiveDirectoryIterator($baseDir);
-        $iterator = new \RecursiveIteratorIterator($directoryIterator);
-        $files = new \RegexIterator($iterator, '/^.+\.(php|html|js)$/i', \RegexIterator::GET_MATCH);
-        
-        // recursive foreach .php, .html and .js file
-        foreach($files as $file) {
-            // prepare data
-            $file = current($file);
-            $bi = $baseIndex;
-            $oldBi = $oldBaseIndex;
-            
-            
-            // file_get_contents()
-            $objFile = new \Cx\Lib\FileSystem\File($file);
-            $content = $objFile->getData();
-            
-            $content = preg_replace(
-                '/' . $oldBi . '/',
-                preg_quote($bi),
-                $content
-            );
-            echo 'Replace ' . $oldBi . ' by ' . $bi . ' in ' . $file . "\n";
-            
-            $objFile->write($content);
-        }
-    }
-
-    /**
-     * Set the component's name in frontend and backend language files
-     * @param string $baseDir Directory in which the recursive replace should be done
-     */
-    public function setComponentName($baseDir) {
-        $componentNamePlaceholder = '{COMPONENT_NAME}';
-        
-        $directoryIterator = new \RecursiveDirectoryIterator($baseDir);
-        $iterator = new \RecursiveIteratorIterator($directoryIterator);
-        $files = new \RegexIterator($iterator, '/^.+(frontend|backend)\.php$/i', \RegexIterator::GET_MATCH);
-        
-        // recursive foreach frontend.php and backend.php file
-        foreach($files as $file) {
-            // prepare data
-            $file = current($file);
-            
-            // file_get_contents()
-            $objFile = new \Cx\Lib\FileSystem\File($file);
-            $content = $objFile->getData();
-            
-            $content = preg_replace(
-                '/'.preg_quote($componentNamePlaceholder).'/',
-                preg_quote($this->componentName),
-                $content
-            );
-            echo 'Replace ' . $componentNamePlaceholder . ' by ' . $this->componentName . ' in ' . $file . "\n";
-            
-            $objFile->write($content);
-        }
     }
     
     /**
@@ -995,7 +545,7 @@ class ReflectionComponent {
      * - Alter or copy pages
      * - Create DB entries for new component
      * - Activate new component
-     * @todo Test copy of pages (rxqcmv1)
+     * @todo Test copy of pages
      * @param string $newName New component name
      * @param string $newType New component type, one of 'core', 'core_module' and 'module'
      * @param boolean $customized Copy/move to customizing folder?
@@ -1016,10 +566,6 @@ class ReflectionComponent {
         foreach ($pages as $page) {
             if ($copy) {
                 // copy page
-                $node = $page->getNode()->copy();
-                $em->persist($node);
-                $node->getPage()->setModule($newName);
-                $em->persist($node->getPage());
             } else {
                 $page->setModule($newName);
                 $em->persist($page);
@@ -1030,8 +576,6 @@ class ReflectionComponent {
         // remove old component from db (component, modules, backend_areas)
         if (!$copy) {
             $this->removeFromDb();
-        } else {
-            // copy db tables and refactor
         }
         
         // copy/move in filesystem (name, type and customizing)
@@ -1044,9 +588,6 @@ class ReflectionComponent {
             $baseDir = $newComponent->getDirectory();
         }
         $newComponent->fixNamespaces(SystemComponent::getBaseNamespaceForType($this->componentType) . '\\' . $this->componentName, $baseDir);
-        $newComponent->fixLanguagePlaceholders(strtoupper($this->componentType . '_' . $this->componentName), $baseDir);
-        // renaming the component in backend navigation does not yet work
-        //$newComponent->setComponentName($baseDir);
         
         // add new component to db and activate it (component, modules, backend_areas, pages)
         $newComponent->activate();
