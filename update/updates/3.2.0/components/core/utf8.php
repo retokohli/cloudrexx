@@ -418,7 +418,7 @@ function _utf8Update()
 
                         $objTableStructure->fields['Create Table'] = preg_replace(
                             array(
-                                '/'.$table.'/',
+                                '/TABLE `'.$table.'/',
                                 '/collate[\s|=][a-z0-9_]+_bin/i',
                                 '/default current_timestamp on update current_timestamp/i',
                                 '/character\s+set[\s|=][a-z0-9_]+/i',
@@ -426,8 +426,11 @@ function _utf8Update()
                                 '/default charset=[a-z0-9_]+/i',
                             ),
                             array(
-                                $table.'_new',
+                                'TABLE `'.$table.'_new',
                                 'BINARY',
+                                '',
+                                '',
+                                '',
                                 '',
                             ),
                             $objTableStructure->fields['Create Table']
