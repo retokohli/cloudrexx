@@ -1272,7 +1272,10 @@ $updates310Sp1To310Sp2 = array(
         INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ("shop","paymill_use_test_account","config","text","0","",15)
     ',
     '
-        UPDATE `'.DBPREFIX.'core_text` SET `text` = "VISA, Mastercard (Saferpay)" WHERE `key` = "payment_name" AND `section` = "shop"
+        INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES (\'shop\',\'orderitems_amount_min\',\'config\',\'text\',\'0\',\'\',0);
+    ',
+    '
+        UPDATE `'.DBPREFIX.'core_text` SET `text` = "VISA, Mastercard (Saferpay)" WHERE `key` = "payment_name" AND `section` = "shop" AND `text` LIKE "%PostFinance%"
     ',
     'INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (16,1,"shop","payment_name","Kreditkarte (Paymill)")',
     'INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (16,2,"shop","payment_name","paymill")',
@@ -1284,14 +1287,15 @@ $updates310Sp1To310Sp2 = array(
     'INSERT IGNORE INTO `'.DBPREFIX.'module_shop_rel_payment` (`zone_id`, `payment_id`) VALUES (1,16)',
     'INSERT IGNORE INTO `'.DBPREFIX.'module_shop_rel_payment` (`zone_id`, `payment_id`) VALUES (1,17)',
     'INSERT IGNORE INTO `'.DBPREFIX.'module_shop_rel_payment` (`zone_id`, `payment_id`) VALUES (1,18)',
-    'UPDATE `'.DBPREFIX.'module_calendar_settings` SET `order` = 9 WHERE `order` = 8',
     'UPDATE `'.DBPREFIX.'module_calendar_settings` SET `order` = 10 WHERE `order` = 9',
+    'UPDATE `'.DBPREFIX.'module_calendar_settings` SET `order` = 9 WHERE `order` = 8',
     'INSERT IGNORE INTO `'.DBPREFIX.'module_calendar_settings` (`id`, `section_id`, `name`, `title`, `value`, `info`, `type`, `options`, `special`, `order`) VALUES (20,19,"placeData","TXT_CALENDAR_PLACE_DATA","1","TXT_CALENDAR_PLACE_DATA_STATUS_INFO",3,"TXT_CALENDAR_PLACE_DATA_DEFAULT,TXT_CALENDAR_PLACE_DATA_FROM_MEDIADIR,TXT_CALENDAR_PLACE_DATA_FROM_BOTH","",7)',
     'INSERT IGNORE INTO `'.DBPREFIX.'module_calendar_settings` (`id`, `section_id`, `name`, `title`, `value`, `info`, `type`, `options`, `special`, `order`) VALUES (62,19,"placeDataForm","","0","",5,"","getPlaceDataDorpdown",8)',
     'INSERT IGNORE INTO `'.DBPREFIX.'module_calendar_settings` (`id`, `section_id`, `name`, `title`, `value`, `info`, `type`, `options`, `special`, `order`) VALUES (63,19,"placeDataHost","TXT_CALENDAR_PLACE_DATA_HOST","1","TXT_CALENDAR_PLACE_DATA_STATUS_INFO",3,"TXT_CALENDAR_PLACE_DATA_DEFAULT,TXT_CALENDAR_PLACE_DATA_FROM_MEDIADIR,TXT_CALENDAR_PLACE_DATA_FROM_BOTH","",9)',
     'INSERT IGNORE INTO `'.DBPREFIX.'module_calendar_settings` (`id`, `section_id`, `name`, `title`, `value`, `info`, `type`, `options`, `special`, `order`) VALUES (64,19,"placeDataHostForm","","0","",5,"","getPlaceDataDorpdown",10)',
     'INSERT IGNORE INTO `'.DBPREFIX.'module_calendar_settings_section` (`id`, `parent`, `order`, `name`, `title`) VALUES (19,1,4,"location_host","TXT_CALENDAR_EVENT_LOCATION")',
     'INSERT IGNORE INTO `'.DBPREFIX.'module_news_settings` (`name`, `value`) VALUES ("recent_news_message_limit","5")',
+    'UPDATE `'.DBPREFIX.'module_mediadir_inputfield_types` set `active`=1, `comment`=\'\' WHERE `name` = \'wysiwyg\'',
     array(
         'table' => DBPREFIX.'module_mediadir_inputfields',
         'structure' => array(
