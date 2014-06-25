@@ -270,6 +270,7 @@ class CSRF {
      */
     public static function check_code()
     {
+        return;
         if (!self::__is_logged_in()) return;
         if ($_SERVER['REQUEST_METHOD'] == 'GET' && self::$frontend_mode) return;
         if (self::$already_checked) return;
