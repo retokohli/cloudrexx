@@ -580,11 +580,15 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
                     'sort_type' => 'asc',
                     'parent_id' => 'title',
                     'desc' => $objResult->fields['title'],
-                    'names' => array($this->langId => $objResult->fields['title']),
                     'value' => $objResult->fields['id'],
                     'order_id' => $objResult->fields['order_id'],
                     'modifiable' => array('names'),
                 );
+
+                // add names for all languages
+                foreach (\FWLanguage::getLanguageArray() as $langId => $langData) {
+                    $this->arrAttributes['title_'.$objResult->fields['id']]['names'][$langId] = $objResult->fields['title'];
+                }
                 $objResult->MoveNext();
             }
         }
