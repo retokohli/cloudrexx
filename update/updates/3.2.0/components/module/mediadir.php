@@ -157,7 +157,8 @@ function _mediadirUpdate()
               'search'             => array('type' => 'INT(10)', 'after' => 'verification'),
               'required'           => array('type' => 'INT(10)', 'after' => 'search'),
               'order'              => array('type' => 'INT(10)', 'after' => 'required'),
-              'show_in'            => array('type' => 'INT(10)', 'after' => 'order')
+              'show_in'            => array('type' => 'INT(10)', 'after' => 'order'),
+              'context_type'       => array('type' => 'ENUM(\'none\',\'title\',\'address\',\'zip\',\'city\',\'country\')', 'after' => 'show_in')
           )
       );
 

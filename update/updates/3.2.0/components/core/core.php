@@ -134,7 +134,8 @@ function _coreUpdate()
                 'status'                     => array('type' => 'SET(\'y\',\'n\')', 'notnull' => true, 'default' => 'n', 'after' => 'description_variable'),
                 'is_required'                => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'status'),
                 'is_core'                    => array('type' => 'TINYINT(4)', 'notnull' => true, 'default' => '0', 'after' => 'is_required'),
-                'is_active'                  => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'is_core')
+                'is_active'                  => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'is_core'),
+                'is_licensed'                => array('type' => 'TINYINT(1)', 'after' => 'is_active')
             ),
             array(
                 'id'                         => array('fields' => array('id'), 'type' => 'UNIQUE')
