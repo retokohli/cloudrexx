@@ -634,19 +634,27 @@ function _shopUpdate()
         }
         // Note:  No changes (still single language in version 3)
         $table_name = DBPREFIX.'module_shop_payment_processors';
-        if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
-            Cx\Lib\UpdateUtil::table($table_name,
-                array(
-                    'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                    'type' => array('type' => 'ENUM(\'internal\',\'external\')', 'notnull' => true, 'default' => 'internal'),
-                    'name' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
-                    'description' => array('type' => 'TEXT'),
-                    'company_url' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
-                    'status' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => false, 'default' => '1'),
-                    'picture' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
-                )
-            );
-        }
+
+        Cx\Lib\UpdateUtil::table($table_name,
+            array(
+                'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'type' => array('type' => 'ENUM(\'internal\',\'external\')', 'notnull' => true, 'default' => 'internal'),
+                'name' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+                'description' => array('type' => 'TEXT'),
+                'company_url' => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => ''),
+                'status' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => false, 'default' => '1'),
+                'picture' => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => ''),
+            )
+        );
+
+        Cx\Lib\UpdateUtil::sql('
+            INSERT IGNORE INTO `'.DBPREFIX.'module_shop_payment_processors` (`id`, `type`, `name`, `description`, `company_url`, `status`, `picture`)
+            VALUES (12,"external","paymill_cc","","https://www.paymill.com",1,""),
+                   (13,"external","paymill_elv","","https://www.paymill.com",1,""),
+                   (14,"external","paymill_iban","","https://www.paymill.com",1,"")
+        ');
+
+
         // Note:  No changes (still single language in version 3)
         $table_name = DBPREFIX.'module_shop_pricelists';
         if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
@@ -777,18 +785,26 @@ function _shopUpdate()
                 )
             );
         }
+
         $table_name = DBPREFIX.'module_shop_rel_payment';
-        if (   Cx\Lib\UpdateUtil::table_exist($table_name)
-            && Cx\Lib\UpdateUtil::column_exist($table_name, 'id')) {
-            Cx\Lib\UpdateUtil::table(
-                $table_name,
-                array(
-                    'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-                    'zones_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                    'payment_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
-                )
-            );
-        }
+        Cx\Lib\UpdateUtil::table(
+            $table_name,
+            array(
+                'id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+                'zones_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+                'payment_id' => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0'),
+            )
+        );
+
+
+        Cx\Lib\UpdateUtil::sql('
+            INSERT IGNORE INTO `'.DBPREFIX.'module_shop_rel_payment` (`zones_id`, `payment_id`)
+            VALUES (1,16),
+                   (1,17),
+                   (1,18)
+        ');
+
+
         // Note: This is renamed to module_shop_rel_shipper for version 3.0
         $table_name = DBPREFIX.'module_shop_rel_shipment';
         if (   Cx\Lib\UpdateUtil::table_exist($table_name)
@@ -1525,6 +1541,7 @@ function _shopInstall()
             ON DUPLICATE KEY UPDATE `key` = `key`
         ");
 
+
         \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'core_setting',
             array(
@@ -1611,7 +1628,15 @@ function _shopInstall()
                     ('egov', 'postfinance_use_testserver', 'config', 'checkbox', '1', '1', 7),
                     ('shop', 'use_js_cart', 'config', 'checkbox', '0', '1', 47),
                     ('shop', 'shopnavbar_on_all_pages', 'config', 'checkbox', '1', '1', 48),
-                    ('filesharing', 'permission', 'config', 'text', 'off', '', 0)
+                    ('filesharing', 'permission', 'config', 'text', 'off', '', 0),
+                    ('shop','payment_lsv_active','config','text','1','','18'),
+                    ('shop','paymill_active','config','text','1','',3),
+                    ('shop','paymill_live_private_key','config','text','','',0),
+                    ('shop','paymill_live_public_key','config','text','','',0),
+                    ('shop','paymill_live_public_key','config','text','','',0),
+                    ('shop','paymill_test_private_key','config','text','','',2),
+                    ('shop','paymill_test_public_key','config','text','','',16),
+                    ('shop','paymill_use_test_account','config','text','0','',15)
             ON DUPLICATE KEY UPDATE `section` = `section`
         ");
 
@@ -1671,7 +1696,7 @@ function _shopInstall()
                     (2, 1, 'shop', 'manufacturer_name', 'Apple, Inc.'),
                     (2, 1, 'shop', 'manufacturer_uri', 'http://www.apple.com/'),
                     (2, 1, 'shop', 'option_name', 'Pimp my Handy Kit'),
-                    (2, 1, 'shop', 'payment_name', 'VISA, Mastercard'),
+                    (2, 1, 'shop', 'payment_name', 'VISA, Mastercard (Saferpay)'),
                     (2, 1, 'shop', 'shipper_name', 'Express Post'),
                     (2, 1, 'shop', 'vat_class', 'Deutschland Normalsatz'),
                     (2, 1, 'shop', 'zone_name', 'Schweiz'),
@@ -1993,7 +2018,11 @@ function _shopInstall()
                     (5, 1, 'shop', 'manufacturer_uri', ''),
                     (2, 1, 'shop', 'core_mail_template_message_html', '[CUSTOMER_SALUTATION]<br />\r\n<br />\r\nIhre Bestellung wurde ausgef&uuml;hrt. Sie werden in den n&auml;chsten Tagen ihre Lieferung erhalten.<br />\r\n<br />\r\nHerzlichen Dank f&uuml;r das Vertrauen.<br />\r\nWir w&uuml;rden uns freuen, wenn Sie uns weiterempfehlen und w&uuml;nschen Ihnen noch einen sch&ouml;nen Tag.<br />\r\n<br />\r\nMit freundlichen Gr&uuml;ssen<br />\r\nIhr [SHOP_COMPANY] Online Shop Team<br />\r\n<br />\r\n[SHOP_HOMEPAGE]'),
                     (4, 1, 'shop', 'currency_name', 'Euro'),
-                    (5, 1, 'shop', 'currency_name', 'United States Dollars')
+                    (5, 1, 'shop', 'currency_name', 'United States Dollars'),
+                    (16,1,'shop','payment_name','Kreditkarte (Paymill)'),
+                    (16,2,'shop','payment_name','paymill'),
+                    (17,1,'shop','payment_name','ELV (Paymill)'),
+                    (18,1,'shop','payment_name','IBAN/BIC (Paymill)')
             ON DUPLICATE KEY UPDATE `id` = `id`
         ");
 
