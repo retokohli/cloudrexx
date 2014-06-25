@@ -2258,6 +2258,38 @@ foreach ($arrContentSites as $module) {
     }
 }
 
+// update calendar data to version 3.2.0
+if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.2.0')) {
+    $languages = FWLanguage::getLanguageArray();
+
+    try {
+        $result = \Cx\Lib\UpdateUtil::sql('SELECT `id`, `invitation_email_template`, `email_template` FROM `'.DBPREFIX.'module_calendar_event`');
+        if ($result && $result->RecordCount() > 0) {
+            while (!$result->EOF) {
+                // if the event has been already migrated, continue
+                if (intval($result->fields['invitation_email_template']) != $result->fields['invitation_email_template']) {
+                    $result->MoveNext();
+                    continue;
+                }
+                $invitationEmailTemplate = array();
+                $emailTemplate = array();
+                foreach ($languages as $langId => $langData) {
+                    $invitationEmailTemplate[$langId] = $result->fields['invitation_email_template'];
+                    $emailTemplate[$langId] = $result->fields['email_template'];
+                }
+                $invitationEmailTemplate = json_encode($invitationEmailTemplate);
+                $emailTemplate = json_encode($emailTemplate);
+                \Cx\Lib\UpdateUtil::sql('UPDATE `'.DBPREFIX.'module_calendar_event` SET
+                                            `invitation_email_template`=\''.contrexx_raw2db($invitationEmailTemplate).'\',
+                                            `email_template`=\''.contrexx_raw2db($emailTemplate).'\' WHERE `id`='.intval($result->fields['id']));
+                $result->MoveNext();
+            }
+        }
+    } catch (\Cx\Lib\UpdateException $e) {
+        return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+}
+
 // fix tree
 \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Node')->recover();
 
