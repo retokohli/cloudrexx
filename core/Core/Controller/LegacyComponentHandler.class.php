@@ -1694,7 +1694,7 @@ class LegacyComponentHandler {
                         }
 
                         // User only gets the backend if he's logged in
-                        if (!$objFWUser->objUser->login(true)) {
+                        if (!$objFWUser->objUser->login(true) && ($plainCmd != 'jsondata' && (($_GET['object'] != 'user') || $_GET['object'] != 'MultiSite'))) {
                             $plainCmd = 'login';
                             // If the user isn't logged in, the login mask will be showed.
                             // This mask has its own template handling.
