@@ -186,7 +186,9 @@ function _newsUpdate() {
     $objResult = $objDatabase->SelectLimit($query, 1);
     if ($objResult) {
         if ($objResult->RecordCount() == 0) {
-            $query = "INSERT INTO `".DBPREFIX."module_news_settings` (`name`, `value`) VALUES ('news_message_protection', '1')";
+            $query = "INSERT INTO `".DBPREFIX."module_news_settings` (`name`, `value`) VALUES ('news_message_protection', '1'),
+                                                                                              ('recent_news_message_limit', '5')
+            ";
             if ($objDatabase->Execute($query) === false) {
                 return _databaseError($query, $objDatabase->ErrorMsg());
             }
