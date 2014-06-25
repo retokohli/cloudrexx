@@ -4044,7 +4044,7 @@ CREATE TABLE `contrexx_session_variable` (
   `lastused` timestamp NOT NULL,
   `key` varchar(40) NOT NULL default '',
   `value` text,
-  UNIQUE KEY `key_index` (`parent_id`,`key`),
+  UNIQUE KEY `key_index` (`parent_id`,`key`,`sessionid`),
   KEY `id` (`id`)
 ) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
