@@ -150,7 +150,6 @@ cx.jQuery(document).ready(function(){
                      ),
                 ),
             ),
-            'specialcode' => 'var $J = jQuery;',
         ),
         'jquery-tools' => array(
             'jsfiles' => array(
