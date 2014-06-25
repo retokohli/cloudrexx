@@ -621,7 +621,6 @@ class FWUser extends User_Setting
         global $_CORELANG;
 
         $userFilter = array(
-            'email'         => $username,
             'restore_key'      => $restoreKey,
             'restore_key_time' => array(
                 array (
@@ -631,6 +630,13 @@ class FWUser extends User_Setting
             ),
             'active'           => 1,
         );
+
+        $arrSettings = User_Setting::getSettings();
+        if ($arrSettings['use_usernames']['status']) {
+            $userFilter['username'] = $username;
+        } else {
+            $userFilter['email'] = $username;
+        }
 
         $objUser = $this->objUser->getUsers($userFilter, null, null, null, 1);
         if ($objUser) {
