@@ -424,12 +424,12 @@ function _updateSettings()
                 ),
                 121     => array(
 			'setname'	=> 'cacheUserCacheMemcacheConfig',
-			'setvalue'	=> '{"ip":"127.0.0.1","port":11211}',
+			'setvalue'	=> '{\"ip":\"127.0.0.1\",\"port\":11211}',
 			'setmodule'	=> 1
                 ),
                 122     => array(
 			'setname'	=> 'cacheProxyCacheVarnishConfig',
-			'setvalue'	=> '{"ip":"127.0.0.1","port":8080}',
+			'setvalue'	=> '{\"ip":\"127.0.0.1\",\"port\":8080}',
 			'setmodule'	=> 1
                 ),
 	);
@@ -581,7 +581,7 @@ function _updateSettings()
                 foreach($arrInner as $strName => $strValue) {
                     $fileContent .= sprintf("%-".$intMaxLen."s",'$_CONFIG[\''.$strName.'\']');
                     $fileContent .= "= ";
-                    $fileContent .= (is_numeric($strValue) ? $strValue : '"'.$strValue.'"').";\n";
+                    $fileContent .= (is_numeric($strValue) ? $strValue : '"'.contrexx_addslashes($strValue).'"').";\n";
                 }
                 $fileContent .= "\n";
             }
