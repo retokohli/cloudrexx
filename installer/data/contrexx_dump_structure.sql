@@ -4046,7 +4046,7 @@ CREATE TABLE `contrexx_session_variable` (
   `value` text,
   UNIQUE KEY `key_index` (`parent_id`,`key`),
   KEY `id` (`id`)
-) ENGINE=MyISAM;
+) ENGINE=MyISAM ;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
