@@ -992,13 +992,25 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
         return true;
     }
 
-
+    /**
+     * Show on adminview of the mail templates for the given section and group
+     *
+     * @param   string    $section      The section
+     * @param   string    $group        The group
+     *                                  default set to nonempty
+     * @param   string   $act           The action of the mail template
+     *                                  default set to mailtemplate_overview
+     * @return  \Cx\Core\Html\Sigma     The template object
+     */
     static function adminView($section, $group = 'nonempty',$act='mailtemplate_overview') {
-        \MailTemplate::storeFromPost($section);
+        self::storeFromPost($section);
         if (!isset($_GET['key'])) {
-            return static::overview($section, $group, 0, false);
+            if (!empty($_GET['delete_mailtemplate_key'])) {
+               self::deleteTemplate($section); 
+            }
+            return static::overview($section, $group, 0, false,$act);
         } else {
-            return static::edit($section, '', false,$act);
+            return static::edit($section, '', false, $act);
         }
     }
 
@@ -1013,9 +1025,11 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
      * @param   string    $group        The group
      * @param   integer   $limit        The optional limit for the number
      *                                  of templates to be shown
+     * @param   string   $act           The action of the mail template
+     *                                  default set to mailtemplate_overview
      * @return  \Cx\Core\Html\Sigma     The template object
      */
-    static function overview($section, $group, $limit=0, $useDefaultActs = true)
+    static function overview($section, $group, $limit=0, $useDefaultActs = true,$act='mailtemplate_overview')
     {
         global $_CORELANG;
 
@@ -1052,8 +1066,8 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
 //echo("Made uri for sorting: ".htmlentities($uri)."<br />");
         if ($useDefaultActs) {
             Html::stripUriParam($uri, 'act');
-        Html::replaceUriParameter($uri_edit, 'act=mailtemplate_edit');
-        Html::replaceUriParameter($uri_overview, 'act=mailtemplate_overview');
+            Html::replaceUriParameter($uri_edit, 'act=mailtemplate_edit');
+            Html::replaceUriParameter($uri_overview, 'act=mailtemplate_overview');
         }
         $objSorting = new Sorting(
             $uri_overview,
@@ -1104,7 +1118,7 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
 
         $langMenuEditUri = $uri_edit;
         \Html::stripUriParam($langMenuEditUri, 'userFrontendLangId');
-
+        \Html::replaceUriParameter($langMenuEditUri, 'act='.$act);
         $i = 0;
         foreach ($arrTemplates as $arrTemplate) {
             $langState = array();
@@ -1113,7 +1127,6 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
                     $langState[$langId] = 'active';
                 }
             }
-
             $objTemplateLocal->setVariable(array(
                 'MAILTEMPLATE_ROWCLASS' => ++$i % 2 + 1,
                 'MAILTEMPLATE_PROTECTED' =>
@@ -1127,13 +1140,13 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
                     '</a>',
                 'MAILTEMPLATE_KEY' => $arrTemplate['key'],
                 'MAILTEMPLATE_LANGUAGES' => \Html::getLanguageIcons($langState, $langMenuEditUri.'&amp;key='.$arrTemplate['key'].'&amp;userFrontendLangId=%1$d'),
-                'MAILTEMPLATE_FUNCTIONS' => Html::getBackendFunctions(
+                'MAILTEMPLATE_FUNCTIONS' => \Html::getBackendFunctions(
                     array(
                         'copy'   => $uri_edit.'&amp;copy=1&amp;key='.$arrTemplate['key'],
                         'edit'   => $uri_edit.'&amp;key='.$arrTemplate['key'],
                         'delete' => ($arrTemplate['protected']
                           ? ''
-                          : $uri_overview.'&amp;delete_mailtemplate_key='.$arrTemplate['key']),
+                          : $uri_overview.'&amp;delete_mailtemplate_key='.$arrTemplate['key'].'&amp;csrf='.CSRF::code()),
                     ),
                     array(
                         'delete' => $_CORELANG['TXT_CORE_MAILTEMPLATE_DELETE_CONFIRM'],
@@ -1156,6 +1169,7 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
      *                                  to be edited
      * @param   string    $key          The optional key of the mail template
      *                                  to be edited
+     * @param   string    $act          The action of the mail template
      * @return  \Cx\Core\Html\Sigma     The template object
      */
     static function edit($section, $key='', $useDefaultActs = true,$act)
@@ -1187,12 +1201,13 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
         Html::stripUriParam($uri, 'key');
         $uriAppendix = '';
         if ($useDefaultActs) {
-        Html::stripUriParam($uri, 'act');
-            $uriAppendix = '&amp;act=mailtemplate_overview';
+            Html::stripUriParam($uri, 'act');
+            $uriAppendix = '&amp;act='.$act;
         }
         $tab_index = \Cx\Core\Setting\Controller\Setting::tab_index();
         Html::replaceUriParameter($uri, 'active_tab='.$tab_index);
         Html::replaceUriParameter($uri, 'userFrontendLangId='.FRONTEND_LANG_ID);
+        Html::replaceUriParameter($uri, 'act='.$act);
         $objTemplate->setGlobalVariable(
             $_CORELANG
           + array(
@@ -1203,7 +1218,7 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
                 (isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : ''),
             'CORE_MAILTEMPLATE_ACTIVE_TAB' => $tab_index,
             'URI_BASE' => $uri.$uriAppendix,
-            'ACT' => $act
+            'CSRF'=>CSRF::code()
         ));
 
         $i = 0;
