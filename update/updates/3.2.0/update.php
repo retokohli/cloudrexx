@@ -85,15 +85,7 @@ function executeContrexxUpdate() {
             'dependencies'  => array (),
         ),
     );
-        
-    if (!\Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'session_variable') && $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.2.0')) {
-        if (!migrateSessionTable()) {
-            return false;
-        }
-        setUpdateMsg(1, 'timeout');
-        return false;
-    }
-    
+            
     $_SESSION['contrexx_update']['copyFilesFinished'] = !empty($_SESSION['contrexx_update']['copyFilesFinished']) ? $_SESSION['contrexx_update']['copyFilesFinished'] : false;
 
     // Copy cx files to the root directory
@@ -188,6 +180,18 @@ function executeContrexxUpdate() {
     }
     /////////////////////
 
+    
+    /////////////////////////////
+    // Session Table MIGRATION //
+    /////////////////////////////
+    if (!\Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'session_variable') && $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.2.0')) {
+        if (!migrateSessionTable()) {
+            setUpdateMsg('Error in updating session table', 'error');
+            return false;
+        }
+        setUpdateMsg(1, 'timeout');
+        return false;
+    }  
 
     // Load Doctrine (this must be done after the UTF-8 Migration, because we'll need $_DBCONFIG['charset'] to be set)
     $incDoctrineStatus = require_once(UPDATE_PATH . '/config/doctrine.php');
@@ -1853,8 +1857,93 @@ function getHtAccessTemplate()
 
 function migrateSessionTable()
 {
-    
+    try {
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'session_variable',
+            array(
+                'id'        => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' =>true),
+                'parent_id' => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'id'),
+                'sessionid' => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => '', 'after' => 'parent_id'),
+                'lastused'  => array('type' => 'TIMESTAMP', 'notnull' => true, 'default_expr' => 'CURRENT_TIMESTAMP', 'on_update' => 'CURRENT_TIMESTAMP', 'after' => 'sessionid'),
+                'key'       => array('type' => 'VARCHAR(40)', 'notnull' => true, 'default' => '', 'after' => 'lastused'),
+                'value'     => array('type' => 'TEXT', 'notnull' => true, 'default' => '', 'after' => 'key')
+            ),
+            array(
+                'key_index' => array('fields' => array('parent_id', 'key', 'sessionid'), 'type' => 'UNIQUE')
+            )
+        );
+        \Cx\Lib\UpdateUtil::sql('TRUNCATE TABLE `'. DBPREFIX .'session_variable`');
+        
+        $objResult = \Cx\Lib\UpdateUtil::sql('SELECT 
+                                                `sessionid`,
+                                                `datavalue`
+                                              FROM
+                                                 `' . DBPREFIX . 'sessions`');        
+        if ($objResult) {
+            while (!$objResult->EOF) {
+                $sessionArray = unserializesession($objResult->fields['datavalue']);
+                insertSessionArray($sessionArray);
+                $objResult->MoveNext();
+            }
+        }
+    } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+        
     return true;
+}
+
+function insertSessionArray($sessionArr, $parentId = 0)
+{
+    global $objDatabase, $sessionObj;
+    
+    foreach ($sessionArr as $key => $value) {        
+        \Cx\Lib\UpdateUtil::sql('INSERT INTO 
+                                    '. DBPREFIX .'session_variable
+                                SET 
+                                `parent_id` = "'. intval($parentId) .'",
+                                `sessionid` = "'. $sessionObj->sessionid .'",
+                                `key` = "'. contrexx_input2db($key) .'",
+                                `value` = "'. (is_array($value) ? contrexx_input2db(serialize(null)) : contrexx_input2db(serialize($value)))  .'"');
+        $insertId = $objDatabase->Insert_ID();
+        
+        if (is_array($value)) {            
+            insertSessionArray($value, $insertId);
+        }
+    }
+}
+
+function unserializesession( $data )
+{
+    if(  strlen( $data) == 0)
+    {
+        return array();
+    }
+    
+    // match all the session keys and offsets
+    preg_match_all('/(^|;|\})([a-zA-Z0-9_]+)\|/i', $data, $matchesarray, PREG_OFFSET_CAPTURE);
+
+    $returnArray = array();
+
+    $lastOffset = null;
+    $currentKey = '';
+    foreach ( $matchesarray[2] as $value )
+    {
+        $offset = $value[1];
+        if(!is_null( $lastOffset))
+        {
+            $valueText = substr($data, $lastOffset, $offset - $lastOffset );
+            $returnArray[$currentKey] = unserialize($valueText);
+        }
+        $currentKey = $value[0];
+
+        $lastOffset = $offset + strlen( $currentKey )+1;
+    }
+
+    $valueText = substr($data, $lastOffset );
+    $returnArray[$currentKey] = unserialize($valueText);
+    
+    return $returnArray;
 }
 
 class License {
