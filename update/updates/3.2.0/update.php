@@ -432,7 +432,6 @@ function executeContrexxUpdate() {
                     'target'                             => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'active'),
                     'module'                             => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'target'),
                     'cmd'                                => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => '', 'after' => 'module'),
-                    'contrexx_content_page_ibfk_3'       => array('type' => 'FOREIGN', 'after' => 'cmd')
                 ),
                 array(
                     'node_id'                            => array('fields' => array('node_id','lang'), 'type' => 'UNIQUE'),
