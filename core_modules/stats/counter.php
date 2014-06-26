@@ -88,13 +88,14 @@ class counter
     public $mobilePhone = "";
 
     /**
-    * Constructor
-    *
-    * Set the requested url,client infos,onlineusers and count users and spiders
-    *
-    * @global   array  $_CONFIG
-    */
-    function counter($arrRobots,$arrBannedWords)
+     * Constructor
+     *
+     * Set the requested url,client infos,onlineusers and count users and spiders
+     *
+     * @param array $arrRobots
+     * @param array $arrBannedWords
+     */
+    public function __construct($arrRobots,$arrBannedWords)
     {
         global $_GET;
 
