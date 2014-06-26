@@ -12,7 +12,7 @@ function _updateModules()
 
         // add modules
         foreach ($arrModules as $arrModule) {
-            \Cx\Lib\UpdateUtil::sql("INSERT INTO ".DBPREFIX."modules ( `id` , `name` , `description_variable` , `status` , `is_required` , `is_core` , `distributor` ) VALUES ( ".$arrModule['id']." , '".$arrModule['name']."', '".$arrModule['description_variable']."', '".$arrModule['status']."', '".$arrModule['is_required']."', '".$arrModule['is_core']."', 'Comvation AG') ON DUPLICATE KEY UPDATE `id` = `id`");
+            \Cx\Lib\UpdateUtil::sql("INSERT INTO ".DBPREFIX."modules ( `id` , `name` , `description_variable` , `status` , `is_required` , `is_core` , `is_active`, `distributor` ) VALUES ( ".$arrModule['id']." , '".$arrModule['name']."', '".$arrModule['description_variable']."', '".$arrModule['status']."', '".$arrModule['is_required']."', '".$arrModule['is_core']."', ".$arrModule['is_active'].", 'Comvation AG') ON DUPLICATE KEY UPDATE `id` = `id`");
         }
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
@@ -30,7 +30,8 @@ function getModules()
 			'description_variable'	=> '',
 			'status'				=> 'n',
 			'is_required'			=> 0,
-			'is_core'				=> 1
+			'is_core'				=> 1,
+                        'is_active'                             => 0
 		),
 		array(
 			'id'					=> 1,
@@ -38,7 +39,8 @@ function getModules()
 			'description_variable'	=> 'TXT_CORE_MODULE_DESCRIPTION',
 			'status'				=> 'n',
 			'is_required'			=> 1,
-			'is_core'				=> 1
+			'is_core'				=> 1,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 2,
@@ -46,7 +48,8 @@ function getModules()
 			'description_variable'	=> 'TXT_STATS_MODULE_DESCRIPTION',
 			'status'				=> 'n',
 			'is_required'			=> 0,
-			'is_core'				=> 1
+			'is_core'				=> 1,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 3,
@@ -54,7 +57,8 @@ function getModules()
 			'description_variable'	=> 'TXT_GALLERY_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 0
+			'is_core'				=> 0,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 4,
@@ -62,7 +66,8 @@ function getModules()
 			'description_variable'	=> 'TXT_NEWSLETTER_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 0
+			'is_core'				=> 0,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 5,
@@ -70,7 +75,8 @@ function getModules()
 			'description_variable'	=> 'TXT_SEARCH_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 1
+			'is_core'				=> 1,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 6,
@@ -78,7 +84,8 @@ function getModules()
 			'description_variable'	=> 'TXT_CONTACT_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 1,
-			'is_core'				=> 1
+			'is_core'				=> 1,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 7,
@@ -86,7 +93,8 @@ function getModules()
 			'description_variable'	=> 'TXT_BLOCK_MODULE_DESCRIPTION',
 			'status'				=> 'n',
 			'is_required'			=> 0,
-			'is_core'				=> 0
+			'is_core'				=> 0,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 8,
@@ -94,7 +102,8 @@ function getModules()
 			'description_variable'	=> 'TXT_NEWS_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 1,
-			'is_core'				=> 1
+			'is_core'				=> 1,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 9,
@@ -102,7 +111,8 @@ function getModules()
 			'description_variable'	=> 'TXT_MEDIA_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 1
+			'is_core'				=> 1,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 10,
@@ -110,7 +120,8 @@ function getModules()
 			'description_variable'	=> 'TXT_GUESTBOOK_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 0
+			'is_core'				=> 0,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 11,
@@ -118,7 +129,8 @@ function getModules()
 			'description_variable'	=> 'TXT_SITEMAP_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 1
+			'is_core'				=> 1,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 12,
@@ -126,7 +138,8 @@ function getModules()
 			'description_variable'	=> 'TXT_LINKS_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 0
+			'is_core'				=> 0,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 13,
@@ -134,7 +147,8 @@ function getModules()
 			'description_variable'	=> 'TXT_IDS_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 1,
-			'is_core'				=> 1
+			'is_core'				=> 1,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 14,
@@ -142,7 +156,8 @@ function getModules()
 			'description_variable'	=> 'TXT_ERROR_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 1,
-			'is_core'				=> 1
+			'is_core'				=> 1,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 15,
@@ -150,7 +165,8 @@ function getModules()
 			'description_variable'	=> 'TXT_HOME_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 1,
-			'is_core'				=> 1
+			'is_core'				=> 1,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 16,
@@ -158,7 +174,8 @@ function getModules()
 			'description_variable'	=> 'TXT_SHOP_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 0
+			'is_core'				=> 0,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 17,
@@ -166,7 +183,8 @@ function getModules()
 			'description_variable'	=> 'TXT_VOTING_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 0
+			'is_core'				=> 0,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 18,
@@ -174,7 +192,8 @@ function getModules()
 			'description_variable'	=> 'TXT_LOGIN_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 1,
-			'is_core'				=> 1
+			'is_core'				=> 1,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 19,
@@ -182,7 +201,8 @@ function getModules()
 			'description_variable'	=> 'TXT_DOC_SYS_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 0
+			'is_core'				=> 0,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 20,
@@ -190,7 +210,8 @@ function getModules()
 			'description_variable'	=> 'TXT_FORUM_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 0
+			'is_core'				=> 0,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 21,
@@ -198,7 +219,8 @@ function getModules()
 			'description_variable'	=> 'TXT_CALENDAR_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 0
+			'is_core'				=> 0,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 22,
@@ -206,7 +228,8 @@ function getModules()
 			'description_variable'	=> 'TXT_FEED_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 0
+			'is_core'				=> 0,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 23,
@@ -214,7 +237,8 @@ function getModules()
 			'description_variable'	=> 'TXT_COMMUNITY_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 1
+			'is_core'				=> 1,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 24,
@@ -222,7 +246,8 @@ function getModules()
 			'description_variable'	=> 'TXT_MEDIA_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 1
+			'is_core'				=> 1,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 25,
@@ -230,7 +255,8 @@ function getModules()
 			'description_variable'	=> 'TXT_MEDIA_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 1
+			'is_core'				=> 1,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 26,
@@ -238,7 +264,8 @@ function getModules()
 			'description_variable'	=> 'TXT_FILEBROWSER_DESCRIPTION',
 			'status'				=> 'n',
 			'is_required'			=> 1,
-			'is_core'				=> 1
+			'is_core'				=> 1,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 27,
@@ -246,7 +273,8 @@ function getModules()
 			'description_variable'	=> 'TXT_RECOMMEND_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 0
+			'is_core'				=> 0,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 30,
@@ -254,7 +282,8 @@ function getModules()
 			'description_variable'	=> 'TXT_LIVECAM_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 0
+			'is_core'				=> 0,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 31,
@@ -262,7 +291,8 @@ function getModules()
 			'description_variable'	=> 'TXT_MEMBERDIR_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 0
+			'is_core'				=> 0,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 32,
@@ -270,7 +300,8 @@ function getModules()
 			'description_variable'	=> 'TXT_NETTOOLS_MODULE_DESCRIPTION',
 			'status'				=> 'n',
 			'is_required'			=> 0,
-			'is_core'				=> 1
+			'is_core'				=> 1,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 33,
@@ -278,7 +309,8 @@ function getModules()
 			'description_variable'	=> 'TXT_MARKET_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 0
+			'is_core'				=> 0,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 35,
@@ -286,7 +318,8 @@ function getModules()
 			'description_variable'	=> 'TXT_PODCAST_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 0
+			'is_core'				=> 0,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 38,
@@ -294,7 +327,8 @@ function getModules()
 			'description_variable'	=> 'TXT_EGOVERNMENT_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 0
+			'is_core'				=> 0,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 39,
@@ -302,7 +336,8 @@ function getModules()
 			'description_variable'	=> 'TXT_MEDIA_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 1
+			'is_core'				=> 1,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 41,
@@ -310,7 +345,8 @@ function getModules()
 			'description_variable'	=> 'TXT_ALIAS_MODULE_DESCRIPTION',
 			'status'				=> 'n',
 			'is_required'			=> 0,
-			'is_core'				=> 1
+			'is_core'				=> 1,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 44,
@@ -318,7 +354,8 @@ function getModules()
 			'description_variable'	=> 'TXT_IMPRINT_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 1,
-			'is_core'				=> 1
+			'is_core'				=> 1,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 45,
@@ -326,7 +363,8 @@ function getModules()
 			'description_variable'	=> 'TXT_AGB_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 1,
-			'is_core'				=> 1
+			'is_core'				=> 1,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 46,
@@ -334,7 +372,8 @@ function getModules()
 			'description_variable'	=> 'TXT_PRIVACY_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 1,
-			'is_core'				=> 1
+			'is_core'				=> 1,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 47,
@@ -342,7 +381,8 @@ function getModules()
 			'description_variable'	=> 'TXT_BLOG_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 0
+			'is_core'				=> 0,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 48,
@@ -350,7 +390,8 @@ function getModules()
 			'description_variable'	=> 'TXT_DATA_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 0
+			'is_core'				=> 0,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 49,
@@ -358,7 +399,8 @@ function getModules()
 			'description_variable'	=> 'TXT_ECARD_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 0
+			'is_core'				=> 0,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 52,
@@ -366,7 +408,8 @@ function getModules()
 			'description_variable'	=> 'TXT_FILEUPLOADER_MODULE_DESCRIPTION',
 			'status'				=> 'n',
 			'is_required'			=> 0,
-			'is_core'				=> 0
+			'is_core'				=> 1,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 53,
@@ -374,7 +417,8 @@ function getModules()
 			'description_variable'	=> 'TXT_DOWNLOADS_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 0
+			'is_core'				=> 0,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 54,
@@ -382,7 +426,8 @@ function getModules()
 			'description_variable'	=> 'TXT_U2U_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 0
+			'is_core'				=> 0,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 56,
@@ -390,7 +435,8 @@ function getModules()
 			'description_variable'	=> 'TXT_KNOWLEDGE_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 0
+			'is_core'				=> 0,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 57,
@@ -398,7 +444,8 @@ function getModules()
 			'description_variable'	=> 'TXT_JOBS_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 0
+			'is_core'				=> 0,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 60,
@@ -406,7 +453,8 @@ function getModules()
 			'description_variable'	=> 'TXT_MEDIADIR_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 0
+			'is_core'				=> 0,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 61,
@@ -414,7 +462,8 @@ function getModules()
 			'description_variable'	=> 'Catpcha Module',
 			'status'				=> 'n',
 			'is_required'			=> 1,
-			'is_core'				=> 1
+			'is_core'				=> 1,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 62,
@@ -422,7 +471,8 @@ function getModules()
 			'description_variable'	=> 'TXT_CHECKOUT_MODULE_DESCRIPTION',
 			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 0
+			'is_core'				=> 0,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 63,
@@ -430,7 +480,8 @@ function getModules()
 			'description_variable'	=> 'Json Adapter',
 			'status'				=> 'n',
 			'is_required'			=> 1,
-			'is_core'				=> 1
+			'is_core'				=> 1,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 64,
@@ -438,7 +489,8 @@ function getModules()
 			'description_variable'	=> 'TXT_LANGUAGE_SETTINGS',
 			'status'				=> 'n',
 			'is_required'			=> 1,
-			'is_core'				=> 1
+			'is_core'				=> 1,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 65,
@@ -446,7 +498,8 @@ function getModules()
 			'description_variable'	=> 'TXT_LANGUAGE_SETTINGS',
 			'status'				=> 'n',
 			'is_required'			=> 1,
-			'is_core'				=> 1
+			'is_core'				=> 1,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 66,
@@ -454,7 +507,8 @@ function getModules()
 			'description_variable'	=> 'TXT_LICENSE',
 			'status'				=> 'n',
 			'is_required'			=> 1,
-			'is_core'				=> 1
+			'is_core'				=> 1,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 67,
@@ -462,15 +516,35 @@ function getModules()
 			'description_variable'	=> 'TXT_LOGIN_MODULE_DESCRIPTION',
 			'status'				=> 'n',
 			'is_required'			=> 1,
-			'is_core'				=> 1
+			'is_core'				=> 1,
+                        'is_active'                             => 1
 		),
 		array(
 			'id'					=> 68,
 			'name'					=> 'filesharing',
 			'description_variable'	=> 'TXT_FILESHARING_MODULE_DESCRIPTION',
-			'status'				=> 'n',
+			'status'				=> 'y',
 			'is_required'			=> 0,
-			'is_core'				=> 0
+			'is_core'				=> 0,
+                        'is_active'                             => 1
+		),
+		array(
+			'id'					=> 69,
+			'name'					=> 'crm',
+			'description_variable'	=> 'TXT_CRM_MODULE_DESCRIPTION',
+			'status'				=> 'n',
+			'is_required'			=> 1,
+			'is_core'				=> 0,
+                        'is_active'                             => 1
+		),
+		array(
+			'id'					=> 71,
+			'name'					=> 'FrontendEditing',
+			'description_variable'	=> 'TXT_MODULE_FRONTEND_EDITING',
+			'status'				=> 'n',
+			'is_required'			=> 1,
+			'is_core'				=> 1,
+                        'is_active'                             => 1
 		)
 	);
 
