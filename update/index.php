@@ -127,15 +127,15 @@ if (!$objDatabase) {
 }
 Env::set('db', $objDatabase);
 
-if (!\Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'session_variable')) {
+if (!\Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'session_variable')) {    
     require_once(UPDATE_CORE . '/session.class.php');
     // Start session
     $sessionObj = new cmsSession();
-    $sessionObj->cmsSessionStatusUpdate('backend');
 } else {
     require_once(UPDATE_CORE . '/session32.class.php');
-    \cmsSession::getInstance();
+    $sessionObj = \cmsSession::getInstance();
 }
+$sessionObj->cmsSessionStatusUpdate('backend');
 
 // Initialize base system
 $objInit = new InitCMS('update', Env::em());
