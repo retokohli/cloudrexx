@@ -123,6 +123,8 @@ class FormGenerator {
                     )
                 );
                 $inputNumber->setAttribute('type', 'number');
+                if($name=='id')
+                    $inputNumber->setAttribute('disabled');
                 return $inputNumber;
                 break;
             case '\Country':

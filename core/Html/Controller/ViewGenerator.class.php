@@ -17,9 +17,12 @@ class ViewGenerator {
     /**
      *
      * @param mixed $object Array, instance of DataSet, instance of EntityBase, object
+     * @param $options is functions array 
+     * @param $entityNS is entity name space
+     *                   without $entityNS edit will not work
      * @throws ViewGeneratorException 
      */
-    public function __construct($object, $options = array()) {
+    public function __construct($object, $options = array(),$entityNS='') {
         $this->options = $options;
         if (is_array($object)) {
             $object = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($object);
@@ -35,8 +38,11 @@ class ViewGenerator {
             // render form
             $this->object = $object;
         }
-        
-        if (isset($_POST['editid'])) {
+        /** 
+         *  postSave event
+         *  execute save if entry is a doctrine entity (or execute callback if specified in configuration)
+         */
+        if (isset($_POST['editid']) && !empty($entityNS)) {
             // render form for editid
             $entityId = contrexx_input2raw($_POST['editid']);
             $form = $this->renderFormForEntry($entityId);
@@ -54,97 +60,33 @@ class ViewGenerator {
             }
             // get form data
             $dataSet = $form->getData();
-            
-            /**
-             * TODO:
-             * - trigger pre- and postSave event
-             * - execute save if entry is a doctrine entity (or execute callback if specified in configuration)
-             * 
-             * - trigger pre- and postRemove event
-             * - execute remove if entry is a doctrine entity (or execute callback if specified in configuration)
-             * 
-             * - trigger pre- and postCreate event
-             * - execute create if entity class is a doctrine entity (or execute callback if specified in configuration)
-             */
-            
-            //echo '<pre>';var_dump($dataSet->toArray());die();
-            // save form data
-            // CUSTOMIZING FOR PAYCLOUD.CH
-            $instanceUrl = 'https://' . contrexx_input2raw($_POST['editid']) . '.' . substr($_SERVER['SERVER_NAME'], 0);
             $data = $dataSet->toArray();
-            
-            // modify data for checkout json adapter of instance
-            $data['firstName'] = $data['firstname'];
-            $data['name'] = $data['lastname'];
-            $data['plz'] = $data['zip'];
-            $data['ort'] = $data['location'];
-            $data['emailId'] = $data['email'];
-            $data['phoneNumber'] = $data['phone'];
-            $data['poBox'] = $data['pOBox'];
-            $data['gender'] = $data['salutation'] === 'Mrs.' ? 1 : 2;
-            $data['newsletterStatus'] = $data['newsletterStatus'] === 'yes' ? 1 : 0;
-            
-            $jd = new \Cx\Core\Json\JsonData();
-            $jd->getJson(
-                $instanceUrl.'/cadmin/index.php?cmd=jsondata&object=user&act=loginUser',
-                array(
-                    'USERNAME' => 'O5vie5gOnIMY3Xbi@payrexx.com',
-                    'PASSWORD' => 'NwIoOKjujfMlLcMnZCoSxFyZ6hmKnRxa',
-                )
-            );
-            // get new username and password
-            $passwordHasChanged = false;
-            $username = $data['email'];
-            $password = contrexx_input2raw($_POST['password1']);
-            if (!empty($_POST['password1']) || !empty($_POST['password2'])) {
-                if (empty($_POST['password2']) || $_POST['password1'] != $_POST['password2']) {
-                    \Message::add('blabla', \Message::CLASS_ERROR);
-                    return;
+            $classMethods = get_class_methods(new $entityNS());
+            $id=0; $updateArray=array();
+            foreach ($data as $key=>$value) {
+                if (in_array('set'.ucfirst($key), $classMethods)) {
+                    $updateArray['set'.ucfirst($key)]=$value;
+                } elseif (in_array('get'.ucfirst($key), $classMethods) && $key!='editid') {
+                    $id=$value;
                 }
-                $passwordHasChanged = true;
             }
-            // set password using access json adapter
-            if ($username != '' || $passwordHasChanged) {
-                $jd->getJson(
-                    $instanceUrl.'/cadmin/index.php?cmd=jsondata&object=user&act=setPassword',
-                    array(
-                        'userId' => $username,
-                        'password' => $password,
-                        'repeatPassword' => $password,
-                    )
-                );
+            if ($id) {
+                $entityObj=\Env::get('em')->getRepository($entityNS)->find($id);
+                foreach($updateArray as $key=>$value) {
+                    $entityObj->$key($value);
+                }
+                \Env::get('em')->flush();    
+                \Message::add('Entity have been updated sucessfully!');
             }
             
-            if (isset($_POST['activeStatus'])){
-                $jd->getJson(
-                    $instanceUrl.'/cadmin/index.php?cmd=jsondata&object=checkout&act=activateInstance'
-                );
-                $jd->getJson(
-                    $instanceUrl.'/cadmin/index.php?cmd=jsondata&object=checkout&act=setMessage',
-                    array(
-                        'message' => contrexx_input2raw($_POST['instanceMessage']),
-                    )
-                );
-            } else {
-                $jd->getJson(
-                    $instanceUrl.'/cadmin/index.php?cmd=jsondata&object=checkout&act=disableInstance'
-                );
-            }
-            
-            // unset password in rest of data
-            //unset($data['email']);
-            //unset($data['password']);
-            // submit rest of data
-            $jd->getJson(
-                $instanceUrl.'/cadmin/index.php?cmd=jsondata&object=checkout&act=saveMasterData',
-                $data
-            );
-            $jd->getJson(
-                $instanceUrl.'/cadmin/index.php?cmd=jsondata&object=user&act=logoutUser'
-            );
-            //
             \CSRF::redirect(\Env::get('cx')->getRequest());
-            // END CUSTOMIZING FOR PAYCLOUD.CH
+        }
+        /**
+         * TODO:
+         * - trigger pre- and postRemove event
+         * - execute remove if entry is a doctrine entity (or execute callback if specified in configuration)
+         */
+        if (isset($_POST['deleteid']) && !empty($entityNS)) {
         }
     }
     
