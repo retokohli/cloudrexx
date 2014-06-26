@@ -295,7 +295,10 @@ function _crmInstall() {
                     'text_id'        => array('type' => 'INT(10)', 'unsigned' => true, 'after' => 'section'),
                     'html'           => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'text_id'),
                     'protected'      => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'html')
-                )
+                ),
+                null,
+                'MyISAM',
+                'cx3upgrade'
             );
 
             // migrate mail templates
