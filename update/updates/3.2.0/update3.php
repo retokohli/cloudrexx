@@ -2382,6 +2382,15 @@ if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.2.0')) {
     }
 }
 
+if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.2.0')) {
+    $crmComponentUpdateFile = dirname(__FILE__).'/components/module/crm.php';
+    require_once($crmComponentUpdateFile);
+    $crmUpdate = _crmUpdate();
+    if ($crmUpdate !== true) {
+        return $crmUpdate;
+    }
+}
+
 // fix tree
 \Env::em()->getRepository('Cx\Core\ContentManager\Model\Entity\Node')->recover();
 
