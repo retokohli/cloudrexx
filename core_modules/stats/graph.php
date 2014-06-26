@@ -53,7 +53,7 @@ class makeGraph
     public $graphColor = "#c8d7ee";
 
 
-    function makeGraph()
+    public function __construct()
     {
         if (isset($_GET['stats']) && !empty($_GET['stats'])) {
             $this->stats = $_GET['stats'];
