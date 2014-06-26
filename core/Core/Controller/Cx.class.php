@@ -1012,9 +1012,37 @@ namespace Cx\Core\Core\Controller {
             global $_CONFIG, $themesPages, $objCounter, $objBanner, $_CORELANG;
 
             if ($this->mode == self::MODE_BACKEND) {
+                $formattedVersion = htmlentities(
+                    $_CONFIG['coreCmsName'],
+                    ENT_QUOTES,
+                    CONTREXX_CHARSET
+                ) . ' ' .
+                htmlentities(
+                    str_replace(
+                        ' Service Pack 0',
+                        '',
+                        preg_replace(
+                            '#^(\d+\.\d+)\.(\d+)$#',
+                            '$1 Service Pack $2',
+                            $_CONFIG['coreCmsVersion'])
+                    ), 
+                    ENT_QUOTES,
+                    CONTREXX_CHARSET
+                ) . ' ' .
+                htmlentities(
+                    $_CONFIG['coreCmsEdition'],
+                    ENT_QUOTES,
+                    CONTREXX_CHARSET
+                ) . ' ' .
+                htmlentities(
+                    $_CONFIG['coreCmsStatus'],
+                    ENT_QUOTES,
+                    CONTREXX_CHARSET
+                );
                 $this->template->setGlobalVariable(array(
                     'TXT_FRONTEND'              => $_CORELANG['TXT_FRONTEND'],
                     'TXT_UPGRADE'               => $_CORELANG['TXT_UPGRADE'],
+                    'CONTREXX_VERSION'          => $formattedVersion,
                 ));
                 $this->template->setVariable(array(
                     'TXT_LOGOUT'                => $_CORELANG['TXT_LOGOUT'],
