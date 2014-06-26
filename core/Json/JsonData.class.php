@@ -184,8 +184,18 @@ class JsonData {
      * @param string $certificateFile (optional) Local certificate file for non public SSL certificates
      * @return mixed Decoded JSON on success, false otherwise
      */
-    public function getJson($url, $data = array(), $secure = false, $certificateFile = '') {
+    public function getJson($url, $data = array(), $secure = false, $certificateFile = '', $httpAuth=array()) {
         $request = new \HTTP_Request2($url, \HTTP_Request2::METHOD_POST);
+        if(!empty($httpAuth) && $httpAuth['httpAuthMethod']='none'){
+            switch($httpAuth['httpAuthMethod']){
+                case 'basic':
+                    $request->setAuth($httpAuth['httpAuthUsername'], $httpAuth['httpAuthPassword'], \HTTP_Request2::AUTH_BASIC);
+                    break;
+                case 'disgest':
+                    $request->setAuth($httpAuth['httpAuthUsername'], $httpAuth['httpAuthPassword'], \HTTP_Request2::AUTH_DIGEST);
+                    break;
+            }
+        }
         foreach ($data as $name=>$value) {
             $request->addPostParameter($name, $value);
         }
