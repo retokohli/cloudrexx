@@ -149,7 +149,13 @@ class BackendTable extends HTML_Table {
             $code .= '<a href="' . $editUrl . '" class="edit"></a>';
         }
         if (isset($functions['delete']) && $functions['delete']) {
-            $code .= '<a href="#" id="deleteid' . $rowname . '" class="delete"></a>';
+            $deleteUrl = clone $baseUrl;
+            $deleteUrl->setParam('deleteid', $rowname);
+            $deleteUrl.='&csrf='.\CSRF::code();
+            $onclick ='if (confirm(\'Do you really want to delete?\'))'.
+                    'window.location.replace(\''.$deleteUrl.'\');';
+            $_uri = 'javascript:void(0);';
+            $code .= '<a onclick="'.$onclick.'" href="'.$_uri.'" class="delete"></a>';
         }
         return $code . '</span>';
     }

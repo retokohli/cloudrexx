@@ -124,3 +124,12 @@ form.cx-ui > fieldset > .actions {
     text-algin: left;
     margin: 0;
 }
+#instance_table table {
+    width:100%;
+    border:0;
+}
+#instance_table fieldset {
+    float:left;
+    width:98%;
+}
+
