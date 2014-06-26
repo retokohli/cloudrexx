@@ -383,7 +383,7 @@ function executeContrexxUpdate() {
 
             // before an update of module page can be done, the db changes have to be done
             \Cx\Lib\UpdateUtil::table(
-                DBPREFIX.'content_page',
+                DBPREFIX . 'content_page',
                 array(
                     'id'                                 => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                     'node_id'                            => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'id'),
@@ -391,7 +391,7 @@ function executeContrexxUpdate() {
                     'lang'                               => array('type' => 'INT(11)', 'after' => 'nodeIdShadowed'),
                     'type'                               => array('type' => 'VARCHAR(16)', 'after' => 'lang'),
                     'caching'                            => array('type' => 'TINYINT(1)', 'after' => 'type'),
-                    'updatedAt'                          => array('type' => 'timestamp', 'after' => 'caching'),
+                    'updatedAt'                          => array('type' => 'timestamp', 'after' => 'caching', 'notnull' => false),
                     'updatedBy'                          => array('type' => 'CHAR(40)', 'after' => 'updatedAt'),
                     'title'                              => array('type' => 'VARCHAR(255)', 'after' => 'updatedBy'),
                     'linkTarget'                         => array('type' => 'VARCHAR(16)', 'notnull' => false, 'after' => 'title'),
@@ -400,17 +400,17 @@ function executeContrexxUpdate() {
                     'content'                            => array('type' => 'longtext', 'after' => 'slug'),
                     'sourceMode'                         => array('type' => 'TINYINT(1)', 'notnull' => true, 'default' => '0', 'after' => 'content'),
                     'customContent'                      => array('type' => 'VARCHAR(64)', 'notnull' => false, 'after' => 'sourceMode'),
-                    'useCustomContentForAllChannels'     => array('type' => 'INT(2)', 'notnull' => false, 'after' => 'customContent'),
+                    'useCustomContentForAllChannels'     => array('type' => 'INT(2)', 'after' => 'customContent', 'notnull' => false),
                     'cssName'                            => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'useCustomContentForAllChannels'),
                     'cssNavName'                         => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'cssName'),
                     'skin'                               => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'cssNavName'),
-                    'useSkinForAllChannels'              => array('type' => 'INT(2)', 'notnull' => false, 'after' => 'skin'),
+                    'useSkinForAllChannels'              => array('type' => 'INT(2)', 'after' => 'skin', 'notnull' => false),
                     'metatitle'                          => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'useSkinForAllChannels'),
                     'metadesc'                           => array('type' => 'text', 'after' => 'metatitle'),
                     'metakeys'                           => array('type' => 'text', 'after' => 'metadesc'),
                     'metarobots'                         => array('type' => 'VARCHAR(7)', 'notnull' => false, 'after' => 'metakeys'),
-                    'start'                              => array('type' => 'timestamp', 'after' => 'metarobots'),
-                    'end'                                => array('type' => 'timestamp', 'after' => 'start'),
+                    'start'                              => array('type' => 'timestamp', 'after' => 'metarobots', 'notnull' => false),
+                    'end'                                => array('type' => 'timestamp', 'after' => 'start', 'notnull' => false),
                     'editingStatus'                      => array('type' => 'VARCHAR(16)', 'after' => 'end'),
                     'protection'                         => array('type' => 'INT(11)', 'after' => 'editingStatus'),
                     'frontendAccessId'                   => array('type' => 'INT(11)', 'after' => 'protection'),
@@ -419,11 +419,21 @@ function executeContrexxUpdate() {
                     'active'                             => array('type' => 'TINYINT(1)', 'after' => 'display'),
                     'target'                             => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'active'),
                     'module'                             => array('type' => 'VARCHAR(255)', 'notnull' => false, 'after' => 'target'),
-                    'cmd'                                => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => '', 'after' => 'module'),
+                    'cmd'                                => array('type' => 'VARCHAR(50)', 'notnull' => true, 'default' => '', 'after' => 'module')
                 ),
                 array(
                     'node_id'                            => array('fields' => array('node_id','lang'), 'type' => 'UNIQUE'),
                     'IDX_D8E86F54460D9FD7'               => array('fields' => array('node_id'))
+                ),
+                'InnoDB',
+                '',
+                array(
+                    'node_id' => array(
+                        'table'     => DBPREFIX.'content_node',
+                        'column'    => 'id',
+                        'onDelete'  => 'SET NULL',
+                        'onUpdate'  => 'NO ACTION',
+                    ),
                 )
             );
 
