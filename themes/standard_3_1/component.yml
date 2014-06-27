@@ -4,3 +4,4 @@ DlcInfo:
   type: template
   publisher: 'Comvation AG'
   versions: [{ state: stable, number: 1, releaseDate: 01.01.2013 }]
+  dependencies: [{ name: jquery, type: lib, minimumVersionNumber: 1.6.1, maximumVersionNumber: 1.6.1 }]
