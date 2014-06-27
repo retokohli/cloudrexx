@@ -568,7 +568,7 @@ class Resolver {
                 if ($langId != $this->lang) {
                     $this->lang = $langId;
                     $this->url->setLangDir(\FWLanguage::getLanguageCodeById($langId));
-                    $this->pathOffset = ASCMS_INSTANCE_OFFSET.'/'.\FWLanguage::getLanguageCodeById($langId);
+                    $this->pathOffset = ASCMS_INSTANCE_OFFSET;
                 }
 
                 $targetPath = substr($targetPage->getPath(), 1);
