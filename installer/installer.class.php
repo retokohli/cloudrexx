@@ -1901,10 +1901,10 @@ class Installer
             require_once($documentRoot.'/core/Core/init.php');
             init('minimal');
             
-            if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = new cmsSession();
+            if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = cmsSession::getInstance();
 
             $userId = 1;
-            $sessionObj->cmsSessionUserUpdate($userId);
+            $_SESSION->cmsSessionUserUpdate($userId);
 
             $_GET['force'] = 'true';
             $_GET['silent'] = 'true';
