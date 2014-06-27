@@ -79,9 +79,33 @@ class cacheLib
     /**
      * Delete all cached file's of the cache system   
      */
-    function _deleteAllFiles()
+    function _deleteAllFiles($cacheEngine = null)
     {
-        \Env::get('cache')->deleteAll();
+        if (!in_array($cacheEngine, array('cxPages', 'cxEntries'))) {
+            \Env::get('cache')->deleteAll();
+            return;
+        }
+        $handleDir = opendir($this->strCachePath);
+        if ($handleDir) {
+            while ($strFile = readdir($handleDir)) {
+                if ($strFile != '.' && $strFile != '..') {
+                    switch ($cacheEngine) {
+                        case 'cxPages':
+                            if(is_file($this->strCachePath . $strFile)){
+                                unlink($this->strCachePath . $strFile);
+                            }
+                            break;
+                        case 'cxEntries':
+                            \Env::get('cache')->deleteAll();
+                            break;
+                        default:
+                            unlink($this->strCachePath . $strFile);
+                            break;
+                    }
+                }
+            }
+            closedir($handleDir);
+        }
     }
     
     protected function initOPCaching() {

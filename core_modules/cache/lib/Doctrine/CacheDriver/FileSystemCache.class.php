@@ -112,10 +112,20 @@ class FilesystemCache extends FileCache
     {
         foreach (new \DirectoryIterator($this->directory) as $file) {            
             if ($file->isDir() && !$file->isDot()) {
-                \Cx\Lib\FileSystem\FileSystem::delete_folder($file->getPath() .'/'. $file->getFilename(), true);
+                \Cx\Lib\FileSystem\FileSystem::delete_folder(str_replace('\\', '/', $file->getPath() .'/'. $file->getFilename()), true);
             }
         }
         
         return true;
+    }
+    
+    /**
+     * Deletes all cache entries.
+     *
+     * @return boolean TRUE if the cache entries were successfully deleted, FALSE otherwise.
+     */
+    public function deleteAll()
+    {
+        return $this->doFlush();
     }
 }
