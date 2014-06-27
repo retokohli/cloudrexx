@@ -108,7 +108,7 @@ class LoginManager {
      */
     private function showPasswordReset()
     {
-        global $_ARRAYLANG, $objFWUser, $sessionObj;
+        global $_ARRAYLANG, $objFWUser;
 
         JS::activate('jquery');
         $this->objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', '/core_modules/login/template/login_reset_password.html');

@@ -1171,7 +1171,7 @@ class AccessManager extends AccessLib
 
     private function modifyUser()
     {
-        global $_ARRAYLANG, $_CONFIG, $sessionObj;
+        global $_ARRAYLANG, $_CONFIG;
 
         $associatedGroups = '';
         $notAssociatedGroups = '';

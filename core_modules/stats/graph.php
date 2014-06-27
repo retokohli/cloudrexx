@@ -404,8 +404,8 @@ $objDatabase = $cx->getDb()->getAdoDb();
 $adminPage = true;
 $objInit = new InitCMS($mode="backend");
 
-$sessionObj = new cmsSession();
-$sessionObj->cmsSessionStatusUpdate("backend");
+$sessionObj = \cmsSession::getInstance();
+$_SESSION->cmsSessionStatusUpdate("backend");
 Permission::checkAccess(19, 'static');
 
 $objInit->_initBackendLanguage();

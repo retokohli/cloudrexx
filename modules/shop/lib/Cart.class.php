@@ -172,7 +172,7 @@ class Cart
             return;
         }
         $quantity = intval($arrNewProduct['quantity']);
-        $products = &$_SESSION['shop']['cart']['items'];
+        $products = $_SESSION['shop']['cart']['items']->toArray(); // $_SESSION is a object so convert into array
         $cart_id = null;
         // Add as a new product if true
         $new = true;
@@ -322,6 +322,7 @@ class Cart
                 }
             }
         }
+        $_SESSION['shop']['cart']['items'] = $products;
 //DBG::log("Cart::add_product(): New options: ".var_export($products[$cart_id]['options'], true));
 //DBG::log("Cart::add_product(): Leaving");
     }
@@ -351,7 +352,7 @@ class Cart
 //DBG::log("Cart::update_quantity(): Quantities: ".var_export($_REQUEST['quantity'], true));
         // Update quantity to cart
         if (empty($_SESSION['shop']['cart']['items'])) return;
-        foreach (array_keys($_SESSION['shop']['cart']['items']) as $cartId) {
+        foreach (array_keys($_SESSION['shop']['cart']['items']->toArray()) as $cartId) {
             // Remove Products
             if (isset($_REQUEST['quantity'][$cartId])) {
                 if (intval($_REQUEST['quantity'][$cartId] < 1)) {

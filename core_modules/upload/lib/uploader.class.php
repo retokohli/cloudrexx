@@ -87,7 +87,7 @@ abstract class Uploader
        //start session if it's not ready yet
        global $sessionObj;
        if(empty($sessionObj)) { //session hasn't been initialized so far
-           $sessionObj = new cmsSession();
+           $sessionObj = \cmsSession::getInstance();
        }
     }
     /**
@@ -275,12 +275,11 @@ abstract class Uploader
      */
     public function notifyCallback()
     {
-        global $sessionObj;
 
         //temporary path where files were uploaded
         $tempDir = '/upload_'.$this->uploadId;
-        $tempPath = $sessionObj->getTempPath().$tempDir;
-        $tempWebPath = $sessionObj->getWebTempPath().$tempDir;
+        $tempPath = $_SESSION->getTempPath().$tempDir;
+        $tempWebPath = $_SESSION->getWebTempPath().$tempDir;
 
         //we're going to call the callbck, so the data is not needed anymore
         //well... not quite sure. need it again in contact form.
@@ -372,10 +371,9 @@ abstract class Uploader
      * Cleans up the session - unsets the callback data stored for this upload
      */
     protected function cleanupCallbackData() {
-        global $sessionObj;
 
         unset($_SESSION['upload']['handlers'][$this->uploadId]['callback']);
-        $sessionObj->cleanTempPaths();
+        $_SESSION->cleanTempPaths();
     }
 
     /**
@@ -427,12 +425,10 @@ abstract class Uploader
      */
     protected function addChunk($fileName, $chunk, $chunks)
     {
-        global $sessionObj;
-      
         
         //get a writable directory
-        $tempPath = $sessionObj->getTempPath();
-        $webTempPath = $sessionObj->getWebTempPath();
+        $tempPath = $_SESSION->getTempPath();
+        $webTempPath = $_SESSION->getWebTempPath();
         $dirName = 'upload_'.$this->uploadId;
 
         $targetDir = $tempPath.'/'.$dirName;

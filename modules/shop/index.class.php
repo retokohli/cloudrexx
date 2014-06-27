@@ -83,13 +83,13 @@ class Shop extends ShopLibrary
         if (self::$initialized) {
 die("Shop::init(): ERROR: Shop::init() called more than once!");
         }
+        if (self::use_session()) {
+            global $sessionObj;
+            if (empty($sessionObj)) $sessionObj = \cmsSession::getInstance();
+        }
         if (!isset($_SESSION['shop'])) {
             $_SESSION['shop'] = array();
 		}
-        if (self::use_session()) {
-            global $sessionObj;
-            if (empty($sessionObj)) $sessionObj = new cmsSession();
-        }
         if (   empty($_REQUEST['section'])
             || $_REQUEST['section'] != 'shop'.MODULE_INDEX) {
             global $_ARRAYLANG, $objInit;
@@ -163,7 +163,7 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
         if (isset($_REQUEST['coupon_code'])) {
             global $sessionObj;
             if (!$sessionObj) {
-                $sessionObj = new \cmsSession();
+                $sessionObj = \cmsSession::getInstance();
             }
             $_SESSION['shop']['coupon_code'] =
                 trim(strip_tags(contrexx_input2raw($_REQUEST['coupon_code'])));
@@ -1918,7 +1918,7 @@ die("Failed to update the Cart!");
     {
         if (self::$objCustomer) return true;
         $objUser = FWUser::getFWUserObject()->objUser;
-        global $sessionObj;
+        
         if ($objUser->login()) {
             self::$objCustomer = Customer::getById($objUser->getId());
             if (self::$objCustomer) {
@@ -1926,7 +1926,7 @@ die("Failed to update the Cart!");
                 $_SESSION['shop']['username'] = self::$objCustomer->username();
                 $_SESSION['shop']['email'] = self::$objCustomer->email();
 //DBG::log("Shop::_authenticate(): Success! (".self::$objCustomer->firstname().' '.self::$objCustomer->lastname().', '.self::$objCustomer->username().', email '.self::$objCustomer->email().")");
-                $sessionObj->cmsSessionUserUpdate(self::$objCustomer->id());
+                $_SESSION->cmsSessionUserUpdate(self::$objCustomer->id());
                 return true;
             }
         }

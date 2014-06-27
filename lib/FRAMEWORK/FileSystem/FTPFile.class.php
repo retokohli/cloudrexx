@@ -255,9 +255,10 @@ class FTPFile implements FileInterface
             // unable to use memory as temporary storage location,
             // try to create file in the session temp path 
             if (empty($sessionObj)) { //session hasn't been initialized so far
-                $sessionObj = new cmsSession();
+                $sessionObj = \cmsSession::getInstance();
             }
-            $sessionTempPath = $sessionObj->getTempPath();
+
+            $sessionTempPath = $_SESSION->getTempPath();
             $pathInfo = pathinfo($this->file);
             $tempFile = $sessionTempPath.'/'.$pathInfo['basename'];
             $idx = 1;
