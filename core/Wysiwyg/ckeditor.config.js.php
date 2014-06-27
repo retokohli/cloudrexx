@@ -39,6 +39,11 @@ CKEDITOR.editorConfig = function( config )
     config.shiftEnterMode = CKEDITOR.ENTER_P;
     config.startupOutlineBlocks = true;
     config.allowedContent = true;
+    
+    config.ignoreEmptyParagraph = false;
+    config.protectedSource.push(/<i[^>]*><\/i>/g);
+    config.protectedSource.push(/<span[^>]*><\/span>/g);
+    config.protectedSource.push(/<a[^>]*><\/a>/g);
 
     config.tabSpaces = 4;
 
