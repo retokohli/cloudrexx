@@ -196,18 +196,13 @@ class ForumAdmin extends ForumLibrary {
                 ));
 
                 $strLanguages = '';
-                if (count(\FWLanguage::getActiveFrontendLanguages()) > 1) {
-                	$langState = array();
-                	if (is_array($arrValues['languages'])) {
-		                foreach ($arrValues['languages'] as $intLangId => $arrTranslations) {
-		                    $langState[$intLangId] = 'active';
-		                }
-                	}
-                    $strLanguages = \Html::getLanguageIcons($langState, 'index.php?cmd=forum&amp;act=category_edit&amp;id=' . $arrValues['id']);
-                    $this->_objTpl->touchBlock('txt_languages_block');
-                } else {
-                    $this->_objTpl->hideBlock('txt_languages_block');
+                $langState = array();
+                if (is_array($arrValues['languages'])) {
+                        foreach ($arrValues['languages'] as $intLangId => $arrTranslations) {
+                            $langState[$intLangId] = 'active';
+                        }
                 }
+                $strLanguages = \Html::getLanguageIcons($langState, 'index.php?cmd=forum&amp;act=category_edit&amp;id=' . $arrValues['id']);
 
                 $this->_objTpl->setVariable(array(
                        'CATEGORY_ROWCLASS'            =>    'row'.($index % 2),
