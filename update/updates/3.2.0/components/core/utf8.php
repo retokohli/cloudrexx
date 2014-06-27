@@ -34,6 +34,10 @@ function _utf8Update()
         return $arrCollations;
     }
     
+    if (!isset($_SESSION['contrexx_update']['update']['core'])) {
+        $_SESSION['contrexx_update']['update']['core'] = array();
+    }
+    
     // note: $usedCollation is the currently used collation.
     // in case $usedCollation is non-utf8, then the following var
     // won't be set. This will cause the update system to ask the user
