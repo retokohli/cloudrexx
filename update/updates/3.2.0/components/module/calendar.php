@@ -455,6 +455,9 @@ class CalendarUpdate31
         define('CALENDAR_NEW_REGISTRATION_FORM_FIELD_NAME_TABLE', DBPREFIX . 'module_calendar_registration_form_field_name');
         define('CALENDAR_NEW_REGISTRATION_FORM_FIELD_VALUE_TABLE', DBPREFIX . 'module_calendar_registration_form_field_value');
 
+        if (!isset($_SESSION['contrexx_update']['calendar'])) {
+            $_SESSION['contrexx_update']['calendar'] = array();
+        }
         // create new tables
         if (empty($_SESSION['contrexx_update']['calendar']['tables_created'])) {
             $createTablesState = $this->createNewTables();
