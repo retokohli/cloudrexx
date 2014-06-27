@@ -48,19 +48,29 @@ class BlogAdmin extends BlogLibrary {
 
         $isAdmin = $objFWUser->objUser->getAdminStatus();
         //if(in_array(120, $objFWUser->objUser->getStaticPermissionIds()) || $isAdmin) {
-        	$strNavigation .= '<a href="index.php?cmd=blog">'.$_CORELANG['TXT_BLOG_ENTRY_MANAGE_TITLE'].'</a>';
+        	$strNavigation .= '<a href="index.php?cmd=blog" 
+                    class="'.($_GET['act'] == '' ? 'active' : '').'">'
+                        .$_CORELANG['TXT_BLOG_ENTRY_MANAGE_TITLE'].'</a>';
         //}
         if(in_array(121, $objFWUser->objUser->getStaticPermissionIds()) || $isAdmin) {
-        	$strNavigation .= '<a href="index.php?cmd=blog&amp;act=addEntry">'.$_CORELANG['TXT_BLOG_ENTRY_ADD_TITLE'].'</a>';
+        	$strNavigation .= '<a href="index.php?cmd=blog&amp;act=addEntry" 
+                    class="'.(in_array($_GET['act'], array('addEntry', 'editEntry')) ? 'active' : '').'">'
+                        .$_CORELANG['TXT_BLOG_ENTRY_ADD_TITLE'].'</a>';
         }
         if(in_array(122, $objFWUser->objUser->getStaticPermissionIds()) || $isAdmin) {
-        	$strNavigation .= '<a href="index.php?cmd=blog&amp;act=manageCategory">'.$_CORELANG['TXT_BLOG_CATEGORY_MANAGE_TITLE'].'</a>';
+        	$strNavigation .= '<a href="index.php?cmd=blog&amp;act=manageCategory" 
+                    class="'.(in_array($_GET['act'], array('manageCategory', 'manageCategory')) ? 'active' : '').'">'
+                        .$_CORELANG['TXT_BLOG_CATEGORY_MANAGE_TITLE'].'</a>';
         }
         if(in_array(125, $objFWUser->objUser->getStaticPermissionIds()) || $isAdmin) {
-        	$strNavigation .= '<a href="index.php?cmd=blog&amp;act=networks">'.$_CORELANG['TXT_BLOG_NETWORKS_TITLE'].'</a>';
+        	$strNavigation .= '<a href="index.php?cmd=blog&amp;act=networks" 
+                    class="'.(in_array($_GET['act'], array('networks', 'editNetwork')) ? 'active' : '').'">'
+                        .$_CORELANG['TXT_BLOG_NETWORKS_TITLE'].'</a>';
         }
         if(in_array(124, $objFWUser->objUser->getStaticPermissionIds()) || $isAdmin) {
-        	$strNavigation .= '<a href="index.php?cmd=blog&amp;act=settings">'.$_CORELANG['TXT_BLOG_SETTINGS_TITLE'].'</a>';
+        	$strNavigation .= '<a href="index.php?cmd=blog&amp;act=settings" 
+                    class="'.(in_array($_GET['act'], array('settings'))? 'active' : '').'">'
+                        .$_CORELANG['TXT_BLOG_SETTINGS_TITLE'].'</a>';
         }
 
         $objTemplate->setVariable('CONTENT_NAVIGATION', $strNavigation);
