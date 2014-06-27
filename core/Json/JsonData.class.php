@@ -186,13 +186,16 @@ class JsonData {
      */
     public function getJson($url, $data = array(), $secure = false, $certificateFile = '', $httpAuth=array()) {
         $request = new \HTTP_Request2($url, \HTTP_Request2::METHOD_POST);
-        if(!empty($httpAuth) && $httpAuth['httpAuthMethod']='none'){
+        if(!empty($httpAuth)){
             switch($httpAuth['httpAuthMethod']){
                 case 'basic':
                     $request->setAuth($httpAuth['httpAuthUsername'], $httpAuth['httpAuthPassword'], \HTTP_Request2::AUTH_BASIC);
                     break;
                 case 'disgest':
                     $request->setAuth($httpAuth['httpAuthUsername'], $httpAuth['httpAuthPassword'], \HTTP_Request2::AUTH_DIGEST);
+                    break;
+                case 'none':
+                default:
                     break;
             }
         }
