@@ -91,14 +91,35 @@ class ViewGenerator {
                     \Message::add('Cannot save, Invalid argument!', \Message::CLASS_ERROR);
                 }
             } 
-            \CSRF::redirect(\Env::get('cx')->getRequest());
+             \CSRF::redirect(str_replace('&editid='.$_GET['editid'],'',\Env::get('Resolver')->getUrl()));
         }
         /**
-         * TODO:
-         * - trigger pre- and postRemove event
-         * - execute remove if entry is a doctrine entity (or execute callback if specified in configuration)
+         * 
+         * trigger pre- and postRemove event
+         * execute remove if entry is a doctrine entity (or execute callback if specified in configuration)
          */
-        if (isset($_POST['deleteid']) && !empty($entityNS)) {
+        if (isset($_GET['deleteid']) && !empty($entityNS)) {
+            $id=0;
+            $entityObject = $this->object->getEntry($_GET['deleteid']);
+            if (empty($entityObject)) {
+                \Message::add('Cannot save, Invalid entry', \Message::CLASS_ERROR);
+                return;
+            }
+            $classMethods = get_class_methods(new $entityNS());
+            foreach ($entityObject as $name=>$value) {
+                if (in_array('get'.ucfirst($name), $classMethods) && !in_array('set'.ucfirst($name), $classMethods)) {
+                    $id=$entityObject[$name];
+                }
+            } 
+            if (!empty($id)) {
+                $entityObj=\Env::get('em')->getRepository($entityNS)->find($id);
+                if (!empty($entityObj)) {
+                    \Env::get('em')->remove($entityObj);
+                    \Env::get('em')->flush();
+                    \Message::add('Entity have been deleted sucessfully!');   
+                }
+            }
+            \CSRF::redirect(str_replace('&deleteid='.$_GET['deleteid'],'',\Env::get('Resolver')->getUrl()));
         }
     }
     
