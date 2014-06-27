@@ -178,15 +178,16 @@ class CacheManager extends cacheLib
         if ($handleFolder) {
             while ($strFile = readdir($handleFolder)) {
                 if ($strFile != '.' && $strFile != '..') {
-                    if(false === strpos($strFile, 'db_')){
-                        $intFoldersizePages += filesize($this->strCachePath . $strFile);
-                        ++$intFilesPages;
-                    }else{
+                    if(is_dir($this->strCachePath.'/'.$strFile)){
                         $intFoldersizeEntries += filesize($this->strCachePath . $strFile);
                         ++$intFilesEntries;
+                    }elseif($strFile !== '.htaccess'){
+                        $intFoldersizePages += filesize($this->strCachePath . $strFile);
+                        ++$intFilesPages;
                     }
                 }
             }
+            $intFoldersizeEntries = filesize($this->strCachePath) - $intFoldersizePages - filesize($this->strCachePath . '.htaccess');
             closedir($handleFolder);
         }
         
@@ -490,11 +491,11 @@ class CacheManager extends cacheLib
      * @global     object    $objTemplate
      * @global     array    $_CORELANG
      */
-    function deleteAllFiles()
+    function deleteAllFiles($cacheEngine = null)
     {
         global $_CORELANG, $objTemplate;
 
-        $this->_deleteAllFiles();
+        $this->_deleteAllFiles($cacheEngine);
 
         $objTemplate->SetVariable('CONTENT_OK_MESSAGE', $_CORELANG['TXT_CACHE_FOLDER_EMPTY']);
     }
@@ -512,7 +513,7 @@ class CacheManager extends cacheLib
         switch ($cacheEngine) {
             case 'cxEntries':
             case 'cxPages':
-                $this->deleteAllFiles();
+                $this->deleteAllFiles($cacheEngine);
                 break;
             case self::CACHE_ENGINE_APC:
             case 'apc':
