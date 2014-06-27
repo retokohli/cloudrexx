@@ -42,6 +42,34 @@ class ViewGenerator {
          *  postSave event
          *  execute save if entry is a doctrine entity (or execute callback if specified in configuration)
          */
+        if (isset($_GET['add']) && !empty($this->options ['functions']['add'])) {
+            $form = $this->renderFormForEntry(null);
+            // form->isValid()?
+            if ($form === false) {
+                // cannot save, no such entry
+                \Message::add('Cannot save, no such entry', \Message::CLASS_ERROR);
+                return;
+            }
+            if (!$form->isValid()) {
+                // data validation failed, stay in edit view
+                \Message::add('Cannot save, validation failed', \Message::CLASS_ERROR);
+                $_GET['add'] = $_POST['add'];
+                return;
+            }
+            if (!empty($_POST)) {
+                $entityObject = \Env::get('em')->getClassMetadata($entityNS);  
+                $primaryKeyName =$entityObject->getSingleIdentifierFieldName(); //get primary key name  
+                $getAllField = $entityObject->getColumnNames(); //get all field names  
+                // TODO - add new entry
+                //\Message::add('Entity have been added sucessfully!');   
+                \CSRF::redirect(str_replace('&add='.$_GET['add'],'',\Env::get('Resolver')->getUrl()));
+            }
+           
+        }
+        /** 
+         *  postSave event
+         *  execute save if entry is a doctrine entity (or execute callback if specified in configuration)
+         */
         if (isset($_POST['editid']) && !empty($entityNS)) {
             // render form for editid
             $entityId = contrexx_input2raw($_POST['editid']);
@@ -58,8 +86,10 @@ class ViewGenerator {
                 $_GET['editid'] = $_POST['editid'];
                 return;
             }
-            
-            $entityObject = $this->object->getEntry($entityId);
+            $entityObject=array();
+            if ($this->object->entryExists($entityId)) {
+                $entityObject = $this->object->getEntry($entityId);
+            }
             if (empty($entityObject)) {
                 \Message::add('Cannot save, Invalid entry', \Message::CLASS_ERROR);
                 return;
@@ -124,6 +154,10 @@ class ViewGenerator {
     }
     
     public function render(&$isSingle = false) {
+        if (isset($_GET['add']) && !empty($this->options ['functions']['add'])) {
+            $isSingle = true;
+            return $this->renderFormForEntry(null);
+        }
         $renderObject = $this->object;
         $entityClass = get_class($this->object);
         if (
@@ -146,7 +180,14 @@ class ViewGenerator {
             }
             $listingController = new \Cx\Core_Modules\Listing\Controller\ListingController($renderObject);
             $renderObject = $listingController->getData();
-            return new \BackendTable($renderObject, $this->options) . '<br />' . $listingController;
+            $backendTable = new \BackendTable($renderObject, $this->options) . '<br />' . $listingController;
+            new \BackendTable($renderObject, $this->options) . '<br />' . $listingController;
+            if (!empty($this->options ['functions']['add'])) {
+                $actionUrl = clone \Env::get('cx')->getRequest();
+                $actionUrl->setParam('add', 0);
+                $backendTable .= '<br /><br /><input type="button" name="addEtity" value="Add" onclick="location.href='."'".$actionUrl."&csrf=".\CSRF::code()."'".'" />'; 
+            }
+            return $backendTable;
         } else {
             $isSingle = true;
             return $this->renderFormForEntry($entityId);
@@ -154,19 +195,41 @@ class ViewGenerator {
     }
     
     protected function renderFormForEntry($entityId) {
-        $renderObject = $this->object;
-        $entityClass = get_class($this->object);
-        if ($this->object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
-            $entityClass = $this->object->getDataType();
-            if (!$this->object->entryExists($entityId)) {
-                // no such entry
-                return false;
+        if (isset($_GET['add']) && !empty($this->options ['functions']['add'])) {
+            $renderObject = $this->object;
+            $entityClass = get_class($this->object);
+            if ($this->object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
+                $entityClass = $this->object->getDataType();
             }
-            $renderObject = $this->object->getEntry($entityId);
+            //die;
+            $actionUrl = clone \Env::get('cx')->getRequest();
+            $actionUrl->setParam('add', 0);
+            $entityObject = \Env::get('em')->getClassMetadata($entityClass);  
+            $primaryKeyName =$entityObject->getSingleIdentifierFieldName(); //get primary key name  
+            $getAllField = $entityObject->getColumnNames(); //get all field names  
+            $blankData=array();
+            foreach($getAllField as $name) {
+                if ($name!=$primaryKeyName) {
+                    $blankData[$name]="";    
+                }
+            }
+            return new FormGenerator($blankData, $actionUrl, $entityClass, $this->options); 
+        } else {
+        
+            $renderObject = $this->object;
+            $entityClass = get_class($this->object);
+            if ($this->object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
+                $entityClass = $this->object->getDataType();
+                if (!$this->object->entryExists($entityId)) {
+                    // no such entry
+                    return false;
+                }
+                $renderObject = $this->object->getEntry($entityId);
+            }
+            $actionUrl = clone \Env::get('cx')->getRequest();
+            $actionUrl->setParam('editid', null);
+            return new FormGenerator($renderObject, $actionUrl, $entityClass, $this->options);
         }
-        $actionUrl = clone \Env::get('cx')->getRequest();
-        $actionUrl->setParam('editid', null);
-        return new FormGenerator($renderObject, $actionUrl, $entityClass, $this->options);
     }
     
     public function __toString() {
