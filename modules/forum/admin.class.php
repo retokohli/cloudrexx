@@ -47,7 +47,7 @@ class ForumAdmin extends ForumLibrary {
 
         $objTemplate->setVariable(
             'CONTENT_NAVIGATION',
-            '<a href="?cmd=forum&amp;act=category" class="'.($this->act == 'category' ? 'active' : '').'">'.$_ARRAYLANG['TXT_FORUM_MENU_CATEGORIES'].'</a>
+            '<a href="?cmd=forum&amp;act=category" class="'.(in_array($this->act, array('category', '')) ? 'active' : '').'">'.$_ARRAYLANG['TXT_FORUM_MENU_CATEGORIES'].'</a>
             <a href="?cmd=forum&amp;act=settings" class="'.($this->act == 'settings' ? 'active' : '').'">'.$_ARRAYLANG['TXT_FORUM_MENU_SETTINGS'].'</a>
         ');
     }
