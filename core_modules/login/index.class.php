@@ -242,7 +242,7 @@ class Login
             if ($objFWUser->checkLogin()) {
                 $objFWUser->objUser->reset();
                 $objFWUser->logoutAndDestroySession();
-                $sessionObj = new \cmsSession();
+                $sessionObj = \cmsSession::getInstance();
             } else {
                 $_GET['relogin'] = 'true';
             }

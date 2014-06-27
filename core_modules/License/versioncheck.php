@@ -7,7 +7,7 @@ if (!isset($objUser) || !isset($objDatabase) || !isset($license)) {
 }
 
 // Init user
-if (empty($sessionObj)) $sessionObj = new \cmsSession();
+if (empty($sessionObj)) $sessionObj = \cmsSession::getInstance();
 if (!isset($objUser)) {
     $objUser = $cx->getUser()->objUser;
 }

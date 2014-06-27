@@ -72,7 +72,11 @@ class UploadFactory
     protected function initSession() {
         global $sessionObj;
         if(empty($sessionObj)) { //session hasn't been initialized so far
-            $sessionObj = new cmsSession();
+            $sessionObj = \cmsSession::getInstance();
+        }
+        if (!isset($_SESSION['upload'])) {
+            $_SESSION['upload'] = array();
+            $_SESSION['upload']['handlers'] = array();
         }
     }
 
