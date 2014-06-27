@@ -261,6 +261,9 @@ class ContentMigration
             }
             self::$em->flush();
 
+            if (!isset($_SESSION['contrexx_update']['nodes'])) {
+                $_SESSION['contrexx_update']['nodes'] = array();
+            }
             foreach ($this->nodeArr as $catId => $node) {
                 $_SESSION['contrexx_update']['nodes'][$catId] = $node->getId();
             }
@@ -350,6 +353,10 @@ class ContentMigration
                         $page   = $pageRepo->find($pageId);
                     }
 
+                    if (!isset($_SESSION['contrexx_update']['pages'])) {
+                        $_SESSION['contrexx_update']['pages'] = array();
+                    }
+                    
                     // CREATE PAGE
                     switch ($objResult->fields['action']) {
                         case 'new':
@@ -528,6 +535,9 @@ class ContentMigration
     function _setCmd($page, $cmd) {
         $origCmd = $cmd;
         $cmd = preg_replace('/[^-A-Za-z0-9_]+/', '_', $origCmd);
+        if (!isset($_SESSION['contrexx_update']['modified_cmds'])) {
+            $_SESSION['contrexx_update']['modified_cmds'] = array();
+        }
         if ($cmd != $origCmd) {
             // add message like 'Cmd of page {title} has been changed to {newcmd} (was {oldcmd})'
             $_SESSION['contrexx_update']['modified_cmds'][] = array(
@@ -1059,7 +1069,7 @@ class ContentMigration
 
         foreach ($arrSimilarPages as $nodeId => $arrPageIds) {
             if (!checkMemoryLimit() || !checkTimeoutLimit()) {
-                $_SESSION['contrexx_update']['node_to_remove'] = array_merge($_SESSION['contrexx_update']['node_to_remove'], $nodeToRemove);
+                $_SESSION['contrexx_update']['node_to_remove'] = array_merge(\ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['node_to_remove']), $nodeToRemove);
                 return 'timeout';
             }
 
@@ -1094,8 +1104,8 @@ class ContentMigration
 
         foreach ($arrRemovePages as $pageId) {
             if (!checkMemoryLimit() || !checkTimeoutLimit()) {
-                $_SESSION['contrexx_update']['page_to_remove'] = array_merge($_SESSION['contrexx_update']['page_to_remove'], $pageToRemove);
-                $_SESSION['contrexx_update']['node_to_remove'] = array_merge($_SESSION['contrexx_update']['node_to_remove'], $nodeToRemove);
+                $_SESSION['contrexx_update']['page_to_remove'] = array_merge(\ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['page_to_remove']), $pageToRemove);
+                $_SESSION['contrexx_update']['node_to_remove'] = array_merge(\ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['node_to_remove']), $nodeToRemove);
                 return 'timeout';
             }
 
@@ -1107,8 +1117,8 @@ class ContentMigration
 
             unset($_SESSION['contrexx_update']['remove_pages'][$pageId]);
         }
-        $_SESSION['contrexx_update']['page_to_remove'] = array_merge($_SESSION['contrexx_update']['page_to_remove'], $pageToRemove);
-        $_SESSION['contrexx_update']['node_to_remove'] = array_merge($_SESSION['contrexx_update']['node_to_remove'], $nodeToRemove);
+        $_SESSION['contrexx_update']['page_to_remove'] = array_merge(\ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['page_to_remove']), $pageToRemove);
+        $_SESSION['contrexx_update']['node_to_remove'] = array_merge(\ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['node_to_remove']), $nodeToRemove);
         $pageToRemove = $_SESSION['contrexx_update']['page_to_remove'];
         $nodeToRemove = $_SESSION['contrexx_update']['node_to_remove'];
 

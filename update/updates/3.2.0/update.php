@@ -85,7 +85,7 @@ function executeContrexxUpdate() {
             'dependencies'  => array (),
         ),
     );
-
+            
     $_SESSION['contrexx_update']['copyFilesFinished'] = !empty($_SESSION['contrexx_update']['copyFilesFinished']) ? $_SESSION['contrexx_update']['copyFilesFinished'] : false;
 
     // Copy cx files to the root directory
@@ -134,6 +134,9 @@ function executeContrexxUpdate() {
 
     FWLanguage::init();
 
+    if (!isset($_SESSION['contrexx_update']['update'])) {
+        $_SESSION['contrexx_update']['update'] = array();
+    }
     if (!isset($_SESSION['contrexx_update']['update']['done'])) {
         $_SESSION['contrexx_update']['update']['done'] = array();
     }
@@ -150,7 +153,7 @@ function executeContrexxUpdate() {
         setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_UNABLE_LOAD_UPDATE_COMPONENT'], dirname(__FILE__) . '/components/core/utf8.php'));
         return false;
     }
-    if (!in_array('utf8', $_SESSION['contrexx_update']['update']['done'])) {
+    if (!in_array('utf8', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
         $result = _utf8Update();
         if ($result === 'timeout') {
             setUpdateMsg(1, 'timeout');
@@ -180,6 +183,18 @@ function executeContrexxUpdate() {
     }
     /////////////////////
 
+    
+    /////////////////////////////
+    // Session Table MIGRATION //
+    /////////////////////////////
+    if (!\Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'session_variable') && $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.2.0')) {
+        if (!migrateSessionTable()) {
+            setUpdateMsg('Error in updating session table', 'error');
+            return false;
+        }
+        setUpdateMsg(1, 'timeout');
+        return false;
+    }
 
     // Load Doctrine (this must be done after the UTF-8 Migration, because we'll need $_DBCONFIG['charset'] to be set)
     $incDoctrineStatus = require_once(UPDATE_PATH . '/config/doctrine.php');
@@ -261,8 +276,8 @@ function executeContrexxUpdate() {
         if (empty($_SESSION['contrexx_update']['migrate_lang_ids'])) {
             $_SESSION['contrexx_update']['migrate_lang_ids'] = $contentMigration->getActiveContentLanguageIds();
         }
-        $contentMigration->arrMigrateLangIds = $_SESSION['contrexx_update']['migrate_lang_ids'];
-        $contentMigration->migrateLangIds    = implode(',', $_SESSION['contrexx_update']['migrate_lang_ids']);
+        $contentMigration->arrMigrateLangIds = ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['migrate_lang_ids']);
+        $contentMigration->migrateLangIds    = implode(',', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['migrate_lang_ids']));
 
         // Migrate content
         if (empty($_SESSION['contrexx_update']['content_migrated'])) {
@@ -274,12 +289,12 @@ function executeContrexxUpdate() {
 
                 // log migrated nodes
                 DBG::msg('NODES: catId -> nodeId');
-                DBG::dump($_SESSION['contrexx_update']['nodes']);
+                DBG::dump(ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['nodes']));
                 unset($_SESSION['contrexx_update']['nodes']);
 
                 // log migrated pages
                 DBG::msg('PAGES: catId -> pageId');
-                DBG::dump($_SESSION['contrexx_update']['pages']);
+                DBG::dump(ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['pages']));
                 unset($_SESSION['contrexx_update']['pages']);
 
                 if (!checkMemoryLimit() || !checkTimeoutLimit()) {
@@ -512,7 +527,7 @@ function executeContrexxUpdate() {
         return false;
     }
 
-    if (!in_array('coreUpdate', $_SESSION['contrexx_update']['update']['done'])) {
+    if (!in_array('coreUpdate', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
         $result = _coreUpdate();
         if ($result === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
@@ -544,7 +559,7 @@ function executeContrexxUpdate() {
         $dh = opendir(dirname(__FILE__).'/components/'.$dir);
         if ($dh) {
             while (($file = readdir($dh)) !== false) {
-                if (!in_array($file, $_SESSION['contrexx_update']['update']['done'])) {
+                if (!in_array($file, ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
                     $fileInfo = pathinfo(dirname(__FILE__).'/components/'.$dir.'/'.$file);
 
                     if ($fileInfo['extension'] == 'php') {
@@ -621,7 +636,7 @@ function executeContrexxUpdate() {
         closedir($dh);
     }
 
-    if (!in_array('coreSettings', $_SESSION['contrexx_update']['update']['done'])) {
+    if (!in_array('coreSettings', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
         $result = _updateSettings();
         if ($result === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
@@ -644,7 +659,7 @@ function executeContrexxUpdate() {
         }
     }
 
-    if (!in_array('coreModules', $_SESSION['contrexx_update']['update']['done'])) {
+    if (!in_array('coreModules', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
         $result = _updateModules();
         if ($result === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
@@ -656,7 +671,7 @@ function executeContrexxUpdate() {
         }
     }
 
-    if (!in_array('coreBackendAreas', $_SESSION['contrexx_update']['update']['done'])) {
+    if (!in_array('coreBackendAreas', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
         $result = _updateBackendAreas();
         if ($result === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
@@ -668,7 +683,7 @@ function executeContrexxUpdate() {
         }
     }
 
-    if (!in_array('coreModuleRepository', $_SESSION['contrexx_update']['update']['done'])) {
+    if (!in_array('coreModuleRepository', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
         $result = _updateModuleRepository();
         if ($result === false) {
             DBG::msg('unable to update module repository');
@@ -681,7 +696,7 @@ function executeContrexxUpdate() {
         }
     }
 
-    if (!in_array('moduleTemplates', $_SESSION['contrexx_update']['update']['done'])) {
+    if (!in_array('moduleTemplates', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
         if (_updateModulePages($viewUpdateTable) === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
                 DBG::msg('unable to update module templates');
@@ -693,7 +708,7 @@ function executeContrexxUpdate() {
         }
     }
 
-    if (!in_array('moduleStyles', $_SESSION['contrexx_update']['update']['done'])) {
+    if (!in_array('moduleStyles', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
         if (_updateCssDefinitions($viewUpdateTable, $objUpdate) === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
                 setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_MODULE_TEMPLATES']), 'title');
@@ -704,7 +719,7 @@ function executeContrexxUpdate() {
         }
     }
     
-    if (!in_array('navigations', $_SESSION['contrexx_update']['update']['done'])) {
+    if (!in_array('navigations', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
         if (_updateNavigations() === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
                 setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_NAVIGATIONS']), 'title');
@@ -753,7 +768,7 @@ function executeContrexxUpdate() {
     $arrUpdate = $objUpdate->getLoadedVersionInfo();
     $_CONFIG['coreCmsVersion'] = $arrUpdate['cmsVersion'];
 
-    if (!in_array('coreLicense', $_SESSION['contrexx_update']['update']['done'])) {
+    if (!in_array('coreLicense', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
         $lupd = new License();
         try {
             $result = $lupd->update();
@@ -1086,7 +1101,7 @@ function _updateModuleRepository() {
 
         while (($file = readdir($dh)) !== false) {
             if (preg_match('#^repository_([0-9]+)\.php$#', $file, $arrFunction)) {
-                if (!in_array($file, $_SESSION['contrexx_update']['update']['done'])) {
+                if (!in_array($file, ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
                     if (function_exists('memory_get_usage')) {
                         if (!checkMemoryLimit()) {
                             return false;
@@ -1604,6 +1619,9 @@ function backupModifiedFile($file)
         $customizingFile .= $suffix;
     }
 
+    if (!isset($_SESSION['contrexx_update']['modified_files'])) {
+        $_SESSION['contrexx_update']['modified_files'] = array();
+    }
     try {
         $objFile = new \Cx\Lib\FileSystem\File($file);
         $objFile->copy($customizingFile);
@@ -1716,7 +1734,7 @@ function copyCxFilesToRoot($src, $dst)
                 continue;
             }
 
-            $_SESSION['contrexx_update']['copiedCxFilesTotal']++;
+            $_SESSION['contrexx_update']['copiedCxFilesTotal'] = $_SESSION['contrexx_update']['copiedCxFilesTotal'] + 1;
 
             try {
                 
@@ -1736,7 +1754,7 @@ function copyCxFilesToRoot($src, $dst)
             } catch (\Exception $e) {
                 $copiedCxFilesIndex--;
                 $_SESSION['contrexx_update']['copiedCxFilesIndex'] = $copiedCxFilesIndex;
-                $_SESSION['contrexx_update']['copiedCxFilesTotal']--;
+                $_SESSION['contrexx_update']['copiedCxFilesTotal'] = $_SESSION['contrexx_update']['copiedCxFilesTotal'] - 1;
                 setUpdateMsg('Folgende Datei konnte nicht installiert werden:<br />' . $dstPath);
                 setUpdateMsg('Fehler: ' . $e->getMessage());
                 setUpdateMsg('<br />Häufigste Ursache dieses Problems ist, dass zur Ausführung dieses Vorgangs die benötigten Schreibrechte nicht vorhanden sind. Prüfen Sie daher, ob die FTP-Konfiguration in der Datei <strong>config/configuration.php</strong> korrekt eingerichtet ist.');
@@ -1850,6 +1868,111 @@ function getHtAccessTemplate()
     }
 
     return $htAccessTemplate;
+}
+
+function migrateSessionTable()
+{
+    try {
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'session_variable',
+            array(
+                'id'        => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' =>true),
+                'parent_id' => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'id'),
+                'sessionid' => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => '', 'after' => 'parent_id'),
+                'lastused'  => array('type' => 'TIMESTAMP', 'notnull' => true, 'default_expr' => 'CURRENT_TIMESTAMP', 'on_update' => 'CURRENT_TIMESTAMP', 'after' => 'sessionid'),
+                'key'       => array('type' => 'VARCHAR(40)', 'notnull' => true, 'default' => '', 'after' => 'lastused'),
+                'value'     => array('type' => 'TEXT', 'notnull' => true, 'default' => '', 'after' => 'key')
+            ),
+            array(
+                'key_index' => array('fields' => array('parent_id', 'key', 'sessionid'), 'type' => 'UNIQUE')
+            )
+        );
+        \Cx\Lib\UpdateUtil::sql('TRUNCATE TABLE `'. DBPREFIX .'session_variable`');
+        
+        $objResult = \Cx\Lib\UpdateUtil::sql('SELECT 
+                                                `sessionid`,
+                                                `datavalue`
+                                              FROM
+                                                 `' . DBPREFIX . 'sessions`');        
+        if ($objResult) {
+            while (!$objResult->EOF) {
+                $sessionArray = unserializesession($objResult->fields['datavalue']);
+                insertSessionArray($sessionArray);
+                $objResult->MoveNext();
+            }
+        }
+        \Cx\Lib\UpdateUtil::table(
+            DBPREFIX.'sessions',
+            array(
+                'sessionid'      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'primary' => true),
+                'remember_me'    => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'sessionid'),
+                'startdate'      => array('type' => 'VARCHAR(14)', 'notnull' => true, 'default' => '', 'after' => 'remember_me'),
+                'lastupdated'    => array('type' => 'VARCHAR(14)', 'notnull' => true, 'default' => '', 'after' => 'startdate'),
+                'status'         => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'lastupdated'),
+                'user_id'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'status'),                
+            ),
+            array(
+                'LastUpdated'    => array('fields' => array('lastupdated')),
+            )
+        );
+    } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+    }
+        
+    return true;
+}
+
+function insertSessionArray($sessionArr, $parentId = 0)
+{
+    global $objDatabase, $sessionObj;
+    
+    foreach ($sessionArr as $key => $value) {        
+        \Cx\Lib\UpdateUtil::sql('INSERT INTO 
+                                    '. DBPREFIX .'session_variable
+                                SET 
+                                `parent_id` = "'. intval($parentId) .'",
+                                `sessionid` = "'. $sessionObj->sessionid .'",
+                                `key` = "'. contrexx_input2db($key) .'",
+                                `value` = "'. (is_array($value) ? contrexx_input2db(serialize(null)) : contrexx_input2db(serialize($value)))  .'"');
+        $insertId = $objDatabase->Insert_ID();
+        
+        if (is_array($value)) {            
+            insertSessionArray($value, $insertId);
+        }
+    }
+}
+
+function unserializesession( $data )
+{
+    if(  strlen( $data) == 0)
+    {
+        return array();
+    }
+    
+    // match all the session keys and offsets
+    preg_match_all('/(^|;|\})([a-zA-Z0-9_]+)\|/i', $data, $matchesarray, PREG_OFFSET_CAPTURE);
+
+    $returnArray = array();
+
+    $lastOffset = null;
+    $currentKey = '';
+    foreach ( $matchesarray[2] as $value )
+    {
+        $offset = $value[1];
+        if(!is_null( $lastOffset))
+        {
+            $valueText = substr($data, $lastOffset, $offset - $lastOffset );
+            $returnArray[$currentKey] = unserialize($valueText);
+        }
+        $currentKey = $value[0];
+
+        $lastOffset = $offset + strlen( $currentKey )+1;
+    }
+
+    $valueText = substr($data, $lastOffset );
+    $returnArray[$currentKey] = unserialize($valueText);
+    
+    return $returnArray;
 }
 
 class License {

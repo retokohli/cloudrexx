@@ -613,6 +613,9 @@ NEWS;
     * EXTENSION:    Categories as NestedSet         *
     * ADDED:        Contrexx v3.1.0                 *
     ************************************************/
+    if (!isset($_SESSION['contrexx_update']['news'])) {
+        $_SESSION['contrexx_update']['news'] = array();
+    }
     if ($objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.1.0') && !isset($_SESSION['contrexx_update']['news']['nestedSet'])) {
         try {
             $nestedSetRootId = null;
