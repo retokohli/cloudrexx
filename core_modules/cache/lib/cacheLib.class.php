@@ -81,7 +81,7 @@ class cacheLib
      */
     function _deleteAllFiles()
     {
-        \Env::get('cache')->flushAll();
+        \Env::get('cache')->deleteAll();
     }
     
     protected function initOPCaching() {
