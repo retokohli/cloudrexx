@@ -116,7 +116,6 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
 //DBG::log("Shop::init(): section {$_REQUEST['section']}, cmd {$_REQUEST['cmd']}: Calling setJsCart()");
             self::setJsCart();
         }
-        self::registerJavascriptCode();
 //DBG::log("Shop::init(): After setJsCart: shopnavbar: {$themesPages['shopnavbar']}");
         self::$initialized = true;
     }
@@ -142,6 +141,7 @@ die("Shop::init(): ERROR: Shop::init() called more than once!");
 //\DBG::activate(DBG_ERROR_FIREPHP|DBG_LOG);
 //\DBG::activate(DBG_LOG_FILE);
         self::init();
+        self::registerJavascriptCode();
         self::$defaultImage = ASCMS_SHOP_IMAGES_WEB_PATH.'/'.ShopLibrary::noPictureName;
         // PEAR Sigma template
         self::$objTemplate = new \Cx\Core\Html\Sigma('.');
@@ -544,6 +544,7 @@ die("Failed to get Customer for ID $customer_id");
         }
         if (!self::$use_js_cart) return;
 
+        self::registerJavascriptCode();
         ContrexxJavascript::getInstance()->setVariable('TXT_SHOP_CART_IS_LOADING', $_ARRAYLANG['TXT_SHOP_CART_IS_LOADING'] ,'shop/cart');
         ContrexxJavascript::getInstance()->setVariable('TXT_SHOP_COULD_NOT_LOAD_CART', $_ARRAYLANG['TXT_SHOP_COULD_NOT_LOAD_CART'] ,'shop/cart');
         ContrexxJavascript::getInstance()->setVariable('TXT_EMPTY_SHOPPING_CART', $_ARRAYLANG['TXT_EMPTY_SHOPPING_CART'] ,'shop/cart');
@@ -1877,6 +1878,8 @@ die("Failed to update the Cart!");
     {
         global $_ARRAYLANG;//, $_CONFIGURATION;
 
+        // needed for cart
+        JS::activate('cx');
         JS::activate('jquery');
 
 // Update prices with options included
