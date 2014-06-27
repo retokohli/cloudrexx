@@ -18,12 +18,10 @@ class ViewGenerator {
      *
      * @param mixed $object Array, instance of DataSet, instance of EntityBase, object
      * @param $options is functions array 
-     * @param $entityNS is entity name space
-     *                   without $entityNS edit will not work
      * @throws ViewGeneratorException 
      */
-    public function __construct($object, $options = array(),$entityNS='') {
-        $this->options = $options;
+    public function __construct($object, $options = array()) {
+        $this->options = $options;$entityNS=null;
         if (is_array($object)) {
             $object = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($object);
         }
@@ -38,6 +36,8 @@ class ViewGenerator {
             // render form
             $this->object = $object;
         }
+        // get entity name space
+        $entityNS = $this->object->getDataType();
         /** 
          *  postSave event
          *  execute save if entry is a doctrine entity (or execute callback if specified in configuration)
@@ -58,27 +58,39 @@ class ViewGenerator {
                 $_GET['editid'] = $_POST['editid'];
                 return;
             }
-            // get form data
-            $dataSet = $form->getData();
-            $data = $dataSet->toArray();
-            $classMethods = get_class_methods(new $entityNS());
-            $id=0; $updateArray=array();
-            foreach ($data as $key=>$value) {
-                if (in_array('set'.ucfirst($key), $classMethods)) {
-                    $updateArray['set'.ucfirst($key)]=$value;
-                } elseif (in_array('get'.ucfirst($key), $classMethods) && $key!='editid') {
-                    $id=$value;
-                }
-            }
-            if ($id) {
-                $entityObj=\Env::get('em')->getRepository($entityNS)->find($id);
-                foreach($updateArray as $key=>$value) {
-                    $entityObj->$key($value);
-                }
-                \Env::get('em')->flush();    
-                \Message::add('Entity have been updated sucessfully!');
-            }
             
+            $entityObject = $this->object->getEntry($entityId);
+            if (empty($entityObject)) {
+                \Message::add('Cannot save, Invalid entry', \Message::CLASS_ERROR);
+                return;
+            }
+            $isUpdate=false; $id=0; $updateArray=array();
+            $classMethods = get_class_methods(new $entityNS());
+            foreach ($entityObject as $name=>$value) {
+                if (isset ($_POST[$name])) { 
+                    if ($_POST[$name] != $value) {
+                        $isUpdate=true;
+                        if (in_array('set'.ucfirst($name), $classMethods)) {
+                            $updateArray['set'.ucfirst($name)]=$_POST[$name];
+                        }
+                    } 
+                } elseif (in_array('get'.ucfirst($name), $classMethods) && !in_array('set'.ucfirst($name), $classMethods)) {
+                    $id=$entityObject[$name];
+                }
+            }  
+            if (!empty($updateArray) && !empty($id) 
+                && !empty($isUpdate)) {
+                $entityObj=\Env::get('em')->getRepository($entityNS)->find($id);
+                if (!empty($entityObj)) {
+                    foreach($updateArray as $key=>$value) {
+                        $entityObj->$key($value);
+                    }
+                    \Env::get('em')->flush();    
+                    \Message::add('Entity have been updated sucessfully!');   
+                } else {
+                    \Message::add('Cannot save, Invalid argument!', \Message::CLASS_ERROR);
+                }
+            } 
             \CSRF::redirect(\Env::get('cx')->getRequest());
         }
         /**
