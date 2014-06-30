@@ -58,6 +58,18 @@ class ViewGenerator {
                 return;
             }
             if (!empty($_POST)) {
+                $post=$_POST;
+                unset($post['csrf']);
+                $blankPost=true;
+                if (!empty($post)) {
+                    foreach($post as $value) {
+                        if ($value) $blankPost=false;
+                    }
+                }
+                if ($blankPost) {
+                    \Message::add('Cannot save, You should fill any one field!', \Message::CLASS_ERROR);
+                    return;
+                }
                 $entityObject = \Env::get('em')->getClassMetadata($entityNS);  
                 $primaryKeyName =$entityObject->getSingleIdentifierFieldName(); //get primary key name  
                 $getAllField = $entityObject->getColumnNames(); //get all field names  

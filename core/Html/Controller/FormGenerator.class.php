@@ -25,9 +25,11 @@ class FormGenerator {
         $title->addChild(new \Cx\Core\Html\Model\Entity\TextElement($entityClass));
         $this->form->addChild($title);
         // @todo replace this by auto-find editid
-        $editIdField = new \Cx\Core\Html\Model\Entity\DataElement('editid', contrexx_input2raw($_REQUEST['editid']), 'input');
-        $editIdField->setAttribute('type', 'hidden');
-        $this->form->addChild($editIdField);
+        if (isset($_REQUEST['editid'])) {
+            $editIdField = new \Cx\Core\Html\Model\Entity\DataElement('editid', contrexx_input2raw($_REQUEST['editid']), 'input');
+            $editIdField->setAttribute('type', 'hidden');
+            $this->form->addChild($editIdField);   
+        }
         // foreach entity field
         /*$metadata = $em->getClassMetadata(get_class($entity));
         foreach ($metadata->getColumnNames() as $field) {
