@@ -29,6 +29,25 @@
             var url = document.forms['theForm'].attributes.action.value;
             url = url + self.document.location.hash;
             document.forms['theForm'].attributes.action.value = url;
+            
+            document.onkeydown = function(e){
+                var evtobj = window.event ? event : e;
+                //on Ctrl + K click on "save changes"-button 
+                if (evtobj.ctrlKey){
+                    if (evtobj.preventDefault) {
+                        evtobj.preventDefault();
+                    } else {
+                        evtobj.returnValue = false;
+                    }
+                    switch(evtobj.keyCode){
+                        case 75: //k
+                            document.getElementById('continue').click();
+                            break;
+                    }
+                }else if(evtobj.keyCode == 27){ // ESC
+                    document.getElementById('abort').click();
+                }
+            } 
         /* ]]> */
         </script>
   </body>
