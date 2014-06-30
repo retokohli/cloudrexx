@@ -948,6 +948,13 @@ cx.cm = function(target) {
     });
 
     cx.jQuery(document).ready(function() {
+        if (cx.jQuery('#languageCount').val()<=1) {
+            cx.jQuery("#site-language").hide();
+            cx.jQuery(".adminlist ").addClass("margin0");
+        } else {
+            cx.jQuery("#site-language").show();
+            cx.jQuery(".adminlist ").removeClass("margin0");
+        }
         if (cx.jQuery.getUrlVar('act') == 'new') {
             // make sure history tab is hidden
             cx.jQuery('.tab.page_history').hide();
@@ -2852,7 +2859,7 @@ cx.cm.pushHistory = function(source) {
         cx.cm.historyAdjusting = false;
         return;
     }
-    
+
     // push state
     if (!cx.cm.isEditView()) {
         History.pushState({
