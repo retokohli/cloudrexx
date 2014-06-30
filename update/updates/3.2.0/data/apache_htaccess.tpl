@@ -13,4 +13,4 @@ RewriteCond   %{REQUEST_FILENAME}  !-f
 RewriteRule   .  index.php?__cap=%{REQUEST_URI} [L,QSA]
 
 # Add captured request to index files
-RewriteRule ^(.*)index.php $1index.php?__cap=%{REQUEST_URI} [L,QSA]
+RewriteRule ^index.php index.php?__cap=%{REQUEST_URI} [L,QSA]
