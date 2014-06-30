@@ -89,7 +89,7 @@ class ViewGenerator {
         }
         /** 
          *  postEdit event
-         *  execute eidt if entry is a doctrine entity (or execute callback if specified in configuration)
+         *  execute edit if entry is a doctrine entity (or execute callback if specified in configuration)
          */
         if (isset($_POST['editid']) && !empty($entityNS)) {
             // render form for editid
@@ -199,7 +199,6 @@ class ViewGenerator {
             $listingController = new \Cx\Core_Modules\Listing\Controller\ListingController($renderObject);
             $renderObject = $listingController->getData();
             $backendTable = new \BackendTable($renderObject, $this->options) . '<br />' . $listingController;
-            new \BackendTable($renderObject, $this->options) . '<br />' . $listingController;
             if (!empty($this->options ['functions']['add'])) {
                 $actionUrl = clone \Env::get('cx')->getRequest();
                 $actionUrl->setParam('add', 0);
