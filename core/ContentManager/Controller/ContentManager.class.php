@@ -313,6 +313,19 @@ class ContentManager extends \Module
         $cxjs->setVariable('availableBlocks', $objJsonData->jsondata('block', 'getBlocks', array(), false), 'contentmanager');
 
         // TODO: move including of add'l JS dependencies to cx obj from /cadmin/index.html
+        $getLangOptions=$this->getLangOptions();
+        $statusPageLayout='';
+        $languageDisplay='';
+        if (((!empty($_GET['act']) && $_GET['act'] == 'new')
+                ||!empty($_GET['page'])) && $getLangOptions=="") {
+            $statusPageLayout='margin0';
+            $languageDisplay='display:none';
+        }
+
+        $this->template->setVariable('ADMIN_LIST_MARGIN', $statusPageLayout);
+        $this->template->setVariable('LANGUAGE_DISPLAY', $languageDisplay);
+
+        // TODO: move including of add'l JS dependencies to cx obj from /cadmin/index.html
         $this->template->setVariable('CXJS_INIT_JS', \ContrexxJavascript::getInstance()->initJs());
         $this->template->setVariable('SKIN_OPTIONS', $this->getSkinOptions());
         $this->template->setVariable('LANGSWITCH_OPTIONS', $this->getLangOptions());
@@ -323,7 +336,7 @@ class ContentManager extends \Module
         
         $this->template->touchBlock('content_manager_language_selection');
 
-            $editmodeTemplate = new \Cx\Core\Html\Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
+        $editmodeTemplate = new \Cx\Core\Html\Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
         $editmodeTemplate->loadTemplateFile('content_editmode.html');
         $editmodeTemplate->setVariable(array(
             'TXT_EDITMODE_TEXT'    => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_TEXT'],
@@ -368,13 +381,19 @@ class ContentManager extends \Module
     protected function getLangOptions()
     {
         $output = '';
-        foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
-            $selected = $lang['id'] == FRONTEND_LANG_ID ? ' selected="selected"' : '';
-            $output .= '<option value="' . \FWLanguage::getLanguageCodeById($lang['id']) . '"' . $selected . '>' . $lang['name'] . '</option>';
+        $language=\FWLanguage::getActiveFrontendLanguages();
+        if (count($language)>1) {
+            $output .='<select id="language" class="chzn-select">';
+            foreach ($language as $lang) {
+                $selected = $lang['id'] == FRONTEND_LANG_ID ? ' selected="selected"' : '';
+                $output .= '<option value="' . \FWLanguage::getLanguageCodeById($lang['id']) . '"' . $selected . '>' . $lang['name'] . '</option>';
+            }
+            $output .='</select>';
         }
-
+        $output .= '<input type="hidden"  name="languageCount" id="languageCount" value="'.count($language).'">';
         return $output;
     }
+
 
     protected function getLangLabels()
     {

@@ -22,10 +22,10 @@ define('CONTEXX_INSTALLED', true);
 * -------------------------------------------------------------------------
 */
 $_DBCONFIG['host'] = 'localhost'; // This is normally set to localhost
-$_DBCONFIG['database'] = 'dev'; // Database name
+$_DBCONFIG['database'] = 'contrexx_3_2_branch'; // Database name
 $_DBCONFIG['tablePrefix'] = 'contrexx_'; // Database table prefix
 $_DBCONFIG['user'] = 'root'; // Database username
-$_DBCONFIG['password'] = ''; // Database password
+$_DBCONFIG['password'] = 'toor'; // Database password
 $_DBCONFIG['dbType'] = 'mysql';    // Database type (e.g. mysql,postgres ..)
 $_DBCONFIG['charset'] = 'utf8'; // Charset (default, latin1, utf8, ..)
 $_DBCONFIG['timezone'] = 'Europe/Zurich'; // Controller's timezone for model
@@ -36,8 +36,8 @@ $_DBCONFIG['collation'] = 'utf8_unicode_ci';
 * Site path specific configuration
 * -------------------------------------------------------------------------
 */
-$_PATHCONFIG['ascms_root'] = '';
-$_PATHCONFIG['ascms_root_offset'] = ''; // example: '/cms';
+$_PATHCONFIG['ascms_root'] = '/home/robin/WWW/branches/';
+$_PATHCONFIG['ascms_root_offset'] = 'contrexx_3_2'; // example: '/cms';
 $_PATHCONFIG['ascms_installation_root'] = $_PATHCONFIG['ascms_root'];
 $_PATHCONFIG['ascms_installation_offset'] = $_PATHCONFIG['ascms_root_offset']; // example: '/cms';
 
