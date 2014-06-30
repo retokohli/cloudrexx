@@ -945,7 +945,12 @@ namespace Cx\Core\Core\Controller {
             $this->ch->callPreContentParseHooks();
             
             $this->ch->loadComponent($this, $plainSection, $this->resolvedPage);
+            // This would be a postContentParseHook:
+            \Message::show();
+            
+            $this->ch->callPostContentParseHooks();
 
+        }
         /**
          * Calls hooks after content was processed
          */
