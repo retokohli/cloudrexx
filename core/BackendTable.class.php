@@ -62,7 +62,7 @@ class BackendTable extends HTML_Table {
                             }
                             $header = '<a href="' .  \Env::get('cx')->getRequest() . '&order=' . $origHeader . $order . '" style="white-space: nowrap;">' . $header . ' ' . $img . '</a>';
                         }
-                        $this->setCellContents(0, $col, $header, 'th', 0, false);
+                        $this->setCellContents(0, $col, $header, 'th', 0);
                     }
                     if (
                         isset($options['fields']) &&
@@ -100,12 +100,12 @@ class BackendTable extends HTML_Table {
                         if (isset($_ARRAYLANG['FUNCTIONS'])) {
                             $header = $_ARRAYLANG['FUNCTIONS'];
                         }
-                        $this->setCellContents(0, $col, $header, 'th');
+                        $this->setCellContents(0, $col, $header, 'th', 0, true);
                     }
                     if (!isset($options['functions']['baseUrl'])) {
                         $options['functions']['baseUrl'] = clone \Env::get('cx')->getRequest();
                     }
-                    $this->setCellContents($row, $col, $this->getFunctionsCode($rowname, $options['functions']), 'TD', 0, false);
+                    $this->setCellContents($row, $col, $this->getFunctionsCode($rowname, $options['functions']), 'TD', 0);
     			}
     			$first = false;
     			$row++;
@@ -125,7 +125,7 @@ class BackendTable extends HTML_Table {
      * @param type $encode
      * @return type 
      */
-    function setCellContents($row, $col, $contents, $type = 'TD', $body = 0, $encode = true)
+    function setCellContents($row, $col, $contents, $type = 'TD', $body = 0, $encode = false)
     {
         if ($encode) {
             $contents = contrexx_raw2xhtml($contents);
