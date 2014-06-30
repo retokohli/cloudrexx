@@ -322,16 +322,16 @@ class CSRF {
         }
         $csrfContinue = 'javascript:sendData();';
         $csrfAbort = 'index.php' . (isset($_GET['cmd']) ? '?cmd='.$_GET['cmd'] : '');
-        $_CORELANG['TXT_CSRF_DESCR'] = str_replace('%1$s', $csrfContinue, $_CORELANG['TXT_CSRF_DESCR']);
-        $_CORELANG['TXT_CSRF_DESCR'] = str_replace('%2$s', $csrfAbort, $_CORELANG['TXT_CSRF_DESCR']);
+        $_CORELANG['TXT_CSRF_DESCR'] = str_replace('%1$s', $csrfContinue . '" tabindex="-1', $_CORELANG['TXT_CSRF_DESCR']);
+        $_CORELANG['TXT_CSRF_DESCR'] = str_replace('%2$s', $csrfAbort . '" tabindex="-1', $_CORELANG['TXT_CSRF_DESCR']);
         $action = $_SERVER['REQUEST_URI'];
         $tpl->setGlobalVariable(array(
             'TXT_CSRF_TITLE'    => $_CORELANG['TXT_CSRF_TITLE'],
             'TXT_CSRF_DESCR'    => $_CORELANG['TXT_CSRF_DESCR'],
             'TXT_CSRF_CONTINUE' => $_CORELANG['TXT_CSRF_CONTINUE'],
             'TXT_CSRF_ABORT'    => $_CORELANG['TXT_CSRF_ABORT'],
-            'CSRF_CONTINUE'     => $csrfContinue,
-            'CSRF_ABORT'        => $csrfAbort,
+            'CSRF_CONTINUE'     => $csrfContinue . '" tabindex="1',
+            'CSRF_ABORT'        => $csrfAbort . '" tabindex="2',
             'REQUEST_METHOD'    => strtolower($_SERVER['REQUEST_METHOD']),
             'ACTION'            => $action,
             'FORM_ELEMENTS'     => $form,
