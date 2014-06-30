@@ -322,6 +322,12 @@ class Setting{
      * @todo    Add functionality to handle special form elements
      * @todo    Verify special values like e-mail addresses in methods
      *          that store them, like add(), update(), and updateAll()
+     * @adding tooltip   A tooltip for a configuration option can be defined by simply
+     *                   adding a language variable in the corresponding language
+     *                   file, that uses the same key as used for 
+     *                   the configuration variable itself, but with the suffix _TOOLTIP 
+     *                   I.e. if the language variable for an option is TXT_CORE_MODULE_MULTISITE_INSTANCESPATH, 
+     *                   then the option's tooltip language variable key would be TXT_CORE_MODULE_MULTISITE_INSTANCESPATH_TOOLTIP
      */
     static function show(&$objTemplateLocal, $uriBase, $section='', $tab_name='', $prefix='TXT_') 
     {
