@@ -285,25 +285,25 @@ class Setting{
      *    Prefix:   'TXT_'
      *  Results in placeholders to be set as follows:
      *    Placeholder         Value
-     *    SETTINGDB_NAME      The content of $_ARRAYLANG['TXT_SHOP_DUMMY']
-     *    SETTINGDB_VALUE     The HTML element for the setting type with
+     *    SETTING_NAME      The content of $_ARRAYLANG['TXT_SHOP_DUMMY']
+     *    SETTING_VALUE     The HTML element for the setting type with
      *                        a name attribute of 'shop_dummy'
      *
      * Placeholders:
-     * The settings' name is to SETTINGDB_NAME, and the input element to
-     * SETTINGDB_VALUE.
+     * The settings' name is to SETTING_NAME, and the input element to
+     * SETTING_VALUE.
      * Set the default block to parse after each array entry if it
-     * differs from the default 'core_setting_db'.
+     * differs from the default 'core_setting'.
      * Make sure to define all the language variables that are expected
      * to be defined here!
      * In addition, some entries from $_CORELANG are set up. These are both
      * used as placeholder name and language array index:
-     *  - TXT_CORE_SETTINGDB_STORE
-     *  - TXT_CORE_SETTINGDB_NAME
-     *  - TXT_CORE_SETTINGDB_VALUE
+     *  - TXT_CORE_SETTING_STORE
+     *  - TXT_CORE_SETTING_NAME
+     *  - TXT_CORE_SETTING_VALUE
      *
      * The template object is given by reference, and if the block
-     * 'core_settingdb_row' is not present, is replaced by the default backend
+     * 'core_setting_row' is not present, is replaced by the default backend
      * template.
      * $uriBase *SHOULD* be the URI for the current module page.
      * If you want your settings to be stored, you *MUST* handle the post
@@ -343,40 +343,40 @@ class Setting{
             'URI_BASE' => $uriBase,
         ));
 
-        if ($objTemplateLocal->blockExists('core_settingdb_row')){
-                $objTemplateLocal->setCurrentBlock('core_settingdb_row');
+        if ($objTemplateLocal->blockExists('core_setting_row')){
+                $objTemplateLocal->setCurrentBlock('core_setting_row');
         }        
         if (!is_array($arrSettings)) {
         //die("No Settings array");
-            return \Message::error($_CORELANG['TXT_CORE_SETTINGDB_ERROR_RETRIEVING']);
+            return \Message::error($_CORELANG['TXT_CORE_SETTING_ERROR_RETRIEVING']);
         }
         if (empty($arrSettings)) {
             //die("No Settings found");
             \Message::warning(
                 sprintf(
-                    $_CORELANG['TXT_CORE_SETTINGDB_WARNING_NONE_FOUND_FOR_TAB_AND_SECTION'],
+                    $_CORELANG['TXT_CORE_SETTING_WARNING_NONE_FOUND_FOR_TAB_AND_SECTION'],
                     $tab_name, $section));
             return false;
         }
         self::show_section($objTemplateLocal, $section, $prefix);
         // The tabindex must be set in the form name in any case
         $objTemplateLocal->setGlobalVariable(
-            'CORE_SETTINGDB_TAB_INDEX', $engineType::$tab_index);
+            'CORE_SETTING_TAB_INDEX', $engineType::$tab_index);
         // Set up tab, if any
         if (!empty($tab_name)) {
             $active_tab = (isset($_REQUEST['active_tab']) ? $_REQUEST['active_tab'] : 1);
             $objTemplateLocal->setGlobalVariable(array(
-                'CORE_SETTINGDB_TAB_NAME' => $tab_name,
-            //  'CORE_SETTINGDB_TAB_INDEX' => self::$tab_index,
-                'CORE_SETTINGDB_TAB_CLASS' => ($engineType::$tab_index == $active_tab ? 'active' : ''),
-                'CORE_SETTINGDB_TAB_DISPLAY' => ($engineType::$tab_index++ == $active_tab ? 'block' : 'none'),
-                'CORE_SETTINGDB_CURRENT_TAB'=>'tab-'.$active_tab
+                'CORE_SETTING_TAB_NAME' => $tab_name,
+            //  'CORE_SETTING_TAB_INDEX' => self::$tab_index,
+                'CORE_SETTING_TAB_CLASS' => ($engineType::$tab_index == $active_tab ? 'active' : ''),
+                'CORE_SETTING_TAB_DISPLAY' => ($engineType::$tab_index++ == $active_tab ? 'block' : 'none'),
+                'CORE_SETTING_CURRENT_TAB'=>'tab-'.$active_tab
             ));
-            $objTemplateLocal->touchBlock('core_settingdb_header');
-            $objTemplateLocal->touchBlock('core_settingdb_tab_row');
-            $objTemplateLocal->parse('core_settingdb_tab_row');
-            $objTemplateLocal->touchBlock('core_settingdb_tab_div');
-            $objTemplateLocal->parse('core_settingdb_tab_div');
+            $objTemplateLocal->touchBlock('core_setting_header');
+            $objTemplateLocal->touchBlock('core_setting_tab_row');
+            $objTemplateLocal->parse('core_setting_tab_row');
+            $objTemplateLocal->touchBlock('core_setting_tab_div');
+            $objTemplateLocal->parse('core_setting_tab_div');
         }
 
 // NOK
@@ -405,8 +405,8 @@ class Setting{
         // This is set to multipart if necessary
         $enctype = '';
         $i = 0;
-        if ($objTemplateLocal->blockExists('core_settingdb_row'))
-            $objTemplateLocal->setCurrentBlock('core_settingdb_row');
+        if ($objTemplateLocal->blockExists('core_setting_row'))
+            $objTemplateLocal->setCurrentBlock('core_setting_row');
         foreach ($arrSettings as $name => $arrSetting) {
             // Determine HTML element for type and apply values and selected
             $element = '';
@@ -417,14 +417,14 @@ class Setting{
             // Warn if some mandatory value is empty
             if (empty($value) && preg_match('/_mandatory$/', $type)) {
                 \Message::warning(
-                    sprintf($_CORELANG['TXT_CORE_SETTINGDB_WARNING_EMPTY'],
+                    sprintf($_CORELANG['TXT_CORE_SETTING_WARNING_EMPTY'],
                         $_ARRAYLANG[$prefix.strtoupper($name)],
                         $name));
             }
             // Warn if some language variable is not defined
             if (empty($_ARRAYLANG[$prefix.strtoupper($name)])) {
                 \Message::warning(
-                    sprintf($_CORELANG['TXT_CORE_SETTINGDB_WARNING_MISSING_LANGUAGE'],
+                    sprintf($_CORELANG['TXT_CORE_SETTING_WARNING_MISSING_LANGUAGE'],
                         $prefix.strtoupper($name),
                         $name));
             }
@@ -465,13 +465,13 @@ class Setting{
                 // claim the full width
                 $element = new \Cx\Core\Wysiwyg\Wysiwyg($name, $value);
                 $objTemplateLocal->setVariable(array(
-                    'CORE_SETTINGDB_ROW' => $_ARRAYLANG[$prefix.strtoupper($name)],
-                    'CORE_SETTINGDB_ROWCLASS1' => (++$i % 2 ? '1' : '2'),
+                    'CORE_SETTING_ROW' => $_ARRAYLANG[$prefix.strtoupper($name)],
+                    'CORE_SETTING_ROWCLASS1' => (++$i % 2 ? '1' : '2'),
                 ));
                 $objTemplateLocal->parseCurrentBlock();
                 $objTemplateLocal->setVariable(array(
-                    'CORE_SETTINGDB_ROW' => $element.'<br /><br />',
-                    'CORE_SETTINGDB_ROWCLASS1' => (++$i % 2 ? '1' : '2'),
+                    'CORE_SETTING_ROW' => $element.'<br /><br />',
+                    'CORE_SETTING_ROWCLASS1' => (++$i % 2 ? '1' : '2'),
                 ));
                 $objTemplateLocal->parseCurrentBlock();
                 // Skip the part below, all is done already
@@ -574,9 +574,9 @@ class Setting{
                 $toolTips='  <span class="icon-info tooltip-trigger"></span><span class="tooltip-message">'.$_ARRAYLANG[$prefix.strtoupper($name).'_TOOLTIP'].'</span>';
             }
             $objTemplateLocal->setVariable(array(
-                'CORE_SETTINGDB_NAME' => $_ARRAYLANG[$prefix.strtoupper($name)].$toolTips,
-                'CORE_SETTINGDB_VALUE' => $element,
-                'CORE_SETTINGDB_ROWCLASS2' => (++$i % 2 ? '1' : '2'),
+                'CORE_SETTING_NAME' => $_ARRAYLANG[$prefix.strtoupper($name)].$toolTips,
+                'CORE_SETTING_VALUE' => $element,
+                'CORE_SETTING_ROWCLASS2' => (++$i % 2 ? '1' : '2'),
             ));
             $objTemplateLocal->parseCurrentBlock();
 //echo("\Cx\Core\Setting\Controller\Setting::show(objTemplateLocal, $prefix): shown $name => $value<br />");
@@ -584,15 +584,15 @@ class Setting{
 
         // Set form encoding to multipart if necessary
         if (!empty($enctype))
-            $objTemplateLocal->setVariable('CORE_SETTINGDB_ENCTYPE', $enctype);
+            $objTemplateLocal->setVariable('CORE_SETTING_ENCTYPE', $enctype);
 
         if (   !empty($section)
-            && $objTemplateLocal->blockExists('core_settingdb_section')) {
+            && $objTemplateLocal->blockExists('core_setting_section')) {
 //echo("\Cx\Core\Setting\Controller\Setting::show(objTemplateLocal, $header, $prefix): creating section $header<br />");
             $objTemplateLocal->setVariable(array(
-                'CORE_SETTINGDB_SECTION' => $section,
+                'CORE_SETTING_SECTION' => $section,
             ));
-            //$objTemplateLocal->parse('core_settingdb_section');
+            //$objTemplateLocal->parse('core_setting_section');
         }
         return true;
     }
@@ -611,7 +611,7 @@ class Setting{
     {
         $engineType=self::getEngineType();
         
-        if (empty($objTemplateLocal)|| !$objTemplateLocal->blockExists('core_settingdb_row')) 
+        if (empty($objTemplateLocal)|| !$objTemplateLocal->blockExists('core_setting_row')) 
         {
             $objTemplateLocal = new \Cx\Core\Html\Sigma(ASCMS_DOCUMENT_ROOT.'/core/Setting/View/Template/Generic');
             if (!$objTemplateLocal->loadTemplateFile('Form.html'))
@@ -621,29 +621,29 @@ class Setting{
         $active_tab = (isset($_REQUEST['active_tab']) ? $_REQUEST['active_tab'] : 1);
         // The tabindex must be set in the form name in any case
         $objTemplateLocal->setGlobalVariable(array(
-                                                    'CORE_SETTINGDB_TAB_INDEX' => $engineType::$tab_index,
-                                                    'CORE_SETTINGDB_EXTERNAL' => $content,
+                                                    'CORE_SETTING_TAB_INDEX' => $engineType::$tab_index,
+                                                    'CORE_SETTING_EXTERNAL' => $content,
                                                 ));
         // Set up the tab, if any
         if (!empty($tab_name)) 
         {
             $objTemplateLocal->setGlobalVariable(array(
-                                                        'CORE_SETTINGDB_TAB_NAME' => $tab_name,
-                                        //                'CORE_SETTINGDB_TAB_INDEX' => self::$tab_index,
-                                                        'CORE_SETTINGDB_TAB_CLASS' => ($engineType::$tab_index == $active_tab ? 'active' : ''),
-                                                        'CORE_SETTINGDB_TAB_DISPLAY' => ($engineType::$tab_index++ == $active_tab ? 'block' : 'none'),
+                                                        'CORE_SETTING_TAB_NAME' => $tab_name,
+                                        //                'CORE_SETTING_TAB_INDEX' => self::$tab_index,
+                                                        'CORE_SETTING_TAB_CLASS' => ($engineType::$tab_index == $active_tab ? 'active' : ''),
+                                                        'CORE_SETTING_TAB_DISPLAY' => ($engineType::$tab_index++ == $active_tab ? 'block' : 'none'),
                                                 ));
-            $objTemplateLocal->touchBlock('core_settingdb_tab_row');
-            $objTemplateLocal->parse('core_settingdb_tab_row');
-            $objTemplateLocal->touchBlock('core_settingdb_tab_div_external');
-            $objTemplateLocal->parse('core_settingdb_tab_div_external');
+            $objTemplateLocal->touchBlock('core_setting_tab_row');
+            $objTemplateLocal->parse('core_setting_tab_row');
+            $objTemplateLocal->touchBlock('core_setting_tab_div_external');
+            $objTemplateLocal->parse('core_setting_tab_div_external');
         }
         return true;
     }
     /**
      * Ensures that a valid template is available
      *
-     * Die()s if the template given is invalid, and settingDb.html cannot be
+     * Die()s if the template given is invalid, and Form.html cannot be
      * loaded to replace it.
      * @param   \Cx\Core\Html\Sigma $objTemplateLocal   The template,
      *                                                  by reference
@@ -654,7 +654,7 @@ class Setting{
         if (!($objTemplateLocal instanceof \Cx\Core\Html\Sigma)) {
             $objTemplateLocal = new \Cx\Core\Html\Sigma(ASCMS_DOCUMENT_ROOT.'/core/Setting/View/Template/Generic');
         }
-        if (!$objTemplateLocal->blockExists('core_settingdb_row')) {
+        if (!$objTemplateLocal->blockExists('core_setting_row')) {
             $objTemplateLocal->setRoot(ASCMS_DOCUMENT_ROOT.'/core/Setting/View/Template/Generic');
         //$objTemplateLocal->setCacheRoot('.');
             if (!$objTemplateLocal->loadTemplateFile('Form.html')){
@@ -758,9 +758,9 @@ class Setting{
         //echo("self::storeFromPost(): So far, the result is ".($result ? 'okay' : 'no good')."<br />");
         $result_update = self::updateAll();
         if ($result_update === false) {
-            \Message::error($_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING']);
+            \Message::error($_CORELANG['TXT_CORE_SETTING_ERROR_STORING']);
         } elseif ($result_update === true) {
-            \Message::ok($_CORELANG['TXT_CORE_SETTINGDB_STORED_SUCCESSFULLY']);
+            \Message::ok($_CORELANG['TXT_CORE_SETTING_STORED_SUCCESSFULLY']);
         }
         // If nothing bad happened above, return the result of updateAll(),
         // which may be true, false, or the empty string
@@ -868,7 +868,7 @@ class Setting{
      * read for some other reason, returns null.
      * Don't drop the table after migrating your settings, other modules
      * might still need it!  Instead, try this method only after you failed
-     * to get your settings from SettingDb.
+     * to get your settings from Setting.
      * @param   integer   $module_id      The module ID
      * @return  array                     The settings array on success,
      *                                    null otherwise
