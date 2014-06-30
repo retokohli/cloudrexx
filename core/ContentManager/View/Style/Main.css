@@ -1419,3 +1419,6 @@ div.date img{
 #content-manager.edit_view .chosen-container {
     width: 352px !important;
 }
+.margin0 {
+    margin:0px !important;
+}
