@@ -270,7 +270,6 @@ class CSRF {
      */
     public static function check_code()
     {
-        return;
         if (!self::__is_logged_in()) return;
         if ($_SERVER['REQUEST_METHOD'] == 'GET' && self::$frontend_mode) return;
         if (self::$already_checked) return;
@@ -366,8 +365,8 @@ class CSRF {
 
     private static function __reduce($code)
     {
-        foreach (array_keys($_SESSION[self::$sesskey]->toArray()) as $key) {
-            $_SESSION[self::$sesskey][$key] = $_SESSION[self::$sesskey][$key] -
+        foreach (array_keys($_SESSION[self::$sesskey]) as &$key) {
+            $_SESSION[self::$sesskey][$key] -=
                 ($code == $key
                     ? self::$active_decrease : self::$unused_decrease);
         }
@@ -384,7 +383,7 @@ class CSRF {
 
     private static function __cleanup()
     {
-        foreach ($_SESSION[self::$sesskey]->toArray() as $key => $count) {
+        foreach ($_SESSION[self::$sesskey] as $key => $count) {
             if ($count < 0) {
                 unset($_SESSION[self::$sesskey][$key]);
             }
@@ -404,7 +403,7 @@ class CSRF {
             \cmsSession::getInstance();
             $_SESSION[self::$sesskey] = array();
         }
-        $csrfdata                 = $_SESSION[self::$sesskey]->toArray();
+        $csrfdata                 = $_SESSION[self::$sesskey];
         $csrfdata[$key]           = $value;
         $_SESSION[self::$sesskey] = $csrfdata;
     }
