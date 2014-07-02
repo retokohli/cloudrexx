@@ -1881,7 +1881,7 @@ function migrateSessionTable()
                 'sessionid' => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => '', 'after' => 'parent_id'),
                 'lastused'  => array('type' => 'TIMESTAMP', 'notnull' => true, 'default_expr' => 'CURRENT_TIMESTAMP', 'on_update' => 'CURRENT_TIMESTAMP', 'after' => 'sessionid'),
                 'key'       => array('type' => 'VARCHAR(40)', 'notnull' => true, 'default' => '', 'after' => 'lastused'),
-                'value'     => array('type' => 'TEXT', 'notnull' => true, 'default' => '', 'after' => 'key')
+                'value'     => array('type' => 'TEXT', 'notnull' => false, 'default' => '', 'after' => 'key')
             ),
             array(
                 'key_index' => array('fields' => array('parent_id', 'key', 'sessionid'), 'type' => 'UNIQUE')
