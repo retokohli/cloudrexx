@@ -7,6 +7,7 @@
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @package     contrexx
  * @subpackage  core_db
+ * @todo        make class a pure library
  */
 
 namespace {
