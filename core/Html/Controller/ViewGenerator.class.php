@@ -96,8 +96,9 @@ class ViewGenerator {
          *  postEdit event
          *  execute edit if entry is a doctrine entity (or execute callback if specified in configuration)
          */
-        $entityId = (isset($_POST['editid'])? contrexx_input2raw($_POST['editid']):null);
-        if (!empty($entityId)) {
+       // $entityId = (isset($_POST['editid'])? contrexx_input2raw($_POST['editid']):null);
+        if (isset($_POST['editid'])) {
+            $entityId = contrexx_input2raw($_POST['editid']);
             // render form for editid
             $form = $this->renderFormForEntry($entityId);
             if ($form === false) {
@@ -204,7 +205,7 @@ class ViewGenerator {
                 $tpl->loadTemplateFile('NoEntries.html');
                 return $tpl->get();
             }
-            $listingController = new \Cx\Core_Modules\Listing\Controller\ListingController($renderObject);
+            $listingController = new \Cx\Core_Modules\Listing\Controller\ListingController($renderObject, array(), $this->options['functions']);
             $renderObject = $listingController->getData();
             $backendTable = new \BackendTable($renderObject, $this->options) . '<br />' . $listingController;
             if (!empty($this->options['functions']['add'])) {
