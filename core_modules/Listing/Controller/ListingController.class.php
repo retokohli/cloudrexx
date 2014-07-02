@@ -62,7 +62,7 @@ class ListingController {
     const FILTERING_HTML_AJAX = 18;
     const FILTERING_DATA_AJAX = 19;
     const FILTERING_CLIENT_ONLY = 20;
-    
+
     /**
      * How many lists are there for this request
      * @var int
@@ -105,6 +105,8 @@ class ListingController {
      */
     protected $criteria = array();
     
+    
+    private $paging;
     /**
      * Handles a list
      * @param mixed $entities Entity class name as string or callback function
@@ -112,6 +114,7 @@ class ListingController {
      * @param array $options (Unused)
      */
     public function __construct($entities, $crit = array(), $options = array()) {
+        $this->paging = $options['paging'];
         // init handlers (filtering, paging and sorting)
         $this->handlers = array(
             new FilteringController(),
@@ -263,6 +266,10 @@ class ListingController {
      * @todo move to pagingcontroller
      */
     protected function getPagingControl() {
+        $html = '';
+        if(!$this->paging){
+            return $html;    
+        }
         $numberOfPages = ceil(count($this->entityClass->toArray()) / $this->count);
         $activePageNumber = ceil(($this->offset + 1) / $this->count);
         
@@ -271,7 +278,7 @@ class ListingController {
         echo 'Number of pages: ' . $numberOfPages . '<br />';
         echo 'Active page: ' . $activePageNumber . '<br />';*/
         
-        $html = '';
+        
         
         if ($this->offset) {
             // render goto start
