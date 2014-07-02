@@ -44,17 +44,21 @@ class FileSystem extends Engine{
      * @return  boolean               True on success, false otherwise
      */
     static function init($section, $group=null) {
-        //File Path
-        $filename=ASCMS_CORE_PATH .'/Setting/Data/'.$section.'.yml';
-        self::flush();
-        self::$section = $section;
-        self::$group = $group;
-        //call DataSet importFromFile method @return array
-        $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::importFromFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), $filename);
-        if (!empty($objDataSet)) {
-            foreach ($objDataSet as $value) {
-                self::$arrSettings[$value['name']]= $value;
+        try {
+            //File Path
+            $filename=ASCMS_CORE_PATH .'/Setting/Data/'.$section.'.yml';
+            self::flush();
+            self::$section = $section;
+            self::$group = $group;
+            //call DataSet importFromFile method @return array
+            $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::importFromFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), $filename);
+            if (!empty($objDataSet)) {
+                foreach ($objDataSet as $value) {
+                    self::$arrSettings[$value['name']]= $value;
+                }
             }
+        } catch (\Cx\Core_Modules\Listing\Model\Entity\DataSetException $e) {
+            throw new \Cx\Core\Setting\Controller\SettingException($e->getMessage());
         }
     }
     /**
