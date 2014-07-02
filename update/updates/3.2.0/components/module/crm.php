@@ -18,7 +18,7 @@ function _crmUpdate() {
                 'contact_customer'       => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'contact_role'),
                 'contact_language'       => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'contact_customer'),
                 'gender'                 => array('type' => 'TINYINT(2)', 'after' => 'contact_language'),
-                'notes'                  => array('type' => 'text','notnull' => true, 'after' => 'gender'),
+                'notes'                  => array('type' => 'text','notnull' => false, 'after' => 'gender'),
                 'industry_type'          => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'notes'),
                 'contact_type'           => array('type' => 'TINYINT(2)', 'notnull' => false, 'after' => 'industry_type'),
                 'user_account'           => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'contact_type'),
@@ -59,7 +59,7 @@ function _crmUpdate() {
                 'notes_type_id'      => array('type' => 'INT(1)', 'after' => 'customer_id'),
                 'user_id'            => array('type' => 'INT(11)', 'after' => 'notes_type_id'),
                 'date'               => array('type' => 'date', 'after' => 'user_id'),
-                'comment'            => array('type' => 'text', 'after' => 'date'),
+                'comment'            => array('type' => 'text', 'notnull' => false, 'after' => 'date'),
                 'added_date'         => array('type' => 'datetime', 'notnull' => false, 'after' => 'comment'),
                 'updated_by'         => array('type' => 'INT(11)', 'notnull' => false, 'after' => 'added_date'),
                 'updated_on'         => array('type' => 'datetime', 'notnull' => false, 'after' => 'updated_by')
@@ -98,7 +98,7 @@ function _crmUpdate() {
                 'id'             => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                 'email'          => array('type' => 'VARCHAR(256)', 'after' => 'id'),
                 'email_type'     => array('type' => 'TINYINT(4)', 'after' => 'email'),
-                'is_primary'     => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '0', 'after' => 'email_type'),
+                'is_primary'     => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => false, 'default' => '0', 'after' => 'email_type'),
                 'contact_id'     => array('type' => 'INT(11)', 'after' => 'is_primary')
             ),
             array(
@@ -113,7 +113,7 @@ function _crmUpdate() {
                 'id'             => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                 'phone'          => array('type' => 'VARCHAR(256)', 'after' => 'id'),
                 'phone_type'     => array('type' => 'TINYINT(4)', 'after' => 'phone'),
-                'is_primary'     => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '0', 'after' => 'phone_type'),
+                'is_primary'     => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => false, 'default' => '0', 'after' => 'phone_type'),
                 'contact_id'     => array('type' => 'INT(11)', 'after' => 'is_primary')
             ),
             array(
@@ -128,7 +128,7 @@ function _crmUpdate() {
                 'id'             => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
                 'url'            => array('type' => 'VARCHAR(256)', 'after' => 'id'),
                 'url_profile'    => array('type' => 'TINYINT(4)', 'after' => 'url'),
-                'is_primary'     => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '0', 'after' => 'url_profile'),
+                'is_primary'     => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => false, 'default' => '0', 'after' => 'url_profile'),
                 'contact_id'     => array('type' => 'INT(11)', 'after' => 'is_primary')
             ),
             array(
@@ -144,7 +144,7 @@ function _crmUpdate() {
                 'url'            => array('type' => 'VARCHAR(256)', 'after' => 'id'),
                 'url_type'       => array('type' => 'TINYINT(4)', 'after' => 'url'),
                 'url_profile'    => array('type' => 'TINYINT(4)', 'after' => 'url_type'),
-                'is_primary'     => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => true, 'default' => '0', 'after' => 'url_profile'),
+                'is_primary'     => array('type' => 'ENUM(\'0\',\'1\')', 'notnull' => false, 'default' => '0', 'after' => 'url_profile'),
                 'contact_id'     => array('type' => 'INT(11)', 'after' => 'is_primary')
             ),
             array(
