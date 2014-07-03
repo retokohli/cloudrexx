@@ -373,21 +373,6 @@ $updatesHotfixToSp1 = array(
     '
         DROP TABLE IF EXISTS `'.DBPREFIX.'module_alias_target`
     ',
-    array(
-        'table' => DBPREFIX.'sessions',
-        'structure' => array(
-            'sessionid'      => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'primary' => true),
-            'remember_me'    => array('type' => 'INT(1)', 'notnull' => true, 'default' => '0', 'after' => 'sessionid'),
-            'startdate'      => array('type' => 'VARCHAR(14)', 'notnull' => true, 'default' => '', 'after' => 'remember_me'),
-            'lastupdated'    => array('type' => 'VARCHAR(14)', 'notnull' => true, 'default' => '', 'after' => 'startdate'),
-            'status'         => array('type' => 'VARCHAR(20)', 'notnull' => true, 'default' => '', 'after' => 'lastupdated'),
-            'user_id'        => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'status'),
-            'datavalue'      => array('type' => 'text', 'notnull' => false, 'after' => 'user_id'),
-        ),
-        'keys' => array(
-            'LastUpdated'    => array('fields' => array('lastupdated')),
-        ),
-    ),
     '
         DROP TABLE IF EXISTS `'.DBPREFIX.'module_shop_countries`
     ',
