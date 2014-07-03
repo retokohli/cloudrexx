@@ -1888,7 +1888,6 @@ function migrateSessionTable()
             )
         );
         \Cx\Lib\UpdateUtil::sql('TRUNCATE TABLE `'. DBPREFIX .'session_variable`');
-        \Cx\Lib\UpdateUtil::sql('ALTER TABLE  `'. DBPREFIX .'session_variable` CHANGE  `value`  `value` TEXT NULL ;');
 
         $objResult = \Cx\Lib\UpdateUtil::sql('SELECT 
                                                 `sessionid`,
