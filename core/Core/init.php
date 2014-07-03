@@ -72,8 +72,10 @@ require_once dirname(dirname(dirname(__FILE__))).'/lib/FRAMEWORK/DBG/DBG.php';
 	global $multiSiteWebsiteOffset, $multiSiteWebsiteName;
 	$multiSiteWebsiteOffset = '';
 	$multiSiteWebsiteName = '';
-	foreach ($multiSiteRepo->findAll($_PATHCONFIG['ascms_root'].$_PATHCONFIG['ascms_root_offset'].'/websites/') as $website) {
-		if ($subdomain == strtolower($website->getName())) {
+	$website = $multiSiteRepo->findByName($_PATHCONFIG['ascms_root'].$_PATHCONFIG['ascms_root_offset'].'/websites', $subdomain);
+    if ($website) {
+	//foreach ($multiSiteRepo->findAll($_PATHCONFIG['ascms_root'].$_PATHCONFIG['ascms_root_offset'].'/websites/') as $website) {
+	//	if ($subdomain == strtolower($website->getName())) {
 			//\DBG::activate(DBG_PHP);
 			$_PATHCONFIG['ascms_root_offset'] .= '/websites/'.$website->getName();
 			$multiSiteWebsiteOffset .= '/websites/'.$website->getName();
@@ -81,7 +83,7 @@ require_once dirname(dirname(dirname(__FILE__))).'/lib/FRAMEWORK/DBG/DBG.php';
 			$pathconfigBackup = $_PATHCONFIG;
     		require_once $_PATHCONFIG['ascms_root'].$_PATHCONFIG['ascms_root_offset'].'/config/configuration.php';
 			//$_PATHCONFIG = $pathconfigBackup;
-			break;
-		}
+	//		break;
+	//	}
 	}
     require_once dirname(dirname(dirname(__FILE__))).'/core/Core/Controller/Cx.class.php';
