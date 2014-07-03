@@ -767,6 +767,59 @@ $updatesSp4To310 = array(
     (57, 'forceProtocolFrontend', 'none', 1),
     (58, 'forceProtocolBackend', 'none', 1),
     (59, 'forceDomainUrl', 'off', 1)",
+    array(
+        'table'  =>  DBPREFIX . 'module_calendar_mail',
+        'structure' => array(
+            'id' => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'title' => array('type' => 'VARCHAR(255)', 'after' => 'id'),
+            'content_text' => array('type' => 'longtext', 'after' => 'title'),
+            'content_html' => array('type' => 'longtext', 'after' => 'content_text'),
+            'recipients' => array('type' => 'mediumtext', 'after' => 'content_html'),
+            'lang_id' => array('type' => 'INT(1)', 'after' => 'recipients'),
+            'action_id' => array('type' => 'INT(1)', 'after' => 'lang_id'),
+            'is_default' => array('type' => 'INT(1)', 'after' => 'action_id'),
+            'status' => array('type' => 'INT(1)', 'after' => 'is_default')
+        )
+    ),
+    'INSERT INTO  `' . DBPREFIX . 'module_calendar_mail`
+    (`title`, `content_text`, `content_html`, `lang_id`, `action_id`,  `status`)
+    SELECT
+    title.setvalue ,
+    content.setvalue ,ss
+    REPLACE(content.setvalue, "\r\n", "<br />\n") ,
+    1 ,
+    1 ,
+    1
+    FROM `' . DBPREFIX . 'module_calendar_settings` as content
+    JOIN `' . DBPREFIX . 'module_calendar_settings` as title ON title.setid = 3
+    WHERE content.setid = 4;
+    ',
+    'DROP TABLE `' . DBPREFIX . 'module_calendar_settings`',
+    array(
+        'table'     => DBPREFIX . 'module_calendar_settings',
+        'structure' => array(
+            'id'         => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'section_id' => array('type' => 'INT(11)', 'after' => 'id'),
+            'name'       => array('type' => 'VARCHAR(255)', 'after' => 'section_id'),
+            'title'      => array('type' => 'VARCHAR(255)', 'after' => 'name'),
+            'value'      => array('type' => 'mediumtext', 'after' => 'title'),
+            'info'       => array('type' => 'mediumtext', 'after' => 'value'),
+            'type'       => array('type' => 'INT(11)', 'after' => 'info'),
+            'options'    => array('type' => 'mediumtext', 'after' => 'type'),
+            'special'    => array('type' => 'VARCHAR(255)', 'after' => 'options'),
+            'order'      => array('type' => 'INT(11)', 'after' => 'special')
+        )
+    ),
+    array(
+        'table'     => DBPREFIX . 'module_calendar_settings_section',
+        'structure' => array(
+            'id'     => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'parent' => array('type' => 'INT(11)', 'after' => 'id'),
+            'order'  => array('type' => 'INT(11)', 'after' => 'parent'),
+            'name'   => array('type' => 'VARCHAR(255)', 'after' => 'order'),
+            'title'  => array('type' => 'VARCHAR(255)', 'after' => 'name')
+        )
+    ),
     array (
         'table' => DBPREFIX.'core_text',
         'structure' => array(
@@ -836,45 +889,6 @@ $updates310To310Sp1 = array(
         (58, 'forceProtocolBackend', 'none', 1)
         ON DUPLICATE KEY UPDATE `setname` = VALUES(`setname`)",
     'ALTER TABLE `' . DBPREFIX . 'module_crm_contacts` CONVERT TO CHARACTER SET `utf8`',
-    'INSERT INTO  `' . DBPREFIX . 'module_calendar_mail`
-    (`title`, `content_text`, `content_html`, `lang_id`, `action_id`,  `status`)
-    SELECT
-    title.setvalue ,
-    content.setvalue ,
-    REPLACE(content.setvalue, "\r\n", "<br />\n") ,
-    1 ,
-    1 ,
-    1
-    FROM `' . DBPREFIX . 'module_calendar_settings` as content
-    JOIN `' . DBPREFIX . 'module_calendar_settings` as title ON title.setid = 3
-    WHERE content.setid = 4;
-    ',
-    'DROP TABLE `' . DBPREFIX . 'module_calendar_settings`',
-    array(
-        'table'     => DBPREFIX . 'module_calendar_settings',
-        'structure' => array(
-            'id'         => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-            'section_id' => array('type' => 'INT(11)', 'after' => 'id'),
-            'name'       => array('type' => 'VARCHAR(255)', 'after' => 'section_id'),
-            'title'      => array('type' => 'VARCHAR(255)', 'after' => 'name'),
-            'value'      => array('type' => 'mediumtext', 'after' => 'title'),
-            'info'       => array('type' => 'mediumtext', 'after' => 'value'),
-            'type'       => array('type' => 'INT(11)', 'after' => 'info'),
-            'options'    => array('type' => 'mediumtext', 'after' => 'type'),
-            'special'    => array('type' => 'VARCHAR(255)', 'after' => 'options'),
-            'order'      => array('type' => 'INT(11)', 'after' => 'special')
-        )
-    ),
-    array(
-        'table'     => DBPREFIX . 'module_calendar_settings_section',
-        'structure' => array(
-            'id'     => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
-            'parent' => array('type' => 'INT(11)', 'after' => 'id'),
-            'order'  => array('type' => 'INT(11)', 'after' => 'parent'),
-            'name'   => array('type' => 'VARCHAR(255)', 'after' => 'order'),
-            'title'  => array('type' => 'VARCHAR(255)', 'after' => 'name')
-        )
-    ),
     array(
         'table' => DBPREFIX.'module_crm_contacts',
         'structure' => array(
