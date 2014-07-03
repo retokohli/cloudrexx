@@ -1,3 +1,6 @@
+DROP DATABASE trunk;
+CREATE DATABASE trunk;
+USE trunk;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_access_group_dynamic_ids` (
