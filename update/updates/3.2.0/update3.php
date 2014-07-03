@@ -862,7 +862,8 @@ $updates310To310Sp1 = array(
             'order'  => array('type' => 'INT(11)', 'after' => 'parent'),
             'name'   => array('type' => 'VARCHAR(255)', 'after' => 'order'),
             'title'  => array('type' => 'VARCHAR(255)', 'after' => 'name')
-        ),
+        )
+    ),
     array(
         'table' => DBPREFIX.'module_crm_contacts',
         'structure' => array(
