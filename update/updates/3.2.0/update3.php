@@ -339,8 +339,6 @@ $updatesHotfixToSp1 = array(
             'html'           => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'text_id'),
             'protected'      => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'html'),
         ),
-        'keys' => array(
-        ),
     ),
     array(
         'table' => DBPREFIX.'languages',
