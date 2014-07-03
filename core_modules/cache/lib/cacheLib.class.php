@@ -201,16 +201,23 @@ class cacheLib
     
     protected function getActivatedCacheEngines() {
         global $_CONFIG;
-        
-        if (isset($_CONFIG['cacheUserCache']) && in_array($_CONFIG['cacheUserCache'], $this->userCacheEngines)) {
+
+        $this->userCacheEngine = self::CACHE_ENGINE_OFF;
+        if (   isset($_CONFIG['cacheDbStatus'])
+            && $_CONFIG['cacheDbStatus'] == 'on'
+            && isset($_CONFIG['cacheUserCache'])
+            && in_array($_CONFIG['cacheUserCache'], $this->userCacheEngines)
+        ) {
             $this->userCacheEngine = $_CONFIG['cacheUserCache'];
-        } else {
-            $this->userCacheEngine = self::CACHE_ENGINE_OFF;
         }
-        if (isset($_CONFIG['cacheOPCache']) && in_array($_CONFIG['cacheOPCache'], $this->opCacheEngines)) {
+
+        $this->opCacheEngine = self::CACHE_ENGINE_OFF;
+        if (   isset($_CONFIG['cacheOpStatus'])
+            && $_CONFIG['cacheOpStatus'] == 'on'
+            && isset($_CONFIG['cacheOPCache'])
+            && in_array($_CONFIG['cacheOPCache'], $this->opCacheEngines)
+        ) {
             $this->opCacheEngine = $_CONFIG['cacheOPCache'];
-        } else {
-            $this->opCacheEngine = self::CACHE_ENGINE_OFF;
         }
         
         // deactivate other op cache engines
