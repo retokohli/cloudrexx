@@ -838,6 +838,32 @@ $updates310To310Sp1 = array(
         (58, 'forceProtocolBackend', 'none', 1)
         ON DUPLICATE KEY UPDATE `setname` = VALUES(`setname`)",
     'ALTER TABLE `' . DBPREFIX . 'module_crm_contacts` CONVERT TO CHARACTER SET `utf8`',
+    'DROP TABLE `' . DBPREFIX . 'module_calendar_settings`',
+    array(
+        'table'     => DBPREFIX . 'module_calendar_settings',
+        'structure' => array(
+            'id'         => array('type' => 'INT(7)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'section_id' => array('type' => 'INT(11)', 'after' => 'id'),
+            'name'       => array('type' => 'VARCHAR(255)', 'after' => 'section_id'),
+            'title'      => array('type' => 'VARCHAR(255)', 'after' => 'name'),
+            'value'      => array('type' => 'mediumtext', 'after' => 'title'),
+            'info'       => array('type' => 'mediumtext', 'after' => 'value'),
+            'type'       => array('type' => 'INT(11)', 'after' => 'info'),
+            'options'    => array('type' => 'mediumtext', 'after' => 'type'),
+            'special'    => array('type' => 'VARCHAR(255)', 'after' => 'options'),
+            'order'      => array('type' => 'INT(11)', 'after' => 'special')
+        )
+    ),
+    array(
+        'table'     => DBPREFIX . 'module_calendar_settings_section',
+        'structure' => array(
+            'id'     => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'parent' => array('type' => 'INT(11)', 'after' => 'id'),
+            'order'  => array('type' => 'INT(11)', 'after' => 'parent'),
+            'name'   => array('type' => 'VARCHAR(255)', 'after' => 'order'),
+            'title'  => array('type' => 'VARCHAR(255)', 'after' => 'name')
+        )
+    ),
     array(
         'table' => DBPREFIX.'module_crm_contacts',
         'structure' => array(
