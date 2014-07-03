@@ -173,6 +173,20 @@ class cmsSession extends RecursiveArrayAccess {
     }
     
     /**
+     * Default object destructor.       
+     * It release all created locks
+     * 
+     */  
+    function __destruct() {
+        // release all locks
+        if (!empty($this->locks)) {
+            foreach (array_keys($this->locks) as $lockKey) {
+                $this->releaseLock($lockKey);
+            }
+        }
+    }
+    
+    /**
      * Read the data from database and assign it into $_SESSION array
      */
     function readData() {
@@ -354,19 +368,11 @@ class cmsSession extends RecursiveArrayAccess {
 
     /**
      * Callable on session close
-     * It release all created locks
      * 
      * @return boolean
      */
     function cmsSessionClose()
-    {        
-        // release all locks
-        if (!empty($_SESSION->locks)) {
-            foreach ($_SESSION->locks as $key => $value) {
-                $this->releaseLock($key);
-            }
-        }
-        
+    {
         return true;
     }
 
