@@ -75,21 +75,25 @@ class JsonUploader implements JsonAdapter {
         $mediaBrowserConfiguration = \Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration::get();
         $mediaBrowserConfiguration->mediaTypes;
 
+        $strPath = ASCMS_INSTANCE_PATH .'/'. $params['get']['path'];
         $strWebPath = '/'.$params['get']['path'];
         $dir = $params['get']['dir'];
+        
+        var_dump($strWebPath);
 
-        $path_part = explode("/", $params['get']['path'], 2);
-        $mediaBrowserConfiguration = \Cx\Core_Modules\MediaBrowser\Controller\MediaBrowserConfiguration::get();
-        $path = ASCMS_INSTANCE_PATH .'/'. $mediaBrowserConfiguration->mediaTypePaths[$path_part[0]][1] .'/'. $path_part[1];
+
 
         if (preg_match('#^[0-9a-zA-Z_\-]+$#', $dir)) {
-            if (\Cx\Lib\FileSystem\FileSystem::make_folder($path.$dir)) {
+            $objFile = new \File();
+            if (!$objFile->mkDir($strPath, $strWebPath, $dir)) {
                 return $_ARRAYLANG['TXT_FILEBROWSER_UNABLE_TO_CREATE_FOLDER'];
             } else {
                 return $_ARRAYLANG['TXT_FILEBROWSER_DIRECTORY_SUCCESSFULLY_CREATED'];
             }
+        } else if (!empty($dir)) {
+            // error: TXT_FILEBROWSER_INVALID_CHARACTERS
+            return $_ARRAYLANG['TXT_FILEBROWSER_INVALID_CHARACTERS'];
         }
-        return $_ARRAYLANG['TXT_FILEBROWSER_INVALID_CHARACTERS'];
     }
 
 }
