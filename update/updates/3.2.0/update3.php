@@ -333,13 +333,14 @@ $updatesHotfixToSp1 = array(
     array(
         'table' => DBPREFIX.'core_mail_template',
         'structure' => array(
-            'key'            => array('type' => 'tinytext'),
-            'section'        => array('type' => 'tinytext', 'notnull' => true, 'after' => 'key'),
+            'key'            => array('type' => 'tinytext', 'primary' => true),
+            'section'        => array('type' => 'tinytext', 'notnull' => true, 'after' => 'key', 'primary' => true),
             'text_id'        => array('type' => 'INT(10)', 'unsigned' => true, 'after' => 'section'),
             'html'           => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'text_id'),
             'protected'      => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'html'),
         ),
-        'keys' => array(),
+        'keys' => array(
+        ),
     ),
     '
         ALTER TABLE `' . DBPREFIX.'core_mail_template` ADD PRIMARY KEY (`key` (32), `section` (32))
@@ -838,6 +839,19 @@ $updates310To310Sp1 = array(
         (58, 'forceProtocolBackend', 'none', 1)
         ON DUPLICATE KEY UPDATE `setname` = VALUES(`setname`)",
     'ALTER TABLE `' . DBPREFIX . 'module_crm_contacts` CONVERT TO CHARACTER SET `utf8`',
+    'INSERT INTO  `' . DBPREFIX . '_module_calendar_mail`
+    (`title`, `content_text`, `content_html`, `lang_id`, `action_id`,  `status`)
+    SELECT
+    title.setvalue ,
+    content.setvalue ,
+    REPLACE(content.setvalue, "\r\n", "<br />\n") ,
+    1 ,
+    1 ,
+    1
+    FROM `' . DBPREFIX . 'module_calendar_settings` as content
+    JOIN `' . DBPREFIX . 'module_calendar_settings` as title ON title.setid = 3
+    WHERE content.setid = 4;
+    ',
     'DROP TABLE `' . DBPREFIX . 'module_calendar_settings`',
     array(
         'table'     => DBPREFIX . 'module_calendar_settings',
