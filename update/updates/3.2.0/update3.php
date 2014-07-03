@@ -333,8 +333,8 @@ $updatesHotfixToSp1 = array(
     array(
         'table' => DBPREFIX.'core_mail_template',
         'structure' => array(
-            'key'            => array('type' => 'tinytext', 'primary' => true),
-            'section'        => array('type' => 'tinytext', 'notnull' => true, 'after' => 'key', 'primary' => true),
+            'key'            => array('type' => 'tinytext', 'primary' => 32),
+            'section'        => array('type' => 'tinytext', 'notnull' => true, 'after' => 'key', 'primary' => 32),
             'text_id'        => array('type' => 'INT(10)', 'unsigned' => true, 'after' => 'section'),
             'html'           => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'text_id'),
             'protected'      => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'html'),
@@ -342,9 +342,6 @@ $updatesHotfixToSp1 = array(
         'keys' => array(
         ),
     ),
-    '
-        ALTER TABLE `' . DBPREFIX.'core_mail_template` ADD PRIMARY KEY (`key` (32), `section` (32))
-    ',
     array(
         'table' => DBPREFIX.'languages',
         'structure' => array(
