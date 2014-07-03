@@ -273,7 +273,7 @@ namespace Cx\Core\Core\Controller {
             } catch (\Exception $e) {
                 \header($_SERVER['SERVER_PROTOCOL'] . ' 500 Server Error');
                 echo file_get_contents(ASCMS_DOCUMENT_ROOT.'/offline.html');
-                \DBG::msg('Contrexx initialization failed! ' . get_class($e) . ': "' . $e->getMessage() . '"');
+                \DBG::msg('Contrexx initialization failed! ' . get_class($e) . ': "' . $e->getMessage() . $e->getFile() . '"');
                 die();
             }
         }

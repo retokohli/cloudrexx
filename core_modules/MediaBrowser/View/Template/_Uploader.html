@@ -1,5 +1,5 @@
 <div id="uploader">
-    <div class="tabMediaBrowserBreadcrumbs" >
+    <div class="tabMediaBrowserBreadcrumbs">
         <ul>
             <li data-ng-repeat="pathpart in path">
                 <a data-ng-click="clickPath($index)" href="#/uploader">{{pathpart.name}}</a>
@@ -9,24 +9,56 @@
     </div>
     <div class="tabMediaBrowserContent">
         <div class="mediaUploaderListCtrl">
+
             <div class="uploadPlatform uploadStart">
                 <i class="icon-dropzone"></i>
+
                 <div class="dropzoneText1">Datei hierher ziehen</div>
                 <div class="dropzoneText2">- oder -</div>
-                <button type="submit" id="selectFileFromComputer" class="btn btn-default">Bild vom Computer auswählen</button>
+                <button type="submit" id="selectFileFromComputer" class="btn btn-default">Bild vom Computer auswählen
+                </button>
             </div>
-            <div style="display: none;" class="uploadPlatform uploadFilesAdded" >
-                <div class="dropzoneText2">Contrexx lädt die Dateien für Sie hoch...</div><br />
+
+
+            <div style="display: none;" class="uploadPlatform uploadFilesAdded">
+                <div class="dropzoneText2">Contrexx lädt die Dateien für Sie hoch...</div>
+                <br/>
+
                 <div class="progress progress-striped active">
-                    <div class="progress-bar"  role="progressbar" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100" style="width: 0%">
-                        
+                    <div class="progress-bar" role="progressbar" aria-valuenow="45" aria-valuemin="0"
+                         aria-valuemax="100" style="width: 0%">
+
                     </div>
                 </div>
                 <button type="submit" id="uploadInterrupt" class="btn btn-default">Upload abbrechen</button>
             </div>
+            <table class="uploadFiles table table-striped">
+                <tr>
+                    <td>Name</td>
+                    <td>Grösse</td>
+                    <td>Progress</td>
+                    <td></td>
+                </tr>
+                <tr data-ng-repeat="file in fileList.files">
+                    <td width="30%">{{file.name}}</td>
+                    <td width="10%">{{file.size}}</td>
+                    <td width="30%">
+                        <div class="progress-bar" role="progressbar" aria-valuemin="0" aria-valuemax="100"
+                             style="width: 0%" >
+
+                        </div>
+                    </td>
+                    <td>
+                        <i class="glyphicon glyphicon-trash"></i>
+                    </td>
+                </tr>
+            </table>
+
         </div>
     </div>
     <div class="tabMediaBrowserFooter">
-        <button type="submit" class="btn btn-primary" data-dismiss="modal" data-target=".media-browser-modal">Abbrechen</button>
+        <button type="submit" class="btn btn-primary" data-dismiss="modal" data-target=".media-browser-modal">
+            Abbrechen
+        </button>
     </div>
 </div>

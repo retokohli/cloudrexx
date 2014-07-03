@@ -523,7 +523,6 @@ class NewsletterLib
         return $recipientTitleId;
     }
 
-
 // TODO: Merge with user_profile_attribute_title
     function _initRecipientTitles()
     {
@@ -539,7 +538,6 @@ class NewsletterLib
             }
         }
     }
-
 
     function _deleteRecipient($id)
     {
