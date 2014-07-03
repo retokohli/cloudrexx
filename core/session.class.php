@@ -130,9 +130,7 @@ class cmsSession extends RecursiveArrayAccess {
         {
             self::$instance = new static();
             $_SESSION = self::$instance;
-            
-            register_shutdown_function(array($this, '__destruct'));
-            
+                                    
             // read the session data
             $_SESSION->readData();
             
@@ -155,6 +153,8 @@ class cmsSession extends RecursiveArrayAccess {
             session_destroy();
         }
 
+        register_shutdown_function(array(& $this, 'releaseLocks'));
+        
         $this->initDatabase();
         $this->initRememberMe();
         $this->initSessionLifetime();
@@ -175,11 +175,9 @@ class cmsSession extends RecursiveArrayAccess {
     }
     
     /**
-     * Default object destructor.       
      * It release all created locks
-     * 
      */  
-    function __destruct() {
+    function releaseLocks() {
         // release all locks
         if (!empty($this->locks)) {
             foreach (array_keys($this->locks) as $lockKey) {
