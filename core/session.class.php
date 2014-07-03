@@ -127,12 +127,14 @@ class cmsSession extends RecursiveArrayAccess {
     public static function getInstance()
     {
         if (!isset(self::$instance))
-        {            
+        {
             self::$instance = new static();
             $_SESSION = self::$instance;
             
+            register_shutdown_function(array($this, '__destruct'));
+            
             // read the session data
-            $_SESSION->readData();            
+            $_SESSION->readData();
             
             //earliest possible point to set debugging according to session.
             $_SESSION->restoreDebuggingParams();
