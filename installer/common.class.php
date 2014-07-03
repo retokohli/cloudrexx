@@ -1556,7 +1556,7 @@ class CommonFunctions
                     }
                     return ini_get('xcache.size') > 0;
                 case \cacheLib::CACHE_ENGINE_FILESYSTEM:
-                    return is_writable(ASCMS_CACHE_PATH);
+                    return is_writable(ASCMS_DOCUMENT_ROOT . '/tmp/cache');
             }
         };
 
