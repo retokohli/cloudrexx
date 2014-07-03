@@ -53,7 +53,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             \JS::registerJS(substr(ASCMS_CORE_MODULE_FOLDER . '/MediaBrowser/View/Script/angular.min.js', 1));
             \JS::registerJS(substr(ASCMS_CORE_MODULE_FOLDER . '/MediaBrowser/View/Script/angular-route.min.js', 1));
             \JS::registerJS(substr(ASCMS_CORE_MODULE_FOLDER . '/MediaBrowser/View/Script/bootstrap.min.js', 1));
-            \JS::registerJS(substr(ASCMS_CORE_MODULE_FOLDER . '/MediaBrowser/View/Script/bootbox.min.js', 1));
             \JS::registerJS(substr(ASCMS_CORE_MODULE_FOLDER . '/MediaBrowser/View/Script/mediabrowser.js', 1));
             \JS::registerJS(substr(ASCMS_CORE_MODULE_FOLDER . '/MediaBrowser/View/Script/standalone-directives.js', 1));
         }

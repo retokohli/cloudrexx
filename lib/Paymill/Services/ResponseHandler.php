@@ -2,8 +2,6 @@
 
 namespace Paymill\Services;
 
-require_once ASCMS_LIBRARY_PATH.'/Paymill/Models/Response/Payment.php';
-
 use Paymill\Models\Response as Models;
 use Paymill\Models\Response\Error;
 
@@ -145,7 +143,6 @@ class ResponseHandler
      */
     private function _createPayment($response)
     {
-
         $model = new Models\Payment();
         $model->setId($response['id']);
         $model->setType($response['type']);
