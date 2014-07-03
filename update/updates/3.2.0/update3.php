@@ -836,7 +836,7 @@ $updates310To310Sp1 = array(
         (58, 'forceProtocolBackend', 'none', 1)
         ON DUPLICATE KEY UPDATE `setname` = VALUES(`setname`)",
     'ALTER TABLE `' . DBPREFIX . 'module_crm_contacts` CONVERT TO CHARACTER SET `utf8`',
-    'INSERT INTO  `' . DBPREFIX . '_module_calendar_mail`
+    'INSERT INTO  `' . DBPREFIX . 'module_calendar_mail`
     (`title`, `content_text`, `content_html`, `lang_id`, `action_id`,  `status`)
     SELECT
     title.setvalue ,
