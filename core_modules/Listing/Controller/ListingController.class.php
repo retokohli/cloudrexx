@@ -62,7 +62,7 @@ class ListingController {
     const FILTERING_HTML_AJAX = 18;
     const FILTERING_DATA_AJAX = 19;
     const FILTERING_CLIENT_ONLY = 20;
-
+    
     /**
      * How many lists are there for this request
      * @var int
@@ -282,7 +282,7 @@ class ListingController {
         
         if ($this->offset) {
             // render goto start
-            $url = clone \Env::get('cx')->getRequest();
+            $url = clone \Env::get('cx')->getRequest()->getUrl();
             $url->setParam('pos', 0);
             $html .= '<a href="' . $url . '">&lt;&lt;</a>&nbsp;';
 
@@ -291,7 +291,7 @@ class ListingController {
             if ($pagePos < 0) {
                 $pagePos = 0;
             }
-            $url = clone \Env::get('cx')->getRequest();
+            $url = clone \Env::get('cx')->getRequest()->getUrl();
             $url->setParam('pos', $pagePos);
             $html .= '<a href="' . $url . '">&lt;</a>&nbsp;';
         } else {
@@ -306,7 +306,7 @@ class ListingController {
             }
             // render page with link
             $pagePos = ($pageNumber - 1) * $this->count;
-            $url = clone \Env::get('cx')->getRequest();
+            $url = clone \Env::get('cx')->getRequest()->getUrl();
             $url->setParam('pos', $pagePos);
             $html .= '<a href="' . $url . '">' . $pageNumber . '</a>&nbsp;';
         }
@@ -317,12 +317,12 @@ class ListingController {
             if ($pagePos < 0) {
                 $pagePos = 0;
             }
-            $url = clone \Env::get('cx')->getRequest();
+            $url = clone \Env::get('cx')->getRequest()->getUrl();
             $url->setParam('pos', $pagePos);
             $html .= '<a href="' . $url . '">&gt;</a>&nbsp;';
             
             // render goto last page
-            $url = clone \Env::get('cx')->getRequest();
+            $url = clone \Env::get('cx')->getRequest()->getUrl();
             $url->setParam('pos', ($numberOfPages - 1) * $this->count);
             $html .= '<a href="' . $url . '">&gt;&gt;</a>';
         } else {

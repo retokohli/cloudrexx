@@ -50,6 +50,14 @@ class JsonUser implements JsonAdapter {
     }
 
     /**
+     * Returns default permission as object
+     * @return Object
+     */
+    public function getDefaultPermissions() {
+        return null;
+    }
+    
+    /**
      * Returns the user with the given user id.
      * If the user does not exist then return the currently logged in user.
      *

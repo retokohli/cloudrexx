@@ -42,6 +42,14 @@ class JsonBlock implements JsonAdapter {
     }
 
     /**
+     * Returns default permission as object
+     * @return Object
+     */
+    public function getDefaultPermissions() {
+        return null;
+    }
+    
+    /**
      * Returns all messages as string
      * @return String HTML encoded error messages
      */

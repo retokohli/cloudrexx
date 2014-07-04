@@ -50,6 +50,14 @@ class JsonCrm implements JsonAdapter {
     }
 
     /**
+     * Returns default permission as object
+     * @return Object
+     */
+    public function getDefaultPermissions() {
+        return null;
+    }
+    
+    /**
      * get customer search result
      *
      * @global array $_ARRAYLANG

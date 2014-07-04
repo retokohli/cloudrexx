@@ -470,7 +470,7 @@ namespace Cx\Core\Core\Controller {
             }
             $this->mode = $mode;
             if ($this->request) {
-                $this->request->setMode($this->mode);
+                $this->request->getUrl()->setMode($this->mode);
             }
         }
 
@@ -792,10 +792,11 @@ namespace Cx\Core\Core\Controller {
                 switch ($this->mode) {
                     case self::MODE_FRONTEND:
                     case self::MODE_BACKEND:
-                        $this->request = \Cx\Core\Routing\Url::fromCapturedRequest($request, $offset, $_GET);
+                        $this->request = new \Cx\Core\Routing\Model\Entity\Request($_SERVER['REQUEST_METHOD'], 
+                                                                                   \Cx\Core\Routing\Url::fromCapturedRequest($request, $offset, $_GET));
                         break;
                     case self::MODE_MINIMAL:
-                        $this->request = \Cx\Core\Routing\Url::fromRequest();
+                        $this->request = new \Cx\Core\Routing\Model\Entity\Request($_SERVER['REQUEST_METHOD'], \Cx\Core\Routing\Url::fromRequest());
                         break;
                 }
             }
@@ -878,7 +879,7 @@ namespace Cx\Core\Core\Controller {
             switch ($no) {
                 case 1:
                     // Request URL
-                    $url = $this->request;
+                    $url = $this->request->getUrl();
                     // populate template
                     $objTemplate = $this->template;
                     // populate classloader
@@ -934,8 +935,8 @@ namespace Cx\Core\Core\Controller {
          * @todo Is this useful in CLI mode?
          */
         protected function resolve() {
-            $this->resolver = new \Cx\Core\Routing\Resolver($this->getRequest(), null, $this->getDb()->getEntityManager(), null, null);
-            $this->request->setMode($this->mode);
+            $this->resolver = new \Cx\Core\Routing\Resolver($this->getRequest()->getUrl(), null, $this->getDb()->getEntityManager(), null, null);
+            $this->request->getUrl()->setMode($this->mode);
 
             if ($this->mode == self::MODE_FRONTEND) {
                 $this->resolvedPage = $this->resolver->resolve();
@@ -1106,7 +1107,7 @@ namespace Cx\Core\Core\Controller {
             // set global template variables
             $boolShop = \Shop::isInitialized();
             $objNavbar = new \Navigation($this->resolvedPage->getId(), $this->resolvedPage);
-            $objNavbar->setLanguagePlaceholders($this->resolvedPage, $this->request, $this->template);
+            $objNavbar->setLanguagePlaceholders($this->resolvedPage, $this->request->getUrl(), $this->template);
             $metarobots = $this->resolvedPage->getMetarobots();
             $this->template->setVariable(array(
                 'CHARSET'                        => \Env::get('init')->getFrontendLangCharset(),
@@ -1145,8 +1146,8 @@ namespace Cx\Core\Core\Controller {
                 'COUNTER'                        => $objCounter->getCounterTag(),
                 'BANNER'                         => isset($objBanner) ? $objBanner->getBannerJS() : '',
                 'VERSION'                        => contrexx_raw2xhtml($_CONFIG['coreCmsName']),
-                'LANGUAGE_NAVBAR'                => $objNavbar->getFrontendLangNavigation($this->resolvedPage, $this->request),
-                'LANGUAGE_NAVBAR_SHORT'          => $objNavbar->getFrontendLangNavigation($this->resolvedPage, $this->request, true),
+                'LANGUAGE_NAVBAR'                => $objNavbar->getFrontendLangNavigation($this->resolvedPage, $this->request->getUrl()),
+                'LANGUAGE_NAVBAR_SHORT'          => $objNavbar->getFrontendLangNavigation($this->resolvedPage, $this->request->getUrl(), true),
                 'ACTIVE_LANGUAGE_NAME'           => \Env::get('init')->getFrontendLangName(),
                 'RANDOM'                         => md5(microtime()),
                 'TXT_SEARCH'                     => $_CORELANG['TXT_SEARCH'],

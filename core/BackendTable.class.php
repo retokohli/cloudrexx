@@ -60,7 +60,7 @@ class BackendTable extends HTML_Table {
                                     }
                                 }
                             }
-                            $header = '<a href="' .  \Env::get('cx')->getRequest() . '&order=' . $origHeader . $order . '" style="white-space: nowrap;">' . $header . ' ' . $img . '</a>';
+                            $header = '<a href="' .  \Env::get('cx')->getRequest()->getUrl() . '&order=' . $origHeader . $order . '" style="white-space: nowrap;">' . $header . ' ' . $img . '</a>';
                         }
                         $this->setCellContents(0, $col, $header, 'th', 0);
                     }
@@ -103,7 +103,7 @@ class BackendTable extends HTML_Table {
                         $this->setCellContents(0, $col, $header, 'th', 0, true);
                     }
                     if (!isset($options['functions']['baseUrl'])) {
-                        $options['functions']['baseUrl'] = clone \Env::get('cx')->getRequest();
+                        $options['functions']['baseUrl'] = clone \Env::get('cx')->getRequest()->getUrl();
                     }
                     $this->setCellContents($row, $col, $this->getFunctionsCode($rowname, $options['functions']), 'TD', 0);
     			}

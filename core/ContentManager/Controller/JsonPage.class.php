@@ -90,6 +90,14 @@ class JsonPage implements JsonAdapter {
     }
 
     /**
+     * Returns default permission as object
+     * @return Object
+     */
+    public function getDefaultPermissions() {
+        return null;
+    }
+    
+    /**
      * Sends data to the client
      * @todo Clean up usage of $param
      * @param Array $params Client parameters

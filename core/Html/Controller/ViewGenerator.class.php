@@ -209,7 +209,7 @@ class ViewGenerator {
             $renderObject = $listingController->getData();
             $backendTable = new \BackendTable($renderObject, $this->options) . '<br />' . $listingController;
             if (!empty($this->options['functions']['add'])) {
-                $actionUrl = clone \Env::get('cx')->getRequest();
+                $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
                 $actionUrl->setParam('add', 1);
                 $backendTable .= '<br /><br /><input type="button" name="addEtity" value="Add" onclick="location.href='."'".$actionUrl."&csrf=".\CSRF::code()."'".'" />'; 
             }
@@ -223,7 +223,7 @@ class ViewGenerator {
     protected function renderFormForEntry($entityId) {
         $renderArray=array();
         $entityClass = get_class($this->object);
-        $actionUrl = clone \Env::get('cx')->getRequest();
+        $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
         if ($this->object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             $entityClass = $this->object->getDataType();
             $entityObject = \Env::get('em')->getClassMetadata($entityClass);  

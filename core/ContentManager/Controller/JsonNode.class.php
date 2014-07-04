@@ -110,6 +110,14 @@ class JsonNode implements JsonAdapter {
     }
 
     /**
+     * Returns default permission as object
+     * @return Object
+     */
+    public function getDefaultPermissions() {
+        return null;
+    }
+    
+    /**
      * Returns the Node tree rendered for JS
      * @return String JSON data 
      */

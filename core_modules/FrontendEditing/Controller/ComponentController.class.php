@@ -42,7 +42,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         }
 
         // get current request`s parameters
-        $requestParams = $this->cx->getRequest()->getParamArray();
+        $requestParams = $this->cx->getRequest()->getUrl()->getParamArray();
 
         // check whether the contrexx is in frontend mode, a content page exists and it is no pagePreview
         if (

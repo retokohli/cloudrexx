@@ -116,7 +116,7 @@ class news extends newsLibrary {
         $whereStatus    = '';
         $newsAccess     = \Permission::checkAccess(10, 'static', true);
         $newsPreview    = !empty($_GET['newsPreview']) ? intval($_GET['newsPreview']) : 0;
-        $base64Redirect = base64_encode(\Env::get('cx')->getRequest());
+        $base64Redirect = base64_encode(\Env::get('cx')->getRequest()->getUrl());
         if ($newsPreview && !$newsAccess) {
             \Permission::noAccess($base64Redirect);
         } else if (!$newsAccess) {

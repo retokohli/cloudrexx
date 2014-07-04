@@ -126,6 +126,15 @@ class Url {
         }
     }
 
+     /**
+     * Get the protocol
+     * 
+     * @return String
+     */
+    public function getProtocol() {
+        return $this->protocol;
+    }
+    
     public function getMode() {
         return $this->mode;
     }
