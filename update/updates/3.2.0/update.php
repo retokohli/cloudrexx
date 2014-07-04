@@ -1896,8 +1896,15 @@ function migrateSessionTable()
                                                  `' . DBPREFIX . 'sessions`');        
         if ($objResult) {
             while (!$objResult->EOF) {
-                $sessionArray = unserializesession($objResult->fields['datavalue']);
-                insertSessionArray($sessionArray);
+                $sessionId = $objResult->fields['sessionid'];
+                
+                if ($sessionId == $sessionObj->sessionid) {
+                    $sessionArray = $_SESSION; // migrate the current state into database.
+                } else {
+                    $sessionArray = unserializesession($objResult->fields['datavalue']);
+                }
+                
+                insertSessionArray($sessionId, $sessionArray);
                 $objResult->MoveNext();
             }
         }
@@ -1922,24 +1929,24 @@ function migrateSessionTable()
     return true;
 }
 
-function insertSessionArray($sessionArr, $parentId = 0)
+function insertSessionArray($sessionId, $sessionArr, $parentId = 0)
 {
-    global $objDatabase, $sessionObj;
-    
+    global $objDatabase;
+
     foreach ($sessionArr as $key => $value) {
         \Cx\Lib\UpdateUtil::sql('INSERT INTO 
                                     '. DBPREFIX .'session_variable
                                 SET 
                                 `parent_id` = "'. intval($parentId) .'",
-                                `sessionid` = "'. $sessionObj->sessionid .'",
+                                `sessionid` = "'. $sessionId .'",
                                 `key` = "'. contrexx_input2db($key) .'",
                                 `value` = "'. (is_array($value) ? contrexx_input2db(serialize(null)) : contrexx_input2db(serialize($value)))  .'"
                               ON DUPLICATE KEY UPDATE 
                                 `value` = "'. (is_array($value) ? contrexx_input2db(serialize(null)) : contrexx_input2db(serialize($value))) .'"');
         $insertId = $objDatabase->Insert_ID();
         
-        if (is_array($value)) {            
-            insertSessionArray($value, $insertId);
+        if (is_array($value)) {
+            insertSessionArray($sessionId, $value, $insertId);
         }
     }
 }
