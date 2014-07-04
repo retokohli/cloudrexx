@@ -1,7 +1,11 @@
 <?php
 
-class Frontend500CheckContext extends \Behat\Behat\Context\BehatContext
+use Behat\Behat\Context\BehatContext;
+use Behat\MinkExtension\Context\MinkContext;
+
+class Frontend500CheckContext extends MinkContext
 {
+    private $visitedLinks = array();
     private $failedLinks = array();
 
     /**
@@ -37,33 +41,57 @@ class Frontend500CheckContext extends \Behat\Behat\Context\BehatContext
         // wait otherwise the page is not loaded
         $this->waitForFrontend();
         $linkTags = $this->getLinkTagsOfNavigation();
+        $links = array();
         foreach ($linkTags as $linkTag) {
-            $url = $linkTag->getAttribute('href');
-            if (preg_match('/\.xml/', $url)) {
+            $links[] = $linkTag->getAttribute('href');
+        }
+        foreach ($links as $baseurl) {
+           // $baseurl = $linkTag->getAttribute('href');
+            echo "\n".$baseurl;
+            if (preg_match('/(\.xml)/', $baseurl)) {
                 continue;
             }
-            if (!$this->testLink($url)) {
-                $this->getMainContext()->session->back();
-                $this->waitForFrontend();
+            if (!$this->testLink($baseurl)) {
+//                $this->getMainContext()->session->back();
+//                $this->waitForFrontend();
             } else {
                 // check links of content
                 try {
-                    $contentLinks = $this->getMainContext()->page->findAll('css', '#page a');
-                    foreach ($contentLinks as $contentLink) {
-                        $url = $contentLink->getAttribute('href');
-                        if (!$this->testLink($url)) {
-                        }
-                        $this->getMainContext()->session->back();
-                        $this->waitForFrontend();
+                    $contentLinksElement = $this->getMainContext()->page->findAll('css', '#content2 a');
+                    $contentlinks = array();
+                    foreach ($contentLinksElement as $contentlink) {
+                        $contentlinks[] = $contentlink->getAttribute('href');
                     }
-                } catch (\Exception $e) {}
+                    foreach ($contentlinks as $url) {
+
+                        if (!preg_match('/http/', $url)) {
+                            continue;
+                        }
+                        echo "\n".$url;
+                        if (!$this->testLink($url)) {
+                            echo 'Failed';
+                        }
+//                        $this->getMainContext()->session->back();
+//                        $this->waitForFrontend();
+                    }
+                } catch (\Exception $e) {
+                }
             }
         }
     }
 
-    private function testLink($url) {
+    private function testLink($url)
+    {
+        if (in_array($url, $this->visitedLinks)){
+            echo ' (Duplicate)';
+            if (in_array($url, $this->failedLinks)){
+                return false;
+            }
+            return true;
+        }
+        $this->visitedLinks[] = $url;
         $this->getMainContext()->iAmOn($url);
-        if (preg_match('/http/', $url)) {
+        if (preg_match('/(http)/', $url)) {
             return true;
         }
         $this->waitForFrontend();
@@ -74,7 +102,8 @@ class Frontend500CheckContext extends \Behat\Behat\Context\BehatContext
         return true;
     }
 
-    private function currentPageIsMaintenance() {
+    private function currentPageIsMaintenance()
+    {
         $html = $this->getMainContext()->page->find('css', 'body')->getHtml();
         if (preg_match('/maintenance mode/', $this->getMainContext()->page->find('css', 'body')->getHtml()) || empty($html)) {
             return true;
@@ -82,11 +111,17 @@ class Frontend500CheckContext extends \Behat\Behat\Context\BehatContext
         return false;
     }
 
-    private function getLinkTagsOfNavigation() {
-        return $this->getMainContext()->page->findAll('css', '#navigation a');
+    private function getLinkTagsOfNavigation()
+    {
+        try {
+            return $this->getMainContext()->page->findAll('css', '#navigation a');
+        } catch (\Exception $e) {
+            return array();
+        }
     }
 
-    private function waitForFrontend(){
+    private function waitForFrontend()
+    {
         $this->getMainContext()->session->wait(2000, 'document.getElementsByTagName("body")[0] !== undefined');
     }
 }

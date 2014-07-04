@@ -1,6 +1,19 @@
 <?php
 
-use Behat\Behat\Context\BehatContext;
+define('BEHAT_ERROR_REPORTING', E_ERROR | E_WARNING | E_PARSE);
+use Behat\Behat\Context\ClosuredContextInterface,
+    Behat\Behat\Context\TranslatedContextInterface,
+    Behat\Behat\Context\BehatContext,
+    Behat\Behat\Exception\PendingException;
+use Behat\Gherkin\Node\PyStringNode,
+    Behat\Gherkin\Node\TableNode;
+
+//
+// Require 3rd-party libraries here:
+//
+//   require_once 'PHPUnit/Autoload.php';
+//   require_once 'PHPUnit/Framework/Assert/Functions.php';
+//
 
 /**
  * Features context.
@@ -13,7 +26,7 @@ class FeatureContext extends BehatContext
     public $session;
 
     /**
-     * @var DocumentElement
+     * @var \Behat\Mink\Element\DocumentElement
      */
     public $page;
 
@@ -31,10 +44,12 @@ class FeatureContext extends BehatContext
      */
     public function __construct(array $parameters)
     {
-        require_once dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/core/Core/init.php';
-        require_once dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/lib/doctrine/vendor/Symfony/Component/Yaml/Yaml.php';
+
+        require_once dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/config/configuration.php';
+        require_once dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/config/settings.php';
+        require_once dirname(dirname(dirname(dirname(dirname(dirname(__FILE__)))))) . '/config/set_constants.php';
+        ini_set('xdebug.max_nesting_level', 1000);
         global $_CONFIG;
-        init('minimal');
         $this->config = $_CONFIG;
 
         // check whether the backend has 500 server errors on links
@@ -57,23 +72,26 @@ class FeatureContext extends BehatContext
     /**
      * @Given /^I am in backend$/
      */
-    public function iAmInBackend() {
-        $this->iAmOn('http://' . $this->config['domainUrl'] . '/contrexx/trunk' . ASCMS_BACKEND_PATH);
+    public function iAmInBackend()
+    {
+        $this->iAmOn('http://' . $this->config['domainUrl'] . '/' . ASCMS_BACKEND_PATH);
 //        $this->iAmOn('http://' . $this->config['domainUrl'] . ASCMS_INSTANCE_OFFSET . ASCMS_BACKEND_PATH);
     }
 
     /**
      * @Given /^I am in frontend$/
      */
-    public function iAmInFrontend() {
-        $this->iAmOn('http://' . $this->config['domainUrl'] . '/contrexx/trunk');
+    public function iAmInFrontend()
+    {
+        $this->iAmOn('http://' . $this->config['domainUrl'] . '/');
 //        $this->iAmOn('http://' . $this->config['domainUrl'] . ASCMS_INSTANCE_OFFSET);
     }
 
-    public function iOpenBrowser() {
-        $driver = new \Behat\Mink\Driver\Selenium2Driver(
+    public function iOpenBrowser()
+    {
+        $driver        = new \Behat\Mink\Driver\Selenium2Driver(
             'firefox',
-            array (
+            array(
                 'javascriptEnabled' => true,
             )
         );
@@ -97,9 +115,9 @@ class FeatureContext extends BehatContext
     /**
      * @Given /^I enter the username "([^"]*)"$/
      */
-    public function iEnterTheUsername(&$username)
+    public function iEnterTheUsername($username)
     {
-        $input = $this->objectById('input', 'username');
+        $input = $this->page->findById('username');
         $input->setValue($username);
     }
 
@@ -108,7 +126,7 @@ class FeatureContext extends BehatContext
      */
     public function iEnterThePassword($password)
     {
-        $input = $this->objectById('input', 'password');
+        $input = $this->page->findById('password');
         $input->setValue($password);
     }
 
@@ -117,7 +135,9 @@ class FeatureContext extends BehatContext
      */
     public function iPressTheSubmitButton()
     {
-        $button = $this->objectByCssSelector('input[type="submit"]');
+
+        $button = $this->page->findById('login_button');
+
         $button->click();
     }
 
@@ -136,7 +156,8 @@ class FeatureContext extends BehatContext
      * @return mixed
      * @throws Behat\Mink\Exception\ElementNotFoundException Element not found
      */
-    public function objectById($tag, $id) {
+    public function objectById($tag, $id)
+    {
         return $this->objectByCssSelector($tag . '#' . $id);
     }
 
@@ -146,11 +167,16 @@ class FeatureContext extends BehatContext
      * @return mixed
      * @throws Behat\Mink\Exception\ElementNotFoundException
      */
-    public function objectByCssSelector($cssSelector) {
+    public function objectByCssSelector($cssSelector)
+    {
         $element = $this->page->find('css', $cssSelector);
-        if ($element == null) {
-            // @todo: add contrexx exception
-            throw new \Behat\Mink\Exception\ElementNotFoundException($this->session, 'input', 'css', 'input[type="submit"]');
+        try {
+            if ($element == null) {
+                // @todo: add contrexx exception
+                throw new \Behat\Mink\Exception\ElementNotFoundException($this->session, 'input', 'css', 'input[type="submit"]');
+            }
+        } catch (Exception $e) {
+            echo $e->getLine();
         }
         return $element;
     }

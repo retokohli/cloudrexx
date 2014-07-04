@@ -1,6 +1,10 @@
 <?php
 
-class Backend500CheckContext extends \Behat\Behat\Context\BehatContext
+
+use Behat\Behat\Context\BehatContext;
+use Behat\MinkExtension\Context\MinkContext;
+
+class Backend500CheckContext extends BehatContext
 {
     private $failedLinks = array();
 
@@ -37,14 +41,14 @@ class Backend500CheckContext extends \Behat\Behat\Context\BehatContext
         // wait otherwise the page is not loaded
         $this->waitForBackend();
         $lastLinkIndex = count($this->getLinkTagsOfNavigation(1)) - 1;
-
         // visit first link
         // skip the first two links
         $linkTags = array();
         $this->visitNextLink(2, $lastLinkIndex, $linkTags);
     }
 
-    private function currentPageIsMaintenance() {
+    private function currentPageIsMaintenance()
+    {
         $html = $this->getMainContext()->page->find('css', 'body')->getHtml();
         if (preg_match('/maintenance mode/', $this->getMainContext()->page->find('css', 'body')->getHtml()) || empty($html)) {
             return true;
@@ -52,23 +56,26 @@ class Backend500CheckContext extends \Behat\Behat\Context\BehatContext
         return false;
     }
 
-    private function visitNextLink($currentLinkIndex, $lastLinkIndex, &$linkTags) {
+    private function visitNextLink($currentLinkIndex, $lastLinkIndex, &$linkTags)
+    {
         if ($currentLinkIndex > $lastLinkIndex) {
             return;
         }
 
         $linkTags = $this->getLinkTagsOfNavigation(1);
+
         $url = $linkTags[$currentLinkIndex]->getAttribute('href');
         $this->getMainContext()->iAmOn($url);
+
         $this->waitForBackend();
 
         if (!$this->currentPageIsMaintenance()) {
             // refresh current site
 
             $subNavigationLinksCount = count($this->getLinkTagsOfNavigation(2));
-            for($i = 0; $i < $subNavigationLinksCount; $i++) {
+            for ($i = 0; $i < $subNavigationLinksCount; $i++) {
                 $subNavigationLinks = $this->getLinkTagsOfNavigation(2);
-                $url = $subNavigationLinks[$i]->getAttribute('href');
+                $url                = $subNavigationLinks[$i]->getAttribute('href');
                 $this->getMainContext()->iAmOn($url);
                 $this->waitForBackend();
 
@@ -78,7 +85,7 @@ class Backend500CheckContext extends \Behat\Behat\Context\BehatContext
                     $this->waitForBackend();
                 } else {
                     $subNavigation2LinksCount = count($this->getLinkTagsOfNavigation(3));
-                    for($j = 0; $j < $subNavigation2LinksCount; $j++) {
+                    for ($j = 0; $j < $subNavigation2LinksCount; $j++) {
                         $subNavigation2Links = $this->getLinkTagsOfNavigation(3);
                         if (!isset($subNavigation2Links[$j])) {
                             continue;
@@ -118,22 +125,24 @@ class Backend500CheckContext extends \Behat\Behat\Context\BehatContext
         $this->visitNextLink(++$currentLinkIndex, $lastLinkIndex, $linkTags);
     }
 
-    private function getLinkTagsOfNavigation($level) {
+    private function getLinkTagsOfNavigation($level)
+    {
         switch ($level) {
             case 1:
-                return $this->getMainContext()->page->findAll('css', '.navigation_level_2 > li > a');
+                return $this->getMainContext()->session->getPage()->findAll('css', '.navigation_level_2 > li > a');
                 break;
             case 2:
-                return $this->getMainContext()->page->findAll('css', '#subnavbar_level1 td.navi > a');
+                return $this->getMainContext()->session->getPage()->findAll('css', '#subnavbar_level1 td.navi > a');
                 break;
             case 3:
             default:
-                return $this->getMainContext()->page->findAll('css', '#subnavbar_level2 a');
+                return $this->getMainContext()->session->getPage()->findAll('css', '#subnavbar_level2 a');
                 break;
         }
     }
 
-    private function waitForBackend(){
+    private function waitForBackend()
+    {
         $this->getMainContext()->session->wait(2000, 'document.getElementsByTagName("body")[0] !== undefined');
     }
 }
