@@ -744,7 +744,8 @@ class Resolver {
             // Otherwise the EntityManager holds false information about the page.
             // I.e. type might be 'application' instead of 'fallback'
             // See bug-report #1536
-            $this->em->refresh($page);
+            // $this->em->refresh($page);
+            $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK);
 
             // Due to the fallback-resolving, the virtual language directory
             // is currently set to the fallback language. Therefore we must set
