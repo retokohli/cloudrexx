@@ -300,6 +300,10 @@ function _crmInstall() {
                 'MyISAM',
                 'cx3upgrade'
             );
+            Cx\Lib\UpdateUtil::sql("
+                ALTER TABLE `".DBPREFIX."core_mail_template`
+                ADD PRIMARY KEY (`key` (32), `section` (32))
+            ");
 
             // migrate mail templates
             \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES(12, 1, \'crm\', \'core_mail_template_bcc\', \'\')');
