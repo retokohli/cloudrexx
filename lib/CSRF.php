@@ -365,7 +365,8 @@ class CSRF {
 
     private static function __reduce($code)
     {
-        foreach (array_keys($_SESSION[self::$sesskey]) as &$key) {
+        $arrayKeys = array_keys($_SESSION[self::$sesskey]);
+        foreach ($arrayKeys as &$key) {
             $_SESSION[self::$sesskey][$key] -=
                 ($code == $key
                     ? self::$active_decrease : self::$unused_decrease);
