@@ -1926,14 +1926,16 @@ function insertSessionArray($sessionArr, $parentId = 0)
 {
     global $objDatabase, $sessionObj;
     
-    foreach ($sessionArr as $key => $value) {        
+    foreach ($sessionArr as $key => $value) {
         \Cx\Lib\UpdateUtil::sql('INSERT INTO 
                                     '. DBPREFIX .'session_variable
                                 SET 
                                 `parent_id` = "'. intval($parentId) .'",
                                 `sessionid` = "'. $sessionObj->sessionid .'",
                                 `key` = "'. contrexx_input2db($key) .'",
-                                `value` = "'. (is_array($value) ? contrexx_input2db(serialize(null)) : contrexx_input2db(serialize($value)))  .'"');
+                                `value` = "'. (is_array($value) ? contrexx_input2db(serialize(null)) : contrexx_input2db(serialize($value)))  .'"
+                              ON DUPLICATE KEY UPDATE 
+                                `value` = "'. (is_array($value) ? contrexx_input2db(serialize(null)) : contrexx_input2db(serialize($value))) .'"');
         $insertId = $objDatabase->Insert_ID();
         
         if (is_array($value)) {            
