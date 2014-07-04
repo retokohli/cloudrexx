@@ -27,11 +27,12 @@ abstract class PageTree {
     protected $em = null;
     protected $license = null;
     protected $currentPage = null;
-    protected $pageIdsAtCurrentPath = array();    
+    protected $pageIdsAtCurrentPath = array();
+    protected $currentPageOnRootNode = false;
     protected $currentPagePath = null;
     protected $pageRepo = null;
     protected $skipInvisible = true;
-    
+
     /**
      * @param $entityManager the doctrine em
      * @param \Cx\Core_Modules\License\License $license License used to check if a module is allowed in frontend
@@ -75,109 +76,148 @@ abstract class PageTree {
     public function render() {
         $content = $this->preRender($this->lang);
         $content .= $this->renderHeader($this->lang);
-$this->bytes = memory_get_peak_usage();
-        $content .= $this->internalRender($this->rootNode);
+        $this->bytes = memory_get_peak_usage();
+        $content .= $this->internalRender($this->rootNode, $this->currentPageOnRootNode);
 //echo 'PageTree2(' . get_class($this) . '): ' . formatBytes(memory_get_peak_usage()-$this->bytes) . '<br />';
         $content .= $this->renderFooter($this->lang);
         $content .= $this->postRender($this->lang);
         return $content;
     }
-    
+
     /**
      * @todo Virtual pages!
      * @param type $nodes
      * @param type $level
-     * @param type $dontDescend 
+     * @param type $dontDescend
      */
-    private function internalRender($node) {
+    private function internalRender($node, $dontDescend = false) {
         global $_CONFIG;
         $content = '';
+        $nodeStack = array();
+        array_push($nodeStack, $node);
 
-        $qb  = $this->em->createQueryBuilder();
-        $qb1 = clone $qb;
-        
-        $qb1->select('COUNT(p1.id)')
-            ->from('\Cx\Core\ContentManager\Model\Entity\Page', 'p1')
-            ->join('p1.node', 'n1')
-            ->where("p1.type != 'alias'")
-            ->andWhere('n1.parent = n.id')
-            ->andWhere('p1.lang = :lang')
-            ->andWhere('p1.active = 1');
-        if ($this->skipInvisible) {
-            $qb1->andWhere('p1.display = 1');
+        $q = $this->em->createQuery("SELECT n FROM Cx\Core\ContentManager\Model\Entity\Node n JOIN n.pages p WHERE p.type != 'alias' AND n.lft > ?1 AND n.rgt < ?2 AND p.lang = ?3 ORDER BY n.lft  ASC");
+
+        $q->setParameter(1, $node->getLft());
+        $q->setParameter(2, $node->getRgt());
+        $q->setParameter(3, $this->lang);
+
+        $children = $q->getResult();
+
+        $nodeArray = array();
+        foreach ($children as $child) {
+            $nodeArray[$child->getParent()->getId()][] = $child;
         }
-        
-        $qb ->select('p','n.lvl AS level', 'n.lft AS leftIndex', 'n.rgt AS rightIndex')
-            ->addSelect('('. $qb1->getDQL() .') AS hasChild')            
-            ->from('\Cx\Core\ContentManager\Model\Entity\Page', 'p')
-            ->join('p.node', 'n')
-            ->where("p.type != 'alias'")
-            ->andWhere('n.lft >= :left')
-            ->andWhere('n.rgt <= :right')
-            ->andWhere('p.lang = :lang')
-            ->orderBy('n.lft', 'ASC')
-            ->setParameters(array(
-                'left'  => $node->getLft(),
-                'right' => $node->getRgt(),
-                'lang'  => $this->lang
-            ));
+
         $lastLevel = $this->getLastLevel();
-        if ($lastLevel) {
-            $qb->andWhere('n.lvl <= :level');
-            $qb->setParameter('level', $lastLevel);
-        }
-        
-        $pages = $qb->getQuery()->getResult();
-        
-        $invisibleIndex = 0;
-        foreach ($pages as $page) {
-            
-            $currentPage = $page[0];
-            $level       = $page['level'];
-            $left        = $page['leftIndex'];
-            $right       = $page['rightIndex'];
-            $hasChilds   = (boolean) $page['hasChild'];
-            
-            if ($left <= $invisibleIndex) {
+        while (count($nodeStack)) {
+            $node = array_pop($nodeStack);
+            if (is_callable($node)) {
+                $content .= $node();
                 continue;
             }
-            
-            if (!$currentPage || !$currentPage->isActive() || !$currentPage->isVisible()) {
-                $invisibleIndex = $right;                
+            $page = $node->getPage($this->lang);
+            if (
+                ($node->getLvl() == $lastLevel && $lastLevel > 0) ||
+                (
+                    !$this->getFullNavigation() && // don't show full navigation
+                    $page && // don't be on root node
+                    !in_array($page->getId(), $this->pageIdsAtCurrentPath) // I am not on active page
+                )
+            ) {
+                // hide children
+                $children = array();
+            } else {
+                $children = isset($nodeArray[$node->getId()]) ? $nodeArray[$node->getId()] : array();
+            }
+
+            $page = $node->getPage($this->lang);
+            $hasChilds = false;
+            if ($this->skipInvisible) {
+                if (!$page || ($page->isVisible() && $page->isActive())) {
+                    foreach ($children as $child) {
+                        $childPage = $child->getPage($this->lang);
+                        if ($childPage && $childPage->isVisible() && $childPage->isActive()) {
+                            $hasChilds = true;
+                            break;
+                        }
+                    }
+                }
+            } else {
+                if (!$page || $page->isActive()) {
+                    foreach ($children as $child) {
+                        $childPage = $child->getPage($this->lang);
+                        if ($childPage && $childPage->isActive()) {
+                            $hasChilds = true;
+                            break;
+                        }
+                    }
+                }
+            }
+            if ($hasChilds && !$dontDescend) {
+                // add preRenderLevel to stack
+                $pageTree = $this;
+                $level = $node->getLvl() + 1;
+                $lang = $this->lang;
+                array_push($nodeStack, function() use($pageTree, &$content, $level, $lang, $node) {
+                    return $pageTree->postRenderLevel($level, $lang, $node);
+                });
+                // add children to stack
+                $children = array_reverse($children, true);
+                foreach ($children as $child) {
+                    array_push($nodeStack, $child);
+                }
+                // add postRenderLevel to stack
+                array_push($nodeStack, function() use($pageTree, &$content, $level, $lang, $node) {
+                    return $pageTree->preRenderLevel($level, $lang, $node);
+                });
+            }
+
+            if (!$page || !$page->isActive() || !$page->isVisible()) {
                 continue;
             }
-            
-            // if page is protected, user has not sufficent permissions and protected pages are hidden
-            if ($currentPage->isFrontendProtected() && $_CONFIG['coreListProtectedPages'] != 'on' &&
-                    !\Permission::checkAccess($currentPage->getFrontendAccessId(), 'dynamic', true)
+
+            try {
+                $parentPage = $page->getParent();
+                // if parent is invisible or unpublished and parent node is not start node
+                if ($parentPage &&
+                    (!$parentPage->isVisible() || !$parentPage->isActive()) &&
+                    $page->getNode()->getParent()->getId() != $this->rootNode->getId()
                 ) {
-                $invisibleIndex = $right;
+                    continue;
+                }
+            } catch (\Cx\Core\ContentManager\Model\Entity\PageException $e) {
+                // if parent page does not exist, parent is root
+            }
+            // if page is protected, user has not sufficent permissions and protected pages are hidden
+            if ($page->isFrontendProtected() && $_CONFIG['coreListProtectedPages'] != 'on' &&
+                !\Permission::checkAccess($page->getFrontendAccessId(), 'dynamic', true)
+            ) {
                 continue;
             }
-            
-            if ($currentPage->getModule() != '' && !$this->license->isInLegalFrontendComponents($currentPage->getModule())) {
-                $invisibleIndex = $right;
+
+            if ($page->getModule() != '' && !$this->license->isInLegalFrontendComponents($page->getModule())) {
                 continue;
             }
+
             // prepare data for element
-            $current = in_array($currentPage->getId(), $this->pageIdsAtCurrentPath);
-            
-            $href = $currentPage->getPath();
+            $current = in_array($page->getId(), $this->pageIdsAtCurrentPath);
+
+            $href = $page->getPath();
             if (isset($_GET['pagePreview']) && $_GET['pagePreview'] == 1) {
                 $href .= '?pagePreview=1';
             }
-            
+
             $bytes = memory_get_peak_usage();
-            $content .= $this->preRenderElement($level, $hasChilds, $this->lang, $currentPage);
-            $content .= $this->renderElement($currentPage->getTitle(), $level, $hasChilds, $this->lang, $href, $current, $currentPage);
-            $content .= $this->postRenderElement($level, $hasChilds, $this->lang, $currentPage);
+            $content .= $this->preRenderElement($node->getLvl(), $hasChilds, $this->lang, $page);
+            $content .= $this->renderElement($page->getTitle(), $node->getLvl(), $hasChilds, $this->lang, $href, $current, $page);
+            $content .= $this->postRenderElement($node->getLvl(), $hasChilds, $this->lang, $page);
             $bytes = memory_get_peak_usage()-$bytes;
             $this->bytes = $this->bytes + $bytes;
         }
-        
         return $content;
     }
-    
+
     /**
      * Tells wheter $pathToPage is in the active branch
      * @param String $pathToPage
@@ -187,7 +227,7 @@ $this->bytes = memory_get_peak_usage();
         if ($pathToPage == '') {
             return false;
         }
-        
+
         $pathToPage = str_replace('//', '/', $pathToPage . '/');
         return substr($this->currentPagePath . '/', 0, strlen($pathToPage)) == $pathToPage;
     }
@@ -195,7 +235,7 @@ $this->bytes = memory_get_peak_usage();
     public function setVirtualLanguageDirectory($dir) {
         $this->virtualLanguageDirectory = $dir;
     }
-    
+
     protected abstract function preRenderElement($level, $hasChilds, $lang, $page);
     /**
      * Override this to do your representation of the tree.
@@ -212,28 +252,28 @@ $this->bytes = memory_get_peak_usage();
     protected abstract function renderElement($title, $level, $hasChilds, $lang, $path, $current, $page);
 
     protected abstract function postRenderElement($level, $hasChilds, $lang, $page);
-    
+
     public abstract function preRenderLevel($level, $lang, $parentNode);
-    
+
     public abstract function postRenderLevel($level, $lang, $parentNode);
-    
+
     protected abstract function renderHeader($lang);
-    
+
     protected abstract function renderFooter($lang);
-    
+
     protected abstract function preRender($lang);
-    
+
     protected abstract function postRender($lang);
-    
+
     /**
      * Called on construction. Override if you do not want to override the ctor.
      */
     protected abstract function init();
-    
+
     protected function getFirstLevel() {
         return 1; // show from first level
     }
-    
+
     protected function getLastLevel() {
         return 0; // show all levels
     }
