@@ -35,7 +35,7 @@ Cx\Core\ContentManager\Model\Entity\Node:
         - treeParent
   oneToMany: # inverse side
     children:
-      fetch: EAGER #progressive fetching
+      fetch: LAZY #progressive fetching
       targetEntity: Cx\Core\ContentManager\Model\Entity\Node
       mappedBy: parent
     pages:
