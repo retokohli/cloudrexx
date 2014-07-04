@@ -114,6 +114,7 @@ class Frontend500CheckContext extends MinkContext
     private function getLinkTagsOfNavigation()
     {
         try {
+            echo "If this test doesn't check all links change the css selector in features/bootstrap/Frontend500Check.php:118 to find your navigation links.";
             return $this->getMainContext()->page->findAll('css', '#navigation a');
         } catch (\Exception $e) {
             return array();
