@@ -74,7 +74,7 @@ class FeatureContext extends BehatContext
      */
     public function iAmInBackend()
     {
-        $this->iAmOn('http://' . $this->config['domainUrl'] . '/' . ASCMS_BACKEND_PATH);
+        $this->iAmOn('http://' . $this->config['domainUrl'] . '/' . ASCMS_INSTANCE_OFFSET . ASCMS_BACKEND_PATH);
 //        $this->iAmOn('http://' . $this->config['domainUrl'] . ASCMS_INSTANCE_OFFSET . ASCMS_BACKEND_PATH);
     }
 
@@ -83,7 +83,7 @@ class FeatureContext extends BehatContext
      */
     public function iAmInFrontend()
     {
-        $this->iAmOn('http://' . $this->config['domainUrl'] . '/');
+        $this->iAmOn('http://' . $this->config['domainUrl'] . '/' .ASCMS_INSTANCE_OFFSET);
 //        $this->iAmOn('http://' . $this->config['domainUrl'] . ASCMS_INSTANCE_OFFSET);
     }
 
