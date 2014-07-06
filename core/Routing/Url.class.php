@@ -103,14 +103,15 @@ class Url {
      */
     public function __construct($url) {
         $matches = array();
-        $matchCount = preg_match('/^(https?:\/\/[^\/]+\/)(.*)?/', $url, $matches);
+        $matchCount = preg_match('/^((https?):\/\/[^\/]+\/)(.*)?/', $url, $matches);
         if ($matchCount == 0) {
             throw new UrlException('Malformed URL: ' . $url);
         }
 
         $this->domain = $matches[1];
-        if (isset($matches[2])) {
-            $this->setPath($matches[2]);
+        $this->protocol = $matches[2];
+        if (isset($matches[3])) {
+            $this->setPath($matches[3]);
         } else {
             $this->suggest();
         }
