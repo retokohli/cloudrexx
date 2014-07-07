@@ -1406,6 +1406,8 @@ $updates310Sp1To310Sp2 = array(
     '
         UPDATE `'.DBPREFIX.'core_text` SET `text` = "VISA, Mastercard (Saferpay)" WHERE `key` = "payment_name" AND `section` = "shop" AND `text` LIKE "%PostFinance%"
     ',
+    'INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES (\'crm\',\'numof_mailtemplate_per_page_backend\',\'config\',\'text\',\'25\',\'\',1001)',
+    'INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES (\'filesharing\',\'permission\',\'config\',\'text\',\'off\',\'\',0)',
     'INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (16,1,"shop","payment_name","Kreditkarte (Paymill)")',
     'INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (16,2,"shop","payment_name","paymill")',
     'INSERT IGNORE INTO `'.DBPREFIX.'core_text` (`id`, `lang_id`, `section`, `key`, `text`) VALUES (17,1,"shop","payment_name","ELV (Paymill)")',
