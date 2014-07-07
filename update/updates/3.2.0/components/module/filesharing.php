@@ -38,6 +38,9 @@ function _filesharingUpdate()
             ON DUPLICATE KEY UPDATE `id` = `id`
         ');
 
+        \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`)
+                                    VALUES (\'filesharing\',\'permission\',\'config\',\'text\',\'off\',\'\',0)');
+
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
