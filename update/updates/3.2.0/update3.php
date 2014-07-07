@@ -1441,6 +1441,19 @@ $updates310Sp1To310Sp2 = array(
             'context_type'       => array('type' => 'ENUM(\'none\',\'title\',\'address\',\'zip\',\'city\',\'country\')', 'after' => 'show_in')
         ),
     ),
+    array(
+        'table' => DBPREFIX.'module_shop_order_attributes',
+        'structure' => array(
+            'id'                 => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'auto_increment' => true, 'primary' => true),
+            'item_id'            => array('type' => 'INT(10)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'after' => 'id'),
+            'attribute_name'     => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'item_id'),
+            'option_name'        => array('type' => 'VARCHAR(255)', 'notnull' => true, 'default' => '', 'after' => 'attribute_name'),
+            'price'              => array('type' => 'DECIMAL(9,2)', 'unsigned' => false, 'notnull' => true, 'default' => '0.00', 'after' => 'option_name')
+        ),
+        'keys' => array(
+            'item_id'            => array('fields' => array('item_id'))
+        )
+    ),
 );
 
 $updatesRc1To310Sp2    = array_merge($updatesRc1ToRc2, $updatesRc2ToStable, $updatesStableToHotfix, $updatesHotfixToSp1, $updatesSp1ToSp2, $updatesSp2ToSp3, $updatesSp3ToSp4, $updatesSp4To310, $updates310To310Sp1, $updates310Sp1To310Sp2);

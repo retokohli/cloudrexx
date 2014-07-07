@@ -342,6 +342,8 @@ function _crmInstall() {
             \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_mail_template` (`key`, `section`, `text_id`, `html`, `protected`) VALUES(\'crm_user_account_created\', \'crm\', 12, 1, 1)');
             \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_mail_template` (`key`, `section`, `text_id`, `html`, `protected`) VALUES(\'crm_notify_staff_on_contact_added\', \'crm\', 14, 1, 1)');
             \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_mail_template` (`key`, `section`, `text_id`, `html`, `protected`) VALUES(\'crm_task_assigned\', \'crm\', 13, 1, 1)');
+
+            \Cx\Lib\UpdateUtil::sql('INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES (\'crm\',\'numof_mailtemplate_per_page_backend\',\'config\',\'text\',\'25\',\'\',1001)');
         }
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
