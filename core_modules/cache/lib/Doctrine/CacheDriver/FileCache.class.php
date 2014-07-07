@@ -24,6 +24,8 @@ namespace Cx\Core_Modules\cache\lib\Doctrine\CacheDriver;
  *
  * @since  2.3
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
+ * @package     contrexx
+ * @subpackage  coremodule_cache
  */
 abstract class FileCache extends CacheProvider
 {
