@@ -2026,6 +2026,25 @@ function _shopInstall()
             ON DUPLICATE KEY UPDATE `id` = `id`
         ");
 
+        try {
+            $queries = array(
+                'INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ("shop","payment_lsv_active","config","text","1","",18)',
+                'INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ("shop","paymill_active","config","text","1","",3)',
+                'INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ("shop","paymill_live_private_key","config","text","","",0)',
+                'INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ("shop","paymill_live_public_key","config","text","","",0)',
+                'INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ("shop","paymill_live_public_key","config","text","","",0)',
+                'INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ("shop","paymill_test_private_key","config","text","","",2)',
+                'INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ("shop","paymill_test_public_key","config","text","","",16)',
+                'INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES ("shop","paymill_use_test_account","config","text","0","",15)',
+                'INSERT IGNORE INTO `'.DBPREFIX.'core_setting` (`section`, `name`, `group`, `type`, `value`, `values`, `ord`) VALUES (\'shop\',\'orderitems_amount_min\',\'config\',\'text\',\'0\',\'\',0);'
+            );
+            foreach ($queries as $query) {
+                \Cx\Lib\UpdateUtil::sql($query);
+            }
+        } catch (\Cx\Lib\UpdateException $e) {
+            return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
+        }
+
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
