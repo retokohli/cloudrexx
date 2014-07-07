@@ -203,26 +203,27 @@ class cacheLib
         global $_CONFIG;
 
         $this->userCacheEngine = self::CACHE_ENGINE_OFF;
-        if (   isset($_CONFIG['cacheDbStatus'])
-            && $_CONFIG['cacheDbStatus'] == 'on'
-            && isset($_CONFIG['cacheUserCache'])
+        if (   isset($_CONFIG['cacheUserCache'])
             && in_array($_CONFIG['cacheUserCache'], $this->userCacheEngines)
         ) {
             $this->userCacheEngine = $_CONFIG['cacheUserCache'];
         }
 
         $this->opCacheEngine = self::CACHE_ENGINE_OFF;
-        if (   isset($_CONFIG['cacheOpStatus'])
-            && $_CONFIG['cacheOpStatus'] == 'on'
-            && isset($_CONFIG['cacheOPCache'])
+        if (   isset($_CONFIG['cacheOPCache'])
             && in_array($_CONFIG['cacheOPCache'], $this->opCacheEngines)
         ) {
             $this->opCacheEngine = $_CONFIG['cacheOPCache'];
         }
+
+        $opCacheEngine = $this->opCacheEngine;
+        if (!$this->getOpCacheActive()) {
+            $opCacheEngine = self::CACHE_ENGINE_OFF;
+        }
         
         // deactivate other op cache engines
         foreach ($this->opCacheEngines as $engine) {
-            if ($engine != $this->opCacheEngine) {
+            if ($engine != $opCacheEngine) {
                 switch ($engine) {
                     case self::CACHE_ENGINE_APC:
                         ini_set('apc.cache_by_default', 0);
@@ -236,6 +237,18 @@ class cacheLib
                 }
             }
         }
+    }
+
+    public function getUserCacheActive() {
+        return
+            isset($_CONFIG['cacheDbStatus'])
+            && $_CONFIG['cacheDbStatus'] == 'on';
+    }
+
+    public function getOpCacheActive() {
+        return
+            isset($_CONFIG['cacheOpStatus'])
+            && $_CONFIG['cacheOpStatus'] == 'on';
     }
     
     public function getOpCacheEngine() {
