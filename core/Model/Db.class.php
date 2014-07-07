@@ -190,7 +190,12 @@ namespace Cx\Core\Model {
 
             $config = new \Doctrine\ORM\Configuration();
 
-            switch ($objCache->getUserCacheEngine()) {
+            $userCacheEngine = $objCache->getUserCacheEngine();
+            if (!$objCache->getUserCacheActive()) {
+                $userCacheEngine = \Cache::CACHE_ENGINE_OFF;
+            }
+
+            switch ($userCacheEngine) {
                 case \Cache::CACHE_ENGINE_APC:
                     $cache = new \Doctrine\Common\Cache\ApcCache();
                     $cache->setNamespace($_DBCONFIG['database'] . '.' . DBPREFIX);
