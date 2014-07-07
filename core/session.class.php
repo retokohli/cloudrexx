@@ -144,6 +144,21 @@ class cmsSession extends RecursiveArrayAccess {
     }
 
     /**
+     * Return true if the session is initialized and false otherwise.
+     * 
+     * @return boolean true if the session is initialized and false otherwise.
+     */
+    public static function isInitialized()
+    {
+        if (!isset(self::$instance))
+        {
+            return false;
+        }
+        
+        return true;
+    }
+
+    /**
      * Default object constructor.          
      */    
     protected function __construct()

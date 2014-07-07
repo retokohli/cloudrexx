@@ -127,12 +127,12 @@ class cmsSession extends RecursiveArrayAccess {
     public static function getInstance()
     {
         if (!isset(self::$instance))
-        {            
+        {
             self::$instance = new static();
             $_SESSION = self::$instance;
-            
+                                    
             // read the session data
-            $_SESSION->readData();            
+            $_SESSION->readData();
             
             //earliest possible point to set debugging according to session.
             $_SESSION->restoreDebuggingParams();
@@ -141,6 +141,21 @@ class cmsSession extends RecursiveArrayAccess {
         }
         
         return self::$instance;
+    }
+
+    /**
+     * Return true if the session is initialized and false otherwise.
+     * 
+     * @return boolean true if the session is initialized and false otherwise.
+     */
+    public static function isInitialized()
+    {
+        if (!isset(self::$instance))
+        {
+            return false;
+        }
+        
+        return true;
     }
 
     /**
@@ -153,6 +168,8 @@ class cmsSession extends RecursiveArrayAccess {
             session_destroy();
         }
 
+        register_shutdown_function(array(& $this, 'releaseLocks'));
+        
         $this->initDatabase();
         $this->initRememberMe();
         $this->initSessionLifetime();
@@ -170,6 +187,18 @@ class cmsSession extends RecursiveArrayAccess {
         } else {
             $this->cmsSessionError();
         }        
+    }
+    
+    /**
+     * It release all created locks
+     */  
+    function releaseLocks() {
+        // release all locks
+        if (!empty($this->locks)) {
+            foreach (array_keys($this->locks) as $lockKey) {
+                $this->releaseLock($lockKey);
+            }
+        }
     }
     
     /**
@@ -354,19 +383,11 @@ class cmsSession extends RecursiveArrayAccess {
 
     /**
      * Callable on session close
-     * It release all created locks
      * 
      * @return boolean
      */
     function cmsSessionClose()
-    {        
-        // release all locks
-        if (!empty($_SESSION->locks)) {
-            foreach ($_SESSION->locks as $key => $value) {
-                $this->releaseLock($key);
-            }
-        }
-        
+    {
         return true;
     }
 
