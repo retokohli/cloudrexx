@@ -403,9 +403,7 @@ class CSRF {
             \cmsSession::getInstance();
             $_SESSION[self::$sesskey] = array();
         }
-        $csrfdata                 = $_SESSION[self::$sesskey];
-        $csrfdata[$key]           = $value;
-        $_SESSION[self::$sesskey] = $csrfdata;
+        $_SESSION[self::$sesskey][$key] = $value;
     }
 
 
