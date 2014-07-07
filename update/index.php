@@ -159,6 +159,11 @@ try {
     // don't handle this exception here because we can't print a nice error message
 }
 
+require_once(UPDATE_CORE . '/cache/cache.class.php');
+global $objCache;
+
+$objCache = new \Cache();
+
 // Start update
 $objUpdate = new ContrexxUpdate();
 // $_CORELANG has been initialized by the constructor of ContrexxUpdate()
