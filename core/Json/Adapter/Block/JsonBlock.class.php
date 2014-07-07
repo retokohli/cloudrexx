@@ -11,9 +11,32 @@
 namespace Cx\Core\Json\Adapter\Block;
 use \Cx\Core\Json\JsonAdapter;
 
+/**
+ * Class NoPermissionException
+ * @package     contrexx
+ * @subpackage  core_json
+ */
 class NoPermissionException extends \Exception {}
+
+/**
+ * Class NotEnoughArgumentsException
+ * @package     contrexx
+ * @subpackage  core_json
+ */
 class NotEnoughArgumentsException extends \Exception {}
+
+/**
+ * Class NoBlockFoundException
+ * @package     contrexx
+ * @subpackage  core_json
+ */
 class NoBlockFoundException extends \Exception {}
+
+/**
+ * Class BlockCouldNotBeSavedException
+ * @package     contrexx
+ * @subpackage  core_json
+ */
 class BlockCouldNotBeSavedException extends \Exception {}
 
 /**
