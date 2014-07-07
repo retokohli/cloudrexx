@@ -235,21 +235,20 @@ class cmsSession extends RecursiveArrayAccess {
         $objResult = \Env::get('db')->Execute($query);
         
         $data = array();
-        if ($objResult && $objResult->RecordCount() > 0) {
+        if ($objResult !== false && $objResult->RecordCount() > 0) {
             while (!$objResult->EOF) {
                 $dataKey   = $objResult->fields['key'];
-                $dataValue = unserialize($objResult->fields['value']);                
-                if (!is_null($dataValue)) {
-                    $data[$dataKey] = $dataValue;
-                } else {
+                if ($objResult->fields['value'] === '') {
                     $data[$dataKey]       = new RecursiveArrayAccess(null, $dataKey, $varId);
                     $data[$dataKey]->id   = $objResult->fields['id'];
                     $data[$dataKey]->data = self::getDataFromKey($objResult->fields['id']);
-                    $data[$dataKey]->callableOnSet   = array('\cmsSession', 'updateToDb');                    
+                    $data[$dataKey]->callableOnSet   = array('\cmsSession', 'updateToDb');
                     $data[$dataKey]->callableOnGet   = array('\cmsSession', 'getFromDb');
                     $data[$dataKey]->callableOnUnset = array('\cmsSession', 'removeFromSession');
+                } else {
+                    $data[$dataKey] = unserialize($objResult->fields['value']);
                 }
-                
+
                 $objResult->MoveNext();
             }
         }
@@ -726,19 +725,18 @@ class cmsSession extends RecursiveArrayAccess {
                       LIMIT 0, 1';
             $objResult = \Env::get('db')->Execute($query);
 
-            $dataValue = unserialize($objResult->fields['value']);   
-            
-            if (!is_null($dataValue)) {
-                $arrObj->data[$offset] = $dataValue;
-            } else {
+            if ($objResult->fields['value'] === '') {
                 $data       = new RecursiveArrayAccess(null, $offset, $arrObj->id);
                 $data->id   = $objResult->fields['id'];
                 $data->data = self::getDataFromKey($objResult->fields['id']);
                 $data->callableOnSet   = array('\cmsSession', 'updateToDb');
                 $data->callableOnGet   = array('\cmsSession', 'getFromDb');
                 $data->callableOnUnset = array('\cmsSession', 'removeFromSession');
-                
+
                 $arrObj->data[$offset] = $data;
+            } else {
+                $dataValue = unserialize($objResult->fields['value']);
+                $arrObj->data[$offset] = $dataValue;
             }
 
             return $arrObj->data[$offset];
@@ -753,7 +751,7 @@ class cmsSession extends RecursiveArrayAccess {
      * @param object $arrObj session object array
      */
     public static function updateToDb($arrObj) {
-        
+
         if (empty($arrObj->id) && (string) $arrObj->offset != '') {
             $query = 'INSERT INTO 
                             '. DBPREFIX .'session_variable
@@ -768,15 +766,22 @@ class cmsSession extends RecursiveArrayAccess {
         }
 
         foreach ($arrObj->data as $key => $value) {
+
+            if (is_a($value, 'Cx\Core\Model\RecursiveArrayAccess')) {
+                $serializedValue = '';
+            } else {
+                $serializedValue = contrexx_input2db(serialize($value));
+            }
+
             $query = 'INSERT INTO 
                             '. DBPREFIX .'session_variable
                         SET 
                         `parent_id` = "'. intval($arrObj->id) .'",
                         `sessionid` = "'. $_SESSION->sessionid .'",
                         `key` = "'. contrexx_input2db($key) .'",
-                        `value` = "'. contrexx_input2db(serialize(is_a($value, 'Cx\Core\Model\RecursiveArrayAccess') ? null : $value)) .'"
+                        `value` = "'. $serializedValue .'"
                       ON DUPLICATE KEY UPDATE 
-                         `value` = "'. contrexx_input2db(serialize(is_a($value, 'Cx\Core\Model\RecursiveArrayAccess') ? null : $value)) .'"';
+                         `value` = "'. $serializedValue .'"';
 
             \Env::get('db')->Execute($query);
         }
