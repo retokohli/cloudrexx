@@ -29,6 +29,8 @@ namespace Cx\Core_Modules\cache\lib\Doctrine\CacheDriver;
  * @author Jonathan Wage <jonwage@gmail.com>
  * @author Roman Borschel <roman@code-factory.org>
  * @author Fabio B. Silva <fabio.bat.silva@gmail.com>
+ * @package     contrexx
+ * @subpackage  coremodule_cache
  */
 interface Cache extends \Doctrine\Common\Cache\Cache
 {
