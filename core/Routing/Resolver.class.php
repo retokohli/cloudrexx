@@ -709,6 +709,13 @@ class Resolver {
      */
     public function handleFallbackContent($page, $requestedPage = true) {
         //handle untranslated pages - replace them by the right language version.
+
+        // Important: We must reset the modified $page object here.
+        // Otherwise the EntityManager holds false information about the page.
+        // I.e. type might be 'application' instead of 'fallback'
+        // See bug-report #1536
+        $page = $this->pageRepo->findOneById($page->getId());
+
         if($page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK) {
             // in case the first resolved page (= original requested page) is a fallback page
             // we must check here if this very page is active.
@@ -739,13 +746,6 @@ class Resolver {
             // be reset, when we reset (see next command) the original
             // requested page $page.
             $this->page = clone $page;
-
-            // Important: We must reset the modified $page object here.
-            // Otherwise the EntityManager holds false information about the page.
-            // I.e. type might be 'application' instead of 'fallback'
-            // See bug-report #1536
-            // $this->em->refresh($page);
-            $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_FALLBACK);
 
             // Due to the fallback-resolving, the virtual language directory
             // is currently set to the fallback language. Therefore we must set
