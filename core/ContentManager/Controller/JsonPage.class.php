@@ -154,7 +154,8 @@ class JsonPage implements JsonAdapter {
      * @return type 
      */
     public function set($params) {
-        global $_CORELANG;
+        global $_CORELANG, $objCache;
+        $objCache->clearCache();
         
         // Global access check
         if (!\Permission::checkAccess(6, 'static', true) || !\Permission::checkAccess(35, 'static', true)) {
