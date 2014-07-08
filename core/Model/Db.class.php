@@ -195,6 +195,7 @@ namespace Cx\Core\Model {
                 $userCacheEngine = \Cache::CACHE_ENGINE_OFF;
             }
 
+            $arrayCache = new \Doctrine\Common\Cache\ArrayCache();
             switch ($userCacheEngine) {
                 case \Cache::CACHE_ENGINE_APC:
                     $cache = new \Doctrine\Common\Cache\ApcCache();
@@ -219,12 +220,12 @@ namespace Cx\Core\Model {
                     $cache = new \Cx\Core_Modules\cache\lib\Doctrine\CacheDriver\FileSystemCache(ASCMS_CACHE_PATH);                    
                     break;
                 default:
-                    $cache = new \Doctrine\Common\Cache\ArrayCache();
+                    $cache = $arrayCache;
                     break;
             }
             \Env::set('cache', $cache);
             $config->setResultCacheImpl($cache);
-            $config->setMetadataCacheImpl($cache);
+            $config->setMetadataCacheImpl($arrayCache);
             $config->setQueryCacheImpl($cache);
 
             $config->setProxyDir(ASCMS_MODEL_PROXIES_PATH);
