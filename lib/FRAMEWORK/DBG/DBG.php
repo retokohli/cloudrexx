@@ -335,7 +335,14 @@ class DBG
         while (file_exists($file.$suffix)) {
             $suffix = '.'.++$nr;
         }*/
-        if (class_exists('\Cx\Lib\FileSystem\File')) {
+        if ($file == 'php://output') {
+			self::$dbg_fh = fopen($file, $mode);
+            if (self::$dbg_fh) {
+                return true;
+            } else {
+                return false;
+            }
+		} elseif (class_exists('\Cx\Lib\FileSystem\File')) {
             try {
                 self::$dbg_fh = new \Cx\Lib\FileSystem\File($file.$suffix);
                 self::$dbg_fh->touch();
