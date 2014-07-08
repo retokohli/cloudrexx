@@ -415,6 +415,10 @@ class cacheLib
     private function clearVarnishCache()
     {
         global $_CONFIG;
+        
+        if (!isset($_CONFIG['cacheVarnishStatus']) || $_CONFIG['cacheVarnishStatus'] != 'on') {
+            return;
+        }
 
         $varnishConfiguration = $this->getVarnishConfiguration();
         $varnishSocket = fsockopen($varnishConfiguration['ip'], $varnishConfiguration['port'], $errno, $errstr);
