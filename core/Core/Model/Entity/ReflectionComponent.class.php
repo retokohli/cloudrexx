@@ -336,8 +336,8 @@ class ReflectionComponent {
         if (isset($meta['DlcInfo']['FrameworkVersion'])) {
             if ($meta['DlcInfo']['FrameworkVersion'] < 3.1) {
                 //copy code from installer to load db from sql:
-                    // load /data/structure.sql
-                    // load /data/fixtures.sql
+                // load /data/structure.sql
+                // load /data/fixtures.sql
             } else {
                 // init DB structure from doctrine yaml files
                 //doctrine orm:schema-tool:update --force
@@ -1168,7 +1168,20 @@ class ReflectionComponent {
             
             $result->MoveNext();
         }
-                
+        
+        
+        $query = 'DELETE FROM `'. DBPREFIX .'core_mail_template` WHERE `section` = "'. $this->componentName .'"';
+        $adoDb->execute($query);
+        
+        $query = 'DELETE FROM `'. DBPREFIX .'core_text` WHERE `section` = "'. $this->componentName .'"';
+        $adoDb->execute($query);
+        
+        $query = 'DELETE FROM `'. DBPREFIX .'core_setting` WHERE `section` = "'. $this->componentName .'"';
+        $adoDb->execute($query);
+
+        $query = 'DELETE FROM `'. DBPREFIX .'settings` WHERE `setname` LIKE "'. $this->componentName .'%"';
+        $adoDb->execute($query);
+            
         // pages
         $this->deactivate();
     }
