@@ -1358,7 +1358,24 @@ function activateDebugging()
     if ($File->getAccessMode() == \Cx\Lib\FileSystem\File::FTP_ACCESS) {
         throw new \Exception('Cannot write log via FTP (file needs to be loaded into memory which leads to memory overflow)');
     }
+
+    // temporariy disable FTP support to prevent the FileSystem
+    // from creating the dbg.log file through FTP
+    $ftpConfig = \Env::get('ftpConfig');
+    if ($ftpConfig['is_activated']) {
+        \DBG::msg('Update: Intentionally deactivate FTP support as we do not support to write the update log (dbg.log) through FTP due to potential memory overflows.');
+        $hackedFtpConfig = $ftpConfig;
+        $hackedFtpConfig['is_activated'] = false;
+        \Env::set('ftpConfig', $hackedFtpConfig);
+    }
+
     $File->touch();
+
+    // reset FTP
+    if ($ftpConfig['is_activated']) {
+        \Env::set('ftpConfig', $ftpConfig);
+    }
+
     if ($File->makeWritable()) {
         \DBG::activate(DBG_LOG_FILE | DBG_PHP | DBG_DB);
         return true;
