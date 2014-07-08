@@ -80,7 +80,7 @@ class Permission {
      * 
      * @return boolean
      */
-    public function hasAccess() {
+    public function hasAccess(array $params = array()) {
         $protocol = \Env::get('cx')->getRequest()->getUrl()->getProtocol();
         $method   = \Env::get('cx')->getRequest()->getHttpRequestMethod();
         
@@ -100,7 +100,7 @@ class Permission {
         }
         
         //callback function check
-        if (isset($this->callback) && !call_user_func($this->callback)) {
+        if (isset($this->callback) && !call_user_func($this->callback, $params)) {
             return false;
         }
         
