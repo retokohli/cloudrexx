@@ -356,7 +356,7 @@ class JsonPage implements JsonAdapter {
             }
             
             if ($page->getEditingStatus() != '') {
-                $logEntries = $this->logRepo->getLogEntries($page);
+                $logEntries = $this->logRepo->getLogEntries($page, false);
                 $this->em->remove($logEntries[0]);
             }
             
