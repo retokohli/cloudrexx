@@ -1599,7 +1599,7 @@ class CommonFunctions
                 // have to use serializer "php", not "default" due to doctrine2 gedmo tree repository
                 ini_set('apc.serializer', 'php');
                 if ($isConfigured(\cacheLib::CACHE_ENGINE_APC, true)) {
-                    $_CONFIG['cacheUserCache'] = \cacheLib::CACHE_ENGINE_XCACHE;
+                    $_CONFIG['cacheUserCache'] = \cacheLib::CACHE_ENGINE_APC;
                     return;
                 }
             }
