@@ -2348,6 +2348,12 @@ cx.cm.resetEditView = function() {
         el = cx.jQuery(el);
         el.val("");
     });
+
+    // empty existing ckeditor
+    if (cx.cm.editorInUse()) {
+        CKEDITOR.instances.cm_ckeditor.setData('');
+    }
+
     // reset hidden fields
     cx.jQuery("input#pageId").val("new");
     cx.jQuery("input#pageLang").val(cx.jQuery('.chzn-select').val());
