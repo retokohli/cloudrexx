@@ -191,30 +191,55 @@ class CacheManager extends cacheLib
             closedir($handleFolder);
         }
         
-        if($this->isInstalled(self::CACHE_ENGINE_APC) && $this->isConfigured(self::CACHE_ENGINE_APC)){
+        if (   $this->isInstalled(self::CACHE_ENGINE_APC)
+            && $this->isConfigured(self::CACHE_ENGINE_APC)
+            && (
+                $this->opCacheEngine == self::CACHE_ENGINE_APC
+                || $this->userCacheEngine == self::CACHE_ENGINE_APC
+            )
+        ){
             $this->objTpl->touchBlock('apcCachingStats');
             $apcSmaInfo = \apc_sma_info();
             $apcCacheInfo = \apc_cache_info();
         }else{
             $this->objTpl->hideBlock('apcCachingStats');
         }
-        if($this->isInstalled(self::CACHE_ENGINE_ZEND_OPCACHE) && $this->isConfigured(self::CACHE_ENGINE_ZEND_OPCACHE)){
+        if (   $this->isInstalled(self::CACHE_ENGINE_ZEND_OPCACHE)
+            && $this->isConfigured(self::CACHE_ENGINE_ZEND_OPCACHE)
+            && $this->opCacheEngine == self::CACHE_ENGINE_ZEND_OPCACHE
+            && $this->getOpCacheActive()
+        ){
             $this->objTpl->touchBlock('zendOpCachingStats');
             $opCacheConfig = \opcache_get_configuration();
             $opCacheStatus = \opcache_get_status();
         }else{
             $this->objTpl->hideBlock('zendOpCachingStats');
         }
-        if($this->isInstalled(self::CACHE_ENGINE_MEMCACHE) && $this->isConfigured(self::CACHE_ENGINE_MEMCACHE)){
+        if (   $this->isInstalled(self::CACHE_ENGINE_MEMCACHE)
+            && $this->isConfigured(self::CACHE_ENGINE_MEMCACHE)
+            && $this->userCacheEngine == self::CACHE_ENGINE_MEMCACHE
+            && $this->getUserCacheActive()
+        ){
             $this->objTpl->touchBlock('memcacheCachingStats');
             $memcacheStats = $this->memcache->getStats();
         }else{
             $this->objTpl->hideBlock('memcacheCachingStats');
         }
-        if($this->isInstalled(self::CACHE_ENGINE_XCACHE) && $this->isConfigured(self::CACHE_ENGINE_XCACHE)){
+        if (   $this->isInstalled(self::CACHE_ENGINE_XCACHE)
+            && $this->isConfigured(self::CACHE_ENGINE_XCACHE)
+            && (
+                   $this->opCacheEngine == self::CACHE_ENGINE_XCACHE
+                || $this->userCacheEngine == self::CACHE_ENGINE_XCACHE
+            )
+        ){
             $this->objTpl->touchBlock('xCacheCachingStats');
         }else{
             $this->objTpl->hideBlock('xCacheCachingStats');
+        }
+        if ($this->userCacheEngine == self::CACHE_ENGINE_FILESYSTEM && $this->getUserCacheActive()) {
+            $this->objTpl->touchBlock('FileSystemCachingStats');
+        } else {
+            $this->objTpl->hideBlock('FileSystemCachingStats');
         }
         $apcSizeCount = isset($apcCacheInfo['nhits']) ? $apcCacheInfo['nhits'] : 0;
         $apcEntriesCount = 0;
@@ -227,7 +252,7 @@ class CacheManager extends cacheLib
         }
         $apcMaxSizeKb = isset($apcSmaInfo['num_seg']) && isset($apcSmaInfo['seg_size']) ? $apcSmaInfo['num_seg']*$apcSmaInfo['seg_size'] / 1024 : 0;
         $apcSizeKb = isset($apcCacheInfo['mem_size']) ? $apcCacheInfo['mem_size'] / 1024 : 0;
-        
+
         $opcacheSizeCount = !isset($opCacheStatus) || $opCacheStatus == false ? 0 : $opCacheStatus['opcache_statistics']['num_cached_scripts'];
         $opcacheSizeKb = (!isset($opCacheStatus) || $opCacheStatus == false ? 0 : $opCacheStatus['memory_usage']['used_memory']) / (1024 * 1024);
         $opcacheMaxSizeKb = isset($opCacheConfig['directives']['opcache.memory_consumption']) ? $opCacheConfig['directives']['opcache.memory_consumption'] / (1024 * 1024) : 0;
@@ -336,7 +361,9 @@ class CacheManager extends cacheLib
 
         $this->objSettings->writeSettingsFile();
         $this->initUserCaching(); // reinit user caches (especially memcache)
+        $this->initOPCaching(); // reinit opcaches
         $this->getActivatedCacheEngines();
+        $this->clearCache($this->getOpCacheEngine());
 
         if (!count($this->objSettings->strErrMessage)) {
             $objTemplate->SetVariable('CONTENT_OK_MESSAGE', $_CORELANG['TXT_SETTINGS_UPDATED']);
@@ -507,7 +534,6 @@ class CacheManager extends cacheLib
      * @param string $cacheEngine
      */
     public function forceClearCache($cacheEngine = null){
-        
         global $_CORELANG, $objTemplate;
         
         switch ($cacheEngine) {

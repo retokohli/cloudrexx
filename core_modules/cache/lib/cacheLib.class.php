@@ -215,12 +215,17 @@ class cacheLib
         ) {
             $this->opCacheEngine = $_CONFIG['cacheOPCache'];
         }
+    }
 
+    public function deactivateNotUsedOpCaches() {
+        if (empty($this->opCacheEngine)) {
+            $this->getActivatedCacheEngines();
+        }
         $opCacheEngine = $this->opCacheEngine;
         if (!$this->getOpCacheActive()) {
             $opCacheEngine = self::CACHE_ENGINE_OFF;
         }
-        
+
         // deactivate other op cache engines
         foreach ($this->opCacheEngines as $engine) {
             if ($engine != $opCacheEngine) {
@@ -240,12 +245,14 @@ class cacheLib
     }
 
     public function getUserCacheActive() {
+        global $_CONFIG;
         return
             isset($_CONFIG['cacheDbStatus'])
             && $_CONFIG['cacheDbStatus'] == 'on';
     }
 
     public function getOpCacheActive() {
+        global $_CONFIG;
         return
             isset($_CONFIG['cacheOpStatus'])
             && $_CONFIG['cacheOpStatus'] == 'on';
@@ -392,6 +399,7 @@ class cacheLib
                 break;
             case self::CACHE_ENGINE_ZEND_OPCACHE:
                 $this->clearZendOpCache();
+                break;
             case self::CACHE_ENGINE_FILESYSTEM:
                 $this->_deleteAllFiles();
             default:

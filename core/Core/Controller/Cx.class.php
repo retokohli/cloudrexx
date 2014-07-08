@@ -604,6 +604,11 @@ namespace Cx\Core\Core\Controller {
              * Start caching with op cache, user cache and contrexx caching
              */
             $objCache = new \Cache();
+            if ($this->mode == self::MODE_FRONTEND) {
+                $objCache->deactivateNotUsedOpCaches();
+            } elseif (!isset($_GET['cmd']) || $_GET['cmd'] != 'settings') {
+                $objCache->deactivateNotUsedOpCaches();
+            }
             $this->tryToSetMemoryLimit();
             
             // start contrexx caching
