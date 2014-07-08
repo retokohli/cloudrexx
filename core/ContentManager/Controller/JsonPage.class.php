@@ -215,6 +215,7 @@ class JsonPage implements JsonAdapter {
                     $parentNode = $this->nodeRepo->getRoot();
                 }
                 $node->setParent($parentNode);
+                $parentNode->addChildren($node);
                 
                 // add parent node to ID, so the node containing the new page is opened
                 if (!isset($_COOKIE['jstree_open'])) {
@@ -235,6 +236,7 @@ class JsonPage implements JsonAdapter {
             // CREATE
             } else {
                 $node->setParent($this->nodeRepo->getRoot());
+                $this->nodeRepo->getRoot()->addChildren($node);
 
                 $this->em->persist($node);
                 $this->em->flush();
@@ -242,6 +244,7 @@ class JsonPage implements JsonAdapter {
 
             $page = new \Cx\Core\ContentManager\Model\Entity\Page();
             $page->setNode($node);
+            $node->addPage($page);
             $page->setNodeIdShadowed($node->getId());
             $page->setLang(\FWLanguage::getLanguageIdByCode($lang));
             $page->setUpdatedBy(
@@ -387,7 +390,7 @@ class JsonPage implements JsonAdapter {
             // Gedmo hooks in on persist/flush, so we unfortunately need to flush our em in
             // order to get a clean set of logEntries.
             $this->em->flush();
-            $logEntries = $this->logRepo->getLogEntries($page);
+            $logEntries = $this->logRepo->getLogEntries($page, false);
 
             // Revert to the published version.
             $cachedEditingStatus = $page->getEditingStatus();
