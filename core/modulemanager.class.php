@@ -455,40 +455,39 @@ class modulemanager
     {
         global $objDatabase;
 
-        if (isset($_POST['removeModule']) && is_array($_POST['removeModule'])) {
-            foreach (array_keys($_POST['removeModule']) as $moduleId) {
-                
-                $query = "
-                    SELECT name
-                    FROM ".DBPREFIX."modules
-                    WHERE id='" . $moduleId . "'
-                ";
-                $objResult = $objDatabase->Execute($query);
-                if ($objResult) {
-                    if (!$objResult->EOF) {
-                        $moduleName = $objResult->fields['name'];
-                    }
-                } else {
-                    $this->errorHandling();
-                    return false;
-                }
-
-                $em = \Env::get('em');
-                $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-                $pages = $pageRepo->findBy(array(
-                    'module' => $moduleName,
-                    'lang' => $this->langId,
-                ));
-                foreach ($pages as $page) {
-                    $em->remove($page->getNode());
-                    $em->flush();
-                }
-            }
-            return true;
-        } else {
+        if (!isset($_POST['removeModule']) || !is_array($_POST['removeModule'])) {
             return false;
         }
 
+        $em = \Env::get('em');
+        $pageRepo = $em->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+
+        $nodes = array();
+        foreach (array_keys($_POST['removeModule']) as $moduleId) {
+            $query = "
+                SELECT name
+                FROM ".DBPREFIX."modules
+                WHERE id='" . $moduleId . "'
+            ";
+            $objResult = $objDatabase->Execute($query);
+            if (!$objResult || $objResult->EOF) {
+                $this->errorHandling();
+                return false;
+            }
+            $pages = $pageRepo->findBy(array(
+                'module' => $objResult->fields['name'],
+            ));
+            foreach ($pages as $page) {
+                $nodes[$page->getNode()->getLft()] = $page->getNode()->getId();
+            }
+        }
+        ksort($nodes);
+        $jd = new \Cx\Core\Json\JsonData();
+        $status = $jd->data('node', 'multipleDelete', array('post'=>array('nodes'=>$nodes, 'currentNodeId' => 0)));
+        if (!$status['status'] == 'success') {
+            return false;
+        }
+        return true;
     }
 
 
