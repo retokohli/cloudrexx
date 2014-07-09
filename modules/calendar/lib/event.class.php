@@ -1777,7 +1777,11 @@ class CalendarEvent extends CalendarLibrary
                 }
             }
 
-            $url = $pages[$langId]->getUrl(ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET, "?eid={$intMediaDirId}");
+            // no page for mediadir available
+            $url = '';
+            if (isset($pages[$langId])) {
+                $url = $pages[$langId]->getUrl(ASCMS_PROTOCOL."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET, "?eid={$intMediaDirId}");
+            }
 
             $place          = ($type = 'place') ? $this->place : $this->org_name;
             $placeUrl       = "<a href='".$url."' target='_blank' >". (!empty($place) ? $place : $url) ."</a>";
