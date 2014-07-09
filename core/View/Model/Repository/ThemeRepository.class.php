@@ -235,6 +235,10 @@ class ThemeRepository
             return $theme;
         }
         try {
+            // create a new one if no component.yml exists
+            if (!file_exists($themePath . '/component.yml')) {
+                $this->convertThemeToComponent($theme);
+            }
             $yamlFile = new \Cx\Lib\FileSystem\File($themePath . '/component.yml');
             $yaml = new \Symfony\Component\Yaml\Yaml();
             $themeInformation = $yaml->load($yamlFile->getData());
