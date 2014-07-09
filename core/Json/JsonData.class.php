@@ -170,7 +170,7 @@ class JsonData {
         }
         
         if ($objPermission && ($objPermission instanceof \Cx\Core\Access\Model\Entity\Permission)) {
-            if (!$objPermission->hasAccess($arguments['post']))
+            if (!$objPermission->hasAccess($arguments))
                 return $this->getErrorData('JsonData-request to method ' . $realMethod . ' of adapter ' . $adapter->getName() . ' has been rejected by not complying to the permission requirements of the requested method.');
         }
         
