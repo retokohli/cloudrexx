@@ -224,7 +224,11 @@ namespace Cx\Core\Model {
                     break;
             }
             \Env::set('cache', $cache);
-            $config->setResultCacheImpl($cache);
+            if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
+                $config->setResultCacheImpl($arrayCache);
+            } else {
+                $config->setResultCacheImpl($cache);
+            }
             $config->setMetadataCacheImpl($arrayCache);
             $config->setQueryCacheImpl($cache);
 
