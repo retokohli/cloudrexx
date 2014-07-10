@@ -659,6 +659,7 @@ $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_PLEASE_CHOOSE'] = "-- Status --";
 $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_SHIPPED'] = "versandt";
 $_ARRAYLANG['TXT_SHOP_ORDER_SUM'] = "Summe";
 $_ARRAYLANG['TXT_SHOP_ORDER_TIME'] = "Bestellungszeit";
+$_ARRAYLANG['TXT_SHOP_ORDER_ITEM_HAS_OPTIONS'] = "Dieses Produkt wurde mit Optionen bestellt und kann deshalb nicht bearbeitet werden!";
 $_ARRAYLANG['TXT_SHOP_ORDER_WARNING_NO_ITEM'] = "Der Bestellung sind keine Artikel zugeordnet";
 $_ARRAYLANG['TXT_SHOP_ORDERITEMS_AMOUNT_MAX'] = "Maximaler Betrag für bestellte Artikel";
 $_ARRAYLANG['TXT_SHOP_ORDERITEMS_AMOUNT_MAX_NOTE'] = "Hinweis: Lassen Sie den Wert leer oder setzen Sie ihn auf 0 (Null), um die Beschränkung ausser Kraft zu setzen.";
