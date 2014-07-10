@@ -338,6 +338,7 @@ class ReflectionComponent {
                 //copy code from installer to load db from sql:
                 // load /data/structure.sql
                 // load /data/fixtures.sql
+                $this->importStructureAndData();
             } else {
                 // init DB structure from doctrine yaml files
                 //doctrine orm:schema-tool:update --force
@@ -347,6 +348,32 @@ class ReflectionComponent {
         
         // Activate this component
         $this->activate();
+    }
+    
+    function importStructureAndData()
+    {
+        $sqlDump = ASCMS_APP_CACHE_FOLDER . '/Data/Structure.sql';
+        
+        $fp = @fopen ($sqlDump, "r");
+        if ($fp !== false) {            
+            while (!feof($fp)) {
+                $buffer = fgets($fp);
+                if ((substr($buffer,0,1) != "#") && (substr($buffer,0,2) != "--")) {
+                    $sqlQuery .= $buffer;
+                    if (preg_match("/;[ \t\r\n]*$/", $buffer)) {
+                        $result = $this->db->Execute($sqlQuery);
+                        if ($result === false) {
+                            throw new SystemComponentException($sqlQuery .' ('. $this->db->ErrorMsg() .')');
+                        }
+                        $sqlQuery = "";
+                    }
+                }
+            }
+        } else {
+            throw new SystemComponentException('File not found : '. $sqlDump);
+        }
+        
+        $sqlDump = ASCMS_APP_CACHE_FOLDER . '/Data/Data.sql';
     }
     
     /**
@@ -587,17 +614,152 @@ class ReflectionComponent {
             $file = new \Cx\Lib\FileSystem\File($path);
             $file->touch();
             foreach ($arrayTables as $table) {
-                $objResult = $this->db->query('SHOW CREATE TABLE '. $table);
-                while (!$objResult->EOF) {
-                    $file->append($objResult->fields['Create Table'] . ";" . PHP_EOL . PHP_EOL);
-                    $objResult->MoveNext();
-                }
+                $file->append($this->getTableStructure($table));
             }
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             \DBG::msg($e->getMessage());
         }
     }
     
+    /**
+     * Writes to file the $table's structure
+     * 
+     * @param string $table The table name
+     * @access private
+     * @return boolean|string return false when table not exists or return table schema
+     */
+    private function getTableStructure($table)
+    {
+        // Structure Header
+        $structure  = '';
+        $structure .= "-- \n";
+        $structure .= "-- Table structure for table `{$table}` \n";
+        $structure .= "-- \n\n";
+
+        // Dump Structure
+        $structure .= 'DROP TABLE IF EXISTS `'.$table.'`;'."\n";
+        $structure .= "CREATE TABLE `".$table."` (\n";
+        $objResult  = $this->db->Execute('SHOW FIELDS FROM `'.$table.'`');
+        if ( $objResult->RecordCount() == 0 ) {
+            return false;
+        }
+        while(!$objResult->EOF) {            
+            $structure .= '`'.$objResult->fields['Field'].'` '.$objResult->fields['Type'];
+            if ( @strcmp($objResult->fields['Null'],'YES') != 0 ) {
+                $structure .= ' NOT NULL';
+            }
+
+            if ( !empty($objResult->fields['Default']) || @strcmp($objResult->fields['Null'],'YES') == 0) {
+                $structure .= ' DEFAULT '.(is_null($objResult->fields['Default']) ? 'NULL' : "'{$objResult->fields['Default']}'");
+            }
+
+            if ( !empty($objResult->fields['Extra']) ) {
+                $structure .= ' '.$objResult->fields['Extra'];
+            }
+
+            $structure .= ",\n";
+            $objResult->MoveNext();
+        }
+        
+        $structure = preg_replace("/,\n$/", '', $structure);
+
+        // Save all Column Indexes
+        $structure .= $this->getSqlKeysTable($table);
+        $structure .= "\n)";
+
+        //Save table engine
+        $objTableStatus = $this->db->Execute("SHOW TABLE STATUS LIKE '".$table."'");
+        if ($objTableStatus) {
+            if (!empty($objTableStatus->fields['Engine'])) {
+                $structure .= ' ENGINE='.$objTableStatus->fields['Engine'];
+            }
+            if (!empty($objTableStatus->fields['Auto_increment'])) {
+                $structure .= ' AUTO_INCREMENT='.$objTableStatus->fields['Auto_increment'];
+            }
+        }
+
+        $structure .= ";\n\n-- --------------------------------------------------------\n\n";
+        
+        return $structure;
+    }
+    
+    /**
+     * Writes to file the $table's structure
+     * 
+     * @param string $table The table name
+     * @access private
+     * @return boolean|string return false when table not exists or return table schema
+     */
+    private function getSqlKeysTable($table)
+    {
+        $primary = "";
+        $unique  = $index = $fulltext = array();
+        
+        $objResult = $this->db->Execute("SHOW KEYS FROM `{$table}`");
+        if ($objResult->RecordCount() == 0) {
+            return false;
+        }
+        while (!$objResult->EOF) {
+            if (($objResult->fields['Key_name'] == 'PRIMARY') && ($objResult->fields['Index_type'] == 'BTREE')) {
+                if ( $primary == '' ) {
+                    $primary = "  PRIMARY KEY  (`{$objResult->fields['Column_name']}`";
+                } else {
+                    $primary .= ", `{$objResult->fields['Column_name']}`";
+                }
+            }
+            if (($objResult->fields['Key_name'] != 'PRIMARY') && ($objResult->fields['Non_unique'] == '0') && ($objResult->fields['Index_type'] == 'BTREE')) {
+                if ( (!is_array($unique)) || ($unique[$objResult->fields['Key_name']]=="") ) {
+                    $unique[$objResult->fields['Key_name']] = "  UNIQUE KEY `{$objResult->fields['Key_name']}` (`{$objResult->fields['Column_name']}`";
+                } else {
+                    $unique[$objResult->fields['Key_name']] .= ", `{$objResult->fields['Column_name']}`";
+                }
+            }
+            if (($objResult->fields['Key_name'] != 'PRIMARY') && ($objResult->fields['Non_unique'] == '1') && ($objResult->fields['Index_type'] == 'BTREE')) {
+                if ( (!is_array($index)) OR ($index[$objResult->fields['Key_name']]=="") ) {
+                    $index[$objResult->fields['Key_name']] = "  KEY `{$objResult->fields['Key_name']}` (`{$objResult->fields['Column_name']}`";
+                } else {
+                    $index[$objResult->fields['Key_name']] .= ", `{$objResult->fields['Column_name']}`";
+                }
+            }
+            if (($objResult->fields['Key_name'] != 'PRIMARY') && ($objResult->fields['Non_unique'] == '1') && ($objResult->fields['Index_type'] == 'FULLTEXT')) {
+                if ( (!is_array($fulltext)) || ($fulltext[$objResult->fields['Key_name']]=="") ) {
+                    $fulltext[$objResult->fields['Key_name']] = "  FULLTEXT `{$objResult->fields['Key_name']}` (`{$objResult->fields['Column_name']}`";
+                } else {
+                    $fulltext[$objResult->fields['Key_name']] .= ", `{$objResult->fields['Column_name']}`";
+                }
+            }
+            $objResult->MoveNext();
+        }
+        
+        
+        $sqlKeyStatement = '';
+        // generate primary, unique, key and fulltext
+        if ($primary != "") {
+            $sqlKeyStatement .= ",\n";
+            $primary .= ")";
+            $sqlKeyStatement .= $primary;
+        }
+        foreach ($unique as $keyName => $keyDef) {
+            $sqlKeyStatement .= ",\n";
+            $keyDef .= ")";
+            $sqlKeyStatement .= $keyDef;
+        }
+        
+        foreach ($index as $keyName => $keyDef) {
+            $sqlKeyStatement .= ",\n";
+            $keyDef .= ")";
+            $sqlKeyStatement .= $keyDef;
+        }
+        
+        foreach ($fulltext as $keyName => $keyDef) {
+            $sqlKeyStatement .= ",\n";
+            $keyDef .= ")";
+            $sqlKeyStatement .= $keyDef;
+        }
+        
+        return $sqlKeyStatement;
+    }
+        
     /**
      * Write the meta information of the component to the file
      * 
