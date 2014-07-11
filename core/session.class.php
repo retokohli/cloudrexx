@@ -719,6 +719,8 @@ class cmsSession extends RecursiveArrayAccess {
                       FROM 
                         `'. DBPREFIX .'session_variable` 
                       WHERE 
+                        `sessionid` = "'. $_SESSION->sessionid .'",
+                      AND    
                         `parent_id` = "'. intval($arrObj->id).'" 
                       AND 
                         `key` = "'. contrexx_input2db($offset) .'" 
@@ -751,7 +753,7 @@ class cmsSession extends RecursiveArrayAccess {
      * @param object $arrObj session object array
      */
     public static function updateToDb($arrObj) {
-
+        
         if (empty($arrObj->id) && (string) $arrObj->offset != '') {
             $query = 'INSERT INTO 
                             '. DBPREFIX .'session_variable
@@ -764,7 +766,7 @@ class cmsSession extends RecursiveArrayAccess {
 
             $arrObj->id = \Env::get('db')->Insert_ID();
         }
-
+        
         foreach ($arrObj->data as $key => $value) {
 
             if (is_a($value, 'Cx\Core\Model\RecursiveArrayAccess')) {
