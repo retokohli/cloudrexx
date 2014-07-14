@@ -1,0 +1,26 @@
+<!-- BEGIN news_status_message -->
+{TXT_NEWS_NO_NEWS_FOUND}
+<!-- END news_status_message -->
+
+<!-- BEGIN news_archive_months_list -->
+<ul id="news_archive_months_list">
+    <!-- BEGIN news_archive_months_list_item -->
+    <li><a href="#{NEWS_ARCHIVE_MONTH_KEY}">{NEWS_ARCHIVE_MONTH_NAME}</a> ({NEWS_ARCHIVE_MONTH_COUNT})</li>
+    <!-- END news_archive_months_list_item  -->
+</ul>
+<!-- END news_archive_months_list -->
+<br />
+<!-- BEGIN news_archive_month_list -->
+<ul id="news_archive_list">
+    <!-- BEGIN news_archive_month_list_item -->
+    <li>
+        <a name="{NEWS_ARCHIVE_MONTH_KEY}">{NEWS_ARCHIVE_MONTH_NAME}</a>
+        <ul>
+            <!-- BEGIN news_archive_link -->
+            <li><a href="{NEWS_ARCHIVE_LINK_URL}" title="{NEWS_ARCHIVE_LINK_TITLE}">{NEWS_ARCHIVE_LINK_TITLE}</a></li>
+            <!-- END news_archive_link -->
+        </ul>
+    </li>
+    <!-- END news_archive_month_list_item -->
+</ul>
+<!-- END news_archive_month_list -->

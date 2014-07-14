@@ -197,27 +197,27 @@ namespace Cx\Core\Model {
 
             $arrayCache = new \Doctrine\Common\Cache\ArrayCache();
             switch ($userCacheEngine) {
-                case \Cache::CACHE_ENGINE_APC:
+                case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_APC:
                     $cache = new \Doctrine\Common\Cache\ApcCache();
                     $cache->setNamespace($_DBCONFIG['database'] . '.' . DBPREFIX);
                     break;
-                case \Cache::CACHE_ENGINE_MEMCACHE:
+                case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_MEMCACHE:
                     $memcache = $objCache->getMemcache();
                     if ($memcache instanceof \Memcache) {
                         $cache = new \Doctrine\Common\Cache\MemcacheCache();
                         $cache->setMemcache($memcache);
                     } elseif ($memcache instanceof \Memcached) {
-                        $cache = new \Cx\Core_Modules\Cache\lib\Doctrine\CacheDriver\MemcachedCache();
+                        $cache = new \Cx\Core_Modules\Cache\Controller\Doctrine\CacheDriver\MemcachedCache();
                         $cache->setMemcache($memcache);
                     }
                     $cache->setNamespace($_DBCONFIG['database'] . '.' . DBPREFIX);
                     break;
-                case \Cache::CACHE_ENGINE_XCACHE:
+                case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_XCACHE:
                     $cache = new \Doctrine\Common\Cache\XcacheCache();
                     $cache->setNamespace($_DBCONFIG['database'] . '.' . DBPREFIX);
                     break;
-                case \Cache::CACHE_ENGINE_FILESYSTEM:
-                    $cache = new \Cx\Core_Modules\cache\lib\Doctrine\CacheDriver\FileSystemCache(ASCMS_CACHE_PATH);                    
+                case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_FILESYSTEM:
+                    $cache = new \Cx\Core_Modules\Cache\Controller\Doctrine\CacheDriver\FileSystemCache(ASCMS_CACHE_PATH);                    
                     break;
                 default:
                     $cache = $arrayCache;

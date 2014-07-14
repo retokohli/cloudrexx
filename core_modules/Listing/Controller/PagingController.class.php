@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Paging controller
  *
@@ -19,7 +18,6 @@ namespace Cx\Core_Modules\Listing\Controller;
  * @package     contrexx
  * @subpackage  coremodule_listing
  */
-
 class PagingController extends ListingHandler {
     protected $countPerPage = 0;
     protected $currentPage = 0;
@@ -30,11 +28,12 @@ class PagingController extends ListingHandler {
         $this->countPerPage = $_CONFIG['corePagingLimit'];
     }
     
-    public function handle(&$offset, &$count, &$criteria, &$order, &$args) {
-        $offset = 0;
-        if (isset($args['pos'])) {
-            $offset = $args['pos'];
+    public function handle($params, $config) {
+        $params['offset'] = 0;
+        if (isset($config['pos'])) {
+            $params['offset'] = $config['pos'];
         }
-        $count = $this->countPerPage;
+        $params['count'] = $this->countPerPage;
+        return $params;
     }
 }

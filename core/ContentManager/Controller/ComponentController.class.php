@@ -47,4 +47,36 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             'JsonNode', 'JsonPage', 'JsonContentManager',
         );
     }
+    
+    /**
+     * Load your component.
+     * 
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
+     */
+    public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        global $objTemplate, $objDatabase, $objInit, $act;
+        
+        switch ($this->cx->getMode()) {
+            case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
+                $this->cx->getTemplate()->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master.html');
+                $cachedRoot = $this->cx->getTemplate()->getRoot();
+                $this->cx->getTemplate()->setRoot($this->getDirectory() . '/View/Template/Backend');
+
+                \Permission::checkAccess(6, 'static');
+                $cm = new ContentManager($act, $objTemplate, $objDatabase, $objInit);
+                $cm->getPage();
+
+                $this->cx->getTemplate()->setRoot($cachedRoot);
+                break;
+        }
+    }
+    
+    /**
+     * Do something for search the content
+     * 
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
+     */
+    public function preContentParse(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        $this->cx->getEvents()->addEventListener('SearchFindContent', new \Cx\Core\ContentManager\Model\Event\PageEventListener());
+   }     
 }

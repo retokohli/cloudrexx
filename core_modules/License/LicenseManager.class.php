@@ -46,7 +46,7 @@ class LicenseManager {
     public function getPage($post, &$_CORELANG) {
         $lc = LicenseCommunicator::getInstance($this->config);
         $lc->addJsUpdateCode($this->lang, $this->license, true, false);
-        $sm = new \settingsManager();
+        $sm = new \Cx\Core\Config\Controller\Config();
         if (\FWUser::getFWUserObject()->objUser->getAdminStatus()) {
             if (isset($post['save']) && isset($post['licenseKey'])) {
                 $license = License::getCached($this->config, $this->db);
@@ -61,14 +61,14 @@ class LicenseManager {
                 // This is only a backup if javascript is bogus
                 try {
                     $lc->update($this->license, $this->config, true, false, $this->lang);
-                    $this->license->save(new \settingsManager(), $this->db);
+                    $this->license->save(new \Cx\Core\Config\Controller\Config(), $this->db);
                 } catch (\Exception $e) {}
             }
         }
         if (!file_exists(ASCMS_TEMP_PATH . '/licenseManager.html')) {
             try {
                 $lc->update($this->license, $this->config, true, true, $this->lang);
-                $this->license->save(new \settingsManager(), $this->db);
+                $this->license->save(new \Cx\Core\Config\Controller\Config(), $this->db);
             } catch (\Exception $e) {}
         }
         if (file_exists(ASCMS_TEMP_PATH . '/licenseManager.html')) {

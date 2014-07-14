@@ -11,6 +11,7 @@ namespace Cx\Core\Html\Model\Entity;
  */
 class DataElement extends HtmlElement {
     const TYPE_INPUT = 'input';
+    const TYPE_SELECT = 'select';
     protected $validator;
     protected $type;
     
@@ -19,10 +20,18 @@ class DataElement extends HtmlElement {
         parent::__construct($type);
         $this->validator = $validator;
         $this->type = $type;
-        $this->setAttributes(array(
-            'name' => $name,
-            'value' => $value,
-        ));
+        $this->setAttribute('name', $name);
+        switch ($type) {
+            case self::TYPE_INPUT:
+                $this->setAttribute('value', $value);
+            break;
+            case self::TYPE_SELECT:
+                if (is_string($value)) {
+                    // this is for customizing only:
+                    $this->addChild(new \Cx\Core\Html\Model\Entity\TextElement($value));
+                }
+            break;
+        }
     }
     
     public function isValid() {
@@ -39,6 +48,7 @@ class DataElement extends HtmlElement {
     public function getIdentifier() {
         switch ($this->type) {
             case self::TYPE_INPUT:
+            case self::TYPE_SELECT:
                 return $this->getAttribute('name');
                 break;
             default:
@@ -54,6 +64,17 @@ class DataElement extends HtmlElement {
                 break;
             default:
                 return null;
+                break;
+        }
+    }
+    
+    public function setData($data) {
+        switch ($this->type) {
+            case self::TYPE_INPUT:
+                $this->setAttribute('value', $data);
+                break;
+            default:
+                // error handling
                 break;
         }
     }

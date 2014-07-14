@@ -79,7 +79,7 @@ class Permission
         global $objInit;
 
         $objFWUser = FWUser::getFWUserObject();
-        CSRF::header('Location: '.CONTREXX_DIRECTORY_INDEX.'?'.($objInit->mode == 'backend' ? '' : 'section=login&'.(!empty($redirect) ? 'redirect='.$redirect.'&' : '')).($objFWUser->objUser->login() ? 'cmd=noaccess' : ''));
+        \Cx\Core\Csrf\Controller\ComponentController::header('Location: '.CONTREXX_DIRECTORY_INDEX.'?'.($objInit->mode == 'backend' ? '' : 'section=Login&'.(!empty($redirect) ? 'redirect='.$redirect.'&' : '')).($objFWUser->objUser->login() ? 'cmd=noaccess' : ''));
         exit;
     }
 
@@ -110,7 +110,7 @@ class Permission
         $lastAccessId = $_CONFIG['lastAccessId'];
         $newAccessId = $_CONFIG['lastAccessId'] + 1;
 
-        $objSettings = new settingsManager();
+        $objSettings = new \Cx\Core\Config\Controller\Config();
         if ($objSettings->isWritable()) {
             if ($objDatabase->Execute("UPDATE `".DBPREFIX."settings` SET `setvalue` = ".$newAccessId." WHERE `setname` = 'lastAccessId'")
                 && $objSettings->writeSettingsFile()

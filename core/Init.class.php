@@ -632,8 +632,15 @@ class InitCMS
                         case 'core':
                             $this->arrModulePath[$objResult->fields['name']] = ASCMS_DOCUMENT_ROOT.'/lang/';
                             break;
-                        case 'home':
-                            // home is not a real module
+                        case 'DatabaseManager':
+                        case 'SystemInfo':
+                        case 'ComponentManager':
+                        case 'ViewManager':
+                        case 'LanguageManager':
+                        case 'ContentWorkflow':    
+                        case 'Config':    
+                        case 'SystemLog':
+                            $this->arrModulePath[$objResult->fields['name']] = ASCMS_CORE_PATH.'/'. $objResult->fields['name'] . '/lang/';
                             break;
                         default:
                         $this->arrModulePath[$objResult->fields['name']] = ($objResult->fields['is_core'] == 1 ? ASCMS_CORE_MODULE_PATH : ASCMS_MODULE_PATH).'/'.$objResult->fields['name'].'/lang/';
@@ -642,7 +649,7 @@ class InitCMS
                 $objResult->MoveNext();
             }
             // add special modules
-            $this->arrModulePath['media'] = ASCMS_CORE_MODULE_PATH.'/media/lang/';
+            $this->arrModulePath['Media'] = ASCMS_CORE_MODULE_PATH.'/Media/lang/';
         }
     }
 
@@ -676,11 +683,11 @@ class InitCMS
                 $module = isset($_REQUEST['section']) ? addslashes(strip_tags($_REQUEST['section'])) : 'core';
             }
         }
-        if (preg_match('/^media\d+$/', $module)) {
-            $module = 'media';
+        if (preg_match('/^Media\d+$/', $module)) {
+            $module = 'Media';
         }
         // change module for core components
-        if (!array_key_exists($module, $this->arrModulePath) && $module != 'media') {
+        if (!array_key_exists($module, $this->arrModulePath) && $module != 'Media') {
             $module = '';
         } else {
             //load english language file first...
@@ -837,7 +844,7 @@ class InitCMS
                 Html::replaceUriParameter($action, $query_string);
                 // The dropdown is built below
                 break;*/
-            case 'shop':
+            case 'Shop':
             case 'country':
                 // Variant 2:  Use any (GET) request parameters
                 // Note that this is generally unsafe, as most modules/methods do
@@ -857,10 +864,9 @@ class InitCMS
             break;
             // TODO: Add your case here if variant 1 is enabled, too
             //case 'foobar':
-            case 'content':
-            case 'docsys':
-            case 'recommend':
-            case 'jobs':
+            case 'DocSys':
+            case 'Recommend':
+            case 'Jobs':
             case 'alias':
                 // The old way
                 $i = 0;

@@ -1,0 +1,43 @@
+<!-- START calendar_show.html --> 
+<script type="text/javascript">
+    $J(document).ready(function() {
+        $J('#calendar li:last').css({
+            'border': 0,
+            'padding': 0
+        });
+    });
+</script>
+
+{CALENDAR_JAVA_SCRIPT}
+
+<div id="calendar">
+    <!-- BEGIN boxes -->
+    <div class="categories">
+        <select name="catid" id="selectcat" onchange="changecat();">
+            {CALENDAR_CATEGORIES}
+        </select>
+    </div>
+    <div id="calendar-boxes">{CALENDAR_BOX}</div>
+    <!-- END boxes -->  
+    <!-- BEGIN list -->
+    <ul class="event-list">
+        <!-- BEGIN eventList -->
+        <li>
+            <!-- BEGIN calendarDateList -->
+            {CALENDAR_DATE_LIST}{CALENDAR_SEP_DATE_TIME_LIST}{CALENDAR_TIME_LIST}{TXT_CALENDAR_CLOCK_LIST}
+            <!-- END calendarDateList -->
+
+            <a href="{CALENDAR_EVENT_DETAIL_LINK}" target="{CALENDAR_EVENT_DETAIL_TARGET}">{CALENDAR_EVENT_TITLE}</a>
+            {CALENDAR_EVENT_PLACE}
+        </li>
+        <!-- END eventList -->
+        <!-- BEGIN emptyEventList -->
+        <li>
+            <i>{TXT_CALENDAR_NO_EVENTS}</i>
+        <li>    
+        <!-- END emptyEventList -->
+    </ul>
+    <!-- END list -->
+
+</div>
+<!-- END calendar_show.html -->

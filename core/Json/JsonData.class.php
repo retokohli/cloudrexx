@@ -39,10 +39,10 @@ class JsonData {
         '\\Cx\\Core\\Json\\Adapter\\Calendar' => array(
             'JsonCalendar',
         ),
-        '\\Cx\\modules\\survey\\controllers' => array(
+        '\\Cx\\modules\\Survey\\Controller' => array(
             'JsonSurvey',
         ),
-        '\\Cx\\modules\\crm\\lib\\controllers' => array(
+        '\\Cx\\Modules\\Crm\\Controller' => array(
             'JsonCrm',
         ),
     );
@@ -151,20 +151,34 @@ class JsonData {
      * @return String data to use for further processing
      */
     public function data($adapter, $method, $arguments = array()) {
+        global $_CORELANG;
         if (!isset($this->adapters[$adapter])) {
             return $this->getErrorData('No such adapter');
         }
         $adapter = $this->adapters[$adapter];
         $methods = $adapter->getAccessableMethods();
         $realMethod = '';
-        if (in_array($method, $methods)) {
+        if (in_array($method, $methods) || array_key_exists($method, $methods)) {
             $realMethod = $method;
-        } else if (isset($methods[$method])) {
-            $realMethod = $methods[$method];
         }
+        
         if ($realMethod == '') {
             return $this->getErrorData('No such method: ' . $method);
         }
+        //permission checks
+        $objPermission = new \Cx\Core\Access\Model\Entity\Permission(null, null, true, null);
+        $defaultPermission = $adapter->getDefaultPermissions();
+        if (!empty($methods[$method]) && ($methods[$method] instanceof \Cx\Core\Access\Model\Entity\Permission)) {
+            $objPermission = $methods[$method];
+        } else if (!empty ($defaultPermission) && ($defaultPermission instanceof \Cx\Core\Access\Model\Entity\Permission)) {
+            $objPermission = $defaultPermission;
+        }
+        
+        if ($objPermission && ($objPermission instanceof \Cx\Core\Access\Model\Entity\Permission)) {
+            if (!$objPermission->hasAccess())
+                return $this->getErrorData('JsonData-request to method ' . $realMethod . ' of adapter ' . $adapter->getName() . ' has been rejected by not complying to the permission requirements of the requested method.');
+        }
+        
         try {
             $output = call_user_func(array($adapter, $realMethod), $arguments);
 

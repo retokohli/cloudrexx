@@ -617,7 +617,7 @@ class Imagetype
 
         $objTemplateLocal = new \Cx\Core\Html\Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
 // TODO: Needed?
-        CSRF::add_placeholder($objTemplateLocal);
+        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($objTemplateLocal);
         $objTemplateLocal->setErrorHandling(PEAR_ERROR_DIE);
         if (!$objTemplateLocal->loadTemplateFile('imagetypes.html'))
             die("Failed to load template imagetypes.html");

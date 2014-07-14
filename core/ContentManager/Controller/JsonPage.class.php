@@ -78,6 +78,7 @@ class JsonPage implements JsonAdapter {
             'getAccessData',
             'getPathByTarget',
             'isBroken',
+            'loadApplicationTemplate'
         );
     }
 
@@ -87,6 +88,14 @@ class JsonPage implements JsonAdapter {
      */
     public function getMessagesAsString() {
         return implode("<br />", $this->messages);
+    }
+    
+    /**
+     * Returns default permission as object
+     * @return Object
+     */
+    public function getDefaultPermissions() {
+        return null;
     }
 
     /**
@@ -770,6 +779,8 @@ class JsonPage implements JsonAdapter {
             'useSkinForAllChannels' => array('type' => 'integer'),
             'customContent' => array('type' => 'String'),
             'useCustomContentForAllChannels' => array('type' => 'integer'),
+            'applicationTemplate' => array('type' => 'String'),
+            'useCustomApplicationTemplateForAllChannels' => array('type' => 'integer'),
             'cssName' => array('type' => 'String'),
             'cssNavName' => array('type' => 'String'),
         );
@@ -905,7 +916,7 @@ class JsonPage implements JsonAdapter {
             $i++;
         }
         // Add paging widget:
-        $paging = '<div id="history_paging">' . getPaging($i, $offset, '?cmd=content&page=' . $page->getId() . '&tab=history', $_CORELANG['TXT_CORE_CM_HISTORY_ENTRIES'], true, $numberOfEntries) . '</div>';
+        $paging = '<div id="history_paging">' . getPaging($i, $offset, '?cmd=ContentManager&page=' . $page->getId() . '&tab=history', $_CORELANG['TXT_CORE_CM_HISTORY_ENTRIES'], true, $numberOfEntries) . '</div>';
 
         //(VI) render
         die($table->toHtml() . $paging);
@@ -1091,6 +1102,8 @@ class JsonPage implements JsonAdapter {
             'useSkinForAllChannels' => $page->getUseSkinForAllChannels(),
             'customContent' => $page->getCustomContent(),
             'useCustomContentForAllChannels' => $page->getUseCustomContentForAllChannels(),
+            'applicationTemplate' => $page->getApplicationTemplate(),
+            'useCustomApplicationTemplateForAllChannels' => $page->getUseCustomApplicationTemplateForAllChannels(),
             'cssName' => $page->getCssName(),
             'cssNavName' => $page->getCssNavName(),
             'caching' => $page->getCaching(),
@@ -1189,4 +1202,63 @@ class JsonPage implements JsonAdapter {
 
         return false;
     }
+    
+    /**
+     * load the application template based on the application, cmd and theme name
+     * 
+     * @return array
+     */
+    public function loadApplicationTemplate() {
+        
+        $application = isset($_GET['app']) ? contrexx_input2raw($_GET['app']) : '';
+        $section     = preg_match('#^Media\d+# i', $application) ? 'Media' : $application;
+        $cmd         = (isset($_GET['area']) && $_GET['area'] != '') ? contrexx_input2raw($_GET['area']) : 'default';
+        $template    = isset($_GET['template']) ? contrexx_input2raw($_GET['template']) : '';
+        $result      = array(
+            'files'  => array(),
+            'area'   => '',
+            'path'   => ''
+        );
+        
+        $themeRepo   = new \Cx\Core\View\Model\Repository\ThemeRepository();
+        if (!empty($section)) {
+            if ($template > 0) {
+                $theme = $themeRepo->findOneBy(array('id' => $template));
+            } else {
+                $theme = $themeRepo->getDefaultTheme();
+            }
+            $themeFolderName  = $theme->getFoldername();
+            $moduleFolderName = contrexx_isCoreModule($application) ? 'core_modules' : 'modules';
+            $themePath        = ASCMS_THEMES_PATH.'/'.$themeFolderName.'/'.$moduleFolderName.'/'.$section.'/Template/Frontend';
+            if (file_exists($themePath)) {
+                $templateFiles    = $this->readDirs($themePath);
+                foreach ($templateFiles As $templateFile) {
+                    if (preg_match('#^'.ucfirst($cmd).'_custom_# i', $templateFile) && preg_match('#\.html# i', $templateFile)) {
+                        $result['files'][] = $templateFile;
+                    }
+                }
+            }
+            $result['area'] = ucfirst($cmd);
+            $result['path'] = '/themes/'.$themeFolderName.'/'.$moduleFolderName.'/'.$section.'/Template/Frontend';
+        }
+        return $result;
+    }
+    
+    /**
+     * read the files under the given path directory
+     * 
+     * @param string $path
+     * 
+     * @return array
+     */
+    public function readDirs($path) {
+
+        $result = array();
+        foreach (glob("$path/*.*", GLOB_BRACE) as $filename) {
+            $file_name = str_replace($path . '/', '', $filename);
+            $result[] = $file_name;
+        }
+
+        return $result;
+    }    
 }

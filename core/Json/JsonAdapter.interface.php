@@ -36,4 +36,10 @@ interface JsonAdapter {
      * @return String HTML encoded error messages
      */
     public function getMessagesAsString();
+    
+    /**
+     * Returns default permission as object
+     * @return Object
+     */
+    public function getDefaultPermissions();
 }

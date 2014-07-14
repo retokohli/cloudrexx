@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Filtering controller
  *
@@ -19,10 +18,9 @@ namespace Cx\Core_Modules\Listing\Controller;
  * @package     contrexx
  * @subpackage  coremodule_listing
  */
-
 class FilteringController {
 	
-	public function handle(&$offset, &$count, &$criteria, &$order) {
-		
+	public function handle($params, $config) {
+		return $params;
 	}
 }

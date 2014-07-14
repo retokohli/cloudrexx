@@ -19,10 +19,11 @@ class License {
     private static $staticModules = array(
         'license',
         'logout',
-        'error',
-        'captcha',
+        'Error',
+        'Captcha',
         'upgrade',
         'noaccess',
+        'fulllanguage'
     );
     private $state;
     private $frontendLocked = false;

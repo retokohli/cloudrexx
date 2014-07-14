@@ -72,7 +72,7 @@ class SocialLogin
      */
     public static function getProviders()
     {
-        \SettingDb::init('access', 'sociallogin');
+        \SettingDb::init('Access', 'sociallogin');
 
         $settingProviders = json_decode(\SettingDb::getValue('providers'));
         foreach ($settingProviders as $providerName => $providerData) {
@@ -101,7 +101,7 @@ class SocialLogin
      */
     public static function updateProviders($providers)
     {
-        \SettingDb::init('access', 'sociallogin');
+        \SettingDb::init('Access', 'sociallogin');
         \SettingDb::set('providers', json_encode($providers));
         \SettingDb::update('providers');
     }
@@ -120,7 +120,7 @@ class SocialLogin
         global $_CONFIG, $objInit;
         return ASCMS_PROTOCOL . '://' . $_CONFIG['domainUrl'] . ASCMS_PATH_OFFSET . '/' .
             \FWLanguage::getLanguageCodeById($objInit->getDefaultFrontendLangId()) .
-            '/index.php?section=login&provider=' . $provider . (!empty($redirect) ? '&redirect=' . $redirect : '');
+            '/index.php?section=Login&provider=' . $provider . (!empty($redirect) ? '&redirect=' . $redirect : '');
     }
 
     /**

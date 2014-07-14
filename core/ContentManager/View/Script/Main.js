@@ -1,4 +1,4 @@
-var baseUrl = 'index.php?cmd=content';
+var baseUrl = 'index.php?cmd=ContentManager';
 var regExpUriProtocol = new RegExp(cx.variables.get('regExpUriProtocol', 'contentmanager'));
 
 var mouseIsUp = true;
@@ -139,7 +139,7 @@ reloadCustomContentTemplates = function() {
     
     for (var i = 0; i < templates[skinId].length; i++) {
         var isHome = /^home_/.exec(templates[skinId][i]);
-        if ((isHome && module == "home") || !isHome && module != "home") {
+        if ((isHome && module == "Home") || !isHome && module != "Home") {
             select.append(cx.jQuery('<option>', {
                 value : templates[skinId][i]
             }).text(templates[skinId][i]));
@@ -156,12 +156,14 @@ cx.ready(function() {
     cx.cm.pageSkin = 0;
     // initialise the page custom template
     cx.cm.pageContentTemplate = '';
+    // initialise the page custom application template
+    cx.cm.pageApplicationTemplate = '';
 
     // Disable the option use for all channels by default
-    cx.jQuery('input[name="page[useSkinForAllChannels]"], input[name="page[useCustomContentForAllChannels]"]').attr('disabled', 'disabled');
+    cx.jQuery('input[name="page[useSkinForAllChannels]"], input[name="page[useCustomContentForAllChannels]"], input[name="page[useCustomApplicationTemplateForAllChannels]"]').attr('disabled', 'disabled');
             
     cx.jQuery('#page_target_browse').click(function() {
-        url = '?cmd=fileBrowser&csrf='+cx.variables.get('csrf', 'contrexx')+'&standalone=true&type=webpages';
+        url = '?cmd=FileBrowser&csrf='+cx.variables.get('csrf', 'contrexx')+'&standalone=true&type=webpages';
         opts = 'width=800,height=600,resizable=yes,status=no,scrollbars=yes';
         window.open(url, 'target', opts).focus();
         return false;
@@ -221,7 +223,7 @@ cx.ready(function() {
         cx.jQuery(this).hide();
         cx.jQuery('#page_target_text').text('');
         cx.jQuery('#page_target_backup').val(cx.jQuery('#page_target_protocol').val() + cx.jQuery('#page_target').val());
-        cx.jQuery.getJSON('index.php?cmd=jsondata&object=page&act=getPathByTarget', {
+        cx.jQuery.getJSON('index.php?cmd=JsonData&object=page&act=getPathByTarget', {
             target: cx.jQuery('#page_target_backup').val()
         }, function(data) {
             cx.jQuery('#page_target_text').text(data.data).attr('href', function() {return cx.jQuery(this).text()});
@@ -241,7 +243,7 @@ cx.ready(function() {
             // get complete tree
             cx.trigger("loadingStart", "contentmanager", {});
             cx.jQuery.ajax({
-                url: "?cmd=jsondata&object=node&act=getTree&recursive=true",
+                url: "?cmd=JsonData&object=node&act=getTree&recursive=true",
                 dataType: 'json',
                 success: function(response) {
                     if (!response.data) {
@@ -300,7 +302,7 @@ cx.ready(function() {
                 cx.trigger("loadingStart", "contentmanager", {});
                 cx.jQuery.ajax({
                     type: 'POST',
-                    url:  'index.php?cmd=jsondata&object='+object+'&act=multiple'+act+recursive+offset,
+                    url:  'index.php?cmd=JsonData&object='+object+'&act=multiple'+act+recursive+offset,
                     data: data,
                     success: function(json) {
                         if (json.state && json.state == 'timeout') {
@@ -484,6 +486,9 @@ cx.ready(function() {
         cx.cm.pageSkin = cx.jQuery(this).val();
         
         reloadCustomContentTemplates();
+        cx.cm.loadApplicationTemplate(cx.jQuery('#page select[name="page[application]"]').val(), 
+                                      cx.jQuery('#page input[name="page[area]"]').val(), 
+                                      cx.jQuery('#page select[name="page[skin]"]').val());
     });
     
     cx.jQuery('#page select[name="page[customContent]"]').bind('change', function() {
@@ -499,7 +504,21 @@ cx.ready(function() {
         
         cx.cm.pageContentTemplate = cx.jQuery(this).val();
     });
-
+    
+    cx.jQuery('#page select[name="page[applicationTemplate]"]').bind('change', function() {
+        if (cx.jQuery(this).val() == '') {
+            cx.jQuery('input[name="page[useCustomApplicationTemplateForAllChannels]"]').removeAttr('checked');
+            cx.jQuery('input[name="page[useCustomApplicationTemplateForAllChannels]"]').attr('disabled', 'disabled');
+        } else {
+            if (cx.cm.pageApplicationTemplate == '') {
+                cx.jQuery('input[name="page[useCustomApplicationTemplateForAllChannels]"]').attr('checked', 'checked');
+            }
+            cx.jQuery('input[name="page[useCustomApplicationTemplateForAllChannels]"]').removeAttr('disabled');
+        }        
+        
+        cx.cm.pageApplicationTemplate = cx.jQuery(this).val();
+    });
+    
     cx.jQuery('#page_skin_view, #page_skin_edit').click(function(event) {
         var themeId = 0;
         var themeName = "";
@@ -518,12 +537,15 @@ cx.ready(function() {
         if (cx.jQuery(event.currentTarget).is('#page_skin_view')) {
             window.open('../index.php?preview='+themeId);
         } else {
-            window.open('index.php?cmd=skins&act=templates&themes='+cx.variables.get("templateFolders", "contentmanager/themes")[themeId]+'&csrf='+cx.variables.get('csrf', 'contrexx'));
+            window.open('index.php?cmd=ViewManager&act=templates&themes='+cx.variables.get("templateFolders", "contentmanager/themes")[themeId]+'&csrf='+cx.variables.get('csrf', 'contrexx'));
         }
     });
 
     cx.jQuery('#page select[name="page[application]"]').bind('blur', function() {
         reloadCustomContentTemplates();
+        cx.cm.loadApplicationTemplate(cx.jQuery('#page select[name="page[application]"]').val(), 
+                                      cx.jQuery('#page input[name="page[area]"]').val(), 
+                                      cx.jQuery('#page select[name="page[skin]"]').val());
     });
 
     // react to get ?loadpage=
@@ -594,7 +616,7 @@ cx.cm = function(target) {
             cx.jQuery('#cm_ckeditor').val(CKEDITOR.instances.cm_ckeditor.getData());
         }
         cx.trigger("loadingStart", "contentmanager", {});
-        cx.jQuery.post('index.php?cmd=jsondata&object=page&act=set', 'action=publish&'+cx.jQuery('#cm_page').serialize(), function(response) {
+        cx.jQuery.post('index.php?cmd=JsonData&object=page&act=set', 'action=publish&'+cx.jQuery('#cm_page').serialize(), function(response) {
             if (response.data != null) {
                 if (cx.jQuery('#historyConatiner').html() != '') {
                     cx.cm.loadHistory();
@@ -624,9 +646,9 @@ cx.cm = function(target) {
                         page.visibility.type = "redirection";
                         page.visibility.fallback = false;
                         break;
-                    case "application":
+                    case "application": 
                         var module = cx.jQuery("[name=\"page[application]\"").val();
-                        if (module != "home") {
+                        if (module != "Home") {
                             page.visibility.type = "application";
                         } else {
                             page.visibility.type = "home";
@@ -652,7 +674,7 @@ cx.cm = function(target) {
                     parameter.pageRedirectPlaceholder = cx.jQuery('#page_target').val();
                 }
                 cx.jQuery.ajax({
-                    url: 'index.php?cmd=jsondata&object=page&act=isBroken',
+                    url: 'index.php?cmd=JsonData&object=page&act=isBroken',
                     dataType: 'json',
                     async: false,
                     data: parameter,
@@ -679,7 +701,7 @@ cx.cm = function(target) {
             cx.jQuery('#cm_ckeditor').val(CKEDITOR.instances.cm_ckeditor.getData());
         }
         cx.trigger("loadingStart", "contentmanager", {});
-        cx.jQuery.post('index.php?cmd=jsondata&object=page&act=set', cx.jQuery('#cm_page').serialize(), function(response) {
+        cx.jQuery.post('index.php?cmd=JsonData&object=page&act=set', cx.jQuery('#cm_page').serialize(), function(response) {
             if (response.data != null) {
                 if (cx.jQuery('#historyConatiner').html() != '') {
                     cx.cm.loadHistory();
@@ -706,7 +728,7 @@ cx.cm = function(target) {
                         break;
                     case "application":
                         var module = cx.jQuery("[name=\"page[application]\"").val();
-                        if (module != "home") {
+                        if (module != "Home") {
                             page.visibility.type = "application";
                         } else {
                             page.visibility.type = "home";
@@ -732,7 +754,7 @@ cx.cm = function(target) {
                     parameter.pageRedirectPlaceholder = cx.jQuery('#page_target').val();
                 }
                 cx.jQuery.ajax({
-                    url: 'index.php?cmd=jsondata&object=page&act=isBroken',
+                    url: 'index.php?cmd=JsonData&object=page&act=isBroken',
                     dataType: 'json',
                     async: false,
                     data: parameter,
@@ -759,7 +781,7 @@ cx.cm = function(target) {
         }
         cx.jQuery.ajax({
             type: 'post',
-            url:  'index.php?cmd=jsondata&object=page&act=setPagePreview',
+            url:  'index.php?cmd=JsonData&object=page&act=setPagePreview',
             data:  cx.jQuery('#cm_page').serialize(),
             async: false,
             error: function() {
@@ -847,7 +869,7 @@ cx.cm = function(target) {
             var fallbackPageId = cx.jQuery("#" + cx.jQuery("#pageId").val()).parent().children("." + fallbackLanguage).attr("id");
             cx.trigger("loadingStart", "contentmanager", {});
             cx.jQuery.ajax({
-                url: "index.php?cmd=jsondata&object=page&act=get&page=" + fallbackPageId,
+                url: "index.php?cmd=JsonData&object=page&act=get&page=" + fallbackPageId,
                 async: false,
                 success: function(response) {
                     var fallbackPageType = response.data.type;
@@ -923,7 +945,12 @@ cx.cm = function(target) {
     });
     
     cx.jQuery("select#page_application").change(cx.cm.homeCheck, cx.jQuery("#pageId").val());
-    cx.jQuery("input#page_application_area").keyup(cx.cm.homeCheck, cx.jQuery("#pageId").val());
+    cx.jQuery('#page input[name="page[area]"]').keyup(cx.cm.homeCheck, cx.jQuery("#pageId").val());
+    cx.jQuery('#page input[name="page[area]"]').change(function() {
+        cx.cm.loadApplicationTemplate(cx.jQuery('#page select[name="page[application]"]').val(), 
+                                      cx.jQuery('#page input[name="page[area]"]').val(), 
+                                      cx.jQuery('#page select[name="page[skin]"]').val());
+    });
     // prevent enter key from opening fileBrowser
     cx.jQuery("#content-manager input").keydown(function(event) {
         if (event.keyCode == 13) {
@@ -965,6 +992,32 @@ cx.cm = function(target) {
         }
     });
 };
+cx.cm.loadApplicationTemplate = function(application, area, template) {
+    cx.trigger("loadingStart", "contentmanager", {});
+    cx.jQuery.ajax({
+        url: "index.php?cmd=JsonData&object=page&act=loadApplicationTemplate&app=" + application + "&area=" + area + "&template=" + template,
+        async: false,
+        success: function(response) {
+            var templateFile = response.data.files;
+            var select = cx.jQuery('#page select[name="page[applicationTemplate]"]');
+            select.empty();
+            select.append(cx.jQuery("<option value=\"\" selected=\"selected\">(Default)</option>"));
+            for (var i = 0; i < templateFile.length; i++) {
+                if (templateFile[i] != '') {
+                    select.append(cx.jQuery('<option>', {
+                        value : templateFile[i]
+                    }).text(templateFile[i]));
+                }
+            }
+            cx.jQuery('span.area').text(response.data.area);
+            cx.jQuery('span.folderPath').text(response.data.path);
+            cx.cm.pageApplicationTemplate = '';
+            cx.jQuery('input[name="page[useCustomApplicationTemplateForAllChannels]"]').attr('disabled', 'disabled');
+            cx.jQuery('input[name="page[useCustomApplicationTemplateForAllChannels]"]').removeAttr('checked');
+        }
+    });
+    cx.trigger("loadingEnd", "contentmanager", {});
+}
 
 cx.cm.homeCheck = function(addClasses, pageId) {
     var module = cx.jQuery("select#page_application");
@@ -974,7 +1027,7 @@ cx.cm.homeCheck = function(addClasses, pageId) {
     cmd.removeClass("warning");
 
     // this is no home page
-    if (module.val() != "home" || cmd.val() != "") {
+    if (module.val() != "Home" || cmd.val() != "") {
         return false;
     }
     
@@ -1030,7 +1083,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                         nodeId = cx.jQuery(nodeId).closest('li').attr('id').split("_")[1];
                         nodeId = "&nodeid=" + nodeId;
                     }
-                    return "?cmd=jsondata&object=node&act=getTree" + nodeId;
+                    return "?cmd=JsonData&object=node&act=getTree" + nodeId;
                 },
                 "progressive_render" : true,
                 "success" : function(response) {
@@ -1163,7 +1216,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
             cx.jQuery.ajax({
                 async : false,
                 type: 'POST',
-                url: "?cmd=jsondata&object=node&act=move",
+                url: "?cmd=JsonData&object=node&act=move",
                 data : {
                     "operation" : "move_node",
                     "id" : cx.jQuery(this).attr("id").replace("node_", ""),
@@ -1223,7 +1276,7 @@ cx.cm.createJsTree = function(target, data, nodeLevels, open_all) {
                         module = cx.jQuery.trim(cx.jQuery.parseJSON(cx.jQuery(leaf).attr("data-href")).module);
                         module = module.split(" ")[0];
                     } catch (ex) {}
-                    if (cx.jQuery.inArray(module, ["", "home", "login", "imprint", "ids", "error", "sitemap", "agb", "privacy", "search"]) == -1) {
+                    if (cx.jQuery.inArray(module, ["", "Home", "login", "Imprint", "Ids", "Error", "Sitemap", "Agb", "Privacy", "search"]) == -1) {
                         cx.cm.showEditModeWindow(module, this.id, cx.jQuery(this).closest('li').attr("id").split("_")[1]);
                     } else {
                         cx.cm.loadPage(this.id, cx.jQuery(this).closest('li').attr("id").split("_")[1], null, "content");
@@ -1656,7 +1709,7 @@ cx.cm.saveToggleStatuses = function() {
     cx.variables.set('toggleThemes', toggleStatuses['toggleThemes'], 'contentmanager/toggle');
     cx.variables.set('toggleApplication', toggleStatuses['toggleApplication'], 'contentmanager/toggle');
     cx.variables.set('sidebar', toggleStatuses['sidebar'], 'contentmanager/toggle');
-    cx.jQuery.post('index.php?cmd=jsondata&object=cm&act=saveToggleStatuses', toggleStatuses);
+    cx.jQuery.post('index.php?cmd=JsonData&object=cm&act=saveToggleStatuses', toggleStatuses);
 };
 
 CKEDITOR.on('instanceReady', function() {
@@ -1757,7 +1810,7 @@ cx.cm.performAction = function(action, pageId, nodeId) {
     var pageElement = cx.jQuery("a#" + pageId);
     var pageLang = pageElement.attr("class").split(" ")[0];
     var page = cx.cm.getPageStatus(nodeId, pageLang);
-    var url = "index.php?cmd=jsondata&object=page&act=set&action=" + action + "&pageId=" + pageId;
+    var url = "index.php?cmd=JsonData&object=page&act=set&action=" + action + "&pageId=" + pageId;
     switch (action) {
         case "new":
             cx.cm.showEditView(true);
@@ -1766,7 +1819,7 @@ cx.cm.performAction = function(action, pageId, nodeId) {
             cx.cm.createEditor();
             return;
         case "copy":
-            url = "index.php?cmd=jsondata&object=node&act=copy&id=" + nodeId;
+            url = "index.php?cmd=JsonData&object=node&act=copy&id=" + nodeId;
             break;
         case "activate":
         case "deactivate":
@@ -1785,7 +1838,7 @@ cx.cm.performAction = function(action, pageId, nodeId) {
                 return;
             }
             var currentNodeId = cx.jQuery('input#pageNode').val();
-            url = "index.php?cmd=jsondata&object=node&act=delete&action=" + action + "&id=" + nodeId + "&currentNodeId=" + currentNodeId;
+            url = "index.php?cmd=JsonData&object=node&act=delete&action=" + action + "&id=" + nodeId + "&currentNodeId=" + currentNodeId;
             break;
         default:
             // do not perform unknown actions
@@ -2485,14 +2538,14 @@ cx.cm.showEditModeWindow = function(cmdName, pageId) {
     var editModeModuleLink = "index.php?cmd=" + cmdName + "&csrf=" + csrf;
     
     // Redirect to edit page of the contact form if module is contact
-    if (cmdName == 'contact') {
+    if (cmdName == 'Contact') {
         var contactFormId  = cx.cm.getcontactFormId(pageId);
         editModeModuleLink = "index.php?cmd=" + cmdName + "&act=forms&tpl=edit&formId=" + contactFormId + "&csrf=" + csrf;
         
     // Redirect to media module for media1, 2, 3 and 4
-    } else if (/media[1-4]/.exec(cmdName)) {
-        var archiveId = /media([1-4])/.exec(cmdName)[1];
-        editModeModuleLink = "index.php?cmd=media&archive=archive" + archiveId + "&csrf=" + csrf;
+    } else if (/Media[1-4]/.exec(cmdName)) {
+        var archiveId = /Media([1-4])/.exec(cmdName)[1];
+        editModeModuleLink = "index.php?cmd=Media&archive=archive" + archiveId + "&csrf=" + csrf;
     }
     
     content = content.replace(/\%1/g, editModeLayoutLink);
@@ -2542,7 +2595,7 @@ cx.cm.loadHistory = function(id, pos) {
         return;
     }
     
-    cx.jQuery('#page_history').load('index.php?cmd=jsondata&object=page&act=getHistoryTable&page='+pageId+'&pos='+pos+hideDrafts, function() {
+    cx.jQuery('#page_history').load('index.php?cmd=JsonData&object=page&act=getHistoryTable&page='+pageId+'&pos='+pos+hideDrafts, function() {
         cx.jQuery("#history_paging").find("a").each(function(index, el) {
             el = cx.jQuery(el);
             var pos;
@@ -2568,7 +2621,7 @@ cx.cm.loadHistory = function(id, pos) {
 
 cx.cm.loadPage = function(pageId, nodeId, historyId, selectTab, reloadHistory) {
     cx.cm.resetEditView();
-    var url = '?cmd=jsondata&object=page&act=get&page='+pageId+'&node='+nodeId+'&lang='+cx.jQuery("#site-tree").jstree("get_lang")+'&userFrontendLangId='+cx.jQuery("#site-tree").jstree("get_lang");
+    var url = '?cmd=JsonData&object=page&act=get&page='+pageId+'&node='+nodeId+'&lang='+cx.jQuery("#site-tree").jstree("get_lang")+'&userFrontendLangId='+cx.jQuery("#site-tree").jstree("get_lang");
     if (historyId) {
         url += '&history=' + historyId;
     }
@@ -2702,9 +2755,20 @@ cx.cm.pageLoaded = function(page, selectTab, reloadHistory, historyId) {
     }
     cx.jQuery('#page select[name="page[customContent]"]').trigger('change');
     
+    
+    cx.jQuery('#page select[name="page[applicationTemplate]"]').val(page.applicationTemplate);
+    cx.cm.pageApplicationTemplate = page.applicationTemplate;
+    
+    if (page.useCustomApplicationTemplateForAllChannels == '1') {
+        cx.jQuery('#page input[name="page[useCustomApplicationTemplateForAllChannels]"]').attr('checked', 'checked');
+    } else {
+        cx.jQuery('#page input[name="page[useCustomApplicationTemplateForAllChannels]"]').removeAttr('checked');
+    }
+    cx.jQuery('#page select[name="page[applicationTemplate]"]').trigger('change');
+        
     cx.jQuery('#page input[name="page[cssName]"]').val(page.cssName);
 
-    if (page.module === 'home') {
+    if (page.module === 'Home') {
         cx.jQuery(".content_template_info").html('home.html');
     } else {
         cx.jQuery(".content_template_info").html('content.html');
@@ -2870,7 +2934,7 @@ cx.cm.pushHistory = function(source) {
     if (!cx.cm.isEditView()) {
         History.pushState({
             state:cx.cm.historyPushes
-        }, document.title, "?cmd=content" + "&userFrontendLangId=" + activeLanguageId + "&csrf=" + cx.variables.get("csrf", "contrexx"));
+        }, document.title, "?cmd=ContentManager" + "&userFrontendLangId=" + activeLanguageId + "&csrf=" + cx.variables.get("csrf", "contrexx"));
     } else if (activePageId == "new" || activePageId == "" || activePageId == "0") {
         var node = "";
         var act = "&act=new";
@@ -2882,7 +2946,7 @@ cx.cm.pushHistory = function(source) {
         }
         History.pushState({
             state:cx.cm.historyPushes
-        }, document.title, "?cmd=content" + act + "&userFrontendLangId=" + activeLanguageId + node + "&tab=" + activeTabName + "&csrf=" + cx.variables.get("csrf", "contrexx"));
+        }, document.title, "?cmd=ContentManager" + act + "&userFrontendLangId=" + activeLanguageId + node + "&tab=" + activeTabName + "&csrf=" + cx.variables.get("csrf", "contrexx"));
     } else {
         var version = "";
         if (cx.jQuery("#historyId").val() != "") {
@@ -2890,7 +2954,7 @@ cx.cm.pushHistory = function(source) {
         }
         History.pushState({
             state:cx.cm.historyPushes
-        }, document.title, "?cmd=content&page=" + activePageId + version + "&tab=" + activeTabName + "&csrf=" + cx.variables.get("csrf", "contrexx"));
+        }, document.title, "?cmd=ContentManager&page=" + activePageId + version + "&tab=" + activeTabName + "&csrf=" + cx.variables.get("csrf", "contrexx"));
     }
     cx.cm.historyPushes++;
 }

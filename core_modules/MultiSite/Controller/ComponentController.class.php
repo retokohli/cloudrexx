@@ -70,7 +70,7 @@ class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponen
         	$act = contrexx_input2raw($_GET['act']);
         }
         
-        $actTemplate = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/MultiSite/View/Template');
+        $actTemplate = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/MultiSite/View/Template/Backend');
         
         switch ($act) {
 		
@@ -99,7 +99,7 @@ class ComponentController extends \Cx\Core\Component\Model\Entity\SystemComponen
 		}
         
         // set tabs
-        $navigation = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/MultiSite/View/Template');
+        $navigation = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/MultiSite/View/Template/Backend');
         $navigation->loadTemplateFile('Navigation.html');
         foreach ($navEntries as $href=>$title) {
             $navigation->setVariable(array(

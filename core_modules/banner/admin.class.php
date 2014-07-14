@@ -49,8 +49,8 @@ class Banner extends bannerLibrary {
     {
         global  $_ARRAYLANG, $objInit, $objTemplate;
 
-        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/banner/template');
-        CSRF::add_placeholder($this->_objTpl);
+        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/banner/View/Template/Backend');
+        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);     
         $this->pageTitle = $_ARRAYLANG['TXT_BANNER_ADMINISTRATION'];
         $this->langId=$objInit->userFrontendLangId;
@@ -173,7 +173,7 @@ class Banner extends bannerLibrary {
                                         LIMIT    1
                                     ');
 
-                $objSettings = new settingsManager();
+                $objSettings = new \Cx\Core\Config\Controller\Config();
                 $objSettings->writeSettingsFile();
             }
 
@@ -831,7 +831,7 @@ class Banner extends bannerLibrary {
         if ($objResult->RecordCount() > 0) {
             $strDropDown = '<select name="ddGroup" onChange="window.location=this.options[this.selectedIndex].value">';
             while (!$objResult->EOF) {
-                $strDropDown .= '<option value="'.CSRF::enhanceURI('index.php?cmd=banner').'&act=group_details&id='.$objResult->fields['id'].'"'.(($objResult->fields['id'] == $intGid) ? ' selected' : '').'>'.$objResult->fields['name'].'</option>';
+                $strDropDown .= '<option value="'.\Cx\Core\Csrf\Controller\ComponentController::enhanceURI('index.php?cmd=banner').'&act=group_details&id='.$objResult->fields['id'].'"'.(($objResult->fields['id'] == $intGid) ? ' selected' : '').'>'.$objResult->fields['name'].'</option>';
                 $objResult->MoveNext();
             }
             $strDropDown .= '</select>';
@@ -890,14 +890,14 @@ class Banner extends bannerLibrary {
                     while(!$objSubResult->EOF) {
                         switch ($objSubResult->fields['type']) {
                             case 'news':
-                                $strRelationsNews     .= '<a href="?cmd=news&amp;act=newscat">'.$arrNewsCategories[$objSubResult->fields['page_id']].' ('.$objSubResult->fields['page_id'].'</a>)<br />';
+                                $strRelationsNews     .= '<a href="?cmd=News&amp;act=newscat">'.$arrNewsCategories[$objSubResult->fields['page_id']].' ('.$objSubResult->fields['page_id'].'</a>)<br />';
                             break;
                             case 'teaser':
-                                $strRelationsTeaser    .= '<a href="?cmd=news&amp;act=teasers&amp;tpl=editFrame&amp;frameId='.$objSubResult->fields['page_id'].'">'.$arrTeaserCategories[$objSubResult->fields['page_id']].' ('.$objSubResult->fields['page_id'].'</a>)<br />';
+                                $strRelationsTeaser    .= '<a href="?cmd=News&amp;act=teasers&amp;tpl=editFrame&amp;frameId='.$objSubResult->fields['page_id'].'">'.$arrTeaserCategories[$objSubResult->fields['page_id']].' ('.$objSubResult->fields['page_id'].'</a>)<br />';
                             break;
                             default:
                                 $arrValues = $objContentTree->getThisNode($objSubResult->fields['page_id']);
-                                $strRelationsContent .= '<a href="?cmd=content&amp;act=edit&amp;pageId='.$arrValues['catid'].'">'.$arrValues['catname'].' ('.$arrValues['catid'].'</a>)<br />';
+                                $strRelationsContent .= '<a href="?cmd=ContentManager&amp;act=edit&amp;pageId='.$arrValues['catid'].'">'.$arrValues['catname'].' ('.$arrValues['catid'].'</a>)<br />';
                         }
                         $objSubResult->MoveNext();
                     }

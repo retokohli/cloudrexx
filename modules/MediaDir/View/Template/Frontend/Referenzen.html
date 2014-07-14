@@ -1,0 +1,29 @@
+<script type="text/javascript">
+    var setMargin = function (event) {
+        $J(event).css('margin-top', function () {
+            return ($J(event).parent().height() - $J(event).height()) / 2;
+        })
+    }
+</script>
+
+{MEDIADIR_JAVASCRIPT}
+
+<div id="mediadir">
+    <!-- BEGIN mediadirSearchform -->
+     {MEDIADIR_NORMAL_SEARCH_FORM}
+     <!-- END mediadirSearchform -->
+
+    <!-- BEGIN mediadirEntryList -->
+    <a class="reference" href="index.php?section=MediaDir&amp;cmd=detail31&amp;eid={MEDIADIR_ENTRY_ID}">
+        <!-- BEGIN mediadir_inputfield_180 -->
+        <img src="{MEDIADIR_INPUTFIELD_VALUE_SRC_THUMB}" alt="" onload="setMargin(this)" />
+        <!-- END mediadir_inputfield_180 -->
+    </a>
+    <!-- END mediadirEntryList -->
+
+    <!-- BEGIN mediadirNoEntriesFound -->
+    {TXT_MEDIADIR_SEARCH_MESSAGE}
+    <!-- END mediadirNoEntriesFound -->
+
+    {MEDIADIR_PAGING}
+</div>

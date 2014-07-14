@@ -2530,7 +2530,7 @@ class soap_server extends nusoap_base {
 			// This is a request for WSDL
 			if($this->externalWSDLURL){
               if (strpos($this->externalWSDLURL,"://")!==false) { // assume URL
-				CSRF::header('Location: '.$this->externalWSDLURL);
+				\Cx\Core\Csrf\Controller\ComponentController::header('Location: '.$this->externalWSDLURL);
               } else { // assume file
                 header("Content-Type: text/xml\r\n");
                 $fp = fopen($this->externalWSDLURL, 'r');

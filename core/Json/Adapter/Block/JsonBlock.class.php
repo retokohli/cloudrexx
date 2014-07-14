@@ -58,7 +58,7 @@ class JsonBlock implements JsonAdapter {
      * @return String Name of this adapter
      */
     public function getName() {
-        return 'block';
+        return 'Block';
     }
     
     /**
@@ -78,6 +78,14 @@ class JsonBlock implements JsonAdapter {
     }
     
     /**
+     * Returns default permission as object
+     * @return Object
+     */
+    public function getDefaultPermissions() {
+        return null;
+    }
+    
+    /**
      * Returns all available blocks for each language
      * @return array List of blocks (lang => id )
      */
@@ -88,7 +96,7 @@ class JsonBlock implements JsonAdapter {
             throw new \Exception($_CORELANG['TXT_ACCESS_DENIED_DESCRIPTION']);
         }
         
-        $blockLib = new \blockLibrary();
+        $blockLib = new \Cx\Modules\Block\Controller\BlockLibrary();
         $blocks = $blockLib->getBlocks();
         $data = array();
         foreach ($blocks as $id=>$block) {

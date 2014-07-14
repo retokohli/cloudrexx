@@ -892,7 +892,7 @@ DBG::log("SettingDb::add(): ERROR: Query failed: $query");
             $value = (isset ($_POST[$name])
                 ? contrexx_input2raw($_POST[$name])
                 : null);
-//            if (preg_match('/^'.preg_quote(CSRF::key(), '/').'$/', $name))
+//            if (preg_match('/^'.preg_quote(\Cx\Core\Csrf\Controller\ComponentController::key(), '/').'$/', $name))
 //                continue;
             switch (self::$arrSettings[$name]['type']) {
               case self::TYPE_FILEUPLOAD:

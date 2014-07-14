@@ -50,6 +50,14 @@ class JsonUser implements JsonAdapter {
     public function getMessagesAsString() {
         return implode('<br />', $this->messages);
     }
+    
+    /**
+     * Returns default permission as object
+     * @return Object
+     */
+    public function getDefaultPermissions() {
+        return null;
+    }
 
     /**
      * Returns the user with the given user id.

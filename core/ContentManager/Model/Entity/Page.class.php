@@ -143,6 +143,16 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     protected $useCustomContentForAllChannels;
 
     /**
+     * @var string $applicationTemplate
+     */
+    protected $applicationTemplate;
+    
+    /**
+     * @var integer $useCustomApplicationTemplateForAllChannels
+     */
+    protected $useCustomApplicationTemplateForAllChannels;
+
+    /**
      * @var string $cssName
      */
     protected $cssName;
@@ -526,6 +536,46 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     }
     
     /**
+     * Set applicationTemplate
+     *
+     * @param string $applicationTemplate
+     */
+    public function setApplicationTemplate($applicationTemplate)
+    {
+        $this->applicationTemplate = $applicationTemplate;
+    }
+
+    /**
+     * Get applicationTemplate
+     *
+     * @return string $applicationTemplate
+     */
+    public function getApplicationTemplate()
+    {
+        return $this->applicationTemplate;
+    }
+    
+    /**
+     * Get useCustomApplicationTemplateForAllChannels
+     *
+     * @return integer $useCustomApplicationTemplateForAllChannels
+     */
+    public function setUseCustomApplicationTemplateForAllChannels($useCustomApplicationTemplateForAllChannels)
+    {
+        $this->useCustomApplicationTemplateForAllChannels = $useCustomApplicationTemplateForAllChannels;
+    }
+    
+    /**
+     * Get useCustomApplicationTemplateForAllChannels
+     *
+     * @return integer $useCustomApplicationTemplateForAllChannels
+     */
+    public function getUseCustomApplicationTemplateForAllChannels()
+    {
+        return $this->useCustomApplicationTemplateForAllChannels;
+    }
+    
+    /**
      * Set cssName
      *
      * @param string $cssName
@@ -759,7 +809,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
 
         if ($this->isFrontendProtected()) $status .= "protected ";
         if ($this->getModule()) {
-            if ($this->getModule() == "home" && $this->getCmd() == '') $status .= "home ";
+            if ($this->getModule() == "Home" && $this->getCmd() == '') $status .= "home ";
             else $status .= "application ";
         }
         return $status;
@@ -1684,7 +1734,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
     {
         $oldAliasList = $this->getAliases();
         $aliases = array();
-        $lib = new \aliasLib($this->getLang());
+        $lib = new \Cx\Core_Modules\Alias\Controller\AliasLib($this->getLang());
         foreach ($oldAliasList as $oldAlias) {
             if (in_array($oldAlias->getSlug(), $data)) {
                 // existing alias, ignore;
@@ -1893,7 +1943,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
      * @return array 
      */
     public function getRelatedBlocks() {
-        $blockLib = new \blockLibrary();
+        $blockLib = new \Cx\Modules\Block\Controller\BlockLibrary();
         $blocks = $blockLib->_getBlocksForPageId($this->getId());
         return $blocks;
     }
@@ -1903,7 +1953,7 @@ class Page extends \Cx\Model\Base\EntityBase implements \Serializable
      * @param array $relatedBlocks list of block IDs
      */
     public function setRelatedBlocks($relatedBlocks) {
-        $blockLib = new \blockLibrary();
+        $blockLib = new \Cx\Modules\Block\Controller\BlockLibrary();
         $blockLib->_setBlocksForPageId($this->getId(), $relatedBlocks);
     }
     

@@ -78,8 +78,8 @@ class Immo extends ImmoLib
     function __construct()
     {
         global $objTemplate, $_ARRAYLANG, $objDatabase;
-        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/immo/template');
-        CSRF::add_placeholder($this->_objTpl);
+        $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/immo/View/Template/Backend');
+        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
 
@@ -2867,7 +2867,7 @@ WHERE id = $immoID )";
             }
         }
 
-        CSRF::header("Location: ?cmd=immo&act=settings");
+        \Cx\Core\Csrf\Controller\ComponentController::header("Location: ?cmd=immo&act=settings");
         exit;
     }
 

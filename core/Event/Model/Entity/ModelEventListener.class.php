@@ -32,7 +32,7 @@ class ModelEventListener implements EventListener {
         $this->listener = $listener;
     }
     
-    public function onEvent($eventName, $eventArgs) {
+    public function onEvent($eventName, array $eventArgs) {
         $eventArgs = current($eventArgs);
         if (
             $eventArgs instanceof \Doctrine\ORM\Event\LifecycleEventArgs &&

@@ -108,8 +108,6 @@ class ContentManager extends \Module
             }
         }
 
-        $cachedRoot = $this->template->getRoot();
-        $this->template->setRoot(ASCMS_CORE_PATH . '/ContentManager/View/Template');
         $this->template->addBlockfile('ADMIN_CONTENT', 'content_manager', 'Skeleton.html');
 
         // user has no permission to create new page, hide navigation item in admin navigation
@@ -120,7 +118,6 @@ class ContentManager extends \Module
         $this->template->touchBlock('content_manager');
         $this->template->addBlockfile('CONTENT_MANAGER_MEAT', 'content_manager_meat', 'Page.html');
         $this->template->touchBlock('content_manager_meat');
-        $this->template->setRoot($cachedRoot);
 
         if (\Permission::checkAccess(78, 'static', true) &&
             \Permission::checkAccess(115, 'static', true)
@@ -150,7 +147,7 @@ class ContentManager extends \Module
             //type tab
             'TXT_CORE_CM_PAGE', 'TXT_CORE_CM_META', 'TXT_CORE_CM_PERMISSIONS', 'TXT_CORE_CM_MORE', 'TXT_CORE_CM_HISTORY', 'TXT_CORE_CM_PAGE_NAME', 'TXT_CORE_CM_PAGE_NAME_INFO', 'TXT_CORE_CM_PAGE_TITLE', 'TXT_CORE_CM_PAGE_TITLE_INFO', 'TXT_CORE_CM_TYPE', 'TXT_CORE_CM_TYPE_CONTENT', 'TXT_CORE_CM_TYPE_REDIRECT', 'TXT_CORE_CM_TYPE_APPLICATION', 'TXT_CORE_CM_TYPE_FALLBACK', 'TXT_CORE_CM_TYPE_CONTENT_INFO', 'TXT_CORE_CM_TYPE_REDIRECT_TARGET', 'TXT_CORE_CM_BROWSE', 'TXT_CORE_CM_TYPE_REDIRECT_INFO', 'TXT_CORE_CM_TYPE_APPLICATION', 'TXT_CORE_CM_TYPE_APPLICATION', 'TXT_CORE_CM_TYPE_APPLICATION_AREA', 'TXT_CORE_CM_TYPE_APPLICATION_INFO', 'TXT_CORE_CM_TYPE_FALLBACK_INFO', 'TXT_CORE_CM_TYPE_REDIRECT_INFO_ACTION', 'TXT_CORE_CM_SCHEDULED_PUBLISHING', 'TXT_CORE_CM_SCHEDULED_PUBLISHING_FROM', 'TXT_CORE_CM_SCHEDULED_PUBLISHING_TO', 'TXT_CORE_CM_SCHEDULED_PUBLISHING_INFO', 'TXT_INTERNAL',
             //meta tab
-            'TXT_CORE_CM_SE_INDEX', 'TXT_CORE_CM_METATITLE', 'TXT_CORE_CM_METATITLE_INFO', 'TXT_CORE_CM_METADESC', 'TXT_CORE_CM_METADESC_INFO', 'TXT_CORE_CM_METAKEYS', 'TXT_CORE_CM_METAKEYS_INFO',
+            'TXT_CORE_CM_SE_INDEX', 'TXT_CORE_CM_METATITLE', 'TXT_CORE_CM_METATITLE_INFO', 'TXT_CORE_CM_METADESC', 'TXT_CORE_CM_METADESC_INFO', 'TXT_CORE_CM_METAKEYS', 'TXT_CORE_CM_METAKEYS_INFO', 'TXT_CORE_CM_APPLICATION_TEMPLATE_INFO', 'TXT_CORE_CM_USE_APPLICATION_TEMPLATE_ALL_CHANNELS_INFO',
             //access tab
             'TXT_CORE_CM_ACCESS_PROTECTION_FRONTEND', 'TXT_CORE_CM_ACCESS_PROTECTION_BACKEND', 'TXT_CORE_CM_ACCESS_PROTECTION_AVAILABLE_GROUPS', 'TXT_CORE_CM_ACCESS_PROTECTION_ASSIGNED_GROUPS',
             //advanced tab
@@ -158,7 +155,7 @@ class ContentManager extends \Module
             //blocks tab
             'TXT_CORE_CM_BLOCKS', 'TXT_CORE_CM_BLOCKS_AVAILABLE', 'TXT_CORE_CM_BLOCKS_ASSIGNED',
             //settings tab
-            'TXT_CORE_APPLICATION_AREA', 'TXT_CORE_APPLICATION', 'TXT_CORE_AREA', 'TXT_CORE_SKIN', 'TXT_CORE_CUSTOMCONTENT', 'TXT_CORE_REDIRECTION', 'TXT_CORE_CACHING', 'TXT_CORE_SLUG', 'TXT_CORE_CSSNAME', 'TXT_THEME_PREVIEW', 'TXT_EDIT',
+            'TXT_CORE_APPLICATION_AREA', 'TXT_CORE_APPLICATION', 'TXT_CORE_AREA', 'TXT_CORE_SKIN', 'TXT_CORE_CUSTOMCONTENT', 'TXT_CORE_REDIRECTION', 'TXT_CORE_CACHING', 'TXT_CORE_SLUG', 'TXT_CORE_CSSNAME', 'TXT_THEME_PREVIEW', 'TXT_EDIT', 'TXT_CORE_CM_APPLICATION_TEMPLATE',
             //bottom buttons
             'TXT_CANCEL', 'TXT_CORE_PREVIEW', 'TXT_CORE_SAVE_PUBLISH', 'TXT_CORE_SAVE', 'TXT_CORE_SUBMIT_FOR_RELEASE', 'TXT_CORE_REFUSE_RELEASE'
         ));
@@ -310,7 +307,7 @@ class ContentManager extends \Module
         $cxjs->setVariable('contentTemplates', $this->getCustomContentTemplates(), 'contentmanager');
         $cxjs->setVariable('defaultTemplates', $this->getDefaultTemplates(), 'contentmanager/themes');
         $cxjs->setVariable('templateFolders', $this->getTemplateFolders(), 'contentmanager/themes');
-        $cxjs->setVariable('availableBlocks', $objJsonData->jsondata('block', 'getBlocks', array(), false), 'contentmanager');
+        $cxjs->setVariable('availableBlocks', $objJsonData->jsondata('Block', 'getBlocks', array(), false), 'contentmanager');
 
         // TODO: move including of add'l JS dependencies to cx obj from /cadmin/index.html
         $getLangOptions=$this->getLangOptions();
@@ -336,7 +333,7 @@ class ContentManager extends \Module
         
         $this->template->touchBlock('content_manager_language_selection');
 
-        $editmodeTemplate = new \Cx\Core\Html\Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
+        $editmodeTemplate = new \Cx\Core\Html\Sigma(ASCMS_CORE_PATH . '/ContentManager/View/Template/Backend');
         $editmodeTemplate->loadTemplateFile('content_editmode.html');
         $editmodeTemplate->setVariable(array(
             'TXT_EDITMODE_TEXT'    => $_CORELANG['TXT_FRONTEND_EDITING_SELECTION_TEXT'],

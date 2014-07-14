@@ -50,6 +50,14 @@ class JsonCalendar implements JsonAdapter {
     }
     
     /**
+     * Returns default permission as object
+     * @return Object
+     */
+    public function getDefaultPermissions() {
+        return null;
+    }
+    
+    /**
      * Returns all series dates from the given post data
      *       
      * @return array Array of dates
@@ -61,7 +69,7 @@ class JsonCalendar implements JsonAdapter {
             throw new \Exception($_CORELANG['TXT_ACCESS_DENIED_DESCRIPTION']);
         }
         
-        $calendarLib = new \CalendarLibrary();       
+        $calendarLib = new \Cx\Modules\Calendar\Controller\CalendarLibrary();       
         return $calendarLib->getExeceptionDates();        
     }
 }

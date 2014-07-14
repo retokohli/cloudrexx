@@ -356,7 +356,7 @@ namespace Cx\Core\Core\Controller {
 
             // Check if the system is installed
             if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
-                \CSRF::header('Location: http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'].'installer/index.php');
+                \Cx\Core\Csrf\Controller\ComponentController::header('Location: http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'].'installer/index.php');
                 exit;
             } else if ($incSettingsStatus === false) {
                 die('System halted: Unable to load basic configuration!');
@@ -436,7 +436,7 @@ namespace Cx\Core\Core\Controller {
                     }
                     // this does not belong here:
                     if (!preg_match('#^' . ASCMS_INSTANCE_OFFSET . ASCMS_BACKEND_PATH . '/#', $_GET['__cap'])) {
-                        // do not use \CSRF::header() here, since ClassLoader is not loaded at this time
+                        // do not use \Cx\Core\Csrf\Controller\ComponentController::header() here, since ClassLoader is not loaded at this time
                         header('Location: ' . ASCMS_INSTANCE_OFFSET . ASCMS_BACKEND_PATH . '/');
                         die();
                     }
@@ -445,7 +445,7 @@ namespace Cx\Core\Core\Controller {
             }
             $this->mode = $mode;
             if ($this->request) {
-                $this->request->setMode($this->mode);
+                $this->request->getUrl()->setMode($this->mode);
             }
         }
 
@@ -482,8 +482,8 @@ namespace Cx\Core\Core\Controller {
             
             global $objCache;
             if (
-                $objCache->getUserCacheEngine() == \Cache::CACHE_ENGINE_APC ||
-                $objCache->getOpCacheEngine() == \Cache::CACHE_ENGINE_APC
+                $objCache->getUserCacheEngine() == \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_APC ||
+                $objCache->getOpCacheEngine() == \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_APC
             ) {
                 if ($this->memoryLimit < 32) {
                     ini_set('memory_limit', '32M');
@@ -603,7 +603,7 @@ namespace Cx\Core\Core\Controller {
             /**
              * Start caching with op cache, user cache and contrexx caching
              */
-            $objCache = new \Cache();
+            $objCache = new \Cx\Core_Modules\Cache\Controller\Cache();
             if ($this->mode == self::MODE_FRONTEND) {
                 $objCache->deactivateNotUsedOpCaches();
             } elseif (!isset($_GET['cmd']) || $_GET['cmd'] != 'settings') {
@@ -621,7 +621,7 @@ namespace Cx\Core\Core\Controller {
             $this->cl->loadFile(ASCMS_CORE_PATH.'/API.php');
             // Temporary fix until all GET operation requests will be replaced by POSTs
             if ($this->mode != self::MODE_BACKEND) {
-                \CSRF::setFrontendMode();
+                \Cx\Core\Csrf\Controller\ComponentController::setFrontendMode();
             }
             
             $this->db = new \Cx\Core\Model\Db($this);
@@ -679,10 +679,11 @@ namespace Cx\Core\Core\Controller {
                 switch ($this->mode) {
                     case self::MODE_FRONTEND:
                     case self::MODE_BACKEND:
-                        $this->request = \Cx\Core\Routing\Url::fromCapturedRequest($request, $offset, $_GET);
+                        $this->request = new \Cx\Core\Routing\Model\Entity\Request($_SERVER['REQUEST_METHOD'], 
+                                                                                   \Cx\Core\Routing\Url::fromCapturedRequest($request, $offset, $_GET));
                         break;
                     case self::MODE_MINIMAL:
-                        $this->request = \Cx\Core\Routing\Url::fromRequest();
+                        $this->request = new \Cx\Core\Routing\Model\Entity\Request($_SERVER['REQUEST_METHOD'], \Cx\Core\Routing\Url::fromRequest());
                         break;
                 }
             }
@@ -765,7 +766,7 @@ namespace Cx\Core\Core\Controller {
             switch ($no) {
                 case 1:
                     // Request URL
-                    $url = $this->request;
+                    $url = $this->request->getUrl();
                     // populate template
                     $objTemplate = $this->template;
                     // populate classloader
@@ -821,8 +822,8 @@ namespace Cx\Core\Core\Controller {
          * @todo Is this useful in CLI mode?
          */
         protected function resolve() {
-            $this->resolver = new \Cx\Core\Routing\Resolver($this->getRequest(), null, $this->getDb()->getEntityManager(), null, null);
-            $this->request->setMode($this->mode);
+            $this->resolver = new \Cx\Core\Routing\Resolver($this->getRequest()->getUrl(), null, $this->getDb()->getEntityManager(), null, null);
+            $this->request->getUrl()->setMode($this->mode);
 
             if ($this->mode == self::MODE_FRONTEND) {
                 $this->resolvedPage = $this->resolver->resolve();
@@ -834,7 +835,7 @@ namespace Cx\Core\Core\Controller {
                 $this->resolvedPage->setVirtual(true);
                 
                 if (!isset($plainCmd)) {
-                    $cmd = isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : '';
+                    $cmd = isset($_REQUEST['cmd']) ? $_REQUEST['cmd'] : 'Home';
                     $act = isset($_REQUEST['act']) ? $_REQUEST['act'] : '';
                     $plainCmd = $cmd;
                 }
@@ -860,8 +861,7 @@ namespace Cx\Core\Core\Controller {
          * @global type $plainSection 
          */
         protected function preContentLoad() {
-            global $moduleStyleFile,
-                    $plainCmd, $plainSection;
+            global $moduleStyleFile, $plainCmd, $plainSection;
             
             $this->ch->callPreContentLoadHooks();
             
@@ -871,17 +871,13 @@ namespace Cx\Core\Core\Controller {
                 $pageContent = $this->resolvedPage->getContent();
                 \LinkGenerator::parseTemplate($pageContent);
                 $this->resolvedPage->setContent($pageContent);
-
+                
                 $moduleStyleFile = null;
             } else if ($this->mode == self::MODE_BACKEND) {
                 // Skip the nav/language bar for modules which don't make use of either.
                 // TODO: Remove language selector for modules which require navigation but bring their own language management.
                 if ($this->ch->isLegacyComponent($plainCmd)) {
-                    if (in_array($plainCmd, array('content'))) {
-                        $this->template->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master_stripped.html');
-                    } else {
-                        $this->template->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master.html');
-                    }
+                    $this->template->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master.html');
                 }
                 $plainSection = $plainCmd;
             }
@@ -950,12 +946,49 @@ namespace Cx\Core\Core\Controller {
             $this->ch->callPreContentParseHooks();
             
             $this->ch->loadComponent($this, $plainSection, $this->resolvedPage);
+            $this->loadContentTemplateOfPage();
+            
+            if ($this->mode == self::MODE_FRONTEND) {
+                //replace the {NODE_<ID>_<LANG>}- placeholders
+                $pageContent = $this->resolvedPage->getContent();
+                \LinkGenerator::parseTemplate($pageContent);
+                $this->resolvedPage->setContent($pageContent);
+            }
+            
+            $this->ch->loadComponent($this, $plainSection, $this->resolvedPage);
             // This would be a postContentParseHook:
             \Message::show();
             
             $this->ch->callPostContentParseHooks();
-
         }
+
+        protected function loadContentTemplateOfPage() {
+            global $plainSection;
+            
+            try {
+                $cmd              = !$this->resolver->getCmd() ? 'Default' : ucfirst($this->resolver->getCmd()); 
+                $customAppTemplate= !$this->resolvedPage->getApplicationTemplate() ? $cmd.'.html' : $this->resolvedPage->getApplicationTemplate();
+                $moduleFolderName = contrexx_isCoreModule($this->resolver->getSection()) ? 'core_modules' : 'modules';
+                
+                //displaying the application template for all output channels
+                if ($this->resolvedPage->getUseCustomApplicationTemplateForAllChannels()) {
+                    $themeRepo       = new \Cx\Core\View\Model\Repository\ThemeRepository();
+                    $themeFolderName = $this->resolvedPage->getSkin() ? $themeRepo->findById($this->resolvedPage->getSkin())->getFoldername() : \Env::get('init')->getCurrentThemesPath();
+                } else {
+                    $themeFolderName  = \Env::get('init')->getCurrentThemesPath();
+                }
+                
+                $themePath        = ASCMS_THEMES_PATH.'/'.$themeFolderName.'/'.$moduleFolderName.'/'.$plainSection.'/Template/Frontend/'.$customAppTemplate;
+                $modulePath       = \Env::get('ClassLoader')->getFilePath(ASCMS_DOCUMENT_ROOT.'/'.$moduleFolderName.'/'.$plainSection.'/View/Template/Frontend/'.$cmd.'.html');
+                $contentTemplate  = file_exists($themePath) ? file_get_contents($themePath) : (file_exists($modulePath) ? file_get_contents($modulePath) : '');
+                
+                $this->resolvedPage->setContent(str_replace('{APPLICATION_DATA}', $contentTemplate, $this->resolvedPage->getContent()));
+            } catch (\Exception $e) {
+                throw new \Exception('Error Loading the content template:' . $e);
+            }
+        }
+
+
         /**
          * Calls hooks after content was processed
          */
@@ -1019,9 +1052,9 @@ namespace Cx\Core\Core\Controller {
             }
             
             // set global template variables
-            $boolShop = \Shop::isInitialized();
+            $boolShop = \Cx\modules\Shop\Controller\Shop::isInitialized();
             $objNavbar = new \Navigation($this->resolvedPage->getId(), $this->resolvedPage);
-            $objNavbar->setLanguagePlaceholders($this->resolvedPage, $this->request, $this->template);
+            $objNavbar->setLanguagePlaceholders($this->resolvedPage, $this->request->getUrl(), $this->template);
             $metarobots = $this->resolvedPage->getMetarobots();
             $this->template->setVariable(array(
                 'CHARSET'                        => \Env::get('init')->getFrontendLangCharset(),
@@ -1060,13 +1093,13 @@ namespace Cx\Core\Core\Controller {
                 'COUNTER'                        => $objCounter->getCounterTag(),
                 'BANNER'                         => isset($objBanner) ? $objBanner->getBannerJS() : '',
                 'VERSION'                        => contrexx_raw2xhtml($_CONFIG['coreCmsName']),
-                'LANGUAGE_NAVBAR'                => $objNavbar->getFrontendLangNavigation($this->resolvedPage, $this->request),
-                'LANGUAGE_NAVBAR_SHORT'          => $objNavbar->getFrontendLangNavigation($this->resolvedPage, $this->request, true),
+                'LANGUAGE_NAVBAR'                => $objNavbar->getFrontendLangNavigation($this->resolvedPage, $this->request->getUrl()),
+                'LANGUAGE_NAVBAR_SHORT'          => $objNavbar->getFrontendLangNavigation($this->resolvedPage, $this->request->getUrl(), true),
                 'ACTIVE_LANGUAGE_NAME'           => \Env::get('init')->getFrontendLangName(),
                 'RANDOM'                         => md5(microtime()),
                 'TXT_SEARCH'                     => $_CORELANG['TXT_SEARCH'],
                 'MODULE_INDEX'                   => MODULE_INDEX,
-                'LOGIN_URL'                      => '<a href="' . \Env::get('init')->getUriBy('section', 'login') . '" class="start-frontend-editing">' . $_CORELANG['TXT_FRONTEND_EDITING_LOGIN'] . '</a>',
+                'LOGIN_URL'                      => '<a href="' . \Env::get('init')->getUriBy('section', 'Login') . '" class="start-frontend-editing">' . $_CORELANG['TXT_FRONTEND_EDITING_LOGIN'] . '</a>',
                 'TXT_CORE_LAST_MODIFIED_PAGE'    => $_CORELANG['TXT_CORE_LAST_MODIFIED_PAGE'],
                 'LAST_MODIFIED_PAGE'             => date(ASCMS_DATE_FORMAT_DATE, $this->resolvedPage->getUpdatedAt()->getTimestamp()),
                 'CONTACT_EMAIL'                  => isset($_CONFIG['contactFormEmail']) ? contrexx_raw2xhtml($_CONFIG['contactFormEmail']) : '',

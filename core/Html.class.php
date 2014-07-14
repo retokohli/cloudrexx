@@ -1054,7 +1054,7 @@ var _active_tab = '.
             '<a href="javascript:void(0);" title="'.
             $_CORELANG['TXT_CORE_HTML_CHOOSE_IMAGE'].'"'.
             ' tabindex="'.++self::$index_tab.'"'.
-            ' onclick="openBrowser(\'index.php?cmd=fileBrowser&amp;standalone=true'.
+            ' onclick="openBrowser(\'index.php?cmd=FileBrowser&amp;standalone=true'.
             ($type ? '&amp;type='.$type : '').
             ($path ? '&amp;path='.$path : '').
             '\',\''.$id.'\','.

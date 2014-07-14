@@ -212,11 +212,11 @@ class LinkGenerator {
                         } else if ($data['lang'] && empty($data['cmd'])) {
                             $this->placeholders[$placeholder] = \Cx\Core\Routing\Url::fromModuleAndCmd($data['module'], $data['lang'], FRONTEND_LANG_ID)->toString($this->absoluteUris);
                         } else {
-                            $this->placeholders[$placeholder] = \Cx\Core\Routing\Url::fromModuleAndCmd('error', '', $data['lang'])->toString($this->absoluteUris);
+                            $this->placeholders[$placeholder] = \Cx\Core\Routing\Url::fromModuleAndCmd('Error', '', $data['lang'])->toString($this->absoluteUris);
                         }
                     }
                 } else {
-                    $this->placeholders[$placeholder] = \Cx\Core\Routing\Url::fromModuleAndCmd('error', '', $data['lang'])->toString($this->absoluteUris);
+                    $this->placeholders[$placeholder] = \Cx\Core\Routing\Url::fromModuleAndCmd('Error', '', $data['lang'])->toString($this->absoluteUris);
                 }
             } else {
                 $this->placeholders[$placeholder] = $data->toString($this->absoluteUris);

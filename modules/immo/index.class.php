@@ -87,7 +87,7 @@ class Immo extends ImmoLib
                                         lang_id = 1 AND lower(name) LIKE '%aufzählung%'");
         $this->_listingCount = $objRS->fields['cnt'];
         $this->_objTpl = new \Cx\Core\Html\Sigma('.');
-        CSRF::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($pageContent);
 
@@ -774,7 +774,7 @@ class Immo extends ImmoLib
         if (!empty($_GET['id'])) {
             $immoID = intval($_GET['id']);
             if (empty($immoID)) {
-                CSRF::header('Location: ?section=immo&cmd=immolist');
+                \Cx\Core\Csrf\Controller\ComponentController::header('Location: ?section=immo&cmd=immolist');
                 die();
             }
         }

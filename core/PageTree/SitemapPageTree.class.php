@@ -29,7 +29,7 @@ class SitemapPageTree extends SigmaPageTree {
     }
     protected function renderElement($title, $level, $hasChilds, $lang, $path, $current, $page) {
         $width = $level*25;
-        $spacer = "<img src='".ASCMS_MODULE_IMAGE_WEB_PATH."/sitemap/spacer.gif' width='$width' height='12' alt='' />";
+        $spacer = "<img src='".ASCMS_CORE_MODULE_FOLDER."/Sitemap/View/Media/spacer.gif' width='$width' height='12' alt='' />";
         $linkTarget = $page->getLinkTarget();
         $this->template->setVariable(array(
             'STYLE'     => self::cssPrefix .'_' . $level,
