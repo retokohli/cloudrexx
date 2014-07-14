@@ -489,10 +489,10 @@ cx.fe.toolbar = function() {
                         // init the inline ckeditor
                             cx.fe.contentEditor.start(true);
                         cx.fe.toolbar.showAnchors(true, true); // show both anchors, history and options
+                } else {
+                    if (cx.jQuery("#fe_title").length > 0 || cx.jQuery("#fe_content").length > 0) {
+                        cx.tools.StatusMessage.showMessage(cx.fe.langVars.TXT_FRONTEND_EDITING_MODULE_PAGE, 'info', 5000);
                     } else {
-                        if (cx.jQuery("#fe_title").length > 0 || cx.jQuery("#fe_content").length > 0) {
-                            cx.tools.StatusMessage.showMessage(cx.fe.langVars.TXT_FRONTEND_EDITING_MODULE_PAGE, 'info', 5000);
-                        } else {
                             cx.tools.StatusMessage.showMessage(cx.fe.langVars.TXT_FRONTEND_EDITING_NO_TITLE_AND_CONTENT, 'info', 5000);
                         }
                             cx.fe.contentEditor.start(false);
@@ -722,7 +722,7 @@ cx.fe.editorLoaded = function() {
  * @param callback
  */
 cx.fe.loadPageData = function(historyId, putTheData, callback) {
-    var url = cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=jsondata&object=page&act=get&page=" + cx.variables.get("pageId", "FrontendEditing") + "&lang=" + cx.jQuery.cookie("langId") + "&userFrontendLangId=" + cx.jQuery.cookie("langId");
+    var url = cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=JsonData&object=page&act=get&page=" + cx.variables.get("pageId", "FrontendEditing") + "&lang=" + cx.jQuery.cookie("langId") + "&userFrontendLangId=" + cx.jQuery.cookie("langId");
     if (historyId) {
         url += "&history=" + historyId;
     }
@@ -734,7 +734,7 @@ cx.fe.loadPageData = function(historyId, putTheData, callback) {
 
             // check whether the page is a content page or a home page
             // the application pages do not allow to update title and content
-            if (putTheData && (cx.fe.page.type != "application" || cx.fe.page.module == "home")) {
+            if (putTheData && (cx.fe.page.type != "application" || cx.fe.page.module == "Home")) {
                 // put the new data of page into the html and start editor if the user is in edit mode
                 if (cx.fe.page.title) {
                     cx.jQuery("#fe_title").html(cx.fe.page.title);
@@ -917,7 +917,7 @@ cx.fe.publishPage = function() {
     cx.fe.preparePageToSend();
 
     cx.jQuery.post(
-        cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=jsondata&object=page&act=set",
+        cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=JsonData&object=page&act=set",
         {
             action: "publish",
             page: cx.fe.page,
@@ -954,7 +954,7 @@ cx.fe.savePage = function() {
     cx.fe.preparePageToSend();
 
     cx.jQuery.post(
-        cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=jsondata&object=page&act=set",
+        cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=JsonData&object=page&act=set",
         {
             page: cx.fe.page,
             ignoreBlocks: true
@@ -1078,7 +1078,7 @@ cx.fe.history.load = function(pos) {
         "<div class=\"historyInit\"><img src=\"" + cx.variables.get("basePath", "contrexx") + "/lib/javascript/jquery/jstree/themes/default/throbber.gif\" alt=\"Loading...\" /></div>"
     );
     cx.jQuery("#fe_history .fe_box").load(
-        cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=jsondata&object=page&act=getHistoryTable&page=" + cx.fe.page.id + "&pos=" + pos + "&limit=10" + hideDrafts,
+        cx.variables.get("basePath", "contrexx") + "cadmin/index.php?cmd=JsonData&object=page&act=getHistoryTable&page=" + cx.fe.page.id + "&pos=" + pos + "&limit=10" + hideDrafts,
         function() {
             cx.jQuery("#history_paging").find("a").each(function(index, el) {
                 el = cx.jQuery(el);
@@ -1166,7 +1166,7 @@ cx.fe.options.reloadCustomContentTemplates = function() {
 
     for (var i = 0; i < templates[skinId].length; i++) {
         var isHome = /^home_/.exec(templates[skinId][i]);
-        if ((isHome && application == "home") || !isHome && application != "home") {
+        if ((isHome && application == "Home") || !isHome && application != "Home") {
             select.append(cx.jQuery("<option>", {
                 value: templates[skinId][i]
             }).text(templates[skinId][i]));

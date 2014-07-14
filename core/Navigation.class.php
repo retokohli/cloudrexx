@@ -80,12 +80,12 @@ class Navigation
         }
 
         $this->_objTpl = new \Cx\Core\Html\Sigma('.');
-        CSRF::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($templateContent);
 
         if ($boolShop) {
-            $this->_objTpl->setVariable('SHOPNAVBAR_FILE', Shop::getNavbar());
+            $this->_objTpl->setVariable('SHOPNAVBAR_FILE', \Cx\modules\Shop\Controller\Shop::getNavbar());
         }
 
         $rootNode = null;
@@ -198,7 +198,7 @@ class Navigation
                 $url->setPath(substr($targetPage->getPath(), 1));
                 $link = $url->__toString();
             } else {
-                $link = $url->fromModuleAndCmd('error', '', $langId);
+                $link = $url->fromModuleAndCmd('Error', '', $langId);
             }
             $placeholders['LANG_CHANGE_'.strtoupper($langData['lang'])] = $link;
             $placeholders['LANG_SELECTED_'.strtoupper($langData['lang'])] = '';

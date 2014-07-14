@@ -448,7 +448,7 @@ class ADODB_pdo_base extends ADODB_pdo {
         return false;
     }
 }
-
+	
 class ADOPDOStatement {
 
 	var $databaseType = "pdo";		

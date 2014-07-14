@@ -29,8 +29,8 @@ class MemberManager
 	 */
 	function __construct()
 	{
-		$this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/member/template');
-        CSRF::add_placeholder($this->_objTpl);
+		$this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/member/View/Template/Backend');
+        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
 		$this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
                 $this->act = isset($_REQUEST['act']) ? $_REQUEST['act'] : '';
                 $this->setNavigation();
@@ -40,8 +40,8 @@ class MemberManager
                 global $objTemplate, $_ARRAYLANG;
 
                 $objTemplate->setVariable("CONTENT_NAVIGATION", "
-                    <a href='index.php?cmd=contact' title=".$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS']." class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS']."</a>
-                    <a href='index.php?cmd=contact&amp;act=settings' title=".$_ARRAYLANG['TXT_CONTACT_SETTINGS']." class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_CONTACT_SETTINGS']."</a>");
+                    <a href='index.php?cmd=Contact' title=".$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS']." class='".($this->act == '' ? 'active' : '')."'>".$_ARRAYLANG['TXT_CONTACT_CONTACT_FORMS']."</a>
+                    <a href='index.php?cmd=Contact&amp;act=settings' title=".$_ARRAYLANG['TXT_CONTACT_SETTINGS']." class='".($this->act == 'settings' ? 'active' : '')."'>".$_ARRAYLANG['TXT_CONTACT_SETTINGS']."</a>");
         }
 
 	function MemberManager()

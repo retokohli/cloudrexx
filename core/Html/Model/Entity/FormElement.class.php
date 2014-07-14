@@ -24,20 +24,22 @@ class FormElement extends HtmlElement {
     /**
      * Add children to first fieldset
      */
-    public function addChild(HtmlElement $element) {
+    public function addChild(HtmlElement $element, HtmlElement $reference = null, $before = false) {
         if ($element instanceof FieldsetElement) {
-            parent::addChild($element);
+            parent::addChild($element, $reference, $before);
             return;
         }
         if (!count($this->getChildren())) {
             $this->addChild(new FieldsetElement());
         }
-        current($this->getChildren())->addChild($element);
+        current($this->getChildren())->addChild($element, $reference, $before);
     }
     
-    public function addChildren(array $elements) {
+    public function addChildren(array $elements, HtmlElement $reference = null, $before = false) {
         foreach ($elements as $child) {
-            $this->addChild($child);
+            $this->addChild($child, $reference, $before);
+            $before = false;
+            $reference = $child;
         }
     }
     
@@ -56,15 +58,28 @@ class FormElement extends HtmlElement {
         return true;
     }
     
-    public function getData() {
-        $data = array();
-        // foreach data field
-        foreach ($this->getChildren() as $fieldset) {
-            foreach ($fieldset->getChildren() as $child) {
-                if ($child instanceof \Cx\Core\Html\Model\Entity\DataElement) {
-                    $data[$child->getIdentifier()] = $child->getData();
+    public function getData($element = null, &$data = array()) {
+        $internalRequest = true;
+        if (!$element) {
+            $element = $this;
+            $internalRequest = false;
+        }
+        
+        foreach ($element->getChildren() as $subElement) {
+            if ($subElement instanceof \Cx\Core\Html\Model\Entity\DataElement) {
+                $data[$subElement->getIdentifier()] = $subElement->getData();
+                if (isset($_POST[$subElement->getIdentifier()])) {
+                    if ($subElement->getValidator()->isValid(contrexx_input2raw($_POST[$subElement->getIdentifier()]))) {
+                        $data[$subElement->getIdentifier()] = contrexx_input2raw($_POST[$subElement->getIdentifier()]);
+                        $subElement->setData(contrexx_input2raw($_POST[$subElement->getIdentifier()]));
+                    }
                 }
+            } else {
+                $this->getData($subElement, $data);
             }
+        }
+        if ($internalRequest) {
+            return $data;
         }
         return new \Cx\Core_Modules\Listing\Model\Entity\DataSet(array($data));
     }
@@ -79,9 +94,12 @@ class FormElement extends HtmlElement {
             }
         }
         if (!$hasSubmit) {
+            $submitDiv = new HtmlElement('div');
+            $submitDiv->setAttribute('class', 'actions');
             $submit = new HtmlElement('input');
             $submit->setAttribute('type', 'submit');
-            $this->addChild($submit);
+            $submitDiv->addChild($submit);
+            $this->addChild($submitDiv);
         }
         return parent::render();
     }

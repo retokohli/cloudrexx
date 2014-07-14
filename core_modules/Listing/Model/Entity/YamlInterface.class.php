@@ -9,7 +9,7 @@
  * @subpackage  core_module_listing
  */
 
-namespace Cx\Core_Modules\Listing\Model;
+namespace Cx\Core_Modules\Listing\Model\Entity;
 
 /**
  * Yaml interface
@@ -19,7 +19,6 @@ namespace Cx\Core_Modules\Listing\Model;
  * @package     contrexx
  * @subpackage  core_module_listing
  */
-
 class YamlInterface implements Exportable, Importable {
     protected $yaml;
     

@@ -1014,7 +1014,7 @@ DBG::log("User_Profile_Attribute::loadCoreAttributes(): Attribute $attributeId, 
                     $objDatabase->Execute("UPDATE `".DBPREFIX."settings` SET `setvalue` = ".$lastAccessId." WHERE `setname` = 'lastAccessId'") !== false
                 ) {
                     $this->arrAttributes[$this->id]['access_id'] = $this->access_id = $_CONFIG['lastAccessId'] = $lastAccessId;
-                    $objSettings = new settingsManager();
+                    $objSettings = new \Cx\Core\Config\Controller\Config();
                     $objSettings->writeSettingsFile();
                 } else {
                     return false;

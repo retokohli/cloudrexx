@@ -153,12 +153,12 @@ class PageEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             if ($page->isVirtual()) {
                 throw new PageEventListenerException('Tried to persist Page "'.$page->getTitle().'" with id "'.$page->getId().'". This Page is virtual and cannot be stored in the DB.');
             }
-            if ($page->getModule() == 'home'
+            if ($page->getModule() == 'Home'
                     && $page->getCmd() == ''
                     && $page->getType() == \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION
             ) {
                 $home = $pageRepo->findBy(array(
-                    'module' => 'home',
+                    'module' => 'Home',
                     'cmd' => '',
                     'lang' => $page->getLang(),
                     'type' => \Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION,
@@ -208,7 +208,14 @@ class PageEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         }
     }
 
-    public function onEvent($eventName, $eventArgs) {
+    public function onEvent($eventName, array $eventArgs) {        
         $this->$eventName(current($eventArgs));
+    }
+   
+     public static function SearchFindContent($search) {
+        global $license;
+        $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+        $result = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($pageRepo->searchResultsForSearchModule($search->getTerm(), $license));
+        $search->appendResult($result);
     }
 }

@@ -70,7 +70,7 @@ class LicenseCommunicator {
         if (!$forceUpdate && !$this->isTimeToUpdate($_CONFIG) && empty($response)) {
             return;
         }
-        $sm = new \settingsManager();
+        $sm = new \Cx\Core\Config\Controller\Config();
         if (!$sm->isWritable()) {
             throw new \Exception($_CORELANG['TXT_SETTINGS_ERROR_NO_WRITE_ACCESS']);
         }
@@ -343,7 +343,7 @@ class LicenseCommunicator {
                     }
                     
                     var versionCheckResponseHandler = function(data, allowUserAgent) {';
-            $sm = new \settingsManager();
+            $sm = new \Cx\Core\Config\Controller\Config();
             if (\FWUser::getFWUserObject()->objUser->getAdminStatus()) {
                 $jsCode .= '
                         if (data == "false" && allowUserAgent && ' . ($sm->isWritable() ? 'true' : 'false') . ') {

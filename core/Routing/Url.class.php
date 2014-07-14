@@ -498,8 +498,8 @@ class Url {
 
         // In case we were unable to locate the requested page, we shall
         // return the URL to the error page
-        if (!$page && $returnErrorPageOnError && $module != 'error') {
-            $page = $pageRepo->findOneByModuleCmdLang('error', '', $lang);
+        if (!$page && $returnErrorPageOnError && $module != 'Error') {
+            $page = $pageRepo->findOneByModuleCmdLang('Error', '', $lang);
         }
 
         // In case we were unable to locate the requested page

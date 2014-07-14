@@ -89,7 +89,7 @@ abstract class Uploader
        if(empty($sessionObj)) { //session hasn't been initialized so far
            $sessionObj = \cmsSession::getInstance();
        }
-    }
+        }
     /**
      * Set a callback to be called when uploading has finished.
      *
@@ -146,7 +146,7 @@ abstract class Uploader
     protected function redirect() {
         if($this->redirectUrl == null)
             throw new UploaderException('tried to redirect without a redirect url set via Uploader::setRedirectUrl()!');
-        CSRF::header('Location: ' . $this->redirectUrl);
+        \Cx\Core\Csrf\Controller\ComponentController::header('Location: ' . $this->redirectUrl);
         die();
     }
 
@@ -405,7 +405,7 @@ abstract class Uploader
         if ($this->isBackendRequest) {
             $uploadPath = ASCMS_ADMIN_WEB_PATH.'/index.php?cmd=upload&act=upload';
         } else {
-            $url = clone \Env::get('cx')->getRequest();
+            $url = clone \Env::get('cx')->getRequest()->getUrl();
             $url->removeAllParams();
             $url->setParams(array(
                 'section' => 'upload',

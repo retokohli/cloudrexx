@@ -110,7 +110,7 @@ class FormUploader extends Uploader
         if($this->isBackendRequest) {
             $redirectUrl = ASCMS_ADMIN_WEB_PATH.'/index.php?cmd=upload&act=formUploaderFrameFinished&uploadId='.$this->uploadId;
         } else {
-            $url = clone \Env::get('cx')->getRequest();
+            $url = clone \Env::get('cx')->getRequest()->getUrl();
             $url->removeAllParams();
             $url->setParams(array(
                 'section' => 'upload',

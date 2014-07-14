@@ -2,7 +2,7 @@
 <rss version="2.0">
 	<channel>
 		<title>Contrexx WCMS</title>
-		<link>http://staging.contrexxlabs.com/contrexx/trunk/de/index.php?section=news</link>
+		<link>http://staging.contrexxlabs.com/contrexx/trunk/de/index.php?section=News</link>
 		<description>Informationen rund um das Contrexx WCMS</description>
 		<language>de</language>
 		<copyright>Copyright 2013, http://staging.contrexxlabs.com</copyright>
@@ -12,14 +12,14 @@
 		<docs>http://blogs.law.harvard.edu/tech/rss</docs>
 		<item>
 			<title>test</title>
-			<link>http://staging.contrexxlabs.com/contrexx/trunk/de/index.php?section=news&amp;cmd=details&amp;newsid=6&amp;teaserId=</link>
+			<link>http://staging.contrexxlabs.com/contrexx/trunk/de/index.php?section=News&amp;cmd=details&amp;newsid=6&amp;teaserId=</link>
 			<description>test&lt;br /&gt;&lt;br /&gt;test</description>
-			<category domain="http://staging.contrexxlabs.com/contrexx/trunk/de/index.php?section=news&amp;category=1">Kundennews</category>
+			<category domain="http://staging.contrexxlabs.com/contrexx/trunk/de/index.php?section=News&amp;category=1">Kundennews</category>
 			<pubDate>Thu, 18 Jul 2013 12:54:37 +0200</pubDate>
 		</item>
 		<item>
 			<title>MaxMuster AG begrüsst neue Mitarbeiterin</title>
-			<link>http://staging.contrexxlabs.com/contrexx/trunk/de/index.php?section=news&amp;cmd=details&amp;newsid=5&amp;teaserId=</link>
+			<link>http://staging.contrexxlabs.com/contrexx/trunk/de/index.php?section=News&amp;cmd=details&amp;newsid=5&amp;teaserId=</link>
 			<description>Wir freuen uns, eine neue Mitarbeiterin, Jessica Parker, begrüssen zu dürfen!&lt;br /&gt;&lt;br /&gt;Das MaxMuster Team heisst die neue Mitarbeiterin, Jessica Parker, herzlich willkommen!&lt;br /&gt;
 &lt;br /&gt;
 &lt;table border=&quot;0&quot; cellpadding=&quot;1&quot; cellspacing=&quot;1&quot; style=&quot;margin: 0 0 15px 0;&quot;&gt;
@@ -44,12 +44,12 @@ Jessica Parker wird mit ihrer 7 j&amp;auml;hrigen Berufserfahrung unser Administ
 Wir w&amp;uuml;nschen ihr einen guten Start, viel Erfolg und Spass bei der Arbeit.&lt;br /&gt;
 &lt;br /&gt;
 Das MaxMuster Team</description>
-			<category domain="http://staging.contrexxlabs.com/contrexx/trunk/de/index.php?section=news&amp;category=1">Kundennews</category>
+			<category domain="http://staging.contrexxlabs.com/contrexx/trunk/de/index.php?section=News&amp;category=1">Kundennews</category>
 			<pubDate>Sat, 29 Sep 2012 16:52:00 +0200</pubDate>
 		</item>
 		<item>
 			<title>Wir haben ein Contrexx CMS</title>
-			<link>http://staging.contrexxlabs.com/contrexx/trunk/de/index.php?section=news&amp;cmd=details&amp;newsid=4&amp;teaserId=</link>
+			<link>http://staging.contrexxlabs.com/contrexx/trunk/de/index.php?section=News&amp;cmd=details&amp;newsid=4&amp;teaserId=</link>
 			<description>Wir haben für unsere Website ein Contrexx CMS gewählt.&lt;br /&gt;&lt;br /&gt;&lt;h2&gt;
 	Was ist &lt;a href=&quot;http://www.contrexx.com&quot; target=&quot;_blank&quot;&gt;Contrexx&lt;/a&gt; ?&lt;/h2&gt;
 Dank dem modular aufgebauten Contrexx Web Content Management System wird das Verwalten von anwendungsreichen Webseiten stark vereinfacht. Die &lt;strong&gt;&amp;uuml;bersichtliche Administrationsoberfl&amp;auml;che&lt;/strong&gt; gew&amp;auml;hrt Firmen, Vereinen sowie Privatpersonen die M&amp;ouml;glichkeit, die komplette Webseite auch ohne besondere Computerkenntnisse selber zu bearbeiten.&lt;br /&gt;
@@ -71,19 +71,19 @@ Wenn Kundendaten vom Online Shop, von Online Zahlungen und von Newsletter Abonne
 Wichtig f&amp;uuml;r eine erfolgreiche Webseite sind nicht nur Texte, sondern auch Bilder, Grafiken, Dokumente und Videos. Bei einem anwendungsreichen Internetauftritt ist es wichtig, diese Dateien in einer logisch organisierten Ablage zu speichern. Genau dies bietet Contrexx mit dem integrierten &lt;strong&gt;Media Asset Management&lt;/strong&gt;. Die Datenbanken k&amp;ouml;nnen mit den Besuchern der Webseite geteilt oder nur f&amp;uuml;r ausgew&amp;auml;hlte Benutzer zur Verf&amp;uuml;gung gestellt werden.&lt;br /&gt;
 &lt;br /&gt;
 Contrexx bietet somit die Grundlage f&amp;uuml;r einen erfolgreichen Internetauftritt.</description>
-			<category domain="http://staging.contrexxlabs.com/contrexx/trunk/de/index.php?section=news&amp;category=1">Kundennews</category>
+			<category domain="http://staging.contrexxlabs.com/contrexx/trunk/de/index.php?section=News&amp;category=1">Kundennews</category>
 			<pubDate>Fri, 28 Sep 2012 13:35:00 +0200</pubDate>
 		</item>
 		<item>
 			<title>Neue Webseite online</title>
-			<link>http://staging.contrexxlabs.com/contrexx/trunk/de/index.php?section=news&amp;cmd=details&amp;newsid=1&amp;teaserId=</link>
+			<link>http://staging.contrexxlabs.com/contrexx/trunk/de/index.php?section=News&amp;cmd=details&amp;newsid=1&amp;teaserId=</link>
 			<description>Unsere neue Webseite ist online. Erstellt wurde das neue Portal mit &lt;a href=&quot;http://www.contrexx.com/&quot; title=&quot;Contrexx&quot;&gt;Contrexx&lt;/a&gt;.&lt;br /&gt;&lt;br /&gt;Aufgrund der steigenden Wichtigkeit des Internets ist es f&amp;uuml;r Unternehmungen jeglicher Art unumg&amp;auml;nglich geworden, eine eigene Website zu haben. Wie die pers&amp;ouml;nliche Visitenkarte soll auch der Internetauftritt gepflegt und modern wirken. Doch heutzutage reicht eine simple Website nicht mehr aus, denn die Anforderungen an einen Internetauftritt sind gestiegen. Die Site soll anwendungsreich und sch&amp;ouml;n illustriert sein.&lt;br /&gt;
 &lt;br /&gt;
 Daf&amp;uuml;r wurde der erste Schritt getan, denn dieses Webprojekt ist nun dank &lt;a href=&quot;http://www.contrexx.com&quot; target=&quot;_blank&quot;&gt;Contrexx&lt;/a&gt; mit einem Web Content Management System ausger&amp;uuml;stet, welches alle Anwendungen beinhaltet, die eine Website heute braucht. Die Inhalte und Funktionen k&amp;ouml;nnen jederzeit mit kleinem Aufwand bearbeitet und aufgefrischt werden, um den Kunden stets eine aktuelle und ansprechende Webseite zu pr&amp;auml;sentieren.&lt;br /&gt;
 &lt;br /&gt;
-&lt;a href=&quot;https://www.contrexx.com/index.php?section=newsletter&quot; target=&quot;_blank&quot;&gt;Abonnieren Sie den Newsletter&lt;/a&gt;, damit Sie &amp;uuml;ber Neuigkeiten und Verbesserungen von Contrexx laufend informiert sind.&lt;br /&gt;
+&lt;a href=&quot;https://www.contrexx.com/index.php?section=Newsletter&quot; target=&quot;_blank&quot;&gt;Abonnieren Sie den Newsletter&lt;/a&gt;, damit Sie &amp;uuml;ber Neuigkeiten und Verbesserungen von Contrexx laufend informiert sind.&lt;br /&gt;
 </description>
-			<category domain="http://staging.contrexxlabs.com/contrexx/trunk/de/index.php?section=news&amp;category=1">Kundennews</category>
+			<category domain="http://staging.contrexxlabs.com/contrexx/trunk/de/index.php?section=News&amp;category=1">Kundennews</category>
 			<pubDate>Thu, 27 Sep 2012 22:00:00 +0200</pubDate>
 		</item>
 	</channel>

@@ -1,0 +1,33 @@
+<div id="login">
+    <form method="post" action="index.php?section=Login" name="loginForm">
+        <input type="hidden" value="{LOGIN_REDIRECT}" name="redirect" />
+        <p><label for="USERNAME">{TXT_USER_NAME}</label><input id="USERNAME" name="USERNAME" value="" type="text"></p>
+        <p><label for="PASSWORD">{TXT_PASSWORD}</label><input id="PASSWORD" name="PASSWORD" value="" type="password"></p>
+        <!-- BEGIN captcha -->
+        <p><label for="coreCaptchaCode">{TXT_CORE_CAPTCHA}</label>{CAPTCHA_CODE}</p>
+        <!-- END captcha -->
+        <p>
+            <input type="submit" name="login" value="{TXT_LOGIN}" />
+            <input type="checkbox" value="1" name="remember_me" class="remember_me" id="remember_me" />
+            <label for="remember_me" class="remember_me">{TXT_LOGIN_REMEMBER_ME}</label>
+        </p>
+        <a title="Jetzt kostenlos registrieren" href="index.php?section=access&amp;cmd=signup" class="register">Haben Sie noch keinen Account? Jetzt registrieren</a><br />
+        <a title="{TXT_LOST_PASSWORD}" href="index.php?section=Login&amp;cmd=lostpw" class="lostpw">{TXT_PASSWORD_LOST}</a><br />
+        <br />
+        <p style="color: #ff0000;">{LOGIN_STATUS_MESSAGE}</p>
+    </form>
+    <!-- BEGIN login_social_networks -->
+    <div id="sociallogin">
+        <span>ODER</span>
+        <!-- BEGIN login_social_networks_facebook -->
+        <a class="facebook loginbutton" href="{LOGIN_SOCIALLOGIN_FACEBOOK}">Facebook</a>
+        <!-- END login_social_networks_facebook -->
+        <!-- BEGIN login_social_networks_google -->
+        <a class="google loginbutton" href="{LOGIN_SOCIALLOGIN_GOOGLE}">Google</a>
+        <!-- END login_social_networks_google -->
+        <!-- BEGIN login_social_networks_twitter -->
+        <a class="twitter loginbutton" href="{LOGIN_SOCIALLOGIN_TWITTER}">Twitter</a>
+        <!-- END login_social_networks_twitter -->
+    </div>
+    <!-- END login_social_networks -->
+</div>

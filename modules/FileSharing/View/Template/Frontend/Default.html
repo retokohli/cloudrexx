@@ -1,0 +1,116 @@
+{UPLOAD_WIDGET_CODE}
+{UPLOADER_CODE}
+{EXTENDED_FILE_INPUT_CODE}
+
+<script type="text/javascript">
+    $J(document).ready(function () {
+        $J('input[name=accept_terms]').click(function () {
+            if ($J('input[name=accept_terms]').is(':checked')) {
+                $J('input[type=submit]').removeAttr('disabled');
+            } else {
+                $J('input[type=submit]').attr('disabled', true);
+            }
+        });
+    });
+</script>
+
+<div id="fileshare">
+    <!-- BEGIN error_file_not_found -->
+    <span class="error">{FILESHARING_ERROR_FILE_NOT_FOUND}</span>
+    <!-- END error_file_not_found -->
+    <!-- BEGIN error_no_files_uploaded -->
+    <span class="error">{FILESHARING_ERROR_NO_FILES_UPLOADED}</span>
+    <!-- END error_no_files_uploaded -->
+    {TXT_FILESHARING_EXPLANATION}<br />
+    <!-- BEGIN uploaded -->
+    <table border="0" cellpadding="0" cellspacing="0" width="100%">
+        <tbody>
+            <!-- BEGIN filesharing_file -->
+            <tr>
+                <td rowspan="3" width="120">
+                    <!-- BEGIN image -->
+                    <img src="{FILE_IMAGE_SRC}" width="100" />
+                    <!-- END image -->
+                </td>
+                <td width="100">
+                    <b>{FILESHARING_FILE_NAME}</b>
+                </td>
+                <td>
+                    {FILE_NAME}
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <b>{FILESHARING_DOWNLOAD_LINK}</b>
+                </td>
+                <td>
+                    <a href="{FILE_DOWNLOAD_LINK_HREF}" target="_blank">{FILE_DOWNLOAD_LINK_HREF}</a>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <b>{FILESHARING_DELETE_LINK}</b>
+                </td>
+                <td>
+                    <a href="{FILE_DELETE_LINK_HREF}" target="_blank">{FILE_DELETE_LINK_HREF}</a>
+                </td>
+            </tr>
+            <!-- END filesharing_file -->
+        </tbody>
+    </table>
+    <br />
+    <br />
+    <a href="{NEW_UPLOAD_HREF}">{NEW_UPLOAD}</a>
+    <!-- END uploaded -->
+    <!-- BEGIN upload_form -->
+    <form action="{FORM_ACTION}" class="fileshareForm" id="contactForm" method="{FORM_METHOD}" style="float: left;">
+        <p>
+            <label>{TXT_FILESHARING_FILES}</label>
+            <input disabled="disabled" id="file_upload" type="file" />
+        </p>
+        <div id="uploadFormField_uploadWidget" class="formUploadedFiles"></div>
+        <p>
+            <label for="FILESHARING_FORM_EMAIL">{FILESHARING_EMAIL}</label> <input id="FILESHARING_FORM_EMAIL" name="email" placeholder="{FILESHARING_EMAIL_INFO}" type="text" />
+        </p>
+        <p>
+            <label for="FILESHARING_FORM_SUBJECT">{FILESHARING_SUBJECT}</label><input id="FILESHARING_FORM_SUBJECT" name="subject" placeholder="{FILESHARING_SUBJECT_INFO}" type="text" />
+        </p>
+        <p>
+            <a class="toggle" href="#">{FILESHARING_MORE}</a>
+        </p>
+        <div class="toggle" style="display: none;">
+            <p>
+                <label for="FILESHARING_FORM_MESSAGE">{FILESHARING_MESSAGE}</label><textarea id="FILESHARING_FORM_MESSAGE" name="message" placeholder="{FILESHARING_MESSAGE_INFO}"></textarea>
+            </p>
+            <p>
+                <label for="FILESHARING_FORM_EXPIRATION">{FILESHARING_EXPIRATION}</label> 
+                <select id="FILESHARING_FORM_EXPIRATION" name="expiration">
+                    <option value="86400">{1D}</option>
+                    <option selected="selected" value="864000">{10D}</option>
+                    <option value="1728000">{20D}</option>
+                    <option value="2592000">{30D}</option>
+                </select>
+            </p>
+        </div>
+        <p>
+            <input id="FILESHARING_ACCEPT_TERMS" name="accept_terms" type="checkbox" value="1" />{TXT_FILESHARING_I_AGREE} <a href="index.php?section=Agb">{TXT_FILESHARING_TERMS_OF_SERVICE}</a> {TXT_FILESHARING_I_ACCEPT}
+        </p>
+        <p>
+            <input disabled="disabled" type="submit" value="{FILESHARING_SEND}" />
+        </p>
+    </form>
+    <!-- END upload_form -->
+    <!-- BEGIN confirm_delete -->
+    <form action="{FORM_ACTION}" class="fileshareForm" id="contactForm" method="{FORM_METHOD}" style="float: left;">
+        <p>
+            <label>{TXT_FILESHARING_FILE_NAME}</label>{FILESHARING_FILE_NAME}
+        </p>
+        <p>
+            <input name="delete" type="submit" value="{TXT_FILESHARING_CONFIRM_DELETE}" />
+        </p>
+    </form>
+    <!-- END confirm_delete -->
+    <!-- BEGIN no_access -->
+    {FILESHARING_NO_ACCESS}
+    <!-- END no_access -->
+</div>

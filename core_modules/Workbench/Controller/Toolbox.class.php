@@ -6,7 +6,7 @@ class Toolbox {
     protected $template = null;
     
     public function __construct(&$language, $mode, &$arguments) {
-        $this->template = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/Workbench/View/Template');
+        $this->template = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/Workbench/View/Template/Backend');
         switch ($mode) {
             case 'yaml':
                 $this->template->loadTemplateFile('Yaml.html');
@@ -127,7 +127,7 @@ class Toolbox {
         } else {
             $type = 'module';
         }
-        if ($name == 'jsondata') {
+        if ($name == 'JsonData') {
             $name = 'Json';
         }
         $path .= '/';

@@ -92,6 +92,18 @@ Cx\Core\ContentManager\Model\Entity\Page:
       gedmo:
         - versioned
     
+    applicationTemplate:
+      nullable: true
+      type: string
+      length: 100
+      gedmo:
+        - versioned
+        
+    useCustomApplicationTemplateForAllChannels:
+      type: integer      
+      gedmo:
+        - versioned
+    
     cssName:
       nullable: true
       type: string

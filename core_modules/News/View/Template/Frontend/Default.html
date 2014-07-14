@@ -1,0 +1,38 @@
+<script type="text/javascript">
+    $J(document).ready(function () {
+        $J('.news-image').each(function () {
+            if ($J.trim($J(this).html()) == '') {
+                $J(this).siblings('.news-text').css('width', '100%');
+                $J(this).remove();
+            }
+        });
+        $J('#news li:last').css('border', 0);
+    });
+</script>
+
+<!-- BEGIN news_status_message -->
+{TXT_NEWS_NO_NEWS_FOUND}
+<!-- END news_status_message -->
+
+<!-- BEGIN news_menu -->
+<form name="formNews" method="post" action="index.php?section=News&cmd={NEWS_CMD}">
+    {NEWS_CAT_DROPDOWNMENU}
+</form>
+<!-- END news_menu -->
+
+<!-- BEGIN news_list -->
+<ul id="news">
+    <!-- BEGIN newsrow -->
+    <li class="{NEWS_CSS}">
+        <h3>{NEWS_LINK_TITLE}</h3>
+        <div class="news-image">{NEWS_IMAGE}</div>
+        <div class="news-text">
+            <div class="news-teaser">{NEWS_TEASER}</div>
+            <div class="news-info">{NEWS_DATE} &bull; {NEWS_CATEGORY}<!-- BEGIN news_comments_count --> &bull; {NEWS_COUNT_COMMENTS}<!-- END news_comments_count --></div>
+        </div>
+    </li>
+    <!-- END newsrow -->
+</ul>
+<!-- END news_list -->
+
+{NEWS_PAGING}

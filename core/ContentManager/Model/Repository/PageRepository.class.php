@@ -913,7 +913,7 @@ class PageRepository extends EntityRepository {
             $results[] = array(
                 'Score' => 100,
                 'Title' => $page->getTitle(),
-                'Content' => \Search::shortenSearchContent(
+                'Content' => \Cx\Core_Modules\Search\Controller\Search::shortenSearchContent(
                     $page->getContent(), $config['searchDescriptionLength']),
                 'Link' => $this->getPath($page)
             );

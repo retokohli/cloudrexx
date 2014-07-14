@@ -170,9 +170,9 @@ class cmsSession extends RecursiveArrayAccess {
 
         register_shutdown_function(array(& $this, 'releaseLocks'));
         
-        $this->initDatabase();
-        $this->initRememberMe();
-        $this->initSessionLifetime();
+            $this->initDatabase();
+            $this->initRememberMe();
+            $this->initSessionLifetime();
 
         if (session_set_save_handler(
             array(& $this, 'cmsSessionOpen'),

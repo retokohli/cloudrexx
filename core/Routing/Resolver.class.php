@@ -225,12 +225,12 @@ class Resolver {
 
                             if(!$page || !$page->isActive()) {
                                 //fallback for inexistant error page
-                                if ($section == 'error') {
+                                if ($section == 'Error') {
                                     // If the error module is not installed, show this
                                     die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                                 } else {
                                     //page not found, redirect to error page.
-                                    \CSRF::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('error'));
+                                    \Cx\Core\Csrf\Controller\ComponentController::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('Error'));
                                     exit;
                                 }
                             }
@@ -266,11 +266,11 @@ class Resolver {
                             /*
                             //404 for inactive pages
                             if(($start > $now && $start != null) || ($now > $end && $end != null)) {
-                                if ($section == 'error') {
+                                if ($section == 'Error') {
                                     // If the error module is not installed, show this
                                     die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                                 }
-                                CSRF::header('Location: index.php?section=error&id=404');
+                                \Cx\Core\Csrf\Controller\ComponentController::header('Location: index.php?section=Error&id=404');
                                 exit;
                                 }*/
 
@@ -323,7 +323,7 @@ class Resolver {
                         define('MODULE_INDEX', $moduleIndex);
 
                         // Start page or default page for no section
-                        if ($section == 'home') {
+                        if ($section == 'Home') {
                             if (!\Env::get('init')->hasCustomContent()){
                                 $page_template = $themesPages['home'];
                             } else {
@@ -417,7 +417,7 @@ class Resolver {
     public function redirectToCorrectLanguageDir() {
         $this->url->setLangDir(\FWLanguage::getLanguageCodeById($this->lang));
 
-        \CSRF::header('Location: '.$this->url);
+        \Cx\Core\Csrf\Controller\ComponentController::header('Location: '.$this->url);
         exit;
     }
 
@@ -638,7 +638,7 @@ class Resolver {
                            || $url->getSuggestedTargetPath() == '';
         //    user probably tried requesting the home-page
         if(!$section && $urlPointsToHome) {
-            $section = 'home';
+            $section = 'Home';
         }
         $this->setSection($section, $command);
 
@@ -791,7 +791,7 @@ class Resolver {
                     array_push($checkLogin, $this->getFallbackPage($currentPage));
                 } catch (ResolverException $e) {}
             }
-            if ($currentPage->getModule() == 'login') {
+            if ($currentPage->getModule() == 'Login') {
                 return;
             }
         }
@@ -801,7 +801,7 @@ class Resolver {
                 || $history
                 || !empty($_COOKIE['PHPSESSID']))
             && (   !isset($_REQUEST['section'])
-                || $_REQUEST['section'] != 'login')
+                || $_REQUEST['section'] != 'Login')
         ) {
             if (empty($sessionObj)) $sessionObj = \cmsSession::getInstance();
             $_SESSION->cmsSessionStatusUpdate('frontend');
@@ -809,13 +809,13 @@ class Resolver {
                 if ($page_protected) {
                     if (!\Permission::checkAccess($pageAccessId, 'dynamic', true)) {
                         $link=base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
-                        \CSRF::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('login', 'noaccess', '', array('redirect' => $link)));
+                        \Cx\Core\Csrf\Controller\ComponentController::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('Login', 'noaccess', '', array('redirect' => $link)));
                         exit;
                     }
                 }
                 if ($history && !\Permission::checkAccess(78, 'static', true)) {
                     $link=base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
-                    \CSRF::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('login', 'noaccess', '', array('redirect' => $link)));
+                    \Cx\Core\Csrf\Controller\ComponentController::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('Login', 'noaccess', '', array('redirect' => $link)));
                     exit;
                 }
             } elseif (!empty($_COOKIE['PHPSESSID']) && !$page_protected) {
@@ -826,7 +826,7 @@ class Resolver {
                 } else {
                     $link=base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
                 }
-                \CSRF::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('login', '', '', array('redirect' => $link)));
+                \Cx\Core\Csrf\Controller\ComponentController::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('Login', '', '', array('redirect' => $link)));
                 exit;
             }
         }

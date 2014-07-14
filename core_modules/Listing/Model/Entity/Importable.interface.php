@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Importable
  *
@@ -9,7 +8,7 @@
  * @subpackage  core_module_listing
  */
 
-namespace Cx\Core_Modules\Listing\Model;
+namespace Cx\Core_Modules\Listing\Model\Entity;
 
 /**
  * Importable
@@ -19,7 +18,6 @@ namespace Cx\Core_Modules\Listing\Model;
  * @package     contrexx
  * @subpackage  core_module_listing
  */
-
 interface Importable {
 
     public function import($dataAsString);

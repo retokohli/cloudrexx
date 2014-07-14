@@ -196,16 +196,16 @@ class adminMenu
                         }
 
                         switch ($linkCmd) {
-                            case 'news':
-                                $news = new newsManager();
+                            case 'News':
+                                $news = new \Cx\Core_Modules\News\Controller\NewsManager();
                                 if ($linkCmdSection == 'act=newstype' && $news->arrSettings['news_use_types'] != '1') {
                                     continue 2;
                                 } else if ($linkCmdSection == 'act=teasers' && $_CONFIG['newsTeasersStatus'] != '1') {
                                     continue 2;
                                 }
                                 break;
-                            case 'content';
-                                if (   $this->activeCmd == 'content'
+                            case 'ContentManager';
+                                if (   $this->activeCmd == 'ContentManager'
                                     && (   empty($_REQUEST['act']) && !empty($linkCmdSection)
                                         || !empty($_REQUEST['act']) && empty($linkCmdSection))
                                 ) {
@@ -219,14 +219,14 @@ class adminMenu
                                 break;
                             case 'stats':
                                 $cssClass = 'inactive';
-                                if ($this->activeCmd == 'stats') {
+                                if ($this->activeCmd == 'Stats') {
                                     if (!empty($_REQUEST['stat']) && !empty($linkCmdSection) && (strpos($linkCmdSection, $_REQUEST['stat']) !== false)) {
                                         $cssClass = 'active';
                                     }
                                 }
                                 break;
                             case 'server':
-                                if ($this->activeCmd == 'nettools') {
+                                if ($this->activeCmd == 'NetTools') {
                                     $cssClass = 'active';
                                 }
                                 break;
@@ -235,15 +235,15 @@ class adminMenu
                                     break;
                                 }
                                 $linkCmdSection = 'archive=themes';
-                            case 'contact':
-                                if ($this->activeCmd == 'contact') {
+                            case 'Contact':
+                                if ($this->activeCmd == 'Contact') {
                                     break;
                                 }
-                                if ($linkCmd == 'contact') {
+                                if ($linkCmd == 'Contact') {
                                     $linkCmdSection = 'archive=contact';
                                 }
-                            case 'media':
-                                if ($this->activeCmd != 'media') {
+                            case 'Media':
+                                if ($this->activeCmd != 'Media') {
                                     break;
                                 }
 
@@ -255,21 +255,21 @@ class adminMenu
 
                                 switch ($requestedArchive) {
                                     case 'attach':
-                                    case 'shop':
-                                    case 'gallery':
-                                    case 'access':
-                                    case 'mediadir':
-                                    case 'downloads':
-                                    case 'calendar':
-                                    case 'podcast':
-                                    case 'blog':
-                                        $requestedArchive = 'content';
+                                    case 'Shop':
+                                    case 'Gallery':
+                                    case 'Access':
+                                    case 'MediaDir':
+                                    case 'Downloads':
+                                    case 'Calendar':
+                                    case 'Podcast':
+                                    case 'Blog':
+                                        $requestedArchive = 'ContentManager';
                                         break;
                                     case 'themes':
-                                        $linkCmd = 'media';
+                                        $linkCmd = 'Media';
                                         break;
-                                    case 'contact':
-                                        $linkCmd = 'media';
+                                    case 'Contact':
+                                        $linkCmd = 'Media';
                                         break;
                                     case 'archive':
                                         $requestedArchive = 'archive';
@@ -291,7 +291,7 @@ class adminMenu
                                 }
 
                                 break;
-                            case 'newsletter':
+                            case 'Newsletter':
                                 if (!isset($_REQUEST['act'])) {
                                     $_REQUEST['act'] = 'mails';
                                 }
@@ -313,12 +313,12 @@ class adminMenu
                                         break;
                                 }
                                 break;
-                            case 'crm':
+                            case 'Crm':
                                 if($link_data[1] == $_CORELANG['TXT_CRM_CUSTOMERS']){
                                     $link_data[1] = $_CORELANG['TXT_CRM_CUSTOMER'];
                                 }
                                 break;
-                            case 'access':
+                            case 'Access':
                                 if($link_data[0] == '189'){
                                     $cssClass = 'inactive';
                                 }

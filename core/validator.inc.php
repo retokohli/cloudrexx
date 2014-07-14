@@ -110,7 +110,7 @@ function preg_match_replace(
 function checkForSpider()
 {
     $arrRobots = array();
-    require_once ASCMS_CORE_MODULE_PATH.'/stats/lib/spiders.inc.php';
+    require_once ASCMS_CORE_MODULE_PATH.'/Stats/Data/spiders.inc.php';
     $useragent =  htmlspecialchars($_SERVER['HTTP_USER_AGENT'], ENT_QUOTES, CONTREXX_CHARSET);
     foreach ($arrRobots as $spider) {
         $spiderName = trim($spider);

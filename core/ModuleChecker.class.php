@@ -137,9 +137,9 @@ namespace Cx\Core
             $arrCmActiveModules = array_unique($arrCmActiveModules);
 
             // add static modules
-            $arrCmInstalledModules[] = 'block';
-            $arrCmInstalledModules[] = 'crm';
-            $arrCmActiveModules[] = 'block';
+            $arrCmInstalledModules[] = 'Block';
+            $arrCmInstalledModules[] = 'Crm';
+            $arrCmActiveModules[] = 'Block';
             $arrCmInstalledModules[] = 'upload';
             $arrCmActiveModules[] = 'upload';
 
@@ -148,7 +148,7 @@ namespace Cx\Core
                 while (!$objResult->EOF) {
                     $moduleName = $objResult->fields['name'];
 
-                    if ($moduleName == 'news') {
+                    if ($moduleName == 'News') {
                         $this->arrModules[] = $moduleName;
                         //$this->arrCoreModules[] = $moduleName;
                         if (in_array($moduleName, $arrCmInstalledModules)) {

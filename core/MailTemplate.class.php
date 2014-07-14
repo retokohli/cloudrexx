@@ -1032,7 +1032,7 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
         Html::stripUriParam($uri, 'delete_mailtemplate_key');
 // TODO: I guess that explicitly adding CSRF should not be necessary?!
 // TODO: And it doesn't seem to work like that, either?!
-        CSRF::enhanceURI($uri);
+        \Cx\Core\Csrf\Controller\ComponentController::enhanceURI($uri);
         $uri_edit = $uri_overview = $uri;
 //echo("Made uri for sorting: ".htmlentities($uri)."<br />");
         if ($useDefaultActs) {

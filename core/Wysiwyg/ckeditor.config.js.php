@@ -12,16 +12,16 @@ init('minimal');
 
 $sessionObj = \cmsSession::getInstance();
 $_SESSION->cmsSessionStatusUpdate('backend');
-$CSRF = '&'.CSRF::key().'='.CSRF::code();
+$CSRF = '&'.\Cx\Core\Csrf\Controller\ComponentController::key().'='.\Cx\Core\Csrf\Controller\ComponentController::code();
 
 
 $langId = !empty($_GET['langId']) ? $_GET['langId'] : null;
 
 //'&' must not be htmlentities, used in javascript
 $defaultBrowser   = ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX
-                   .'?cmd=fileBrowser&standalone=true&langId='.$langId.$CSRF;
+                   .'?cmd=FileBrowser&standalone=true&langId='.$langId.$CSRF;
 $linkBrowser      = ASCMS_PATH_OFFSET . ASCMS_BACKEND_PATH.'/'.CONTREXX_DIRECTORY_INDEX
-                   .'?cmd=fileBrowser&standalone=true&langId='.$langId.'&type=webpages'.$CSRF;
+                   .'?cmd=FileBrowser&standalone=true&langId='.$langId.'&type=webpages'.$CSRF;
 
 $defaultTemplateFilePath = substr(\Env::get('ClassLoader')->getFilePath('/lib/ckeditor/plugins/templates/templates/default.js'), strlen(ASCMS_PATH));
 
@@ -40,6 +40,11 @@ CKEDITOR.editorConfig = function( config )
     config.startupOutlineBlocks = true;
     config.allowedContent = true;
     
+    config.ignoreEmptyParagraph = false;
+    config.protectedSource.push(/<i[^>]*><\/i>/g);
+    config.protectedSource.push(/<span[^>]*><\/span>/g);
+    config.protectedSource.push(/<a[^>]*><\/a>/g);
+
     config.ignoreEmptyParagraph = false;
     config.protectedSource.push(/<i[^>]*><\/i>/g);
     config.protectedSource.push(/<span[^>]*><\/span>/g);

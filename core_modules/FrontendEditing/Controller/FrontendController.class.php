@@ -108,7 +108,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\Controller
         $page = $this->cx->getPage();
 
         // init component template object
-        $componentTemplate = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/' . $componentController->getName() . '/View/Template');
+        $componentTemplate = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/' . $componentController->getName() . '/View/Template/Generic');
         $componentTemplate->setErrorHandling(PEAR_ERROR_DIE);
 
         // add div for toolbar after starting body tag
@@ -149,8 +149,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\Controller
             'TXT_FRONTEND_EDITING_TOOLBAR_SAVE_BLOCK' => $_ARRAYLANG['TXT_FRONTEND_EDITING_TOOLBAR_SAVE_BLOCK'],
             'SKIN_OPTIONS' => $this->getSkinOptions(),
             'LINK_LOGOUT' => $objInit->getUriBy('section', 'logout'),
-            'LINK_PROFILE' => ASCMS_PATH_OFFSET . '/cadmin/index.php?cmd=access&amp;act=user&amp;tpl=modify&amp;id=' . $objUser->getId(),
-            'LINK_CM' => ASCMS_PATH_OFFSET . '/cadmin/index.php?cmd=content&amp;page=' . $page->getId() . '&amp;tab=content',
+            'LINK_PROFILE' => ASCMS_PATH_OFFSET . '/cadmin/index.php?cmd=Access&amp;act=user&amp;tpl=modify&amp;id=' . $objUser->getId(),
+            'LINK_CM' => ASCMS_PATH_OFFSET . '/cadmin/index.php?cmd=ContentManager&amp;page=' . $page->getId() . '&amp;tab=content',
         ));
         $objTemplate->_blocks['__global__'] = preg_replace('/<body[^>]*>/', '\\0' . $componentTemplate->get(), $objTemplate->_blocks['__global__']);
     }

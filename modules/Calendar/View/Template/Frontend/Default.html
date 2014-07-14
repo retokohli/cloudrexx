@@ -1,0 +1,43 @@
+{CALENDAR_JAVASCRIPT}
+
+<form action="index.php" method="get">
+<input name="section" value="{CALENDAR_MODULE_NAME}" type="hidden"/>
+<p><label>{TXT_CALENDAR_SEARCH_TERM}</label><input name="term" value="{CALENDAR_SEARCH_TERM}" type="text"/></p>
+<p><label>{TXT_CALENDAR_FROM}</label><input name="from" id="{CALENDAR_SEARCH_START_DATE_INPUT_ID}" value="{CALENDAR_SEARCH_FROM}" type="text" /></p>
+<p><label>{TXT_CALENDAR_TILL}</label><input name="till" id="{CALENDAR_SEARCH_END_DATE_INPUT_ID}" value="{CALENDAR_SEARCH_TILL}" type="text"/></p>
+<p><label>{TXT_CALENDAR_CATEGORY}</label><select name="catid">{CALENDAR_SEARCH_CATEGORIES}</select></p>
+<p><input name="search" value="{TXT_CALENDAR_SEARCH}" type="submit"/>
+</form>
+<br /><br />
+<!-- <form action="index.php" method="get" name="calendarSearch" >
+<input name="section" value="{CALENDAR_MODULE_NAME}" type="hidden"/>
+<select name="catid" onchange="document.calendarSearch.submit();">{CALENDAR_SEARCH_CATEGORIES}</select>
+</form><br /> -->
+<table cellspacing="0">
+    <tbody> 
+        <tr>
+            <td><h2>Wann</h2></td>
+            <td><h2>Anlass</h2></td>
+            <td><h2>Wo</h2></td>
+        </tr>
+        <!-- BEGIN eventList -->
+        <tr>
+            <td width="20%" align="left" valign="top" nowrap="nowrap">
+            <!-- BEGIN calendarDateList -->
+            {CALENDAR_DATE_LIST}{CALENDAR_SEP_DATE_TIME_LIST}{CALENDAR_TIME_LIST}{TXT_CALENDAR_CLOCK_LIST}
+            <!-- END calendarDateList -->
+            </td>
+            <td width="40%" valign="top"><a href="{CALENDAR_EVENT_DETAIL_LINK}" target="{CALENDAR_EVENT_DETAIL_TARGET}">{CALENDAR_EVENT_TITLE}</a></td>
+            <td width="40%" valign="top">{CALENDAR_EVENT_PLACE}</td>
+        </tr>
+        <!-- END eventList -->  
+        <!-- BEGIN emptyEventList -->
+        <tr>
+            <td colspan="3"><i>{TXT_CALENDAR_NO_EVENTS}</i></td>
+        </tr>    
+        <!-- END emptyEventList -->
+    </tbody>
+</table>
+
+<br />
+{CALENDAR_PAGING}

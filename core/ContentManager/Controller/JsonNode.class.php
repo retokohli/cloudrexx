@@ -108,6 +108,14 @@ class JsonNode implements JsonAdapter {
     public function getMessagesAsString() {
         return implode('<br />', $this->messages);
     }
+    
+    /**
+     * Returns default permission as object
+     * @return Object
+     */
+    public function getDefaultPermissions() {
+        return null;
+    }
 
     /**
      * Returns the Node tree rendered for JS
@@ -570,7 +578,7 @@ class JsonNode implements JsonAdapter {
         $output['hasHome']    = array();
         foreach (\FWLanguage::getActiveFrontendLanguages() as $lang) {
             $page = $this->pageRepo->findOneBy(array(
-                'module' => 'home',
+                'module' => 'Home',
                 'cmd' => '',
                 'lang' => $lang['id'],
             ));

@@ -141,7 +141,7 @@ class Sandbox {
      * @todo: no HTML here!
      */
     protected function show(&$lang) {
-        $this->template = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/Workbench/View/Template');
+        $this->template = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/Workbench/View/Template/Backend');
         $this->template->loadTemplateFile('Sandbox.html');
         
         switch ($this->mode) {

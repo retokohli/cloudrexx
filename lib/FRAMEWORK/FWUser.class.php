@@ -90,10 +90,10 @@ class FWUser extends User_Setting
 
         if (isset($username) && isset($password)) {
             if (empty($sessionObj)) $sessionObj = cmsSession::getInstance();
-            if (!isset($_SESSION['auth'])) {
-                $_SESSION['auth'] = array();
-            }
-            if ($this->objUser->auth($username, $password, $this->isBackendMode(), FWCaptcha::getInstance()->check())) {
+        if (!isset($_SESSION['auth'])) {
+            $_SESSION['auth'] = array();
+        }
+            if ($this->objUser->auth($username, $password, $this->isBackendMode(), \Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->check())) {
                 if ($this->isBackendMode()) {
                     $this->log();
                 }
@@ -120,7 +120,7 @@ class FWUser extends User_Setting
         $password = isset($_POST['PASSWORD']) && $_POST['PASSWORD'] != '' ? md5(contrexx_stripslashes($_POST['PASSWORD'])) : null;
 
         if (isset($username) && isset($password)) {
-            return $this->objUser->checkLoginData($username, $password, \FWCaptcha::getInstance()->check());
+            return $this->objUser->checkLoginData($username, $password, \Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->check());
         }
 
         return false;
@@ -164,7 +164,7 @@ class FWUser extends User_Setting
         if ($this->backendMode) {
             $pathOffset = ASCMS_PATH_OFFSET;
             
-            CSRF::header('Location: '.(!empty($pathOffset)
+            \Cx\Core\Csrf\Controller\ComponentController::header('Location: '.(!empty($pathOffset)
                 ? $pathOffset
                 : '/'));
         } else {
@@ -173,9 +173,9 @@ class FWUser extends User_Setting
                 $redirect = self::getRedirectUrl($_REQUEST['redirect']);
             }
 
-            CSRF::header('Location: '.(!empty($redirect)
+            \Cx\Core\Csrf\Controller\ComponentController::header('Location: '.(!empty($redirect)
                 ? $redirect
-                : CONTREXX_DIRECTORY_INDEX.'?section=login'));
+                : CONTREXX_DIRECTORY_INDEX.'?section=Login'));
         }
         exit;
     }
@@ -393,7 +393,7 @@ class FWUser extends User_Setting
             $placeholderPrefix.'USER_EMAIL'     => contrexx_raw2xhtml($objUser->getEmail()),
         ));
 
-        $objAccessLib = new AccessLib($objTemplate);
+        $objAccessLib = new \Cx\Core_Modules\Access\Controller\AccessLib($objTemplate);
         $objAccessLib->setModulePrefix($placeholderPrefix);
         $objAccessLib->setAttributeNamePrefix($blockName.'_profile_attribute');
 
@@ -465,9 +465,9 @@ class FWUser extends User_Setting
                 $objMail->Subject = $objUserMail->getSubject();
 
                 if ($this->isBackendMode()) {
-                    $restorLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=login&act=resetpw&username=".urlencode($objUser->getEmail())."&restoreKey=".$objUser->getRestoreKey();
+                    $restorLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=Login&act=resetpw&username=".urlencode($objUser->getEmail())."&restoreKey=".$objUser->getRestoreKey();
                 } else {
-                    $restorLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH."?section=login&cmd=resetpw&username=".urlencode($objUser->getEmail())."&restoreKey=".$objUser->getRestoreKey();
+                    $restorLink = strtolower(ASCMS_PROTOCOL)."://".$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH."?section=Login&cmd=resetpw&username=".urlencode($objUser->getEmail())."&restoreKey=".$objUser->getRestoreKey();
                 }
 
                 if (in_array($objUserMail->getFormat(), array('multipart', 'text'))) {

@@ -1743,7 +1743,7 @@ class User extends User_Profile
                     DBPREFIX,
                     $this->id,
                     $categories[$key],
-                    \NewsletterLib::_emailCode()
+                    \Cx\Modules\Newsletter\Controller\NewsletterLib::_emailCode()
                 );
                 $objDatabase->execute($query);
             }
@@ -2441,7 +2441,7 @@ class User extends User_Profile
          * @var \Cx\Core\Core\Controller\Cx $cx
          */
         $cx = \Env::get('cx');
-        if (!$cx->getLicense()->isInLegalComponents('crm')) {
+        if (!$cx->getLicense()->isInLegalComponents('Crm')) {
             return false;
         }
         $db = $cx->getDb()->getAdoDb();

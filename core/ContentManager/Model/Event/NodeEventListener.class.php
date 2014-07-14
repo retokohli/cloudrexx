@@ -68,7 +68,7 @@ class NodeEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         $objCache->clearCache();
     }
 
-    public function onEvent($eventName, $eventArgs) {
+    public function onEvent($eventName, array $eventArgs) {
         $this->$eventName(current($eventArgs));
     }
 }

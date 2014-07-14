@@ -49,7 +49,7 @@ abstract class SystemComponentBackendController extends Controller {
             $cmd = explode('/', contrexx_input2raw($_GET['act']));
         }
         
-        $actTemplate = new \Cx\Core\Html\Sigma($this->getDirectory() . '/View/Template');
+        $actTemplate = new \Cx\Core\Html\Sigma($this->getDirectory() . '/View/Template/Backend');
         $filename = $cmd[0] . '.html';
         $testFilename = $cmd[0];
         if (!\Env::get('ClassLoader')->getFilePath($actTemplate->getRoot() . '/' . $filename)) {
@@ -74,7 +74,7 @@ abstract class SystemComponentBackendController extends Controller {
         $this->parsePage($actTemplate, $cmd);
         
         // set tabs
-        $navigation = new \Cx\Core\Html\Sigma(ASCMS_CORE_PATH . '/Core/View/Template');
+        $navigation = new \Cx\Core\Html\Sigma(ASCMS_CORE_PATH . '/Core/View/Template/Backend');
         $navigation->loadTemplateFile('Navigation.html');
         $commands = array_merge(array(''), $this->getCommands());
         foreach ($commands as $key=>$command) {
@@ -148,10 +148,10 @@ abstract class SystemComponentBackendController extends Controller {
         
         // finish
         $actTemplate->setGlobalVariable($_ARRAYLANG);
-        \CSRF::add_placeholder($actTemplate);
+        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($actTemplate);
         $page->setContent($actTemplate->get());
         $cachedRoot = $this->cx->getTemplate()->getRoot();
-        $this->cx->getTemplate()->setRoot(ASCMS_CORE_PATH . '/Core/View/Template');
+        $this->cx->getTemplate()->setRoot(ASCMS_CORE_PATH . '/Core/View/Template/Backend');
         $this->cx->getTemplate()->addBlockfile('CONTENT_OUTPUT', 'content_master', 'ContentMaster.html');
         $this->cx->getTemplate()->setRoot($cachedRoot);
         $this->cx->getTemplate()->setVariable(array(
