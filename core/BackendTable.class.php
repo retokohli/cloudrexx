@@ -62,7 +62,7 @@ class BackendTable extends HTML_Table {
                             }
                             $header = '<a href="' .  \Env::get('cx')->getRequest()->getUrl() . '&order=' . $origHeader . $order . '" style="white-space: nowrap;">' . $header . ' ' . $img . '</a>';
                         }
-                        $this->setCellContents(0, $col, $header, 'th', 0, false);
+                        $this->setCellContents(0, $col, $header, 'th', 0);
                     }
                     if (
                         isset($options['fields']) &&
@@ -100,12 +100,12 @@ class BackendTable extends HTML_Table {
                         if (isset($_ARRAYLANG['FUNCTIONS'])) {
                             $header = $_ARRAYLANG['FUNCTIONS'];
                         }
-                        $this->setCellContents(0, $col, $header, 'th');
+                        $this->setCellContents(0, $col, $header, 'th', 0, true);
                     }
                     if (!isset($options['functions']['baseUrl'])) {
                         $options['functions']['baseUrl'] = clone \Env::get('cx')->getRequest()->getUrl();
                     }
-                    $this->setCellContents($row, $col, $this->getFunctionsCode($rowname, $options['functions']), 'TD', 0, false);
+                    $this->setCellContents($row, $col, $this->getFunctionsCode($rowname, $options['functions']), 'TD', 0);
     			}
     			$first = false;
     			$row++;
@@ -125,7 +125,7 @@ class BackendTable extends HTML_Table {
      * @param type $encode
      * @return type 
      */
-    function setCellContents($row, $col, $contents, $type = 'TD', $body = 0, $encode = true)
+    function setCellContents($row, $col, $contents, $type = 'TD', $body = 0, $encode = false)
     {
         if ($encode) {
             $contents = contrexx_raw2xhtml($contents);
@@ -149,7 +149,13 @@ class BackendTable extends HTML_Table {
             $code .= '<a href="' . $editUrl . '" class="edit"></a>';
         }
         if (isset($functions['delete']) && $functions['delete']) {
-            $code .= '<a href="#" id="deleteid' . $rowname . '" class="delete"></a>';
+            $deleteUrl = clone $baseUrl;
+            $deleteUrl->setParam('deleteid', $rowname);
+            $deleteUrl.='&csrf='.\Cx\Core\Csrf\Controller\ComponentController::code();
+            $onclick ='if (confirm(\'Do you really want to delete?\'))'.
+                    'window.location.replace(\''.$deleteUrl.'\');';
+            $_uri = 'javascript:void(0);';
+            $code .= '<a onclick="'.$onclick.'" href="'.$_uri.'" class="delete"></a>';
         }
         return $code . '</span>';
     }
