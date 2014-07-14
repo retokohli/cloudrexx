@@ -162,7 +162,7 @@ try {
 require_once(UPDATE_CORE . '/cache/cache.class.php');
 global $objCache;
 
-$objCache = new \Cache();
+$objCache = new \Cx\Core_Modules\Cache\Controller\Cache();
 
 // Start update
 $objUpdate = new ContrexxUpdate();

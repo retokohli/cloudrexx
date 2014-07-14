@@ -192,7 +192,7 @@ namespace Cx\Core\Model {
 
             $userCacheEngine = $objCache->getUserCacheEngine();
             if (!$objCache->getUserCacheActive()) {
-                $userCacheEngine = \Cache::CACHE_ENGINE_OFF;
+                $userCacheEngine = \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_OFF;
             }
 
             $arrayCache = new \Doctrine\Common\Cache\ArrayCache();
