@@ -719,12 +719,12 @@ class cmsSession extends RecursiveArrayAccess {
                       FROM 
                         `'. DBPREFIX .'session_variable` 
                       WHERE 
-                        `sessionid` = "'. $_SESSION->sessionid .'",
-                      AND    
+                        `sessionid` = "'. $_SESSION->sessionid .'"
+                      AND
                         `parent_id` = "'. intval($arrObj->id).'" 
                       AND 
                         `key` = "'. contrexx_input2db($offset) .'" 
-                      LIMIT 0, 1';
+                      LIMIT 0, 1';            
             $objResult = \Env::get('db')->Execute($query);
 
             if ($objResult->fields['value'] === '') {
