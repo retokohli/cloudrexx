@@ -56,7 +56,7 @@ class ReflectionComponent {
      * @var string ZIP package filename
      */
     protected $packageFile = null;
-
+    
     /**
      * Database object
      * 
@@ -84,7 +84,7 @@ class ReflectionComponent {
             return;
         }
         $arg1Parts = explode('.', $arg1);
-		if (file_exists($arg1) && end($arg1Parts) == 'zip') {
+	if (file_exists($arg1) && end($arg1Parts) == 'zip') {
             // clean up tmp dir
             \Cx\Lib\FileSystem\FileSystem::delete_folder(ASCMS_APP_CACHE_FOLDER, true);
         
@@ -125,7 +125,7 @@ class ReflectionComponent {
         }
         throw new \BadMethodCallException('Pass a component or zip package filename or specify a component name and type');
     }
-    
+
     /**
      * Check if the provided string is a valid component name
      * @param  string component name
@@ -165,7 +165,7 @@ class ReflectionComponent {
      * Returns wheter this component exists or not in the system
      * Note : It not depends the component type
      * 
-     * @param boolean $allowCustomizing (optional) Set to false if you want to ignore customizings
+     * @param boolean $allowCustomizing (optional) Set to false if you want to ignore customizings     
      * @return boolean True if it exists, false otherwise
      */
     public function exists($allowCustomizing = true) {
@@ -222,7 +222,7 @@ class ReflectionComponent {
         
         return false;
     }
-    
+
     /**
      * Returns wheter this component is valid or not. A valid component will work as expected
      * @return boolean True if valid, false otherwise
@@ -300,14 +300,17 @@ class ReflectionComponent {
         $meta = $yaml->load($content);
         
         // Check dependencies
+        echo "Checking  dependencies ... ";
         foreach ($meta['DlcInfo']['dependencies'] as $dependencyInfo) {
             $dependency = new static($dependencyInfo['name'], $dependencyInfo['type']);
             if (!$dependency->exists()) {
                 throw new SystemComponentException('Dependency "' . $dependency->getName() . '" not met');
             }
         }
+        echo "Done \n";
         
         // Copy ZIP contents
+        echo "Copying files to installation ... ";
         $filesystem = new \Cx\Lib\FileSystem\FileSystem();
         $filesystem->copyDir(
             ASCMS_APP_CACHE_FOLDER,
@@ -317,7 +320,8 @@ class ReflectionComponent {
             ASCMS_PATH_OFFSET,
             '',
             true
-        );        
+        );
+        echo "Done \n";
         
         // Activate (if type is system or application)
         // TODO: templates need to be activated too!
@@ -337,16 +341,71 @@ class ReflectionComponent {
             if ($meta['DlcInfo']['FrameworkVersion'] < 3.1) {
                 //copy code from installer to load db from sql:
                 // load /data/structure.sql
-                // load /data/fixtures.sql
+                // load /data/fixtures.sql                
             } else {
                 // init DB structure from doctrine yaml files
                 //doctrine orm:schema-tool:update --force
                 // load DB data from /data/fixture.yml/sql
             }
         }
+        $this->importStructureFromSql();
+        $this->importDataFromSql();
         
         // Activate this component
         $this->activate();
+    }
+    
+    function importStructureFromSql()
+    {
+        $sqlDump = ASCMS_APP_CACHE_FOLDER . '/Data/Structure.sql';
+        
+        $fp = @fopen ($sqlDump, "r");
+        if ($fp !== false) {
+            while (!feof($fp)) {
+                $buffer = fgets($fp);
+                if ((substr($buffer,0,1) != "#") && (substr($buffer,0,2) != "--")) {
+                    $sqlQuery .= $buffer;
+                    if (preg_match("/;[ \t\r\n]*$/", $buffer)) {
+                        $sqlQuery = preg_replace('#contrexx_#', DBPREFIX, $sqlQuery, 1);
+                        $result = $this->db->Execute($sqlQuery);
+                        if ($result === false) {
+                            throw new SystemComponentException($sqlQuery .' ('. $this->db->ErrorMsg() .')');
+                        }
+                        $sqlQuery = '';
+                    }
+                }
+            }
+        } else {
+            throw new SystemComponentException('File not found : '. $sqlDump);
+        }        
+    }
+    
+    /**
+     * 
+     */
+    function importDataFromSql()
+    {
+        $sqlDump = ASCMS_APP_CACHE_FOLDER . '/Data/Data.sql';        
+        
+        $fp = @fopen ($sqlDump, "r");
+        if ($fp !== false) {
+            while (!feof($fp)) {
+                $buffer = fgets($fp);
+                if ((substr($buffer,0,1) != "#") && (substr($buffer,0,2) != "--")) {
+                    $sqlQuery .= $buffer;
+                    if (preg_match("/;[ \t\r\n]*$/", $buffer)) {
+                        $sqlQuery = preg_replace('#contrexx_#', DBPREFIX, $sqlQuery, 1);
+                        $result = $this->db->Execute($sqlQuery);
+                        if ($result === false) {
+                            throw new SystemComponentException($sqlQuery .' ('. $this->db->ErrorMsg() .')');
+                        }
+                        $sqlQuery = '';
+                    }
+                }
+            }
+        } else {
+            throw new SystemComponentException('File not found : '. $sqlDump);
+        }
     }
     
     /**
@@ -368,6 +427,7 @@ class ReflectionComponent {
         $filesystem = new \Cx\Lib\FileSystem\FileSystem();
         // clean up tmp dir
         $filesystem->delete_folder(ASCMS_APP_CACHE_FOLDER, true);
+        echo "Copying files ... ";
         $filesystem->copyDir(
             $this->getDirectory(false),
             preg_replace('#' . ASCMS_DOCUMENT_ROOT . '#', '', $this->getDirectory(false)),
@@ -377,9 +437,11 @@ class ReflectionComponent {
             '',
             true
         );
+        echo "Done \n";
         
         if ($customized) {
             // overwrite with contents of $this->getDirectory(true, true)
+            echo "Copying customizing files ... ";
             $filesystem->copyDir(
                 $this->getDirectory(true, true),
                 preg_replace('#' . ASCMS_DOCUMENT_ROOT . '#', '', $this->getDirectory(true, true)),
@@ -389,23 +451,30 @@ class ReflectionComponent {
                 '',
                 true
             );
+            echo "Done \n";
         }
         
         // Copy additional contents to folder:
-            // If this is still an AdoDb component:
-                // create $this->getDirectory(false)./data/structure.sql
-                // create $this->getDirectory(false)./data/fixtures.sql
-            // If this is a doctrine component:
-                // create $this->getDirectory(false)./data/fixtures.yml/sql 
+        // If this is still an AdoDb component:
+        // create $this->getDirectory(false)./data/structure.sql
+        // create $this->getDirectory(false)./data/fixtures.sql
+        // If this is a doctrine component:
+        // create $this->getDirectory(false)./data/fixtures.yml/sql 
         // Write database structure and data into the files
+        echo "Writing component data (structure & data) ... ";
         $this->writeDatabaseStructureAndData();                
-               
-        // Create meta.yml
-        $this->writeMetaDataToFile(ASCMS_APP_CACHE_FOLDER . '/meta.yml');
+        echo "Done \n";
         
+        echo "Creating meta file ... ";
+        // Create meta.yml        
+        $this->writeMetaDataToFile(ASCMS_APP_CACHE_FOLDER . '/meta.yml');
+        echo "Done \n";
+        
+        echo "Exporting component ... ";
         // Compress
         $file = new \PclZip($path);
         $file->create(ASCMS_APP_CACHE_FOLDER, PCLZIP_OPT_REMOVE_PATH, ASCMS_APP_CACHE_FOLDER);
+        echo "Done \n";
     }
     
     /**
@@ -527,6 +596,8 @@ class ReflectionComponent {
     {
         $fields       = $this->getColumnsFromTable($table);
         $columnString = '`'. implode('`, `', $fields) .'`';
+                
+        $tableName = preg_replace('#'. DBPREFIX .'#', 'contrexx_', $table, 1);
         
         $objResult = $this->db->query($query);
         if ($objResult) {
@@ -539,7 +610,7 @@ class ReflectionComponent {
 
                 $dataString = '\'' . implode('\', \'', $datas) . '\'';
 
-                $dataLine = 'INSERT INTO '.$table.' (' . $columnString . ') VALUES ('. $dataString .');' . PHP_EOL;
+                $dataLine = 'INSERT INTO `'.$tableName.'` (' . $columnString . ') VALUES ('. $dataString .');' . PHP_EOL;
                 $objFile->append($dataLine);
 
                 $objResult->MoveNext();
@@ -587,17 +658,154 @@ class ReflectionComponent {
             $file = new \Cx\Lib\FileSystem\File($path);
             $file->touch();
             foreach ($arrayTables as $table) {
-                $objResult = $this->db->query('SHOW CREATE TABLE '. $table);
-                while (!$objResult->EOF) {
-                    $file->append($objResult->fields['Create Table'] . ";" . PHP_EOL . PHP_EOL);
-                    $objResult->MoveNext();
-                }
+                $file->append($this->getTableStructure($table));
             }
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             \DBG::msg($e->getMessage());
         }
     }
     
+    /**
+     * Writes to file the $table's structure
+     * 
+     * @param string $table The table name
+     * @access private
+     * @return boolean|string return false when table not exists or return table schema
+     */
+    private function getTableStructure($table)
+    {
+        // Structure Header
+        $structure  = '';
+        $structure .= "-- \n";
+        $structure .= "-- Table structure for table `{$table}` \n";
+        $structure .= "-- \n\n";
+                
+        $tableName = preg_replace('#'. DBPREFIX .'#', 'contrexx_', $table, 1);
+
+        // Dump Structure
+        $structure .= 'DROP TABLE IF EXISTS `'.$tableName.'`;'."\n";
+        $structure .= "CREATE TABLE `".$tableName."` (\n";
+        $objResult  = $this->db->Execute('SHOW FIELDS FROM `'.$table.'`');
+        if ( $objResult->RecordCount() == 0 ) {
+            return false;
+        }
+        while(!$objResult->EOF) {            
+            $structure .= '`'.$objResult->fields['Field'].'` '.$objResult->fields['Type'];
+            if ( @strcmp($objResult->fields['Null'],'YES') != 0 ) {
+                $structure .= ' NOT NULL';
+            }
+
+            if ( !empty($objResult->fields['Default']) || @strcmp($objResult->fields['Null'],'YES') == 0) {
+                $structure .= ' DEFAULT '.(is_null($objResult->fields['Default']) ? 'NULL' : "'{$objResult->fields['Default']}'");
+            }
+
+            if ( !empty($objResult->fields['Extra']) ) {
+                $structure .= ' '.$objResult->fields['Extra'];
+            }
+
+            $structure .= ",\n";
+            $objResult->MoveNext();
+        }
+        
+        $structure = preg_replace("/,\n$/", '', $structure);
+
+        // Save all Column Indexes
+        $structure .= $this->getSqlKeysTable($table);
+        $structure .= "\n)";
+
+        //Save table engine
+        $objTableStatus = $this->db->Execute("SHOW TABLE STATUS LIKE '".$table."'");
+        if ($objTableStatus) {
+            if (!empty($objTableStatus->fields['Engine'])) {
+                $structure .= ' ENGINE='.$objTableStatus->fields['Engine'];
+            }
+            if (!empty($objTableStatus->fields['Auto_increment'])) {
+                $structure .= ' AUTO_INCREMENT='.$objTableStatus->fields['Auto_increment'];
+            }
+        }
+
+        $structure .= ";\n\n-- --------------------------------------------------------\n\n";
+        
+        return $structure;
+    }
+    
+    /**
+     * Writes to file the $table's structure
+     * 
+     * @param string $table The table name
+     * @access private
+     * @return boolean|string return false when table not exists or return table schema
+     */
+    private function getSqlKeysTable($table)
+    {
+        $primary = "";
+        $unique  = $index = $fulltext = array();
+        
+        $objResult = $this->db->Execute("SHOW KEYS FROM `{$table}`");
+        if ($objResult->RecordCount() == 0) {
+            return false;
+        }
+        while (!$objResult->EOF) {
+            if (($objResult->fields['Key_name'] == 'PRIMARY') && ($objResult->fields['Index_type'] == 'BTREE')) {
+                if ( $primary == '' ) {
+                    $primary = "  PRIMARY KEY  (`{$objResult->fields['Column_name']}`";
+                } else {
+                    $primary .= ", `{$objResult->fields['Column_name']}`";
+                }
+            }
+            if (($objResult->fields['Key_name'] != 'PRIMARY') && ($objResult->fields['Non_unique'] == '0') && ($objResult->fields['Index_type'] == 'BTREE')) {
+                if ( (!is_array($unique)) || ($unique[$objResult->fields['Key_name']]=="") ) {
+                    $unique[$objResult->fields['Key_name']] = "  UNIQUE KEY `{$objResult->fields['Key_name']}` (`{$objResult->fields['Column_name']}`";
+                } else {
+                    $unique[$objResult->fields['Key_name']] .= ", `{$objResult->fields['Column_name']}`";
+                }
+            }
+            if (($objResult->fields['Key_name'] != 'PRIMARY') && ($objResult->fields['Non_unique'] == '1') && ($objResult->fields['Index_type'] == 'BTREE')) {
+                if ( (!is_array($index)) OR ($index[$objResult->fields['Key_name']]=="") ) {
+                    $index[$objResult->fields['Key_name']] = "  KEY `{$objResult->fields['Key_name']}` (`{$objResult->fields['Column_name']}`";
+                } else {
+                    $index[$objResult->fields['Key_name']] .= ", `{$objResult->fields['Column_name']}`";
+                }
+            }
+            if (($objResult->fields['Key_name'] != 'PRIMARY') && ($objResult->fields['Non_unique'] == '1') && ($objResult->fields['Index_type'] == 'FULLTEXT')) {
+                if ( (!is_array($fulltext)) || ($fulltext[$objResult->fields['Key_name']]=="") ) {
+                    $fulltext[$objResult->fields['Key_name']] = "  FULLTEXT `{$objResult->fields['Key_name']}` (`{$objResult->fields['Column_name']}`";
+                } else {
+                    $fulltext[$objResult->fields['Key_name']] .= ", `{$objResult->fields['Column_name']}`";
+                }
+            }
+            $objResult->MoveNext();
+        }
+        
+        
+        $sqlKeyStatement = '';
+        // generate primary, unique, key and fulltext
+        if ($primary != "") {
+            $sqlKeyStatement .= ",\n";
+            $primary .= ")";
+            $sqlKeyStatement .= $primary;
+        }
+        foreach ($unique as $keyName => $keyDef) {
+            $sqlKeyStatement .= ",\n";
+            $keyDef .= ")";
+            $sqlKeyStatement .= $keyDef;
+        }
+        
+        foreach ($index as $keyName => $keyDef) {
+            $sqlKeyStatement .= ",\n";
+            $keyDef .= ")";
+            $sqlKeyStatement .= $keyDef;
+        }
+        
+        foreach ($fulltext as $keyName => $keyDef) {
+            $sqlKeyStatement .= ",\n";
+            $keyDef .= ")";
+            $sqlKeyStatement .= $keyDef;
+        }
+        
+        return $sqlKeyStatement;
+    }
+        
     /**
      * Write the meta information of the component to the file
      * 
@@ -627,7 +835,7 @@ class ReflectionComponent {
                  'type' => $this->componentType,
                  'publisher' => $publisher,
                  'dependencies' => null,
-                 'versions' => null,
+                 'versions' => null,                 
                  'rating' => 0,
                  'downloads' => 0,
                  'price' => 0.0,
@@ -1134,22 +1342,22 @@ class ReflectionComponent {
         $moduleId = $res->fields['id'];
         
         if (!empty($moduleId)) {
-		    $query = '
-		        DELETE FROM
-		            `' . DBPREFIX . 'modules`
-		        WHERE
-		            `id` = \'' . $moduleId . '\'
-		    ';
-		    $adoDb->execute($query);
-		    
-		    // backend_areas
-		    $query = '
-		        DELETE FROM
-		            `' . DBPREFIX . 'backend_areas`
-		        WHERE
-		            `module_id` = \'' . $moduleId . '\'
-		    ';
-		    $adoDb->execute($query);
+            $query = '
+                DELETE FROM
+                    `' . DBPREFIX . 'modules`
+                WHERE
+                    `id` = \'' . $moduleId . '\'
+            ';
+            $adoDb->execute($query);
+
+            // backend_areas
+            $query = '
+                DELETE FROM
+                    `' . DBPREFIX . 'backend_areas`
+                WHERE
+                    `module_id` = \'' . $moduleId . '\'
+            ';
+            $adoDb->execute($query);
         }
         
         // module tables (LIKE DBPREFIX . strtolower($moduleName)%)
@@ -1168,7 +1376,20 @@ class ReflectionComponent {
             
             $result->MoveNext();
         }
-                
+        
+        
+        $query = 'DELETE FROM `'. DBPREFIX .'core_mail_template` WHERE `section` = "'. $this->componentName .'"';
+        $adoDb->execute($query);
+        
+        $query = 'DELETE FROM `'. DBPREFIX .'core_text` WHERE `section` = "'. $this->componentName .'"';
+        $adoDb->execute($query);
+        
+        $query = 'DELETE FROM `'. DBPREFIX .'core_setting` WHERE `section` = "'. $this->componentName .'"';
+        $adoDb->execute($query);
+
+        $query = 'DELETE FROM `'. DBPREFIX .'settings` WHERE `setname` LIKE "'. $this->componentName .'%"';
+        $adoDb->execute($query);
+            
         // pages
         $this->deactivate();
     }
