@@ -58,7 +58,7 @@ class MemberDirManager extends MemberDirLibrary
 
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
-        $this->imagePath = ASCMS_MODULE_IMAGE_WEB_PATH;
+        $this->imagePath = ASCMS_MODULE_WEB_PATH.'/MemberDir/View/Media';
         $this->langId=$objInit->userFrontendLangId;
 
         parent::__construct();

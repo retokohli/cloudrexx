@@ -691,11 +691,11 @@ class DataLibrary
         $intNumberOfStars = round($objVoteResult->fields['avarageVote'] / 2) ;
 
         for ($i = 1; $i <= $intNumberOfStars; ++$i) {
-            $strReturn .= '<img title="'.$_ARRAYLANG['TXT_DATA_LIB_RATING'].'" alt="'.$_ARRAYLANG['TXT_DATA_LIB_RATING'].'" src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/data/star_on.gif" />';
+            $strReturn .= '<img title="'.$_ARRAYLANG['TXT_DATA_LIB_RATING'].'" alt="'.$_ARRAYLANG['TXT_DATA_LIB_RATING'].'" src="'.ASCMS_MODULE_WEB_PATH.'/Data/View/Media/star_on.gif" />';
         }
 
         for ($i = $intNumberOfStars + 1; $i <= 5; ++$i) {
-            $strReturn .= '<img title="'.$_ARRAYLANG['TXT_DATA_LIB_RATING'].'" alt="'.$_ARRAYLANG['TXT_DATA_LIB_RATING'].'" src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/data/star_off.gif" />';
+            $strReturn .= '<img title="'.$_ARRAYLANG['TXT_DATA_LIB_RATING'].'" alt="'.$_ARRAYLANG['TXT_DATA_LIB_RATING'].'" src="'.ASCMS_MODULE_WEB_PATH.'/Data/View/Media/star_off.gif" />';
         }
 
         return $strReturn;
