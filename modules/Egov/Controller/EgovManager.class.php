@@ -51,7 +51,7 @@ class EgovManager extends EgovLibrary
         $this->objTemplate = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/Egov/View/Template/Backend');
         \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->objTemplate);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
-        $this->imagePath = ASCMS_MODULE_IMAGE_WEB_PATH;
+        $this->imagePath = ASCMS_MODULE_WEB_PATH .'/Egov/View/Media';
         $this->langId=$objInit->userFrontendLangId;
     }
 

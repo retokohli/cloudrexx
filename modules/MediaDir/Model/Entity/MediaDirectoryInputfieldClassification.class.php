@@ -214,7 +214,7 @@ EOF;
                 $strImage = 'classification_off.png';
             }
 
-            $strValue .= '<img src="'.ASCMS_MODULE_IMAGE_WEB_PATH.'/'.$this->moduleName.'/'.$strImage.'" title="'.$arrInputfield['name'][0].' - '.$intValue.'" alt="'.$arrInputfield['name'][0].' - '.$intValue.'" />';
+            $strValue .= '<img src="'.ASCMS_MODULE_WEB_PATH.'/'.$this->moduleName.'/View/Media/'.$strImage.'" title="'.$arrInputfield['name'][0].' - '.$intValue.'" alt="'.$arrInputfield['name'][0].' - '.$intValue.'" />';
         }
 
         if(!empty($strValue)) {

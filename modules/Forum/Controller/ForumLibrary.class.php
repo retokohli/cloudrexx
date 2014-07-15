@@ -481,11 +481,7 @@ class ForumLibrary
             return false;
         }
         $pathinfo = pathinfo($file);
-        if (file_exists(ASCMS_MODULE_IMAGE_PATH.'/filebrowser/'.$pathinfo['extension'].'.gif')) {
-            $icon = ASCMS_MODULE_IMAGE_WEB_PATH.'/filebrowser/'.$pathinfo['extension'].'.gif';
-        } else {
-            $icon = ASCMS_ADMIN_WEB_PATH.'/images/icons/save.png';
-        }
+        $icon = \Cx\Core_Modules\Media\Controller\MediaLibrary::_getIcon($file);
         return array(
             'name' => $file,
             'path' => ASCMS_FORUM_UPLOAD_PATH.'/'.$file,
