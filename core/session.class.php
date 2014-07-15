@@ -554,7 +554,7 @@ class cmsSession extends RecursiveArrayAccess {
             return false;
         }
 
-        return ASCMS_PATH . $this->sessionPath;
+        return ASCMS_INSTANCE_PATH . $this->sessionPath;
     }
 
     /**
