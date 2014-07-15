@@ -151,7 +151,6 @@ class JsonData {
      * @return String data to use for further processing
      */
     public function data($adapter, $method, $arguments = array()) {
-        global $_CORELANG;
         if (!isset($this->adapters[$adapter])) {
             return $this->getErrorData('No such adapter');
         }
@@ -175,7 +174,7 @@ class JsonData {
         }
         
         if ($objPermission && ($objPermission instanceof \Cx\Core\Access\Model\Entity\Permission)) {
-            if (!$objPermission->hasAccess())
+            if (!$objPermission->hasAccess($arguments))
                 return $this->getErrorData('JsonData-request to method ' . $realMethod . ' of adapter ' . $adapter->getName() . ' has been rejected by not complying to the permission requirements of the requested method.');
         }
         
@@ -208,10 +207,34 @@ class JsonData {
      * @param array $data (optional) HTTP post data
      * @param boolean $secure (optional) Wheter to verify peer using SSL or not, default false
      * @param string $certificateFile (optional) Local certificate file for non public SSL certificates
+     * @param array Set an optional HTTP Authentication method and supply its login credentials.
+     *              The supplied array must comply with the following structure:
+     * <pre class="brush: php">
+     *              $httpAuth = array(
+     *                  'httpAuthMethod'   => 'none|basic|disgest',
+     *                  'httpAuthUsername' => '<username>',
+     *                  'httpAuthPassword' => '<password>',
+     *              );
+     * </pre>
      * @return mixed Decoded JSON on success, false otherwise
      */
-    public function getJson($url, $data = array(), $secure = false, $certificateFile = '') {
+    public function getJson($url, $data = array(), $secure = false, $certificateFile = '', $httpAuth=array()) {
         $request = new \HTTP_Request2($url, \HTTP_Request2::METHOD_POST);
+
+        if (!empty($httpAuth)) {
+            switch($httpAuth['httpAuthMethod']) {
+                case 'basic':
+                    $request->setAuth($httpAuth['httpAuthUsername'], $httpAuth['httpAuthPassword'], \HTTP_Request2::AUTH_BASIC);
+                    break;
+                case 'disgest':
+                    $request->setAuth($httpAuth['httpAuthUsername'], $httpAuth['httpAuthPassword'], \HTTP_Request2::AUTH_DIGEST);
+                    break;
+                case 'none':
+                default:
+                    break;
+            }
+        }
+
         foreach ($data as $name=>$value) {
             $request->addPostParameter($name, $value);
         }
