@@ -153,12 +153,6 @@ class LegacyComponentHandler {
             ),
             'backend' => array(
                 'preResolve' => array(
-                    'Session' => function() {
-                        global $sessionObj;
-
-                        if (empty($sessionObj)) $sessionObj = \cmsSession::getInstance();
-                        $_SESSION->cmsSessionStatusUpdate('backend');
-                    },
                     'Js' => function() {
                         // Load the JS helper class and set the offset
                         \JS::setOffset('../');
