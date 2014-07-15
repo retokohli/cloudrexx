@@ -447,7 +447,6 @@ $_ARRAYLANG['TXT_DEBUGGING_FLAG_LOG_FILE'] = "Output to file";
 $_ARRAYLANG['TXT_SETTINGS_TITLE_SUBSYSTEM'] = "Alt sistemler";
 $_ARRAYLANG['TXT_SETTINGS_HISTORY'] = "İçerik akışı & Çalışma akışı ayarı";
 $_ARRAYLANG['TXT_NETTOOLS_MODULE_DESCRIPTION'] = "Değişik Ağ kurulumları";
-entegre edililebilir. ";
 $_ARRAYLANG['TXT_SETTINGS_MENU_SYSTEM'] = "Sistem";
 $_ARRAYLANG['TXT_IMPORT'] = "İthal et";
 $_ARRAYLANG['TXT_CHOOSE_FILE'] = "Veriyi seçiniz";
