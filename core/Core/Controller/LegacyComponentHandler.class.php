@@ -153,13 +153,6 @@ class LegacyComponentHandler {
             ),
             'backend' => array(
                 'preResolve' => array(
-                    'Js' => function() {
-                        // Load the JS helper class and set the offset
-                        \JS::setOffset('../');
-                        \JS::activate('backend');
-                        \JS::activate('cx');
-                        \JS::activate('chosen');
-                    },
                     'ComponentHandler' => function() {
                         global $arrMatch, $plainCmd, $cmd;
 
