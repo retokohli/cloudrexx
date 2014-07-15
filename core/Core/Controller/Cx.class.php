@@ -166,6 +166,111 @@ namespace Cx\Core\Core\Controller {
         protected $eventManager = null;
         
         /**
+         * The folder name of the storage location of the core components (/core).
+         * Formerly known as ASCMS_CORE_FOLDER.
+         * @var string
+         * @todo @MRi: Shall we convert this into a constant?
+         */
+        protected $coreFolderName = '/core';
+
+        /**
+         * The folder name used for the temp storage location (/tmp).
+         * @var string
+         * @todo @MRi: Shall we convert this into a constant?
+         */
+        protected $tempFolderName = '/tmp';
+
+        /**
+         * The folder name used to access the backend of the website (/cadmin).
+         * Formerly known as ASCMS_BACKEND_PATH
+         * @var string
+         * @todo @MRi: Shall we convert this into a constant?
+         */
+        protected $backendFolderName = '/cadmin';
+
+        /**
+         * The folder name used for the customizing storage location (/customizing).
+         * @var string
+         * @todo @MRi: Shall we convert this into a constant?
+         */
+        protected $customizingFolderName = '/customizing';
+
+        /**
+         * The webserver's DocumentRoot path.
+         * Formerly known as ASCMS_PATH.
+         * @var string
+         */
+        protected $codeBasePath = null;
+
+        /**
+         * The offset path from the webserver's DocumentRoot to the
+         * location of the Code Base of the Contrexx installation.
+         * Formerly known as ASCMS_PATH_OFFSET.
+         * @var string
+         */
+        protected $codeBaseOffsetPath = null;
+
+        /**
+         * The absolute path to the Code Base of the Contrexx installation.
+         * Formerly known as ASCMS_DOCUMENT_ROOT.
+         * @var string
+         */
+        protected $codeBaseDocumentRootPath = null;
+
+        /**
+         * The absolute path to the core components (/core)
+         * of the Code Base of the Contrexx installation.
+         * Formerly known as ASCMS_CORE_PATH.
+         * @var string
+         */
+        protected $codeBaseCorePath = null;
+
+        /**
+         * The absolute path to the website's data repository.
+         * Formerly known as ASCMS_INSTANCE_PATH.
+         * @var string
+         */
+        protected $websitePath = null;
+
+        /**
+         * The offset path from the website's data repository to the
+         * location of the Contrexx installation if it is run in a subdirectory.
+         * Formerly known as ASCMS_INSTANCE_OFFSET.
+         * @var string
+         */
+        protected $websiteOffsetPath = null;
+
+        /**
+         * The absolute path to the data repository of the Contrexx installation.
+         * Formerly known as ASCMS_INSTANCE_DOCUMENT_ROOT.
+         * @var string
+         */
+        protected $websiteDocumentRootPath = null;
+
+        /**
+         * The absolute path to the customizing repository of the website.
+         * Formerly known as ASCMS_CUSTOMIZING_PATH.
+         * @var string
+         */
+        protected $websiteCustomizingPath = null;
+
+        /**
+         * The offset path from the website's DocumentRoot to the customizing
+         * repository of the website.
+         * Formerly known as ASCMS_CUSTOMIZING_WEB_PATH.
+         * @var string
+         */
+        protected $websiteCustomizingWebPath = null;
+
+        /**
+         * The absolute path to the temp storage location (/tmp)
+         * of the associated Data repository of the website.
+         * Formerly known as ASCMS_TEMP_PATH.
+         * @var string
+         */
+        protected $websiteTempPath = null;
+        
+        /**
          * This creates instances of this class
          * 
          * Normally the first instance is returned. This method is necessary
@@ -176,12 +281,12 @@ namespace Cx\Core\Core\Controller {
          * @param boolean $forceNew (optional) Wheter to force a new instance or not, default false
          * @return \Cx\Core\Core\Controller\Cx Instance of this class 
          */
-        public static function instanciate($mode = null, $forceNew = false) {
+        public static function instanciate($mode = null, $forceNew = false, $configFilePath = null) {
             if (count(self::$instances) && !$forceNew) {
                 reset(self::$instances);
                 return current(self::$instances);
             }
-            $instance = new static($mode);
+            $instance = new static($mode, $configFilePath);
             self::$instances[] = $instance;
             return $instance;
         }
@@ -193,7 +298,7 @@ namespace Cx\Core\Core\Controller {
          * This does everything related to Contrexx.
          * @param string $mode (optional) Use constants, one of self::MODE_[FRONTEND|BACKEND|CLI|MINIMAL]
          */
-        protected function __construct($mode = null) {
+        protected function __construct($mode = null, $configFilePath = null) {
             try {
                 /**
                  * This starts time measurement
@@ -202,9 +307,10 @@ namespace Cx\Core\Core\Controller {
                 $this->startTimer();
 
                 /**
-                 * Load config/configuration.php, config/settings.php and config/set_constants.php
+                 * Load config/configuration.php
                  * If you want to load another config instead, you may call
                  * 
+// TODO: @MRi: what is the status about this?
                  *     $cx->loadConfig($pathToYourConfigDirectory);
                  *     $cx->handleCustomizing();
                  *     $cx->postInit();
@@ -213,7 +319,30 @@ namespace Cx\Core\Core\Controller {
                  * 
                  * in the constructor of your ComponentController. 
                  */
-                $this->loadConfig();
+                $this->loadConfig($configFilePath);
+
+                /**
+                 * Loads the basic configuration ($_CONFIG) from config/settings.php
+                 */
+                $this->loadSettings();
+
+                /**
+                 * Checks if the system has been installed (CONTEXX_INSTALLED).
+                 * If not, the user will be redirected to the web-installer.
+                 */
+                $this->checkInstallationStatus();
+
+                /**
+                 * Verifies that the basic configuration ($_CONFIG) has bee loaded.
+                 * If not, the system will halt.
+                 */
+                $this->checkBasicConfiguration();
+
+                /**
+                 * Sets the path to the customizing directory (/customizing) of the website,
+                 * if the associated functionality has been activatd.
+                 */
+                $this->setCustomizingPath();
 
                 /**
                  * Sets the mode Contrexx runs in
@@ -225,7 +354,14 @@ namespace Cx\Core\Core\Controller {
                  * Early initializations, tries to enable APC and increase RAM size
                  * This is not a hookscript, since no components are loaded so far
                  */
+// TODO: @MRi: how should the newly added methods and method preInit() be grouped?
                 $this->preInit();
+                
+                /**
+                 * Defines the core constants (ASCMS_*) of Contrexx as defined in config/set_constants.php
+                 * and config/SetCustomizableConstants.php. 
+                 */
+                $this->defineConstants();
                 
                 /**
                  * Loads ClassLoader, EventManager and Database connection
@@ -304,8 +440,13 @@ namespace Cx\Core\Core\Controller {
          * @global array $_PATHCONFIG Path configuration from /config/configuration.php
          * @throws \Exception If the CMS is deactivated, an exception is thrown
          */
-        protected function loadConfig() {
-            global $_CONFIG, $_PATHCONFIG, $_DBCONFIG;
+        protected function loadConfig($configFilePath = null) {
+            global $_PATHCONFIG;
+
+            // load custom configuration file
+            if ($configFilePath) {
+                include_once $configFilePath;
+            }
 
             /**
              * Should we overwrite path configuration?
@@ -328,13 +469,20 @@ namespace Cx\Core\Core\Controller {
                 $_PATHCONFIG['ascms_installation_offset'] = $_PATHCONFIG['ascms_root_offset'];
             }
 
+            $this->setCodeBaseRepository($_PATHCONFIG['ascms_installation_root'], $_PATHCONFIG['ascms_installation_offset']);
+            $this->setWebsiteRepository($_PATHCONFIG['ascms_root'], $_PATHCONFIG['ascms_root_offset']);
+        }
+
+        protected function loadSettings() {
+            global $_CONFIG, $_DBCONFIG;
+
             /**
              * User configuration settings
              *
              * This file is re-created by the CMS itself. It initializes the
              * {@link $_CONFIG[]} global array.
              */
-            $incSettingsStatus = include_once $_PATHCONFIG['ascms_root'].$_PATHCONFIG['ascms_root_offset'].'/config/settings.php';
+            include_once $this->getWebsiteDocumentRootPath().'/config/settings.php';
             
             @ini_set('default_charset', $_CONFIG['coreCharacterEncoding']);
             
@@ -346,25 +494,35 @@ namespace Cx\Core\Core\Controller {
             
             // Set timezone
             @ini_set('date.timezone', $_DBCONFIG['timezone']);
+        }
             
-            /**
-             * -------------------------------------------------------------------------
-             * Set constants
-             * -------------------------------------------------------------------------
-             */
-            require_once $_PATHCONFIG['ascms_installation_root'].$_PATHCONFIG['ascms_installation_offset'].'/config/set_constants.php';
+        protected function defineConstants()
+        {
+            require_once $this->getCodeBaseDocumentRootPath() . '/config/set_constants.php';
+        }
 
+        protected function checkInstallationStatus() {
             // Check if the system is installed
             if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
-                \Cx\Core\Csrf\Controller\ComponentController::header('Location: http://'.$_SERVER['HTTP_HOST'].$_SERVER['REQUEST_URI'].'installer/index.php');
+                header('Location: '.$this->getCodeBaseOffsetPath().'/installer/index.php');
                 exit;
-            } else if ($incSettingsStatus === false) {
+            }
+        }
+
+        protected function checkBasicConfiguration() {
+            global $_CONFIG;
+
+            if (!isset($_CONFIG)) {
                 die('System halted: Unable to load basic configuration!');
             }
+        }
+
+        protected function setCustomizingPath() {
+            global $_CONFIG;
 
             // Check if the system is configured with enabled customizings
             if (isset($_CONFIG['useCustomizings']) && $_CONFIG['useCustomizings'] == 'on') {
-                $this->customizingPath = ASCMS_CUSTOMIZING_PATH;
+                $this->customizingPath = $this->getWebsiteCustomizingPath();
             }
         }
 
@@ -431,13 +589,14 @@ namespace Cx\Core\Core\Controller {
                     if (!isset($_GET['__cap'])) {
                         break;
                     }
-                    if (!preg_match('#^' . ASCMS_INSTANCE_OFFSET . '(/[a-z]{2})?(/admin|' . ASCMS_BACKEND_PATH . ')#', $_GET['__cap'])) {
+                    if (!preg_match('#^' . $this->getWebsiteOffsetPath() . '(/[a-z]{2})?(/admin|' . $this->getBackendFolderName() . ')#', $_GET['__cap'])) {
                         break;
                     }
                     // this does not belong here:
-                    if (!preg_match('#^' . ASCMS_INSTANCE_OFFSET . ASCMS_BACKEND_PATH . '/#', $_GET['__cap'])) {
+                    if (!preg_match('#^' . $this->getWebsiteOffsetPath() . $this->getBackendFolderName() . '/#', $_GET['__cap'])) {
                         // do not use \Cx\Core\Csrf\Controller\ComponentController::header() here, since ClassLoader is not loaded at this time
-                        header('Location: ' . ASCMS_INSTANCE_OFFSET . ASCMS_BACKEND_PATH . '/');
+// TODO: is this actually the cause of the CSRF missing issue?
+                        header('Location: ' . $this->getWebsiteOffsetPath() . $this->getBackendFolderName() . '/');
                         die();
                     }
                     $mode = self::MODE_BACKEND;
@@ -454,6 +613,8 @@ namespace Cx\Core\Core\Controller {
          */
         protected function preInit() {
             $this->checkSystemState();
+            $this->initClassLoader();
+            $this->callPreInitHooks();
             $this->adjustRequest();            
         }
         
@@ -466,6 +627,43 @@ namespace Cx\Core\Core\Controller {
             // Check if system is running
             if ($_CONFIG['systemStatus'] != 'on' && $this->mode == self::MODE_FRONTEND) {
                 throw new \Exception('System disabled by config');
+            }
+        }
+
+        protected function initClassLoader() {
+            /**
+             * This needs to be initialized before loading config/doctrine.php
+             * Because we overwrite the Gedmo model (so we need to load our model
+             * before doctrine loads the Gedmo one)
+             */
+            require_once($this->getCodeBaseCorePath().'/ClassLoader/ClassLoader.class.php');
+            $this->cl = new \Cx\Core\ClassLoader\ClassLoader($this, true, $this->customizingPath);
+        }
+
+       /**
+         * Calls pre-init hooks
+         */
+        protected function callPreInitHooks() {
+// TODO: Load preInit component hooks from yaml-file
+            $componentDefinitions = array();
+
+            foreach ($componentDefinitions as $componentDefinition) {
+                $component = new \Cx\Core\Core\Model\Entity\SystemComponent();
+                $component->setName($componentDefinition['name']);
+                $component->setType($componentDefinition['type']);
+                $systemComponentControler = new \Cx\Core\Core\Model\Entity\SystemComponentController($component, $this);
+                switch ($this->mode) {
+                    case self::MODE_FRONTEND:
+                        $componentController = new \Cx\Core_Modules\MultiSite\Controller\FrontendController($systemComponentControler, $this);
+                        break;
+                    case self::MODE_BACKEND:
+                        $componentController = new \Cx\Core_Modules\MultiSite\Controller\BackendController($systemComponentControler, $this);
+                        break;
+                    default:
+                        $componentController = new \Cx\Core_Modules\MultiSite\Controller\ComponentController($component, $this);
+                        break;
+                }
+                $componentController->preInit();
             }
         }
 
@@ -582,14 +780,6 @@ namespace Cx\Core\Core\Controller {
          */
         protected function init() {
             global $_CONFIG, $_FTPCONFIG, $objDatabase, $objInit, $objCache;
-
-            /**
-             * This needs to be initialized before loading config/doctrine.php
-             * Because we overwrite the Gedmo model (so we need to load our model
-             * before doctrine loads the Gedmo one)
-             */
-            require_once(ASCMS_CORE_PATH.'/ClassLoader/ClassLoader.class.php');
-            $this->cl = new \Cx\Core\ClassLoader\ClassLoader(ASCMS_DOCUMENT_ROOT, true, $this->customizingPath);
 
             /**
              * Environment repository
@@ -1466,6 +1656,138 @@ namespace Cx\Core\Core\Controller {
          */
         public function getClassLoader() {
             return $this->cl;
+        }
+
+        /**
+         * Set the path to the location of the website's Code Base in the file system.
+         * @param string The base path of the Code Base (webserver's DocumentRoot path).
+         * @param string The offset path from the webserver's DocumentRoot to the
+         *               location of the Code Base of the Contrexx installation.
+         */
+        public function setCodeBaseRepository($codeBasePath, $codeBaseOffsetPath) {
+            $this->codeBasePath                 = $codeBasePath;
+            $this->codeBaseOffsetPath           = $codeBaseOffsetPath;
+            $this->codeBaseDocumentRootPath     = $this->codeBasePath . $this->codeBaseOffsetPath;
+            $this->codeBaseCorePath             = $this->codeBaseDocumentRootPath . $this->coreFolderName;
+        }
+
+        /**
+         * Return the base path of the Code Base (webserver's DocumentRoot path).
+         * Formerly known as ASCMS_PATH.
+         * @return string
+         */
+        public function getCodeBasePath() {
+            return $this->codeBasePath;
+        }
+
+        /**
+         * Return the offset path from the webserver's DocumentRoot to the
+         * location of the Code Base of the Contrexx installation.
+         * Formerly known as ASCMS_PATH_OFFSET.
+         * @return string
+         */
+        public function getCodeBaseOffsetPath() {
+            return $this->codeBaseOffsetPath;
+        }
+
+        /**
+         * Return the absolute path to the Code Base of the Contrexx installation.
+         * Formerly known as ASCMS_DOCUMENT_ROOT.
+         * @return string
+         */
+        public function getCodeBaseDocumentRootPath() {
+            return $this->codeBaseDocumentRootPath;
+        }
+
+        /**
+         * Return the absolute path to the core components (/core)
+         * of the Code Base of the Contrexx installation.
+         * Formerly known as ASCMS_CORE_PATH.
+         * @return string
+         */
+        public function getCodeBaseCorePath() {
+            return $this->codeBaseCorePath;
+        }
+
+        /**
+         * Set the path to the location of the website's data repository in the file system.
+         * @param string The absolute path to the website's data repository.
+         * @param string The offset path from the website's data repository to the
+         *               location of the Contrexx installation if it is run in a subdirectory.
+         */
+        public function setWebsiteRepository($websitePath, $websiteOffsetPath) {
+            $this->websitePath                  = $websitePath;
+            $this->websiteOffsetPath            = $websiteOffsetPath;
+            $this->websiteDocumentRootPath      = $this->websitePath . $this->websiteOffsetPath;
+            $this->websiteCustomizingPath       = $this->websiteDocumentRootPath . $this->customizingFolderName;
+            $this->websiteCustomizingWebPath    = $this->websiteOffsetPath . $this->customizingFolderName;
+            $this->websiteTempPath              = $this->websiteDocumentRootPath . $this->tempFolderName;
+        }
+
+        /**
+         * Return the absolute path to the website's data repository.
+         * Formerly known as ASCMS_INSTANCE_PATH.
+         * @return string
+         */
+        public function getWebsitePath() {
+            return $this->websitePath;
+        }
+
+        /**
+         * Return the offset path from the website's data repository to the
+         * location of the Contrexx installation if it is run in a subdirectory.
+         * Formerly known as ASCMS_INSTANCE_OFFSET.
+         * @return string
+         */
+        public function getWebsiteOffsetPath() {
+                return $this->websiteOffsetPath;
+        }
+
+        /**
+         * Return the absolute path to the data repository of the Contrexx installation.
+         * Formerly known as ASCMS_INSTANCE_DOCUMENT_ROOT.
+         * @return string
+         */
+        public function getWebsiteDocumentRootPath() {
+            return $this->websiteDocumentRootPath;
+        }
+
+        /**
+         * Return the absolute path to the customizing repository of the website.
+         * Formerly known as ASCMS_CUSTOMIZING_PATH.
+         * @return string
+         */
+        public function getWebsiteCustomizingPath() {
+            return $this->websiteCustomizingPath;
+        }
+
+        /**
+         * Return the offset path from the website's DocumentRoot to the customizing
+         * repository of the website.
+         * Formerly known as ASCMS_CUSTOMIZING_WEB_PATH.
+         * @return string
+         */
+        public function getWebsiteCustomizingWebPath() {
+            return $this->websiteCustomizingWebPath;
+        }
+
+        /**
+         * Return the absolute path to the temp storage location (/tmp)
+         * of the associated Data repository of the website.
+         * Formerly known as ASCMS_TEMP_PATH.
+         * @return string
+         */
+        public function getWebsiteTempPath() {
+            return $this->websiteTempPath;
+        }
+
+        /**
+         * Return the folder name used to access the backend of the website (/cadmin).
+         * Formerly known as ASCMS_BACKEND_PATH
+         * @return string
+         */
+        public function getBackendFolderName() {
+            return $this->backendFolderName;
         }
     }
 }
