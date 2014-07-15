@@ -23,6 +23,7 @@ class ClassLoader {
     private $basePath;
     private $customizingPath;
     private $legacyClassLoader = null;
+    private $cx = null;
     
     /**
      * To use LegacyClassLoader config.php and set_constants.php must be loaded
@@ -30,12 +31,16 @@ class ClassLoader {
      * @param String $basePath Base directory to load files (e.g. ASCMS_DOCUMENT_ROOT)
      * @param boolean $useLegacyAsFallback (optional) Wheter to use LegacyClassLoader too (default) or not
      */
-    public function __construct($basePath, $useLegacyAsFallback = true, $customizingPath = null) {
-        $this->basePath = $basePath;
+// TODO: Fix ClassCloader instantiation in:
+//      update/updates/3.2.0/update.php
+//      installer/classloader.inc.php
+    public function __construct($cx, $useLegacyAsFallback = true, $customizingPath = null) {
+        $this->cx = $cx;
+        $this->basePath = $cx->getCodeBaseDocumentRootPath();
         $this->customizingPath = $customizingPath;
         spl_autoload_register(array($this, 'autoload'));
         if ($useLegacyAsFallback) {
-            $this->legacyClassLoader = new LegacyClassLoader($this);
+            $this->legacyClassLoader = new LegacyClassLoader($this, $cx);
         }
     }
     
@@ -157,7 +162,12 @@ class ClassLoader {
     
     public function getFilePath($file, &$isCustomized = false) {
         $file = preg_replace('#\\\\#', '/', $file);
-        $regex = preg_replace('#([\(\)])#', '\\\\$1', ASCMS_PATH.ASCMS_PATH_OFFSET);
+        // using $this->cx->getCodeBaseDocumentRootPath() here instead of $this->basePath
+        // makes sure that no matter where the ClassLoader gets initialized,
+        // all customized files are always located in the folder /customizing.
+        // This means that also the customized files of the installer will be
+        // located in the folder /customizing. 
+        $regex = preg_replace('#([\(\)])#', '\\\\$1', $this->cx->getCodeBaseDocumentRootPath());
         $file = preg_replace('#'.$regex.'#', '', $file);
         
         // load class from customizing folder
