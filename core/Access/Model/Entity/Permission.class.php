@@ -62,7 +62,13 @@ class Permission {
      * @param Array   $allowedMethods
      * @param Boolean $requiresLogin
      */
-    public function __construct($allowedProtocols, $allowedMethods, $requiresLogin, $callback) {
+    public function __construct($allowedProtocols = array('http', 'https'), $allowedMethods = array('get', 'post'), $requiresLogin = true, $callback = null) {
+        if (!$allowedProtocols) {
+            $allowedProtocols = array('http', 'https');
+        }
+        if (!$allowedMethods) {
+            $allowedMethods = array('get', 'post');
+        }
         $this->allowedProtocols = array_map('strtolower', $allowedProtocols);
         $this->allowedMethods   = array_map('strtolower', $allowedMethods);
         $this->requiresLogin    = $requiresLogin;
@@ -74,7 +80,7 @@ class Permission {
      * 
      * @return boolean
      */
-    public function hasAccess() {
+    public function hasAccess(array $params = array()) {
         $protocol = \Env::get('cx')->getRequest()->getUrl()->getProtocol();
         $method   = \Env::get('cx')->getRequest()->getHttpRequestMethod();
         
@@ -94,7 +100,7 @@ class Permission {
         }
         
         //callback function check
-        if (isset($this->callback) && !call_user_func($this->callback)) {
+        if (isset($this->callback) && !call_user_func($this->callback, $params)) {
             return false;
         }
         
