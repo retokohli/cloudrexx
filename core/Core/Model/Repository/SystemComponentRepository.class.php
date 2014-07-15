@@ -191,7 +191,7 @@ class SystemComponentRepository extends \Doctrine\ORM\EntityRepository
      */
     public function callPreResolveHooks() {
         foreach ($this->findActive() as $component) {
-            $component->preResolve($this->cx->getRequest());
+            $component->preResolve($this->cx->getRequest()->getUrl());
         }
     }
     

@@ -13,6 +13,8 @@ function contentManagerUpdates() {
         \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."backend_areas` SET `uri` = 'index.php?cmd=ContentManager&act=new' WHERE `area_id` = 5");
         \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."backend_areas` SET `uri` = 'index.php?cmd=ContentManager' WHERE `area_id` = 6");
         \Cx\Lib\UpdateUtil::sql("UPDATE `".DBPREFIX."backend_areas` SET `uri` = 'index.php?cmd=ContentManager' WHERE `area_id` = 161");
+        //Alter the content_page table structure
+        \Cx\Lib\UpdateUtil::sql("ALTER TABLE `".DBPREFIX."content_page` ADD `applicationTemplate` VARCHAR(100) CHARACTER SET utf8 COLLATE utf8_unicode_ci NULL AFTER `useCustomContentForAllChannels`, ADD `useCustomApplicationTemplateForAllChannels` TINYINT(2) NOT NULL AFTER `applicationTemplate`");
     } catch (\Cx\Lib\UpdateException $e) {
         return "Error: $e->sql";
     }
