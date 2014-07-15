@@ -1144,8 +1144,6 @@ namespace Cx\Core\Core\Controller {
                 \LinkGenerator::parseTemplate($pageContent);
                 $this->resolvedPage->setContent($pageContent);
             }
-            
-            $this->ch->loadComponent($this, $plainSection, $this->resolvedPage);
             // This would be a postContentParseHook:
             \Message::show();
             
