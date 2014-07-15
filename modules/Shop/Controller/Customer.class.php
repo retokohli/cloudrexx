@@ -290,7 +290,7 @@ class Customer extends \User
             self::errorHandler();
             $group_reseller = \SettingDb::getValue('usergroup_id_reseller');
         }
-        $group_customer = SettingDb::getValue('usergroup_id_customer');
+        $group_customer = \SettingDb::getValue('usergroup_id_customer');
                 if (empty($group_customer)) {
                     self::errorHandler();
                     $group_customer = \SettingDb::getValue('usergroup_id_customer');
@@ -382,7 +382,7 @@ class Customer extends \User
     {
         global $_ARRAYLANG;
 
-        if (!Orders::deleteByCustomerId($this->id)) {
+        if (!\Orders::deleteByCustomerId($this->id)) {
             return \Message::error($_ARRAYLANG['TXT_SHOP_ERROR_CUSTOMER_DELETING_ORDERS']);
         }
         return parent::delete($deleteOwnAccount);

@@ -891,7 +891,7 @@ die("Failed to update the Cart!");
         global $_ARRAYLANG;
 
         // activate javascript shadowbox
-        JS::activate('shadowbox');
+        \JS::activate('shadowbox');
         
         $flagSpecialoffer = intval(\SettingDb::getValue('show_products_default'));
         if (isset($_REQUEST['cmd']) && $_REQUEST['cmd'] == 'discounts') {
@@ -1881,8 +1881,8 @@ die("Failed to update the Cart!");
         global $_ARRAYLANG;//, $_CONFIGURATION;
 
         // needed for cart
-        JS::activate('cx');
-        JS::activate('jquery');
+        \JS::activate('cx');
+        \JS::activate('jquery');
 
 // Update prices with options included
 // TODO Also consider Customer type (reseller, final customer)
