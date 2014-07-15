@@ -240,32 +240,6 @@ class LegacyComponentHandler {
                     },
                     
                 ),
-                'postContentLoad' => array(
-                    'Message' => function() {
-                        global $objTemplate;
-
-                        // TODO: This would better be handled by the Message class
-                        if (!empty($objTemplate->_variables['CONTENT_STATUS_MESSAGE'])) {
-                            $objTemplate->_variables['CONTENT_STATUS_MESSAGE'] =
-                                '<div id="alertbox">'.
-                                $objTemplate->_variables['CONTENT_STATUS_MESSAGE'].'</div>';
-                        }
-                        if (!empty($objTemplate->_variables['CONTENT_OK_MESSAGE'])) {
-                            if (!isset($objTemplate->_variables['CONTENT_STATUS_MESSAGE'])) {
-                                $objTemplate->_variables['CONTENT_STATUS_MESSAGE'] = '';
-                            }
-                            $objTemplate->_variables['CONTENT_STATUS_MESSAGE'] .=
-                                '<div id="okbox">'.
-                                $objTemplate->_variables['CONTENT_OK_MESSAGE'].'</div>';
-                        }
-                        if (!empty($objTemplate->_variables['CONTENT_WARNING_MESSAGE'])) {
-                            $objTemplate->_variables['CONTENT_STATUS_MESSAGE'] .=
-                                '<div class="warningbox">'.
-                                $objTemplate->_variables['CONTENT_WARNING_MESSAGE'].'</div>';
-                        }
-                    },
-                    
-                ),
             ),
         );
     }
