@@ -5,7 +5,7 @@
  * @copyright   Comvation AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
- * @subpackage  modules_shop
+ * @subpackage  module_shop
  */
 
 namespace Cx\Modules\Shop\Controller;
@@ -16,7 +16,7 @@ namespace Cx\Modules\Shop\Controller;
  * @copyright   Comvation AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
- * @subpackage  modules_shop
+ * @subpackage  module_shop
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
     public function getControllerClasses() {

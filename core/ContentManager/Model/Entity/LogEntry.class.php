@@ -6,7 +6,7 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  model_contentmanager
+ * @subpackage  core_contentmanager
  */
 
 namespace Cx\Core\ContentManager\Model\Entity;
@@ -22,7 +22,7 @@ use Gedmo\Loggable\Entity\AbstractLogEntry;
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  model_contentmanager
+ * @subpackage  core_contentmanager
  * @Table(
  *     name="log_entry",
  *  indexes={

@@ -6,7 +6,7 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  model_contentmanager
+ * @subpackage  core_contentmanager
  */
 
 namespace Cx\Core\ContentManager\Model\Repository;
@@ -24,7 +24,7 @@ use Gedmo\Loggable\Entity\Repository\LogEntryRepository;
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  model_contentmanager
+ * @subpackage  core_contentmanager
  */
 
 class LogEntryRepositoryException extends \Exception {};
@@ -35,7 +35,7 @@ class LogEntryRepositoryException extends \Exception {};
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  model_contentmanager
+ * @subpackage  core_contentmanager
  */
 
 class PageLogRepository extends LogEntryRepository

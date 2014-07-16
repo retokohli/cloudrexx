@@ -6,7 +6,7 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
  * @package     contrexx
- * @subpackage  core_view_model
+ * @subpackage  core_view
  */
 
 namespace Cx\Core\View\Model\Repository;
@@ -17,7 +17,7 @@ namespace Cx\Core\View\Model\Repository;
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
  * @package     contrexx
- * @subpackage  core_view_model
+ * @subpackage  core_view
  */
 class ThemeRepository
 {

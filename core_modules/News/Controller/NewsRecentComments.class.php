@@ -7,7 +7,7 @@
  * @author      ss4u <ss4u.comvation@gmail.com>
  * @version     3.1.1
  * @package     contrexx
- * @subpackage  module_news
+ * @subpackage  coremodule_news
  */
 
 namespace Cx\Core_Modules\News\Controller;
@@ -19,7 +19,7 @@ namespace Cx\Core_Modules\News\Controller;
  * @author      ss4u <ss4u.comvation@gmail.com>
  * @version     3.1.1
  * @package     contrexx
- * @subpackage  module_news
+ * @subpackage  coremodule_news
  */
 class NewsRecentComments extends \Cx\Core_Modules\News\Controller\NewsLibrary
 {

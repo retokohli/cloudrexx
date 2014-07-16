@@ -6,7 +6,7 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  model_contentmanager
+ * @subpackage  core_contentmanager
  */
 
 namespace Cx\Core\ContentManager\Model\Entity;
@@ -17,7 +17,7 @@ namespace Cx\Core\ContentManager\Model\Entity;
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  model_contentmanager
+ * @subpackage  core_contentmanager
  */
 class NodeException extends \Exception {}
 
@@ -27,7 +27,7 @@ class NodeException extends \Exception {}
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  model_contentmanager
+ * @subpackage  core_contentmanager
  */
 class Node extends \Cx\Model\Base\EntityBase implements \Serializable
 {

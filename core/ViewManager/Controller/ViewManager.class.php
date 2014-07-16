@@ -3,7 +3,7 @@
 /**
  * View Manager
  * 
- * @package    Contrexx
+ * @package    contrexx
  * @subpackage core_viewmanager
  * @author     Comvation Development Team <info@comvation.com>
  * @copyright  CONTREXX CMS - COMVATION AG
@@ -17,7 +17,7 @@ namespace Cx\Core\ViewManager\Controller;
  * View Manager class
  * View Manager and Themes management functions
  *
- * @package    Contrexx
+ * @package    contrexx
  * @subpackage core_viewmanager
  * @author     Comvation Development Team <info@comvation.com>
  * @copyright  CONTREXX CMS - COMVATION AG

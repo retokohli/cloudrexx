@@ -5,7 +5,7 @@
  * @copyright   Comvation AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
- * @subpackage  coremodule_access
+ * @subpackage  coremodule_news
  */
 
 namespace Cx\Core_Modules\News\Controller;
@@ -16,7 +16,7 @@ namespace Cx\Core_Modules\News\Controller;
  * @copyright   Comvation AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
- * @subpackage  coremodule_access
+ * @subpackage  coremodule_news
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
     public function getControllerClasses() {

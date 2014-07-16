@@ -6,7 +6,7 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  model_contentmanager
+ * @subpackage  core_contentmanager
  */
 
 namespace Cx\Core\ContentManager\Model\Entity;
@@ -22,7 +22,7 @@ define('BACKEND_PROTECTION',  1 << 1);
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  model_contentmanager
+ * @subpackage  core_contentmanager
  */
 class PageException extends \Exception {
     protected $userMessage = '';
@@ -43,7 +43,7 @@ class PageException extends \Exception {
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  model_contentmanager
+ * @subpackage  core_contentmanager
  */
 class Page extends \Cx\Model\Base\EntityBase implements \Serializable
 {

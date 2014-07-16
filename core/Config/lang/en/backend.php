@@ -4,7 +4,7 @@
  * @copyright   CONTREXX CMS - COMVATION AG 
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public 
- * @package     contrexx 
+ * @package     contrexx
  * @subpackage  core_config
  */ 
 global $_ARRAYLANG; 

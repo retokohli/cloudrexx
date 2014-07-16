@@ -5,7 +5,7 @@
  * @copyright   Comvation AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
- * @subpackage  modules_captcha
+ * @subpackage  coremodule_captcha
  */
 
 namespace Cx\Core_Modules\Captcha\Controller;
@@ -16,7 +16,7 @@ namespace Cx\Core_Modules\Captcha\Controller;
  * @copyright   Comvation AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
- * @subpackage  modules_captcha
+ * @subpackage  coremodule_captcha
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
     public function getControllerClasses() {

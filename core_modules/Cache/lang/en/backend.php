@@ -4,8 +4,8 @@
  * @copyright   CONTREXX CMS - COMVATION AG 
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public 
- * @package     contrexx 
- * @subpackage  core_cache
+ * @package     contrexx
+ * @subpackage  coremodule_cache
  */ 
 global $_ARRAYLANG; 
 $_ARRAYLANG['TXT_CACHE_ERR_NOTWRITABLE'] = 'The choosen caching-directory is not writeable. Please set chmod 777 on: ';

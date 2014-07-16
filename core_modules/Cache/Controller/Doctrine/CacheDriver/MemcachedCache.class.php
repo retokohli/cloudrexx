@@ -5,7 +5,7 @@
  * @copyright   Comvation AG
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
  * @package     contrexx
- * @subpackage  coremodules_cache
+ * @subpackage  coremodule_cache
  */
 
 namespace Cx\Core_Modules\Cache\Controller\Doctrine\CacheDriver;
@@ -18,7 +18,7 @@ use \Memcached;
  * @copyright   Comvation AG
  * @author      Ueli Kramer <ueli.kramer@comvation.com>
  * @package     contrexx
- * @subpackage  coremodules_cache
+ * @subpackage  coremodule_cache
  */
 class MemcachedCache extends \Doctrine\Common\Cache\MemcacheCache
 {

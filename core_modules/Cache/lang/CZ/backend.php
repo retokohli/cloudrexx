@@ -4,8 +4,8 @@
  * @copyright   CONTREXX CMS - COMVATION AG 
  * @author      Comvation Development Team <info@comvation.com>
  * @access      public 
- * @package     contrexx 
- * @subpackage  core_cache
+ * @package     contrexx
+ * @subpackage  coremodule_cache
  */ 
 global $_ARRAYLANG; 
 $_ARRAYLANG['TXT_CACHE_ERR_NOTWRITABLE'] = 'Das gewählte Caching-Verzeichnis ist nicht beschreibbar. Setzen Sie die Berechtigung 777 auf folgendes Verzeichnis: ';

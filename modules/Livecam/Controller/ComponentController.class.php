@@ -5,7 +5,7 @@
  * @copyright   Comvation AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
- * @subpackage  modules_livecam
+ * @subpackage  module_livecam
  */
 
 namespace Cx\Modules\Livecam\Controller;
@@ -16,7 +16,7 @@ namespace Cx\Modules\Livecam\Controller;
  * @copyright   Comvation AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
- * @subpackage  modules_livecam
+ * @subpackage  module_livecam
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
     public function getControllerClasses() {
