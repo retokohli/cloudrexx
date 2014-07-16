@@ -16,7 +16,7 @@ class FormGenerator {
         if (empty($entityClass) && is_object($entity)) {
             $entityClass = get_class($entity);
         }
-        \JS::registerCSS(ASCMS_CORE_FOLDER.'/Html/View/Style/Backend.css');
+        \JS::registerCSS(\Env::get('cx')->getCoreFolderName() . '/Html/View/Style/Backend.css');
         $this->form = new \Cx\Core\Html\Model\Entity\FormElement($actionUrl);
         $this->form->setAttribute('id', 'form-X');
         $this->form->setAttribute('class', 'cx-ui');

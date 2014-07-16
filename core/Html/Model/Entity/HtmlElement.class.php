@@ -97,7 +97,7 @@ class HtmlElement {
         if ($this->output) {
             return $this->output;
         }
-        $template = new \Cx\Core\Html\Sigma(ASCMS_CORE_PATH.'/Html/View/Template/Generic');
+        $template = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseCorePath() . '/Html/View/Template/Generic');
         $template->loadTemplateFile('HtmlElement.html');
         $parsedChildren = null;
         foreach ($this->getChildren() as $child) {
