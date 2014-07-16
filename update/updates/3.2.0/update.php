@@ -1940,9 +1940,9 @@ function insertSessionArray($sessionId, $sessionArr, $parentId = 0)
                                 `parent_id` = "'. intval($parentId) .'",
                                 `sessionid` = "'. $sessionId .'",
                                 `key` = "'. contrexx_input2db($key) .'",
-                                `value` = "'. (is_array($value) ? contrexx_input2db(serialize(null)) : contrexx_input2db(serialize($value)))  .'"
+                                `value` = "'. (is_array($value) ? '' : contrexx_input2db(serialize($value)))  .'"
                               ON DUPLICATE KEY UPDATE 
-                                `value` = "'. (is_array($value) ? contrexx_input2db(serialize(null)) : contrexx_input2db(serialize($value))) .'"');
+                                `value` = "'. (is_array($value) ? '' : contrexx_input2db(serialize($value))) .'"');
         $insertId = $objDatabase->Insert_ID();
         
         if (is_array($value)) {
