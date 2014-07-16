@@ -5,7 +5,7 @@
  * @copyright   Comvation AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
- * @subpackage  modules_crm
+ * @subpackage  module_crm
  */
 
 namespace Cx\Modules\Crm\Controller;
@@ -16,7 +16,7 @@ namespace Cx\Modules\Crm\Controller;
  * @copyright   Comvation AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
- * @subpackage  modules_crm
+ * @subpackage  module_crm
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
     public function getControllerClasses() {

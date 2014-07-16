@@ -5,7 +5,7 @@
  * @copyright   Comvation AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
- * @subpackage  modules_ecard
+ * @subpackage  module_ecard
  */
 
 namespace Cx\Modules\Ecard\Controller;
@@ -16,7 +16,7 @@ namespace Cx\Modules\Ecard\Controller;
  * @copyright   Comvation AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
- * @subpackage  modules_ecard
+ * @subpackage  module_ecard
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
     public function getControllerClasses() {

@@ -6,7 +6,7 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  model_contentmanager
+ * @subpackage  core_contentmanager
  */
 
 namespace Cx\Core\ContentManager\Model\Repository;
@@ -24,7 +24,7 @@ use Doctrine\ORM\EntityManager,
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  model_contentmanager
+ * @subpackage  core_contentmanager
  */
 class NodeRepository extends NestedTreeRepository {
     protected $em = null;

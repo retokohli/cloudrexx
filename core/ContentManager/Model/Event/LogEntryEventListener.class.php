@@ -6,7 +6,7 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  model_events
+ * @subpackage  core_contentmanager
  */
 
 namespace Cx\Core\ContentManager\Model\Event;
@@ -17,7 +17,7 @@ namespace Cx\Core\ContentManager\Model\Event;
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  model_events
+ * @subpackage  core_contentmanager
  */
 class LogEntryEventListenerException extends \Exception {}
 
@@ -27,7 +27,7 @@ class LogEntryEventListenerException extends \Exception {}
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  model_events
+ * @subpackage  core_contentmanager
  */
 class LogEntryEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     public function onFlush($eventArgs) {

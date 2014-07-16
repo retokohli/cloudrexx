@@ -5,15 +5,26 @@
  * Podcast Library class
  *
  * @copyright   CONTREXX CMS - COMVATION AG
- * @author        Comvation Development Team <info@comvation.com>
- * @access        public
- * @version        1.0.0
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @version     1.0.0
  * @package     contrexx
  * @subpackage  module_podcast
  * @todo        Edit PHP DocBlocks!
  */
+
 namespace Cx\Modules\Podcast\Controller;
 
+/**
+ * Podcast Library class
+ *
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Comvation Development Team <info@comvation.com>
+ * @access      public
+ * @version     1.0.0
+ * @package     contrexx
+ * @subpackage  module_podcast
+ */
 class PodcastLib
 {
     /**

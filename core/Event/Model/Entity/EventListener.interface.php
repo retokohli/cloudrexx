@@ -6,7 +6,7 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  model_events
+ * @subpackage  core_event
  */
 
 namespace Cx\Core\Event\Model\Entity;
@@ -17,7 +17,7 @@ namespace Cx\Core\Event\Model\Entity;
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  model_events
+ * @subpackage  core_event
  */
 interface EventListener {
     

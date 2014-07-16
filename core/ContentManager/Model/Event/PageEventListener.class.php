@@ -8,7 +8,7 @@
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  model_events
+ * @subpackage  core_contentmanager
  */
 
 namespace Cx\Core\ContentManager\Model\Event;
@@ -22,7 +22,7 @@ use Doctrine\Common\Util\Debug as DoctrineDebug;
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  model_events
+ * @subpackage  core_contentmanager
  */
 class PageEventListenerException extends \Exception {}
 
@@ -32,7 +32,7 @@ class PageEventListenerException extends \Exception {}
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      COMVATION Development Team <info@comvation.com>
  * @package     contrexx
- * @subpackage  model_events
+ * @subpackage  core_contentmanager
  */
 class PageEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     
