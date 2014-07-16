@@ -1392,7 +1392,7 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
             // create thumbnail if required
             if (empty($arrEntryValues['thumbnail'])) {
                 if (!isset($objImage)) {
-                    $objImage = new ImageManager();
+                    $objImage = new \ImageManager();
                 }
                 $strPath = dirname(ASCMS_DOCUMENT_ROOT.$arrEntryValues['image']).'/';
                 $strWebPath = substr($strPath, strlen(ASCMS_PATH_OFFSET));
@@ -1758,7 +1758,7 @@ class DataAdmin extends \Cx\Modules\Data\Controller\DataLibrary {
             $objDatabase->Execute("   DELETE FROM ".DBPREFIX."module_data_placeholders
                                       WHERE ref_id = ".$intEntryId);
 
-            $objFile = new File();
+            $objFile = new \File();
             foreach (glob(ASCMS_DATA_IMAGES_PATH.'/'.$intEntryId.'_*') as $image) {
                 $objFile->delFile(ASCMS_DATA_IMAGES_PATH.'/', ASCMS_DATA_IMAGES_WEB_PATH.'/', basename($image));
             }
