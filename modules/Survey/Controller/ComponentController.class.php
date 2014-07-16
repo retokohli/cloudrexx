@@ -8,7 +8,7 @@
  * @subpackage  coremodule_survey
  */
 
-namespace Cx\modules\Survey\Controller;
+namespace Cx\Modules\Survey\Controller;
 
 /**
  * Main controller for Survey
