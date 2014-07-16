@@ -8,7 +8,7 @@
  * @version     3.0.0
  */
 
-namespace Cx\modules\Shop\Controller;
+namespace Cx\Modules\Shop\Controller;
 
 /**
  * Useful methods to handle everything related to shipments

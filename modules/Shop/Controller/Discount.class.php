@@ -13,7 +13,7 @@
  * @subpackage  module_shop
  */
 
-namespace Cx\modules\Shop\Controller;
+namespace Cx\Modules\Shop\Controller;
 
 /**
  * Discount

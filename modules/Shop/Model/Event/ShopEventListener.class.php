@@ -32,7 +32,7 @@ class ShopEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         $objUser = \FWUser::getFWUserObject()->objUser;
 
         if ($objUser->login()) {
-            $objCustomer = \Cx\modules\Shop\Controller\Customer::getById($objUser->getId());
+            $objCustomer = \Cx\Modules\Shop\Controller\Customer::getById($objUser->getId());
             \Cx\Core\Setting\Controller\Setting::init('Shop', 'config');
             if ($objCustomer && $objCustomer->is_reseller()) {
                 $flagIsReseller = true;
@@ -40,7 +40,7 @@ class ShopEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         }
 
         $querySelect = $queryCount = $queryOrder = null;
-        list($querySelect, $queryCount, $queryTail, $queryOrder) = \Cx\modules\Shop\Controller\Products::getQueryParts(null, null, null, $term_db, false, false, '', $flagIsReseller);
+        list($querySelect, $queryCount, $queryTail, $queryOrder) = \Cx\Modules\Shop\Controller\Products::getQueryParts(null, null, null, $term_db, false, false, '', $flagIsReseller);
         $query = $querySelect . $queryTail . $queryOrder;//Search query
         $parseSearchData = function(&$searchData) {
                                 $searchData['title']   = $searchData['name'];

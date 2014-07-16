@@ -11,7 +11,7 @@
  * @author      Reto Kohli <reto.kohli@comvation.com>
  */
 
-namespace Cx\modules\Shop\Controller;
+namespace Cx\Modules\Shop\Controller;
 
 /**
  * Product Attributes

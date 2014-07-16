@@ -8,7 +8,7 @@
  * @subpackage  modules_shop
  */
 
-namespace Cx\modules\Shop\Controller;
+namespace Cx\Modules\Shop\Controller;
 
 /**
  * Main controller for Shop

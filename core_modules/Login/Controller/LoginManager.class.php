@@ -70,9 +70,10 @@ class LoginManager {
      */
     private function showPasswordLost()
     {
-        global $_ARRAYLANG, $objFWUser;
+        global $_ARRAYLANG;
 
         \JS::activate('jquery');
+        $objFWUser = \FWUser::getFWUserObject();
         $this->objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', '/core_modules/Login/View/Template/Backend/login_lost_password.html');
         $this->objTemplate->setVariable(array(
             'TITLE'                     => $_ARRAYLANG['TXT_LOGIN_RESET_PASSWORD'],
@@ -110,9 +111,10 @@ class LoginManager {
      */
     private function showPasswordReset()
     {
-        global $_ARRAYLANG, $objFWUser;
+        global $_ARRAYLANG;
 
         \JS::activate('jquery');
+        $objFWUser = \FWUser::getFWUserObject();
         $this->objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', '/core_modules/Login/View/Template/Backend/login_reset_password.html');
         $this->objTemplate->setVariable(array(
             'TITLE'                             => $_ARRAYLANG['TXT_LOGIN_SET_NEW_PASSWORD'],
@@ -148,7 +150,6 @@ class LoginManager {
                     'active'           => 1,
                 );
 
-                $objFWUser = \FWUser::getFWUserObject();
                 $objFWUser->checkAuth();
             } else {
                 $this->objTemplate->setVariable('LOGIN_ERROR_MESSAGE', $objFWUser->getErrorMsg());
@@ -196,7 +197,7 @@ class LoginManager {
      */
     private function showLogin()
     {
-        global $_CORELANG, $_ARRAYLANG, $objFWUser;
+        global $_CORELANG, $_ARRAYLANG;
         
         if (isset($_GET['cmd']) && $_GET['cmd'] == 'JsonData') {
             $jd = new \Cx\Core\Json\JsonData();
@@ -225,7 +226,7 @@ class LoginManager {
         ));
 
         if (\Cx\Core_Modules\Captcha\Controller\Captcha::getInstance()->check()) {
-            $this->objTemplate->setVariable('LOGIN_ERROR_MESSAGE', $objFWUser->getErrorMsg());
+            $this->objTemplate->setVariable('LOGIN_ERROR_MESSAGE', \FWUser::getFWUserObject()->getErrorMsg());
             $this->objTemplate->parse('error_message');
         } else {
             $this->objTemplate->hideBlock('error_message');

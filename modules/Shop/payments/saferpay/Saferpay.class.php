@@ -319,7 +319,7 @@ class Saferpay
     {
         global $_ARRAYLANG;
 /*        'AMOUNT' => str_replace('.', '', $_SESSION['shop']['grand_total_price']),
-        'CURRENCY' => \Cx\modules\Shop\Controller\Currency::getActiveCurrencyCode(),
+        'CURRENCY' => \Cx\Modules\Shop\Controller\Currency::getActiveCurrencyCode(),
         'ORDERID' => $_SESSION['shop']['order_id'],
         'ACCOUNTID' => \Cx\Core\Setting\Controller\Setting::getValue('saferpay_id'),
         'SUCCESSLINK' => urlencode('http://'.$serverBase.'index.php?section=Shop'.MODULE_INDEX.'&cmd=success&result=1&handler=saferpay'),

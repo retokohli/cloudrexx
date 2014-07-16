@@ -15,7 +15,7 @@
  * @todo        To be unified with the core Country class
  */
 
-namespace Cx\modules\Shop\Controller;
+namespace Cx\Modules\Shop\Controller;
 
 /**
  * Country helper methods

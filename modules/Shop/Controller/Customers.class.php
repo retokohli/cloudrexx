@@ -10,7 +10,7 @@
  * @todo        Test!
  */
 
-namespace Cx\modules\Shop\Controller;
+namespace Cx\Modules\Shop\Controller;
 
 /**
  * Customer as used in the Shop.

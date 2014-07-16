@@ -85,7 +85,7 @@ class Navigation
         $this->_objTpl->setTemplate($templateContent);
 
         if ($boolShop) {
-            $this->_objTpl->setVariable('SHOPNAVBAR_FILE', \Cx\modules\Shop\Controller\Shop::getNavbar());
+            $this->_objTpl->setVariable('SHOPNAVBAR_FILE', \Cx\Modules\Shop\Controller\Shop::getNavbar());
         }
 
         $rootNode = null;

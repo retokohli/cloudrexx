@@ -8,7 +8,7 @@
  * @author      Reto Kohli <reto.kohli@comvation.com> (PHP5 and fixes)
  */
 
-namespace Cx\modules\Shop\Controller;
+namespace Cx\Modules\Shop\Controller;
 
 /**
  * CSV class for importing and exporting CSV files

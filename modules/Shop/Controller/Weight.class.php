@@ -8,7 +8,7 @@
  * @subpackage  module_shop
  */
 
-namespace Cx\modules\Shop\Controller;
+namespace Cx\Modules\Shop\Controller;
 
 /**
  * The Weight class provides static conversion functions for weights.

@@ -9,7 +9,7 @@
  * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
  */
 
-namespace Cx\modules\Shop\Controller;
+namespace Cx\Modules\Shop\Controller;
 
 /**
  * Debug mode

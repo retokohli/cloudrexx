@@ -10,7 +10,7 @@
  * @version     3.0.0
  */
 
-namespace Cx\modules\Shop\Controller;
+namespace Cx\Modules\Shop\Controller;
 
 /**
  * Shop settings
