@@ -194,7 +194,35 @@ namespace Cx\Core\Core\Controller {
          * @todo @MRi: Shall we convert this into a constant?
          */
         protected $customizingFolderName = '/customizing';
-
+        
+        /**
+         * The folder name used for the core_modules storage location (/core_modules).
+         * Formerly known as ASCMS_CORE_MODULE_FOLDER
+         * @var string
+         */
+        protected $coreModuleFolderName = '/core_modules';
+        
+        /**
+         * The folder name used for the lib storage location (/lib).
+         * Formerly known as ASCMS_LIBRARY_FOLDER
+         * @var string
+         */
+        protected $libraryFolderName = '/lib';
+        
+        /**
+         * The folder name used for the model storage location (/model).
+         * Formerly known as ASCMS_MODEL_FOLDER
+         * @var string
+         */
+        protected $modelFolderName = '/model';
+        
+        /**
+         * The folder name used for the modules storage location (/modules).
+         * Formerly known as ASCMS_MODULE_FOLDER
+         * @var string
+         */
+        protected $moduleFolderName = '/modules';
+        
         /**
          * The webserver's DocumentRoot path.
          * Formerly known as ASCMS_PATH.
@@ -225,6 +253,78 @@ namespace Cx\Core\Core\Controller {
          */
         protected $codeBaseCorePath = null;
 
+        /**
+         * The absolute path used to access the backend template
+         * of the Code Base of the Contrexx installation
+         * Formerly known as ASCMS_ADMIN_TEMPLATE_PATH
+         * @var string
+         */
+        protected $codeBaseAdminTemplatePath = null;
+        
+        /**
+         * The offset path used to access the backend template
+         * of the Code Base of the Contrexx installation.
+         * Formerly known as ASCMS_ADMIN_TEMPLATE_WEB_PATH.
+         * @var string
+         */
+        protected $codeBaseAdminTemplateWebPath = null;
+        
+        /**
+         * The absolute path of the core modules(core_modules) folder
+         * of the Code Base of the Contrexx installation
+         * Formerly known as ASCMS_CORE_MODULE_PATH
+         * @var string
+         */
+        protected $codeBaseCoreModulePath  = null;
+        
+        /**
+         * The offset path of the core modules(core_modules) folder
+         * of the Code Base of the Contrexx installation
+         * Formerly known as ASCMS_CORE_MODULE_WEB_PATH
+         * @var string
+         */
+        protected $codeBaseCoreModuleWebPath  = null;
+        
+        /**
+         * The absolute path of the lib folder
+         * of the Code Base of the Contrexx installation
+         * Formerly known as ASCMS_LIBRARY_PATH
+         * @var string
+         */
+        protected $codeBaseLibraryPath  = null;
+        
+        /**
+         * The absolute path of the FRAMEWORK folder
+         * of the Code Base of the Contrexx installation
+         * Formerly known as ASCMS_FRAMEWORK_PATH
+         * @var string
+         */
+        protected $codeBaseFrameworkPath  = null;
+        
+        /**
+         * The absolute path of the model folder
+         * of the Code Base of the Contrexx installation
+         * Formerly known as ASCMS_MODEL_PATH
+         * @var string
+         */
+        protected $codeBaseModelPath  = null;
+        
+        /**
+         * The absolute path of the module folder
+         * of the Code Base of the Contrexx installation
+         * Formerly known as ASCMS_MODULE_PATH
+         * @var string
+         */
+        protected $codeBaseModulePath  = null;
+        
+        /**
+         * The offset path of the module folder
+         * of the Code Base of the Contrexx installation
+         * Formerly known as ASCMS_MODULE_WEB_PATH
+         * @var string
+         */
+        protected $codeBaseModuleWebPath  = null;
+        
         /**
          * The absolute path to the website's data repository.
          * Formerly known as ASCMS_INSTANCE_PATH.
@@ -269,6 +369,14 @@ namespace Cx\Core\Core\Controller {
          * @var string
          */
         protected $websiteTempPath = null;
+        
+        /**
+         * The absolute path to the themes storage location (/themes)
+         * of the associated Data repository of the website.
+         * Formerly known as ASCMS_THEMES_PATH.
+         * @var string
+         */
+        protected $websiteThemesPath = null;
         
         /**
          * This creates instances of this class
@@ -408,7 +516,7 @@ namespace Cx\Core\Core\Controller {
              */
             } catch (\Exception $e) {
                 \header($_SERVER['SERVER_PROTOCOL'] . ' 500 Server Error');
-                echo file_get_contents(ASCMS_DOCUMENT_ROOT.'/offline.html');
+                echo file_get_contents($this->codeBaseDocumentRootPath . '/offline.html');
                 \DBG::msg('Contrexx initialization failed! ' . get_class($e) . ': "' . $e->getMessage() . '"');
                 die();
             }
@@ -784,7 +892,7 @@ namespace Cx\Core\Core\Controller {
             /**
              * Environment repository
              */
-            require_once($this->cl->getFilePath(ASCMS_CORE_PATH.'/Env.class.php'));
+            require_once($this->cl->getFilePath($this->codeBaseCorePath . '/Env.class.php'));
             \Env::set('cx', $this);
             \Env::set('ClassLoader', $this->cl);            
             \Env::set('config', $_CONFIG);
@@ -808,7 +916,7 @@ namespace Cx\Core\Core\Controller {
              * Include all the required files.
              * @todo Remove API.php, it should be unnecessary
              */
-            $this->cl->loadFile(ASCMS_CORE_PATH.'/API.php');
+            $this->cl->loadFile($this->codeBaseCorePath . '/API.php');
             // Temporary fix until all GET operation requests will be replaced by POSTs
             if ($this->mode != self::MODE_BACKEND) {
                 \Cx\Core\Csrf\Controller\ComponentController::setFrontendMode();
@@ -864,7 +972,7 @@ namespace Cx\Core\Core\Controller {
             if (!$this->request) {
                 // this makes \Env::get('Resolver')->getUrl() return a sensful result
                 $request = !empty($_GET['__cap']) ? $_GET['__cap'] : '';
-                $offset = ASCMS_INSTANCE_OFFSET;
+                $offset = $this->websiteOffsetPath;
 
                 switch ($this->mode) {
                     case self::MODE_FRONTEND:
@@ -930,7 +1038,7 @@ namespace Cx\Core\Core\Controller {
          * In all other modes, no file is loaded here
          */
         protected function loadTemplate() {
-            $this->template = new \Cx\Core\Html\Sigma(($this->mode == self::MODE_FRONTEND) ? ASCMS_THEMES_PATH : ASCMS_ADMIN_TEMPLATE_PATH);
+            $this->template = new \Cx\Core\Html\Sigma(($this->mode == self::MODE_FRONTEND) ? $this->websiteThemesPath : $this->codeBaseAdminTemplatePath);
             $this->template->setErrorHandling(PEAR_ERROR_DIE);
             if ($this->mode == self::MODE_BACKEND) {
                 $this->template->loadTemplateFile('index.html');
@@ -987,7 +1095,7 @@ namespace Cx\Core\Core\Controller {
                     // because it depends on Env::get('virtualLanguageDirectory').
                     // Find an other solution; probably best is to replace CONTREXX_SCRIPT_PATH by a prettier method
                     define('CONTREXX_SCRIPT_PATH',
-                        ASCMS_PATH_OFFSET.
+                        $this->codeBaseOffsetPath.
                         \Env::get('virtualLanguageDirectory').
                         '/'.
                         CONTREXX_DIRECTORY_INDEX);
@@ -1166,8 +1274,8 @@ namespace Cx\Core\Core\Controller {
                     $themeFolderName  = \Env::get('init')->getCurrentThemesPath();
                 }
                 
-                $themePath        = ASCMS_THEMES_PATH.'/'.$themeFolderName.'/'.$moduleFolderName.'/'.$plainSection.'/Template/Frontend/'.$customAppTemplate;
-                $modulePath       = \Env::get('ClassLoader')->getFilePath(ASCMS_DOCUMENT_ROOT.'/'.$moduleFolderName.'/'.$plainSection.'/View/Template/Frontend/'.$cmd.'.html');
+                $themePath        = $this->websiteThemesPath .'/'.$themeFolderName.'/'.$moduleFolderName.'/'.$plainSection.'/Template/Frontend/'.$customAppTemplate;
+                $modulePath       = \Env::get('ClassLoader')->getFilePath($this->codeBaseDocumentRootPath . '/'.$moduleFolderName.'/'.$plainSection.'/View/Template/Frontend/'.$cmd.'.html');
                 $contentTemplate  = file_exists($themePath) ? file_get_contents($themePath) : (file_exists($modulePath) ? file_get_contents($modulePath) : '');
                 
                 $this->resolvedPage->setContent(str_replace('{APPLICATION_DATA}', $contentTemplate, $this->resolvedPage->getContent()));
@@ -1251,8 +1359,8 @@ namespace Cx\Core\Core\Controller {
                 'NAVTITLE'                       => contrexx_raw2xhtml($this->resolvedPage->getTitle()),
                 'GLOBAL_TITLE'                   => $_CONFIG['coreGlobalPageTitle'],
                 'DOMAIN_URL'                     => $_CONFIG['domainUrl'],
-                'PATH_OFFSET'                    => ASCMS_PATH_OFFSET,
-                'BASE_URL'                       => ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].ASCMS_PATH_OFFSET,
+                'PATH_OFFSET'                    => $this->codeBaseOffsetPath,
+                'BASE_URL'                       => ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'] . $this->codeBaseOffsetPath,
                 'METAKEYS'                       => $metarobots ? contrexx_raw2xhtml($this->resolvedPage->getMetakeys()) : '',
                 'METADESC'                       => $metarobots ? contrexx_raw2xhtml($this->resolvedPage->getMetadesc()) : '',
                 'METAROBOTS'                     => $metarobots ? 'all' : 'none',
@@ -1411,7 +1519,7 @@ namespace Cx\Core\Core\Controller {
                     );
 
                 if (!$this->resolvedPage->getUseSkinForAllChannels() && isset($_GET['pdfview']) && intval($_GET['pdfview']) == 1) {
-                    $this->cl->loadFile(ASCMS_CORE_PATH.'/pdf.class.php');
+                    $this->cl->loadFile($this->codeBaseCorePath . '/pdf.class.php');
                     $pageTitle = $this->resolvedPage->getTitle();
                     $objPDF          = new \PDF();
                     $objPDF->title   = $pageTitle.(empty($pageTitle) ? null : '.pdf');
@@ -1459,7 +1567,7 @@ namespace Cx\Core\Core\Controller {
 
                 // replace links from before contrexx 3
                 $ls = new \LinkSanitizer(
-                    ASCMS_PATH_OFFSET.\Env::get('virtualLanguageDirectory').'/',
+                    $this->codeBaseOffsetPath . \Env::get('virtualLanguageDirectory').'/',
                     $endcode);
                 $endcode = $ls->replace();
 
@@ -1530,17 +1638,17 @@ namespace Cx\Core\Core\Controller {
 
 
                 // Style parsing
-                if (file_exists(ASCMS_ADMIN_TEMPLATE_PATH.'/css/'.$cmd.'.css')) {
+                if (file_exists($this->codeBaseAdminTemplatePath . '/css/'.$cmd.'.css')) {
                     // check if there's a css file in the core section
-                    $this->template->setVariable('ADD_STYLE_URL', ASCMS_ADMIN_TEMPLATE_WEB_PATH.'/css/'.$cmd.'.css');
+                    $this->template->setVariable('ADD_STYLE_URL', $this->codeBaseAdminTemplateWebPath .'/css/'.$cmd.'.css');
                     $this->template->parse('additional_style');
-                } elseif (file_exists(ASCMS_MODULE_PATH.'/'.$cmd.'/template/backend.css')) {
+                } elseif (file_exists($this->codeBaseModulePath . '/'.$cmd.'/template/backend.css')) {
                     // of maybe in the current module directory
-                    $this->template->setVariable('ADD_STYLE_URL', ASCMS_MODULE_WEB_PATH.'/'.$cmd.'/template/backend.css');
+                    $this->template->setVariable('ADD_STYLE_URL', $this->codeBaseModuleWebPath . '/'.$cmd.'/template/backend.css');
                     $this->template->parse('additional_style');
-                } elseif (file_exists(ASCMS_CORE_MODULE_PATH.'/'.$cmd.'/template/backend.css')) {
+                } elseif (file_exists($this->codeBaseCoreModulePath . '/'.$cmd.'/template/backend.css')) {
                     // or in the core module directory
-                    $this->template->setVariable('ADD_STYLE_URL', ASCMS_CORE_MODULE_WEB_PATH.'/'.$cmd.'/template/backend.css');
+                    $this->template->setVariable('ADD_STYLE_URL', $this->codeBaseCoreModuleWebPath . '/'.$cmd.'/template/backend.css');
                     $this->template->parse('additional_style');
                 } else {
                     $this->template->hideBlock('additional_style');
@@ -1655,6 +1763,44 @@ namespace Cx\Core\Core\Controller {
         public function getClassLoader() {
             return $this->cl;
         }
+        
+        /**
+         * Return the folder name used for the core_modules storage location (/core_modules).
+         * Formerly known as ASCMS_CORE_MODULE_FOLDER.
+         * @return string
+         */
+        public function getCoreModuleFolderName() {
+            return $this->coreModuleFolderName;
+        }
+        
+        /**
+         * Return the folder name used for the lib storage location (/lib).
+         * Formerly known as ASCMS_LIBRARY_FOLDER.
+         * @return string
+         */
+        public function getLibraryFolderName() {
+            return $this->libraryFolderName;
+        }
+        
+        
+        /**
+         * Return the folder name used for the model storage location (/model).
+         * Formerly known as ASCMS_MODEL_FOLDER.
+         * @return string
+         */
+        public function getModelFolderName() {
+            return $this->modelFolderName;
+        }
+        
+        
+        /**
+         * Return the folder name used for the modules storage location (/modules).
+         * Formerly known as ASCMS_MODULE_FOLDER.
+         * @return string
+         */
+        public function getModuleFolderName() {
+            return $this->moduleFolderName;
+        }
 
         /**
          * Set the path to the location of the website's Code Base in the file system.
@@ -1667,6 +1813,15 @@ namespace Cx\Core\Core\Controller {
             $this->codeBaseOffsetPath           = $codeBaseOffsetPath;
             $this->codeBaseDocumentRootPath     = $this->codeBasePath . $this->codeBaseOffsetPath;
             $this->codeBaseCorePath             = $this->codeBaseDocumentRootPath . $this->coreFolderName;
+            $this->codeBaseAdminTemplatePath    = $this->codeBaseDocumentRootPath . $this->backendFolderName . '/template/ascms';
+            $this->codeBaseAdminTemplateWebPath = $this->codeBaseOffsetPath . $this->backendFolderName . '/template/ascms';
+            $this->codeBaseCoreModulePath       = $this->codeBasePath . $this->coreModuleFolderName;
+            $this->codeBaseCoreModuleWebPath    = $this->codeBaseOffsetPath . $this->coreModuleFolderName;
+            $this->codeBaseLibraryPath          = $this->codeBasePath . $this->libraryFolderName;
+            $this->codeBaseFrameworkPath        = $this->codeBaseLibraryPath . '/FRAMEWORK';
+            $this->codeBaseModelPath            = $this->codeBasePath . $this->modelFolderName;
+            $this->codeBaseModulePath           = $this->codeBasePath . $this->moduleFolderName;
+            $this->codeBaseModuleWebPath        = $this->codeBaseOffsetPath . $this->moduleFolderName;
         }
 
         /**
@@ -1708,6 +1863,103 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
+         * Return the folder name of the storage location of the core components(/core).
+         * Formerly known as ASCMS_CORE_FOLDER.
+         * @return string
+         */
+        public function getCoreFolderName() {
+            return $this->coreFolderName;
+        }
+        
+        /**
+         * Return the absolute path used to access the backend template
+         * of the Code Base of the Contrexx installation
+         * Formerly known as ASCMS_ADMIN_TEMPLATE_PATH
+         * @return string
+         */
+        public function getCodeBaseAdminTemplatePath() {
+            return $this->codeBaseAdminTemplatePath;
+        }
+        
+        /**
+         * Return the offset path used to access the backend template
+         * of the Code Base of the Contrexx installation
+         * Formerly known as ASCMS_ADMIN_TEMPLATE_WEB_PATH
+         * @return string
+         */
+        public function getCodeBaseAdminTemplateWebPath() {
+            return $this->codeBaseAdminTemplateWebPath;
+        }
+
+        /**
+         * Return the absolute path of the core modules(core_modules) folder
+         * of the Code Base of the Contrexx installation
+         * Formerly known as ASCMS_CORE_MODULE_PATH
+         * @return string
+         */
+        public function getCodeBaseCoreModulePath() {
+            return $this->codeBaseCoreModulePath;
+        }
+        
+        /**
+         * Return the offset path of the core modules(core_modules) folder
+         * of the Code Base of the Contrexx installation
+         * Formerly known as ASCMS_CORE_MODULE_WEB_PATH
+         * @return string
+         */
+        public function getCodeBaseCoreModuleWebPath() {
+            return $this->codeBaseCoreModuleWebPath;
+        }
+
+        /**
+         * The absolute path of the lib folder
+         * of the Code Base of the Contrexx installation
+         * Formerly known as ASCMS_LIBRARY_PATH
+         * @return string
+         */
+        public function getCodeBaseLibraryPath() {
+            return $this->codeBaseLibraryPath;
+        }
+        /**
+         * Return the absolute path of the FRAMEWORK folder
+         * of the Code Base of the Contrexx installation
+         * Formerly known as ASCMS_FRAMEWORK_PATH
+         * @return string
+         */
+        public function getCodeBaseFrameworkPath() {
+            return $this->codeBaseFrameworkPath;
+        }
+        /**
+         * Return the absolute path of the lib folder
+         * of the Code Base of the Contrexx installation
+         * Formerly known as ASCMS_MODEL_PATH
+         * @return string
+         */
+        public function getCodeBaseModelPath() {
+            return $this->codeBaseModelPath;
+        }
+        
+        /**
+         * Return the absolute path of the module folder
+         * of the Code Base of the Contrexx installation
+         * Formerly known as ASCMS_MODULE_PATH
+         * @return string
+         */
+        public function getCodeBaseModulePath() {
+            return $this->codeBaseModulePath;
+        }
+        
+        /**
+         * Return the offset path of the module folder
+         * of the Code Base of the Contrexx installation
+         * Formerly known as ASCMS_MODULE_WEB_PATH
+         * @return string
+         */
+        public function getCodeBaseModuleWebPath() {
+            return $this->codeBaseModuleWebPath;
+        }
+
+        /**
          * Set the path to the location of the website's data repository in the file system.
          * @param string The absolute path to the website's data repository.
          * @param string The offset path from the website's data repository to the
@@ -1720,6 +1972,7 @@ namespace Cx\Core\Core\Controller {
             $this->websiteCustomizingPath       = $this->websiteDocumentRootPath . $this->customizingFolderName;
             $this->websiteCustomizingWebPath    = $this->websiteOffsetPath . $this->customizingFolderName;
             $this->websiteTempPath              = $this->websiteDocumentRootPath . $this->tempFolderName;
+            $this->websiteThemesPath            = $this->websiteDocumentRootPath . '/themes';
         }
 
         /**
@@ -1786,6 +2039,16 @@ namespace Cx\Core\Core\Controller {
          */
         public function getBackendFolderName() {
             return $this->backendFolderName;
+        }
+        
+        /**
+         * Return the absolute path to the themes storage location (/themes)
+         * of the associated Data repository of the website.
+         * Formerly known as ASCMS_THEMES_PATH.
+         * @return string
+         */
+        public function getWebsiteThemesPath() {
+            return $this->websiteThemesPath;
         }
     }
 }

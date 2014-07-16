@@ -61,24 +61,24 @@ class LegacyClassLoader {
             $name = end($parts);
             // start try and error...
             // files in /core
-            if ($this->testLoad(ASCMS_CORE_PATH.'/'.$name.'.class.php', $origName)) { return; }
+            if ($this->testLoad($this->cx->getCodeBaseCorePath() . '/'.$name.'.class.php', $origName)) { return; }
             // files in /lib
-            if ($this->testLoad(ASCMS_LIBRARY_PATH.'/'.$name.'.php', $origName)) { return; }
+            if ($this->testLoad($this->cx->getCodeBaseLibraryPath() . '/'.$name.'.php', $origName)) { return; }
             // files in /lib/FRAMEWORK/User
-            if ($this->testLoad(ASCMS_FRAMEWORK_PATH.'/User/'.$name.'.class.php', $origName)) { return; }
+            if ($this->testLoad($this->cx->getCodeBaseFrameworkPath() . '/User/'.$name.'.class.php', $origName)) { return; }
             // files in /lib/FRAMEWORK
-            if ($this->testLoad(ASCMS_FRAMEWORK_PATH.'/'.preg_replace('/FW/', '', $name).'.class.php', $origName)) { return; }
+            if ($this->testLoad($this->cx->getCodeBaseFrameworkPath() . '/'.preg_replace('/FW/', '', $name).'.class.php', $origName)) { return; }
             // files in /lib/PEAR
             $end = preg_split('/_/', $name);
             if ($this->testLoad(
-                    ASCMS_LIBRARY_PATH.'/PEAR/'.
+                    $this->cx->getCodeBaseLibraryPath() . '/PEAR/'.
                     preg_replace(
                         '/_/', '/', preg_replace('/PEAR\//', '', $name . '/')).
                     end($end).'.php', $origName)) {
                 return;
             }
             // files in /model/entities/Cx/Model/Base
-            if ($this->testLoad(ASCMS_MODEL_PATH.'/entities/Cx/Model/Base/' . $name . '.php', $origName)) { return; }
+            if ($this->testLoad($this->cx->getCodeBaseModelPath() . '/entities/Cx/Model/Base/' . $name . '.php', $origName)) { return; }
 
             // core module and module libraries /[core_modules|modules]/{modulename}/lib/{modulename}Lib.class.php
             $moduleName = strtolower(preg_replace('/Library/', '', $name));
@@ -89,46 +89,46 @@ class LegacyClassLoader {
             $lowerModuleName = strtolower($name);
             if (\Env::get('init')) {
                 if (\Env::get('init')->mode != 'backend') {
-                    if ($this->testLoad(ASCMS_CORE_MODULE_PATH.'/' . $lowerModuleName . '/index.class.php', $origName)) { return; }
-                    if ($this->testLoad(ASCMS_MODULE_PATH.'/' . $lowerModuleName . '/index.class.php', $origName)) { return; }
+                    if ($this->testLoad($this->cx->getCodeBaseCoreModulePath() . '/' . $lowerModuleName . '/index.class.php', $origName)) { return; }
+                    if ($this->testLoad($this->cx->getCodeBaseModulePath() . '/' . $lowerModuleName . '/index.class.php', $origName)) { return; }
                 } else {
-                    if ($this->testLoad(ASCMS_CORE_MODULE_PATH.'/' . $lowerModuleName . '/admin.class.php', $origName)) { return; }
-                    if ($this->testLoad(ASCMS_MODULE_PATH.'/' . $lowerModuleName . '/admin.class.php', $origName)) { return; }
+                    if ($this->testLoad($this->cx->getCodeBaseCoreModulePath() . '/' . $lowerModuleName . '/admin.class.php', $origName)) { return; }
+                    if ($this->testLoad($this->cx->getCodeBaseModulePath() . '/' . $lowerModuleName . '/admin.class.php', $origName)) { return; }
                 }
             }
 
-            if ($this->testLoad(ASCMS_CORE_MODULE_PATH.'/' . $moduleName . '/lib/' . $moduleName . 'Lib.class.php', $origName)) { return; }
-            if ($this->testLoad(ASCMS_CORE_MODULE_PATH.'/' . $moduleName . '/lib/Lib.class.php', $origName)) { return; }
-            if ($this->testLoad(ASCMS_CORE_MODULE_PATH.'/' . $moduleName . '/lib/lib.class.php', $origName)) { return; }
-            if ($this->testLoad(ASCMS_CORE_MODULE_PATH.'/' . $moduleName . '/Lib.class.php', $origName)) { return; }
-            if ($this->testLoad(ASCMS_MODULE_PATH.'/' . $moduleName . '/lib/' . $moduleName . 'Lib.class.php', $origName)) { return; }
-            if ($this->testLoad(ASCMS_MODULE_PATH.'/' . $moduleName . '/lib/Lib.class.php', $origName)) { return; }
-            if ($this->testLoad(ASCMS_MODULE_PATH.'/' . $moduleName . '/lib/lib.class.php', $origName)) { return; }
-            if ($this->testLoad(ASCMS_MODULE_PATH.'/' . $moduleName . '/Lib.class.php', $origName)) { return; }
+            if ($this->testLoad($this->cx->getCodeBaseCoreModulePath() . '/' . $moduleName . '/lib/' . $moduleName . 'Lib.class.php', $origName)) { return; }
+            if ($this->testLoad($this->cx->getCodeBaseCoreModulePath() . '/' . $moduleName . '/lib/Lib.class.php', $origName)) { return; }
+            if ($this->testLoad($this->cx->getCodeBaseCoreModulePath() . '/' . $moduleName . '/lib/lib.class.php', $origName)) { return; }
+            if ($this->testLoad($this->cx->getCodeBaseCoreModulePath() . '/' . $moduleName . '/Lib.class.php', $origName)) { return; }
+            if ($this->testLoad($this->cx->getCodeBaseModulePath() . '/' . $moduleName . '/lib/' . $moduleName . 'Lib.class.php', $origName)) { return; }
+            if ($this->testLoad($this->cx->getCodeBaseModulePath() . '/' . $moduleName . '/lib/Lib.class.php', $origName)) { return; }
+            if ($this->testLoad($this->cx->getCodeBaseModulePath() . '/' . $moduleName . '/lib/lib.class.php', $origName)) { return; }
+            if ($this->testLoad($this->cx->getCodeBaseModulePath() . '/' . $moduleName . '/Lib.class.php', $origName)) { return; }
 
             // core module and module model /[core_modules|modules]/{modulename}/lib/
             $moduleName = current(preg_split('/[A-Z]/', lcfirst($name)));
             $nameWithoutModule = substr($name, strlen($moduleName));
             $nameWithoutModuleLowercase = strtolower($nameWithoutModule);
-            if ($this->testLoad(ASCMS_CORE_MODULE_PATH.'/' . $moduleName . '/lib/' . $name . '.class.php', $origName)) { return; }
-            if ($this->testLoad(ASCMS_CORE_MODULE_PATH.'/' . $moduleName . '/lib/' . $nameWithoutModule . '.class.php', $origName)) { return; }
-            if ($this->testLoad(ASCMS_CORE_MODULE_PATH.'/' . $moduleName . '/lib/' . $nameWithoutModuleLowercase . '.class.php', $origName)) { return; }
-            if ($this->testLoad(ASCMS_MODULE_PATH.'/' . $moduleName . '/lib/' . $name . '.class.php', $origName)) { return; }
-            if ($this->testLoad(ASCMS_MODULE_PATH.'/' . $moduleName . '/lib/' . $nameWithoutModule . '.class.php', $origName)) { return; }
-            if ($this->testLoad(ASCMS_MODULE_PATH.'/' . $moduleName . '/lib/' . $nameWithoutModuleLowercase . '.class.php', $origName)) { return; }
+            if ($this->testLoad($this->cx->getCodeBaseCoreModulePath() . '/' . $moduleName . '/lib/' . $name . '.class.php', $origName)) { return; }
+            if ($this->testLoad($this->cx->getCodeBaseCoreModulePath() . '/' . $moduleName . '/lib/' . $nameWithoutModule . '.class.php', $origName)) { return; }
+            if ($this->testLoad($this->cx->getCodeBaseCoreModulePath() . '/' . $moduleName . '/lib/' . $nameWithoutModuleLowercase . '.class.php', $origName)) { return; }
+            if ($this->testLoad($this->cx->getCodeBaseModulePath() . '/' . $moduleName . '/lib/' . $name . '.class.php', $origName)) { return; }
+            if ($this->testLoad($this->cx->getCodeBaseModulePath() . '/' . $moduleName . '/lib/' . $nameWithoutModule . '.class.php', $origName)) { return; }
+            if ($this->testLoad($this->cx->getCodeBaseModulePath() . '/' . $moduleName . '/lib/' . $nameWithoutModuleLowercase . '.class.php', $origName)) { return; }
             // exception for data module
-            if ($this->testLoad(ASCMS_MODULE_PATH.'/' . $moduleName . '/' . $name . '.class.php', $origName)) { return; }
+            if ($this->testLoad($this->cx->getCodeBaseModulePath() . '/' . $moduleName . '/' . $name . '.class.php', $origName)) { return; }
 
             // core module and module model classes not containing module name
-            if ($this->testLoad(ASCMS_MODULE_PATH.'/shop/lib/' . $name . '.class.php', $origName)) { return; }
+            if ($this->testLoad($this->cx->getCodeBaseModulePath() . '/shop/lib/' . $name . '.class.php', $origName)) { return; }
 
             // Temporary exceptions
             // exception for filesystem. TEMPORARY!
-            if ($this->testLoad(ASCMS_FRAMEWORK_PATH.'/File/'.$name.'.class.php', $origName)) {return; }
+            if ($this->testLoad($this->cx->getCodeBaseFrameworkPath() . '/File/'.$name.'.class.php', $origName)) {return; }
             // exception for CxJs. TEMPORARAY!
-            if ($this->testLoad(ASCMS_FRAMEWORK_PATH.'/cxjs/'.$name.'.class.php', $origName)) {return; }
-            if ($this->testLoad(ASCMS_FRAMEWORK_PATH.'/cxjs/'.$name.'.interface.php', $origName)) {return; }
-            if ($this->testLoad(ASCMS_FRAMEWORK_PATH.'/cxjs/i18n/'.preg_replace('/JQueryUiI18nProvider/', 'jQueryUi', $name).'.class.php', $origName)) {return; }
+            if ($this->testLoad($this->cx->getCodeBaseFrameworkPath() . '/cxjs/'.$name.'.class.php', $origName)) {return; }
+            if ($this->testLoad($this->cx->getCodeBaseFrameworkPath() . '/cxjs/'.$name.'.interface.php', $origName)) {return; }
+            if ($this->testLoad($this->cx->getCodeBaseFrameworkPath() . '/cxjs/i18n/'.preg_replace('/JQueryUiI18nProvider/', 'jQueryUi', $name).'.class.php', $origName)) {return; }
 
             // This is sort of like giving in...
             $this->fallbackLoad($origName, $name);
@@ -157,11 +157,11 @@ class LegacyClassLoader {
 
     private function testLoad($path, $name) {
         if (file_exists($path)) {
-            $path = substr($path, strlen(ASCMS_DOCUMENT_ROOT));
+            $path = substr($path, strlen($this->cx->getCodeBaseDocumentRootPath()));
             $this->loadClass($path, $name);
             $this->mapTable[$name] = $path;
             try {
-                $objFile = new \Cx\Lib\FileSystem\File(ASCMS_TEMP_PATH.'/legacyClassCache.tmp');
+                $objFile = new \Cx\Lib\FileSystem\File($this->cx->getWebsiteTempPath() . '/legacyClassCache.tmp');
                 $objFile->write(serialize($this->mapTable));
             } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
                 \DBG::msg($e->getMessage());
@@ -182,19 +182,19 @@ class LegacyClassLoader {
         //echo $name . '<br />';
         $namespace = substr($name, 0, strlen($name) - strlen($className) - 1);
         $globDirs = array(
-            ASCMS_CORE_MODULE_PATH,
-            ASCMS_CORE_PATH,
-            ASCMS_LIBRARY_PATH,
-            ASCMS_MODULE_PATH,
+            $this->cx->getCodeBaseCoreModulePath(),
+            $this->cx->getCodeBaseCorePath(),
+            $this->cx->getCodeBaseLibraryPath(),
+            $this->cx->getCodeBaseModulePath(),
         );
         $customizingGlobDirs = array(
-            ASCMS_CUSTOMIZING_PATH.ASCMS_CORE_MODULE_FOLDER,
-            ASCMS_CUSTOMIZING_PATH.ASCMS_CORE_FOLDER,
-            ASCMS_CUSTOMIZING_PATH.ASCMS_LIBRARY_FOLDER,
-            ASCMS_CUSTOMIZING_PATH.ASCMS_MODEL_FOLDER,
-            ASCMS_CUSTOMIZING_PATH.ASCMS_MODULE_FOLDER,
+            $this->cx->getWebsiteCustomizingPath() . $this->cx->getCoreModuleFolderName(),
+            $this->cx->getWebsiteCustomizingPath() . $this->cx->getCoreFolderName(),
+            $this->cx->getWebsiteCustomizingPath() . $this->cx->getLibraryFolderName(),
+            $this->cx->getWebsiteCustomizingPath() . $this->cx->getModelFolderName(),
+            $this->cx->getWebsiteCustomizingPath() . $this->cx->getModuleFolderName(),
         );
-        if ($_CONFIG['useCustomizings'] == 'on' && file_exists(ASCMS_CUSTOMIZING_PATH)) {
+        if ($_CONFIG['useCustomizings'] == 'on' && file_exists($this->cx->getWebsiteCustomizingPath())) {
             // search in customizing folders first, because we expect the most changes there
             $globDirs = array_merge($customizingGlobDirs, $globDirs);
         }
@@ -212,7 +212,10 @@ class LegacyClassLoader {
         $this->testLoad($path, $name);
     }
 
-    private function searchClass($name, $namespace, $path = ASCMS_DOCUMENT_ROOT) {
+    private function searchClass($name, $namespace, $path = '') {
+        if (empty ($path)) {
+            $path = $this->cx->getCodeBaseDocumentRootPath();
+        }
         $files = glob($path . '/*.php');
         foreach ($files as $file) {
             $fileParts = explode('/', $file);
@@ -256,10 +259,10 @@ class LegacyClassLoader {
 
         $this->tab++;
         $bytes = memory_get_peak_usage();
-        if ($_CONFIG['useCustomizings'] == 'on' && file_exists(ASCMS_CUSTOMIZING_PATH . '/' . $path)) {
-            require_once ASCMS_CUSTOMIZING_PATH . '/' . $path;
+        if ($_CONFIG['useCustomizings'] == 'on' && file_exists($this->cx->getWebsiteCustomizingPath() . '/' . $path)) {
+            require_once $this->cx->getWebsiteCustomizingPath() . '/' . $path;
         } else {
-            require_once ASCMS_DOCUMENT_ROOT . '/' . $path;
+            require_once $this->cx->getCodeBaseDocumentRootPath() . '/' . $path;
         }
         $bytes = memory_get_peak_usage()-$bytes;
         $this->tab--;

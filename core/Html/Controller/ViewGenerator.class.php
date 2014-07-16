@@ -26,7 +26,7 @@ class ViewGenerator {
         if (is_array($object)) {
             $object = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($object);
         }
-        \JS::registerCSS(ASCMS_CORE_FOLDER.'/Html/View/Style/Backend.css');
+        \JS::registerCSS(\Env::get('cx')->getCoreFolderName() . '/Html/View/Style/Backend.css');
         if ($object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             // render table if no parameter is set
             $this->object = $object;
@@ -201,7 +201,7 @@ class ViewGenerator {
         if ($renderObject instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             if (!count($renderObject) || !count(current($renderObject))) {
                 // make this configurable
-                $tpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_PATH.'/Html/View/Template/Generic');
+                $tpl = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseCorePath().'/Html/View/Template/Generic');
                 $tpl->loadTemplateFile('NoEntries.html');
                 return $tpl->get();
             }

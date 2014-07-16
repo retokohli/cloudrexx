@@ -15,15 +15,19 @@ static $match = null;
  */
 define('ASCMS_ADMIN_PATH',                  ASCMS_DOCUMENT_ROOT. ASCMS_BACKEND_PATH);
 define('ASCMS_ADMIN_WEB_PATH',              ASCMS_PATH_OFFSET. ASCMS_BACKEND_PATH);
+// Cx::getCodeBaseAdminTemplatePath()
 define('ASCMS_ADMIN_TEMPLATE_PATH',         ASCMS_DOCUMENT_ROOT. ASCMS_BACKEND_PATH.'/template/ascms');
+// Cx::getCodeBaseAdminTemplateWebPath()
 define('ASCMS_ADMIN_TEMPLATE_WEB_PATH',     ASCMS_PATH_OFFSET. ASCMS_BACKEND_PATH.'/template/ascms');
-// Cx::$coreFolderName
+// Cx::getCoreFolderName()
 define('ASCMS_CORE_FOLDER',                 '/core');
 define('ASCMS_API_PATH',                    ASCMS_DOCUMENT_ROOT.ASCMS_CORE_FOLDER.'/API');
 define('ASCMS_IMAGES_FOLDER',               '/images');
 define('ASCMS_ATTACH_PATH',                 ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.ASCMS_IMAGES_FOLDER.'/attach');
 define('ASCMS_ATTACH_WEB_PATH',             ASCMS_INSTANCE_OFFSET.ASCMS_IMAGES_FOLDER.'/attach');
+// Cx::getLibraryFolderName()
 define('ASCMS_LIBRARY_FOLDER',              '/lib');
+// Cx::getCodeBaseFrameworkPath()
 define('ASCMS_FRAMEWORK_PATH',              ASCMS_DOCUMENT_ROOT.ASCMS_LIBRARY_FOLDER.'/FRAMEWORK');
 define('ASCMS_CALENDAR_IMAGE_PATH',         ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.ASCMS_IMAGES_FOLDER.'/Calendar');
 define('ASCMS_CALENDAR_IMAGE_WEB_PATH',     ASCMS_INSTANCE_OFFSET.ASCMS_IMAGES_FOLDER.'/Calendar');
@@ -42,6 +46,7 @@ define('ASCMS_GALLERY_IMPORT_PATH',         ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_O
 define('ASCMS_GALLERY_WEB_PATH',            ASCMS_INSTANCE_OFFSET.ASCMS_IMAGES_FOLDER.'/Gallery');
 define('ASCMS_GALLERY_PATH',                ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.ASCMS_IMAGES_FOLDER.'/Gallery');
 define('ASCMS_LANGUAGE_PATH',               ASCMS_DOCUMENT_ROOT.'/lang');
+// Cx::getCodeBaseLibraryPath()
 define('ASCMS_LIBRARY_PATH',                ASCMS_DOCUMENT_ROOT.ASCMS_LIBRARY_FOLDER);
 define('ASCMS_MEDIA1_PATH',                 ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/media/archive1');
 define('ASCMS_MEDIA1_WEB_PATH',             ASCMS_INSTANCE_OFFSET.'/media/archive1');
@@ -55,11 +60,17 @@ define('ASCMS_MEDIA_PATH',                  ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_O
 define('ASCMS_MEDIA_WEB_PATH',              ASCMS_INSTANCE_OFFSET.'/media');
 define('ASCMS_FILESHARING_PATH',            ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/media/FileSharing');
 define('ASCMS_FILESHARING_WEB_PATH',        ASCMS_INSTANCE_OFFSET.'/media/FileSharing');
+// Cx::getModuleFolderName()
 define('ASCMS_MODULE_FOLDER',               '/modules');
+// Cx::getCodeBaseModulePath()
 define('ASCMS_MODULE_PATH',                 ASCMS_DOCUMENT_ROOT.ASCMS_MODULE_FOLDER);
+// Cx::getCodeBaseModuleWebPath()
 define('ASCMS_MODULE_WEB_PATH',             ASCMS_PATH_OFFSET.ASCMS_MODULE_FOLDER);
+// Cx::getCoreModuleFolderName()
 define('ASCMS_CORE_MODULE_FOLDER',          '/core_modules');
+// Cx::getCodeBaseCoreModulePath()
 define('ASCMS_CORE_MODULE_PATH',            ASCMS_DOCUMENT_ROOT.ASCMS_CORE_MODULE_FOLDER);
+// Cx::getCodeBaseCoreModuleWebPath()
 define('ASCMS_CORE_MODULE_WEB_PATH',        ASCMS_PATH_OFFSET.ASCMS_CORE_MODULE_FOLDER);
 define('ASCMS_NEWSLETTER_ATTACH_PATH',      ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.ASCMS_IMAGES_FOLDER.'/attach');
 define('ASCMS_NEWSLETTER_ATTACH_WEB_PATH',  ASCMS_INSTANCE_OFFSET.ASCMS_IMAGES_FOLDER.'/attach');
@@ -74,6 +85,7 @@ define('ASCMS_DOWNLOADS_IMAGES_WEB_PATH',   ASCMS_INSTANCE_OFFSET.ASCMS_IMAGES_F
 define('ASCMS_DATA_IMAGES_PATH',            ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.ASCMS_IMAGES_FOLDER.'/data');
 define('ASCMS_DATA_IMAGES_WEB_PATH',        ASCMS_INSTANCE_OFFSET.ASCMS_IMAGES_FOLDER.'/data');
 define('ASCMS_THEMES_WEB_PATH',             ASCMS_INSTANCE_OFFSET.'/themes');
+// Cx::getWebsiteThemesPath()
 define('ASCMS_THEMES_PATH',                 ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.'/themes');
 define('ASCMS_ACCESS_PATH',                 ASCMS_INSTANCE_PATH.ASCMS_INSTANCE_OFFSET.ASCMS_IMAGES_FOLDER.'/Access');
 define('ASCMS_ACCESS_WEB_PATH',             ASCMS_INSTANCE_OFFSET.ASCMS_IMAGES_FOLDER.'/Access');
@@ -102,7 +114,9 @@ define('ASCMS_ECARD_SEND_ECARDS_PATH',      ASCMS_MEDIA_PATH.'/Ecard/send_ecards
 define('ASCMS_ECARD_SEND_ECARDS_WEB_PATH',  ASCMS_MEDIA_WEB_PATH.'/Ecard/send_ecards');
 define('ASCMS_ECARD_THUMBNAIL_PATH',        ASCMS_MEDIA_PATH.'/Ecard/thumbnails');
 define('ASCMS_ECARD_THUMBNAIL_WEB_PATH',    ASCMS_MEDIA_WEB_PATH.'/Ecard/thumbnails');
+// Cx::getModelFolderName()
 define('ASCMS_MODEL_FOLDER',                '/model');
+// Cx::getCodeBaseModelPath()
 define('ASCMS_MODEL_PATH',                  ASCMS_DOCUMENT_ROOT.ASCMS_MODEL_FOLDER);
 define('ASCMS_MODEL_PROXIES_PATH',          ASCMS_MODEL_PATH.'/proxies');
 define('ASCMS_TESTING_FOLDER',              '/Testing');

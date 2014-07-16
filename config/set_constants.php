@@ -21,7 +21,7 @@ define('ASCMS_PATH_OFFSET',                 $_PATHCONFIG['ascms_installation_off
 define('ASCMS_INSTANCE_PATH',               $_PATHCONFIG['ascms_root']);
 // Cx::getWebsiteOffsetPath()
 define('ASCMS_INSTANCE_OFFSET',             $_PATHCONFIG['ascms_root_offset']);
-// Cx::getBackendPath()
+// Cx::getBackendFolderName()
 define('ASCMS_BACKEND_PATH',                '/cadmin');
 define('ASCMS_PROTOCOL',                    empty($_SERVER['HTTPS']) || $_SERVER['HTTPS'] == 'off' ? 'http' : 'https');
 define('ASCMS_WEBSERVER_SOFTWARE',          !empty($_SERVER['SERVER_SOFTWARE']) && stristr($_SERVER['SERVER_SOFTWARE'], 'apache') ? 'apache' : (!empty($_SERVER['SERVER_SOFTWARE']) && stristr($_SERVER['SERVER_SOFTWARE'], 'iis') ? 'iis' : ''));
