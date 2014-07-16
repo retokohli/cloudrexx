@@ -658,6 +658,7 @@ $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_PLEASE_CHOOSE'] = "-- Status --";
 $_ARRAYLANG['TXT_SHOP_ORDER_STATUS_SHIPPED'] = "shipped";
 $_ARRAYLANG['TXT_SHOP_ORDER_SUM'] = "Sum";
 $_ARRAYLANG['TXT_SHOP_ORDER_TIME'] = "Order time";
+$_ARRAYLANG['TXT_SHOP_ORDER_ITEM_HAS_OPTIONS'] = "This product has been ordered with product options. You can't edit it here!";
 $_ARRAYLANG['TXT_SHOP_ORDER_WARNING_NO_ITEM'] = "Warning: there are no products assigned to this order";
 $_ARRAYLANG['TXT_SHOP_ORDERITEMS_AMOUNT_MAX'] = "Maximum product amount per order";
 $_ARRAYLANG['TXT_SHOP_ORDERITEMS_AMOUNT_MAX_NOTE'] = "Note: Leave this field empty, or set it to 0 (zero) to disable the limit.";

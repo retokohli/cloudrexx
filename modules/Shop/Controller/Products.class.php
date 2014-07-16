@@ -1043,12 +1043,13 @@ class Products
      *                                  inactive (false) Products only.
      *                                  Ignored if null.  Defaults to null
      * @param   string    $format       The optional sprintf() format
+     * @param   boolean   $showAllOptions Show all options and not only the selected
      * @return  array                   The HTML options string on success,
      *                                  null otherwise
      * @global  ADONewConnection
      * @author  Reto Kohli <reto.kohli@comvation.com>
      */
-    static function getMenuoptions($selected=null, $active=null, $format='%2$s')
+    static function getMenuoptions($selected=null, $active=null, $format='%2$s', $showAllOptions = true)
     {
         global $_ARRAYLANG;
 
@@ -1056,6 +1057,12 @@ class Products
             array(0 => $_ARRAYLANG['TXT_SHOP_PRODUCT_NONE']) +
             self::getNameArray($active, $format);
         if ($arrName === false) return null;
+
+        if ($selected && !$showAllOptions) {
+            $arrName = array();
+            $product = \Product::getById($selected);
+            $arrName[$product->id()] = $product->name();
+        }
         return \Html::getOptions($arrName, $selected);
     }
 
