@@ -1872,6 +1872,8 @@ function getHtAccessTemplate()
 
 function migrateSessionTable()
 {
+    global $sessionObj;
+    
     try {
         \Cx\Lib\UpdateUtil::table(
             DBPREFIX.'session_variable',
