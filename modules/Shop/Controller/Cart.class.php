@@ -411,10 +411,11 @@ class Cart
         $total_discount_amount = 0;        
 //DBG::log("Cart::update(): Products: ".var_export($products, true));
         // Loop 1: Collect necessary Product data
-        foreach ($_SESSION['shop']['cart']['items'] as $cart_id => $product) {
+        $products = $_SESSION['shop']['cart']['items']->toArray();
+        foreach ($products as $cart_id => &$product) {
             $objProduct = Product::getById($product['id']);
             if (!$objProduct) {
-                unset($_SESSION['shop']['cart']['items'][$cart_id]);
+                unset($products[$cart_id]);
                 continue;
             }
             // Limit Products in the cart to the stock available if the
@@ -425,7 +426,7 @@ class Cart
             }
             // Remove Products with quatities of zero or less
             if ($product['quantity'] <= 0) {
-                unset($_SESSION['shop']['cart']['items'][$cart_id]);
+                unset($products[$cart_id]);
                 continue;
             }
             $options_price = 0;
@@ -516,6 +517,7 @@ class Cart
             );
 //DBG::log("Cart::update(): Loop 1: Product: ".var_export(self::$products[$cart_id], true));
         }
+        $_SESSION['shop']['cart']['items'] = $products;
         // Loop 2: Calculate Coupon discounts and VAT
         $objCoupon = null;
         $hasCoupon = false;
@@ -657,7 +659,7 @@ class Cart
      */
     static function get_products_array()
     {
-        return $_SESSION['shop']['cart']['items'];
+        return $_SESSION['shop']['cart']['items']->toArray();
     }
 
 

@@ -59,6 +59,6 @@ class ExportCommand extends Command {
         
         $comp->pack($zipPath, $customized);
         
-        $this->interface->show('Done');
+        $this->interface->show('Component exported successfully.');
     }
 }

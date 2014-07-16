@@ -175,6 +175,8 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
                             isset($this->callableOnGet) ? $this->callableOnGet : null,
                             isset($this->callableOnUnset) ? $this->callableOnUnset : null
                     );
+        } else if (is_object($this->data[$offset]) && is_a($this->data[$offset], __CLASS__)) {
+            $this->offsetUnset($offset);
         }
         
         $this->data[$offset] = $data;

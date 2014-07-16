@@ -1160,6 +1160,8 @@ class Order
         }
         // store the product details and add the price of each product
         // to the total order sum $totalOrderSum
+        $order = self::getById($order_id);
+        $orderOptions = $order->getOptionArray();
         foreach ($_REQUEST['product_list'] as $orderItemId => $product_id) {
             if ($orderItemId != 0 && $product_id == 0) {
                 // delete the product from the list
@@ -1186,8 +1188,16 @@ class Order
                     continue;
                 }
                 $product_name = $objProduct->name();
-                $price = Currency::formatPrice(
-                    $_REQUEST['productPrice'][$orderItemId]);
+                $productPrice = $price = $_REQUEST['productPrice'][$orderItemId];
+                if (isset($orderOptions[$orderItemId])) {
+                    foreach ($orderOptions[$orderItemId] as $optionValues) {
+                        foreach ($optionValues as $value) {
+                            $price += $value['price'];
+                        }
+                    }
+                }
+                $price = Currency::formatPrice($price);
+                $productPrice = Currency::formatPrice($productPrice);
                 $quantity = max(1,
                     intval($_REQUEST['productQuantity'][$orderItemId]));
                 $totalOrderSum += $price * $quantity;
@@ -1198,13 +1208,13 @@ class Order
                 if ($orderItemId == 0) {
                     // Add a new product to the list
                     if (!self::insertItem($order_id, $product_id, $product_name,
-                        $price, $quantity, $vat_rate, $weight, array())) {
+                        $productPrice, $quantity, $vat_rate, $weight, array())) {
                         return false;
                     }
                 } else {
                     // Update the order item
                     if (!self::updateItem($orderItemId, $product_id,
-                        $product_name, $price, $quantity, $vat_rate, $weight, array())) {
+                        $product_name, $productPrice, $quantity, $vat_rate, $weight, array())) {
                         return false;
                     }
                 }
@@ -1551,6 +1561,10 @@ class Order
         if (!$objResult) {
             return \Message::error($_ARRAYLANG['TXT_SHOP_ORDER_ITEM_ERROR_UPDATING']);
         }
+
+        // don't save options if there is none
+        if (empty($arrOptions)) return true;
+
         if (!self::deleteOptions($item_id)) return false;
         foreach ($arrOptions as $attribute_id => $arrOptionIds) {
             if (!self::insertAttribute($item_id, $attribute_id, $arrOptionIds)) {
@@ -2034,6 +2048,8 @@ class Order
                     $total_weight += $weight * $quantity;
                 }
             }
+
+            $itemHasOptions = !empty($arrProductOptions[$item_id]);
             $objTemplate->setVariable(array(
                 'SHOP_PRODUCT_ID' => $product_id,
                 'SHOP_ROWCLASS' => 'row'.(++$i % 2 + 1),
@@ -2042,7 +2058,7 @@ class Order
                 'SHOP_PRODUCT_PRICE' => Currency::formatPrice($price),
                 'SHOP_PRODUCT_SUM' => Currency::formatPrice($row_net_price),
                 'SHOP_P_ID' => ($edit
-                    ? $objResult->fields['id'] // Item ID
+                    ? $item_id // Item ID
                     // If we're just showing the order details, the
                     // product ID is only used in the product ID column
                     : $objResult->fields['product_id']), // Product ID
@@ -2057,10 +2073,13 @@ class Order
             // Get a product menu for each Product if $edit-ing.
             // Preselect the current Product ID.
             if ($edit) {
+                if ($itemHasOptions && $objTemplate->blockExists('order_item_product_options_tooltip')) {
+                    $objTemplate->touchBlock('order_item_product_options_tooltip');
+                }
                 $objTemplate->setVariable(
                     'SHOP_PRODUCT_IDS_MENU', Products::getMenuoptions(
                         $product_id, null,
-                        $_ARRAYLANG['TXT_SHOP_PRODUCT_MENU_FORMAT']));
++                        $_ARRAYLANG['TXT_SHOP_PRODUCT_MENU_FORMAT'], false));
             }
             $objTemplate->parse('order_item');
             $objResult->MoveNext();

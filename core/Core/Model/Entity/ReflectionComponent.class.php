@@ -300,14 +300,17 @@ class ReflectionComponent {
         $meta = $yaml->load($content);
         
         // Check dependencies
+        echo "Checking  dependencies ... ";
         foreach ($meta['DlcInfo']['dependencies'] as $dependencyInfo) {
             $dependency = new static($dependencyInfo['name'], $dependencyInfo['type']);
             if (!$dependency->exists()) {
                 throw new SystemComponentException('Dependency "' . $dependency->getName() . '" not met');
             }
         }
+        echo "Done \n";
         
         // Copy ZIP contents
+        echo "Copying files to installation ... ";
         $filesystem = new \Cx\Lib\FileSystem\FileSystem();
         $filesystem->copyDir(
             ASCMS_APP_CACHE_FOLDER,
@@ -318,6 +321,7 @@ class ReflectionComponent {
             '',
             true
         );
+        echo "Done \n";
         
         // Activate (if type is system or application)
         // TODO: templates need to be activated too!
@@ -337,43 +341,71 @@ class ReflectionComponent {
             if ($meta['DlcInfo']['FrameworkVersion'] < 3.1) {
                 //copy code from installer to load db from sql:
                 // load /data/structure.sql
-                // load /data/fixtures.sql
-                $this->importStructureAndData();
+                // load /data/fixtures.sql                
             } else {
                 // init DB structure from doctrine yaml files
                 //doctrine orm:schema-tool:update --force
                 // load DB data from /data/fixture.yml/sql
             }
         }
+        $this->importStructureFromSql();
+        $this->importDataFromSql();
         
         // Activate this component
         $this->activate();
     }
     
-    function importStructureAndData()
+    function importStructureFromSql()
     {
         $sqlDump = ASCMS_APP_CACHE_FOLDER . '/Data/Structure.sql';
         
         $fp = @fopen ($sqlDump, "r");
-        if ($fp !== false) {            
+        if ($fp !== false) {
             while (!feof($fp)) {
                 $buffer = fgets($fp);
                 if ((substr($buffer,0,1) != "#") && (substr($buffer,0,2) != "--")) {
                     $sqlQuery .= $buffer;
                     if (preg_match("/;[ \t\r\n]*$/", $buffer)) {
+                        $sqlQuery = preg_replace('#contrexx_#', DBPREFIX, $sqlQuery, 1);
                         $result = $this->db->Execute($sqlQuery);
                         if ($result === false) {
                             throw new SystemComponentException($sqlQuery .' ('. $this->db->ErrorMsg() .')');
                         }
-                        $sqlQuery = "";
+                        $sqlQuery = '';
+                    }
+                }
+            }
+        } else {
+            throw new SystemComponentException('File not found : '. $sqlDump);
+        }        
+    }
+    
+    /**
+     * 
+     */
+    function importDataFromSql()
+    {
+        $sqlDump = ASCMS_APP_CACHE_FOLDER . '/Data/Data.sql';        
+        
+        $fp = @fopen ($sqlDump, "r");
+        if ($fp !== false) {
+            while (!feof($fp)) {
+                $buffer = fgets($fp);
+                if ((substr($buffer,0,1) != "#") && (substr($buffer,0,2) != "--")) {
+                    $sqlQuery .= $buffer;
+                    if (preg_match("/;[ \t\r\n]*$/", $buffer)) {
+                        $sqlQuery = preg_replace('#contrexx_#', DBPREFIX, $sqlQuery, 1);
+                        $result = $this->db->Execute($sqlQuery);
+                        if ($result === false) {
+                            throw new SystemComponentException($sqlQuery .' ('. $this->db->ErrorMsg() .')');
+                        }
+                        $sqlQuery = '';
                     }
                 }
             }
         } else {
             throw new SystemComponentException('File not found : '. $sqlDump);
         }
-        
-        $sqlDump = ASCMS_APP_CACHE_FOLDER . '/Data/Data.sql';
     }
     
     /**
@@ -395,6 +427,7 @@ class ReflectionComponent {
         $filesystem = new \Cx\Lib\FileSystem\FileSystem();
         // clean up tmp dir
         $filesystem->delete_folder(ASCMS_APP_CACHE_FOLDER, true);
+        echo "Copying files ... ";
         $filesystem->copyDir(
             $this->getDirectory(false),
             preg_replace('#' . ASCMS_DOCUMENT_ROOT . '#', '', $this->getDirectory(false)),
@@ -404,9 +437,11 @@ class ReflectionComponent {
             '',
             true
         );
+        echo "Done \n";
         
         if ($customized) {
             // overwrite with contents of $this->getDirectory(true, true)
+            echo "Copying customizing files ... ";
             $filesystem->copyDir(
                 $this->getDirectory(true, true),
                 preg_replace('#' . ASCMS_DOCUMENT_ROOT . '#', '', $this->getDirectory(true, true)),
@@ -416,23 +451,30 @@ class ReflectionComponent {
                 '',
                 true
             );
+            echo "Done \n";
         }
         
         // Copy additional contents to folder:
-            // If this is still an AdoDb component:
-                // create $this->getDirectory(false)./data/structure.sql
-                // create $this->getDirectory(false)./data/fixtures.sql
-            // If this is a doctrine component:
-                // create $this->getDirectory(false)./data/fixtures.yml/sql 
+        // If this is still an AdoDb component:
+        // create $this->getDirectory(false)./data/structure.sql
+        // create $this->getDirectory(false)./data/fixtures.sql
+        // If this is a doctrine component:
+        // create $this->getDirectory(false)./data/fixtures.yml/sql 
         // Write database structure and data into the files
+        echo "Writing component data (structure & data) ... ";
         $this->writeDatabaseStructureAndData();                
-               
+        echo "Done \n";
+        
+        echo "Creating meta file ... ";
         // Create meta.yml        
         $this->writeMetaDataToFile(ASCMS_APP_CACHE_FOLDER . '/meta.yml');
+        echo "Done \n";
         
+        echo "Exporting component ... ";
         // Compress
         $file = new \PclZip($path);
         $file->create(ASCMS_APP_CACHE_FOLDER, PCLZIP_OPT_REMOVE_PATH, ASCMS_APP_CACHE_FOLDER);
+        echo "Done \n";
     }
     
     /**
@@ -554,6 +596,8 @@ class ReflectionComponent {
     {
         $fields       = $this->getColumnsFromTable($table);
         $columnString = '`'. implode('`, `', $fields) .'`';
+                
+        $tableName = preg_replace('#'. DBPREFIX .'#', 'contrexx_', $table, 1);
         
         $objResult = $this->db->query($query);
         if ($objResult) {
@@ -566,7 +610,7 @@ class ReflectionComponent {
 
                 $dataString = '\'' . implode('\', \'', $datas) . '\'';
 
-                $dataLine = 'INSERT INTO '.$table.' (' . $columnString . ') VALUES ('. $dataString .');' . PHP_EOL;
+                $dataLine = 'INSERT INTO `'.$tableName.'` (' . $columnString . ') VALUES ('. $dataString .');' . PHP_EOL;
                 $objFile->append($dataLine);
 
                 $objResult->MoveNext();
@@ -635,10 +679,12 @@ class ReflectionComponent {
         $structure .= "-- \n";
         $structure .= "-- Table structure for table `{$table}` \n";
         $structure .= "-- \n\n";
+                
+        $tableName = preg_replace('#'. DBPREFIX .'#', 'contrexx_', $table, 1);
 
         // Dump Structure
-        $structure .= 'DROP TABLE IF EXISTS `'.$table.'`;'."\n";
-        $structure .= "CREATE TABLE `".$table."` (\n";
+        $structure .= 'DROP TABLE IF EXISTS `'.$tableName.'`;'."\n";
+        $structure .= "CREATE TABLE `".$tableName."` (\n";
         $objResult  = $this->db->Execute('SHOW FIELDS FROM `'.$table.'`');
         if ( $objResult->RecordCount() == 0 ) {
             return false;
@@ -789,7 +835,7 @@ class ReflectionComponent {
                  'type' => $this->componentType,
                  'publisher' => $publisher,
                  'dependencies' => null,
-                 'versions' => null,
+                 'versions' => null,                 
                  'rating' => 0,
                  'downloads' => 0,
                  'price' => 0.0,
