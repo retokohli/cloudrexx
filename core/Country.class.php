@@ -770,7 +770,7 @@ class Country
 
         $uri = Html::getRelativeUri();
         // Let all links in this tab point here again
-        Html::replaceUriParameter($uri, 'active_tab='.SettingDb::tab_index());
+        Html::replaceUriParameter($uri, 'active_tab='.\Cx\Core\Setting\Controller\Setting::tab_index());
         // Create a copy of the URI for the Paging, as this is passed by
         // reference and modified
         $uri_paging = $uri;
@@ -788,8 +788,8 @@ class Country
             true,
             'order_country'
         );
-        SettingDb::init('core', 'country');
-        $limit = SettingDb::getValue('numof_countries_per_page_backend');
+        \Cx\Core\Setting\Controller\Setting::init('core', 'country');
+        $limit = \Cx\Core\Setting\Controller\Setting::getValue('numof_countries_per_page_backend');
         $count = 0;
         $arrCountries = self::getArray(
             $count, null, $limit, Paging::getPosition(),
@@ -807,7 +807,7 @@ class Country
             'HEAD_SETTINGS_COUNTRY_NAME' => $objSorting->getHeaderForField('name'),
             'HEAD_SETTINGS_COUNTRY_ISO2' => $objSorting->getHeaderForField('alpha2'),
             'HEAD_SETTINGS_COUNTRY_ISO3' => $objSorting->getHeaderForField('alpha3'),
-            'CORE_SETTINGDB_TAB_INDEX' => SettingDb::tab_index(),
+            'CORE_SETTING_TAB_INDEX' => \Cx\Core\Setting\Controller\Setting::tab_index(),
             'SETTINGS_COUNTRY_PAGING' =>
                 Paging::get($uri_paging, '', $count, $limit, true),
         ));
@@ -839,12 +839,12 @@ class Country
             $objTemplateCountry->parse('settings_country_row');
         }
         $objTemplateSetting = null;
-        SettingDb::show_external(
+        \Cx\Core\Setting\Controller\Setting::show_external(
             $objTemplateSetting,
             $_CORELANG['TXT_CORE_COUNTRY_EDIT'],
             $objTemplateCountry->get()
         );
-        SettingDb::show(
+        \Cx\Core\Setting\Controller\Setting::show(
             $objTemplateSetting,
             $uri,
             $_CORELANG['TXT_CORE_COUNTRY_SETTINGS'],
@@ -904,7 +904,7 @@ class Country
 
     static function storeSettings()
     {
-        SettingDb::storeFromPost();
+        \Cx\Core\Setting\Controller\Setting::storeFromPost();
     }
 
 
@@ -1018,8 +1018,8 @@ class Country
             }
         }
 
-        SettingDb::init('core', 'country');
-        SettingDb::add('numof_countries_per_page_backend', 30, 101);
+        \Cx\Core\Setting\Controller\Setting::init('core', 'country');
+        \Cx\Core\Setting\Controller\Setting::add('numof_countries_per_page_backend', 30, 101);
 
         // More to come...
 

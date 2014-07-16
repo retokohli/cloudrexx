@@ -1697,7 +1697,7 @@ function _coreUpdate()
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }
     try {
-        SettingDb::errorHandler();
+        \Cx\Core\Setting\Controller\Setting::errorHandler();
     } catch (\Cx\Lib\UpdateException $e) {
         return \Cx\Lib\UpdateUtil::DefaultActionHandler($e);
     }

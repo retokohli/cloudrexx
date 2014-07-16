@@ -215,10 +215,10 @@ class EgovManager extends EgovLibrary
             ? 'checked="checked"' : '');
 
         // PostFinance uses SettingDb
-        \SettingDb::init('Egov', 'config');
-// TODO: Temporary fix for the upgrade to SettingDb.
+        \Cx\Core\Setting\Controller\Setting::init('Egov', 'config');
+// TODO: Temporary fix for the upgrade to \Cx\Core\Setting\Controller\Setting.
 // Remove when the whole module is migrated.
-        $postfinance_shop_id = \SettingDb::getValue('postfinance_shop_id');
+        $postfinance_shop_id = \Cx\Core\Setting\Controller\Setting::getValue('postfinance_shop_id');
         if (empty ($postfinance_shop_id)) {
             self::errorHandler();
         }
@@ -226,10 +226,10 @@ class EgovManager extends EgovLibrary
          * @var     \Cx\Core\Html\Sigma
          */
         $objTemplateLocal = new \Cx\Core\Html\Sigma();
-        if (\SettingDb::show_section($objTemplateLocal,
+        if (\Cx\Core\Setting\Controller\Setting::show_section($objTemplateLocal,
                 $_ARRAYLANG['TXT_EGOV_POSTFINANCE'], 'TXT_EGOV_')) {
-            $objTemplateLocal->parse('core_settingdb_sections');
-            $template = $objTemplateLocal->get('core_settingdb_sections');
+            $objTemplateLocal->parse('core_setting_sections');
+            $template = $objTemplateLocal->get('core_setting_sections');
             $this->objTemplate->setVariable(
                 'EGOV_SETTINGS_POSTFINANCE', $template);
         }
@@ -1411,8 +1411,8 @@ class EgovManager extends EgovLibrary
                SET `value`='".(isset($_REQUEST['PayPal_IPN']) ? 1 : 0)."'
              WHERE `name`='set_paypal_ipn'
         ") ? true : false);
-        \SettingDb::init('Egov', 'config');
-        $result_settingdb = \SettingDb::storeFromPost(true);
+        \Cx\Core\Setting\Controller\Setting::init('Egov', 'config');
+        $result_settingdb = \Cx\Core\Setting\Controller\Setting::storeFromPost(true);
         if ($result_settingdb === false) {
             self::errorHandler();
             $result = false;

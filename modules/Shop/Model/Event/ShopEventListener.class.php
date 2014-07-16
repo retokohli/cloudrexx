@@ -33,7 +33,7 @@ class ShopEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
 
         if ($objUser->login()) {
             $objCustomer = \Cx\modules\Shop\Controller\Customer::getById($objUser->getId());
-            \SettingDb::init('Shop', 'config');
+            \Cx\Core\Setting\Controller\Setting::init('Shop', 'config');
             if ($objCustomer && $objCustomer->is_reseller()) {
                 $flagIsReseller = true;
             }
