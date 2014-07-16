@@ -10,7 +10,7 @@
  * @todo        Edit PHP DocBlocks!
  */
 
-namespace Cx\modules\Shop\Controller;
+namespace Cx\Modules\Shop\Controller;
 
 /**
  * Currency related static methods

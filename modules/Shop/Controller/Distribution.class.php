@@ -9,7 +9,7 @@
  * @subpackage  module_shop
  */
 
-namespace Cx\modules\Shop\Controller;
+namespace Cx\Modules\Shop\Controller;
 
 /**
  * Provides methods for handling different distribution types

@@ -1240,7 +1240,7 @@ namespace Cx\Core\Core\Controller {
             }
             
             // set global template variables
-            $boolShop = \Cx\modules\Shop\Controller\Shop::isInitialized();
+            $boolShop = \Cx\Modules\Shop\Controller\Shop::isInitialized();
             $objNavbar = new \Navigation($this->resolvedPage->getId(), $this->resolvedPage);
             $objNavbar->setLanguagePlaceholders($this->resolvedPage, $this->request->getUrl(), $this->template);
             $metarobots = $this->resolvedPage->getMetarobots();
