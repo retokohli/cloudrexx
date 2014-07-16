@@ -99,7 +99,7 @@ class FileSystem extends Engine{
         if (!self::$changed) {
         // TODO: These messages are inapropriate when settings are stored by another piece of code, too.
         // Find a way around this.
-        // Message::information($_CORELANG['TXT_CORE_SETTINGDB_INFORMATION_NO_CHANGE']);
+        // Message::information($_CORELANG['TXT_CORE_SETTING_INFORMATION_NO_CHANGE']);
             return null;
         }
         // TODO: Add error messages for section errors
@@ -120,10 +120,10 @@ class FileSystem extends Engine{
         $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), $fileName);
         if ($success) {
             self::$changed = false;
-            //return Message::ok($_CORELANG['TXT_CORE_SETTINGDB_STORED_SUCCESSFULLY']);
+            //return Message::ok($_CORELANG['TXT_CORE_SETTING_STORED_SUCCESSFULLY']);
             return true;
         }
-        //return Message::error($_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING']);
+        //return Message::error($_CORELANG['TXT_CORE_SETTING_ERROR_STORING']);
         return false;
     }
     /**

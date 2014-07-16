@@ -130,9 +130,9 @@ class FileSharingManager extends FileSharingLib
     {
         global $_ARRAYLANG, $objDatabase;
 
-        \SettingDb::init('FileSharing', 'config');
-        if (!\SettingDb::getValue('permission')) {
-            \SettingDb::add('permission', 'off');
+        \Cx\Core\Setting\Controller\Setting::init('FileSharing', 'config');
+        if (!\Cx\Core\Setting\Controller\Setting::getValue('permission')) {
+            \Cx\Core\Setting\Controller\Setting::add('permission', 'off');
         }
 
         if (isset($_POST['save_settings'])) {
@@ -178,7 +178,7 @@ class FileSharingManager extends FileSharingLib
         /**
          * parse permissions
          */
-        $oldFilesharingPermission = \SettingDb::getValue('permission');
+        $oldFilesharingPermission = \Cx\Core\Setting\Controller\Setting::getValue('permission');
         $objFWUser = \FWUser::getFWUserObject();
 
         if (!is_numeric($oldFilesharingPermission)) {
@@ -262,8 +262,8 @@ class FileSharingManager extends FileSharingLib
         /**
          * save permissions
          */
-        \SettingDb::init('FileSharing', 'config');
-        $oldFilesharingSetting = \SettingDb::getValue('permission');
+        \Cx\Core\Setting\Controller\Setting::init('FileSharing', 'config');
+        $oldFilesharingSetting = \Cx\Core\Setting\Controller\Setting::getValue('permission');
         $newFilesharingSetting = $_POST['filesharingSettingsPermission'];
         if (!is_numeric($newFilesharingSetting)) {
             if (is_numeric($oldFilesharingSetting)) {
@@ -290,8 +290,8 @@ class FileSharingManager extends FileSharingLib
             }
         }
         // save new setting
-        \SettingDb::set('permission', $newFilesharingSetting);
-        \SettingDb::updateAll();
+        \Cx\Core\Setting\Controller\Setting::set('permission', $newFilesharingSetting);
+        \Cx\Core\Setting\Controller\Setting::updateAll();
     }
 }
 

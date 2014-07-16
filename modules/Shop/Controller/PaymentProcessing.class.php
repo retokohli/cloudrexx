@@ -292,7 +292,7 @@ foreach (\PostfinanceMobile::getErrors() as $error) {
                 break;
             case 'paypal':
                 $order_id = $_SESSION['shop']['order_id'];
-                $account_email = \SettingDb::getValue('paypal_account_email');
+                $account_email = \Cx\Core\Setting\Controller\Setting::getValue('paypal_account_email');
                 $item_name = $_ARRAYLANG['TXT_SHOP_PAYPAL_ITEM_NAME'];
                 $currency_code = Currency::getCodeById(
                     $_SESSION['shop']['currencyId']);
@@ -357,7 +357,7 @@ foreach (\PostfinanceMobile::getErrors() as $error) {
             'AMOUNT' => str_replace('.', '', $_SESSION['shop']['grand_total_price']),
             'CURRENCY' => Currency::getActiveCurrencyCode(),
             'ORDERID' => $_SESSION['shop']['order_id'],
-            'ACCOUNTID' => \SettingDb::getValue('saferpay_id'),
+            'ACCOUNTID' => \Cx\Core\Setting\Controller\Setting::getValue('saferpay_id'),
             'SUCCESSLINK' =>
                 'http://'.$serverBase.'index.php?section=Shop'.MODULE_INDEX.
                 '&cmd=success&result=1&handler=saferpay',
@@ -378,7 +378,7 @@ foreach (\PostfinanceMobile::getErrors() as $error) {
             'DELIVERY' => 'no',
         );
         $payInitUrl = \Saferpay::payInit($arrShopOrder,
-            \SettingDb::getValue('saferpay_use_test_account'));
+            \Cx\Core\Setting\Controller\Setting::getValue('saferpay_use_test_account'));
 //DBG::log("PaymentProcessing::_SaferpayProcessor(): payInit URL: $payInitUrl");
         // Fixed: Added check for empty return string,
         // i.e. on connection problems
@@ -390,7 +390,7 @@ foreach (\PostfinanceMobile::getErrors() as $error) {
                 "<br />".\Saferpay::getErrors();
         }
         $return = "<script src='http://www.saferpay.com/OpenSaferpayScript.js'></script>\n";
-        switch (\SettingDb::getValue('saferpay_window_option')) {
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('saferpay_window_option')) {
             case 0: // iframe
                 return
                     $return.
@@ -546,7 +546,7 @@ if (empty ($return)) {
         global $_ARRAYLANG;
 
         \Datatrans::initialize(
-            \SettingDb::getValue('datatrans_merchant_id'),
+            \Cx\Core\Setting\Controller\Setting::getValue('datatrans_merchant_id'),
             $_SESSION['shop']['order_id'],
             $_SESSION['shop']['grand_total_price'],
             Currency::getActiveCurrencyCode()
@@ -604,9 +604,9 @@ if (empty ($return)) {
                 
             case 'saferpay':
                 $arrShopOrder = array(
-                    'ACCOUNTID' => \SettingDb::getValue('saferpay_id'));
+                    'ACCOUNTID' => \Cx\Core\Setting\Controller\Setting::getValue('saferpay_id'));
                 $id = \Saferpay::payConfirm();
-                if (\SettingDb::getValue('saferpay_finalize_payment')) {
+                if (\Cx\Core\Setting\Controller\Setting::getValue('saferpay_finalize_payment')) {
                     $arrShopOrder['ID'] = $id;
                     $id = \Saferpay::payComplete($arrShopOrder);
                 }
@@ -639,9 +639,9 @@ if (empty ($return)) {
                 $currency_code = Currency::getCodeById($currency_id);
                 return \PayPal::ipnCheck($amount, $currency_code,
                     $order_id, $customer_email,
-                    \SettingDb::getValue('paypal_account_email'));
+                    \Cx\Core\Setting\Controller\Setting::getValue('paypal_account_email'));
             case 'yellowpay':
-                $passphrase = \SettingDb::getValue('postfinance_hash_signature_out');
+                $passphrase = \Cx\Core\Setting\Controller\Setting::getValue('postfinance_hash_signature_out');
                 return \Yellowpay::checkIn($passphrase);
 //                    if (\Yellowpay::$arrError || \Yellowpay::$arrWarning) {
 //                        global $_ARRAYLANG;

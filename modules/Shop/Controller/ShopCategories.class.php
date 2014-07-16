@@ -1036,9 +1036,9 @@ class ShopCategories
 /*
     Note: The size and quality parameters should be taken from the
           settings as follows:
-    SettingDb::getValue('thumbnail_max_width'),
-    SettingDb::getValue('thumbnail_max_height'),
-    SettingDb::getValue('thumbnail_quality')
+    \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_width'),
+    \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_height'),
+    \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_quality')
 */
         global $_ARRAYLANG;
 

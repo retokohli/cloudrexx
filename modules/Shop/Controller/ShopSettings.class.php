@@ -67,16 +67,16 @@ class ShopSettings
             self::$success &= $result;
         }
         self::storeVat();
-        if (\SettingDb::changed()) {
+        if (\Cx\Core\Setting\Controller\Setting::changed()) {
             self::$changed = true;
-            if (\SettingDb::updateAll() === false) {
+            if (\Cx\Core\Setting\Controller\Setting::updateAll() === false) {
                 return false;
         }
         }
         if (self::$changed) {
             return (self::$success
-                ? \Message::ok($_CORELANG['TXT_CORE_SETTINGDB_STORED_SUCCESSFULLY'])
-                : \Message::error($_CORELANG['TXT_CORE_SETTINGDB_ERROR_STORING'])
+                ? \Message::ok($_CORELANG['TXT_CORE_SETTING_STORED_SUCCESSFULLY'])
+                : \Message::error($_CORELANG['TXT_CORE_SETTING_ERROR_STORING'])
             );
         }
         return null;
@@ -94,83 +94,83 @@ class ShopSettings
         if (empty($_POST['general'])) return;
 
 // TODO: Use
-//        SettingDb::storeFromPost();
+//        \Cx\Core\Setting\Controller\Setting::storeFromPost();
 
-        \SettingDb::set('email',
+        \Cx\Core\Setting\Controller\Setting::set('email',
             trim(strip_tags(contrexx_input2raw($_POST['email']))));
-        \SettingDb::set('email_confirmation',
+        \Cx\Core\Setting\Controller\Setting::set('email_confirmation',
             trim(strip_tags(contrexx_input2raw($_POST['email_confirmation']))));
         // added: shop company name and address
-        \SettingDb::set('company',
+        \Cx\Core\Setting\Controller\Setting::set('company',
             trim(strip_tags(contrexx_input2raw($_POST['company']))));
-        \SettingDb::set('address',
+        \Cx\Core\Setting\Controller\Setting::set('address',
             trim(strip_tags(contrexx_input2raw($_POST['address']))));
-        \SettingDb::set('telephone',
+        \Cx\Core\Setting\Controller\Setting::set('telephone',
             trim(strip_tags(contrexx_input2raw($_POST['telephone']))));
-        \SettingDb::set('fax',
+        \Cx\Core\Setting\Controller\Setting::set('fax',
             trim(strip_tags(contrexx_input2raw($_POST['fax']))));
-        \SettingDb::set('country_id', intval($_POST['country_id']));
+        \Cx\Core\Setting\Controller\Setting::set('country_id', intval($_POST['country_id']));
         // Thumbnail settings
-        \SettingDb::set('thumbnail_max_width', intval($_POST['thumbnail_max_width']));
-        \SettingDb::set('thumbnail_max_height', intval($_POST['thumbnail_max_height']));
-        \SettingDb::set('thumbnail_quality', intval($_POST['thumbnail_quality']));
+        \Cx\Core\Setting\Controller\Setting::set('thumbnail_max_width', intval($_POST['thumbnail_max_width']));
+        \Cx\Core\Setting\Controller\Setting::set('thumbnail_max_height', intval($_POST['thumbnail_max_height']));
+        \Cx\Core\Setting\Controller\Setting::set('thumbnail_quality', intval($_POST['thumbnail_quality']));
         // Extended settings
         // New in V2.something
-        \SettingDb::set('weight_enable', !empty($_POST['weight_enable']));
-        \SettingDb::set('show_products_default',
+        \Cx\Core\Setting\Controller\Setting::set('weight_enable', !empty($_POST['weight_enable']));
+        \Cx\Core\Setting\Controller\Setting::set('show_products_default',
             empty($_POST['show_products_default'])
               ? 0 : intval($_POST['show_products_default']));
         // Mind that this defaults to 1, zero is not a valid value
-        \SettingDb::set('product_sorting',
+        \Cx\Core\Setting\Controller\Setting::set('product_sorting',
             empty($_POST['product_sorting'])
               ? 1 : intval($_POST['product_sorting']));
         // Order amount lower limit (new in 3.1.0)
-        \SettingDb::set('orderitems_amount_min',
+        \Cx\Core\Setting\Controller\Setting::set('orderitems_amount_min',
             empty($_POST['orderitems_amount_min'])
                 ? 0 : floatval($_POST['orderitems_amount_min']));
         // Order amount upper limit (applicable when using Saferpay)
-        \SettingDb::set('orderitems_amount_max',
+        \Cx\Core\Setting\Controller\Setting::set('orderitems_amount_max',
             empty($_POST['orderitems_amount_max'])
                 ? 0 : floatval($_POST['orderitems_amount_max']));
         // New in V3.0.0
-        \SettingDb::set('use_js_cart',
+        \Cx\Core\Setting\Controller\Setting::set('use_js_cart',
             intval($_POST['use_js_cart']));
-        \SettingDb::set('shopnavbar_on_all_pages',
+        \Cx\Core\Setting\Controller\Setting::set('shopnavbar_on_all_pages',
             intval($_POST['shopnavbar_on_all_pages']));
-        \SettingDb::set('register',
+        \Cx\Core\Setting\Controller\Setting::set('register',
             trim(strip_tags(contrexx_input2raw($_POST['register']))));
-        \SettingDb::set('numof_customers_per_page_backend',
+        \Cx\Core\Setting\Controller\Setting::set('numof_customers_per_page_backend',
             intval($_POST['numof_customers_per_page_backend']));
-        \SettingDb::set('numof_manufacturers_per_page_backend',
+        \Cx\Core\Setting\Controller\Setting::set('numof_manufacturers_per_page_backend',
             intval($_POST['numof_manufacturers_per_page_backend']));
-        \SettingDb::set('numof_mailtemplate_per_page_backend',
+        \Cx\Core\Setting\Controller\Setting::set('numof_mailtemplate_per_page_backend',
             intval($_POST['numof_mailtemplate_per_page_backend']));
-        \SettingDb::set('usergroup_id_customer',
+        \Cx\Core\Setting\Controller\Setting::set('usergroup_id_customer',
             intval($_POST['usergroup_id_customer']));
-        \SettingDb::set('usergroup_id_reseller',
+        \Cx\Core\Setting\Controller\Setting::set('usergroup_id_reseller',
             intval($_POST['usergroup_id_reseller']));
-        \SettingDb::set('user_profile_attribute_customer_group_id',
+        \Cx\Core\Setting\Controller\Setting::set('user_profile_attribute_customer_group_id',
             intval($_POST['user_profile_attribute_customer_group_id']));
-        \SettingDb::set('user_profile_attribute_notes',
+        \Cx\Core\Setting\Controller\Setting::set('user_profile_attribute_notes',
             intval($_POST['user_profile_attribute_notes']));
         // New in V3.0.4 or V3.1.0
-        if (!\SettingDb::set('numof_products_per_page_backend',
+        if (!\Cx\Core\Setting\Controller\Setting::set('numof_products_per_page_backend',
             intval($_POST['numof_products_per_page_backend']))) {
-            \SettingDb::add('numof_products_per_page_backend',
+            \Cx\Core\Setting\Controller\Setting::add('numof_products_per_page_backend',
                 intval($_POST['numof_products_per_page_backend']), 53,
-                \SettingDb::TYPE_TEXT, null, 'config');
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
         }
-        if (!\SettingDb::set('numof_orders_per_page_backend',
+        if (!\Cx\Core\Setting\Controller\Setting::set('numof_orders_per_page_backend',
             intval($_POST['numof_orders_per_page_backend']))) {
-            \SettingDb::add('numof_orders_per_page_backend',
+            \Cx\Core\Setting\Controller\Setting::add('numof_orders_per_page_backend',
                 intval($_POST['numof_orders_per_page_backend']), 54,
-                \SettingDb::TYPE_TEXT, null, 'config');
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
         }
-        if (!\SettingDb::set('numof_coupon_per_page_backend',
+        if (!\Cx\Core\Setting\Controller\Setting::set('numof_coupon_per_page_backend',
             intval($_POST['numof_coupon_per_page_backend']))) {
-            \SettingDb::add('numof_coupon_per_page_backend',
+            \Cx\Core\Setting\Controller\Setting::add('numof_coupon_per_page_backend',
                 intval($_POST['numof_coupon_per_page_backend']), 58,
-                \SettingDb::TYPE_TEXT, null, 'config');
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
         }
     }
 
@@ -245,71 +245,71 @@ class ShopSettings
         Payment::reset();
         if (empty ($_POST['bpayment'])) return;
 // NOTE: All the following could be handled by Payment::settings()
-        \SettingDb::set('postfinance_shop_id',
+        \Cx\Core\Setting\Controller\Setting::set('postfinance_shop_id',
             trim(strip_tags(contrexx_input2raw($_POST['postfinance_shop_id']))));
-        \SettingDb::set('postfinance_active',
+        \Cx\Core\Setting\Controller\Setting::set('postfinance_active',
             !empty($_POST['postfinance_active']));
-//        \SettingDb::set('postfinance_hash_seed',
+//        \Cx\Core\Setting\Controller\Setting::set('postfinance_hash_seed',
 //            trim(strip_tags(contrexx_input2raw($_POST['postfinance_hash_seed']);
 // Replaced by
-        \SettingDb::set('postfinance_hash_signature_in',
+        \Cx\Core\Setting\Controller\Setting::set('postfinance_hash_signature_in',
             trim(strip_tags(contrexx_input2raw($_POST['postfinance_hash_signature_in']))));
-        \SettingDb::set('postfinance_hash_signature_out',
+        \Cx\Core\Setting\Controller\Setting::set('postfinance_hash_signature_out',
             trim(strip_tags(contrexx_input2raw($_POST['postfinance_hash_signature_out']))));
-        \SettingDb::set('postfinance_authorization_type',
+        \Cx\Core\Setting\Controller\Setting::set('postfinance_authorization_type',
             trim(strip_tags(contrexx_input2raw($_POST['postfinance_authorization_type']))));
 // OBSOLETE -- Determined by the available cards and the PostFinance
 // backend settings
-//        \SettingDb::set('postfinance_accepted_payment_methods', $strYellowpayAcceptedPM);
-        \SettingDb::set('postfinance_use_testserver',
+//        \Cx\Core\Setting\Controller\Setting::set('postfinance_accepted_payment_methods', $strYellowpayAcceptedPM);
+        \Cx\Core\Setting\Controller\Setting::set('postfinance_use_testserver',
             !empty($_POST['postfinance_use_testserver']));
         // Postfinance Mobile
-        \SettingDb::set('postfinance_mobile_webuser',
+        \Cx\Core\Setting\Controller\Setting::set('postfinance_mobile_webuser',
             trim(strip_tags(contrexx_input2raw($_POST['postfinance_mobile_webuser']))));
-        \SettingDb::set('postfinance_mobile_sign',
+        \Cx\Core\Setting\Controller\Setting::set('postfinance_mobile_sign',
             trim(strip_tags(contrexx_input2raw($_POST['postfinance_mobile_sign']))));
-        \SettingDb::set('postfinance_mobile_ijustwanttotest',
+        \Cx\Core\Setting\Controller\Setting::set('postfinance_mobile_ijustwanttotest',
             !empty($_POST['postfinance_mobile_ijustwanttotest']));
-        \SettingDb::set('postfinance_mobile_status',
+        \Cx\Core\Setting\Controller\Setting::set('postfinance_mobile_status',
             !empty($_POST['postfinance_mobile_status']));
         // Saferpay
-        \SettingDb::set('saferpay_id',
+        \Cx\Core\Setting\Controller\Setting::set('saferpay_id',
             trim(strip_tags(contrexx_input2raw($_POST['saferpay_id']))));
-        \SettingDb::set('saferpay_active',
+        \Cx\Core\Setting\Controller\Setting::set('saferpay_active',
             !empty($_POST['saferpay_active']));
-        \SettingDb::set('saferpay_finalize_payment',
+        \Cx\Core\Setting\Controller\Setting::set('saferpay_finalize_payment',
             !empty($_POST['saferpay_finalize_payment']));
-        \SettingDb::set('saferpay_use_test_account',
+        \Cx\Core\Setting\Controller\Setting::set('saferpay_use_test_account',
             !empty($_POST['saferpay_use_test_account']));
-        \SettingDb::set('saferpay_window_option',
+        \Cx\Core\Setting\Controller\Setting::set('saferpay_window_option',
             intval($_POST['saferpay_window_option']));
         // Paypal
-        \SettingDb::set('paypal_account_email',
+        \Cx\Core\Setting\Controller\Setting::set('paypal_account_email',
             trim(strip_tags(contrexx_input2raw($_POST['paypal_account_email']))));
-        \SettingDb::set('paypal_active', !empty($_POST['paypal_active']));
-        \SettingDb::set('paypal_default_currency',
+        \Cx\Core\Setting\Controller\Setting::set('paypal_active', !empty($_POST['paypal_active']));
+        \Cx\Core\Setting\Controller\Setting::set('paypal_default_currency',
             trim(strip_tags(contrexx_input2raw($_POST['paypal_default_currency']))));
         // Datatrans
-        \SettingDb::set('datatrans_merchant_id',
+        \Cx\Core\Setting\Controller\Setting::set('datatrans_merchant_id',
             trim(strip_tags(contrexx_input2raw($_POST['datatrans_merchant_id']))));
-        \SettingDb::set('datatrans_active', !empty($_POST['datatrans_active']));
-        \SettingDb::set('datatrans_request_type',
+        \Cx\Core\Setting\Controller\Setting::set('datatrans_active', !empty($_POST['datatrans_active']));
+        \Cx\Core\Setting\Controller\Setting::set('datatrans_request_type',
             trim(strip_tags(contrexx_input2raw($_POST['datatrans_request_type']))));
-        \SettingDb::set('datatrans_use_testserver', !empty($_POST['datatrans_use_testserver']));
+        \Cx\Core\Setting\Controller\Setting::set('datatrans_use_testserver', !empty($_POST['datatrans_use_testserver']));
         // Paymill
-        \SettingDb::set('paymill_active',
+        \Cx\Core\Setting\Controller\Setting::set('paymill_active',
             !empty($_POST['paymill_active']));
-        \SettingDb::set('paymill_use_test_account', !empty($_POST['paymill_use_test_account']));
-        \SettingDb::set('paymill_test_private_key',
+        \Cx\Core\Setting\Controller\Setting::set('paymill_use_test_account', !empty($_POST['paymill_use_test_account']));
+        \Cx\Core\Setting\Controller\Setting::set('paymill_test_private_key',
             trim(strip_tags(contrexx_input2raw($_POST['paymill_test_private_key']))));
-        \SettingDb::set('paymill_test_public_key',
+        \Cx\Core\Setting\Controller\Setting::set('paymill_test_public_key',
             trim(strip_tags(contrexx_input2raw($_POST['paymill_test_public_key']))));
-        \SettingDb::set('paymill_live_private_key',
+        \Cx\Core\Setting\Controller\Setting::set('paymill_live_private_key',
             trim(strip_tags(contrexx_input2raw($_POST['paymill_live_private_key']))));
-        \SettingDb::set('paymill_live_public_key',
+        \Cx\Core\Setting\Controller\Setting::set('paymill_live_public_key',
             trim(strip_tags(contrexx_input2raw($_POST['paymill_live_public_key']))));
         // LSV
-        \SettingDb::set('payment_lsv_active', !empty($_POST['payment_lsv_active']));
+        \Cx\Core\Setting\Controller\Setting::set('payment_lsv_active', !empty($_POST['payment_lsv_active']));
 // All preceding should be handled by Payment::settings()
     }
 
@@ -412,51 +412,51 @@ class ShopSettings
         }
 //DBG::log("Got bvat");
 
-        $result = \SettingDb::set('vat_number',
+        $result = \Cx\Core\Setting\Controller\Setting::set('vat_number',
             trim(strip_tags(contrexx_input2raw($_POST['vat_number']))));
         if (isset($result)) self::$success &= $result;
 
 //DBG::log("HERE: ".self::$success);
-        $result = \SettingDb::set('vat_default_id',
+        $result = \Cx\Core\Setting\Controller\Setting::set('vat_default_id',
             intval($_POST['vat_default_id']));
         if (isset($result)) self::$success &= $result;
-        $result = \SettingDb::set('vat_other_id',
+        $result = \Cx\Core\Setting\Controller\Setting::set('vat_other_id',
             intval($_POST['vat_other_id']));
         if (isset($result)) self::$success &= $result;
         $vat_enabled_home_customer = !empty($_POST['vat_enabled_home_customer']);
-        $result = \SettingDb::set(
+        $result = \Cx\Core\Setting\Controller\Setting::set(
             'vat_enabled_home_customer', $vat_enabled_home_customer);
         if (isset($result)) self::$success &= $result;
         if ($vat_enabled_home_customer) {
-            $result = \SettingDb::set('vat_included_home_customer',
+            $result = \Cx\Core\Setting\Controller\Setting::set('vat_included_home_customer',
                 !empty($_POST['vat_included_home_customer']));
             if (isset($result)) self::$success &= $result;
         }
         $vat_enabled_home_reseller = !empty($_POST['vat_enabled_home_reseller']);
-        $result = \SettingDb::set(
+        $result = \Cx\Core\Setting\Controller\Setting::set(
             'vat_enabled_home_reseller', $vat_enabled_home_reseller);
         if (isset($result)) self::$success &= $result;
-//DBG::log("after set(): ".self::$success.", my changed: ".self::$changed.", \SettingDb: ".\SettingDb::changed());
+//DBG::log("after set(): ".self::$success.", my changed: ".self::$changed.", \SettingDb: ".\Cx\Core\Setting\Controller\Setting::changed());
         if ($vat_enabled_home_reseller) {
-            $result = \SettingDb::set('vat_included_home_reseller',
+            $result = \Cx\Core\Setting\Controller\Setting::set('vat_included_home_reseller',
                 !empty($_POST['vat_included_home_reseller']));
             if (isset($result)) self::$success &= $result;
         }
         $vat_enabled_foreign_customer = !empty($_POST['vat_enabled_foreign_customer']);
-        $result = \SettingDb::set(
+        $result = \Cx\Core\Setting\Controller\Setting::set(
             'vat_enabled_foreign_customer', $vat_enabled_foreign_customer);
         if (isset($result)) self::$success &= $result;
         if ($vat_enabled_foreign_customer) {
-            $result = \SettingDb::set('vat_included_foreign_customer',
+            $result = \Cx\Core\Setting\Controller\Setting::set('vat_included_foreign_customer',
                 !empty($_POST['vat_included_foreign_customer']));
             if (isset($result)) self::$success &= $result;
         }
         $vat_enabled_foreign_reseller = !empty($_POST['vat_enabled_foreign_reseller']);
-        $result = \SettingDb::set(
+        $result = \Cx\Core\Setting\Controller\Setting::set(
             'vat_enabled_foreign_reseller', $vat_enabled_foreign_reseller);
         if (isset($result)) self::$success &= $result;
         if ($vat_enabled_foreign_reseller) {
-            $result = \SettingDb::set('vat_included_foreign_reseller',
+            $result = \Cx\Core\Setting\Controller\Setting::set('vat_included_foreign_reseller',
                 !empty($_POST['vat_included_foreign_reseller']));
             if (isset($result)) self::$success &= $result;
         }
@@ -560,8 +560,8 @@ class ShopSettings
     {
         global $_CONFIGURATION;
 // ShopSettings
-        \SettingDb::errorHandler();
-        \SettingDb::init('Shop', 'config');
+        \Cx\Core\Setting\Controller\Setting::errorHandler();
+        \Cx\Core\Setting\Controller\Setting::init('Shop', 'config');
         $table_name = DBPREFIX.'module_shop_config';
         $i = 0;
         if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
@@ -669,15 +669,15 @@ class ShopSettings
                     break;
                 }
                 if ($name) {
-                    if (   \SettingDb::getValue($name) === NULL
-                        && !\SettingDb::add($name, $value, ++$i)) {
+                    if (   \Cx\Core\Setting\Controller\Setting::getValue($name) === NULL
+                        && !\Cx\Core\Setting\Controller\Setting::add($name, $value, ++$i)) {
                         throw new Cx\Lib\Update_DatabaseException(
                            "Failed to add SettingDb entry for '$name'");
                     }
                 }
                 if ($name_status) {
-                    if (   \SettingDb::getValue($name_status) === NULL
-                        && !\SettingDb::add($name_status, $status, ++$i)) {
+                    if (   \Cx\Core\Setting\Controller\Setting::getValue($name_status) === NULL
+                        && !\Cx\Core\Setting\Controller\Setting::add($name_status, $status, ++$i)) {
                         throw new Cx\Lib\Update_DatabaseException(
                            "Failed to add SettingDb entry for status '$name_status'");
                     }
@@ -685,83 +685,83 @@ class ShopSettings
                 $objResult->MoveNext();
             }
         }
-        \SettingDb::init('Shop', 'config');
+        \Cx\Core\Setting\Controller\Setting::init('Shop', 'config');
         // Try adding any that just *might* be missing for *any* reason
-        \SettingDb::add('email', 'no-reply@comvation.com', ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('email_confirmation', 'no-reply@comvation.com', ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('company', 'Comvation AG', ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('address', 'Burgstrasse 20', ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('country_id', 204, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('telephone', '+4133 2266000', ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('fax', '+4133 2266001', ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('vat_number', '12345678', ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('vat_enabled_foreign_customer', 0, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('vat_enabled_foreign_reseller', 0, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('vat_enabled_home_customer', 1, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('vat_enabled_home_reseller', 1, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('vat_included_foreign_customer', 0, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('vat_included_foreign_reseller', 0, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('vat_included_home_customer', 1, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('vat_included_home_reseller', 1, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('vat_default_id', 1, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('vat_other_id', 1, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('weight_enable', 0, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('show_products_default', 0, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('product_sorting', 0, ++$i,
-            \SettingDb::TYPE_DROPDOWN,
+        \Cx\Core\Setting\Controller\Setting::add('email', 'no-reply@comvation.com', ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('email_confirmation', 'no-reply@comvation.com', ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('company', 'Comvation AG', ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('address', 'Burgstrasse 20', ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('country_id', 204, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('telephone', '+4133 2266000', ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('fax', '+4133 2266001', ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('vat_number', '12345678', ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('vat_enabled_foreign_customer', 0, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('vat_enabled_foreign_reseller', 0, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('vat_enabled_home_customer', 1, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('vat_enabled_home_reseller', 1, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('vat_included_foreign_customer', 0, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('vat_included_foreign_reseller', 0, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('vat_included_home_customer', 1, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('vat_included_home_reseller', 1, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('vat_default_id', 1, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('vat_other_id', 1, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('weight_enable', 0, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('show_products_default', 0, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('product_sorting', 0, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN,
             '0:TXT_SHOP_PRODUCT_SORTING_ALPHABETIC,'.
             '1:TXT_SHOP_PRODUCT_SORTING_INDIVIDUAL,'.
             '2:TXT_SHOP_PRODUCT_SORTING_PRODUCTCODE',
             'config');
-        \SettingDb::add('thumbnail_max_width', 140, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('thumbnail_max_height', 140, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('thumbnail_quality', 90, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('saferpay_id', '1234', ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('saferpay_active', 1, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('saferpay_use_test_account', 1, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('saferpay_finalize_payment', 1, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('saferpay_window_option', 2, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('paypal_active', 1, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('paypal_account_email', 'no-reply@comvation.com', ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('paypal_default_currency', 'CHF', ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('thumbnail_max_width', 140, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('thumbnail_max_height', 140, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('thumbnail_quality', 90, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('saferpay_id', '1234', ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('saferpay_active', 1, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('saferpay_use_test_account', 1, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('saferpay_finalize_payment', 1, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('saferpay_window_option', 2, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('paypal_active', 1, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('paypal_account_email', 'no-reply@comvation.com', ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('paypal_default_currency', 'CHF', ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
         // Also see Yellowpay.class
-        \SettingDb::add('postfinance_shop_id', 'Ihr Kontoname', ++$i,
-            \SettingDb::TYPE_TEXT);
-        \SettingDb::add('postfinance_active', '0', ++$i,
-            \SettingDb::TYPE_CHECKBOX, '1');
-        \SettingDb::add('postfinance_authorization_type', 'SAL', ++$i,
-            \SettingDb::TYPE_DROPDOWN, 'RES:Reservation,SAL:Verkauf');
+        \Cx\Core\Setting\Controller\Setting::add('postfinance_shop_id', 'Ihr Kontoname', ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT);
+        \Cx\Core\Setting\Controller\Setting::add('postfinance_active', '0', ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1');
+        \Cx\Core\Setting\Controller\Setting::add('postfinance_authorization_type', 'SAL', ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'RES:Reservation,SAL:Verkauf');
 // OBSOLETE
         // As it appears that in_array(0, $array) is true for each non-empty
         // $array, indices for the entries must be numbered starting at 1.
@@ -769,35 +769,35 @@ class ShopSettings
 //        foreach (self::$arrKnownPaymentMethod as $index => $name) {
 //            $arrPayments[$index] = $name;
 //        }
-//        \SettingDb::add('postfinance_accepted_payment_methods', '', ++$i,
-//                \SettingDb::TYPE_CHECKBOXGROUP,
-//                \SettingDb::joinValues($arrPayments));
-        \SettingDb::add('postfinance_hash_signature_in',
+//        \Cx\Core\Setting\Controller\Setting::add('postfinance_accepted_payment_methods', '', ++$i,
+//                \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOXGROUP,
+//                \Cx\Core\Setting\Controller\Setting::joinValues($arrPayments));
+        \Cx\Core\Setting\Controller\Setting::add('postfinance_hash_signature_in',
             'Mindestens 16 Buchstaben, Ziffern und Zeichen', ++$i,
-            \SettingDb::TYPE_TEXT);
-        \SettingDb::add('postfinance_hash_signature_out',
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT);
+        \Cx\Core\Setting\Controller\Setting::add('postfinance_hash_signature_out',
             'Mindestens 16 Buchstaben, Ziffern und Zeichen', ++$i,
-            \SettingDb::TYPE_TEXT);
-        \SettingDb::add('postfinance_use_testserver', '1', ++$i,
-            \SettingDb::TYPE_CHECKBOX, '1');
-        \SettingDb::add('postfinance_mobile_webuser', '1234', ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('postfinance_mobile_sign', 'geheimer_schlüssel', ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('postfinance_mobile_ijustwanttotest', 1, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('postfinance_mobile_status', 1, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('datatrans_merchant_id', '1234', ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('datatrans_active', 1, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('datatrans_request_type', 'CAA', ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('datatrans_use_testserver', 1, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('payment_lsv_active', 0, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT);
+        \Cx\Core\Setting\Controller\Setting::add('postfinance_use_testserver', '1', ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX, '1');
+        \Cx\Core\Setting\Controller\Setting::add('postfinance_mobile_webuser', '1234', ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('postfinance_mobile_sign', 'geheimer_schlüssel', ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('postfinance_mobile_ijustwanttotest', 1, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('postfinance_mobile_status', 1, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('datatrans_merchant_id', '1234', ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('datatrans_active', 1, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('datatrans_request_type', 'CAA', ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('datatrans_use_testserver', 1, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('payment_lsv_active', 0, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
         // New for V3.0
         // Disable jsCart by default.
         $useJsCart = '0';
@@ -806,8 +806,8 @@ class ShopSettings
             && $_CONFIGURATION['custom']['shopJsCart']) {
             $useJsCart = '1';
         }
-        \SettingDb::add('use_js_cart', $useJsCart, ++$i,
-            \SettingDb::TYPE_CHECKBOX);
+        \Cx\Core\Setting\Controller\Setting::add('use_js_cart', $useJsCart, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX);
         // Disable shopnavbar on other pages by default.
         $shopnavbar = '0';
         // Activate it in case it was activated in config/configuration.php
@@ -815,47 +815,47 @@ class ShopSettings
             && $_CONFIGURATION['custom']['shopnavbar']) {
             $shopnavbar = '1';
         }
-        \SettingDb::add('shopnavbar_on_all_pages', $shopnavbar, ++$i,
-            \SettingDb::TYPE_CHECKBOX);
+        \Cx\Core\Setting\Controller\Setting::add('shopnavbar_on_all_pages', $shopnavbar, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_CHECKBOX);
         // New for v3.1.0
-        \SettingDb::add('orderitems_amount_min', 0, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('orderitems_amount_min', 0, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
         // New for v2.2(?)
-        \SettingDb::add('orderitems_amount_max', 0, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('orderitems_amount_max', 0, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
         // New for v2.3
-        \SettingDb::add('register',
+        \Cx\Core\Setting\Controller\Setting::add('register',
             ShopLibrary::REGISTER_MANDATORY, ++$i,
-            \SettingDb::TYPE_DROPDOWN,
-            \SettingDb::joinValues(array(
+            \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN,
+            \Cx\Core\Setting\Controller\Setting::joinValues(array(
                 ShopLibrary::REGISTER_MANDATORY,
                 ShopLibrary::REGISTER_OPTIONAL,
                 ShopLibrary::REGISTER_NONE)),
             'config');
-        \SettingDb::add('numof_products_per_page_frontend', 25, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('history_maximum_age_days', 730, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('numof_orders_per_page_frontend', 10, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('numof_orders_per_page_backend', 25, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('numof_customers_per_page_backend', 25, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('numof_manufacturers_per_page_backend', 25, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('numof_mailtemplate_per_page_backend', 25, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('numof_coupon_per_page_backend', 25, ++$i,
-            \SettingDb::TYPE_TEXT, null, 'config');
-        \SettingDb::add('usergroup_id_customer', 0, 341,
-            \SettingDb::TYPE_DROPDOWN_USERGROUP, null, 'config');
-        \SettingDb::add('usergroup_id_reseller', 0, 342,
-            \SettingDb::TYPE_DROPDOWN_USERGROUP, null, 'config');
-        \SettingDb::add('user_profile_attribute_customer_group_id', 0, 351,
-            \SettingDb::TYPE_DROPDOWN_USER_CUSTOM_ATTRIBUTE, null, 'config');
-        \SettingDb::add('user_profile_attribute_notes', 0, 352,
-            \SettingDb::TYPE_DROPDOWN_USER_CUSTOM_ATTRIBUTE, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('numof_products_per_page_frontend', 25, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('history_maximum_age_days', 730, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('numof_orders_per_page_frontend', 10, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('numof_orders_per_page_backend', 25, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('numof_customers_per_page_backend', 25, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('numof_manufacturers_per_page_backend', 25, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('numof_mailtemplate_per_page_backend', 25, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('numof_coupon_per_page_backend', 25, ++$i,
+            \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('usergroup_id_customer', 0, 341,
+            \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN_USERGROUP, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('usergroup_id_reseller', 0, 342,
+            \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN_USERGROUP, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('user_profile_attribute_customer_group_id', 0, 351,
+            \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN_USER_CUSTOM_ATTRIBUTE, null, 'config');
+        \Cx\Core\Setting\Controller\Setting::add('user_profile_attribute_notes', 0, 352,
+            \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN_USER_CUSTOM_ATTRIBUTE, null, 'config');
         // Note that the Settings *MUST* be reinited after adding new entries!
 
         // Add more new/missing settings here

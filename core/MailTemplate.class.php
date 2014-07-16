@@ -193,7 +193,7 @@ die("MailTemplate::init(): Empty section!");
             $arrLanguageId = FWLanguage::getIdArray();
         }
         self::reset();
-        if (empty($limit)) $limit = SettingDb::getValue(
+        if (empty($limit)) $limit = \Cx\Core\Setting\Controller\Setting::getValue(
             'mailtemplate_per_page_backend');
         if (empty($limit)) $limit = 25;
         $query_from = null;
@@ -1014,17 +1014,17 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
             return false;
         }
         if (empty($limit)) {
-            SettingDb::init($section, $group);
-            $limit = SettingDb::getValue('numof_mailtemplate_per_page_backend');
+            \Cx\Core\Setting\Controller\Setting::init($section, $group);
+            $limit = \Cx\Core\Setting\Controller\Setting::getValue('numof_mailtemplate_per_page_backend');
 // TODO: TEMPORARY
             if (is_null($limit)) {
               $limit = 25;
-              SettingDb::add('numof_mailtemplate_per_page_backend', $limit,
+              \Cx\Core\Setting\Controller\Setting::add('numof_mailtemplate_per_page_backend', $limit,
                   1001, 'text', '', $group);
             }
         }
         $uri = Html::getRelativeUri_entities();
-        $tab_index = SettingDb::tab_index();
+        $tab_index = \Cx\Core\Setting\Controller\Setting::tab_index();
         Html::replaceUriParameter($uri, 'active_tab='.$tab_index);
         Html::replaceUriParameter($uri, 'userFrontendLangId='.FRONTEND_LANG_ID);
 //echo("Made uri for sorting: ".htmlentities($uri)."<br />");
@@ -1188,7 +1188,7 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
             Html::stripUriParam($uri, 'act');
             $uriAppendix = '&amp;act=mailtemplate_overview';
         }
-        $tab_index = SettingDb::tab_index();
+        $tab_index = \Cx\Core\Setting\Controller\Setting::tab_index();
         Html::replaceUriParameter($uri, 'active_tab='.$tab_index);
         Html::replaceUriParameter($uri, 'userFrontendLangId='.FRONTEND_LANG_ID);
         $objTemplate->setGlobalVariable(
