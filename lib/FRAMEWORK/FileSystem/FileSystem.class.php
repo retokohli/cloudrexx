@@ -500,7 +500,7 @@ class FileSystem
 ////////////////////////////////////////////////////////////////////////////////
 // These are simplified to use a single path argument only.
 // Any of these use paths that are *ALWAYS* relative to the
-// ASCMS_INSTANCE_DOCUMENT_ROOT constant defined in config/set_constants.php.
+// \Env::get('cx')->getWebsiteDocumentRootPath().
 // Other arguments *MUST NOT* contain "path" in their name in any case;
 // rather call them "folder_name" or "file_name".
 ////////////////////////////////////////////////////////////////////////////////
@@ -569,7 +569,7 @@ class FileSystem
             return false;
         }
         if (move_uploaded_file(
-            $tmp_path, ASCMS_INSTANCE_DOCUMENT_ROOT.'/'.$target_path)) {
+            $tmp_path, \Env::get('cx')->getWebsiteDocumentRootPath().'/'.$target_path)) {
 //DBG::log("File::upload_file_http($upload_field_name, $target_path, $maximum_size, $accepted_types): File successfully moved to $target_path<br />");
             return true;
         }
@@ -599,8 +599,8 @@ class FileSystem
      */
     static function path_relative_to_root(&$path)
     {
-        if (strpos($path, ASCMS_INSTANCE_DOCUMENT_ROOT) === 0) {
-            $path = substr($path, strlen(ASCMS_INSTANCE_DOCUMENT_ROOT) + 1);
+        if (strpos($path, \Env::get('cx')->getWebsiteDocumentRootPath()) === 0) {
+            $path = substr($path, strlen(\Env::get('cx')->getWebsiteDocumentRootPath()) + 1);
         } elseif (ASCMS_PATH_OFFSET && strpos($path, ASCMS_PATH_OFFSET) === 0) {
             $path = substr($path, strlen(ASCMS_PATH_OFFSET) + 1);
         } elseif (strpos($path, '/') === 0) {
@@ -621,7 +621,7 @@ class FileSystem
     {
         self::path_relative_to_root($folder_path);
         if (self::exists($folder_path)) {
-            if (is_dir(ASCMS_INSTANCE_DOCUMENT_ROOT.'/'.$folder_path)) {
+            if (is_dir(\Env::get('cx')->getWebsiteDocumentRootPath().'/'.$folder_path)) {
 //DBG::log("File::make_folder($folder_path): OK, folder $folder_path exists already<br />");
                 return true;
             }
@@ -629,15 +629,15 @@ class FileSystem
             return false;
         }
 
-        \Cx\Lib\FileSystem\FileSystem::makeWritable(dirname(ASCMS_INSTANCE_DOCUMENT_ROOT.'/'.$folder_path));
-        @mkdir(ASCMS_INSTANCE_DOCUMENT_ROOT.'/'.$folder_path);
+        \Cx\Lib\FileSystem\FileSystem::makeWritable(dirname(\Env::get('cx')->getWebsiteDocumentRootPath().'/'.$folder_path));
+        @mkdir(\Env::get('cx')->getWebsiteDocumentRootPath().'/'.$folder_path);
         if (!self::exists($folder_path)) {
-//DBG::log("File::make_folder($folder_path): FAIL, cannot create folder ".ASCMS_INSTANCE_DOCUMENT_ROOT."/$folder_path<br />");
+//DBG::log("File::make_folder($folder_path): FAIL, cannot create folder ".\Env::get('cx')->getWebsiteDocumentRootPath()."/$folder_path<br />");
             if (!self::make_folder_ftp($folder_path)) {
-//DBG::log("File::make_folder($folder_path): FAIL, cannot create folder FTP ".ASCMS_INSTANCE_DOCUMENT_ROOT."/$folder_path<br />");
+//DBG::log("File::make_folder($folder_path): FAIL, cannot create folder FTP ".\Env::get('cx')->getWebsiteDocumentRootPath()."/$folder_path<br />");
                 return false;
             }
-//DBG::log("File::make_folder($folder_path): OK created folder FTP ".ASCMS_INSTANCE_DOCUMENT_ROOT."/$folder_path<br />");
+//DBG::log("File::make_folder($folder_path): OK created folder FTP ".\Env::get('cx')->getWebsiteDocumentRootPath()."/$folder_path<br />");
         }
         $flags = self::chmod($folder_path, self::CHMOD_FOLDER);
         if ($flags == self::CHMOD_FOLDER) {
@@ -704,14 +704,14 @@ class FileSystem
                 return false;
             }
         }
-        $directory = @opendir(ASCMS_INSTANCE_DOCUMENT_ROOT.'/'.$source_path);
+        $directory = @opendir(\Env::get('cx')->getWebsiteDocumentRootPath().'/'.$source_path);
         $file = @readdir($directory);
         while ($file) {
             if (preg_match('/^\.\.?$/', $file)) {
                 $file = @readdir($directory);
                 continue;
             }
-            if (is_file(ASCMS_INSTANCE_DOCUMENT_ROOT.'/'.$source_path.'/'.$file)) {
+            if (is_file(\Env::get('cx')->getWebsiteDocumentRootPath().'/'.$source_path.'/'.$file)) {
                 if (!self::copy_file(
                     $source_path.'/'.$file, $target_path.'/'.$file, $force)) {
                     return false;
@@ -744,8 +744,8 @@ class FileSystem
         self::path_relative_to_root($target_path);
         if (self::exists($target_path) && !$force)
             return false;
-        if (!copy(ASCMS_INSTANCE_DOCUMENT_ROOT.'/'.$source_path,
-                ASCMS_INSTANCE_DOCUMENT_ROOT.'/'.$target_path)) {
+        if (!copy(\Env::get('cx')->getWebsiteDocumentRootPath().'/'.$source_path,
+                \Env::get('cx')->getWebsiteDocumentRootPath().'/'.$target_path)) {
             if (!self::copy_file_ftp($source_path, $target_path))
                 return false;
         }
@@ -770,7 +770,7 @@ class FileSystem
         if ($_FTPCONFIG['is_activated'] && empty(self::$connection))
             self::init();
         if (!self::$connection) return false;
-        $resource = fopen(ASCMS_INSTANCE_DOCUMENT_ROOT.'/'.$source_path, 'r');
+        $resource = fopen(\Env::get('cx')->getWebsiteDocumentRootPath().'/'.$source_path, 'r');
         if (!$resource) return false;
         $result = ftp_fput(
             self::$connection, self::$ftpPath.'/'.$target_path,
@@ -796,7 +796,7 @@ class FileSystem
 
         self::path_relative_to_root($file_path);
         if (self::exists($file_path)) return false;
-        if (!file_put_contents(ASCMS_INSTANCE_DOCUMENT_ROOT.'/'.$file_path, '')) {
+        if (!file_put_contents(\Env::get('cx')->getWebsiteDocumentRootPath().'/'.$file_path, '')) {
             if ($_FTPCONFIG['is_activated'] && empty(self::$connection))
                 self::init();
             if (!self::$connection) return false;
@@ -825,7 +825,7 @@ class FileSystem
     public static function delete_folder($folder_path, $force=false)
     {
         self::path_relative_to_root($folder_path);
-        $resource = @opendir(ASCMS_INSTANCE_DOCUMENT_ROOT.'/'.$folder_path);
+        $resource = @opendir(\Env::get('cx')->getWebsiteDocumentRootPath().'/'.$folder_path);
         if (!$resource) return false;
         $file = @readdir($resource);
         while ($file !== false) {
@@ -838,7 +838,7 @@ class FileSystem
                 return false;
             }
             $file_path = $folder_path.'/'.$file;
-            if (is_file(ASCMS_INSTANCE_DOCUMENT_ROOT.'/'.$file_path)) {
+            if (is_file(\Env::get('cx')->getWebsiteDocumentRootPath().'/'.$file_path)) {
                 if (!self::delete_file($file_path)) return false;
             } else {
                 if (!self::delete_folder($file_path, $force)) return false;
@@ -847,8 +847,8 @@ class FileSystem
         }
         closedir($resource);
 
-        \Cx\Lib\FileSystem\FileSystem::makeWritable(dirname(ASCMS_INSTANCE_DOCUMENT_ROOT.'/'.$folder_path));
-        if (@rmdir(ASCMS_INSTANCE_DOCUMENT_ROOT.'/'.$folder_path))
+        \Cx\Lib\FileSystem\FileSystem::makeWritable(dirname(\Env::get('cx')->getWebsiteDocumentRootPath().'/'.$folder_path));
+        if (@rmdir(\Env::get('cx')->getWebsiteDocumentRootPath().'/'.$folder_path))
             return true;
         return self::delete_folder_ftp($folder_path);
     }
@@ -963,13 +963,13 @@ class FileSystem
         if (self::exists($to_path) && !$force)
             return false;
         if (!rename(
-            ASCMS_INSTANCE_DOCUMENT_ROOT.'/'.$from_path,
-            ASCMS_INSTANCE_DOCUMENT_ROOT.'/'.$to_path)) {
+            \Env::get('cx')->getWebsiteDocumentRootPath().'/'.$from_path,
+            \Env::get('cx')->getWebsiteDocumentRootPath().'/'.$to_path)) {
             if (!self::move_ftp($from_path, $to_path, $force)) return false;
         }
         return self::chmod(
             $to_path,
-            (is_file(ASCMS_INSTANCE_DOCUMENT_ROOT.'/'.$from_path)
+            (is_file(\Env::get('cx')->getWebsiteDocumentRootPath().'/'.$from_path)
               ? self::CHMOD_FILE : self::CHMOD_FOLDER));
     }
 
@@ -1021,7 +1021,7 @@ class FileSystem
 //DBG::log("File::chmod($path, ".decoct($flags)."): FAIL, folder $path does not exist<br />");
             return false;
         }
-        if (@chmod(ASCMS_INSTANCE_DOCUMENT_ROOT.'/'.$path, $flags)) {
+        if (@chmod(\Env::get('cx')->getWebsiteDocumentRootPath().'/'.$path, $flags)) {
 //DBG::log("File::chmod($path, ".decoct($flags)."): OK, folder $path chmodded<br />");
             return true;
         }
@@ -1071,7 +1071,7 @@ class FileSystem
     /**
      * Wrapper for file_exists()
      *
-     * Prepends ASCMS_INSTANCE_DOCUMENT_ROOT to the path.
+     * Prepends \Env::get('cx')->getWebsiteDocumentRootPath() to the path.
      * The file is stat()ed before calling file_exists() in order to
      * update a potentially outdated cache.
      * @param   string    $path     The file or folder path
@@ -1082,11 +1082,11 @@ class FileSystem
         // Clear the file cache.  file_exists() relies on that too much
         clearstatcache();
         self::path_relative_to_root($path);
-        $result = file_exists(ASCMS_INSTANCE_DOCUMENT_ROOT.'/'.$path);
+        $result = file_exists(\Env::get('cx')->getWebsiteDocumentRootPath().'/'.$path);
 //if ($result) {
-//DBG::log("File::exists($path): file ".ASCMS_INSTANCE_DOCUMENT_ROOT."/$path exists<br />");
+//DBG::log("File::exists($path): file ".\Env::get('cx')->getWebsiteDocumentRootPath()."/$path exists<br />");
 //} else {
-//DBG::log("File::exists($path): file ".ASCMS_INSTANCE_DOCUMENT_ROOT."/$path does not exist<br />");
+//DBG::log("File::exists($path): file ".\Env::get('cx')->getWebsiteDocumentRootPath()."/$path does not exist<br />");
 //}
         return $result;
     }
