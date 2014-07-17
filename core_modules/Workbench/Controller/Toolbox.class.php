@@ -109,7 +109,26 @@ class Toolbox {
 	                closedir($dh);
                 }
                 // add all not-yet-listed components existing in filesystem
-                $table = new \BackendTable(new \Cx\Core_Modules\Listing\Model\Entity\DataSet($modules));
+                $tableDefinition = array(
+                    'fields' => array(
+                        'id' => array(
+                            'table' => array(
+                                'parse' => function($value) {return $value;}
+                            ),
+                        ),
+                        'exists_db' => array(
+                            'table' => array(
+                                'parse' => function($value) {return $value;}
+                            ),
+                        ),
+                        'skeleton_version' => array(
+                            'table' => array(
+                                'parse' => function($value) {return $value;}
+                            ),
+                        ),
+                    )
+                );
+                $table = new \BackendTable(new \Cx\Core_Modules\Listing\Model\Entity\DataSet($modules), $tableDefinition);
                 $this->template->setVariable(array(
                     'RECORD_COUNT' => count($modules),
                     'RESULT' => $table->toHtml(),
