@@ -24,7 +24,6 @@ class PagingController extends ListingHandler {
     
     public function __construct() {
         global $_CONFIG;
-        
         $this->countPerPage = $_CONFIG['corePagingLimit'];
     }
     

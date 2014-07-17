@@ -267,10 +267,10 @@ class ListingController {
      */
     protected function getPagingControl() {
         $html = '';
-        if(!$this->paging){
+        if(!$this->paging || $this->entityClass->size() <= $this->count){
             return $html;    
         }
-        $numberOfPages = ceil(count($this->entityClass->toArray()) / $this->count);
+        $numberOfPages = ceil($this->entityClass->size() / $this->count);
         $activePageNumber = ceil(($this->offset + 1) / $this->count);
         
         /*echo 'Number of entries: ' . count($this->entityClass->toArray()) . '<br />';
@@ -311,7 +311,7 @@ class ListingController {
             $html .= '<a href="' . $url . '">' . $pageNumber . '</a>&nbsp;';
         }
         
-        if ($this->offset + $this->count <= count($this->entityClass->toArray())) {
+        if ($this->offset + $this->count < $this->entityClass->size()) {
             // render goto next
             $pagePos = ($activePageNumber - 0) * $this->count;
             if ($pagePos < 0) {
@@ -328,10 +328,13 @@ class ListingController {
         } else {
             $html .= '&gt;&nbsp;&gt;&gt;';
         }
-        
+        if($this->offset + $this->count > $this->entityClass->size()){
+            $to =  $this->entityClass->size();
+        }else{
+            $to  = $this->offset + $this->count;
+        }
         // entry x-y out of n
-        $html .= '&nbsp;Einträge ' . $this->offset . ' - ' . ($this->offset + $this->count) . ' von ' . count($this->entityClass->toArray());
-        
+        $html .= '&nbsp;Einträge ' . ($this->offset+1). ' - ' . $to . ' von ' . $this->entityClass->size();
         return $html;
     }
 }
