@@ -750,28 +750,23 @@ namespace Cx\Core\Core\Controller {
 
        /**
          * Calls pre-init hooks
+         * Pre-Init hooks are defined in /core/Core/Data/preInitHooks.yml.
          */
         protected function callPreInitHooks() {
-// TODO: Load preInit component hooks from yaml-file
-            $componentDefinitions = array();
-
-            foreach ($componentDefinitions as $componentDefinition) {
-                $component = new \Cx\Core\Core\Model\Entity\SystemComponent();
-                $component->setName($componentDefinition['name']);
-                $component->setType($componentDefinition['type']);
-                $systemComponentControler = new \Cx\Core\Core\Model\Entity\SystemComponentController($component, $this);
-                switch ($this->mode) {
-                    case self::MODE_FRONTEND:
-                        $componentController = new \Cx\Core_Modules\MultiSite\Controller\FrontendController($systemComponentControler, $this);
-                        break;
-                    case self::MODE_BACKEND:
-                        $componentController = new \Cx\Core_Modules\MultiSite\Controller\BackendController($systemComponentControler, $this);
-                        break;
-                    default:
-                        $componentController = new \Cx\Core_Modules\MultiSite\Controller\ComponentController($component, $this);
-                        break;
+            try {
+                $filename = $this->getCodeBaseCorePath() . '/Core/Data/preInitHooks.yml';
+                $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::importFromFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), $filename);
+                foreach ($objDataSet as $componentDefinition) {
+                    $component = new \Cx\Core\Core\Model\Entity\SystemComponent();
+                    $component->setName($componentDefinition['name']);
+                    $component->setType($componentDefinition['type']);
+                    $componentControllerClass = $component->getNamespace() . '\\Controller\\ComponentController';
+                    $componentController = new $componentControllerClass($component, $this);
+                    $componentController->preInit($this);
                 }
-                $componentController->preInit();
+            } catch (\Cx\Core_Modules\Listing\Model\Entity\DataSetException $e) {
+                \DBG::msg('callPreInitHooks: Process failed!');
+                \DBG::msg($e->getMessage());
             }
         }
 
