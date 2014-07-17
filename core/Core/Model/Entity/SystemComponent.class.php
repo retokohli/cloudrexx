@@ -141,7 +141,7 @@ class SystemComponent
      * @return string Path for this component
      */
     public function getDirectory($allowCustomizing = true, $relative = false) {
-        $basepath = ASCMS_DOCUMENT_ROOT;
+        $basepath = \Env::get('cx')->getCodeBaseDocumentRootPath();
         if ($relative) {
             $basepath = '';
         }
@@ -172,16 +172,16 @@ class SystemComponent
     public static function getPathForType($type) {
         switch ($type) {
             case self::TYPE_CORE:
-                return ASCMS_CORE_FOLDER;
+                return \Env::get('cx')->getCoreFolderName();
                 break;
             case self::TYPE_CORE_MODULE:
-                return ASCMS_CORE_MODULE_FOLDER;
+                return \Env::get('cx')->getCoreModuleFolderName();
                 break;
             case self::TYPE_MODULE:
-                return ASCMS_MODULE_FOLDER;
+                return \Env::get('cx')->getModuleFolderName();
                 break;
             case 'lib':
-                return ASCMS_LIBRARY_FOLDER;
+                return \Env::get('cx')->getLibraryFolderName();
                 break;
             default:
                 throw new SystemComponentException('No such component type "' . $type . '"');

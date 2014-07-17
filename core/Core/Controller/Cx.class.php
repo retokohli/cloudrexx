@@ -722,6 +722,7 @@ namespace Cx\Core\Core\Controller {
         protected function preInit() {
             $this->checkSystemState();
             $this->initClassLoader();
+            $this->initEnv();
             $this->callPreInitHooks();
             $this->adjustRequest();            
         }
@@ -748,7 +749,23 @@ namespace Cx\Core\Core\Controller {
             $this->cl = new \Cx\Core\ClassLoader\ClassLoader($this, true, $this->customizingPath);
         }
 
-       /**
+        /**
+         * Setting Env class
+         * 
+         */
+        protected function initEnv() {
+            global $_CONFIG, $_FTPCONFIG;
+            /**
+             * Environment repository
+             */
+            require_once($this->cl->getFilePath($this->codeBaseCorePath . '/Env.class.php'));
+            \Env::set('cx', $this);
+            \Env::set('ClassLoader', $this->cl);            
+            \Env::set('config', $_CONFIG);
+            \Env::set('ftpConfig', $_FTPCONFIG);
+        }
+
+        /**
          * Calls pre-init hooks
          * Pre-Init hooks are defined in /core/Core/Data/preInitHooks.yml.
          */
@@ -882,16 +899,7 @@ namespace Cx\Core\Core\Controller {
          * @global type $objInit 
          */
         protected function init() {
-            global $_CONFIG, $_FTPCONFIG, $objDatabase, $objInit, $objCache, $_DBCONFIG;
-
-            /**
-             * Environment repository
-             */
-            require_once($this->cl->getFilePath($this->codeBaseCorePath . '/Env.class.php'));
-            \Env::set('cx', $this);
-            \Env::set('ClassLoader', $this->cl);            
-            \Env::set('config', $_CONFIG);
-            \Env::set('ftpConfig', $_FTPCONFIG);
+            global $objDatabase, $objInit, $objCache, $_DBCONFIG;
 
             /**
              * Start caching with op cache, user cache and contrexx caching
