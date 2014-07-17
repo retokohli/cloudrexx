@@ -7,6 +7,7 @@
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @package     contrexx
  * @subpackage  core_db
+ * @todo        make class a pure library
  */
 
 namespace {
@@ -78,12 +79,26 @@ namespace Cx\Core\Model {
          */
         protected $loggableListener = null;
         
+        /*
+         * db instance
+         * @var \Cx\Core\Model\Model\Entity/Db
+         * */
+        protected $db;
+        
+         /*
+         * db user instance
+         * @var \Cx\Core\Model\Model\Entity/DbUser
+         * */
+        protected $dbUser;
+
         /**
          * Creates a new instance of the database connection handler
-         * @param \Cx\Core\Core\Controller\Cx $cx Main class
+         * @param \Cx\Core\Model\Model\Entity\Db $db Database connection details
+         * @param \Cx\Core\Model\Model\Entity\DbUser $dbUser Database user details
          */
-        public function __construct(\Cx\Core\Core\Controller\Cx $cx) {
-            $this->cx = $cx;
+        public function __construct(\Cx\Core\Model\Model\Entity\Db $db, \Cx\Core\Model\Model\Entity\DbUser $dbUser) {
+            $this->db = $db;
+            $this->dbUser = $dbUser;
         }
         
         /**
@@ -96,31 +111,28 @@ namespace Cx\Core\Model {
 
         /**
          * Initializes the PDO connection
-         * @global array $_DBCONFIG Database configuration
-         * @global array $_CONFIG Configuration
          * @return \PDO PDO connection
          */
         public function getPdoConnection() {
-            global $_DBCONFIG, $_CONFIG;
-
             if ($this->pdo) {
                 return $this->pdo;
             }
-            $objDateTimeZone = new \DateTimeZone($_CONFIG['timezone']);
+            $objDateTimeZone = new \DateTimeZone($this->db->getTimezone());
             $objDateTime = new \DateTime('now', $objDateTimeZone);
             $offset = $objDateTimeZone->getOffset($objDateTime);
             $offsetHours = round(abs($offset)/3600); 
             $offsetMinutes = round((abs($offset)-$offsetHours*3600) / 60); 
             $offsetString = ($offset > 0 ? '+' : '-').($offsetHours < 10 ? '0' : '').$offsetHours.':'.($offsetMinutes < 10 ? '0' : '').$offsetMinutes;
 
+            $dbCharSet = $this->db->getCharset();    
             $this->pdo = new \PDO(
-                'mysql:dbname=' . $_DBCONFIG['database'] . ';charset=' . $_DBCONFIG['charset'] . ';host=' . preg_replace('/:/', ';port=', $_DBCONFIG['host']),
-                $_DBCONFIG['user'],
-                $_DBCONFIG['password'],
+                'mysql:dbname=' . $this->db->getName() . ';charset=' . $dbCharSet . ';host=' . preg_replace('/:/', ';port=', $this->db->getHost()),
+                $this->dbUser->getName(),
+                $this->dbUser->getPassword(),
                 array(
                     // Setting the connection character set in the DSN (see below new \PDO()) prior to PHP 5.3.6 did not work.
                     // We will have to manually do it by executing the SET NAMES query when connection to the database.
-                    \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES '.$_DBCONFIG['charset'],
+                    \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET NAMES '.$dbCharSet,
                     \PDO::MYSQL_ATTR_INIT_COMMAND => 'SET time_zone = \'' . $offsetString . '\'',
                 )
             );
@@ -178,7 +190,6 @@ namespace Cx\Core\Model {
 
         /**
          * Returns the doctrine entity manager
-         * @global array $_DBCONFIG Database configuration
          * @return \Doctrine\ORM\EntityManager 
          */
         public function getEntityManager() {
@@ -186,7 +197,7 @@ namespace Cx\Core\Model {
                 return $this->em;
             }
 
-            global $_DBCONFIG, $objCache;
+            global $objCache;
 
             $config = new \Doctrine\ORM\Configuration();
 
@@ -199,7 +210,7 @@ namespace Cx\Core\Model {
             switch ($userCacheEngine) {
                 case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_APC:
                     $cache = new \Doctrine\Common\Cache\ApcCache();
-                    $cache->setNamespace($_DBCONFIG['database'] . '.' . DBPREFIX);
+                    $cache->setNamespace($this->db->getName() . '.' . $this->db->getTablePrefix());
                     break;
                 case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_MEMCACHE:
                     $memcache = $objCache->getMemcache();
@@ -210,11 +221,11 @@ namespace Cx\Core\Model {
                         $cache = new \Cx\Core_Modules\Cache\Controller\Doctrine\CacheDriver\MemcachedCache();
                         $cache->setMemcache($memcache);
                     }
-                    $cache->setNamespace($_DBCONFIG['database'] . '.' . DBPREFIX);
+                    $cache->setNamespace($this->db->getName() . '.' . $this->db->getTablePrefix());
                     break;
                 case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_XCACHE:
                     $cache = new \Doctrine\Common\Cache\XcacheCache();
-                    $cache->setNamespace($_DBCONFIG['database'] . '.' . DBPREFIX);
+                    $cache->setNamespace($this->db->getName() . '.' . $this->db->getTablePrefix());
                     break;
                 case \Cx\Core_Modules\Cache\Controller\Cache::CACHE_ENGINE_FILESYSTEM:
                     $cache = new \Cx\Core_Modules\Cache\Controller\Doctrine\CacheDriver\FileSystemCache(ASCMS_CACHE_PATH);                    
@@ -269,7 +280,7 @@ namespace Cx\Core\Model {
             $config->setMetadataDriverImpl($chainDriverImpl);
 
             //table prefix
-            $prefixListener = new \DoctrineExtension\TablePrefixListener($_DBCONFIG['tablePrefix']);
+            $prefixListener = new \DoctrineExtension\TablePrefixListener($this->db->getTablePrefix());
             $evm->addEventListener(\Doctrine\ORM\Events::loadClassMetadata, $prefixListener);
 
             $config->setSqlLogger(new \Cx\Lib\DBG\DoctrineSQLLogger());
@@ -278,7 +289,7 @@ namespace Cx\Core\Model {
 
             //resolve enum, set errors
             $conn = $em->getConnection();
-            $conn->setCharset($_DBCONFIG['charset']); 
+            $conn->setCharset($this->db->getCharset()); 
             $conn->getDatabasePlatform()->registerDoctrineTypeMapping('enum', 'string');
             $conn->getDatabasePlatform()->registerDoctrineTypeMapping('set', 'string');
             

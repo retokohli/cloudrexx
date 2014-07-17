@@ -887,7 +887,7 @@ namespace Cx\Core\Core\Controller {
          * @global type $objInit 
          */
         protected function init() {
-            global $_CONFIG, $_FTPCONFIG, $objDatabase, $objInit, $objCache;
+            global $_CONFIG, $_FTPCONFIG, $objDatabase, $objInit, $objCache, $_DBCONFIG;
 
             /**
              * Environment repository
@@ -921,10 +921,27 @@ namespace Cx\Core\Core\Controller {
             if ($this->mode != self::MODE_BACKEND) {
                 \Cx\Core\Csrf\Controller\ComponentController::setFrontendMode();
             }
-            
-            $this->db = new \Cx\Core\Model\Db($this);
+
+            // Set database connection details
+            $objDb = new \Cx\Core\Model\Model\Entity\Db();
+            $objDb->setHost($_DBCONFIG['host']);
+            $objDb->setName($_DBCONFIG['database']);
+            $objDb->setTablePrefix($_DBCONFIG['tablePrefix']);
+            $objDb->setDbType($_DBCONFIG['dbType']);
+            $objDb->setCharset($_DBCONFIG['charset']);
+            $objDb->setCollation($_DBCONFIG['collation']);
+            $objDb->setTimezone($_DBCONFIG['timezone']);
+
+            // Set database user details
+            $objDbUser = new \Cx\Core\Model\Model\Entity\DbUser();
+            $objDbUser->setName($_DBCONFIG['user']);
+            $objDbUser->setPassword($_DBCONFIG['password']);
+
+            // Initialize database connection
+            $this->db = new \Cx\Core\Model\Db($objDb, $objDbUser);
             $objDatabase = $this->db->getAdoDb();
             \Env::set('db', $objDatabase);
+
             $em = $this->db->getEntityManager();
             \Env::set('em', $em);
             \Env::set('pageguard', new \PageGuard($this->db->getAdoDb()));
