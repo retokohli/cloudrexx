@@ -225,7 +225,7 @@ class File implements FileInterface
             return true;
         }
         
-        $path       = ASCMS_PATH.ASCMS_PATH_OFFSET;
+        $path       = \Env::get('cx')->getCodeBasePath() . \Env::get('cx')->getCodeBaseOffsetPath();
         $relPath    = str_replace($path, '', $dst);
         $pathInfo   = pathinfo($relPath);
         $arrFolders = explode('/', $pathInfo['dirname']);
@@ -279,7 +279,7 @@ class File implements FileInterface
             return true;
         }
         
-        $path       = ASCMS_PATH.ASCMS_PATH_OFFSET;
+        $path       = \Env::get('cx')->getCodeBasePath() . \Env::get('cx')->getCodeBaseOffsetPath();
         $relPath    = str_replace($path, '', $dst);
         $pathInfo   = pathinfo($relPath);
         $arrFolders = explode('/', $pathInfo['dirname']);

@@ -153,7 +153,7 @@ class FileSystem
         if (!self::$connection)
             self::$connection = ftp_connect($_FTPCONFIG['host']);
         if (self::$connection) {
-            self::$ftpPath = $_FTPCONFIG['path'].ASCMS_PATH_OFFSET;
+            self::$ftpPath = $_FTPCONFIG['path'] . \Env::get('cx')->getCodeBaseOffsetPath();
             if (@ftp_login(
                   self::$connection,
                   $_FTPCONFIG['username'],
@@ -601,8 +601,8 @@ class FileSystem
     {
         if (strpos($path, \Env::get('cx')->getWebsiteDocumentRootPath()) === 0) {
             $path = substr($path, strlen(\Env::get('cx')->getWebsiteDocumentRootPath()) + 1);
-        } elseif (ASCMS_PATH_OFFSET && strpos($path, ASCMS_PATH_OFFSET) === 0) {
-            $path = substr($path, strlen(ASCMS_PATH_OFFSET) + 1);
+        } elseif (\Env::get('cx')->getCodeBaseOffsetPath() && strpos($path, \Env::get('cx')->getCodeBaseOffsetPath()) === 0) {
+            $path = substr($path, strlen(\Env::get('cx')->getCodeBaseOffsetPath()) + 1);
         } elseif (strpos($path, '/') === 0) {
             $path = substr($path, 1);
         }

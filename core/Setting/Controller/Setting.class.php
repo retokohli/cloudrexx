@@ -613,7 +613,7 @@ class Setting{
         
         if (empty($objTemplateLocal)|| !$objTemplateLocal->blockExists('core_setting_row')) 
         {
-            $objTemplateLocal = new \Cx\Core\Html\Sigma(ASCMS_DOCUMENT_ROOT.'/core/Setting/View/Template/Generic');
+            $objTemplateLocal = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseDocumentRootPath() . '/core/Setting/View/Template/Generic');
             if (!$objTemplateLocal->loadTemplateFile('Form.html'))
                 die("Failed to load template Form.html");
         }
@@ -652,10 +652,10 @@ class Setting{
     {
         //"instanceof" considers subclasses of Sigma to be a Sigma, too!
         if (!($objTemplateLocal instanceof \Cx\Core\Html\Sigma)) {
-            $objTemplateLocal = new \Cx\Core\Html\Sigma(ASCMS_DOCUMENT_ROOT.'/core/Setting/View/Template/Generic');
+            $objTemplateLocal = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseDocumentRootPath() . '/core/Setting/View/Template/Generic');
         }
         if (!$objTemplateLocal->blockExists('core_setting_row')) {
-            $objTemplateLocal->setRoot(ASCMS_DOCUMENT_ROOT.'/core/Setting/View/Template/Generic');
+            $objTemplateLocal->setRoot(\Env::get('cx')->getCodeBaseDocumentRootPath() . '/core/Setting/View/Template/Generic');
         //$objTemplateLocal->setCacheRoot('.');
             if (!$objTemplateLocal->loadTemplateFile('Form.html')){
                 die("Failed to load template Form.html");

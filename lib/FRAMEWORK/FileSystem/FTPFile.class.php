@@ -74,7 +74,7 @@ class FTPFile implements FileInterface
         $this->file = $pathInfo['basename'];
         $path = $pathInfo['dirname'];
 
-        if ($file == ASCMS_PATH) {
+        if ($file == \Env::get('cx')->getCodeBasePath()) {
             $this->file = '';
         }
 
@@ -83,16 +83,16 @@ class FTPFile implements FileInterface
 
     private function getValidFilePath($file, $path)
     {
-        if ($file == ASCMS_PATH) {
+        if ($file == \Env::get('cx')->getCodeBasePath()) {
             $filePath = $this->ftpConfig['path'];
-        } elseif (strpos($path, ASCMS_PATH) === 0) {
-            $filePath = $this->ftpConfig['path'].substr($path, strlen(ASCMS_PATH));
-        } elseif (ASCMS_PATH_OFFSET && strpos($path, ASCMS_PATH_OFFSET) === 0) {
+        } elseif (strpos($path, \Env::get('cx')->getCodeBasePath()) === 0) {
+            $filePath = $this->ftpConfig['path'].substr($path, strlen(\Env::get('cx')->getCodeBasePath()));
+        } elseif (\Env::get('cx')->getCodeBaseOffsetPath() && strpos($path, \Env::get('cx')->getCodeBaseOffsetPath()) === 0) {
             $filePath = $this->ftpConfig['path'].$path;
         } elseif (strpos($path, '/') === 0) {
-            $filePath = $this->ftpConfig['path'].ASCMS_PATH_OFFSET.$path;
+            $filePath = $this->ftpConfig['path']. \Env::get('cx')->getCodeBaseOffsetPath() . $path;
         } else {
-            $filePath = $this->ftpConfig['path'].ASCMS_PATH_OFFSET.'/'.$path;
+            $filePath = $this->ftpConfig['path'] . \Env::get('cx')->getCodeBaseOffsetPath() . '/'.$path;
         }
 
         return preg_replace('#^/+#', '', $filePath);
@@ -196,7 +196,7 @@ class FTPFile implements FileInterface
         // this is probably not required for FTP - TD / 11/1/2012
         /*$parentDirectory = dirname($this->passedFilePath);
         if (!is_writable($parentDirectory)) {
-            if (strpos($parentDirectory, ASCMS_DOCUMENT_ROOT) === 0) {
+            if (strpos($parentDirectory, \Env::get('cx')->getCodeBaseDocumentRootPath()) === 0) {
                 // parent directory lies within the Contrexx installation directory,
                 // therefore, we shall try to make it writable
                 \Cx\Lib\FileSystem\FileSystem::makeWritable($parentDirectory);

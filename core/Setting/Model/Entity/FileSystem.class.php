@@ -46,7 +46,7 @@ class FileSystem extends Engine{
     static function init($section, $group=null) {
         try {
             //File Path
-            $filename=ASCMS_CORE_PATH .'/Setting/Data/'.$section.'.yml';
+            $filename =  \Env::get('cx')->getCodeBaseCorePath() .'/Setting/Data/'.$section.'.yml';
             self::flush();
             self::$section = $section;
             self::$group = $group;
@@ -114,7 +114,7 @@ class FileSystem extends Engine{
         }
         $success = true;
         //File Path
-        $fileName=ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
+        $fileName = \Env::get('cx')->getCodeBaseCorePath() .'/Setting/Data/'.self::$section.'.yml';
         //call DataSet exportToFile method to update file
         $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet(self::$arrSettings);
         $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), $fileName);
@@ -159,7 +159,7 @@ class FileSystem extends Engine{
             return false;
         }
         if(!empty(self::$arrSettings)){
-            $fileName=ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
+            $fileName = \Env::get('cx')->getCodeBaseCorePath() .'/Setting/Data/'.self::$section.'.yml';
             $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet(self::$arrSettings);
             $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), $fileName);
             return true;
@@ -217,7 +217,7 @@ class FileSystem extends Engine{
             // \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::add(): ERROR: Setting '$name' already exists and is non-empty ($old_value)");
             return false;
         }
-        $filename = ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
+        $filename = \Env::get('cx')->getCodeBaseCorePath() .'/Setting/Data/'.self::$section.'.yml';
         $addValue =   Array(  
                             'name'=> addslashes($name),
                             'section'=> addslashes(self::$section),
@@ -254,7 +254,7 @@ class FileSystem extends Engine{
         if (empty($name) && empty($group) && empty(self::$section)) return false;
          
         $arrSetting=array();
-        $filename=ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
+        $filename = \Env::get('cx')->getCodeBaseCorePath() .'/Setting/Data/'.self::$section.'.yml';
         $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::importFromFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), $filename);
         // if get blank or invalid file
         if (empty($objDataSet)) return false;
@@ -282,7 +282,7 @@ class FileSystem extends Engine{
     {
         if (empty(self::$section))return false;
         try {
-            $filename=ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml';
+            $filename = \Env::get('cx')->getCodeBaseCorePath() .'/Setting/Data/'.self::$section.'.yml';
             $objFile = new \Cx\Lib\FileSystem\File($filename);
             $objFile->delete();       
             return true;
@@ -300,7 +300,7 @@ class FileSystem extends Engine{
     static function errorHandler()
     {
         try {
-            $file = new \Cx\Lib\FileSystem\File(ASCMS_CORE_PATH .'/Setting/Data/'.self::$section.'.yml');
+            $file = new \Cx\Lib\FileSystem\File(\Env::get('cx')->getCodeBaseCorePath() .'/Setting/Data/'.self::$section.'.yml');
             $file->touch();
             return false;
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
