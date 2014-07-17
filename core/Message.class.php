@@ -137,6 +137,9 @@ class Message
      */
     static function add($message, $class=self::CLASS_INFO)
     {
+        if (!\cmsSession::isInitialized()) {
+            throw new \Exception("\Message can't be used at this point as no session has been initialized yet!");
+        }
         if (empty($_SESSION['messages'])) {
             $_SESSION['messages'] = array();
         }
