@@ -761,7 +761,7 @@ class Country
     {
         global $_CORELANG;
         
-        $objTemplateCountry = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseModulePath() . '/Country/View/Template/Generic');
+        $objTemplateCountry = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseCorePath() . '/Country/View/Template/Generic');
         $objTemplateCountry->loadTemplateFile('Overview.html');
 
         // Adds messages
