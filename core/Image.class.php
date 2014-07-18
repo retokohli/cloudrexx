@@ -312,8 +312,8 @@ class Image
      */
     function getSizeArrayThumbnail()
     {
-        $width_max = Imagetype::getWidthThumbnail($this->imagetype_key);
-        $height_max = Imagetype::getHeightThumbnail($this->imagetype_key);
+        $width_max = \Cx\Core\ImageType\Controller\ImageType::getWidthThumbnail($this->imagetype_key);
+        $height_max = \Cx\Core\ImageType\Controller\ImageType::getHeightThumbnail($this->imagetype_key);
         return self::getScaledSize(
             $this->getSizeArray(), $width_max, $height_max);
     }
@@ -682,7 +682,7 @@ class Image
             return false;
         }
         // Get the thumbnail size for the associated type
-        $arrInfo = Imagetype::getInfoArray($this->imagetype_key);
+        $arrInfo = \Cx\Core\ImageType\Controller\ImageType::getInfoArray($this->imagetype_key);
 //DBG::log("resize(): Info: ".var_export($arrInfo, true));
         if ($arrInfo['width_thumb'] || $arrInfo['height_thumb']) {
             if (!self::scale(
@@ -743,7 +743,7 @@ class Image
             || !preg_match('/\.(?:jpe?g|gif|png)$/i', $this->path)) return false;
         // Get the thumbnail size for the associated type
         $arrOptions =
-            Imagetype::getThumbnailOptions($this->imagetype_key);
+            \Cx\Core\ImageType\Controller\ImageType::getThumbnailOptions($this->imagetype_key);
         return self::createThumbnail($this->path,
             $arrOptions['width'], $arrOptions['height'],
             $arrOptions['quality']);

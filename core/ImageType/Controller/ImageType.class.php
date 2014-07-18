@@ -5,11 +5,11 @@
  *
  * @version     3.0.0
  * @package     contrexx
- * @subpackage  core
+ * @subpackage  core_imagetype
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  */
-
+namespace Cx\Core\ImageType\Controller;
 /**
  * Image
  *
@@ -18,11 +18,11 @@
  * to access the database directly!
  * @version     3.0.0
  * @package     contrexx
- * @subpackage  core
+ * @subpackage  core_imagetype
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  */
-class Imagetype
+class ImageType
 {
     /**
      * Text key for the image type
@@ -103,12 +103,12 @@ class Imagetype
     {
         global $objDatabase;
 
-//echo("Imagetype::getArray($key): Entered<br />");
+//echo("ImageType::getArray($key): Entered<br />");
         if (   self::$last_key !== ''
             && self::$last_key !== $key)
             self::reset();
         if (!is_array(self::$arrImagetypes)) {
-//echo("Imagetype::getArray($key): Entered<br />");
+//echo("ImageType::getArray($key): Entered<br />");
             $arrSqlName = Text::getSqlSnippets(
                 '`imagetype`.`text_id`', FRONTEND_LANG_ID,
                 MODULE_ID, self::TEXT_IMAGETYPE
@@ -133,11 +133,11 @@ class Imagetype
                         : "='".addslashes($key)."'")
                     : '')."
                  ORDER BY `imagetype`.`key` ASC";
-//echo("Imagetype::getArray($key): query $query<br />");
+//echo("ImageType::getArray($key): query $query<br />");
             $objResult = $objDatabase->Execute($query);
-//echo("Imagetype::getArray($key): query ran, result ".var_export($objResult, true)."<br />");
+//echo("ImageType::getArray($key): query ran, result ".var_export($objResult, true)."<br />");
             if (!$objResult) return self::errorHandler();
-//die("Imagetype::getArray($key): No error<br />");
+//die("ImageType::getArray($key): No error<br />");
             self::$arrImagetypes = array();
             while (!$objResult->EOF) {
                 $strName = $objResult->fields[$arrSqlName['text']];
@@ -160,9 +160,9 @@ class Imagetype
                 $objResult->MoveNext();
             }
             self::$last_key = $key;
-//die("Imagetype::getArray($key): got ".var_export(self::$arrImagetypes, true)."<hr />");
+//die("ImageType::getArray($key): got ".var_export(self::$arrImagetypes, true)."<hr />");
         }
-//echo("Imagetype::getArray(): Array ".var_export(self::$arrImagetypes, true)."<br />");
+//echo("ImageType::getArray(): Array ".var_export(self::$arrImagetypes, true)."<br />");
         return self::$arrImagetypes;
     }
 
@@ -189,14 +189,14 @@ class Imagetype
     {
         global $objDatabase;
 
-//echo("Imagetype::getNameArray($key): Entered<br />");
+//echo("ImageType::getNameArray($key): Entered<br />");
         $arrImagetypes = self::getArray($key);
         if ($arrImagetypes === false) return false;
         $arrName = array();
         foreach ($arrImagetypes as $key => $arrImagetype) {
             $arrName[$key] = $arrImagetype['name'];
         }
-//die("Imagetype::getNameArray($key): got ".var_export($arrImagetype, true)."<hr />");
+//die("ImageType::getNameArray($key): got ".var_export($arrImagetype, true)."<hr />");
         return $arrName;
     }
 
@@ -307,7 +307,7 @@ class Imagetype
      */
     static function getWidthThumbnail($key)
     {
-//echo("Imagetype::getWidthThumbnail($key): Entered<br />");
+//echo("ImageType::getWidthThumbnail($key): Entered<br />");
         $arrImagetype = self::getArray($key);
         if (   empty($key)
             || is_array($key)
@@ -330,7 +330,7 @@ class Imagetype
      */
     static function getHeightThumbnail($key)
     {
-//echo("Imagetype::getHeightThumbnail($key): Entered<br />");
+//echo("ImageType::getHeightThumbnail($key): Entered<br />");
         $arrImagetype = self::getArray();
         if (   empty($key)
             || is_array($key)
@@ -636,7 +636,7 @@ class Imagetype
         ));
 
         $arrImagetypes = self::getArray();
-//echo("Imagetype::edit(): got Array: ".var_export($arrImagetypes, true)."<br />");
+//echo("ImageType::edit(): got Array: ".var_export($arrImagetypes, true)."<br />");
         if (!is_array($arrImagetypes)) {
             $objTemplateLocal->setVariable(
                 'CONTENT_STATUS_MESSAGE',
@@ -773,7 +773,7 @@ class Imagetype
      */
     static function storeFromPost()
     {
-//echo("Imagetype::storeFromPost(): Entered<br />");
+//echo("ImageType::storeFromPost(): Entered<br />");
         if (!isset($_POST['imagetype_key'])) return '';
         // Compare POST with current imagetypes.
         // Only store what was changed.
@@ -851,7 +851,7 @@ class Imagetype
     ) {
 //        global $_CORELANG;
 
-//echo("Imagetype::getMenu($name, $selected, $imagetype_key): Entered<br />");
+//echo("ImageType::getMenu($name, $selected, $imagetype_key): Entered<br />");
         if ($imagetype_key === false) return '';
         $menu = '';
         if (is_array($imagetype_key)) {
@@ -867,7 +867,7 @@ class Imagetype
 //        $menu = sprintf(
 //            $_CORELANG['TXT_CORE_HTML_IMAGETYPE_NAME'], $menu
 //        );
-//echo("*** Imagetype::getMenu($name, $selected, $imagetype_key): Made menu<br />".nl2br(htmlentities(var_export($menu, true)))."<br />");
+//echo("*** ImageType::getMenu($name, $selected, $imagetype_key): Made menu<br />".nl2br(htmlentities(var_export($menu, true)))."<br />");
         return $menu;
     }
 
@@ -884,14 +884,15 @@ class Imagetype
     {
         global $objDatabase;
 
-//die("Imagetype::errorHandler(): Disabled!<br />");
+//die("ImageType::errorHandler(): Disabled!<br />");
 
         $arrTables = $objDatabase->MetaTables('TABLES');
         if (in_array(DBPREFIX."core_imagetype", $arrTables)) {
             $objResult = $objDatabase->Execute("
                 DROP TABLE `".DBPREFIX."core_imagetype`");
             if (!$objResult) return false;
-echo("Imagetype::errorHandler(): Created table core_imagetype<br />");
+            
+echo("ImageType::errorHandler(): Created table core_imagetype<br />");
         }
         $objResult = $objDatabase->Execute("
             CREATE TABLE IF NOT EXISTS `".DBPREFIX."core_imagetype` (
@@ -908,7 +909,7 @@ echo("Imagetype::errorHandler(): Created table core_imagetype<br />");
               UNIQUE (`text_id`)
             ) ENGINE=MYISAM");
         if (!$objResult) return false;
-echo("Imagetype::errorHandler(): Created table core_imagetype<br />");
+echo("ImageType::errorHandler(): Created table core_imagetype<br />");
 
         $arrImagetypes = array(
             // hotelcard image type entries
@@ -987,7 +988,7 @@ echo("Imagetype::errorHandler(): Created table core_imagetype<br />");
                     $text_id, $lang_id, $text,
                     $arrImagetype['module_id'], self::TEXT_IMAGETYPE);
                 if (!$text_id)
-die("Imagetype::errorHandler(): Error storing Text");
+die("ImageType::errorHandler(): Error storing Text");
             }
             $objResult = $objDatabase->Execute("
                 INSERT INTO `".DBPREFIX."core_imagetype` (
@@ -1006,9 +1007,9 @@ die("Imagetype::errorHandler(): Error storing Text");
                   ".$arrImagetype['quality_thumb']."
                 )");
             if (!$objResult)
-die("Imagetype::errorHandler(): Error adding Imagetype");
+die("ImageType::errorHandler(): Error adding Imagetype");
 
-echo("Imagetype::errorHandler(): Inserted image type ".var_export($arrImagetype, true)."<br />");
+echo("ImageType::errorHandler(): Inserted image type ".var_export($arrImagetype, true)."<br />");
         }
 
         // More to come...
