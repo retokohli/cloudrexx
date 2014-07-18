@@ -124,22 +124,22 @@ class ShopMail
     static function errorHandler()
     {
 // Mail
-        \MailTemplate::errorHandler();
+        \Cx\Core\MailTemplate\Controller\MailTemplate::errorHandler();
 
         if (Cx\Lib\UpdateUtil::table_empty(DBPREFIX.'core_mail_template')) {
             // Make sure there are no bodies lying around
-            \Text::deleteByKey('Shop', \MailTemplate::TEXT_NAME);
-            \Text::deleteByKey('Shop', \MailTemplate::TEXT_FROM);
-            \Text::deleteByKey('Shop', \MailTemplate::TEXT_SENDER);
-            \Text::deleteByKey('Shop', \MailTemplate::TEXT_REPLY);
-            \Text::deleteByKey('Shop', \MailTemplate::TEXT_TO);
-            \Text::deleteByKey('Shop', \MailTemplate::TEXT_CC);
-            \Text::deleteByKey('Shop', \MailTemplate::TEXT_BCC);
-            \Text::deleteByKey('Shop', \MailTemplate::TEXT_SUBJECT);
-            \Text::deleteByKey('Shop', \MailTemplate::TEXT_MESSAGE);
-            \Text::deleteByKey('Shop', \MailTemplate::TEXT_MESSAGE_HTML);
-            \Text::deleteByKey('Shop', \MailTemplate::TEXT_ATTACHMENTS);
-            \Text::deleteByKey('Shop', \MailTemplate::TEXT_INLINE);
+            \Text::deleteByKey('Shop', \Cx\Core\MailTemplate\Controller\MailTemplate::TEXT_NAME);
+            \Text::deleteByKey('Shop', \Cx\Core\MailTemplate\Controller\MailTemplate::TEXT_FROM);
+            \Text::deleteByKey('Shop', \Cx\Core\MailTemplate\Controller\MailTemplate::TEXT_SENDER);
+            \Text::deleteByKey('Shop', \Cx\Core\MailTemplate\Controller\MailTemplate::TEXT_REPLY);
+            \Text::deleteByKey('Shop', \Cx\Core\MailTemplate\Controller\MailTemplate::TEXT_TO);
+            \Text::deleteByKey('Shop', \Cx\Core\MailTemplate\Controller\MailTemplate::TEXT_CC);
+            \Text::deleteByKey('Shop', \Cx\Core\MailTemplate\Controller\MailTemplate::TEXT_BCC);
+            \Text::deleteByKey('Shop', \Cx\Core\MailTemplate\Controller\MailTemplate::TEXT_SUBJECT);
+            \Text::deleteByKey('Shop', \Cx\Core\MailTemplate\Controller\MailTemplate::TEXT_MESSAGE);
+            \Text::deleteByKey('Shop', \Cx\Core\MailTemplate\Controller\MailTemplate::TEXT_MESSAGE_HTML);
+            \Text::deleteByKey('Shop', \Cx\Core\MailTemplate\Controller\MailTemplate::TEXT_ATTACHMENTS);
+            \Text::deleteByKey('Shop', \Cx\Core\MailTemplate\Controller\MailTemplate::TEXT_INLINE);
         }
         $arrFrom = $arrSender = $arrSubject = array();
         $arrLanguageId = \FWLanguage::getIdArray();
@@ -234,7 +234,7 @@ class ShopMail
 //                $arrTemplate['message_html'] = preg_replace(
 //                    '/(?:\r|\n|\r\n)/', "<br />\n", $arrTemplate['message']);
                     $arrTemplate['lang_id'] = $lang_id;
-                    if (!\MailTemplate::store('Shop', $arrTemplate)) {
+                    if (!\Cx\Core\MailTemplate\Controller\MailTemplate::store('Shop', $arrTemplate)) {
                         throw new Cx\Lib\Update_DatabaseException(
                            "Failed to store Mailtemplate");
                     }
@@ -247,8 +247,8 @@ class ShopMail
         // Add the new default templates with the new keys
         // and have the user migrate changes herself!
         foreach ($arrLanguageId as $lang_id) {
-            if (!\MailTemplate::get('Shop', 'order_confirmation', $lang_id)) {
-                \MailTemplate::store('Shop', array(
+            if (!\Cx\Core\MailTemplate\Controller\MailTemplate::get('Shop', 'order_confirmation', $lang_id)) {
+                \Cx\Core\MailTemplate\Controller\MailTemplate::store('Shop', array(
                     'lang_id' => $lang_id,
                     'key'          => 'order_confirmation',
                     'name'         => 'Bestellungsbestätigung',
@@ -438,8 +438,8 @@ EOF
                     'html'         => true,
                 ));
             }
-            if (!\MailTemplate::get('Shop', 'order_complete', $lang_id)) {
-                \MailTemplate::store('Shop', array(
+            if (!\Cx\Core\MailTemplate\Controller\MailTemplate::get('Shop', 'order_complete', $lang_id)) {
+                \Cx\Core\MailTemplate\Controller\MailTemplate::store('Shop', array(
                     'lang_id' => $lang_id,
                     'key'          => 'order_complete',
                     'name'         => 'Auftrag abgeschlossen',
@@ -479,8 +479,8 @@ EOF
                     'html'         => true,
                 ));
             }
-            if (!\MailTemplate::get('Shop', 'customer_login', $lang_id)) {
-                \MailTemplate::store('Shop', array(
+            if (!\Cx\Core\MailTemplate\Controller\MailTemplate::get('Shop', 'customer_login', $lang_id)) {
+                \Cx\Core\MailTemplate\Controller\MailTemplate::store('Shop', array(
                     'lang_id' => $lang_id,
                     'key'          => 'customer_login',
                     'name'         => 'Logindaten',

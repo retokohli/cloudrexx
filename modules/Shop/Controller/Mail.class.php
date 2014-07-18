@@ -349,18 +349,18 @@ die("Mail::storeTemplate(): Obsolete method called!");
         if (!include_once ASCMS_FRAMEWORK_PATH.'/UpdateUtil') return false;
         if (Cx\Lib\UpdateUtil::table_empty(DBPREFIX.'core_mail_template')) {
             // Make sure there are no bodies lying around
-            \Text::deleteByKey('Shop', \MailTemplate::TEXT_NAME);
-            \Text::deleteByKey('Shop', \MailTemplate::TEXT_FROM);
-            \Text::deleteByKey('Shop', \MailTemplate::TEXT_SENDER);
-            \Text::deleteByKey('Shop', \MailTemplate::TEXT_REPLY);
-            \Text::deleteByKey('Shop', \MailTemplate::TEXT_TO);
-            \Text::deleteByKey('Shop', \MailTemplate::TEXT_CC);
-            \Text::deleteByKey('Shop', \MailTemplate::TEXT_BCC);
-            \Text::deleteByKey('Shop', \MailTemplate::TEXT_SUBJECT);
-            \Text::deleteByKey('Shop', \MailTemplate::TEXT_MESSAGE);
-            \Text::deleteByKey('Shop', \MailTemplate::TEXT_MESSAGE_HTML);
-            \Text::deleteByKey('Shop', \MailTemplate::TEXT_ATTACHMENTS);
-            \Text::deleteByKey('Shop', \MailTemplate::TEXT_INLINE);
+            \Text::deleteByKey('Shop', \Cx\Core\MailTemplate\Controller\MailTemplate::TEXT_NAME);
+            \Text::deleteByKey('Shop', \Cx\Core\MailTemplate\Controller\MailTemplate::TEXT_FROM);
+            \Text::deleteByKey('Shop', \Cx\Core\MailTemplate\Controller\MailTemplate::TEXT_SENDER);
+            \Text::deleteByKey('Shop', \Cx\Core\MailTemplate\Controller\MailTemplate::TEXT_REPLY);
+            \Text::deleteByKey('Shop', \Cx\Core\MailTemplate\Controller\MailTemplate::TEXT_TO);
+            \Text::deleteByKey('Shop', \Cx\Core\MailTemplate\Controller\MailTemplate::TEXT_CC);
+            \Text::deleteByKey('Shop', \Cx\Core\MailTemplate\Controller\MailTemplate::TEXT_BCC);
+            \Text::deleteByKey('Shop', \Cx\Core\MailTemplate\Controller\MailTemplate::TEXT_SUBJECT);
+            \Text::deleteByKey('Shop', \Cx\Core\MailTemplate\Controller\MailTemplate::TEXT_MESSAGE);
+            \Text::deleteByKey('Shop', \Cx\Core\MailTemplate\Controller\MailTemplate::TEXT_MESSAGE_HTML);
+            \Text::deleteByKey('Shop', \Cx\Core\MailTemplate\Controller\MailTemplate::TEXT_ATTACHMENTS);
+            \Text::deleteByKey('Shop', \Cx\Core\MailTemplate\Controller\MailTemplate::TEXT_INLINE);
         }
         // Migrate existing templates from the shop to the MailTemplate.
         // These are the keys replacing the IDs.
@@ -437,7 +437,7 @@ die("Mail::storeTemplate(): Obsolete method called!");
 //                $arrTemplate['message_html'] = preg_replace(
 //                    '/(?:\r|\n|\r\n)/', "<br />\n", $arrTemplate['message']);
                 $arrTemplate['lang_id'] = $lang_id;
-                if (!\MailTemplate::store('Shop', $arrTemplate)) {
+                if (!\Cx\Core\MailTemplate\Controller\MailTemplate::store('Shop', $arrTemplate)) {
                     throw new Cx\Lib\Update_DatabaseException(
                        "Failed to store Mailtemplate");
                 }

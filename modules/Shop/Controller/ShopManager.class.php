@@ -1394,7 +1394,7 @@ class ShopManager extends ShopLibrary
         global $_CORELANG;
 
 // TODO: TEMPORARY.  Remove when a proper update is available.
-$template = \MailTemplate::get('Shop', 'order_confirmation');
+$template = \Cx\Core\MailTemplate\Controller\MailTemplate::get('Shop', 'order_confirmation');
 //die(var_export($template, true));
 if (!$template) {
     ShopMail::errorHandler();
@@ -1406,10 +1406,10 @@ if (!$template) {
             && $_REQUEST['act'] == 'mailtemplate_edit') {
             $_REQUEST['active_tab'] = 2;
         }
-        \MailTemplate::deleteTemplate('Shop');
+        \Cx\Core\MailTemplate\Controller\MailTemplate::deleteTemplate('Shop');
         // If there is anything to be stored, and if that fails, return to
         // the edit view in order to save the posted form content
-        $result_store = \MailTemplate::storeFromPost('Shop');
+        $result_store = \Cx\Core\MailTemplate\Controller\MailTemplate::storeFromPost('Shop');
         if ($result_store === false) {
             $_REQUEST['active_tab'] = 2;
         }
@@ -1417,7 +1417,7 @@ if (!$template) {
         $result &= \Cx\Core\Setting\Controller\Setting::show_external(
             $objTemplate,
             $_CORELANG['TXT_CORE_MAILTEMPLATES'],
-            \MailTemplate::overview('Shop', 'config',
+            \Cx\Core\MailTemplate\Controller\MailTemplate::overview('Shop', 'config',
                 \Cx\Core\Setting\Controller\Setting::getValue('numof_mailtemplate_per_page_backend')
             )->get()
         );
@@ -1426,7 +1426,7 @@ if (!$template) {
             (empty($_REQUEST['key'])
               ? $_CORELANG['TXT_CORE_MAILTEMPLATE_ADD']
               : $_CORELANG['TXT_CORE_MAILTEMPLATE_EDIT']),
-            \MailTemplate::edit('Shop')->get()
+            \Cx\Core\MailTemplate\Controller\MailTemplate::edit('Shop')->get()
         );
         self::$objTemplate->addBlock('SHOP_SETTINGS_FILE',
             'settings_block', $objTemplate->get());
@@ -3041,7 +3041,7 @@ if ($test === NULL) {
                 'to' => $email,
                 'substitution' => $arrSubs,
             );
-            if (!\MailTemplate::send($arrMailTemplate)) {
+            if (!\Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate)) {
                 \Message::warning($_ARRAYLANG['TXT_MESSAGE_SEND_ERROR']);
                 return $objCustomer->id();
             }
@@ -3600,7 +3600,7 @@ if ($test === NULL) {
                 //.','.\Cx\Core\Setting\Controller\Setting::getValue('email_confirmation'),
             'substitution' => &$arrSubstitution,
         );
-        if (!\MailTemplate::send($arrMailTemplate)) return false;
+        if (!\Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate)) return false;
         return $arrSubstitution['CUSTOMER_EMAIL'];
     }
 

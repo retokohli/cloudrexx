@@ -1199,10 +1199,10 @@ class CrmSettings extends CrmLibrary
             && $_REQUEST['act'] == 'mailtemplate_edit') {
             $_REQUEST['active_tab'] = 2;
         }
-        \MailTemplate::deleteTemplate('Crm');
+        \Cx\Core\MailTemplate\Controller\MailTemplate::deleteTemplate('Crm');
         // If there is anything to be stored, and if that fails, return to
         // the edit view in order to save the posted form content
-        $result_store = \MailTemplate::storeFromPost('Crm');
+        $result_store = \Cx\Core\MailTemplate\Controller\MailTemplate::storeFromPost('Crm');
         if ($result_store === false) {
             $_REQUEST['active_tab'] = 2;
         }
@@ -1210,7 +1210,7 @@ class CrmSettings extends CrmLibrary
         $result &= \Cx\Core\Setting\Controller\Setting::show_external(
             $objTemplate,
             $_CORELANG['TXT_CORE_MAILTEMPLATES'],
-            \MailTemplate::overview('Crm', 'config',
+            \Cx\Core\MailTemplate\Controller\MailTemplate::overview('Crm', 'config',
                 \Cx\Core\Setting\Controller\Setting::getValue('numof_mailtemplate_per_page_backend')
             )->get()
         );
@@ -1220,7 +1220,7 @@ class CrmSettings extends CrmLibrary
             (empty($_REQUEST['key'])
               ? $_CORELANG['TXT_CORE_MAILTEMPLATE_ADD']
               : $_CORELANG['TXT_CORE_MAILTEMPLATE_EDIT']),
-            \MailTemplate::edit('Crm')->get()
+            \Cx\Core\MailTemplate\Controller\MailTemplate::edit('Crm')->get()
         );
 
         $result &= \Cx\Core\Setting\Controller\Setting::show_external(

@@ -56,7 +56,7 @@ class CrmDefaultEventHandler implements \Cx\Modules\Crm\Model\Events\CrmEventHan
                 'substitution' => $substitutions,
         ));
 
-        if (false === \MailTemplate::send($arrMailTemplate)) {
+        if (false === \Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate)) {
             $event->cancel();
             return false;
         };
