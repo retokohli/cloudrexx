@@ -5,7 +5,7 @@
  * @copyright   Comvation AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
- * @subpackage  coremodule_survey
+ * @subpackage  module_survey
  */
 
 namespace Cx\Modules\Survey\Controller;
@@ -16,7 +16,7 @@ namespace Cx\Modules\Survey\Controller;
  * @copyright   Comvation AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
- * @subpackage  coremodule_survey
+ * @subpackage  module_survey
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
     public function getControllerClasses() {
