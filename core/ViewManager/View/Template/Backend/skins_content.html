@@ -4,8 +4,79 @@
     function reloadThemesPage(){
         document.themesForm.submit();
     }
+
+    $J(document).ready(function() {
+        $J('.loadThemesPage').bind('click', function() {
+            $J('#themesPage').val($J(this).attr('data-rel'));
+            reloadThemesPage();
+        });
+        $J(".chosen-select").chosen({width: "100%"});
+
+        $J("#jstree").jstree({
+            "ui": {
+                "initially_select": ["activeFile"]
+            },
+            "core": {
+                "animation": 1,
+                "initially_open": ["activeFile"]
+            }
+
+
+        }).delegate(".jstree-open>a", "click.jstree", function(event) {
+            $J.jstree._reference(this).close_node(this, false, false);
+        }).delegate(".jstree-closed>a", "click.jstree", function(event) {
+            $J.jstree._reference(this).open_node(this, false, false);
+        });
+    });
     // -->
 </script>
+<style>
+    #jstree {
+        height: 598px;
+        overflow: auto;
+        width: 253px;
+    }
+    /*    #jstree, .jstree a {
+            float: none;
+        }*/
+    li.jstree-open > ul {
+        display: block;
+    }
+    .jstree ul, .jstree li {
+        display: block;
+        list-style-type: none;
+        margin: 0;
+        padding: 0;
+        margin-left: 10px;
+    }
+    #jstree .jstree-icon {
+        clear: none;
+        cursor: pointer;
+        float: left;
+        margin-top: 6px;
+        position: relative;
+    }
+    .jstree-default a .jstree-icon {
+        background-position: -36px 0;
+    }
+    .jstree a {
+        width: 0px;
+    }
+    .jstree #activeFile{
+        color: #1A74BD;
+        cursor: pointer;
+    }
+    .icon{
+        margin-top: 8px;
+    }
+    .themesContentHeading{
+        float: right;
+    }
+    li.jstree-closed, li.jstree-leaf{
+        height: 28px;
+    }
+
+</style>
 
 <div id="subnavbar_level2">
     <ul>
@@ -16,17 +87,16 @@
 
 <table width="100%" border="0" cellspacing="0" cellpadding="0">
     <tr>
-        <td width="240" valign="top" nowrap>
+        <td width="253" valign="top" nowrap>
 
-            <form name="themesForm" action="index.php?cmd=skins&amp;act=templates"  method="post">
-                <table summary="" width="240" border="0" cellspacing="0" cellpadding="3" class="adminlist">
+            <form name="themesForm" action="index.php?cmd=ViewManager&amp;act=templates"  method="post">
+                <table summary="" width="253" border="0" cellspacing="0" cellpadding="3" class="adminlist">
                     <tr>
-                        <th width="240" nowrap="nowrap">{TXT_DESIGN_FOLDER}</th>
+                        <th width="253" nowrap="nowrap">{TXT_DESIGN_FOLDER}</th>
                     </tr>
                     <tr valign="top" class="row1">
                         <td>
-                            <select name="themes" size="9" onChange="reloadThemesPage()" style="width: 100%;">
-                                <option value="">--- {TXT_CHOOSE_TEMPLATE_GROUP} ----</option>
+                            <select name="themes" size="9" onChange="reloadThemesPage()" style="width: 253px;" class="chosen-select">
                                 {THEMES_MENU}
                             </select>
                         </td>
@@ -36,46 +106,80 @@
                     </tr>
                     <tr valign="top" class="row1">
                         <td>
-                            <select name="themesPage" size="14" onChange="reloadThemesPage()" style="width: 100%;">
-                                <option value="">--- {TXT_SELECT_FILE} -------------------</option>
-                                {THEMES_PAGES_MENU}
-                            </select>
+                            <div id="jstree">
+
+                                <ul>
+                                    <li>
+                                        {THEME_FOLDER_ICON} <a>{TXT_DESIGN_LAYOUT}</a>
+                                        <!-- BEGIN application_template -->
+                                        <ul>
+                                            <li>
+                                                {THEME_FOLDER_ICON} <a>{TXT_DESIGN_APPLICATION_TEMPLATE}</a>
+
+                                                <!-- BEGIN application_folders -->
+                                                <ul>
+                                                    <li>
+                                                        <img height="16" width="16" alt="icon" src="{THEME_APPL_FOLDER_ICON}" class="icon">
+                                                        <a href="javascript:void(0);" >
+                                                            {THEME_APPL_FOLDER_NAME}
+                                                        </a>
+                                                        {THEME_APPL_FOLDERS}
+                                                    </li>
+                                                </ul>
+                                                <!-- END application_folders -->
+
+                                            </li>                                            
+                                        </ul>
+                                        <!-- END application_template -->
+                                        <ul>
+                                            <li>
+                                                {THEME_FOLDER_ICON}<a>{TXT_DESIGN_HOME_TEMPLATE}</a>
+                                                <ul>
+                                                    <!-- BEGIN home_template -->
+                                                    <li>
+                                                        <img height='16' width='16' alt='icon' src='{THEME_HOME_LAYOUT_ICON}' class='icon'>
+                                                        <a href= 'javascript:void(0);' class='loadThemesPage' id = '{THEME_HOME_LAYOUT_CSS_ID}' data-rel='{THEME_HOME_LAYOUT_NAME}'>
+                                                            {THEME_HOME_LAYOUT_NAME}
+                                                        </a>
+                                                    </li>
+                                                    <!-- END home_template -->
+                                                </ul>
+                                            </li>
+                                        </ul>
+                                        <ul>
+                                            <li>
+                                                {THEME_FOLDER_ICON}<a>{TXT_DESIGN_CONTENT_TEMPLATE}</a>
+                                                <ul>
+                                                    <!-- BEGIN content_template -->
+                                                    <li>
+                                                        <img height='16' width='16' alt='icon' src='{THEME_CONTENT_LAYOUT_ICON}' class='icon'>
+                                                        <a href= 'javascript:void(0);' class='loadThemesPage' id = '{THEME_CONTENT_LAYOUT_CSS_ID}' data-rel='{THEME_CONTENT_LAYOUT_NAME}'>
+                                                            {THEME_CONTENT_LAYOUT_NAME}
+                                                        </a>
+                                                    </li>
+                                                    <!-- END content_template -->
+                                                </ul>
+                                            </li>
+                                        </ul>
+
+                                    </li>
+                                </ul>
+                                <ul>
+
+                                    <!-- BEGIN remaining_files_folders -->    
+                                    {THEME_REMAINING_FOLDERS}
+                                    <!-- END remaining_files_folders -->
+
+                                    <!-- BEGIN remaining_files_folders -->
+                                    {THEME_REMAINING_FILES}
+                                    <!-- END remaining_files_folders -->
+                                </ul>
+                            </div>
+
                         </td>
                     </tr>
-                    <tr>
-                        <th nowrap="nowrap">{TXT_MANAGE_FILES}</th>
-                    </tr>
-                    <tr valign="top" class="row1">
-                        <td>
-                            <select name="themesDelFileName" style="width: 100%">
-                                <option value="" selected>--- {TXT_SELECT_FILE} ---</option>
-                                {THEMES_PAGE_DEL_VALUE}
-                            </select><br />
-                            <input type="submit" name="Submit" value="{TXT_DELETE}" style="WIDTH: 100px"/>
-                            <br />
-                            <input type="input" name="themesNewFileName" maxlength="50" style="width: 240px;" /><br />
-                            <input type="submit" name="Submit" value="{TXT_CREATE_FILE}" />
-                        </td>
-                    </tr>
-                    <!-- BEGIN theme_libraries -->
-                    <tr>
-                        <th colspan="2" nowrap="nowrap">{TXT_TEMPLATE_USED_LIBRARIES}</th>
-                    </tr>
-                    <tr valign="top" class="row1">
-                        <td width="240">
-                            <!-- BEGIN theme_library -->
-                            <select name="libraryVersion[{THEME_LIBRARY_NAME}]" style="width: 100%">
-                                <option value="">{THEME_LIBRARY_NAME} {TXT_THEME_LIBRARY_NOT_USED}</option>
-                                <!-- BEGIN theme_library_version -->
-                                <option value="{THEME_LIBRARY_VERSION}" {THEME_LIBRARY_VERSION_SELECTED}>{THEME_LIBRARY_NAME} {THEME_LIBRARY_VERSION}</option>
-                                <!-- END theme_library_version -->
-                            </select><br />
-                            <!-- END theme_library -->
-                            <input type="submit" value="{TXT_SAVE}" />
-                        </td>
-                    </tr>
-                    <!-- END theme_libraries -->
                 </table>
+                <input type="hidden" name="themesPage" id="themesPage"/>
             </form>
         </td>
         <td width="100%" valign="top" >
@@ -83,13 +187,14 @@
             <form name="themesForm2" method="post" action="index.php?cmd=ViewManager&amp;act=update">
                 <table summary="" width="100%" border="0" cellspacing="0" cellpadding="3"  class="adminlist">
                     <tr>
-                        <th width="100%"><!--{TXT_FILE_EDITOR}--><b>{THEMES_FULL_PATH}</b></th>
-                        <th align="right" nowrap>
+                        <th width="100%"><!--{TXT_FILE_EDITOR}--><b>{THEMES_FULL_PATH}</b>
+                            <span class="themesContentHeading">
                             <!-- BEGIN file_actions_top -->
                             <input onClick="javascript:this.form.content.focus(); this.form.content.select();" type=button value='{TXT_SELECT_ALL}' />
                             <input type="reset" value='{TXT_RESET}' name="Reset" />
                             <input type="submit" value='{TXT_STORE}' name="Submit" />	
                             <!-- END file_actions_top -->
+                            </span>
                         </th>
                     </tr>
                     <tr class="row1">
@@ -115,6 +220,46 @@
                 </div>
             </form>
         </td>
+        <td width="240" valign="top" nowrap>
+            <form action="index.php?cmd=ViewManager&amp;act=templates" method="post">
+                <input type="hidden" name="themes" value="{THEMES_SELECTED_THEME}" />
+                <table summary="" width="240" border="0" cellspacing="0" cellpadding="3" class="adminlist">
+                    <!-- BEGIN theme_libraries -->
+                    <tr>
+                        <th colspan="2" nowrap="nowrap">{TXT_TEMPLATE_USED_LIBRARIES}</th>
+                    </tr>
+                    <tr valign="top" class="row1">
+                        <td width="240">
+                            <!-- BEGIN theme_library -->
+                            <select name="libraryVersion[{THEME_LIBRARY_NAME}]" style="width: 100%">
+                                <option value="">{THEME_LIBRARY_NAME} {TXT_THEME_LIBRARY_NOT_USED}</option>
+                                <!-- BEGIN theme_library_version -->
+                                <option value="{THEME_LIBRARY_VERSION}" {THEME_LIBRARY_VERSION_SELECTED}>{THEME_LIBRARY_NAME} {THEME_LIBRARY_VERSION}</option>
+                                <!-- END theme_library_version -->
+                            </select><br />
+                            <!-- END theme_library -->
+                            <input type="submit" value="{TXT_SAVE}" />
+                        </td>
+                    </tr>
+                    <!-- END theme_libraries -->
+                    <tr>
+                        <th nowrap="nowrap">{TXT_MANAGE_FILES}</th>
+                    </tr>
+                    <tr valign="top" class="row1">
+                        <td>
+                            <select name="themesDelFileName" style="width: 100%">
+                                <option value="" selected>--- {TXT_SELECT_FILE} ---</option>
+                                {THEMES_PAGE_DEL_VALUE}
+                            </select><br />
+                            <input type="submit" name="Submit" value="{TXT_DELETE}" style="WIDTH: 100px"/>
+                            <br />
+                            <input type="input" name="themesNewFileName" maxlength="50" style="width: 240px;" /><br />
+                            <input type="submit" name="Submit" value="{TXT_CREATE_FILE}" />
+                        </td>
                     </tr>
                 </table>
+            </form>
+        </td>
+    </tr>
+</table>
 <!-- END themes_content.html -->

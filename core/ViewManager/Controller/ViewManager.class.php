@@ -1190,9 +1190,9 @@ class ViewManager
             return;
         }
 
-        $directory = new RecursiveDirectoryIterator($this->path.$themes);
-        $iterator = new RecursiveIteratorIterator($directory);
-        $objects = new RegexIterator($iterator, '/^.+'.$themesFile.'$/i', RecursiveRegexIterator::GET_MATCH);
+        $directory = new \RecursiveDirectoryIterator($this->path.$themes);
+        $iterator = new \RecursiveIteratorIterator($directory);
+        $objects = new \RegexIterator($iterator, '/^.+'.$themesFile.'$/i', RecursiveRegexIterator::GET_MATCH);
 
         // iterate through all objects in the folder and search for matching files
         foreach ($objects as $object) {
@@ -1714,8 +1714,8 @@ class ViewManager
         if ($themes != "") {
             $file = $this->path.$themes;
             if (file_exists($file)) {
-                $directory = new RecursiveDirectoryIterator($file);
-                $objects = new RecursiveIteratorIterator($directory);
+                $directory = new \RecursiveDirectoryIterator($file);
+                $objects = new \RecursiveIteratorIterator($directory);
 
                 foreach ($objects as $name => $object) {
                     $fileName = $object->getFileName();
