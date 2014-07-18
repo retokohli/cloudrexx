@@ -5,7 +5,7 @@
  * @copyright   Comvation AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
- * @subpackage  coremodule_filesharing
+ * @subpackage  module_filesharing
  */
 
 namespace Cx\Modules\FileSharing\Controller;
@@ -16,7 +16,7 @@ namespace Cx\Modules\FileSharing\Controller;
  * @copyright   Comvation AG
  * @author      Project Team SS4U <info@comvation.com>
  * @package     contrexx
- * @subpackage  coremodule_filesharing
+ * @subpackage  module_filesharing
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
     public function getControllerClasses() {

@@ -1,22 +1,22 @@
 <?php
 
 /**
- * JSON Adapter for Survey module
+ * JSON Adapter for Crm module
  * @copyright   Comvation AG
  * @author      ss4u <ss4ugroup@gmail.com>
  * @package     contrexx
- * @subpackage  core_json
+ * @subpackage  module_crm
  */
 
 namespace Cx\Modules\Crm\Controller;
 use \Cx\Core\Json\JsonAdapter;
 
 /**
- * JSON Adapter for Survey module
+ * JSON Adapter for Crm module
  * @copyright   Comvation AG
  * @author      ss4u <ss4ugroup@gmail.com>
  * @package     contrexx
- * @subpackage  core_json
+ * @subpackage  module_crm
  */
 class JsonCrm implements JsonAdapter {
     /**

@@ -5,7 +5,7 @@
  * @copyright   Comvation AG
  * @author      ss4u <ss4ugroup@gmail.com>
  * @package     contrexx
- * @subpackage  core_json
+ * @subpackage  module_survey
  */
 
 namespace Cx\Modules\Survey\Controller;
@@ -16,7 +16,7 @@ use \Cx\Core\Json\JsonAdapter;
  * @copyright   Comvation AG
  * @author      ss4u <ss4ugroup@gmail.com>
  * @package     contrexx
- * @subpackage  core_json
+ * @subpackage  module_survey
  */
 class JsonSurvey implements JsonAdapter {
     /**
