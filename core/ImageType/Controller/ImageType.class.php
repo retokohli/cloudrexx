@@ -615,12 +615,12 @@ class ImageType
 //$objTemplate->setCurrentBlock();
 //echo(nl2br(htmlentities(var_export($objTemplate->getPlaceholderList()))));
 
-        $objTemplateLocal = new \Cx\Core\Html\Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
+        $objTemplateLocal = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseCorePath() . '/ImageType/View/Template/Generic');
 // TODO: Needed?
         \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($objTemplateLocal);
         $objTemplateLocal->setErrorHandling(PEAR_ERROR_DIE);
-        if (!$objTemplateLocal->loadTemplateFile('imagetypes.html'))
-            die("Failed to load template imagetypes.html");
+        if (!$objTemplateLocal->loadTemplateFile('Types.html'))
+            die("Failed to load template Types.html");
         $uri = Html::getRelativeUri_entities();
         $active_tab = \Cx\Core\Setting\Controller\Setting::getTabIndex();
         Html::replaceUriParameter($uri, 'active_tab='.$active_tab);
