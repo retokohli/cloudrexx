@@ -264,7 +264,7 @@ die("Failed to get Customer for ID $customer_id");
                 break;
 
             case 'testAttachment':
-                \MailTemplate::send(array(
+                \Cx\Core\MailTemplate\Controller\MailTemplate::send(array(
                     'from' => 'reto.kohli@comvation.com',
                     'to' => 'reto.kohli@comvation.com',
                     'subject' => 'Test Attachment',
@@ -3583,7 +3583,7 @@ die("Shop::processRedirect(): This method is obsolete!");
             'substitution' => &$arrSubstitution,
             'to' => $objCustomer->email(),
         );
-        return \MailTemplate::send($arrMailTemplate);
+        return \Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate);
     }
 
 

@@ -324,7 +324,7 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
 // NOTE: Creates some XML order file (for customizing)
 //        $template = file_get_contents(
 //            ASCMS_MODULE_PATH.'/Shop/View/Template/Backend/module_shop_export_orders.xml');
-//        MailTemplate::substitute($template, $arrSubstitution, true);
+//        \Cx\Core\MailTemplate\Controller\MailTemplate::substitute($template, $arrSubstitution, true);
 //        // Strip leftover comments from blocks: "<!---->" or "<!--  -->"
 //        $template = preg_replace('/<!--\s*-->/', '', $template);
 //        $file = new Cx\Lib\FileSystem\File(
@@ -332,7 +332,7 @@ die("ShopLibrary::shopSetMailTemplate(): Obsolete method called");
 //        //$file->makeWritable(); // Fails on win32
 //        $file->write($template);
 ///
-        if (!\MailTemplate::send($arrMailTemplate)) return false;
+        if (!\Cx\Core\MailTemplate\Controller\MailTemplate::send($arrMailTemplate)) return false;
         return $arrSubstitution['CUSTOMER_EMAIL'];
     }
 
