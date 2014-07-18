@@ -49,14 +49,14 @@ class FileSystemFile implements FileInterface
             throw new FileSystemFileException('No file path specified!');
         }
         
-        if (strpos($file, \Env::get('cx')->getWebsitePath() . \Env::get('cx')->getWebsiteOffsetPath()) === 0) {
+        if (strpos($file, \Env::get('cx')->getWebsiteDocumentRootPath()) === 0) {
             $this->filePath = $file;
         } elseif (\Env::get('cx')->getWebsiteOffsetPath() && strpos($file, \Env::get('cx')->getWebsiteOffsetPath()) === 0) {
             $this->filePath = \Env::get('cx')->getWebsitePath() . $file;
         } elseif (strpos($file, '/') === 0) {
-            $this->filePath = \Env::get('cx')->getWebsitePath() . \Env::get('cx')->getWebsiteOffsetPath() . $file;
+            $this->filePath = \Env::get('cx')->getWebsiteDocumentRootPath() . $file;
         } else {
-            $this->filePath = \Env::get('cx')->getWebsitePath() . \Env::get('cx')->getWebsiteOffsetPath() . '/'.$file;
+            $this->filePath = \Env::get('cx')->getWebsiteDocumentRootPath() . '/'.$file;
         }
     }
     
@@ -184,7 +184,7 @@ class FileSystemFile implements FileInterface
 
         $parentDirectory = dirname($this->filePath);
         if (!is_writable($parentDirectory)) {
-            if (strpos($parentDirectory, \Env::get('cx')->getWebsitePath() . \Env::get('cx')->getWebsiteOffsetPath()) === 0) {
+            if (strpos($parentDirectory, \Env::get('cx')->getWebsiteDocumentRootPath()) === 0) {
                 // parent directory lies within the Contrexx installation directory,
                 // therefore, we shall try to make it writable
                 \Cx\Lib\FileSystem\FileSystem::makeWritable($parentDirectory);
