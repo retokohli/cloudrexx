@@ -552,7 +552,7 @@ class Customer extends \User
             'CUSTOMER_ADDRESS' => $this->address(),
             'CUSTOMER_ZIP' => $this->zip(),
             'CUSTOMER_CITY' => $this->city(),
-            'CUSTOMER_COUNTRY' => \Country::getNameById($this->country_id()),
+            'CUSTOMER_COUNTRY' => \Cx\Core\Country\Controller\Country::getNameById($this->country_id()),
             'CUSTOMER_PHONE' => $this->phone(),
             'CUSTOMER_FAX' => $this->fax(),
             'CUSTOMER_USERNAME' => $this->username(),
@@ -668,7 +668,7 @@ class Customer extends \User
         // are ready first!
 //DBG::log("Customer::errorHandler(): Adding settings");
         ShopSettings::errorHandler();
-//        \Country::errorHandler(); // Called by Order::errorHandler();
+//        \Cx\Core\Country\Controller\Country::errorHandler(); // Called by Order::errorHandler();
         Order::errorHandler();
         Discount::errorHandler();
 

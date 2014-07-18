@@ -129,11 +129,11 @@ class FormGenerator {
                 break;
             case '\Country':
                 // this is for customizing only:
-                $data = \Country::getNameById($value);
+                $data = \Cx\Core\Country\Controller\Country::getNameById($value);
                 if (empty($data)) {
                     $value = 204;
                 }
-                $options = \Country::getMenuoptions($value, false);
+                $options = \Cx\Core\Country\Controller\Country::getMenuoptions($value, false);
                 $select = new \Cx\Core\Html\Model\Entity\DataElement(
                     $name,
                     $options,

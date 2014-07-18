@@ -1243,7 +1243,7 @@ if (!$limit) {
                     'SHIPPING_ZIP' => $objOrder->zip(),
                     'SHIPPING_CITY' => $objOrder->city(),
                     'SHIPPING_COUNTRY_ID' => $objOrder->country_id(),
-                    'SHIPPING_COUNTRY' => \Country::getNameById(
+                    'SHIPPING_COUNTRY' => \Cx\Core\Country\Controller\Country::getNameById(
                         $objOrder->country_id()),
                     'SHIPPING_PHONE' => $objOrder->phone(),
                 )),

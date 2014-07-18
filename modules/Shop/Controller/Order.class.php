@@ -1773,8 +1773,8 @@ class Order
             'SHOP_ZIP' => $objOrder->billing_zip(),
             'SHOP_CITY' => $objOrder->billing_city(),
             'SHOP_COUNTRY' => ($edit
-                ? \Country::getMenu('billing_country_id', $objOrder->billing_country_id())
-                : \Country::getNameById($objOrder->billing_country_id())),
+                ? \Cx\Core\Country\Controller\Country::getMenu('billing_country_id', $objOrder->billing_country_id())
+                : \Cx\Core\Country\Controller\Country::getNameById($objOrder->billing_country_id())),
             'SHOP_PHONE' => $objOrder->billing_phone(),
             'SHOP_FAX' => $objOrder->billing_fax(),
             'SHOP_EMAIL' => $objOrder->billing_email(),
@@ -1788,8 +1788,8 @@ class Order
             'SHOP_SHIP_ZIP' => $objOrder->zip(),
             'SHOP_SHIP_CITY' => $objOrder->city(),
             'SHOP_SHIP_COUNTRY' => ($edit
-                ? \Country::getMenu('shipCountry', $objOrder->country_id())
-                : \Country::getNameById($objOrder->country_id())),
+                ? \Cx\Core\Country\Controller\Country::getMenu('shipCountry', $objOrder->country_id())
+                : \Cx\Core\Country\Controller\Country::getNameById($objOrder->country_id())),
             'SHOP_SHIP_PHONE' => $objOrder->phone(),
             'SHOP_PAYMENTTYPE' => Payment::getProperty($objOrder->payment_id(), 'name'),
             'SHOP_CUSTOMER_NOTE' => $objOrder->note(),
@@ -2123,7 +2123,7 @@ class Order
     {
 // Order
         ShopSettings::errorHandler();
-        \Country::errorHandler();
+        \Cx\Core\Country\Controller\Country::errorHandler();
 
         $table_name = DBPREFIX.'module_shop_order_items';
         $table_structure = array(

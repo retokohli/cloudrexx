@@ -386,12 +386,12 @@ class ShopSettings
             || empty($_POST['list1'])) return null;
         $list = contrexx_input2raw($_POST['list1']);
         sort($list);
-        $arrCountryIdActive = array_keys(\Country::getNameArray(true));
+        $arrCountryIdActive = array_keys(\Cx\Core\Country\Controller\Country::getNameArray(true));
         sort($arrCountryIdActive);
         if ($list == $arrCountryIdActive) return null;
         self::$changed = true;
         $strCountryIdActive = join(',', $list);
-        return \Country::activate($strCountryIdActive);
+        return \Cx\Core\Country\Controller\Country::activate($strCountryIdActive);
     }
 
 

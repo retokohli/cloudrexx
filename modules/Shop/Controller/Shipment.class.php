@@ -771,7 +771,7 @@ class Shipment
         $arrResult = array();
         foreach (self::$arrShippers as $shipper_id => $shipper) {
             // Get countries covered by this shipper
-            $arrSqlName = \Country::getSqlSnippets();
+            $arrSqlName = \Cx\Core\Country\Controller\Country::getSqlSnippets();
             $objResult = $objDatabase->Execute("
                 SELECT DISTINCT `country`.`id`,".
                        $arrSqlName['field']."

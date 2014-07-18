@@ -219,19 +219,6 @@ class LegacyComponentHandler {
                         \FWUser::getFWUserObject()->logout();
                         exit;
                     },
-                    'country' => function() {
-                        global $cl, $_CORELANG, $subMenuTitle;
-
-                // TODO: Move this define() somewhere else, allocate the IDs properly
-                        define('PERMISSION_COUNTRY_VIEW', 145);
-                        define('PERMISSION_COUNTRY_EDIT', 146);
-                        \Permission::checkAccess(PERMISSION_COUNTRY_VIEW, 'static');
-                        if (!$cl->loadFile(ASCMS_CORE_PATH.'/Country.class.php'))
-                            die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $subMenuTitle = $_CORELANG['TXT_CORE_COUNTRY'];
-                        \Country::getPage();
-                    },
-                    
                 ),
             ),
         );

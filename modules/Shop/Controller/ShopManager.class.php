@@ -1310,7 +1310,7 @@ class ShopManager extends ShopLibrary
         $selected = '';
         $notSelected = '';
         $count = 0;
-        foreach (\Country::getArray($count) as $country_id => $arrCountry) {
+        foreach (\Cx\Core\Country\Controller\Country::getArray($count) as $country_id => $arrCountry) {
             if (empty($arrCountry['active'])) {
                 $notSelected .=
                     '<option value="'.$country_id.'">'.
@@ -1345,7 +1345,7 @@ class ShopManager extends ShopLibrary
                 '<option value="'.$zone_id.'"'.
                 ($selectFirst ? '' : \Html::ATTRIBUTE_SELECTED).
                 '>'.$arrZone['name']."</option>\n";
-            $arrCountryInZone = \Country::getArraysByZoneId($zone_id);
+            $arrCountryInZone = \Cx\Core\Country\Controller\Country::getArraysByZoneId($zone_id);
             $strSelectedCountries = '';
             foreach ($arrCountryInZone['in'] as $country_id => $arrCountry) {
                 $strSelectedCountries .=
@@ -1373,7 +1373,7 @@ class ShopManager extends ShopLibrary
         }
         self::$objTemplate->setVariable(array(
             'SHOP_ZONES_OPTIONS' => $strZoneOptions,
-            'SHOP_ZONE_COUNTRY_LIST' => \Country::getMenuoptions(),
+            'SHOP_ZONE_COUNTRY_LIST' => \Cx\Core\Country\Controller\Country::getMenuoptions(),
         ));
     }
 
@@ -1518,7 +1518,7 @@ if ($test === NULL) {
             'SHOP_CONTACT_TEL' => \Cx\Core\Setting\Controller\Setting::getValue('telephone'),
             'SHOP_CONTACT_FAX' => \Cx\Core\Setting\Controller\Setting::getValue('fax'),
             // Country settings
-            'SHOP_GENERAL_COUNTRY_MENUOPTIONS' => \Country::getMenuoptions(
+            'SHOP_GENERAL_COUNTRY_MENUOPTIONS' => \Cx\Core\Country\Controller\Country::getMenuoptions(
                 \Cx\Core\Setting\Controller\Setting::getValue('country_id'), false),
             // Thumbnail settings
             'SHOP_THUMBNAIL_MAX_WIDTH' => \Cx\Core\Setting\Controller\Setting::getValue('thumbnail_max_width'),
@@ -2803,7 +2803,7 @@ if ($test === NULL) {
             'SHOP_ADDRESS' => $objCustomer->address(),
             'SHOP_CITY' => $objCustomer->city(),
             'SHOP_USERNAME' => $objCustomer->username(),
-            'SHOP_COUNTRY' => \Country::getNameById($objCustomer->country_id()),
+            'SHOP_COUNTRY' => \Cx\Core\Country\Controller\Country::getNameById($objCustomer->country_id()),
             'SHOP_ZIP' => $objCustomer->zip(),
             'SHOP_PHONE' => $objCustomer->phone(),
             'SHOP_FAX' => $objCustomer->fax(),
@@ -2944,7 +2944,7 @@ if ($test === NULL) {
             'SHOP_COMPANY_NOTE' => $companynote,
             'SHOP_REGISTER_DATE' => date(ASCMS_DATE_FORMAT_DATETIME, $registerdate),
             'SHOP_COUNTRY_MENUOPTIONS' =>
-                \Country::getMenuoptions($country_id),
+                \Cx\Core\Country\Controller\Country::getMenuoptions($country_id),
             'SHOP_DISCOUNT_GROUP_CUSTOMER_MENUOPTIONS' =>
                 Discount::getMenuOptionsGroupCustomer($customer_group_id),
             'SHOP_CUSTOMER_TYPE_MENUOPTIONS' =>

@@ -2117,10 +2117,10 @@ die("Shop::processRedirect(): This method is obsolete!");
                 \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'account'),
             // New template - since 2.1.0
             'SHOP_ACCOUNT_COUNTRY_MENUOPTIONS' =>
-                \Country::getMenuoptions($country_id, true),
+                \Cx\Core\Country\Controller\Country::getMenuoptions($country_id, true),
             // Old template
             // Compatibility with 2.0 and older versions
-            'SHOP_ACCOUNT_COUNTRY' => \Country::getMenu('countryId', $country_id),
+            'SHOP_ACCOUNT_COUNTRY' => \Cx\Core\Country\Controller\Country::getMenu('countryId', $country_id),
         ));
         $register = \Cx\Core\Setting\Controller\Setting::getValue('register');
 
@@ -2213,7 +2213,7 @@ die("Shop::processRedirect(): This method is obsolete!");
             'SHOP_ACCOUNT_CITY2' => (empty($_SESSION['shop']['city2'])
                 ? '' : htmlentities($_SESSION['shop']['city2'], ENT_QUOTES, CONTREXX_CHARSET)),
             'SHOP_ACCOUNT_COUNTRY2' =>
-                \Country::getNameById($_SESSION['shop']['countryId2']),
+                \Cx\Core\Country\Controller\Country::getNameById($_SESSION['shop']['countryId2']),
             'SHOP_ACCOUNT_COUNTRY2_ID' => $_SESSION['shop']['countryId2'],
             'SHOP_ACCOUNT_PHONE2' => (empty($_SESSION['shop']['phone2'])
                 ? '' : htmlentities($_SESSION['shop']['phone2'], ENT_QUOTES, CONTREXX_CHARSET)),
@@ -2975,7 +2975,7 @@ die("Shop::processRedirect(): This method is obsolete!");
             'SHOP_ADDRESS' => stripslashes($_SESSION['shop']['address']),
             'SHOP_ZIP' => stripslashes($_SESSION['shop']['zip']),
             'SHOP_CITY' => stripslashes($_SESSION['shop']['city']),
-            'SHOP_COUNTRY' => \Country::getNameById($_SESSION['shop']['countryId']),
+            'SHOP_COUNTRY' => \Cx\Core\Country\Controller\Country::getNameById($_SESSION['shop']['countryId']),
             'SHOP_EMAIL' => stripslashes($_SESSION['shop']['email']),
             'SHOP_PHONE' => stripslashes($_SESSION['shop']['phone']),
             'SHOP_FAX' => stripslashes($_SESSION['shop']['fax']),
@@ -2989,7 +2989,7 @@ die("Shop::processRedirect(): This method is obsolete!");
                 'SHOP_ADDRESS2' => stripslashes($_SESSION['shop']['address2']),
                 'SHOP_ZIP2' => stripslashes($_SESSION['shop']['zip2']),
                 'SHOP_CITY2' => stripslashes($_SESSION['shop']['city2']),
-                'SHOP_COUNTRY2' => \Country::getNameById($_SESSION['shop']['countryId2']),
+                'SHOP_COUNTRY2' => \Cx\Core\Country\Controller\Country::getNameById($_SESSION['shop']['countryId2']),
                 'SHOP_PHONE2' => stripslashes($_SESSION['shop']['phone2']),
             ));
         }
