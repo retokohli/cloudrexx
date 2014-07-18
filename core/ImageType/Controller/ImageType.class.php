@@ -109,7 +109,7 @@ class ImageType
             self::reset();
         if (!is_array(self::$arrImagetypes)) {
 //echo("ImageType::getArray($key): Entered<br />");
-            $arrSqlName = Text::getSqlSnippets(
+            $arrSqlName = \Text::getSqlSnippets(
                 '`imagetype`.`text_id`', FRONTEND_LANG_ID,
                 MODULE_ID, self::TEXT_IMAGETYPE
             );
@@ -387,7 +387,7 @@ class ImageType
                AND `key`='".addslashes($key)."'");
         if (!$objResult) return self::errorHandler();
         if ($objResult->RecordCount()) {
-            if (!Text::deleteById($objResult->fields['text_id']))
+            if (!\Text::deleteById($objResult->fields['text_id']))
                 return false;
         }
         $objResult = $objDatabase->Execute("
@@ -478,7 +478,7 @@ class ImageType
         $width_thumb='NULL', $height_thumb='NULL', $quality_thumb='NULL'
     ) {
         $text_id_old = self::getTextIdByKey($key);
-        $text_id = Text::replace(
+        $text_id = \Text::replace(
             ($text_id_old ? $text_id_old : null),
             FRONTEND_LANG_ID, $imagetype,
             MODULE_ID, self::TEXT_IMAGETYPE);
@@ -621,12 +621,12 @@ class ImageType
         $objTemplateLocal->setErrorHandling(PEAR_ERROR_DIE);
         if (!$objTemplateLocal->loadTemplateFile('Types.html'))
             die("Failed to load template Types.html");
-        $uri = Html::getRelativeUri_entities();
+        $uri = \Html::getRelativeUri_entities();
         $active_tab = \Cx\Core\Setting\Controller\Setting::getTabIndex();
-        Html::replaceUriParameter($uri, 'active_tab='.$active_tab);
-        Html::stripUriParam($uri, 'imagetype_delete_key');
-        Html::stripUriParam($uri, 'key');
-        Html::stripUriParam($uri, 'act');
+        \Html::replaceUriParameter($uri, 'active_tab='.$active_tab);
+        \Html::stripUriParam($uri, 'imagetype_delete_key');
+        \Html::stripUriParam($uri, 'key');
+        \Html::stripUriParam($uri, 'act');
         $objTemplateLocal->setGlobalVariable(
 // TODO: Add sorting
             $_CORELANG
@@ -668,45 +668,45 @@ class ImageType
                 'CORE_IMAGETYPE_ROWCLASS'  => ++$i % 2 + 1,
                 'CORE_IMAGETYPE_KEY'       =>
                     $key.
-                    Html::getHidden(
+                    \Html::getHidden(
                         'imagetype_key['.$key.']', $key, 'imagetype_key-'.$key),
                 'CORE_IMAGETYPE_NAME'      =>
-                    Html::getInputText(
+                    \Html::getInputText(
                         'imagetype_name['.$key.']', $name, 'imagetype_name-'.$key,
                         'style="width: 220px;"'),
                 'CORE_IMAGETYPE_WIDTH'     =>
-                    Html::getInputText(
+                    \Html::getInputText(
                         'imagetype_width['.$key.']', $width, false,
                         'style="width: 30px; text-align: right;"').
                     $_CORELANG['TXT_CORE_IMAGETYPE_PIXEL'],
                 'CORE_IMAGETYPE_HEIGHT'    =>
-                    Html::getInputText(
+                    \Html::getInputText(
                         'imagetype_height['.$key.']', $height, false,
                         'style="width: 30px; text-align: right;"').
                     $_CORELANG['TXT_CORE_IMAGETYPE_PIXEL'],
                 'CORE_IMAGETYPE_QUALITY'   =>
-                    Html::getInputText(
+                    \Html::getInputText(
                         'imagetype_quality['.$key.']', $quality, false,
                         'style="width: 30px; text-align: right;"').
                     $_CORELANG['TXT_CORE_IMAGETYPE_PERCENT_SIGN'],
                 'CORE_IMAGETYPE_WIDTH_THUMB'     =>
-                    Html::getInputText(
+                    \Html::getInputText(
                         'imagetype_width_thumb['.$key.']', $width_thumb, false,
                         'style="width: 30px; text-align: right;"').
                     $_CORELANG['TXT_CORE_IMAGETYPE_PIXEL'],
                 'CORE_IMAGETYPE_HEIGHT_THUMB'    =>
-                    Html::getInputText(
+                    \Html::getInputText(
                         'imagetype_height_thumb['.$key.']', $height_thumb, false,
                         'style="width: 30px; text-align: right;"').
                     $_CORELANG['TXT_CORE_IMAGETYPE_PIXEL'],
                 'CORE_IMAGETYPE_QUALITY_THUMB'   =>
-                    Html::getInputText(
+                    \Html::getInputText(
                         'imagetype_quality_thumb['.$key.']', $quality_thumb, false,
                         'style="width: 30px; text-align: right;"').
                     $_CORELANG['TXT_CORE_IMAGETYPE_PERCENT_SIGN'],
 // Disabled by popular demand
 //                'CORE_IMAGETYPE_FUNCTIONS' =>
-//                    Html::getBackendFunctions(array(
+//                    \Html::getBackendFunctions(array(
 //                            'delete' => $uri.'&amp;imagetype_delete_key='.urlencode($key),
 //                        ),
 //                        array(
@@ -721,40 +721,40 @@ class ImageType
         $objTemplateLocal->setVariable(array(
             'CORE_IMAGETYPE_ROWCLASS'  => 1,
             'CORE_IMAGETYPE_KEY'       =>
-                Html::getInputText(
+                \Html::getInputText(
                     'imagetype_key[new]', '', false,
                     'style="width: 220px;"'),
             'CORE_IMAGETYPE_NAME'      =>
-                Html::getInputText(
+                \Html::getInputText(
                     'imagetype_name[new]', '', false,
                     'style="width: 220px;"'),
             'CORE_IMAGETYPE_WIDTH'     =>
-                Html::getInputText(
+                \Html::getInputText(
                     'imagetype_width[new]', self::DEFAULT_WIDTH, false,
                     'style="width: 30px; text-align: right;"').
                     $_CORELANG['TXT_CORE_IMAGETYPE_PIXEL'],
             'CORE_IMAGETYPE_HEIGHT'    =>
-                Html::getInputText(
+                \Html::getInputText(
                     'imagetype_height[new]', self::DEFAULT_HEIGHT, false,
                     'style="width: 30px; text-align: right;"').
                     $_CORELANG['TXT_CORE_IMAGETYPE_PIXEL'],
             'CORE_IMAGETYPE_QUALITY'   =>
-                Html::getInputText(
+                \Html::getInputText(
                     'imagetype_quality[new]', self::DEFAULT_QUALITY, false,
                     'style="width: 30px; text-align: right;"').
                     $_CORELANG['TXT_CORE_IMAGETYPE_PERCENT_SIGN'],
             'CORE_IMAGETYPE_WIDTH_THUMB'     =>
-                Html::getInputText(
+                \Html::getInputText(
                     'imagetype_width_thumb[new]', self::DEFAULT_WIDTH_THUMB, false,
                     'style="width: 30px; text-align: right;"').
                     $_CORELANG['TXT_CORE_IMAGETYPE_PIXEL'],
             'CORE_IMAGETYPE_HEIGHT_THUMB'    =>
-                Html::getInputText(
+                \Html::getInputText(
                     'imagetype_height_thumb[new]', self::DEFAULT_HEIGHT_THUMB, false,
                     'style="width: 30px; text-align: right;"').
                     $_CORELANG['TXT_CORE_IMAGETYPE_PIXEL'],
             'CORE_IMAGETYPE_QUALITY_THUMB'   =>
-                Html::getInputText(
+                \Html::getInputText(
                     'imagetype_quality_thumb[new]', self::DEFAULT_QUALITY_THUMB, false,
                     'style="width: 30px; text-align: right;"').
                     $_CORELANG['TXT_CORE_IMAGETYPE_PERCENT_SIGN'],
@@ -855,13 +855,13 @@ class ImageType
         if ($imagetype_key === false) return '';
         $menu = '';
         if (is_array($imagetype_key)) {
-            $menu = Html::getSelect(
+            $menu = \Html::getSelect(
                 $name.'_type', $imagetype_key, $selected, false, '',
                 $attribute);
         } else {
             $arrName = self::getNameArray($imagetype_key);
             $menu =
-                Html::getHidden($name.'_type', $imagetype_key).
+                \Html::getHidden($name.'_type', $imagetype_key).
                 current($arrName);
         }
 //        $menu = sprintf(
@@ -979,12 +979,12 @@ echo("ImageType::errorHandler(): Created table core_imagetype<br />");
             ),
         );
 
-        Text::deleteByKey(self::TEXT_IMAGETYPE);
+        \Text::deleteByKey(self::TEXT_IMAGETYPE);
 
         foreach ($arrImagetypes as $arrImagetype) {
             $text_id = 0;
             foreach ($arrImagetype['text'] as $lang_id => $text) {
-                $text_id = Text::replace(
+                $text_id = \Text::replace(
                     $text_id, $lang_id, $text,
                     $arrImagetype['module_id'], self::TEXT_IMAGETYPE);
                 if (!$text_id)
