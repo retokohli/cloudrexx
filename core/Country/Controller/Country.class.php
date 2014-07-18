@@ -6,19 +6,19 @@
  * @version     3.0.0
  * @since       3.0.0
  * @package     contrexx
- * @subpackage  core
+ * @subpackage  core_country
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  * @todo        Test!
  */
-
+namespace Cx\Core\Country\Controller;
 /**
  * Country helper methods
  *
  * @version     3.0.0
  * @since       3.0.0
  * @package     contrexx
- * @subpackage  core
+ * @subpackage  core_country
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      Reto Kohli <reto.kohli@comvation.com>
  */
@@ -760,9 +760,9 @@ class Country
     static function settings()
     {
         global $_CORELANG;
-
-        $objTemplateCountry = new \Cx\Core\Html\Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
-        $objTemplateCountry->loadTemplateFile('settings_country.html');
+        
+        $objTemplateCountry = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseModulePath() . '/Country/View/Template/Generic');
+        $objTemplateCountry->loadTemplateFile('Overview.html');
 
         // Adds messages
         self::storeSettings();

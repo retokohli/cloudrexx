@@ -189,7 +189,7 @@ class Payment
                 // if it is one of them, it should only be able to order when it is Switzerland
                 if (
                     in_array(self::$arrPayments[$paymentId]['processor_id'], array(3, 11)) &&
-                    \Country::getAlpha2ById($countryId) != 'CH'
+                    \Cx\Core\Country\Controller\Country::getAlpha2ById($countryId) != 'CH'
                 ) {
                     $objResult->MoveNext();
                     continue;

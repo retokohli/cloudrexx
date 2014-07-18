@@ -902,11 +902,11 @@ die("Cart::view(): ERROR: No template");
             $objTemplate->setVariable(array(
                 'TXT_SHIP_COUNTRY' => $_ARRAYLANG['TXT_SHIP_COUNTRY'],
                 // Old, obsolete
-                'SHOP_COUNTRIES_MENU' => \Country::getMenu(
+                'SHOP_COUNTRIES_MENU' => \Cx\Core\Country\Controller\Country::getMenu(
                     'countryId2', $_SESSION['shop']['countryId2'],
                         true, "document.forms['shopForm'].submit()"),
                 // New; use this so you can apply CSS more easily
-                'SHOP_COUNTRIES_MENUOPTIONS' => \Country::getMenuoptions(
+                'SHOP_COUNTRIES_MENUOPTIONS' => \Cx\Core\Country\Controller\Country::getMenuoptions(
                     $_SESSION['shop']['countryId2']),
             ));
         }

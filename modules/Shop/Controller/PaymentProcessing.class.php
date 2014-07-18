@@ -504,7 +504,7 @@ foreach (\PostfinanceMobile::getErrors() as $error) {
             // ownertown    Customer's town/city name
 //            'ownertown' => $_SESSION['shop']['city'],
             // ownercty     Customer's country
-//            'ownercty' => \Country::getNameById($_SESSION['shop']['countryId']),
+//            'ownercty' => \Cx\Core\Country\Controller\Country::getNameById($_SESSION['shop']['countryId']),
             // ownertelno   Customer's telephone number
 //            'ownertelno' => $_SESSION['shop']['phone'],
         );

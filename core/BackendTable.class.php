@@ -77,9 +77,9 @@ class BackendTable extends HTML_Table {
                     } else if (is_object($data) && get_class($data) == 'DateTime') {
                         $data = $data->format(ASCMS_DATE_FORMAT);
                     } else if (isset($options['fields'][$origHeader]) && isset($options['fields'][$origHeader]['type']) && $options['fields'][$origHeader]['type'] == '\Country') {
-                        $data = \Country::getNameById($data);
+                        $data = \Cx\Core\Country\Controller\Country::getNameById($data);
                         if (empty($data)) {
-                            $data = \Country::getNameById(204);
+                            $data = \Cx\Core\Country\Controller\Country::getNameById(204);
                         }
                     } else if (gettype($data) == 'boolean') {
                         $data = '<i>' . ($data ? 'Yes' : 'No') . '</i>';
