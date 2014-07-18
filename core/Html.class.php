@@ -884,7 +884,7 @@ var _active_tab = '.
      * by the corresponding Imagetype
      *
      * This adds alt, width, and height attributes with the values returned
-     * by {@see Image::getPath()}, and {@see Imagetype::getInfoArray()} methods
+     * by {@see Image::getPath()}, and {@see \Cx\Core\ImageType\Controller\ImageType::getInfoArray()} methods
      * repectively.
      * If the $attribute parameter contains one of the alt, width, or height
      * attributes (or corresponding style information), these will override
@@ -897,7 +897,7 @@ var _active_tab = '.
     static function getImage($objImage, $attribute='')
     {
         $type = $objImage->getImagetypeKey();
-        $objImagetype = Imagetype::getInfoArray($type);
+        $objImagetype = \Cx\Core\ImageType\Controller\ImageType::getInfoArray($type);
         $width = $objImagetype['width'];
         $height = $objImagetype['height'];
         $path = $objImage->getPath();
@@ -921,7 +921,7 @@ var _active_tab = '.
      * size specified by the corresponding Imagetype
      *
      * This adds alt, width, and height attributes with the values returned
-     * by {@see Image::getPath()}, and {@see Imagetype::getInfoArrayWidth()}
+     * by {@see Image::getPath()}, and {@see \Cx\Core\ImageType\Controller\ImageType::getInfoArrayWidth()}
      * methods repectively.
      * If the $attribute parameter contains one of the alt, width, or height
      * attributes (or corresponding style information), these will override
@@ -934,7 +934,7 @@ var _active_tab = '.
     static function getThumbnail($objImage, $attribute='')
     {
         $type = $objImage->getImagetypeKey();
-        $objImagetype = Imagetype::getInfoArray($type);
+        $objImagetype = \Cx\Core\ImageType\Controller\ImageType::getInfoArray($type);
         $width = $objImagetype['width_thumb'];
         $height = $objImagetype['height_thumb'];
         $path = $objImage->getPath();
@@ -1011,7 +1011,7 @@ var _active_tab = '.
 // TODO: Implement...
 /*
         if (is_array($imagetype_key)) {
-            $arrImagetypeName = Imagetype::getNameArray();
+            $arrImagetypeName = \Cx\Core\ImageType\Controller\ImageType::getNameArray();
             $type_element = self::getSelect($id.'_type', $arrImagetypeName);
         }
 */
@@ -1123,11 +1123,11 @@ var _active_tab = '.
             if (empty($width) && empty($height)) {
                 $key = (is_array($imagetype_key)
                     ? '' : $imagetype_key);
-                $width = Imagetype::getWidthThumbnail($key);
-                $height = Imagetype::getHeightThumbnail($key);
+                $width = \Cx\Core\ImageType\Controller\ImageType::getWidthThumbnail($key);
+                $height = \Cx\Core\ImageType\Controller\ImageType::getHeightThumbnail($key);
             }
         }
-//        $arrImagetypeName = Imagetype::getNameArray();
+//        $arrImagetypeName = \Cx\Core\ImageType\Controller\ImageType::getNameArray();
 //        if ($imagetype_key === false)
 //            $imagetype_key = $objImage->getImagetypeKey();
 
@@ -1153,7 +1153,7 @@ var _active_tab = '.
                   basename($objImage->getPath())).
                 '<br />'
               : '').
-            Imagetype::getMenu(
+            \Cx\Core\ImageType\Controller\ImageType::getMenu(
                 $id, $objImage->getImagetypeKey(), $imagetype_key).
             self::getHidden(
                 $id.'_id', $objImage->getId(), '' // Force id attribute like name
