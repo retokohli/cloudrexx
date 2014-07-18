@@ -13,7 +13,7 @@ namespace Cx\Core\Html\Controller;
 class ViewGenerator {
     protected $object;
     protected $options;
-    
+
     /**
      *
      * @param mixed $object Array, instance of DataSet, instance of EntityBase, object
@@ -29,13 +29,14 @@ class ViewGenerator {
         \JS::registerCSS(ASCMS_CORE_FOLDER.'/Html/View/Style/Backend.css');
         if ($object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             // render table if no parameter is set
-            $this->object = $object;
+            $this->object = $object;           
         } else {
             if (!is_object($object)) {
                 throw new ViewGeneratorException('Cannot generate view for variable type ' . gettype($object));
             }
             // render form
             $this->object = $object;
+            
         }
         // get entity name space
         $entityNS = $this->object->getDataType();
@@ -133,7 +134,7 @@ class ViewGenerator {
                         if (in_array('set'.ucfirst($name), $classMethods)) {
                             $updateArray['set'.ucfirst($name)]=contrexx_input2raw($_POST[$name]);
                         }
-                    } 
+                    }
                 }
             }
             if (!empty($updateArray) && !empty($id) 
@@ -143,7 +144,7 @@ class ViewGenerator {
                     foreach($updateArray as $key=>$value) {
                         $entityObj->$key($value);
                     }
-                    \Env::get('em')->flush();    
+                    \Env::get('em')->flush();
                     \Message::add('Entity have been updated sucessfully!');   
                 } else {
                     \Message::add('Cannot save, Invalid argument!', \Message::CLASS_ERROR);
@@ -199,21 +200,21 @@ class ViewGenerator {
             }
         }
         if ($renderObject instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
+            if (!empty($this->options['functions']['add'])) {
+                $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
+                $actionUrl->setParam('add', 1);
+                $addBtn = '<br /><br /><input type="button" name="addEtity" value="Add" onclick="location.href='."'".$actionUrl."&csrf=".\CSRF::code()."'".'" />'; 
+            }
             if (!count($renderObject) || !count(current($renderObject))) {
                 // make this configurable
                 $tpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_PATH.'/Html/View/Template/Generic');
                 $tpl->loadTemplateFile('NoEntries.html');
-                return $tpl->get();
+                return $tpl->get().$addBtn;
             }
             $listingController = new \Cx\Core_Modules\Listing\Controller\ListingController($renderObject, array(), $this->options['functions']);
             $renderObject = $listingController->getData();
             $backendTable = new \BackendTable($renderObject, $this->options) . '<br />' . $listingController;
-            if (!empty($this->options['functions']['add'])) {
-                $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
-                $actionUrl->setParam('add', 1);
-                $backendTable .= '<br /><br /><input type="button" name="addEtity" value="Add" onclick="location.href='."'".$actionUrl."&csrf=".\CSRF::code()."'".'" />'; 
-            }
-            return $backendTable;
+            return $backendTable.$addBtn;
         } else {
             $isSingle = true;
             return $this->renderFormForEntry($entityId);
@@ -222,7 +223,7 @@ class ViewGenerator {
     
     protected function renderFormForEntry($entityId) {
         $renderArray=array();
-        $entityClass = get_class($this->object);
+        //$entityClass = get_class($this->object);
         $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
         if ($this->object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             $entityClass = $this->object->getDataType();
