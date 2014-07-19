@@ -94,7 +94,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         // The CSRF code needn't to be checked in the login module
         // because the user isn't logged in at this point.
         // TODO: Why is upload excluded? The CSRF check doesn't take place in the upload module!
-        if (!empty($plainCmd) && !empty($cmd) and !in_array($plainCmd, array('FileBrowser', 'upload', 'Login'))) {
+        if (!empty($plainCmd) && !empty($cmd) and !in_array($plainCmd, array('FileBrowser', 'upload', 'Login', 'Home'))) {
             // Since language initialization in in the same hook as this
             // and we cannot define the order of module-processing,
             // we need to check if language is already initialized:
