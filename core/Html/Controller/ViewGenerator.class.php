@@ -87,7 +87,7 @@ class ViewGenerator {
                 \Env::get('em')->persist($entityObj);
                 \Env::get('em')->flush();
                 \Message::add('Entity have been added sucessfully!');   
-                $actionUrl = clone \Env::get('Resolver')->getRequest->getUrl();
+                $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
                 $actionUrl->setParam('add', null);
                 \Cx\Core\Csrf\Controller\ComponentController::redirect($actionUrl);
             }
@@ -149,7 +149,7 @@ class ViewGenerator {
                     \Message::add('Cannot save, Invalid argument!', \Message::CLASS_ERROR);
                 }
             } 
-            $actionUrl = clone \Env::get('Resolver')->getRequest->getUrl();
+            $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
             $actionUrl->setParam('editid', null);
             \Cx\Core\Csrf\Controller\ComponentController::redirect($actionUrl);
         }
@@ -176,7 +176,7 @@ class ViewGenerator {
                     \Message::add('Entity have been deleted sucessfully!');   
                 }
             }
-            $actionUrl = clone \Env::get('Resolver')->getRequest->getUrl();
+            $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
             $actionUrl->setParam('deleteid', null);
             \Cx\Core\Csrf\Controller\ComponentController::redirect($actionUrl);
         }
@@ -199,21 +199,22 @@ class ViewGenerator {
             }
         }
         if ($renderObject instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
+            if (!empty($this->options['functions']['add'])) {
+                $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
+                $actionUrl->setParam('add', 1);
+                $addBtn = '<br /><br /><input type="button" name="addEtity" value="Add" onclick="location.href='."'".$actionUrl."&csrf=".\Cx\Core\Csrf\Controller\ComponentController::code()."'".'" />'; 
+            }
             if (!count($renderObject) || !count(current($renderObject))) {
                 // make this configurable
                 $tpl = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseCorePath().'/Html/View/Template/Generic');
                 $tpl->loadTemplateFile('NoEntries.html');
-                return $tpl->get();
+                return $tpl->get().$addBtn;
             }
             $listingController = new \Cx\Core_Modules\Listing\Controller\ListingController($renderObject, array(), $this->options['functions']);
             $renderObject = $listingController->getData();
             $backendTable = new \BackendTable($renderObject, $this->options) . '<br />' . $listingController;
-            if (!empty($this->options['functions']['add'])) {
-                $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
-                $actionUrl->setParam('add', 1);
-                $backendTable .= '<br /><br /><input type="button" name="addEtity" value="Add" onclick="location.href='."'".$actionUrl."&csrf=".\Cx\Core\Csrf\Controller\ComponentController::code()."'".'" />'; 
-            }
-            return $backendTable;
+
+            return $backendTable.$addBtn;
         } else {
             $isSingle = true;
             return $this->renderFormForEntry($entityId);
@@ -222,7 +223,6 @@ class ViewGenerator {
     
     protected function renderFormForEntry($entityId) {
         $renderArray=array();
-        $entityClass = get_class($this->object);
         $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
         if ($this->object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             $entityClass = $this->object->getDataType();
