@@ -797,7 +797,7 @@ namespace Cx\Core\Core\Controller {
 
         /**
          * Calls pre-init hooks
-         * Pre-Init hooks are defined in /core/Core/Data/preInitHooks.yml.
+         * Pre-Init hooks are defined in /config/preInitHooks.yml.
          */
         protected function callPreInitHooks() {
             try {
