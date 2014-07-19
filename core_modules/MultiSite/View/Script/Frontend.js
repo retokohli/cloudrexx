@@ -68,7 +68,7 @@
             if(count>0){
                 return false;
             }else{
-                domainUrl = cx.variables.get('baseUrl', 'MultiSite')+"/cadmin/index.php?cmd=jsondata&object=MultiSite&act=signup";
+                domainUrl = cx.variables.get('baseUrl', 'MultiSite')+cx.variables.get('cadminPath', 'contrexx')+"index.php?cmd=jsondata&object=MultiSite&act=signup";
                 //call get json function after 
                 //all the validations are checked
                 jQuery.ajax({
