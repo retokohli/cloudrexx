@@ -808,13 +808,13 @@ class Resolver {
             if (\FWUser::getFWUserObject()->objUser->login()) {
                 if ($page_protected) {
                     if (!\Permission::checkAccess($pageAccessId, 'dynamic', true)) {
-                        $link=base64_encode(\Env::get('cx')->getRequest()->getUrl()->toString());
+                        $link=base64_encode(\Env::get('cx')->getRequest()->toString());
                         \CSRF::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('login', 'noaccess', '', array('redirect' => $link)));
                         exit;
                     }
                 }
                 if ($history && !\Permission::checkAccess(78, 'static', true)) {
-                    $link=base64_encode(\Env::get('cx')->getRequest()->getUrl()->toString());
+                    $link=base64_encode(\Env::get('cx')->getRequest()->toString());
                     \CSRF::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('login', 'noaccess', '', array('redirect' => $link)));
                     exit;
                 }
@@ -824,7 +824,7 @@ class Resolver {
                 if (isset($_GET['redirect'])) {
                     $link = $_GET['redirect'];
                 } else {
-                    $link=base64_encode(\Env::get('cx')->getRequest()->getUrl()->toString());
+                    $link=base64_encode(\Env::get('cx')->getRequest()->toString());
                 }
                 \CSRF::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('login', '', '', array('redirect' => $link)));
                 exit;
