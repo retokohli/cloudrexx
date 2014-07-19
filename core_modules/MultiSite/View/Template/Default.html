@@ -1,0 +1,60 @@
+<!--<p>
+    <form method="post" action="#">
+      <label for="name">Instance name: </label><input type="text" name="name" id="name" />
+      <input type="submit" value="Create">
+    </form>
+</p>-->
+<style type="text/css">
+    /*span.delete {
+        background-image: url(images/icons/delete.gif);
+        display: block;
+        height: 16px;
+        width: 16px;
+        float: right;
+        margin-top: 4px;
+        margin-left: 4px;
+        cursor: pointer;
+    }
+    
+    a.edit {
+        background-image: url(images/icons/edit.gif);
+        display: block;
+        height: 16px;
+        width: 16px;
+        float: right;
+        margin-top: 4px;
+        margin-left: 4px;
+        cursor: pointer;
+    }*/
+</style>
+<script type="text/javascript">
+    cx.ready(function() {
+        /*jQuery("#instance_table table tr").each(function(index, el) {
+            var link = jQuery(el).children("td").first();
+            link.html("<a href=\"http://" + link.html() + ".ppay.ch/\" target=\"_blank\">" + link.html() + "</a>");
+        });*/
+        
+        jQuery(".delete").each(function(index, el) {
+            jQuery(el).click(function() {
+                if (!confirm("Do you really want to delete instance \"" + jQuery(el).attr("id").substr(8) + "\"?")) {
+                    return;
+                }
+                
+                // ajax to delete
+                jQuery.ajax({
+                    url: "index.php?cmd=jsondata&object=MultiSite&act=removeInstance",
+                    type: "POST",
+                    data: {
+                        instanceName: jQuery(el).attr("id").substr(8)
+                    },
+                    complete: function() {
+                        document.location.reload(true);
+                    }
+                });
+            });
+        });
+    });
+</script>
+<div id="instance_table">
+{TABLE}
+</div>

@@ -1,0 +1,45 @@
+Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer:
+  type: entity
+  repositoryClass: Cx\Core_Modules\MultiSite\Model\Repository\WebsiteServiceServerRepository
+  table: core_module_multisite_website_service_server
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    hostname:
+      type: string
+      length: 255
+    label:
+      type: string
+      length: 225
+    secretKey:
+      type: string
+      length: 32
+    installationId:
+      type: string
+      length: 40
+    isDefault:
+      type: integer
+      length: 1
+    httpAuthMethod:
+      type: string
+      length: 6
+    httpAuthUsername:
+      type: string
+      length: 255
+    httpAuthPassword:
+      type: string
+      length: 255
+    defaultWebsiteIp:
+      type: string
+      length: 45      
+  oneToMany: # inverse side
+    websites:
+      targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\Website
+      mappedBy: websiteServiceServer
+      joinColumn:
+        name: websiteServiceServerId
+        referencedColumnName: id
+
