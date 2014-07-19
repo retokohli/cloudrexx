@@ -141,6 +141,17 @@ class SystemComponentController extends Controller {
     }
     
     /**
+     * Do something before system initialization
+     * 
+     * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
+     * CALCULATE YOUR STUFF AS LATE AS POSSIBLE.
+     * This event must be registered in the preInit-Hook definition
+     * file config/preInitHooks.yml.
+     * @param \Cx\Core\Core\Controller\Cx   $cx The instance of \Cx\Core\Core\Controller\Cx
+     */
+    public function preInit(\Cx\Core\Core\Controller\Cx $cx) {}
+    
+    /**
      * Called for additional, component specific resolving
      * 
      * If /en/Path/to/Page is the path to a page for this component
