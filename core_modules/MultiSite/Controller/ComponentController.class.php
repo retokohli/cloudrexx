@@ -76,7 +76,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 // TODO: refactor whole method
 //       -> cronjob might be running on Website Manager Server
 //       -> there we have all information about the websites in the repository
-//       no need for method strange methods like $website->getDefaultLanguageId()
+//       no need for strange methods like $website->getDefaultLanguageId()
 throw new MultiSiteException('Refactor this method!');
 
         if ($_SERVER['SERVER_ADDR'] != $_SERVER['REMOTE_ADDR']) {
@@ -98,7 +98,7 @@ throw new MultiSiteException('Refactor this method!');
         \MailTemplate::init('MultiSite');
         foreach ($websites as $website) {
             if (!\MailTemplate::send(array(
-                'lang_id' => $website->getDefaultLanguageId(),
+                'lang_id' => $website->getOwner()->getBackendLanguage(),
                 'section' => 'MultiSite',
                 'key' => 'reminder' . $daysInPast . 'days',
                 'to' => $website->getMail(),
@@ -225,7 +225,7 @@ throw new MultiSiteException('Refactor this method!');
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Unavailable website names");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('websitePath') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('websitePath',ASCMS_DOCUMENT_ROOT.'/websites', 2,
+                && !\Cx\Core\Setting\Controller\Setting::add('websitePath',\Env::get('cx')->getCodeBaseDocumentRootPath().'/websites', 2,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for websites path");
             }
@@ -265,7 +265,7 @@ throw new MultiSiteException('Refactor this method!');
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database Mode");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('defaultCodeBase') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('defaultCodeBase',ASCMS_DOCUMENT_ROOT, 10,
+                && !\Cx\Core\Setting\Controller\Setting::add('defaultCodeBase',\Env::get('cx')->getCodeBaseDocumentRootPath(), 10,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'config')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add SettingDb entry for Database Default code base");
             }
@@ -346,6 +346,46 @@ throw new MultiSiteException('Refactor this method!');
             \DBG::msg($e->getMessage());
         }
         // Always
+        return false;
+    }
+
+    public function preInit(\Cx\Core\Core\Controller\Cx $cx) {
+        // Abort in case the request has not been made to either the frontend nor the backend
+        if (!in_array($cx->getMode(), array($cx::MODE_FRONTEND, $cx::MODE_BACKEND))) {
+            return;
+        }
+
+        // Abort in case this Contrexx installation has not been set up as a Website Service.
+        // If the MultiSite module has not been configured, then 'mode' will be set to null.
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+            case 'service':
+            case 'manager/service':
+                $this->deployWebsite($cx);
+                break;
+
+            case 'website':
+// TODO: Website specific customizings can be added at this point
+//       Extensions like access restrictions to certain parts of the system, etc.
+                break;
+
+            default:
+                break;
+        }
+    }
+
+    private function deployWebsite(\Cx\Core\Core\Controller\Cx $cx) {
+        $multiSiteRepo = new \Cx\Core_Modules\MultiSite\Model\Repository\WebsiteRepository();
+// TODO: add support for requests to domain aliases (i.e.: example.com)
+        $websiteName = substr($_SERVER['HTTP_HOST'], 0, -strlen('.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain')));
+        $website = $multiSiteRepo->findByName(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/', $websiteName);
+        if ($website) {
+            $configFile = \Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName.'/config/configuration.php';
+            \DBG::msg("MultiSite: Loading customer Website {$website->getName()}...");
+            \Cx\Core\Core\Controller\Cx::instanciate(\Env::get('cx')->getMode(), true, $configFile);
+            exit;
+        }
+
+        // no website found. Abort website-deployment and let Contrexx process with the regular system initialization (i.e. most likely with the Website Service Website)
         return false;
     }
 }

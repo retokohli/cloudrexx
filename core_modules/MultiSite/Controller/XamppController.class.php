@@ -29,15 +29,12 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * Protected object for db queries
      * */
     protected $db;
-    protected $cx;
     
      /*
      * Constructor
      */
-    public function __construct($cx,\Cx\Core\Model\Model\Entity\Db $db, \Cx\Core\Model\Model\Entity\DbUser $dbUser) {
-        $this->cx = $cx;
-        $CacheEngine = $this->cx->getCacheEngine();
-        $dbClass = new \Cx\Core\Model\Db($db, $dbUser, $CacheEngine);
+    public function __construct(\Cx\Core\Model\Model\Entity\Db $db, \Cx\Core\Model\Model\Entity\DbUser $dbUser) {
+        $dbClass = new \Cx\Core\Model\Db($db, $dbUser);
         // init new db
         $this->db = $dbClass->getAdoDb(); 
     }

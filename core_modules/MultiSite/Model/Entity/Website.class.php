@@ -88,116 +88,6 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
 
         return new Website($basepath, $name);
     }
-
-    //__construct_old method just keeping this 
-    //for backup, will remove this
-    public function __construct_old($basepath, $name, $websiteServiceServeObj, $userObj) {
-        $this->basepath = $basepath;
-        $this->name = $name;
-        $this->owner = $userObj;
-        //websiteServiceServer to passed value
-        $this->websiteServiceServer = $websiteServiceServeObj;
-        if (!file_exists($this->basepath . '/' . $this->name . '/config/settings.php')) {
-            throw new WebsiteException('No instance found on path ' . $this->basepath . '/' . $this->name);
-        }
-        $settings = file_get_contents($this->basepath . '/' . $this->name . '/config/settings.php');
-        if (!file_exists($this->basepath . '/' . $this->name . '/config/configuration.php')) {
-            throw new WebsiteException('No instance found on path ' . $this->basepath . '/' . $this->name);
-        }
-        $config = file_get_contents($this->basepath . '/' . $this->name . '/config/configuration.php');
-        $matches = array();
-        /*preg_match('/\$_CONFIG\\[\'coreCmsEdition\'\\][\s]*=[\s]*"([a-z A-Z]*)";/', $settings, $matches);
-        if (isset($matches[1])) {
-            $this->licenseEdition = $matches[1];
-        }
-        preg_match('/\$_CONFIG\\[\'licenseState\'\\][\s]*=[\s]*"([a-zA-Z]*)";/', $settings, $matches);
-        if (isset($matches[1])) {
-            $this->licenseState = $matches[1];
-        }
-        preg_match('/\$_CONFIG\\[\'domainUrl\'\\][\s]*=[\s]*"([a-zA-Z-_\.]*)";/', $settings, $matches);
-        if (isset($matches[1])) {
-            $this->domain = $matches[1];
-        }*/
-        preg_match('/\$_CONFIG\\[\'licenseCustomer\'\\][\s]*=[\s]*"([^"]*)";/', $settings, $matches);
-        if (isset($matches[1])) {
-            $this->customer = unserialize(base64_decode($matches[1]));
-        } else {
-            $this->customer = new \Cx\Core_Modules\License\Person();
-        }
-        /*preg_match('/\$_CONFIG\\[\'licenseCreatedAt\'\\][\s]*=[\s]*([0-9]*);/', $settings, $matches);
-        $created = 0;
-        if (isset($matches[1])) {
-            $created = $matches[1];
-        }
-        preg_match('/\$_CONFIG\\[\'licenseSuccessfulUpdate\'\\][\s]*=[\s]*([0-9]*);/', $settings, $matches);
-        $supd = 0;
-        if (isset($matches[1])) {
-            $supd = $matches[1];
-        }
-        preg_match('/\$_CONFIG\\[\'licenseFailedUpdate\'\\][\s]*=[\s]*([0-9]*);/', $settings, $matches);
-        $fupd = 0;
-        if (isset($matches[1])) {
-            $fupd = $matches[1];
-        }
-        $lupd = new \DateTime();
-        $lupd->setTimestamp($supd > $fupd ? $supd : $fupd);
-        $this->licenseLastUpdate = $lupd;//->format('Y-m-d H:i:s');
-        $createTime = new \DateTime();
-        // this is a temporary fix for wrong date in license creation
-        //$created = filectime($basepath . '/' . $this->name . '/config/configuration.php');
-        $createTime->setTimestamp($created);
-        $this->createdAt = $createTime;//->format('Y-m-d H:i:s'); */
-        preg_match('/\$_PATHCONFIG\\[\'ascms_root_offset\'\\][\s]*=[\s]*["\']([a-z\\/A-Z-_\.]*)["\'];/', $config, $matches);
-        $rootOffset = '';
-        if (isset($matches[1])) {
-            $rootOffset = $matches[1];
-        }
-        preg_match('/\$_PATHCONFIG\\[\'ascms_installation_root\'\\][\s]*=[\s]*["\']([0-9a-z\\/A-Z-_\.]*)["\'];/', $config, $matches);
-        $instRoot = '';
-        if (isset($matches[1])) {
-            $instRoot = $matches[1];
-        }
-        preg_match('/\$_PATHCONFIG\\[\'ascms_installation_offset\'\\][\s]*=[\s]*["\']([0-9a-z\\/A-Z-_\.]*)["\'];/', $config, $matches);
-        $instOffset = '';
-        if (isset($matches[1])) {
-            $instOffset = $matches[1];
-        }
-        $this->setCodeBase($instRoot . $instOffset);
-        global $_PATHCONFIG;
-        //echo $instRoot . ' != ' . $_PATHCONFIG['ascms_root'] . ' || ' . $instOffset . ' != ' . $_PATHCONFIG['ascms_root_offset'] . '<br />';
-        /*if ($instRoot != $_PATHCONFIG['ascms_root'] || $instOffset != $_PATHCONFIG['ascms_root_offset']) {
-        //if ($instRoot != ASCMS_PATH || $instOffset != ASCMS_PATH_OFFSET) {
-            // since we want to manage instances of multiple codebases, this check is no longer needed
-            //throw new WebsiteException('Instance could not be loaded from path ' . $this->basepath . '/' . $this->name);
-        }//*/
-        /*global $objDatabase;
-        if ($objDatabase) {
-            $res = $objDatabase->execute('SELECT `email` FROM `' . $this->name . '_access_users` WHERE `email` NOT LIKE \'noreply@contrexx.com\' LIMIT 1');
-            if (!empty($res->fields['email'])) {
-                $this->email = $res->fields['email'];
-            }
-        }*/
-        $this->company = $this->customer->getCompanyName();
-        $this->salutation = $this->customer->getTitle();
-        $this->firstname = $this->customer->getFirstName();
-        $this->lastname = $this->customer->getLastName();
-        $this->country = $this->customer->getCountry();
-        
-        $address = $this->customer->getAddress();
-        $address = explode("\n", $address, 2);
-        $this->poBox = '';
-        if (count($address) == 2) {
-            $this->poBox = $address[1];
-        }
-        $this->address = $address[0];
-        $this->zip = $this->customer->getZip();
-        $this->city = $this->customer->getCity();
-        
-        $this->phone = $this->customer->getPhone();
-        $this->email = $this->customer->getMail();
-        /*$editLink = clone \Env::get('cx')->getRequest()->getUrl();
-        $editLink->setParam('edit', $this->name);*/
-    }
     
      /**
      * Set id
@@ -337,6 +227,15 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
     public function getWebsiteServiceServer()
     {
         return $this->websiteServiceServer;
+    }
+
+    public function getOwner()
+    {
+        if (!isset($this->owner)) {
+            $user = new \User();
+            $this->owner = $user->getUser($this->ownerId);
+        }
+        return $this->owner;
     }
     
     /**

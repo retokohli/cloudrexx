@@ -26,7 +26,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * To show messages, use \Message class
      * @param \Cx\Core\Html\Sigma $template Template containing content of resolved page
      */
-    public function parsePage(\Cx\Core\Html\Sigma $template) {
+    public function parsePage(\Cx\Core\Html\Sigma $template, $cmd) {
         $activityType=contrexx_input2raw($_REQUEST['cmd']); 
         //$template->setRoot($this->getDirectory().'/View/Template');
         
