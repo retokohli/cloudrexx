@@ -5,6 +5,7 @@ class WebsiteException extends \Exception {}
 
 class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
     protected $basepath = null;
+  
     /**
      * @var integer $id
      */
@@ -45,7 +46,6 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
     protected $owner;
     
     private $websiteController;
-    private $cx; 
    
     /**
      * @var string $ipAddress
@@ -56,7 +56,7 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
      * @var intiger $ownerId
      */
     public $ownerId;
-   
+
     /*
      * Constructor
      * */
@@ -198,6 +198,7 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
         /*$editLink = clone \Env::get('cx')->getRequest()->getUrl();
         $editLink->setParam('edit', $this->name);*/
     }
+    
      /**
      * Set id
      *
@@ -296,49 +297,7 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
     {
         return $this->status;
     }
-    
-    public function getPdoObject() {
-        if ($this->pdo) {
-            return $this->pdo;
-        }
-        
-        global $_DBCONFIG, $_PATHCONFIG;
-        
-        // get cx object
-        $cx = \Env::get('cx');
-        
-        // save old db config in variable
-        $oldDBConfig = $_DBCONFIG;
-        
-        //dynamic use instances path
-        \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'config','FileSystem');
-        $websitePath=\Cx\Core\Setting\Controller\Setting::getValue('websitePath');
-        
-        // load new db config of instance
-        require_once $websitePath.'/'.$this->getName().'/config/configuration.php';
-        $cacheEngine = $cx->getCacheEngine();
-        //create objects of the db
-        $objDb = new \Cx\Core\Model\Model\Entity\Db($_DBCONFIG);
-        //create objects of the dbUser
-        $objDbUser = new \Cx\Core\Model\Model\Entity\DbUser($_DBCONFIG);
-        // get pdo connection with db configuration of instance
-        $db = new \Cx\Core\Model\Db($objDb, $objDbUser, $cacheEngine);
-        $this->pdo = $db->getPdoConnection();
-        
-        // get old db config
-        $_DBCONFIG = $oldDBConfig;
-        return $this->pdo;
-    }
-    
-    public function getDefaultLanguageId() {
-        $pdo = $this->getPdoObject();
-        foreach ($pdo->query("SELECT `id` FROM `".DBPREFIX."languages` WHERE `is_default` = 'true'") as $row) {
-            return intval($row['id']);
-        }
-        // default to german if something fails
-        return 1;
-    }
-    
+
     /**
      * Set websiteServiceServerId
      *
@@ -386,7 +345,6 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
     public function setup() {
         global $_DBCONFIG, $_ARRAYLANG;
 
-        $this->cx = \Env::get('cx');
         if (\Cx\Core\Setting\Controller\Setting::getValue('websiteController')) {
             //creating object of plesk controller to call plesk API RPC
             $this->websiteController = \Cx\Core_Modules\MultiSite\Controller\PleskController::fromConfig();
@@ -399,7 +357,7 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
             //initialized with default configuration
             $dbUserObj = new \Cx\Core\Model\Model\Entity\DbUser($_DBCONFIG); //creating Db user class object    
             //set website controller object with XampController called when used on localhost
-            $this->websiteController = new \Cx\Core_Modules\MultiSite\Controller\XamppController($this->cx, $dbObj, $dbUserObj); 
+            $this->websiteController = new \Cx\Core_Modules\MultiSite\Controller\XamppController($dbObj, $dbUserObj); 
         }
         //website name
         $websiteName = $this->getName();
@@ -445,32 +403,32 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
             $objDbUser = new \Cx\Core\Model\Model\Entity\DbUser();
             $this->setupDatabase($langId, $this->owner, $objDb, $objDbUser);
             $this->setupDataFolder($websiteName);
-            
             $this->setupConfiguration($websiteName, $objDb, $objDbUser);
         }
+
         if(!$isServiceServer){
         // Add DNS records for new website
-            $dnsRecordId = $this->websiteController->addDnsRecord('A', \Cx\Core\Setting\Controller\Setting::getValue('pleskMasterSubscriptionId'),
-                $websiteName, $this->websiteServiceServer->getDefaultWebsiteIp());
-        
-            $websiteDomain = $websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
-            // write mail
-            \MailTemplate::init('MultiSite');
-            if (!\MailTemplate::send(array(
-                'section' => 'MultiSite',
-                'lang_id' => $langId,
-                'key' => 'createInstance',
-                'to' => $websiteMail,
-                'search' => array('[[WEBSITE_DOMAIN]]', '[[WEBSITE_NAME]]', '[[WEBSITE_MAIL]]', '[[WEBSITE_PASSWORD]]'),
-                'replace' => array($websiteDomain, $websiteName, $websiteMail, $websitePassword),
-            ))) {
-            // TODO: Implement proper error handler:
-            //       removeWebsite() must not be called from within this method.
-            //       Instead, in case the setup process fails, a proper exception must be thrown.
-            //       Then the object that executed the setup() method must handle the exception
-            //       and call the removeWebsite() method if required.
-                //$this->removeWebsite($websiteName);
-                throw new WebsiteException('Could not create website (Mail send failed)');
+        $dnsRecordId = $this->websiteController->addDnsRecord('A', \Cx\Core\Setting\Controller\Setting::getValue('pleskMasterSubscriptionId'),
+         $websiteName, $this->websiteServiceServer->getDefaultWebsiteIp());
+
+        $websiteDomain = $websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
+        // write mail
+        \MailTemplate::init('MultiSite');
+        if (!\MailTemplate::send(array(
+            'section' => 'MultiSite',
+            'lang_id' => $langId,
+            'key' => 'createInstance',
+            'to' => $websiteMail,
+            'search' => array('[[WEBSITE_DOMAIN]]', '[[WEBSITE_NAME]]', '[[WEBSITE_MAIL]]', '[[WEBSITE_PASSWORD]]'),
+            'replace' => array($websiteDomain, $websiteName, $websiteMail, $websitePassword),
+        ))) {
+// TODO: Implement proper error handler:
+//       removeWebsite() must not be called from within this method.
+//       Instead, in case the setup process fails, a proper exception must be thrown.
+//       Then the object that executed the setup() method must handle the exception
+//       and call the removeWebsite() method if required.
+            //$this->removeWebsite($websiteName);
+            throw new WebsiteException('Could not create website (Mail send failed)');
             }
         }
         $this->messages = $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATED'];
@@ -488,6 +446,7 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
         //load language file 
         $langData = $objInit->loadLanguageData('MultiSite');
         $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+
         $websiteName = $this->getName();
         $websiteMail = $this->owner->getEmail();
         $unavailablePrefixesValue = explode(',',\Cx\Core\Setting\Controller\Setting::getValue('unavailablePrefixes'));
@@ -508,6 +467,7 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
         if (file_exists(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName)) {
             throw new WebsiteException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_ALREADY_EXISTS']);
         }
+        
         /* commented as we have removed email attribute from this class
         // website with that mail
         $webRepo = new \Cx\Core_Modules\MultiSite\Model\Repository\WebsiteRepository();
@@ -557,6 +517,7 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
         \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/config');
         \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/tmp');
         \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/tmp');
+// TODO: Add /themes to Website
         // create media folders
         \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/media');
         \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/media');
@@ -602,8 +563,6 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
             $newConfData = preg_replace('/\\$_DBCONFIG\\[\'dbType\'\\] = \'.*?\';/', '$_DBCONFIG[\'dbType\'] = \'' .$objDb->getdbType() . '\';', $newConfData);
             $newConfData = preg_replace('/\\$_DBCONFIG\\[\'charset\'\\] = \'.*?\';/', '$_DBCONFIG[\'charset\'] = \'' .$objDb->getCharset() . '\';', $newConfData);
             $newConfData = preg_replace('/\\$_DBCONFIG\\[\'timezone\'\\] = \'.*?\';/', '$_DBCONFIG[\'timezone\'] = \'' .$objDb->getTimezone() . '\';', $newConfData);
-            
-            
             $newConfData = preg_replace('/\\$_DBCONFIG\\[\'database\'\\] = \'.*?\';/', '$_DBCONFIG[\'database\'] = \'' .$objDb->getName() . '\';', $newConfData);
             $newConfData = preg_replace('/\\$_DBCONFIG\\[\'user\'\\] = \'.*?\';/', '$_DBCONFIG[\'user\'] = \'' . $objDbUser->getName() . '\';', $newConfData);
             $newConfData = preg_replace('/\\$_DBCONFIG\\[\'password\'\\] = \'.*?\';/', '$_DBCONFIG[\'password\'] = \'' . $objDbUser->getPassword() . '\';', $newConfData);
@@ -689,6 +648,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
             throw new MultiSiteException('No website with that name');
         }
         
+// TODO: remove database user
         // remove database
         $dbName = \Cx\Core\Setting\Controller\Setting::getValue('websiteDatabasePrefix').$this->id;
         $dbObj = new \Cx\Core\Model\Model\Entity\Db();
@@ -707,8 +667,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
         $this->websiteController->createDb($objDb, $objDbUser);
 
         //call core db class to create db connection object
-        $cacheEngine = $this->cx->getCacheEngine();
-        $dbClass = new \Cx\Core\Model\Db($objDb, $objDbUser, $cacheEngine);
+        $dbClass = new \Cx\Core\Model\Db($objDb, $objDbUser);
         $websitedb = $dbClass->getAdoDb();       
 
         return $websitedb;

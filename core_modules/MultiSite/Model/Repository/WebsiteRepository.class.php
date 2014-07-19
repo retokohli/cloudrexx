@@ -69,6 +69,10 @@ class WebsiteRepository {
     }
 
     public function findByName($basePath, $name) {
+        if (empty($name)) {
+            return null;
+        }
+
         if (isset($this->websites[$basePath][$name])) {
             return $this->websites[$basePath][$name];
         }
