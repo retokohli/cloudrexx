@@ -29,6 +29,19 @@ namespace Cx\Core\Setting\Controller;
 class SettingException extends \Exception {}
 
 
+/**
+ * Manages settings stored in the database or file system    
+ *
+ * Before trying to access a modules' settings, *DON'T* forget to call
+ * {@see Setting::init()} before calling getValue() for the first time!
+ * @copyright   CONTREXX CMS - COMVATION AG
+ * @author      Reto Kohli <reto.kohli@comvation.com> (parts)
+ * @author      Manish Thakur <manishthakur@cdnsol.com>
+ * @version     3.0.0
+ * @package     contrexx
+ * @subpackage  core_setting
+ * @todo        Edit PHP DocBlocks!
+ */ 
 class Setting{
      
     /**
