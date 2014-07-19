@@ -78,6 +78,7 @@ class Db extends Engine{
             $objResult->MoveNext();
         }
     }
+
     /**
      * Returns the settings array for the given section and group
      * @return  array
@@ -86,6 +87,7 @@ class Db extends Engine{
     {
        return self::$arrSettings;
     }
+
     /**
      * Stores all settings entries present in the $arrSettings object
      * array variable
@@ -122,6 +124,7 @@ class Db extends Engine{
         //return Message::error($_CORELANG['TXT_CORE_SETTING_ERROR_STORING']);
         return false;
     }
+
     /**
      * Updates the value for the given name in the settings table
      *
@@ -167,6 +170,7 @@ class Db extends Engine{
         self::$changed = true;
         return true;
     }
+
     /**
      * Add a new record to the settings
      *
@@ -240,6 +244,7 @@ class Db extends Engine{
         }
         return true;
     }
+
     /**
      * Delete one or more records from the database table
      *
@@ -269,6 +274,7 @@ class Db extends Engine{
         self::flush();
         return true;
     }
+
     /**
      * Deletes all entries for the current section
      *
@@ -290,6 +296,7 @@ class Db extends Engine{
         if (!$objResult) return self::errorHandler();
         return true;
     }
+
     /**
      * Should be called whenever there's a problem with the settings table
      *

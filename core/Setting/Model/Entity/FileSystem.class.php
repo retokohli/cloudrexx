@@ -46,12 +46,12 @@ class FileSystem extends Engine{
     static function init($section, $group=null) {
         try {
             //File Path
-            $filename =  \Env::get('cx')->getCodeBaseCorePath() .'/Setting/Data/'.$section.'.yml';
+            $filename =  \Env::get('cx')->getWebsiteConfigPath() . '/'.$section.'.yml';
             self::flush();
             self::$section = $section;
             self::$group = $group;
             //call DataSet importFromFile method @return array
-            $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::importFromFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), $filename);
+            $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load($filename);
             if (!empty($objDataSet)) {
                 foreach ($objDataSet as $value) {
                     self::$arrSettings[$value['name']]= $value;
@@ -61,6 +61,7 @@ class FileSystem extends Engine{
             throw new \Cx\Core\Setting\Controller\SettingException($e->getMessage());
         }
     }
+
     /**
      * Returns the settings array for the given section and group
      * @return  array
@@ -79,6 +80,7 @@ class FileSystem extends Engine{
         }
         return $settingArray;
     }
+
     /**
      * Stores all settings entries present in the $arrSettings object
      * array variable
@@ -114,7 +116,7 @@ class FileSystem extends Engine{
         }
         $success = true;
         //File Path
-        $fileName = \Env::get('cx')->getCodeBaseCorePath() .'/Setting/Data/'.self::$section.'.yml';
+        $fileName = \Env::get('cx')->getWebsiteConfigPath() . '/'.self::$section.'.yml';
         //call DataSet exportToFile method to update file
         $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet(self::$arrSettings);
         $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), $fileName);
@@ -126,6 +128,7 @@ class FileSystem extends Engine{
         //return Message::error($_CORELANG['TXT_CORE_SETTING_ERROR_STORING']);
         return false;
     }
+
     /**
      * Updates the value for the given name in the settings
      *
@@ -159,7 +162,7 @@ class FileSystem extends Engine{
             return false;
         }
         if(!empty(self::$arrSettings)){
-            $fileName = \Env::get('cx')->getCodeBaseCorePath() .'/Setting/Data/'.self::$section.'.yml';
+            $fileName = \Env::get('cx')->getWebsiteConfigPath() . '/'.self::$section.'.yml';
             $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet(self::$arrSettings);
             $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), $fileName);
             return true;
@@ -167,6 +170,7 @@ class FileSystem extends Engine{
             return false;
         }
     }
+
     /**
      * Add a new record to the settings    
      *
@@ -217,7 +221,7 @@ class FileSystem extends Engine{
             // \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::add(): ERROR: Setting '$name' already exists and is non-empty ($old_value)");
             return false;
         }
-        $filename = \Env::get('cx')->getCodeBaseCorePath() .'/Setting/Data/'.self::$section.'.yml';
+        $filename = \Env::get('cx')->getWebsiteConfigPath() . '/'.self::$section.'.yml';
         $addValue =   Array(  
                             'name'=> addslashes($name),
                             'section'=> addslashes(self::$section),
@@ -234,6 +238,7 @@ class FileSystem extends Engine{
         }
         return true;
     }
+
     /**
      * Delete one or more records from the File   
      *
@@ -254,8 +259,8 @@ class FileSystem extends Engine{
         if (empty($name) && empty($group) && empty(self::$section)) return false;
          
         $arrSetting=array();
-        $filename = \Env::get('cx')->getCodeBaseCorePath() .'/Setting/Data/'.self::$section.'.yml';
-        $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::importFromFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), $filename);
+        $filename = \Env::get('cx')->getWebsiteConfigPath() . '/'.self::$section.'.yml';
+        $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load($filename);
         // if get blank or invalid file
         if (empty($objDataSet)) return false;
         
@@ -271,6 +276,7 @@ class FileSystem extends Engine{
         $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), $filename);
         return true;                   
     }
+
     /**
      * Deletes all entries for the current section
      *
@@ -282,7 +288,7 @@ class FileSystem extends Engine{
     {
         if (empty(self::$section))return false;
         try {
-            $filename = \Env::get('cx')->getCodeBaseCorePath() .'/Setting/Data/'.self::$section.'.yml';
+            $filename = \Env::get('cx')->getWebsiteConfigPath() . '/'.self::$section.'.yml';
             $objFile = new \Cx\Lib\FileSystem\File($filename);
             $objFile->delete();       
             return true;
@@ -290,6 +296,7 @@ class FileSystem extends Engine{
             \DBG::msg($e->getMessage());
         }
     }
+
     /**
      * Should be called whenever there's a problem with the settings
      *
@@ -300,7 +307,7 @@ class FileSystem extends Engine{
     static function errorHandler()
     {
         try {
-            $file = new \Cx\Lib\FileSystem\File(\Env::get('cx')->getCodeBaseCorePath() .'/Setting/Data/'.self::$section.'.yml');
+            $file = new \Cx\Lib\FileSystem\File(\Env::get('cx')->getWebsiteConfigPath() . '/'.self::$section.'.yml');
             $file->touch();
             return false;
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
