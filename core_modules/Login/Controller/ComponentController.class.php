@@ -44,8 +44,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
                 if (\FWUser::getFWUserObject()->objUser->login(true)) {
-                    header('location: index.php');
-                    exit;
+                    \Cx\Core\Csrf\Controller\ComponentController::header('location: index.php');
                 }
                 $this->cx->getTemplate()->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master.html');
                 $objTemplate = $this->cx->getTemplate();
