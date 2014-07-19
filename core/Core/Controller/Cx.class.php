@@ -728,10 +728,10 @@ namespace Cx\Core\Core\Controller {
                         break;
                     }
                     // this does not belong here:
-                    if (!preg_match('#^' . $this->getWebsiteOffsetPath() . $this->getBackendFolderName() . '/#', $_GET['__cap'])) {
+                    if (!preg_match('#^' . $this->getWebsiteBackendPath() . '/#', $_GET['__cap'])) {
                         // do not use \Cx\Core\Csrf\Controller\ComponentController::header() here, since ClassLoader is not loaded at this time
 // TODO: is this actually the cause of the CSRF missing issue?
-                        header('Location: ' . $this->getWebsiteOffsetPath() . $this->getBackendFolderName() . '/');
+                        header('Location: ' . $this->getWebsiteBackendPath() . '/');
                         die();
                     }
                     $mode = self::MODE_BACKEND;
@@ -1821,6 +1821,24 @@ namespace Cx\Core\Core\Controller {
         public function getClassLoader() {
             return $this->cl;
         }
+
+        /**
+         * Return the folder name of the storage location of the core components(/core).
+         * Formerly known as ASCMS_CORE_FOLDER.
+         * @return string
+         */
+        public function getCoreFolderName() {
+            return self::FOLDER_NAME_CORE;
+        }
+        
+        /**
+         * Return the folder name used to access the backend of the website (/cadmin).
+         * Formerly known as ASCMS_BACKEND_PATH
+         * @return string
+         */
+        public function getBackendFolderName() {
+            return self::FOLDER_NAME_BACKEND;
+        }
         
         /**
          * Return the folder name used for the core_modules storage location (/core_modules).
@@ -1920,15 +1938,6 @@ namespace Cx\Core\Core\Controller {
             return $this->codeBaseCorePath;
         }
 
-        /**
-         * Return the folder name of the storage location of the core components(/core).
-         * Formerly known as ASCMS_CORE_FOLDER.
-         * @return string
-         */
-        public function getCoreFolderName() {
-            return self::FOLDER_NAME_CORE;
-        }
-        
         /**
          * Return the absolute path used to access the backend template
          * of the Code Base of the Contrexx installation
@@ -2098,14 +2107,13 @@ namespace Cx\Core\Core\Controller {
         public function getWebsiteTempPath() {
             return $this->websiteTempPath;
         }
-
+        
         /**
-         * Return the folder name used to access the backend of the website (/cadmin).
-         * Formerly known as ASCMS_BACKEND_PATH
+         * Return the relative path to the backend of the website (/cadmin).
          * @return string
          */
-        public function getBackendFolderName() {
-            return self::FOLDER_NAME_BACKEND;
+        public function getWebsiteBackendPath() {
+            return $this->websiteOffsetPath . self::FOLDER_NAME_BACKEND;
         }
         
         /**
