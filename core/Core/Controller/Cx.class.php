@@ -396,6 +396,9 @@ namespace Cx\Core\Core\Controller {
          * versioncheck.php, which load Cx for standalone operation.
          * @param string $mode (optional) One of the modes listed in constants above
          * @param boolean $forceNew (optional) Wheter to force a new instance or not, default false
+         * @param string $configFilePath (optional) The absolute path to a Contrexx configuration
+         *                               file (configuration.php) that shall be loaded
+         *                               instead of the default one.
          * @return \Cx\Core\Core\Controller\Cx Instance of this class 
          */
         public static function instanciate($mode = null, $forceNew = false, $configFilePath = null) {
@@ -414,6 +417,9 @@ namespace Cx\Core\Core\Controller {
          * Initializes the Cx class
          * This does everything related to Contrexx.
          * @param string $mode (optional) Use constants, one of self::MODE_[FRONTEND|BACKEND|CLI|MINIMAL]
+         * @param string $configFilePath The absolute path to a Contrexx configuration
+         *                               file (configuration.php) that shall be loaded
+         *                               instead of the default one.
          */
         protected function __construct($mode = null, $configFilePath = null) {
             try {
@@ -425,16 +431,6 @@ namespace Cx\Core\Core\Controller {
 
                 /**
                  * Load config/configuration.php
-                 * If you want to load another config instead, you may call
-                 * 
-// TODO: @MRi: what is the status about this?
-                 *     $cx->loadConfig($pathToYourConfigDirectory);
-                 *     $cx->handleCustomizing();
-                 *     $cx->postInit();
-                 *     $cx->loadContrexx();
-                 *     // something to stop execution of Cx which does not interrupt the script invoking Cx
-                 * 
-                 * in the constructor of your ComponentController. 
                  */
                 $this->loadConfig($configFilePath);
 
@@ -478,7 +474,7 @@ namespace Cx\Core\Core\Controller {
                  * Defines the core constants (ASCMS_*) of Contrexx as defined in config/set_constants.php
                  * and config/SetCustomizableConstants.php. 
                  */
-                $this->defineConstants();
+                $this->defineLegacyConstants();
                 
                 /**
                  * Loads ClassLoader, EventManager and Database connection
@@ -548,14 +544,13 @@ namespace Cx\Core\Core\Controller {
         }
         
         /**
-         * Loads configuration files (settings.php and set_constants.php)
+         * Load an optional configuration file and sets up the path configuration.
          * 
-         * configuration.php is loaded in index.php in order to load this file
-         * from its correct location.
+         * Note: The default configuration.php is loaded in index.php in order to
+         * load this file from its correct location.
          * @todo Find a way to store configuration by avoiding global variables
-         * @global array $_CONFIG Configuration array from /config/settings.php
          * @global array $_PATHCONFIG Path configuration from /config/configuration.php
-         * @throws \Exception If the CMS is deactivated, an exception is thrown
+         * @global array $_DBCONFIG Database connection details from /config/configuration.php
          */
         protected function loadConfig($configFilePath = null) {
             global $_PATHCONFIG, $_DBCONFIG;
@@ -591,6 +586,14 @@ namespace Cx\Core\Core\Controller {
             $this->setWebsiteRepository($_PATHCONFIG['ascms_root'], $_PATHCONFIG['ascms_root_offset']);
         }
 
+        /**
+         * Loads basic configuration (settings.php) and set basic PHP behavior
+         * such as character-set, timezone, etc.
+         * 
+         * @todo Find a way to store configuration by avoiding global variables
+         * @global array $_CONFIG Configuration array from /config/settings.php
+         * @global array $_DBCONFIG Configuration array from /config/settings.php
+         */
         protected function loadSettings() {
             global $_CONFIG, $_DBCONFIG;
 
@@ -614,11 +617,19 @@ namespace Cx\Core\Core\Controller {
             @ini_set('date.timezone', $_DBCONFIG['timezone']);
         }
             
-        protected function defineConstants()
+        /**
+         * Loads legacy constants (set_constants.php / SetCustomizableConstants.php)
+         */
+        protected function defineLegacyConstants()
         {
             require_once $this->getCodeBaseDocumentRootPath() . '/config/set_constants.php';
         }
 
+        /**
+         * Checks if the Contrexx installation has been set up yet (CONTEXX_INSTALLED).
+         * If not, the user will be redirected (through a HTTP-Location redirect) to
+         * the web-installer (/installer).
+         */
         protected function checkInstallationStatus() {
             // Check if the system is installed
             if (!defined('CONTEXX_INSTALLED') || !CONTEXX_INSTALLED) {
@@ -627,6 +638,12 @@ namespace Cx\Core\Core\Controller {
             }
         }
 
+        /**
+         * Verifies if the basic configuration has been initialized (settings.php).
+         * If not, the system will halt.
+         * 
+         * @global array $_CONFIG Configuration array from /config/settings.php
+         */
         protected function checkBasicConfiguration() {
             global $_CONFIG;
 
@@ -732,7 +749,7 @@ namespace Cx\Core\Core\Controller {
         protected function preInit() {
             $this->checkSystemState();
             $this->initClassLoader();
-            $this->initEnv();
+            $this->initLegacyEnv();
             $this->callPreInitHooks();
             $this->adjustRequest();            
         }
@@ -760,10 +777,11 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
-         * Setting Env class
-         * 
+         * Setting up Env class
+         * @global array $_CONFIG Configuration array from /config/settings.php
+         * @global array $_FTPCONFIG FTP configuration array from /config/configuration.php
          */
-        protected function initEnv() {
+        protected function initLegacyEnv() {
             global $_CONFIG, $_FTPCONFIG;
             /**
              * Environment repository
