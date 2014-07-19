@@ -166,62 +166,64 @@ namespace Cx\Core\Core\Controller {
         protected $eventManager = null;
         
         /**
+         * The folder name of the storage location of the config files (/config).
+         * @var string
+         */
+        const FOLDER_NAME_CONFIG = '/config';
+
+        /**
          * The folder name of the storage location of the core components (/core).
          * Formerly known as ASCMS_CORE_FOLDER.
          * @var string
-         * @todo @MRi: Shall we convert this into a constant?
          */
-        protected $coreFolderName = '/core';
+        const FOLDER_NAME_CORE = '/core';
 
         /**
          * The folder name used for the temp storage location (/tmp).
          * @var string
-         * @todo @MRi: Shall we convert this into a constant?
          */
-        protected $tempFolderName = '/tmp';
+        const FOLDER_NAME_TEMP = '/tmp';
 
         /**
          * The folder name used to access the backend of the website (/cadmin).
          * Formerly known as ASCMS_BACKEND_PATH
          * @var string
-         * @todo @MRi: Shall we convert this into a constant?
          */
-        protected $backendFolderName = '/cadmin';
+        const FOLDER_NAME_BACKEND = '/cadmin';
 
         /**
          * The folder name used for the customizing storage location (/customizing).
          * @var string
-         * @todo @MRi: Shall we convert this into a constant?
          */
-        protected $customizingFolderName = '/customizing';
+        const FOLDER_NAME_CUSTOMIZING = '/customizing';
         
         /**
          * The folder name used for the core_modules storage location (/core_modules).
          * Formerly known as ASCMS_CORE_MODULE_FOLDER
          * @var string
          */
-        protected $coreModuleFolderName = '/core_modules';
+        const FOLDER_NAME_CORE_MODULE = '/core_modules';
         
         /**
          * The folder name used for the lib storage location (/lib).
          * Formerly known as ASCMS_LIBRARY_FOLDER
          * @var string
          */
-        protected $libraryFolderName = '/lib';
+        const FOLDER_NAME_LIBRARY = '/lib';
         
         /**
          * The folder name used for the model storage location (/model).
          * Formerly known as ASCMS_MODEL_FOLDER
          * @var string
          */
-        protected $modelFolderName = '/model';
+        const FOLDER_NAME_MODEL = '/model';
         
         /**
          * The folder name used for the modules storage location (/modules).
          * Formerly known as ASCMS_MODULE_FOLDER
          * @var string
          */
-        protected $moduleFolderName = '/modules';
+        const FOLDER_NAME_MODULE = '/modules';
         
         /**
          * The webserver's DocumentRoot path.
@@ -346,6 +348,13 @@ namespace Cx\Core\Core\Controller {
          * @var string
          */
         protected $websiteDocumentRootPath = null;
+
+        /**
+         * The absolute path to the storage location of
+         * the website's config files  (/config).
+         * @var string
+         */
+        protected $websiteConfigPath = null;
 
         /**
          * The absolute path to the customizing repository of the website.
@@ -591,7 +600,7 @@ namespace Cx\Core\Core\Controller {
              * This file is re-created by the CMS itself. It initializes the
              * {@link $_CONFIG[]} global array.
              */
-            include_once $this->getWebsiteDocumentRootPath().'/config/settings.php';
+            include_once $this->getWebsiteConfigPath().'/settings.php';
             
             @ini_set('default_charset', $_CONFIG['coreCharacterEncoding']);
             
@@ -1791,7 +1800,7 @@ namespace Cx\Core\Core\Controller {
          * @return string
          */
         public function getCoreModuleFolderName() {
-            return $this->coreModuleFolderName;
+            return self::FOLDER_NAME_CORE_MODULE;
         }
         
         /**
@@ -1800,7 +1809,7 @@ namespace Cx\Core\Core\Controller {
          * @return string
          */
         public function getLibraryFolderName() {
-            return $this->libraryFolderName;
+            return self::FOLDER_NAME_LIBRARY;
         }
         
         
@@ -1810,7 +1819,7 @@ namespace Cx\Core\Core\Controller {
          * @return string
          */
         public function getModelFolderName() {
-            return $this->modelFolderName;
+            return self::FOLDER_NAME_MODEL;
         }
         
         
@@ -1820,7 +1829,7 @@ namespace Cx\Core\Core\Controller {
          * @return string
          */
         public function getModuleFolderName() {
-            return $this->moduleFolderName;
+            return self::FOLDER_NAME_MODULE;
         }
 
         /**
@@ -1833,16 +1842,16 @@ namespace Cx\Core\Core\Controller {
             $this->codeBasePath                 = $codeBasePath;
             $this->codeBaseOffsetPath           = $codeBaseOffsetPath;
             $this->codeBaseDocumentRootPath     = $this->codeBasePath . $this->codeBaseOffsetPath;
-            $this->codeBaseCorePath             = $this->codeBaseDocumentRootPath . $this->coreFolderName;
-            $this->codeBaseAdminTemplatePath    = $this->codeBaseDocumentRootPath . $this->backendFolderName . '/template/ascms';
-            $this->codeBaseAdminTemplateWebPath = $this->codeBaseOffsetPath . $this->backendFolderName . '/template/ascms';
-            $this->codeBaseCoreModulePath       = $this->codeBasePath . $this->coreModuleFolderName;
-            $this->codeBaseCoreModuleWebPath    = $this->codeBaseOffsetPath . $this->coreModuleFolderName;
-            $this->codeBaseLibraryPath          = $this->codeBasePath . $this->libraryFolderName;
+            $this->codeBaseCorePath             = $this->codeBaseDocumentRootPath . self::FOLDER_NAME_CORE;
+            $this->codeBaseAdminTemplatePath    = $this->codeBaseDocumentRootPath . self::FOLDER_NAME_BACKEND . '/template/ascms';
+            $this->codeBaseAdminTemplateWebPath = $this->codeBaseOffsetPath . self::FOLDER_NAME_BACKEND . '/template/ascms';
+            $this->codeBaseCoreModulePath       = $this->codeBasePath . self::FOLDER_NAME_CORE_MODULE;
+            $this->codeBaseCoreModuleWebPath    = $this->codeBaseOffsetPath . self::FOLDER_NAME_CORE_MODULE;
+            $this->codeBaseLibraryPath          = $this->codeBasePath . self::FOLDER_NAME_LIBRARY;
             $this->codeBaseFrameworkPath        = $this->codeBaseLibraryPath . '/FRAMEWORK';
-            $this->codeBaseModelPath            = $this->codeBasePath . $this->modelFolderName;
-            $this->codeBaseModulePath           = $this->codeBasePath . $this->moduleFolderName;
-            $this->codeBaseModuleWebPath        = $this->codeBaseOffsetPath . $this->moduleFolderName;
+            $this->codeBaseModelPath            = $this->codeBasePath . self::FOLDER_NAME_MODEL;
+            $this->codeBaseModulePath           = $this->codeBasePath . self::FOLDER_NAME_MODULE;
+            $this->codeBaseModuleWebPath        = $this->codeBaseOffsetPath . self::FOLDER_NAME_MODULE;
         }
 
         /**
@@ -1889,7 +1898,7 @@ namespace Cx\Core\Core\Controller {
          * @return string
          */
         public function getCoreFolderName() {
-            return $this->coreFolderName;
+            return self::FOLDER_NAME_CORE;
         }
         
         /**
@@ -1990,9 +1999,10 @@ namespace Cx\Core\Core\Controller {
             $this->websitePath                  = $websitePath;
             $this->websiteOffsetPath            = $websiteOffsetPath;
             $this->websiteDocumentRootPath      = $this->websitePath . $this->websiteOffsetPath;
-            $this->websiteCustomizingPath       = $this->websiteDocumentRootPath . $this->customizingFolderName;
-            $this->websiteCustomizingWebPath    = $this->websiteOffsetPath . $this->customizingFolderName;
-            $this->websiteTempPath              = $this->websiteDocumentRootPath . $this->tempFolderName;
+            $this->websiteConfigPath            = $this->websitePath . self::FOLDER_NAME_CONFIG;
+            $this->websiteCustomizingPath       = $this->websiteDocumentRootPath . self::FOLDER_NAME_CUSTOMIZING;
+            $this->websiteCustomizingWebPath    = $this->websiteOffsetPath . self::FOLDER_NAME_CUSTOMIZING;
+            $this->websiteTempPath              = $this->websiteDocumentRootPath . self::FOLDER_NAME_TEMP;
             $this->websiteThemesPath            = $this->websiteDocumentRootPath . '/themes';
         }
 
@@ -2022,6 +2032,14 @@ namespace Cx\Core\Core\Controller {
          */
         public function getWebsiteDocumentRootPath() {
             return $this->websiteDocumentRootPath;
+        }
+
+        /**
+         * Return the absolute path to the storage location of the website's config files.
+         * @return string
+         */
+        public function getWebsiteConfigPath() {
+            return $this->websiteConfigPath;
         }
 
         /**
@@ -2059,7 +2077,7 @@ namespace Cx\Core\Core\Controller {
          * @return string
          */
         public function getBackendFolderName() {
-            return $this->backendFolderName;
+            return self::FOLDER_NAME_BACKEND;
         }
         
         /**
