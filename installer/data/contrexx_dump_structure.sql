@@ -309,6 +309,43 @@ CREATE TABLE `contrexx_core_mail_template` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_core_module_multisite_user_website` (
+  `websiteId` int(11) unsigned NOT NULL,
+  `multiSiteUserId` int(11) unsigned NOT NULL,
+  `userId` int(5) unsigned NOT NULL,
+  `role` enum('admin','user') NOT NULL default 'user'
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_core_module_multisite_website` (
+  `id` int(11) NOT NULL auto_increment,
+  `name` varchar(200) NOT NULL,
+  `language` varchar(50) NOT NULL,
+  `status` int(11) NOT NULL,
+  `websiteServiceServerId` int(11) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `name_index` (`name`)
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_core_module_multisite_website_service_server` (
+  `id` int(11) NOT NULL auto_increment,
+  `hostname` varchar(255) NOT NULL,
+  `label` varchar(225) NOT NULL,
+  `secretKey` varchar(32) NOT NULL,
+  `installationId` varchar(40) NOT NULL,
+  `isDefault` int(1) NOT NULL,
+  `httpAuthMethod` varchar(6) default NULL,
+  `httpAuthUsername` varchar(255) NOT NULL,
+  `httpAuthPassword` varchar(255) NOT NULL,
+  `defaultWebsiteIp` varchar(45) NOT NULL,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_core_setting` (
   `section` varchar(32) NOT NULL default '',
   `name` varchar(255) NOT NULL default '',
