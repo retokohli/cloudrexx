@@ -220,7 +220,7 @@ class LoginManager {
             'TXT_LOGIN_PASSWORD'            => $_ARRAYLANG['TXT_LOGIN_PASSWORD'],
             'TXT_LOGIN_PASSWORD_LOST'       => $_ARRAYLANG['TXT_LOGIN_PASSWORD_LOST'],
             'TXT_LOGIN_REMEMBER_ME'         => $_CORELANG['TXT_CORE_REMEMBER_ME'],
-            'REDIRECT_URL'                  => !empty($_POST['redirect']) ? $_POST['redirect'] : ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/'.basename(getenv('REQUEST_URI')),
+            'REDIRECT_URL'                  => !empty($_POST['redirect']) ? $_POST['redirect'] : ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.substr(getenv('REQUEST_URI'), strlen(\Env::get('cx')->getWebsiteBackendPath())),
             'FRONTEND_LINK'                 => $frontendLink,
             'JAVASCRIPT'                    => \JS::getCode(),
         ));

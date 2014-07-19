@@ -214,8 +214,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     'USER_ID' => $objFWUser->objUser->getId(),
                 ));
 
-
-                if (isset($_POST['redirect']) && preg_match('/\.php/', $_POST['redirect'])) {
+                if (isset($_POST['redirect'])) {
                     $redirect = \FWUser::getRedirectUrl(urlencode($_POST['redirect']));
                     \Cx\Core\Csrf\Controller\ComponentController::header('location: ' . $redirect);
                 }
