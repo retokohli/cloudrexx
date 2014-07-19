@@ -464,10 +464,10 @@ namespace Cx\Core\Core\Controller {
                 $this->setMode($mode);
 
                 /**
-                 * Early initializations, tries to enable APC and increase RAM size
-                 * This is not a hookscript, since no components are loaded so far
+                 * Early initializations. Verifies that the system is online (not suspended).
+                 * Initializes the ClassLoader, the legacy Environment variables and executes
+                 * the preInit-hook-scripts. Finally it verifies the requested HTTP-Host.
                  */
-// TODO: @MRi: how should the newly added methods and method preInit() be grouped?
                 $this->preInit();
                 
                 /**
@@ -744,7 +744,9 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
-         * Early initializations. Tries to enable APC and increase RAM size
+         * Early initializations. Verifies that the system is online (not suspended).
+         * Initializes the ClassLoader, the legacy Environment variables and executes
+         * the preInit-hook-scripts. Finally it verifies the requested HTTP-Host.
          */
         protected function preInit() {
             $this->checkSystemState();
@@ -799,19 +801,27 @@ namespace Cx\Core\Core\Controller {
          */
         protected function callPreInitHooks() {
             try {
-                $filename = $this->getCodeBaseCorePath() . '/Core/Data/preInitHooks.yml';
-                $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::importFromFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), $filename);
+                $filename = $this->getWebsiteConfigPath() . '/preInitHooks.yml';
+                $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load($filename);
                 foreach ($objDataSet as $componentDefinition) {
                     $component = new \Cx\Core\Core\Model\Entity\SystemComponent();
                     $component->setName($componentDefinition['name']);
                     $component->setType($componentDefinition['type']);
-                    $componentControllerClass = $component->getNamespace() . '\\Controller\\ComponentController';
+                    // Initialize ComponentController of component if available,
+                    // otherwise initialize the SystemComponentController
+                    // Implementation taken from method Cx\Core\Core\Model\Repository\SystemComponentRepository::getComponentControllerClassFor()
+                    // as that method shall not be used at this point to prevent the
+                    // system (i.e. the Class Loader) from loading the doctine PHP classes.
+                    if ($this->cl->getFilePath($component->getDirectory(false) . '/Controller/ComponentController.class.php')) {
+                        $componentControllerClass = $component->getNamespace() . '\\Controller\\ComponentController';
+                    } else {
+                        $componentControllerClass = '\\Cx\\Core\\Core\\Model\\Entity\\SystemComponentController';
+                    }
                     $componentController = new $componentControllerClass($component, $this);
                     $componentController->preInit($this);
                 }
             } catch (\Cx\Core_Modules\Listing\Model\Entity\DataSetException $e) {
-                \DBG::msg('callPreInitHooks: Process failed!');
-                \DBG::msg($e->getMessage());
+                throw new \Exception('Error in processing preInit-hooks: '.$e->getMessage());
             }
         }
 
@@ -2017,7 +2027,7 @@ namespace Cx\Core\Core\Controller {
             $this->websitePath                  = $websitePath;
             $this->websiteOffsetPath            = $websiteOffsetPath;
             $this->websiteDocumentRootPath      = $this->websitePath . $this->websiteOffsetPath;
-            $this->websiteConfigPath            = $this->websitePath . self::FOLDER_NAME_CONFIG;
+            $this->websiteConfigPath            = $this->websiteDocumentRootPath . self::FOLDER_NAME_CONFIG;
             $this->websiteCustomizingPath       = $this->websiteDocumentRootPath . self::FOLDER_NAME_CUSTOMIZING;
             $this->websiteCustomizingWebPath    = $this->websiteOffsetPath . self::FOLDER_NAME_CUSTOMIZING;
             $this->websiteTempPath              = $this->websiteDocumentRootPath . self::FOLDER_NAME_TEMP;
