@@ -549,10 +549,11 @@ namespace Cx\Core\Core\Controller {
          * @throws \Exception If the CMS is deactivated, an exception is thrown
          */
         protected function loadConfig($configFilePath = null) {
-            global $_PATHCONFIG;
+            global $_PATHCONFIG, $_DBCONFIG;
 
             // load custom configuration file
             if ($configFilePath) {
+                \DBG::log('Cx: LoadConfig: '.$configFilePath);
                 include_once $configFilePath;
             }
 
