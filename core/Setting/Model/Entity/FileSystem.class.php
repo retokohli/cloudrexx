@@ -28,6 +28,12 @@ namespace Cx\Core\Setting\Model\Entity;
  */
 class FileSystem extends Engine{
     /**
+     * Path to the configuration file used as storage location
+     * @var string
+     */
+    static $filename = null;
+
+    /**
      * Initialize the settings entries from the file with key/value pairs
      * for the current section and the given group
      *
@@ -41,20 +47,35 @@ class FileSystem extends Engine{
      * @param   string    $section    The section
      * @param   string    $group      The optional group.
      *                                Defaults to null
+     * @param   string    $configRepository     An optional path
+     *                                to the storage location of config files (/config) which shall be used for the engine 'File System'.
      * @return  boolean               True on success, false otherwise
      */
-    static function init($section, $group=null) {
+    static function init($section, $group=null, $configRepository = null) {
+        if (!$configRepository) {
+            $configRepository = \Env::get('cx')->getWebsiteConfigPath();
+        }
+
+        self::flush();
+        self::$section = $section;
+        self::$group = $group;
+        self::$filename =  $configRepository . '/'.$section.'.yml';
+
         try {
-            //File Path
-            $filename =  \Env::get('cx')->getWebsiteConfigPath() . '/'.$section.'.yml';
-            self::flush();
-            self::$section = $section;
-            self::$group = $group;
+            $file = new \Cx\Lib\FileSystem\File(self::$filename);
+            $file->touch();
+            $file->makeWritable();
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            throw new \Cx\Core\Setting\Controller\SettingException($e->getMessage());
+        }
+
+        try {
             //call DataSet importFromFile method @return array
-            $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load($filename);
+            $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load(self::$filename);
             if (!empty($objDataSet)) {
+                self::$arrSettings = array();
                 foreach ($objDataSet as $value) {
-                    self::$arrSettings[$value['name']]= $value;
+                    self::$arrSettings[$value['name']] = $value;
                 }
             }
         } catch (\Cx\Core_Modules\Listing\Model\Entity\DataSetException $e) {
@@ -115,11 +136,9 @@ class FileSystem extends Engine{
             return false;
         }
         $success = true;
-        //File Path
-        $fileName = \Env::get('cx')->getWebsiteConfigPath() . '/'.self::$section.'.yml';
         //call DataSet exportToFile method to update file
         $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet(self::$arrSettings);
-        $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), $fileName);
+        $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), self::$filename);
         if ($success) {
             self::$changed = false;
             //return Message::ok($_CORELANG['TXT_CORE_SETTING_STORED_SUCCESSFULLY']);
@@ -162,9 +181,8 @@ class FileSystem extends Engine{
             return false;
         }
         if(!empty(self::$arrSettings)){
-            $fileName = \Env::get('cx')->getWebsiteConfigPath() . '/'.self::$section.'.yml';
             $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet(self::$arrSettings);
-            $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), $fileName);
+            $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), self::$filename);
             return true;
         }else{
             return false;
@@ -221,7 +239,6 @@ class FileSystem extends Engine{
             // \DBG::log("\Cx\Core\Setting\Model\Entity\FileSystem::add(): ERROR: Setting '$name' already exists and is non-empty ($old_value)");
             return false;
         }
-        $filename = \Env::get('cx')->getWebsiteConfigPath() . '/'.self::$section.'.yml';
         $addValue =   Array(  
                             'name'=> addslashes($name),
                             'section'=> addslashes(self::$section),
@@ -234,7 +251,7 @@ class FileSystem extends Engine{
         self::$arrSettings[addslashes($name)]=$addValue;
         if (!empty(self::$arrSettings)) {                     
             $objDataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet(self::$arrSettings);
-            $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), $filename);
+            $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), self::$filename);
         }
         return true;
     }
@@ -259,8 +276,7 @@ class FileSystem extends Engine{
         if (empty($name) && empty($group) && empty(self::$section)) return false;
          
         $arrSetting=array();
-        $filename = \Env::get('cx')->getWebsiteConfigPath() . '/'.self::$section.'.yml';
-        $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load($filename);
+        $objDataSet = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load(self::$filename);
         // if get blank or invalid file
         if (empty($objDataSet)) return false;
         
@@ -273,7 +289,7 @@ class FileSystem extends Engine{
         if (empty($arrSetting)) return false;
         
         $objDataSet =new \Cx\Core_Modules\Listing\Model\Entity\DataSet($arrSetting);
-        $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), $filename);
+        $objDataSet->exportToFile(new \Cx\Core_Modules\Listing\Model\Entity\YamlInterface(), self::$filename);
         return true;                   
     }
 
@@ -288,8 +304,7 @@ class FileSystem extends Engine{
     {
         if (empty(self::$section))return false;
         try {
-            $filename = \Env::get('cx')->getWebsiteConfigPath() . '/'.self::$section.'.yml';
-            $objFile = new \Cx\Lib\FileSystem\File($filename);
+            $objFile = new \Cx\Lib\FileSystem\File(self::$filename);
             $objFile->delete();       
             return true;
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
