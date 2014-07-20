@@ -1111,7 +1111,7 @@ $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_CC'] = "Trennen Sie mehrere E-Mail Adres
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_NOTE_BCC'] = "Trennen Sie mehrere E-Mail Adressen durch Kommas.";
 $_ARRAYLANG['TXT_CORE_MAILTEMPLATE_WARNING_NONE'] = "Es sind keine E-Mail Vorlagen vorhanden";
 
-// core SettingDb
+// core \Cx\Core\Setting
 $_ARRAYLANG['TXT_CORE_SETTING'] = "Einstellungen";
 $_ARRAYLANG['TXT_CORE_SETTING_ERROR_RETRIEVING'] = "Fehler bei der Abfrage der Einstellungen";
 $_ARRAYLANG['TXT_CORE_SETTING_ERROR_STORING'] = "Fehler beim Speichern der Einstellungen";
