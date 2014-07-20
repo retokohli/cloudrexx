@@ -121,6 +121,13 @@ class cmsSession extends RecursiveArrayAccess {
      */
     private static $sessionLockTime = 10;
     
+    /**
+     * Maximum allowed length of a session variable key.
+     * This maximum length is defined by the associated database field core_session_variable.key.
+     * @var integer
+     */
+    const VARIABLE_KEY_MAX_LENGTH = 40;
+
     /*
      * Get instance of the class from the out side world
      */
@@ -156,6 +163,15 @@ class cmsSession extends RecursiveArrayAccess {
         }
         
         return true;
+    }
+
+    /**
+     * Return the maximum length of a session variable key.
+     * @return integer Maximum allowed length of a session variable key.
+     */
+    public static function getVariableKeyMaxLength()
+    {
+        return self::VARIABLE_KEY_MAX_LENGTH;
     }
 
     /**
