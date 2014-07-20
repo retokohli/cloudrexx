@@ -260,8 +260,8 @@ class MediaManager extends MediaLibrary
                 break;
         }
 
-        $this->docRoot = ASCMS_DOCUMENT_ROOT; // with path offset
-        $this->docRoot = ASCMS_PATH; // without path offset
+        $this->docRoot = \Env::get('cx')->getWebsiteDocumentRootPath(); // with path offset
+        $this->docRoot = \Env::get('cx')->getWebsitePath(); // without path offset
 
         //paths
         $this->webPath = $this->_pathCheck($this->getPath);
