@@ -1823,6 +1823,14 @@ namespace Cx\Core\Core\Controller {
         }
 
         /**
+         * Return the folder name of the storage location of the configuration files (/config).
+         * @return string
+         */
+        public function getConfigFolderName() {
+            return self::FOLDER_NAME_CONFIG;
+        }
+        
+        /**
          * Return the folder name of the storage location of the core components(/core).
          * Formerly known as ASCMS_CORE_FOLDER.
          * @return string
