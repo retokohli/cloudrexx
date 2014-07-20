@@ -538,10 +538,22 @@ die("MailTemplate::init(): Empty section!");
 // Must handle any of CR, LF, CR/LF, and LF/CR!
 //                preg_replace('/[\015\012]/', "\015\012", $value);
             if ($search) {
-                $value = str_replace($search, $replace, $value);
+                // we need to replace raw data with HTML entities
+                // for HTML-body of email
+                if ($field == 'message_html') {
+                    foreach ($search as $index => $searchTerm) {
+                        $value = str_replace($searchTerm, contrexx_raw2xhtml($replace[$index]), $value);
+                    }
+                } else {
+                    $value = str_replace($search, $replace, $value);
+                }
             }
             if ($substitution) {
-                self::substitute($value, $substitution);
+                $convertToHtmlEntities = false;
+                if ($field == 'message_html') {
+                    $convertToHtmlEntities = true;
+                }
+                self::substitute($value, $substitution, $convertToHtmlEntities);
             }
             if ($strip) self::clearEmptyPlaceholders($value);
         }
@@ -698,8 +710,9 @@ die("MailTemplate::init(): Empty section!");
      *                                    by reference
      * @param   array     $substitution   The array of placeholders and values,
      *                                    by reference
+     * @param   boolean   $convertToHtmlEntities if true, converts the values to html entities
      */
-    static function substitute(&$string, &$substitution)
+    static function substitute(&$string, &$substitution, $convertToHtmlEntities = false)
     {
         if (empty($string)) return;
 //DBG::log("substitute($string, \$substitution): Entered");
@@ -720,7 +733,7 @@ die("MailTemplate::init(): Empty section!");
                     // Parse block with subarray contents (nested block)
                     foreach ($value as $value_inner) {
                         $block = $block_template;
-                        self::substitute($block, $value_inner);
+                        self::substitute($block, $value_inner, $convertToHtmlEntities);
                         $block_parsed .= $block;
 //echo("substitute(): Block parsed: ".htmlentities($block)."<br />");
                     }
@@ -730,7 +743,7 @@ die("MailTemplate::init(): Empty section!");
                     // it does not contain any placeholder present
                     // in the substitution (conditional block)
                     $block = $block_template;
-                    self::substitute($block, $substitution);
+                    self::substitute($block, $substitution, $convertToHtmlEntities);
                     if ($block != $block_template) {
                         $block_parsed = $block;
                     }
@@ -741,6 +754,9 @@ die("MailTemplate::init(): Empty section!");
                 // Cannot operate on simple placeholders with an array
                 if (is_array($value)) continue;
                 $placeholder_re = '/'.preg_quote("[$placeholder]", '/').'/i';
+                if ($convertToHtmlEntities) {
+                    $value = contrexx_raw2xhtml($value);
+                }
                 if (preg_match($placeholder_re, $string)) {
                     $string = preg_replace(
                         $placeholder_re, $value, $string);
