@@ -443,7 +443,8 @@ class License {
     }
     
     /**
-     * @param \SettingDb $settings Reference to the settings manager object
+     * @param array             $_CONFIG    Reference to the basic settings ($_CONFIG)
+     * @param ADONewConnection  $objDb      Database connection object
      * @return \Cx\Core_Modules\License\License
      */
     public static function getCached(&$_CONFIG, $objDb) {
