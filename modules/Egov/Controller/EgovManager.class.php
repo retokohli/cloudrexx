@@ -214,7 +214,7 @@ class EgovManager extends EgovLibrary
         $ipnchecked = (EgovLibrary::GetSettings('set_paypal_ipn') == 1
             ? 'checked="checked"' : '');
 
-        // PostFinance uses SettingDb
+        // PostFinance uses \Cx\Core\Setting
         \Cx\Core\Setting\Controller\Setting::init('Egov', 'config');
 // TODO: Temporary fix for the upgrade to \Cx\Core\Setting\Controller\Setting.
 // Remove when the whole module is migrated.
