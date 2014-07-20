@@ -664,7 +664,7 @@ class Customer extends \User
             return false;
         }
 
-        // Ensure that the ShopSettings (including SettingDb) and Order tables
+        // Ensure that the ShopSettings (including \Cx\Core\Setting) and Order tables
         // are ready first!
 //DBG::log("Customer::errorHandler(): Adding settings");
         ShopSettings::errorHandler();

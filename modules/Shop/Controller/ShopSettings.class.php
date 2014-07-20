@@ -436,7 +436,7 @@ class ShopSettings
         $result = \Cx\Core\Setting\Controller\Setting::set(
             'vat_enabled_home_reseller', $vat_enabled_home_reseller);
         if (isset($result)) self::$success &= $result;
-//DBG::log("after set(): ".self::$success.", my changed: ".self::$changed.", \SettingDb: ".\Cx\Core\Setting\Controller\Setting::changed());
+//DBG::log("after set(): ".self::$success.", my changed: ".self::$changed.", \Cx\Core\Setting\Controller\Setting: ".\Cx\Core\Setting\Controller\Setting::changed());
         if ($vat_enabled_home_reseller) {
             $result = \Cx\Core\Setting\Controller\Setting::set('vat_included_home_reseller',
                 !empty($_POST['vat_included_home_reseller']));
@@ -460,7 +460,7 @@ class ShopSettings
                 !empty($_POST['vat_included_foreign_reseller']));
             if (isset($result)) self::$success &= $result;
         }
-//DBG::log("storeVat(): after Settingdb: ".self::$success.", changed: ".self::$changed);
+//DBG::log("storeVat(): after \Cx\Core\Setting\Controller\Setting: ".self::$success.", changed: ".self::$changed);
         self::update_vat();
 //DBG::log("end of storeVat(): ".self::$success.", changed: ".self::$changed);
         Vat::init();
@@ -552,7 +552,7 @@ class ShopSettings
     /**
      * Fixes database errors.
      *
-     * Also migrates settings from the old Shop settings table to SettingDb.
+     * Also migrates settings from the old Shop settings table to \Cx\Core\Setting.
      * @return  boolean                 False.  Always.
      * @throws  Cx\Lib\Update_DatabaseException
      */
@@ -565,7 +565,7 @@ class ShopSettings
         $table_name = DBPREFIX.'module_shop_config';
         $i = 0;
         if (Cx\Lib\UpdateUtil::table_exist($table_name)) {
-            // Migrate all entries using the SettingDb class
+            // Migrate all entries using the \Cx\Core\Setting\Controller\Setting class
             $query = "
                 SELECT `name`, `value`, `status`
                   FROM ".DBPREFIX."module_shop_config
@@ -672,14 +672,14 @@ class ShopSettings
                     if (   \Cx\Core\Setting\Controller\Setting::getValue($name) === NULL
                         && !\Cx\Core\Setting\Controller\Setting::add($name, $value, ++$i)) {
                         throw new Cx\Lib\Update_DatabaseException(
-                           "Failed to add SettingDb entry for '$name'");
+                           "Failed to add \Cx\Core\Setting entry for '$name'");
                     }
                 }
                 if ($name_status) {
                     if (   \Cx\Core\Setting\Controller\Setting::getValue($name_status) === NULL
                         && !\Cx\Core\Setting\Controller\Setting::add($name_status, $status, ++$i)) {
                         throw new Cx\Lib\Update_DatabaseException(
-                           "Failed to add SettingDb entry for status '$name_status'");
+                           "Failed to add \Cx\Core\Setting entry for status '$name_status'");
                     }
                 }
                 $objResult->MoveNext();

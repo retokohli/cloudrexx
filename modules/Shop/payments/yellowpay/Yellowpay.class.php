@@ -433,7 +433,7 @@ class Yellowpay
      * @param   array       $arrFields      The parameter array
      * @param   string      $submitValue    The optional label for the submit button
      * @param   boolean     $autopost       If true, the form is automatically submitted. Defaults to false.
-     * @param   array       $arrSettings    Settings from SettingDb
+     * @param   array       $arrSettings    Settings from \Cx\Core\Setting
      * @param   object      $landingPage    The optional URI parameter string
      * @return  string                      The HTML form code
      */
