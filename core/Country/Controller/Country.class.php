@@ -137,7 +137,7 @@ class Country
         global $objDatabase;
 
         if (empty($lang_id)) $lang_id = FRONTEND_LANG_ID;
-        $arrSqlName = Text::getSqlSnippets('`country`.`id`', $lang_id,
+        $arrSqlName = \Text::getSqlSnippets('`country`.`id`', $lang_id,
             'core', array('name' => self::TEXT_NAME));
         if (empty($limit)) $limit  = -1;
         if (empty($offset)) $offset =  0;
@@ -159,7 +159,7 @@ class Country
             $id = $objResult->fields['id'];
             $strName = $objResult->fields['name'];
             if ($strName === null) {
-                $objText = Text::getById($id, 'core', self::TEXT_NAME);
+                $objText = \Text::getById($id, 'core', self::TEXT_NAME);
                 if ($objText) $strName = $objText->content();
             }
             $arrCountries[$id] = array(
@@ -211,7 +211,7 @@ class Country
 //die("Country::getById(): ERROR: Empty language ID");
             $lang_id = FRONTEND_LANG_ID;
         }
-        $arrSqlName = Text::getSqlSnippets('`country`.`id`', $lang_id,
+        $arrSqlName = \Text::getSqlSnippets('`country`.`id`', $lang_id,
             'core', array('name' => self::TEXT_NAME));
         $query = "
             SELECT `country`.`alpha2`, `country`.`alpha3`,
@@ -230,7 +230,7 @@ class Country
         if ($objResult->EOF) return false;
         $strName = $objResult->fields['name'];
         if ($strName === null) {
-            $objText = Text::getById($country_id, 'core', self::TEXT_NAME);
+            $objText = \Text::getById($country_id, 'core', self::TEXT_NAME);
             if ($objText) $strName = $objText->content();
         }
         return array(
@@ -396,7 +396,7 @@ class Country
      * Returns SQL query snippets for the Country name for including
      * in any full query
      *
-     * Simply calls {@see Text::getSqlSnippets()} using 'name' as the
+     * Simply calls {@see \Text::getSqlSnippets()} using 'name' as the
      * alias for the Country name field.
      * @param   integer   $lang_id    The optional Language ID.
      *                                Defaults to the FRONTEND_LANG_ID
@@ -408,7 +408,7 @@ class Country
     {
         $lang_id = intval($lang_id);
         if (empty($lang_id)) $lang_id = FRONTEND_LANG_ID;
-        return Text::getSqlSnippets(
+        return \Text::getSqlSnippets(
             '`country`.`id`', $lang_id, 'core',
             array('name' => self::TEXT_NAME));
     }
@@ -476,7 +476,7 @@ class Country
         }
         // Store the Country name only if it's set
         if ($country_name != '') {
-            if (Text::replace(
+            if (\Text::replace(
                 $country_id, $lang_id, 'core', self::TEXT_NAME, $country_name)) {
 //DBG::log("Country::store($alpha2, $alpha3, $lang_id, $country_name, $ord, $active, $country_id): Successfully stored Text);
                 return true;
@@ -580,7 +580,7 @@ class Country
 //            Message::add($_CORELANG['TXT_CORE_COUNTRY_ERROR_DELETING_NOT_FOUND'];
             return false;
         }
-        if (!Text::deleteById($country_id, 'core', self::TEXT_NAME, 0)) {
+        if (!\Text::deleteById($country_id, 'core', self::TEXT_NAME, 0)) {
             return false;
         }
         $query = "
@@ -619,10 +619,10 @@ class Country
         if (count(self::$arrCountries) == 1) {
             $arrCountry = current(self::$arrCountries);
             return
-                Html::getHidden($menuName, $arrCountry['id']).
+                \Html::getHidden($menuName, $arrCountry['id']).
                 $arrCountry['name'];
         }
-        return Html::getSelectCustom(
+        return \Html::getSelectCustom(
             $menuName, self::getMenuoptions($selected, $active),
             false, $onchange);
     }
@@ -638,7 +638,7 @@ class Country
      */
     static function getMenuoptions($selected=0, $active=true)
     {
-        return Html::getOptions(self::getNameArray($active), $selected);
+        return \Html::getOptions(self::getNameArray($active), $selected);
     }
 
 
@@ -676,7 +676,7 @@ class Country
         // Query relations between zones and countries:
         // Get all country IDs and names
         // associated with that zone ID
-        $arrSqlName = Text::getSqlSnippets(
+        $arrSqlName = \Text::getSqlSnippets(
             '`country`.`id`', FRONTEND_LANG_ID, 'core',
             array('name' => self::TEXT_NAME));
         $query = "
@@ -698,7 +698,7 @@ class Country
             $strName = $objResult->fields['name'];
             if ($strName === null) {
 //DBG::log(("MISSING Name for ID $id"));
-                $objText = Text::getById($id, 'core', self::TEXT_NAME, 0);
+                $objText = \Text::getById($id, 'core', self::TEXT_NAME, 0);
 //DBG::log(("GOT Name for Text ID $id: ".$objText->content()));
                 if ($objText) $strName = $objText->content();
             }
@@ -768,9 +768,9 @@ class Country
         self::storeSettings();
         self::storeFromPost();
 
-        $uri = Html::getRelativeUri();
+        $uri = \Html::getRelativeUri();
         // Let all links in this tab point here again
-        Html::replaceUriParameter($uri, 'active_tab='.\Cx\Core\Setting\Controller\Setting::tab_index());
+        \Html::replaceUriParameter($uri, 'active_tab='.\Cx\Core\Setting\Controller\Setting::tab_index());
         // Create a copy of the URI for the Paging, as this is passed by
         // reference and modified
         $uri_paging = $uri;
@@ -792,10 +792,10 @@ class Country
         $limit = \Cx\Core\Setting\Controller\Setting::getValue('numof_countries_per_page_backend');
         $count = 0;
         $arrCountries = self::getArray(
-            $count, null, $limit, Paging::getPosition(),
+            $count, null, $limit, \Paging::getPosition(),
             $objSorting->getOrder());
         if ($arrCountries === false) {
-            return Message::error($_CORELANG['TXT_CORE_COUNTRY_ERROR_INITIALIZING']);
+            return \Message::error($_CORELANG['TXT_CORE_COUNTRY_ERROR_INITIALIZING']);
         }
         $objTemplateCountry->setGlobalVariable($_CORELANG
           + array(
@@ -809,7 +809,7 @@ class Country
             'HEAD_SETTINGS_COUNTRY_ISO3' => $objSorting->getHeaderForField('alpha3'),
             'CORE_SETTING_TAB_INDEX' => \Cx\Core\Setting\Controller\Setting::tab_index(),
             'SETTINGS_COUNTRY_PAGING' =>
-                Paging::get($uri_paging, '', $count, $limit, true),
+                \Paging::get($uri_paging, '', $count, $limit, true),
         ));
         // Note:  Optionally disable the block 'settings_country_submit'
         // to disable storing changes
@@ -819,13 +819,13 @@ class Country
                 'SETTINGS_COUNTRY_ROWCLASS' => (++$i % 2 + 1),
                 'SETTINGS_COUNTRY_ID' => $country_id,
                 'SETTINGS_COUNTRY_ACTIVE' =>
-                    ($arrCountry['active'] ? Html::ATTRIBUTE_CHECKED : ''),
+                    ($arrCountry['active'] ? \Html::ATTRIBUTE_CHECKED : ''),
 // Note that the ordinal value is unused other than in the settings!
                 'SETTINGS_COUNTRY_ORD' => $arrCountry['ord'],
                 'SETTINGS_COUNTRY_NAME' => $arrCountry['name'],
                 'SETTINGS_COUNTRY_ISO2' => $arrCountry['alpha2'],
                 'SETTINGS_COUNTRY_ISO3' => $arrCountry['alpha3'],
-                'SETTINGS_FUNCTIONS' => Html::getBackendFunctions(
+                'SETTINGS_FUNCTIONS' => \Html::getBackendFunctions(
                     array(
                         'delete' => 'delete_country_id='.$country_id,
                     ),
@@ -867,9 +867,9 @@ class Country
         self::init();
         if (!empty($_REQUEST['delete_country_id'])) {
             if (Country::deleteById($_REQUEST['delete_country_id'])) {
-                Message::ok($_CORELANG['TXT_CORE_COUNTRY_DELETED_SUCCESSULLY']);
+                \Message::ok($_CORELANG['TXT_CORE_COUNTRY_DELETED_SUCCESSULLY']);
             } else {
-                Message::error($_CORELANG['TXT_CORE_COUNTRY_DELETING_FAILED']);
+                \Message::error($_CORELANG['TXT_CORE_COUNTRY_DELETING_FAILED']);
             }
             return;
         }
@@ -891,13 +891,13 @@ class Country
                       $alpha2, $alpha3, FRONTEND_LANG_ID, $country_name,
                       $ord, $active, $country_id)
             ) {
-                Message::error(sprintf(
+                \Message::error(sprintf(
                         $_CORELANG['TXT_CORE_COUNTRY_ERROR_STORING'],
                         $country_id, $country_name));
             }
         }
-        if (!Message::have(Message::CLASS_ERROR)) {
-            Message::ok($_CORELANG['TXT_CORE_COUNTRY_STORED_SUCCESSULLY']);
+        if (!\Message::have(Message::CLASS_ERROR)) {
+            \Message::ok($_CORELANG['TXT_CORE_COUNTRY_STORED_SUCCESSULLY']);
         }
     }
 
@@ -924,22 +924,22 @@ class Country
             'ord' => array('type' => 'INT(5)', 'unsigned' => true, 'notnull' => true, 'default' => '0', 'renamefrom' => 'sort_order'),
             'active' => array('type' => 'TINYINT(1)', 'unsigned' => true, 'notnull' => true, 'default' => '1', 'renamefrom' => 'is_active'),
         );
-        Cx\Lib\UpdateUtil::table($table_name, $table_structure);
-        if (Cx\Lib\UpdateUtil::table_empty($table_name)) {
-            Text::deleteByKey('core', self::TEXT_NAME);
+        \Cx\Lib\UpdateUtil::table($table_name, $table_structure);
+        if (\Cx\Lib\UpdateUtil::table_empty($table_name)) {
+            \Text::deleteByKey('core', self::TEXT_NAME);
             // Copy the Countries from the Shop module if possible
-            if (Cx\Lib\UpdateUtil::table_exist(DBPREFIX."module_shop_countries")) {
+            if (\Cx\Lib\UpdateUtil::table_exist(DBPREFIX."module_shop_countries")) {
                 $query = "
                     SELECT `countries_id`, `countries_name`,
                            `countries_iso_code_2`, `countries_iso_code_3`,
                            `activation_status`
                       FROM ".DBPREFIX."module_shop_countries";
-                $objResult = Cx\Lib\UpdateUtil::sql($query);
+                $objResult = \Cx\Lib\UpdateUtil::sql($query);
                 if (!$objResult) {
                     throw new \Cx\Lib\Update_DatabaseException(
                        "Failed to to query Country names", $query);
                 }
-                $default_lang_id = FWLanguage::getDefaultLangId();
+                $default_lang_id = \FWLanguage::getDefaultLangId();
                 while (!$objResult->EOF) {
                     $id = $objResult->fields['countries_id'];
                     $name = $objResult->fields['countries_name'];
@@ -959,7 +959,7 @@ class Country
                     }
                     $objResult->MoveNext();
                 }
-                Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'module_shop_countries');
+                \Cx\Lib\UpdateUtil::drop_table(DBPREFIX.'module_shop_countries');
             }
         }
 
@@ -967,7 +967,7 @@ class Country
 // USE FOR NEW INSTALLATIONS ONLY!
 // These records will lead to inconsistencies with Country references in
 // other tables otherwise.
-        if (Cx\Lib\UpdateUtil::table_empty($table_name)) {
+        if (\Cx\Lib\UpdateUtil::table_empty($table_name)) {
             // Add new Country records if available
             if (   file_exists(ASCMS_CORE_PATH.'/countries_iso_3166-2.php')
                 && include_once(ASCMS_CORE_PATH.'/countries_iso_3166-2.php')) {
@@ -1008,7 +1008,7 @@ class Country
                     continue;
                 }
                 foreach ($arrLanguage as $lang_id => $name) {
-                    if (!Text::replace($country_id, $lang_id, 'core',
+                    if (!\Text::replace($country_id, $lang_id, 'core',
                         self::TEXT_NAME, $name)) {
                         throw new \Cx\Lib\Update_DatabaseException(
                            "Failed to to update Country '$name' from languages file");
