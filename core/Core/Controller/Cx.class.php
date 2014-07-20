@@ -248,6 +248,14 @@ namespace Cx\Core\Core\Controller {
         protected $codeBaseDocumentRootPath = null;
 
         /**
+         * The absolute path to the storage location of the
+         * configuration files (/config) of the Code Base of the
+         * Contrexx installation.
+         * @var string
+         */
+        protected $codeBaseConfigPath = null;
+
+        /**
          * The absolute path to the core components (/core)
          * of the Code Base of the Contrexx installation.
          * Formerly known as ASCMS_CORE_PATH.
@@ -1896,6 +1904,7 @@ namespace Cx\Core\Core\Controller {
             $this->codeBasePath                 = $codeBasePath;
             $this->codeBaseOffsetPath           = $codeBaseOffsetPath;
             $this->codeBaseDocumentRootPath     = $this->codeBasePath . $this->codeBaseOffsetPath;
+            $this->codeBaseConfigPath           = $this->codeBaseDocumentRootPath . self::FOLDER_NAME_CONFIG;
             $this->codeBaseCorePath             = $this->codeBaseDocumentRootPath . self::FOLDER_NAME_CORE;
             $this->codeBaseAdminTemplatePath    = $this->codeBaseDocumentRootPath . self::FOLDER_NAME_BACKEND . '/template/ascms';
             $this->codeBaseAdminTemplateWebPath = $this->codeBaseOffsetPath . self::FOLDER_NAME_BACKEND . '/template/ascms';
@@ -1934,6 +1943,16 @@ namespace Cx\Core\Core\Controller {
          */
         public function getCodeBaseDocumentRootPath() {
             return $this->codeBaseDocumentRootPath;
+        }
+
+        /**
+         * Return the absolute path to the storage location of the
+         * configuration files (/config) of the Code Base of the
+         * Contrexx installation.
+         * @return string
+         */
+        public function getCodeBaseConfigPath() {
+            return $this->codeBaseConfigPath;
         }
 
         /**
