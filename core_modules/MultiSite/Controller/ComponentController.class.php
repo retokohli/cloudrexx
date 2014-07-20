@@ -208,7 +208,6 @@ throw new MultiSiteException('Refactor this method!');
     /**
      * Fixes database errors.   
      *
-     * Also migrates settings from the multisite settings table to SettingDb.
      * @return  boolean                 False.  Always.
      * @throws  \Cx\Lib\Update_DatabaseException
      */

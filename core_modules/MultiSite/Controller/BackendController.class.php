@@ -42,16 +42,15 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             case 'settings':
                 if(!empty($cmd[1]) && $cmd[1]=='email')
                 {   
-                    
+                    $config = \Env::get('config');
                     $template->setVariable(array(
-                        'TABLE' => \MailTemplate::adminView('MultiSite','nonempty','settings/email')->get(),
+                        'TABLE' => \Cx\Core\MailTemplate\Controller\MailTemplate::adminView('MultiSite', 'nonempty', $config['corePagingLimit'], 'settings/email')->get(),
                     ));
                 }elseif(!empty($cmd[1]) && $cmd[1]=='website_service_servers'){
                     $websiteServiceServers = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findAll();
                     if(empty($websiteServiceServers)){
                         $websiteServiceServers = new \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer();
                     }
-                    //\DBG::dump($websiteServiceServers);
                     $view = new \Cx\Core\Html\Controller\ViewGenerator($websiteServiceServers,
                         array(
                             'functions' => array(
