@@ -57,6 +57,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\Routing\Url                      $request    The URL object for this request
      */
     public function preResolve(\Cx\Core\Routing\Url $request) {
+// TODO: Deactivated license check for now. Implement new behavior.
+        return true;
 
         global $objDatabase;
 
@@ -102,6 +104,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
      */
     public function postResolve(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+// TODO: Deactivated license check for now. Implement new behavior.
+        return true;
 
         global $plainCmd, $objDatabase, $_CORELANG, $_LANGID, $section;
 
