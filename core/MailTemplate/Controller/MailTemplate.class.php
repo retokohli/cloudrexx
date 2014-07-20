@@ -165,7 +165,7 @@ class MailTemplate
      * frontend languages otherwise.
      * The $limit value defaults to the value of the
      * mailtemplate_per_page_backend setting from the core settings
-     * (@see SettingDb}.
+     * (@see \Cx\Core\Setting\Controller\Setting}.
      * @param   integer     $section        The section
      * @param   integer     $lang_id        The optional language ID
      * @param   string      $order          The optional sorting order string,
@@ -996,12 +996,27 @@ die("MailTemplate::init(): Empty section!");
     }
     
     
-    static function adminView($section, $group = 'nonempty') {
+    /**
+     * Show on adminview of the mail templates for the given section and group
+     *
+     * @param   string    $section      The section
+     * @param   string    $group        The group
+     *                                  default set to nonempty
+     * @param   integer   $limit        The optional limit for the number
+     *                                  of templates to get listed per page
+     * @param   string   $act           The action of the mail template
+     *                                  default set to mailtemplate_overview
+     * @return  \Cx\Core\Html\Sigma     The template object
+     */
+    static function adminView($section, $group = 'nonempty', $limit = 0, $act = 'mailtemplate_overview') {
         self::storeFromPost($section);
         if (!isset($_GET['key'])) {
-            return static::overview($section, $group, 0, false);
+            if (!empty($_GET['delete_mailtemplate_key'])) {
+               self::deleteTemplate($section); 
+            }
+            return static::overview($section, $group, $limit, false, $act);
         } else {
-            return static::edit($section, '', false);
+            return static::edit($section, '', false, $act);
         }
     }
 
@@ -1016,9 +1031,11 @@ die("MailTemplate::init(): Empty section!");
      * @param   string    $group        The group
      * @param   integer   $limit        The optional limit for the number
      *                                  of templates to be shown
+     * @param   string   $act           The action of the mail template
+     *                                  default set to mailtemplate_overview
      * @return  \Cx\Core\Html\Sigma     The template object
      */
-    static function overview($section, $group, $limit=0, $useDefaultActs = true)
+    static function overview($section, $group, $limit=0, $useDefaultActs = true, $act = 'mailtemplate_edit')
     {
         global $_CORELANG;
 
@@ -1145,7 +1162,7 @@ die("MailTemplate::init(): Empty section!");
                 $icon =
                     '<a href="'.
                         CONTREXX_DIRECTORY_INDEX.
-                        "?cmd=$section&amp;act=mailtemplate_edit".
+                        "?cmd=$section&amp;act=".$act.
                         '&amp;key='.$key.
                         '&amp;userFrontendLangId='.$lang_id.'"'.
                     ' title="'.$title.'">'.
@@ -1171,9 +1188,10 @@ die("MailTemplate::init(): Empty section!");
      *                                  to be edited
      * @param   string    $key          The optional key of the mail template
      *                                  to be edited
+     * @param   string    $act          The action of the mail template
      * @return  \Cx\Core\Html\Sigma     The template object
      */
-    static function edit($section, $key='', $useDefaultActs = true)
+    static function edit($section, $key='', $useDefaultActs = true, $act = 'mailtemplate_overview')
     {
         global $_CORELANG;
 
@@ -1193,7 +1211,10 @@ die("MailTemplate::init(): Empty section!");
             $arrTemplate = self::getEmpty($key);
         }
         // Copy the template?
-        if (isset($_REQUEST['copy'])) $arrTemplate['key'] = '';
+        if (isset($_REQUEST['copy'])) {
+            $arrTemplate['key'] = '';
+            $new = true;
+        }
         $objTemplate = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseCorePath().'/MailTemplate/View/Template/Generic');
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($objTemplate);
@@ -1204,7 +1225,7 @@ die("MailTemplate::init(): Empty section!");
         $uriAppendix = '';
         if ($useDefaultActs) {
             \Html::stripUriParam($uri, 'act');
-            $uriAppendix = '&amp;act=mailtemplate_overview';
+            $uriAppendix = '&amp;act='.$act;
         }
         $tab_index = \Cx\Core\Setting\Controller\Setting::tab_index();
         \Html::replaceUriParameter($uri, 'active_tab='.$tab_index);
