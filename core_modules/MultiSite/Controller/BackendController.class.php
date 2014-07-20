@@ -341,32 +341,81 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 }
                 \Cx\Core\Setting\Controller\Setting::storeFromPost();
             }
-            \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'config', 'FileSystem');    
-            $result &= \Cx\Core\Setting\Controller\Setting::show(
+
+            // fetch MultiSite operation mode and set websiteController
+            $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode');
+            $websiteController = \Cx\Core\Setting\Controller\Setting::getValue('websiteController');
+
+            if ($mode != 'website') {
+                \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'config', 'FileSystem');    
+                \Cx\Core\Setting\Controller\Setting::show(
                     $objTemplate,
                     'index.php?cmd=MultiSite&act=settings',
                     $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE'],
                     'General',
                     'TXT_CORE_MODULE_MULTISITE_'
                 );
+            }
             
-            \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'plesk', 'FileSystem');
-            $result &= \Cx\Core\Setting\Controller\Setting::show(
+            if (in_array($mode, array('manager', 'service', 'manager/service'))) {
+                \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'setup', 'FileSystem');    
+                \Cx\Core\Setting\Controller\Setting::show(
                     $objTemplate,
                     'index.php?cmd=MultiSite&act=settings',
-                    $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE'],
-                    'Plesk',
+// TODO: The configuration options multiSiteDomain, unavailablePrefixes, websiteNameMaxLength and  websiteNameMinLength must be set remotely by the Website Manager
+//       Once implemented, those options must be read-only or not getting listed at all
+                    $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE'] .($mode == 'service' ? ' - TODO: The configuration options below must be set remotely by the Website Manager! (except for option "Subscription controller")' : ''),
+                    'Setup',
                     'TXT_CORE_MODULE_MULTISITE_'
                 );
+            }
             
-            \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'websiteManager', 'FileSystem');
-            $result &= \Cx\Core\Setting\Controller\Setting::show(
+            if ($mode == 'service') {
+                \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'websiteManager', 'FileSystem');
+                \Cx\Core\Setting\Controller\Setting::show(
                     $objTemplate,
                     'index.php?cmd=MultiSite&act=settings',
                     $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE'],
                     'Website Manager',
                     'TXT_CORE_MODULE_MULTISITE_'
                 );
+            }
+
+            if (in_array($mode, array('service', 'manager/service'))) {
+                \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'websiteSetup', 'FileSystem');    
+                \Cx\Core\Setting\Controller\Setting::show(
+                    $objTemplate,
+                    'index.php?cmd=MultiSite&act=settings',
+                    $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE'],
+                    'Website Setup',
+                    'TXT_CORE_MODULE_MULTISITE_'
+                );
+            }
+            
+            if (   in_array($mode, array('manager', 'service', 'manager/service'))
+                && $websiteController == 'plesk'
+            ) {
+                \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'plesk', 'FileSystem');
+                \Cx\Core\Setting\Controller\Setting::show(
+                    $objTemplate,
+                    'index.php?cmd=MultiSite&act=settings',
+                    $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE'],
+                    'Plesk',
+                    'TXT_CORE_MODULE_MULTISITE_'
+                );
+            }
+
+            if ($mode == 'website') {
+                // config section if the MultiSite is run as Website
+                \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'website', 'FileSystem');
+                \Cx\Core\Setting\Controller\Setting::show(
+                    $objTemplate,
+                    'index.php?cmd=MultiSite&act=settings',
+                    $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE'],
+                    'Website Service',
+                    'TXT_CORE_MODULE_MULTISITE_'
+                );
+            }
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
             \Message::error($e->getMessage());

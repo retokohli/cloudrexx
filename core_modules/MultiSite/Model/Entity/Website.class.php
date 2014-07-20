@@ -40,8 +40,6 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
      * @var Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer
      */
     public $websiteServiceServer;
-       
-    protected $pdo = null;
     
     protected $owner;
     
@@ -244,20 +242,29 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
     public function setup() {
         global $_DBCONFIG, $_ARRAYLANG;
 
-        if (\Cx\Core\Setting\Controller\Setting::getValue('websiteController')) {
-            //creating object of plesk controller to call plesk API RPC
-            $this->websiteController = \Cx\Core_Modules\MultiSite\Controller\PleskController::fromConfig();
-            $this->websiteController->setWebspaceId(\Cx\Core\Setting\Controller\Setting::getValue('pleskWebsitesSubscriptionId'));
-        } else {
-            //create \Cx\Core\Model\Model\Entity\Db() object
-            //initialized with default configuration
-            $dbObj = new \Cx\Core\Model\Model\Entity\Db($_DBCONFIG);
-            //create \Cx\Core\Model\Model\Entity\DbUser() object
-            //initialized with default configuration
-            $dbUserObj = new \Cx\Core\Model\Model\Entity\DbUser($_DBCONFIG); //creating Db user class object    
-            //set website controller object with XampController called when used on localhost
-            $this->websiteController = new \Cx\Core_Modules\MultiSite\Controller\XamppController($dbObj, $dbUserObj); 
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('websiteController')) {
+            case 'plesk':
+                //creating object of plesk controller to call plesk API RPC
+                $this->websiteController = \Cx\Core_Modules\MultiSite\Controller\PleskController::fromConfig();
+                $this->websiteController->setWebspaceId(\Cx\Core\Setting\Controller\Setting::getValue('pleskWebsitesSubscriptionId'));
+                break;
+
+            case 'xampp':
+                //create \Cx\Core\Model\Model\Entity\Db() object
+                //initialized with default configuration
+                $dbObj = new \Cx\Core\Model\Model\Entity\Db($_DBCONFIG);
+                //create \Cx\Core\Model\Model\Entity\DbUser() object
+                //initialized with default configuration
+                $dbUserObj = new \Cx\Core\Model\Model\Entity\DbUser($_DBCONFIG); //creating Db user class object    
+                //set website controller object with XampController called when used on localhost
+                $this->websiteController = new \Cx\Core_Modules\MultiSite\Controller\XamppController($dbObj, $dbUserObj); 
+                break;
+
+            default:
+                throw new WebsiteException('Unknown websiteController set!');    
+                break;
         }
+
         //website name
         $websiteName = $this->getName();
         //user Email
@@ -303,33 +310,35 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
             $this->setupDatabase($langId, $this->owner, $objDb, $objDbUser);
             $this->setupDataFolder($websiteName);
             $this->setupConfiguration($websiteName, $objDb, $objDbUser);
+            $this->setupMultiSiteConfig($websiteName);
         }
 
-        if(!$isServiceServer){
-        // Add DNS records for new website
-        $dnsRecordId = $this->websiteController->addDnsRecord('A', \Cx\Core\Setting\Controller\Setting::getValue('pleskMasterSubscriptionId'),
-         $websiteName, $this->websiteServiceServer->getDefaultWebsiteIp());
+        if (!$isServiceServer) {
+            // Add DNS records for new website
+            $dnsRecordId = $this->websiteController->addDnsRecord('A', \Cx\Core\Setting\Controller\Setting::getValue('pleskMasterSubscriptionId'),
+                $websiteName, $this->websiteServiceServer->getDefaultWebsiteIp());
 
-        $websiteDomain = $websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
-        // write mail
-        \MailTemplate::init('MultiSite');
-        if (!\MailTemplate::send(array(
-            'section' => 'MultiSite',
-            'lang_id' => $langId,
-            'key' => 'createInstance',
-            'to' => $websiteMail,
-            'search' => array('[[WEBSITE_DOMAIN]]', '[[WEBSITE_NAME]]', '[[WEBSITE_MAIL]]', '[[WEBSITE_PASSWORD]]'),
-            'replace' => array($websiteDomain, $websiteName, $websiteMail, $websitePassword),
-        ))) {
+            $websiteDomain = $websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
+            // write mail
+            \MailTemplate::init('MultiSite');
+            if (!\MailTemplate::send(array(
+                'section' => 'MultiSite',
+                'lang_id' => $langId,
+                'key' => 'createInstance',
+                'to' => $websiteMail,
+                'search' => array('[[WEBSITE_DOMAIN]]', '[[WEBSITE_NAME]]', '[[WEBSITE_MAIL]]', '[[WEBSITE_PASSWORD]]'),
+                'replace' => array($websiteDomain, $websiteName, $websiteMail, $websitePassword),
+            ))) {
 // TODO: Implement proper error handler:
 //       removeWebsite() must not be called from within this method.
 //       Instead, in case the setup process fails, a proper exception must be thrown.
 //       Then the object that executed the setup() method must handle the exception
 //       and call the removeWebsite() method if required.
-            //$this->removeWebsite($websiteName);
-            throw new WebsiteException('Could not create website (Mail send failed)');
+                //$this->removeWebsite($websiteName);
+                throw new WebsiteException('Could not create website (Mail send failed)');
             }
         }
+
         $this->messages = $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATED'];
         return 'success';
     }
@@ -417,6 +426,9 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
         \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/tmp');
         \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/tmp');
 // TODO: Add /themes to Website
+        // themes
+        //\Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/themes');
+        //\Cx\Lib\FileSystem\FileSystem::copy_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/themes');
         // create media folders
         \Cx\Lib\FileSystem\FileSystem::make_folder(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/media');
         \Cx\Lib\FileSystem\FileSystem::makeWritable(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/media');
@@ -434,29 +446,15 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
     * */
     private function setupConfiguration($websiteName, $objDb, $objDbUser){
         global $_PATHCONFIG;
-        // copy templated files
-        // config/configuration.php
-        # copy file
+        // setup base configuration (configuration.php)
         try {
-            $conf = new \Cx\Lib\FileSystem\File($this->cl->getFilePath(ASCMS_CORE_MODULE_PATH.'/MultiSite/Data/WebsitesTemplate/config/configuration.php'));
-            $conf->copy(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/config/configuration.php');
-        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-            //\DBG::msg($e->getMessage());
-            throw new WebsiteException('error in copy configuration file');
-        }
-        
-        // update db config
-        # Read data from file
-        try {
+            $configuration = new \Cx\Lib\FileSystem\File(\Env::get('cx')->getCodeBaseCoreModulePath() . '/MultiSite/Data/WebsitesTemplate/config/configuration.php');
+            $configuration->copy(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/config/configuration.php');
+
             $newConf = new \Cx\Lib\FileSystem\File(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/config/configuration.php');
             $newConfData = $newConf->getData();
-        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-            //\DBG::msg($e->getMessage());
-            throw new WebsiteException('error in getting data from configuration file');
-        }
 
-       # Write data to file
-        try {
+            // set database configuration
             $newConfData = preg_replace('/\\$_DBCONFIG\\[\'host\'\\] = \'.*?\';/', '$_DBCONFIG[\'host\'] = \'' .$objDb->getHost() . '\';', $newConfData);
             $newConfData = preg_replace('/\\$_DBCONFIG\\[\'tablePrefix\'\\] = \'.*?\';/', '$_DBCONFIG[\'tablePrefix\'] = \'' .$objDb->getTablePrefix() . '\';', $newConfData);
             $newConfData = preg_replace('/\\$_DBCONFIG\\[\'dbType\'\\] = \'.*?\';/', '$_DBCONFIG[\'dbType\'] = \'' .$objDb->getdbType() . '\';', $newConfData);
@@ -466,46 +464,104 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
             $newConfData = preg_replace('/\\$_DBCONFIG\\[\'user\'\\] = \'.*?\';/', '$_DBCONFIG[\'user\'] = \'' . $objDbUser->getName() . '\';', $newConfData);
             $newConfData = preg_replace('/\\$_DBCONFIG\\[\'password\'\\] = \'.*?\';/', '$_DBCONFIG[\'password\'] = \'' . $objDbUser->getPassword() . '\';', $newConfData);
             
-            //adding path config
+            // set path configuration
             $newConfData = preg_replace('/\\$_PATHCONFIG\\[\'ascms_root\'\\] = \'.*?\';/', '$_PATHCONFIG[\'ascms_root\'] = \'' . \Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '\';', $newConfData);
             $newConfData = preg_replace('/\\$_PATHCONFIG\\[\'ascms_installation_root\'\\] = \'.*?\';/', '$_PATHCONFIG[\'ascms_installation_root\'] = \'' . $_PATHCONFIG['ascms_installation_root'] . '\';', $newConfData);          
                         
             $newConf->write($newConfData);
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-            //\DBG::msg($e->getMessage());
-            throw new WebsiteException('error in modifying data in configuration file');
+            throw new WebsiteException('Unable to setup configuration file: '.$e->getMessage());
         }
 
-        // config/settings.php
-        # copy file
+        // setup basic configuration (settings.php)
         try {
-            $settings = new \Cx\Lib\FileSystem\File($this->cl->getFilePath(ASCMS_CORE_MODULE_PATH.'/MultiSite/Data/WebsitesTemplate/config/settings.php'));
+            $settings = new \Cx\Lib\FileSystem\File(\Env::get('cx')->getCodeBaseCoreModulePath() . '/MultiSite/Data/WebsitesTemplate/config/settings.php');
             $settings->copy(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/config/settings.php');
-        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-            //\DBG::msg($e->getMessage());
-            throw new WebsiteException('error in copying setting file');
-        }
-        
-        // update domain url
-        # Write data to file
-        try {
             $newSettings = new \Cx\Lib\FileSystem\File(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/config/settings.php');
             $newSettings->write(preg_replace('/\\$_CONFIG\\[\'domainUrl\'\\](?:[ ]+)= \"(?:[a-z-\\.]+)\";/', '$_CONFIG[\'domainUrl\'] = \'' . $websiteName . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain') . '\';', $newSettings->getData()));
             $newSettings->write(preg_replace('/\\$_CONFIG\\[\'licenseCreatedAt\'\\](?:[ ]+)= (?:[0-9]+);/', '$_CONFIG[\'licenseCreatedAt\'] = ' . time() . ';', $newSettings->getData()));
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
-            //\DBG::msg($e->getMessage());
-            throw new WebsiteException('error in writing data into setting file');
+            throw new WebsiteException('Unable to setup settings file: '.$e->getMessage());
         }
         
-        // tmp/legacyClassCache.tmp
-        # copy file
+        // setup preInitHooks.yml
         try {
+            $preInit = new \Cx\Lib\FileSystem\File(\Env::get('cx')->getCodeBaseConfigPath() . '/preInitHooks.yml');
+            $preInit->copy(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/config/preInitHooks.yml');
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            throw new WebsiteException('Unable to set up preInitHooks.yml: '.$e->getMessage());
+        }
+
+        // tmp/legacyClassCache.tmp
+// TODO: Extend LegacyClassLoader by a read-only legacyClassCache located in the Code Base (core/ClassLoader/Data/LegacyClassCache.tmp).
+//       Move the existing legacyClassCache.tmp from /tmp to the new location.
+//       Implement a custom website classCache.tmp that is generated by the website itself (should only contain new classes of non-core extensions)
+        # copy file
+        /*try {
             $classCache = new \Cx\Lib\FileSystem\File($this->cl->getFilePath(ASCMS_CORE_MODULE_PATH.'/MultiSite/Data/WebsitesTemplate/tmp/legacyClassCache.tmp'));
             $classCache->copy(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/tmp/legacyClassCache.tmp');
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             //\DBG::msg($e->getMessage());
             throw new WebsiteException('error in copying legacyClassCache.tmp');
-        }    
+        }*/
+    }
+
+    private function setupMultiSiteConfig($websiteName)
+    {
+        $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath');
+        $websiteConfigPath = $websitePath . '/' . $websiteName . \Env::get('cx')->getConfigFolderName();
+
+        $config = \Env::get('config');
+        $serviceInstallationId = $config['installationId'];
+        $serviceHostname = $config['domainUrl'];
+
+        try {
+            \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'config','FileSystem', $websiteConfigPath);
+            if (\Cx\Core\Setting\Controller\Setting::getValue('mode') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('mode','website', 1,
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'website:website', 'config')){
+                    throw new \Exception("Failed to add Setting entry for MultiSite mode");
+            }
+            \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'website','FileSystem', $websiteConfigPath);
+            if (\Cx\Core\Setting\Controller\Setting::getValue('serviceHostname') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('serviceHostname', $serviceHostname, 2,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
+                    throw new \Exception("Failed to add Setting entry for Hostname of Website Service");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('serviceSecretKey') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('serviceSecretKey', $this->secretKey, 3,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
+                    throw new \Exception("Failed to add Setting entry for SecretKey of Website Service");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('serviceInstallationId') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('serviceInstallationId', $serviceInstallationId, 4,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
+                    throw new \Exception("Failed to add Setting entry for InstallationId of Website Service");
+            }
+// TODO: HTTP-Authentication details of Website Service Server must be set
+            if (\Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthMethod') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('serviceHttpAuthMethod','', 5,
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'none:none, basic:basic, digest:digest', 'website')){
+                    throw new \Exception("Failed to add Setting entry for HTTP Authentication Method of Website Service");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthUsername') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('serviceHttpAuthUsername','', 6,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
+                    throw new \Exception("Failed to add Setting entry for HTTP Authentication Username of Website Service");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthPassword') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('serviceHttpAuthPassword','', 7,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
+                    throw new \Exception("Failed to add Setting entry for HTTP Authentication Password of Website Service");
+            }
+        } catch (\Exception $e) {
+            // we must re-initialize the original MultiSite settings of the main installation
+            \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
+            throw new WebsiteException('Error in setting up the MultiSite configuration:'. $e->getMessage());
+        }
+
+        // we must re-initialize the original MultiSite settings of the main installation
+        \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
     }
 
     /**
@@ -589,7 +645,6 @@ throw new WebsiteException('implement secret-key algorithm first!');
      * @throws \Exception 
      */
     protected function initDb($type, $objUser, $objDbUser, $langId, $websitedb) {
-        global $_CONFIG;
         $fp = @fopen(\Env::get('ClassLoader')->getFilePath(ASCMS_CORE_MODULE_PATH . '/MultiSite/Data/contrexx_dump_' . $type . '.sql'), "r");
         if ($fp === false) {
             throw new \Exception('File not found');
@@ -622,9 +677,6 @@ throw new WebsiteException('implement secret-key algorithm first!');
                     //$sqlQuery = preg_replace($dbPrefixRegexp, '`'.$dbsuffix.'$1`', $sqlQuery);
                     $sqlQuery = preg_replace('#CONSTRAINT(\s)*`([0-9a-z_]*)`(\s)*FOREIGN KEY#', 'CONSTRAINT FOREIGN KEY', $sqlQuery);
                     $sqlQuery = preg_replace('/TYPE=/', 'ENGINE=', $sqlQuery);
-// TODO: migrate content to have info@cloudrexx.com or similar set as default
-                    $sqlQuery = str_replace('info@payrexx.com', $objUser->getEmail(), $sqlQuery);
-                    $sqlQuery = preg_replace('/'.md5('5xMdtue3BL').'/', md5($objDbUser->getPassword()), $sqlQuery);
                     $result = $websitedb->Execute($sqlQuery);
                     if ($result === false) {
                         $statusMsg .= "<br />".htmlentities($sqlQuery, ENT_QUOTES, 'UTF-8')."<br /> (".$websitedb->ErrorMsg().")<br />";
@@ -640,6 +692,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
         }
         
         if ($type == 'data') {
+// TODO: create default user
             // set default language for user
             $result = $websitedb->Execute(
                     'UPDATE `contrexx_access_users`
