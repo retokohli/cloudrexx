@@ -1008,6 +1008,7 @@ die("MailTemplate::init(): Empty section!");
 
         $objTemplateLocal = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseCorePath().'/MailTemplate/View/Template/Generic');
         $objTemplateLocal->setErrorHandling(PEAR_ERROR_DIE);
+        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($objTemplateLocal);
         if (!$objTemplateLocal->loadTemplateFile('Overview.html'))
             die("Failed to load template Overview.html");
         if (empty ($section) || empty ($group)) {
@@ -1032,9 +1033,6 @@ die("MailTemplate::init(): Empty section!");
 //echo("Made uri for sorting: ".htmlentities($uri)."<br />");
         \Html::stripUriParam($uri, 'key');
         \Html::stripUriParam($uri, 'delete_mailtemplate_key');
-// TODO: I guess that explicitly adding CSRF should not be necessary?!
-// TODO: And it doesn't seem to work like that, either?!
-        \Cx\Core\Csrf\Controller\ComponentController::enhanceURI($uri);
         $uri_edit = $uri_overview = $uri;
 //echo("Made uri for sorting: ".htmlentities($uri)."<br />");
         if ($useDefaultActs) {
@@ -1114,7 +1112,7 @@ die("MailTemplate::init(): Empty section!");
                         'edit'   => $uri_edit.'&amp;key='.$arrTemplate['key'],
                         'delete' => ($arrTemplate['protected']
                           ? ''
-                          : $uri_overview.'&amp;delete_mailtemplate_key='.$arrTemplate['key']),
+                          : $uri_overview.'&amp;delete_mailtemplate_key='.$arrTemplate['key'].'&amp;csrf='.\Cx\Core\Csrf\Controller\ComponentController::code()),
                     ),
                     array(
                         'delete' => $_CORELANG['TXT_CORE_MAILTEMPLATE_DELETE_CONFIRM'],
@@ -1182,6 +1180,7 @@ die("MailTemplate::init(): Empty section!");
         if (isset($_REQUEST['copy'])) $arrTemplate['key'] = '';
         $objTemplate = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseCorePath().'/MailTemplate/View/Template/Generic');
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
+        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($objTemplate);
         if (!$objTemplate->loadTemplateFile('Edit.html'))
             die("Failed to load template Edit.html");
         $uri = \Html::getRelativeUri_entities();
