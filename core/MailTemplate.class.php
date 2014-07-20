@@ -1055,11 +1055,12 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
         // Template titles are shown in the current language only, no need
         // (and no way either) to load them all.  Names are shown in the
         // currently active frontend language only.
+        $pagingParameterName = $section.'_'.$group;
         $arrTemplates = self::getArray(
             $section,
             FRONTEND_LANG_ID,
             $objSorting->getOrder(),
-            Paging::getPosition(),
+            Paging::getPosition($pagingParameterName),
             $limit,
             $count
         );
@@ -1073,7 +1074,7 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
             'CORE_MAILTEMPLATE_PROTECTED' => $objSorting->getHeaderForField('protected'),
             'PAGING' => Paging::get(
                 $uri_overview, $_CORELANG['TXT_CORE_MAILTEMPLATE_PAGING'],
-                $count, $limit, true),
+                $count, $limit, true, null, $pagingParameterName),
             'URI_BASE' => $uri,
             'URI_EDIT' => $uri_edit,
             'CORE_MAILTEMPLATE_COLSPAN' => 5 + count($arrLanguageName),
