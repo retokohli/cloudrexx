@@ -184,8 +184,14 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                     $objFWUser->checkAuth();
                 }
 
-                // User only gets the backend if he's logged in
-                if (!$objFWUser->objUser->login(true)) {
+                // User only gets the backend if he's logged in.
+                // Exception: If it is a JsonData request, then the request will be
+                //            processed. In that case, JsonData will take over the
+                //            required access/permission check.
+                //            Default permission rule by JsonData is set to
+                //            only allow the execution of requests where the
+                //            requester is signed-in.
+                if (!$objFWUser->objUser->login(true) && $plainCmd != 'JsonData') {
                     $plainCmd = 'Login';
                     // If the user isn't logged in, the login mask will be showed.
                     // This mask has its own template handling.
