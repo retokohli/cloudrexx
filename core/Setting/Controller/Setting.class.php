@@ -125,17 +125,20 @@ class Setting{
      *                                Defaults to null
      * @param   string    $engine     The Engine type Database or File system
      *                                Default to set Database 
+     * @param   string    $fileSystemConfigRepository     An optional path
+     *                                to the storage location of config files (/config) which shall be used for the engine 'File System'.
+     *                                Default to set Database 
      * @return  boolean               True on success, false otherwise
      * @global  ADOConnection   $objDatabase
      */
-    static function init($section, $group=null,$engine = 'Database')
+    static function init($section, $group=null,$engine = 'Database', $fileSystemConfigRepository = null)
     {
         
         if($engine=="Database" || empty($engine)){ //default
             \Cx\Core\Setting\Model\Entity\Db::init($section, $group);
             self::setEngineType('\Cx\Core\Setting\Model\Entity\Db');
         }elseif($engine=="FileSystem"){ //optional
-            \Cx\Core\Setting\Model\Entity\FileSystem::init($section, $group);
+            \Cx\Core\Setting\Model\Entity\FileSystem::init($section, $group, $fileSystemConfigRepository);
             self::setEngineType('\Cx\Core\Setting\Model\Entity\FileSystem');
         }else{
             throw new SettingException('Invalid arguments supplied');
