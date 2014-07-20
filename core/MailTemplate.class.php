@@ -1006,6 +1006,7 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
 
         $objTemplateLocal = new \Cx\Core\Html\Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
         $objTemplateLocal->setErrorHandling(PEAR_ERROR_DIE);
+        \CSRF::add_placeholder($objTemplateLocal);
         if (!$objTemplateLocal->loadTemplateFile('mailtemplate_overview.html'))
             die("Failed to load template mailtemplate_overview.html");
         if (empty ($section) || empty ($group)) {
@@ -1030,9 +1031,6 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
 //echo("Made uri for sorting: ".htmlentities($uri)."<br />");
         Html::stripUriParam($uri, 'key');
         Html::stripUriParam($uri, 'delete_mailtemplate_key');
-// TODO: I guess that explicitly adding CSRF should not be necessary?!
-// TODO: And it doesn't seem to work like that, either?!
-        CSRF::enhanceURI($uri);
         $uri_edit = $uri_overview = $uri;
 //echo("Made uri for sorting: ".htmlentities($uri)."<br />");
         if ($useDefaultActs) {
@@ -1112,7 +1110,7 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
                         'edit'   => $uri_edit.'&amp;key='.$arrTemplate['key'],
                         'delete' => ($arrTemplate['protected']
                           ? ''
-                          : $uri_overview.'&amp;delete_mailtemplate_key='.$arrTemplate['key']),
+                          : $uri_overview.'&amp;delete_mailtemplate_key='.$arrTemplate['key'].'&amp;csrf='.\CSRF::code()),
                     ),
                     array(
                         'delete' => $_CORELANG['TXT_CORE_MAILTEMPLATE_DELETE_CONFIRM'],
@@ -1180,6 +1178,7 @@ DBG::log("MailTemplate::store(): ERROR deleting text for key $key, ID $text_id, 
         if (isset($_REQUEST['copy'])) $arrTemplate['key'] = '';
         $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
+        \CSRF::add_placeholder($objTemplate);
         if (!$objTemplate->loadTemplateFile('mailtemplate_edit.html'))
             die("Failed to load template mailtemplate_edit.html");
         $uri = Html::getRelativeUri_entities();
