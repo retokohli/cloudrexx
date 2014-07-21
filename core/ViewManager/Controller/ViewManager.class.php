@@ -279,7 +279,7 @@ class ViewManager
         if (!empty($_GET['export'])){
             $archiveURL=$this->_exportFile();
             if (is_string($archiveURL)){
-                \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".$archiveURL);
+                \Cx\Core\Csrf\Controller\Csrf::header("Location: ".$archiveURL);
                 exit;
             }
         }

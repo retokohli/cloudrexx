@@ -89,7 +89,7 @@ class ViewGenerator {
                 \Message::add('Entity have been added sucessfully!');   
                 $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
                 $actionUrl->setParam('add', null);
-                \Cx\Core\Csrf\Controller\ComponentController::redirect($actionUrl);
+                \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
             }
         }
         /** 
@@ -151,7 +151,7 @@ class ViewGenerator {
             } 
             $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
             $actionUrl->setParam('editid', null);
-            \Cx\Core\Csrf\Controller\ComponentController::redirect($actionUrl);
+            \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
         }
         /**
          * 
@@ -178,7 +178,7 @@ class ViewGenerator {
             }
             $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
             $actionUrl->setParam('deleteid', null);
-            \Cx\Core\Csrf\Controller\ComponentController::redirect($actionUrl);
+            \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
         }
     }
     
@@ -202,7 +202,7 @@ class ViewGenerator {
             if (!empty($this->options['functions']['add'])) {
                 $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
                 $actionUrl->setParam('add', 1);
-                $addBtn = '<br /><br /><input type="button" name="addEtity" value="Add" onclick="location.href='."'".$actionUrl."&csrf=".\Cx\Core\Csrf\Controller\ComponentController::code()."'".'" />'; 
+                $addBtn = '<br /><br /><input type="button" name="addEtity" value="Add" onclick="location.href='."'".$actionUrl."&csrf=".\Cx\Core\Csrf\Controller\Csrf::code()."'".'" />'; 
             }
             if (!count($renderObject) || !count(current($renderObject))) {
                 // make this configurable

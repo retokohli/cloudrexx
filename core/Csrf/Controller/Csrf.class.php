@@ -1,20 +1,22 @@
 <?php
 
 /**
- * Protect against CSRF attacks
- *
+ * Csrf Class
+ * Protect against Csrf attacks
+ * 
  * @copyright   CONTREXX CMS - COMVATION AG
  * @author      David Vogt <david.vogt@comvation.com>
  * @since       2.1.3
  * @package     contrexx
- * @subpackage  lib_framework
+ * @subpackage  core_csrf
  */
 
+namespace Cx\Core\Csrf\Controller;
 /**
- * This class provides protection against CSRF attacks.
+ * This class provides protection against Csrf attacks.
  *
- * call CSRF::add_code() if the page contains vulnerable
- * links and forms, and use CSRF::check_code() to kill the
+ * call Csrf::add_code() if the page contains vulnerable
+ * links and forms, and use Csrf::check_code() to kill the
  * request if there's an invalid code.
  *
  * This class expects that the session has been set up
@@ -24,9 +26,9 @@
  * @author      David Vogt <david.vogt@comvation.com>
  * @since       2.1.3
  * @package     contrexx
- * @subpackage  lib_framework
+ * @subpackage  core_csrf
  */
-class CSRF {
+class Csrf {
 
     /**
      * This variable defines how many times a given code
@@ -113,7 +115,7 @@ class CSRF {
      */
     public static function header($header, $replace = true, $httpResponseCode = null)
     {
-        \DBG::msg('\CSRF::header(): Set header "' . $header);
+        \DBG::msg('\Cx\Core\Csrf\Controller\Csrf::header(): Set header "' . $header);
         header(self::__enhance_header($header), $replace, $httpResponseCode);
     }
     
@@ -219,8 +221,8 @@ class CSRF {
         }
         
         if (!is_object($tpl)) {
-            DBG::msg("self::add_placeholder(): fix this call, that ain't a template object! (Stack follows)");
-            DBG::stack();
+            \DBG::msg("self::add_placeholder(): fix this call, that ain't a template object! (Stack follows)");
+            \DBG::stack();
         }
         $code = self::__get_code();
         $tpl->setGlobalVariable(array(
@@ -234,7 +236,7 @@ class CSRF {
     /**
      * Returns the anti-CSRF code's form key.
      * You can build your own URLs together
-     * with CSRF::code()
+     * with \Cx\Core\Csrf\Controller\Csrf::code()
      */
     public static function key()
     {
@@ -245,7 +247,7 @@ class CSRF {
     /**
      * Returns the anti-CSRF code for the current
      * request. You can build your own URLs together
-     * with CSRF::key()
+     * with \Cx\Core\Csrf\Controller\Csrf::key()
      */
     public static function code()
     {
@@ -304,9 +306,9 @@ class CSRF {
 
         $data = ($_SERVER['REQUEST_METHOD'] == 'GET' ? $_GET : $_POST);
         self::add_code();
-        $tpl = new \Cx\Core\Html\Sigma(ASCMS_ADMIN_TEMPLATE_PATH);
+        $tpl = new \Cx\Core\Html\Sigma(\Env::get('cx')->getCodeBaseCorePath() . '/Csrf/View/Template/Generic/');
         $tpl->setErrorHandling(PEAR_ERROR_DIE);
-        $tpl->loadTemplateFile('csrfprotection.html');
+        $tpl->loadTemplateFile('Warning.html');
         $form = '';
         foreach ($data as $key => $value) {
             if ($key == self::$formkey || $key == 'amp;'.self::$formkey || $key == '__cap') {
@@ -321,16 +323,16 @@ class CSRF {
         }
         $csrfContinue = 'javascript:sendData();';
         $csrfAbort = 'index.php' . (isset($_GET['cmd']) ? '?cmd='.$_GET['cmd'] : '');
-        $_CORELANG['TXT_CSRF_DESCR'] = str_replace('%1$s', $csrfContinue, $_CORELANG['TXT_CSRF_DESCR']);
-        $_CORELANG['TXT_CSRF_DESCR'] = str_replace('%2$s', $csrfAbort, $_CORELANG['TXT_CSRF_DESCR']);
+        $_CORELANG['TXT_CSRF_DESCR'] = str_replace('%1$s', $csrfContinue . '" tabindex="-1', $_CORELANG['TXT_CSRF_DESCR']);
+        $_CORELANG['TXT_CSRF_DESCR'] = str_replace('%2$s', $csrfAbort . '" tabindex="-1', $_CORELANG['TXT_CSRF_DESCR']);
         $action = $_SERVER['REQUEST_URI'];
         $tpl->setGlobalVariable(array(
             'TXT_CSRF_TITLE'    => $_CORELANG['TXT_CSRF_TITLE'],
             'TXT_CSRF_DESCR'    => $_CORELANG['TXT_CSRF_DESCR'],
             'TXT_CSRF_CONTINUE' => $_CORELANG['TXT_CSRF_CONTINUE'],
             'TXT_CSRF_ABORT'    => $_CORELANG['TXT_CSRF_ABORT'],
-            'CSRF_CONTINUE'     => $csrfContinue,
-            'CSRF_ABORT'        => $csrfAbort,
+            'CSRF_CONTINUE'     => $csrfContinue . '" tabindex="1',
+            'CSRF_ABORT'        => $csrfAbort . '" tabindex="2',
             'REQUEST_METHOD'    => strtolower($_SERVER['REQUEST_METHOD']),
             'ACTION'            => $action,
             'FORM_ELEMENTS'     => $form,
@@ -365,8 +367,8 @@ class CSRF {
 
     private static function __reduce($code)
     {
-        foreach (array_keys($_SESSION[self::$sesskey]) as $key) {
-            $_SESSION[self::$sesskey][$key] -=
+        foreach ($_SESSION[self::$sesskey] as $key => $value) {
+            $_SESSION[self::$sesskey][$key] = $_SESSION[self::$sesskey][$key] -
                 ($code == $key
                     ? self::$active_decrease : self::$unused_decrease);
         }
@@ -400,11 +402,10 @@ class CSRF {
     private static function __setkey($key, $value)
     {
         if (!isset($_SESSION[self::$sesskey])) {
+            \cmsSession::getInstance();
             $_SESSION[self::$sesskey] = array();
         }
-        $csrfdata                 = $_SESSION[self::$sesskey];
-        $csrfdata[$key]           = $value;
-        $_SESSION[self::$sesskey] = $csrfdata;
+        $_SESSION[self::$sesskey][$key] = $value;
     }
 
 
@@ -425,7 +426,7 @@ class CSRF {
         }
 
         if (class_exists('FWUser')) {
-            $objFWUser = FWUser::getFWUserObject();
+            $objFWUser = \FWUser::getFWUserObject();
             if ($objFWUser->objUser->login($backend)) {
                 return true;
             }
@@ -459,4 +460,4 @@ class CSRF {
     }
 }
 
-CSRF::cleanRequestURI();
+Csrf::cleanRequestURI();

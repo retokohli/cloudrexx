@@ -437,7 +437,7 @@ class ContentWorkflow extends \Module {
      * @param  integer  The page with this id will be shown in content manager.
      */
     protected function redirectPage($intPageId) {
-        \Cx\Core\Csrf\Controller\ComponentController::header('location: index.php?cmd=ContentManager&page='.$intPageId.'&tab=content');
+        \Cx\Core\Csrf\Controller\Csrf::header('location: index.php?cmd=ContentManager&page='.$intPageId.'&tab=content');
         exit;
     }
 

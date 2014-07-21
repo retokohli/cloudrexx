@@ -737,7 +737,7 @@ namespace Cx\Core\Core\Controller {
                     }
                     // this does not belong here:
                     if (!preg_match('#^' . $this->getWebsiteBackendPath() . '/#', $_GET['__cap'])) {
-                        // do not use \Cx\Core\Csrf\Controller\ComponentController::header() here, since ClassLoader is not loaded at this time
+                        // do not use \Cx\Core\Csrf\Controller\Csrf::header() here, since ClassLoader is not loaded at this time
 // TODO: is this actually the cause of the CSRF missing issue?
                         header('Location: ' . $this->getWebsiteBackendPath() . '/');
                         die();
@@ -968,7 +968,7 @@ namespace Cx\Core\Core\Controller {
             $this->cl->loadFile($this->codeBaseCorePath . '/API.php');
             // Temporary fix until all GET operation requests will be replaced by POSTs
             if ($this->mode != self::MODE_BACKEND) {
-                \Cx\Core\Csrf\Controller\ComponentController::setFrontendMode();
+                \Cx\Core\Csrf\Controller\Csrf::setFrontendMode();
             }
 
             // Set database connection details
