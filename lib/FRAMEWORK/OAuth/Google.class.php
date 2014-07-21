@@ -70,7 +70,7 @@ class Google extends OAuth
         }
 
         if (!$client->getAccessToken()) {
-            \Cx\Core\Csrf\Controller\ComponentController::header('Location: ' . $client->createAuthUrl());
+            \Cx\Core\Csrf\Controller\Csrf::header('Location: ' . $client->createAuthUrl());
             exit;
         }
 

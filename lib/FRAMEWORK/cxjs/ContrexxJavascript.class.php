@@ -68,7 +68,7 @@ class ContrexxJavascript {
                 'cadminPath'=> ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH.'/',
                 'mode'      => $objInit->mode,
                 'language'  => $langCode,
-                'csrf'      => \Cx\Core\Csrf\Controller\ComponentController::code(),
+                'csrf'      => \Cx\Core\Csrf\Controller\Csrf::code(),
             ),
             'contrexx'
         );

@@ -58,7 +58,7 @@ class Facebook extends OAuth
 
         $user = self::$facebook->getUser();
         if (empty($user) && empty($_GET["state"])) {
-            \Cx\Core\Csrf\Controller\ComponentController::header('Location: ' . self::$facebook->getLoginUrl(array('scope' => self::$permissions)));
+            \Cx\Core\Csrf\Controller\Csrf::header('Location: ' . self::$facebook->getLoginUrl(array('scope' => self::$permissions)));
             exit;
         }
 
