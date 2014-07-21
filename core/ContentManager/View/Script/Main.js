@@ -566,7 +566,7 @@ cx.cm = function(target) {
         showSecond: false,
         dateFormat: 'dd.mm.yy',
         timeFormat: 'hh:mm',
-        buttonImage: "template/ascms/images/calender.png",
+        buttonImage: "core/ContentManager/View/Media/calender.png",
         buttonImageOnly: true
     };
     cx.jQuery("input.date").datetimepicker(dpOptions);

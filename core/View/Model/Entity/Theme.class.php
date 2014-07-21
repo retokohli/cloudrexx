@@ -89,7 +89,7 @@ class Theme extends \Cx\Model\Base\EntityBase
         if (file_exists(ASCMS_THEMES_PATH . '/' . $this->foldername . '/images/preview.gif')) {
             return ASCMS_THEMES_WEB_PATH . '/' . $this->foldername . '/images/preview.gif';
         }
-        return ASCMS_ADMIN_TEMPLATE_WEB_PATH.'/images/preview.gif';
+        return ASCMS_PATH_OFFSET.'/core/Core/View/Media/preview.gif';
     }
     
     /**

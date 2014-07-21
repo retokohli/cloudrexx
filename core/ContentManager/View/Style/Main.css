@@ -1100,7 +1100,7 @@ div.date img{
     float: left;
     width: 18px;
     margin: 0 0 2px 0;
-    background: url(../Media/button_bg.png) repeat-x left top #dadada;
+    background: url("../../../../core/Core/View/Media/button_bg.png") repeat-x left top #dadada;
     border: 1px solid #bbbbbb;
     padding: 2px 10px;
     color: #444444;
@@ -1315,7 +1315,7 @@ div.date img{
 }
 
 .btn {
-    background: url(../Media/button_bg.png) top left repeat-x;
+    background: url("../../../../core/Core/View/Media/button_bg.png") top left repeat-x;
     border: 1px solid #bbb;
     color: #333;
     cursor: pointer;
