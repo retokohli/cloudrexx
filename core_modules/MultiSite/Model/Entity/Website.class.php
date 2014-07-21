@@ -79,7 +79,7 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
         if ($websiteServiceServer) {
             $this->setWebsiteServiceServer($websiteServiceServer);
         }
-
+        $this->secretKey = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::generateSecretKey();
         $this->validate();
     }
 
