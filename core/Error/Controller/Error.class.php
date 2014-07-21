@@ -6,10 +6,12 @@
  * @copyright	CONTREXX CMS - COMVATION AG
  * @author		Comvation Development Team <info@comvation.com>
  * @package	    contrexx
- * @subpackage  core
+ * @subpackage  core_error
  * @version		1.0.0
  * @todo        Edit PHP DocBlocks!
  */
+
+namespace Cx\Core\Error\Controller;
 
 /**
  * Handles all errors.
@@ -18,11 +20,11 @@
  * @author		Comvation Development Team <info@comvation.com>
  * @access		public
  * @package	    contrexx
- * @subpackage  core
+ * @subpackage  core_error
  * @version		1.0.0
  * @todo        Declare and document class variable 'pageContent'
  */
-class error
+class Error
 {
     /**
      * HTML Template
@@ -38,7 +40,7 @@ class error
     {
         $this->pageContent = $pageContent;
         $this->_objTpl = new \Cx\Core\Html\Sigma();
-        CSRF::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
     }
 
 
