@@ -77,10 +77,10 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
         $this->em = \Env::em();
 
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/Contact/View/Template/Backend');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         
-        $this->_objTpl->setGlobalVariable('CSRF_PARAM', \Cx\Core\Csrf\Controller\ComponentController::param());
+        $this->_objTpl->setGlobalVariable('CSRF_PARAM', \Cx\Core\Csrf\Controller\Csrf::param());
         
         $this->_arrFormFieldTypes = array(
             'text'          => $_ARRAYLANG['TXT_CONTACT_TEXTBOX'],
@@ -2117,7 +2117,7 @@ class ContactManager extends \Cx\Core_Modules\Contact\Controller\ContactLib
         );
         
         if (empty($formId)) {
-            \Cx\Core\Csrf\Controller\ComponentController::header("Location: index.php?cmd=Contact");
+            \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?cmd=Contact");
             return;
         }
 

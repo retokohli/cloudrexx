@@ -161,7 +161,7 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         parent::__construct();
 
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/News/View/Template/Backend');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->_saveSettings();
@@ -2571,14 +2571,14 @@ class NewsManager extends \Cx\Core_Modules\News\Controller\NewsLibrary {
         // cast input id to integer and check whether the id is zero or not
         $id = intval($id);
         if ($id == 0) {
-            \Cx\Core\Csrf\Controller\ComponentController::redirect($manageCategoriesLink);
+            \Cx\Core\Csrf\Controller\Csrf::redirect($manageCategoriesLink);
             exit;
         }
 
         // check whether the category exists or not
         $objResult = $objDatabase->SelectLimit("SELECT `catid`, `parent_id` FROM `".DBPREFIX."module_news_categories` WHERE `catid` = " . $id);
         if ($objResult->RecordCount() == 0) {
-            \Cx\Core\Csrf\Controller\ComponentController::redirect($manageCategoriesLink);
+            \Cx\Core\Csrf\Controller\Csrf::redirect($manageCategoriesLink);
             exit;
         }
 

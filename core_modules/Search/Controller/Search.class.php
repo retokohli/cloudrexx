@@ -72,7 +72,7 @@ class Search
 
 
         $objTpl = new \Cx\Core\Html\Sigma('.');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($objTpl);
         $objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $objTpl->setTemplate($page_content);
         $objTpl->setGlobalVariable($_ARRAYLANG);

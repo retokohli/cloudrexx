@@ -91,7 +91,7 @@ class MediaLibrary
     function _downloadMediaOLD()
     {
         if (is_file($this->path.$this->getFile)) {
-            \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".$this->webPath.$this->getFile);
+            \Cx\Core\Csrf\Controller\Csrf::header("Location: ".$this->webPath.$this->getFile);
             exit;
         }
     }
@@ -1012,7 +1012,7 @@ class MediaLibrary
         \JS::activate('jquery');
 
         $delete_msg = $_ARRAYLANG['TXT_MEDIA_CONFIRM_DELETE_2'];
-        $csrfCode   = \Cx\Core\Csrf\Controller\ComponentController::code();
+        $csrfCode   = \Cx\Core\Csrf\Controller\Csrf::code();
         $code       = <<<END
                     <script type="text/javascript">
                     /* <![CDATA[ */

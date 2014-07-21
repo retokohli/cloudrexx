@@ -45,7 +45,7 @@ class CacheManager extends \Cx\Core_Modules\Cache\Controller\CacheLib
         
         $this->objTpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/Cache/View/Template/Backend');
         $langData = $objInit->loadLanguageData('Cache');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->objTpl);
         $this->objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->arrSettings = $this->getSettings();

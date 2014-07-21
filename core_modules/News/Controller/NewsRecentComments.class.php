@@ -33,7 +33,7 @@ class NewsRecentComments extends \Cx\Core_Modules\News\Controller\NewsLibrary
         $this->getSettings();
         $this->_pageContent = $pageContent;
         $this->_objTemplate = new \Cx\Core\Html\Sigma('.');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTemplate);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTemplate);
     }
     
     function getRecentNewsComments()

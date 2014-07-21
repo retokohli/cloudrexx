@@ -146,7 +146,7 @@ abstract class Uploader
     protected function redirect() {
         if($this->redirectUrl == null)
             throw new UploaderException('tried to redirect without a redirect url set via Uploader::setRedirectUrl()!');
-        \Cx\Core\Csrf\Controller\ComponentController::header('Location: ' . $this->redirectUrl);
+        \Cx\Core\Csrf\Controller\Csrf::header('Location: ' . $this->redirectUrl);
         die();
     }
 

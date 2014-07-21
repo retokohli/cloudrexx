@@ -58,7 +58,7 @@ class AliasManager extends \Cx\Core_Modules\Alias\Controller\AliasLib
         parent::__construct();
         
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/Alias/View/Template/Backend');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);        
     }
     private function setNavigation()

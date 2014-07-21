@@ -100,7 +100,7 @@ class Home {
         }
 
         $objTemplate->setVariable(array(
-            'CSRF'                          => \Cx\Core\Csrf\Controller\ComponentController::param(),
+            'CSRF'                          => \Cx\Core\Csrf\Controller\Csrf::param(),
             'TXT_LAST_LOGIN' 				=> htmlentities($_CORELANG['TXT_LAST_LOGIN'], ENT_QUOTES, CONTREXX_CHARSET),
             'TXT_CONTREXX_NEWS' 			=> htmlentities($_CORELANG['TXT_CONTREXX_NEWS'], ENT_QUOTES, CONTREXX_CHARSET),
             'TXT_CREATING_AND_PUBLISHING'   => htmlentities($_CORELANG['TXT_CREATING_AND_PUBLISHING'], ENT_QUOTES, CONTREXX_CHARSET),
