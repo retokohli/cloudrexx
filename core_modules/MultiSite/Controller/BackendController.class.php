@@ -61,6 +61,23 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                 'paging' => true,       // cannot be turned off yet
                                 'filtering' => false,   // this does not exist yet
                             ),
+                            'fields' => array(
+                                'secretKey' => array(
+                                    'showOverview' => false,
+                                ),
+                                'installationId' => array(
+                                    'showOverview' => false,
+                                ),
+                                'httpAuthMethod' => array(
+                                    'showOverview' => false,
+                                ),
+                                'httpAuthUsername' => array(
+                                    'showOverview' => false,
+                                ),
+                                'httpAuthPassword' => array(
+                                    'showOverview' => false,
+                                ),
+                            )
                         )
                     );
                     $isSingle = false;
@@ -221,46 +238,6 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         ),*/
                         'codeBase' => array(
                             'showOverview' => true,
-                        ),
-                        'company' => array(
-                            'showOverview' => false,
-                        ),
-                        'salutation' => array(
-                            'showOverview' => false,
-                        ),
-                        'firstname' => array(
-                            'showOverview' => false,
-                        ),
-                        'lastname' => array(
-                            'showOverview' => false,
-                        ),
-                        'country' => array(
-                            'type' => '\Country',
-                            'showOverview' => false,
-                        ),
-                        'fax' => array(
-                            'showOverview' => false,
-                        ),
-                        'address' => array(
-                            'showOverview' => false,
-                        ),
-                        'poBox' => array(
-                            'showOverview' => false,
-                        ),
-                        'zip' => array(
-                            'showOverview' => false,
-                        ),
-                        'city' => array(
-                            'showOverview' => false,
-                        ),
-                        'state' => array(
-                            'showOverview' => false,
-                        ),
-                        'phone' => array(
-                            'showOverview' => false,
-                        ),
-                        'email' => array(
-                            'type' => 'mail',
                         ),
                     ),
                 ));

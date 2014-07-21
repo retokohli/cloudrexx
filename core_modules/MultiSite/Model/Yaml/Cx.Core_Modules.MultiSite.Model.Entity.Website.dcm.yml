@@ -21,6 +21,8 @@ Cx\Core_Modules\MultiSite\Model\Entity\Website:
       type: integer
     websiteServiceServerId:
       type: integer
+    secretKey:
+      type: string
 #  manyToOne: # owning side
 #    websiteServiceServer:
 #      targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer

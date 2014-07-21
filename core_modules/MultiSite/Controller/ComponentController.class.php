@@ -227,7 +227,7 @@ throw new MultiSiteException('Refactor this method!');
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'config','FileSystem');
             if (\Cx\Core\Setting\Controller\Setting::getValue('mode') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('mode','none', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'none:none,manager:manager,service:service,manager/service:manager/service', 'config')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'none:none,manager:manager,service:service,hybrid:hybrid', 'config')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database Mode");
             }
 
@@ -369,7 +369,7 @@ throw new MultiSiteException('Refactor this method!');
         // If the MultiSite module has not been configured, then 'mode' will be set to null.
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
             case 'service':
-            case 'manager/service':
+            case 'hybrid':
                 $this->deployWebsite($cx);
                 break;
 

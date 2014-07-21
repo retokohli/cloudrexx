@@ -54,6 +54,11 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
      * @var intiger $ownerId
      */
     public $ownerId;
+    
+    /**
+     * @var string $secretKey
+     */
+    public $secretKey;
 
     /*
      * Constructor
@@ -236,6 +241,26 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
         return $this->owner;
     }
     
+    /**
+     * Set secretKey
+     *
+     * @param string $secretKey
+     */
+    public function setSecretKey($secretKey)
+    {
+        $this->secretKey = $secretKey;
+    }
+
+    /**
+     * Get secretKey
+     *
+     * @return string $secretKey
+     */
+    public function getSecretKey()
+    {
+        return $this->secretKey;
+    }
+
     /**
      * Creates a new website
      */
@@ -733,5 +758,5 @@ throw new WebsiteException('implement secret-key algorithm first!');
             return $statusMsg;
         }
     }
-
+    
 }

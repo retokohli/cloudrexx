@@ -214,5 +214,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'sender' => $config['domainUrl'],
         ));
     }
-
+    /**
+     *  Get the auto-generated SecretKey
+     * 
+     * @return string 
+     */
+    public static function generateSecretKey(){
+        return bin2hex(openssl_random_pseudo_bytes(16));    
+    }
 }
