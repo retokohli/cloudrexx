@@ -230,7 +230,7 @@ class Resolver {
                                     die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                                 } else {
                                     //page not found, redirect to error page.
-                                    \Cx\Core\Csrf\Controller\ComponentController::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('Error'));
+                                    \Cx\Core\Csrf\Controller\Csrf::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('Error'));
                                     exit;
                                 }
                             }
@@ -270,7 +270,7 @@ class Resolver {
                                     // If the error module is not installed, show this
                                     die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                                 }
-                                \Cx\Core\Csrf\Controller\ComponentController::header('Location: index.php?section=Error&id=404');
+                                \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=Error&id=404');
                                 exit;
                                 }*/
 
@@ -417,7 +417,7 @@ class Resolver {
     public function redirectToCorrectLanguageDir() {
         $this->url->setLangDir(\FWLanguage::getLanguageCodeById($this->lang));
 
-        \Cx\Core\Csrf\Controller\ComponentController::header('Location: '.$this->url);
+        \Cx\Core\Csrf\Controller\Csrf::header('Location: '.$this->url);
         exit;
     }
 
@@ -809,13 +809,13 @@ class Resolver {
                 if ($page_protected) {
                     if (!\Permission::checkAccess($pageAccessId, 'dynamic', true)) {
                         $link=base64_encode(\Env::get('cx')->getRequest()->getUrl()->toString());
-                        \Cx\Core\Csrf\Controller\ComponentController::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('Login', 'noaccess', '', array('redirect' => $link)));
+                        \Cx\Core\Csrf\Controller\Csrf::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('Login', 'noaccess', '', array('redirect' => $link)));
                         exit;
                     }
                 }
                 if ($history && !\Permission::checkAccess(78, 'static', true)) {
                     $link=base64_encode(\Env::get('cx')->getRequest()->getUrl()->toString());
-                    \Cx\Core\Csrf\Controller\ComponentController::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('Login', 'noaccess', '', array('redirect' => $link)));
+                    \Cx\Core\Csrf\Controller\Csrf::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('Login', 'noaccess', '', array('redirect' => $link)));
                     exit;
                 }
             } elseif (!empty($_COOKIE['PHPSESSID']) && !$page_protected) {
@@ -826,7 +826,7 @@ class Resolver {
                 } else {
                     $link=base64_encode(\Env::get('cx')->getRequest()->getUrl()->toString());
                 }
-                \Cx\Core\Csrf\Controller\ComponentController::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('Login', '', '', array('redirect' => $link)));
+                \Cx\Core\Csrf\Controller\Csrf::header('Location: '.\Cx\Core\Routing\Url::fromModuleAndCmd('Login', '', '', array('redirect' => $link)));
                 exit;
             }
         }

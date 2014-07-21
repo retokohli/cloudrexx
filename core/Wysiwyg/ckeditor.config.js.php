@@ -12,7 +12,7 @@ init('minimal');
 
 $sessionObj = \cmsSession::getInstance();
 $_SESSION->cmsSessionStatusUpdate('backend');
-$CSRF = '&'.\Cx\Core\Csrf\Controller\ComponentController::key().'='.\Cx\Core\Csrf\Controller\ComponentController::code();
+$CSRF = '&'.\Cx\Core\Csrf\Controller\Csrf::key().'='.\Cx\Core\Csrf\Controller\Csrf::code();
 
 
 $langId = !empty($_GET['langId']) ? $_GET['langId'] : null;

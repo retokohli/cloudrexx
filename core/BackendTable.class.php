@@ -151,7 +151,7 @@ class BackendTable extends HTML_Table {
         if (isset($functions['delete']) && $functions['delete']) {
             $deleteUrl = clone $baseUrl;
             $deleteUrl->setParam('deleteid', $rowname);
-            $deleteUrl.='&csrf='.\Cx\Core\Csrf\Controller\ComponentController::code();
+            $deleteUrl.='&csrf='.\Cx\Core\Csrf\Controller\Csrf::code();
             $onclick ='if (confirm(\'Do you really want to delete?\'))'.
                     'window.location.replace(\''.$deleteUrl.'\');';
             $_uri = 'javascript:void(0);';
