@@ -84,7 +84,7 @@ class Twitter extends OAuth
             $tmhOAuth->request('POST',$tmhOAuth->url('oauth/request_token',""),array('oauth_callback' => \Cx\Lib\SocialLogin::getLoginUrl(self::OAUTH_PROVIDER)));
             $_SESSION['oauth'] = $tmhOAuth->extract_params($tmhOAuth->response['response']);
             $url = 'https://api.twitter.com/oauth/authenticate?oauth_token='.$_SESSION['oauth']['oauth_token'];
-            \Cx\Core\Csrf\Controller\ComponentController::header("Location: ". $url);
+            \Cx\Core\Csrf\Controller\Csrf::header("Location: ". $url);
             exit;
         }
     }
