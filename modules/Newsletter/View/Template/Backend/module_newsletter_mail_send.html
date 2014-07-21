@@ -93,7 +93,7 @@
 
 		if (newsletterSendStatus) {
 			$J('#newsletter_send_button').attr('value', 'Versenden anhalten');
-			$J('#newsletter_statusbar .ui-progressbar-value').css({'background-image': 'url(template/ascms/images/loadingAnimation.gif)'});
+			$J('#newsletter_statusbar .ui-progressbar-value').css({'background-image': 'url(../modules/Newsletter/View/Media/loadingAnimation.gif)'});
 			newsletterSend();
 			newsletterSendRunning = true;
 			setTimeout(newsletterAnimateCycle, newsletterCycleSpeed)

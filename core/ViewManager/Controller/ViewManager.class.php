@@ -1811,7 +1811,7 @@ class ViewManager
 
         //copy "not available" preview.gif as default preview image
         if (!file_exists($this->path.$themeDirectory.'/images/preview.gif')) {
-            if (!\Cx\Lib\FileSystem\FileSystem::copy_file(ASCMS_ADMIN_TEMPLATE_PATH.'/images/preview.gif', $this->path.$themeDirectory.'/images/preview.gif')) {
+            if (!\Cx\Lib\FileSystem\FileSystem::copy_file(ASCMS_DOCUMENT_ROOT.'/core/Core/View/Media/preview.gif', $this->path.$themeDirectory.'/images/preview.gif')) {
                 $this->strErrMessage = sprintf($_ARRAYLANG['TXT_UNABLE_TO_CREATE_FILE'], contrexx_raw2xhtml($this->path.$themeDirectory.'/images/preview.gif'));
                 return false;
             }
