@@ -41,7 +41,7 @@ class GuestBookManager extends GuestBookLibrary
         global  $objDatabase, $_ARRAYLANG, $objTemplate, $objInit;
 
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/GuestBook/View/Template/Backend');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->imagePath = ASCMS_MODULE_FOLDER;
         $this->langId=$objInit->userFrontendLangId;        

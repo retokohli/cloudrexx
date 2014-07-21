@@ -33,7 +33,7 @@ class Egov extends EgovLibrary
         $this->initContactForms();
         $this->pageContent = $pageContent;
         $this->objTemplate = new \Cx\Core\Html\Sigma('.');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->objTemplate);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->objTemplate);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->setTemplate($this->pageContent, true, true);
     }

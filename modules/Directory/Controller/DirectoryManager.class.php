@@ -69,7 +69,7 @@ class DirectoryManager extends DirectoryLibrary
         global $objInit; 
 
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/Directory/View/Template/Backend');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->langId=$objInit->userFrontendLangId;
@@ -1521,7 +1521,7 @@ EOF;
                 //change status
                 $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_levels SET status='".$levelStatus."' WHERE id='".$levelId."'");
 
-                \Cx\Core\Csrf\Controller\ComponentController::header('Location: index.php?cmd=Directory&act=levels');
+                \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?cmd=Directory&act=levels');
                 exit;
             } else {
                 //get id and status
@@ -1531,7 +1531,7 @@ EOF;
                 //change status
                 $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_directory_categories SET status='".$catStatus."' WHERE id='".$catId."'");
 
-                \Cx\Core\Csrf\Controller\ComponentController::header('Location: index.php?cmd=Directory');
+                \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?cmd=Directory');
                 exit;
             }
         }
@@ -2976,7 +2976,7 @@ EOF;
             $objSettings = new \Cx\Core\Config\Controller\Config();
             $objSettings->writeSettingsFile();
 
-            \Cx\Core\Csrf\Controller\ComponentController::header('Location: ?cmd=Directory&act=settings&tpl=homecontent');
+            \Cx\Core\Csrf\Controller\Csrf::header('Location: ?cmd=Directory&act=settings&tpl=homecontent');
             exit;
 
             $this->strOkMessage = $_ARRAYLANG['TXT_DIR_SETTINGS_SUCCESFULL_SAVE'];

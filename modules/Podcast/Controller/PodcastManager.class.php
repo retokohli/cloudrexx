@@ -68,7 +68,7 @@ class PodcastManager extends PodcastLib
         global $objTemplate, $_ARRAYLANG;
 
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/Podcast/View/Template/Backend');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         
         $this->_youTubeIdRegex = '#.*[\?&]v=('.$this->_youTubeAllowedCharacters.'{'.$this->_youTubeIdLength.'}).*#';
@@ -255,7 +255,7 @@ class PodcastManager extends PodcastLib
         }
 
         if ($mediaCount > 0 || $categoryId) {
-            $this->_objTpl->setVariable('PODCAST_CATEGORY_MENU', $this->_getCategoriesMenu($categoryId, 'onchange="window.location.href=\'index.php?cmd=Podcast&amp;'.\Cx\Core\Csrf\Controller\ComponentController::param().'&amp;categoryId=\'+this.value"'));
+            $this->_objTpl->setVariable('PODCAST_CATEGORY_MENU', $this->_getCategoriesMenu($categoryId, 'onchange="window.location.href=\'index.php?cmd=Podcast&amp;'.\Cx\Core\Csrf\Controller\Csrf::param().'&amp;categoryId=\'+this.value"'));
             $this->_objTpl->touchBlock('podcast_category_menu');
         } else {
             $this->_objTpl->hideBlock('podcast_category_menu');

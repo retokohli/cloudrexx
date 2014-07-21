@@ -40,7 +40,7 @@ class CalendarHeadlines extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         
         $this->pageContent = $pageContent;    
         
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
     }
     
     /**

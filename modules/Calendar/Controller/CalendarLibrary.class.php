@@ -137,7 +137,7 @@ class CalendarLibrary
         
         $this->_objTpl->setGlobalVariable(array(
             $this->moduleLangVar.'_MODULE_NAME'  => $this->moduleName,
-            $this->moduleLangVar.'_CSRF'         => 'csrf='.\Cx\Core\Csrf\Controller\ComponentController::code(),     
+            $this->moduleLangVar.'_CSRF'         => 'csrf='.\Cx\Core\Csrf\Controller\Csrf::code(),     
             $this->moduleLangVar.'_DATE_FORMAT'  => self::getDateFormat(1),
             $this->moduleLangVar.'_JAVASCRIPT'   => self::getJavascript(),
         ));        
@@ -248,16 +248,16 @@ class CalendarLibrary
 
                 switch($strStatus) {
                     case 'no_access':
-                        \Cx\Core\Csrf\Controller\ComponentController::header('Location: '.CONTREXX_SCRIPT_PATH.'?section=Login&cmd=noaccess');
+                        \Cx\Core\Csrf\Controller\Csrf::header('Location: '.CONTREXX_SCRIPT_PATH.'?section=Login&cmd=noaccess');
                         exit();
                         break;
                     case 'login':
                         $link = base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
-                        \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Login&redirect=".$link);
+                        \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Login&redirect=".$link);
                         exit();
                         break;
                     case 'redirect':
-                        \Cx\Core\Csrf\Controller\ComponentController::header('Location: '.CONTREXX_SCRIPT_PATH.'?section='.$this->moduleName);   
+                        \Cx\Core\Csrf\Controller\Csrf::header('Location: '.CONTREXX_SCRIPT_PATH.'?section='.$this->moduleName);   
                         exit();
                         break;
                 }

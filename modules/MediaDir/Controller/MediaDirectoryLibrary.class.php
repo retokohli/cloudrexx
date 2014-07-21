@@ -71,7 +71,7 @@ class MediaDirectoryLibrary
 
     	$this->_objTpl->setGlobalVariable(array(
             'MODULE_NAME' =>  $this->moduleName,
-            'CSRF' =>  'csrf='.\Cx\Core\Csrf\Controller\ComponentController::code(),
+            'CSRF' =>  'csrf='.\Cx\Core\Csrf\Controller\Csrf::code(),
         ));
     }
 

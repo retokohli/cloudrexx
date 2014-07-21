@@ -65,7 +65,7 @@ class SurveyManager extends SurveyLibrary {
         parent::__construct();
         
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/Survey/View/Template/Backend');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         
         $objTemplate->setVariable("CONTENT_NAVIGATION",
@@ -215,10 +215,10 @@ class SurveyManager extends SurveyLibrary {
         }
         if(isset($_POST['create_submit'])) {
             if($_POST['createSurvey'] == "create") {
-                \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=Survey&act=addSurvey");
+                \Cx\Core\Csrf\Controller\Csrf::header("Location: ".ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=Survey&act=addSurvey");
             } else {
                 $selectedSurvey = (int) $_REQUEST['selectSurvey'];
-                \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=Survey&act=modify_survey&copy=1&id={$selectedSurvey}");
+                \Cx\Core\Csrf\Controller\Csrf::header("Location: ".ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=Survey&act=modify_survey&copy=1&id={$selectedSurvey}");
             }
         }
     }
@@ -431,7 +431,7 @@ class SurveyManager extends SurveyLibrary {
 
         $this->_pageTitle = $_ARRAYLANG['TXT_EDIT_SURVEY_TXT'];
         $this->_objTpl->loadTemplateFile('module_add_surveyone.html');
-        $CSRF_PARAM = \Cx\Core\Csrf\Controller\ComponentController::param();
+        $CSRF_PARAM = \Cx\Core\Csrf\Controller\Csrf::param();
 
         $id = isset($_REQUEST['id']) ? contrexx_input2raw($_REQUEST['id']) : 0;
         $homeBoxCheck = $objDatabase->Execute('SELECT * FROM `'.DBPREFIX.'module_survey_surveygroup` WHERE isHomeBox="1" AND id!="'.$id.'"');
@@ -586,7 +586,7 @@ class SurveyManager extends SurveyLibrary {
 
         $objResult = $objDatabase->Execute('SELECT 1 FROM '.DBPREFIX.'module_survey_surveyQuestions WHERE survey_id='.$id);
         if ($objResult->RecordCount() == 0) {
-            \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=Survey&act=addQuestions&surveyId=".$id."&linkId=".$linkId);
+            \Cx\Core\Csrf\Controller\Csrf::header("Location: ".ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=Survey&act=addQuestions&surveyId=".$id."&linkId=".$linkId);
         }
 
         $this->_pageTitle = $_ARRAYLANG['TXT_QUESTION_OVERVIEW'];
@@ -751,7 +751,7 @@ class SurveyManager extends SurveyLibrary {
                 'TXT_TEXT_ROW'                              => $_ARRAYLANG['TXT_TEXT_ROW']
         ));
 
-        $link = 'index.php?cmd=Survey&act=editQuestionsOverview&id='.$linkId.'&linkId='.$linkId.'&'.\Cx\Core\Csrf\Controller\ComponentController::param();
+        $link = 'index.php?cmd=Survey&act=editQuestionsOverview&id='.$linkId.'&linkId='.$linkId.'&'.\Cx\Core\Csrf\Controller\Csrf::param();
         // Parsing back button to place holder.
         $this->_objTpl->setVariable(array(
             'TXT_BACK'          => '<input type="button" name="Back" value="'.$_ARRAYLANG['TXT_BACK_SURVEY_TXT'].'" onclick= "window.location=\''.$link.'\'" />',
@@ -1004,7 +1004,7 @@ class SurveyManager extends SurveyLibrary {
                     $objDatabase->Execute($query);
                 }
             }
-            \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=Survey&act=editQuestionsOverview&id=$survey_id&linkId=$linkId&mes=updated");
+            \Cx\Core\Csrf\Controller\Csrf::header("Location: ".ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=Survey&act=editQuestionsOverview&id=$survey_id&linkId=$linkId&mes=updated");
         }
     }
 
@@ -1368,7 +1368,7 @@ class SurveyManager extends SurveyLibrary {
         $row = 'row1';
 
         if ($objResult->RecordCount() == 0) {
-            \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=Survey&act=createOrCopy");
+            \Cx\Core\Csrf\Controller\Csrf::header("Location: ".ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=Survey&act=createOrCopy");
         }
 
         $this->_objTpl->setVariable(array(
@@ -1632,7 +1632,7 @@ class SurveyManager extends SurveyLibrary {
 
             }
         }
-        \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=Survey&act=editQuestionsOverview&id=$lid&linkId=$lid&mes=deleted");
+        \Cx\Core\Csrf\Controller\Csrf::header("Location: ".ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=Survey&act=editQuestionsOverview&id=$lid&linkId=$lid&mes=deleted");
     }
 
     function deleteSurvey() {
@@ -1767,7 +1767,7 @@ class SurveyManager extends SurveyLibrary {
 
             // Last Inserted Id
             $lastId = mysql_insert_id();
-            \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=Survey&act=addQuestions&surveyId=$lastId");
+            \Cx\Core\Csrf\Controller\Csrf::header("Location: ".ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=Survey&act=addQuestions&surveyId=$lastId");
         }
     }
 
@@ -1882,7 +1882,7 @@ class SurveyManager extends SurveyLibrary {
             $this->_strOkMessage = $_ARRAYLANG['TXT_SURVEY_ADDED_SUC_TXT'];
             if (isset($_REQUEST['linkId']) && ($_REQUEST['linkId'] != "")) {
                 $ids = contrexx_input2raw($_REQUEST['linkId']);
-                $link = "index.php?cmd=Survey&act=editQuestionsOverview&id=".$ids."&linkId=".$ids."&".\Cx\Core\Csrf\Controller\ComponentController::param();
+                $link = "index.php?cmd=Survey&act=editQuestionsOverview&id=".$ids."&linkId=".$ids."&".\Cx\Core\Csrf\Controller\Csrf::param();
                 $this->_objTpl->setVariable(array(
                     'ADD_QUESTION_HERE' => '<a href="index.php?cmd=Survey&act=addQuestions&surveyId='.$surveyId.'" title="'.$_ARRAYLANG['TXT_SURVEY_ADDQUESTION_TXT'].'">
                                            '.$_ARRAYLANG['TXT_SURVEY_ADDQUESTION_ANOTHER_TXT'].'</a>',
@@ -1890,7 +1890,7 @@ class SurveyManager extends SurveyLibrary {
                     'TXT_PREVIEW'       => '<input type="button" name="Preview" value="'.$_ARRAYLANG['TXT_SURVEY_PREVIEW_TXT'].'" onClick="window.open('."'".'../index.php?section=Survey&cmd=surveypreview&id='.$surveyId."'".')">'
                 ));
             } else {
-                $link = 'index.php?cmd=Survey&act=editQuestionsOverview&id='.$surveyId.'&linkId='.$surveyId.'&'.\Cx\Core\Csrf\Controller\ComponentController::param();
+                $link = 'index.php?cmd=Survey&act=editQuestionsOverview&id='.$surveyId.'&linkId='.$surveyId.'&'.\Cx\Core\Csrf\Controller\Csrf::param();
                 $this->_objTpl->setVariable(array(
                     'ADD_QUESTION_HERE' => '<a href="index.php?cmd=Survey&act=addQuestions&surveyId='.$surveyId.'" title="'.$_ARRAYLANG['TXT_SURVEY_ADDQUESTION_TXT'].'">
                                            '.$_ARRAYLANG['TXT_SURVEY_ADDQUESTION_ANOTHER_TXT'].'</a>',
@@ -1969,7 +1969,7 @@ class SurveyManager extends SurveyLibrary {
                              WHERE id = "'.$id.'"';
             $objDatabase->Execute($insertSurvey);
 
-            \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=Survey&act=settings&mes=update");
+            \Cx\Core\Csrf\Controller\Csrf::header("Location: ".ASCMS_PATH_OFFSET.ASCMS_BACKEND_PATH."/index.php?cmd=Survey&act=settings&mes=update");
         }
 
     }
@@ -2043,7 +2043,7 @@ END;
         $TXT_SURVEY_ENTER_COLUMN_ERR = $_ARRAYLANG['TXT_SURVEY_ENTER_COLUMN_ERR'];
         $TXT_SURVEY_ENTER_TITLE_ERR = $_ARRAYLANG['TXT_SURVEY_ENTER_TITLE_ERR'];
         $TXT_SURVEY_HOMEBOX_ERR = $_ARRAYLANG['TXT_SURVEY_HOMEBOX_ERR'];
-        $CSRF_PARAM = \Cx\Core\Csrf\Controller\ComponentController::param();
+        $CSRF_PARAM = \Cx\Core\Csrf\Controller\Csrf::param();
 
         $javascript = <<<END
         <script language="JavaScript" type="text/javascript">
@@ -2405,7 +2405,7 @@ END;
         $TXT_SURVEY_SELECT_EMAIL_ERR = $_ARRAYLANG['TXT_SURVEY_SELECT_EMAIL_ERR'];
         $TXT_SHOW = $_ARRAYLANG['TXT_SHOW'];
         $TXT_HIDE = $_ARRAYLANG['TXT_HIDE'];
-        $CSRF_PARAM = \Cx\Core\Csrf\Controller\ComponentController::param();
+        $CSRF_PARAM = \Cx\Core\Csrf\Controller\Csrf::param();
 
         $javascript = <<<END
         <script language="JavaScript" type="text/javascript">
@@ -2947,8 +2947,8 @@ END;
                 $i++;
                 $objResult->MoveNext();
             }
-            \Cx\Core\Csrf\Controller\ComponentController::header("Content-Type: text/csv");
-            \Cx\Core\Csrf\Controller\ComponentController::header("Content-Disposition: Attachment; filename=\"export.csv\"");
+            \Cx\Core\Csrf\Controller\Csrf::header("Content-Type: text/csv");
+            \Cx\Core\Csrf\Controller\Csrf::header("Content-Disposition: Attachment; filename=\"export.csv\"");
             echo utf8_decode($CsvContent);
             exit;
             $this->_strOkMessage = $_ARRAYLANG['TXT_SURVEY_CLEARED_SUC_TXT'];
@@ -3146,8 +3146,8 @@ END;
                 $objDateuser->MoveNext();
             }
 
-            \Cx\Core\Csrf\Controller\ComponentController::header("Content-Type: text/csv");
-            \Cx\Core\Csrf\Controller\ComponentController::header("Content-Disposition: Attachment; filename=\"exportAdditionaldetails.csv\"");
+            \Cx\Core\Csrf\Controller\Csrf::header("Content-Type: text/csv");
+            \Cx\Core\Csrf\Controller\Csrf::header("Content-Disposition: Attachment; filename=\"exportAdditionaldetails.csv\"");
             echo utf8_decode($CsvData);
             exit;
         }

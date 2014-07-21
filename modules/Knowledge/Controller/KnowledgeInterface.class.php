@@ -48,7 +48,7 @@ class KnowledgeInterface extends KnowledgeLibrary
         global $_LANGID, $objInit;
         
         $tpl = new \Cx\Core\Html\Sigma();
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($tpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($tpl);
         $tpl->setErrorHandling(PEAR_ERROR_DIE);
         $template = $this->settings->formatTemplate($this->settings->get("tag_cloud_sidebar_template"));
         $tpl->setTemplate($template);
@@ -95,7 +95,7 @@ class KnowledgeInterface extends KnowledgeLibrary
         $template = $this->settings->formatTemplate($this->settings->get("best_rated_sidebar_template"));
         
         $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_THEMES_PATH);
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($objTemplate);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($objTemplate);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         
         $objTemplate->setTemplate($template);
@@ -132,7 +132,7 @@ class KnowledgeInterface extends KnowledgeLibrary
         $template = $this->settings->formatTemplate($this->settings->get("most_read_sidebar_template"));
         
         $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_THEMES_PATH);
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($objTemplate);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($objTemplate);
         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         
         $objTemplate->setTemplate($template);

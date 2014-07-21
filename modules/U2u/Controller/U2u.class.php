@@ -42,7 +42,7 @@ class U2u extends U2uLibrary
 
         $this->_intLanguageId = intval($_LANGID);
         $this->_objTpl = new \Cx\Core\Html\Sigma('.');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($pageContent);
     }
@@ -67,7 +67,7 @@ class U2u extends U2uLibrary
         $objFWUser = \FWUser::getFWUserObject();
         if (!$objFWUser->objUser->login()) {
             $link = base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
-            \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Login&redirect=".$link);
+            \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Login&redirect=".$link);
             exit;
         }
 
@@ -309,7 +309,7 @@ class U2u extends U2uLibrary
          $query = 'SELECT 1 FROM '.DBPREFIX.'module_u2u_address_list WHERE user_id="'.$id.'" AND buddies_id="'.$buddies_id.'"';
          $objRS = $objDatabase->SelectLimit($query, 1);
          if($objRS->RecordCount() > 0){
-            \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Access&cmd=members");
+            \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Access&cmd=members");
             die();
          }
          $query='REPLACE INTO '.DBPREFIX.'module_u2u_address_list  (
@@ -318,7 +318,7 @@ class U2u extends U2uLibrary
                                          )
                                          VALUES ('.$id.','.$buddies_id.')';
          $objDatabase->Execute($query);
-         \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Access&cmd=members");
+         \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Access&cmd=members");
          die();
     }
 

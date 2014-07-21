@@ -38,7 +38,7 @@ class Forum extends ForumLibrary {
         parent::__construct();
         $this->_intLangId = intval($_LANGID);
         $this->_objTpl = new \Cx\Core\Html\Sigma('.');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($strPageContent);
     }
@@ -378,7 +378,7 @@ class Forum extends ForumLibrary {
 
         if ($intForumId == 0) {
             //wrong id, redirect
-            \Cx\Core\Csrf\Controller\ComponentController::header('location: index.php?section=Forum');
+            \Cx\Core\Csrf\Controller\Csrf::header('location: index.php?section=Forum');
             die();
         }
 
@@ -572,7 +572,7 @@ class Forum extends ForumLibrary {
                 $objCache = new \Cx\Core_Modules\Cache\Controller\CacheManager();
                 $objCache->deleteAllFiles();
             }
-            \Cx\Core\Csrf\Controller\ComponentController::header('Location: ?section=Forum&cmd=board&id='.$intForumId);
+            \Cx\Core\Csrf\Controller\Csrf::header('Location: ?section=Forum&cmd=board&id='.$intForumId);
             die();
         }
     }
@@ -602,7 +602,7 @@ class Forum extends ForumLibrary {
         }
 
         if(empty($intCatId)){
-            \Cx\Core\Csrf\Controller\ComponentController::header('Location: index.php?section=Forum');
+            \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=Forum');
             die();
         }
         if ($objFWUser->objUser->login()) {
@@ -781,8 +781,8 @@ class Forum extends ForumLibrary {
             ));
 
             $quoteLink = "id=".$intThreadId."&act=quote&postid=".$postId;
-            $quoteLinkLoggedIn      = "location.href='".\Cx\Core\Csrf\Controller\ComponentController::enhanceURI("index.php?section=Forum")."&amp;cmd=thread&amp;".htmlentities($quoteLink)."';";
-            $quoteLinkNotLoggedIn   = "location.href='".\Cx\Core\Csrf\Controller\ComponentController::enhanceURI("index.php?section=Login")."&amp;redirect=".base64_encode("index.php?section=Forum&cmd=thread&".$quoteLink)."';";
+            $quoteLinkLoggedIn      = "location.href='".\Cx\Core\Csrf\Controller\Csrf::enhanceURI("index.php?section=Forum")."&amp;cmd=thread&amp;".htmlentities($quoteLink)."';";
+            $quoteLinkNotLoggedIn   = "location.href='".\Cx\Core\Csrf\Controller\Csrf::enhanceURI("index.php?section=Login")."&amp;redirect=".base64_encode("index.php?section=Forum&cmd=thread&".$quoteLink)."';";
             $this->_objTpl->setVariable(array(
                 'FORUM_POST_DATE'                   => $arrValues['time_created'],
                 'FORUM_POST_LAST_EDITED'            => ($arrValues['time_edited'] != date(ASCMS_DATE_FORMAT, 0))
@@ -814,7 +814,7 @@ class Forum extends ForumLibrary {
             ));
 
             if(!$objFWUser->objUser->login() && !$this->_checkAuth($intCatId, 'write')){
-                $button = '<input type="button" value="'.$_ARRAYLANG['TXT_FORUM_CREATE_POST'].'" onclick="location.href=\''.\Cx\Core\Csrf\Controller\ComponentController::enhanceURI('index.php?section=Login').'&redirect='.base64_encode($_SERVER['REQUEST_URI']).'\';" />';
+                $button = '<input type="button" value="'.$_ARRAYLANG['TXT_FORUM_CREATE_POST'].'" onclick="location.href=\''.\Cx\Core\Csrf\Controller\Csrf::enhanceURI('index.php?section=Login').'&redirect='.base64_encode($_SERVER['REQUEST_URI']).'\';" />';
                 $this->_objTpl->setVariable(array(
                     'FORUM_POST_REPLY_REDIRECT'     =>  $button,
                 ));
@@ -926,7 +926,7 @@ class Forum extends ForumLibrary {
                 $objCache = new \Cx\Core_Modules\Cache\Controller\CacheManager();
                 $objCache->deleteAllFiles();
             }
-            \Cx\Core\Csrf\Controller\ComponentController::header('Location: index.php?section=Forum&cmd=thread&id='.$intThreadId.'&pos='.$this->_getLastPos($postId, $intThreadId));
+            \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=Forum&cmd=thread&id='.$intThreadId.'&pos='.$this->_getLastPos($postId, $intThreadId));
             die();
         }
 
@@ -1026,7 +1026,7 @@ class Forum extends ForumLibrary {
                 $objCache->deleteAllFiles();
             }
 
-            \Cx\Core\Csrf\Controller\ComponentController::header('Location: index.php?section=Forum&cmd=thread&id='.$intThreadId.'&pos='.$this->_getLastPos($postId, $intThreadId));
+            \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=Forum&cmd=thread&id='.$intThreadId.'&pos='.$this->_getLastPos($postId, $intThreadId));
             die();
         }
 
@@ -1086,7 +1086,7 @@ class Forum extends ForumLibrary {
                     'FORUM_CATEGORY_ID'                                     => $intCatId,
                     'FORUM_THREAD_ID'                                       => $intThreadId,
                 ));
-                \Cx\Core\Csrf\Controller\ComponentController::header('Location: index.php?section=Forum&cmd=thread&id='.$thread);
+                \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=Forum&cmd=thread&id='.$thread);
             }
         }
 
@@ -1133,7 +1133,7 @@ class Forum extends ForumLibrary {
                     break;
                 }
                 if($action != 'move'){
-                    \Cx\Core\Csrf\Controller\ComponentController::header('Location: index.php?section=Forum&cmd=thread&id='.$intThreadId.'&a='.$action.'&r='.$success.'&s='.$suffix);
+                    \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=Forum&cmd=thread&id='.$intThreadId.'&a='.$action.'&r='.$success.'&s='.$suffix);
                 }
             }else{
                 $this->_objTpl->setVariable('TXT_THREAD_ACTION_ERROR', $_ARRAYLANG['TXT_FORUM_NO_ACCESS']);
@@ -1408,7 +1408,7 @@ class Forum extends ForumLibrary {
                 $this->_objTpl->setVariable('TXT_THREADS_NONE', $_ARRAYLANG['TXT_FORUM_THREADS_NONE']);
             }
         } else {
-            \Cx\Core\Csrf\Controller\ComponentController::header('location: index.php?section=Forum');
+            \Cx\Core\Csrf\Controller\Csrf::header('location: index.php?section=Forum');
             die();
         }
 
@@ -1664,11 +1664,11 @@ class Forum extends ForumLibrary {
                             //<![CDATA[
                                 function gotoForum(objSelect){
                                     id = objSelect.options[objSelect.selectedIndex].value;
-                                    if(id==0){return top.location.href="index.php?section=Forum&'.\Cx\Core\Csrf\Controller\ComponentController::param().'";}
+                                    if(id==0){return top.location.href="index.php?section=Forum&'.\Cx\Core\Csrf\Controller\Csrf::param().'";}
                                     if(id.indexOf("_cat") > -1){
-                                        return top.location.href="index.php?section=Forum&cmd=cat&'.\Cx\Core\Csrf\Controller\ComponentController::param().'&id="+parseInt(id);
+                                        return top.location.href="index.php?section=Forum&cmd=cat&'.\Cx\Core\Csrf\Controller\Csrf::param().'&id="+parseInt(id);
                                     }else{
-                                        return top.location.href="index.php?section=Forum&cmd=board&'.\Cx\Core\Csrf\Controller\ComponentController::param().'&id="+id;
+                                        return top.location.href="index.php?section=Forum&cmd=board&'.\Cx\Core\Csrf\Controller\Csrf::param().'&id="+id;
                                     }
                                 }
                             //]]>
@@ -1681,7 +1681,7 @@ class Forum extends ForumLibrary {
                             //<![CDATA[
                                 function deletePost(thread_id, post_id){
                                     if(confirm("'.$_ARRAYLANG['TXT_FORUM_CONFIRM_DELETE'].'\n'.$_ARRAYLANG['TXT_FORUM_CANNOT_UNDO_OPERATION'].'")){
-                                        window.location.href = "?section=Forum&cmd=thread&'.\Cx\Core\Csrf\Controller\ComponentController::param().'&id="+thread_id+"&act=delete&postid="+post_id;
+                                        window.location.href = "?section=Forum&cmd=thread&'.\Cx\Core\Csrf\Controller\Csrf::param().'&id="+thread_id+"&act=delete&postid="+post_id;
                                     }
                                 }
                             //]]>
@@ -1694,7 +1694,7 @@ class Forum extends ForumLibrary {
                             //<![CDATA[
                                 function deleteThread(category_id, thread_id){
                                     if(confirm("'.$_ARRAYLANG['TXT_FORUM_CONFIRM_DELETE'].'\n'.$_ARRAYLANG['TXT_FORUM_CANNOT_UNDO_OPERATION'].'")){
-                                        window.location.href = "?section=Forum&cmd=board&'.\Cx\Core\Csrf\Controller\ComponentController::param().'&id="+category_id+"&act=delete&threadid="+thread_id;
+                                        window.location.href = "?section=Forum&cmd=board&'.\Cx\Core\Csrf\Controller\Csrf::param().'&id="+category_id+"&act=delete&threadid="+thread_id;
                                     }
                                 }
                             //]]>
@@ -1786,7 +1786,7 @@ class Forum extends ForumLibrary {
                 $confirmDelete  = $_ARRAYLANG['TXT_FORUM_THREAD_ACTION_DELETE_CONFIRM']."\\n".$_ARRAYLANG['TXT_FORUM_CANNOT_UNDO_OPERATION'];
 
                 $allowedExtensions = str_replace(',', ', ', $this->_arrSettings['allowed_extensions']);
-                $csrf          = \Cx\Core\Csrf\Controller\ComponentController::param();
+                $csrf          = \Cx\Core\Csrf\Controller\Csrf::param();
                 $strJavaScript = <<< EOJS
 <script type="text/javascript" language="JavaScript">
 //<![CDATA[

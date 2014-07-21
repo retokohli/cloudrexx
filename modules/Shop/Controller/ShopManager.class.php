@@ -57,7 +57,7 @@ class ShopManager extends ShopLibrary
             $_ARRAYLANG
           + array(
             'SHOP_CURRENCY' => Currency::getActiveCurrencySymbol(),
-            'CSRF_PARAM' => \Cx\Core\Csrf\Controller\ComponentController::param()
+            'CSRF_PARAM' => \Cx\Core\Csrf\Controller\Csrf::param()
         ));
     }
 
@@ -241,7 +241,7 @@ class ShopManager extends ShopLibrary
                 break;
         }
         \Message::show();
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder(self::$objTemplate);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder(self::$objTemplate);
         $objTemplate->setVariable(array(
             'CONTENT_TITLE' => self::$pageTitle,
             'ADMIN_CONTENT' => self::$objTemplate->get(),
@@ -1981,7 +1981,7 @@ if ($test === NULL) {
             \Message::error(sprintf(
                 $_ARRAYLANG['TXT_SHOP_CATEGORY_ERROR_UPDATING'], $category_id));
         }
-        \Cx\Core\Csrf\Controller\ComponentController::redirect('index.php?cmd=Shop&act=categories');
+        \Cx\Core\Csrf\Controller\Csrf::redirect('index.php?cmd=Shop&act=categories');
     }
 
 
@@ -2438,13 +2438,13 @@ if ($test === NULL) {
 
         switch ($_POST['afterStoreAction']) {
           case 'newEmpty':
-            \Cx\Core\Csrf\Controller\ComponentController::redirect(
+            \Cx\Core\Csrf\Controller\Csrf::redirect(
                 'index.php?cmd=Shop'.MODULE_INDEX.'&act=products&tpl=manage');
           case 'newTemplate':
-            \Cx\Core\Csrf\Controller\ComponentController::redirect('index.php?cmd=Shop'.MODULE_INDEX.
+            \Cx\Core\Csrf\Controller\Csrf::redirect('index.php?cmd=Shop'.MODULE_INDEX.
                 '&act=products&tpl=manage&id='.$objProduct->id().'&new=1');
         }
-        \Cx\Core\Csrf\Controller\ComponentController::redirect('index.php?cmd=Shop'.MODULE_INDEX.'&act=products');
+        \Cx\Core\Csrf\Controller\Csrf::redirect('index.php?cmd=Shop'.MODULE_INDEX.'&act=products');
         // Never reached
         return true;
     }
@@ -2538,7 +2538,7 @@ if ($test === NULL) {
             \Message::ok($_ARRAYLANG['TXT_ORDER_DELETED']);
         }
 // TODO: Add error message
-        \Cx\Core\Csrf\Controller\ComponentController::redirect('index.php?cmd=Shop&act=orders');
+        \Cx\Core\Csrf\Controller\Csrf::redirect('index.php?cmd=Shop&act=orders');
     }
 
 
@@ -2700,7 +2700,7 @@ if ($test === NULL) {
             \Message::error(sprintf(
                 $_ARRAYLANG['TXT_SHOP_ERROR_CUSTOMER_UPDATING'], $customer_id));
         }
-        \Cx\Core\Csrf\Controller\ComponentController::redirect('index.php?cmd=Shop&act=customers');
+        \Cx\Core\Csrf\Controller\Csrf::redirect('index.php?cmd=Shop&act=customers');
     }
 
 

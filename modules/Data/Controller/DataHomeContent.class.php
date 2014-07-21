@@ -31,7 +31,7 @@ class DataHomeContent extends \Cx\Modules\Data\Controller\DataLibrary  {
 		
 	    $this->_strPageContent = $strPageContent;
 	    $this->_objTpl = new \Cx\Core\Html\Sigma('.');
-            \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+            \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
 	    $this->_intLanguageId = intval($_LANGID);
             $this->_arrSettings = $this->createSettingsArray();
 	}

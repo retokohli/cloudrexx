@@ -967,7 +967,7 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         if (isset($_GET['confirm']) && $_GET['confirm']) {
             $this->_objTpl->setGlobalVariable(array(
                 $this->moduleLangVar.'_SAVE_PUBLISH' => "<input type='submit' name='save_and_publish' value='{$_ARRAYLANG['TXT_CALENDAR_SAVE_AND_PUBLISH']}'>",
-                $this->moduleLangVar.'_EVENT_DELETE' => "<input type='button' name='delete' value='{$_ARRAYLANG['TXT_CALENDAR_DELETE']}' onClick='if (confirm(\"{$_ARRAYLANG['TXT_CALENDAR_CONFIRM_DELETE_DATA']}\\n{$_ARRAYLANG['TXT_CALENDAR_ACTION_IS_IRREVERSIBLE']}\")) { window.location.href = \"index.php?cmd={$this->moduleName}&delete=$eventId&".\Cx\Core\Csrf\Controller\ComponentController::param()."\"} return false;'>",
+                $this->moduleLangVar.'_EVENT_DELETE' => "<input type='button' name='delete' value='{$_ARRAYLANG['TXT_CALENDAR_DELETE']}' onClick='if (confirm(\"{$_ARRAYLANG['TXT_CALENDAR_CONFIRM_DELETE_DATA']}\\n{$_ARRAYLANG['TXT_CALENDAR_ACTION_IS_IRREVERSIBLE']}\")) { window.location.href = \"index.php?cmd={$this->moduleName}&delete=$eventId&".\Cx\Core\Csrf\Controller\Csrf::param()."\"} return false;'>",
             ));
         }
     }
@@ -1260,7 +1260,7 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
         global $_ARRAYLANG, $_LANGID;
         
         if (empty($eventId)) {
-            \Cx\Core\Csrf\Controller\ComponentController::header("Location: index.php?cmd=".$this->moduleName);
+            \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?cmd=".$this->moduleName);
             return;
         }   
         
@@ -1388,7 +1388,7 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
             
             exit();   
        } else {   
-            \Cx\Core\Csrf\Controller\ComponentController::header("Location: index.php?cmd=".$this->moduleName);
+            \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?cmd=".$this->moduleName);
             return;
        }
     }
@@ -1540,7 +1540,7 @@ class CalendarManager extends \Cx\Modules\Calendar\Controller\CalendarLibrary
                     }
                     $tpl = !empty($_POST['regtpl']) ? $_POST['regtpl'] : $tpl;
                     $this->okMessage = $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_SUCCESSFULLY_SAVED'];                    
-                    \Cx\Core\Csrf\Controller\ComponentController::header('Location: index.php?cmd='.$this->moduleName.'&act=event_registrations&tpl='.$tpl.'&id='.$eventId);
+                    \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?cmd='.$this->moduleName.'&act=event_registrations&tpl='.$tpl.'&id='.$eventId);
 	        } else {
                     $this->errMessage = $_ARRAYLANG['TXT_CALENDAR_REGISTRATION_CORRUPT_SAVED'];
 	        }

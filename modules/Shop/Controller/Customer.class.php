@@ -475,7 +475,7 @@ class Customer extends \User
         $usergroup_id = \Cx\Core\Setting\Controller\Setting::getValue('usergroup_id_customer');
         if (!$usergroup_id) {
             \Message::error($_ARRAYLANG['TXT_SHOP_ERROR_USERGROUP_INVALID']);
-            \Cx\Core\Csrf\Controller\ComponentController::redirect(CONTREXX_DIRECTORY_INDEX.'?section=Shop');
+            \Cx\Core\Csrf\Controller\Csrf::redirect(CONTREXX_DIRECTORY_INDEX.'?section=Shop');
         }
         $objUser = \FWUser::getFWUserObject()->objUser;
         $objUser = $objUser->getUsers(array(

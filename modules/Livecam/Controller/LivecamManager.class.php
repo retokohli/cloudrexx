@@ -49,7 +49,7 @@ class LivecamManager extends LivecamLibrary
         global $objTemplate, $_ARRAYLANG, $_CONFIG;
 
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/Livecam/View/Template/Backend');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->getSettings();
@@ -98,7 +98,7 @@ class LivecamManager extends LivecamLibrary
         switch ($_REQUEST['act']) {
             case 'saveSettings':
                 $this->saveSettings();
-                \Cx\Core\Csrf\Controller\ComponentController::header("Location: index.php?cmd=Livecam&act=settings");
+                \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?cmd=Livecam&act=settings");
                 break;
             case 'settings':
                 $this->settings();

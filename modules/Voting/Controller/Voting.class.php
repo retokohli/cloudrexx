@@ -22,7 +22,7 @@ function votingShowCurrent($page_content){
 	$paging = '';
 
 	$objTpl = new \Cx\Core\Html\Sigma('.');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($objTpl);
 	$objTpl->setErrorHandling(PEAR_ERROR_DIE);
 	$objTpl->setTemplate($page_content);
     
@@ -301,7 +301,7 @@ function VotingSubmit(){
 	        $objDatabase->Execute($query);
 			_store_additional_data($voting_id);
     }
-	    \Cx\Core\Csrf\Controller\ComponentController::header("Location: ?section=Voting");
+	    \Cx\Core\Csrf\Controller\Csrf::header("Location: ?section=Voting");
 	}
 }
 
@@ -373,7 +373,7 @@ function setVotingResult($template)
 	$paging="";
 
 	$objTpl = new \Cx\Core\Html\Sigma('.');
-    \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($objTpl);
+    \Cx\Core\Csrf\Controller\Csrf::add_placeholder($objTpl);
 	$objTpl->setErrorHandling(PEAR_ERROR_DIE);
 	$objTpl->setTemplate($template);
 

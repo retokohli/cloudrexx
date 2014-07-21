@@ -82,7 +82,7 @@ class CrmManager extends CrmLibrary
 
         $this->_mediaPath = ASCMS_MEDIA_PATH.'/Crm';
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/'.$this->moduleName.'/View/Template/Backend');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
 
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->act = $_REQUEST['act'];
@@ -289,7 +289,7 @@ class CrmManager extends CrmLibrary
                 if ($return) {
                     return false;
                 }
-                \Cx\Core\Csrf\Controller\ComponentController::header("Location:./index.php?cmd=".$this->moduleName."&act=customers&tpl=showcustdetail&id={$customer_id}");
+                \Cx\Core\Csrf\Controller\Csrf::header("Location:./index.php?cmd=".$this->moduleName."&act=customers&tpl=showcustdetail&id={$customer_id}");
                 exit();
             }
         }
@@ -439,7 +439,7 @@ class CrmManager extends CrmLibrary
         }
         $this->_objTpl->setGlobalVariable(array(
                 'CRM_CUST_ID'                  => $custId,
-                'CSRF_PARAM'                   => \Cx\Core\Csrf\Controller\ComponentController::param(),
+                'CSRF_PARAM'                   => \Cx\Core\Csrf\Controller\Csrf::param(),
                 'TXT_CRM_NO_RECORDS_FOUND'     => $_ARRAYLANG['TXT_CRM_NO_RECORDS_FOUND'],
                 'TXT_CRM_NOTES_TYPE'           => $_ARRAYLANG['TXT_CRM_NOTE_TYPE'],
                 'TXT_CRM_SHOW_COMMENT_HISTORY' => $_ARRAYLANG['TXT_CRM_SHOW_COMMENT_HISTORY'],
@@ -879,7 +879,7 @@ class CrmManager extends CrmLibrary
         if ($contactId) {
             //For Profile Photo Upload
             $uploaderCode2 = $this->initUploader(2, true, 'proPhotoUploadFinished', $contactId, 'profile_files_');
-            $redirectUrl = \Cx\Core\Csrf\Controller\ComponentController::enhanceURI('index.php?cmd=Crm&act=getImportFilename&custId='.$contactId);
+            $redirectUrl = \Cx\Core\Csrf\Controller\Csrf::enhanceURI('index.php?cmd=Crm&act=getImportFilename&custId='.$contactId);
             $this->_objTpl->setVariable(array(
                 'COMBO_UPLOADER_CODE2' => $uploaderCode2,
                 'REDIRECT_URL'         => $redirectUrl
@@ -1369,7 +1369,7 @@ END;
         $message = base64_encode("deleted");
         $redirect = isset($_GET['redirect']) ? base64_decode($_GET['redirect']) : '';
 
-        \Cx\Core\Csrf\Controller\ComponentController::header("location:".ASCMS_ADMIN_WEB_PATH."/index.php?cmd=".$this->moduleName."&act=customers$redirect&mes=$message");
+        \Cx\Core\Csrf\Controller\Csrf::header("location:".ASCMS_ADMIN_WEB_PATH."/index.php?cmd=".$this->moduleName."&act=customers$redirect&mes=$message");
         exit();
     }
 
@@ -1460,7 +1460,7 @@ END;
             }
         }
         $message = base64_encode($mes);
-        \Cx\Core\Csrf\Controller\ComponentController::header("Location: ./index.php?cmd=".$this->moduleName."&act=settings&tpl=customertypes&mes={$message}");
+        \Cx\Core\Csrf\Controller\Csrf::header("Location: ./index.php?cmd=".$this->moduleName."&act=settings&tpl=customertypes&mes={$message}");
 
     }
 
@@ -1926,7 +1926,7 @@ END;
                 $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CUSTOMER_TYPES_DELETED_SUCCESSFULLY'];
             }
         }
-        \Cx\Core\Csrf\Controller\ComponentController::header('location:./index.php?cmd=Crm&act=settings&tpl=customertypes');
+        \Cx\Core\Csrf\Controller\Csrf::header('location:./index.php?cmd=Crm&act=settings&tpl=customertypes');
         exit();
     }
 
@@ -2197,10 +2197,10 @@ END;
 
                 if (isset($_POST['save_add_new_contact'])) {
                     $contactTypeUrl = $contactType == 2 ? '&type=contact' : '';
-                    \Cx\Core\Csrf\Controller\ComponentController::header("Location:./index.php?cmd=".$this->moduleName."&act=customers&tpl=managecontact&mes=".base64_encode($msg).$contactTypeUrl);
+                    \Cx\Core\Csrf\Controller\Csrf::header("Location:./index.php?cmd=".$this->moduleName."&act=customers&tpl=managecontact&mes=".base64_encode($msg).$contactTypeUrl);
                     exit();
                 }
-                \Cx\Core\Csrf\Controller\ComponentController::header("Location:./index.php?cmd=".$this->moduleName."&act=customers&mes=".base64_encode($msg).base64_decode($redirect));
+                \Cx\Core\Csrf\Controller\Csrf::header("Location:./index.php?cmd=".$this->moduleName."&act=customers&mes=".base64_encode($msg).base64_decode($redirect));
                 exit();
             } elseif (empty($accountUserEmail)) {
                 $this->_strErrMessage = $_ARRAYLANG['TXT_CRM_EMAIL_EMPTY'];
@@ -2664,7 +2664,7 @@ END;
                     $db = $objDatabase->Execute($sql);
                     if ($db) {
                         $_SESSION['TXT_MSG_OK'] = ($id) ? $_ARRAYLANG['TXT_CRM_COMMENT_UPDATESUCESSMESSAGE'] : $_ARRAYLANG['TXT_CRM_COMMENT_SUCESSMESSAGE'];
-                        \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".base64_decode($redirect));
+                        \Cx\Core\Csrf\Controller\Csrf::header("Location: ".base64_decode($redirect));
                         exit();
                     } else {
                         $this->_strErrMessage = "Some thing went wrong";
@@ -2758,7 +2758,7 @@ END;
 
             if (isset($redirect))
                 $_SESSION['TXT_MSG_OK'] = $_ARRAYLANG['TXT_CRM_COMMENT_DELETESUCESSMESSAGE'];
-            \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".base64_decode($redirect));
+            \Cx\Core\Csrf\Controller\Csrf::header("Location: ".base64_decode($redirect));
         }
         die();
     }
@@ -2850,7 +2850,7 @@ END;
 
         //For notes type Upload
         $uploaderCodeTaskType = $this->initUploader('notesType', true, 'notesUploadFinished', '', 'notes_type_files_');
-        $redirectUrl = \Cx\Core\Csrf\Controller\ComponentController::enhanceURI('index.php?cmd=Crm&act=getImportFilename');
+        $redirectUrl = \Cx\Core\Csrf\Controller\Csrf::enhanceURI('index.php?cmd=Crm&act=getImportFilename');
         $this->_objTpl->setVariable(array(
             'COMBO_UPLOADER_CODE_TASK_TYPE' => $uploaderCodeTaskType,
             'REDIRECT_URL'                  => $redirectUrl
@@ -3056,7 +3056,7 @@ END;
                                                                                                   pos     = '$position'
                                                                                             WHERE id      = '$id'");
                 $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_NOTES_UPDATED'];
-                \Cx\Core\Csrf\Controller\ComponentController::header("Location:".ASCMS_ADMIN_WEB_PATH."/index.php?cmd=".$this->moduleName."&act=settings&tpl=notes");
+                \Cx\Core\Csrf\Controller\Csrf::header("Location:".ASCMS_ADMIN_WEB_PATH."/index.php?cmd=".$this->moduleName."&act=settings&tpl=notes");
                 exit();
             } else {
                 $this->_strErrMessage = $_ARRAYLANG['TXT_CRM_ERROR'];
@@ -3092,7 +3092,7 @@ END;
                 'TXT_CRM_BACK'                      => $_ARRAYLANG['TXT_CRM_BACK'],
                 'TXT_BROWSE'                        => $_ARRAYLANG['TXT_BROWSE'],
                 'PM_SETTINGS_CURRENCY_JAVASCRIPT' => $objJs->getAddCurrencyJavascript(),
-                'CSRF_PARAM'                    => \Cx\Core\Csrf\Controller\ComponentController::param(),
+                'CSRF_PARAM'                    => \Cx\Core\Csrf\Controller\Csrf::param(),
         ));
 
     }
@@ -3151,7 +3151,7 @@ END;
                 }
             }
         }
-        \Cx\Core\Csrf\Controller\ComponentController::header('location:./index.php?cmd=Crm&act=settings&tpl=currency');
+        \Cx\Core\Csrf\Controller\Csrf::header('location:./index.php?cmd=Crm&act=settings&tpl=currency');
         exit();
     }
 
@@ -3202,7 +3202,7 @@ END;
             }
             $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_DEACTIVATED_SUCCESSFULLY'];
         }
-        \Cx\Core\Csrf\Controller\ComponentController::header("Location: ./index.php?cmd=".$this->moduleName."&act=settings&tpl=currency");
+        \Cx\Core\Csrf\Controller\Csrf::header("Location: ./index.php?cmd=".$this->moduleName."&act=settings&tpl=currency");
         $_GET['tpl'] = 'currency';
         $this->settingsSubmenu();
     }
@@ -3628,7 +3628,7 @@ END;
                     'CRM_CONTACT_COMMA'    => !empty ($objResult->fields['zip']) || !empty ($objResult->fields['city']) ? ', ' : '',
                     'CRM_CUSTOMER_ID'      => (int) $objResult->fields['id'],
                     'TXT_CRM_CONTACT_TOOLTIP_HEAD' => $_ARRAYLANG['TXT_CRM_CONTACT_TOOLTIP_HEAD'],
-                    'CSRF_PARAM'           => \Cx\Core\Csrf\Controller\ComponentController::param(),
+                    'CSRF_PARAM'           => \Cx\Core\Csrf\Controller\Csrf::param(),
             ));
         }
         echo $this->_objTpl->get();
@@ -3742,7 +3742,7 @@ END;
         $objTpl->setGlobalVariable(array(
                 'MODULE_NAME'        => $this->moduleName,
                 'PM_MODULE_NAME'    => $this->pm_moduleName,
-                'CSRF_PARAM'            => \Cx\Core\Csrf\Controller\ComponentController::param(),
+                'CSRF_PARAM'            => \Cx\Core\Csrf\Controller\Csrf::param(),
         ));
         $query = "SELECT tt.name,
                          tt.icon,
@@ -3930,7 +3930,7 @@ END;
             $this->_objTpl->setVariable(array(
                     'CRM_PROJECT_ACTIVE'       => $active,
                     'CRM_PROJECT_ID'           => (int) $objProjectResult->fields['id'],
-                    'CRM_PROJECT_NAME'         => "<a href='index.php?cmd=".$this->moduleName."&act=projectdetails&".\Cx\Core\Csrf\Controller\ComponentController::param()."&projectid={$objProjectResult->fields['id']}'>".contrexx_raw2xhtml(html_entity_decode($objProjectResult->fields['url'], ENT_QUOTES, CONTREXX_CHARSET))." - ".contrexx_raw2xhtml($objProjectResult->fields['name'])."</a>",
+                    'CRM_PROJECT_NAME'         => "<a href='index.php?cmd=".$this->moduleName."&act=projectdetails&".\Cx\Core\Csrf\Controller\Csrf::param()."&projectid={$objProjectResult->fields['id']}'>".contrexx_raw2xhtml(html_entity_decode($objProjectResult->fields['url'], ENT_QUOTES, CONTREXX_CHARSET))." - ".contrexx_raw2xhtml($objProjectResult->fields['name'])."</a>",
                     'CRM_PROJECT_QUOTED_PRICE' => contrexx_raw2xhtml($objProjectResult->fields['quoted_price']).' '.contrexx_raw2xhtml($objProjectResult->fields['currency']),
                     'CRM_PROJECT_STATUS'       => contrexx_raw2xhtml($objProjectResult->fields['proStatus']),
                     'CRM_PROJECT_RESPONSIBLE'  => $this->getUserName($objProjectResult->fields['assigned_to']),
@@ -3958,7 +3958,7 @@ END;
                 'TXT_CRM_TITLE_FUNCTIONS'             => $_ARRAYLANG['TXT_CRM_TITLE_FUNCTIONS'],
                 'TXT_CRM_ADD_PROJECT'                 => $_ARRAYLANG['TXT_CRM_ADD_PROJECT'],
                 'TXT_COMPANY_NAME'                    => $company,
-                'CSRF_PARAM'                          => \Cx\Core\Csrf\Controller\ComponentController::param(),
+                'CSRF_PARAM'                          => \Cx\Core\Csrf\Controller\Csrf::param(),
                 'CRM_CUSTOMER_ID'                     => $custId,
 
         ));
@@ -4034,16 +4034,16 @@ END;
 
         $row = 'row2';
         while (!$objDealsResult->EOF) {
-            $title = $allowPm ? "<a href='./index.php?cmd={$this->pm_moduleName}&act=projectdetails&projectid={$objDealsResult->fields['project_id']}&".\Cx\Core\Csrf\Controller\ComponentController::param()."'>".contrexx_raw2xhtml($objDealsResult->fields['title'])."</a>" : contrexx_raw2xhtml($objDealsResult->fields['title']);
-            $userName = $allowPm ? "<a href='./index.php?cmd={$this->pm_moduleName}&act=resourcedetails&id={$objDealsResult->fields['assigned_to']}&".\Cx\Core\Csrf\Controller\ComponentController::param()."'>".contrexx_raw2xhtml($this->getUserName($objDealsResult->fields['assigned_to']))."</a>" : contrexx_raw2xhtml($this->getUserName($objDealsResult->fields['assigned_to']));
+            $title = $allowPm ? "<a href='./index.php?cmd={$this->pm_moduleName}&act=projectdetails&projectid={$objDealsResult->fields['project_id']}&".\Cx\Core\Csrf\Controller\Csrf::param()."'>".contrexx_raw2xhtml($objDealsResult->fields['title'])."</a>" : contrexx_raw2xhtml($objDealsResult->fields['title']);
+            $userName = $allowPm ? "<a href='./index.php?cmd={$this->pm_moduleName}&act=resourcedetails&id={$objDealsResult->fields['assigned_to']}&".\Cx\Core\Csrf\Controller\Csrf::param()."'>".contrexx_raw2xhtml($this->getUserName($objDealsResult->fields['assigned_to']))."</a>" : contrexx_raw2xhtml($this->getUserName($objDealsResult->fields['assigned_to']));
             $this->_objTpl->setVariable(array(
                     'ENTRY_ID'              => (int) $objDealsResult->fields['id'],
                     'CRM_DEALS_TITLE'       => $title,
-                    'CRM_CONTACT_NAME'      => "<a href='./index.php?cmd=".$this->moduleName."&act=customers&tpl=showcustdetail&id={$objDealsResult->fields['customer']}&".\Cx\Core\Csrf\Controller\ComponentController::param()."' title='details'>".contrexx_raw2xhtml($objDealsResult->fields['customer_name']." ".$objDealsResult->fields['contact_familyname']).'</a>',
+                    'CRM_CONTACT_NAME'      => "<a href='./index.php?cmd=".$this->moduleName."&act=customers&tpl=showcustdetail&id={$objDealsResult->fields['customer']}&".\Cx\Core\Csrf\Controller\Csrf::param()."' title='details'>".contrexx_raw2xhtml($objDealsResult->fields['customer_name']." ".$objDealsResult->fields['contact_familyname']).'</a>',
                     'CRM_DEALS_CONTACT_NAME'=> $userName,
                     'CRM_DEALS_DUE_DATE'    => contrexx_raw2xhtml($objDealsResult->fields['due_date']),
                     'ROW_CLASS'             => $row = ($row == "row2") ? "row1" : 'row2',
-                    'CSRF_PARAM_CRM'        => \Cx\Core\Csrf\Controller\ComponentController::param(),
+                    'CSRF_PARAM_CRM'        => \Cx\Core\Csrf\Controller\Csrf::param(),
             ));
             $this->_objTpl->parse('showDeals');
             $objDealsResult->MoveNext();
@@ -4060,7 +4060,7 @@ END;
                 'TXT_CRM_NO_RECORDS_FOUND'          => $_ARRAYLANG['TXT_CRM_NO_RECORDS_FOUND'],
                 'CRM_CUSTOMER_ID'               => $custId,
                 'TXT_CRM_ADD_OPPURTUNITY'       => $_ARRAYLANG['TXT_CRM_ADD_DEAL_TITLE'],
-                'CSRF_PARAM'                    => \Cx\Core\Csrf\Controller\ComponentController::param(),
+                'CSRF_PARAM'                    => \Cx\Core\Csrf\Controller\Csrf::param(),
         ));
         $this->_objTpl->setGlobalVariable('CRM_REDIRECT_LINK', '&redirect='.base64_encode("&act=customers&tpl=showcustdetail&id={$custId}"));
         if (isset($_GET['ajax'])) {
@@ -4110,7 +4110,7 @@ END;
         $objTpl->setGlobalVariable(array(
                 'MODULE_NAME'        => $this->moduleName,
                 'PM_MODULE_NAME'    => $this->pm_moduleName,
-                'CSRF_PARAM'            => \Cx\Core\Csrf\Controller\ComponentController::param(),
+                'CSRF_PARAM'            => \Cx\Core\Csrf\Controller\Csrf::param(),
         ));
         $query = "SELECT doc.id,
                          doc.document_name,
@@ -4553,7 +4553,7 @@ END;
                     }
 
                     //print base64_decode($redirect);
-                    \Cx\Core\Csrf\Controller\ComponentController::header("Location:./index.php?cmd=".$this->moduleName."&mes=".base64_encode($msg).base64_decode($redirect));
+                    \Cx\Core\Csrf\Controller\Csrf::header("Location:./index.php?cmd=".$this->moduleName."&mes=".base64_encode($msg).base64_decode($redirect));
                     $this->_strOkMessage = "Saved successfully";
                 } else {
                     $this->_strErrMessage = "Err in saving";
@@ -5002,7 +5002,7 @@ END;
                 }
 
                 if ($db) {
-                    \Cx\Core\Csrf\Controller\ComponentController::header("Location:./?cmd=".$this->moduleName."&act=settings&tpl=industry");
+                    \Cx\Core\Csrf\Controller\Csrf::header("Location:./?cmd=".$this->moduleName."&act=settings&tpl=industry");
                     exit();
                 } else {
                     $this->_strErrMessage = "Error in saving Data";
@@ -5061,7 +5061,7 @@ END;
                 'TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT'       => $_ARRAYLANG['TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT'],
                 'TXT_CRM_BACK'                    => $_ARRAYLANG['TXT_CRM_BACK'],
                 'TXT_TITLE_MODIFY_INDUSTRY'       => (!empty ($id)) ? $_ARRAYLANG['TXT_CRM_EDIT_INDUSTRY'] : $_ARRAYLANG['TXT_CRM_ADD_INDUSTRY'],
-                'CSRF_PARAM'                      => \Cx\Core\Csrf\Controller\ComponentController::param(),
+                'CSRF_PARAM'                      => \Cx\Core\Csrf\Controller\Csrf::param(),
         ));
     }
 
@@ -5242,7 +5242,7 @@ END;
         $objTpl->setVariable(array(
             'DEFAULT_LANG_ID'               => $_LANGID,
             'LANG_ARRAY'                    => implode(',', array_keys($this->_arrLanguages)),
-            'CSRF_PARAM'                    => \Cx\Core\Csrf\Controller\ComponentController::param(),
+            'CSRF_PARAM'                    => \Cx\Core\Csrf\Controller\Csrf::param(),
             'TXT_CRM_CUSTOMER_MEMBERSHIP'   => $_ARRAYLANG['TXT_CRM_CUSTOMER_MEMBERSHIP'],
             'TXT_CRM_ADD_MEMBERSHIP'        => $_ARRAYLANG['TXT_CRM_ADD_MEMBERSHIP'],
             'TXT_STATUS'                    => $_ARRAYLANG['TXT_STATUS'],
@@ -5339,7 +5339,7 @@ END;
             }
 
             if ($db) {
-                \Cx\Core\Csrf\Controller\ComponentController::header("Location:./?cmd=".$this->moduleName."&act=settings&tpl=membership");
+                \Cx\Core\Csrf\Controller\Csrf::header("Location:./?cmd=".$this->moduleName."&act=settings&tpl=membership");
                 exit();
             } else {
                 $this->_strErrMessage = "Error in saving Data";

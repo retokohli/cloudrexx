@@ -48,7 +48,7 @@ class Market extends MarketLibrary
         $this->pageContent = $pageContent;
 
         $this->_objTpl = new \Cx\Core\Html\Sigma('.');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->mediaPath = ASCMS_MARKET_MEDIA_PATH . '/';
@@ -804,7 +804,7 @@ class Market extends MarketLibrary
                 $this->_objTpl->setVariable('MARKET_PICTURE', $image);
             }
         }else{
-            \Cx\Core\Csrf\Controller\ComponentController::header('Location: ?section=Market');
+            \Cx\Core\Csrf\Controller\Csrf::header('Location: ?section=Market');
         }
     }
 
@@ -869,7 +869,7 @@ class Market extends MarketLibrary
                 ));
             }
         }else{
-            \Cx\Core\Csrf\Controller\ComponentController::header('Location: ?section=Market');
+            \Cx\Core\Csrf\Controller\Csrf::header('Location: ?section=Market');
         }
     }
 
@@ -889,18 +889,18 @@ class Market extends MarketLibrary
 
 
         if (!$this->settings['addEntry'] == '1' || (!$this->communityModul && $this->settings['addEntry_only_community'] == '1')) {
-            \Cx\Core\Csrf\Controller\ComponentController::header('Location: index.php?section=Market');
+            \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=Market');
             exit;
         }elseif ($this->settings['addEntry_only_community'] == '1') {
             $objFWUser = \FWUser::getFWUserObject();
             if ($objFWUser->objUser->login()) {
                 if (!\Permission::checkAccess(99, 'static', true)) {
-                    \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=Login&cmd=noaccess");
+                    \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=Login&cmd=noaccess");
                     exit;
                 }
             }else {
                 $link = base64_encode(CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
-                \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=Login&redirect=".$link);
+                \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=Login&redirect=".$link);
                 exit;
             }
         } else {
@@ -1050,7 +1050,7 @@ class Market extends MarketLibrary
                         $this->sendMail($id);
 
                         if ($objResultUpdate !== false) {
-                            \Cx\Core\Csrf\Controller\ComponentController::header('Location: ?section=Market&cmd=detail&id='.$objResult->fields['id'].'');
+                            \Cx\Core\Csrf\Controller\Csrf::header('Location: ?section=Market&cmd=detail&id='.$objResult->fields['id'].'');
                         }
 
                         $objResult->MoveNext();
@@ -1094,7 +1094,7 @@ class Market extends MarketLibrary
             ));
 
         }else{
-            \Cx\Core\Csrf\Controller\ComponentController::header('Location: ?section=Market&cmd=add');
+            \Cx\Core\Csrf\Controller\Csrf::header('Location: ?section=Market&cmd=add');
         }
     }
 
@@ -1364,18 +1364,18 @@ class Market extends MarketLibrary
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
         if (!$this->settings['editEntry'] == '1' || (!$this->communityModul && $this->settings['addEntry_only_community'] == '1')) {
-            \Cx\Core\Csrf\Controller\ComponentController::header('Location: index.php?section=Market&cmd=detail&id='.$_POST['id']);
+            \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=Market&cmd=detail&id='.$_POST['id']);
             exit;
         }elseif ($this->settings['addEntry_only_community'] == '1') {
             $objFWUser = \FWUser::getFWUserObject();
             if ($objFWUser->objUser->login()) {
                 if (!\Permission::checkAccess(100, 'static', true)) {
-                    \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=Login&cmd=noaccess");
+                    \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=Login&cmd=noaccess");
                     exit;
                 }
             }else {
                 $link = base64_encode(CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
-                \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=Login&redirect=".$link);
+                \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=Login&redirect=".$link);
                 exit;
             }
         } else {
@@ -1515,7 +1515,7 @@ class Market extends MarketLibrary
                         ));
                            $objResult->MoveNext();
                        }else{
-                        \Cx\Core\Csrf\Controller\ComponentController::header('Location: index.php?section=Market&cmd=detail&id='.$_GET['id']);
+                        \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=Market&cmd=detail&id='.$_GET['id']);
                         exit;
                     }
                 }
@@ -1562,22 +1562,22 @@ class Market extends MarketLibrary
                                           WHERE id='".contrexx_addslashes($_POST['id'])."'");
 
                     if ($objResult !== false) {
-                        \Cx\Core\Csrf\Controller\ComponentController::header('Location: index.php?section=Market&cmd=detail&id='.$_POST['id']);
+                        \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=Market&cmd=detail&id='.$_POST['id']);
                         exit;
                     }else{
 // TODO: Never used
 //                        $error = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
-                        \Cx\Core\Csrf\Controller\ComponentController::header('Location: index.php?section=Market&cmd=edit&id='.$_POST['id']);
+                        \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=Market&cmd=edit&id='.$_POST['id']);
                         exit;
                     }
                 }else{
 // TODO: Never used
 //                    $error = $_CORELANG['TXT_MARKET_IMAGE_UPLOAD_ERROR'];
-                    \Cx\Core\Csrf\Controller\ComponentController::header('Location: index.php?section=Market&cmd=edit&id='.$_POST['id']);
+                    \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=Market&cmd=edit&id='.$_POST['id']);
                     exit;
                 }
             }else{
-                \Cx\Core\Csrf\Controller\ComponentController::header('Location: index.php?section=Market');
+                \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=Market');
                 exit;
             }
         }
@@ -1592,18 +1592,18 @@ class Market extends MarketLibrary
         $this->_objTpl->setTemplate($this->pageContent, true, true);
 
         if (!$this->settings['editEntry'] == '1' || (!$this->communityModul && $this->settings['addEntry_only_community'] == '1')) {
-            \Cx\Core\Csrf\Controller\ComponentController::header('Location: index.php?section=Market&cmd=detail&id='.$_POST['id']);
+            \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=Market&cmd=detail&id='.$_POST['id']);
             exit;
         }elseif ($this->settings['addEntry_only_community'] == '1') {
             $objFWUser = \FWUser::getFWUserObject();
             if ($objFWUser->objUser->login()) {
                 if (!\Permission::checkAccess(101, 'static', true)) {
-                    \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=Login&cmd=noaccess");
+                    \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=Login&cmd=noaccess");
                     exit;
                 }
             }else {
                 $link = base64_encode(CONTREXX_DIRECTORY_INDEX.'?'.$_SERVER['QUERY_STRING']);
-                \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=Login&redirect=".$link);
+                \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=Login&redirect=".$link);
                 exit;
             }
         } else {
@@ -1631,7 +1631,7 @@ class Market extends MarketLibrary
 
                         $objResult->MoveNext();
                     }else{
-                        \Cx\Core\Csrf\Controller\ComponentController::header('Location: index.php?section=Market&cmd=detail&id='.$_GET['id']);
+                        \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=Market&cmd=detail&id='.$_GET['id']);
                         exit;
                     }
                 }
@@ -1643,10 +1643,10 @@ class Market extends MarketLibrary
                 $arrDelete[0] = $_POST['id'];
                 $this->removeEntry($arrDelete);
 
-                \Cx\Core\Csrf\Controller\ComponentController::header('Location: index.php?section=Market');
+                \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=Market');
                 exit;
             }else{
-                \Cx\Core\Csrf\Controller\ComponentController::header('Location: index.php?section=Market');
+                \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=Market');
                 exit;
             }
         }

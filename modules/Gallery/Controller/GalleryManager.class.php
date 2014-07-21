@@ -54,7 +54,7 @@ class GalleryManager extends GalleryLibrary
         global $_ARRAYLANG, $objTemplate, $objInit;
 
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/Gallery/View/Template/Backend');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->intLangId=$objInit->userFrontendLangId;
@@ -2172,7 +2172,7 @@ class GalleryManager extends GalleryLibrary
         $comboUp->setData($paths);
         //set instance name to combo_uploader so we are able to catch the instance with js
         $comboUp->setJsInstanceName('exposed_combo_uploader');
-        $redirectUrl = \Cx\Core\Csrf\Controller\ComponentController::enhanceURI('index.php?cmd=Gallery&act=validate_form');
+        $redirectUrl = \Cx\Core\Csrf\Controller\Csrf::enhanceURI('index.php?cmd=Gallery&act=validate_form');
 
         $this->_objTpl->loadTemplateFile('module_gallery_upload_images.html', true, true);
         $this->_objTpl->setVariable(array(

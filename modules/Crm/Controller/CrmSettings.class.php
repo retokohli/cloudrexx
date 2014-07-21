@@ -270,7 +270,7 @@ class CrmSettings extends CrmLibrary
         $id                 = isset($_GET['id']) ? intval($_GET['id']) : 0;
 
         if (empty($id)) {
-            \Cx\Core\Csrf\Controller\ComponentController::header("location:./index.php?cmd=".$this->moduleName."&act=settings&tpl=customertypes");
+            \Cx\Core\Csrf\Controller\Csrf::header("location:./index.php?cmd=".$this->moduleName."&act=settings&tpl=customertypes");
             exit();
         }
 
@@ -304,7 +304,7 @@ class CrmSettings extends CrmLibrary
             }
 
             if ($success) {
-                \Cx\Core\Csrf\Controller\ComponentController::header("location:./index.php?cmd=".$this->moduleName."&act=settings&tpl=customertypes");
+                \Cx\Core\Csrf\Controller\Csrf::header("location:./index.php?cmd=".$this->moduleName."&act=settings&tpl=customertypes");
                 exit();
             }
         } else {
@@ -337,7 +337,7 @@ class CrmSettings extends CrmLibrary
                 'TXT_CUSTOMER_TYPE_SORTING_NUMBER'  => $_ARRAYLANG['TXT_CRM_SORTING_NUMBER'],
                 'TXT_CRM_ENTER_LABEL_FIELD_WITHOUT_SPECIAL_CHARACTERS' => $_ARRAYLANG['TXT_CRM_ENTER_LABEL_FIELD_WITHOUT_SPECIAL_CHARACTERS'],
                 'TXT_CRM_CURRENCY_RATES'                => $_ARRAYLANG['TXT_CRM_CURRENCY_RATES'],
-                'CSRF_PARAM'                        => \Cx\Core\Csrf\Controller\ComponentController::param(),
+                'CSRF_PARAM'                        => \Cx\Core\Csrf\Controller\Csrf::param(),
         ));
     }
     /**
@@ -380,7 +380,7 @@ class CrmSettings extends CrmLibrary
         }
 
         if ($success) {
-            \Cx\Core\Csrf\Controller\ComponentController::header("location:./index.php?cmd=".$this->moduleName."&act=settings&tpl=customertypes");
+            \Cx\Core\Csrf\Controller\Csrf::header("location:./index.php?cmd=".$this->moduleName."&act=settings&tpl=customertypes");
             exit();
         }
 
@@ -592,7 +592,7 @@ class CrmSettings extends CrmLibrary
 
         $id = isset($_GET['id']) ? (int) $_GET['id'] : 0;
         if (empty($id)) {
-            \Cx\Core\Csrf\Controller\ComponentController::header(ASCMS_ADMIN_WEB_PATH."/index.php?cmd=".$this->moduleName."&act=settings&tpl=currency");
+            \Cx\Core\Csrf\Controller\Csrf::header(ASCMS_ADMIN_WEB_PATH."/index.php?cmd=".$this->moduleName."&act=settings&tpl=currency");
             exit();
         }
 
@@ -626,7 +626,7 @@ class CrmSettings extends CrmLibrary
                 $objDatabase->Execute($updateProjectTypes);
                 $_SESSION['strOkMessage'] = $_ARRAYLANG['TXT_CRM_CURRENCY_UPDATED_SUCCESSFULLY'];
 
-                \Cx\Core\Csrf\Controller\ComponentController::header("location:./index.php?cmd=".$this->moduleName."&act=settings&tpl=currency");
+                \Cx\Core\Csrf\Controller\Csrf::header("location:./index.php?cmd=".$this->moduleName."&act=settings&tpl=currency");
                 exit();
             }
         } else {
@@ -670,7 +670,7 @@ class CrmSettings extends CrmLibrary
             'TXT_CRM_DELETE_SELECTED' => $_ARRAYLANG['TXT_CRM_DELETE_SELECTED'],
             'TXT_CRM_CURRENCY_RATES'  => $_ARRAYLANG['TXT_CRM_CURRENCY_RATES'],
             'TXT_CRM_HOURLY_RATE'     => $_ARRAYLANG['TXT_CRM_HOURLY_RATE'],
-            'CSRF_PARAM'              => \Cx\Core\Csrf\Controller\ComponentController::param(),
+            'CSRF_PARAM'              => \Cx\Core\Csrf\Controller\Csrf::param(),
             'CURRENCY_JAVASCRIPT'     => $objJs->getAddCurrencyJavascript()
         ));
     }
@@ -734,7 +734,7 @@ class CrmSettings extends CrmLibrary
                 'TXT_CRM_DELETE_SELECTED'             => $_ARRAYLANG['TXT_CRM_DELETE_SELECTED'],
                 'PM_SETTINGS_CURRENCY_JAVASCRIPT' => $objJs->getAddCurrencyJavascript(),
         ));
-        \Cx\Core\Csrf\Controller\ComponentController::header('location:./index.php?cmd=Crm&act=settings&tpl=currency');
+        \Cx\Core\Csrf\Controller\Csrf::header('location:./index.php?cmd=Crm&act=settings&tpl=currency');
         exit();
     }
 
@@ -751,7 +751,7 @@ class CrmSettings extends CrmLibrary
 
         //For task type Upload
         $uploaderCodeTaskType = $this->initUploader('taskType', true, 'taskUploadFinished', '', 'task_type_files_');
-        $redirectUrl = \Cx\Core\Csrf\Controller\ComponentController::enhanceURI('index.php?cmd=Crm&act=getImportFilename');
+        $redirectUrl = \Cx\Core\Csrf\Controller\Csrf::enhanceURI('index.php?cmd=Crm&act=getImportFilename');
         $this->_objTpl->setVariable(array(
             'COMBO_UPLOADER_CODE_TASK_TYPE' => $uploaderCodeTaskType,
             'REDIRECT_URL'                  => $redirectUrl
@@ -873,7 +873,7 @@ class CrmSettings extends CrmLibrary
         if ($_POST['saveTaskType']) {
             $this->saveTaskTypes($id);
             $msg = "taskUpdated";
-            \Cx\Core\Csrf\Controller\ComponentController::header("Location:./index.php?cmd=".$this->moduleName."&act=settings&tpl=tasktypes&msg=".base64_encode($msg));
+            \Cx\Core\Csrf\Controller\Csrf::header("Location:./index.php?cmd=".$this->moduleName."&act=settings&tpl=tasktypes&msg=".base64_encode($msg));
             exit();
         }
 
@@ -886,7 +886,7 @@ class CrmSettings extends CrmLibrary
         $objTpl->setVariable(array(
                 'TXT_CRM_ADD_TASK_TYPE'     => $_ARRAYLANG['TXT_CRM_EDIT_TASK_TYPE'],
                 'TXT_CRM_BACK1'                 => $_ARRAYLANG['TXT_CRM_BACK1'],
-                'CSRF_PARAM'                => \Cx\Core\Csrf\Controller\ComponentController::param(),
+                'CSRF_PARAM'                => \Cx\Core\Csrf\Controller\Csrf::param(),
                 'TXT_BROWSE'                   => $_ARRAYLANG['TXT_BROWSE'],
                 'TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT' => $_ARRAYLANG['TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT']
         ));

@@ -54,7 +54,7 @@ class DataBlocks extends \Cx\Modules\Data\Controller\DataLibrary
         }
         $this->_arrSettings = $this->createSettingsArray();
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_THEMES_PATH);
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->langVars = $objInit->loadLanguageData('Data');
     }
 

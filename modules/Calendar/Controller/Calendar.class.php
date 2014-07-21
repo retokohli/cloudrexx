@@ -161,7 +161,7 @@ class Calendar extends CalendarLibrary
                 if($_GET['id'] != null && $_GET['date'] != null) {
                     self::showEvent();
                 } else {
-                    \Cx\Core\Csrf\Controller\ComponentController::header("Location: index.php?section=".$this->moduleName);
+                    \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?section=".$this->moduleName);
                     exit();
                 }
                 break;
@@ -951,15 +951,15 @@ UPLOADER;
                         $this->_objTpl->touchBlock("cancelMessage");
                         break;
                     default:
-                        \Cx\Core\Csrf\Controller\ComponentController::header("Location: index.php?section=".$this->moduleName);
+                        \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?section=".$this->moduleName);
                         break;
                 }
             } else {
-                \Cx\Core\Csrf\Controller\ComponentController::header("Location: index.php?section=".$this->moduleName);
+                \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?section=".$this->moduleName);
                 return;
             }            
         } else {
-            \Cx\Core\Csrf\Controller\ComponentController::header("Location: index.php?section=".$this->moduleName);
+            \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?section=".$this->moduleName);
             return;
         }
     }

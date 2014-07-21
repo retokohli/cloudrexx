@@ -922,7 +922,7 @@ if (!$limit) {
             || $order_id <= 0)
         {
             \Message::error($_ARRAYLANG['TXT_SHOP_ORDER_ERROR_UPDATING_STATUS']);
-            \Cx\Core\Csrf\Controller\ComponentController::redirect('index.php?cmd=Shop&act=orders');
+            \Cx\Core\Csrf\Controller\Csrf::redirect('index.php?cmd=Shop&act=orders');
         }
         $objUser = \FWUser::getFWUserObject()->objUser;
         $query = "
@@ -933,7 +933,7 @@ if (!$limit) {
              WHERE `id`=$order_id";
         if (!$objDatabase->Execute($query)) {
             \Message::error($_ARRAYLANG['TXT_SHOP_ORDER_ERROR_UPDATING_STATUS']);
-            \Cx\Core\Csrf\Controller\ComponentController::redirect('index.php?cmd=Shop&act=orders');
+            \Cx\Core\Csrf\Controller\Csrf::redirect('index.php?cmd=Shop&act=orders');
         }
         // Send an email to the customer
         if (   !empty($_GET['sendMail'])
@@ -961,7 +961,7 @@ if (!$limit) {
                 }
             }
         }
-        \Cx\Core\Csrf\Controller\ComponentController::redirect('index.php?cmd=Shop&act=orders');
+        \Cx\Core\Csrf\Controller\Csrf::redirect('index.php?cmd=Shop&act=orders');
     }
 
 

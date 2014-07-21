@@ -39,7 +39,7 @@ class ForumAdmin extends ForumLibrary {
         global $objInit;
         parent::__construct();
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/Forum/View/Template/Backend');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_intLangId = $objInit->userFrontendLangId;        
     }
@@ -639,7 +639,7 @@ class ForumAdmin extends ForumLibrary {
 
         } else {
             //no category with this id, redirect
-            \Cx\Core\Csrf\Controller\ComponentController::header("location: index.php?cmd=Forum");
+            \Cx\Core\Csrf\Controller\Csrf::header("location: index.php?cmd=Forum");
         }
 
     }
@@ -842,7 +842,7 @@ class ForumAdmin extends ForumLibrary {
                }
            } else {
                //wrong id, redirect
-               \Cx\Core\Csrf\Controller\ComponentController::header("location: index.php?cmd=Forum");
+               \Cx\Core\Csrf\Controller\Csrf::header("location: index.php?cmd=Forum");
            }
     }
 

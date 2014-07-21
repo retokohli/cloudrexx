@@ -33,7 +33,7 @@ class Podcast extends PodcastLib
     function __construct($pageContent)
     {
         $this->_objTpl = new \Cx\Core\Html\Sigma('.');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($pageContent);
         parent::__construct();
@@ -150,7 +150,7 @@ EOF;
 
         $menu = $this->_getCategoriesMenu($categoryId, 'id="podcast_category_menu"', true, true);
         if ($menu !== false) {
-            $this->_objTpl->setVariable('PODCAST_CATEGORY_MENU', $menu.' <input type="button" onclick="window.location.href=\'index.php?section=Podcast&amp;'.\Cx\Core\Csrf\Controller\ComponentController::param().'&amp;cid=\'+document.getElementById(\'podcast_category_menu\').value" value="'.$_ARRAYLANG['TXT_PODCAST_SHOW'].'" />');
+            $this->_objTpl->setVariable('PODCAST_CATEGORY_MENU', $menu.' <input type="button" onclick="window.location.href=\'index.php?section=Podcast&amp;'.\Cx\Core\Csrf\Controller\Csrf::param().'&amp;cid=\'+document.getElementById(\'podcast_category_menu\').value" value="'.$_ARRAYLANG['TXT_PODCAST_SHOW'].'" />');
         }
         if(intval($categoryId) == 0){
             $categories = array_keys($this->_getCategories(true, false, $_LANGID));

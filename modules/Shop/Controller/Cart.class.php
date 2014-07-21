@@ -958,7 +958,7 @@ die("Cart::view(): ERROR: No template");
         $objCustomer = Shop::customer();
         if (!$objCustomer) {
             \Message::information($_ARRAYLANG['TXT_SHOP_ORDER_LOGIN_TO_REPEAT']);
-            \Cx\Core\Csrf\Controller\ComponentController::redirect(
+            \Cx\Core\Csrf\Controller\Csrf::redirect(
                 \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'login').
                 '?redirect='.base64_encode(
                     \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'cart').
@@ -968,7 +968,7 @@ die("Cart::view(): ERROR: No template");
         $order = Order::getById($order_id);
         if (!$order || $order->customer_id() != $customer_id) {
             \Message::warning($_ARRAYLANG['TXT_SHOP_ORDER_INVALID_ID']);
-            \Cx\Core\Csrf\Controller\ComponentController::redirect(
+            \Cx\Core\Csrf\Controller\Csrf::redirect(
                 \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'history'));
         }
 // Optional!
@@ -1068,7 +1068,7 @@ die("Cart::view(): ERROR: No template");
         }
         \Message::information($_ARRAYLANG['TXT_SHOP_ORDER_RESTORED']);
 // Enable for production
-        \Cx\Core\Csrf\Controller\ComponentController::redirect(
+        \Cx\Core\Csrf\Controller\Csrf::redirect(
             \Cx\Core\Routing\Url::fromModuleAndCmd('Shop', 'cart'));
     }
 
