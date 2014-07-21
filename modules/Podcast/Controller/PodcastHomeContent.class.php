@@ -37,7 +37,7 @@ class PodcastHomeContent extends PodcastLib
         global $_LANGID;
         $this->_pageContent = $pageContent;
         $this->_objTpl = new \Cx\Core\Html\Sigma('.');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_langId = $_LANGID;
            parent::__construct();
     }

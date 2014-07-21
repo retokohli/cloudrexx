@@ -83,7 +83,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
 
         parent::__construct();
         $this->tpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/Knowledge'.MODULE_INDEX.'/View/Template/Backend');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->tpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->tpl);
         $this->tpl->setErrorHandling(PEAR_ERROR_DIE);
 
          $this->languageId = $objInit->userFrontendLangId;
@@ -135,12 +135,12 @@ class KnowledgeAdmin extends KnowledgeLibrary
                     case 'update':
                         \Permission::checkAccess(ACCESS_ID_EDIT_CATEGORIES, 'static');
                         $id = $this->updateCategory();
-                        \Cx\Core\Csrf\Controller\ComponentController::header("Location: index.php?cmd=Knowledge".MODULE_INDEX."&section=categories&act=overview&highlight=".$id);
+                        \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?cmd=Knowledge".MODULE_INDEX."&section=categories&act=overview&highlight=".$id);
                         break;
                     case 'insert':
                         \Permission::checkAccess(ACCESS_ID_EDIT_CATEGORIES, 'static');
                         $id = $this->insertCategory();
-                        \Cx\Core\Csrf\Controller\ComponentController::header("Location: index.php?cmd=Knowledge".MODULE_INDEX."&section=categories&act=overview&highlight=".$id);
+                        \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?cmd=Knowledge".MODULE_INDEX."&section=categories&act=overview&highlight=".$id);
                         break;
                     case 'delete':
                         \Permission::checkAccess(ACCESS_ID_EDIT_CATEGORIES, 'static');
@@ -187,7 +187,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
                         \Permission::checkAccess(ACCESS_ID_EDIT_ARTICLES, 'static');
                         $id = $this->updateArticle();
                         $content = $this->articleOverview();
-                        \Cx\Core\Csrf\Controller\ComponentController::header("Location: index.php?cmd=Knowledge".MODULE_INDEX."&section=articles&act=edit&id=".$id."&updated=true");
+                        \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?cmd=Knowledge".MODULE_INDEX."&section=articles&act=edit&id=".$id."&updated=true");
                         break;
                     case 'getArticles':
                         \Permission::checkAccess(ACCESS_ID_OVERVIEW, 'static');
@@ -251,7 +251,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
                 $this->settings($content, $active);
                 break;
             default:
-                \Cx\Core\Csrf\Controller\ComponentController::header("Location: index.php?cmd=Knowledge".MODULE_INDEX."&section=articles");
+                \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?cmd=Knowledge".MODULE_INDEX."&section=articles");
         }
 
         $objTemplate->setVariable(array(
@@ -892,7 +892,7 @@ class KnowledgeAdmin extends KnowledgeLibrary
         $tpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH."/Knowledge/View/Template/Backend/");
         $tpl->setErrorHandling(PEAR_ERROR_DIE);
         $tpl->loadTemplateFile("module_knowledge_articles_overview_articlelist.html");
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($tpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($tpl);
         $tpl->setGlobalVariable("MODULE_INDEX", MODULE_INDEX);
         $tpl->setGlobalVariable(array(
             // language variables

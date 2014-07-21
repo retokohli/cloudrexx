@@ -58,7 +58,7 @@ class MarketManager extends MarketLibrary
         global $_ARRAYLANG, $_CORELANG, $objTemplate;
 
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/Market/View/Template/Backend');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->mediaPath = ASCMS_MARKET_MEDIA_PATH . '/';
         $this->mediaWebPath = ASCMS_MARKET_MEDIA_WEB_PATH . '/';
@@ -1116,7 +1116,7 @@ class MarketManager extends MarketLibrary
             }
 
             if ($objResult !== false) {
-                \Cx\Core\Csrf\Controller\ComponentController::header('Location: ?cmd=Market&act=settings&tpl=spez_fields');
+                \Cx\Core\Csrf\Controller\Csrf::header('Location: ?cmd=Market&act=settings&tpl=spez_fields');
                 $this->strOkMessage = $_ARRAYLANG['TXT_MARKET_SETTINGS_UPDATED'];
             }else{
                 $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
@@ -1197,7 +1197,7 @@ class MarketManager extends MarketLibrary
             }
 
             if ($objResult !== false) {
-                \Cx\Core\Csrf\Controller\ComponentController::header('Location: ?cmd=Market&act=settings');
+                \Cx\Core\Csrf\Controller\Csrf::header('Location: ?cmd=Market&act=settings');
                 $this->strOkMessage = $_ARRAYLANG['TXT_MARKET_SETTINGS_UPDATED'];
             }else{
                 $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
@@ -1269,7 +1269,7 @@ class MarketManager extends MarketLibrary
         if (isset($_POST['submitSettings'])) {
             $objResult = $objDatabase->Execute("UPDATE ".DBPREFIX."module_market_mail SET title='".$_POST['mailTitle']."', content='".$_POST['mailContent']."', mailcc='".$_POST['mailCC']."', active='".$_POST['mailOn']."' WHERE id='1'");
             if ($objResult !== false) {
-                \Cx\Core\Csrf\Controller\ComponentController::header('Location: ?cmd=Market&act=settings&tpl=email');
+                \Cx\Core\Csrf\Controller\Csrf::header('Location: ?cmd=Market&act=settings&tpl=email');
                 $this->strOkMessage = $_ARRAYLANG['TXT_MARKET_SETTINGS_UPDATED'];
             }else{
                 $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];
@@ -1346,7 +1346,7 @@ class MarketManager extends MarketLibrary
             }
 
             if ($objResult !== false) {
-                \Cx\Core\Csrf\Controller\ComponentController::header('Location: ?cmd=Market&act=settings&tpl=email_code');
+                \Cx\Core\Csrf\Controller\Csrf::header('Location: ?cmd=Market&act=settings&tpl=email_code');
                 $this->strOkMessage = $_ARRAYLANG['TXT_MARKET_SETTINGS_UPDATED'];
             }else{
                 $this->strErrMessage = $_CORELANG['TXT_DATABASE_QUERY_ERROR'];

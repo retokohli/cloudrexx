@@ -55,7 +55,7 @@ class CrmJavascript {
         $TXT_SORTING_NUMERIC                  = $_ARRAYLANG['TXT_SORTING_NUMERIC'];
         $TXT_MANDATORY_ERROR                  = $_ARRAYLANG['TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT'];
         $MODULE_NAME                          = $this->moduleName;
-        $CSRFPARAM                            = \Cx\Core\Csrf\Controller\ComponentController::param();
+        $CSRFPARAM                            = \Cx\Core\Csrf\Controller\Csrf::param();
 
         $javascript = <<<END
 <script type="text/javascript" src="../lib/javascript/jquery.js"></script>        
@@ -1085,7 +1085,7 @@ END;
         $TXT_SORTING_NUMERIC                  = $_ARRAYLANG['TXT_SORTING_NUMERIC'];
         $TXT_MANDATORY_ERROR                  = $_ARRAYLANG['TXT_CRM_MANDATORY_FIELDS_NOT_FILLED_OUT'];  
         $MODULE_NAME                          = $this->moduleName;
-        $CSRFPARAM                            = \Cx\Core\Csrf\Controller\ComponentController::param();
+        $CSRFPARAM                            = \Cx\Core\Csrf\Controller\Csrf::param();
 
 
         $javascript = <<<END

@@ -100,7 +100,7 @@ class Livecam extends LivecamLibrary
         $this->pageContent = $pageContent;
 
         $this->_objTpl = new \Cx\Core\Html\Sigma('.');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->_getAction();

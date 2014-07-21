@@ -73,7 +73,7 @@ class Directory extends DirectoryLibrary
         $this->pageContent = $pageContent;
 
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_DOCUMENT_ROOT);
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->path = ASCMS_DIR_PATH . '/';
@@ -118,7 +118,7 @@ class Directory extends DirectoryLibrary
      */
     function getPage()
     {
-        \Cx\Core\Csrf\Controller\ComponentController::add_code();
+        \Cx\Core\Csrf\Controller\Csrf::add_code();
         if (!isset($_REQUEST['cmd'])) {
             $_REQUEST['cmd'] = '';
         }
@@ -140,14 +140,14 @@ class Directory extends DirectoryLibrary
                 $this->latest();
                 break;
             case 'edit':
-                \Cx\Core\Csrf\Controller\ComponentController::check_code();
+                \Cx\Core\Csrf\Controller\Csrf::check_code();
                 $this->editFeed();
                 break;
             case 'search':
                 $this->searchFeed();
                 break;
             case 'vote':
-                \Cx\Core\Csrf\Controller\ComponentController::check_code();
+                \Cx\Core\Csrf\Controller\Csrf::check_code();
                 $this->voteFeed();
                 break;
             default:
@@ -1391,18 +1391,18 @@ $this->arrRows[2] = '';
         $status="error";
 
         if (!$this->settings['addFeed']['value'] == '1' || (!$this->communityModul && $this->settings['addFeed_only_community']['value'] == '1')) {
-           \Cx\Core\Csrf\Controller\ComponentController::header('Location: '.CONTREXX_SCRIPT_PATH.'?section=Directory');
+           \Cx\Core\Csrf\Controller\Csrf::header('Location: '.CONTREXX_SCRIPT_PATH.'?section=Directory');
             exit;
         } elseif ($this->settings['addFeed_only_community']['value'] == '1') {
             $objFWUser = \FWUser::getFWUserObject();
 			if ($objFWUser->objUser->login()) {
 				if (!\Permission::checkAccess(96, 'static', true)) {
-                    \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Login&cmd=noaccess");
+                    \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Login&cmd=noaccess");
 					exit;
 				}
 			}else {
                 $link = base64_encode(CONTREXX_SCRIPT_PATH.'?'.$_SERVER['QUERY_STRING']);
-                \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Login&redirect=".$link);
+                \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Login&redirect=".$link);
                 exit;
             }
         } else {
@@ -1438,7 +1438,7 @@ $this->arrRows[2] = '';
 
         //add feed
         if (isset($_POST['addSubmit'])) {
-            \Cx\Core\Csrf\Controller\ComponentController::check_code();
+            \Cx\Core\Csrf\Controller\Csrf::check_code();
             $status = $this->addFeed();
         }
 
@@ -1526,19 +1526,19 @@ $this->arrRows[2] = '';
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
         if (!$this->communityModul && $this->settings['addFeed_only_community']['value'] == '1') {
-            \Cx\Core\Csrf\Controller\ComponentController::header('Location: '.CONTREXX_SCRIPT_PATH.'?section=Directory');
+            \Cx\Core\Csrf\Controller\Csrf::header('Location: '.CONTREXX_SCRIPT_PATH.'?section=Directory');
             exit;
         }
 
         $objFWUser = \FWUser::getFWUserObject();
 		if ($objFWUser->objUser->login()) {
 			if (!\Permission::checkAccess(94, 'static', true)) {
-                \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Login&cmd=noaccess");
+                \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Login&cmd=noaccess");
 				exit;
 			}
 		}else {
             $link = base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-            \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Login&redirect=".$link);
+            \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Login&redirect=".$link);
             exit;
         }
 
@@ -1610,19 +1610,19 @@ $this->arrRows[2] = '';
         $status = "error";
 
         if (!$this->settings['editFeed']['value'] == '1' || (!$this->communityModul && $this->settings['addFeed_only_community']['value'] == '1')) {
-            \Cx\Core\Csrf\Controller\ComponentController::header('Location: '.CONTREXX_SCRIPT_PATH.'?section=Directory&cmd=myfeeds');
+            \Cx\Core\Csrf\Controller\Csrf::header('Location: '.CONTREXX_SCRIPT_PATH.'?section=Directory&cmd=myfeeds');
             exit;
         }
 
         $objFWUser = \FWUser::getFWUserObject();
 		if ($objFWUser->objUser->login()) {
 			if (!\Permission::checkAccess(94, 'static', true)) {
-                \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Login&cmd=noaccess");
+                \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Login&cmd=noaccess");
 				exit;
 			}
 		}else {
             $link = base64_encode($_SERVER['PHP_SELF'].'?'.$_SERVER['QUERY_STRING']);
-            \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Login&redirect=".$link);
+            \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Login&redirect=".$link);
             exit;
         }
 
@@ -1635,7 +1635,7 @@ $this->arrRows[2] = '';
         }
 
         if ($_GET['id'] == '' && $_POST['edit_id'] == '') {
-            \Cx\Core\Csrf\Controller\ComponentController::header('Location: '.CONTREXX_SCRIPT_PATH.'?section=Directory&cmd=myfeeds');
+            \Cx\Core\Csrf\Controller\Csrf::header('Location: '.CONTREXX_SCRIPT_PATH.'?section=Directory&cmd=myfeeds');
             exit;
         }
 
@@ -1650,7 +1650,7 @@ $this->arrRows[2] = '';
         }
 
         if ($author != $objFWUser->objUser->getId()) {
-            \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Directory&cmd=myfeeds");
+            \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Directory&cmd=myfeeds");
         }
 
         //get navigation
@@ -2018,7 +2018,7 @@ $this->arrRows[2] = '';
         if (!$search_result) {
             $err = $objGoogleSearch->getError();
             if ($err) {
-                \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Directory&cmd=search");
+                \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_SCRIPT_PATH."?section=Directory&cmd=search");
                 exit;
             }
         }
@@ -2084,7 +2084,7 @@ $this->arrRows[2] = '';
                     $objResult->MoveNext();
                 }
             }
-            \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".$link);
+            \Cx\Core\Csrf\Controller\Csrf::header("Location: ".$link);
             exit;
         }
     }

@@ -54,7 +54,7 @@ class MemberDirManager extends MemberDirLibrary
         global $objInit;
 
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/MemberDir/View/Template/Backend');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
 
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
@@ -977,7 +977,7 @@ class MemberDirManager extends MemberDirLibrary
             if (!empty($_GET['id'])) {
                 $id = $_GET['id'];
             } else {
-                \Cx\Core\Csrf\Controller\ComponentController::header("Location: index.php?cmd=MemberDir");
+                \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?cmd=MemberDir");
             }
         }
 
@@ -1708,7 +1708,7 @@ class MemberDirManager extends MemberDirLibrary
 
         if (isset($_POST['import_cancel'])) {
             $importlib->cancel();
-            \Cx\Core\Csrf\Controller\ComponentController::header("Location: index.php?cmd=MemberDir&act=import");
+            \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?cmd=MemberDir&act=import");
             exit;
         } elseif ($_POST['fieldsSelected']) {
             $fieldnames = $this->getFieldData($_POST['directory']);
@@ -1753,7 +1753,7 @@ class MemberDirManager extends MemberDirLibrary
                     echo $objDatabase->ErrorMsg();
                 }
 
-                \Cx\Core\Csrf\Controller\ComponentController::header("Location: index.php?cmd=MemberDir&act=showdir&id=".$_POST['directory']);
+                \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?cmd=MemberDir&act=showdir&id=".$_POST['directory']);
             }
 
         } elseif ($_FILES['importfile']['size'] == 0) {

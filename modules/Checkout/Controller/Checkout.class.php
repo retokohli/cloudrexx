@@ -68,7 +68,7 @@ class Checkout extends CheckoutLibrary {
         $this->objTemplate = new \Cx\Core\Html\Sigma('.');
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->setTemplate($pageContent);
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->objTemplate);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->objTemplate);
     }
 
     /**

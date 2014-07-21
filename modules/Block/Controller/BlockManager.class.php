@@ -79,7 +79,7 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
         global $_ARRAYLANG;
 
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/Block/View/Template/Backend');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         if (isset($_GET['added']) && $_GET['added'] == 'true') {
@@ -268,7 +268,7 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             'TXT_BLOCK_INCLUDED_IN_GLOBAL_BLOCK'=> $_ARRAYLANG['TXT_BLOCK_INCLUDED_IN_GLOBAL_BLOCK'],
             'BLOCK_CATEGORIES_DROPDOWN'         => $this->_getCategoriesDropdown($catId),
             'DIRECTORY_INDEX'                   => CONTREXX_DIRECTORY_INDEX,
-            'CSRF_PARAM'                        => \Cx\Core\Csrf\Controller\ComponentController::param(),
+            'CSRF_PARAM'                        => \Cx\Core\Csrf\Controller\Csrf::param(),
         ));
 
         $arrBlocks = $this->getBlocks($catId);
@@ -404,8 +404,8 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             'TXT_BLOCK_OPERATION_IRREVERSIBLE'      => $_ARRAYLANG['TXT_BLOCK_OPERATION_IRREVERSIBLE'],
             'BLOCK_CATEGORIES_PARENT_DROPDOWN'      => $this->_getCategoriesDropdown(),
             'DIRECTORY_INDEX'                       => CONTREXX_DIRECTORY_INDEX,
-            'CSRF_KEY'                              => \Cx\Core\Csrf\Controller\ComponentController::key(),
-            'CSRF_CODE'                             => \Cx\Core\Csrf\Controller\ComponentController::code(),
+            'CSRF_KEY'                              => \Cx\Core\Csrf\Controller\Csrf::key(),
+            'CSRF_CODE'                             => \Cx\Core\Csrf\Controller\Csrf::code(),
         ));
 
         $arrCategories = $this->_getCategories(true);
@@ -488,7 +488,7 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             'BLOCK_CATEGORY_NAME'                   => $arrCategory['name'],
             'BLOCK_CATEGORY_SEPERATOR'              => $arrCategory['seperator'],
             'DIRECTORY_INDEX'                       => CONTREXX_DIRECTORY_INDEX,
-            'CSRF_PARAM'                            => \Cx\Core\Csrf\Controller\ComponentController::param(),
+            'CSRF_PARAM'                            => \Cx\Core\Csrf\Controller\Csrf::param(),
         ));
     }
 
@@ -706,7 +706,7 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             if ($blockId) {
                 if ($this->_updateBlock($blockId, $blockCat, $blockContent, $blockName, $blockStart, $blockEnd, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockWysiwygEditor, $blockLangActive)) {
                     if ($this->storePlaceholderSettings($blockId, $blockGlobal, $blockDirect, $blockCategory, $blockGlobalAssociatedPageIds, $blockDirectAssociatedPageIds, $blockCategoryAssociatedPageIds)) {
-                        \Cx\Core\Csrf\Controller\ComponentController::header('location: index.php?cmd=Block&modified=true&blockname='.$blockName);
+                        \Cx\Core\Csrf\Controller\Csrf::header('location: index.php?cmd=Block&modified=true&blockname='.$blockName);
                         exit;
                     }
                 }
@@ -714,7 +714,7 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             } else { 
                 if ($blockId = $this->_addBlock($blockCat, $blockContent, $blockName, $blockStart, $blockEnd, $blockRandom, $blockRandom2, $blockRandom3, $blockRandom4, $blockWysiwygEditor, $blockLangActive)) {
                     if ($this->storePlaceholderSettings($blockId, $blockGlobal, $blockDirect, $blockCategory, $blockGlobalAssociatedPageIds, $blockDirectAssociatedPageIds, $blockCategoryAssociatedPageIds)) {
-                        \Cx\Core\Csrf\Controller\ComponentController::header('location: index.php?cmd=Block&added=true&blockname='.$blockName);
+                        \Cx\Core\Csrf\Controller\Csrf::header('location: index.php?cmd=Block&added=true&blockname='.$blockName);
                         exit;
                     }
                 }
@@ -1011,7 +1011,7 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             }
         }
 
-        \Cx\Core\Csrf\Controller\ComponentController::header("Location: index.php?cmd=Block");
+        \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?cmd=Block");
     }
 
     /**
@@ -1041,7 +1041,7 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             }
         }
 
-        \Cx\Core\Csrf\Controller\ComponentController::header("Location: index.php?cmd=Block");
+        \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?cmd=Block");
     }
 
     /**
@@ -1142,7 +1142,7 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
                 $objDatabase->Execute($query);
             }
 
-            \Cx\Core\Csrf\Controller\ComponentController::header('Location: index.php?cmd=Block&act=settings');
+            \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?cmd=Block&act=settings');
         }
     }
 }

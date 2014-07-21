@@ -62,7 +62,7 @@ class DownloadsManager extends DownloadsLibrary
         global $objTemplate, $_ARRAYLANG;
 
         $this->objTemplate = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/Downloads/View/Template/Backend');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->objTemplate);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->objTemplate);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);        
         parent::__construct();
     }
@@ -285,7 +285,7 @@ class DownloadsManager extends DownloadsLibrary
                 $objDownload->send($langId);
             } else {
                 // add socket -> prevent to hide the source from the customer
-                \Cx\Core\Csrf\Controller\ComponentController::header('Location: '.$objDownload->getSource($langId));
+                \Cx\Core\Csrf\Controller\Csrf::header('Location: '.$objDownload->getSource($langId));
             }
         }
     }
@@ -1345,7 +1345,7 @@ class DownloadsManager extends DownloadsLibrary
             $objDownload->updateMTime();
             if ($objDownload->store()) {
                 if (!empty($this->parentCategoryId)) {
-                    header('location: '.\Cx\Core\Csrf\Controller\ComponentController::enhanceURI('index.php?cmd=Downloads&act=categories&parent_id='.$this->parentCategoryId));
+                    header('location: '.\Cx\Core\Csrf\Controller\Csrf::enhanceURI('index.php?cmd=Downloads&act=categories&parent_id='.$this->parentCategoryId));
                 } else {
                     return $this->downloads();
                 }

@@ -56,7 +56,7 @@ class Downloads extends DownloadsLibrary
         $this->userId = $objFWUser->objUser->login() ? $objFWUser->objUser->getId() : 0;
         $this->parseURLModifiers($queryParams);
         $this->objTemplate = new \Cx\Core\Html\Sigma('.');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->objTemplate);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->objTemplate);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->setTemplate($strPageContent);
     }
@@ -93,7 +93,7 @@ class Downloads extends DownloadsLibrary
     */
     public function getPage()
     {
-        \Cx\Core\Csrf\Controller\ComponentController::add_code();
+        \Cx\Core\Csrf\Controller\Csrf::add_code();
         switch ($this->cmd) {
             case 'download_file':
                 $this->download();
@@ -134,7 +134,7 @@ class Downloads extends DownloadsLibrary
     {
         global $_LANGID, $_ARRAYLANG;
 
-        \Cx\Core\Csrf\Controller\ComponentController::check_code();
+        \Cx\Core\Csrf\Controller\Csrf::check_code();
         $objDownload = new Download();
         $objDownload->load(isset($_GET['delete_file']) ? $_GET['delete_file'] : 0);
 
@@ -153,7 +153,7 @@ class Downloads extends DownloadsLibrary
     {
         global $_LANGID, $_ARRAYLANG;
 
-        \Cx\Core\Csrf\Controller\ComponentController::check_code();
+        \Cx\Core\Csrf\Controller\Csrf::check_code();
         $objCategory = Category::getCategory(isset($_GET['delete_category']) ? $_GET['delete_category'] : 0);
 
         if (!$objCategory->EOF) {
@@ -476,7 +476,7 @@ class Downloads extends DownloadsLibrary
             $name = contrexx_stripslashes($_POST['downloads_category_name']);
         }
 
-        \Cx\Core\Csrf\Controller\ComponentController::check_code();
+        \Cx\Core\Csrf\Controller\Csrf::check_code();
 
         // check for sufficient permissiosn
         if ($objCategory->getAddSubcategoriesAccessId()
@@ -749,10 +749,10 @@ class Downloads extends DownloadsLibrary
         global $_ARRAYLANG;
 
         $fileDeleteTxt = preg_replace('#\n#', '\\n', addslashes($_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_DOWNLOAD']));
-        $fileDeleteLink = \Cx\Core\Csrf\Controller\ComponentController::enhanceURI(CONTREXX_SCRIPT_PATH.$this->moduleParamsJs)
+        $fileDeleteLink = \Cx\Core\Csrf\Controller\Csrf::enhanceURI(CONTREXX_SCRIPT_PATH.$this->moduleParamsJs)
             .'&category='.$objCategory->getId().'&delete_file=';
         $categoryDeleteTxt = preg_replace('#\n#', '\\n', addslashes($_ARRAYLANG['TXT_DOWNLOADS_CONFIRM_DELETE_CATEGORY']));
-        $categoryDeleteLink = \Cx\Core\Csrf\Controller\ComponentController::enhanceURI(CONTREXX_SCRIPT_PATH.$this->moduleParamsJs)
+        $categoryDeleteLink = \Cx\Core\Csrf\Controller\Csrf::enhanceURI(CONTREXX_SCRIPT_PATH.$this->moduleParamsJs)
             .'&category='.$objCategory->getId().'&delete_category=';
 
         $javascript = <<<JS_CODE
@@ -1319,7 +1319,7 @@ JS_CODE;
         if (!$objDownload->EOF) {
             // check if the download is expired
             if ($objDownload->getExpirationDate() && $objDownload->getExpirationDate() < time()) {
-                \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=Error&id=404");
+                \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=Error&id=404");
                 exit;
             }
 
@@ -1347,7 +1347,7 @@ JS_CODE;
                 $objDownload->send();
             } else {
                 // add socket -> prevent to hide the source from the customer
-                \Cx\Core\Csrf\Controller\ComponentController::header('Location: '.$objDownload->getSource());
+                \Cx\Core\Csrf\Controller\Csrf::header('Location: '.$objDownload->getSource());
             }
         }
     }

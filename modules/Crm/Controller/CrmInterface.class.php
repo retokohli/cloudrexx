@@ -136,7 +136,7 @@ class CrmInterface extends CrmLibrary
             $objTpl->parse('crm_enclosure');
         }
         $uploaderCode = $this->initUploader(1, true, 'uploadFinished','' , 'import_files_');
-        $redirectUrl = \Cx\Core\Csrf\Controller\ComponentController::enhanceURI('index.php?cmd=Crm&act=getImportFilename');
+        $redirectUrl = \Cx\Core\Csrf\Controller\Csrf::enhanceURI('index.php?cmd=Crm&act=getImportFilename');
         $this->_objTpl->setVariable(array(
               'COMBO_UPLOADER_CODE' => $uploaderCode,
 	      'REDIRECT_URL'	    => $redirectUrl

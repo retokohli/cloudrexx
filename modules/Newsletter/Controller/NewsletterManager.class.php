@@ -57,7 +57,7 @@ class NewsletterManager extends NewsletterLib
         global $objTemplate, $_ARRAYLANG;
 
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/Newsletter/View/Template/Backend');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->act = isset($_GET['act']) ? $_GET['act'] : '';
@@ -590,7 +590,7 @@ class NewsletterManager extends NewsletterLib
 			$_REQUEST['standalone'] = true;
 
 			$this->_impTpl = new \Cx\Core\Html\Sigma();
-			\Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_impTpl);
+			\Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_impTpl);
 			$this->_impTpl->setTemplate($HTML_TemplateSource_Import);
 
             $query = '  SELECT  n.id                AS newsid,
@@ -3688,7 +3688,7 @@ class NewsletterManager extends NewsletterLib
 
 			$_REQUEST['standalone'] = true;
 			$this->_objTpl = new \Cx\Core\Html\Sigma();
-			\Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+			\Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
 			$this->_objTpl->setTemplate($HTML_TemplateSource_Import);
 
             $query = '  SELECT  n.id                AS newsid,
@@ -4133,7 +4133,7 @@ $WhereStatement = '';
         global $objDatabase, $_ARRAYLANG;
 
         $objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/Newsletter/View/Template/Backend');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($objTpl);
         $objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         \Env::get('ClassLoader')->loadFile(ASCMS_LIBRARY_PATH . '/importexport/import.class.php');
@@ -4165,7 +4165,7 @@ $WhereStatement = '';
         if (isset($_POST['import_cancel'])) {
             // Abbrechen. Siehe Abbrechen
             $objImport->cancel();
-            \Cx\Core\Csrf\Controller\ComponentController::header("Location: index.php?cmd=Newsletter&act=users&tpl=import");
+            \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?cmd=Newsletter&act=users&tpl=import");
             exit;
         } elseif (isset($_POST['fieldsSelected'])) {
             // Speichern der Daten. Siehe Final weiter unten.
@@ -5498,7 +5498,7 @@ function CheckMail(s) {
 function DeleteUser(UserID, email) {
   strConfirmMsg = "'.$_ARRAYLANG['TXT_NEWSLETTER_CONFIRM_DELETE_RECIPIENT_OF_ADDRESS'].'";
   if (confirm(strConfirmMsg.replace("%s", email)+"\n'.$_ARRAYLANG['TXT_NEWSLETTER_CANNOT_UNDO_OPERATION'].'")) {
-    document.location.href = "index.php?cmd=Newsletter&'.\Cx\Core\Csrf\Controller\ComponentController::param().'&act=users&delete=1&id="+UserID;
+    document.location.href = "index.php?cmd=Newsletter&'.\Cx\Core\Csrf\Controller\Csrf::param().'&act=users&delete=1&id="+UserID;
   }
 }
 

@@ -1714,7 +1714,7 @@ class CrmLibrary
 
         }
         $message = base64_encode("dealsdeleted");
-        \Cx\Core\Csrf\Controller\ComponentController::header("location:".ASCMS_ADMIN_WEB_PATH."/index.php?cmd=".$this->moduleName."&act=deals&mes=$message");
+        \Cx\Core\Csrf\Controller\Csrf::header("location:".ASCMS_ADMIN_WEB_PATH."/index.php?cmd=".$this->moduleName."&act=deals&mes=$message");
     }
 
     /**

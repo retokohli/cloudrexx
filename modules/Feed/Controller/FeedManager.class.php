@@ -45,7 +45,7 @@ class FeedManager extends FeedLibrary
         global  $_ARRAYLANG, $objTemplate, $_CONFIG;
 
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/Feed/View/Template/Backend');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         if (isset($_GET['act']) && $_GET['act'] == 'settings' && isset($_POST['save'])) {
@@ -1746,7 +1746,7 @@ class FeedManager extends FeedLibrary
 
     function goToReplace($add)
     {
-        \Cx\Core\Csrf\Controller\ComponentController::header("Location: index.php?cmd=Feed".$add);
+        \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?cmd=Feed".$add);
     }
 
 }

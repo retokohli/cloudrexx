@@ -41,7 +41,7 @@ class Blog extends \Cx\Modules\Blog\Controller\BlogLibrary  {
         $this->_intCurrentUserId = 0;
 
         $this->_objTpl = new \Cx\Core\Html\Sigma('.');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($strPageContent);
     }
@@ -63,7 +63,7 @@ class Blog extends \Cx\Modules\Blog\Controller\BlogLibrary  {
     */
     function getPage()
     {
-        \Cx\Core\Csrf\Controller\ComponentController::add_code();
+        \Cx\Core\Csrf\Controller\Csrf::add_code();
         if(!isset($_GET['cmd'])) {
             $_GET['cmd'] = '';
         }
@@ -162,7 +162,7 @@ class Blog extends \Cx\Modules\Blog\Controller\BlogLibrary  {
         $intMessageId = intval($intMessageId);
 
         if ($intMessageId < 1) {
-            \Cx\Core\Csrf\Controller\ComponentController::header("Location: index.php?section=Blog");
+            \Cx\Core\Csrf\Controller\Csrf::header("Location: index.php?section=Blog");
         }
 
         //Empty form-values
@@ -408,7 +408,7 @@ class Blog extends \Cx\Modules\Blog\Controller\BlogLibrary  {
      */
     function addVoting($intMessageId, $intVoting) {
         global $objDatabase, $_ARRAYLANG;
-        \Cx\Core\Csrf\Controller\ComponentController::check_code();
+        \Cx\Core\Csrf\Controller\Csrf::check_code();
 
         $intMessageId = intval($intMessageId);
         $intVoting = intval($intVoting);
@@ -450,7 +450,7 @@ class Blog extends \Cx\Modules\Blog\Controller\BlogLibrary  {
     function addComment() {
         global $objDatabase, $_ARRAYLANG, $_CONFIG;
 
-        \Cx\Core\Csrf\Controller\ComponentController::check_code();
+        \Cx\Core\Csrf\Controller\Csrf::check_code();
         $this->initUserId();
 
         //Check for activated function

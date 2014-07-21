@@ -38,7 +38,7 @@ class Survey {
      */
     function __construct($pageContent) {
         $this->_objTpl = new \Cx\Core\Html\Sigma('.');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($pageContent);
     }
@@ -808,7 +808,7 @@ END;
                         setcookie ("votingcookie_$surveyId", $cookieVal, time()+3600*24); // 1 Day
                     }
 
-                    \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".CONTREXX_SCRIPT_PATH."?section=survey&cmd=surveyattend&id=".$idOfSurvey);
+                    \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_SCRIPT_PATH."?section=survey&cmd=surveyattend&id=".$idOfSurvey);
                     $this->_objTpl->setVariable(array(
                         'SURVEY_SUCCESS' => "<div style='padding:0px; color:rgb(2, 146, 2);'>$_ARRAYLANG[TXT_SURVEY_COMPLETED]</div>"
                     ));
@@ -1437,7 +1437,7 @@ END;
                         setcookie ("votingcookie_$surveyId", $cookieVal, time()+3600*24); // 1 Day
                     }
 
-                    \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".CONTREXX_SCRIPT_PATH."?section=survey&cmd=surveyattend&id=".$idOfSurvey);
+                    \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_SCRIPT_PATH."?section=survey&cmd=surveyattend&id=".$idOfSurvey);
                     $this->_objTpl->setVariable(array(
                         'SURVEY_SUCCESS' => "<div style='padding:0px; color:rgb(2, 146, 2);'>$_ARRAYLANG[TXT_SURVEY_COMPLETED]</div>"
                     ));

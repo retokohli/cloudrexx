@@ -40,7 +40,7 @@ class Newsletter extends NewsletterLib
         global $_ARRAYLANG;
         $this->pageContent = $pageContent;
         $this->_objTpl = new \Cx\Core\Html\Sigma('.');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $months = explode(',', $_ARRAYLANG['TXT_NEWSLETTER_MONTHS_ARRAY']);
         $i=0;
@@ -959,7 +959,7 @@ class Newsletter extends NewsletterLib
             $date    = date(ASCMS_DATE_FORMAT_DATE, $objResult->fields['date_sent']);
         } else {
             // newsletter not found > redirect to homepage
-            \Cx\Core\Csrf\Controller\ComponentController::header('Location: '.\Cx\Core\Routing\Url::fromDocumentRoot());
+            \Cx\Core\Csrf\Controller\Csrf::header('Location: '.\Cx\Core\Routing\Url::fromDocumentRoot());
             exit();
         }
         
@@ -1243,7 +1243,7 @@ class Newsletter extends NewsletterLib
             ";
             $objDatabase->Execute($query);
         }
-        \Cx\Core\Csrf\Controller\ComponentController::header('Location: '.$url);
+        \Cx\Core\Csrf\Controller\Csrf::header('Location: '.$url);
         exit;
     }
 

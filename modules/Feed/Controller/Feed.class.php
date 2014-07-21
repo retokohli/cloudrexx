@@ -42,7 +42,7 @@ class Feed extends FeedLibrary
     {
         $this->pageContent = $pageContent;
         $this->_objTpl = new \Cx\Core\Html\Sigma('.');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
     }
 
@@ -190,7 +190,7 @@ class Feed extends FeedLibrary
             if(!isset($_GET['cat']) and !isset($_GET['news'])){
                 $this->_objTpl->setVariable('FEED_NO_NEWSFEED', $_ARRAYLANG['TXT_FEED_NO_NEWSFEED']);
             }else{
-                \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=Feed");
+                \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=Feed");
             }
         } else {
             if ($this->_objTpl->blockExists('feed_cat')) {
@@ -242,7 +242,7 @@ class Feed extends FeedLibrary
                            AND status = '1'";
             $objResult = $objDatabase->Execute($query);
             if($objResult->RecordCount() == 0){
-                \Cx\Core\Csrf\Controller\ComponentController::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=Feed");
+                \Cx\Core\Csrf\Controller\Csrf::header("Location: ".CONTREXX_DIRECTORY_INDEX."?section=Feed");
                 die;
             }
 

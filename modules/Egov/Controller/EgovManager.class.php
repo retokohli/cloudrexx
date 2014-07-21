@@ -49,7 +49,7 @@ class EgovManager extends EgovLibrary
         );
         $this->initContactForms();
         $this->objTemplate = new \Cx\Core\Html\Sigma(ASCMS_MODULE_PATH.'/Egov/View/Template/Backend');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->objTemplate);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->objTemplate);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->imagePath = ASCMS_MODULE_WEB_PATH .'/Egov/View/Media';
         $this->langId=$objInit->userFrontendLangId;
@@ -757,7 +757,7 @@ class EgovManager extends EgovLibrary
              WHERE order_id=".intval($_REQUEST['id']);
         $objResult = $objDatabase->Execute($query);
         if (!$objResult || $objResult->RecordCount() != 1) {
-            \Cx\Core\Csrf\Controller\ComponentController::header('Location: index.php?cmd=Egov&err=Wrong Order ID');
+            \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?cmd=Egov&err=Wrong Order ID');
             exit;
         }
 

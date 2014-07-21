@@ -37,7 +37,7 @@ class DocSys extends DocSysLibrary
         global $_LANGID;
         $this->pageContent = $pageContent;
         $this->_objTpl = new \Cx\Core\Html\Sigma('.');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->langId = $_LANGID;
     }
@@ -72,7 +72,7 @@ class DocSys extends DocSysLibrary
         $this->_objTpl->setGlobalVariable('MODULE_INDEX', MODULE_INDEX);
         $id = intval($_GET['id']);
         if ($id <= 0) {
-            \Cx\Core\Csrf\Controller\ComponentController::header("Location: ?section=DocSys" . MODULE_INDEX);
+            \Cx\Core\Csrf\Controller\Csrf::header("Location: ?section=DocSys" . MODULE_INDEX);
             exit;
         }
         $query = "

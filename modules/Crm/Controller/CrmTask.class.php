@@ -382,7 +382,7 @@ class CrmTask extends CrmLibrary
                     $dispatcher->triggerEvent(CRM_EVENT_ON_TASK_CREATED, null, $info);
                 }
 
-                \Cx\Core\Csrf\Controller\ComponentController::header("Location:./index.php?cmd=".$this->moduleName.base64_decode($redirect));
+                \Cx\Core\Csrf\Controller\Csrf::header("Location:./index.php?cmd=".$this->moduleName.base64_decode($redirect));
                 exit();
             }            
         } elseif (!empty($id)) {
@@ -561,7 +561,7 @@ class CrmTask extends CrmLibrary
         if (!empty($id)) {
             $objResult = $objDatabase->Execute("DELETE FROM ".DBPREFIX."module_{$this->moduleNameLC}_task WHERE id = '$id'");
             
-            \Cx\Core\Csrf\Controller\ComponentController::header("Location:index.php?cmd=".$this->moduleName.base64_decode($redirect)."&mes=".  base64_encode('taskDeleted'));
+            \Cx\Core\Csrf\Controller\Csrf::header("Location:index.php?cmd=".$this->moduleName.base64_decode($redirect)."&mes=".  base64_encode('taskDeleted'));
         }
     }
 
