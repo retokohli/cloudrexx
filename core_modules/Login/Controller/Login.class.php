@@ -41,7 +41,7 @@ class Login
     function __construct($pageContent)
     {
         $this->_objTpl = new \Cx\Core\Html\Sigma('.');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($pageContent);
     }
@@ -258,7 +258,7 @@ class Login
             if (!empty($redirect)) {
                 $redirect = \FWUser::getRedirectUrl(urlencode(base64_decode($redirect)));
             }
-            \Cx\Core\Csrf\Controller\ComponentController::header('Location: '.(empty($redirect) ? $groupRedirect : $redirect));
+            \Cx\Core\Csrf\Controller\Csrf::header('Location: '.(empty($redirect) ? $groupRedirect : $redirect));
             exit;
         } else {
             if (isset($_POST['login'])) {

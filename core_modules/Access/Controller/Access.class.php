@@ -27,7 +27,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         parent::__construct();
 
         $this->_objTpl = new \Cx\Core\Html\Sigma('.');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         $this->_objTpl->setTemplate($pageContent);
     }
@@ -38,7 +38,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
         $groupId = isset($cmd[1]) ? intval($cmd[1]) : null;
 
         \Cx\Lib\SocialLogin::parseSociallogin($this->_objTpl, 'access_');
-        \Cx\Core\Csrf\Controller\ComponentController::add_code();
+        \Cx\Core\Csrf\Controller\Csrf::add_code();
         switch ($cmd[0]) {
             case 'signup':
                 $this->signUp();
@@ -79,7 +79,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
 
             if ($objUser->getProfileAccess() != 'everyone') {
                 if (!$objFWUser->objUser->login()) {
-                    \Cx\Core\Csrf\Controller\ComponentController::header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=Login&redirect='.base64_encode(ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd=user&id='.$objUser->getId()));
+                    \Cx\Core\Csrf\Controller\Csrf::header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=Login&redirect='.base64_encode(ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd=user&id='.$objUser->getId()));
                     exit;
                 }
 
@@ -87,7 +87,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
                     && $objUser->getProfileAccess() == 'nobody'
                     && !$objFWUser->objUser->getAdminStatus()
                 ) {
-                    \Cx\Core\Csrf\Controller\ComponentController::header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=Login&cmd=noaccess&redirect='.base64_encode(ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd=user&id='.$objUser->getId()));
+                    \Cx\Core\Csrf\Controller\Csrf::header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=Login&cmd=noaccess&redirect='.base64_encode(ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd=user&id='.$objUser->getId()));
                     exit;
                 }
             }
@@ -121,7 +121,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             $this->_objTpl->setVariable("ACCESS_REFERER", $_SERVER['HTTP_REFERER']);
         } else {
             // or would it be better to redirect to the home page?
-            \Cx\Core\Csrf\Controller\ComponentController::header('Location: index.php?section=Access&cmd=members');
+            \Cx\Core\Csrf\Controller\Csrf::header('Location: index.php?section=Access&cmd=members');
             exit;
         }
     }
@@ -208,7 +208,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         $objFWUser = \FWUser::getFWUserObject();
         if (!$objFWUser->objUser->login()) {
-            \Cx\Core\Csrf\Controller\ComponentController::header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=Login&redirect='.base64_encode(ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd='.rawurlencode($_REQUEST['cmd'])));
+            \Cx\Core\Csrf\Controller\Csrf::header('Location: '.CONTREXX_DIRECTORY_INDEX.'?section=Login&redirect='.base64_encode(ASCMS_PROTOCOL.'://'.$_CONFIG['domainUrl'].CONTREXX_SCRIPT_PATH.'?section=Access&cmd='.rawurlencode($_REQUEST['cmd'])));
             exit;
         }
         $settingsDone = false;
@@ -216,7 +216,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
 
         if (isset($_POST['access_delete_account'])) {
             // delete account
-            \Cx\Core\Csrf\Controller\ComponentController::check_code();
+            \Cx\Core\Csrf\Controller\Csrf::check_code();
             if ($objFWUser->objUser->checkPassword(isset($_POST['access_user_password']) ? $_POST['access_user_password'] : null)) {
                 if ($objFWUser->objUser->isAllowedToDeleteAccount()) {
                     if ($objFWUser->objUser->delete(true)) {
@@ -239,7 +239,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             }
         } elseif (isset($_POST['access_change_password'])) {
             // change password
-            \Cx\Core\Csrf\Controller\ComponentController::check_code();
+            \Cx\Core\Csrf\Controller\Csrf::check_code();
             if (!empty($_POST['access_user_current_password']) && $objFWUser->objUser->checkPassword(trim(contrexx_stripslashes($_POST['access_user_current_password'])))) {
                 $this->_objTpl->setVariable(
                     'ACCESS_SETTINGS_MESSAGE',
@@ -260,7 +260,7 @@ class Access extends \Cx\Core_Modules\Access\Controller\AccessLib
             }
         } elseif (isset($_POST['access_store'])) {
             // store profile
-            \Cx\Core\Csrf\Controller\ComponentController::check_code();
+            \Cx\Core\Csrf\Controller\Csrf::check_code();
             $status = true;
 
             isset($_POST['access_user_username']) ? $objFWUser->objUser->setUsername(trim(contrexx_stripslashes($_POST['access_user_username']))) : null;

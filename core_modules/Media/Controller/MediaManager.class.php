@@ -70,7 +70,7 @@ class MediaManager extends MediaLibrary
 
         // sigma template
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/Media/View/Template/Backend');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
         
         $this->arrPaths     = array(ASCMS_MEDIA1_PATH.DIRECTORY_SEPARATOR,
@@ -757,7 +757,7 @@ class MediaManager extends MediaLibrary
             'MEDIA_TYPE_CLASS'         => isset($tmpClass['type']) ? $tmpIcon['type'] : '',
             'MEDIA_DATE_CLASS'         => isset($tmpClass['date']) ? $tmpIcon['date'] : '',
             'MEDIA_PERM_CLASS'         => isset($tmpClass['perm']) ? $tmpIcon['perm'] : '',
-            'CSRF'                     => \Cx\Core\Csrf\Controller\ComponentController::param(),
+            'CSRF'                     => \Cx\Core\Csrf\Controller\Csrf::param(),
         ));
     }
 
@@ -945,11 +945,11 @@ class MediaManager extends MediaLibrary
         
         // Variables
         $this->_objTpl->setVariable(array(
-        	'CSRF'					 	 => \Cx\Core\Csrf\Controller\ComponentController::param(),
+        	'CSRF'					 	 => \Cx\Core\Csrf\Controller\Csrf::param(),
             'MEDIA_EDIT_AJAX_ACTION'     => 'index.php?cmd=Media&archive='.$this->archive.'&act=editImage&path='.$this->webPath,
             'MEDIA_EDIT_REDIRECT'        => 'index.php?cmd=Media&archive='.$this->archive.'&path='.$this->webPath,
             'MEDIA_BACK_HREF'            => 'index.php?cmd=Media&amp;archive='.$this->archive.'&amp;path='.$this->webPath,
-            'MEDIA_FILE_IMAGE_SRC'       => 'index.php?cmd=Media&archive='.$this->archive.'&act=getImage&path='.$this->webPath.'&file='.$this->getFile.'&'.\Cx\Core\Csrf\Controller\ComponentController::param(),
+            'MEDIA_FILE_IMAGE_SRC'       => 'index.php?cmd=Media&archive='.$this->archive.'&act=getImage&path='.$this->webPath.'&file='.$this->getFile.'&'.\Cx\Core\Csrf\Controller\Csrf::param(),
             'MEDIA_IMAGE_WIDTH'          => !empty($imageSize) ? intval($imageSize[0]) : 0,
             'MEDIA_IMAGE_HEIGHT'         => !empty($imageSize) ? intval($imageSize[1]) : 0,
             'MEDIA_IMAGE_CROP_WIDTH'     => $arrImageSettings['image_cut_width'],

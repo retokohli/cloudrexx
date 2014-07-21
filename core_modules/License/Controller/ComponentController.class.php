@@ -124,7 +124,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         die($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
                     } else {
                         //page not found, redirect to error page.
-                        \Cx\Core\Csrf\Controller\ComponentController::header('Location: ' . \Cx\Core\Routing\Url::fromModuleAndCmd('Error'));
+                        \Cx\Core\Csrf\Controller\Csrf::header('Location: ' . \Cx\Core\Routing\Url::fromModuleAndCmd('Error'));
                         exit;
                     }
                 }

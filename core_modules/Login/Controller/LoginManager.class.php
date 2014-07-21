@@ -27,7 +27,7 @@ class LoginManager {
     public function __construct()
     {
         $this->objTemplate = new \Cx\Core\Html\Sigma(ASCMS_DOCUMENT_ROOT);
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->objTemplate);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->objTemplate);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
         $this->objTemplate->loadTemplateFile('/cadmin/template/ascms/index.html');
     }

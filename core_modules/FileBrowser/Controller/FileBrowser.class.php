@@ -106,7 +106,7 @@ class FileBrowser {
     */
     function __construct() {
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/FileBrowser/View/Template/Backend');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $this->_iconPath = ASCMS_CORE_MODULE_WEB_PATH.'/FileBrowser/View/Media/';        
@@ -291,7 +291,7 @@ class FileBrowser {
         }
 
         if (preg_match('#^[0-9a-zA-Z_\-]+$#', $dir)) {
-            \Cx\Core\Csrf\Controller\ComponentController::check_code();
+            \Cx\Core\Csrf\Controller\Csrf::check_code();
             $objFile = new \File();
             if (!$objFile->mkDir($strPath, $strWebPath, $dir)) {
                 $this->_pushStatusMessage(sprintf($_ARRAYLANG['TXT_FILEBROWSER_UNABLE_TO_CREATE_FOLDER'], $dir), 'error');
@@ -316,7 +316,7 @@ class FileBrowser {
 
         $this->_objTpl->addBlockfile('FILEBROWSER_NAVIGATION', 'fileBrowser_navigation', 'module_fileBrowser_navigation.html');
         $this->_objTpl->setVariable(array(
-            'FILEBROWSER_MEDIA_TYPE_MENU'   => $this->_getMediaTypeMenu('fileBrowserType', $this->_mediaType, 'onchange="window.location.replace(\''.\Cx\Core\Csrf\Controller\ComponentController::enhanceURI('index.php?cmd=FileBrowser').'&amp;standalone=true&amp;langId='.$this->_frontendLanguageId.'&amp;type=\'+this.value+\''.$ckEditorFuncNum.'\')"'),
+            'FILEBROWSER_MEDIA_TYPE_MENU'   => $this->_getMediaTypeMenu('fileBrowserType', $this->_mediaType, 'onchange="window.location.replace(\''.  \Cx\Core\Csrf\Controller\Csrf::enhanceURI('index.php?cmd=FileBrowser').'&amp;standalone=true&amp;langId='.$this->_frontendLanguageId.'&amp;type=\'+this.value+\''.$ckEditorFuncNum.'\')"'),
             'TXT_FILEBROWSER_PREVIEW'       => $_ARRAYLANG['TXT_FILEBROWSER_PREVIEW']
         ));
 

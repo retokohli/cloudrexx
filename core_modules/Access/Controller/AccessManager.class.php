@@ -50,7 +50,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         parent::__construct();
         
         $this->_objTpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/Access/View/Template/Backend');
-        \Cx\Core\Csrf\Controller\ComponentController::add_placeholder($this->_objTpl);
+        \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->_objTpl);
         $this->_objTpl->setErrorHandling(PEAR_ERROR_DIE);
     }
     private function setNavigation()
@@ -399,7 +399,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             'ACCESS_TYPE'                       => $_ARRAYLANG['TXT_ACCESS_TYPE'].($orderBy == 'type' ? $orderDirection == 'asc' ? ' &uarr;' : ' &darr;' : ''),
             'ACCESS_SORT_BY'                    => $orderBy,
             'ACCESS_GROUP_TYPE_FILTER'          => $groupTypeFilter,
-            'ACCESS_GROUP_TYPE_MENU'            => $this->getGroupTypeMenu($groupTypeFilter, 'name="group_type_filter" onchange="window.location.replace(\''.\Cx\Core\Csrf\Controller\ComponentController::enhanceURI('index.php?cmd=Access&amp;act=group').'&amp;sort='.$orderDirection.'&amp;by='.$orderBy.'&amp;group_type_filter=\'+this.value)"')
+            'ACCESS_GROUP_TYPE_MENU'            => $this->getGroupTypeMenu($groupTypeFilter, 'name="group_type_filter" onchange="window.location.replace(\''.\Cx\Core\Csrf\Controller\Csrf::enhanceURI('index.php?cmd=Access&amp;act=group').'&amp;sort='.$orderDirection.'&amp;by='.$orderBy.'&amp;group_type_filter=\'+this.value)"')
         ));
 
         $this->_objTpl->setGlobalVariable(array(
@@ -954,10 +954,10 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
             'TXT_ACCESS_SEARCH'                     => $_ARRAYLANG['TXT_ACCESS_SEARCH'],
             'TXT_ACCESS_USER_LIST'                  => $_ARRAYLANG['TXT_ACCESS_USER_LIST'],
             'TXT_ACCESS_FILTER'                     => $_ARRAYLANG['TXT_ACCESS_FILTER'],
-            'ACCESS_GROUP_MENU'                     => $this->getGroupMenu($groupId, 'name="access_group_id" onchange="window.location.replace(\''.\Cx\Core\Csrf\Controller\ComponentController::enhanceURI('index.php?cmd=Access').'&amp;act=user&amp;groupId=\'+this.value+\'&amp;sort='.htmlspecialchars($orderDirection).'&amp;by='.htmlspecialchars($orderBy).'&amp;accountType='.$accountType.'\')"'),
-            'ACCESS_USER_ACCOUNT_MENU'              => $this->getUserAccountMenu($accountType, 'name="access_user_account_type" onchange="window.location.replace(\''.\Cx\Core\Csrf\Controller\ComponentController::enhanceURI('index.php?cmd=Access').'&amp;act=user&amp;groupId='.$groupId.'&amp;sort='.htmlspecialchars($orderDirection).'&amp;by='.htmlspecialchars($orderBy).'&amp;accountType=\'+this.value)"'),
-            'ACCESS_USER_STATUS_MENU'               => $this->getUserStatusMenu($userStatusFilter, 'name="user_status_filter" onchange="window.location.replace(\''.\Cx\Core\Csrf\Controller\ComponentController::enhanceURI('index.php?cmd=Access').'&amp;act=user&amp;groupId='.$groupId.'&amp;sort='.htmlspecialchars($orderDirection).'&amp;by='.htmlspecialchars($orderBy).'&amp;user_status_filter=\'+this.value+\'&amp;user_role_filter='.$userRoleFilter.'&amp;accountType='.$accountType.'\')"'),
-            'ACCESS_USER_ROLE_MENU'                 => $this->getUserRoleMenu($userRoleFilter, 'name="user_role_filter" onchange="window.location.replace(\''.\Cx\Core\Csrf\Controller\ComponentController::enhanceURI('index.php?cmd=Access').'&amp;act=user&amp;groupId='.$groupId.'&amp;sort='.htmlspecialchars($orderDirection).'&amp;by='.htmlspecialchars($orderBy).'&amp;user_status_filter='.$userStatusFilter.'&amp;user_role_filter=\'+this.value+\'&amp;accountType='.$accountType.'\')"'),
+            'ACCESS_GROUP_MENU'                     => $this->getGroupMenu($groupId, 'name="access_group_id" onchange="window.location.replace(\''.\Cx\Core\Csrf\Controller\Csrf::enhanceURI('index.php?cmd=Access').'&amp;act=user&amp;groupId=\'+this.value+\'&amp;sort='.htmlspecialchars($orderDirection).'&amp;by='.htmlspecialchars($orderBy).'&amp;accountType='.$accountType.'\')"'),
+            'ACCESS_USER_ACCOUNT_MENU'              => $this->getUserAccountMenu($accountType, 'name="access_user_account_type" onchange="window.location.replace(\''.\Cx\Core\Csrf\Controller\Csrf::enhanceURI('index.php?cmd=Access').'&amp;act=user&amp;groupId='.$groupId.'&amp;sort='.htmlspecialchars($orderDirection).'&amp;by='.htmlspecialchars($orderBy).'&amp;accountType=\'+this.value)"'),
+            'ACCESS_USER_STATUS_MENU'               => $this->getUserStatusMenu($userStatusFilter, 'name="user_status_filter" onchange="window.location.replace(\''.\Cx\Core\Csrf\Controller\Csrf::enhanceURI('index.php?cmd=Access').'&amp;act=user&amp;groupId='.$groupId.'&amp;sort='.htmlspecialchars($orderDirection).'&amp;by='.htmlspecialchars($orderBy).'&amp;user_status_filter=\'+this.value+\'&amp;user_role_filter='.$userRoleFilter.'&amp;accountType='.$accountType.'\')"'),
+            'ACCESS_USER_ROLE_MENU'                 => $this->getUserRoleMenu($userRoleFilter, 'name="user_role_filter" onchange="window.location.replace(\''.  \Cx\Core\Csrf\Controller\Csrf::enhanceURI('index.php?cmd=Access').'&amp;act=user&amp;groupId='.$groupId.'&amp;sort='.htmlspecialchars($orderDirection).'&amp;by='.htmlspecialchars($orderBy).'&amp;user_status_filter='.$userStatusFilter.'&amp;user_role_filter=\'+this.value+\'&amp;accountType='.$accountType.'\')"'),
             'ACCESS_GROUP_IP'                       => $groupId,
             'ACCESS_ACCOUNT_TYPE'                   => $accountType,
             'ACCESS_SEARCH_VALUE'                   => htmlentities(join(' ', $search), ENT_QUOTES, CONTREXX_CHARSET),
@@ -1461,7 +1461,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         if(isset($_GET['source'])){
             switch ($_GET['source']){
                 case 'Newsletter':
-                    \Cx\Core\Csrf\Controller\ComponentController::header('Location: 
+                    \Cx\Core\Csrf\Controller\Csrf::header('Location: 
                         index.php?cmd=Newsletter&act=users&store=true'. //and add Params for Newsletter Filter
                         (!empty($_GET['newsletterListId']) ? '&newsletterListId='.contrexx_input2raw($_GET['newsletterListId']) : '').
                         (!empty($_GET['filterkeyword']) ? '&filterkeyword='.contrexx_input2raw($_GET['filterkeyword']) : '').
