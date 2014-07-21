@@ -30,19 +30,21 @@ class ViewGenerator {
         if ($object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             // render table if no parameter is set
             $this->object = $object;
+            $entityNS = $this->object->getDataType();
         } else {
             if (!is_object($object)) {
                 throw new ViewGeneratorException('Cannot generate view for variable type ' . gettype($object));
             }
             // render form
             $this->object = $object;
+            $entityNS = get_class($this->object);
         }
         // get entity name space
-        $entityNS = $this->object->getDataType();
+        /*$entityNS = get_class($this->object);
         if (empty($entityNS)) {
             \Message::add('Cannot load, Invalid name space', \Message::CLASS_ERROR);
             return;
-        }
+        }*/
         /** 
          *  postSave event
          *  execute save if entry is a doctrine entity (or execute callback if specified in configuration)
@@ -72,12 +74,13 @@ class ViewGenerator {
                 if ($blankPost) {
                     \Message::add('Cannot save, You should fill any one field!', \Message::CLASS_ERROR);
                     return;
-                }
+                }               
                 $entityObject = \Env::get('em')->getClassMetadata($entityNS);  
                 $primaryKeyName =$entityObject->getSingleIdentifierFieldName(); //get primary key name  
-                $getAllField = $entityObject->getColumnNames(); //get all field names  
+                $getAllField = $entityObject->getColumnNames(); //get all field names                 
                 //add new entry
                 $entityObj = new $entityNS();
+                
                 foreach($getAllField as $entity) {
                     if (isset($_POST[$entity]) && $entity!=$primaryKeyName) {
                         $name='set'.$entity;
@@ -190,6 +193,7 @@ class ViewGenerator {
         }
         $renderObject = $this->object;
         $entityClass = get_class($this->object);
+        $entityId = '';
         if ($this->object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet
             && isset($_GET['editid'])) {
             $entityClass = $this->object->getDataType();
@@ -248,6 +252,19 @@ class ViewGenerator {
                     if ($name!=$primaryKeyName) {
                         $renderArray[$name]=$value;
                     }
+                }
+            }
+        } else {
+            $entityClass = get_class($this->object);
+            $entityObject = \Env::get('em')->getClassMetadata($entityClass);  
+            $primaryKeyName =$entityObject->getSingleIdentifierFieldName(); //get primary key name
+            $title='Add Entity';
+            $actionUrl->setParam('add', 1);
+            $getAllField = $entityObject->getColumnNames(); //get all field names  
+            if (empty($getAllField)) return false;
+            foreach($getAllField as $name) {
+                if ($name!=$primaryKeyName) {
+                    $renderArray[$name]="";    
                 }
             }
         }
