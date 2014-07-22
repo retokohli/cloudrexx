@@ -1,30 +1,82 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" lang="de" xml:lang="de">
-  <head>
-    {INCLUDES}
-  </head>
-  <body>
-    <script type="text/javascript">
-    {CXJS_INIT_JS}
-    cx.include('core_modules/Upload/css/uploaders/form/form.css', function() {
-        var form = new FormUploader({UPLOAD_ID});
-    });
-    </script>
+<?php
+/**
+ * Main controller for Upload
+ * 
+ * @copyright   comvation
+ * @author      Project Team SS4U <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_upload
+ */
 
-    <div id="form_uploader_{UPLOAD_ID}" class="form_uploader">
-      <form action="{UPLOAD_URL}" method="post" enctype="multipart/form-data">
-        <input type="hidden" name="MAX_FILE_SIZE" value="{MAX_FILE_SIZE}" />
-        <div class="files">
-          <div class="file">
-            <input type="file" name="uploaderFiles[]" />
-            <a href="" class="delete"></a>
-          </div>
-        </div>
-        <div><a href="" class="add">{UPLOAD_FORM_ADD}</a></div>
-		<div class="form_submit">
-			<input type="submit" class="submitButton" value="{UPLOAD}" />
-		</div>
-      </form>
-    </div>
-  </body>
-</html>
+namespace Cx\Core_Modules\Upload\Controller;
+
+/**
+ * Main controller for Upload
+ * 
+ * @copyright   comvation
+ * @author      Project Team SS4U <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_upload
+ */
+class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
+    /**
+     * getControllerClasses
+     * 
+     * @return type
+     */
+    public function getControllerClasses() {
+        return array();
+    }
+
+    /**
+     * Load the component Upload.
+     * 
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page       The resolved page
+     */
+    public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        global $objTemplate;
+        $this->cx->getTemplate()->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master.html');
+        $objTemplate = $this->cx->getTemplate();
+
+        $objUploadModule = new UploadManager();
+        $objUploadModule->getPage();
+    }
+    
+    /**
+     * Do something before resolving is done
+     * 
+     * @param \Cx\Core\Routing\Url $request The URL object for this request
+     */
+    public function preResolve(\Cx\Core\Routing\Url $request) {
+        switch ($this->cx->getMode()) {
+            
+            case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
+                if (isset($_REQUEST['section']) && $_REQUEST['section'] == 'Upload') {
+                    $_REQUEST['standalone'] = 'true';
+                }
+            
+            break;
+        }
+    }
+    
+    /**
+     * Do something after resolving is done
+     * 
+     * @param \Cx\Core\ContentManager\Model\Entity\Page $page The resolved page
+     */
+    public function postResolve(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        global $sessionObj;
+        switch ($this->cx->getMode()) {
+            
+            case \Cx\Core\Core\Controller\Cx::MODE_FRONTEND:
+                if (isset($_REQUEST['section']) && $_REQUEST['section'] == 'Upload') {
+                    if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = \cmsSession::getInstance(); // initialize session object                            
+                    $objUploadModule = new Upload();
+                    $objUploadModule->getPage();
+                    //execution never reaches this point
+                }
+
+            break;
+        }
+    }
+}   
