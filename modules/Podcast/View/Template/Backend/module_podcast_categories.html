@@ -24,13 +24,13 @@ function podcast_delete_category(id, title)
 		</tr>
 		<!-- BEGIN podcast_categories_list -->
 			<tr class="{PODCAST_ROW_CLASS}">
-				<td><img src="images/icons/{PODCAST_CATEGORY_STATUS_IMG}" width="13" height="13" alt="{PODCAST_CATEGORY_STATUS_TXT}" /></td>
+				<td><img src="../core/Core/View/Media/icons/{PODCAST_CATEGORY_STATUS_IMG}" width="13" height="13" alt="{PODCAST_CATEGORY_STATUS_TXT}" /></td>
 				<td>{PODCAST_CATEGORY_TITLE}</td>
 				<td title="{PODCAST_CATEGORY_DESCRIPTION}">{PODCAST_CATEGORY_DESCRIPTION_CUT}</td>
 				<td>{PODCAST_CATEGORY_MEDIA_COUNT}</td>
 				<td style="text-align:right;">
-					<a href="index.php?cmd=Podcast&amp;act=modifyCategory&amp;id={PODCAST_CATEGORY_ID}" title="{TXT_PODCAST_MODIFY_CATEGORY}"><img src="images/icons/edit.gif" width="16" height="16" border="0" alt="{TXT_PODCAST_MODIFY_CATEGORY}" /></a>
-					<a href="javascript:void(0);" onclick="podcast_delete_category({PODCAST_CATEGORY_ID}, '{PODCAST_CATEGORY_TITLE}')" title="{TXT_PODCAST_DELETE_CATEGORY}"><img src="images/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_PODCAST_DELETE_CATEGORY}" /></a>
+					<a href="index.php?cmd=Podcast&amp;act=modifyCategory&amp;id={PODCAST_CATEGORY_ID}" title="{TXT_PODCAST_MODIFY_CATEGORY}"><img src="../core/Core/View/Media/icons/edit.gif" width="16" height="16" border="0" alt="{TXT_PODCAST_MODIFY_CATEGORY}" /></a>
+					<a href="javascript:void(0);" onclick="podcast_delete_category({PODCAST_CATEGORY_ID}, '{PODCAST_CATEGORY_TITLE}')" title="{TXT_PODCAST_DELETE_CATEGORY}"><img src="../core/Core/View/Media/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_PODCAST_DELETE_CATEGORY}" /></a>
 			</tr>
 		<!-- END podcast_categories_list -->
 	</tbody>

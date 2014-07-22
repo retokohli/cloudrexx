@@ -112,19 +112,19 @@ $J(document).ready(function() {
         <td nowrap="nowrap">{NEWS_ID}</td>
         <td nowrap="nowrap">
           <a href="?cmd=News&amp;act=invertStatus&amp;newsId={NEWS_ID}" title="{NEWS_ACTIVATE} | {NEWS_DEACTIVATE}">
-          <img src="images/icons/{NEWS_STATUS_PICTURE}" border="0" alt="{NEWS_ACTIVATE} | {NEWS_DEACTIVATE}" title="{NEWS_ACTIVATE} | {NEWS_DEACTIVATE}"/>
+          <img src="../core/Core/View/Media/icons/{NEWS_STATUS_PICTURE}" border="0" alt="{NEWS_ACTIVATE} | {NEWS_DEACTIVATE}" title="{NEWS_ACTIVATE} | {NEWS_DEACTIVATE}"/>
           </a>
-          <!-- BEGIN news_message_protected_icon --><img src="images/icons/lock_closed.gif" width="12" height="13" alt="{TXT_NEWS_MESSAGE_PROTECTED}" /><!-- END news_message_protected_icon -->
-          <!-- BEGIN news_message_not_protected_icon --><img src="images/icons/pixel.gif" width="12" height="13" alt="{TXT_NEWS_READ_ALL_ACCESS_DESC}" /><!-- END news_message_not_protected_icon -->
+          <!-- BEGIN news_message_protected_icon --><img src="../core/Core/View/Media/icons/lock_closed.gif" width="12" height="13" alt="{TXT_NEWS_MESSAGE_PROTECTED}" /><!-- END news_message_protected_icon -->
+          <!-- BEGIN news_message_not_protected_icon --><img src="../core/Core/View/Media/icons/pixel.gif" width="12" height="13" alt="{TXT_NEWS_READ_ALL_ACCESS_DESC}" /><!-- END news_message_not_protected_icon -->
         </td>
         <td>
           <a href="?cmd=News&amp;act=edit&amp;newsId={NEWS_ID}">{NEWS_TITLE}</a>&nbsp;
           <!-- BEGIN news_comments_data -->
-          <a href="index.php?cmd=News&amp;act=comments&amp;newsId={NEWS_ID}"><img src="images/icons/comment.gif" alt="{TXT_NEWS_NUMBER_OF_COMMENTS}" class="tooltip-trigger" /><span class="tooltip-message">{TXT_NEWS_NUMBER_OF_COMMENTS}: {NEWS_COMMENTS_COUNT}</span></a>
+          <a href="index.php?cmd=News&amp;act=comments&amp;newsId={NEWS_ID}"><img src="../core/Core/View/Media/icons/comment.gif" alt="{TXT_NEWS_NUMBER_OF_COMMENTS}" class="tooltip-trigger" /><span class="tooltip-message">{TXT_NEWS_NUMBER_OF_COMMENTS}: {NEWS_COMMENTS_COUNT}</span></a>
           <!-- END news_comments_data -->
         </td>
         <td>
-          <a href="{NEWS_PREVIEW_LINK_HREF}" target="_blank" title="{TXT_NEWS_PREVIEW}"><img src="images/icons/preview.png" border="0" alt="{TXT_NEWS_PREVIEW}"></a>
+          <a href="{NEWS_PREVIEW_LINK_HREF}" target="_blank" title="{TXT_NEWS_PREVIEW}"><img src="../core/Core/View/Media/icons/preview.png" border="0" alt="{TXT_NEWS_PREVIEW}"></a>
         </td>
         <td nowrap="nowrap">{NEWS_LANGUAGES}</td>
         <td nowrap="nowrap">{NEWS_CATEGORY}&nbsp;</td>
@@ -135,15 +135,15 @@ $J(document).ready(function() {
         <td nowrap="nowrap">{NEWS_DATE}&nbsp;</td>
         <td nowrap="nowrap">
           <div align="right">
-            <a href="?cmd=News&amp;act=edit&amp;newsId={NEWS_ID}" title="{TXT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{TXT_EDIT}" /></a>
-            <a href="?cmd=News&amp;act=copy&amp;newsId={NEWS_ID}" title="{TXT_COPY}"><img src="images/icons/copy.gif" border="0" width="16" height="16" alt="{TXT_COPY}" /></a>
-            <a href="javascript:deletePage({NEWS_ID})" title="{TXT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_DELETE}" /></a>
+            <a href="?cmd=News&amp;act=edit&amp;newsId={NEWS_ID}" title="{TXT_EDIT}"><img src="../core/Core/View/Media/icons/edit.gif" border="0" alt="{TXT_EDIT}" /></a>
+            <a href="?cmd=News&amp;act=copy&amp;newsId={NEWS_ID}" title="{TXT_COPY}"><img src="../core/Core/View/Media/icons/copy.gif" border="0" width="16" height="16" alt="{TXT_COPY}" /></a>
+            <a href="javascript:deletePage({NEWS_ID})" title="{TXT_DELETE}"><img src="../core/Core/View/Media/icons/delete.gif" border="0" alt="{TXT_DELETE}" /></a>
           </div>
         </td>
       </tr>
     <!-- END newsrow -->
   </table>
-  <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
+  <img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
   <a href="#" onclick="changeCheckboxes('formNews','selectedNewsId[]',true); return false;">{TXT_SELECT_ALL}</a>&nbsp;/&nbsp;
   <a href="#" onclick="changeCheckboxes('formNews','selectedNewsId[]',false); return false;">{TXT_REMOVE_SELECTION}</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   <input type="submit" name="delete" value="{TXT_DELETE_MARKED}" onclick="deletePages('formNews'); return false;" />&nbsp;&nbsp;
@@ -183,7 +183,7 @@ $J(document).ready(function() {
     <!-- BEGIN news_validator_row -->
       <tr class="{NEWS_CLASS}">
         <td nowrap="nowrap"><input type="checkbox" name="selectedUnvalidatedNewsId[]" id="selectedUnvalidatedNewsId" value="{NEWS_ID}" /></td>
-        <td nowrap="nowrap"><img src="images/icons/{NEWS_STATUS_PICTURE}" border="0" alt="{NEWS_STATUS}"/></td>
+        <td nowrap="nowrap"><img src="../core/Core/View/Media/icons/{NEWS_STATUS_PICTURE}" border="0" alt="{NEWS_STATUS}"/></td>
         <td><a href="?cmd=News&amp;act=edit&amp;newsId={NEWS_ID}&amp;validate=true">{NEWS_TITLE}</a>&nbsp;</td>
         <td nowrap="nowrap">{NEWS_LANGUAGES}&nbsp;</td>
         <td nowrap="nowrap">{NEWS_CATEGORY}&nbsp;</td>
@@ -191,14 +191,14 @@ $J(document).ready(function() {
         <td nowrap="nowrap">{NEWS_DATE}&nbsp;</td>
         <td nowrap="nowrap">
           <div align="right">
-            <a href="?cmd=News&amp;act=edit&amp;newsId={NEWS_ID}&amp;validate=true" title="{TXT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{TXT_EDIT}" /></a>
-            <a href="javascript:deletePage({NEWS_ID})" title="{TXT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_DELETE}" /></a>
+            <a href="?cmd=News&amp;act=edit&amp;newsId={NEWS_ID}&amp;validate=true" title="{TXT_EDIT}"><img src="../core/Core/View/Media/icons/edit.gif" border="0" alt="{TXT_EDIT}" /></a>
+            <a href="javascript:deletePage({NEWS_ID})" title="{TXT_DELETE}"><img src="../core/Core/View/Media/icons/delete.gif" border="0" alt="{TXT_DELETE}" /></a>
           </div>
         </td>
       </tr>
     <!-- END news_validator_row -->
   </table>
-  <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
+  <img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
   <a href="javascript:{}" onclick="changeCheckboxes('formUnvalidatedNews','selectedUnvalidatedNewsId[]',true); return false;">{TXT_SELECT_ALL}</a>&nbsp;/&nbsp;
   <a href="javascript:{}" onclick="changeCheckboxes('formUnvalidatedNews','selectedUnvalidatedNewsId[]',false); return false;">{TXT_REMOVE_SELECTION}</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   <input type="submit" name="delete" value="{TXT_DELETE_MARKED}" onclick="deletePages('formUnvalidatedNews'); return false;" />&nbsp;&nbsp;

@@ -67,19 +67,19 @@ function deleteImmo(immoID) {
 	http = getXMLHttpRequestObj();
 
 	var imgEdit = new Image();
-	imgEdit.src = 'images/icons/edit.gif';
+	imgEdit.src = '../core/Core/View/Media/icons/edit.gif';
 	imgEdit.title = '{TXT_IMMO_EDIT}';
 	imgEdit.alt = '{TXT_IMMO_EDIT}';
 	imgEdit.border = '0';
 
 	var imgDelete = new Image();
-	imgDelete.src = 'images/icons/delete.gif';
+	imgDelete.src = '../core/Core/View/Media/icons/delete.gif';
 	imgDelete.title = '{TXT_IMMO_DELETE}';
 	imgDelete.alt = '{TXT_IMMO_DELETE}';
 	imgDelete.border = '0';
 
 	var imgCopy = new Image();
-	imgCopy.src = 'images/icons/copy.gif';
+	imgCopy.src = '../core/Core/View/Media/icons/copy.gif';
 	imgCopy.title = '{TXT_IMMO_COPY}';
 	imgCopy.alt = '{TXT_IMMO_COPY}';
 	imgCopy.border = '0';
@@ -414,9 +414,9 @@ function deleteImmo(immoID) {
         {IMMO_SPECIAL_OFFER}
     </td>
     <td style="text-align: right; white-space: nowrap;">
-        <a href="?cmd=immo&amp;act=add&amp;id={IMMO_ID}"> <img style="border: none;" src="images/icons/edit.gif" title="{TXT_IMMO_EDIT}" alt="{TXT_IMMO_EDIT}" /> </a>
-        <a href="?cmd=immo&amp;act=copy&amp;id={IMMO_ID}"> <img style="border: none;" src="images/icons/copy.gif" title="{TXT_IMMO_COPY}" alt="{TXT_IMMO_COPY}" /> </a>
-        <a href="javascript:deleteImmo({IMMO_ID})"> <img style="border: none;" src="images/icons/delete.gif" title="{TXT_IMMO_DELETE}" alt="{TXT_IMMO_DELETE}" /> </a>
+        <a href="?cmd=immo&amp;act=add&amp;id={IMMO_ID}"> <img style="border: none;" src="../core/Core/View/Media/icons/edit.gif" title="{TXT_IMMO_EDIT}" alt="{TXT_IMMO_EDIT}" /> </a>
+        <a href="?cmd=immo&amp;act=copy&amp;id={IMMO_ID}"> <img style="border: none;" src="../core/Core/View/Media/icons/copy.gif" title="{TXT_IMMO_COPY}" alt="{TXT_IMMO_COPY}" /> </a>
+        <a href="javascript:deleteImmo({IMMO_ID})"> <img style="border: none;" src="../core/Core/View/Media/icons/delete.gif" title="{TXT_IMMO_DELETE}" alt="{TXT_IMMO_DELETE}" /> </a>
 
     </td>
 </tr>

@@ -161,7 +161,7 @@ var catTree = {
         if (obj.select == undefined) {
             Element.extend(obj);
         }
-        obj.select('.openClosePicture')[0].src = "images/icons/minuslink.gif";
+        obj.select('.openClosePicture')[0].src = "../core/Core/View/Media/icons/minuslink.gif";
         obj.nextSibling.src = "../modules/Knowledge/View/Media/folder-open.small.png";
         obj.onclick = function() { catTree.closePart(obj); }
     },
@@ -182,7 +182,7 @@ var catTree = {
         if (obj.select == undefined) {
             Element.extend(obj);
         }
-        obj.select('.openClosePicture')[0].src = "images/icons/pluslink.gif";
+        obj.select('.openClosePicture')[0].src = "../core/Core/View/Media/icons/pluslink.gif";
         obj.nextSibling.src = "../modules/Knowledge/View/Media/folder.small.png";
         obj.onclick = function() { catTree.openPart(obj); }
     }
@@ -200,10 +200,10 @@ var switchActive = function(id, obj, action)
             if (statusMsg(transport.responseText)) {
                 var img = obj.getElementsByTagName("img")[0];
                 if (action == 0) {
-                    img.src = "images/icons/led_red.gif";
+                    img.src = "../core/Core/View/Media/icons/led_red.gif";
                     obj.onclick = function() { switchActive(id, obj, 1); }
                 } else {
-                    img.src = "images/icons/led_green.gif";
+                    img.src = "../core/Core/View/Media/icons/led_green.gif";
                     obj.onclick = function() { switchActive(id, obj, 0); }
                 }
                 new Effect.Highlight('article_'+id);
@@ -250,7 +250,7 @@ var deleteArticle = function(id)
                         <!-- BEGIN row -->
                         <li style="clear: both; width: 95%;">
                             <div style="float: left; ">
-                                <img src="images/icons/sub_arrow.gif" class="sub_arrow" style="border: none;" /><a href="javascript: void(0);" onclick="catTree.openPart(this);" style="visibility: {CATEGORY_PLUS_VISIBLITY};"><img alt="" class="openClosePicture" src="images/icons/pluslink.gif" style="border: none; margin: 2px;" /></a><img src="../modules/Knowledge/View/Media/folder.small.png" style="margin-right:8px;" id="folder_{CATEGORY_ID}" />
+                                <img src="../core/Core/View/Media/icons/sub_arrow.gif" class="sub_arrow" style="border: none;" /><a href="javascript: void(0);" onclick="catTree.openPart(this);" style="visibility: {CATEGORY_PLUS_VISIBLITY};"><img alt="" class="openClosePicture" src="../core/Core/View/Media/icons/pluslink.gif" style="border: none; margin: 2px;" /></a><img src="../modules/Knowledge/View/Media/folder.small.png" style="margin-right:8px;" id="folder_{CATEGORY_ID}" />
                             </div>
                             <div><a href="javascript: void(0);" onclick="articles.getCategory({ID})">{NAME}</a> ({ENTRY_COUNT})</div>
                             {SUB}

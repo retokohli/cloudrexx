@@ -1943,10 +1943,10 @@ class CrmLibrary
                 $spacer = null;
                 $intSpacerSize = null;
                 $intSpacerSize = (count($arrParentIds)*21);
-                $spacer .= '<img src="images/icons/pixel.gif" border="0" width="'.$intSpacerSize.'" height="11" alt="" />';
+                $spacer .= '<img src="../core/Core/View/Media/icons/pixel.gif" border="0" width="'.$intSpacerSize.'" height="11" alt="" />';
 
                 //parse variables
-                $activeImage = ($arrIndustry['status']) ? 'images/icons/led_green.gif' : 'images/icons/led_red.gif';
+                $activeImage = ($arrIndustry['status']) ? '../core/Core/View/Media/icons/led_green.gif' : '../core/Core/View/Media/icons/led_red.gif';
                 $objTpl->setVariable(array(
                     'ENTRY_ID'           => $arrIndustry['id'],
                     'CRM_SORTING'        => (int) $arrIndustry['sorting'],

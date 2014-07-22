@@ -53,7 +53,7 @@
         <td>
             <!-- BEGIN newsletter_mail_feedback_link -->
             <a href="index.php?cmd=Newsletter&amp;act=feedback&amp;id={NEWSLETTER_MAIL_ID}" title="{NEWSLETTER_FEEDBACK_OVERVIEW}">
-                <img src="images/icons/stats.png" width="16" height="16" />
+                <img src="../core/Core/View/Media/icons/stats.png" width="16" height="16" />
     {NEWSLETTER_MAIL_FEEDBACK}
             </a>
             <!-- END newsletter_mail_feedback_link -->
@@ -65,18 +65,18 @@
         <!-- <td>{NEWSLETTER_MAIL_FORMAT}</td> -->
         <!-- <td>{NEWSLETTER_MAIL_TEMPLATE}</td> -->
         <td style="white-space: nowrap; text-align: right;">
-            <a href="index.php?cmd=Newsletter&amp;act=editMail&amp;id={NEWSLETTER_MAIL_ID}" title="{TXT_NEWSLETTER_MODIFY_EMAIL}"><img src="images/icons/edit.gif" border="0" width="16" height="16" alt="{TXT_NEWSLETTER_MODIFY_EMAIL}" /></a>
-            <a href="index.php?cmd=Newsletter&amp;act=copyMail&amp;id={NEWSLETTER_MAIL_ID}" title="{TXT_NEWSLETTER_COPY_EMAIL}"><img src="images/icons/copy.gif" border="0" width="16" height="16" alt="{TXT_NEWSLETTER_COPY_EMAIL}" /></a>
-            <a href="javascript:newsletterDeleteMail({NEWSLETTER_MAIL_ID});" title="{TXT_NEWSLETTER_DELETE_EMAIL}"><img src="images/icons/delete.gif" border="0" width="17" height="17" alt="{TXT_NEWSLETTER_DELETE_EMAIL}" /></a>
+            <a href="index.php?cmd=Newsletter&amp;act=editMail&amp;id={NEWSLETTER_MAIL_ID}" title="{TXT_NEWSLETTER_MODIFY_EMAIL}"><img src="../core/Core/View/Media/icons/edit.gif" border="0" width="16" height="16" alt="{TXT_NEWSLETTER_MODIFY_EMAIL}" /></a>
+            <a href="index.php?cmd=Newsletter&amp;act=copyMail&amp;id={NEWSLETTER_MAIL_ID}" title="{TXT_NEWSLETTER_COPY_EMAIL}"><img src="../core/Core/View/Media/icons/copy.gif" border="0" width="16" height="16" alt="{TXT_NEWSLETTER_COPY_EMAIL}" /></a>
+            <a href="javascript:newsletterDeleteMail({NEWSLETTER_MAIL_ID});" title="{TXT_NEWSLETTER_DELETE_EMAIL}"><img src="../core/Core/View/Media/icons/delete.gif" border="0" width="17" height="17" alt="{TXT_NEWSLETTER_DELETE_EMAIL}" /></a>
         </td>
     </tr>
     <!-- END newsletter_list -->
 </table>
 <!-- BEGIN newsletter_list_multiAction -->
-    <img src="images/icons/arrow.gif" width="38" height="22" style="margin-left:5px;" alt="arrow" />
+    <img src="../core/Core/View/Media/icons/arrow.gif" width="38" height="22" style="margin-left:5px;" alt="arrow" />
     <a href="javascript:{}" onclick="changeCheckboxes('newsletter_mail_selection','newsletter_mail_selected[]',true); return false;" title="{TXT_NEWSLETTER_CHECK_ALL}">{TXT_NEWSLETTER_CHECK_ALL}</a> /
     <a href="javascript:{}" onclick="changeCheckboxes('newsletter_mail_selection','newsletter_mail_selected[]',false); return false;" title="{TXT_NEWSLETTER_UNCHECK_ALL}">{TXT_NEWSLETTER_UNCHECK_ALL}</a>
-    <img src="images/icons/strike.gif" width="34" height="22" alt="design" />
+    <img src="../core/Core/View/Media/icons/strike.gif" width="34" height="22" alt="design" />
     <select name="newsletter_select_action" id="newsletter_select_action" onchange="newsletterMailDoAction(this.value)">
         <option value="0" selected="selected">{TXT_NEWSLETTER_WITH_SELECTED}:</option>
         <option value="delete">{TXT_NEWSLETTER_DELETE}</option>

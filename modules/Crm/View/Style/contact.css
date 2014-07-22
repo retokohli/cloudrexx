@@ -1,5 +1,5 @@
 #loading {
-    background: url(../../../../cadmin/images/icons/loading.gif) no-repeat center center #D3D0D0;
+    background: url(../../../../core/Core/View/Media/icons/loading.gif) no-repeat center center #D3D0D0;
     display: none;
     height: 100%;
     left: 0;
@@ -36,7 +36,7 @@
     min-width: 70px;
 }
 .crm-deleteLink, .crm_deleteLink_address {
-    background: url("../../../../cadmin/images/icons/empty.gif") no-repeat scroll left center transparent;
+    background: url("../../../../core/Core/View/Media/icons/empty.gif") no-repeat scroll left center transparent;
     cursor: pointer;
     display: inline-block;
     height: 16px;
@@ -52,7 +52,7 @@
     width: 16px;
 }
 .crm-addNewLink, .crm_addNewLink_address {
-    background: url("../../../../cadmin/images/icons/add-crm.png") no-repeat scroll left center transparent;
+    background: url("../../../../core/Core/View/Media/icons/add-crm.png") no-repeat scroll left center transparent;
     cursor: pointer;
     display: inline-block;
     height: 16px;
@@ -64,10 +64,10 @@
     position: relative;
 }
 .not_primary_field, .not_primary_field_address {
-    background: url("../../../../cadmin/images/icons/Tick-icon.png") no-repeat scroll left center transparent;
+    background: url("../../../../core/Core/View/Media/icons/Tick-icon.png") no-repeat scroll left center transparent;
 }
 .primary_field, .primary_field_address {
-    background: url("../../../../cadmin/images/icons/Tick-primary.png") no-repeat scroll left center transparent;
+    background: url("../../../../core/Core/View/Media/icons/Tick-primary.png") no-repeat scroll left center transparent;
 }
 .address_list_container {
     float: left;
@@ -115,7 +115,7 @@ body .address_list_container input {
 #content #selectContact,#content .selectCustomer {
     padding-left: 20px;
     height: 16px;
-    background: url("../../../../cadmin/images/icons/search_lens.jpg") no-repeat scroll left center transparent;
+    background: url("../../../../core/Core/View/Media/icons/search_lens.jpg") no-repeat scroll left center transparent;
     border-right: 1px solid #BBB;
 }
 .newContactSelecter {
@@ -154,7 +154,7 @@ table#contacts tfoot tr td, table#websitesTable tfoot tr td {
     padding-left: 15px;
 }
 #addContact, #addWebsite {
-    background-image: url("../../../../cadmin/images/icons/icon-user-add.png");
+    background-image: url("../../../../core/Core/View/Media/icons/icon-user-add.png");
     background-position: left top;
     padding-left: 20px;
     background-repeat: no-repeat;
@@ -166,10 +166,10 @@ table#contacts tfoot tr td, table#websitesTable tfoot tr td {
     height: 17px;
 }
 .header-expand{
-    background: url("../../../../cadmin/images/icons/collapce_right.gif") no-repeat scroll left center transparent;
+    background: url("../../../../core/Core/View/Media/icons/collapce_right.gif") no-repeat scroll left center transparent;
 }
 .header-collapse{
-    background: url("../../../../cadmin/images/icons/expand-header.gif") no-repeat scroll left center transparent;
+    background: url("../../../../core/Core/View/Media/icons/expand-header.gif") no-repeat scroll left center transparent;
 }
 .clear {clear: both;float: none;}
 #access .input-addcontact {width: 156px !important;}
@@ -184,7 +184,7 @@ table#contacts tfoot tr td, table#websitesTable tfoot tr td {
 }
 .spacing{float: left;width: 1%;}
 .delete-customer{
-    background: url("../../../../cadmin/images/icons/cross-grey.png") no-repeat scroll left center white;
+    background: url("../../../../core/Core/View/Media/icons/cross-grey.png") no-repeat scroll left center white;
     cursor: pointer;
     height: 16px;
     margin-left: -20px;

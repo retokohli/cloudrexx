@@ -96,7 +96,7 @@ form .formUploadedFiles .deleteIcon {
     margin: 2px 0 0 0;
     overflow: hidden;
     text-indent: 16px;
-    background: url('../../cadmin/images/icons/delete.gif') no-repeat;
+    background: url('../../core/Core/View/Media/icons/delete.gif') no-repeat;
 }
 
 form label {

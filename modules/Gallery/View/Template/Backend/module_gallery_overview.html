@@ -44,8 +44,8 @@ function selectMultiAction()
 	<!-- BEGIN showCategories -->
 	<tr class="row{OVERVIEW_ROWCLASS}">
 		<td width="1%"><input type="checkbox" name="selectedCategoryId[]" id="selectedCategoryId" value="{OVERVIEW_ID}"></td>
-		<td width="1%"><a href="?cmd=Gallery&amp;act=activate_category&amp;id={OVERVIEW_ID}" target="_self"><img src="images/icons/{OVERVIEW_ICON}.gif" border="0" alt="" /></a></td>
-		<td width="1%" nowrap="nowrap">{OVERVIEW_SUBCATEGORY}<img src="images/icons/folder_on.gif" border="0" alt="" />&nbsp;
+		<td width="1%"><a href="?cmd=Gallery&amp;act=activate_category&amp;id={OVERVIEW_ID}" target="_self"><img src="../core/Core/View/Media/icons/{OVERVIEW_ICON}.gif" border="0" alt="" /></a></td>
+		<td width="1%" nowrap="nowrap">{OVERVIEW_SUBCATEGORY}<img src="../core/Core/View/Media/icons/folder_on.gif" border="0" alt="" />&nbsp;
 			<input type="text" name="sortingSystem{OVERVIEW_ID}" value="{OVERVIEW_SORTING}" maxlength="5" size="5" />&nbsp;
 			<a href="?cmd=Gallery&amp;act=cat_details&amp;id={OVERVIEW_ID}">{OVERVIEW_NAME}</a>
 		</td>
@@ -54,8 +54,8 @@ function selectMultiAction()
 		<td align="center">{OVERVIEW_IMAGE_SIZE} kb&nbsp;</td>
 		<td align="right" nowrap="nowrap">
 			<div align="right" {OVERVIEW_ACTION_DISPLAY}>
-				<a href="?cmd=Gallery&amp;act=edit_category&amp;id={OVERVIEW_ID}" target="_self"><img alt="{TXT_IMG_EDIT_ALT}" title="{TXT_IMG_EDIT_ALT}" src="images/icons/edit.gif" border="0" /></a> 
-				<a href="javascript:deleteCategory({OVERVIEW_ID});" target="_self"><img alt="{TXT_IMG_DEL_ALT}" src="images/icons/delete.gif" border="0" title="{TXT_IMG_DEL_ALT}" /></a> 
+				<a href="?cmd=Gallery&amp;act=edit_category&amp;id={OVERVIEW_ID}" target="_self"><img alt="{TXT_IMG_EDIT_ALT}" title="{TXT_IMG_EDIT_ALT}" src="../core/Core/View/Media/icons/edit.gif" border="0" /></a> 
+				<a href="javascript:deleteCategory({OVERVIEW_ID});" target="_self"><img alt="{TXT_IMG_DEL_ALT}" src="../core/Core/View/Media/icons/delete.gif" border="0" title="{TXT_IMG_DEL_ALT}" /></a> 
 			</div>
 		</td>
 	</tr>
@@ -66,10 +66,10 @@ function selectMultiAction()
 <table cellpadding="2" cellspacing="0" border="0">
 	<tr>
 		<td>
-			<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="" />
+			<img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="" />
 			<a href="#" onClick="changeCheckboxes('frmShowGallery','selectedCategoryId[]',true); return false;">{TXT_SELECT_ALL}</a> / 
 			<a href="#" onClick="changeCheckboxes('frmShowGallery','selectedCategoryId[]',false); return false;">{TXT_DESELECT_ALL}</a>
-			<img src="images/icons/strike.gif">
+			<img src="../core/Core/View/Media/icons/strike.gif">
 			<select name="frmShowGallery_MultiAction" onChange="selectMultiAction();">
 				<option value="0">{TXT_SUBMIT_SELECT}</option>
 				<option value="delete">{TXT_SUBMIT_DELETE}</option>

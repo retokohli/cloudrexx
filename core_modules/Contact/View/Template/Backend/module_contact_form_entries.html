@@ -44,14 +44,14 @@ function selectMultiAction(order)
 				<td>
 				    {CONTACT_FORM_DATE}
 				    <!-- BEGIN contact_form_entry_attach -->
-				    <img src="images/icons/attach.png" alt="Attach" style="position: relative; top: 3px;" />
+				    <img src="../core/Core/View/Media/icons/attach.png" alt="Attach" style="position: relative; top: 3px;" />
 				    <!-- END contact_form_entry_attach -->
 				</td>
 				<!-- BEGIN contact_form_entry_data -->
 				<td>{CONTACT_FORM_ENTRIES_CELL_CONTENT}</td>
 				<!-- END contact_form_entry_data -->
-				<td style="text-align:right;"><a href="index.php?cmd=Contact&amp;act=entries&amp;formId={CONTACT_FORM_ID}&amp;entryId={CONTACT_FORM_ENTRY_ID}" title="{TXT_CONTACT_DETAILS}"><img src="images/icons/details.gif" border="0" width="16" height="16" alt="{TXT_CONTACT_DETAILS}" /></a>
-				<a href="javascript:confirmDeleteEntry({CONTACT_FORM_ENTRY_ID})" title="{TXT_CONTACT_DELETE_ENTRY}"><img src="images/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_CONTACT_DELETE_ENTRY}" /></a></td>
+				<td style="text-align:right;"><a href="index.php?cmd=Contact&amp;act=entries&amp;formId={CONTACT_FORM_ID}&amp;entryId={CONTACT_FORM_ENTRY_ID}" title="{TXT_CONTACT_DETAILS}"><img src="../core/Core/View/Media/icons/details.gif" border="0" width="16" height="16" alt="{TXT_CONTACT_DETAILS}" /></a>
+				<a href="javascript:confirmDeleteEntry({CONTACT_FORM_ENTRY_ID})" title="{TXT_CONTACT_DELETE_ENTRY}"><img src="../core/Core/View/Media/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_CONTACT_DELETE_ENTRY}" /></a></td>
 			</tr>
 		<!-- END contact_form_entries -->
 	</tbody>
@@ -60,10 +60,10 @@ function selectMultiAction(order)
 <table cellpadding="2" cellspacing="0" border="0">
 	<tr>
 		<td>
-			<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
+			<img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
 			<a href="#" onclick="changeCheckboxes('frmContact','selectedEntries[]',true); return false;">{TXT_CONTACT_SELECT_ALL}</a> /
 			<a href="#" onclick="changeCheckboxes('frmContact','selectedEntries[]',false); return false;">{TXT_CONTACT_DESELECT_ALL}</a>
-			<img src="images/icons/strike.gif" alt="design" />
+			<img src="../core/Core/View/Media/icons/strike.gif" alt="design" />
 			<select name="frmContact_MultiAction" onchange="selectMultiAction(this.value);">
 				<option value="0">{TXT_CONTACT_SUBMIT_SELECT}</option>
 				<option value="delete">{TXT_CONTACT_SUBMIT_DELETE}</option>

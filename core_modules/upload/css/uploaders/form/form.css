@@ -9,7 +9,7 @@ body {
 
 .form_uploader .delete {
     display:none;
-    background: url(../../../../../cadmin/images/icons/delete.gif) no-repeat;
+    background: url(../../../../../core/Core/View/Media/icons/delete.gif) no-repeat;
     width: 16px;
     height: 16px;
     vertical-align:middle;
@@ -18,7 +18,7 @@ body {
 
 .form_uploader .add {
     display:none;
-    background: url(../../../../../cadmin/images/icons/add.gif) no-repeat;
+    background: url(../../../../../core/Core/View/Media/icons/add.gif) no-repeat;
 	padding-left: 20px;
 	padding-top: 2px;
     height: 18px;

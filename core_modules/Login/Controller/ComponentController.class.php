@@ -46,7 +46,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 if (\FWUser::getFWUserObject()->objUser->login(true)) {
                     \Cx\Core\Csrf\Controller\Csrf::header('location: index.php');
                 }
-                $this->cx->getTemplate()->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master.html');
+                $this->cx->getTemplate()->addBlockfile('CONTENT_OUTPUT', 'content_master', 'LegacyContentMaster.html');
                 $objTemplate = $this->cx->getTemplate();
                 $objLoginManager = new \Cx\Core_Modules\Login\Controller\LoginManager();
                 $objLoginManager->getPage();

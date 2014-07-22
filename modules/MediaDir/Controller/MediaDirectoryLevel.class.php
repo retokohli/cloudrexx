@@ -216,7 +216,7 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
                     $spacer = null;
                     $intSpacerSize = null;
                     $intSpacerSize = (count($arrParentIds)*21);
-                    $spacer .= '<img src="images/icons/pixel.gif" border="0" width="'.$intSpacerSize.'" height="11" alt="" />';
+                    $spacer .= '<img src="../core/Core/View/Media/icons/pixel.gif" border="0" width="'.$intSpacerSize.'" height="11" alt="" />';
 
                     //check expanded categories
                     if($_GET['exp_level'] == 'all') {
@@ -228,12 +228,12 @@ class MediaDirectoryLevel extends MediaDirectoryLibrary
 
                     if(!empty($arrLevel['levelChildren'])) {
                         if((in_array($arrLevel['levelId'], $this->arrExpandedLevelIds) && $bolExpandLevel) || $_GET['exp_level'] == 'all'){
-                            $strLevelIcon = '<a href="index.php?cmd='.$this->moduleName.'&amp;exp_level='.$arrLevel['levelParentId'].'"><img src="images/icons/minuslink.gif" border="0" alt="{'.$this->moduleLangVar.'_LEVEL_NAME}" title="{'.$this->moduleLangVar.'_LEVEL_NAME}" /></a>';
+                            $strLevelIcon = '<a href="index.php?cmd='.$this->moduleName.'&amp;exp_level='.$arrLevel['levelParentId'].'"><img src="../core/Core/View/Media/icons/minuslink.gif" border="0" alt="{'.$this->moduleLangVar.'_LEVEL_NAME}" title="{'.$this->moduleLangVar.'_LEVEL_NAME}" /></a>';
                         } else {
-                            $strLevelIcon = '<a href="index.php?cmd='.$this->moduleName.'&amp;exp_level='.$arrLevel['levelId'].'"><img src="images/icons/pluslink.gif" border="0" alt="{'.$this->moduleLangVar.'_LEVEL_NAME}" title="{'.$this->moduleLangVar.'_LEVEL_NAME}" /></a>';
+                            $strLevelIcon = '<a href="index.php?cmd='.$this->moduleName.'&amp;exp_level='.$arrLevel['levelId'].'"><img src="../core/Core/View/Media/icons/pluslink.gif" border="0" alt="{'.$this->moduleLangVar.'_LEVEL_NAME}" title="{'.$this->moduleLangVar.'_LEVEL_NAME}" /></a>';
                         }
                     } else {
-                        $strLevelIcon = '<img src="images/icons/pixel.gif" border="0" width="11" height="11" alt="{'.$this->moduleLangVar.'_LEVEL_NAME}" title="{'.$this->moduleLangVar.'_LEVEL_NAME}" />';
+                        $strLevelIcon = '<img src="../core/Core/View/Media/icons/pixel.gif" border="0" width="11" height="11" alt="{'.$this->moduleLangVar.'_LEVEL_NAME}" title="{'.$this->moduleLangVar.'_LEVEL_NAME}" />';
                     }
 
                     //parse variables

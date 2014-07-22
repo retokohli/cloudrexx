@@ -75,17 +75,17 @@
     <td valign="top"><a href="index.php?cmd=MemberDir&amp;act=show&amp;id={MEMBERDIR_ID}">{MEMBERDIR_FIELD_1}</a></td>
 	<td valign="top">{MEMBERDIR_FIELD_2}</td>
     <td valign="top">{MEMBERDIR_FIELD_3}</td>
-    <td valign="top" style="text-align: right"><a href="?cmd=MemberDir&amp;act=exportvcf&amp;id={MEMBERDIR_ID}"><img style="margin-bottom: 1px;" border="0" src="images/icons/vcard.gif" title="{TXT_MEMBERDIR_EXPORT_CONTACT_AS_VCARD}" alt="{TXT_MEMBERDIR_EXPORT_CONTACT_AS_VCARD}" /></a> <a href="index.php?cmd=MemberDir&amp;act=editMember&amp;id={MEMBERDIR_ID}"><img src="images/icons/edit.gif" border="0" alt="Eintrag editieren" /></a> <a href="javascript:memberdirDelete({MEMBERDIR_ID})"><img src="images/icons/delete.gif" border="0" alt="Eintrag l&ouml;schen" /></a> </td>
+    <td valign="top" style="text-align: right"><a href="?cmd=MemberDir&amp;act=exportvcf&amp;id={MEMBERDIR_ID}"><img style="margin-bottom: 1px;" border="0" src="../core/Core/View/Media/icons/vcard.gif" title="{TXT_MEMBERDIR_EXPORT_CONTACT_AS_VCARD}" alt="{TXT_MEMBERDIR_EXPORT_CONTACT_AS_VCARD}" /></a> <a href="index.php?cmd=MemberDir&amp;act=editMember&amp;id={MEMBERDIR_ID}"><img src="../core/Core/View/Media/icons/edit.gif" border="0" alt="Eintrag editieren" /></a> <a href="javascript:memberdirDelete({MEMBERDIR_ID})"><img src="../core/Core/View/Media/icons/delete.gif" border="0" alt="Eintrag l&ouml;schen" /></a> </td>
   </tr>
   <!-- END memberdir_row -->
 </table>
 <table cellpadding="2" cellspacing="0" border="0">
 	<tr>
 		<td>
-			<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
+			<img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
 			<a href="#" onClick="changeCheckboxes('memberlist','selectedId[]',true); return false;">{TXT_SELECT_ALL}</a> /
 			<a href="#" onClick="changeCheckboxes('memberlist','selectedId[]',false); return false;">{TXT_DESELECT_ALL}</a>
-			<img src="images/icons/strike.gif">
+			<img src="../core/Core/View/Media/icons/strike.gif">
 			<select name="memberdir_MultiAction" onchange="selectMultiAction();">
 				<option value="0">{TXT_SUBMIT_SELECT}</option>
 				<option value="delete">{TXT_SUBMIT_DELETE}</option>

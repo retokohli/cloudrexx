@@ -76,10 +76,10 @@
 				<input type="text" name="sortingSystem{IMAGES_CATTYPE}{IMAGES_ID}" value="{IMAGES_SORTING}" maxlength="5" size="5" />
 			</td>
 			<td nowrap="nowrap" valign="top">
-				<a href="?cmd=Gallery&amp;act=activate_picture&amp;gid={CATEGORY_ID}&amp;id={IMAGES_ID}" target="_self"><img src="images/icons/{IMAGES_ACTIVE_ICON}" border="0" alt="{TXT_ACTIVATE_PICTURE}" title="{TXT_ACTIVATE_PICTURE}" /></a>
+				<a href="?cmd=Gallery&amp;act=activate_picture&amp;gid={CATEGORY_ID}&amp;id={IMAGES_ID}" target="_self"><img src="../core/Core/View/Media/icons/{IMAGES_ACTIVE_ICON}" border="0" alt="{TXT_ACTIVATE_PICTURE}" title="{TXT_ACTIVATE_PICTURE}" /></a>
 			</td>
 			<td nowrap="nowrap" valign="top">
-				<a href="?cmd=Gallery&amp;act=category_picture&amp;gid={CATEGORY_ID}&amp;id={IMAGES_ID}" target="_self"><img src="images/icons/{IMAGES_CATIMG_ICON}" border="0" alt="{TXT_SET_CATIMG}" title="{TXT_SET_CATIMG}" /></a>
+				<a href="?cmd=Gallery&amp;act=category_picture&amp;gid={CATEGORY_ID}&amp;id={IMAGES_ID}" target="_self"><img src="../core/Core/View/Media/icons/{IMAGES_CATIMG_ICON}" border="0" alt="{TXT_SET_CATIMG}" title="{TXT_SET_CATIMG}" /></a>
 			</td>
 			<td nowrap="nowrap" align="center" valign="middle">
 				{IMAGES_NAME},&nbsp;{IMAGES_LASTEDIT}<br />
@@ -104,12 +104,12 @@
 			<td nowrap="nowrap" align="right" valign="top">
 				<div align="right">
 					{IMAGES_HIDE_LINKICON_S}
-						<img src="images/icons/link.gif" border="0" alt="Link" title="Link" />&nbsp;
+						<img src="../core/Core/View/Media/icons/link.gif" border="0" alt="Link" title="Link" />&nbsp;
 					{IMAGES_HIDE_LINKICON_E}
-					<a href="index.php?cmd=Gallery&amp;act=rotate_picture&amp;catid={CATEGORY_ID}&amp;id={IMAGES_ID}" target="_self"><img alt="{TXT_IMG_ROTATE_ALT}" title="{TXT_IMG_ROTATE_ALT}" src="images/icons/rotate.gif" border="0" /></a>&nbsp;
-					<a href="javascript:resetPicture({IMAGES_ID})" target="_self"><img alt="{TXT_IMG_RESET_ALT}" title="{TXT_IMG_RESET_ALT}" src="images/icons/reset.png" border="0" /></a>&nbsp;
-					<a href="index.php?cmd=Gallery&amp;act=edit_picture&amp;id={IMAGES_ID}" target="_self"><img alt="{TXT_IMG_EDIT_ALT}" title="{TXT_IMG_EDIT_ALT}" src="images/icons/edit.gif" border="0" /></a>&nbsp;
-					<a href="javascript:deletePicture({IMAGES_ID})" target="_self"><img alt="{TXT_IMG_DELETE_ALT}" title="{TXT_IMG_DELETE_ALT}" src="images/icons/delete.gif" border="0" /></a>
+					<a href="index.php?cmd=Gallery&amp;act=rotate_picture&amp;catid={CATEGORY_ID}&amp;id={IMAGES_ID}" target="_self"><img alt="{TXT_IMG_ROTATE_ALT}" title="{TXT_IMG_ROTATE_ALT}" src="../core/Core/View/Media/icons/rotate.gif" border="0" /></a>&nbsp;
+					<a href="javascript:resetPicture({IMAGES_ID})" target="_self"><img alt="{TXT_IMG_RESET_ALT}" title="{TXT_IMG_RESET_ALT}" src="../core/Core/View/Media/icons/reset.png" border="0" /></a>&nbsp;
+					<a href="index.php?cmd=Gallery&amp;act=edit_picture&amp;id={IMAGES_ID}" target="_self"><img alt="{TXT_IMG_EDIT_ALT}" title="{TXT_IMG_EDIT_ALT}" src="../core/Core/View/Media/icons/edit.gif" border="0" /></a>&nbsp;
+					<a href="javascript:deletePicture({IMAGES_ID})" target="_self"><img alt="{TXT_IMG_DELETE_ALT}" title="{TXT_IMG_DELETE_ALT}" src="../core/Core/View/Media/icons/delete.gif" border="0" /></a>
 			    </div>
 			</td>
 		</tr>
@@ -119,10 +119,10 @@
 	<table cellpadding="2" cellspacing="0" border="0">
 		<tr>
 			<td>
-				<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
+				<img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
 				<a href="#" onclick="changeCheckboxes('frmShowImages','selectedImageId[]',true); return false;">{TXT_SELECT_ALL}</a> /
 				<a href="#" onclick="changeCheckboxes('frmShowImages','selectedImageId[]',false); return false;">{TXT_DESELECT_ALL}</a>
-				<img src="images/icons/strike.gif" alt="" />
+				<img src="../core/Core/View/Media/icons/strike.gif" alt="" />
 				<select name="frmShowImages_MultiAction" onchange="selectMultiAction();">
 					<option value="0">{TXT_SUBMIT_SELECT}</option>
 					<option value="delete">{TXT_SUBMIT_DELETE}</option>

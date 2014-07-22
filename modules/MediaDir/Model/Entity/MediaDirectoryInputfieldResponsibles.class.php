@@ -105,13 +105,13 @@ class MediaDirectoryInputfieldResponsibles extends \Cx\Modules\MediaDir\Controll
                     $strLegendStyle = 'color: #0A50A1;';
                     $strInputStyle = 'width: 300px';
                     $strInputFlagStyle = 'width: 279px; margin-bottom: 2px; padding-left: 21px;';
-                    $strDeleteImagePath = 'images/icons/delete.gif';  
+                    $strDeleteImagePath = '../core/Core/View/Media/icons/delete.gif';  
                 } else {
                     $strFieldsetStyle = 'margin-bottom: 10px; position: relative;';
                     $strLegendStyle = '';
                     $strInputStyle = ''; 
                     $strInputFlagStyle = '';
-                    $strDeleteImagePath = 'cadmin/images/icons/delete.gif';  
+                    $strDeleteImagePath = '../core/Core/View/Media/icons/delete.gif';  
                 }                
                 
                 $strBlankElement .= '<fieldset style="'.$strFieldsetStyle.'"  id="'.$this->moduleNameLC.'ResponsiblesElement_'.$intId.'_ELEMENT-KEY">';   
@@ -191,13 +191,13 @@ EOF;
                     $strLegendStyle = 'color: #0A50A1;';
                     $strInputStyle = 'width: 300px';
                     $strInputFlagStyle = 'width: 279px; margin-bottom: 2px; padding-left: 21px; position: relative;';
-                    $strDeleteImagePath = 'images/icons/delete.gif';  
+                    $strDeleteImagePath = '../core/Core/View/Media/icons/delete.gif';  
                 } else {
                     $strFieldsetStyle = 'margin-bottom: 10px; position: relative;';
                     $strLegendStyle = '';
                     $strInputStyle = ''; 
                     $strInputFlagStyle = '';
-                    $strDeleteImagePath = 'cadmin/images/icons/delete.gif';  
+                    $strDeleteImagePath = '../core/Core/View/Media/icons/delete.gif';  
                 }        
                 
                 for($intKey = 0; $intKey < $intNumElements; $intKey++) {

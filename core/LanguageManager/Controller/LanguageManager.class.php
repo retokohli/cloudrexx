@@ -826,10 +826,10 @@ class LanguageManager
                     if (($i % 2) == 0) {$class="row1";} else {$class="row2";}
 
                     if (intval($objResult->fields['backend'])==1) {
-                        $this->template->setVariable("LANGUAGE_ADMIN","<img alt='' src='images/icons/check.gif' />");
+                        $this->template->setVariable("LANGUAGE_ADMIN","<img alt='' src='../core/Core/View/Media/icons/check.gif' />");
                     }
                     if (intval($objResult->fields['frontend'])==1) {
-                        $this->template->setVariable("LANGUAGE_WEBSITE","<img alt='' src='images/icons/check.gif' />");
+                        $this->template->setVariable("LANGUAGE_WEBSITE","<img alt='' src='../core/Core/View/Media/icons/check.gif' />");
                     }
                     $this->template->setVariable(array(
                         'LANGUAGE_ROWCLASS'        => $class,
@@ -841,9 +841,9 @@ class LanguageManager
                     ));
                     // not carefully checked variable
                     if (intval($objResult->fields['status']==1)) {
-                        $langStatus ="<img alt='' src=\"images/icons/led_green.gif\" />";
+                        $langStatus ="<img alt='' src=\"../core/Core/View/Media/icons/led_green.gif\" />";
                     } else {
-                        $langStatus ="<img alt='' src=\"images/icons/led_red.gif\" />";
+                        $langStatus ="<img alt='' src=\"../core/Core/View/Media/icons/led_red.gif\" />";
                     }
                     $this->template->setVariable("LANGUAGE_STATUS",$langStatus);
                     $this->template->parse('languageRow');

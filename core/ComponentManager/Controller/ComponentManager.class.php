@@ -201,7 +201,7 @@ class ComponentManager
         $objResult = $objDatabase->Execute($query);
         
         $statusLink = '<a href="index.php?cmd=ComponentManager&amp;act=changestatus&amp;id=%d&amp;status=%d"> %s </a>';
-        $statusIcon = '<img src="images/icons/%s" alt="" />';
+        $statusIcon = '<img src="../core/Core/View/Media/icons/%s" alt="" />';
         
         $moduleLink = '<a href="index.php?cmd=%s"> %s </a>';
         $moduleArchiveLink = '<a href="index.php?cmd=%s&amp;archive=%s"> %s </a>';
@@ -525,13 +525,13 @@ class ComponentManager
                     $objTemplate->setVariable(array(
                         'MODULE_REMOVE'  => "<input type='checkbox' name='removeModule[".$objResult->fields['id']."]' value='0' />",
                         'MODULE_INSTALL' => "&nbsp;",
-                        'MODULE_STATUS'  => "<img src='images/icons/led_green.gif' alt='' />"
+                        'MODULE_STATUS'  => "<img src='../core/Core/View/Media/icons/led_green.gif' alt='' />"
                     ));
                 } else {
                     $objTemplate->setVariable(array(
                         'MODULE_INSTALL' => "<input type='checkbox' name='installModule[".$objResult->fields['id']."]' value='1' />",
                         'MODULE_REMOVE'  => "&nbsp;",
-                        'MODULE_STATUS'  => "<img src='images/icons/led_red.gif' alt='' />"
+                        'MODULE_STATUS'  => "<img src='../core/Core/View/Media/icons/led_red.gif' alt='' />"
                     ));
                 }
                 if (isset($_CORELANG[$objResult->fields['description_variable']])) {

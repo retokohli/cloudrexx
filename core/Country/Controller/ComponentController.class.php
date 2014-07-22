@@ -41,7 +41,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         define('PERMISSION_COUNTRY_VIEW', 145);
         define('PERMISSION_COUNTRY_EDIT', 146);
 
-        $this->cx->getTemplate()->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master.html');
+        $this->cx->getTemplate()->addBlockfile('CONTENT_OUTPUT', 'content_master', 'LegacyContentMaster.html');
         $cachedRoot = $this->cx->getTemplate()->getRoot();
 
         \Permission::checkAccess(PERMISSION_COUNTRY_VIEW, 'static');

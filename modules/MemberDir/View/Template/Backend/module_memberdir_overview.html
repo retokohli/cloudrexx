@@ -66,7 +66,7 @@
 		}
 		document.getElementById("status-column").style.width = (60 + (openedLevel * 20))+"px";
 
-		obj.src = "images/icons/pluslink.gif";
+		obj.src = "../core/Core/View/Media/icons/pluslink.gif";
 		obj.onclick = function(){  openSubDir(this, level-1); };
 		setColors();
 	}
@@ -96,7 +96,7 @@
                 }
             }
         }
-        obj.src = "images/icons/minuslink.gif";
+        obj.src = "../core/Core/View/Media/icons/minuslink.gif";
         obj.onclick = function(){  closeSubDir(this, level); };
         setColors();
 	}
@@ -174,9 +174,9 @@
   <tr class="{MEMBERDIR_ROW} {MEMBERDIR_PARENTS}" style="display: {MEMBERDIR_DISPLAY};">
     <td valign="top">{MEMBERDIR_DIRID}</td>
   	<td valign="top" style="padding-left:{MEMBERDIR_MARGIN}px;">
-  	<!-- BEGIN treeimg --><img src="images/icons/pluslink.gif" alt="open" onclick="openSubDir(this, {MEMBERDIR_LEVEL});" id="img{MEMBERDIR_DIRID}"/><!-- END treeimg -->
-  	<!-- BEGIN spacer --><img src="images/icons/pixel.gif" alt="space" style="height: 11px; width: 11px;" /><!-- END spacer -->
-  	<a href="index.php?cmd=MemberDir&amp;act=activate&amp;id={MEMBERDIR_DIRID}"><img src="images/icons/led_{MEMBERDIR_ACTIVE}.gif" alt="" border="0"/></a>
+  	<!-- BEGIN treeimg --><img src="../core/Core/View/Media/icons/pluslink.gif" alt="open" onclick="openSubDir(this, {MEMBERDIR_LEVEL});" id="img{MEMBERDIR_DIRID}"/><!-- END treeimg -->
+  	<!-- BEGIN spacer --><img src="../core/Core/View/Media/icons/pixel.gif" alt="space" style="height: 11px; width: 11px;" /><!-- END spacer -->
+  	<a href="index.php?cmd=MemberDir&amp;act=activate&amp;id={MEMBERDIR_DIRID}"><img src="../core/Core/View/Media/icons/led_{MEMBERDIR_ACTIVE}.gif" alt="" border="0"/></a>
   	<input type="checkbox" name="selectedId[]" id="selectedId" value="{MEMBERDIR_DIRID}" />
 
   	</td>
@@ -185,17 +185,17 @@
  	<td valign="top">{MEMBERDIR_ENTRYCOUNT}</td>
  	<td valign="top">{MEMBERDIR_LANGUAGE}</td>
  	<td valign="top"><a href="#" onclick="downloadQuestion('{MEMBERDIR_DIRID}', '{MEMBERDIR_HAS_CHILDREN}');">{TXT_DOWNLOAD}</a></td>
-    <td valign="top" style="text-align: right"><a href="index.php?cmd=MemberDir&amp;act=copy&amp;id={MEMBERDIR_DIRID}"><img src="images/icons/copy.gif" alt="" border="0"/></a> <a href="index.php?cmd=MemberDir&amp;act=editDir&amp;id={MEMBERDIR_DIRID}"><img src="images/icons/edit.gif" border="0" alt="Eintrag editieren" width="15" height="15" /></a> <a href="javascript:memberdirDelete({MEMBERDIR_DIRID})"><img src="images/icons/delete.gif" border="0" alt="Eintrag l&ouml;schen"  width="17" height="17" /></a> </td>
+    <td valign="top" style="text-align: right"><a href="index.php?cmd=MemberDir&amp;act=copy&amp;id={MEMBERDIR_DIRID}"><img src="../core/Core/View/Media/icons/copy.gif" alt="" border="0"/></a> <a href="index.php?cmd=MemberDir&amp;act=editDir&amp;id={MEMBERDIR_DIRID}"><img src="../core/Core/View/Media/icons/edit.gif" border="0" alt="Eintrag editieren" width="15" height="15" /></a> <a href="javascript:memberdirDelete({MEMBERDIR_DIRID})"><img src="../core/Core/View/Media/icons/delete.gif" border="0" alt="Eintrag l&ouml;schen"  width="17" height="17" /></a> </td>
   </tr>
   <!-- END dirlist_row -->
 </table>
 <table cellpadding="2" cellspacing="0" border="0">
 	<tr>
 		<td>
-			<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
+			<img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
 			<a href="#" onClick="changeCheckboxes('dirlist','selectedId[]',true); return false;">{TXT_SELECT_ALL}</a> /
 			<a href="#" onClick="changeCheckboxes('dirlist','selectedId[]',false); return false;">{TXT_DESELECT_ALL}</a>
-			<img src="images/icons/strike.gif" alt="strike" />
+			<img src="../core/Core/View/Media/icons/strike.gif" alt="strike" />
 			<select name="memberdir_MultiAction" onchange="selectMultiAction();">
 				<option value="0">{TXT_SUBMIT_SELECT}</option>
 				<option value="export">{TXT_DOWNLOAD}</option>

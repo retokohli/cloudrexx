@@ -52,7 +52,7 @@
               name="active_old[{SHOP_CATEGORY_ID}]" />-->
           <span style="cursor: pointer;"
                onclick="toggleCategory({SHOP_CATEGORY_ID});">
-            <img src="images/icons/{SHOP_CATEGORY_ACTIVE_PICTURE}"
+            <img src="../core/Core/View/Media/icons/{SHOP_CATEGORY_ACTIVE_PICTURE}"
                  alt="{SHOP_CATEGORY_ACTIVE}" title="{SHOP_CATEGORY_ACTIVE}" />
           </span>
         </td>
@@ -67,7 +67,7 @@
           &nbsp;
           <a href="index.php?cmd=Shop{MODULE_INDEX}&amp;act=products&amp;category_id={SHOP_CATEGORY_ID}"
             title="{TXT_PREVIEW}">
-            <img src="images/icons/details.gif" width="14" height="16"
+            <img src="../core/Core/View/Media/icons/details.gif" width="14" height="16"
                 border="0" alt="{TXT_PREVIEW}" />
           </a>
           <input type="hidden" value="{SHOP_CATEGORY_ORD}"
@@ -82,24 +82,24 @@
         <td class="a_right">
 <!-- BEGIN category_language -->
           <a href="index.php?cmd=Shop{MODULE_INDEX}&amp;act=categories&amp;category_id={SHOP_CATEGORY_ID}&amp;userFrontendLangId={SHOP_CATEGORY_LANGUAGE_ID}">
-            <img src="images/icons/edit.gif" border="0"
+            <img src="../core/Core/View/Media/icons/edit.gif" border="0"
                  alt="{SHOP_CATEGORY_LANGUAGE_EDIT}"
                  title="{SHOP_CATEGORY_LANGUAGE_EDIT}" />
           </a>
 <!-- END category_language -->
 <!--a href="index.php?cmd=Shop{MODULE_INDEX}&amp;act=categories&amp;category_id={SHOP_CATEGORY_ID}"
                 title="{TXT_EDIT}">
-              <img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" />
+              <img src="../core/Core/View/Media/icons/edit.gif" alt="{TXT_EDIT}" border="0" />
             </a-->
 
           <a href="javascript:deleteCategory('{SHOP_CATEGORY_ID}')"
               title="{TXT_DELETE}">
-            <img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" />
+            <img src="../core/Core/View/Media/icons/delete.gif" alt="{TXT_DELETE}" border="0" />
           </a>
         </td>
       </tr><!-- END category_row -->
     </table>
-    <img src="images/icons/arrow.gif" border="0" width="38" height="22" title="{TXT_MARKED}:" alt="{TXT_MARKED}:" />
+    <img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" title="{TXT_MARKED}:" alt="{TXT_MARKED}:" />
     <a href="javascript:{}" onclick="changeCheckboxes('selectCat','selected_category_id[]',true)" title="{TXT_SELECT_ALL}">{TXT_SELECT_ALL}</a>&nbsp;/&nbsp;
     <a href="javascript:{}" onclick="changeCheckboxes('selectCat','selected_category_id[]',false)" title="{TXT_REMOVE_SELECTION}">{TXT_REMOVE_SELECTION}</a>&nbsp;&nbsp;&nbsp;
     <select name="multi_action" onchange="shopCatDoAction('selectCat','selected_category_id[]',this,this.value)">
@@ -179,7 +179,7 @@
           </a>
           <img id="img_remove" onclick="remove_image()"
                style="cursor: pointer; vertical-align: text-bottom; {SHOP_PICTURE_REMOVE_DISPLAY}"
-               src="images/icons/delete.gif" border="0"
+               src="../core/Core/View/Media/icons/delete.gif" border="0"
                alt="{TXT_SHOP_DEL_ICON}" title="{TXT_SHOP_DEL_ICON}" />
           <input type="hidden" id="img" name="image_href"
               value="{SHOP_PICTURE_IMG_HREF}" />

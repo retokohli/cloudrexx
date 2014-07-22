@@ -557,9 +557,9 @@ class EgovManager extends EgovLibrary
         $objResult = $objDatabase->Execute($query);
         $i = 0;
         while(!$objResult->EOF) {
-            $StatusImg = '<img src="images/icons/status_green.gif" width="10" height="10" border="0" alt="" />';
+            $StatusImg = '<img src="../core/Core/View/Media/icons/status_green.gif" width="10" height="10" border="0" alt="" />';
             if ($objResult->fields["product_status"]!=1) {
-                $StatusImg = '<img src="images/icons/status_red.gif" width="10" height="10" border="0" alt="" />';
+                $StatusImg = '<img src="../core/Core/View/Media/icons/status_red.gif" width="10" height="10" border="0" alt="" />';
             }
 
             $query_orders = "
@@ -1705,9 +1705,9 @@ class EgovManager extends EgovLibrary
         $objResult = $objDatabase->Execute($query);
         $i = 0;
         while(!$objResult->EOF) {
-            $StatusImg = '<img src="images/icons/status_green.gif" width="10" height="10" border="0" alt="" />';
+            $StatusImg = '<img src="../core/Core/View/Media/icons/status_green.gif" width="10" height="10" border="0" alt="" />';
             if ($objResult->fields["product_status"]!=1) {
-                $StatusImg = '<img src="images/icons/status_red.gif" width="10" height="10" border="0" alt="" />';
+                $StatusImg = '<img src="../core/Core/View/Media/icons/status_red.gif" width="10" height="10" border="0" alt="" />';
             }
 
             $this->objTemplate->setVariable(array(

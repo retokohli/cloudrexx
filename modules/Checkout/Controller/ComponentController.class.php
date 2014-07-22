@@ -42,7 +42,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
                 \Permission::checkAccess(161, 'static');
-                $this->cx->getTemplate()->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master.html');
+                $this->cx->getTemplate()->addBlockfile('CONTENT_OUTPUT', 'content_master', 'LegacyContentMaster.html');
                 $objTemplate = $this->cx->getTemplate();
 
                 $subMenuTitle = $_CORELANG['TXT_CHECKOUT_MODULE'];

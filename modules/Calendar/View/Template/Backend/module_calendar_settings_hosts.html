@@ -76,14 +76,14 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,
         <!--  BEGIN hostList -->
         <tr class="{CALENDAR_HOST_ROW}">
            <td style="text-align: center;"><input type="checkbox" name="selectedHostId[]" id="selectedHostId" value="{CALENDAR_HOST_ID}" /></td>
-           <td style="text-align: center;"><a href="index.php?cmd={CALENDAR_MODULE_NAME}&amp;act=settings&amp;tpl=hosts&amp;switch_status={CALENDAR_HOST_ID}"><img src="images/icons/led_{CALENDAR_HOST_LED}.gif" border="0" alt="{CALENDAR_HOST_STATUS}" title="{CALENDAR_HOST_STATUS}" /></a></td>
+           <td style="text-align: center;"><a href="index.php?cmd={CALENDAR_MODULE_NAME}&amp;act=settings&amp;tpl=hosts&amp;switch_status={CALENDAR_HOST_ID}"><img src="../core/Core/View/Media/icons/led_{CALENDAR_HOST_LED}.gif" border="0" alt="{CALENDAR_HOST_STATUS}" title="{CALENDAR_HOST_STATUS}" /></a></td>
            <td><a href="index.php?cmd={CALENDAR_MODULE_NAME}&amp;act=settings&amp;tpl=modify_host&amp;id={CALENDAR_HOST_ID}"><b>{CALENDAR_HOST_TITLE}</b></a></td>
            <td><a href="{CALENDAR_HOST_URI}" target="_blank" >{CALENDAR_HOST_URI}</a></td>
            <td>{CALENDAR_HOST_CATEGORY}</td>
            <td>{CALENDAR_HOST_KEY}</td>
            <td style="text-align: right;">
-                <a href="index.php?cmd={CALENDAR_MODULE_NAME}&amp;act=settings&amp;tpl=modify_host&amp;id={CALENDAR_HOST_ID}" target="_self" title="{CALENDAR_HOST_TITLE} {TXT_CALENDAR_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{CALENDAR_HOST_TITLE} {TXT_CALENDAR_EDIT}" title="{CALENDAR_HOST_TITLE} {TXT_CALENDAR_EDIT}" /></a>
-                <a href="javascript:deleteHost('{CALENDAR_HOST_ID}');" title="{CALENDAR_HOST_TITLE} {TXT_CALENDAR_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{CALENDAR_HOST_TITLE} {TXT_CALENDAR_DELETE}" title="{CALENDAR_HOST_TITLE} {TXT_CALENDAR_DELETE}" /></a>
+                <a href="index.php?cmd={CALENDAR_MODULE_NAME}&amp;act=settings&amp;tpl=modify_host&amp;id={CALENDAR_HOST_ID}" target="_self" title="{CALENDAR_HOST_TITLE} {TXT_CALENDAR_EDIT}"><img src="../core/Core/View/Media/icons/edit.gif" border="0" alt="{CALENDAR_HOST_TITLE} {TXT_CALENDAR_EDIT}" title="{CALENDAR_HOST_TITLE} {TXT_CALENDAR_EDIT}" /></a>
+                <a href="javascript:deleteHost('{CALENDAR_HOST_ID}');" title="{CALENDAR_HOST_TITLE} {TXT_CALENDAR_DELETE}"><img src="../core/Core/View/Media/icons/delete.gif" border="0" alt="{CALENDAR_HOST_TITLE} {TXT_CALENDAR_DELETE}" title="{CALENDAR_HOST_TITLE} {TXT_CALENDAR_DELETE}" /></a>
             </td>
         </tr>
         <!-- END hostList -->
@@ -97,10 +97,10 @@ Style[0]=["","","","","",,"black","#ffffe1","","","",,,,1,"#000000",2,21,0.3,,2,
     <table cellpadding="2" cellspacing="0" border="0">
         <tr>
             <td style="border: 0px;">
-                <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
+                <img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
                 <a href="#" onclick="changeCheckboxes('formSettingsHosts','selectedHostId',true); return false;">{TXT_SELECT_ALL}</a> /
                 <a href="#" onclick="changeCheckboxes('formSettingsHosts','selectedHostId',false); return false;">{TXT_DESELECT_ALL}</a>
-                <img src="images/icons/strike.gif" alt="space" />
+                <img src="../core/Core/View/Media/icons/strike.gif" alt="space" />
                 <select name="formSettingsHosts_MultiAction" onchange="selectMultiAction();">
                     <option value="0">{TXT_SUBMIT_SELECT}</option>
                     <option value="activate">{TXT_SUBMIT_ACTIVATE}</option>

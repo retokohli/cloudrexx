@@ -51,19 +51,19 @@ cx.ready(function() {
 	http = getXMLHttpRequestObj();
 	
 	var imgDetails = new Image();
-	imgDetails.src = 'images/icons/details.gif';
+	imgDetails.src = '../core/Core/View/Media/icons/details.gif';
 	imgDetails.title = '{TXT_IMMO_DETAILS}';
 	imgDetails.alt = '{TXT_IMMO_DETAILS}';
 	imgDetails.border = '0';
 
 	var imgDelete = new Image();
-	imgDelete.src = 'images/icons/delete.gif';
+	imgDelete.src = '../core/Core/View/Media/icons/delete.gif';
 	imgDelete.title = '{TXT_IMMO_DELETE}';
 	imgDelete.alt = '{TXT_IMMO_DELETE}';
 	imgDelete.border = '0';
 
 	var imgComment = new Image();
-	imgComment.src = 'images/icons/note.gif';
+	imgComment.src = '../core/Core/View/Media/icons/note.gif';
 	imgComment.title = '{TXT_IMMO_DELETE}';
 	imgComment.alt = '{TXT_IMMO_DELETE}';
 	imgComment.border = '0';
@@ -240,7 +240,7 @@ cx.ready(function() {
 	            	comment[i] = comment[i].replace(/\r\n|\r|\n/g, "<br />");
 	            	commentTD = document.createElement("td");
 	            	commentTD.style.whiteSpace="nowrap";
-	            	commentTD.innerHTML = '<img onmouseout="hideTip();" onmouseover="showTip(\''+i+'\', this);" src="images/icons/note.gif" alt="comment" width="12" height="12" />';
+	            	commentTD.innerHTML = '<img onmouseout="hideTip();" onmouseover="showTip(\''+i+'\', this);" src="../core/Core/View/Media/icons/note.gif" alt="comment" width="12" height="12" />';
 	            	
 	            	row.appendChild(commentTD);
 	            	row.appendChild(createTdWithText(unescape(contacts[i].timestamp)));
@@ -318,7 +318,7 @@ cx.ready(function() {
 
 
 <div style="float: right;">
-	<a href="?cmd=immo&amp;act=export&amp;type=interests&amp;immo_id={IMMO_ID}"> <img style="vertical-align: middle; border: 0;" src="images/icons/excel.gif" title="export" alt="export" /> {TXT_IMMO_DOWNLOAD_LIST}</a>
+	<a href="?cmd=immo&amp;act=export&amp;type=interests&amp;immo_id={IMMO_ID}"> <img style="vertical-align: middle; border: 0;" src="../core/Core/View/Media/icons/excel.gif" title="export" alt="export" /> {TXT_IMMO_DOWNLOAD_LIST}</a>
 </div>
 
 
@@ -387,8 +387,8 @@ cx.ready(function() {
 	<td><span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{IMMO_COMMENT_TEXT}</span></td>
 	<td>{IMMO_TIMESTAMP}&nbsp;</td>
 	<td style="text-align: right;">
-    	<a href="?cmd=immo&amp;act=interestdetails&amp;id={IMMO_CONTACT_ID}" title="{TXT_IMMO_DETAILS}"> <img style="border: none;" src="images/icons/details.gif" title="{TXT_IMMO_DETAILS}" alt="{TXT_IMMO_DETAILS}" /> </a>
-    	<a href="javascript:deleteContact({IMMO_CONTACT_ID})" title="{TXT_IMMO_DELETE}"> <img style="border: none;" src="images/icons/delete.gif" title="{TXT_IMMO_DELETE}" alt="{TXT_IMMO_DELETE}" /> </a>
+    	<a href="?cmd=immo&amp;act=interestdetails&amp;id={IMMO_CONTACT_ID}" title="{TXT_IMMO_DETAILS}"> <img style="border: none;" src="../core/Core/View/Media/icons/details.gif" title="{TXT_IMMO_DETAILS}" alt="{TXT_IMMO_DETAILS}" /> </a>
+    	<a href="javascript:deleteContact({IMMO_CONTACT_ID})" title="{TXT_IMMO_DELETE}"> <img style="border: none;" src="../core/Core/View/Media/icons/delete.gif" title="{TXT_IMMO_DELETE}" alt="{TXT_IMMO_DELETE}" /> </a>
     </td>
 </tr>
 <!-- END downloads -->

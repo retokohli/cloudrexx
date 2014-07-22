@@ -18,13 +18,13 @@
     text-align: right;
     line-height: 22px; /* same as #progressBar height if we want text middle aligned */
     width: 0;
-    background: url("../../../../cadmin/images/icons/Load.gif")
+    background: url("../../../../core/Core/View/Media/icons/Load.gif")
 }
 .arrow-down {
-    background: url("../../../../cadmin/images/icons/advancedsearch-down.png") no-repeat scroll right 3px #FFFFFF;
+    background: url("../../../../core/Core/View/Media/icons/advancedsearch-down.png") no-repeat scroll right 3px #FFFFFF;
 }
 .arrow-up {
-    background: url("../../../../cadmin/images/icons/advancedsearch-up.png") no-repeat scroll right 3px #FFFFFF;
+    background: url("../../../../core/Core/View/Media/icons/advancedsearch-up.png") no-repeat scroll right 3px #FFFFFF;
 }
 .crm-watermark {
     color: #AAAAAA;
@@ -47,7 +47,7 @@ table.adminlist table.innerTable tr td {
     padding: 0 0 0 17px;
 }
 table.adminlist td table td { height: 0px; line-height: 12px; }
-.ui-autocomplete-loading { background: white url('../../../../cadmin/images/icons/ui-anim_basic_16x16.gif') right center no-repeat; }
+.ui-autocomplete-loading { background: white url('../../../../core/Core/View/Media/icons/ui-anim_basic_16x16.gif') right center no-repeat; }
 input#importfile {
     position: absolute;
     left: -5000px; /** move out of the screen */
@@ -59,7 +59,7 @@ div.csvImprtSteps{font-size: 46px;font-weight: bold;color: #3186AF;text-align: c
 .text_description{color: #333;font-weight: normal;}
 .warning{display: none;}
 body #content input.disabled{background: #ccc;}
-.import-button { background: url('../../../../cadmin/images/icons/import.png') left center no-repeat transparent; padding-left: 15px; }
+.import-button { background: url('../../../../core/Core/View/Media/icons/import.png') left center no-repeat transparent; padding-left: 15px; }
 .clear{clear: both;}
 #Import .ui-state-highlight{background: #DFF0FE;display: none;}
 #Import .ui-state-error{background: #FEC9CF;display: none;}
@@ -73,7 +73,7 @@ table#mapCSVColumn tbody tr td.not_match {background-color: whiteSmoke;}
 .notesdate{padding: 1px 0 1px 7px;margin: 5px 0;}
 #notesCategoriesLink, .CategoriesDropDownLink,#taskStatusPanel {padding: 1px 0 1px 7px;margin: 5px 0;border: 1px solid #DDDDDD; }
 #notesCategoriesLink, .CategoriesDropDownLink {width: 255px;}
-#notesCategoriesLink, .CategoriesDropDownLink, .CategoriesDropDownLink:hover,#notesCategoriesLink:hover {background: url('../../../../cadmin/images/icons/crm_arrow_down.gif') no-repeat 240px 3px  #fff;}
+#notesCategoriesLink, .CategoriesDropDownLink, .CategoriesDropDownLink:hover,#notesCategoriesLink:hover {background: url('../../../../core/Core/View/Media/icons/crm_arrow_down.gif') no-repeat 240px 3px  #fff;}
 #taskStatusPanel {background: #fff;min-width: 70px;padding: 0}
 #content #taskStatusPanel a {
     padding: 5px 0;
@@ -130,25 +130,25 @@ table#mapCSVColumn tbody tr td.not_match {background-color: whiteSmoke;}
     min-height: 40px;
 }
 .notesItem {
-    background: url('../../../../cadmin/images/icons/customer_note.png') no-repeat 10px 7px  transparent;
+    background: url('../../../../core/Core/View/Media/icons/customer_note.png') no-repeat 10px 7px  transparent;
 }
 .notesItem_1 {
-    background: url('../../../../cadmin/images/icons/key_icon.png') no-repeat 10px 7px  transparent;
+    background: url('../../../../core/Core/View/Media/icons/key_icon.png') no-repeat 10px 7px  transparent;
 }
 .notesItem_13 {
-    background: url('../../../../cadmin/images/icons/customer_note.png') no-repeat 10px 7px  transparent;
+    background: url('../../../../core/Core/View/Media/icons/customer_note.png') no-repeat 10px 7px  transparent;
 }
 .notesItem_14 {
-    background: url('../../../../cadmin/images/icons/acquire.png') no-repeat 10px 7px  transparent;
+    background: url('../../../../core/Core/View/Media/icons/acquire.png') no-repeat 10px 7px  transparent;
 }
 .notesItem_73 {
-    background: url('../../../../cadmin/images/icons/email.png') no-repeat 10px 7px  transparent;
+    background: url('../../../../core/Core/View/Media/icons/email.png') no-repeat 10px 7px  transparent;
 }
 .notesItem_74 {
-    background: url('../../../../cadmin/images/icons/call.png') no-repeat 10px 7px  transparent;
+    background: url('../../../../core/Core/View/Media/icons/call.png') no-repeat 10px 7px  transparent;
 }
 .notesItem_75 {
-    background: url('../../../../cadmin/images/icons/appointment.png') no-repeat 10px 7px  transparent;
+    background: url('../../../../core/Core/View/Media/icons/appointment.png') no-repeat 10px 7px  transparent;
 }
 .taskTypeItem {
     background-image: url('../../../../modules/Crm/View/Media/task_default.png');

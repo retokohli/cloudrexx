@@ -44,7 +44,7 @@ function selectMultiAction() {
 		<!-- BEGIN showComments -->
 		<tr class="{COMMENT_ROWCLASS}">
 			<td><input type="checkbox" name="selectedCommentsId[]" id="selectedCommentsId" value="{COMMENT_ID}" /></td>
-			<td><a href="?cmd=Data&amp;act=commentStatus&amp;id={COMMENT_ID}" target="_self"><img src="images/icons/{COMMENT_STATUS_ICON}.gif" border="0" alt="{TXT_IMGALT_STATUS}" title="{TXT_IMGALT_STATUS}" /></a></td>
+			<td><a href="?cmd=Data&amp;act=commentStatus&amp;id={COMMENT_ID}" target="_self"><img src="../core/Core/View/Media/icons/{COMMENT_STATUS_ICON}.gif" border="0" alt="{TXT_IMGALT_STATUS}" title="{TXT_IMGALT_STATUS}" /></a></td>
 			<td>{COMMENT_DATE}</td>
 			<td><a href="?cmd=Data&amp;act=editComment&amp;id={COMMENT_ID}" target="_self" title="{COMMENT_SUBJECT} - {TXT_IMGALT_EDIT}">{COMMENT_SUBJECT}</a></td>
 			<td>{COMMENT_CONTENT}</td>
@@ -52,8 +52,8 @@ function selectMultiAction() {
 			<td>{COMMENT_LANGUAGE}</td>			
 			<td>
 				<div align="right">
-					<a href="?cmd=Data&amp;act=editComment&amp;id={COMMENT_ID}" target="_self" title="{TXT_IMGALT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{TXT_IMGALT_EDIT}" title="{TXT_IMGALT_EDIT}" /></a>
-					<a href="javascript:deleteComment({COMMENT_ID});" target="_self" title="{TXT_IMGALT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_IMGALT_DELETE}" title="{TXT_IMGALT_DELETE}" /></a>
+					<a href="?cmd=Data&amp;act=editComment&amp;id={COMMENT_ID}" target="_self" title="{TXT_IMGALT_EDIT}"><img src="../core/Core/View/Media/icons/edit.gif" border="0" alt="{TXT_IMGALT_EDIT}" title="{TXT_IMGALT_EDIT}" /></a>
+					<a href="javascript:deleteComment({COMMENT_ID});" target="_self" title="{TXT_IMGALT_DELETE}"><img src="../core/Core/View/Media/icons/delete.gif" border="0" alt="{TXT_IMGALT_DELETE}" title="{TXT_IMGALT_DELETE}" /></a>
 				</div>
 			</td>
 		</tr>
@@ -68,10 +68,10 @@ function selectMultiAction() {
 	<table cellpadding="2" cellspacing="0" border="0">
 		<tr>
 			<td>
-				<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_COMMENTS_MARKED}:" />
+				<img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_COMMENTS_MARKED}:" />
 				<a href="#" onclick="changeCheckboxes('frmShowComments','selectedCommentsId[]',true); return false;">{TXT_COMMENTS_SELECT_ALL}</a> / 
 				<a href="#" onclick="changeCheckboxes('frmShowComments','selectedCommentsId[]',false); return false;">{TXT_COMMENTS_DESELECT_ALL}</a>
-				<img src="images/icons/strike.gif" alt="" />
+				<img src="../core/Core/View/Media/icons/strike.gif" alt="" />
 				<select name="frmShowComments_MultiAction" onchange="selectMultiAction();">
 					<option value="0">{TXT_COMMENTS_SUBMIT_SELECT}</option>
 					<option value="activate">{TXT_COMMENTS_SUBMIT_ACTIVATE}</option>

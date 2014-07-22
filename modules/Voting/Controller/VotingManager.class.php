@@ -200,7 +200,7 @@ class VotingManager
                     'VOTING_ROW_NR'        => $row = $row % 2 == 1 ? 2 : 1,
                     'VOTING_EMAIL'        => htmlentities($objMails->fields['email'], ENT_QUOTES),
                     'VOTING_EMAIL_ID'    => $objMails->fields['id'],
-                    'VOTING_VALID'    => $objMails->fields['valid'] == '1' ? '<img src="images/icons/check_mark.gif" width="16" height="16" alt="'.$_ARRAYLANG['TXT_VOTING_EMAIL_IS_VAILD'].'" />' : '<img src="images/icons/question_mark.gif" width="16" height="16" alt="'.$_ARRAYLANG['TXT_VOTING_EMAIL_ISNT_VAILD'].'" />'
+                    'VOTING_VALID'    => $objMails->fields['valid'] == '1' ? '<img src="../core/Core/View/Media/icons/check_mark.gif" width="16" height="16" alt="'.$_ARRAYLANG['TXT_VOTING_EMAIL_IS_VAILD'].'" />' : '<img src="../core/Core/View/Media/icons/question_mark.gif" width="16" height="16" alt="'.$_ARRAYLANG['TXT_VOTING_EMAIL_ISNT_VAILD'].'" />'
                 ));
 
                 if ($objMails->fields['valid'] == '1') {
@@ -258,7 +258,7 @@ class VotingManager
                     $imagewidth = round($percentage,0);
                 }
                 $votingResultText .= stripslashes($objResult->fields['question'])."<br />\n";
-                $votingResultText .= "<img src='images/icons/$images.gif' width='$imagewidth%' height=\"10\" alt=\"$votes ".$_ARRAYLANG['TXT_VOTES']." / $percentage %\" />";
+                $votingResultText .= "<img src='../core/Core/View/Media/icons/$images.gif' width='$imagewidth%' height=\"10\" alt=\"$votes ".$_ARRAYLANG['TXT_VOTES']." / $percentage %\" />";
                 $votingResultText .= "&nbsp;<font size='1'>$votes ".$_ARRAYLANG['TXT_VOTES']." / $percentage %</font><br />\n";
                 $objResult->MoveNext();
             }

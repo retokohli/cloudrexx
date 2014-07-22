@@ -44,7 +44,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
             case \Cx\Core\Core\Controller\Cx::MODE_BACKEND:
 
-                $this->cx->getTemplate()->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master.html');
+                $this->cx->getTemplate()->addBlockfile('CONTENT_OUTPUT', 'content_master', 'LegacyContentMaster.html');
                 $objTemplate = $this->cx->getTemplate();
 
                 \Permission::checkAccess(149, 'static');

@@ -81,7 +81,7 @@ function shopProductsIsChecked(fieldName)
       </td>
       <td width="1%" class="a_right f_bold">{SHOP_HEADING_PRODUCT_ORD}</td>
       <td width="1%">
-        <img src="images/icons/home.gif" alt="{TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE}" />
+        <img src="../core/Core/View/Media/icons/home.gif" alt="{TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE}" />
         <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_SHOP_SHOW_PRODUCT_ON_START_PAGE_TIP}</span>
       </td>
       <td width="50%" class="f_bold">{SHOP_HEADING_PRODUCT_NAME}</td>
@@ -110,7 +110,7 @@ function shopProductsIsChecked(fieldName)
         {SHOP_PRODUCT_ID}
         <input type="hidden" name="product_id[{SHOP_PRODUCT_ID}]" value="{SHOP_PRODUCT_ID}" /></td>
       <td class="a_center">
-        <img src="images/icons/{SHOP_PRODUCT_STATUS_PICTURE}" alt="{TXT_PRODUCT_STATUS}" title="{TXT_PRODUCT_STATUS}" />
+        <img src="../core/Core/View/Media/icons/{SHOP_PRODUCT_STATUS_PICTURE}" alt="{TXT_PRODUCT_STATUS}" title="{TXT_PRODUCT_STATUS}" />
       </td>
       <td>
         <input type="text" name="ord[{SHOP_PRODUCT_ID}]" size="3" maxlength="5"
@@ -167,30 +167,30 @@ function shopProductsIsChecked(fieldName)
       <td class="a_right">
         <a href="index.php?cmd=Shop{MODULE_INDEX}&amp;act=products&amp;tpl=manage&amp;id={SHOP_PRODUCT_ID}&amp;new=1"
            title="{TXT_AS_TEMPLATE}">
-          <img src="images/icons/pages.gif" alt="{TXT_AS_TEMPLATE}" border="0" />
+          <img src="../core/Core/View/Media/icons/pages.gif" alt="{TXT_AS_TEMPLATE}" border="0" />
         </a>
 
 <!-- BEGIN product_language -->
         <a href="index.php?cmd=Shop{MODULE_INDEX}&amp;act=products&amp;tpl=manage&amp;id={SHOP_PRODUCT_ID}&amp;userFrontendLangId={SHOP_PRODUCT_LANGUAGE_ID}">
-          <img src="images/icons/edit.gif" border="0"
+          <img src="../core/Core/View/Media/icons/edit.gif" border="0"
                alt="{SHOP_PRODUCT_LANGUAGE_EDIT}"
                title="{SHOP_PRODUCT_LANGUAGE_EDIT}" />
         </a>
 <!-- END product_language -->
 <!--        <a href="index.php?cmd=Shop{MODULE_INDEX}&amp;act=products&amp;tpl=manage&amp;id={SHOP_PRODUCT_ID}"
            title="{TXT_SHOP_EDIT}">
-          <img src="images/icons/edit.gif"
+          <img src="../core/Core/View/Media/icons/edit.gif"
                alt="{TXT_SHOP_EDIT}" border="0" />
         </a>-->
 
         <a href="javascript:deleteProduct('{SHOP_PRODUCT_ID}')" title="{TXT_DELETE}">
-          <img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" />
+          <img src="../core/Core/View/Media/icons/delete.gif" alt="{TXT_DELETE}" border="0" />
         </a>
       </td>
     </tr>
 <!-- END productRow -->
   </table>
-  <img src="images/icons/arrow.gif" border="0" width="38" height="22" title="{TXT_MARKED}:" alt="{TXT_MARKED}:" />
+  <img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" title="{TXT_MARKED}:" alt="{TXT_MARKED}:" />
   <a href="javascript:{}" onclick="changeCheckboxes('product_list','selectedProductId[]',true)" title="{TXT_SELECT_ALL}">{TXT_SELECT_ALL}</a>&nbsp;/&nbsp;
   <a href="javascript:{}" onclick="changeCheckboxes('product_list','selectedProductId[]',false)" title="{TXT_REMOVE_SELECTION}">{TXT_REMOVE_SELECTION}</a>&nbsp;&nbsp;&nbsp;
   <select name="multi_action" onchange="shopProductsDoAction(this,this.value)">

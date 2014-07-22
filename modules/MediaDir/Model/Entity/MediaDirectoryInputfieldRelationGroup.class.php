@@ -169,14 +169,14 @@ class MediaDirectoryInputfieldRelationGroup extends \Cx\Modules\MediaDir\Control
                     }
 
                     if($bolAddNewAlowed || (intval($intFormType) == 0) || $intUserIsAdmin == 1) {
-                        $strAddNewButton = '<a class="addEntryLink" rel="shadowbox[add'.$intId.'];height=750;width=730;options={onClose:new Function(\'refreshSelector_'.$intId.'(\\\''.$intId.'\\\', \\\''.$this->moduleNameLC.'Inputfield_deselected_'.$intId.'\\\', \\\''.$this->moduleNameLC.'Inputfield_'.$intId.'\\\', \\\''.$_GET['section'].'\\\', \\\''.$_GET['cmd'].'\\\', \\\''.$intEntryId.'\\\')\')}" href="index.php?section=marketplace&cmd='.$strAddNewCmd.'" ><img src="cadmin/images/icons/icon-user-add.png" style="cursor: pointer;  border: 0px;" />&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_ADD_ENTRY'].'</a>';
+                        $strAddNewButton = '<a class="addEntryLink" rel="shadowbox[add'.$intId.'];height=750;width=730;options={onClose:new Function(\'refreshSelector_'.$intId.'(\\\''.$intId.'\\\', \\\''.$this->moduleNameLC.'Inputfield_deselected_'.$intId.'\\\', \\\''.$this->moduleNameLC.'Inputfield_'.$intId.'\\\', \\\''.$_GET['section'].'\\\', \\\''.$_GET['cmd'].'\\\', \\\''.$intEntryId.'\\\')\')}" href="index.php?section=marketplace&cmd='.$strAddNewCmd.'" ><img src="../core/Core/View/Media/icons/icon-user-add.png" style="cursor: pointer;  border: 0px;" />&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_ADD_ENTRY'].'</a>';
                         $strEditFunction = 'ondblclick="editSelectedElement_'.$intId.'(this);"';
                     } else {
                     	$strAddNewButton = '';
                         $strEditFunction = '';
                     }
 
-                    //$strRefreshNewButton = '<br /><a href="javascript:refreshSelector_'.$intId.'(\''.$intId.'\', \''.$this->moduleNameLC.'Inputfield_deselected_'.$intId.'\', \''.$this->moduleNameLC.'Inputfield_'.$intId.'\', \''.$_GET['section'].'\', \''.$_GET['cmd'].'\', \''.$intEntryId.'\');"><img src="cadmin/images/icons/refresh.gif" style="cursor: pointer;  border: 0px;" />&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_REFRESH'].'</a>';
+                    //$strRefreshNewButton = '<br /><a href="javascript:refreshSelector_'.$intId.'(\''.$intId.'\', \''.$this->moduleNameLC.'Inputfield_deselected_'.$intId.'\', \''.$this->moduleNameLC.'Inputfield_'.$intId.'\', \''.$_GET['section'].'\', \''.$_GET['cmd'].'\', \''.$intEntryId.'\');"><img src="../core/Core/View/Media/icons/refresh.gif" style="cursor: pointer;  border: 0px;" />&nbsp;'.$_ARRAYLANG['TXT_MEDIADIR_REFRESH'].'</a>';
                     //$strStyle = 'style="overflow: auto; float: left; list-style: none; padding: 0px; margin: 0px 5px 0px 0px;"';
                 }
 

@@ -607,8 +607,8 @@
         <!-- BEGIN  text-column -->
             <td style="white-space: nowrap;">
             <input style="width: 300px; vertical-align: top;" type="text" size="90" {IMMO_DECIMAL_ONLY} name="{IMMO_FIELD_TEXT_NAME}" value="{IMMO_FIELD_TEXT_VALUE}" />
-            <img style="vertical-align: top;" src="images/icons/refresh.png" onclick="sendReq({IMMO_FIELD_ID}, {IMMO_FIELD_LANG_ID}, document.getElementsByName('{IMMO_FIELD_TEXT_NAME}')[0].value, '{IMMO_FIELD_TEXT_NAME}');" alt="{TXT_IMMO_GET_PROPOSAL_LIST}" />
-            <img style="vertical-align: top;" src="images/icons/delete.gif" onclick="document.getElementsByName('{IMMO_FIELD_TEXT_NAME}')[0].value='';" alt="{TXT_IMMO_DELETE}" />
+            <img style="vertical-align: top;" src="../core/Core/View/Media/icons/refresh.png" onclick="sendReq({IMMO_FIELD_ID}, {IMMO_FIELD_LANG_ID}, document.getElementsByName('{IMMO_FIELD_TEXT_NAME}')[0].value, '{IMMO_FIELD_TEXT_NAME}');" alt="{TXT_IMMO_GET_PROPOSAL_LIST}" />
+            <img style="vertical-align: top;" src="../core/Core/View/Media/icons/delete.gif" onclick="document.getElementsByName('{IMMO_FIELD_TEXT_NAME}')[0].value='';" alt="{TXT_IMMO_DELETE}" />
             </td>
         <!-- END text-column -->
         {IMMO_TEXT_DATA}
@@ -622,8 +622,8 @@
         <!-- BEGIN textarea-column -->
             <td style="vertical-align: top">
             <textarea style="vertical-align: top; width: 300px;" rows="6" cols="90" name="{IMMO_FIELD_TEXTAREA_NAME}">{IMMO_FIELD_TEXTAREA_VALUE}</textarea>
-            <img style="vertical-align:top;" src="images/icons/refresh.png" onclick="sendReq({IMMO_FIELD_ID}, {IMMO_FIELD_LANG_ID}, document.getElementsByName('{IMMO_FIELD_TEXTAREA_NAME}')[0].value, '{IMMO_FIELD_TEXTAREA_NAME}');" alt="{TXT_IMMO_GET_PROPOSAL_LIST}" />
-            <img style="vertical-align:top;" src="images/icons/delete.gif" onclick="document.getElementsByName('{IMMO_FIELD_TEXTAREA_NAME}')[0].value='';" alt="{TXT_IMMO_DELETE}" />
+            <img style="vertical-align:top;" src="../core/Core/View/Media/icons/refresh.png" onclick="sendReq({IMMO_FIELD_ID}, {IMMO_FIELD_LANG_ID}, document.getElementsByName('{IMMO_FIELD_TEXTAREA_NAME}')[0].value, '{IMMO_FIELD_TEXTAREA_NAME}');" alt="{TXT_IMMO_GET_PROPOSAL_LIST}" />
+            <img style="vertical-align:top;" src="../core/Core/View/Media/icons/delete.gif" onclick="document.getElementsByName('{IMMO_FIELD_TEXTAREA_NAME}')[0].value='';" alt="{TXT_IMMO_DELETE}" />
             </td>
         <!-- END textarea-column -->
         {IMMO_TEXTAREA_DATA}
@@ -703,7 +703,7 @@
         <!-- BEGIN lnk-column -->
             <td>
                <input type="text" style="width: 200px;" name="{IMMO_FIELD_LNK_NAME}" value="{IMMO_FIELD_LNK_VALUE}" />
-               <a href="javascript:void(0);" onclick="openBrowser('?cmd=FileBrowser&amp;standalone=true&amp;path=/immo/pdfs/{LAST_IMMO_ID}','{IMMO_FIELD_LNK_ID}','width=800,height=600,resizable=yes,status=no,scrollbars=yes','pdf', '{IMMO_FIELD_LNK_NAME}');"> <img style="border: none;" src="images/icons/folder_on.gif" alt="{TXT_IMMO_BROWSE}" title="{TXT_IMMO_BROWSE}" /> </a>
+               <a href="javascript:void(0);" onclick="openBrowser('?cmd=FileBrowser&amp;standalone=true&amp;path=/immo/pdfs/{LAST_IMMO_ID}','{IMMO_FIELD_LNK_ID}','width=800,height=600,resizable=yes,status=no,scrollbars=yes','pdf', '{IMMO_FIELD_LNK_NAME}');"> <img style="border: none;" src="../core/Core/View/Media/icons/folder_on.gif" alt="{TXT_IMMO_BROWSE}" title="{TXT_IMMO_BROWSE}" /> </a>
             </td>
         <!-- END lnk-column -->
         {IMMO_LNK_DATA}

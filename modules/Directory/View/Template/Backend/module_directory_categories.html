@@ -201,8 +201,8 @@ function catDoMove()
       <td width="40%" valign="top">{CATEGORIES_DESCRIPTION} </td>
       <td width="18%" valign="top">{CATEGORIES_SHOW_ENTRIES} </td>
       <td width="1%" valign="top" nowrap="nowrap" align="right">
-        <a href="index.php?cmd=Directory&amp;act=edit&amp;id={CATEGORIES_ID}"><img src="images/icons/edit.gif" alt='{TXT_EDIT}' border="0" /></a>
-        <a href="javascript:deleteCategory({CATEGORIES_ID})"><img src="images/icons/delete.gif" alt='{TXT_DELETE}' border="0" /></a>
+        <a href="index.php?cmd=Directory&amp;act=edit&amp;id={CATEGORIES_ID}"><img src="../core/Core/View/Media/icons/edit.gif" alt='{TXT_EDIT}' border="0" /></a>
+        <a href="javascript:deleteCategory({CATEGORIES_ID})"><img src="../core/Core/View/Media/icons/delete.gif" alt='{TXT_DELETE}' border="0" /></a>
       </td>
     </tr>
 <!-- END categoriesRow -->
@@ -223,17 +223,17 @@ function catDoMove()
   <table cellpadding="2" cellspacing="0" border="0">
     <tr>
       <td>
-        <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
+        <img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
         <a href="#" onclick="changeCheckboxes('displayForm','formSelected[]',true); return false;">{TXT_SELECT_ALL}</a> /
         <a href="#" onclick="changeCheckboxes('displayForm','formSelected[]',false); return false;">{TXT_DESELECT_ALL}</a>
-        <img src="images/icons/strike.gif" />
+        <img src="../core/Core/View/Media/icons/strike.gif" />
         <select name="selectAction" onchange="catDoAction();">
           <option value="0" selected="selected">{TXT_SELECT_ACTION}</option>
           <option value="move">{TXT_MOVE}</option>
           <option value="delete">{TXT_DELETE}</option>
         </select>
         <span id="showmove" style="display:none;">
-        <img src="images/icons/strike.gif" />
+        <img src="../core/Core/View/Media/icons/strike.gif" />
         <select name="selectCat" onchange="catDoMove();">
           <option value="" selected="selected">{TXT_SELECT_CATEGORY}</option>
           <option value="0">{TXT_MAIN_CATEGORY}</option>

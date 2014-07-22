@@ -1013,11 +1013,11 @@ table tr.reset td {
 }
 
 .toggle_style.open .title .indicator {
-    background: url(../../../images/icons/toggle_open.png) no-repeat center center;
+    background: url(../Media/icons/toggle_open.png) no-repeat center center;
 }
 
 .toggle_style.closed .title .indicator {
-    background: url(../../../images/icons/toggle_closed.png) no-repeat center center;
+    background: url(../Media/icons/toggle_closed.png) no-repeat center center;
 }
 
 .toggle_style .title label {
@@ -1083,7 +1083,7 @@ table tr.reset td {
 .sort-handle { /*the drag handle*/
                cursor: move;
                width: 17px;
-               background-image: url(../../../images/icons/updown.gif);
+               background-image: url(../Media/icons/updown.gif);
                background-repeat: no-repeat;
                background-position: center left;
                clear: left;
@@ -1100,7 +1100,7 @@ table tr.reset td {
   styles for javascript helpers.
 */
 .cx-lock {
-    background-image: url('../../../images/icons/switch_lock.png');
+    background-image: url('../Media/icons/switch_lock.png');
     width: 21px;
     height: 16px;
     display: inline-block;
@@ -1119,11 +1119,11 @@ table tr.reset td {
 }
 
 .cx-expand.cx-expandUp{
-    background: url("../../../images/icons/advancedsearch-up.png") no-repeat left 3px;
+    background: url("../Media/icons/advancedsearch-up.png") no-repeat left 3px;
 }
 
 .cx-expand.cx-expandDown{
-    background: url("../../../images/icons/advancedsearch-down.png") no-repeat left 3px;
+    background: url("../Media/icons/advancedsearch-down.png") no-repeat left 3px;
 }
 
 
@@ -1230,7 +1230,7 @@ table.adminlist td.nowrap {
   width: 14px;
   height: 16px;
   margin-top: 3px;
-  background-image: url(../../../images/icons/link.gif);
+  background-image: url(../Media/icons/link.gif);
   background-position: left top;
   background-repeat: no-repeat;
   cursor: pointer;
@@ -1265,7 +1265,7 @@ table.adminlist td.nowrap {
     display: inline-block;
     width: 13px;
     height: 12px;
-    background: url(../../../images/icons/warning.png) no-repeat left center;
+    background: url(../Media/icons/warning.png) no-repeat left center;
 }
 
 .icon-comment {
@@ -1273,7 +1273,7 @@ table.adminlist td.nowrap {
     display: inline-block;
     width: 11px;
     height: 10px;
-    background: url(../../../images/icons/comment.gif) no-repeat left center;
+    background: url(../Media/icons/comment.gif) no-repeat left center;
 }
 
 .backend_link {
@@ -1282,7 +1282,7 @@ table.adminlist td.nowrap {
     min-width: 13px;
     min-height: 16px;
     padding-left: 16px;
-    background: url(../../../images/icons/green_arrow_down.png) no-repeat left center;
+    background: url(../Media/icons/green_arrow_down.png) no-repeat left center;
 }
 
 .frontend_link {
@@ -1291,7 +1291,7 @@ table.adminlist td.nowrap {
     min-width: 14px;
     min-height: 16px;
     padding-left: 17px;
-    background: url(../../../images/icons/blue_arrow_up.png) no-repeat left center;
+    background: url(../Media/icons/blue_arrow_up.png) no-repeat left center;
 }
 
 

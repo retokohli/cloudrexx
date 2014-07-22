@@ -22,12 +22,12 @@ var cxDataList = function() {
     var htmlAEditAccess = '<a href="index.php?cmd=Access&act=user&tpl=modify&id=[id]&source=newsletter" title="{TXT_NEWSLETTER_MODIFY_RECIPIENT}"></a>';
     var htmlADelete = '<a href="javascript:void(0)" onclick="DeleteUser([id],\'[email]\')" title="{TXT_NEWSLETTER_DELETE_RECIPIENT}"></a>';
     var htmlUserFunctions = '<td style="text-align:right;"></td>';
-    var htmlImageLedRed = '<img src="images/icons/led_red.gif" title="{TXT_OPEN_ISSUE}" alt="{TXT_OPEN_ISSUE}" border="0" />';
-    var htmlImageLedGreen = '<img src="images/icons/led_green.gif" title="{TXT_ACTIVE}" alt="{TXT_ACTIVE}" border="0" />';
-    var htmlImageEdit = '<img src="images/icons/edit.gif" title="{TXT_NEWSLETTER_MODIFY_RECIPIENT}" alt="{TXT_NEWSLETTER_MODIFY_RECIPIENT}" border="0" />';
-    var htmlImageCopy = '<img src="images/icons/copy.gif" title="{TXT_NEWSLETTER_COPY_RECIPIENT}" alt="{TXT_NEWSLETTER_COPY_RECIPIENT}" border="0" />';
-    var htmlImageIconSpacer = '<img src="images/icons/pixel.gif" width="17" height="17" border="0" />';
-    var htmlImageDelete = '<img src="images/icons/delete.gif" title="{TXT_NEWSLETTER_DELETE_RECIPIENT}" alt="{TXT_NEWSLETTER_DELETE_RECIPIENT}" border="0" />';
+    var htmlImageLedRed = '<img src="../core/Core/View/Media/icons/led_red.gif" title="{TXT_OPEN_ISSUE}" alt="{TXT_OPEN_ISSUE}" border="0" />';
+    var htmlImageLedGreen = '<img src="../core/Core/View/Media/icons/led_green.gif" title="{TXT_ACTIVE}" alt="{TXT_ACTIVE}" border="0" />';
+    var htmlImageEdit = '<img src="../core/Core/View/Media/icons/edit.gif" title="{TXT_NEWSLETTER_MODIFY_RECIPIENT}" alt="{TXT_NEWSLETTER_MODIFY_RECIPIENT}" border="0" />';
+    var htmlImageCopy = '<img src="../core/Core/View/Media/icons/copy.gif" title="{TXT_NEWSLETTER_COPY_RECIPIENT}" alt="{TXT_NEWSLETTER_COPY_RECIPIENT}" border="0" />';
+    var htmlImageIconSpacer = '<img src="../core/Core/View/Media/icons/pixel.gif" width="17" height="17" border="0" />';
+    var htmlImageDelete = '<img src="../core/Core/View/Media/icons/delete.gif" title="{TXT_NEWSLETTER_DELETE_RECIPIENT}" alt="{TXT_NEWSLETTER_DELETE_RECIPIENT}" border="0" />';
     var htmlAFeedback = '<a href="index.php?cmd=Newsletter&act=users&tpl=feedback&id=[id]&recipient_type=[type]" title="{TXT_NEWSLETTER_FEEDBACK_OVERVIEW}"></a>';
 
     var searchFunc = function(keyword, attribute, status) {
@@ -408,10 +408,10 @@ var confirmDeleteInactive = function() {
         </table>
 
         <div>
-            <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="arrow" />
+            <img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="arrow" />
             <a href="javascript:void(0)" onclick="changeCheckboxes('userlist','userid[]',true); return false;">{TXT_NEWSLETTER_CHECK_ALL}</a> /
             <a href="javascript:void(0)" onclick="changeCheckboxes('userlist','userid[]',false); return false;">{TXT_NEWSLETTER_UNCHECK_ALL}</a>
-            <img src="images/icons/strike.gif" alt="strike" title="strike" />
+            <img src="../core/Core/View/Media/icons/strike.gif" alt="strike" title="strike" />
             <select name="userlist_MultiAction" onchange="MultiAction();">
                 <option value="0">{TXT_NEWSLETTER_WITH_SELECTED}:</option>
                 <option value="delete">{TXT_NEWSLETTER_DELETE}</option>

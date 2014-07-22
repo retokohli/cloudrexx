@@ -58,12 +58,12 @@ function deleteOrder(OrderID)
             <td>{ORDER_ID}</td>
             <td><a href="index.php?cmd=Egov&amp;act=order_edit&amp;id={ORDER_ID}" target="_self">{ORDER_PRODUCT}</a></td>
         <td>{ORDER_NAME}</td>
-            <td><img src="images/icons/{ORDER_STATE_IMG}" alt="{ORDER_STATE}" title="{ORDER_STATE}" border="0" /> {ORDER_STATE}</td>
+            <td><img src="../core/Core/View/Media/icons/{ORDER_STATE_IMG}" alt="{ORDER_STATE}" title="{ORDER_STATE}" border="0" /> {ORDER_STATE}</td>
             <td><a href="index.php?cmd=Egov&amp;act=order_edit&amp;id={ORDER_ID}" target="_self">{ORDER_DATE}</a></td>
         <td>{ORDER_IP}</td>
           <td style="text-align:right;" nowrap="nowrap">
-            <a href="index.php?cmd=Egov&amp;act=order_edit&amp;id={ORDER_ID}" target="_self" title="{TXT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{TXT_EDIT}" title="{TXT_EDIT}" /></a>
-            <a href="javascript:deleteOrder({ORDER_ID});" target="_self" title="{TXT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_DELETE}" title="{TXT_DELETE}" /></a>
+            <a href="index.php?cmd=Egov&amp;act=order_edit&amp;id={ORDER_ID}" target="_self" title="{TXT_EDIT}"><img src="../core/Core/View/Media/icons/edit.gif" border="0" alt="{TXT_EDIT}" title="{TXT_EDIT}" /></a>
+            <a href="javascript:deleteOrder({ORDER_ID});" target="_self" title="{TXT_DELETE}"><img src="../core/Core/View/Media/icons/delete.gif" border="0" alt="{TXT_DELETE}" title="{TXT_DELETE}" /></a>
           </td>
           </tr>
       <!-- END orders_row -->
@@ -73,10 +73,10 @@ function deleteOrder(OrderID)
   <table summary="" cellpadding="2" cellspacing="0" border="0">
     <tr>
       <td>
-        <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
+        <img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
         <a href="#" onClick="changeCheckboxes('frmOrders','selectedOrderId[]',true); return false;">{TXT_SELECT_ALL}</a> /
         <a href="#" onClick="changeCheckboxes('frmOrders','selectedOrderId[]',false); return false;">{TXT_DESELECT_ALL}</a>
-        <img src="images/icons/strike.gif" alt="" />
+        <img src="../core/Core/View/Media/icons/strike.gif" alt="" />
         <select name="frmOrders_MultiAction" onChange="selectMultiAction();">
           <option value="0">{TXT_SUBMIT_SELECT}</option>
           <option value="delete">{TXT_SUBMIT_DELETE}</option>

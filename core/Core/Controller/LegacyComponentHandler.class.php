@@ -211,7 +211,7 @@ class LegacyComponentHandler {
                         $objTemplate->setVariable(array(
                             'CONTENT_NAVIGATION' => '<span id="noaccess_title">'.contrexx_raw2xhtml($_CONFIG['coreCmsName']).'</span>',
                             'ADMIN_CONTENT' =>
-                                '<img src="images/no_access.png" alt="" /><br /><br />'.
+                                '<img src="../core/Core/View/Media/no_access.png" alt="" /><br /><br />'.
                                 $_CORELANG['TXT_ACCESS_DENIED_DESCRIPTION'],
                         ));
                     },

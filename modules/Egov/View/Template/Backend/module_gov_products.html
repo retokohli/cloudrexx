@@ -38,18 +38,18 @@ function Position(ProductID, Direction){
         <td>{PRODUCT_ID}</td>
         <td>{PRODUCT_STATUS}</td>
         <td>
-          <a href="javascript:Position({PRODUCT_ID},'up');"><img src="images/icons/up.gif" width="14" height="12" border="0" alt="{TXT_EGOV_UP}" title="{TXT_EGOV_UP}" /></a>
-          <a href="javascript:Position({PRODUCT_ID},'down');"><img src="images/icons/down.gif" width="14" height="12" border="0" alt="{TXT_EGOV_DOWN}" title="{TXT_EGOV_DOWN}" /></a>
+          <a href="javascript:Position({PRODUCT_ID},'up');"><img src="../core/Core/View/Media/icons/up.gif" width="14" height="12" border="0" alt="{TXT_EGOV_UP}" title="{TXT_EGOV_UP}" /></a>
+          <a href="javascript:Position({PRODUCT_ID},'down');"><img src="../core/Core/View/Media/icons/down.gif" width="14" height="12" border="0" alt="{TXT_EGOV_DOWN}" title="{TXT_EGOV_DOWN}" /></a>
         </td>
         <td><a href="index.php?cmd=Egov&amp;act=product_edit&amp;id={PRODUCT_ID}" title="{TXT_IMGALT_EDIT}">{PRODUCT_NAME}</a></td>
         <td>{ORDERS_VALUE}&nbsp;&nbsp;<a href="index.php?cmd=Egov&amp;product={PRODUCT_ID}">{TXT_EGOV_VIEW_ORDERS}</a></td>
         <td>{RESERVATIONS_VALUE}</td>
 
         <td style="text-align:right;" nowrap="nowrap">
-          <a href="index.php?cmd=Egov&amp;act=detail&amp;id={PRODUCT_ID}"><img src="images/icons/calendar_icon.png" border="0" alt="{TXT_EGOV_RESERVATION}" title="{TXT_EGOV_RESERVATION}" /></a>
-          <a href="index.php?cmd=Egov&amp;act=product_copy&amp;id={PRODUCT_ID}"><img src="images/icons/copy.gif" border="0" alt="{TXT_COPY}" title="{TXT_COPY}" /></a>
-          <a href="index.php?cmd=Egov&amp;act=product_edit&amp;id={PRODUCT_ID}"><img src="images/icons/edit.gif" border="0" alt="{TXT_EDIT}" title="{TXT_EDIT}" /></a>
-          <a href="javascript:deleteProduct({PRODUCT_ID});" title="{TXT_IMGALT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_DELETE}" title="{TXT_DELETE}" /></a>
+          <a href="index.php?cmd=Egov&amp;act=detail&amp;id={PRODUCT_ID}"><img src="../core/Core/View/Media/icons/calendar_icon.png" border="0" alt="{TXT_EGOV_RESERVATION}" title="{TXT_EGOV_RESERVATION}" /></a>
+          <a href="index.php?cmd=Egov&amp;act=product_copy&amp;id={PRODUCT_ID}"><img src="../core/Core/View/Media/icons/copy.gif" border="0" alt="{TXT_COPY}" title="{TXT_COPY}" /></a>
+          <a href="index.php?cmd=Egov&amp;act=product_edit&amp;id={PRODUCT_ID}"><img src="../core/Core/View/Media/icons/edit.gif" border="0" alt="{TXT_EDIT}" title="{TXT_EDIT}" /></a>
+          <a href="javascript:deleteProduct({PRODUCT_ID});" title="{TXT_IMGALT_DELETE}"><img src="../core/Core/View/Media/icons/delete.gif" border="0" alt="{TXT_DELETE}" title="{TXT_DELETE}" /></a>
         </td>
       </tr>
       <!-- END products_list -->

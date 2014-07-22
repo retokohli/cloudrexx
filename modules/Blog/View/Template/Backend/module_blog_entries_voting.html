@@ -45,7 +45,7 @@ function selectMultiAction() {
 		<!-- BEGIN showStatistics -->
 		<tr class="{STATS_ROWCLASS}">
 			<td width="10%">{STATS_MARK}</td>
-			<td width="90%"><img src="images/icons/1.gif" border="0" height="10px" width="{STATS_GRAPH}" alt="{STATS_PERCENT}" title="{STATS_PERCENT}" />&nbsp;{STATS_PERCENT}&nbsp;({STATS_COUNT})</td>
+			<td width="90%"><img src="../core/Core/View/Media/icons/1.gif" border="0" height="10px" width="{STATS_GRAPH}" alt="{STATS_PERCENT}" title="{STATS_PERCENT}" />&nbsp;{STATS_PERCENT}&nbsp;({STATS_COUNT})</td>
 		</tr>
 		<!-- END showStatistics -->
 		<!-- BEGIN noStatistics -->
@@ -76,7 +76,7 @@ function selectMultiAction() {
 				<td>{DETAILS_VOTE}</td>
 				<td>
 					<div align="right">
-					<a href="javascript:deleteVote({DETAILS_VOTE_ID});" target="_self" title="{TXT_IMGALT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_IMGALT_DELETE}" title="{TXT_IMGALT_DELETE}" /></a>
+					<a href="javascript:deleteVote({DETAILS_VOTE_ID});" target="_self" title="{TXT_IMGALT_DELETE}"><img src="../core/Core/View/Media/icons/delete.gif" border="0" alt="{TXT_IMGALT_DELETE}" title="{TXT_IMGALT_DELETE}" /></a>
 					</div>
 				</td>
 			</tr>
@@ -91,10 +91,10 @@ function selectMultiAction() {
 		<table cellpadding="2" cellspacing="0" border="0">
 			<tr>
 				<td>
-					<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_DETAILS_VOTES_MARKED}:" />
+					<img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_DETAILS_VOTES_MARKED}:" />
 					<a href="#" onClick="changeCheckboxes('frmShowDetails','selectedVotingsId[]',true); return false;">{TXT_DETAILS_SELECT_ALL}</a> / 
 					<a href="#" onClick="changeCheckboxes('frmShowDetails','selectedVotingsId[]',false); return false;">{TXT_DETAILS_DESELECT_ALL}</a>
-					<img src="images/icons/strike.gif" />
+					<img src="../core/Core/View/Media/icons/strike.gif" />
 					<select name="frmShowDetails_MultiAction" onChange="selectMultiAction();">
 						<option value="0">{TXT_DETAILS_SUBMIT_SELECT}</option>
 						<option value="delete">{TXT_DETAILS_SUBMIT_DELETE}</option>

@@ -240,7 +240,7 @@
             <input type="hidden" name="form_id[]" value="{FEED_ID}">
             <input type="text" name="form_pos[]" value="{FEED_POS}" style="width:25px; text-align:right; padding:2px;">
         </td>
-        <td align="center"><img src="images/icons/led_{FEED_STATUS}.gif"></td>
+        <td align="center"><img src="../core/Core/View/Media/icons/led_{FEED_STATUS}.gif"></td>
         <td align="center">{FEED_ID}</td>
         <td><nobr><a href="javascript:editNews({FEED_ID})" title="{TXT_FEED_EDIT}" hidefocus>{FEED_NAME}</a></nobr></td>
         <td align="center">[{FEED_LANG}]</td>
@@ -250,12 +250,12 @@
         <td align="center">{FEED_TIME}</td>
         <td align="center">
             <a href="javascript:refreshNews({FEED_ID})" title="{TXT_FEED_UPDATE}" hidefocus>
-                <img src="images/icons/refresh.png" border="0">
+                <img src="../core/Core/View/Media/icons/refresh.png" border="0">
             </a>
         </td>
         <td align="center">
             <a href="javascript:showNews({FEED_ID})" title="{TXT_FEED_PREVIEW}" hidefocus>
-                <img src="images/icons/pages.gif" border="0">
+                <img src="../core/Core/View/Media/icons/pages.gif" border="0">
             </a>
         </td>
     </tr>
@@ -265,10 +265,10 @@
 <table cellspacing="0" cellpadding="3" width="100%" border="0">
     <tr>
         <td>
-            <img src="images/icons/arrow.gif">
+            <img src="../core/Core/View/Media/icons/arrow.gif">
             <a href="" onclick="setCheckboxes(true); return false;" hidefocus>{TXT_FEED_MARK_ALL}</a> /
             <a href="" onclick="setCheckboxes(false); return false;" hidefocus>{TXT_FEED_REMOVE_CHOICE}</a>
-            <img src="images/icons/strike.gif">
+            <img src="../core/Core/View/Media/icons/strike.gif">
             <select name="form_select_todo" onchange="selectTodoCategory();">
                 <option value="0" selected>{TXT_FEED_SELECT_OPERATION}:</option>
                 <option value="sort">{TXT_FEED_SAVE_SORTING}</option>

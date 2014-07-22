@@ -141,7 +141,7 @@ class MediaDirectoryInputfieldDownloads extends \Cx\Modules\MediaDir\Controller\
                     $strInputFlagStyle = 'width: 279px; margin-bottom: 2px; padding-left: 21px;';
                     $strTextAreaStyle = 'width: 300px; height: 60px;'; 
                     $strTextAreaFlagStyle = 'width: 279px; margin-bottom: 2px; padding-left: 21px;';
-                    $strDeleteImagePath = 'images/icons/delete.gif';  
+                    $strDeleteImagePath = '../core/Core/View/Media/icons/delete.gif';  
                 } else {
                     $strFieldsetStyle = 'margin-bottom: 10px; position: relative;';
                     $strLegendStyle = '';
@@ -149,7 +149,7 @@ class MediaDirectoryInputfieldDownloads extends \Cx\Modules\MediaDir\Controller\
                     $strInputFlagStyle = '';
                     $strTextAreaStyle = ''; 
                     $strTextAreaFlagStyle = '';
-                    $strDeleteImagePath = 'cadmin/images/icons/delete.gif';  
+                    $strDeleteImagePath = '../core/Core/View/Media/icons/delete.gif';  
                 }                
                 
                 $strBlankElement =
@@ -237,7 +237,7 @@ EOF;
                     $strInputFlagStyle = 'width: 279px; margin-bottom: 2px; padding-left: 21px;';
                     $strTextAreaStyle = 'width: 300px; height: 60px;'; 
                     $strTextAreaFlagStyle = 'width: 279px; margin-bottom: 2px; padding-left: 21px;';                            
-                    $strDeleteImagePath = 'images/icons/delete.gif';  
+                    $strDeleteImagePath = '../core/Core/View/Media/icons/delete.gif';  
                 } else {
                     $strFieldsetStyle = 'margin-bottom: 10px; position: relative;';
                     $strLegendStyle = '';
@@ -245,7 +245,7 @@ EOF;
                     $strInputFlagStyle = '';
                     $strTextAreaStyle = '';
                     $strTextAreaFlagStyle = ''; 
-                    $strDeleteImagePath = 'cadmin/images/icons/delete.gif';  
+                    $strDeleteImagePath = '../core/Core/View/Media/icons/delete.gif';  
                 }        
                 
                 for($intKey = 0; $intKey < $intNumElements; $intKey++) {
