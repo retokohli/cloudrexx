@@ -5732,7 +5732,7 @@ END;
                 $size = filesize($tempPath.'/'.$file);
                 if ($size > $sizeLimit) {
                     $response->addMessage(
-                        \UploadResponse::STATUS_ERROR,
+                        \Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR,
                         "Server error. Increase post_max_size and upload_max_filesize to $size.",
                         $file
                     );
@@ -5742,7 +5742,7 @@ END;
 
                 if (!in_array(strtolower($info['extension']), $arrAllowedFileTypes)) {
                     $response->addMessage(
-                        \UploadResponse::STATUS_ERROR,
+                        \Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR,
                         'Please choose a csv to upload',
                         $file
                     );

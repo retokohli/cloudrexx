@@ -8,7 +8,7 @@
  * @package     contrexx
  * @subpackage  coremodule_upload
  */
-
+namespace Cx\Core_Modules\Upload\Controller;
 /**
  * PlUploader - Flash uploader class.
  *
@@ -39,7 +39,7 @@ class PlUploader extends Uploader
         $fileCount = $_GET['files'];
 
        
-        if (FWValidator::is_file_ending_harmless($fileName)) {
+        if (\FWValidator::is_file_ending_harmless($fileName)) {
             try {
                 $this->addChunk($fileName, $chunk, $chunks);
             }
@@ -68,15 +68,15 @@ class PlUploader extends Uploader
     {
       global $_CORELANG;
       // CSS dependencies
-      JS::activate('cx');
+      \JS::activate('cx');
 
       $uploadPath = $this->getUploadPath('pl');
 
-      $tpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/upload/template/uploaders');
+      $tpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/Upload/template/uploaders');
       $tpl->setErrorHandling(PEAR_ERROR_DIE);
       
       $tpl->loadTemplateFile('pl.html');
-      $tpl->setVariable('UPLOAD_FLASH_URL', ASCMS_CORE_MODULE_WEB_PATH.'/upload/ressources/uploaders/pl/plupload.flash.swf');
+      $tpl->setVariable('UPLOAD_FLASH_URL', ASCMS_CORE_MODULE_WEB_PATH.'/Upload/ressources/uploaders/pl/plupload.flash.swf');
       $tpl->setVariable('UPLOAD_CHUNK_LENGTH', \FWSystem::getLiteralSizeFormat(\FWSystem::getMaxUploadFileSize()-1000));
       $tpl->setVariable('UPLOAD_URL', $uploadPath);
       $tpl->setVariable('UPLOAD_ID', $this->uploadId);

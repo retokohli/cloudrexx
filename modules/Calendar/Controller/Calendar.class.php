@@ -490,7 +490,7 @@ EOF;
         
         if ($showFrom) {
             try {                                
-                \JS::registerJS('core_modules/upload/js/uploaders/exposedCombo/extendedFileInput.js');
+                \JS::registerJS('core_modules/Upload/js/uploaders/exposedCombo/extendedFileInput.js');
                 
                 $javascript .= <<< UPLOADER
                 {$this->getUploaderCode($this->handleUniqueId(self::PICTURE_FIELD_KEY), 'pictureUpload')}
@@ -969,7 +969,7 @@ UPLOADER;
         try {                        
             //init the uploader
             \JS::activate('cx'); //the uploader needs the framework
-            $f = \UploadFactory::getInstance();
+            $f = \Cx\Core_Modules\Upload\Controller\UploadFactory::getInstance();
                                    
             //retrieve temporary location for uploaded files
             $tup = self::getTemporaryUploadPath($fieldName, $submissionId);
@@ -1064,7 +1064,7 @@ JAVASCRIPT;
                 //delete unwanted files
                 if(!in_array(strtolower($info['extension']), $arrAllowedFileTypes)) {                                     
                     $response->addMessage(
-                        \UploadResponse::STATUS_ERROR,
+                        \Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR,
                         $lang["TXT_{$this->moduleLangVar}_IMAGE_UPLOAD_ERROR"],
                         $file
                     );

@@ -8,7 +8,7 @@
  * @package     contrexx
  * @subpackage  coremodule_upload
  */
-
+namespace Cx\Core_Modules\Upload\Controller;
 /**
  * UploadFactoryException
  *
@@ -17,7 +17,7 @@
  * @package     contrexx
  * @subpackage  coremodule_upload
  */
-class UploadFactoryException extends Exception {}
+class UploadFactoryException extends \Exception {}
 
 /**
  * Upload Factory. Creates the right upload classes and initializes them.
@@ -103,11 +103,11 @@ class UploadFactory
 
         if($this->isAdvancedUploadingEnabled) //all uploaders are wanted
             return $available;
-        else if(!in_array('form',$available)) //we do not have an uploader that is applicable
+        else if(!in_array('Form',$available)) //we do not have an uploader that is applicable
             throw new UploadFactoryException('advanced uploaders disabled, but no formUploader found!');
 
         //no advanced uploading, only formUploader wanted
-        return array('form');
+        return array('Form');
     }
 
     /**
@@ -122,7 +122,7 @@ class UploadFactory
         $uploaders = array();
 
         //check which modules are installed
-        $uploaderFolder = ASCMS_CORE_MODULE_PATH.'/upload/lib/';
+        $uploaderFolder = ASCMS_CORE_MODULE_PATH.'/Upload/Controller/';
         $h = opendir($uploaderFolder);
         while(false !== ($f = readdir($h))) {
             $len = strlen($f);

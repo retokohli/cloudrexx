@@ -8,7 +8,7 @@
  * @package     contrexx
  * @subpackage  coremodule_upload
  */
-
+namespace Cx\Core_Modules\Upload\Controller;
 /**
  * Exceptions thrown by uploader
  *
@@ -17,7 +17,7 @@
  * @package     contrexx
  * @subpackage  coremodule_upload
  */
-class UploaderException extends Exception {}
+class UploaderException extends \Exception {}
 
 /**
  * Base class for all kinds of uploaders.
@@ -146,7 +146,7 @@ abstract class Uploader
     protected function redirect() {
         if($this->redirectUrl == null)
             throw new UploaderException('tried to redirect without a redirect url set via Uploader::setRedirectUrl()!');
-        \Cx\Core\Csrf\Controller\Csrf::header('Location: ' . $this->redirectUrl);
+        \Cx\Core\Csrf\Controller\ComponentController::header('Location: ' . $this->redirectUrl);
         die();
     }
 
@@ -403,7 +403,7 @@ abstract class Uploader
     {
         $uploadPath = '';
         if ($this->isBackendRequest) {
-            $uploadPath = ASCMS_ADMIN_WEB_PATH.'/index.php?cmd=upload&act=upload';
+            $uploadPath = ASCMS_ADMIN_WEB_PATH.'/index.php?cmd=Upload&act=upload';
         } else {
             $url = clone \Env::get('cx')->getRequest()->getUrl();
             $url->removeAllParams();

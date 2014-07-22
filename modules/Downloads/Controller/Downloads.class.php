@@ -566,14 +566,14 @@ class Downloads extends DownloadsLibrary
 
             //Uploader button handling
             \JS::activate('cx');
-            \Env::get('ClassLoader')->loadFile(ASCMS_CORE_MODULE_PATH.'/upload/share/uploadFactory.class.php');
+            \Env::get('ClassLoader')->loadFile(ASCMS_CORE_MODULE_PATH.'/Upload/Controller/UploadFactory.class.php');
             //paths we want to remember for handling the uploaded files
             $data = array(
                 'path' => ASCMS_DOWNLOADS_IMAGES_PATH,
                 'webPath' => ASCMS_DOWNLOADS_IMAGES_WEB_PATH,
                 'category_id' => $objCategory->getId(),
             );
-            $comboUp = \UploadFactory::getInstance()->newUploader('exposedCombo');
+            $comboUp = \Cx\Core_Modules\Upload\Controller\UploadFactory::getInstance()->newUploader('exposedCombo');
             $comboUp->setFinishedCallback(array(ASCMS_MODULE_PATH.'/Downloads/Controller/Downloads.class.php', '\Cx\Modules\Downloads\Controller\Downloads', 'uploadFinished'));
             $comboUp->setData($data);
             //set instance name to combo_uploader so we are able to catch the instance with js

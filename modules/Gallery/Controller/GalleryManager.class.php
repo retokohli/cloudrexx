@@ -2167,7 +2167,7 @@ class GalleryManager extends GalleryLibrary
             'path' => ASCMS_GALLERY_PATH,
             'webPath' => ASCMS_GALLERY_WEB_PATH
         );
-        $comboUp = \UploadFactory::getInstance()->newUploader('exposedCombo');
+        $comboUp = \Cx\Core_Modules\Upload\Controller\UploadFactory::getInstance()->newUploader('exposedCombo');
         $comboUp->setFinishedCallback(array(ASCMS_MODULE_PATH.'/Gallery/Controller/GalleryManager.class.php', '\Cx\Modules\Gallery\Controller\GalleryManager', 'uploadFinished'));
         $comboUp->setData($paths);
         //set instance name to combo_uploader so we are able to catch the instance with js
@@ -2245,7 +2245,7 @@ class GalleryManager extends GalleryLibrary
 
                 //delete unwanted files
                 if(!in_array(strtolower($info['extension']), $arrAllowedFileTypes)) {
-                    $response->addMessage(\UploadResponse::STATUS_ERROR, $lang['TXT_GALLERY_UNALLOWED_EXTENSION'], $file);
+                    $response->addMessage(\Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR, $lang['TXT_GALLERY_UNALLOWED_EXTENSION'], $file);
                    @unlink($tempPath.'/'.$file);
                     continue;
                 }
@@ -2254,7 +2254,7 @@ class GalleryManager extends GalleryLibrary
                 $arrImageSize = getimagesize($tempPath.'/'.$file);
                 if (intval($arrImageSize[0]) > intval($objGallery->arrSettings['image_width'])) {
                     $objGallery->strErrMessage = str_replace('{WIDTH}', $objGallery->arrSettings['image_width'], $lang['TXT_GALLERY_UPLOAD_ERROR_WIDTH']);
-                    $response->addMessage(\UploadResponse::STATUS_ERROR, $lang['TXT_GALLERY_RESOLUTION_TOO_HIGH'], $file);
+                    $response->addMessage(\Cx\Core_Modules\Upload\Controller\UploadResponse::STATUS_ERROR, $lang['TXT_GALLERY_RESOLUTION_TOO_HIGH'], $file);
                     @unlink($tempPath.'/'.$file);
                     continue;
                 }

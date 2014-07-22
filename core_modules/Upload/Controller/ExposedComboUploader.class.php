@@ -8,7 +8,7 @@
  * @package     contrexx
  * @subpackage  coremodule_upload
  */
-
+namespace Cx\Core_Modules\Upload\Controller;
 /**
  * ExposedComboUploader - ComboUploader with JQuery expose
  *
@@ -26,8 +26,8 @@ class ExposedComboUploader extends ComboUploader
     public function getXHtml(){
         global $_CORELANG;
 
-        \JS::registerCSS('core_modules/upload/css/uploaders/exposedCombo/exposedCombo.css');
-        \JS::registerJS('core_modules/upload/js/uploaders/exposedCombo/exposedCombo.js');
+        \JS::registerCSS('core_modules/Upload/css/uploaders/exposedCombo/exposedCombo.css');
+        \JS::registerJS('core_modules/Upload/js/uploaders/exposedCombo/exposedCombo.js');
 
         //back up instance name, we're going to set a temporary name for the combo uploader
         $instanceNameBak = $this->jsInstanceName;
@@ -35,7 +35,7 @@ class ExposedComboUploader extends ComboUploader
         $comboXHtml = parent::getXHtml();
         $this->jsInstanceName = $instanceNameBak;
 
-        $tpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/upload/template/uploaders');
+        $tpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/Upload/template/uploaders');
         $tpl->setErrorHandling(PEAR_ERROR_DIE);
         
         $tpl->loadTemplateFile('exposedCombo.html');

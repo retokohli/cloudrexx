@@ -119,26 +119,8 @@ class LegacyComponentHandler {
         $this->exceptions = array(
             'frontend' => array(
                 'preResolve' => array(
-                    
-                    'Upload' => function() {
-                        global $isRegularPageRequest;
-
-                        if (isset($_REQUEST['section']) && $_REQUEST['section'] == 'upload') {
-                            $_REQUEST['standalone'] = 'true';
-                        }
-                    }
                 ),
                 'postResolve' => array(
-                    'Upload' => function() {
-                        global $sessionObj;
-
-                        if (isset($_REQUEST['section']) && $_REQUEST['section'] == 'upload') {
-                            if (!isset($sessionObj) || !is_object($sessionObj)) $sessionObj = \cmsSession::getInstance(); // initialize session object                            
-                            $objUploadModule = new \Upload();
-                            $objUploadModule->getPage();
-                            //execution never reaches this point
-                        }
-                    },
                 ),
                 'preContentLoad' => array(
                 ),
@@ -194,15 +176,6 @@ class LegacyComponentHandler {
                     
                 ),
                 'load' => array(
-                    'upload' => function() {
-                        global $cl, $_CORELANG;
-
-                        if (!$cl->loadFile(ASCMS_CORE_MODULE_PATH.'/upload/admin.class.php'))
-                            die ($_CORELANG['TXT_THIS_MODULE_DOESNT_EXISTS']);
-                        $objUploadModule = new \Upload();
-                        $objUploadModule->getPage();
-                        //execution never reaches this point
-                    },
                     'noaccess' => function() {
                         global $cl, $_CORELANG, $objTemplate, $_CONFIG;
 

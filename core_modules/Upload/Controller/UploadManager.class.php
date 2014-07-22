@@ -8,7 +8,7 @@
  * @package     contrexx
  * @subpackage  coremodule_upload
  */
-
+namespace Cx\Core_Modules\Upload\Controller;
 /**
  * Upload
  *
@@ -17,24 +17,20 @@
  * @package     contrexx
  * @subpackage  coremodule_upload
  */
-class Upload extends UploadLib
+class UploadManager extends UploadLib
 {
     public function getPage()
     {
         $act = '';
-        if(isset($_REQUEST['cmd'])) {
-            $act = $_REQUEST['cmd'];
-        }
         if(isset($_REQUEST['act'])) {
             $act = $_REQUEST['act'];
         }
-
         switch($act) {
             //uploaders
             case 'upload': //an uploader is sending data
                 $this->upload();
                 break;
-            case 'ajaxUploaderCode':
+            case 'ajaxUploaderCode': //a js combouploader requests code of another uploader type
                 $this->ajaxUploaderCode();
                 break;
             //uploaders - formuploader
@@ -54,7 +50,7 @@ class Upload extends UploadLib
             case 'response':
                 $this->response($_GET['upload']);
                 break;
-
+          
             //folderWidget
             case 'refreshFolder':
                 $this->refreshFolder();
@@ -62,6 +58,6 @@ class Upload extends UploadLib
             case 'deleteFile': //a folderWidget wants to delete something
                 $this->deleteFile();
                 break;
-        }
+        }        
     }
 }
