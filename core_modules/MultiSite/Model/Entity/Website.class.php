@@ -266,7 +266,6 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
      */
     public function setup() {
         global $_DBCONFIG, $_ARRAYLANG;
-
         switch (\Cx\Core\Setting\Controller\Setting::getValue('websiteController')) {
             case 'plesk':
                 //creating object of plesk controller to call plesk API RPC
@@ -340,15 +339,15 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
             $websiteIp = \Cx\Core\Setting\Controller\Setting::getValue('pleskIp');
         }
 
-        if (!$isServiceServer) {
+        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == 'manager'
+            || \Cx\Core\Setting\Controller\Setting::getValue('mode') == 'hybrid') {
             // Add DNS records for new website
-            $dnsRecordId = $this->websiteController->addDnsRecord('A', \Cx\Core\Setting\Controller\Setting::getValue('pleskMasterSubscriptionId'),
+            $this->websiteController->addDnsRecord('A', \Cx\Core\Setting\Controller\Setting::getValue('pleskMasterSubscriptionId'),
                 $websiteName, $websiteIp);
-
             $websiteDomain = $websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
             // write mail
-            \MailTemplate::init('MultiSite');
-            if (!\MailTemplate::send(array(
+            \Cx\Core\MailTemplate\Controller\MailTemplate::init('MultiSite');
+            if (!\Cx\Core\MailTemplate\Controller\MailTemplate::send(array(
                 'section' => 'MultiSite',
                 'lang_id' => $langId,
                 'key' => 'createInstance',
