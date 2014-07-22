@@ -8,7 +8,9 @@
  * @package     contrexx
  * @subpackage  coremodule_upload
  */
+
 namespace Cx\Core_Modules\Upload\Controller;
+
 /**
  * Exceptions thrown by uploader
  *
@@ -146,7 +148,7 @@ abstract class Uploader
     protected function redirect() {
         if($this->redirectUrl == null)
             throw new UploaderException('tried to redirect without a redirect url set via Uploader::setRedirectUrl()!');
-        \Cx\Core\Csrf\Controller\ComponentController::header('Location: ' . $this->redirectUrl);
+        \Cx\Core\Csrf\Controller\Csrf::header('Location: ' . $this->redirectUrl);
         die();
     }
 
@@ -408,8 +410,8 @@ abstract class Uploader
             $url = clone \Env::get('cx')->getRequest()->getUrl();
             $url->removeAllParams();
             $url->setParams(array(
-                'section' => 'upload',
-                'cmd' => 'upload',
+                'section' => 'Upload',
+                'cmd' => 'Upload',
             ));
             $uploadPath = (string) $url;
         }

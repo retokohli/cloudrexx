@@ -8,7 +8,9 @@
  * @package     contrexx
  * @subpackage  coremodule_upload
  */
+
 namespace Cx\Core_Modules\Upload\Controller;
+
 /**
  * PlUploader - Flash uploader class.
  *
@@ -68,7 +70,7 @@ class PlUploader extends Uploader
     {
       global $_CORELANG;
       // CSS dependencies
-      \JS::activate('cx');
+      JS::activate('cx');
 
       $uploadPath = $this->getUploadPath('pl');
 

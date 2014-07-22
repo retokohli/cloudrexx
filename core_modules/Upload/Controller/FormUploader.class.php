@@ -8,7 +8,9 @@
  * @package     contrexx
  * @subpackage  coremodule_upload
  */
+
 namespace Cx\Core_Modules\Upload\Controller;
+
 /**
  * FormUploader - Class for upload via HTML input-tags.
  *
@@ -113,7 +115,7 @@ class FormUploader extends Uploader
             $url = clone \Env::get('cx')->getRequest()->getUrl();
             $url->removeAllParams();
             $url->setParams(array(
-                'section' => 'upload',
+                'section' => 'Upload',
                 'cmd' => 'formUploaderFrameFinished',
                 'uploadId' => $this->uploadId,
             ));

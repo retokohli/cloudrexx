@@ -35,9 +35,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
      */
     public function load(\Cx\Core\ContentManager\Model\Entity\Page $page) {
         global $objTemplate;
-        $this->cx->getTemplate()->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master.html');
-        $objTemplate = $this->cx->getTemplate();
-
         $objUploadModule = new UploadManager();
         $objUploadModule->getPage();
     }

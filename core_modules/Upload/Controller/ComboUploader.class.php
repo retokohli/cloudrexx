@@ -8,7 +8,9 @@
  * @package     contrexx
  * @subpackage  coremodule_upload
  */
+
 namespace Cx\Core_Modules\Upload\Controller;
+
 /**
  * ComboUploader - Displays a FormUploader and possibilities to invoke other types of Uploaders.
  *
@@ -88,12 +90,12 @@ class ComboUploader extends Uploader
         //from where the combouploader gets the response for finished uploads
         $responseUrl;
         if($this->isBackendRequest) {
-            $switchUrl = ASCMS_ADMIN_WEB_PATH.'/index.php?'.$cmdOrSection.'=upload&'.$actOrCmd.'=ajaxUploaderCode';
-            $responseUrl = ASCMS_ADMIN_WEB_PATH.'/index.php?'.$cmdOrSection.'=upload&'.$actOrCmd.'=response';
+            $switchUrl = ASCMS_ADMIN_WEB_PATH.'/index.php?'.$cmdOrSection.'=Upload&'.$actOrCmd.'=ajaxUploaderCode';
+            $responseUrl = ASCMS_ADMIN_WEB_PATH.'/index.php?'.$cmdOrSection.'=Upload&'.$actOrCmd.'=response';
         }
         else {
-            $switchUrl = CONTREXX_SCRIPT_PATH.'?'.$cmdOrSection.'=upload&'.$actOrCmd.'=ajaxUploaderCode';
-            $responseUrl = CONTREXX_SCRIPT_PATH.'?'.$cmdOrSection.'=upload&'.$actOrCmd.'=response';
+            $switchUrl = CONTREXX_SCRIPT_PATH.'?'.$cmdOrSection.'=Upload&'.$actOrCmd.'=ajaxUploaderCode';
+            $responseUrl = CONTREXX_SCRIPT_PATH.'?'.$cmdOrSection.'=Upload&'.$actOrCmd.'=response';
         }
                 
         $tpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/Upload/template/uploaders');
