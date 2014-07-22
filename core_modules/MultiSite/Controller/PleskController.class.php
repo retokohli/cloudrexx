@@ -59,12 +59,6 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * Password for the newly created database user
      * */
     protected $dbPassword;   
-
-     /* plesk ip address
-     * 
-     * Ip address on the plesk panel
-     * */
-    protected $pleskIpAddress;
     
     /* plesk API RPC version
      * 
@@ -75,11 +69,10 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     /**
      * Constructor
      */
-    public function __construct($host, $login, $password, $ip){
+    public function __construct($host, $login, $password){
         $this->host = $host;
         $this->login = $login;
         $this->password = $password;
-        $this->ip = $ip;
     }
 
     /*
@@ -383,8 +376,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $pleskHost=\Cx\Core\Setting\Controller\Setting::getValue('pleskHost');
         $pleskLogin=\Cx\Core\Setting\Controller\Setting::getValue('pleskLogin');
         $pleskPassword=\Cx\Core\Setting\Controller\Setting::getValue('pleskPassword');
-        $pleskIp=\Cx\Core\Setting\Controller\Setting::getValue('pleskIp');
-        return new static($pleskHost, $pleskLogin, $pleskPassword, $pleskIp);
+        return new static($pleskHost, $pleskLogin, $pleskPassword);
     }
     
     
