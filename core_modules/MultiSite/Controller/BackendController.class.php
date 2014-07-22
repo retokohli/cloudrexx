@@ -334,7 +334,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 );
             }
             
-            if (in_array($mode, array('manager', 'service', 'manager/service'))) {
+            if (in_array($mode, array('manager', 'service', 'hybrid'))) {
                 \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'setup', 'FileSystem');    
                 \Cx\Core\Setting\Controller\Setting::show(
                     $objTemplate,
@@ -358,7 +358,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 );
             }
 
-            if (in_array($mode, array('service', 'manager/service'))) {
+            if (in_array($mode, array('service', 'hybrid'))) {
                 \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'websiteSetup', 'FileSystem');    
                 \Cx\Core\Setting\Controller\Setting::show(
                     $objTemplate,
@@ -369,7 +369,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 );
             }
             
-            if (   in_array($mode, array('manager', 'service', 'manager/service'))
+            if (   in_array($mode, array('manager', 'service', 'hybrid'))
                 && $websiteController == 'plesk'
             ) {
                 \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'plesk', 'FileSystem');

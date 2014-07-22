@@ -79,7 +79,7 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $websiteNameMaxLength=\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength');
         // TODO: implement protocol support / the protocol to use should be defined by a configuration option
         $protocol = 'https';
-        if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array('manager', 'manager/service'))) {
+        if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array('manager', 'hybrid'))) {
             $configs = \Env::get('config');
             $multiSiteDomain = $protocol.'://'.$configs['domainUrl']; 
         } else {

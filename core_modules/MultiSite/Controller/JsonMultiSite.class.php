@@ -184,7 +184,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 break;
 
             case 'service':
-            case 'manager/service':
+            case 'hybrid':
                 $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('managerSecretKey');
                 $installationId = \Cx\Core\Setting\Controller\Setting::getValue('managerInstallationId');
 
