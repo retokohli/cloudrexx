@@ -1107,8 +1107,8 @@ namespace Cx\Core\Core\Controller {
             $this->template = new \Cx\Core\Html\Sigma(($this->mode == self::MODE_FRONTEND) ? $this->websiteThemesPath : $this->codeBaseAdminTemplatePath);
             $this->template->setErrorHandling(PEAR_ERROR_DIE);
             if ($this->mode == self::MODE_BACKEND) {
-                $this->template->loadTemplateFile('index.html');
-                $this->template->addBlockfile('CONTENT_FILE', 'index_content', 'index_content.html');
+                $this->template->loadTemplateFile('Index.html');
+                $this->template->addBlockfile('CONTENT_FILE', 'index_content', 'IndexContent.html');
             }
         }
         
@@ -1241,7 +1241,7 @@ namespace Cx\Core\Core\Controller {
                 // Skip the nav/language bar for modules which don't make use of either.
                 // TODO: Remove language selector for modules which require navigation but bring their own language management.
                 if ($this->ch->isLegacyComponent($plainCmd)) {
-                    $this->template->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master.html');
+                    $this->template->addBlockfile('CONTENT_OUTPUT', 'content_master', 'LegacyContentMaster.html');
                 }
                 $plainSection = $plainCmd;
             }
@@ -1906,8 +1906,8 @@ namespace Cx\Core\Core\Controller {
             $this->codeBaseDocumentRootPath     = $this->codeBasePath . $this->codeBaseOffsetPath;
             $this->codeBaseConfigPath           = $this->codeBaseDocumentRootPath . self::FOLDER_NAME_CONFIG;
             $this->codeBaseCorePath             = $this->codeBaseDocumentRootPath . self::FOLDER_NAME_CORE;
-            $this->codeBaseAdminTemplatePath    = $this->codeBaseDocumentRootPath . self::FOLDER_NAME_BACKEND . '/template/ascms';
-            $this->codeBaseAdminTemplateWebPath = $this->codeBaseOffsetPath . self::FOLDER_NAME_BACKEND . '/template/ascms';
+            $this->codeBaseAdminTemplatePath    = $this->codeBaseCorePath . '/Core/View/Template/Backend';
+            $this->codeBaseAdminTemplateWebPath = $this->codeBaseOffsetPath . self::FOLDER_NAME_CORE . '/Core/View/Template/Backend';
             $this->codeBaseCoreModulePath       = $this->codeBasePath . self::FOLDER_NAME_CORE_MODULE;
             $this->codeBaseCoreModuleWebPath    = $this->codeBaseOffsetPath . self::FOLDER_NAME_CORE_MODULE;
             $this->codeBaseLibraryPath          = $this->codeBasePath . self::FOLDER_NAME_LIBRARY;

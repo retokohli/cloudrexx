@@ -1166,7 +1166,7 @@ die("MailTemplate::init(): Empty section!");
                         '&amp;key='.$key.
                         '&amp;userFrontendLangId='.$lang_id.'"'.
                     ' title="'.$title.'">'.
-                    '<img src="images/icons/'.
+                    '<img src="../core/Core/View/Media/icons/'.
                     ($available ? 'edit.gif' : 'add.png').'"'.
                     ' width="16" height="16" alt="'.$title.'" border="0" /></a>';
                 $objTemplateLocal->setVariable('MAILTEMPLATE_LANGUAGE', $icon);

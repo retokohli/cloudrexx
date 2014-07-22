@@ -81,10 +81,10 @@ class MediaDirectorySettings extends MediaDirectoryLibrary
                 $intMaskId = intval($objMasks->fields['id']);
                                                                              
                 if($intStatus == 1) {
-                    $strStatus = 'images/icons/status_green.gif';
+                    $strStatus = '../core/Core/View/Media/icons/status_green.gif';
                     $intStatus = 0;
                 } else {
-                    $strStatus = 'images/icons/status_red.gif';
+                    $strStatus = '../core/Core/View/Media/icons/status_red.gif';
                     $intStatus = 1;
                 }  
                 
@@ -1049,10 +1049,10 @@ EOF;
         		}
 
         		if($intStatus == 1) {
-        		    $strStatus = 'images/icons/status_green.gif';
+        		    $strStatus = '../core/Core/View/Media/icons/status_green.gif';
         		    $intStatus = 0;
         		} else {
-        		    $strStatus = 'images/icons/status_red.gif';
+        		    $strStatus = '../core/Core/View/Media/icons/status_red.gif';
         		    $intStatus = 1;
         		}
 

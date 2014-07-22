@@ -281,15 +281,15 @@
 }
 
 #media_image_manipulation #media_image_functions #crop_image #crop_image_title {
-	background-image: url('../../../images/icons/crop.png');
+	background-image: url('../../../../core/Core/View/Media/icons/crop.png');
 }
 
 #media_image_manipulation #media_image_functions #rotate_image #rotate_image_title {
-	background-image: url('../../../images/icons/rotate.png');
+	background-image: url('../../../../core/Core/View/Media/icons/rotate.png');
 }
 
 #media_image_manipulation #media_image_functions #scale_image #scale_image_title {
-	background-image: url('../../../images/icons/scale.png');
+	background-image: url('../../../../core/Core/View/Media/icons/scale.png');
 }
 
 #media_image_manipulation #media_image_functions #rotate_image .rotate_buttons {

@@ -42,7 +42,7 @@ function MultiAction(){
 	</form>
 	<span>
 		<a href="index.php?cmd=Newsletter&amp;act=users&amp;tpl=export&amp;listId=0">
-			<img alt="" title="{TXT_NEWSLETTER_EXPORT_ALL_LISTS}" src="images/icons/csv.gif" />
+			<img alt="" title="{TXT_NEWSLETTER_EXPORT_ALL_LISTS}" src="../core/Core/View/Media/icons/csv.gif" />
 			{TXT_NEWSLETTER_EXPORT_ALL_LISTS}
 		</a>
 	</span>
@@ -66,7 +66,7 @@ function MultiAction(){
 		<!-- BEGIN newsletter_lists -->
 		<tr style="height:20px;" class="{NEWSLETTER_ROW_CLASS}">
 			<td><input style="position:relative;top:2px;" name="listid[]" type="checkbox" value="{NEWSLETTER_LIST_ID}" title="{NEWSLETTER_LIST_ID}" /> {NEWSLETTER_LIST_ID}</td>
-			<td><a href="javascript:void(0);" onclick="changeListStatus({NEWSLETTER_LIST_ID}, '{NEWSLETTER_LIST_NAME}')" title="{NEWSLETTER_LIST_STATUS_MSG}"><img src="images/icons/{NEWSLETTER_LIST_STATUS_IMG}" alt="{NEWSLETTER_LIST_STATUS_MSG}" border="0" /></a></td>
+			<td><a href="javascript:void(0);" onclick="changeListStatus({NEWSLETTER_LIST_ID}, '{NEWSLETTER_LIST_NAME}')" title="{NEWSLETTER_LIST_STATUS_MSG}"><img src="../core/Core/View/Media/icons/{NEWSLETTER_LIST_STATUS_IMG}" alt="{NEWSLETTER_LIST_STATUS_MSG}" border="0" /></a></td>
 			<td><a href="index.php?cmd=Newsletter&amp;act=editlist&amp;id={NEWSLETTER_LIST_ID}" title="{TXT_NEWSLETTER_MODIFY}">{NEWSLETTER_LIST_NAME}</a></td>
 			<td>{NEWSLETTER_LIST_RECIPIENT}</td>
 			<td>
@@ -81,11 +81,11 @@ function MultiAction(){
 				<a href="index.php?cmd=Newsletter&amp;act=editlist&amp;id={NEWSLETTER_LIST_ID}" title="{TXT_NEWSLETTER_NOTIFY_ON_UNSUBSCRIBE}">&nbsp;{NEWSLETTER_NOTIFICATION_EMAIL}</a>
 			</td>
 			<td style="text-align:right; white-space:nowrap;">
-				<a href="index.php?cmd=Newsletter&amp;act=users&amp;tpl=export&amp;listId={NEWSLETTER_LIST_ID}" title="{TXT_NEWSLETTER_EXPORT}"><img src="images/icons/csv.gif" border="0" alt="{TXT_NEWSLETTER_EXPORT}" /> </a>
-				<a href="index.php?cmd=Newsletter&amp;act=gethtml&amp;id={NEWSLETTER_LIST_ID}" title="{TXT_NEWSLETTER_GENERATE_HTML_SOURCE_CODE}"><img src="images/icons/html.gif" border="0" alt="{TXT_NEWSLETTER_GENERATE_HTML_SOURCE_CODE}" /></a>
-				<a href="index.php?cmd=Newsletter&amp;act=editlist&amp;id={NEWSLETTER_LIST_ID}" title="{TXT_NEWSLETTER_MODIFY}"><img src="images/icons/edit.gif" border="0" alt="{TXT_NEWSLETTER_MODIFY}" /></a>
-				<a href="javascript:void(0);" onclick="flushList({NEWSLETTER_LIST_ID}, '{NEWSLETTER_LIST_NAME}');" title="{TXT_NEWSLETTER_FLUSH}"><img src="images/icons/empty.gif" border="0" alt="{TXT_NEWSLETTER_FLUSH}" /></a>
-				<a href="javascript:void(0);" onclick="deleteList({NEWSLETTER_LIST_ID}, '{NEWSLETTER_LIST_NAME}');" title="{TXT_NEWSLETTER_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_NEWSLETTER_DELETE}" /></a>
+				<a href="index.php?cmd=Newsletter&amp;act=users&amp;tpl=export&amp;listId={NEWSLETTER_LIST_ID}" title="{TXT_NEWSLETTER_EXPORT}"><img src="../core/Core/View/Media/icons/csv.gif" border="0" alt="{TXT_NEWSLETTER_EXPORT}" /> </a>
+				<a href="index.php?cmd=Newsletter&amp;act=gethtml&amp;id={NEWSLETTER_LIST_ID}" title="{TXT_NEWSLETTER_GENERATE_HTML_SOURCE_CODE}"><img src="../core/Core/View/Media/icons/html.gif" border="0" alt="{TXT_NEWSLETTER_GENERATE_HTML_SOURCE_CODE}" /></a>
+				<a href="index.php?cmd=Newsletter&amp;act=editlist&amp;id={NEWSLETTER_LIST_ID}" title="{TXT_NEWSLETTER_MODIFY}"><img src="../core/Core/View/Media/icons/edit.gif" border="0" alt="{TXT_NEWSLETTER_MODIFY}" /></a>
+				<a href="javascript:void(0);" onclick="flushList({NEWSLETTER_LIST_ID}, '{NEWSLETTER_LIST_NAME}');" title="{TXT_NEWSLETTER_FLUSH}"><img src="../core/Core/View/Media/icons/empty.gif" border="0" alt="{TXT_NEWSLETTER_FLUSH}" /></a>
+				<a href="javascript:void(0);" onclick="deleteList({NEWSLETTER_LIST_ID}, '{NEWSLETTER_LIST_NAME}');" title="{TXT_NEWSLETTER_DELETE}"><img src="../core/Core/View/Media/icons/delete.gif" border="0" alt="{TXT_NEWSLETTER_DELETE}" /></a>
 			</td>
 		</tr>
 		<!-- END newsletter_lists -->
@@ -99,10 +99,10 @@ function MultiAction(){
 <br />
 
 <div>
-		<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="arrow" />
+		<img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="arrow" />
 		<a href="javascript:void(0)" onclick="changeCheckboxes('listslist','listid[]',true); return false;">{TXT_NEWSLETTER_CHECK_ALL}</a> /
 		<a href="javascript:void(0)" onclick="changeCheckboxes('listslist','listid[]',false); return false;">{TXT_NEWSLETTER_UNCHECK_ALL}</a>
-		<img src="images/icons/strike.gif" alt="strike" title="strike" />
+		<img src="../core/Core/View/Media/icons/strike.gif" alt="strike" title="strike" />
 		<select name="listslist_MultiAction" onchange="MultiAction();">
 			<option value="0">{TXT_NEWSLETTER_WITH_SELECTED}:</option>
 			<option value="delete">{TXT_NEWSLETTER_DELETE}</option>

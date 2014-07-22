@@ -26,10 +26,10 @@ var switchActive = function(id, obj, action)
 {
     cx.jQuery.get('index.php', {cmd: 'Data', act: 'switchEntryState', id: id, switchTo: action}).success(function() {
         if (action) {
-            path = 'images/icons/led_green.gif';
+            path = '../core/Core/View/Media/icons/led_green.gif';
             action = 0;
         } else {
-            path = 'images/icons/led_red.gif';
+            path = '../core/Core/View/Media/icons/led_red.gif';
             action = 1;
         }
         cx.jQuery(obj).children('img:first').attr('src', path);
@@ -73,8 +73,8 @@ $J(document).ready(function () {
                 <!-- BEGIN category_row -->
                 <tr class="row{CATEGORY_ROW}">
                     <td style="padding-left: {CATEGORY_INDENT}px; white-space: nowrap;">
-                    <!-- BEGIN arrow --><img src="images/icons/sub_arrow.gif" /> <!-- END arrow -->
-                    <img src="images/icons/folder_on.gif" />
+                    <!-- BEGIN arrow --><img src="../core/Core/View/Media/icons/sub_arrow.gif" /> <!-- END arrow -->
+                    <img src="../core/Core/View/Media/icons/folder_on.gif" />
                     <a href="index.php?cmd=Data&amp;catId={CATEGORY_ID}" title="{CATEGORY_FULL_NAME}">{CATEGORY_NAME} ({CATEGORY_AMOUNT_OF_ENTRIES})</a></td>
                 </tr>
                 <!-- END category_row -->
@@ -104,13 +104,13 @@ $J(document).ready(function () {
                         <tr class="{ENTRY_ROWCLASS}" id="entry_{ENTRY_ID}">
                             <td><input type="checkbox" name="selectedEntriesId[]" value="{ENTRY_ID}" /></td>
                             <td>
-                                <a href="javascript: void(0);" onclick="switchActive({ENTRY_ID}, this, {ACTIVE_STATE})"><img src="images/icons/led_{ACTIVE_LED}.gif" style="border: none;" alt=""/></a>
+                                <a href="javascript: void(0);" onclick="switchActive({ENTRY_ID}, this, {ACTIVE_STATE})"><img src="../core/Core/View/Media/icons/led_{ACTIVE_LED}.gif" style="border: none;" alt=""/></a>
                             </td>
                             <td>
                                 <!-- BEGIN sort_buttons -->
                                 <span class="sort-buttons" style="width: 35px; height: 20px; float: left; cursor: move;">
-                                    <img src="images/icons/down.gif" style="border: none;" alt="go one up" />
-                                    <img src="images/icons/up.gif" style="border: none;" alt="go one down"/>
+                                    <img src="../core/Core/View/Media/icons/down.gif" style="border: none;" alt="go one up" />
+                                    <img src="../core/Core/View/Media/icons/up.gif" style="border: none;" alt="go one down"/>
                                 </span>
                                 <!-- END sort_buttons -->
                             </td>
@@ -123,9 +123,9 @@ $J(document).ready(function () {
                             <!--<td>{ENTRY_USER}</td>-->
                             <td nowrap="nowrap">
                                 <div align="right">
-                                    <a href="index.php?cmd=Data&amp;act=editEntry&amp;id={ENTRY_ID}" target="_self" title="{TXT_IMGALT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{TXT_IMGALT_EDIT}" title="{TXT_IMGALT_EDIT}" /></a>
-                                    <a href="index.php?cmd=Data&amp;act=copyEntry&amp;id={ENTRY_ID}" target="_self" title="{TXT_IMGALT_COPY}"><img src="images/icons/copy.gif" border="0" alt="{TXT_IMGALT_EDIT}" title="{TXT_IMGALT_EDIT}" /></a>
-                                    <a href="javascript:deleteEntry({ENTRY_ID});" target="_self" title="{TXT_IMGALT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_IMGALT_DELETE}" title="{TXT_IMGALT_DELETE}" /></a> 
+                                    <a href="index.php?cmd=Data&amp;act=editEntry&amp;id={ENTRY_ID}" target="_self" title="{TXT_IMGALT_EDIT}"><img src="../core/Core/View/Media/icons/edit.gif" border="0" alt="{TXT_IMGALT_EDIT}" title="{TXT_IMGALT_EDIT}" /></a>
+                                    <a href="index.php?cmd=Data&amp;act=copyEntry&amp;id={ENTRY_ID}" target="_self" title="{TXT_IMGALT_COPY}"><img src="../core/Core/View/Media/icons/copy.gif" border="0" alt="{TXT_IMGALT_EDIT}" title="{TXT_IMGALT_EDIT}" /></a>
+                                    <a href="javascript:deleteEntry({ENTRY_ID});" target="_self" title="{TXT_IMGALT_DELETE}"><img src="../core/Core/View/Media/icons/delete.gif" border="0" alt="{TXT_IMGALT_DELETE}" title="{TXT_IMGALT_DELETE}" /></a> 
                                 </div>
                             </td>
                         </tr>
@@ -140,10 +140,10 @@ $J(document).ready(function () {
                 <table cellpadding="2" cellspacing="0" border="0">
                     <tr>
                         <td>
-                            <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_ENTRIES_MARKED}:" />
+                            <img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_ENTRIES_MARKED}:" />
                             <a href="#" onclick="changeCheckboxes('frmShowEntries','selectedEntriesId[]',true); return false;">{TXT_ENTRIES_SELECT_ALL}</a> / 
                             <a href="#" onclick="changeCheckboxes('frmShowEntries','selectedEntriesId[]',false); return false;">{TXT_ENTRIES_DESELECT_ALL}</a>
-                            <img src="images/icons/strike.gif" alt="" />
+                            <img src="../core/Core/View/Media/icons/strike.gif" alt="" />
                             <select name="frmShowEntries_MultiAction" onchange="selectMultiAction();">
                                 <option value="0">{TXT_ENTRIES_SUBMIT_SELECT}</option>
                                 <option value="delete">{TXT_ENTRIES_SUBMIT_DELETE}</option>

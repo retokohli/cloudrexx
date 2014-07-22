@@ -42,12 +42,12 @@ function deleteNewsMLCategories() {
           <td height="20"><a href="index.php?cmd=Feed&amp;act=newsML&amp;tpl=details&amp;providerId={FEED_NEWSML_CATEGORY_ID}" title="{TXT_FEED_SHOW_DETAILS}">{FEED_NEWSML_NAME}</a></td>
           <td height="20">{FEED_NEWSML_PLACEHOLDER}</td>
           <td height="20">{FEED_NEWSML_PROVIDER}</td>
-          <td height="20" style="text-align:right;"><a href="index.php?cmd=Feed&amp;act=newsML&amp;tpl=details&amp;providerId={FEED_NEWSML_CATEGORY_ID}" title="{TXT_FEED_SHOW_DETAILS}"><img src="images/icons/details.gif" alt="{TXT_FEED_SHOW_DETAILS}" width="14" height="16" border="0" /></a> <a href="index.php?cmd=Feed&amp;act=newsML&amp;tpl=editCategory&amp;categoryId={FEED_NEWSML_CATEGORY_ID}" title="{TXT_FEED_EDIT_CATEGORY}"><img src="images/icons/edit.gif" width="16" height="16" alt="{TXT_FEED_EDIT_CATEGORY}" border="0" /></a> <a href="index.php?cmd=Feed&amp;act=newsML&amp;tpl=deleteCategory&amp;categoryId={FEED_NEWSML_CATEGORY_ID}" title="{TXT_FEED_DELETE_CATEGORY}" onclick="return deleteNewsMLCategory()"><img src="images/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_FEED_DELETE_CATEGORY}" /></a></td>
+          <td height="20" style="text-align:right;"><a href="index.php?cmd=Feed&amp;act=newsML&amp;tpl=details&amp;providerId={FEED_NEWSML_CATEGORY_ID}" title="{TXT_FEED_SHOW_DETAILS}"><img src="../core/Core/View/Media/icons/details.gif" alt="{TXT_FEED_SHOW_DETAILS}" width="14" height="16" border="0" /></a> <a href="index.php?cmd=Feed&amp;act=newsML&amp;tpl=editCategory&amp;categoryId={FEED_NEWSML_CATEGORY_ID}" title="{TXT_FEED_EDIT_CATEGORY}"><img src="../core/Core/View/Media/icons/edit.gif" width="16" height="16" alt="{TXT_FEED_EDIT_CATEGORY}" border="0" /></a> <a href="index.php?cmd=Feed&amp;act=newsML&amp;tpl=deleteCategory&amp;categoryId={FEED_NEWSML_CATEGORY_ID}" title="{TXT_FEED_DELETE_CATEGORY}" onclick="return deleteNewsMLCategory()"><img src="../core/Core/View/Media/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_FEED_DELETE_CATEGORY}" /></a></td>
         </tr>
       <!-- END feed_newsml_list -->
     </tbody>
   </table>
-  <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_FEED_MARKED}:" />
+  <img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_FEED_MARKED}:" />
   <a href="#" onclick="changeCheckboxes('form_newsml','selectedNewsMLCatId[]',true); return false;">{TXT_FEED_MARK_ALL}</a>&nbsp;/&nbsp;
   <a href="#" onclick="changeCheckboxes('form_newsml','selectedNewsMLCatId[]',false); return false;">{TXT_FEED_REMOVE_CHOICE}</a>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
   <input type="submit" name="newsMLDeleteCategories" value="{TXT_FEED_DELETE_MARKED}" onclick="return deleteNewsMLCategories()" />

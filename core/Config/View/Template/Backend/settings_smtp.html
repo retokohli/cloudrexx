@@ -34,8 +34,8 @@ function settingsSmtpDeleteAccount(id,name)
 			<td><div style="text-align:center;"><input type="radio" name="settings_smtp_default" onclick="window.location.href='?cmd=Config&{CSRF_PARAM}&amp;act=smtp&amp;tpl=default&amp;id={SETTINGS_SMTP_ACCOUNT_ID}'" value="{SETTINGS_SMTP_ACCOUNT_ID}" {SETTINGS_SMTP_DEFAULT} {SETTINGS_SMTP_OPTION_DISABLED} /></div></td>
 			<td><div style="text-align:right;">&nbsp;
 				<!-- BEGIN settings_smtp_account_functions -->
-				<a href="?cmd=Config&amp;act=smtp&amp;tpl=modify&amp;id={SETTINGS_SMTP_ACCOUNT_ID}" title="{TXT_SETTINGS_MODFIY}"><img src="images/icons/edit.gif" width="16" height="16" border="0" alt="{TXT_SETTINGS_MODIFY}" /></a>
-				<a href="javascript:settingsSmtpDeleteAccount({SETTINGS_SMTP_ACCOUNT_ID},'{SETTINGS_SMTP_ACCOUNT_JS}')" title="{TXT_SETTINGS_DELETE}"><img src="images/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_SETTINGS_DELETE}" /></a>
+				<a href="?cmd=Config&amp;act=smtp&amp;tpl=modify&amp;id={SETTINGS_SMTP_ACCOUNT_ID}" title="{TXT_SETTINGS_MODFIY}"><img src="../core/Core/View/Media/icons/edit.gif" width="16" height="16" border="0" alt="{TXT_SETTINGS_MODIFY}" /></a>
+				<a href="javascript:settingsSmtpDeleteAccount({SETTINGS_SMTP_ACCOUNT_ID},'{SETTINGS_SMTP_ACCOUNT_JS}')" title="{TXT_SETTINGS_DELETE}"><img src="../core/Core/View/Media/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_SETTINGS_DELETE}" /></a>
 				<!-- END settings_smtp_account_functions -->
 			</div></td>
 		</tr>

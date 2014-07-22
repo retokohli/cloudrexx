@@ -309,9 +309,9 @@ Caution: JS/ALL files are missing. Also, this should probably be loaded through 
         ),
         'backend' => array(
             'jsfiles' => array(
-                'cadmin/javascript/switching_content.js',
-                'cadmin/javascript/tabs.js',
-                'cadmin/javascript/set_checkboxes.js'
+                'lib/javascript/switching_content.js',
+                'lib/javascript/cx_tabs.js',
+                'lib/javascript/set_checkboxes.js'
             )
         ),
         'user-live-search' => array(

@@ -56,115 +56,115 @@ class Html
     /**
      * Icon used on the link for removing an HTML element
      */
-    const ICON_ELEMENT_REMOVE = 'images/icons/delete.gif';
+    const ICON_ELEMENT_REMOVE = '../core/Core/View/Media/icons/delete.gif';
 
     /**
      * Icon used on the link for adding an HTML element
      * @todo    Find a better icon for this
      */
-    const ICON_ELEMENT_ADD = 'images/icons/check.gif';
+    const ICON_ELEMENT_ADD = '../core/Core/View/Media/icons/check.gif';
 
     /**
      * Icon used for omitted functions
      */
-    const ICON_FUNCTION_BLANK = 'images/icons/pixel.gif';
+    const ICON_FUNCTION_BLANK = '../core/Core/View/Media/icons/pixel.gif';
 
     /**
      * Icon used on the link for viewing any entry
      */
-    const ICON_FUNCTION_VIEW = 'images/icons/viewmag.png';
+    const ICON_FUNCTION_VIEW = '../core/Core/View/Media/icons/viewmag.png';
 
     /**
      * Icon used on the link for deleting any entry
      */
-    const ICON_FUNCTION_DELETE = 'images/icons/delete.gif';
+    const ICON_FUNCTION_DELETE = '../core/Core/View/Media/icons/delete.gif';
 
     /**
      * Icon used on the link for copying any entry
      */
-    const ICON_FUNCTION_COPY = 'images/icons/copy.gif';
+    const ICON_FUNCTION_COPY = '../core/Core/View/Media/icons/copy.gif';
 
     /**
      * Icon used on the link for editing any entry
      */
-    const ICON_FUNCTION_EDIT = 'images/icons/edit.gif';
+    const ICON_FUNCTION_EDIT = '../core/Core/View/Media/icons/edit.gif';
 
     /**
      * Icon used on the link for removing an image
      */
-    const ICON_FUNCTION_CLEAR_IMAGE = 'images/icons/delete.gif';
+    const ICON_FUNCTION_CLEAR_IMAGE = '../core/Core/View/Media/icons/delete.gif';
 
     /**
      * Icon used on the link for marking as not deleted
      */
-    const ICON_FUNCTION_MARK_UNDELETED = 'images/icons/restore.gif';
+    const ICON_FUNCTION_MARK_UNDELETED = '../core/Core/View/Media/icons/restore.gif';
 
     /**
      * Icon used on the link for marking as deleted
      */
-    const ICON_FUNCTION_MARK_DELETED = 'images/icons/empty.gif';
+    const ICON_FUNCTION_MARK_DELETED = '../core/Core/View/Media/icons/empty.gif';
 
     /**
      * Icon used on the link for marking as special
      */
-    const ICON_FUNCTION_SPECIAL_ON = 'images/icons/special_on.png';
+    const ICON_FUNCTION_SPECIAL_ON = '../core/Core/View/Media/icons/special_on.png';
 
     /**
      * Icon used on the link for marking as not special
      */
-    const ICON_FUNCTION_SPECIAL_OFF = 'images/icons/special_off.png';
+    const ICON_FUNCTION_SPECIAL_OFF = '../core/Core/View/Media/icons/special_off.png';
 
     /**
      * Icon used on the link for downloading a PDF document
      */
-    const ICON_FUNCTION_DOWNLOAD_PDF = 'images/icons/pdf.gif';
+    const ICON_FUNCTION_DOWNLOAD_PDF = '../core/Core/View/Media/icons/pdf.gif';
 
     /**
      * Icon used for red status
      */
-    const ICON_STATUS_RED = 'images/icons/status_red.gif';
+    const ICON_STATUS_RED = '../core/Core/View/Media/icons/status_red.gif';
 
     /**
      * Icon used for yellow status
      */
-    const ICON_STATUS_YELLOW = 'images/icons/status_yellow.gif';
+    const ICON_STATUS_YELLOW = '../core/Core/View/Media/icons/status_yellow.gif';
 
     /**
      * Icon used for green status
      */
-    const ICON_STATUS_GREEN = 'images/icons/status_green.gif';
+    const ICON_STATUS_GREEN = '../core/Core/View/Media/icons/status_green.gif';
 
     /**
      * Icon used for the checked status
      */
-    const ICON_STATUS_CHECKED = 'images/icons/check.gif';
+    const ICON_STATUS_CHECKED = '../core/Core/View/Media/icons/check.gif';
 
     /**
      * Icon used for the unchecked status
      */
-    const ICON_STATUS_UNCHECKED = 'images/icons/pixel.gif';
+    const ICON_STATUS_UNCHECKED = '../core/Core/View/Media/icons/pixel.gif';
 
     /**
      * Icon used for Comments (with tooltip containing the text)
      */
-    const ICON_COMMENT = 'images/icons/comment.gif';
+    const ICON_COMMENT = '../core/Core/View/Media/icons/comment.gif';
 
     /**
      * Icon used for gift text (with tooltip containing the text)
      * Only for the hotelcard module
      */
-    const ICON_GIFT = 'images/icons/gift.gif';
+    const ICON_GIFT = '../core/Core/View/Media/icons/gift.gif';
 
     /**
      * Icon used to indicate a link to details for the object.
      * Only for the hotelcard module
      */
-    const ICON_DETAILS = 'images/icons/details.gif';
+    const ICON_DETAILS = '../core/Core/View/Media/icons/details.gif';
 
     /**
      * Icon used for omitted icons (for aligning/formatting)
      */
-    const ICON_BLANK = 'images/icons/blank.gif';
+    const ICON_BLANK = '../core/Core/View/Media/icons/blank.gif';
 
     /**
      * Index counter for all form elements
@@ -1554,13 +1554,13 @@ function select_options(element, on_or_off) {
             $options['style_delete'] =
                 'border:0px;width:17px;height:17px;background-image:url('.
                 ASCMS_PATH_OFFSET.
-                '/cadmin/images/icons/delete.gif);background-repeat:no-repeat;';
+                '/core/Core/View/Media/icons/delete.gif);background-repeat:no-repeat;';
         if (empty($options['style_add']))
             $options['style_add'] = '';
 // TODO: Find a suitable icon
 //                'border:0px;width:17px;height:17px;background-image:url('.
 //                ASCMS_PATH_OFFSET.
-//                '/cadmin/images/icons/add.gif);background-repeat:no-repeat;';
+//                '/core/Core/View/Media/icons/add.gif);background-repeat:no-repeat;';
         // Local copy, as this is modified in the subelements below
         $index_tab = ++self::$index_tab;
         $return =

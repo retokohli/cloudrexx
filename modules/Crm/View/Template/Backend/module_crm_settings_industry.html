@@ -96,7 +96,7 @@
             url = $elm.attr("href");
             $J.get(url, function(data) {
                 image = $elm.find('img').attr('src').split('/')[2] == 'led_green.gif' ? 'led_red.gif' : 'led_green.gif';
-                $elm.find('img').attr('src', 'images/icons/'+image); 
+                $elm.find('img').attr('src', '../core/Core/View/Media/icons/'+image); 
                 fadeOkbox('{TXT_CRM_CHANGE_STATUS}');
             });
             e.preventDefault();
@@ -198,9 +198,9 @@
                     </td>
                     <td style="text-align: right;">
                         <div align="right">
-                            <a title="{TXT_CRM_IMAGE_EDIT}" target="_self" rel="entry_{ENTRY_ID}_edit" class="entry_{ENTRY_ID}_edit editEntry" href="index.php?cmd={MODULE_NAME}&act=settings&tpl=industry&fn=modify&id={ENTRY_ID}" ><img border="0" title="{TXT_CRM_IMAGE_EDIT}" alt="{TXT_CRM_IMAGE_EDIT}" src="images/icons/edit.gif" /></a>
-                            <a title="{TXT_IMAGE_SAVE}" target="_self" style="display: none;" rel="entry_{ENTRY_ID}_save" class="entry_{ENTRY_ID}_save saveEntry" href="javascript:void(0);" ><img border="0" title="{TXT_CRM_IMAGE_EDIT}" alt="{TXT_CRM_IMAGE_EDIT}" src="images/icons/save.png" /></a>
-                            <a rel="entry_{ENTRY_ID}_delete" class="entry_{ENTRY_ID}_delete deleteEntry" href="javascript:void(0);" target="_self" title="{TXT_CRM_IMAGE_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_CRM_IMAGE_DELETE}" title="{TXT_CRM_IMAGE_DELETE}" /></a>
+                            <a title="{TXT_CRM_IMAGE_EDIT}" target="_self" rel="entry_{ENTRY_ID}_edit" class="entry_{ENTRY_ID}_edit editEntry" href="index.php?cmd={MODULE_NAME}&act=settings&tpl=industry&fn=modify&id={ENTRY_ID}" ><img border="0" title="{TXT_CRM_IMAGE_EDIT}" alt="{TXT_CRM_IMAGE_EDIT}" src="../core/Core/View/Media/icons/edit.gif" /></a>
+                            <a title="{TXT_IMAGE_SAVE}" target="_self" style="display: none;" rel="entry_{ENTRY_ID}_save" class="entry_{ENTRY_ID}_save saveEntry" href="javascript:void(0);" ><img border="0" title="{TXT_CRM_IMAGE_EDIT}" alt="{TXT_CRM_IMAGE_EDIT}" src="../core/Core/View/Media/icons/save.png" /></a>
+                            <a rel="entry_{ENTRY_ID}_delete" class="entry_{ENTRY_ID}_delete deleteEntry" href="javascript:void(0);" target="_self" title="{TXT_CRM_IMAGE_DELETE}"><img src="../core/Core/View/Media/icons/delete.gif" border="0" alt="{TXT_CRM_IMAGE_DELETE}" title="{TXT_CRM_IMAGE_DELETE}" /></a>
                         </div>
                     </td>
                 </tr>
@@ -209,7 +209,7 @@
 
         </table>
         <br>
-        <img height="22" border="0" width="38" src="images/icons/arrow.gif" alt=":" />
+        <img height="22" border="0" width="38" src="../core/Core/View/Media/icons/arrow.gif" alt=":" />
         <a href="#" onclick="changeCheckboxes('industry_overview_entries','indusEntry[]',true); return false;">{TXT_CRM_SELECT_ALL}</a> / <a href="#" onclick="changeCheckboxes('industry_overview_entries','indusEntry[]',false); return false;">{TXT_CRM_REMOVE_SELECTION}</a>
         <select name="actionType" id="multiAction">
             <option value="0">{TXT_CRM_SELECT_ACTION}</option>
@@ -246,7 +246,7 @@
                         </div>
                         <div id="Inputfield_0_Expanded" style="display: none; ">
                             <!-- BEGIN industryTypeNames -->
-                            <input type="text" name="Inputfield[{LANG_ID}]" id="Inputfield_0_{LANG_ID}" value="{CRM_INDUSTRY_NAME_VALUE}" style="width: 280px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url('images/flags/flag_{LANG_SHORT_NAME}.gif') no-repeat 3px 3px;" onfocus="this.select();">&nbsp;{LANG_LONG_NAME}&nbsp;&nbsp;
+                            <input type="text" name="Inputfield[{LANG_ID}]" id="Inputfield_0_{LANG_ID}" value="{CRM_INDUSTRY_NAME_VALUE}" style="width: 280px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url('../core/Country/View/Media/Flag/flag_{LANG_SHORT_NAME}.gif') no-repeat 3px 3px;" onfocus="this.select();">&nbsp;{LANG_LONG_NAME}&nbsp;&nbsp;
                             <!-- BEGIN minimize -->
                             <a href="javascript:ExpandMinimize('0');">«&nbsp;{TXT_CRM_MINIMIZE}</a>
                             <!-- END minimize -->

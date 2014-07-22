@@ -925,7 +925,7 @@ JS_CODE;
     {
         global $_ARRAYLANG;
 
-        return sprintf($this->htmlLinkTemplate, "javascript:void(0)\" onclick=\"$method($id,'$name')", $_ARRAYLANG['TXT_DOWNLOADS_DELETE'], sprintf($this->htmlImgTemplate, 'cadmin/images/icons/delete.gif', $_ARRAYLANG['TXT_DOWNLOADS_DELETE']));
+        return sprintf($this->htmlLinkTemplate, "javascript:void(0)\" onclick=\"$method($id,'$name')", $_ARRAYLANG['TXT_DOWNLOADS_DELETE'], sprintf($this->htmlImgTemplate, 'core/Core/View/Media/icons/delete.gif', $_ARRAYLANG['TXT_DOWNLOADS_DELETE']));
     }
 
 

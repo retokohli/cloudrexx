@@ -57,7 +57,7 @@ class Immo extends ImmoLib
 
 
 
-    var $_defaultImage = 'images/icons/images.gif';
+    var $_defaultImage = '../core/Core/View/Media/icons/images.gif';
 
     /**
      * Constructor
@@ -2393,7 +2393,7 @@ WHERE id = $immoID )";
                             'IMMO_FIELD_LNK_ID'			=> $fieldkey,
                             'IMMO_CHECKED'				=> ($immoID > 0) ? (($field['content']['active']) ? 'checked="checked"' : '' ) : ($field['mandatory'] == 1) ? 'checked="checked"' : '',
                             'IMMO_DISABLED'				=> ($field['mandatory'] == 1) ? $strDisabled : '',
-                            'IMMO_PROTECTED_ICON'		=> ($field['type'] == 'protected_link') ? 'images/icons/lock_closed.gif' : 'images/icons/lock_open.gif',
+                            'IMMO_PROTECTED_ICON'		=> ($field['type'] == 'protected_link') ? '../core/Core/View/Media/icons/lock_closed.gif' : '../core/Core/View/Media/icons/lock_open.gif',
                             'TXT_IMMO_PROTECTED'		=> ($field['type'] == 'protected_link') ? $_ARRAYLANG['TXT_IMMO_PROTECTED'] : $_ARRAYLANG['TXT_IMMO_NOT_PROTECTED'],
 
                     ));

@@ -128,7 +128,7 @@ function markCheckboxes(intSelected) {
 			<tr class="{CATEGORY_ROWCLASS}">
 				<td><input type="checkbox" name="selectedCategoryId[]" id="selectedCategoryId" value="{CATEGORY_ID}" /></td>
 				<td>
-					<a href="?cmd=Forum&amp;act=category_status&amp;id={CATEGORY_ID}" target="_self"><img src="images/icons/{CATEGORY_STATUS_ICON}.gif" border="0" alt="{TXT_IMGALT_CHANGE_STATUS}" title="{TXT_IMGALT_CHANGE_STATUS}" />
+					<a href="?cmd=Forum&amp;act=category_status&amp;id={CATEGORY_ID}" target="_self"><img src="../core/Core/View/Media/icons/{CATEGORY_STATUS_ICON}.gif" border="0" alt="{TXT_IMGALT_CHANGE_STATUS}" title="{TXT_IMGALT_CHANGE_STATUS}" />
 				</td>
 				<td>{CATEGORY_SPACER}{CATEGORY_TYPE_ICON}&nbsp;<input type="text" name="sortingSystem{CATEGORY_ID}" value="{CATEGORY_ORDERID}" maxlength="2" size="2" />&nbsp; <a href="?cmd=Forum&amp;act=category_edit&amp;id={CATEGORY_ID}" title="edit {CATEGORY_NAME}">{CATEGORY_NAME} </a></td>
 				<td>{CATEGORY_POSTCOUNT}</td>
@@ -137,9 +137,9 @@ function markCheckboxes(intSelected) {
 				<td nowrap="nowrap">{CATEGORY_LASTPOST}</td>
 				<td nowrap="nowrap">
 					<div align="right">
-						<a href="?cmd=Forum&amp;act=category_edit&amp;id={CATEGORY_ID}" target="_self" title="{TXT_IMGALT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{TXT_IMGALT_EDIT}" title="{TXT_IMGALT_EDIT}" /></a>
-						<a href="?cmd=Forum&amp;act=category_access&amp;id={CATEGORY_ID}" target="_self" title="{TXT_IMGALT_ACCESS}"><img src="images/icons/groups.gif" border="0" alt="{TXT_IMGALT_ACCESS}" title="{TXT_IMGALT_ACCESS}" /></a>
-						<a href="javascript:deleteCategory({CATEGORY_ID});" target="_self" title="{TXT_IMGALT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_IMGALT_DELETE}" title="{TXT_IMGALT_DELETE}" /></a>
+						<a href="?cmd=Forum&amp;act=category_edit&amp;id={CATEGORY_ID}" target="_self" title="{TXT_IMGALT_EDIT}"><img src="../core/Core/View/Media/icons/edit.gif" border="0" alt="{TXT_IMGALT_EDIT}" title="{TXT_IMGALT_EDIT}" /></a>
+						<a href="?cmd=Forum&amp;act=category_access&amp;id={CATEGORY_ID}" target="_self" title="{TXT_IMGALT_ACCESS}"><img src="../core/Core/View/Media/icons/groups.gif" border="0" alt="{TXT_IMGALT_ACCESS}" title="{TXT_IMGALT_ACCESS}" /></a>
+						<a href="javascript:deleteCategory({CATEGORY_ID});" target="_self" title="{TXT_IMGALT_DELETE}"><img src="../core/Core/View/Media/icons/delete.gif" border="0" alt="{TXT_IMGALT_DELETE}" title="{TXT_IMGALT_DELETE}" /></a>
 					</div>
 				</td>
 			</tr>
@@ -155,10 +155,10 @@ function markCheckboxes(intSelected) {
 		<table cellpadding="2" cellspacing="0" border="0">
 			<tr>
 				<td>
-					<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
+					<img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
 					<a href="#" onClick="changeCheckboxes('frmShowCategories','selectedCategoryId[]',true); return false;">{TXT_SELECT_ALL}</a> /
 					<a href="#" onClick="changeCheckboxes('frmShowCategories','selectedCategoryId[]',false); return false;">{TXT_DESELECT_ALL}</a>
-					<img src="images/icons/strike.gif" />
+					<img src="../core/Core/View/Media/icons/strike.gif" />
 					<select name="frmShowCategories_MultiAction" onChange="selectMultiAction();">
 						<option value="0">{TXT_SUBMIT_SELECT}</option>
 						<option value="delete">{TXT_SUBMIT_DELETE}</option>

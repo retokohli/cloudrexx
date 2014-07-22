@@ -34,7 +34,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         global $subMenuTitle, $_ARRAYLANG;
         $subMenuTitle = $_ARRAYLANG['TXT_DESIGN_MANAGEMENT'];
 
-        $this->cx->getTemplate()->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master.html');
+        $this->cx->getTemplate()->addBlockfile('CONTENT_OUTPUT', 'content_master', 'LegacyContentMaster.html');
         $cachedRoot = $this->cx->getTemplate()->getRoot();
         $this->cx->getTemplate()->setRoot($this->getDirectory() . '/View/Template/Backend');
 

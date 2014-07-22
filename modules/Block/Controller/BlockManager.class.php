@@ -280,37 +280,37 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
             $rowNr = 0;
             foreach ($arrBlocks as $blockId => $arrBlock) {
                 if ($arrBlock['active'] ==  '1') {
-                    $status = '<a href="index.php?cmd=Block&amp;act=deactivate&amp;blockId='.$blockId.'" title="'.$_ARRAYLANG['TXT_BLOCK_ACTIVE'].'"><img src="images/icons/led_green.gif" width="13" height="13" border="0" alt="'.$_ARRAYLANG['TXT_BLOCK_ACTIVE'].'" /></a>';
+                    $status = '<a href="index.php?cmd=Block&amp;act=deactivate&amp;blockId='.$blockId.'" title="'.$_ARRAYLANG['TXT_BLOCK_ACTIVE'].'"><img src="../core/Core/View/Media/icons/led_green.gif" width="13" height="13" border="0" alt="'.$_ARRAYLANG['TXT_BLOCK_ACTIVE'].'" /></a>';
                 }else{
-                    $status = '<a href="index.php?cmd=Block&amp;act=activate&amp;blockId='.$blockId.'" title="'.$_ARRAYLANG['TXT_BLOCK_INACTIVE'].'"><img src="images/icons/led_red.gif" width="13" height="13" border="0" alt="'.$_ARRAYLANG['TXT_BLOCK_INACTIVE'].'" /></a>';
+                    $status = '<a href="index.php?cmd=Block&amp;act=activate&amp;blockId='.$blockId.'" title="'.$_ARRAYLANG['TXT_BLOCK_INACTIVE'].'"><img src="../core/Core/View/Media/icons/led_red.gif" width="13" height="13" border="0" alt="'.$_ARRAYLANG['TXT_BLOCK_INACTIVE'].'" /></a>';
                 }
 
                 if ($arrBlock['random'] ==  '1') {
                     $random = '<img src="'.ASCMS_MODULE_WEB_PATH.'/Block/View/Media/Shuffle1.png" width="16" height="16" border="0" alt="random 1" class="tooltip-trigger" /><span class="tooltip-message">'.$_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'].'</span>';
                 } else {
-                    $random = '<img src="images/icons/pixel.gif" width="16" height="16" border="0" alt="" title="" />';
+                    $random = '<img src="../core/Core/View/Media/icons/pixel.gif" width="16" height="16" border="0" alt="" title="" />';
                 }
 
                 if ($arrBlock['random2'] ==  '1') {
                     $random2 = '<img src="'.ASCMS_MODULE_WEB_PATH.'/Block/View/Media/Shuffle2.png" width="16" height="16" border="0" alt="random 2" class="tooltip-trigger" /><span class="tooltip-message">'.$_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'].'</span>';
                 } else {
-                    $random2 = '<img src="images/icons/pixel.gif" width="16" height="16" border="0" alt="" title="" />';
+                    $random2 = '<img src="../core/Core/View/Media/icons/pixel.gif" width="16" height="16" border="0" alt="" title="" />';
                 }
 
                 if ($arrBlock['random3'] ==  '1') {
                     $random3 = '<img src="'.ASCMS_MODULE_WEB_PATH.'/Block/View/Media/Shuffle3.png" width="16" height="16" border="0" alt="random 3" class="tooltip-trigger" /><span class="tooltip-message">'.$_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'].'</span>';
                 } else {
-                    $random3 = '<img src="images/icons/pixel.gif" width="16" height="16" border="0" alt="" title="" />';
+                    $random3 = '<img src="../core/Core/View/Media/icons/pixel.gif" width="16" height="16" border="0" alt="" title="" />';
                 }
 
                 if ($arrBlock['random4'] ==  '1') {
                     $random4 = '<img src="'.ASCMS_MODULE_WEB_PATH.'/Block/View/Media/Shuffle4.png" width="16" height="16" border="0" alt="random 4" class="tooltip-trigger" /><span class="tooltip-message">'.$_ARRAYLANG['TXT_BLOCK_RANDOM_INFO'].'</span>';
                 } else {
-                    $random4 = '<img src="images/icons/pixel.gif" width="16" height="16" border="0" alt="" title="" />';
+                    $random4 = '<img src="../core/Core/View/Media/icons/pixel.gif" width="16" height="16" border="0" alt="" title="" />';
                 }
 
                 if ($arrBlock['global'] ==  '1') {
-                    $global = '<img src="images/icons/upload.gif" width="16" height="16" border="0" alt="upload" title="upload" />';
+                    $global = '<img src="../core/Core/View/Media/icons/upload.gif" width="16" height="16" border="0" alt="upload" title="upload" />';
                 } else {
                     $global = '&nbsp;';
                 }
@@ -323,10 +323,10 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
                 
                 switch ($arrBlock['global']) {
                     case '1':
-                        $checkImage = "images/icons/check.gif";
+                        $checkImage = "../core/Core/View/Media/icons/check.gif";
                         break;
                     case '2':
-                        $checkImage = "images/icons/check.gif";
+                        $checkImage = "../core/Core/View/Media/icons/check.gif";
                         
                         $blockAssociatedPageIds = $this->_getAssociatedPageIds($blockId, 'global');
                         $selectedPages    = array();
@@ -340,7 +340,7 @@ class BlockManager extends \Cx\Modules\Block\Controller\BlockLibrary
                         $strSelectedPages = implode('<br />', $selectedPages);                        
                         break;
                     default :
-                        $checkImage = 'images/icons/pixel.gif';
+                        $checkImage = '../core/Core/View/Media/icons/pixel.gif';
                         break;
                 }
                     

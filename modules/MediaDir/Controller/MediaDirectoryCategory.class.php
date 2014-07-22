@@ -197,7 +197,7 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
                     $spacer = null;
                     $intSpacerSize = null;
                     $intSpacerSize = (count($arrParentIds)*21);
-                    $spacer .= '<img src="images/icons/pixel.gif" border="0" width="'.$intSpacerSize.'" height="11" alt="" />';
+                    $spacer .= '<img src="../core/Core/View/Media/icons/pixel.gif" border="0" width="'.$intSpacerSize.'" height="11" alt="" />';
 
                     //check expanded categories
                     if($exp_cat == 'all') {
@@ -209,12 +209,12 @@ class MediaDirectoryCategory extends MediaDirectoryLibrary
 
                     if(!empty($arrCategory['catChildren'])) {
                         if((in_array($arrCategory['catId'], $this->arrExpandedCategoryIds) && $bolExpandCategory) || $exp_cat == 'all'){
-                            $strCategoryIcon = '<a href="index.php?cmd='.$this->moduleName.'&amp;exp_cat='.$arrCategory['catParentId'].'"><img src="images/icons/minuslink.gif" border="0" alt="{'.$this->moduleLangVar.'_CATEGORY_NAME}" title="{'.$this->moduleLangVar.'_CATEGORY_NAME}" /></a>';
+                            $strCategoryIcon = '<a href="index.php?cmd='.$this->moduleName.'&amp;exp_cat='.$arrCategory['catParentId'].'"><img src="../core/Core/View/Media/icons/minuslink.gif" border="0" alt="{'.$this->moduleLangVar.'_CATEGORY_NAME}" title="{'.$this->moduleLangVar.'_CATEGORY_NAME}" /></a>';
                         } else {
-                            $strCategoryIcon = '<a href="index.php?cmd='.$this->moduleName.'&amp;exp_cat='.$arrCategory['catId'].'"><img src="images/icons/pluslink.gif" border="0" alt="{'.$this->moduleLangVar.'_CATEGORY_NAME}" title="{'.$this->moduleLangVar.'_CATEGORY_NAME}" /></a>';
+                            $strCategoryIcon = '<a href="index.php?cmd='.$this->moduleName.'&amp;exp_cat='.$arrCategory['catId'].'"><img src="../core/Core/View/Media/icons/pluslink.gif" border="0" alt="{'.$this->moduleLangVar.'_CATEGORY_NAME}" title="{'.$this->moduleLangVar.'_CATEGORY_NAME}" /></a>';
                         }
                     } else {
-                        $strCategoryIcon = '<img src="images/icons/pixel.gif" border="0" width="11" height="11" alt="{'.$this->moduleLangVar.'_CATEGORY_NAME}" title="{'.$this->moduleLangVar.'_CATEGORY_NAME}" />';
+                        $strCategoryIcon = '<img src="../core/Core/View/Media/icons/pixel.gif" border="0" width="11" height="11" alt="{'.$this->moduleLangVar.'_CATEGORY_NAME}" title="{'.$this->moduleLangVar.'_CATEGORY_NAME}" />';
                     }
 
                     //parse variables

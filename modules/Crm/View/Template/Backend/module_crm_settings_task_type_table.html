@@ -25,7 +25,7 @@
             <td style="width: 25px;"><input type="checkbox" name="taskTypeId[]" class="entrySelection" value="{CRM_TASK_TYPE_ID}" /></td>
             <td style="width: 50px;">
                 <div>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                    <a href="index.php?cmd={MODULE_NAME}&ajax=1&act=settings&tpl=tasktypes&actionType=changestatus&taskTypeId={CRM_TASK_TYPE_ID}" class="changestatus" ><img src="images/icons/{CRM_TASK_TYPE_ACTIVE}" alt="status" /></a>
+                    <a href="index.php?cmd={MODULE_NAME}&ajax=1&act=settings&tpl=tasktypes&actionType=changestatus&taskTypeId={CRM_TASK_TYPE_ID}" class="changestatus" ><img src="../core/Core/View/Media/icons/{CRM_TASK_TYPE_ACTIVE}" alt="status" /></a>
                 </div>
             </td>
             <td>&nbsp;<input type="text" style="width:25px;padding: 2px;text-align: right;" name="sorting[{CRM_TASK_TYPE_ID}]" value="{CRM_TASK_TYPE_SORTING}" /></td>
@@ -35,9 +35,9 @@
             </td>
             <td>
                 <div align="right">
-                    <a href="index.php?cmd={MODULE_NAME}&amp;act=settings&amp;tpl=tasktypes&amp;fn=editTaskType&amp;id={CRM_TASK_TYPE_ID}" target="_self" title="{TXT_CRM_IMAGE_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{TXT_CRM_IMAGE_EDIT}" title="{TXT_CRM_IMAGE_EDIT}" /></a>
+                    <a href="index.php?cmd={MODULE_NAME}&amp;act=settings&amp;tpl=tasktypes&amp;fn=editTaskType&amp;id={CRM_TASK_TYPE_ID}" target="_self" title="{TXT_CRM_IMAGE_EDIT}"><img src="../core/Core/View/Media/icons/edit.gif" border="0" alt="{TXT_CRM_IMAGE_EDIT}" title="{TXT_CRM_IMAGE_EDIT}" /></a>
                     <!-- BEGIN delete_icon_block -->
-                    <a href="javascript:deleteEntry({CRM_TASK_TYPE_ID});" target="_self" title="{TXT_CRM_IMAGE_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_CRM_IMAGE_DELETE}" title="{TXT_CRM_IMAGE_DELETE}" /></a>
+                    <a href="javascript:deleteEntry({CRM_TASK_TYPE_ID});" target="_self" title="{TXT_CRM_IMAGE_DELETE}"><img src="../core/Core/View/Media/icons/delete.gif" border="0" alt="{TXT_CRM_IMAGE_DELETE}" title="{TXT_CRM_IMAGE_DELETE}" /></a>
                     <!-- END delete_icon_block -->
                 </div>
             </td>

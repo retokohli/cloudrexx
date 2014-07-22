@@ -232,13 +232,13 @@ function openWindow(theURL,winName,features)
             <td width="110" style="text-align: right;" nowrap="nowrap">{MEDIA_FILE_PERM}&nbsp;</td>
             <td width="80" style="text-align: right;" nowrap="nowrap">
                 <!-- BEGIN mediaImageEdit -->
-                <a href="{MEDIA_FILE_EDIT_HREF}" title="{MEDIA_EDIT}"><img src="images/icons/crop_small.png" width="16" height="16" alt="edit" style="border: 0px;" /></a>&nbsp;
+                <a href="{MEDIA_FILE_EDIT_HREF}" title="{MEDIA_EDIT}"><img src="../core/Core/View/Media/icons/crop_small.png" width="16" height="16" alt="edit" style="border: 0px;" /></a>&nbsp;
                 <!-- END mediaImageEdit -->
                 <!-- BEGIN mediaFilesharing -->
-                <a href="{MEDIA_FILE_FILESHARING_HREF}" title="{MEDIA_FILESHARING}"><img src="images/icons/cloud{MEDIA_FILESHARING_STATE}.png" width="16" height="16" alt="filesharing" style="border: 0px;" /></a>
+                <a href="{MEDIA_FILE_FILESHARING_HREF}" title="{MEDIA_FILESHARING}"><img src="../core/Core/View/Media/icons/cloud{MEDIA_FILESHARING_STATE}.png" width="16" height="16" alt="filesharing" style="border: 0px;" /></a>
                 <!-- END mediaFilesharing -->
-                <a href="{MEDIA_FILE_RENAME_HREF}" title="{MEDIA_RENAME}"><img src="images/icons/edit.gif" width="16" height="16" alt="rename" style="border: 0px;" /></a>&nbsp;
-                <a href="javascript:mediaConfirmDelete('{MEDIA_FILE_NAME}');" title="{MEDIA_DELETE}"><img src="images/icons/delete.gif" width="16" height="16" alt="delete" style="border: 0px;" /></a>
+                <a href="{MEDIA_FILE_RENAME_HREF}" title="{MEDIA_RENAME}"><img src="../core/Core/View/Media/icons/edit.gif" width="16" height="16" alt="rename" style="border: 0px;" /></a>&nbsp;
+                <a href="javascript:mediaConfirmDelete('{MEDIA_FILE_NAME}');" title="{MEDIA_DELETE}"><img src="../core/Core/View/Media/icons/delete.gif" width="16" height="16" alt="delete" style="border: 0px;" /></a>
             </td>
         </tr>
       <!-- END mediaDirectoryTree -->
@@ -253,10 +253,10 @@ function openWindow(theURL,winName,features)
     <table width="100%" style="height:50;" cellspacing="0" cellpadding="5" border="0">
       <tr>
         <td valign="middle">
-          <img src="images/icons/arrow.gif" width="38" height="22" alt="^" title="^" />
+          <img src="../core/Core/View/Media/icons/arrow.gif" width="38" height="22" alt="^" title="^" />
           <a href="#" onclick="changeCheckboxes('fileList','formSelected[]',true); return false;">{TXT_SELECT_ALL}</a> /
           <a href="#" onclick="changeCheckboxes('fileList','formSelected[]',false); return false;">{TXT_DESELECT_ALL}</a>
-          <img alt="-" title="-" src="images/icons/strike.gif" />
+          <img alt="-" title="-" src="../core/Core/View/Media/icons/strike.gif" />
           <select name="selectAction" onchange="mediaDoAction();">
             <option value="0" selected="selected">{TXT_MEDIA_SELECT_ACTION}</option>
             <option value="cut">{TXT_MEDIA_CUT}</option>

@@ -154,7 +154,7 @@
         width: 180px;
         text-decoration: none;
         cursor: pointer;
-        background: url('images/icons/crm_arrow_down.gif') no-repeat 160px 5px #fff;
+        background: url('../core/Core/View/Media/icons/crm_arrow_down.gif') no-repeat 160px 5px #fff;
         border: 1px solid #dedede;
     }
     .bordered {        
@@ -273,7 +273,7 @@
                     {TXT_CRM_CUSTOMER_OVERVIEW}
                     <span style="float: right;margin-top: 5px;">
                         <a title="{TXT_CRM_CUSTOMER_EXPORT}"  href="index.php?cmd={MODULE_NAME}&amp;act=settings&amp;tpl=interface&amp;subTpl=exportcsv{CRM_SEARCH_LINK}">
-                            <img src="./images/icons/csv.gif"/>
+                            <img src="../core/Core/View/Media/icons/csv.gif"/>
                         </a>
                     </span>
                 </th>
@@ -323,9 +323,9 @@
                 <td >{CRM_ADDED_DATE}</td>
                 <td nowrap="nowrap">
                     <div align="right">
-                        <a title="{TXT_CRM_DOWNLOAD_VCARD}" target="_self" href="index.php?cmd={MODULE_NAME}&amp;act=exportvcf&amp;id={ENTRY_ID}"><img border="0" title="{TXT_IMAGE_VCARD}" alt="{TXT_IMAGE_VCARD}" src="images/icons/outlook_visitenkarte.png" /></a>                        
-                        <a title="{TXT_CRM_IMAGE_EDIT}" target="_self" href="index.php?cmd={MODULE_NAME}&act=customers&tpl=managecontact&amp;id={ENTRY_ID}{CRM_REDIRECT_LINK}"><img border="0" title="{TXT_CRM_IMAGE_EDIT}" alt="{TXT_CRM_IMAGE_EDIT}" src="images/icons/edit.gif" /></a>
-                        <a href="javascript:deleteEntry({ENTRY_ID});" target="_self" title="{TXT_CRM_IMAGE_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_CRM_IMAGE_DELETE}" title="{TXT_CRM_IMAGE_DELETE}" /></a>
+                        <a title="{TXT_CRM_DOWNLOAD_VCARD}" target="_self" href="index.php?cmd={MODULE_NAME}&amp;act=exportvcf&amp;id={ENTRY_ID}"><img border="0" title="{TXT_IMAGE_VCARD}" alt="{TXT_IMAGE_VCARD}" src="../core/Core/View/Media/icons/outlook_visitenkarte.png" /></a>                        
+                        <a title="{TXT_CRM_IMAGE_EDIT}" target="_self" href="index.php?cmd={MODULE_NAME}&act=customers&tpl=managecontact&amp;id={ENTRY_ID}{CRM_REDIRECT_LINK}"><img border="0" title="{TXT_CRM_IMAGE_EDIT}" alt="{TXT_CRM_IMAGE_EDIT}" src="../core/Core/View/Media/icons/edit.gif" /></a>
+                        <a href="javascript:deleteEntry({ENTRY_ID});" target="_self" title="{TXT_CRM_IMAGE_DELETE}"><img src="../core/Core/View/Media/icons/delete.gif" border="0" alt="{TXT_CRM_IMAGE_DELETE}" title="{TXT_CRM_IMAGE_DELETE}" /></a>
                     </div>
                 </td>
             </tr>
@@ -365,9 +365,9 @@
                 <td>{CRM_ADDED_DATE}</td>
                 <td nowrap="nowrap">
                     <div align="right">
-                        <a title="{TXT_CRM_DOWNLOAD_VCARD}" target="_self" href="index.php?cmd={MODULE_NAME}&amp;act=exportvcf&amp;id={ENTRY_ID}"><img border="0" title="{TXT_IMAGE_VCARD}" alt="{TXT_IMAGE_VCARD}" src="images/icons/outlook_visitenkarte.png" /></a>                        
-                        <a title="{TXT_CRM_IMAGE_EDIT}" target="_self" href="index.php?cmd={MODULE_NAME}&act=customers&tpl=managecontact&type=contact&id={ENTRY_ID}{CRM_REDIRECT_LINK}"><img border="0" title="{TXT_CRM_IMAGE_EDIT}" alt="{TXT_CRM_IMAGE_EDIT}" src="images/icons/edit.gif" /></a>
-                        <a href="javascript:deleteEntry({ENTRY_ID});" target="_self" title="{TXT_CRM_IMAGE_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_CRM_IMAGE_DELETE}" title="{TXT_CRM_IMAGE_DELETE}" /></a>
+                        <a title="{TXT_CRM_DOWNLOAD_VCARD}" target="_self" href="index.php?cmd={MODULE_NAME}&amp;act=exportvcf&amp;id={ENTRY_ID}"><img border="0" title="{TXT_IMAGE_VCARD}" alt="{TXT_IMAGE_VCARD}" src="../core/Core/View/Media/icons/outlook_visitenkarte.png" /></a>                        
+                        <a title="{TXT_CRM_IMAGE_EDIT}" target="_self" href="index.php?cmd={MODULE_NAME}&act=customers&tpl=managecontact&type=contact&id={ENTRY_ID}{CRM_REDIRECT_LINK}"><img border="0" title="{TXT_CRM_IMAGE_EDIT}" alt="{TXT_CRM_IMAGE_EDIT}" src="../core/Core/View/Media/icons/edit.gif" /></a>
+                        <a href="javascript:deleteEntry({ENTRY_ID});" target="_self" title="{TXT_CRM_IMAGE_DELETE}"><img src="../core/Core/View/Media/icons/delete.gif" border="0" alt="{TXT_CRM_IMAGE_DELETE}" title="{TXT_CRM_IMAGE_DELETE}" /></a>
                     </div>
                 </td>
             </tr>
@@ -379,10 +379,10 @@
         <table cellpadding="2" cellspacing="0" border="0">
             <tr>
                 <td>
-                    <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_ENTRIES_MARKED}:" />
+                    <img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_ENTRIES_MARKED}:" />
                     <a href="#" onclick="changeCheckboxes('frmShowCustomersEntries','selectedEntriesId[]',true); return false;">{TXT_CRM_SELECT_ALL}</a> /
                     <a href="#" onclick="changeCheckboxes('frmShowCustomersEntries','selectedEntriesId[]',false); return false;">{TXT_CRM_REMOVE_SELECTION}</a>
-                    <img src="images/icons/strike.gif" alt="" />
+                    <img src="../core/Core/View/Media/icons/strike.gif" alt="" />
                     <select name="frmShowEntries_MultiAction" onchange="selectMultiAction();">
                         <option value="0">{TXT_CRM_SELECT_ACTION}</option>
                         <option value="activate">{TXT_CRM_ACTIVATESELECTED}</option>

@@ -20,10 +20,10 @@ var switchState = function(id, obj, action, type)
         },
         success: function() {
             if (action) {
-                path = 'images/icons/status_green.gif';
+                path = '../core/Core/View/Media/icons/status_green.gif';
                 action = 0;
             } else {
-                path = 'images/icons/status_red.gif';
+                path = '../core/Core/View/Media/icons/status_red.gif';
                 action = 1;
             }
             $J(obj).children('img:first').attr('src', path);
@@ -52,7 +52,7 @@ var switchState = function(id, obj, action, type)
         <td valign="top"><input name="formsOrder[{MEDIADIR_FORM_ID}]" style="width: 30px;" type="text" value="{MEDIADIR_FORM_ORDER}" onfocus="this.select();" /></td>
         <td valign="top"><b><a href="index.php?cmd={MODULE_NAME}&act=settings&tpl=modify_form&amp;id={MEDIADIR_FORM_ID}" target="_self" title="{MEDIADIR_FORM_TITLE} {TXT_EDIT}">{MEDIADIR_FORM_TITLE}</a></b></td>
         <td valign="top" >{MEDIADIR_FORM_DESCRIPTION}</td>
-        <td valign="top"  style="text-align: right;" nowrap="nowrap"><a href="index.php?cmd={MODULE_NAME}&act=settings&tpl=modify_form&amp;id={MEDIADIR_FORM_ID}" target="_self" title="{MEDIADIR_FORM_TITLE} {TXT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{MEDIADIR_FORM_TITLE} {TXT_EDIT}" title="{MEDIADIR_FORM_TITLE} {TXT_EDIT}" /></a><a href="javascript:deleteForm('{MEDIADIR_FORM_ID}');" title="{MEDIADIR_FORM_TITLE} {TXT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{MEDIADIR_FORM_TITLE} {MEDIADIR_FORM_ID}" title="{MEDIADIR_FORM_TITLE} {TXT_DELETE}" /></a></td>
+        <td valign="top"  style="text-align: right;" nowrap="nowrap"><a href="index.php?cmd={MODULE_NAME}&act=settings&tpl=modify_form&amp;id={MEDIADIR_FORM_ID}" target="_self" title="{MEDIADIR_FORM_TITLE} {TXT_EDIT}"><img src="../core/Core/View/Media/icons/edit.gif" border="0" alt="{MEDIADIR_FORM_TITLE} {TXT_EDIT}" title="{MEDIADIR_FORM_TITLE} {TXT_EDIT}" /></a><a href="javascript:deleteForm('{MEDIADIR_FORM_ID}');" title="{MEDIADIR_FORM_TITLE} {TXT_DELETE}"><img src="../core/Core/View/Media/icons/delete.gif" border="0" alt="{MEDIADIR_FORM_TITLE} {MEDIADIR_FORM_ID}" title="{MEDIADIR_FORM_TITLE} {TXT_DELETE}" /></a></td>
     </tr>
     <!-- END mediadirFormTemplateList -->
 

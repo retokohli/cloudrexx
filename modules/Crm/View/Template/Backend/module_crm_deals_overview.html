@@ -144,8 +144,8 @@
                     <td>{CRM_DEALS_DUE_DATE}</td>
                     <td>
                         <div align="right">
-                            <a title="{TXT_CRM_IMAGE_EDIT}" target="_self" rel="entry_{ENTRY_ID}_edit" class="entry_{ENTRY_ID}_edit editEntry" href="./index.php?cmd={MODULE_NAME}&act=deals&tpl=manage&id={ENTRY_ID}{CRM_REDIRECT_LINK}" ><img border="0" title="{TXT_CRM_IMAGE_EDIT}" alt="{TXT_CRM_IMAGE_EDIT}" src="images/icons/edit.gif" /></a>
-                            <a rel="entry_{ENTRY_ID}_delete" class="entry_{ENTRY_ID}_delete deleteEntry" href="javascript:void(0);" target="_self" title="{TXT_CRM_IMAGE_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_CRM_IMAGE_DELETE}" title="{TXT_CRM_IMAGE_DELETE}" /></a>
+                            <a title="{TXT_CRM_IMAGE_EDIT}" target="_self" rel="entry_{ENTRY_ID}_edit" class="entry_{ENTRY_ID}_edit editEntry" href="./index.php?cmd={MODULE_NAME}&act=deals&tpl=manage&id={ENTRY_ID}{CRM_REDIRECT_LINK}" ><img border="0" title="{TXT_CRM_IMAGE_EDIT}" alt="{TXT_CRM_IMAGE_EDIT}" src="../core/Core/View/Media/icons/edit.gif" /></a>
+                            <a rel="entry_{ENTRY_ID}_delete" class="entry_{ENTRY_ID}_delete deleteEntry" href="javascript:void(0);" target="_self" title="{TXT_CRM_IMAGE_DELETE}"><img src="../core/Core/View/Media/icons/delete.gif" border="0" alt="{TXT_CRM_IMAGE_DELETE}" title="{TXT_CRM_IMAGE_DELETE}" /></a>
                         </div>
                     </td>
                 </tr>
@@ -154,7 +154,7 @@
         </table>
         <br>
         <br>
-        <img height="22" border="0" width="38" src="images/icons/arrow.gif" alt=":" />
+        <img height="22" border="0" width="38" src="../core/Core/View/Media/icons/arrow.gif" alt=":" />
         <a href="#" onclick="changeCheckboxes('dealsOverview','dealsEntry[]',true); return false;">{TXT_CRM_SELECT_ALL}</a> / <a href="#" onclick="changeCheckboxes('dealsOverview','dealsEntry[]',false); return false;">{TXT_CRM_REMOVE_SELECTION}</a>
         <select name="actionType" id="multiAction">
             <option value="0">{TXT_CRM_SELECT_ACTION}</option>

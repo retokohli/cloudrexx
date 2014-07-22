@@ -143,8 +143,8 @@ function copyText(strType) {
 				<td valign="top" width="15%"><a href="{COMMENTS_WWW}" alt="{COMMENTS_WWW}" target="_blank">{COMMENTS_WWW}</a></td>
 				<td valign="top" align="justify"width="40%">{COMMENTS_TEXT}</td>
 				<td align="right" nowrap="nowrap">
-					<a href="?cmd=Gallery&amp;act=edit_comment&amp;id={COMMENTS_ID}" target="_self"><img alt="{TXT_COMMENT_EDIT}" title="{TXT_COMMENT_EDIT}" src="images/icons/edit.gif" border="0" /></a>&nbsp;
-					<a href="javascript:deleteComment({COMMENTS_ID})" target="_self"><img alt="{TXT_COMMENT_DELETE}" title="{TXT_COMMENT_DELETE}" src="images/icons/delete.gif" border="0" /></a>
+					<a href="?cmd=Gallery&amp;act=edit_comment&amp;id={COMMENTS_ID}" target="_self"><img alt="{TXT_COMMENT_EDIT}" title="{TXT_COMMENT_EDIT}" src="../core/Core/View/Media/icons/edit.gif" border="0" /></a>&nbsp;
+					<a href="javascript:deleteComment({COMMENTS_ID})" target="_self"><img alt="{TXT_COMMENT_DELETE}" title="{TXT_COMMENT_DELETE}" src="../core/Core/View/Media/icons/delete.gif" border="0" /></a>
 				</td>
 			</tr>
 			<!-- END showComments -->
@@ -152,10 +152,10 @@ function copyText(strType) {
 		<table cellpadding="2" cellspacing="0" border="0">
 			<tr>
 				<td>
-					<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
+					<img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
 					<a href="#" onclick="changeCheckboxes('frmShowComments','selectedCommentsId[]',true); return false;">{TXT_COMMENT_SELECT_ALL}</a> /
 					<a href="#" onclick="changeCheckboxes('frmShowComments','selectedCommentsId[]',false); return false;">{TXT_COMMENT_DESELECT_ALL}</a>
-					<img src="images/icons/strike.gif">
+					<img src="../core/Core/View/Media/icons/strike.gif">
 					<select name="frmShowComments_MultiAction" onchange="selectCommentMultiAction();">
 						<option value="0">{TXT_COMMENT_SELECT_ACT}</option>
 						<option value="delete">{TXT_COMMENT_DELETE_ALL}</option>
@@ -181,7 +181,7 @@ function copyText(strType) {
 				<td width="33%"><a href="?cmd=NetTools&tpl=whois&address={VOTES_IP}">{VOTES_IP}</a></td>
 				<td width="33%">{VOTES_MARK}</td>
 				<td align="right" nowrap="nowrap">
-					<a href="javascript:deleteVote({VOTES_ID})" target="_self"><img alt="{TXT_VOTING_DELETE}" title="{TXT_VOTING_DELETE}" src="images/icons/delete.gif" border="0" /></a>
+					<a href="javascript:deleteVote({VOTES_ID})" target="_self"><img alt="{TXT_VOTING_DELETE}" title="{TXT_VOTING_DELETE}" src="../core/Core/View/Media/icons/delete.gif" border="0" /></a>
 				</td>
 			</tr>
 			<!-- END showVotes -->
@@ -189,10 +189,10 @@ function copyText(strType) {
 		<table cellpadding="2" cellspacing="0" border="0">
 			<tr>
 				<td>
-				<img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
+				<img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
 				<a href="#" onclick="changeCheckboxes('frmShowVotes','selectedVotesId[]',true); return false;">{TXT_COMMENT_SELECT_ALL}</a> /
 				<a href="#" onclick="changeCheckboxes('frmShowVotes','selectedVotesId[]',false); return false;">{TXT_COMMENT_DESELECT_ALL}</a>
-				<img src="images/icons/strike.gif">
+				<img src="../core/Core/View/Media/icons/strike.gif">
 				<select name="frmShowVotes_MultiAction" onchange="selectVotingMultiAction();">
 					<option value="0">{TXT_COMMENT_SELECT_ACT}</option>
 					<option value="delete">{TXT_COMMENT_DELETE_ALL}</option>

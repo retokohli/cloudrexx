@@ -712,12 +712,12 @@ class CrmManager extends CrmLibrary
                 $dealsCount = $objDatabase->getOne("SELECT count(1) AS dealsCount FROM `".DBPREFIX."module_{$this->moduleNameLC}_deals` AS deal WHERE deal.customer = {$objResult->fields['id']}");
                 if ($objResult->fields['contact_type'] == 1) {
                     if (($objResult->fields['status'] == "1")) {
-                        $activeImage = 'images/icons/led_green.gif';
+                        $activeImage = '../core/Core/View/Media/icons/led_green.gif';
                         $activeValue = 1;
                         $imageTitle  = $_ARRAYLANG['TXT_CRM_ACTIVE'];
                     } else {
                         $activeValue = 0;
-                        $activeImage = 'images/icons/led_red.gif';
+                        $activeImage = '../core/Core/View/Media/icons/led_red.gif';
                         $imageTitle  = $_ARRAYLANG['TXT_CRM_INACTIVE'];
                     }
                     $this->_objTpl->setVariable(array(
@@ -745,12 +745,12 @@ class CrmManager extends CrmLibrary
 
                 if ($objResult->fields['contact_type'] == 2) {
                     if (($objResult->fields['status'] == "1")) {
-                        $activeImage = 'images/icons/led_green.gif';
+                        $activeImage = '../core/Core/View/Media/icons/led_green.gif';
                         $activeValue = 1;
                         $imageTitle  = $_ARRAYLANG['TXT_CRM_ACTIVE'];
                     } else {
                         $activeValue = 0;
-                        $activeImage = 'images/icons/led_red.gif';
+                        $activeImage = '../core/Core/View/Media/icons/led_red.gif';
                         $imageTitle  = $_ARRAYLANG['TXT_CRM_INACTIVE'];
                     }
                     $this->_objTpl->setVariable(array(
@@ -1012,7 +1012,7 @@ class CrmManager extends CrmLibrary
                             $address .= !empty($addrArr) ? implode('<br>', $addrArr).",<br> "  : '';
                             $address .= !empty($objAddr->fields['country']) ? "$country."  : '';
                             $addressFull = '';
-                            $addressFull .= "<a class='add-map' target='_blank' href='http://maps.google.com/maps?q={$addrLine},". implode(',', $addrArr) .",{$country}'><img src='images/icons/pin.png' title='{$_ARRAYLANG['TXT_CRM_SHOW_ON_MAP']}' alt='{$_ARRAYLANG['TXT_CRM_SHOW_ON_MAP']}'/></a>";
+                            $addressFull .= "<a class='add-map' target='_blank' href='http://maps.google.com/maps?q={$addrLine},". implode(',', $addrArr) .",{$country}'><img src='../core/Core/View/Media/icons/pin.png' title='{$_ARRAYLANG['TXT_CRM_SHOW_ON_MAP']}' alt='{$_ARRAYLANG['TXT_CRM_SHOW_ON_MAP']}'/></a>";
 
                             if ($first)
                                 $addressFirst = $addressFull.$address;
@@ -1099,7 +1099,7 @@ class CrmManager extends CrmLibrary
                 if ($objContacts) {
                     $row = 'row2';
                     while (!$objContacts->EOF) {
-                        $activeImage = $objContacts->fields['status'] ? 'images/icons/led_green.gif' : 'images/icons/led_red.gif';
+                        $activeImage = $objContacts->fields['status'] ? '../core/Core/View/Media/icons/led_green.gif' : '../core/Core/View/Media/icons/led_red.gif';
                         $this->_objTpl->setVariable(array(
                                 'CRM_CONTACT_ID'     => (int) $objContacts->fields['id'],
                                 'CUSTOMER_CONTACT_ID'=> contrexx_raw2xhtml($objContacts->fields['contact_customer']),
@@ -1628,7 +1628,7 @@ END;
                         'CRM_LABEL'         => contrexx_raw2xhtml($objResult->fields['label']),
                         'CRM_SORTING'       => contrexx_raw2xhtml($objResult->fields['sorting']),
                         'CRM_SUCCESS_RATE'  => contrexx_raw2xhtml($objResult->fields['rate']),
-                        'CRM_SUCCESS_STATUS'=> $objResult->fields['status'] ? 'images/icons/led_green.gif' : 'images/icons/led_red.gif',
+                        'CRM_SUCCESS_STATUS'=> $objResult->fields['status'] ? '../core/Core/View/Media/icons/led_green.gif' : '../core/Core/View/Media/icons/led_red.gif',
                         'ROW_CLASS'         => $row = ($row == "row2" ? "row1" : "row2"),
                 ));
                 $objTpl->parse("successRateEntries");
@@ -1787,7 +1787,7 @@ END;
                         'CRM_LABEL'         => contrexx_raw2xhtml($objResult->fields['label']),
                         'CRM_SORTING'       => contrexx_raw2xhtml($objResult->fields['sorting']),
                         'CRM_STAGE'         => contrexx_raw2xhtml($objResult->fields['stage']),
-                        'CRM_STAGE_STATUS'  => $objResult->fields['status'] ? 'images/icons/led_green.gif' : 'images/icons/led_red.gif',
+                        'CRM_STAGE_STATUS'  => $objResult->fields['status'] ? '../core/Core/View/Media/icons/led_green.gif' : '../core/Core/View/Media/icons/led_red.gif',
                         'ROW_CLASS'         => $row = ($row == "row2" ? "row1" : "row2"),
                 ));
                 $objTpl->parse("stageEntries");
@@ -3923,9 +3923,9 @@ END;
             $contactType = $objProjectResult->fields['contact_type'];
             $company     = contrexx_raw2xhtml($objProjectResult->fields['customer_name']." ".$objProjectResult->fields['contact_familyname']);
             if (($objProjectResult->fields['project_type_id'] == "") || (trim($company) == "") || ($objProjectResult->fields['proStatus'] == "") || ($objProjectResult->fields['proActive'] == 0) || ($objProjectResult->fields['username'] == "")) {
-                $active = '<img border="0" src="images/icons/led_red.gif" alt="" title="Inactive" style="margin-top:4px;"/>';
+                $active = '<img border="0" src="../core/Core/View/Media/icons/led_red.gif" alt="" title="Inactive" style="margin-top:4px;"/>';
             } else {
-                $active = '<img border="0" src="images/icons/led_green.gif" alt="" title="Inactive" style="margin-top:4px;"/>';
+                $active = '<img border="0" src="../core/Core/View/Media/icons/led_green.gif" alt="" title="Inactive" style="margin-top:4px;"/>';
             }
             $this->_objTpl->setVariable(array(
                     'CRM_PROJECT_ACTIVE'       => $active,
@@ -5223,7 +5223,7 @@ END;
             ));
         }
         while (!$objResult->EOF) {
-            $activeImage = ($objResult->fields['status']) ? 'images/icons/led_green.gif' : 'images/icons/led_red.gif';
+            $activeImage = ($objResult->fields['status']) ? '../core/Core/View/Media/icons/led_green.gif' : '../core/Core/View/Media/icons/led_red.gif';
             $objTpl->setVariable(array(
                     'ENTRY_ID'          => $objResult->fields['id'],
                     'CRM_SORTING'       => (int) $objResult->fields['sorting'],

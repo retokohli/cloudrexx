@@ -1298,15 +1298,15 @@ div.date img{
 }
 
 #page #page_target_edit {
-    background: url(../../../../cadmin/images/icons/edit.gif) no-repeat;
+    background: url(../../../../core/Core/View/Media/icons/edit.gif) no-repeat;
 }
 
 #page #page_target_check {
-    background: url(../../../../cadmin/images/icons/check.gif) no-repeat;
+    background: url(../../../../core/Core/View/Media/icons/check.gif) no-repeat;
 }
 
 #page #page_target_cancel {
-    background: url(../../../../cadmin/images/icons/delete.gif) no-repeat;
+    background: url(../../../../core/Core/View/Media/icons/delete.gif) no-repeat;
 }
 
 /* 3) Helpers */

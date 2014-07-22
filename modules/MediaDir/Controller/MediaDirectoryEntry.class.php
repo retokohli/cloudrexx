@@ -338,14 +338,14 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                         }
 
                         if($arrEntry['entryActive'] == 1) {
-                		    $strStatus = 'images/icons/status_green.gif';
+                		    $strStatus = '../core/Core/View/Media/icons/status_green.gif';
                 		    $intStatus = 0;
 
                 		    if(($arrEntry['entryDurationStart'] > $intToday || $arrEntry['entryDurationEnd'] < $intToday) && $arrEntry['entryDurationType'] == 2) {
-                		    	$strStatus = 'images/icons/status_yellow.gif';
+                		    	$strStatus = '../core/Core/View/Media/icons/status_yellow.gif';
                 		    }
                 		} else {
-                		    $strStatus = 'images/icons/status_red.gif';
+                		    $strStatus = '../core/Core/View/Media/icons/status_red.gif';
                 		    $intStatus = 1;
                 		}
 

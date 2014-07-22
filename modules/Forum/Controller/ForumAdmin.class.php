@@ -213,7 +213,7 @@ class ForumAdmin extends ForumLibrary {
                        'CATEGORY_TYPE_ICON'        =>    ($arrValues['level'] == 0) ? '<img src="'.ASCMS_MODULE_WEB_PATH.'/Forum/View/Media/folder.gif" border="0" alt="'.$arrValues['name'].'" />' : '<img src="'.ASCMS_MODULE_WEB_PATH.'/Forum/View/Media/comment.gif" border="0" alt="'.$arrValues['name'].'" />',
                        'FORUM_TOOLTIP_TEXT'        =>    $strLanguages,
                        'FORUM_LANGUAGES'            =>   $strLanguages,
-                       'CATEGORY_SPACER'            =>    '<img src="images/icons/pixel.gif" border="0" width="'.(intval($arrValues['level'])*20).'" height="1" />',
+                       'CATEGORY_SPACER'            =>    '<img src="../core/Core/View/Media/icons/pixel.gif" border="0" width="'.(intval($arrValues['level'])*20).'" height="1" />',
                        'CATEGORY_ORDERID'            =>    $arrValues['order_id'],
                        'CATEGORY_NAME'                =>    $arrValues['name'],
                        'CATEGORY_DESC'                =>    $arrValues['description'],

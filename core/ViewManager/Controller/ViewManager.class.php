@@ -331,8 +331,8 @@ class ViewManager
         $themes = $this->themeRepository->findAll();
         $rowclass = 0;
         foreach ($themes as $theme) {
-            $htmlDeleteLink = '<a onclick="showInfo(this.parentNode.parentNode); return confirmDelete(\''.htmlspecialchars($theme->getThemesname(), ENT_QUOTES, CONTREXX_CHARSET).'\');" href="?cmd=ViewManager&amp;act=manage&amp;delete='.urlencode($theme->getFoldername()).'" title="'.$_ARRAYLANG['TXT_DELETE'].'"> <img border="0" src="images/icons/delete.gif" alt="" /> </a>';
-            $htmlActivateLink = '<a onclick="showInfo(this.parentNode.parentNode);" href="?cmd=ViewManager&amp;act=manage&amp;activate='.$theme->getId().'" title="'.$_ARRAYLANG['TXT_CORE_CM_ACTION_PUBLISH'].'"> <img border="0" src="images/icons/check.gif" alt="" /> </a>';
+            $htmlDeleteLink = '<a onclick="showInfo(this.parentNode.parentNode); return confirmDelete(\''.htmlspecialchars($theme->getThemesname(), ENT_QUOTES, CONTREXX_CHARSET).'\');" href="?cmd=ViewManager&amp;act=manage&amp;delete='.urlencode($theme->getFoldername()).'" title="'.$_ARRAYLANG['TXT_DELETE'].'"> <img border="0" src="../core/Core/View/Media/icons/delete.gif" alt="" /> </a>';
+            $htmlActivateLink = '<a onclick="showInfo(this.parentNode.parentNode);" href="?cmd=ViewManager&amp;act=manage&amp;activate='.$theme->getId().'" title="'.$_ARRAYLANG['TXT_CORE_CM_ACTION_PUBLISH'].'"> <img border="0" src="../core/Core/View/Media/icons/check.gif" alt="" /> </a>';
 
             $version = $theme->getVersionNumber();
             if (!$version) {

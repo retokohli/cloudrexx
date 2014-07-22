@@ -479,7 +479,7 @@ class CrmTask extends CrmLibrary
                                                         SET task_status  = '$status'
                                                        WHERE id      = '$id'");
                     $json['success'] = 1;
-                    $json['status_img'] = $status ? './images/icons/led_green.gif' : './images/icons/led_red.gif';
+                    $json['status_img'] = $status ? '../core/Core/View/Media/icons/led_green.gif' : '../core/Core/View/Media/icons/led_red.gif';
                     $json['status_msg'] = sprintf($_ARRAYLANG['TXT_CRM_TASK_STATUS_CHANGED'], ($status ? $_ARRAYLANG['TXT_CRM_TASK_COMPLETED'] : $_ARRAYLANG['TXT_CRM_TASK_OPEN']));
 
                     $query = "SELECT tt.name,

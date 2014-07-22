@@ -174,7 +174,7 @@ class CrmSettings extends CrmLibrary
         } else {
             $row = 0;
             while (!$objResult->EOF) {
-                $activeImage = ($objResult->fields['active']) ? "images/icons/led_green.gif" : "images/icons/led_red.gif";
+                $activeImage = ($objResult->fields['active']) ? "../core/Core/View/Media/icons/led_green.gif" : "../core/Core/View/Media/icons/led_red.gif";
                 $activeTitle = ($objResult->fields['active']) ? $_ARRAYLANG['TXT_CRM_ACTIVE'] : $_ARRAYLANG['TXT_CRM_INACTIVE'];
                 
                 $customerTypeOverview[$row] = array(
@@ -505,7 +505,7 @@ class CrmSettings extends CrmLibrary
             $currencyeOverview     = $sorting->sort($currencyeOverview, $customerFields[$sortField], $customerFields[2]);
 
             foreach ($currencyeOverview as $key => $currency) {
-                $activeImage = $currencyeOverview[$key]['active'] ? "images/icons/led_green.gif" : "images/icons/led_red.gif";
+                $activeImage = $currencyeOverview[$key]['active'] ? "../core/Core/View/Media/icons/led_green.gif" : "../core/Core/View/Media/icons/led_red.gif";
                 $activeTitle = $currencyeOverview[$key]['active'] ? $_ARRAYLANG['TXT_CRM_ACTIVE']    : $_ARRAYLANG['TXT_CRM_INACTIVE'];
                 
                 $this->_objTpl->setVariable(array(

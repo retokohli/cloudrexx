@@ -1553,13 +1553,13 @@ class BlogManager extends \Cx\Modules\Blog\Controller\BlogLibrary {
                 $strUserMailIcon = '';
                 if (!empty($objCommentResult->fields['user_mail'])) {
                     $strTempMail = htmlentities(stripslashes($objCommentResult->fields['user_mail']),ENT_QUOTES, CONTREXX_CHARSET);
-                    $strUserMailIcon = '<a href="mailto:'.$strTempMail.'" title="'.$strTempMail.'"><img src="images/icons/email.gif" border="0" alt="'.$strTempMail.'" title="'.$strTempMail.'" style="margin-bottom: -3px;" /></a>';
+                    $strUserMailIcon = '<a href="mailto:'.$strTempMail.'" title="'.$strTempMail.'"><img src="../core/Core/View/Media/icons/email.gif" border="0" alt="'.$strTempMail.'" title="'.$strTempMail.'" style="margin-bottom: -3px;" /></a>';
                 }
 
                 $strUserWWWIcon = '';
                 if (!empty($objCommentResult->fields['user_www'])) {
                     $strTempUrl = htmlentities(stripslashes($objCommentResult->fields['user_www']),ENT_QUOTES, CONTREXX_CHARSET);
-                    $strUserWWWIcon = '<a href="'.$strTempUrl.'" target="_blank" title="'.$strTempUrl.'"><img src="images/icons/home.gif" border="0" alt="'.$strTempUrl.'" title="'.$strTempUrl.'" style="margin-bottom: -3px;" /></a>';
+                    $strUserWWWIcon = '<a href="'.$strTempUrl.'" target="_blank" title="'.$strTempUrl.'"><img src="../core/Core/View/Media/icons/home.gif" border="0" alt="'.$strTempUrl.'" title="'.$strTempUrl.'" style="margin-bottom: -3px;" /></a>';
                 }
             } else {
                 $objFWUser = \FWUser::getFWUserObject();
@@ -1577,12 +1577,12 @@ class BlogManager extends \Cx\Modules\Blog\Controller\BlogLibrary {
 
                 $strUserMailIcon = '';
                 if (!empty($strUserMail)) {
-                    $strUserMailIcon = '<a href="mailto:'.$strUserMail.'" title="'.$strUserMail.'"><img src="images/icons/email.gif" border="0" alt="'.$strUserMail.'" title="'.$strUserMail.'" style="margin-bottom: -4px;" /></a>';
+                    $strUserMailIcon = '<a href="mailto:'.$strUserMail.'" title="'.$strUserMail.'"><img src="../core/Core/View/Media/icons/email.gif" border="0" alt="'.$strUserMail.'" title="'.$strUserMail.'" style="margin-bottom: -4px;" /></a>';
                 }
 
                 $strUserWWWIcon = '';
                 if (!empty($strUserWWW)) {
-                    $strUserWWWIcon = '<a href="'.$strUserWWW.'" target="_blank" title="'.$strUserWWW.'"><img src="images/icons/home.gif" border="0" alt="'.$strUserWWW.'" title="'.$strUserWWW.'" style="margin-bottom: -4px;" /></a>';
+                    $strUserWWWIcon = '<a href="'.$strUserWWW.'" target="_blank" title="'.$strUserWWW.'"><img src="../core/Core/View/Media/icons/home.gif" border="0" alt="'.$strUserWWW.'" title="'.$strUserWWW.'" style="margin-bottom: -4px;" /></a>';
                 }
             }
 

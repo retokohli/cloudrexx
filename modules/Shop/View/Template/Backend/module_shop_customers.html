@@ -97,7 +97,7 @@ function customersDoAction(strForm, strCheckbox, objSelect) {
         <td class="a_center">
           <span style="cursor: pointer;"
                 onclick="toggleCustomer({SHOP_CUSTOMERID});">
-            <img src="images/icons/{SHOP_CUSTOMER_STATUS_IMAGE}"
+            <img src="../core/Core/View/Media/icons/{SHOP_CUSTOMER_STATUS_IMAGE}"
                  alt="{SHOP_CUSTOMER_ACTIVE}"
                  title="{SHOP_CUSTOMER_ACTIVE}" />
           </span>
@@ -119,20 +119,20 @@ function customersDoAction(strForm, strCheckbox, objSelect) {
         <td class="a_right">
           <a href="index.php?cmd=Shop{MODULE_INDEX}&amp;act=customerdetails&amp;customer_id={SHOP_CUSTOMERID}"
              title="{TXT_VIEW_DETAILS}">
-            <img src="images/icons/pages.gif" alt="{TXT_VIEW_DETAILS}" border="0" />
+            <img src="../core/Core/View/Media/icons/pages.gif" alt="{TXT_VIEW_DETAILS}" border="0" />
           </a>
           <a href="index.php?cmd=Shop{MODULE_INDEX}&amp;act=neweditcustomer&amp;customer_id={SHOP_CUSTOMERID}"
              title="{TXT_EDIT}">
-            <img src="images/icons/edit.gif" alt="{TXT_EDIT}" border="0" />
+            <img src="../core/Core/View/Media/icons/edit.gif" alt="{TXT_EDIT}" border="0" />
           </a>
           <a href="javascript:deleteCustomer('{SHOP_CUSTOMERID}')" title="{TXT_DELETE}">
-            <img src="images/icons/delete.gif" alt="{TXT_DELETE}" border="0" />
+            <img src="../core/Core/View/Media/icons/delete.gif" alt="{TXT_DELETE}" border="0" />
           </a>
         </td>
     </tr>
 <!-- END shop_customer -->
   </table>
-  <img src="images/icons/arrow.gif" border="0" width="38" height="22" title="{TXT_MARKED}:" alt="{TXT_MARKED}:" />
+  <img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" title="{TXT_MARKED}:" alt="{TXT_MARKED}:" />
   <a href="javascript:{}" onclick="changeCheckboxes('shop_customers','selected_customer_id[]',true)" title="{TXT_SELECT_ALL}">{TXT_SELECT_ALL}</a>&nbsp;/&nbsp;
   <a href="javascript:{}" onclick="changeCheckboxes('shop_customers','selected_customer_id[]',false)" title="{TXT_REMOVE_SELECTION}">{TXT_REMOVE_SELECTION}</a>&nbsp;&nbsp;&nbsp;
   <select name="multi_action" onchange="customersDoAction('shop_customers','selected_customer_id[]',this);">

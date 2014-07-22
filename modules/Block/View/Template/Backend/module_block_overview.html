@@ -82,9 +82,9 @@ function blockDeleteBlock(blockId, blockName)
           <td width="20%" style="text-align:center;"><img src="{BLOCK_GLOBAL_CHECK_IMAGE}" width="16" height="16" border="0" class="tooltip-trigger" style="{BLOCK_CHECK_IMAGE_DISPLAY}" /><span class="tooltip-message">{BLOCK_CHECK_IMAGE_TITLE}</span></td>
           <td width="20%" style="text-align:left;">{BLOCK_RANDOM}&nbsp;{BLOCK_RANDOM_2}&nbsp;{BLOCK_RANDOM_3}&nbsp;{BLOCK_RANDOM_4}</td>
           <td width="5%" style="text-align:right;">
-            <a href="index.php?cmd=Block&amp;act=modify&amp;blockId={BLOCK_ID}" title="{BLOCK_MODIFY}"><img src="images/icons/edit.gif" width="16" height="16" alt="{BLOCK_MODIFY}" border="0" /></a>
-            <a href="index.php?cmd=Block&amp;act=copy&amp;blockId={BLOCK_ID}" title="{BLOCK_COPY}"><img src="images/icons/copy.gif" width="16" height="16" alt="{BLOCK_COPY}" border="0" /></a>
-            <a href="javascript:{void(0)};" onclick="blockDeleteBlock({BLOCK_ID}, '{BLOCK_NAME}')" title="{BLOCK_DELETE}"><img src="images/icons/delete.gif" width="16" height="16" alt="{BLOCK_DELETE}" border="0" /></a>
+            <a href="index.php?cmd=Block&amp;act=modify&amp;blockId={BLOCK_ID}" title="{BLOCK_MODIFY}"><img src="../core/Core/View/Media/icons/edit.gif" width="16" height="16" alt="{BLOCK_MODIFY}" border="0" /></a>
+            <a href="index.php?cmd=Block&amp;act=copy&amp;blockId={BLOCK_ID}" title="{BLOCK_COPY}"><img src="../core/Core/View/Media/icons/copy.gif" width="16" height="16" alt="{BLOCK_COPY}" border="0" /></a>
+            <a href="javascript:{void(0)};" onclick="blockDeleteBlock({BLOCK_ID}, '{BLOCK_NAME}')" title="{BLOCK_DELETE}"><img src="../core/Core/View/Media/icons/delete.gif" width="16" height="16" alt="{BLOCK_DELETE}" border="0" /></a>
           </td>
         </tr>
       <!-- END blockBlockList -->
@@ -96,10 +96,10 @@ function blockDeleteBlock(blockId, blockName)
   <table cellpadding="2" cellspacing="0" border="0">
     <tr>
       <td>
-        <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
+        <img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_MARKED}:" />
         <a href="javascript:{void(0)};" onclick="changeCheckboxes('frmBlocks','selectedBlockId[]',true); return false;">{TXT_BLOCK_SELECT_ALL}</a> /
         <a href="javascript:{void(0)};" onclick="changeCheckboxes('frmBlocks','selectedBlockId[]',false); return false;">{TXT_BLOCK_DESELECT_ALL}</a>
-        <img src="images/icons/strike.gif" width="34" height="22" alt="strike" />
+        <img src="../core/Core/View/Media/icons/strike.gif" width="34" height="22" alt="strike" />
         <select name="frmBlocksMultiAction" onChange="selectMultiAction();">
           <option value="0">{TXT_BLOCK_SUBMIT_SELECT}</option>
           <option value="delete">{TXT_BLOCK_SUBMIT_DELETE}</option>

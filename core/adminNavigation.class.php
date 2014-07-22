@@ -138,7 +138,7 @@ class adminMenu
     {
         global $_CORELANG, $objTemplate, $_CONFIG;
 
-        $objTemplate->addBlockfile('NAVIGATION_OUTPUT', 'navigation_output', 'index_navigation.html');
+        $objTemplate->addBlockfile('NAVIGATION_OUTPUT', 'navigation_output', 'BackendNavigation.html');
 
         reset($this->arrMenuItems);
 

@@ -1108,7 +1108,7 @@ class MemberDirManager extends MemberDirLibrary
                 "MEMBERDIR_ROW"         => "row".$row,
                 "TXT_MAX_FILE_SIZE"     => $_ARRAYLANG['TXT_MAX_FILE_SIZE'].": ".ini_get("upload_max_filesize"),
                 "MEMBERDIR_IMAGE_NUMBER" => 1,
-                "MEMBERDIR_IMAGE_SRC"   => "images/icons/images.gif",
+                "MEMBERDIR_IMAGE_SRC"   => "../core/Core/View/Media/icons/images.gif",
                 "MEMBERDIR_IMAGE_SIZE"  => "21"
             ));
 
@@ -1122,7 +1122,7 @@ class MemberDirManager extends MemberDirLibrary
                 "MEMBERDIR_ROW"         => "row".$row,
                 "TXT_MAX_FILE_SIZE"     => $_ARRAYLANG['TXT_MAX_FILE_SIZE'].": ".ini_get("upload_max_filesize"),
                 "MEMBERDIR_IMAGE_NUMBER" => 2,
-                "MEMBERDIR_IMAGE_SRC"   => "images/icons/images.gif",
+                "MEMBERDIR_IMAGE_SRC"   => "../core/Core/View/Media/icons/images.gif",
                 "MEMBERDIR_IMAGE_SIZE"  => "21"
             ));
 
@@ -1385,7 +1385,7 @@ class MemberDirManager extends MemberDirLibrary
                 "TXT_MEMBERDIR_FIELD"   => $_ARRAYLANG['TXT_PIC_UPLOAD']. " 1",
                 "MEMBERDIR_ROW"         => "row".$row,
                 "MEMBERDIR_IMAGE_NUMBER" => 1,
-                "MEMBERDIR_IMAGE_SRC"   => ($objResult->fields['pic1'] == "none") ? "images/icons/images.gif" : $objResult->fields['pic1'],
+                "MEMBERDIR_IMAGE_SRC"   => ($objResult->fields['pic1'] == "none") ? "../core/Core/View/Media/icons/images.gif" : $objResult->fields['pic1'],
                 "MEMBERDIR_HIDDEN_VALUE"    => ($objResult->fields['pic1'] == "none") ? "" : $objResult->fields['pic1'],
                 "MEMBERDIR_IMAGE_SIZE"  => ($objResult->fields['pic1'] == "none") ? "21" : "60"
             ));
@@ -1399,7 +1399,7 @@ class MemberDirManager extends MemberDirLibrary
                 "TXT_MEMBERDIR_FIELD"   => $_ARRAYLANG['TXT_PIC_UPLOAD']. " 2",
                 "MEMBERDIR_ROW"         => "row".$row,
                 "MEMBERDIR_IMAGE_NUMBER" => 2,
-                "MEMBERDIR_IMAGE_SRC"   => ($objResult->fields['pic2'] == "none") ? "images/icons/images.gif" : $objResult->fields['pic2'],
+                "MEMBERDIR_IMAGE_SRC"   => ($objResult->fields['pic2'] == "none") ? "../core/Core/View/Media/icons/images.gif" : $objResult->fields['pic2'],
                 "MEMBERDIR_HIDDEN_VALUE"    => ($objResult->fields['pic2'] == "none") ? "" : $objResult->fields['pic2'],
                 "MEMBERDIR_IMAGE_SIZE"  => ($objResult->fields['pic2'] == "none") ? "21" : "60"
             ));

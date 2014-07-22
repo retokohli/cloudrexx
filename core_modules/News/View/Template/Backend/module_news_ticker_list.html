@@ -43,8 +43,8 @@ function newsDeleteTickers(action) {
 				<td width="50%">{NEWS_TICKER_CONTENT}</td>
 				<td width="5%" style="text-align:center;">{NEWS_TICKER_CHARSET}</td>
 				<td width="5%" style="text-align:right;">
-					<a href="index.php?cmd=News&amp;act=settings&amp;tpl=ticker&amp;tpl2=modify&amp;id={NEWS_TICKER_ID}&amp;pos={NEWS_TICKER_POS}" title="{TXT_NEWS_MODIFY_TICKER}"><img src="images/icons/edit.gif" width="16" height="16" border="0" alt="{TXT_NEWS_MODIFY_TICKER}" /></a>
-					<a href="javascript:newsDeleteTicker({NEWS_TICKER_ID},'{NEWS_TICKER_NAME}')" title="{NEWS_DELETE_TICKER_TXT}"><img src="images/icons/delete.gif" width="17" height="17" border="0" alt="{NEWS_DELETE_TICKER_TXT}" /></a>
+					<a href="index.php?cmd=News&amp;act=settings&amp;tpl=ticker&amp;tpl2=modify&amp;id={NEWS_TICKER_ID}&amp;pos={NEWS_TICKER_POS}" title="{TXT_NEWS_MODIFY_TICKER}"><img src="../core/Core/View/Media/icons/edit.gif" width="16" height="16" border="0" alt="{TXT_NEWS_MODIFY_TICKER}" /></a>
+					<a href="javascript:newsDeleteTicker({NEWS_TICKER_ID},'{NEWS_TICKER_NAME}')" title="{NEWS_DELETE_TICKER_TXT}"><img src="../core/Core/View/Media/icons/delete.gif" width="17" height="17" border="0" alt="{NEWS_DELETE_TICKER_TXT}" /></a>
 				</td>
 			</tr>
 			<!-- END news_ticker_list -->
@@ -57,10 +57,10 @@ function newsDeleteTickers(action) {
 		</tbody>
 	</table>
 	<!-- BEGIN news_ticker_multi_select_action -->
-	<img src="images/icons/arrow.gif" width="38" height="22" style="margin-left:5px;" alt="arrow" />
+	<img src="../core/Core/View/Media/icons/arrow.gif" width="38" height="22" style="margin-left:5px;" alt="arrow" />
 	<a href="javascript:void(0);" onclick="changeCheckboxes('news_ticker_form','news_ticker_id[]',true); return false;" title="{TXT_NEWS_CHECK_ALL}">{TXT_NEWS_CHECK_ALL}</a> /
 	<a href="javascript:void(0);" onclick="changeCheckboxes('news_ticker_form','news_ticker_id[]',false); return false;" title="{TXT_NEWS_UNCHECK_ALL}">{TXT_NEWS_UNCHECK_ALL}</a>
-	<img src="images/icons/strike.gif" width="34" height="22" alt="design" />
+	<img src="../core/Core/View/Media/icons/strike.gif" width="34" height="22" alt="design" />
 	<select name="news_ticker_select_action" id="news_ticker_select_action" onchange="newsDeleteTickers(this.value)">
 		<option value="0" selected="selected">{TXT_NEWS_WITH_SELECTED}:</option>
 		<option value="delete">{TXT_NEWS_DELETE}</option>

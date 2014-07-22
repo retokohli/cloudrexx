@@ -960,11 +960,11 @@ span.disconnected {
 }
 
 span.connected {
-    background: url("../../cadmin/images/icons/led_green.gif");
+    background: url("../../core/Core/View/Media/icons/led_green.gif");
 }
 
 span.disconnected {
-    background: url("../../cadmin/images/icons/led_red.gif");
+    background: url("../../core/Core/View/Media/icons/led_red.gif");
 }
 
 #login #sociallogin span {

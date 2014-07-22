@@ -1300,7 +1300,7 @@ class SurveyManager extends SurveyLibrary {
                 $imagewidth = round($percentage,0);
 
                 $votingResultText .= contrexx_remove_script_tags($objResult->fields['answer'])."<br />\n";
-                $votingResultText .= "<img src='images/icons/$images.gif' width='$imagewidth%' height=\"10\" alt=\"$votes ".$_ARRAYLANG['TXT_VOTES']." / $percentage %\" />";
+                $votingResultText .= "<img src='../core/Core/View/Media/icons/$images.gif' width='$imagewidth%' height=\"10\" alt=\"$votes ".$_ARRAYLANG['TXT_VOTES']." / $percentage %\" />";
                 $votingResultText .= "&nbsp;<font size='1'>$votes ".$_ARRAYLANG['TXT_VOTES']." / $percentage %</font><br />\n";
             }
             $coun++;
@@ -1393,11 +1393,11 @@ class SurveyManager extends SurveyLibrary {
 
         while(!$objResult->EOF) {
             if($objResult->fields['isActive'] == "1") {
-                $activeImage = "images/icons/led_green.gif";
+                $activeImage = "../core/Core/View/Media/icons/led_green.gif";
                 $activeTitle = $_ARRAYLANG['TXT_ACTIVE'] ;
             }
             else {
-                $activeImage = "images/icons/led_red.gif";
+                $activeImage = "../core/Core/View/Media/icons/led_red.gif";
                 $activeTitle = $_ARRAYLANG['TXT_INACTIVE'] ;
             }
             // Passign the home box status
@@ -1507,11 +1507,11 @@ class SurveyManager extends SurveyLibrary {
 
         while(!$objResult->EOF) {
             /*     if($objResult->fields['isActive'] == "1") {
-                     $activeImage = "images/icons/led_green.gif";
+                     $activeImage = "../core/Core/View/Media/icons/led_green.gif";
                      $activeTitle = $_ARRAYLANG['TXT_ACTIVE'] ;
                  }
                  else {
-                     $activeImage = "images/icons/led_red.gif";
+                     $activeImage = "../core/Core/View/Media/icons/led_red.gif";
                      $activeTitle = $_ARRAYLANG['TXT_INACTIVE'] ;
                  }  */
             $list_id=$objResult->fields['id'];

@@ -199,10 +199,10 @@ class ContentWorkflow extends \Module {
 
                 switch ($this->cmd) {
                     case 'deleted':
-                        $strIcon = '<a href="javascript:restoreDeleted(\''.$pageId.'\');"><img src="images/icons/import.gif" alt="'.$_ARRAYLANG['TXT_DELETED_RESTORE'].'" title="'.$_ARRAYLANG['TXT_DELETED_RESTORE'].'" border="0" align="middle" /></a>';
+                        $strIcon = '<a href="javascript:restoreDeleted(\''.$pageId.'\');"><img src="../core/Core/View/Media/icons/import.gif" alt="'.$_ARRAYLANG['TXT_DELETED_RESTORE'].'" title="'.$_ARRAYLANG['TXT_DELETED_RESTORE'].'" border="0" align="middle" /></a>';
                         break;
                     case 'unvalidated':
-                        $strIcon = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=ContentManager&amp;page='.$pageId.'&amp;tab=content" target="_blank"><img src="images/icons/details.gif" alt="'.$_ARRAYLANG['TXT_DETAILS'].'" title="'.$_ARRAYLANG['TXT_DETAILS'].'" border="0" /></a>';
+                        $strIcon = '<a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=ContentManager&amp;page='.$pageId.'&amp;tab=content" target="_blank"><img src="../core/Core/View/Media/icons/details.gif" alt="'.$_ARRAYLANG['TXT_DETAILS'].'" title="'.$_ARRAYLANG['TXT_DETAILS'].'" border="0" /></a>';
                         
                         switch ($act) {
                             case 'create':
@@ -218,7 +218,7 @@ class ContentWorkflow extends \Module {
                         break;
                     default: // new
                         $strIcon  = '<a href="../'.\FWLanguage::getLanguageCodeById($page->getLang()).$page->getPath().'" target="_blank"><img src="../core/ContentManager/View/Media/Preview.png" alt="'.$_ARRAYLANG['TXT_WORKFLOW_PAGE_PREVIEW'].'" title="'.$_ARRAYLANG['TXT_WORKFLOW_PAGE_PREVIEW'].'" border="0" /></a>&nbsp;';
-                        $strIcon .= '<a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=ContentManager&amp;page='.$pageId.'&amp;tab=content" target="_blank"><img src="images/icons/edit.gif" alt="'.$_ARRAYLANG['TXT_EDIT_PAGE'].'" title="'.$_ARRAYLANG['TXT_EDIT_PAGE'].'" border="0" /></a>';
+                        $strIcon .= '<a href="'.CONTREXX_DIRECTORY_INDEX.'?cmd=ContentManager&amp;page='.$pageId.'&amp;tab=content" target="_blank"><img src="../core/Core/View/Media/icons/edit.gif" alt="'.$_ARRAYLANG['TXT_EDIT_PAGE'].'" title="'.$_ARRAYLANG['TXT_EDIT_PAGE'].'" border="0" /></a>';
                 }
                 
                 $this->tpl->setVariable(array(
@@ -319,7 +319,7 @@ class ContentWorkflow extends \Module {
                     
                     $this->tpl->setVariable(array(
                         'HISTORY_ROW'                   => $intRowCount % 2 == 0 ? 'row1' : 'row2',
-                        'HISTORY_IMGDETAILS'            => '<a href="javascript:restoreDeleted(\''.$linkPageId.'\');"><img src="images/icons/import.gif" alt="'.$_ARRAYLANG['TXT_DELETED_RESTORE'].'" title="'.$_ARRAYLANG['TXT_DELETED_RESTORE'].'" border="0" align="middle" /></a>',
+                        'HISTORY_IMGDETAILS'            => '<a href="javascript:restoreDeleted(\''.$linkPageId.'\');"><img src="../core/Core/View/Media/icons/import.gif" alt="'.$_ARRAYLANG['TXT_DELETED_RESTORE'].'" title="'.$_ARRAYLANG['TXT_DELETED_RESTORE'].'" border="0" align="middle" /></a>',
                         'HISTORY_RID'                   => $intRowCount,
                         'HISTORY_DATE'                  => $updated,
                         'HISTORY_LANGUAGE'              => $lang,

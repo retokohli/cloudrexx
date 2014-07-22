@@ -1350,7 +1350,7 @@ class Immo extends ImmoLib
                             LEFT OUTER JOIN ".DBPREFIX."module_immo_field AS `field` ON content.field_id = field.id";
                 $objResult2 = $objDatabase->Execute($query);
                 while (!$objResult2->EOF) {
-                    $data[strtolower($objResult2->fields['field_name'])] = ($objResult2->fields['type'] == "img" || $objResult2->fields['type'] == "panorama") ? ((!empty($objResult2->fields['uri'])) ? $objResult2->fields['uri']: ASCMS_BACKEND_PATH."/images/icons/pixel.gif") : $objResult2->fields['value'];
+                    $data[strtolower($objResult2->fields['field_name'])] = ($objResult2->fields['type'] == "img" || $objResult2->fields['type'] == "panorama") ? ((!empty($objResult2->fields['uri'])) ? $objResult2->fields['uri']: "../core/Core/View/Media/icons/pixel.gif") : $objResult2->fields['value'];
                     $objResult2->MoveNext();
                 }
                 // Line breaks are evil

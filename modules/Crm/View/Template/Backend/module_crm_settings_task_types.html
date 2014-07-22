@@ -6,7 +6,7 @@
             url = $elm.attr("href");
             $J.get(url, function(data) {
                 image = $elm.find('img').attr('src').split('/')[2] == 'led_green.gif' ? 'led_red.gif' : 'led_green.gif';
-                $elm.find('img').attr('src', 'images/icons/'+image);
+                $elm.find('img').attr('src', '../core/Core/View/Media/icons/'+image);
                 fadeOkbox('{TXT_CRM_STATUS_SUCCESSFULLY_CHANGED}');
             });
             e.preventDefault();
@@ -65,10 +65,10 @@
         <table cellpadding="2" cellspacing="0" border="0" >
             <tr>
                 <td>
-                    <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_ENTRIES_MARKED}:" />
+                    <img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_ENTRIES_MARKED}:" />
                     <a href="#" onclick="changeCheckboxes('taskTypeOverview','taskTypeId[]',true); return false;">{TXT_CRM_SELECT_ALL}</a> /
                     <a href="#" onclick="changeCheckboxes('taskTypeOverview','taskTypeId[]',false); return false;">{TXT_CRM_DESELECT_ALL}</a>
-                    <img src="images/icons/strike.gif" alt="" />
+                    <img src="../core/Core/View/Media/icons/strike.gif" alt="" />
                     <select name="actionType" id="multiAction">
                         <option value="0">{TXT_CRM_SELECT_ACTION}</option>
                         <option value="activate">{TXT_CRM_ACTIVATE_SELECTED}</option>

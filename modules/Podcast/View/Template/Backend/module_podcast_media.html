@@ -40,15 +40,15 @@ function podcast_media_do_action(action) {
 			</tr>
 			<!-- BEGIN podcast_media_list -->
 				<tr class="{PODCAST_ROW_CLASS}">
-					<td><input type="checkbox" name="podcast_medium_selected[]" value="{PODCAST_MEDIUM_ID}" /><img src="images/icons/{PODCAST_MEDIUM_STATUS_IMG}" width="13" height="13" alt="{PODCAST_MEDIUM_STATUS_TXT}" /></td>
+					<td><input type="checkbox" name="podcast_medium_selected[]" value="{PODCAST_MEDIUM_ID}" /><img src="../core/Core/View/Media/icons/{PODCAST_MEDIUM_STATUS_IMG}" width="13" height="13" alt="{PODCAST_MEDIUM_STATUS_TXT}" /></td>
 					<td>{PODCAST_MEDIUM_DATE}</td>
 					<td><a href="index.php?cmd=Podcast&amp;act=showMedium&amp;id={PODCAST_MEDIUM_ID}" title="{TXT_PODCAST_SHOW_MEDIUM}">{PODCAST_MEDIUM_TITLE}</a></td>
 					<td>{PODCAST_MEDIUM_AUTHOR}</td>
 					<td>{PODCAST_MEDIUM_TEMPLATE}</td>
 					<td style="text-align:right;">
-						<a href="index.php?cmd=Podcast&amp;act=getHtml&amp;id={PODCAST_MEDIUM_ID}" title="{TXT_PODCAST_SHOW_HTML_SOURCE_CODE}"><img src="images/icons/html.gif" width="16" height="16" border="0" alt="{TXT_PODCAST_SHOW_HTML_SOURCE_CODE}" /></a>
-						<a href="index.php?cmd=Podcast&amp;act=modifyMedium&amp;id={PODCAST_MEDIUM_ID}" title="{TXT_PODCAST_MODIFY_MEDIUM}"><img src="images/icons/edit.gif" width="16" height="16" border="0" alt="{TXT_PODCAST_MODIFY_MEDIUM}" /></a>
-						<a href="javascript:void(0);" onclick="podcast_delete_medium({PODCAST_MEDIUM_ID}, '{PODCAST_MEDIUM_TITLE}')" title="{TXT_PODCAST_DELETE_MEDIUM}"><img src="images/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_PODCAST_DELETE_MEDIUM}" /></a>
+						<a href="index.php?cmd=Podcast&amp;act=getHtml&amp;id={PODCAST_MEDIUM_ID}" title="{TXT_PODCAST_SHOW_HTML_SOURCE_CODE}"><img src="../core/Core/View/Media/icons/html.gif" width="16" height="16" border="0" alt="{TXT_PODCAST_SHOW_HTML_SOURCE_CODE}" /></a>
+						<a href="index.php?cmd=Podcast&amp;act=modifyMedium&amp;id={PODCAST_MEDIUM_ID}" title="{TXT_PODCAST_MODIFY_MEDIUM}"><img src="../core/Core/View/Media/icons/edit.gif" width="16" height="16" border="0" alt="{TXT_PODCAST_MODIFY_MEDIUM}" /></a>
+						<a href="javascript:void(0);" onclick="podcast_delete_medium({PODCAST_MEDIUM_ID}, '{PODCAST_MEDIUM_TITLE}')" title="{TXT_PODCAST_DELETE_MEDIUM}"><img src="../core/Core/View/Media/icons/delete.gif" width="17" height="17" border="0" alt="{TXT_PODCAST_DELETE_MEDIUM}" /></a>
 					</td>
 				</tr>
 			<!-- END podcast_media_list -->
@@ -61,10 +61,10 @@ function podcast_media_do_action(action) {
 	</tbody>
 </table>
 <!-- BEGIN podcast_media_multi_select_action -->
-<img src="images/icons/arrow.gif" width="38" height="22" style="margin-left:5px;" alt="arrow" />
+<img src="../core/Core/View/Media/icons/arrow.gif" width="38" height="22" style="margin-left:5px;" alt="arrow" />
 <a href="javascript:void(0);" onclick="changeCheckboxes('podcast_media_form','podcast_medium_selected[]',true); return false;" title="{TXT_PODCAST_CHECK_ALL}">{TXT_PODCAST_CHECK_ALL}</a> /
 <a href="javascript:void(0);" onclick="changeCheckboxes('podcast_media_form','podcast_medium_selected[]',false); return false;" title="{TXT_PODCAST_UNCHECK_ALL}">{TXT_PODCAST_UNCHECK_ALL}</a>
-<img src="images/icons/strike.gif" width="34" height="22" alt="design" />
+<img src="../core/Core/View/Media/icons/strike.gif" width="34" height="22" alt="design" />
 <select name="podcast_select_action" id="podcast_select_action" onchange="podcast_media_do_action(this.value)">
 <option value="0" selected="selected">{TXT_PODCAST_WITH_SELECTED}:</option>
 <option value="delete">{TXT_PODCAST_DELETE}</option>

@@ -253,7 +253,7 @@ class Survey {
     function getShowActiveSurveyJavaScript() {
         global $_ARRAYLANG;
         $javascript = <<<END
-        <script language="JavaScript" src="cadmin/javascript/set_checkboxes.js" type="text/javascript"></script>
+        <script language="JavaScript" src="lib/javascript/set_checkboxes.js" type="text/javascript"></script>
 END;
         return $javascript;
 

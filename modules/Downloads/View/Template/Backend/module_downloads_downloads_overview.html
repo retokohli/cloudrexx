@@ -76,7 +76,7 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
             <!-- BEGIN downloads_download_status_link_open -->
             <a href="index.php?cmd=Downloads&amp;act=switch_download_status&amp;id={DOWNLOADS_DOWNLOAD_ID}" title="{DOWNLOADS_DOWNLOAD_SWITCH_STATUS_DESC}">
             <!-- END downloads_download_status_link_open -->
-                <img src="images/icons/{DOWNLOADS_DOWNLOAD_STATUS_LED}" alt="{DOWNLOADS_DOWNLOAD_SWITCH_STATUS_IMG_DESC}" border="0" width="13" height="13" />
+                <img src="../core/Core/View/Media/icons/{DOWNLOADS_DOWNLOAD_STATUS_LED}" alt="{DOWNLOADS_DOWNLOAD_SWITCH_STATUS_IMG_DESC}" border="0" width="13" height="13" />
             <!-- BEGIN downloads_download_status_link_close -->
             </a>
             <!-- END downloads_download_status_link_close -->
@@ -107,15 +107,15 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
             <a href="index.php?cmd=Downloads&amp;act=get&amp;id={DOWNLOADS_DOWNLOAD_ID}" title="{DOWNLOADS_DOWNLOAD_SOURCE}" target="_blank"><img src="{DOWNLOADS_DOWNLOAD_DOWNLOAD_ICON}" alt="{DOWNLOADS_DOWNLOAD_SOURCE}" width="16" height="16" border="0" /></a>
             <!-- END downloads_download_function_download -->
             <!-- BEGIN downloads_download_no_function_download -->
-            <img src="images/icons/pixel.gif" alt="no permission to download this download" width="16" height="16" border="0" />
+            <img src="../core/Core/View/Media/icons/pixel.gif" alt="no permission to download this download" width="16" height="16" border="0" />
             <!-- END downloads_download_no_function_download -->
             <!-- BEGIN downloads_download_functions -->
-            <a href="index.php?cmd=Downloads&amp;act=download&amp;id={DOWNLOADS_DOWNLOAD_ID}" title="{TXT_DOWNLOADS_EDIT}"><img src="images/icons/edit.gif" alt="{TXT_DOWNLOADS_EDIT}" width="16" height="16" border="0" /></a>
-            <a href="javascript:void(0);" onclick="downloadsDeleteDownload({DOWNLOADS_DOWNLOAD_ID},'{DOWNLOADS_DOWNLOAD_NAME_JS}')" title="{TXT_DOWNLOADS_DELETE}"><img src="images/icons/delete.gif" alt="{TXT_DOWNLOADS_DELETE}" width="17" height="17" border="0" /></a>
+            <a href="index.php?cmd=Downloads&amp;act=download&amp;id={DOWNLOADS_DOWNLOAD_ID}" title="{TXT_DOWNLOADS_EDIT}"><img src="../core/Core/View/Media/icons/edit.gif" alt="{TXT_DOWNLOADS_EDIT}" width="16" height="16" border="0" /></a>
+            <a href="javascript:void(0);" onclick="downloadsDeleteDownload({DOWNLOADS_DOWNLOAD_ID},'{DOWNLOADS_DOWNLOAD_NAME_JS}')" title="{TXT_DOWNLOADS_DELETE}"><img src="../core/Core/View/Media/icons/delete.gif" alt="{TXT_DOWNLOADS_DELETE}" width="17" height="17" border="0" /></a>
             <!-- END downloads_download_functions -->
             <!-- BEGIN downloads_download_no_functions -->
-            <img src="images/icons/pixel.gif" alt="no permission to modify this download" width="16" height="16" border="0" />
-            <img src="images/icons/pixel.gif" alt="no permission to delete this download" width="17" height="17" border="0" />
+            <img src="../core/Core/View/Media/icons/pixel.gif" alt="no permission to modify this download" width="16" height="16" border="0" />
+            <img src="../core/Core/View/Media/icons/pixel.gif" alt="no permission to delete this download" width="17" height="17" border="0" />
             <!-- END downloads_download_no_functions -->
         </td>
     </tr>
@@ -123,10 +123,10 @@ function downloadsUpdateSortOrder(event,elForm,idMultiAction)
 </table>
 <input type="button" value="{TXT_SAVE_CHANGES}" onclick="downloadsUpdateSortOrder(event, this.form, 'downloads_download_select_action')" style="float: left; margin: 10px 0 0 65px;" />
 <div style="clear: left;">
-    <img src="images/icons/arrow.gif" width="38" height="22" style="margin-left:5px;" alt="arrow" />
+    <img src="../core/Core/View/Media/icons/arrow.gif" width="38" height="22" style="margin-left:5px;" alt="arrow" />
     <a href="javascript:void(0);" onclick="changeCheckboxes('downloads_download_form','downloads_download_id[]',true); return false;" title="{TXT_DOWNLOADS_CHECK_ALL}">{TXT_DOWNLOADS_CHECK_ALL}</a> /
     <a href="javascript:void(0);" onclick="changeCheckboxes('downloads_download_form','downloads_download_id[]',false); return false;" title="{TXT_DOWNLOADS_UNCHECK_ALL}">{TXT_DOWNLOADS_UNCHECK_ALL}</a>
-    <img src="images/icons/strike.gif" width="34" height="22" alt="design" />
+    <img src="../core/Core/View/Media/icons/strike.gif" width="34" height="22" alt="design" />
     <select name="downloads_download_select_action" id="downloads_download_select_action" onchange="downloadsDownloadDoAction(this.value)">
         <option value="0" selected="selected" style="border-bottom: 1px solid #000;">{TXT_DOWNLOADS_SELECT_ACTION}</option>
         <!-- BEGIN downloads_download_change_order_action --><option value="order">{TXT_DOWNLOADS_ORDER}</option><!-- END downloads_download_change_order_action -->

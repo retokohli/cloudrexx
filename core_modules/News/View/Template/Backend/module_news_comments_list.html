@@ -39,15 +39,15 @@ function deleteComments(form)
     <!-- BEGIN commentsrow -->
       <tr class="{COMMENT_CSS}">
         <td nowrap="nowrap"><input type="checkbox" name="selectedCommentsId[]" value="{COMMENT_ID}" /></td>
-        <td><a href="?cmd=News&amp;pos={POSITION}&amp;act=comment_status&amp;newsId={NEWS_ID}&amp;commentsId={COMMENT_ID}&{CSRF_PARAM}" target="_self"><img src="images/icons/{COMMENT_STATUS_ICON}.gif" border="0" alt="{TXT_NEWS_COMMENT_IMGALT_STATUS}" title="{TXT_NEWS_COMMENT_IMGALT_STATUS}" /></a></td>
+        <td><a href="?cmd=News&amp;pos={POSITION}&amp;act=comment_status&amp;newsId={NEWS_ID}&amp;commentsId={COMMENT_ID}&{CSRF_PARAM}" target="_self"><img src="../core/Core/View/Media/icons/{COMMENT_STATUS_ICON}.gif" border="0" alt="{TXT_NEWS_COMMENT_IMGALT_STATUS}" title="{TXT_NEWS_COMMENT_IMGALT_STATUS}" /></a></td>
         <td nowrap="nowrap">{COMMENT_DATE}</td>
         <td><a href="?cmd=News&amp;act=comment_edit&amp;newsId={NEWS_ID}&amp;commentsId={COMMENT_ID}">{COMMENT_TITLE}</a>&nbsp;</td>
         <td nowrap="nowrap">{COMMENT_MESSAGE}</td>
         <td nowrap="nowrap">{COMMENT_AUTHOR}</td>
         <td nowrap="nowrap">
           <div align="right">
-            <a href="?cmd=News&amp;act=comment_edit&amp;newsId={NEWS_ID}&amp;commentsId={COMMENT_ID}" title="{TXT_NEWS_COMMENT_EDIT}"><img src="images/icons/edit.gif" border="0" alt="{TXT_NEWS_COMMENT_EDIT}" /></a>
-            <a href="javascript:deleteComment({COMMENT_ID})" title="{TXT_NEWS_COMMENT_DELETE}"><img src="images/icons/delete.gif" border="0" alt="{TXT_NEWS_COMMENT_DELETE}" /></a>
+            <a href="?cmd=News&amp;act=comment_edit&amp;newsId={NEWS_ID}&amp;commentsId={COMMENT_ID}" title="{TXT_NEWS_COMMENT_EDIT}"><img src="../core/Core/View/Media/icons/edit.gif" border="0" alt="{TXT_NEWS_COMMENT_EDIT}" /></a>
+            <a href="javascript:deleteComment({COMMENT_ID})" title="{TXT_NEWS_COMMENT_DELETE}"><img src="../core/Core/View/Media/icons/delete.gif" border="0" alt="{TXT_NEWS_COMMENT_DELETE}" /></a>
           </div>
         </td>
       </tr>
@@ -63,7 +63,7 @@ function deleteComments(form)
   <table cellpadding="2" cellspacing="0" border="0">
     <tr>
       <td>
-        <img src="images/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_NEWS_COMMENT_MARKED}:" />
+        <img src="../core/Core/View/Media/icons/arrow.gif" border="0" width="38" height="22" alt="{TXT_NEWS_COMMENT_MARKED}:" />
         <a href="#" onclick="changeCheckboxes('formComments','selectedCommentsId[]',true); return false;">{TXT_NEWS_COMMENT_SELECT_ALL}</a> /
         <a href="#" onclick="changeCheckboxes('formComments','selectedCommentsId[]',false); return false;">{TXT_NEWS_COMMENT_REMOVE_SELECTION}</a>
         <input type="submit" name="delete" value="{TXT_NEWS_COMMENT_DELETE_MARKED}" onclick="deleteComments('formComments'); return false;" />&nbsp;&nbsp;

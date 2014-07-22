@@ -37,7 +37,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         global $subMenuTitle, $objTemplate, $_CORELANG;
         
         \Permission::checkAccess(163, 'static');
-        $this->cx->getTemplate()->addBlockfile('CONTENT_OUTPUT', 'content_master', 'content_master.html');
+        $this->cx->getTemplate()->addBlockfile('CONTENT_OUTPUT', 'content_master', 'LegacyContentMaster.html');
         $objTemplate = $this->cx->getTemplate();
 
         $subMenuTitle = $_CORELANG['TXT_STATISTIC'];

@@ -29,7 +29,7 @@ class LoginManager {
         $this->objTemplate = new \Cx\Core\Html\Sigma(ASCMS_DOCUMENT_ROOT);
         \Cx\Core\Csrf\Controller\Csrf::add_placeholder($this->objTemplate);
         $this->objTemplate->setErrorHandling(PEAR_ERROR_DIE);
-        $this->objTemplate->loadTemplateFile('/cadmin/template/ascms/index.html');
+        $this->objTemplate->loadTemplateFile('/core/Core/View/Template/Backend/Index.html');
     }
 
     /**
@@ -203,7 +203,7 @@ class LoginManager {
             $jd = new \Cx\Core\Json\JsonData();
             die($jd->json($jd->getErrorData($_ARRAYLANG['TXT_LOGIN_NOAUTH_JSON']), true));
         }
-
+        
         $this->objTemplate->addBlockfile('CONTENT_FILE', 'CONTENT_BLOCK', '/core_modules/Login/View/Template/Backend/login.html');
         $frontendLink = ASCMS_INSTANCE_OFFSET;
         if (empty($frontendLink)) {

@@ -140,7 +140,7 @@ class ImmoLib{
 	 *
 	 * @var str
 	 */
-	var $noImage = 'images/icons/.gif';
+	var $noImage = '../core/Core/View/Media/icons/.gif';
 
 
 	/**

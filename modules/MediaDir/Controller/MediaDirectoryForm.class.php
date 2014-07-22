@@ -137,10 +137,10 @@ class MediaDirectoryForm extends MediaDirectoryLibrary
                     foreach ($this->arrForms as $key => $arrForm) {
                 		//get status
                 		if($arrForm['formActive'] == 1) {
-                		    $strStatus = 'images/icons/status_green.gif';
+                		    $strStatus = '../core/Core/View/Media/icons/status_green.gif';
                 		    $intStatus = 0;
                 		} else {
-                		    $strStatus = 'images/icons/status_red.gif';
+                		    $strStatus = '../core/Core/View/Media/icons/status_red.gif';
                 		    $intStatus = 1;
                 		}
 
