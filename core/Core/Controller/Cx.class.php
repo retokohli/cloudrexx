@@ -1309,7 +1309,6 @@ namespace Cx\Core\Core\Controller {
             
             $this->ch->callPreContentParseHooks();
             
-            $this->ch->loadComponent($this, $plainSection, $this->resolvedPage);
             $this->loadContentTemplateOfPage();
             
             if ($this->mode == self::MODE_FRONTEND) {
@@ -1318,6 +1317,8 @@ namespace Cx\Core\Core\Controller {
                 \LinkGenerator::parseTemplate($pageContent);
                 $this->resolvedPage->setContent($pageContent);
             }
+            
+            $this->ch->loadComponent($this, $plainSection, $this->resolvedPage);
             // This would be a postContentParseHook:
             \Message::show();
             
