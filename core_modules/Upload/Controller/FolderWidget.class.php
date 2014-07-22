@@ -8,7 +8,9 @@
  * @package     contrexx
  * @subpackage  coremodule_upload
  */
+
 namespace Cx\Core_Modules\Upload\Controller;
+
 /**
  * FolderWidgetException
  *
@@ -95,7 +97,7 @@ class FolderWidget {
         $arrFileNames = array();
         //move everything uploaded to target dir
         if(!file_exists($this->folder))
-            throw new FolderWidgetException("could not find my directory '".$this->folder."' to list files");
+            throw  new FolderWidgetException("could not find my directory '".$this->folder."' to list files");
         $h = opendir($this->folder);
         while(false !== ($f = readdir($h))) {
             //skip . and ..

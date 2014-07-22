@@ -8,7 +8,9 @@
  * @package     contrexx
  * @subpackage  coremodule_upload
  */
+
 namespace Cx\Core_Modules\Upload\Controller;
+
 /**
  * UploadLib
  *
@@ -51,7 +53,7 @@ class UploadLib
     public function jumpUploaderApplet() {
         //the applet is sent via request because of basic auth problems with a path for the .jar-file that is different from the path the browser authenticated himself against.
         require_once ASCMS_LIBRARY_PATH . '/PEAR/Download.php';
-        $download = new \HTTP_Download();
+        $download = new HTTP_Download();
         $download->setFile(ASCMS_CORE_MODULE_PATH.'/Upload/ressources/uploaders/jump/jumpLoader.jar');
         $download->setContentType('application/java-archive');
         $download->send();
@@ -62,7 +64,7 @@ class UploadLib
     public function jumpUploaderL10n($langCode) {
         //the messages are sent via request because of basic auth problems with a path for the .zip-file that is different from the path the browser authenticated himself against.
         require_once ASCMS_LIBRARY_PATH . '/PEAR/Download.php';
-        $download = new \HTTP_Download();
+        $download = new HTTP_Download();
         //load correct language file
         $objFWUser = \FWUser::getFWUserObject();
 

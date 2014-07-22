@@ -8,7 +8,9 @@
  * @package     contrexx
  * @subpackage  coremodule_upload
  */
+
 namespace Cx\Core_Modules\Upload\Controller;
+
 /**
  * UploadResponses result from an upload request.
  * They carry information about problems concerning uploaded files.
@@ -97,7 +99,7 @@ class UploadResponse {
 
     public static function fromSession($data) {
         $r = new UploadResponse();
-        $data = \json_decode($data, true);
+        $data = json_decode($data, true);
         $r->initFromSession($data['logs'], $data['uploadedFilesCount'], $data['worstStatus'], $data['uploadFinished']);
         return $r;
     }

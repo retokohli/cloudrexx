@@ -8,7 +8,9 @@
  * @package     contrexx
  * @subpackage  coremodule_upload
  */
+
 namespace Cx\Core_Modules\Upload\Controller;
+
 /**
  * Upload
  *
@@ -28,7 +30,6 @@ class Upload extends UploadLib
         if(isset($_REQUEST['act'])) {
             $act = $_REQUEST['act'];
         }
-
         switch($act) {
             //uploaders
             case 'upload': //an uploader is sending data
