@@ -6,7 +6,7 @@
   <body>
     <script type="text/javascript">
     {CXJS_INIT_JS}
-    cx.include('core_modules/upload/css/uploaders/form/form.css', function() {
+    cx.include('core_modules/Upload/css/uploaders/form/form.css', function() {
         var form = new FormUploader({UPLOAD_ID});
     });
     </script>

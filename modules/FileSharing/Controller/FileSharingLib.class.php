@@ -27,7 +27,7 @@ abstract class FileSharingLib
     protected function initUploader()
     {
         \JS::activate('cx'); // the uploader needs the framework
-        \Env::get('ClassLoader')->loadFile(ASCMS_CORE_MODULE_PATH . '/upload/share/uploadFactory.class.php');
+        \Env::get('ClassLoader')->loadFile(ASCMS_CORE_MODULE_PATH . '/Upload/Controller/UploadFactory.class.php');
 
         /**
          * Name of the upload instance
@@ -41,7 +41,7 @@ abstract class FileSharingLib
         $uploaderFolderWidgetContainer = '#uploadFormField_uploadWidget';
 
         // create an exposedCombo uploader
-        $uploader = \UploadFactory::getInstance()->newUploader('exposedCombo');
+        $uploader = \Cx\Core_Modules\Upload\Controller\UploadFactory::getInstance()->newUploader('exposedCombo');
 
         //set instance name so we are able to catch the instance with js
         $uploader->setJsInstanceName($uploaderInstanceName);
@@ -56,7 +56,7 @@ abstract class FileSharingLib
 <script type="text/javascript">
 cx.include(
 [
-'core_modules/upload/js/uploaders/exposedCombo/extendedFileInput.js'
+'core_modules/Upload/js/uploaders/exposedCombo/extendedFileInput.js'
 ],
 function() {
         var ef = new ExtendedFileInput({

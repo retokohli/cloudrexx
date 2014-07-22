@@ -8,7 +8,7 @@
  * @package     contrexx
  * @subpackage  coremodule_upload
  */
-
+namespace Cx\Core_Modules\Upload\Controller;
 /**
  * FolderWidgetException
  *
@@ -17,7 +17,7 @@
  * @package     contrexx
  * @subpackage  coremodule_upload
  */
-class FolderWidgetException extends Exception {}
+class FolderWidgetException extends \Exception {}
 
 /**
  * A folder widget (obviously). Use this to display a list of the files contained in a 
@@ -54,9 +54,9 @@ class FolderWidget {
      */
     public function getXhtml($containerSelector, $instanceName)
     {
-        \JS::registerJS('core_modules/upload/js/folderWidget.js');
+        \JS::registerJS('core_modules/Upload/js/folderWidget.js');
 
-        $tpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/upload/template/');
+        $tpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/Upload/template/');
         $tpl->setErrorHandling(PEAR_ERROR_DIE);
         
         $tpl->loadTemplateFile('folderWidget.html');
@@ -68,7 +68,7 @@ class FolderWidget {
         $refreshUrl = ($this->isBackendRequest ? ASCMS_ADMIN_WEB_PATH : ASCMS_PATH_OFFSET).\Env::get('virtualLanguageDirectory').'/index.php?'.$cmdOrSection.'=upload&'.$actOrCmd.'=refreshFolder'; 
         $deleteUrl = ($this->isBackendRequest ? ASCMS_ADMIN_WEB_PATH : ASCMS_PATH_OFFSET).\Env::get('virtualLanguageDirectory').'/index.php?'.$cmdOrSection.'=upload&'.$actOrCmd.'=deleteFile'; 
 
-        ContrexxJavascript::getInstance()->setVariable(array(
+        \ContrexxJavascript::getInstance()->setVariable(array(
                 'refreshUrl' => $refreshUrl,
                 'deleteUrl' => $deleteUrl,
                 'files' => $this->getFilesJSON(),

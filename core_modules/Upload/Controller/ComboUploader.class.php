@@ -8,7 +8,7 @@
  * @package     contrexx
  * @subpackage  coremodule_upload
  */
-
+namespace Cx\Core_Modules\Upload\Controller;
 /**
  * ComboUploader - Displays a FormUploader and possibilities to invoke other types of Uploaders.
  *
@@ -54,15 +54,15 @@ class ComboUploader extends Uploader
         global $_CORELANG;
 
         //JS / CSS dependencies
-        JS::activate('cx');
-        JS::registerJS('lib/javascript/swfobject.js');
+        \JS::activate('cx');
+        \JS::registerJS('lib/javascript/swfobject.js');
 //        JS::registerJS('lib/javascript/deployJava.js');
-        JS::registerJS('core_modules/upload/js/uploaders/combo/combo.js');
-        JS::registerCSS('core_modules/upload/css/uploaders/combo/combo.css');
+        \JS::registerJS('core_modules/Upload/js/uploaders/combo/combo.js');
+        \JS::registerCSS('core_modules/Upload/css/uploaders/combo/combo.css');
 
-        \JS::registerJS('core_modules/upload/js/uploaders/pl/plupload.full.js');
-        \JS::registerJS('core_modules/upload/js/uploaders/pl/jquery.plupload.queue.js');
-        \JS::registerCSS('core_modules/upload/css/uploaders/pl/plupload.queue.css');
+        \JS::registerJS('core_modules/Upload/js/uploaders/pl/plupload.full.js');
+        \JS::registerJS('core_modules/Upload/js/uploaders/pl/jquery.plupload.queue.js');
+        \JS::registerCSS('core_modules/Upload/css/uploaders/pl/plupload.queue.css');
 
         $formUploader = UploadFactory::getInstance()->newUploader('form',$this->uploadId);
 
@@ -96,7 +96,7 @@ class ComboUploader extends Uploader
             $responseUrl = CONTREXX_SCRIPT_PATH.'?'.$cmdOrSection.'=upload&'.$actOrCmd.'=response';
         }
                 
-        $tpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/upload/template/uploaders');
+        $tpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/Upload/template/uploaders');
         $tpl->setErrorHandling(PEAR_ERROR_DIE);
         
         $tpl->loadTemplateFile('combo.html');

@@ -514,7 +514,7 @@ class FileBrowser {
             $data['webPath'] = ASCMS_CONTENT_IMAGE_WEB_PATH.$this->_path;
         }
 
-        $comboUp = \UploadFactory::getInstance()->newUploader('exposedCombo');
+        $comboUp = \Cx\Core_Modules\Upload\Controller\UploadFactory::getInstance()->newUploader('exposedCombo');
         $comboUp->setFinishedCallback(array(ASCMS_CORE_MODULE_PATH.'/FileBrowser/Controller/FileBrowser.class.php','\Cx\Core_Modules\FileBrowser\Controller\FileBrowser','uploadFinished'));
         $comboUp->setData($data);
         //set instance name to combo_uploader so we are able to catch the instance with js

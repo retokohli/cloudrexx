@@ -530,8 +530,8 @@ class MediaManager extends MediaLibrary
             'webPath' => $this->webPath
         );
 
-        $comboUp = \UploadFactory::getInstance()->newUploader('exposedCombo');
-        $comboUp->setFinishedCallback(array(ASCMS_CORE_MODULE_PATH.'/Media/Controller/MediaLibrary.class.php', 'MediaLibrary', 'uploadFinished'));
+        $comboUp = \Cx\Core_Modules\Upload\Controller\UploadFactory::getInstance()->newUploader('exposedCombo');
+        $comboUp->setFinishedCallback(array(ASCMS_CORE_MODULE_PATH.'/Media/Controller/MediaLibrary.class.php', '\Cx\Core_modules\Media\Controller\MediaLibrary', 'uploadFinished'));
         $comboUp->setData($data);
         //set instance name to combo_uploader so we are able to catch the instance with js
         $comboUp->setJsInstanceName('exposed_combo_uploader');

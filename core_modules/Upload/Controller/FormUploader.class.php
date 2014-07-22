@@ -8,7 +8,7 @@
  * @package     contrexx
  * @subpackage  coremodule_upload
  */
-
+namespace Cx\Core_Modules\Upload\Controller;
 /**
  * FormUploader - Class for upload via HTML input-tags.
  *
@@ -42,7 +42,7 @@ class FormUploader extends Uploader
                 $tmpName = $_FILES["uploaderFiles"]["tmp_name"][$key];
                 $name = $_FILES["uploaderFiles"]["name"][$key];
 
-                if (!FWValidator::is_file_ending_harmless($name)) {
+                if (!\FWValidator::is_file_ending_harmless($name)) {
                     die('Error:'.sprintf('The file %s was refused due to its file extension which is not allowed!', htmlentities($name, ENT_QUOTES, CONTREXX_CHARSET)));
                 }
 
@@ -79,11 +79,11 @@ class FormUploader extends Uploader
     {
         $iframeUrl = '';   
         if($this->isBackendRequest)
-            $iframeUrl = ASCMS_ADMIN_WEB_PATH.'/index.php?cmd=upload&act=formUploaderFrame&uploadId='.$this->uploadId;
+            $iframeUrl = ASCMS_ADMIN_WEB_PATH.'/index.php?cmd=Upload&act=formUploaderFrame&uploadId='.$this->uploadId;
         else
-            $iframeUrl = CONTREXX_SCRIPT_PATH.'?section=upload&cmd=formUploaderFrame&uploadId='.$this->uploadId;
+            $iframeUrl = CONTREXX_SCRIPT_PATH.'?section=Upload&cmd=formUploaderFrame&uploadId='.$this->uploadId;
       
-        $tpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/upload/template/uploaders');
+        $tpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/Upload/template/uploaders');
         $tpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $tpl->loadTemplateFile('form.html');
@@ -100,15 +100,15 @@ class FormUploader extends Uploader
         }
 	
         //JS / CSS dependencies
-        JS::activate('cx');
-        JS::registerCSS('core_modules/upload/css/uploaders/form/formUploader.css');
-        JS::registerJS('core_modules/upload/js/uploaders/form/formUploader.js');
+        \JS::activate('cx');
+        \JS::registerCSS('core_modules/Upload/css/uploaders/form/formUploader.css');
+        \JS::registerJS('core_modules/Upload/js/uploaders/form/formUploader.js');
         
         $uploadPath = $this->getUploadPath('form');
 
         $redirectUrl = '';   
         if($this->isBackendRequest) {
-            $redirectUrl = ASCMS_ADMIN_WEB_PATH.'/index.php?cmd=upload&act=formUploaderFrameFinished&uploadId='.$this->uploadId;
+            $redirectUrl = ASCMS_ADMIN_WEB_PATH.'/index.php?cmd=Upload&act=formUploaderFrameFinished&uploadId='.$this->uploadId;
         } else {
             $url = clone \Env::get('cx')->getRequest()->getUrl();
             $url->removeAllParams();
@@ -121,18 +121,18 @@ class FormUploader extends Uploader
         }
         $this->setRedirectUrl($redirectUrl);
       
-        $tpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/upload/template/uploaders');
+        $tpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/Upload/template/uploaders');
         $tpl->setErrorHandling(PEAR_ERROR_DIE);
         
         $tpl->loadTemplateFile('formFrame.html');
         $tpl->setVariable('UPLOAD_URL', $uploadPath);
-        $tpl->setVariable('INCLUDES', JS::getCode());
-        $tpl->setVariable('CXJS_INIT_JS', ContrexxJavascript::getInstance()->initJs());
+        $tpl->setVariable('INCLUDES', \JS::getCode());
+        $tpl->setVariable('CXJS_INIT_JS', \ContrexxJavascript::getInstance()->initJs());
 		$tpl->setVariable('UPLOAD_FORM_ADD', $_CORELANG['UPLOAD_FORM_ADD']);
 		$tpl->setVariable('UPLOAD', $_CORELANG['UPLOAD']);
 		$tpl->setVariable('UPLOAD_ID', $this->uploadId);
         
-        $tpl->setVariable('MAX_FILE_SIZE', FWSystem::getMaxUploadFileSize()-1000);
+        $tpl->setVariable('MAX_FILE_SIZE', \FWSystem::getMaxUploadFileSize()-1000);
         
         $ls = new \LinkSanitizer(ASCMS_PATH_OFFSET, $tpl->get());
         return $ls->replace();
@@ -140,7 +140,7 @@ class FormUploader extends Uploader
 
     public function getFrameFinishedXHtml() {
         global $_CORELANG;
-        $tpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/upload/template/uploaders');
+        $tpl = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH.'/Upload/template/uploaders');
         $tpl->setErrorHandling(PEAR_ERROR_DIE);
 
         $tpl->loadTemplateFile('formFrameFinished.html');

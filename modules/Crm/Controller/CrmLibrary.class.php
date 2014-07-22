@@ -2784,7 +2784,7 @@ class CrmLibrary
         try {
             //init the uploader
             \JS::activate('cx'); //the uploader needs the framework
-            $f = \UploadFactory::getInstance();
+            $f = \Cx\Core_Modules\Upload\Controller\UploadFactory::getInstance();
 
             /**
             * Name of the upload instance
@@ -2835,7 +2835,7 @@ class CrmLibrary
             $strInputfield = $folderWidget->getXHtml($uploaderFolderWidgetContainer, $uploaderWidgetName);
             $strInputfield .= $uploader->getXHtml();
 
-            \JS::registerJS('core_modules/upload/js/uploaders/exposedCombo/extendedFileInput.js');
+            \JS::registerJS('core_modules/Upload/js/uploaders/exposedCombo/extendedFileInput.js');
 
             $strInputfield .= <<<CODE
             <script type="text/javascript">
