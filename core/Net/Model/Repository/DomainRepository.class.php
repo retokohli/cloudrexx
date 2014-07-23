@@ -48,7 +48,7 @@ class DomainRepository extends \Cx\Core\Model\Controller\YamlRepository {
         $this->add($hostName);
     }
     
-    public static function getMainDomain() {
+    public function getMainDomain() {
         $config = \Env::get('config');
         
         if (empty($config['mainDomainId']) || !$this->entities[$config['mainDomainId']]) {
