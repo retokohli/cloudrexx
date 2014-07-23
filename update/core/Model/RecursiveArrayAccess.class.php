@@ -60,6 +60,13 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
     protected $callableOnUnset;
     
     /**
+     * Callable function on callableOnValidateKey
+     * 
+     * @var callable
+     */
+    protected $callableOnValidateKey;
+    
+    /**
      * 
      * 
      * @var integer
@@ -77,7 +84,7 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
      *
      * @param array $data
      */
-    protected function __construct($data, $offset = '', $parentId = 0, $callableOnSet = null, $callableOnGet = null, $callableOnUnset = null)
+    protected function __construct($data, $offset = '', $parentId = 0, $callableOnSet = null, $callableOnGet = null, $callableOnUnset = null, $callableOnValidateKey = null)
     {
         $this->offset   = $offset;
         $this->parentId = intval($parentId);
@@ -85,6 +92,7 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
         $this->callableOnSet   = $callableOnSet;
         $this->callableOnGet   = $callableOnGet;        
         $this->callableOnUnset = $callableOnUnset;
+        $this->callableOnValidateKey = $callableOnValidateKey;
         
         if ($this->callableOnUnset)
             call_user_func($this->callableOnUnset, $this->offset, $this->parentId);
@@ -122,7 +130,7 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
      *
      * @return boolean true on success or false on failure.
      */
-    public function offsetExists($offset) {
+    public function offsetExists($offset) {       
         return isset($this->data[$offset]);
     }
 
@@ -153,18 +161,29 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
      *
      * @return null
      */
-    public function offsetSet($offset, $data, $callableOnSet = null, $callableOnGet = null, $callableOnUnset = null) {
+    public function offsetSet($offset, $data, $callableOnSet = null, $callableOnGet = null, $callableOnUnset = null, $callableOnValidateKey = null) {
         
-        if ($offset === null) {
-            $offset = count($this->data);            
+        if ($callableOnValidateKey) {
+            $this->callableOnValidateKey = $callableOnValidateKey;
         }
         
-        if ($callableOnSet)
+        if ($this->callableOnValidateKey) {
+            call_user_func($this->callableOnValidateKey, $offset);
+        }
+        
+        if ($offset === null) {
+            $offset = count($this->data);
+        }
+        
+        if ($callableOnSet) {
             $this->callableOnSet = $callableOnSet;
-        if ($callableOnGet)
-            $this->callableOnGet = $callableOnGet;        
-        if ($callableOnUnset)
+        }
+        if ($callableOnGet) {
+            $this->callableOnGet = $callableOnGet;
+        }
+        if ($callableOnUnset) {
             $this->callableOnUnset = $callableOnUnset;
+        }
         
         if ( is_array( $data ) ) {
             $data = new self(
@@ -173,16 +192,18 @@ class RecursiveArrayAccess implements \ArrayAccess, \Countable, \Iterator {
                             $this->id,
                             isset($this->callableOnSet) ? $this->callableOnSet : null,
                             isset($this->callableOnGet) ? $this->callableOnGet : null,
-                            isset($this->callableOnUnset) ? $this->callableOnUnset : null
+                            isset($this->callableOnUnset) ? $this->callableOnUnset : null,
+                            isset($this->callableOnValidateKey) ? $this->callableOnValidateKey : null
                     );
-        } else if (is_object($this->data[$offset]) && is_a($this->data[$offset], __CLASS__)) {
+        } else if (isset($this->data[$offset]) && is_object($this->data[$offset]) && is_a($this->data[$offset], __CLASS__)) {
             $this->offsetUnset($offset);
         }
         
         $this->data[$offset] = $data;
 
-        if ($this->callableOnSet)
+        if ($this->callableOnSet) {
             call_user_func($this->callableOnSet, $this);
+        }
     }
 
     /**
