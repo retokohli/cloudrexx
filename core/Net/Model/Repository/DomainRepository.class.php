@@ -39,6 +39,25 @@ class DomainRepository extends \Cx\Core\Model\Controller\YamlRepository {
      */
     public function __construct() {
         parent::__construct(\Env::get('cx')->getWebsiteConfigPath() . '/DomainRepository.yml');
+        
+        //Initialize the Hostname Domain
+        $hostName = new \Cx\Core\Net\Model\Entity\Domain($_SERVER['SERVER_NAME']);
+        $hostName->setWritable(false);
+        $hostName->setVirtual(true);
+        //attach the hostname domain entity to repository
+        $this->add($hostName);
+    }
+    
+    public static function getMainDomain() {
+        $config = \Env::get('config');
+        
+        if (empty($config['mainDomainId']) || !$this->entities[$config['mainDomainId']]) {
+            return $this->findBy(array('name' => $_SERVER['SERVER_NAME']));
+        }
+        
+        if (!empty($config['mainDomainId']) && $this->entities[$config['mainDomainId']]) {
+            return $this->entities[$config['mainDomainId']];
+        }
     }
 }
 

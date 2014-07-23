@@ -56,7 +56,8 @@ class Config
             <a href="?cmd=Config&amp;act=cache" class="'.($this->act == 'cache' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_MENU_CACHE'].'</a>
             <a href="?cmd=Config&amp;act=smtp" class="'.($this->act == 'smtp' ? 'active' : '').'">'.$_ARRAYLANG['TXT_EMAIL_SERVER'].'</a>
             <a href="index.php?cmd=Config&amp;act=image" class="'.($this->act == 'image' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_IMAGE'].'</a>
-            <a href="index.php?cmd=license">'.$_ARRAYLANG['TXT_LICENSE'].'</a>'
+            <a href="index.php?cmd=license">'.$_ARRAYLANG['TXT_LICENSE'].'</a>
+            <a href="index.php?cmd=Config&amp;act=Domain">'.$_ARRAYLANG['TXT_SETTINGS_DOMAIN'].'</a>'
         );
     }
 
@@ -110,6 +111,9 @@ class Config
         $boolShowStatus = true;
 
         switch ($_GET['act']) {
+            case 'Domain':
+                $this->showDomains();
+                break;
             case 'update':
                 $this->updateSettings();
                 $this->writeSettingsFile();
@@ -230,6 +234,7 @@ class Config
             'TXT_GLOBAL_TITLE_HELP'                     => $_ARRAYLANG['TXT_SETTINGS_GLOBAL_TITLE_HELP'],
             'TXT_DOMAIN_URL'                            => $_ARRAYLANG['TXT_SETTINGS_DOMAIN_URL'],
             'TXT_DOMAIN_URL_HELP'                       => $_ARRAYLANG['TXT_SETTINGS_DOMAIN_URL_HELP'],
+            'TXT_MAIN_DOMAIN'                           => $_ARRAYLANG['TXT_MAIN_DOMAIN'],
             'TXT_PAGING_LIMIT'                          => $_ARRAYLANG['TXT_SETTINGS_PAGING_LIMIT'],
             'TXT_PAGING_LIMIT_HELP'                     => $_ARRAYLANG['TXT_SETTINGS_PAGING_LIMIT_HELP'],
             'TXT_SEARCH_RESULT'                         => $_ARRAYLANG['TXT_SETTINGS_SEARCH_RESULT'],
@@ -293,6 +298,7 @@ class Config
             'SETTINGS_ADMIN_NAME'                           => $arrSettings['coreAdminName'],
             'SETTINGS_GLOBAL_TITLE'                         => $arrSettings['coreGlobalPageTitle'],
             'SETTINGS_DOMAIN_URL'                           => $arrSettings['domainUrl'],
+            'SETTINGS_MAIN_DOMAIN'                          => $arrSettings['mainDomainId'],
             'SETTINGS_PAGING_LIMIT'                         => intval($arrSettings['corePagingLimit']),
             'SETTINGS_SEARCH_RESULT_LENGTH'                 => intval($arrSettings['searchDescriptionLength']),
             'SETTINGS_SESSION_LIFETIME'                     => intval($arrSettings['sessionLifeTime']),
@@ -1024,6 +1030,24 @@ class Config
         
         return true;
     }
+    
+    public function showDomains() {
+        global $_ARRAYLANG, $objTemplate;
+        
+        $this->strPageTitle = $_ARRAYLANG['TXT_SETTINGS_DOMAIN'];
+        $objTemplate->addBlockfile('ADMIN_CONTENT', 'settings_domain', 'domains.html');
+        
+        $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
+        $domains = $domainRepository->findAll();
+        $view = new \Cx\Core\Html\Controller\ViewGenerator($domains, array(
+                    'functions' => array(
+                    'add'       => true,
+                    'edit'      => true,
+                    'delete'    => true,
+                    'sorting'   => true,
+                    'paging'    => true,
+                    'filtering' => false,
+                )));
+        $objTemplate->setVariable('DOMAINS_CONTENT', $view->render());
+    }
 }
-
-?>
