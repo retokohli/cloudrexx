@@ -411,7 +411,7 @@ abstract class Uploader
             $url->removeAllParams();
             $url->setParams(array(
                 'section' => 'Upload',
-                'cmd' => 'Upload',
+                'cmd' => 'upload',
             ));
             $uploadPath = (string) $url;
         }

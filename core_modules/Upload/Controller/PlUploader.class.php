@@ -70,7 +70,7 @@ class PlUploader extends Uploader
     {
       global $_CORELANG;
       // CSS dependencies
-      JS::activate('cx');
+      \JS::activate('cx');
 
       $uploadPath = $this->getUploadPath('pl');
 

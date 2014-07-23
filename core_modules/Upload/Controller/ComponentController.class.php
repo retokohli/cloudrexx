@@ -74,6 +74,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 }
 
             break;
+        default :
+            break;
         }
     }
 }   
