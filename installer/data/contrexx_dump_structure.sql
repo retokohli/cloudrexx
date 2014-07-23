@@ -4082,7 +4082,7 @@ CREATE TABLE `contrexx_session_variable` (
   `parent_id` int(11) NOT NULL,
   `sessionid` varchar(32) NOT NULL default '',
   `lastused` timestamp NOT NULL,
-  `key` varchar(40) NOT NULL default '',
+  `key` varchar(100) NOT NULL default '',
   `value` text,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `key_index` (`parent_id`,`key`,`sessionid`)
