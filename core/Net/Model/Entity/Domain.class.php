@@ -46,6 +46,18 @@ class Domain extends \Cx\Core\Model\Model\Entity\YamlEntity {
     public $name;
 
     /**
+     *  Domain is writable or not
+     * @var string
+     */
+    public $writable;
+
+    /**
+     * Domain is virtual or not
+     * @var string
+     */
+    public $virtual;
+
+    /**
      * Constructor to initialize a new domain.
      * @param   string  $name   Domain name of new domain
      */
@@ -83,6 +95,58 @@ class Domain extends \Cx\Core\Model\Model\Entity\YamlEntity {
      */
     public function getName() {
         return $this->name;
+    }
+    
+    /**
+     * Returns the top-level-domain of the Domain
+     * @return string the top-level-domain of the Domain
+     */
+    public function getTld() {
+        $parts = $this->getParts();
+        return $parts[0];
+    }
+    
+    /**
+     * Returns the domain parts as an array where the tld is listed in index 0, sld in index 1 etc.
+     * @return array the domain parts as an array
+     */
+    public function getParts() {
+        $parts = array_reverse(explode('.', $this->getName()));
+        return $parts;
+    }
+
+    /**
+     * Set the writability of the domain
+     * @param   boolean $writable    TRUE to set the domain as writable or otherwise to FALSE 
+     */
+    public function setWritable($writable) {
+        $this->writable = $writable;
+    }
+
+    /**
+     * Returns the writability of the domain
+     * 
+     * @return  boolean TRUE if the domain is writable, otherwise FALSE
+     */
+    public function isWritable() {
+        return $this->writable;
+    }
+    
+    /**
+     * Set the virtuality of the domain
+     * @param   boolean $virtual    TRUE to set the domain as virtual or otherwise to FALSE 
+     */
+    public function setVirtual($virtual) {
+        $this->virtual = $virtual;
+    }
+
+    /**
+     * Returns the virtuality of the domain
+     * 
+     * @return  boolean TRUE if the domain is virtual, otherwise FALSE
+     */
+    public function isVirtual() {
+        return $this->virtual;
     }
 }
 
