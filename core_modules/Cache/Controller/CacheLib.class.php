@@ -152,6 +152,8 @@ class CacheLib
     }
 
     protected function initUserCaching() {
+        global $_CONFIG;
+        
         // APC
         if ($this->isInstalled(self::CACHE_ENGINE_APC)) {
             // have to use serializer "php", not "default" due to doctrine2 gedmo tree repository
@@ -165,7 +167,10 @@ class CacheLib
         }
         
         // Memcache
-        if ($this->isInstalled(self::CACHE_ENGINE_MEMCACHE)) {
+        if (
+            $this->isInstalled(self::CACHE_ENGINE_MEMCACHE) &&
+            $_CONFIG['cacheUserCache'] == self::CACHE_ENGINE_MEMCACHE
+        ) {
             $memcacheConfiguration = $this->getMemcacheConfiguration();
             unset($this->memcache); // needed for reinitialization
             if (class_exists('\Memcache')) {
