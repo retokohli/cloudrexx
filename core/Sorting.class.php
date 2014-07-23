@@ -273,8 +273,8 @@ DBG::log("Sorting::getHeaderForField($field): WARNING: Cannot make index for $fi
                 ? $_CORELANG['TXT_CORE_SORTING_ASCENDING']
                 : $_CORELANG['TXT_CORE_SORTING_DESCENDING']
             );
-        return
-            '<img src="'.\Env::get('cx')->getCodeBaseCorePath().'/Core/View/Media/icons/'.
+        return 
+            '<img src="'.\Env::get('cx')->getCodeBaseOffsetPath().'/core/Core/View/Media/icons/'.
                 strtolower($this->orderDirection).
             '.png" border="0" alt="'.$orderDirectionString.
             '" title="'.$orderDirectionString.'" />';
