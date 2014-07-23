@@ -76,9 +76,9 @@ class ComboUploader extends Uploader
 
         //combuploader js config: available uploaders
         $uploaders = array("{type:'form',description:'".$formUploaderDescription."'}");
-        if(in_array('pl',$this->enabledUploaders))
+        if(in_array('Pl',$this->enabledUploaders))
             array_push($uploaders,"{type:'pl',description:'".$plUploaderDescription."'}");
-        if(in_array('jump', $this->enabledUploaders))
+        if(in_array('Jump', $this->enabledUploaders))
             array_push($uploaders,"{type:'jump',description:'".$jumpUploaderDescription."'}");
 
         $uploaders = '['.join(',',$uploaders).']';

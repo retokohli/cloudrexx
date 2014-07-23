@@ -67,8 +67,8 @@ class FolderWidget {
         //from where the combouploader gets the code on an uploader switch
         $cmdOrSection = $this->isBackendRequest ? 'cmd' : 'section';
         $actOrCmd = $this->isBackendRequest ? 'act' : 'cmd';
-        $refreshUrl = ($this->isBackendRequest ? ASCMS_ADMIN_WEB_PATH : ASCMS_PATH_OFFSET).\Env::get('virtualLanguageDirectory').'/index.php?'.$cmdOrSection.'=upload&'.$actOrCmd.'=refreshFolder'; 
-        $deleteUrl = ($this->isBackendRequest ? ASCMS_ADMIN_WEB_PATH : ASCMS_PATH_OFFSET).\Env::get('virtualLanguageDirectory').'/index.php?'.$cmdOrSection.'=upload&'.$actOrCmd.'=deleteFile'; 
+        $refreshUrl = ($this->isBackendRequest ? ASCMS_ADMIN_WEB_PATH : ASCMS_PATH_OFFSET).\Env::get('virtualLanguageDirectory').'/index.php?'.$cmdOrSection.'=Upload&'.$actOrCmd.'=refreshFolder'; 
+        $deleteUrl = ($this->isBackendRequest ? ASCMS_ADMIN_WEB_PATH : ASCMS_PATH_OFFSET).\Env::get('virtualLanguageDirectory').'/index.php?'.$cmdOrSection.'=Upload&'.$actOrCmd.'=deleteFile'; 
 
         \ContrexxJavascript::getInstance()->setVariable(array(
                 'refreshUrl' => $refreshUrl,
