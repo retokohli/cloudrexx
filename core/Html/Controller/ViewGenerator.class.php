@@ -78,8 +78,10 @@ class ViewGenerator {
                 $entityObject = \Env::get('em')->getClassMetadata($entityNS);  
                 $primaryKeyName =$entityObject->getSingleIdentifierFieldName(); //get primary key name  
                 $getAllField = $entityObject->getColumnNames(); //get all field names                 
-                //add new entry
-                $entityObj = new $entityNS();
+
+                // create new entity without calling the constructor
+// TODO: this might break certain entities!
+                $entityObj = $entityObject->newInstance();
                 
                 foreach($getAllField as $entity) {
                     if (isset($_POST[$entity]) && $entity!=$primaryKeyName) {
@@ -87,8 +89,17 @@ class ViewGenerator {
                         $entityObj->$name(contrexx_input2raw($_POST[$entity]));
                     }
                 }
-                \Env::get('em')->persist($entityObj);
-                \Env::get('em')->flush();
+                if ($entityObj instanceof \Cx\Core\Model\Model\Entity\YamlEntity) {
+                    $entityRepository = \Env::get('em')->getRepository($entityNS);
+                    $entityRepository->add($entityObj);
+                    $entityRepository->flush();
+                } else {
+                    if (!($entityObj instanceof \Cx\Model\Base\EntityBase)) {
+                        \DBG::msg('Unkown entity model '.get_class($entityObj).'! Trying to persist using entity manager...');
+                    }
+                    \Env::get('em')->persist($entityObj);
+                    \Env::get('em')->flush();
+                }
                 \Message::add('Entity have been added sucessfully!');   
                 $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
                 $actionUrl->setParam('add', null);
@@ -203,6 +214,7 @@ class ViewGenerator {
             }
         }
         if ($renderObject instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
+            $addBtn = '';
             if (!empty($this->options['functions']['add'])) {
                 $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
                 $actionUrl->setParam('add', 1);
