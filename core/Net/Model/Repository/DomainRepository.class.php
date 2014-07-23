@@ -52,7 +52,8 @@ class DomainRepository extends \Cx\Core\Model\Controller\YamlRepository {
         $config = \Env::get('config');
         
         if (empty($config['mainDomainId']) || !$this->entities[$config['mainDomainId']]) {
-            return $this->findBy(array('name' => $_SERVER['SERVER_NAME']));
+            $objDomain = $this->findBy(array('name' => $_SERVER['SERVER_NAME']));
+            return $objDomain[0];
         }
         
         if (!empty($config['mainDomainId']) && $this->entities[$config['mainDomainId']]) {
