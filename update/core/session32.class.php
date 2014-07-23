@@ -120,6 +120,13 @@ class cmsSession extends RecursiveArrayAccess {
      * @var integer
      */
     private static $sessionLockTime = 10;
+
+    /**
+     * Maximum allowed length of a session variable key.
+     * This maximum length is defined by the associated database field core_session_variable.key.
+     * @var integer
+     */
+    const VARIABLE_KEY_MAX_LENGTH = 100;
     
     /*
      * Get instance of the class from the out side world
@@ -159,6 +166,15 @@ class cmsSession extends RecursiveArrayAccess {
     }
 
     /**
+     * Return the maximum length of a session variable key.
+     * @return integer Maximum allowed length of a session variable key.
+     */
+    public static function getVariableKeyMaxLength()
+    {
+        return self::VARIABLE_KEY_MAX_LENGTH;
+    }
+
+    /**
      * Default object constructor.          
      */    
     protected function __construct()
@@ -170,9 +186,9 @@ class cmsSession extends RecursiveArrayAccess {
 
         register_shutdown_function(array(& $this, 'releaseLocks'));
         
-        $this->initDatabase();
-        $this->initRememberMe();
-        $this->initSessionLifetime();
+            $this->initDatabase();
+            $this->initRememberMe();
+            $this->initSessionLifetime();
 
         if (session_set_save_handler(
             array(& $this, 'cmsSessionOpen'),
@@ -657,16 +673,18 @@ class cmsSession extends RecursiveArrayAccess {
      * {@inheritdoc}
      */
     public function offsetSet($offset, $data) {
+        self::validateSessionKeyLength($offset);
+        
         if (empty($this->id)) {
             self::updateToDb($this);
         }
-        parent::offsetSet($offset, $data, array('\cmsSession', 'updateToDb'), array('\cmsSession', 'getFromDb'), array('\cmsSession', 'removeFromSession'));
+        parent::offsetSet($offset, $data, array('\cmsSession', 'updateToDb'), array('\cmsSession', 'getFromDb'), array('\cmsSession', 'removeFromSession'), array('\cmsSession', 'validateSessionKeyLength'));
     }
     
     /**
      * {@inheritdoc}
      */
-    public function offsetGet($offset) {
+    public function offsetGet($offset) {        
         return self::getFromDb($offset, $this);
     }
     
@@ -734,6 +752,7 @@ class cmsSession extends RecursiveArrayAccess {
                 $data->callableOnSet   = array('\cmsSession', 'updateToDb');
                 $data->callableOnGet   = array('\cmsSession', 'getFromDb');
                 $data->callableOnUnset = array('\cmsSession', 'removeFromSession');
+                $data->callableOnSanitizeKey = array('\cmsSession', 'validateSessionKeyLength');
 
                 $arrObj->data[$offset] = $data;
             } else {
@@ -816,5 +835,24 @@ class cmsSession extends RecursiveArrayAccess {
                 $objResult->MoveNext();
             }
         }
+    }
+    
+    /**
+     * Ensure that the used parameter name complies with the session
+     * restrictions defined for variable keys, as the parameter name
+     * is being used as a sesison-variable-key.
+     * @param string $sessionKey The name of the session-variable-key used to store the current paging position.
+     * @return string $sessionKey The sanitized session-variable-key.
+     */
+    public static function validateSessionKeyLength($sessionKey)
+    {
+        
+        // Important: As the parameter name is used as a session-variable-key,
+        // it must not exceed the allowed session-variable-key-length.        
+        if (strlen($sessionKey) > self::getVariableKeyMaxLength()) {
+            throw new \Exception('Session variable key must be less than '. self::VARIABLE_KEY_MAX_LENGTH.' But given '. strlen($sessionKey));
+        }
+        
+        return true;
     }
 }
