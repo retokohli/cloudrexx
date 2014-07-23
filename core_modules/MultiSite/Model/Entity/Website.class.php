@@ -322,7 +322,7 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
                     'auth'        => \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($this->websiteServiceServer->getSecretKey(), $this->websiteServiceServer->getInstallationId())
                 );
             $jd = new \Cx\Core\Json\JsonData();
-            $resp = $jd->getJson('https://'.$hostname.'/cadmin/index.php?cmd=jsondata&object=MultiSite&act=createWebsite', $params,
+            $resp = $jd->getJson('https://'.$hostname.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=createWebsite', $params,
              false, '', $httpAuth);
             $websiteIp = $resp->websiteIp;
             if(!$resp || $resp->status == 'error'){
