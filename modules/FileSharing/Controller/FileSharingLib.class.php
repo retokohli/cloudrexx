@@ -86,9 +86,8 @@ CODE
             //chmod($tempPaths[0] . '/' . $tempPaths[2], 0777);
         }
 
-        $folderWidget = \UploadFactory::getInstance()->newFolderWidget($tempPaths[0] . '/' . $tempPaths[2], $uploaderInstanceName);
+        $folderWidget = \Cx\Core_Modules\Upload\Controller\UploadFactory::getInstance()->newFolderWidget($tempPaths[0] . '/' . $tempPaths[2], $uploaderInstanceName);
         $this->objTemplate->setVariable('UPLOAD_WIDGET_CODE', $folderWidget->getXHtml($uploaderFolderWidgetContainer, 'uploadWidget'));
-
         // return the upload id
         return $uploadId;
     }
