@@ -1801,7 +1801,7 @@ function renameCustomizingFile($file)
 
     try {
         $objFile = new \Cx\Lib\FileSystem\File($file);
-        $objFile->copy($customizingFile);        
+        $objFile->move($customizingFile);        
     } catch (\Exception $e) {
         setUpdateMsg('Error on renaming customizing file:<br />' . $file);
         setUpdateMsg('Error: ' . $e->getMessage());
