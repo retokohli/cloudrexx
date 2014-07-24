@@ -391,6 +391,11 @@ class CacheLib
                 }
             }
         }
+        if ($cacheEngine === null) {
+            // remove cached files
+            $this->_deleteAllFiles('cxPages');
+        }
+        
         $cacheEngine = $cacheEngine == null ? $this->userCacheEngine : $cacheEngine;
         switch ($cacheEngine) {
             case self::CACHE_ENGINE_APC:
