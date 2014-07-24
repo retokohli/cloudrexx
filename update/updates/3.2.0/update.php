@@ -1628,7 +1628,7 @@ function backupModifiedFile($file)
     }
     try {
         $objFile = new \Cx\Lib\FileSystem\File($file);
-        $objFile->copy($customizingFile);
+        $objFile->move($customizingFile);
         $_SESSION['contrexx_update']['modified_files'][] = array(
             'src'   => $cxFilePath . '/' . basename($file),
             'dst'   => substr($customizingFile, strlen(ASCMS_DOCUMENT_ROOT)),
