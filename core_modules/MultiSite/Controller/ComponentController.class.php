@@ -286,6 +286,11 @@ throw new MultiSiteException('Refactor this method!');
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database user prefix for websites");
             }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteIp') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('defaultWebsiteIp','', 6,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database user plesk IP");
+            }
 
             // websiteManager group
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'websiteManager','FileSystem');
@@ -336,11 +341,6 @@ throw new MultiSiteException('Refactor this method!');
                 && !\Cx\Core\Setting\Controller\Setting::add('pleskPassword','', 3,
                 \Cx\Core\Setting\Controller\Setting::TYPE_PASSWORD,'plesk')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database user plesk Password");
-            }
-            if (\Cx\Core\Setting\Controller\Setting::getValue('pleskIp') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('pleskIp','', 4,
-                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'plesk')){
-                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database user plesk IP");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('pleskWebsitesSubscriptionId') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('pleskWebsitesSubscriptionId',0, 5,

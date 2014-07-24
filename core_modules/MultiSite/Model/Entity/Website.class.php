@@ -48,18 +48,23 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
     /**
      * @var string $ipAddress
      */
-    public $ipAddress;
-    
+    private $ipAddress;
+
     /**
-     * @var intiger $ownerId
+     * @var integer $ownerId
      */
-    public $ownerId;
+    private $ownerId;
     
     /**
      * @var string $secretKey
      */
     public $secretKey;
-
+    
+    /**
+     * @var string $installationId
+     */
+    private $installationId;
+    
     /*
      * Constructor
      * */
@@ -75,6 +80,7 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
         $this->status = 0;
         $this->websiteServiceServerId = 0;
         $this->owner = $userObj;
+        $this->installationId = $this->generateInstalationId();
 
         if ($websiteServiceServer) {
             $this->setWebsiteServiceServer($websiteServiceServer);
@@ -260,7 +266,64 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
     {
         return $this->secretKey;
     }
+    /**
+     * Set ipAddress
+     *
+     * @param string $ipAddress
+     */
+    public function setIpAddress($ipAddress)
+    {
+        $this->ipAddress = $ipAddress;
+    }
 
+    /**
+     * Get ipAddress
+     *
+     * @return string $ipAddress
+     */
+    public function getIpAddress()
+    {
+        return $this->ipAddress;
+    }
+
+    /**
+     * Set ownerId
+     *
+     * @param integer $ownerId
+     */
+    public function setOwnerId($ownerId)
+    {
+        $this->ownerId = $ownerId;
+    }
+
+    /**
+     * Get ownerId
+     *
+     * @return integer $ownerId
+     */
+    public function getOwnerId()
+    {
+        return $this->ownerId;
+    }
+     /**
+     * Set installationId
+     *
+     * @param string $installationId
+     */
+    public function setInstallationId($installationId)
+    {
+        $this->installationId = $installationId;
+    }
+
+    /**
+     * Get installationId
+     *
+     * @return string $installationId
+     */
+    public function getInstallationId()
+    {
+        return $this->installationId;
+    }
     /**
      * Creates a new website
      */
@@ -762,6 +825,12 @@ throw new WebsiteException('implement secret-key algorithm first!');
             //echo $statusMsg;
             return $statusMsg;
         }
+    }
+
+    function generateInstalationId(){
+        $randomHash = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::generateSecretKey();
+        $installationId = $randomHash . str_pad(dechex(crc32($randomHash)), 8, '0', STR_PAD_LEFT);    
+        return $installationId;
     }
     
 }

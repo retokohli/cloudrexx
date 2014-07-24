@@ -22,7 +22,16 @@ Cx\Core_Modules\MultiSite\Model\Entity\Website:
     websiteServiceServerId:
       type: integer
     secretKey:
+      type: string 
+    ipAddress:
       type: string
+      length: 45
+    ownerId:
+      type: integer
+    installationId:
+      type: string
+      length: 40  
+      
 #  manyToOne: # owning side
 #    websiteServiceServer:
 #      targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer
