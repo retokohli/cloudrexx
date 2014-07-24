@@ -187,7 +187,11 @@ function executeContrexxUpdate() {
     /////////////////////////////
     // Session Table MIGRATION //
     /////////////////////////////
-    if (!\Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'session_variable') && $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.2.0')) {
+    $isSessionVariableTableExists = \Cx\Lib\UpdateUtil::table_exist(DBPREFIX.'session_variable');
+    if ($isSessionVariableTableExists) {
+        createOrAlterSessionVariableTable();
+    }
+    if (!$isSessionVariableTableExists && $objUpdate->_isNewerVersion($_CONFIG['coreCmsVersion'], '3.2.0')) {
         if (!migrateSessionTable()) {
             setUpdateMsg('Error in updating session table', 'error');
             return false;
@@ -1870,25 +1874,30 @@ function getHtAccessTemplate()
     return $htAccessTemplate;
 }
 
+function createOrAlterSessionVariableTable()
+{
+    \Cx\Lib\UpdateUtil::table(
+        DBPREFIX.'session_variable',
+        array(
+            'id'        => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' =>true),
+            'parent_id' => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'id'),
+            'sessionid' => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => '', 'after' => 'parent_id'),
+            'lastused'  => array('type' => 'TIMESTAMP', 'notnull' => true, 'default_expr' => 'CURRENT_TIMESTAMP', 'on_update' => 'CURRENT_TIMESTAMP', 'after' => 'sessionid'),
+            'key'       => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => '', 'after' => 'lastused'),
+            'value'     => array('type' => 'TEXT', 'notnull' => false, 'default' => '', 'after' => 'key')
+        ),
+        array(
+            'key_index' => array('fields' => array('parent_id', 'key', 'sessionid'), 'type' => 'UNIQUE')
+        )
+    );
+}
+
 function migrateSessionTable()
 {
     global $sessionObj;
     
     try {
-        \Cx\Lib\UpdateUtil::table(
-            DBPREFIX.'session_variable',
-            array(
-                'id'        => array('type' => 'INT(11)', 'notnull' => true, 'auto_increment' => true, 'primary' =>true),
-                'parent_id' => array('type' => 'INT(11)', 'notnull' => true, 'after' => 'id'),
-                'sessionid' => array('type' => 'VARCHAR(32)', 'notnull' => true, 'default' => '', 'after' => 'parent_id'),
-                'lastused'  => array('type' => 'TIMESTAMP', 'notnull' => true, 'default_expr' => 'CURRENT_TIMESTAMP', 'on_update' => 'CURRENT_TIMESTAMP', 'after' => 'sessionid'),
-                'key'       => array('type' => 'VARCHAR(100)', 'notnull' => true, 'default' => '', 'after' => 'lastused'),
-                'value'     => array('type' => 'TEXT', 'notnull' => false, 'default' => '', 'after' => 'key')
-            ),
-            array(
-                'key_index' => array('fields' => array('parent_id', 'key', 'sessionid'), 'type' => 'UNIQUE')
-            )
-        );
+        createOrAlterSessionVariableTable();
         \Cx\Lib\UpdateUtil::sql('TRUNCATE TABLE `'. DBPREFIX .'session_variable`');
 
         $objResult = \Cx\Lib\UpdateUtil::sql('SELECT 
