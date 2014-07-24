@@ -325,6 +325,9 @@ CREATE TABLE `contrexx_core_module_multisite_website` (
   `status` int(11) NOT NULL,
   `websiteServiceServerId` int(11) NOT NULL,
   `secretKey` varchar(255) NOT NULL,
+  `ipAddress` varchar(45) NOT NULL,
+  `ownerId` int(11) NOT NULL,
+  `installationId` varchar(40) NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `name_index` (`name`)
 ) ENGINE=InnoDB;
