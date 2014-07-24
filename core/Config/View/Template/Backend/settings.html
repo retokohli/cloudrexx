@@ -59,7 +59,12 @@ function toggleDebuggingFlags(show) {
             <tr class="row2">
                 <td>{TXT_MAIN_DOMAIN}&nbsp;</td>
                 <td>
-                    <input type="text" name="setvalue[126]" value="{SETTINGS_MAIN_DOMAIN}" size="70" maxlength="250" />
+                    <select name="setvalue[126]">
+                        <option value="">{TXT_SETTINGS_DOMAIN_OPTION}</option>
+                        <!-- BEGIN showDomainName -->
+                        <option value="{SETTINGS_DOMAIN_ID}" {SETTINGS_DOMAIN_SELECTED}>{SETTINGS_DOMAIN_NAME}</option>
+                        <!-- END showDomainName -->
+                    </select>
             </tr>
             <tr class="row1">
                 <td>{TXT_SETTINGS_FORCE_DOMAIN_URL}&nbsp;</td>

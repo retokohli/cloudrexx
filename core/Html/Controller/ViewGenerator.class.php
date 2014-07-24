@@ -135,7 +135,7 @@ class ViewGenerator {
             }
             $isUpdate=false; 
             $updateArray=array();
-            $entityObj = \Env::get('em')->getClassMetadata($entityNS);  
+            $entityObj = \Env::get('em')->getClassMetadata($entityNS);
             $primaryKeyName =$entityObj->getSingleIdentifierFieldName(); //get primary key name  
             //$getAllField = $entityObj->getColumnNames(); //get all field names 
             $id=$entityObject[$primaryKeyName]; //get primary key value  
@@ -152,7 +152,7 @@ class ViewGenerator {
             }
             if (!empty($updateArray) && !empty($id) 
                 && !empty($isUpdate)) {
-                $entityObj=\Env::get('em')->getRepository($entityNS)->find($id);
+                $entityObj = \Env::get('em')->getRepository($entityNS)->findById($id);
                 if (!empty($entityObj)) {
                     foreach($updateArray as $key=>$value) {
                         $entityObj->$key($value);

@@ -52,12 +52,6 @@ class Domain extends \Cx\Core\Model\Model\Entity\YamlEntity {
     public $writable;
 
     /**
-     * Domain is virtual or not
-     * @var string
-     */
-    public $virtual;
-
-    /**
      * Constructor to initialize a new domain.
      * @param   string  $name   Domain name of new domain
      */
@@ -130,23 +124,6 @@ class Domain extends \Cx\Core\Model\Model\Entity\YamlEntity {
      */
     public function isWritable() {
         return $this->writable;
-    }
-    
-    /**
-     * Set the virtuality of the domain
-     * @param   boolean $virtual    TRUE to set the domain as virtual or otherwise to FALSE 
-     */
-    public function setVirtual($virtual) {
-        $this->virtual = $virtual;
-    }
-
-    /**
-     * Returns the virtuality of the domain
-     * 
-     * @return  boolean TRUE if the domain is virtual, otherwise FALSE
-     */
-    public function isVirtual() {
-        return $this->virtual;
     }
 }
 
