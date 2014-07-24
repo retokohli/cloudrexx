@@ -201,6 +201,18 @@ class Config
             }
         }
 
+        //Show the main domain dropdown 
+        $objMainDomain = new \Cx\Core\Net\Model\Repository\DomainRepository();
+        $domains = $objMainDomain->findAll();
+        foreach ($domains As $domain) {
+            $objTemplate->setVariable(array(
+               'SETTINGS_DOMAIN_ID'         => $domain->getId(),
+               'SETTINGS_DOMAIN_NAME'       => $domain->getName(),
+               'SETTINGS_DOMAIN_SELECTED'   => ($domain->getId() == $arrSettings['mainDomainId']) ? 'selected' : ''
+            ));
+            $objTemplate->parse('showDomainName');
+        }
+        
         $objTemplate->setGlobalVariable(array(
             'TXT_RADIO_ON'                    => $_ARRAYLANG['TXT_ACTIVATED'],
             'TXT_RADIO_OFF'                   => $_ARRAYLANG['TXT_DEACTIVATED']
@@ -274,6 +286,7 @@ class Config
             'TXT_GOOGLE_ANALYTICS_TRACKING_ID_INFO'     => $_ARRAYLANG['TXT_GOOGLE_ANALYTICS_TRACKING_ID_INFO'],
             'TXT_PASSWORD_COMPLEXITY'                   => $_ARRAYLANG['TXT_PASSWORD_COMPLEXITY'],
             'TXT_PASSWORD_COMPLEXITY_INFO'              => $_ARRAYLANG['TXT_PASSWORD_COMPLEXITY_INFO'],
+            'TXT_SETTINGS_DOMAIN_OPTION'                => $_ARRAYLANG['TXT_SETTINGS_DOMAIN_OPTION'],
         ));
 
         if ($this->isWritable()) {
@@ -298,7 +311,6 @@ class Config
             'SETTINGS_ADMIN_NAME'                           => $arrSettings['coreAdminName'],
             'SETTINGS_GLOBAL_TITLE'                         => $arrSettings['coreGlobalPageTitle'],
             'SETTINGS_DOMAIN_URL'                           => $arrSettings['domainUrl'],
-            'SETTINGS_MAIN_DOMAIN'                          => $arrSettings['mainDomainId'],
             'SETTINGS_PAGING_LIMIT'                         => intval($arrSettings['corePagingLimit']),
             'SETTINGS_SEARCH_RESULT_LENGTH'                 => intval($arrSettings['searchDescriptionLength']),
             'SETTINGS_SESSION_LIFETIME'                     => intval($arrSettings['sessionLifeTime']),

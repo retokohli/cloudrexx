@@ -13,7 +13,3 @@ Cx\Core\Net\Model\Entity\Domain:
     name:
       type: string
       length: 200
-    writable:
-      type: boolean
-    virtual:
-      type: boolean
