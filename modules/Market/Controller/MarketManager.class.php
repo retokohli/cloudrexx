@@ -475,7 +475,7 @@ class MarketManager extends MarketLibrary
 
         if (!isset($_SESSION['market'])) {
             $_SESSION['market'] = array();
-            $_SESSION['market']['sort'] = array();
+//            $_SESSION['market']['sort'] = array();
         }
         
         // Sort
