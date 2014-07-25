@@ -25,14 +25,6 @@
                 $("#blog_error").html("");
             }
         });
-
-        $("#blogTitle").keyup(function() {
-            if($("#blogTitle").val()==""){
-                $("#blogTitle_error").html("Site Title Required!");
-            }else{
-                $("#blogTitle_error").html("");
-            }
-        });
     });
 
     JQUERYVALIDATION = {
@@ -95,42 +87,6 @@
                     }
                 });
                 return false;
-            }
-        }
-    }
-
-    JQUERYBLOGVALIDATION = {
-        blogValidation: function() {
-            var count=0;       
-            if($("#blogTitle").val()==""){
-                    $("#blogTitle_error").html("Site Title Required!");
-                    ++count;
-            }else{
-                $("#blogTitle_error").html("");
-            }
-            if(count>0){
-                return false;
-            }else{
-                return true;
-            }      
-        }
-    }
-
-    JQUERYTHEMEVALIDATION = {
-        themeValidation: function() {
-            var count=0;   
-            var selectedVal = "";
-            var selected = $("input[type='radio'][name='themes']:checked");
-            if (selected.length > 0) {
-                selectedVal = selected.val();
-            }else{
-              ++count;  
-            }       
-            if(count>0){
-                alert("Please select any one theme!");
-                return false;
-            }else{
-                return true;
             }
         }
     }

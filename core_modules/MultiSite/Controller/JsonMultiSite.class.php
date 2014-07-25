@@ -58,7 +58,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     }
     
     /**
-    * function signup 
+    * function signup
+    * 
+    *  we first have to manually check if the supplied email is valid (\FWValidator::isEmail()) and is not used by an other user (User::isUniqueEmail()).
+
+    If the email is invalid, a related error message shall be displayed to the user.
+    If the email is already used by an other user, show a message like "An account with this email does already exist. Click here to login." 
     */
     public function signup($params){
         // load text-variables of module MultiSite
@@ -78,8 +83,20 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $objUser->setBackendLanguage(contrexx_input2raw($post['langId']));
             //set password 
             $objUser->setPassword($objUser->make_password(8, true));
+            //check email validity
+            if (!\FWValidator::isEmail($post['email'])) {
+                throw new MultiSiteJsonException('The email you entered is invalid.');
+            }
+            //check email existence
+            if (!\User::isUniqueEmail()) {
+                throw new MultiSiteJsonException('An account with this email does already exist. Click here to login.');
+            }
+
             //call \User\store function to store all the info of new user
-            $objUser->store();
+            if (!$objUser->store()) {
+                print_r($objUser->error_msg);
+                return $objUser->error_msg;
+            }
             //call createWebsite method.
             return $this->createWebsite($objUser,$websiteName);
         }
