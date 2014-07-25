@@ -40,6 +40,7 @@ $_CORELANG = array(
     'TXT_UPDATE_VERSION_INFO'                    => 'Versionsinformationen',
     'TXT_UPDATE_LICENSE_DATA'                    => 'Lizenzdaten',
     'TXT_UPDATE_MODULE_TEMPLATES'                => 'Anwendungsseiten',
+    'TXT_UPDATE_CONVERT_TEMPLATES'               => 'Convert theme to component',
     'TXT_UPDATE_NAVIGATIONS'                     => 'Navigationen',
     'TXT_CSS_UPDATE_MISSING_FOLDER'              => 'Template "%s" wurde im Dateisystem nicht gefunden und wird übersprungen...',
     'TXT_UPDATE_CORE_SYSTEM'                     => 'Grundsystem',

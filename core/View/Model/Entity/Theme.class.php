@@ -39,7 +39,7 @@ class Theme extends \Cx\Model\Base\EntityBase
     const THEME_TYPE_PDF = 'pdf';
     
     public function __construct($id = null, $themesname = null, $foldername = null, $expert = 1) {
-        $this->db = \Env::get('cx')->getDb()->getAdoDb();
+        $this->db = \Env::get('db');
         
         $this->setId($id);
         $this->setThemesname($themesname);
