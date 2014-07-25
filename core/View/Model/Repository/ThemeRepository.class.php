@@ -27,7 +27,7 @@ class ThemeRepository
     private $db;
     
     public function __construct() {
-        $this->db = \Env::get('cx')->getDb()->getAdoDb();
+        $this->db = \Env::get('db');
     }
     
     /**
@@ -177,8 +177,7 @@ class ThemeRepository
      * Writes the component.yml file with the data defined in component data array
      * @param \Cx\Core\View\Model\Entity\Theme $theme the theme object
      */
-    public function saveComponentData($theme) {
-        $cl = \Env::get('cx')->getClassLoader();
+    public function saveComponentData($theme) {        
         $file = new \Cx\Lib\FileSystem\File(ASCMS_THEMES_PATH . '/' . $theme->getFoldername() . '/component.yml');
         $file->touch();
         $yaml = new \Symfony\Component\Yaml\Yaml();

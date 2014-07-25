@@ -456,7 +456,14 @@ function executeContrexxUpdate() {
                 )
             );
 
-
+            if (_convertThemes2Component() === false) {
+                if (empty($objUpdate->arrStatusMsg['title'])) {
+                    DBG::msg('unable to convert themes to component');                
+                    setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_CONVERT_TEMPLATES']), 'title');
+                }
+                return false;
+            }            
+            
             if (_updateModulePages($viewUpdateTable) === false) {
                 if (empty($objUpdate->arrStatusMsg['title'])) {
                     DBG::msg('unable to update module templates');
@@ -700,6 +707,19 @@ function executeContrexxUpdate() {
         }
     }
 
+    if (!in_array('convertTemplates', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
+        $result = _convertThemes2Component();
+        if ($result === false) {
+            if (empty($objUpdate->arrStatusMsg['title'])) {
+                DBG::msg('unable to convert themes to component');                
+                setUpdateMsg(sprintf($_CORELANG['TXT_UPDATE_COMPONENT_BUG'], $_CORELANG['TXT_UPDATE_CONVERT_TEMPLATES']), 'title');
+            }
+            return false;
+        } else {
+            $_SESSION['contrexx_update']['update']['done'][] = 'convertTemplates';
+        }
+    }
+    
     if (!in_array('moduleTemplates', ContrexxUpdate::_getSessionArray($_SESSION['contrexx_update']['update']['done']))) {
         if (_updateModulePages($viewUpdateTable) === false) {
             if (empty($objUpdate->arrStatusMsg['title'])) {
@@ -1993,6 +2013,46 @@ function unserializesession( $data )
     $returnArray[$currentKey] = unserialize($valueText);
     
     return $returnArray;
+}
+
+function _convertThemes2Component()
+{
+    global $objDatabase, $_CORELANG;
+    
+    // Find all themes
+    $result = $objDatabase->Execute('SELECT `themesname`, `foldername` FROM `' . DBPREFIX . 'skins`');
+    if ($result->EOF) {
+        \DBG::msg('No themes found!');
+        return false;
+    }
+    
+    $errorMessages = '';
+    $themeRepository = new \Cx\Core\View\Model\Repository\ThemeRepository();
+    while (!$result->EOF) {
+        $themePath = ASCMS_THEMES_PATH . '/' . $result->fields['foldername']; 
+        if (!is_dir($themePath)) {
+            \DBG::msg('Skipping theme "' . $result->fields['themesname'] . '"; No such folder!');
+            $errorMessages .= '<div class="message-warning">' . sprintf($_CORELANG['TXT_CSS_UPDATE_MISSING_FOLDER'], $result->fields['themesname']) . '</div>';
+            $result->moveNext();
+            continue;
+        }
+        
+        // create a new one if no component.yml exists
+        if (!file_exists($themePath . '/component.yml')) {
+            \DBG::msg('Converting theme "' . $result->fields['themesname'] . ' to component');
+            $themeRepository->convertThemeToComponent($result->fields['themesname']);
+        }
+
+        $result->MoveNext();
+    }
+    
+    if (!empty($errorMessages)) {
+        setUpdateMsg($errorMessages, 'msg');
+        setUpdateMsg('<input type="submit" value="'.$_CORELANG['TXT_CONTINUE_UPDATE'].'" name="updateNext" /><input type="hidden" name="processUpdate" id="processUpdate" />', 'button');
+        $_SESSION['contrexx_update']['update']['done'][] = 'convertTemplates';
+        return false;
+    }
+    return true;
 }
 
 class License {
