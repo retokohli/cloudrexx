@@ -28,7 +28,6 @@ $_CONFIG['coreSmtpServer']            = 0;
 $_CONFIG['dashboardNews']             = "on";
 $_CONFIG['dashboardStatistics']       = "on";
 $_CONFIG['dnsServer']                 = "ns1.contrexxhosting.com";
-$_CONFIG['domainUrl']                 = "contrexx3.dev";
 $_CONFIG['frontendEditingStatus']     = "off";
 $_CONFIG['googleAnalyticsTrackingId'] = "";
 $_CONFIG['googleMapsAPIKey']          = "";
