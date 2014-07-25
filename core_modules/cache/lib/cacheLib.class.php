@@ -166,10 +166,9 @@ class cacheLib
             }
         }
         
-        // Memcache
-        if (
-            $this->isInstalled(self::CACHE_ENGINE_MEMCACHE) &&
-            $_CONFIG['cacheUserCache'] == self::CACHE_ENGINE_MEMCACHE
+        if (   $this->isInstalled(self::CACHE_ENGINE_MEMCACHE)
+            && (\Env::get('cx')->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND
+            || $_CONFIG['cacheUserCache'] == self::CACHE_ENGINE_MEMCACHE)
         ) {
             $memcacheConfiguration = $this->getMemcacheConfiguration();
             unset($this->memcache); // needed for reinitialization
