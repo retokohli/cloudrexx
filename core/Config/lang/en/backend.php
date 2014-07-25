@@ -49,7 +49,6 @@ $_ARRAYLANG['TXT_SETTINGS_DOMAIN_URL'] = 'URL of homepage';
 $_ARRAYLANG['TXT_SETTINGS_DOMAIN_URL_HELP'] = 'URL of your Website. Please make sure that you don"t add a slash at the end of the URL! ( / )';
 $_ARRAYLANG['TXT_MAIN_DOMAIN'] = 'Main Domain';
 $_ARRAYLANG['TXT_SETTINGS_DOMAIN'] = 'Domains';
-$_ARRAYLANG['TXT_SETTINGS_DOMAIN_OPTION'] = 'Select a Main Domain';
 $_ARRAYLANG['TXT_SETTINGS_PAGING_LIMIT'] = 'Records per page';
 $_ARRAYLANG['TXT_SETTINGS_PAGING_LIMIT_HELP'] = 'Values between 1 and 200 allowed.';
 $_ARRAYLANG['TXT_SETTINGS_SEARCH_RESULT'] = 'Number of Characters in Search Results';

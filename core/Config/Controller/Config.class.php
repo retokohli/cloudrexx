@@ -206,9 +206,11 @@ class Config
         $domains = $objMainDomain->findAll();
         foreach ($domains As $domain) {
             $objTemplate->setVariable(array(
-               'SETTINGS_DOMAIN_ID'         => $domain->getId(),
-               'SETTINGS_DOMAIN_NAME'       => $domain->getName(),
-               'SETTINGS_DOMAIN_SELECTED'   => ($domain->getId() == $arrSettings['mainDomainId']) ? 'selected' : ''
+               'SETTINGS_DOMAIN_ID'             => $domain->getId(),
+               'SETTINGS_DOMAIN_NAME'           => $domain->getName(),
+               'SETTINGS_DOMAIN_SELECTED'       => ($domain->getId() == $arrSettings['mainDomainId']) ? 'selected' : '',
+               'SETTINGS_HOSTDOMAIN_SELECTED'   => (empty($arrSettings['mainDomainId']) && $domain->getName() == $_CONFIG['domainUrl']) 
+                                                     || ($domain->getName() == $_CONFIG['domainUrl'] && !$objMainDomain->findBy(array('id' => $arrSettings['mainDomainId']))) ? 'selected' : ''
             ));
             $objTemplate->parse('showDomainName');
         }
@@ -244,8 +246,6 @@ class Config
             'TXT_XML_SITEMAP_STATUS_HELP'               => $_ARRAYLANG['TXT_SETTINGS_XML_SITEMAP_HELP'],
             'TXT_GLOBAL_TITLE'                          => $_ARRAYLANG['TXT_SETTINGS_GLOBAL_TITLE'],
             'TXT_GLOBAL_TITLE_HELP'                     => $_ARRAYLANG['TXT_SETTINGS_GLOBAL_TITLE_HELP'],
-            'TXT_DOMAIN_URL'                            => $_ARRAYLANG['TXT_SETTINGS_DOMAIN_URL'],
-            'TXT_DOMAIN_URL_HELP'                       => $_ARRAYLANG['TXT_SETTINGS_DOMAIN_URL_HELP'],
             'TXT_MAIN_DOMAIN'                           => $_ARRAYLANG['TXT_MAIN_DOMAIN'],
             'TXT_PAGING_LIMIT'                          => $_ARRAYLANG['TXT_SETTINGS_PAGING_LIMIT'],
             'TXT_PAGING_LIMIT_HELP'                     => $_ARRAYLANG['TXT_SETTINGS_PAGING_LIMIT_HELP'],
@@ -285,8 +285,7 @@ class Config
             'TXT_GOOGLE_ANALYTICS_TRACKING_ID'          => $_ARRAYLANG['TXT_GOOGLE_ANALYTICS_TRACKING_ID'],
             'TXT_GOOGLE_ANALYTICS_TRACKING_ID_INFO'     => $_ARRAYLANG['TXT_GOOGLE_ANALYTICS_TRACKING_ID_INFO'],
             'TXT_PASSWORD_COMPLEXITY'                   => $_ARRAYLANG['TXT_PASSWORD_COMPLEXITY'],
-            'TXT_PASSWORD_COMPLEXITY_INFO'              => $_ARRAYLANG['TXT_PASSWORD_COMPLEXITY_INFO'],
-            'TXT_SETTINGS_DOMAIN_OPTION'                => $_ARRAYLANG['TXT_SETTINGS_DOMAIN_OPTION'],
+            'TXT_PASSWORD_COMPLEXITY_INFO'              => $_ARRAYLANG['TXT_PASSWORD_COMPLEXITY_INFO']
         ));
 
         if ($this->isWritable()) {
@@ -310,7 +309,6 @@ class Config
             'SETTINGS_ADMIN_EMAIL'                          => $arrSettings['coreAdminEmail'],
             'SETTINGS_ADMIN_NAME'                           => $arrSettings['coreAdminName'],
             'SETTINGS_GLOBAL_TITLE'                         => $arrSettings['coreGlobalPageTitle'],
-            'SETTINGS_DOMAIN_URL'                           => $arrSettings['domainUrl'],
             'SETTINGS_PAGING_LIMIT'                         => intval($arrSettings['corePagingLimit']),
             'SETTINGS_SEARCH_RESULT_LENGTH'                 => intval($arrSettings['searchDescriptionLength']),
             'SETTINGS_SESSION_LIFETIME'                     => intval($arrSettings['sessionLifeTime']),

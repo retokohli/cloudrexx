@@ -51,18 +51,11 @@ function toggleDebuggingFlags(show) {
                 </td>
             </tr>
             <tr class="row2">
-                <td>{TXT_DOMAIN_URL}&nbsp;</td>
-                <td>
-                    <input type="text" name="setvalue[53]" value="{SETTINGS_DOMAIN_URL}" size="70" maxlength="250" />
-                    <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_DOMAIN_URL_HELP}</span>
-            </tr>
-            <tr class="row2">
                 <td>{TXT_MAIN_DOMAIN}&nbsp;</td>
                 <td>
                     <select name="setvalue[126]">
-                        <option value="">{TXT_SETTINGS_DOMAIN_OPTION}</option>
                         <!-- BEGIN showDomainName -->
-                        <option value="{SETTINGS_DOMAIN_ID}" {SETTINGS_DOMAIN_SELECTED}>{SETTINGS_DOMAIN_NAME}</option>
+                        <option value="{SETTINGS_DOMAIN_ID}" {SETTINGS_DOMAIN_SELECTED} {SETTINGS_HOSTDOMAIN_SELECTED}>{SETTINGS_DOMAIN_NAME}</option>
                         <!-- END showDomainName -->
                     </select>
             </tr>

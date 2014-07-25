@@ -26,8 +26,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
 
     public function preInit(\Cx\Core\Core\Controller\Cx $cx) {
-        $config     = \Env::get('config');
+        global $_CONFIG;
         $domainRepo = new \Cx\Core\Net\Model\Repository\DomainRepository();
-        $config['domainUrl'] = $domainRepo->getMainDomain()->getName();
+        $_CONFIG['domainUrl'] = $domainRepo->getMainDomain()->getName();
     }
 }
