@@ -139,7 +139,7 @@ class ViewGenerator {
             $primaryKeyName =$entityObj->getSingleIdentifierFieldName(); //get primary key name  
             //$getAllField = $entityObj->getColumnNames(); //get all field names 
             $id=$entityObject[$primaryKeyName]; //get primary key value  
-            $classMethods = get_class_methods(new $entityNS());
+            $classMethods = get_class_methods($entityObj->newInstance());
             foreach ($entityObject as $name=>$value) {
                 if (isset ($_POST[$name])) { 
                     if ($_POST[$name] != $value) {
@@ -157,7 +157,11 @@ class ViewGenerator {
                     foreach($updateArray as $key=>$value) {
                         $entityObj->$key($value);
                     }
-                    \Env::get('em')->flush();    
+                    if ($entityObj instanceof \Cx\Core\Model\Model\Entity\YamlEntity) {
+                        \Env::get('em')->getRepository($entityNS)->flush();
+                    } else {
+                        \Env::get('em')->flush();    
+                    }
                     \Message::add('Entity have been updated sucessfully!');   
                 } else {
                     \Message::add('Cannot save, Invalid argument!', \Message::CLASS_ERROR);
@@ -183,10 +187,16 @@ class ViewGenerator {
             $primaryKeyName =$entityObj->getSingleIdentifierFieldName(); //get primary key name  
             $id=$entityObject[$primaryKeyName]; //get primary key value  
             if (!empty($id)) {
-                $entityObj=\Env::get('em')->getRepository($entityNS)->find($id);
+                $entityObj=\Env::get('em')->getRepository($entityNS)->findById($id);
                 if (!empty($entityObj)) {
-                    \Env::get('em')->remove($entityObj);
-                    \Env::get('em')->flush();
+                    if ($entityObj instanceof \Cx\Core\Model\Model\Entity\YamlEntity) {
+                        $ymlRepo = \Env::get('em')->getRepository($entityNS);
+                        $ymlRepo->remove($entityObj);;
+                        $ymlRepo->flush();
+                    } else {
+                        \Env::get('em')->remove($entityObj);
+                        \Env::get('em')->flush();
+                    }
                     \Message::add('Entity have been deleted sucessfully!');   
                 }
             }
@@ -197,10 +207,11 @@ class ViewGenerator {
     }
     
     public function render(&$isSingle = false) {
+        $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
         if (!empty($_GET['add']) 
             && !empty($this->options['functions']['add'])) {
             $isSingle = true;
-            return $this->renderFormForEntry(null);
+            return $this->renderFormForEntry(null).$cancel;
         }
         $renderObject = $this->object;
         $entityClass = get_class($this->object);
@@ -216,7 +227,6 @@ class ViewGenerator {
         if ($renderObject instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             $addBtn = '';
             if (!empty($this->options['functions']['add'])) {
-                $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
                 $actionUrl->setParam('add', 1);
                 $addBtn = '<br /><br /><input type="button" name="addEtity" value="Add" onclick="location.href='."'".$actionUrl."&csrf=".\Cx\Core\Csrf\Controller\Csrf::code()."'".'" />'; 
             }
@@ -242,8 +252,8 @@ class ViewGenerator {
         $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
         if ($this->object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             $entityClass = $this->object->getDataType();
-            $entityObject = \Env::get('em')->getClassMetadata($entityClass);  
-            $primaryKeyName =$entityObject->getSingleIdentifierFieldName(); //get primary key name
+            $entityObject = \Env::get('em')->getClassMetaData($entityClass);
+            $primaryKeyName = $entityObject->getSingleIdentifierFieldName(); //get primary key name
             if (!empty($_GET['add']) && !empty($this->options['functions']['add'])) {
                 $title='Add Entity';
                 $actionUrl->setParam('add', 1);
