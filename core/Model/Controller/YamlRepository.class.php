@@ -46,6 +46,18 @@ class YamlRepository {
     protected $entities;
 
     /**
+     * All entities currently added to the repository
+     * @var array
+     */
+    protected $addedEntities = array();
+
+    /**
+     * All entities currently removed from the repository
+     * @var array
+     */
+    protected $removedEntities = array();
+
+    /**
      * Auto-increment value used for the primary identifier
      * when adding a new entity to the repository
      * @var integer
@@ -182,6 +194,10 @@ class YamlRepository {
         }
         $this->validate($entity);
         $this->entities[$this->getIdentifierOfEntity($entity)] = $entity;
+        if (!$entity->isVirtual()) {
+            $this->addedEntities[] = $entity;
+            \Env::get('cx')->getEvents()->triggerEvent('model/prePersist', array($entity));
+        }
     }
 
     /**
@@ -191,6 +207,8 @@ class YamlRepository {
      */
     public function remove($entity) {
         unset($this->entities[$this->getIdentifierOfEntity($entity)]);
+        $this->removedEntities[] = $entity;
+        \Env::get('cx')->getEvents()->triggerEvent('model/preRemove', array($entity));
     }
 
     /**
@@ -212,6 +230,19 @@ class YamlRepository {
         $dataSet->add('data', $entitiesToPersist);
         $dataSet->add('meta', $this->getMetaDefinition());
         $dataSet->save($this->repositoryPath);
+        
+        foreach ($this->removedEntities as $entity) {
+            \Env::get('cx')->getEvents()->triggerEvent('model/postRemove', array($entity));
+        }
+
+        foreach ($this->addedEntities as $entity) {
+            \Env::get('cx')->getEvents()->triggerEvent('model/postPersist', array($entity));
+        }
+        //truncate the variables
+        if (!empty($this->addedEntities))
+            $this->addedEntities = array();
+        if (!empty($this->removedEntities))
+            $this->removedEntities = array();
     }
 
     /**
