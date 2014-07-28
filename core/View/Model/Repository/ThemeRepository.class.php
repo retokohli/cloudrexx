@@ -27,7 +27,7 @@ class ThemeRepository
     private $db;
     
     public function __construct() {
-        $this->db = \Env::get('cx')->getDb()->getAdoDb();
+        $this->db = \Env::get('db');
     }
     
     /**
@@ -177,8 +177,7 @@ class ThemeRepository
      * Writes the component.yml file with the data defined in component data array
      * @param \Cx\Core\View\Model\Entity\Theme $theme the theme object
      */
-    public function saveComponentData($theme) {
-        $cl = \Env::get('cx')->getClassLoader();
+    public function saveComponentData($theme) {        
         $file = new \Cx\Lib\FileSystem\File(ASCMS_THEMES_PATH . '/' . $theme->getFoldername() . '/component.yml');
         $file->touch();
         $yaml = new \Symfony\Component\Yaml\Yaml();
@@ -298,9 +297,18 @@ class ThemeRepository
                     'state' => 'stable',
                     'number' => '1.0.0',
                     'releaseDate' => '',
-                ),
+                ),                
             );
         }
+        // Add default dependencies
+        $themeInformation['DlcInfo']['dependencies'] = array(
+            array(
+                'name' => 'jquery',
+                'type' => 'lib',
+                'minimumVersionNumber' => '1.6.1',
+                'maximumVersionNumber' => '1.7.3'
+            )
+        );
         $themeFolder = $theme;
         $theme = new \Cx\Core\View\Model\Entity\Theme();
         $theme->setFoldername($themeFolder);
