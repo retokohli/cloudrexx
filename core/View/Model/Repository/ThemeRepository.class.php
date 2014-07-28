@@ -297,9 +297,18 @@ class ThemeRepository
                     'state' => 'stable',
                     'number' => '1.0.0',
                     'releaseDate' => '',
-                ),
+                ),                
             );
         }
+        // Add default dependencies
+        $themeInformation['DlcInfo']['dependencies'] = array(
+            array(
+                'name' => 'jquery',
+                'type' => 'lib',
+                'minimumVersionNumber' => '1.6.1',
+                'maximumVersionNumber' => '1.7.3'
+            )
+        );
         $themeFolder = $theme;
         $theme = new \Cx\Core\View\Model\Entity\Theme();
         $theme->setFoldername($themeFolder);
