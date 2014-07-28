@@ -244,14 +244,14 @@ class ViewGenerator {
     
     protected function renderFormForEntry($entityId) {
         $renderArray=array();
-        $cancelUrl = clone \Env::get('cx')->getRequest()->getUrl();
-        $cancelUrl->setParam('add', null);
-        $this->options['cancelUrl'] = $cancelUrl;
         if ($this->object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             $entityClass = $this->object->getDataType();
             $entityObject = \Env::get('em')->getClassMetaData($entityClass);
             $primaryKeyName = $entityObject->getSingleIdentifierFieldName(); //get primary key name
             if (!empty($_GET['add']) && !empty($this->options['functions']['add'])) {
+                $cancelUrl = clone \Env::get('cx')->getRequest()->getUrl();
+                $cancelUrl->setParam('add', null);
+                $this->options['cancelUrl'] = $cancelUrl;
                 $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
                 $title='Add Entity';
                 $actionUrl->setParam('add', 1);
@@ -264,6 +264,9 @@ class ViewGenerator {
                 }
             } else {
                 if (!$this->object->entryExists($entityId)) return false;
+                $cancelUrl = clone \Env::get('cx')->getRequest()->getUrl();
+                $cancelUrl->setParam('editid', null);
+                $this->options['cancelUrl'] = $cancelUrl;
                 $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
                 $title='Edit Entity';
                 $actionUrl->setParam('editid', null);
@@ -279,6 +282,9 @@ class ViewGenerator {
             $entityClass = get_class($this->object);
             $entityObject = \Env::get('em')->getClassMetadata($entityClass);  
             $primaryKeyName =$entityObject->getSingleIdentifierFieldName(); //get primary key name
+            $cancelUrl = clone \Env::get('cx')->getRequest()->getUrl();
+            $cancelUrl->setParam('add', null);
+            $this->options['cancelUrl'] = $cancelUrl;
             $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
             $title='Add Entity';
             $actionUrl->setParam('add', 1);
