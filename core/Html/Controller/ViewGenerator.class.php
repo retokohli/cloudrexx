@@ -39,12 +39,7 @@ class ViewGenerator {
             $this->object = $object;
             $entityNS = get_class($this->object);
         }
-        // get entity name space
-        /*$entityNS = get_class($this->object);
-        if (empty($entityNS)) {
-            \Message::add('Cannot load, Invalid name space', \Message::CLASS_ERROR);
-            return;
-        }*/
+
         /** 
          *  postSave event
          *  execute save if entry is a doctrine entity (or execute callback if specified in configuration)
@@ -152,7 +147,7 @@ class ViewGenerator {
             }
             if (!empty($updateArray) && !empty($id) 
                 && !empty($isUpdate)) {
-                $entityObj = \Env::get('em')->getRepository($entityNS)->findById($id);
+                $entityObj = \Env::get('em')->getRepository($entityNS)->find($id);
                 if (!empty($entityObj)) {
                     foreach($updateArray as $key=>$value) {
                         $entityObj->$key($value);
@@ -187,7 +182,7 @@ class ViewGenerator {
             $primaryKeyName =$entityObj->getSingleIdentifierFieldName(); //get primary key name  
             $id=$entityObject[$primaryKeyName]; //get primary key value  
             if (!empty($id)) {
-                $entityObj=\Env::get('em')->getRepository($entityNS)->findById($id);
+                $entityObj=\Env::get('em')->getRepository($entityNS)->find($id);
                 if (!empty($entityObj)) {
                     if ($entityObj instanceof \Cx\Core\Model\Model\Entity\YamlEntity) {
                         $ymlRepo = \Env::get('em')->getRepository($entityNS);
@@ -207,11 +202,10 @@ class ViewGenerator {
     }
     
     public function render(&$isSingle = false) {
-        $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
         if (!empty($_GET['add']) 
             && !empty($this->options['functions']['add'])) {
             $isSingle = true;
-            return $this->renderFormForEntry(null).$cancel;
+            return $this->renderFormForEntry(null);
         }
         $renderObject = $this->object;
         $entityClass = get_class($this->object);
@@ -226,6 +220,7 @@ class ViewGenerator {
         }
         if ($renderObject instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             $addBtn = '';
+            $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
             if (!empty($this->options['functions']['add'])) {
                 $actionUrl->setParam('add', 1);
                 $addBtn = '<br /><br /><input type="button" name="addEtity" value="Add" onclick="location.href='."'".$actionUrl."&csrf=".\Cx\Core\Csrf\Controller\Csrf::code()."'".'" />'; 
@@ -289,7 +284,7 @@ class ViewGenerator {
                     $renderArray[$name]="";    
                 }
             }
-        }
+        }        
         return new FormGenerator($renderArray, $actionUrl,$title, $this->options);
     }
     
