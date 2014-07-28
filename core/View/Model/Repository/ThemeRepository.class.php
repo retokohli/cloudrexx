@@ -306,7 +306,7 @@ class ThemeRepository
                 'name' => 'jquery',
                 'type' => 'lib',
                 'minimumVersionNumber' => '1.6.1',
-                'maximumVersionNumber' => '1.7.3'
+                'maximumVersionNumber' => '1.6.1'
             )
         );
         $themeFolder = $theme;
