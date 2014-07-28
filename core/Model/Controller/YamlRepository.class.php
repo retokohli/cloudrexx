@@ -127,13 +127,13 @@ class YamlRepository {
     public function findAll() {
         return $this->entities;
     }
-
-    /**
+    
+     /**
      * Return single entity specified by primary identifier $id
      * @param   mixed   Value of primary identifier
      * @return  YamlEntity  Object from repository identified by primary identifier $id
      */
-    public function findById($id) {
+    public function find($id) {
         if (isset($this->entities[$id])) {
             return $this->entities[$id];
         }
@@ -208,7 +208,6 @@ class YamlRepository {
             }
             $entitiesToPersist[] = $entity;
         }
-
         $dataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet();
         $dataSet->add('data', $entitiesToPersist);
         $dataSet->add('meta', $this->getMetaDefinition());
