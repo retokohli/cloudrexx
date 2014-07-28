@@ -29,5 +29,6 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         global $_CONFIG;
         $domainRepo = new \Cx\Core\Net\Model\Repository\DomainRepository();
         $_CONFIG['domainUrl'] = $domainRepo->getMainDomain()->getName();
+        \Env::set('config', $_CONFIG);
     }
 }
