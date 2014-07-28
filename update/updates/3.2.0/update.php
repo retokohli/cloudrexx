@@ -2033,14 +2033,14 @@ function _convertThemes2Component()
         if (!is_dir($themePath)) {
             \DBG::msg('Skipping theme "' . $result->fields['themesname'] . '"; No such folder!');
             $errorMessages .= '<div class="message-warning">' . sprintf($_CORELANG['TXT_CSS_UPDATE_MISSING_FOLDER'], $result->fields['themesname']) . '</div>';
-            $result->moveNext();
+            $result->MoveNext();
             continue;
         }
         
         // create a new one if no component.yml exists
         if (!file_exists($themePath . '/component.yml')) {
             \DBG::msg('Converting theme "' . $result->fields['themesname'] . ' to component');
-            $themeRepository->convertThemeToComponent($result->fields['themesname']);
+            $themeRepository->convertThemeToComponent($result->fields['foldername']);
         }
 
         $result->MoveNext();
