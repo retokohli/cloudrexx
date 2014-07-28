@@ -63,6 +63,9 @@ class FormGenerator {
             $dataElement->setAttribute('id', 'form-X-' . $field);
             $this->form->addChild(static::getDataElementGroup($field, $dataElement));
         }
+        if (isset($options['cancelUrl'])) {
+            $this->form->cancelUrl =$options['cancelUrl'];
+        }
     }
     
     public static function getDataElementGroup($field, $dataElement) {

@@ -244,12 +244,15 @@ class ViewGenerator {
     
     protected function renderFormForEntry($entityId) {
         $renderArray=array();
-        $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
+        $cancelUrl = clone \Env::get('cx')->getRequest()->getUrl();
+        $cancelUrl->setParam('add', null);
+        $this->options['cancelUrl'] = $cancelUrl;
         if ($this->object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             $entityClass = $this->object->getDataType();
             $entityObject = \Env::get('em')->getClassMetaData($entityClass);
             $primaryKeyName = $entityObject->getSingleIdentifierFieldName(); //get primary key name
             if (!empty($_GET['add']) && !empty($this->options['functions']['add'])) {
+                $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
                 $title='Add Entity';
                 $actionUrl->setParam('add', 1);
                 $getAllField = $entityObject->getColumnNames(); //get all field names  
@@ -261,6 +264,7 @@ class ViewGenerator {
                 }
             } else {
                 if (!$this->object->entryExists($entityId)) return false;
+                $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
                 $title='Edit Entity';
                 $actionUrl->setParam('editid', null);
                 $renderObject = $this->object->getEntry($entityId);
@@ -275,6 +279,7 @@ class ViewGenerator {
             $entityClass = get_class($this->object);
             $entityObject = \Env::get('em')->getClassMetadata($entityClass);  
             $primaryKeyName =$entityObject->getSingleIdentifierFieldName(); //get primary key name
+            $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
             $title='Add Entity';
             $actionUrl->setParam('add', 1);
             $getAllField = $entityObject->getColumnNames(); //get all field names  
