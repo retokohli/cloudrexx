@@ -42,11 +42,10 @@ class ImportCommand extends Command {
      */
     public function execute(array $arguments) {
         // The following tasks will be done by Apps:
-            // Get package info
-            // Recursively get all dependencies
-            // Foreach package to install (sorted, the one without any dependencies first):
-                // Download package
-        \DBG::activate(DBG_PHP);
+        // Get package info
+        // Recursively get all dependencies
+        // Foreach package to install (sorted, the one without any dependencies first):
+        // Download package
         $comp = new \Cx\Core\Core\Model\Entity\ReflectionComponent($arguments[2]);
         $comp->install();
     }
