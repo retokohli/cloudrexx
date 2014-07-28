@@ -60,5 +60,17 @@ class DomainRepository extends \Cx\Core\Model\Controller\YamlRepository {
             return $this->entities[$config['mainDomainId']];
         }
     }
+
+    /**
+     * Register the model-event-listener for model Domain
+     */
+    public function registerEventListener() {
+        $eventHandlerInstance = \Env::get('cx')->getEvents(); 
+        $domainListener       = new \Cx\Core\Net\Model\Event\DomainEventListener();
+        $eventHandlerInstance->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Core\\Net\\Model\\Entity\\Domain', $domainListener);
+        $eventHandlerInstance->addModelListener(\Doctrine\ORM\Events::postPersist, 'Cx\\Core\\Net\\Model\\Entity\\Domain', $domainListener);
+        $eventHandlerInstance->addModelListener(\Doctrine\ORM\Events::preRemove, 'Cx\\Core\\Net\\Model\\Entity\\Domain', $domainListener);
+        $eventHandlerInstance->addModelListener(\Doctrine\ORM\Events::postRemove, 'Cx\\Core\\Net\\Model\\Entity\\Domain', $domainListener);
+    }
 }
 
