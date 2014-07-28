@@ -102,10 +102,7 @@ class ReflectionComponent {
             $yaml = new \Symfony\Component\Yaml\Yaml();
             $content = file_get_contents(ASCMS_APP_CACHE_FOLDER . '/meta.yml');
             $meta = $yaml->load($content);
-            $type = array_search($meta['DlcInfo']['type'], $metaTypes);
-            if (!$type) {
-                $type = 'lib';
-            }
+            $type = array_key_exists($meta['DlcInfo']['type'], $metaTypes) ? $meta['DlcInfo']['type'] : 'lib';            
             
             // initialize ReflectionComponent
             $this->packageFile = $arg1;
@@ -347,7 +344,7 @@ class ReflectionComponent {
                 //doctrine orm:schema-tool:update --force
                 // load DB data from /data/fixture.yml/sql
             }
-        }
+        }        
         $this->importStructureFromSql();
         $this->importDataFromSql();
         
@@ -387,6 +384,9 @@ class ReflectionComponent {
     {
         $sqlDump = ASCMS_APP_CACHE_FOLDER . '/Data/Data.sql';        
         
+        $pattern = '/\s+INTO\s+`?([a-z\\d_]+)`?/i';
+        
+        $moduleId = 0;
         $fp = @fopen ($sqlDump, "r");
         if ($fp !== false) {
             while (!feof($fp)) {
@@ -395,6 +395,24 @@ class ReflectionComponent {
                     $sqlQuery .= $buffer;
                     if (preg_match("/;[ \t\r\n]*$/", $buffer)) {
                         $sqlQuery = preg_replace('#contrexx_#', DBPREFIX, $sqlQuery, 1);
+                        $matches = null;
+                        preg_match($pattern, $sqlQuery , $matches , 0);
+                        $table = isset($matches[1]) ? $matches[1] : '';
+                        
+                        switch ($table) {
+                             case DBPREFIX.'modules':
+                                 
+                                 break;
+                             case DBPREFIX.'component':
+                                 
+                                 break;
+                             case DBPREFIX.'backend_areas':
+                                 
+                                 break;
+                             default :
+                                 break;
+                        }
+                        
                         $result = $this->db->Execute($sqlQuery);
                         if ($result === false) {
                             throw new SystemComponentException($sqlQuery .' ('. $this->db->ErrorMsg() .')');
@@ -526,6 +544,25 @@ class ReflectionComponent {
             }
             
             // Dump the core data's to the file            
+            $objFile->append("-- modules".PHP_EOL);
+            $table = DBPREFIX .'modules';
+            $query = 'SELECT *
+                        FROM
+                            `'. DBPREFIX .'modules`
+                        WHERE
+                            `name` = "' . $this->componentName . '"';
+            $this->writeTableDataToFileFromQuery($table, $query, $objFile);
+            
+            $objFile->append("-- component".PHP_EOL);
+            
+            $table = DBPREFIX .'component';
+            $query = 'SELECT *
+                        FROM                             
+                            `'. DBPREFIX .'component`
+                        WHERE
+                            `name` = "' . $this->componentName . '"';
+            $this->writeTableDataToFileFromQuery($table, $query, $objFile);
+                      
             $objFile->append("-- Backend Areas".PHP_EOL);
             $table = DBPREFIX .'backend_areas';
             $query = 'SELECT b.*
@@ -610,7 +647,7 @@ class ReflectionComponent {
 
                 $dataString = '\'' . implode('\', \'', $datas) . '\'';
 
-                $dataLine = 'INSERT INTO `'.$tableName.'` (' . $columnString . ') VALUES ('. $dataString .');' . PHP_EOL;
+                $dataLine = 'INSERT IGNORE INTO `'.$tableName.'` (' . $columnString . ') VALUES ('. $dataString .');' . PHP_EOL;
                 $objFile->append($dataLine);
 
                 $objResult->MoveNext();
