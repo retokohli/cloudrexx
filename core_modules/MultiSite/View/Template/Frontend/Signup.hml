@@ -1,0 +1,21 @@
+<form action="{POST_URL}" method="post" name="registration_form">
+<table style="width:100%">
+	<tbody>
+		<tr>
+			<th>{TXT_MULTISITE_EMAIL_ADDRESS}</th>
+			<td><input id="emailAddress" name="emailAddress" type="text" value="{MULTISITE_USER_EMAIL}" /><br />
+			<span class="error" id="email_error">{email_error}</span></td>
+		</tr>
+		<tr>
+			<th>{TXT_MULTISITE_ADDRESS}</th>
+			<td><input id="blogAddress" name="blogAddress" type="text" value="{MULTISITE_WEBSITE_NAME}" />.{MULTISITE_DOMAIN}<br />
+			<span class="error" id="blog_error">{blog_error}</span></td>
+		</tr>
+		<tr>
+			<th>&nbsp;</th>
+			<td><button name="createBlog" onclick="return JQUERYVALIDATION.regValidation();">{TXT_MULTISITE_CREATE_WEBSITE}</button></td>
+		</tr>
+	</tbody>
+</table>
+</form>
+
