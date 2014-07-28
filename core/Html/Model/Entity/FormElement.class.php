@@ -11,6 +11,7 @@ namespace Cx\Core\Html\Model\Entity;
  */
 class FormElement extends HtmlElement {
     const ENCTYPE_MULTIPART_FORMDATA = 'multipart/formdata';
+    public $cancelUrl = null;
     
     public function __construct($action, $method = 'post', $enctype = self::ENCTYPE_MULTIPART_FORMDATA) {
         parent::__construct('form');
@@ -99,6 +100,13 @@ class FormElement extends HtmlElement {
             $submit = new HtmlElement('input');
             $submit->setAttribute('type', 'submit');
             $submitDiv->addChild($submit);
+            if(!empty($this->cancelUrl)){
+                $cancel = new HtmlElement('input');
+                $cancel->setAttribute('type', 'button');
+                $cancel->setAttribute('value', 'cancel');
+                $cancel->setAttribute('onclick', "location.href='".$this->cancelUrl."&csrf=".\Cx\Core\Csrf\Controller\Csrf::code()."'");
+                $submitDiv->addChild($cancel);
+            }
             $this->addChild($submitDiv);
         }
         return parent::render();

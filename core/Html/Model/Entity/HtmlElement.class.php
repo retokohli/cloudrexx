@@ -125,7 +125,7 @@ class HtmlElement {
         $this->output = $template->get();
         return $this->output;
     }
-    
+
     public function __toString() {
         return $this->render();
     }
