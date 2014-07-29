@@ -401,13 +401,13 @@ class ReflectionComponent {
                         
                         switch ($table) {
                              case DBPREFIX.'modules':
-                                 
+                                 list($columns, $data) = $this->getColumnsAndDataFromSql($sqlQuery);
                                  break;
                              case DBPREFIX.'component':
-                                 
+                                 list($columns, $data) = $this->getColumnsAndDataFromSql($sqlQuery);
                                  break;
                              case DBPREFIX.'backend_areas':
-                                 
+                                 list($columns, $data) = $this->getColumnsAndDataFromSql($sqlQuery);
                                  break;
                              default :
                                  break;
@@ -424,6 +424,28 @@ class ReflectionComponent {
         } else {
             throw new SystemComponentException('File not found : '. $sqlDump);
         }
+    }
+    
+    /**
+     * parse the mysql query and return the columns and data from the given query. 
+     * 
+     * @param string $sqlQuery Mysql query
+     * 
+     * @return array 
+     */
+    public function getColumnsAndDataFromSql($sqlQuery)
+    {
+        $columnAndData = null;
+        preg_match_all('/\((.+?)\)/', $sqlQuery, $columnAndData);                                 
+        $columnsString = $columnAndData[1][0];
+        $dataString    = $columnAndData[1][1];
+        
+        $columns = null;
+        preg_match_all('/\`(.+?)\`/', $columnsString, $columns);
+        $data = null;
+        preg_match_all('/\'(.+?)\'/', $dataString, $data);
+        
+        return array($columns[1], $data[1]);        
     }
     
     /**
