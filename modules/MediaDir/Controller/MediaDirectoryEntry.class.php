@@ -890,6 +890,8 @@ class MediaDirectoryEntry extends MediaDirectoryInputfield
                 $intDurationEnd = $this->dateFromInput($arrData['durationEnd']);
 
                 $arrAdditionalQuery[] = "`duration_type`='". intval($arrData['durationType'])."', `duration_start`='". intval($intDurationStart)."',  `duration_end`='". intval($intDurationEnd)."'";
+                
+                $arrAdditionalQuery[] = "`active`='". (intval($arrData['status']) ? 1 : 0)."'";
             } else {
                 $intConfirmed = $this->arrSettings['settingsConfirmUpdatedEntries'] == 1 ? 0 : 1;
                 $intShowIn = 2;
