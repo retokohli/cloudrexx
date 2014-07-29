@@ -191,10 +191,6 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     $objWebsiteService = $WebsiteServiceServerRepository->findBy(array('hostName' => $authenticationValue['sender']));
                     $secretKey = $objWebsiteService->getSecretKey();
                     $installationId = $objWebsiteService->getInstallationId();
-
-                    if (md5($secretKey.$installationId) === $authenticationValue['key']) {
-                        return true;
-                    }
                 } catch(\Exception $e) {
                     return $e->getMessage();
                 }
@@ -202,14 +198,32 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 
             case 'service':
             case 'hybrid':
-                $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('managerSecretKey');
-                $installationId = \Cx\Core\Setting\Controller\Setting::getValue('managerInstallationId');
-
-                if (md5($secretKey.$installationId) === $authenticationValue['key']) {
-                    return true;
+                //Check if the sender is manager or not
+                if ($authenticationValue['sender'] == \Cx\Core\Setting\Controller\Setting::getValue('managerHostname')) {
+                    $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('managerSecretKey');
+                    $installationId = \Cx\Core\Setting\Controller\Setting::getValue('managerInstallationId');
+                } else {
+                    try {
+                        $websiteRepository = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Repository\WebsiteRepository');
+                        $objWebsite = $websiteRepository->findBy(array('name' => $authenticationValue['sender']));
+                        $secretKey  = $objWebsite->getSecretKey();
+                        $installationId = $objWebsite->getInstallationId();
+                    } catch (\Exception $e) {
+                        return $e->getMessage();
+                    }
                 }
                 break;
+                
+            case 'Website':
+                $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('serviceSecretKey');
+                $installationId = \Cx\Core\Setting\Controller\Setting::getValue('serviceInstallationId');
+                break;
         }
+        
+        if (md5($secretKey.$installationId) === $authenticationValue['key']) {
+            return true;
+        }
+        
         return false;
     }
 
