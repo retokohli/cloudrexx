@@ -1,94 +1,58 @@
 <?php
+/**
+ * WebsiteRepository
+ *
+ * @copyright   Comvation AG
+ * @author      Project Team SS4U <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_multisite
+ */
+
 namespace Cx\Core_Modules\MultiSite\Model\Repository;
 
-class WebsiteRepository {
+/**
+ * WebsiteRepository
+ *
+ * @copyright   Comvation AG
+ * @author      COMVATION Development Team <info@comvation.com>
+ * @package     contrexx
+ * @subpackage  coremodule_multisite
+ */
+class WebsiteRepository extends \Doctrine\ORM\EntityRepository {
     protected $websites = array();
     
-    public function findAll($basepath) {
+    public function findByCreatedDateRange($startTime, $endTime) {
         
-        if (isset($this->websites[$basepath])) {
-            return $this->websites[$basepath];
-        }
-        
-        $websites = array();
-        $dh = opendir($basepath);
-        while ($file = readdir($dh)) {
-            if (substr($file, 0, 1) == '.') {
-                continue;
-            }
-            if (!is_dir($basepath . '/' . $file)) {
-                continue;
-            }
-            try {
-                $websites[$file] = new \Cx\Core_Modules\MultiSite\Model\Entity\Website($basepath, $file);
-                $websites[$file]->setName($file);
-            } catch (\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteException $e) {
-                //echo $e->getMessage() . '<br />';
-                continue;
-            }
-        }
-        closedir($dh);
-        $this->websites[$basepath] = $websites;
-        return $websites;
     }
     
-    public function findByCreatedDateRange($basepath, $startTime, $endTime) {
-        $websites = $this->findAll($basepath);
-        
-        // flip start and end if start is bigger than end
-        if ($startTime > $endTime) {
-            list($startTime, $endTime) = array($endTime, $startTime);
+    public function findByMail($mail) {
+        if (empty($mail)) {
+            return null;
         }
-        
-        if (is_int($startTime)) {
-            $startTime = new \DateTime('@' . $startTime);
-        }
-        if (is_int($endTime)) {
-            $endTime = new \DateTime('@' . $endTime);
-        }
-        
-        $matchingWebsites = array();
-        foreach ($websites as $website) {
-            if (
-                $website->createdAt >= $startTime &&
-                $website->createdAt <= $endTime
-            ) {
-                $matchingWebsites[$website->getName()] = $website;
-            }
-        }
-        return $matchingWebsites;
-    }
-    
-    public function findByMail($basepath, $mail) {
-        foreach ($this->findAll($basepath) as $website) {
-            if ($website->getEmail() == $mail) {
+        foreach ($this->findAll() as $website) {
+            if ($website->getOwner()->getEmail() == $mail) {
                 return $website;
             }
         }
         return null;
     }
-
-    public function findByName($basePath, $name) {
+    
+    public function findByName($name) {
         if (empty($name)) {
             return null;
         }
-
-        if (isset($this->websites[$basePath][$name])) {
-            return $this->websites[$basePath][$name];
-        }
         
-        try {
-            $this->websites[$basePath][$name] = \Cx\Core_Modules\MultiSite\Model\Entity\Website::loadFromFileSystem($basePath, $name);
-            return $this->websites[$basePath][$name];
-        } catch (\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteException $e) {
-            //echo $e->getMessage() . '<br />';
+        $website = $this->findBy(array('name' => $name));
+        if (count($website)>0) {
+            return $website;
+        } else {
             return null;
         }
-
-        return null;
     }
     
-    public function findWebsitesBetween($basepath, $startTime, $endTime) {
-        return count($this->findByCreatedDateRange($basepath, $startTime, $endTime));
+    public function findWebsitesBetween($startTime, $endTime) {
+        
     }
 }
+?>
+
