@@ -55,11 +55,13 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $protocol = 'https';
         if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array('manager', 'hybrid'))) {
             $configs = \Env::get('config');
-            $multiSiteDomain = $protocol.'://'.$configs['domainUrl']; 
-        } else {
+            $multiSiteDomain = $protocol.'://'.$configs['domainUrl'];
+        } else {           
             $multiSiteDomain = $protocol.'://'.\Cx\Core\Setting\Controller\Setting::getValue('managerHostname');
         }
+        //Add jquery validations library (jquery.validate.min.js)
         \JS::activate('cx');
+        \JS::registerJs('lib/javascript/jquery/jquery.validate.min.js');
         \ContrexxJavascript::getInstance()->setVariable('baseUrl', $multiSiteDomain, 'MultiSite');
         $setVariable=array(
                             'TITLE'         => $_ARRAYLANG['TXT_MULTISITE_TITLE'],

@@ -1,21 +1,23 @@
-<form action="{POST_URL}" method="post" name="registration_form">
-<table style="width:100%">
-	<tbody>
-		<tr>
-			<th>{TXT_MULTISITE_EMAIL_ADDRESS}</th>
-			<td><input id="emailAddress" name="emailAddress" type="text" value="{MULTISITE_USER_EMAIL}" /><br />
-			<span class="error" id="email_error">{email_error}</span></td>
-		</tr>
-		<tr>
-			<th>{TXT_MULTISITE_ADDRESS}</th>
-			<td><input id="blogAddress" name="blogAddress" type="text" value="{MULTISITE_WEBSITE_NAME}" />.{MULTISITE_DOMAIN}<br />
-			<span class="error" id="blog_error">{blog_error}</span></td>
-		</tr>
-		<tr>
-			<th>&nbsp;</th>
-			<td><button name="createBlog" onclick="return JQUERYVALIDATION.regValidation();">{TXT_MULTISITE_CREATE_WEBSITE}</button></td>
-		</tr>
-	</tbody>
-</table>
+<form action="{POST_URL}" method="post" name="multisite_signup_form" id="multisite_signup_form">
+    <table style="width:100%">
+        <tbody>
+            <tr>
+                <th>{TXT_MULTISITE_EMAIL_ADDRESS}</th>
+                <td><input id="multisite_email_address" name="multisite_email_address" type="email" value="{MULTISITE_USER_EMAIL}" required /><br />
+            </tr>
+            <tr>
+                <th>{TXT_MULTISITE_ADDRESS}</th>
+                <td><input id="multisite_address" name="multisite_address" type="text" value="{MULTISITE_WEBSITE_NAME}" required />.{MULTISITE_DOMAIN}<br />
+            </tr>
+            <tr>
+                <th>&nbsp;</th>
+                <td><input type="submit" name="multisite_create_website" id="multisite_create_website" value="{TXT_MULTISITE_CREATE_WEBSITE}" /></td>
+            </tr>
+            <tr>
+                <th>&nbsp;</th>
+                <td><div id="message"> </div></td>
+            </tr>
+            
+        </tbody>
+    </table>
 </form>
-

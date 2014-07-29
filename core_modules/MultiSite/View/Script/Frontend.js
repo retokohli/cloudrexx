@@ -1,95 +1,71 @@
 (function($) {
-    cx.ready(function() {  
-        $("#emailAddress").keyup(function() {
-            var length = $("#emailAddress").val().length;       
-            if (length > 0)
-            {
-                if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test($("#emailAddress").val())){
-                    $("#email_error").html("");
-                        return (true)	
-                }else{
-                    $("#email_error").html("Invalid E-mail Address!");
-                }
-                return (false)
-            }
-            else
-            {
-               $("#email_error").html("E-mail Address Required!");
-               return (false)
-            }
-        });
-        $("#blogAddress").keyup(function() {
-            if($("#blogAddress").val()==""){
-                $("#blog_error").html("Site Address Required!");
-            }else{
-                $("#blog_error").html("");
-            }
-        });
-    });
-
-    JQUERYVALIDATION = {
-        regValidation: function() {
-            var count=0;
-            var emailAddress =  $("#emailAddress").val();
-            var blogAddress = $("#blogAddress").val();
-            var langId = $("#langId").val();
-            var length = emailAddress.length;           
-            if (length > 0)
-            {
-                if (/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(emailAddress)){
-                    $("#email_error").html("");
-                }else{ 
-                    $("#email_error").html("Invalid E-mail Address!");
-                    ++count;
-                }
-            }else{
-               $("#email_error").html("E-mail Address Required!");
-               ++count;
-            }
-            if(blogAddress==""){
-                $("#blog_error").html("Site Address Required!");
-                ++count;
-            }else{
-                if(blogAddress.match(/^\d+$/)){
-                    $("#blog_error").html("Site Address can not be numeric!");
-                    ++count;
-                }else{
-                    $("#blog_error").html("");
-                }
-            }
-            if(count>0){
-                return false;
-            }else{
+    cx.ready(function() {
+        //cx_multisite.showSignUp();
+        $("#multisite_signup_form").validate({
+            submitHandler: function(form) {
+                var multisite_email_address =  $("#multisite_email_address").val();
+                var multisite_address = $("#multisite_address").val();
+                loaderImg = 
                 domainUrl = cx.variables.get('baseUrl', 'MultiSite')+cx.variables.get('cadminPath', 'contrexx')+"index.php?cmd=JsonData&object=MultiSite&act=signup";
                 //call get json function after 
                 //all the validations are checked
-                jQuery.ajax({
+                cx.jQuery.ajax({
                     dataType: "json",
                     url: domainUrl,
                     data: {
-                        websiteName : blogAddress,
-                        email : emailAddress,
-                        langId : langId
+                        multisite_email_address : multisite_email_address,
+                        multisite_address : multisite_address,
                     },
                     type: "POST",
                     beforeSend: function(){
-                        $('.load').remove();
-                        $("button[name='createBlog']").parent().append('<div class="load">Requesting...</div>');
+                        $("#multisite_create_website").parent().append(getLoader());
+                        $("#multisite_create_website").attr('disabled', true);
                     },
-                    success: function(data) {
-                        //$('.load').remove();
-                        if(data.status=="success"){
-                            $('.load').html('<font color="green">Website created Successfully</font>');
-                        }else{
-                            $('.load').html('<font color="red">'+data.message+'</font>');    
+                    success: function(response) {
+                        $('#ajaxLoader').remove();
+                        $("#multisite_create_website").attr('disabled', false);
+                        var message = $('#message');
+                        if (response.status == 'success') {
+                            message.html(response.data);
+                            message.css('color', '#006400');
+                        } else {
+                            message.html(response.message);
+                            message.css('color', '#FF0000');
                         }
-                        
                     }
                 });
-                return false;
             }
+        });
+        
+        getLoader = function (){    
+            var loadingImagePath = '/lib/javascript/jquery/jstree/themes/default/throbber.gif';    
+            var img = $('<img></img>');
+            img.attr('src',loadingImagePath);
+            img.attr('id','ajaxLoader');
+            return img;
+        }
+    });
+/*
+    cx_multisite = {
+        showSignUp : function (){
+            //domainUrl = cx.variables.get('baseUrl', 'MultiSite')+cx.variables.get('cadminPath', 'contrexx')+"index.php?cmd=JsonData&object=MultiSite&act=signup";
+            url = "https://cloudrexx.local/cadmin/index.php?cmd=JsonData&object=MultiSite&act=signup&fetchForm=1";
+            cx.jQuery.ajax({
+                dataType: "json",
+                url: url,
+                type: "post",
+                success: function(response) {
+                    cx.ui.dialog({
+                        title: 'Sign Up',
+                        content: response.data,
+                        width:350,
+                        height:400
+                    });
+                }
+            });
         }
     }
+    */
 })(jQuery);
 
 

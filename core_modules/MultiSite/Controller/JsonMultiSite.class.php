@@ -59,46 +59,46 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     
     /**
     * function signup
-    * 
-    *  we first have to manually check if the supplied email is valid (\FWValidator::isEmail()) and is not used by an other user (User::isUniqueEmail()).
-
-    If the email is invalid, a related error message shall be displayed to the user.
-    If the email is already used by an other user, show a message like "An account with this email does already exist. Click here to login." 
-    */
+    * @param post parameters
+    * */
     public function signup($params){
         // load text-variables of module MultiSite
         global $_ARRAYLANG, $objInit;
         $langData = $objInit->loadLanguageData('MultiSite');
         $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
-
         $objUser = new \Cx\Core_Modules\MultiSite\Model\Entity\User();
         if (!empty($params['post'])) {
             $post = $params['post'];
-            $websiteName = contrexx_input2raw($post['websiteName']);
+            $websiteName = contrexx_input2raw($post['multisite_address']);
             //set email of the new user
-            $objUser->setEmail(contrexx_input2raw($post['email']));
+            $objUser->setEmail(contrexx_input2raw($post['multisite_email_address']));
             //set frontend language id 
-            $objUser->setFrontendLanguage(contrexx_input2raw($post['langId']));
+            //$objUser->setFrontendLanguage(contrexx_input2raw($post['langId']));
             //set backend language id 
-            $objUser->setBackendLanguage(contrexx_input2raw($post['langId']));
+            //$objUser->setBackendLanguage(contrexx_input2raw($post['langId']));
             //set password 
             $objUser->setPassword($objUser->make_password(8, true));
             //check email validity
-            if (!\FWValidator::isEmail($post['email'])) {
+            if (!\FWValidator::isEmail($post['multisite_email_address'])) {
                 throw new MultiSiteJsonException('The email you entered is invalid.');
             }
             //check email existence
-            if (!\User::isUniqueEmail()) {
+            if (!\User::isUniqueEmail($post['multisite_email_address'])) {
                 throw new MultiSiteJsonException('An account with this email does already exist. Click here to login.');
             }
 
             //call \User\store function to store all the info of new user
             if (!$objUser->store()) {
-                print_r($objUser->error_msg);
-                return $objUser->error_msg;
+                throw new MultiSiteJsonException($objUser->error_msg);
             }
             //call createWebsite method.
             return $this->createWebsite($objUser,$websiteName);
+        } else if ($params['get']['fetchForm']==1){
+            $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
+            $page = $pageRepo->findOneByModuleCmdLang('MultiSite', 'signup', FRONTEND_LANG_ID);
+            return $page->getContent();
+        } else {
+            die(file_get_contents('core_modules/MultiSite/View/Script/Frontend.js'));
         }
     }
    

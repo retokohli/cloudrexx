@@ -71,6 +71,7 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
     public function __construct($basepath, $name, $websiteServiceServer = null, \Cx\Core_Modules\MultiSite\Model\Entity\User $userObj=null, $lazyLoad = true) {
         $this->basepath = $basepath;
         $this->name = $name;
+        $this->ipAddress = $name;
 
         if ($lazyLoad) {
             return true;
@@ -80,6 +81,7 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
         $this->status = 0;
         $this->websiteServiceServerId = 0;
         $this->owner = $userObj;
+        $this->ownerId = $userObj->getId();
         $this->installationId = $this->generateInstalationId();
         
 
@@ -403,9 +405,9 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
             $this->setupDataFolder($websiteName);
             $this->setupConfiguration($websiteName, $objDb, $objDbUser);
             $this->setupMultiSiteConfig($websiteName);
-            $websiteIp = \Cx\Core\Setting\Controller\Setting::getValue('pleskIp');
+            $websiteIp = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteIp');
         }
-
+        $this->messages = $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATED'];
         if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == 'manager'
             || \Cx\Core\Setting\Controller\Setting::getValue('mode') == 'hybrid') {
             // Add DNS records for new website
@@ -430,13 +432,11 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
                 //$this->removeWebsite($websiteName);
                 throw new WebsiteException('Could not create website (Mail send failed)');
             }
-            return array('status' => 'success');
+            return $this->messages;
         }
-
-        $this->messages = $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATED'];
         return array(
             'status' => 'success',
-            'websiteIp' => $websiteIp
+            'websiteIp' => $websiteIp,
         );
     }
     
