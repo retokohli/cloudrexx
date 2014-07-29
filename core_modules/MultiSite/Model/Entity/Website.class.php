@@ -81,12 +81,16 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
         $this->websiteServiceServerId = 0;
         $this->owner = $userObj;
         $this->installationId = $this->generateInstalationId();
+        
 
         if ($websiteServiceServer) {
             $this->setWebsiteServiceServer($websiteServiceServer);
         }
         $this->secretKey = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::generateSecretKey();
         $this->validate();
+        
+        $this->setFqdn();
+        $this->setBaseDn();
     }
 
     public static function loadFromFileSystem($basepath, $name)
@@ -833,4 +837,74 @@ throw new WebsiteException('implement secret-key algorithm first!');
         return $installationId;
     }
     
+    /**
+     * Set Fqdn
+     *
+     */    
+    function setFqdn(){
+        $fqdn = new Domain($this->name.'.'.$this->websiteServiceServer->getHostname());
+        $fqdn->setWebsiteId($this->id);
+        $fqdn->setType(Domain::TYPE_FQDN);
+        \Env::get('em')->persist($fqdn);
+        \Env::get('em')->flush();
+    }
+    
+    /**
+     * get Fqdn
+     *
+     */    
+    public function getFqdn(){
+        return \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findBy(array('type' => Domain::TYPE_FQDN, 'websiteId' => $this->id));
+    }   
+    
+    /**
+     * Set BaseDn
+     *
+     */    
+    function setBaseDn(){
+        $baseDn = new Domain($this->name.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'));
+        $baseDn->setWebsiteId($this->id);
+        $baseDn->setType(Domain::TYPE_BASE_DOMAIN);
+        \Env::get('em')->persist($baseDn);
+        \Env::get('em')->flush();
+    }
+    
+    /**
+     * Get BaseDn
+     *
+     */    
+    public function getBaseDn(){
+       return \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findBy(array('type' => Domain::TYPE_BASE_DOMAIN, 'websiteId' => $this->id)); 
+    }
+    
+    /**
+     * Get DomainAliases
+     *
+     */   
+    public function getDomainAliases(){
+        return \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findBy(array('type' => Domain::TYPE_EXTERNAL_DOMAIN));
+    }
+    
+    /**
+     * mapDomain
+     * 
+     * @param string $name websitename
+     */  
+    public function mapDomain($name){
+        $mapDomain = new Domain($name);
+        $mapDomain->setWebsiteId($this->id);
+        $mapDomain->setType(Domain::TYPE_EXTERNAL_DOMAIN);
+        \Env::get('em')->persist($mapDomain);
+        \Env::get('em')->flush();
+    }
+    
+    /**
+     * 
+     * unmapDomain
+     *
+     * @param string $name websitename
+     */  
+    public function unmapDomain($name){
+        return  \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain')->remove(array('type' => Domain::TYPE_EXTERNAL_DOMAIN , 'name' => $name, 'websiteId' => $this->id));
+    }
 }

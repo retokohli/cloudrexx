@@ -1,0 +1,24 @@
+Cx\Core_Modules\MultiSite\Model\Entity\Domain:
+  type: entity
+  repositoryClass: Cx\Core_Modules\MultiSite\Model\Repository\DomainRepository
+  table: core_module_multisite_domain
+  indexes:
+    name_index:
+      columns: [ name ]
+  id:
+    websiteId:
+      type: integer
+    type:
+      type: string
+  fields:
+    name:
+      type: string
+      length: 200
+    websiteId:
+      type: integer
+    type:
+      type: string
+      length: 12
+    pleskId:
+      type: integer
+   
