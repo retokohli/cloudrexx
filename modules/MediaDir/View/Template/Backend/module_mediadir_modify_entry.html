@@ -73,6 +73,16 @@ cx.ready(function() {
     </tr>
     <!-- END mediadirFormList -->
 
+    <!-- BEGIN mediadirEntryStatus -->
+    <tr class="{MEDIADIR_INPUTFIELD_ROW_CLASS}">
+        <td width="200" valign="top">{TXT_MEDIADIR_ENTRY_STATUS}</td>
+        <td>
+            <input type="hidden" name="status" value="0" />
+            <input type="checkbox" name="status" value="1" {MEDIADIR_ENTRY_STATUS} />
+        </td>
+    </tr>
+    <!-- END mediadirEntryStatus -->
+    
     <!-- BEGIN mediadirInputfieldList -->
     <tr class="{MEDIADIR_INPUTFIELD_ROW_CLASS}">
         <td width="200" valign="top">{TXT_MEDIADIR_INPUTFIELD_NAME}</td>
