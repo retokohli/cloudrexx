@@ -80,8 +80,8 @@ class RoutingAdapter implements \Cx\Core\Json\JsonAdapter {
         $websitesPath=\Cx\Core\Setting\Controller\Setting::getValue('websitesPath');
         
         // search for website with mail
-        $instRepo = new \Cx\Core_Modules\MultiSite\Model\Repository\WebsiteRepository();
-        $website = $instRepo->findByMail($websitesPath, $params['get']['mail']);
+        $instRepo = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website');
+        $website = $instRepo->findByMail($params['get']['mail']);
         // perform sub request to website
         try {
             if (!$website) {

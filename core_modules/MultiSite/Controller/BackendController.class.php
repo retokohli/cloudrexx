@@ -96,8 +96,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 //\Cx\Core\Setting\Controller\Setting::init('MultiSite', 'config');
                 $websitesPath=\Cx\Core\Setting\Controller\Setting::getValue('websitePath');
                 // this a very ugly BETA with no much comment and wrong english in it
-                $instRepo = new \Cx\Core_Modules\MultiSite\Model\Repository\WebsiteRepository();
-                $websites = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($instRepo->findAll($websitesPath));
+                $instRepo = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                $websites = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($instRepo->findAll());
                 $html = '
                     <p>
                         Heute: ' . 
@@ -174,10 +174,10 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                // \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'config','FileSystem');
                 //self::errorHandler();
                 $websitesPath=\Cx\Core\Setting\Controller\Setting::getValue('websitePath');
-                $instRepo = new \Cx\Core_Modules\MultiSite\Model\Repository\WebsiteRepository();
-                $websites = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($instRepo->findAll($websitesPath));
+                $instRepo = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                $websites = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($instRepo->findAll());
                 if (isset($_GET['adminLogin'])) {
-                    $website = $instRepo->findByName($websitesPath, $_GET['adminLogin']);
+                    $website = $instRepo->findByName($_GET['adminLogin']);
                     if ($website) {
                         // perform login via JSON
                         $websiteDomain = contrexx_input2raw($_GET['adminLogin']) . '.' . substr(\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'), 0);

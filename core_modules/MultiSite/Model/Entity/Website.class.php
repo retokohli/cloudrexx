@@ -475,8 +475,8 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
         
         /* commented as we have removed email attribute from this class
         // website with that mail
-        $webRepo = new \Cx\Core_Modules\MultiSite\Model\Repository\WebsiteRepository();
-        $website = $webRepo->findByMail(\Cx\Core\Setting\Controller\Setting::getValue('websitePath'), $websiteMail);
+        $webRepo = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website');
+        $website = $webRepo->findByMail($websiteMail);
         if ($website) {
             throw new WebsiteException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_ALREADY_EXISTS']);
         }
@@ -666,8 +666,8 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
     */
     public function cleanup() {
 throw new WebsiteException('implement secret-key algorithm first!');
-        $instRepo = new \Cx\Core_Modules\MultiSite\Model\Repository\WebsiteRepository();
-        $websites = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($instRepo->findAll(\Cx\Core\Setting\Controller\Setting::getValue('websitePath')));
+        $instRepo = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website');
+        $websites = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($instRepo->findAll());
         $someTimeAgo = strtotime('60 days ago');
         foreach ($websites as $website) {
             if (!$website->isActivated() && $website->getCreateDate() < $someTimeAgo) {

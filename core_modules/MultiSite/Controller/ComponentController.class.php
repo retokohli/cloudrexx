@@ -156,12 +156,12 @@ throw new MultiSiteException('Refactor this method!');
         $langId = \FWLanguage::getLanguageIdByCode($lang);
         \Env::get('ClassLoader')->loadFile(ASCMS_CORE_MODULE_PATH.'/MultiSite/lang/' . $lang . '/backend.php');
 
-        $instRepo = new \Cx\Core_Modules\MultiSite\Model\Repository\WebsiteRepository();
+        $instRepo = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website');
         $websiteName = isset($params['get']['name']) ? $params['get']['name'] : $params['post']['name'];
         /**
          * @var \Cx\Core_Modules\MultiSite\Model\Entity\Websites $website
          */
-        $website = $instRepo->findByName($this->websitePath, $websiteName);
+        $website = $instRepo->findByName($websiteName);
         if (!$website) {
             throw new MultiSiteRoutingException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_NO_SUCH_WEBSITE_WITH_NAME']);
         }
@@ -386,10 +386,10 @@ throw new MultiSiteException('Refactor this method!');
     }
 
     private function deployWebsite(\Cx\Core\Core\Controller\Cx $cx) {
-        $multiSiteRepo = new \Cx\Core_Modules\MultiSite\Model\Repository\WebsiteRepository();
+        $multiSiteRepo = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website');
 // TODO: add support for requests to domain aliases (i.e.: example.com)
         $websiteName = substr($_SERVER['HTTP_HOST'], 0, -strlen('.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain')));
-        $website = $multiSiteRepo->findByName(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/', $websiteName);
+        $website = $multiSiteRepo->findByName($websiteName);
         if ($website) {
             $configFile = \Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName.'/config/configuration.php';
             \DBG::msg("MultiSite: Loading customer Website {$website->getName()}...");
