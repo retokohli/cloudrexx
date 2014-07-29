@@ -309,6 +309,16 @@ CREATE TABLE `contrexx_core_mail_template` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_core_module_multisite_domain` (
+  `name` varchar(200) NOT NULL,
+  `websiteId` int(11) NOT NULL,
+  `type` varchar(12) NOT NULL,
+  `pleskId` int(11) NOT NULL,
+  PRIMARY KEY  (`websiteId`,`type`)
+) ENGINE=MyISAM;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_core_module_multisite_user_website` (
   `websiteId` int(11) unsigned NOT NULL,
   `multiSiteUserId` int(11) unsigned NOT NULL,
