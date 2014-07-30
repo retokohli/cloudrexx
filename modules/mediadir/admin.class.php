@@ -361,6 +361,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
                 $objForms->listForms($this->_objTpl, 2, $intFormId);
 
                 //parse blocks
+                $this->_objTpl->hideBlock($this->moduleName.'EntryStatus');
                 $this->_objTpl->hideBlock($this->moduleName.'InputfieldList');
                 $this->_objTpl->hideBlock($this->moduleName.'SpezfieldList');
             } else {
@@ -576,6 +577,8 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
 
                 //get form onsubmit
                 $strOnSubmit = parent::getFormOnSubmit($objInputfields->arrJavascriptFormOnSubmit);
+                
+                $this->_objTpl->setVariable($this->moduleLangVar.'_ENTRY_STATUS', ($intEntryId && intval($objEntry->arrEntries[$intEntryId]['entryActive']) ? 'checked="checked"' : ''));
 
                 //parse blocks
                 $this->_objTpl->hideBlock($this->moduleName.'FormList');
@@ -603,6 +606,7 @@ class mediaDirectoryManager extends mediaDirectoryLibrary
                 $this->moduleLangVar.'_DISPLAYDURATION_SELECT_PERIOD' =>  $intEntryDourationPeriod,
                 $this->moduleLangVar.'_DISPLAYDURATION_SHOW_PERIOD' =>  $intEntryDourationShowPeriod,
                 'TXT_'.$this->moduleLangVar.'_TRANSLATION_STATUS' => $_ARRAYLANG['TXT_MEDIADIR_TRANSLATION_STATUS'],
+                'TXT_'.$this->moduleLangVar.'_ENTRY_STATUS' => $_ARRAYLANG['TXT_MEDIADIR_ACTIVE'],
             ));
         } else {
 			CSRF::header("Location: index.php?cmd=".$this->moduleName."&act=settings&tpl=forms");
