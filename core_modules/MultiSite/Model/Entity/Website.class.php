@@ -882,7 +882,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
      *
      */   
     public function getDomainAliases(){
-        return \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findBy(array('type' => Domain::TYPE_EXTERNAL_DOMAIN));
+        return \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findBy(array('type' => Domain::TYPE_EXTERNAL_DOMAIN, 'websiteId' => $this->id));
     }
     
     /**
