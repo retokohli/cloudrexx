@@ -386,10 +386,10 @@ throw new MultiSiteException('Refactor this method!');
     }
 
     private function deployWebsite(\Cx\Core\Core\Controller\Cx $cx) {
-        $multiSiteRepo = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website');
+        $multiSiteRepo = new \Cx\Core_Modules\MultiSite\Model\Repository\FileSystemWebsiteRepository();
 // TODO: add support for requests to domain aliases (i.e.: example.com)
         $websiteName = substr($_SERVER['HTTP_HOST'], 0, -strlen('.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain')));
-        $website = $multiSiteRepo->findByName($websiteName);
+        $website = $multiSiteRepo->findByName(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/', $websiteName);
         if ($website) {
             $configFile = \Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName.'/config/configuration.php';
             \DBG::msg("MultiSite: Loading customer Website {$website->getName()}...");

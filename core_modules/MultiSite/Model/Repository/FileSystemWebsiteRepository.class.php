@@ -1,7 +1,7 @@
 <?php
 namespace Cx\Core_Modules\MultiSite\Model\Repository;
 
-class WebsiteRepository {
+class FileSystemWebsiteRepository {
     protected $websites = array();
     
     public function findAll($basepath) {
