@@ -576,12 +576,9 @@ class MediaDirectoryManager extends MediaDirectoryLibrary
 
                 //get form onsubmit
                 $strOnSubmit = parent::getFormOnSubmit($objInputfields->arrJavascriptFormOnSubmit);
-
-                if(intval($intEntryId) != 0) {
-                    $this->_objTpl->setVariable($this->moduleLangVar.'_ENTRY_STATUS', intval($objEntry->arrEntries[$intEntryId]['entryActive']) ? 'checked="checked"' : '');
-                } else {
-                    $this->_objTpl->hideBlock($this->moduleNameLC.'EntryStatus');
-                }
+                
+                $this->_objTpl->setVariable($this->moduleLangVar.'_ENTRY_STATUS', ($intEntryId && intval($objEntry->arrEntries[$intEntryId]['entryActive']) ? 'checked="checked"' : ''));
+                
                 //parse blocks
                 $this->_objTpl->hideBlock($this->moduleNameLC.'FormList');
             }
