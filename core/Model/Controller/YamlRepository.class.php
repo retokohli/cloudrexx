@@ -196,7 +196,8 @@ class YamlRepository {
         $this->entities[$this->getIdentifierOfEntity($entity)] = $entity;
         if (!$entity->isVirtual()) {
             $this->addedEntities[] = $entity;
-            \Env::get('cx')->getEvents()->triggerEvent('model/prePersist', array($entity));
+            //\Env::get('cx')->getEvents()->triggerEvent('model/prePersist', array($entity));
+            \Env::get('cx')->getEvents()->triggerEvent('model/prePersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($entity, \Env::get('em'))));
         }
     }
 
@@ -208,7 +209,8 @@ class YamlRepository {
     public function remove($entity) {
         unset($this->entities[$this->getIdentifierOfEntity($entity)]);
         $this->removedEntities[] = $entity;
-        \Env::get('cx')->getEvents()->triggerEvent('model/preRemove', array($entity));
+        //\Env::get('cx')->getEvents()->triggerEvent('model/preRemove', array($entity));
+        \Env::get('cx')->getEvents()->triggerEvent('model/preRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($entity, \Env::get('em'))));
     }
 
     /**
@@ -232,11 +234,13 @@ class YamlRepository {
         $dataSet->save($this->repositoryPath);
         
         foreach ($this->removedEntities as $entity) {
-            \Env::get('cx')->getEvents()->triggerEvent('model/postRemove', array($entity));
+            //\Env::get('cx')->getEvents()->triggerEvent('model/postRemove', array($entity));
+            \Env::get('cx')->getEvents()->triggerEvent('model/postRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($entity, \Env::get('em'))));
         }
 
         foreach ($this->addedEntities as $entity) {
-            \Env::get('cx')->getEvents()->triggerEvent('model/postPersist', array($entity));
+            //\Env::get('cx')->getEvents()->triggerEvent('model/postPersist', array($entity));
+            \Env::get('cx')->getEvents()->triggerEvent('model/postPersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($entity, \Env::get('em'))));
         }
         //truncate the variables
         if (!empty($this->addedEntities))
