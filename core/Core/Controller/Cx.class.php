@@ -1190,7 +1190,17 @@ namespace Cx\Core\Core\Controller {
             $this->request->getUrl()->setMode($this->mode);
 
             if ($this->mode == self::MODE_FRONTEND) {
-                $this->resolvedPage = $this->resolver->resolve();
+                
+                // TODO: Workaround for upload-component as it is loaded in preResolve-hook.
+                // Remove this workaround once the Upload-component has been replaced
+                // by the new Uploader-component which operates only through JsonData
+                // and does therefore not depend on the resolved page any longer.
+                if (isset($_GET['section']) && $_GET['section'] == 'Upload') {
+                    $this->resolvedPage = new \Cx\Core\ContentManager\Model\Entity\Page();
+                    $this->resolvedPage->setVirtual(true);
+                } else {
+                    $this->resolvedPage = $this->resolver->resolve();
+                }
                 
             } else {
                 global $cmd, $act, $isRegularPageRequest, $plainCmd;
