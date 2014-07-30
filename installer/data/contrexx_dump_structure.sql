@@ -259,7 +259,7 @@ CREATE TABLE `contrexx_content_page` (
   `customContent` varchar(64) default NULL,
   `useCustomContentForAllChannels` int(2) default NULL,
   `applicationTemplate` varchar(100) default NULL,
-  `useCustomApplicationTemplateForAllChannels` tinyint(2) NOT NULL,
+  `useCustomApplicationTemplateForAllChannels` tinyint(2) default NULL,
   `cssName` varchar(255) default NULL,
   `cssNavName` varchar(255) default NULL,
   `skin` int(11) default NULL,
