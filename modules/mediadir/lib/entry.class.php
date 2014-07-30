@@ -834,7 +834,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
         if(empty($intId)) {
             if($objInit->mode == 'backend') {
                 $intConfirmed = 1;
-                $intActive = 0;
+                $intActive = intval($arrData['status']) ? 1 : 0;
                 $intShowIn = 3;
                 $intDurationType =  intval($arrData['durationType']);
                 $intDurationStart = $this->dateFromInput($arrData['durationStart']);
@@ -888,6 +888,8 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                 $intDurationEnd = $this->dateFromInput($arrData['durationEnd']);
 
                 $arrAdditionalQuery[] = "`duration_type`='". intval($arrData['durationType'])."', `duration_start`='". intval($intDurationStart)."',  `duration_end`='". intval($intDurationEnd)."'";
+                
+                $arrAdditionalQuery[] = "`active`='". (intval($arrData['status']) ? 1 : 0)."'";
             } else {
                 $intConfirmed = $this->arrSettings['settingsConfirmUpdatedEntries'] == 1 ? 0 : 1;
                 $intShowIn = 2;
