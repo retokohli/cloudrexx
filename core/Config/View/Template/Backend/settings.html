@@ -7,6 +7,11 @@ function toggleDebuggingFlags(show) {
     else
         target.hide();
 }
+$J(document).ready(function(){
+   $J("#addDomian").click(function(){
+      $J(location).attr('href', 'index.php?cmd=Config&act=Domain&add=1&csrf=' + cx.variables.get('csrf')); 
+   });
+});
 </script>
 
 <!-- BEGIN settings_ftp_config_warning -->
@@ -46,18 +51,18 @@ function toggleDebuggingFlags(show) {
             <tr class="row1">
                 <td>{TXT_GLOBAL_TITLE}&nbsp;</td>
                 <td>
-                    <input type="text" name="setvalue[51]" value="{SETTINGS_GLOBAL_TITLE}" size="70" maxlength="250" />
+                    <input type="text" name="setvalue[51]" value="{SETTINGS_GLOBAL_TITLE}" size="70" maxlength="250"/>
                     <span class="tooltip-trigger icon-info"></span><span class="tooltip-message">{TXT_GLOBAL_TITLE_HELP}</span>
                 </td>
             </tr>
             <tr class="row2">
                 <td>{TXT_MAIN_DOMAIN}&nbsp;</td>
                 <td>
-                    <select name="setvalue[126]">
+                    <select name="setvalue[126]" style="width: 459px;">
                         <!-- BEGIN showDomainName -->
                         <option value="{SETTINGS_DOMAIN_ID}" {SETTINGS_DOMAIN_SELECTED} {SETTINGS_HOSTDOMAIN_SELECTED}>{SETTINGS_DOMAIN_NAME}</option>
                         <!-- END showDomainName -->
-                    </select>
+                    </select>&nbsp;&nbsp;<input id='addDomian' type="button" name="addDomain" value="{TXT_ADD}"/>
             </tr>
             <tr class="row1">
                 <td>{TXT_SETTINGS_FORCE_DOMAIN_URL}&nbsp;</td>
@@ -92,7 +97,7 @@ function toggleDebuggingFlags(show) {
             <tr class="row1">
                 <td>{TXT_SETTINGS_PROTOCOL_HTTPS_FRONTEND}&nbsp;</td>
                 <td>
-                    <select name="setvalue[57]" id="setvalue_57">
+                    <select name="setvalue[57]" id="setvalue_57" style="width: 459px;">
                         <option value="none"{SETTINGS_FORCE_PROTOCOL_FRONTEND_NONE}>{TXT_FORCE_PROTOCOL_NONE}</option>
                         <option value="http"{SETTINGS_FORCE_PROTOCOL_FRONTEND_HTTP}>{TXT_FORCE_PROTOCOL_HTTP}</option>
                         <option value="https"{SETTINGS_FORCE_PROTOCOL_FRONTEND_HTTPS}>{TXT_FORCE_PROTOCOL_HTTPS}</option>

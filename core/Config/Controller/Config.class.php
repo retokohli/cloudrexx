@@ -57,7 +57,7 @@ class Config
             <a href="?cmd=Config&amp;act=smtp" class="'.($this->act == 'smtp' ? 'active' : '').'">'.$_ARRAYLANG['TXT_EMAIL_SERVER'].'</a>
             <a href="index.php?cmd=Config&amp;act=image" class="'.($this->act == 'image' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_IMAGE'].'</a>
             <a href="index.php?cmd=license">'.$_ARRAYLANG['TXT_LICENSE'].'</a>
-            <a href="index.php?cmd=Config&amp;act=Domain">'.$_ARRAYLANG['TXT_SETTINGS_DOMAIN'].'</a>'
+            <a href="index.php?cmd=Config&amp;act=Domain" class="'.($this->act == 'Domain' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_DOMAIN'].'</a>'
         );
     }
 
@@ -220,6 +220,7 @@ class Config
             'TXT_RADIO_OFF'                   => $_ARRAYLANG['TXT_DEACTIVATED']
         ));
         $objTemplate->setVariable(array(
+            'TXT_ADD'                                   => $_ARRAYLANG['TXT_ADD'],
             'TXT_TITLE_SET1'                            => $_ARRAYLANG['TXT_SETTINGS_TITLE_MISC'],
             'TXT_TITLE_SET2'                            => $_ARRAYLANG['TXT_ADMIN_AREA'],
             'TXT_TITLE_SET3'                            => $_ARRAYLANG['TXT_SECURITY'],
