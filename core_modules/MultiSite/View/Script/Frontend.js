@@ -1,7 +1,7 @@
 (function($) {
     cx.ready(function() {
-        //cx_multisite.showSignUp();
         $("#multisite_signup_form").validate({
+            errorElement: "div",
             submitHandler: function(form) {
                 var multisite_email_address =  $("#multisite_email_address").val();
                 var multisite_address = $("#multisite_address").val();
@@ -37,7 +37,7 @@
             }
         });
         
-        getLoader = function (){    
+        getLoader = function (){
             var loadingImagePath = '/lib/javascript/jquery/jstree/themes/default/throbber.gif';    
             var img = $('<img></img>');
             img.attr('src',loadingImagePath);
@@ -45,11 +45,10 @@
             return img;
         }
     });
-/*
+
     cx_multisite = {
         showSignUp : function (){
-            //domainUrl = cx.variables.get('baseUrl', 'MultiSite')+cx.variables.get('cadminPath', 'contrexx')+"index.php?cmd=JsonData&object=MultiSite&act=signup";
-            url = "https://cloudrexx.local/cadmin/index.php?cmd=JsonData&object=MultiSite&act=signup&fetchForm=1";
+            url = cx.variables.get('baseUrl', 'MultiSite')+cx.variables.get('cadminPath', 'contrexx')+"index.php?cmd=JsonData&object=MultiSite&act=signup&fetchForm=1";
             cx.jQuery.ajax({
                 dataType: "json",
                 url: url,
@@ -65,7 +64,7 @@
             });
         }
     }
-    */
+
 })(jQuery);
 
 

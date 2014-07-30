@@ -27,11 +27,10 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * @param \Cx\Core\Html\Sigma $template Template containing content of resolved page
      */
     public function parsePage(\Cx\Core\Html\Sigma $template, $cmd) {
-        //echo $cmd;die;
         switch ($cmd) {           
             // Singup proccess step1 user register
 			case "signup":
-                    $setVariable = $this->signup($cmd);
+                    $setVariable = $this->signup();
             break;
         }
         $template->setVariable($setVariable);
@@ -44,11 +43,9 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
      * retrun step one respone
      * @param 
      */
-    protected function signup($activityType){
-        global $_ARRAYLANG, $_LANGID;  
-        $post=$_POST;
+    protected function signup(){
+        global $_ARRAYLANG, $_LANGID;
         // get website minimum and maximum Name length
-        //self::errorHandler();
         $websiteNameMinLength=\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength');
         $websiteNameMaxLength=\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength');
         // TODO: implement protocol support / the protocol to use should be defined by a configuration option
@@ -59,8 +56,8 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         } else {           
             $multiSiteDomain = $protocol.'://'.\Cx\Core\Setting\Controller\Setting::getValue('managerHostname');
         }
-        //Add jquery validations library (jquery.validate.min.js)
         \JS::activate('cx');
+        //Add jquery validations library (jquery.validate.min.js)
         \JS::registerJs('lib/javascript/jquery/jquery.validate.min.js');
         \ContrexxJavascript::getInstance()->setVariable('baseUrl', $multiSiteDomain, 'MultiSite');
         $setVariable=array(

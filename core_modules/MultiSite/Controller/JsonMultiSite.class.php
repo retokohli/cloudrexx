@@ -94,9 +94,34 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             //call createWebsite method.
             return $this->createWebsite($objUser,$websiteName);
         } else if ($params['get']['fetchForm']==1){
-            $pageRepo = \Env::get('em')->getRepository('Cx\Core\ContentManager\Model\Entity\Page');
-            $page = $pageRepo->findOneByModuleCmdLang('MultiSite', 'signup', FRONTEND_LANG_ID);
-            return $page->getContent();
+            $Template = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/MultiSite/View/Template/Frontend');
+            $Template->loadTemplateFile('Signup.html');
+            $Template->setErrorHandling(PEAR_ERROR_DIE);
+            // get website minimum and maximum Name length
+            $websiteNameMinLength=\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength');
+            $websiteNameMaxLength=\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength');
+            // TODO: implement protocol support / the protocol to use should be defined by a configuration option
+            $protocol = 'https';
+            if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array('manager', 'hybrid'))) {
+                $configs = \Env::get('config');
+                $multiSiteDomain = $protocol.'://'.$configs['domainUrl'];
+            } else {           
+                $multiSiteDomain = $protocol.'://'.\Cx\Core\Setting\Controller\Setting::getValue('managerHostname');
+            }
+            \JS::activate('cx');
+            //Add jquery validations library (jquery.validate.min.js)
+            \JS::registerJs('lib/javascript/jquery/jquery.validate.min.js');
+            \ContrexxJavascript::getInstance()->setVariable('baseUrl', $multiSiteDomain, 'MultiSite');
+            $setVariable=array(
+                                'TITLE'         => $_ARRAYLANG['TXT_MULTISITE_TITLE'],
+                                'TXT_MULTISITE_EMAIL_ADDRESS' => $_ARRAYLANG['TXT_MULTISITE_EMAIL_ADDRESS'],
+                                'TXT_MULTISITE_ADDRESS'  => $_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS'],
+                                'TXT_MULTISITE_CREATE_WEBSITE'   => $_ARRAYLANG['TXT_MULTISITE_SUBMIT_BUTTON'],
+                                'MULTISITE_DOMAIN'     => \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'),
+                                'POST_URL'      => '',
+                            );
+            $Template->setVariable($setVariable);
+            return $Template->get();
         } else {
             die(file_get_contents('core_modules/MultiSite/View/Script/Frontend.js'));
         }

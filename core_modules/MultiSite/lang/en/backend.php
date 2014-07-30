@@ -65,3 +65,39 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATED'] = 'Thank you for the re
 // default texts for checkout module
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DEFAULT_TEXT_LOOK_AND_FEEL'] = "Submitting the form will take you to the payment provider’s website, where you can complete your payment.";
 
+
+// Registration Module
+$_ARRAYLANG['TXT_MULTISITE_TITLE']='Get started with cloudrexx.com';
+$_ARRAYLANG['TXT_MULTISITE_EMAIL_ADDRESS']='Email Address';
+$_ARRAYLANG['TXT_MULTISITE_USERS_NAME']='User Name';
+$_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS']='Site Address';
+$_ARRAYLANG['TXT_MULTISITE_SUBMIT_BUTTON']='Create Site';
+$_ARRAYLANG['TXT_MULTISITE_IS_UPGRADING']='Thinks about upgrading?';
+$_ARRAYLANG['TXT_MULTISITE_FREE_SITE']='Free Site';
+
+$_ARRAYLANG['TXT_MULTISITE_SITE_TITLE']='Site Title';
+$_ARRAYLANG['TXT_MULTISITE_TAGLINE']='Tag Line';
+$_ARRAYLANG['TXT_MULTISITE_LANGUAGE']='Language';
+$_ARRAYLANG['TXT_MULTISITE_BACKSTEP']='BACK';
+$_ARRAYLANG['TXT_MULTISITE_NEXTSTEP']='NEXT STEP';
+$_ARRAYLANG['TXT_MULTISITE_OPTIONAL']='Optional';
+
+$_ARRAYLANG['TXT_MULTISITE_FIRSTPOST']='CREATE YOUR FIRST POST';
+$_ARRAYLANG['TXT_MULTISITE_NEWS']='News';
+$_ARRAYLANG['TXT_MULTISITE_SITE']='Site';
+$_ARRAYLANG['TXT_MULTISITE_BLOGS']='Blogs';
+$_ARRAYLANG['TXT_MULTISITE_CONTENT_MANAGER']='Content Manager';
+
+// Validation text
+$_ARRAYLANG['TXT_MULTISITE_EMAIL_REQUIRED']='E-mail address required!';
+$_ARRAYLANG['TXT_MULTISITE_EMAIL_INVALID']='Invalid E-mail address!';
+$_ARRAYLANG['TXT_MULTISITE_EMAIL_EXISTS']='E-mail address already exists!';
+$_ARRAYLANG['TXT_MULTISITE_USER_NAME_REQUIRED']='User name required!';
+$_ARRAYLANG['TXT_MULTISITE_USER_NAME_EXISTS']='User name already exists!';
+$_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS_INVALID']='Invalid site address!';
+$_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS_REQUIRED']='Site address required!';
+$_ARRAYLANG['TXT_MULTISITE_WEBSITE_ADDRESS_MINIMUM_LENGTH']='The site address can be up to {digits} characters short.';
+$_ARRAYLANG['TXT_MULTISITE_WEBSITE_ADDRESS_MAXIMUM_LENGTH']='The site address can be up to {digits} characters long.';
+$_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS_EXISTS']='Site address already exists!';
+$_ARRAYLANG['TXT_MULTISITE_SITE_TITLE_REQUIRED']='Site title required!';
+

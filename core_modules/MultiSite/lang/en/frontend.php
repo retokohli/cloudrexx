@@ -20,7 +20,7 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NAME_WRONG_CHARS'] = 'The name mu
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATED'] = 'Thank you for the registration! Please check your inbox (ended up in spam folder?). We sent an email to you with your credentials and first hints. Good luck.';
 
 // default texts for checkout module
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DEFAULT_TEXT_LOOK_AND_FEEL'] = "Submitting the form will take you to the payment provider’s website, where you can complete your payment.";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DEFAULT_TEXT_LOOK_AND_FEEL'] = 'Submitting the form will take you to the payment provider’s website, where you can complete your payment.';
 
 // Registration Module
 $_ARRAYLANG['TXT_MULTISITE_TITLE']='Get started with cloudrexx.com';
