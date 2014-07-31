@@ -35,8 +35,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     * @return array List of method names
     */
     public function getAccessableMethods() {
+// TODO: remove 'get' from 'signup' command once API/Command-mode has been implemented
         return array(
-            'signup'        => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false),
+            'signup'        => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post', 'get'), false),
             'createWebsite'=> new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
         );
     }
