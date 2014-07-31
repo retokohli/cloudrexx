@@ -124,10 +124,6 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $Template->setVariable($setVariable);
             return $Template->get();
         } else {
-             \JS::activate('cx');
-            //Add jquery validations library (jquery.validate.min.js)
-            \JS::registerJs('lib/javascript/jquery/jquery.validate.min.js');
-            \ContrexxJavascript::getInstance()->setVariable('baseUrl', $multiSiteDomain, 'MultiSite');
             $cxJs =  file_get_contents('lib/javascript/cx/contrexxJs.js');
             $cxJs .= file_get_contents('lib/javascript/cx/contrexxJs-tools.js');
             $cxJs .= file_get_contents('lib/javascript/jquery/ui/jquery-ui-1.8.7.custom.min.js');
