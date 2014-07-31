@@ -314,8 +314,10 @@ CREATE TABLE `contrexx_core_module_multisite_domain` (
   `websiteId` int(11) NOT NULL,
   `type` varchar(12) NOT NULL,
   `pleskId` int(11) NOT NULL,
-  PRIMARY KEY  (`websiteId`,`type`)
-) ENGINE=MyISAM;
+  PRIMARY KEY  (`websiteId`,`type`),
+  KEY `name` (`name`),
+  CONSTRAINT `contrexx_core_module_multisite_domain_ibfk_1` FOREIGN KEY (`websiteId`) REFERENCES `contrexx_core_module_multisite_website` (`id`)
+) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
