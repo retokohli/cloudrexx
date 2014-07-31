@@ -1,3 +1,4 @@
+SET FOREIGN_KEY_CHECKS = 0;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_access_group_dynamic_ids` (
