@@ -600,30 +600,37 @@ function deselectAll(control){
         control.options[i].selected = false;
     }
 }
-
-
+var defaultLang = '$_LANGID';
+var activeLang = new Array($arrActiveLang);
+\$J(function(){
+    \$J('.mediadirInputfieldDefault').each(function(){
+        id = \$J(this).data('id');
+        \$J(this).data('lastDefaultValue', \$J(this).val());
+        
+        \$J(this).keyup(function(){
+            var that = \$J(this);
+            var id = \$J(this).data('id');
+            
+            \$J.each(activeLang, function(i, v) {                
+                if (\$J('#mediadirInputfield_'+ id +'_'+ v).val() == that.data('lastDefaultValue')) {
+                    \$J('#mediadirInputfield_'+ id +'_'+ v).val(that.val());
+                }
+            });
+            \$J(this).data('lastDefaultValue', \$J(this).val());
+        });
+        
+        \$J('#mediadirInputfield_'+ id +'_'+ defaultLang).keyup(function(){
+            var id = \$J(this).data('id');
+            \$J('#mediadirInputfield_'+ id +'_0').val(\$J(this).val());
+            \$J('#mediadirInputfield_'+ id +'_0').data('lastDefaultValue', \$J(this).val());
+        });
+    });
+                
+});
+                
 function ExpandMinimize(toggle){
     elm1 = document.getElementById('mediadirInputfield_' + toggle + '_Minimized');
     elm2 = document.getElementById('mediadirInputfield_' + toggle + '_Expanded');
-
-    defaultLang = '$_LANGID';
-    activeLang = new Array($arrActiveLang);
-
-    elmMaster = document.getElementById('mediadirInputfield_' + toggle + '_0');
-    elmDefault = document.getElementById('mediadirInputfield_' + toggle + '_' + defaultLang);
-
-    for(i=0;i<activeLang.length;i++) {
-        elmCurrent = document.getElementById('mediadirInputfield_' + toggle + '_' + activeLang[i]);
-        if(elmCurrent.value == '') {
-            elmCurrent.value = elmMaster.value;
-        }
-    }
-
-    if(elm1.style.display=='block') {
-       elmDefault.value = elmMaster.value;
-    } else {
-       elmMaster.value = elmDefault.value;
-    }
 
     elm1.style.display = (elm1.style.display=='none') ? 'block' : 'none';
     elm2.style.display = (elm2.style.display=='none') ? 'block' : 'none';
