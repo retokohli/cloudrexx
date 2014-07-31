@@ -48,7 +48,8 @@
 
     cx_multisite = {
         showSignUp : function (){
-            url = cx.variables.get('baseUrl', 'MultiSite')+cx.variables.get('cadminPath', 'contrexx')+"index.php?cmd=JsonData&object=MultiSite&act=signup&fetchForm=1";
+            //url = cx.variables.get('baseUrl', 'MultiSite')+cx.variables.get('cadminPath', 'contrexx')+"index.php?cmd=JsonData&object=MultiSite&act=signup&fetchForm=1";
+            url = "/cadmin/index.php?cmd=JsonData&object=MultiSite&act=signup&fetchForm=1";
             cx.jQuery.ajax({
                 dataType: "json",
                 url: url,
@@ -64,7 +65,6 @@
             });
         }
     }
-
 })(jQuery);
 
 

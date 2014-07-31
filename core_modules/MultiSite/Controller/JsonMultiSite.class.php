@@ -124,10 +124,19 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $Template->setVariable($setVariable);
             return $Template->get();
         } else {
-            die(file_get_contents('core_modules/MultiSite/View/Script/Frontend.js'));
+             \JS::activate('cx');
+            //Add jquery validations library (jquery.validate.min.js)
+            \JS::registerJs('lib/javascript/jquery/jquery.validate.min.js');
+            \ContrexxJavascript::getInstance()->setVariable('baseUrl', $multiSiteDomain, 'MultiSite');
+            $cxJs =  file_get_contents('lib/javascript/cx/contrexxJs.js');
+            $cxJs .= file_get_contents('lib/javascript/cx/contrexxJs-tools.js');
+            $cxJs .= file_get_contents('lib/javascript/jquery/ui/jquery-ui-1.8.7.custom.min.js');
+            $cxJs .= file_get_contents('lib/javascript/cx/ui.js');
+            $cxJs .= file_get_contents('core_modules/MultiSite/View/Script/Frontend.js');
+            echo $cxJs;die;
         }
     }
-   
+
     /**
      * Creates a new website
      * @param type $params  
@@ -172,31 +181,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             throw new MultiSiteJsonException($e->getMessage());    
         }
     }
-    /*
-     * query method called from json request
-     * @param $params parameter passed by jsonData method
-     * */
-    /* TODO: remove this method after fully tested with the 
-     * createWebsite()
-    public function query($params){
-        try {
-            if (!empty($params['post']['command'])
-                && $params['post']['command'] == 'createWebsite') {
-                $objUser = new \Cx\Core_Modules\MultiSite\Model\Entity\User();
-                //set email of the new user
-                $objUser->setEmail($params['post']['userEmail']);
-                //set user id of the new user
-                $objUser->setId($params['post']['userId']);
-                $websiteId = $params['post']['websiteId'];
-           
-                return $this->createWebsite($objUser, $params['post']['websiteName']);
-            }
-        } catch (\Exception $e) {
-            return $e->getMessage();
-        }
-       
-    }
-     */ 
+
     /**
      *  callback authentication for verifing secret key and installation id based on mode
      * 
