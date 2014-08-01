@@ -314,7 +314,7 @@ CREATE TABLE `contrexx_core_module_multisite_domain` (
   `name` varchar(200) NOT NULL,
   `websiteId` int(11) NOT NULL,
   `type` varchar(12) NOT NULL,
-  `pleskId` int(11) NOT NULL,
+  `pleskId` int(11) default NULL,
   PRIMARY KEY  (`websiteId`,`type`),
   KEY `name` (`name`),
   CONSTRAINT `contrexx_core_module_multisite_domain_ibfk_1` FOREIGN KEY (`websiteId`) REFERENCES `contrexx_core_module_multisite_website` (`id`)
