@@ -64,6 +64,20 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
      * @var string $installationId
      */
     private $installationId;
+
+    /**
+     * @var Cx\Core_Modules\MultiSite\Model\Entity\Domain
+     */
+    private $fqdn;
+    /**
+     * @var Cx\Core_Modules\MultiSite\Model\Entity\Domain
+     */
+    private $baseDn;
+
+    /**
+     * @var Cx\Core_Modules\MultiSite\Model\Entity\Domain
+     */
+    private $domains;
     
     /*
      * Constructor
@@ -77,6 +91,7 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
             return true;
         }
 
+        $this->domains = new \Doctrine\Common\Collections\ArrayCollection();      
         $this->language = $userObj->getFrontendLanguage();
         $this->status = 0;
         $this->websiteServiceServerId = 0;
@@ -836,17 +851,23 @@ throw new WebsiteException('implement secret-key algorithm first!');
         $installationId = $randomHash . str_pad(dechex(crc32($randomHash)), 8, '0', STR_PAD_LEFT);    
         return $installationId;
     }
-    
+
     /**
      * Set Fqdn
      *
      */    
     function setFqdn(){
-        $fqdn = new Domain($this->name.'.'.$this->websiteServiceServer->getHostname());
-        $fqdn->setWebsiteId($this->id);
+        $config = \Env::get('config');
+        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == 'manager') {
+            $serviceServerHostname = $this->websiteServiceServer->getHostname();
+        } else {
+            $serviceServerHostname = $config['domainUrl'];
+        }
+        $fqdn = new Domain($this->name.'.'.$serviceServerHostname);
         $fqdn->setType(Domain::TYPE_FQDN);
-        \Env::get('em')->persist($fqdn);
-        \Env::get('em')->flush();
+        $this->fqdn = $fqdn;
+        $this->mapDomain($this->fqdn);
+        \Env::get('em')->persist($this->fqdn);
     }
     
     /**
@@ -863,10 +884,10 @@ throw new WebsiteException('implement secret-key algorithm first!');
      */    
     function setBaseDn(){
         $baseDn = new Domain($this->name.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'));
-        $baseDn->setWebsiteId($this->id);
         $baseDn->setType(Domain::TYPE_BASE_DOMAIN);
-        \Env::get('em')->persist($baseDn);
-        \Env::get('em')->flush();
+        $this->baseDn = $baseDn;
+        $this->mapDomain($this->baseDn);
+        \Env::get('em')->persist($this->baseDn);
     }
     
     /**
@@ -884,18 +905,26 @@ throw new WebsiteException('implement secret-key algorithm first!');
     public function getDomainAliases(){
         return \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findBy(array('type' => Domain::TYPE_EXTERNAL_DOMAIN, 'websiteId' => $this->id));
     }
+
+    /**
+     * Get domains
+     *
+     * @return Doctrine\Common\Collections\Collection $domains
+     */
+    public function getDomains() {
+        $this->domains = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findBy(array('websiteId' => $this->id));
+
+        return $this->domains;
+    }
     
     /**
      * mapDomain
      * 
-     * @param string $name websitename
+     * @param Cx\Core_Modules\MultiSite\Model\Entity\Domain $domain
      */  
-    public function mapDomain($name){
-        $mapDomain = new Domain($name);
-        $mapDomain->setWebsiteId($this->id);
-        $mapDomain->setType(Domain::TYPE_EXTERNAL_DOMAIN);
-        \Env::get('em')->persist($mapDomain);
-        \Env::get('em')->flush();
+    public function mapDomain(Domain $domain) {
+        $domain->setWebsite($this);
+        $this->domains[] = $domain;
     }
     
     /**

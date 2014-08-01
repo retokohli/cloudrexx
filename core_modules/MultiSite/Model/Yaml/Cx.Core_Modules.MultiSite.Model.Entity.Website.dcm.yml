@@ -32,6 +32,11 @@ Cx\Core_Modules\MultiSite\Model\Entity\Website:
       type: string
       length: 40  
       
+  oneToMany: # inverse side
+    domains:
+      targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\Domain
+      mappedBy: website
+
 #  manyToOne: # owning side
 #    websiteServiceServer:
 #      targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer

@@ -5,15 +5,13 @@ Cx\Core_Modules\MultiSite\Model\Entity\Domain:
   indexes:
     name_index:
       columns: [ name ]
-  id:
-    websiteId:
-      type: integer
-    type:
-      type: string
+# Note: id is already defined by \Cx\Core\Net\Model\Entity\Domain
+#  id:
   fields:
-    name:
-      type: string
-      length: 200
+# Note: name is already defined by \Cx\Core\Net\Model\Entity\Domain
+#    name:
+#      type: string
+#      length: 200
     websiteId:
       type: integer
     type:
@@ -22,3 +20,11 @@ Cx\Core_Modules\MultiSite\Model\Entity\Domain:
     pleskId:
       type: integer
    
+  manyToOne: # owning side
+    website:
+      targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\Website
+      inversedBy: domains 
+      joinColumn:
+        name: websiteId
+        referencedColumnName: id
+        cascade: [remove]

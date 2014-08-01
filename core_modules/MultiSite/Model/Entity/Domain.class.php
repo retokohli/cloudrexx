@@ -31,6 +31,11 @@ class Domain extends \Cx\Core\Net\Model\Entity\Domain {
     private $websiteId;
 
     /**
+     * @var Cx\Core_Modules\MultiSite\Model\Entity\Website $website
+     */
+    private $website;
+
+    /**
      * @var integer $id
      */
     public $type;
@@ -47,6 +52,7 @@ class Domain extends \Cx\Core\Net\Model\Entity\Domain {
     public function __construct($name) {
         parent::__construct($name);
         $this->name = $name;
+        $this->type = self::TYPE_EXTERNAL_DOMAIN;
     }
 
     /**
@@ -56,6 +62,15 @@ class Domain extends \Cx\Core\Net\Model\Entity\Domain {
      */
     public function setWebsiteId($websiteId) {
         $this->websiteId = $websiteId;
+    }
+
+    /**
+     * Set website
+     *
+     * @param Cx\Core_Modules\MultiSite\Model\Entity\Website $website
+     */
+    public function setWebsite(Website $website) {
+        $this->website = $website;
     }
 
     /**
