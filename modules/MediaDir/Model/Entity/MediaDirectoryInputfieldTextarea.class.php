@@ -109,8 +109,7 @@ class MediaDirectoryInputfieldTextarea extends \Cx\Modules\MediaDir\Controller\M
                         }
 
                         $strInputfield .= '<textarea data-id="'.$intId.'" name="'.$this->moduleNameLC.'Inputfield['.$intId.']['.$intLangId.']" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_'.$intLangId.'" style="height: 60px; width: 279px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url(\'images/flags/flag_'.$arrLang['lang'].'.gif\') no-repeat 3px 3px;" onfocus="this.select();" />'.$arrValue[$intLangId].'</textarea>&nbsp;'.$arrLang['name'].'<a href="javascript:ExpandMinimize(\''.$intId.'\');">&nbsp;'.$minimize.'</a><br />';
-                    }
-                    $strInputfield .= '<textarea name="'.$this->moduleNameLC.'Inputfield['.$intId.'][old]" style="display: none;" onfocus="this.select();" />'.$arrValue[0].'</textarea>';
+                    }                    
                     $strInputfield .= '</div>';
                 } else {
                 	if($this->arrSettings['settingsFrontendUseMultilang'] == 1) {
@@ -127,8 +126,7 @@ class MediaDirectoryInputfieldTextarea extends \Cx\Modules\MediaDir\Controller\M
 	                        }
 
 	                        $strInputfield .= '<textarea data-id="'.$intId.'" name="'.$this->moduleNameLC.'Inputfield['.$intId.']['.$intLangId.']" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_'.$intLangId.'" class="'.$this->moduleNameLC.'InputfieldTextarea '.$strInfoClass.'" '.$arrInfoValue[$intLangId].' onfocus="this.select();" />'.$arrValue[$intLangId].'</textarea>&nbsp;'.$arrLang['name'].'<a href="javascript:ExpandMinimize(\''.$intId.'\');">&nbsp;'.$minimize.'</a><br />';
-	                    }
-	                    $strInputfield .= '<textarea name="'.$this->moduleNameLC.'Inputfield['.$intId.'][old]" style="display: none;" onfocus="this.select();" />'.$arrValue[0].'</textarea>';
+	                    }	                    
 	                    $strInputfield .= '</div>';
                 	} else {
                 		$strInputfield = '<textarea name="'.$this->moduleNameLC.'Inputfield['.$intId.'][0]" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_0" class="'.$this->moduleNameLC.'InputfieldTextarea '.$strInfoClass.'" '.$arrInfoValue[0].' onfocus="this.select();" />'.$arrValue[0].'</textarea>';

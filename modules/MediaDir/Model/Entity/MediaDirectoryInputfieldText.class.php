@@ -107,8 +107,7 @@ class MediaDirectoryInputfieldText extends \Cx\Modules\MediaDir\Controller\Media
                         }
 
                         $strInputfield .= '<input type="text" data-id="'.$intId.'" name="'.$this->moduleNameLC.'Inputfield['.$intId.']['.$intLangId.']" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_'.$intLangId.'" value="'.$arrValue[$intLangId].'" style="width: 279px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url(\'images/flags/flag_'.$arrLang['lang'].'.gif\') no-repeat 3px 3px;" onfocus="this.select();" />&nbsp;'.$arrLang['name'].'&nbsp;'.$minimize.'<br />';
-                    }
-                    $strInputfield .= '<input type="hidden" name="'.$this->moduleNameLC.'Inputfield['.$intId.'][old]" value="'.$arrValue[0].'" />';
+                    }                    
                     $strInputfield .= '</div>';
                 } else {
                     if($this->arrSettings['settingsFrontendUseMultilang'] == 1) {
@@ -125,8 +124,7 @@ class MediaDirectoryInputfieldText extends \Cx\Modules\MediaDir\Controller\Media
 	                        }
 
 	                        $strInputfield .= '<input type="text" data-id="'.$intId.'" name="'.$this->moduleNameLC.'Inputfield['.$intId.']['.$intLangId.']" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_'.$intLangId.'" value="'.$arrValue[$intLangId].'" class="'.$this->moduleNameLC.'InputfieldText '.$strInfoClass.'" '.$arrInfoValue[$intLangId].' onfocus="this.select();" />&nbsp;'.$arrLang['name'].'&nbsp;'.$minimize.'<br />';
-	                    }
-	                    $strInputfield .= '<input type="hidden" name="'.$this->moduleNameLC.'Inputfield['.$intId.'][old]" value="'.$arrValue[0].'" />';
+	                    }	                    
 	                    $strInputfield .= '</div>';
                     } else {
                     	$strInputfield = '<input type="text" name="'.$this->moduleNameLC.'Inputfield['.$intId.'][0]" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_0" value="'.$arrValue[0].'" class="'.$this->moduleNameLC.'InputfieldText '.$strInfoClass.'" '.$arrInfoValue[0].'/>';
