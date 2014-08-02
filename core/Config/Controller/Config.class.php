@@ -1051,14 +1051,16 @@ class Config
         $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
         $domains = $domainRepository->findAll();
         $view = new \Cx\Core\Html\Controller\ViewGenerator($domains, array(
-                    'functions' => array(
-                    'add'       => true,
-                    'edit'      => true,
-                    'delete'    => true,
-                    'sorting'   => true,
-                    'paging'    => true,
-                    'filtering' => false,
-                )));
+            'header'    => $_ARRAYLANG['TXT_SETTINGS_DOMAIN'],
+            'functions' => array(
+                'add'       => true,
+                'edit'      => true,
+                'delete'    => true,
+                'sorting'   => true,
+                'paging'    => true,
+                'filtering' => false,
+                )
+            ));
         $objTemplate->setVariable('DOMAINS_CONTENT', $view->render());
     }
 }
