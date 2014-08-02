@@ -359,7 +359,6 @@ CREATE TABLE `contrexx_core_module_multisite_website_service_server` (
   `httpAuthMethod` varchar(6) default NULL,
   `httpAuthUsername` varchar(255) NOT NULL,
   `httpAuthPassword` varchar(255) NOT NULL,
-  `defaultWebsiteIp` varchar(45) NOT NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
