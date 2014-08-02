@@ -32,7 +32,7 @@ class YamlEntityException extends \Exception {};
  * @package     contrexx
  * @subpackage  core_model
  */
-class YamlEntity {
+class YamlEntity extends \Cx\Model\Base\EntityBase {
     /**
      * Defines if an entity is virtual and therefore not persistable.
      * Defaults to FALSE - not virtual.
