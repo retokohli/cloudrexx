@@ -3,7 +3,7 @@ namespace Cx\Core_Modules\MultiSite\Model\Entity;
 
 class WebsiteException extends \Exception {}
 
-class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
+class Website extends \Cx\Model\Base\EntityBase {
     protected $basepath = null;
   
     /**
@@ -459,8 +459,9 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
     * function validate to validate website name
     * @param $websiteName
     * @param$websiteMail
+    * @todo replace by validators
     * */
-    private function validate()
+    public function validate()
     {
         global $_ARRAYLANG, $objInit;;
         //load language file 
@@ -602,6 +603,14 @@ class Website extends \Cx\Core\Core\Model\Entity\EntityBase {
             $preInit->copy(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/config/preInitHooks.yml');
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             throw new WebsiteException('Unable to set up preInitHooks.yml: '.$e->getMessage());
+        }
+
+        // setup DomainRepository.yml
+        try {
+            $domainRepository = new \Cx\Lib\FileSystem\File(\Env::get('cx')->getCodeBaseCoreModulePath() . '/MultiSite/Data/WebsiteSkeleton/config/DomainRepository.yml');
+            $domainRepository->copy(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/config/DomainRepository.yml');
+        } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
+            throw new WebsiteException('Unable to set up DomainRepository.yml: '.$e->getMessage());
         }
 
         // tmp/legacyClassCache.tmp
