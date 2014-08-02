@@ -1,3 +1,4 @@
+SET FOREIGN_KEY_CHECKS = 0;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_access_group_dynamic_ids` (
@@ -259,7 +260,7 @@ CREATE TABLE `contrexx_content_page` (
   `customContent` varchar(64) default NULL,
   `useCustomContentForAllChannels` int(2) default NULL,
   `applicationTemplate` varchar(100) default NULL,
-  `useCustomApplicationTemplateForAllChannels` tinyint(2) NOT NULL,
+  `useCustomApplicationTemplateForAllChannels` tinyint(2) default NULL,
   `cssName` varchar(255) default NULL,
   `cssNavName` varchar(255) default NULL,
   `skin` int(11) default NULL,
@@ -309,6 +310,20 @@ CREATE TABLE `contrexx_core_mail_template` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_core_module_multisite_domain` (
+  `id` int(11) unsigned NOT NULL auto_increment,
+  `name` varchar(200) NOT NULL,
+  `websiteId` int(11) NOT NULL,
+  `type` varchar(12) NOT NULL,
+  `pleskId` int(11) default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `name` (`name`),
+  KEY `websiteId` (`websiteId`),
+  CONSTRAINT `contrexx_core_module_multisite_domain_ibfk_1` FOREIGN KEY (`websiteId`) REFERENCES `contrexx_core_module_multisite_website` (`id`)
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_core_module_multisite_user_website` (
   `websiteId` int(11) unsigned NOT NULL,
   `multiSiteUserId` int(11) unsigned NOT NULL,
@@ -324,6 +339,10 @@ CREATE TABLE `contrexx_core_module_multisite_website` (
   `language` varchar(50) NOT NULL,
   `status` int(11) NOT NULL,
   `websiteServiceServerId` int(11) NOT NULL,
+  `secretKey` varchar(255) NOT NULL,
+  `ipAddress` varchar(45) NOT NULL,
+  `ownerId` int(11) NOT NULL,
+  `installationId` varchar(40) NOT NULL,
   PRIMARY KEY  (`id`),
   KEY `name_index` (`name`)
 ) ENGINE=InnoDB;
@@ -4081,7 +4100,7 @@ CREATE TABLE `contrexx_session_variable` (
   `parent_id` int(11) NOT NULL,
   `sessionid` varchar(32) NOT NULL default '',
   `lastused` timestamp NOT NULL,
-  `key` varchar(40) NOT NULL default '',
+  `key` varchar(100) NOT NULL default '',
   `value` text,
   PRIMARY KEY  (`id`),
   UNIQUE KEY `key_index` (`parent_id`,`key`,`sessionid`)
