@@ -38,6 +38,8 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * @param array $cmd CMD separated by slashes
      */
     public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd) {
+        global $_ARRAYLANG;
+
         switch (current($cmd)) {
             case 'settings':
                 if(!empty($cmd[1]) && $cmd[1]=='email')
@@ -53,6 +55,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     }
                     $view = new \Cx\Core\Html\Controller\ViewGenerator($websiteServiceServers,
                         array(
+                            'header' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_SETTINGS_WEBSITE_SERVICE_SERVERS'],
                             'functions' => array(
                                 'edit' => true,
                                 'add' => true,
@@ -62,6 +65,18 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                                 'filtering' => false,   // this does not exist yet
                             ),
                             'fields' => array(
+                                'id' => array(
+                                    'showOverview' => false,
+                                ),
+                                'hostname' => array(
+                                    'header' => 'Hostname',
+                                ),
+                                'label' => array(
+                                    'header' => 'Name',
+                                ),
+                                'isDefault' => array(
+                                    'header' => 'Default Server',
+                                ),
                                 'secretKey' => array(
                                     'showOverview' => false,
                                 ),
@@ -80,12 +95,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             )
                         )
                     );
-                    $isSingle = false;
-                    $view->render($isSingle);
-                    $renderedView = $view->render($isSingle);
-                    $template->setVariable(array(
-                        'TABLE' => $renderedView
-                    ));
+                    $template->setVariable('TABLE', $view->render());
                 }else{
                     $this->settings($template);
                 }
@@ -205,6 +215,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 //require_once ASCMS_DOCUMENT_ROOT.'config/settings.php';
                        
                 $view = new \Cx\Core\Html\Controller\ViewGenerator($websites, array(
+                    'header' => 'Websites',
                     'functions' => array(
                         'edit' => true,
                         'delete' => true,
@@ -213,89 +224,55 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         'filtering' => false,   // this does not exist yet
                     ),
                     'fields' => array(
+                        'id' => array('showOverview' => false),
                         'name' => array(
+                            'header' => 'TXT_MULTISITE_SITE_ADDRESS',
                             'readonly' => true,
                             'table' => array(
                                 'parse' => function($value) {
                                     //$websiteUrl = '<a href="https://' . $value . '.cloudrexx.com/" target="_blank">' . $value . '</a>';
-                                    $websiteUrl = '<a href="https://' . $value .\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain').'" target="_blank">' . $value . '</a>';
-                                    $backendLogin = ' (<a href="?cmd=MultiSite&adminLogin=' . $value . '" target="_blank">BE</a>)';
-                                    return $websiteUrl . $backendLogin;
+                                    $websiteUrl = '<a href="https://' . $value . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain').'" target="_blank">' . $value . '</a>';
+                                    //$backendLogin = ' (<a href="?cmd=MultiSite&adminLogin=' . $value . '" target="_blank">BE</a>)';
+                                    return $websiteUrl; //. $backendLogin;
                                 },
                             ),
                         ),
-                        /*'licenseState' => array(
-                            'readonly' => true,
+                        'status' => array('header' => 'Status'),
+                        'language' => array('showOverview' => false),
+                        'websiteServiceServerId' => array(
+                            'header' => 'Website Service Server',
+                            'table' => array(
+                                'parse' => function($value) {
+                                    try {
+                                        $websiteServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findBy(array('id' => $value));
+                                        if ($websiteServiceServer) {
+                                            return contrexx_raw2xhtml($websiteServiceServer[0]->getLabel().' ('.$websiteServiceServer[0]->getHostname()).')';
+                                        }
+                                    } catch (\Exception $e) {}
+                                    return 'Managed by this system';
+                                },
+                            ),
                         ),
-                        'licenseEdition' => array(
-                            'readonly' => true,
+                        'ipAddress' => array('header' => 'IP Address'),
+                        'ownerId' => array(
+                            'header' => 'Owner',
+                            'table' => array(
+                                'parse' => function($value) {
+                                    return \FWUser::getParsedUserTitle($value);
+                                },
+                            ),
                         ),
-                        'createdAt' => array(
-                            'readonly' => true,
+                        'secretKey' => array(
+                            'readonly'      => true,
+                            'showOverview'  => false,
                         ),
-                        'licenseLastUpdate' => array(
-                            'readonly' => true,
-                        ),*/
-                        'codeBase' => array(
-                            'showOverview' => true,
+                        'installationId' => array(
+                            'readonly'      => true,
+                            'showOverview'  => false,
                         ),
                     ),
                 ));
-                $isSingle = false;
-                $renderedView = $view->render($isSingle);
-                if ($isSingle) {
-                    // find last input field (last child of first fieldset)
-                    $fieldsetChildren = current($renderedView->getForm()->getChildren())->getChildren();
-                    end($fieldsetChildren);
-                    $lastInputField = current($fieldsetChildren);
-                    //echo $submitButton;
-                    
-                    // create password edit field
-                    $additionalFields = array();
-                    
-                    $passwordField1 = new \Cx\Core\Html\Model\Entity\DataElement('password1');
-                    $passwordField1->setAttribute('id', 'password1');
-                    $passwordField1->setAttribute('type', 'password');
-                    $additionalFields[] = \Cx\Core\Html\Controller\FormGenerator::getDataElementGroup('password1', $passwordField1);
-                    
-                    $passwordField2 = new \Cx\Core\Html\Model\Entity\DataElement('password2');
-                    $passwordField2->setAttribute('id', 'password2');
-                    $passwordField2->setAttribute('type', 'password');
-                    $additionalFields[] = \Cx\Core\Html\Controller\FormGenerator::getDataElementGroup('password2', $passwordField2);
-                    
-                    $websiteMessage = new \Cx\Core\Html\Model\Entity\DataElement('websiteMessage');
-                    $websiteMessage->setAttribute('id', 'websiteMessage');
-                    $websiteMessage->setAttribute('type', 'text');
-                    
-                    $websiteConfigPath = $websitesPath . '/' . basename(trim($_GET['editid'])) . '/config/settings.php';
-                    if (file_exists($websiteConfigPath)) {
-                        require_once $websitesPath . '/' . basename(trim($_GET['editid'])) . '/config/settings.php';
-                        if (!empty($_CONFIG['dashboardMessages'])) {
-                            $arrDashboardMessages = unserialize(base64_decode($_CONFIG['dashboardMessages']));
-                            $langCode = \FWLanguage::getLanguageCodeById(LANG_ID);
-                            if (!empty($arrDashboardMessages[$langCode])) {
-                                $objDashboardMessage = $arrDashboardMessages[$langCode];
-                                $websiteMessage->setAttribute('value', $objDashboardMessage->getText());
-                            }
-                        }
-                    }
-                    
-                    $additionalFields[] = \Cx\Core\Html\Controller\FormGenerator::getDataElementGroup('websiteMessage', $websiteMessage);
-                    
-                    $activeStatus = new \Cx\Core\Html\Model\Entity\DataElement('activeStatus');
-                    $activeStatus->setAttribute('id', 'activeStatus');
-                    $activeStatus->setAttribute('type', 'checkbox');
-                    if (isset($_CONFIG['systemStatus']) && $_CONFIG['systemStatus'] == 'on') {
-                        $activeStatus->setAttribute('checked', 'checked');
-                    }
-                    $additionalFields[] = \Cx\Core\Html\Controller\FormGenerator::getDataElementGroup('activeStatus', $activeStatus);
-                    
-                    // append password edit field to form (submit button is added in render() method of form)
-                    $renderedView->getForm()->addChildren($additionalFields, $lastInputField, false);
-                }
-                $template->setVariable(array(
-                    'TABLE' => $renderedView,
-                ));
+                $template->setVariable('TABLE', $view->render());
                 break;
         }
     }
