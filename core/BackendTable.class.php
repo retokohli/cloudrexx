@@ -23,8 +23,13 @@ class BackendTable extends HTML_Table {
         global $_ARRAYLANG;
         
     	if ($attrs instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
+            $hasMasterTableHeader = !empty($options['header']);
+            // add master table-header-row
+            if ($hasMasterTableHeader) {
+                $this->addRow(array(0 => $options['header']), null, 'th');
+            }
     		$first = true;
-    		$row = 1;
+    		$row = 1 + $hasMasterTableHeader;
             foreach ($attrs as $rowname=>$rows) {
     			$col = 0;
     			foreach ($rows as $header=>$data) {
@@ -39,9 +44,12 @@ class BackendTable extends HTML_Table {
                     }
                     $origHeader = $header;
     				if ($first) {
+                        if (isset($options['fields'][$header]['header'])) {
+                            $header = $options['fields'][$header]['header'];
+                        }
                         if (isset($_ARRAYLANG[$header])) {
                             $header = $_ARRAYLANG[$header];
-    				}
+                        }
                         if (
                             is_array($options['functions']) &&
                             isset($options['functions']['sorting']) &&
@@ -62,7 +70,11 @@ class BackendTable extends HTML_Table {
                             }
                             $header = '<a href="' .  \Env::get('cx')->getRequest()->getUrl() . '&order=' . $origHeader . $order . '" style="white-space: nowrap;">' . $header . ' ' . $img . '</a>';
                         }
-                        $this->setCellContents(0, $col, $header, 'th', 0);
+                        if ($hasMasterTableHeader) {
+                            $this->setCellContents(1, $col, $header, 'td', 0);
+                        } else {
+                            $this->setCellContents(0, $col, $header, 'th', 0);
+                        }
                     }
                     if (
                         isset($options['fields']) &&
@@ -96,11 +108,16 @@ class BackendTable extends HTML_Table {
                 }
                 if (is_array($options['functions'])) {
                     if ($first) {
-                        $header = 'FUNCTIONS';
-                        if (isset($_ARRAYLANG['FUNCTIONS'])) {
-                            $header = $_ARRAYLANG['FUNCTIONS'];
+                        $header = 'Functions';
+                        if (isset($_ARRAYLANG['TXT_FUNCTIONS'])) {
+                            $header = $_ARRAYLANG['TXT_FUNCTIONS'];
                         }
-                        $this->setCellContents(0, $col, $header, 'th', 0, true);
+                        if ($hasMasterTableHeader) {
+                            $this->setCellContents(1, $col, $header, 'td', 0, true);
+                        } else {
+                            $this->setCellContents(0, $col, $header, 'th', 0, true);
+                        }
+                        $this->updateColAttributes($col, array('style' => 'text-align:right;'));
                     }
                     if (!isset($options['functions']['baseUrl'])) {
                         $options['functions']['baseUrl'] = clone \Env::get('cx')->getRequest()->getUrl();
@@ -110,9 +127,14 @@ class BackendTable extends HTML_Table {
     			$first = false;
     			$row++;
     		}
+            // adjust colspan of master-table-header-row
+            if ($hasMasterTableHeader) {
+                $this->setCellAttributes(0, 0, array('colspan' => $col + is_array($options['functions'])));
+                $this->updateRowAttributes(1, array('class' => 'row3'), true);
+            }
     		$attrs = array();
     	}
-        parent::__construct(array_merge($attrs, array('class' => 'adminlist')));
+        parent::__construct(array_merge($attrs, array('class' => 'adminlist', 'width' => '100%')));
     }
 
     /**
@@ -161,7 +183,7 @@ class BackendTable extends HTML_Table {
     }
 
     public function toHtml() {
-        $this->altRowAttributes(1, array('class' => 'row1'), array('class' => 'row2'), true);
+        $this->altRowAttributes(2, array('class' => 'row1'), array('class' => 'row2'), true);
         return parent::toHtml();
     }
 
