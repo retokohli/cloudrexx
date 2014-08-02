@@ -766,12 +766,15 @@ namespace Cx\Core\Core\Controller {
         
         /**
          * Check whether the system is running
+         * @param   boolean $disableAllModes Set to TRUE to stop the system initialization for any mode (not only {@see self::MODE_FRONTEND}) in case the website has been put into maintenance-mode ($_CONFIG['systemStatus'] = 'off').
          * @throws \Exception
          */
-        protected function checkSystemState() {
+        public function checkSystemState($disableAllModes = false) {
             global $_CONFIG;
             // Check if system is running
-            if ($_CONFIG['systemStatus'] != 'on' && $this->mode == self::MODE_FRONTEND) {
+            if (   $_CONFIG['systemStatus'] != 'on'
+                 && ($this->mode == self::MODE_FRONTEND || $disableAllModes)
+            ) {
                 throw new \Exception('System disabled by config');
             }
         }

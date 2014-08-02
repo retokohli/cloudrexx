@@ -391,6 +391,14 @@ throw new MultiSiteException('Refactor this method!');
         $websiteName = substr($_SERVER['HTTP_HOST'], 0, -strlen('.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain')));
         $website = $multiSiteRepo->findByName(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/', $websiteName);
         if ($website) {
+            // Recheck the system state of the Website Service Server (1st check
+            // has already been performed before executing the preInit-Hooks),
+            // but this time also lock the backend in case the system has been
+            // put into maintenance mode, as a Website must also not be
+            // accessable throuth the backend in case its Website Service Server
+            // has activated the maintenance-mode.
+            $cx->checkSystemState(true);
+
             $configFile = \Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName.'/config/configuration.php';
             \DBG::msg("MultiSite: Loading customer Website {$website->getName()}...");
             \Cx\Core\Core\Controller\Cx::instanciate(\Env::get('cx')->getMode(), true, $configFile);
