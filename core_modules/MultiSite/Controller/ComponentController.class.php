@@ -287,7 +287,7 @@ throw new MultiSiteException('Refactor this method!');
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database user prefix for websites");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteIp') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('defaultWebsiteIp','', 6,
+                && !\Cx\Core\Setting\Controller\Setting::add('defaultWebsiteIp', $_SERVER['SERVER_ADDR'], 6,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database user plesk IP");
             }
