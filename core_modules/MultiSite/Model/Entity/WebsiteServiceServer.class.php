@@ -5,7 +5,7 @@ namespace Cx\Core_Modules\MultiSite\Model\Entity;
 /**
  * Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer
  */
-class WebsiteServiceServer
+class WebsiteServiceServer extends \Cx\Model\Base\EntityBase
 {
     /**
      * @var integer $id
@@ -57,12 +57,6 @@ class WebsiteServiceServer
      */
     public $httpAuthPassword;
     
-    /**
-     * @var string $defaultWebsiteIp
-     */
-    public $defaultWebsiteIp;
-
-
     public function __construct()
     {
         $this->websites = new \Doctrine\Common\Collections\ArrayCollection();
@@ -268,25 +262,4 @@ class WebsiteServiceServer
     {
         return $this->httpAuthPassword;
     }
-    
-    /**
-     * Set defaultWebsiteIp
-     *
-     * @param string $defaultWebsiteIp
-     */
-    public function setDefaultWebsiteIp($defaultWebsiteIp)
-    {
-        $this->defaultWebsiteIp = $defaultWebsiteIp;
-    }
-
-    /**
-     * Get defaultWebsiteIp
-     *
-     * @return string $defaultWebsiteIp
-     */
-    public function getDefaultWebsiteIp()
-    {
-        return $this->defaultWebsiteIp;
-    }
-
 }

@@ -32,9 +32,6 @@ Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer:
     httpAuthPassword:
       type: string
       length: 255
-    defaultWebsiteIp:
-      type: string
-      length: 45      
   oneToMany: # inverse side
     websites:
       targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\Website
