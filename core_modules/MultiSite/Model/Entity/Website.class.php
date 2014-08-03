@@ -24,6 +24,7 @@ class Website extends \Cx\Model\Base\EntityBase {
     /**
      * @var string $language
      */
+// TODO: do we still need this??
     public $language;
 
     /**
@@ -385,7 +386,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             $jd = new \Cx\Core\Json\JsonData();
             $resp = $jd->getJson('https://'.$hostname.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=createWebsite', $params,
              false, '', $httpAuth);
-            $this->ipAddress = $resp->websiteIp;
+            $this->ipAddress = $resp->data->websiteIp;
             if(!$resp || $resp->status == 'error'){
                 $errMsg = isset($resp->message) ? $resp->message : '';
                 throw new WebsiteException('Problem in creating website '.$errMsg);    

@@ -52,7 +52,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             switch ($mode) {
                 case 'manager':
                 case 'hybrid':
-                    $this->updateDnsRecord($domain);
+                    $this->updateDnsRecord($domain, 'preUpdate');
                     break;
 
                 default:
@@ -68,11 +68,37 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         try {
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
             $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode');
+            $domain  = $eventArgs->getEntity();
+            switch ($mode) {
+                case 'manager':
+                    $this->addDnsRecord($domain, 'prePersist');
+                    break;
+
+                case 'service':
+                    break;
+
+                case 'hybrid':
+                    $this->addDnsRecord($domain, 'prePersist');
+                    break;
+
+                default:
+                    break;
+            }
+        } catch (\Exception $e) {
+            \DBG::msg($e->getMessage());
+        }
+    }
+
+    public function postPersist($eventArgs) {
+        \DBG::msg('MultiSite (DomainEventListener): postPersist');
+        try {
+            \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
+            $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode');
             $em = $eventArgs->getEntityManager();
             $domain  = $eventArgs->getEntity();
             switch ($mode) {
                 case 'manager':
-                    $this->addDnsRecord($domain);
+                    $this->addDnsRecord($domain, 'postPersist');
                     break;
 
                 case 'service':
@@ -80,7 +106,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                     break;
 
                 case 'hybrid':
-                    $this->addDnsRecord($domain);
+                    $this->addDnsRecord($domain, 'postPersist');
                     $this->updateDomainRepositoryCache($em);
                     break;
 
@@ -92,27 +118,38 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         }
     }
 
-    private function updateDnsRecord($domain) {
-        $this->removeDnsRecord($domain);
-        $this->addDnsRecord($domain);
+    private function updateDnsRecord($domain, $event) {
+        $this->removeDnsRecord($domain, $event);
+        $this->addDnsRecord($domain, $event);
     }
 
-    private function removeDnsRecord($domain) {
-        $this->manipulateDnsRecord($domain, 'remove');
+    private function removeDnsRecord($domain, $event) {
+        $this->manipulateDnsRecord($domain, 'remove', $event);
     }
 
-    private function addDnsRecord($domain) {
-        $this->manipulateDnsRecord($domain, 'add');
+    private function addDnsRecord($domain, $event) {
+        $this->manipulateDnsRecord($domain, 'add', $event);
     }
 
-    private function manipulateDnsRecord($domain, $operation) {
+    private function manipulateDnsRecord($domain, $operation, $event) {
         switch ($domain->getType()) {
             case \CX\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_FQDN:
+                // FQDN shall not be persisted in postPersist event
+                // as it already gets persisted in prePersist event.
+                if ($event == 'postPersist') {
+                    return;
+                }
                 $type = 'A';
                 $value= $domain->getWebsite()->getIpAddress();
                 break;
 
             case \CX\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_BASE_DOMAIN:
+                // In prePersist event, the DNS-record of BaseDN can't be created
+                // yet, as the FQDN, on which the BaseDN depends on, has not yet
+                // been flushed to the database.
+                if ($event == 'prePersist' || $event == 'postPersist') {
+                    return;
+                }
                 // In case MultiSite is operated in 'hybrid'-mode, then
                 // the BaseDN is the same as FQDN. In that case we won't create the
                 // BaseDN record as it would be an invalid DNS-record.
@@ -134,7 +171,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         switch ($operation) {
             case 'add':
                 $hostingController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
-                $recordId = $hostingController->addDnsRecord($type, \Cx\Core\Setting\Controller\Setting::getValue('pleskMasterSubscriptionId'), $domain->getName(), $value);
+                $recordId = $hostingController->addDnsRecord($type, $domain->getName(), $value, \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'), \Cx\Core\Setting\Controller\Setting::getValue('pleskMasterSubscriptionId'));
                 $domain->setPleskId($recordId);
                 break;
 

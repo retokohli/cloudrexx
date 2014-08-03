@@ -467,9 +467,10 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * @param string    $type   DNS-Record type
      * @param string    $host   DNS-Record host
      * @param string    $value  DNS-Record value
+     * @param string    $zone   Name of DNS-Zone
      * @param integer   $zoneId Id of plesk subscription to add the record to
      */
-    public function addDnsRecord($type = 'A', $host, $value, $zoneId){
+    public function addDnsRecord($type = 'A', $host, $value, $zone, $zoneId){
         $xmldoc = $this->getXmlDocument();
         $packet = $this->getRpcPacket($xmldoc);
         $dns = $xmldoc->createElement('dns');
@@ -483,6 +484,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $recordType = $xmldoc->createElement('type',$type);
         $addRec->appendChild($recordType);
         
+        $host = rtrim(substr($host, 0, -strlen($zone)), '.');
         $host = $xmldoc->createElement('host', $host);
         $addRec->appendChild($host);
 
@@ -507,6 +509,9 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
      * @param integer   $recordId   DNS-Record-Id of the plesk subscription
      */
     public function removeDnsRecord($type, $host, $recordId) {
+        if (empty($recordId)) {
+            return false;
+        }
         $xmldoc = $this->getXmlDocument();
         $packet = $this->getRpcPacket($xmldoc);
         $dns = $xmldoc->createElement('dns');
