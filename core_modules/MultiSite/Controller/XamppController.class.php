@@ -151,7 +151,13 @@ class XamppController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     /**
      * @todo    Implement interface to BIND or similar
      */
-    public function addDnsRecord($recordType='A', $siteId, $host){
+    public function addDnsRecord($type = 'A', $host, $value, $zoneId = null){
+        \DBG::msg("MultiSite (XamppController): add DNS-record: $type / $host / $value / $zoneId");
+        return null;
+    }
+
+    public function removeDnsRecord($type, $host, $id) {
+        \DBG::msg("MultiSite (XamppController): remove DNS-record: $type / $host / $id");
         return true;
     }
 }

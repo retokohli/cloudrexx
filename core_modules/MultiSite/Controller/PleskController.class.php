@@ -32,38 +32,31 @@ class ApiRequestException extends DbControllerException {}
  */
 class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbController, \Cx\Core_Modules\MultiSite\Controller\SubscriptionController {
     
-    /*
+    /**
      * hostname for the plesk panel 
-     * */
+     */
     protected $host;
     
-    /*
+    /**
      * login username for the plesk panel 
-     * */
+     */
     protected $login;
     
-    /*
+    /**
      * login password for the plesk panel 
-     * */
+     */
     protected $password;
     
-    /* Webspace Id
-     * 
-     * Id of the subdomain on the plesk panel where we need
-     * to work on database related tasks
-     * */
     protected $webspaceId;
     
-     /* database password
-     * 
+    /** 
      * Password for the newly created database user
-     * */
+     */
     protected $dbPassword;   
     
-    /* plesk API RPC version
-     * 
+    /**
      * Version of the plesk api rpc
-     * */
+     */
     const API_RPC_VERSION = '1.6.5.0';
     
     /**
@@ -75,26 +68,25 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $this->password = $password;
     }
 
-    /*
+    /**
      * function to set webspace id
      * @param $webspaceId webspace id to set
-     * */
+     */
     public function setWebspaceId($webspaceId){
         $this->webspaceId = $webspaceId;    
     }
     
-    /*
+    /**
      * function to get webspace id
      * @return webspace id
-     * */
+     */
     public function getWebspaceId(){
         return $this->webspaceId;
     }
 
-     /**
+    /**
      * Creates a DB user
      * @param string $name Name for the new user
-     * 
      */
     public function createDbUser(\Cx\Core\Model\Model\Entity\DbUser $user){
         return $user;
@@ -145,7 +137,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         return $dbUser;
     }
 
-     /**
+    /**
      * Removes a db
      * @param \Cx\Core\Model\Model\Entity\Db $db Database to remove
      * @throws MultiSiteDbException On error
@@ -174,10 +166,11 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         return $respArr;
     }
 
-    /* get id of a particular db by its name
+    /**
+     * get id of a particular db by its name
      * @param $name name of the db we need id
      * @return id of the db
-     * */
+     */
     protected function getDbId($name){
         $xmldoc = $this->getXmlDocument();
         $packet = $this->getRpcPacket($xmldoc);
@@ -209,11 +202,11 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     }
     
      /**
-     * Grants user $user usage rights on database $database
-     * @param \Cx\Core\Model\Model\Entity\DbUser $user Database user to grant rights for
-     * @param \Cx\Core\Model\Model\Entity\Db $db Database to work on
-     * @throws MultiSiteDbException On error
-     */
+      * Grants user $user usage rights on database $database
+      * @param \Cx\Core\Model\Model\Entity\DbUser $user Database user to grant rights for
+      * @param \Cx\Core\Model\Model\Entity\Db $db Database to work on
+      * @throws MultiSiteDbException On error
+      */
     public function grantRightsToDb(\Cx\Core\Model\Model\Entity\DbUser $user, \Cx\Core\Model\Model\Entity\Db $database){
         $xmldoc = $this->getXmlDocument();
         $packet = $this->getRpcPacket($xmldoc);
@@ -241,11 +234,11 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     }
 
     /**
-    * Revokes user $user all rights on database $database
-    * @param \Cx\Core\Model\Model\Entity\DbUser $user Database user to revoke rights of
-    * @param \Cx\Core\Model\Model\Entity\Db $db Database to work on
-    * @throws MultiSiteDbException On error
-    */
+     * Revokes user $user all rights on database $database
+     * @param \Cx\Core\Model\Model\Entity\DbUser $user Database user to revoke rights of
+     * @param \Cx\Core\Model\Model\Entity\Db $db Database to work on
+     * @throws MultiSiteDbException On error
+     */
     public function revokeRightsToDb(\Cx\Core\Model\Model\Entity\DbUser $user, \Cx\Core\Model\Model\Entity\Db $database){
         $xmldoc = $this->getXmlDocument();
         $packet = $this->getRpcPacket($xmldoc);
@@ -270,17 +263,17 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     }
     
     /**
-    * Set database password for new user
-    * @param $dbPass password to set for db user
-    */
+     * Set database password for new user
+     * @param $dbPass password to set for db user
+     */
     public function setDbPassword($dbPass){
         $this->dbPassword = $dbPas;
     }
 
     /**
-    * get database password
-    * @return dbPassword
-    */
+     * get database password
+     * @return dbPassword
+     */
     public function getDbPassword(){
         return $this->dbPassword;
     }
@@ -335,7 +328,6 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     }
 
     /**
-
      * Looks if API responded with correct data
      *
      * @return SimpleXMLElement
@@ -351,7 +343,6 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     }
 
     /**
-
      * Send request to the plesk api
      * @param $requestXML request packet xml
      * @return SimpleXMLElement
@@ -380,7 +371,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
     }
     
     
-    /*
+    /**
      * Create a Customer
      * @param \Cx\Core_Modules\MultiSite\Model\Entity\Customer $customer
      * @throws $response array
@@ -410,7 +401,7 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         return $resultNode;	
     }
     
-     /*
+    /**
      * Create a Customer
      * @param \Cx\Core_Modules\MultiSite\Model\Entity\Customer $customer
      * @param \Cx\Core\Model\Model\Entity\SubscriptionInfo $subscription
@@ -471,12 +462,14 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         return $response;    
     }
     
-    /* Add DNS records
-     * @param $recordType type of the record
-     * @param $siteId id of the site for which need to add dns record
-     * @param $host demo (demo.cloudrexx.com.)
-     * */
-    public function addDnsRecord($recordType='A', $siteId, $host, $value){
+    /**
+     * Add DNS records
+     * @param string    $type   DNS-Record type
+     * @param string    $host   DNS-Record host
+     * @param string    $value  DNS-Record value
+     * @param integer   $zoneId Id of plesk subscription to add the record to
+     */
+    public function addDnsRecord($type = 'A', $host, $value, $zoneId){
         $xmldoc = $this->getXmlDocument();
         $packet = $this->getRpcPacket($xmldoc);
         $dns = $xmldoc->createElement('dns');
@@ -484,13 +477,13 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         $addRec = $xmldoc->createElement('add_rec');
         $dns->appendChild($addRec);
         
-        $siteIdTag = $xmldoc->createElement('site-id',$siteId);
+        $siteIdTag = $xmldoc->createElement('site-id', $zoneId);
         $addRec->appendChild($siteIdTag);
         
-        $type = $xmldoc->createElement('type',$recordType);
-        $addRec->appendChild($type);
+        $recordType = $xmldoc->createElement('type',$type);
+        $addRec->appendChild($recordType);
         
-        $host = $xmldoc->createElement('host',$host);
+        $host = $xmldoc->createElement('host', $host);
         $addRec->appendChild($host);
 
         $value = $xmldoc->createElement('value', $value);
@@ -506,11 +499,14 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         }
         return $resultNode->id;       
     }
-    /* Remove DNS records
-     *@param $recordId dns record id on the plesk 
-     * need to delete
-     * */
-    public function removeDnsRecord($recordId){
+
+    /**
+     * Remove DNS records
+     * @param string    $type       DNS-Record-type
+     * @param string    $host       DNS-Record-host
+     * @param integer   $recordId   DNS-Record-Id of the plesk subscription
+     */
+    public function removeDnsRecord($type, $host, $recordId) {
         $xmldoc = $this->getXmlDocument();
         $packet = $this->getRpcPacket($xmldoc);
         $dns = $xmldoc->createElement('dns');
@@ -532,9 +528,10 @@ class PleskController implements \Cx\Core_Modules\MultiSite\Controller\DbControl
         return $response; 
     }
     
-    /* Get dom document object with request packet
+    /**
+     * Get dom document object with request packet
      * return object (DomDocument)
-     * */
+     */
     protected function getXmlDocument(){
         $xmldoc = new \DomDocument('1.0', 'UTF-8');
         $xmldoc->formatOutput = true;
