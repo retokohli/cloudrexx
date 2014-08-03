@@ -336,6 +336,13 @@ namespace Cx\Core\Core\Controller {
         protected $codeBaseModuleWebPath  = null;
         
         /**
+         * The absolute path to the themes storage location (/themes)
+         * of the Code Base of the Contrexx installation
+         * @var string
+         */
+        protected $codeBaseThemesPath = null;
+        
+        /**
          * The absolute path to the website's data repository.
          * Formerly known as ASCMS_INSTANCE_PATH.
          * @var string
@@ -1929,6 +1936,7 @@ namespace Cx\Core\Core\Controller {
             $this->codeBaseModelPath            = $this->codeBasePath . self::FOLDER_NAME_MODEL;
             $this->codeBaseModulePath           = $this->codeBasePath . self::FOLDER_NAME_MODULE;
             $this->codeBaseModuleWebPath        = $this->codeBaseOffsetPath . self::FOLDER_NAME_MODULE;
+            $this->codeBaseThemesPath           = $this->codeBaseDocumentRootPath . '/themes';
         }
 
         /**
@@ -2065,6 +2073,15 @@ namespace Cx\Core\Core\Controller {
          */
         public function getCodeBaseModuleWebPath() {
             return $this->codeBaseModuleWebPath;
+        }
+
+        /**
+         * Return the absolute path to the themes storage location (/themes)
+         * of the Code Base of the Contrexx installation
+         * @return string
+         */
+        public function getCodeBaseThemesPath() {
+            return $this->codeBaseThemesPath;
         }
 
         /**
