@@ -1,0 +1,5 @@
+meta:
+  auto_increment: 1
+  identifier: id
+  unique_keys:
+    - name

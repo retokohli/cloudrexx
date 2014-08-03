@@ -37,12 +37,12 @@ Cx\Core_Modules\MultiSite\Model\Entity\Website:
       targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\Domain
       mappedBy: website
 
-#  manyToOne: # owning side
-#    websiteServiceServer:
-#      targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer
-#      inversedBy: websites
-#      joinColumn:
-#        name: websiteServiceServerId
-#        referencedColumnName: id
+  manyToOne: # owning side
+    websiteServiceServer:
+      targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer
+      inversedBy: websites
+      joinColumn:
+        name: websiteServiceServerId
+        referencedColumnName: id
 #        cascade: [remove]
 

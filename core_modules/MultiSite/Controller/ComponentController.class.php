@@ -29,7 +29,7 @@ class MultiSiteException extends \Exception {}
  * @subpackage  coremodule_multisite
  * @version     1.0.0
  */
-class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController implements \Cx\Core\Json\JsonAdapter {
+class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
    // const MAX_WEBSITE_NAME_LENGTH = 18; 
     private $messages = '';
     private $reminders = array(3, 14);
@@ -44,31 +44,9 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
     }
     
     public function getControllersAccessableByJson() { 
-        return array(
-            'RoutingAdapter', 'ComponentController', 'JsonMultiSite'
-        );
+        return array('JsonMultiSite');
     }
 
-    public function getAccessableMethods() {
-        return array('cleanup', 'sendMails', 'lostPassword');
-    }
-
-    public function getMessagesAsString() {
-        return $this->messages;
-    }
-
-    public function getName() {
-        return 'MultiSite';
-    }
-
-    /**
-     * Returns default permission as object
-     * @return Object
-     */
-    public function getDefaultPermissions() {
-        return null;
-    }
-    
     /**
      * @param array $params the parameters
      */
@@ -121,6 +99,8 @@ throw new MultiSiteException('Refactor this method!');
      * @throws \Exception
      */
     public function lostPassword($params) {
+// TODO: refactor whole method
+throw new MultiSiteException('Refactor this method!');
         global $_ARRAYLANG;
 
         if (empty($params['post'])) {
@@ -203,6 +183,31 @@ throw new MultiSiteException('Refactor this method!');
 
         $this->messages = $response->message;
         return true;
+    }
+
+    public static function getHostingController() {
+        global $_DBCONFIG;
+
+        \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('websiteController')) {
+            case 'plesk':
+                $hostingController = \Cx\Core_Modules\MultiSite\Controller\PleskController::fromConfig();
+                $hostingController->setWebspaceId(\Cx\Core\Setting\Controller\Setting::getValue('pleskWebsitesSubscriptionId'));
+                break;
+
+            case 'xampp':
+                // initialize XAMPP controller with database of Website Manager/Service Server
+                $dbObj = new \Cx\Core\Model\Model\Entity\Db($_DBCONFIG);
+                $dbUserObj = new \Cx\Core\Model\Model\Entity\DbUser($_DBCONFIG);
+                $hostingController = new \Cx\Core_Modules\MultiSite\Controller\XamppController($dbObj, $dbUserObj); 
+                break;
+
+            default:
+                throw new WebsiteException('Unknown websiteController set!');    
+                break;
+        }
+
+        return $hostingController;
     }
 
     /**
@@ -357,6 +362,18 @@ throw new MultiSiteException('Refactor this method!');
         }
         // Always
         return false;
+    }
+
+    public function postResolve(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        // Event Listener must be registered before preContentLoad event
+        $evm = \Env::get('cx')->getEvents();
+        $domainEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\DomainEventListener();
+        $evm->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\Domain', $domainEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::postRemove, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\Domain', $domainEventListener);
+        $evm->addModelListener(\Doctrine\ORM\Events::preUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\Domain', $domainEventListener);
+
+        $websiteEventListener = new \Cx\Core_Modules\MultiSite\Model\Event\WebsiteEventListener();
+        $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'Cx\\Core_Modules\\MultiSite\\Model\\Entity\\Website', $websiteEventListener);
     }
 
     public function preInit(\Cx\Core\Core\Controller\Cx $cx) {

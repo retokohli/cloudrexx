@@ -153,13 +153,13 @@ class WebsiteServiceServer extends \Cx\Model\Base\EntityBase
     }
 
     /**
-     * Add websites
+     * Add website
      *
-     * @param Cx\Core_Modules\MultiSite\Model\Entity\Website $websites
+     * @param Cx\Core_Modules\MultiSite\Model\Entity\Website $website
      */
-    public function addWebsites(\Cx\Core_Modules\MultiSite\Model\Entity\Website $websites)
+    public function addWebsite(\Cx\Core_Modules\MultiSite\Model\Entity\Website $website)
     {
-        $this->websites[] = $websites;
+        $this->websites[] = $website;
     }
 
     /**

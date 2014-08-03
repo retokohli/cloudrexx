@@ -39,7 +39,7 @@ class Website extends \Cx\Model\Base\EntityBase {
     /**
      * @var Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer
      */
-    public $websiteServiceServer;
+    protected $websiteServiceServer;
     
     protected $owner;
     
@@ -85,7 +85,6 @@ class Website extends \Cx\Model\Base\EntityBase {
     public function __construct($basepath, $name, $websiteServiceServer = null, \Cx\Core_Modules\MultiSite\Model\Entity\User $userObj=null, $lazyLoad = true) {
         $this->basepath = $basepath;
         $this->name = $name;
-        $this->ipAddress = $name;
 
         if ($lazyLoad) {
             return true;
@@ -98,7 +97,7 @@ class Website extends \Cx\Model\Base\EntityBase {
         $this->owner = $userObj;
         $this->ownerId = $userObj->getId();
         $this->installationId = $this->generateInstalationId();
-        
+        $this->ipAddress = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteIp');
 
         if ($websiteServiceServer) {
             $this->setWebsiteServiceServer($websiteServiceServer);
@@ -350,35 +349,13 @@ class Website extends \Cx\Model\Base\EntityBase {
      */
     public function setup() {
         global $_DBCONFIG, $_ARRAYLANG;
-        switch (\Cx\Core\Setting\Controller\Setting::getValue('websiteController')) {
-            case 'plesk':
-                //creating object of plesk controller to call plesk API RPC
-                $this->websiteController = \Cx\Core_Modules\MultiSite\Controller\PleskController::fromConfig();
-                $this->websiteController->setWebspaceId(\Cx\Core\Setting\Controller\Setting::getValue('pleskWebsitesSubscriptionId'));
-                break;
+        $this->websiteController = \Cx\Core_Modules\MultiSite\Controller\ComponentController::getHostingController();
 
-            case 'xampp':
-                //create \Cx\Core\Model\Model\Entity\Db() object
-                //initialized with default configuration
-                $dbObj = new \Cx\Core\Model\Model\Entity\Db($_DBCONFIG);
-                //create \Cx\Core\Model\Model\Entity\DbUser() object
-                //initialized with default configuration
-                $dbUserObj = new \Cx\Core\Model\Model\Entity\DbUser($_DBCONFIG); //creating Db user class object    
-                //set website controller object with XampController called when used on localhost
-                $this->websiteController = new \Cx\Core_Modules\MultiSite\Controller\XamppController($dbObj, $dbUserObj); 
-                break;
-
-            default:
-                throw new WebsiteException('Unknown websiteController set!');    
-                break;
-        }
-
-        //website name
         $websiteName = $this->getName();
-        //user Email
         $websiteMail = $this->owner->getEmail(); 
-        
+        $websiteIp = null;
         $websitePassword = \User::make_password(8, true);
+
         // language
         $lang = $this->owner->getBackendLanguage();
         $langId = \FWLanguage::getLanguageIdByCode($lang);
@@ -408,7 +385,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             $jd = new \Cx\Core\Json\JsonData();
             $resp = $jd->getJson('https://'.$hostname.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=createWebsite', $params,
              false, '', $httpAuth);
-            $websiteIp = $resp->websiteIp;
+            $this->ipAddress = $resp->websiteIp;
             if(!$resp || $resp->status == 'error'){
                 $errMsg = isset($resp->message) ? $resp->message : '';
                 throw new WebsiteException('Problem in creating website '.$errMsg);    
@@ -422,12 +399,13 @@ class Website extends \Cx\Model\Base\EntityBase {
             $this->setupMultiSiteConfig($websiteName);
             $websiteIp = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteIp');
         }
+
+        \Env::get('em')->persist($this);
+        \Env::get('em')->flush();
+        
         $this->messages = $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATED'];
         if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == 'manager'
             || \Cx\Core\Setting\Controller\Setting::getValue('mode') == 'hybrid') {
-            // Add DNS records for new website
-            $this->websiteController->addDnsRecord('A', \Cx\Core\Setting\Controller\Setting::getValue('pleskMasterSubscriptionId'),
-                $websiteName, $websiteIp);
             $websiteDomain = $websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
             // write mail
             \Cx\Core\MailTemplate\Controller\MailTemplate::init('MultiSite');
@@ -449,6 +427,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             }
             return $this->messages;
         }
+
         return array(
             'status' => 'success',
             'websiteIp' => $websiteIp,
@@ -884,7 +863,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
      *
      */    
     public function getFqdn(){
-        return \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findBy(array('type' => Domain::TYPE_FQDN, 'websiteId' => $this->id));
+        return \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findOneBy(array('type' => Domain::TYPE_FQDN, 'websiteId' => $this->id));
     }   
     
     /**
@@ -904,7 +883,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
      *
      */    
     public function getBaseDn(){
-       return \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findBy(array('type' => Domain::TYPE_BASE_DOMAIN, 'websiteId' => $this->id)); 
+       return \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findOneBy(array('type' => Domain::TYPE_BASE_DOMAIN, 'websiteId' => $this->id)); 
     }
     
     /**

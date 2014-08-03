@@ -74,6 +74,15 @@ class Domain extends \Cx\Core\Net\Model\Entity\Domain {
     }
 
     /**
+     * Set website
+     *
+     * @param Cx\Core_Modules\MultiSite\Model\Entity\Website $website
+     */
+    public function getWebsite() {
+        return $this->website;
+    }
+
+    /**
      * Get websiteid
      *
      * @return integer $websiteId
@@ -119,3 +128,4 @@ class Domain extends \Cx\Core\Net\Model\Entity\Domain {
     }
 
 }
+
