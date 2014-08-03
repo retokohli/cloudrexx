@@ -486,39 +486,65 @@ class InitCMS
 
         $this->themesPath = $themesPath;
 
-        $this->templates['index'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/index.html');
-        $this->templates['home'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/home.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/home.html') : '';
-        $this->templates['navbar'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/navbar.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/navbar.html') : '';
-        $this->templates['navbar2'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/navbar2.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/navbar2.html') : '';
-        $this->templates['navbar3'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/navbar3.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/navbar3.html') : '';
-        $this->templates['subnavbar'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar.html') : '';
-        $this->templates['subnavbar2'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar2.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar2.html') : '';
-        $this->templates['subnavbar3'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar3.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/subnavbar3.html') : '';
-        $this->templates['sidebar'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/sidebar.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/sidebar.html') : '';
-        $this->templates['top_news'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/top_news.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/top_news.html') : '';
-        $this->templates['shopnavbar'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/shopnavbar.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/shopnavbar.html') : '';
-        $this->templates['headlines'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines.html') : '';
-        $this->templates['headlines2'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines2.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines2.html') : '';
-        $this->templates['headlines3'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines3.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines3.html') : '';
-        $this->templates['headlines4'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines4.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/headlines4.html') : '';
-        $this->templates['news_recent_comments'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/news_recent_comments.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/news_recent_comments.html') : '';
-        $this->templates['javascript'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/javascript.js') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/javascript.js') : '';
-        //$this->templates['style'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/style.css') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/style.css') : '';
-        $this->templates['buildin_style'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/buildin_style.css') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/buildin_style.css') : '';
-        $this->templates['calendar_headlines'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/events.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/events.html') : '';
-        $this->templates['directory_content'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/directory.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/directory.html') : '';
-        $this->templates['forum_content'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/forum.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/forum.html') : '';
-        $this->templates['podcast_content'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/podcast.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/podcast.html') : '';
-        $this->templates['blog_content'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/blog.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/blog.html') : '';
-        $this->templates['immo'] = file_exists(ASCMS_THEMES_PATH.'/'.$themesPath.'/immo.html') ? file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/immo.html') : '';
+        $this->templates['index']                   = $this->getThemeFileContent($themesPath, 'index.html');
+        $this->templates['home']                    = $this->getThemeFileContent($themesPath, 'home.html');
+        $this->templates['navbar']                  = $this->getThemeFileContent($themesPath, 'navbar.html');
+        $this->templates['navbar2']                 = $this->getThemeFileContent($themesPath, 'navbar2.html');
+        $this->templates['navbar3']                 = $this->getThemeFileContent($themesPath, 'navbar3.html');
+        $this->templates['subnavbar']               = $this->getThemeFileContent($themesPath, 'subnavbar.html');
+        $this->templates['subnavbar2']              = $this->getThemeFileContent($themesPath, 'subnavbar2.html');
+        $this->templates['subnavbar3']              = $this->getThemeFileContent($themesPath, 'subnavbar3.html');
+        $this->templates['sidebar']                 = $this->getThemeFileContent($themesPath, 'sidebar.html');
+        $this->templates['top_news']                = $this->getThemeFileContent($themesPath, 'top_news.html');
+        $this->templates['shopnavbar']              = $this->getThemeFileContent($themesPath, 'shopnavbar.html');
+        $this->templates['headlines']               = $this->getThemeFileContent($themesPath, 'headlines.html');
+        $this->templates['headlines2']              = $this->getThemeFileContent($themesPath, 'headlines2.html');
+        $this->templates['headlines3']              = $this->getThemeFileContent($themesPath, 'headlines3.html');
+        $this->templates['headlines4']              = $this->getThemeFileContent($themesPath, 'headlines4.html');
+        $this->templates['news_recent_comments']    = $this->getThemeFileContent($themesPath, 'news_recent_comments.html');
+        $this->templates['javascript']              = $this->getThemeFileContent($themesPath, 'javascript.js');
+        //$this->templates['style']                 = $this->getThemeFileContent($themesPath, 'style.css');
+        $this->templates['buildin_style']           = $this->getThemeFileContent($themesPath, 'buildin_style.css');
+        $this->templates['calendar_headlines']      = $this->getThemeFileContent($themesPath, 'events.html');
+        $this->templates['directory_content']       = $this->getThemeFileContent($themesPath, 'directory.html');
+        $this->templates['forum_content']           = $this->getThemeFileContent($themesPath, 'forum.html');
+        $this->templates['podcast_content']         = $this->getThemeFileContent($themesPath, 'podcast.html');
+        $this->templates['blog_content']            = $this->getThemeFileContent($themesPath, 'blog.html');
+        $this->templates['immo']                    = $this->getThemeFileContent($themesPath, 'immo.html');
 
         if (!$this->hasCustomContent() || !$this->loadCustomContent($page)) {
             // load default content layout if page doesn't have a custom content
             // layout or if it failed to be loaded
-            $this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themesPath.'/content.html');
+            $this->templates['content']             = $this->getThemeFileContent($themesPath, 'content.html');
         }
 
         return $this->templates;
+    }
+
+    /**
+     * Fetches the content of a themes file.
+     *
+     * The content is first fetched from the website's data directory:
+     *      Cx\Core\Core\Controller\Cx::getWebsiteThemesPath()
+     * If the file is not present in the website's data directory,
+     * then the content is fetch from the file in the code base directory:
+     *      Cx\Core\Core\Controller\Cx::getCodeBaseThemesPath()
+     * @param   string  $themesPath Path to the themes folder
+     * @param   string  $file   Name of the file to fetch the content from
+     * @return  string  The content of the file specified by $themesPath and $file
+     */
+    private function getThemeFileContent($themesPath, $file)
+    {
+        $filePath = $themesPath.'/'.$file;
+        $content = '';
+        
+        if (file_exists(\Env::get('cx')->getWebsiteThemesPath().'/'.$filePath)) {
+            $content = file_get_contents(\Env::get('cx')->getWebsiteThemesPath().'/'.$filePath);
+        } elseif (file_exists(\Env::get('cx')->getCodeBaseThemesPath().'/'.$filePath)) {
+            $content = file_get_contents(\Env::get('cx')->getCodeBaseThemesPath().'/'.$filePath);
+        }
+
+        return $content;
     }
 
     private function loadCustomContent($page)
@@ -526,18 +552,17 @@ class InitCMS
         global $objDatabase;
 
         // OPTION USE FOR OUTPUT CHANNEL
-        
+        $themeFolder = '';
         $themeRepository   = new \Cx\Core\View\Model\Repository\ThemeRepository();        
         if ($page->getUseCustomContentForAllChannels()) {
             $themeFolder = $themeRepository->findById($page->getSkin())->getFoldername();
-            if (file_exists(ASCMS_THEMES_PATH.'/'.$themeFolder.'/'.$page->getCustomContent())) {
-                $this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themeFolder.'/'.$page->getCustomContent());
-                return true;
-            }
         } elseif (!empty($this->customContentTemplate)) {
             $themeFolder = $themeRepository->findById($this->channelThemeId)->getFoldername();
-            if (file_exists(ASCMS_THEMES_PATH.'/'.$themeFolder.'/'.$page->getCustomContent())) {
-                $this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$themeFolder.'/'.$page->getCustomContent());
+        }
+        if ($themeFolder) {
+            $content = $this->getThemeFileContent($themeFolder, $page->getCustomContent());
+            if ($content) {
+                $this->templates['content'] = $content;
                 return true;
             }
         }
@@ -550,13 +575,13 @@ class InitCMS
         //another possible behaviour would be to read the standard theme's custom content template instead.
         //this is not done, because customcontent files are mostly used for sidebars etc. - 
         //stuff that should not change the print representation of the content.
-        if (!file_exists(ASCMS_THEMES_PATH.'/'.$this->themesPath.'/'.$this->customContentTemplate)) {
-            return false;
+        $content = $this->getThemeFileContent($this->themesPath, $this->customContentTemplate);
+        if ($content) {
+            $this->templates['content'] = $content;
+            return true;
         }
 
-        $this->templates['content'] = file_get_contents(ASCMS_THEMES_PATH.'/'.$this->themesPath.'/'.$this->customContentTemplate);
-
-        return true;
+        return false;
     }
 
     /**
@@ -590,15 +615,19 @@ class InitCMS
             return array();
 
         $result = array();
+        $templateFiles = array();
         $folder = $objResult->fields['foldername'];
-        if (file_exists(ASCMS_THEMES_PATH.'/'.$folder)) {
-            $templateFiles = scandir(ASCMS_THEMES_PATH.'/'.$folder);
+        if (file_exists(\Env::get('cx')->getCodeBaseThemesPath().'/'.$folder)) {
+            $templateFiles = scandir(\Env::get('cx')->getCodeBaseThemesPath().'/'.$folder);
+        }
+        if (file_exists(\Env::get('cx')->getWebsiteThemesPath().'/'.$folder)) {
+            $templateFiles = array_unique(array_merge($templateFiles, scandir(\Env::get('cx')->getWebsiteThemesPath().'/'.$folder)));
+        }
 
-            foreach ($templateFiles as $f){
-                $match = null;
-                if (preg_match('/^(content|home)_(.+).html$/', $f, $match)) {
-                    array_push($result, $f);
-                }
+        foreach ($templateFiles as $f){
+            $match = null;
+            if (preg_match('/^(content|home)_(.+).html$/', $f, $match)) {
+                array_push($result, $f);
             }
         }
 
