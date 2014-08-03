@@ -338,7 +338,7 @@ CREATE TABLE `contrexx_core_module_multisite_website` (
   `name` varchar(200) NOT NULL,
   `language` varchar(50) NOT NULL,
   `status` int(11) NOT NULL,
-  `websiteServiceServerId` int(11) NOT NULL,
+  `websiteServiceServerId` int(11) default NULL,
   `secretKey` varchar(255) NOT NULL,
   `ipAddress` varchar(45) NOT NULL,
   `ownerId` int(11) NOT NULL,
