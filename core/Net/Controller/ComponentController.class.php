@@ -31,4 +31,13 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         $_CONFIG['domainUrl'] = $domainRepo->getMainDomain()->getName();
         \Env::set('config', $_CONFIG);
     }
+
+    public function postResolve(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        $eventHandlerInstance = \Env::get('cx')->getEvents(); 
+        $domainListener       = new \Cx\Core\Net\Model\Event\DomainEventListener();
+        $eventHandlerInstance->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Core\\Net\\Model\\Entity\\Domain', $domainListener);
+        $eventHandlerInstance->addModelListener(\Doctrine\ORM\Events::postPersist, 'Cx\\Core\\Net\\Model\\Entity\\Domain', $domainListener);
+        $eventHandlerInstance->addModelListener(\Doctrine\ORM\Events::preRemove, 'Cx\\Core\\Net\\Model\\Entity\\Domain', $domainListener);
+        $eventHandlerInstance->addModelListener(\Doctrine\ORM\Events::postRemove, 'Cx\\Core\\Net\\Model\\Entity\\Domain', $domainListener);
+    }
 }

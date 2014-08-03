@@ -51,26 +51,12 @@ class DomainRepository extends \Cx\Core\Model\Controller\YamlRepository {
     public function getMainDomain() {
         $config = \Env::get('config');
         
-        if (empty($config['mainDomainId']) || !$this->entities[$config['mainDomainId']]) {
-            $objDomain = $this->findBy(array('name' => $_SERVER['SERVER_NAME']));
-            return $objDomain[0];
-        }
-        
-        if (!empty($config['mainDomainId']) && $this->entities[$config['mainDomainId']]) {
+        if (!empty($config['mainDomainId']) && isset($this->entities[$config['mainDomainId']])) {
             return $this->entities[$config['mainDomainId']];
         }
-    }
 
-    /**
-     * Register the model-event-listener for model Domain
-     */
-    public function registerEventListener() {
-        $eventHandlerInstance = \Env::get('cx')->getEvents(); 
-        $domainListener       = new \Cx\Core\Net\Model\Event\DomainEventListener();
-        $eventHandlerInstance->addModelListener(\Doctrine\ORM\Events::prePersist, 'Cx\\Core\\Net\\Model\\Entity\\Domain', $domainListener);
-        $eventHandlerInstance->addModelListener(\Doctrine\ORM\Events::postPersist, 'Cx\\Core\\Net\\Model\\Entity\\Domain', $domainListener);
-        $eventHandlerInstance->addModelListener(\Doctrine\ORM\Events::preRemove, 'Cx\\Core\\Net\\Model\\Entity\\Domain', $domainListener);
-        $eventHandlerInstance->addModelListener(\Doctrine\ORM\Events::postRemove, 'Cx\\Core\\Net\\Model\\Entity\\Domain', $domainListener);
+        $objDomain = $this->findBy(array('name' => $_SERVER['SERVER_NAME']));
+        return $objDomain[0];
     }
 }
 
