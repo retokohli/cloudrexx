@@ -26,7 +26,20 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     }
     
     public function prePersist($eventArgs) {
-        //code here
+        if ($eventArgs instanceof \Doctrine\ORM\Event\LifecycleEventArgs) {
+            $objJsonData = new \Cx\Core\Json\JsonData();
+            $hostName = \Cx\Core\Setting\Controller\Setting::getValue('serviceHostname');
+            $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('managerSecretKey');
+            $installationId = \Cx\Core\Setting\Controller\Setting::getValue('managerInstallationId');
+            //post array
+            $params = array(
+                'domainName'    => $eventArgs->getEntity()->getName(),
+                'websiteId'     => $eventArgs->getEntity()->getId(),
+                'auth'          => \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($secretKey, $installationId)
+            );
+        
+            $objJsonData->getJson('https://'.$hostName.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=mapDomain', $params, false, '', null);
+        }
     }
     
     public function postPersist($eventArgs) {
@@ -38,6 +51,19 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     }
     
     public function postRemove($eventArgs) {
+        if ($eventArgs instanceof \Doctrine\ORM\Event\LifecycleEventArgs) {
+            $objJsonData = new \Cx\Core\Json\JsonData();
+            $hostName = \Cx\Core\Setting\Controller\Setting::getValue('serviceHostname');
+            $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('managerSecretKey');
+            $installationId = \Cx\Core\Setting\Controller\Setting::getValue('managerInstallationId');
+            //post array
+            $params = array(
+                'domainName'    => $eventArgs->getEntity()->getName(),
+                'websiteId'     => $eventArgs->getEntity()->getId(),
+                'auth'          => \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($secretKey, $installationId)
+            );
         
+            $objJsonData->getJson('https://'.$hostName.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=unmapDomain', $params, false, '', null);
+        }
     }
 }

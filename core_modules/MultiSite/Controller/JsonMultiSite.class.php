@@ -38,7 +38,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
 // TODO: remove 'get' from 'signup' command once API/Command-mode has been implemented
         return array(
             'signup'        => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post', 'get'), false),
-            'createWebsite'=> new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
+            'createWebsite' => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
+            'mapDomain'     => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
+            'unmapDomain'   => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
         );
     }
 
@@ -260,4 +262,46 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public static function generateSecretKey(){
         return bin2hex(openssl_random_pseudo_bytes(16));    
     }
+    
+    /**
+     * Map the website domain
+     * 
+     * @param type $params
+     * @return type
+     */
+    public function mapDomain($params){
+        if (!empty($params['post']) && !empty($params['post']['domainName'])) {
+            try {
+                $objWebsiteRepo = new \Cx\Core_Modules\MultiSite\Model\Repository\WebsiteRepository();
+                $website = $objWebsiteRepo->findByName($params['post']['domainName']);
+                
+                $objDomain = new \Cx\Core_Modules\MultiSite\Model\Entity\Domain($params['post']['domainName']);                
+                $website->mapDomain($objDomain);
+                
+            } catch (\Exception $e) {
+                return $e->getMessage();
+            }
+        }
+    }        
+    
+    /**
+     * Unmap the website domain
+     * 
+     * @param type $params
+     * @return type
+     */
+    public function unMapDomain($params)
+    {
+        if (!empty($params['post']) && !empty($params['post']['domainName'])) {
+            try {
+                $objWebsiteRepo = new \Cx\Core_Modules\MultiSite\Model\Repository\WebsiteRepository();
+                $website = $objWebsiteRepo->findByName($params['post']['domainName']);
+                
+                $objWebsite = new \Cx\Core_Modules\MultiSite\Model\Entity\Website();            
+                $objWebsite->unmapDomain($website);
+            } catch (\Exception $e) {
+                return $e->getMessage();
+            }
+        }
+    } 
 }
