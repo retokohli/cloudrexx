@@ -46,7 +46,7 @@ namespace Cx\Core\Core\Controller {
          * In this mode, Contrexx is initialized for commandline usage
          * This mode is BETA at this time
          */
-        const MODE_CLI = 'cli';
+        const MODE_COMMAND = 'command';
         
         /**
          * Frontend mode
@@ -141,6 +141,14 @@ namespace Cx\Core\Core\Controller {
         protected $resolver = null;
         
         /**
+         * List of available commands in command mode. Key is
+         * command name, value is the responsible component.
+         * This will be null for all modes except command mode.
+         * @var array
+         */
+        protected $commands = null;
+        
+        /**
          * Current language id
          * @var int
          */
@@ -190,6 +198,12 @@ namespace Cx\Core\Core\Controller {
          * @var string
          */
         const FOLDER_NAME_BACKEND = '/cadmin';
+
+        /**
+         * The folder name used to access the command mode of the website (/api).
+         * @var string
+         */
+        const FOLDER_NAME_COMMAND_MODE = '/api';
 
         /**
          * The folder name used for the customizing storage location (/customizing).
@@ -506,7 +520,7 @@ namespace Cx\Core\Core\Controller {
                 
                 /**
                  * Load all components to have them ready and initialize request and license
-                 * Request is not initialized for CLI mode
+                 * Request is not initialized for command mode
                  */
                 $this->postInit();
                 
@@ -516,10 +530,12 @@ namespace Cx\Core\Core\Controller {
                  * This initializes the main template, executes all hooks
                  * and parses the template.
                  * 
-                 * This is not executed automaticly in minimal and CLI mode. Invoke it
+                 * This is not executed automaticly in minimal. Invoke it
                  * yourself if necessary and be sure to handle exceptions.
+                 *
+                 * Command mode is different ;-)
                  */
-                if ($this->mode == self::MODE_MINIMAL || $this->mode == self::MODE_CLI) {
+                if ($this->mode == self::MODE_MINIMAL) {
                     return;
                 }
                 $this->loadContrexx();
@@ -538,6 +554,8 @@ namespace Cx\Core\Core\Controller {
                 \header($_SERVER['SERVER_PROTOCOL'] . ' 500 Server Error');
                 echo file_get_contents($this->codeBaseDocumentRootPath . '/offline.html');
                 \DBG::msg('Contrexx initialization failed! ' . get_class($e) . ': "' . $e->getMessage() . '"');
+                \DBG::msg('In file ' . $e->getFile() . ' on Line ' . $e->getLine());
+                \DBG::dump($e->getTrace());
                 die();
             }
         }
@@ -720,14 +738,16 @@ namespace Cx\Core\Core\Controller {
          * @param mixed $mode Mode as string or true for front- or false for backend
          */
         protected function setMode($mode) {
-            if (php_sapi_name() === 'cli') {
-                $this->mode = self::MODE_CLI;
+            global $_CONFIG;
+            
+            if ((!$mode || $mode == 'command') && php_sapi_name() === 'cli') {
+                $this->mode = self::MODE_COMMAND;
                 return;
             }
             switch ($mode) {
                 case self::MODE_BACKEND:
                 case self::MODE_FRONTEND:
-                case self::MODE_CLI:
+                case self::MODE_COMMAND:
                 case self::MODE_MINIMAL:
                     break;
                 default:
@@ -738,6 +758,10 @@ namespace Cx\Core\Core\Controller {
                     $mode = self::MODE_FRONTEND;
                     if (!isset($_GET['__cap'])) {
                         break;
+                    }
+                    if (preg_match('#^' . $this->getWebsiteOffsetPath() . '(/[a-z]{2})?' . self::FOLDER_NAME_COMMAND_MODE . '#', $_GET['__cap'])) {
+                        $this->mode = self::MODE_COMMAND;
+                        return;
                     }
                     if (!preg_match('#^' . $this->getWebsiteOffsetPath() . '(/[a-z]{2})?(/admin|' . $this->getBackendFolderName() . ')#', $_GET['__cap'])) {
                         break;
@@ -874,7 +898,7 @@ namespace Cx\Core\Core\Controller {
          * @return mixed
          */
         protected function adjustRequest() {
-            if ($this->mode == self::MODE_MINIMAL || $this->mode == self::MODE_CLI) {
+            if ($this->mode == self::MODE_MINIMAL || $this->mode == self::MODE_COMMAND) {
                 return;
             }
             
@@ -1057,7 +1081,9 @@ namespace Cx\Core\Core\Controller {
                                                                                    \Cx\Core\Routing\Url::fromCapturedRequest($request, $offset, $_GET));
                         break;
                     case self::MODE_MINIMAL:
-                        $this->request = new \Cx\Core\Routing\Model\Entity\Request($_SERVER['REQUEST_METHOD'], \Cx\Core\Routing\Url::fromRequest());
+                        try {
+                            $this->request = new \Cx\Core\Routing\Model\Entity\Request($_SERVER['REQUEST_METHOD'], \Cx\Core\Routing\Url::fromRequest());
+                        } catch (\Cx\Core\Routing\UrlException $e) {}
                         break;
                 }
             }
@@ -1080,6 +1106,39 @@ namespace Cx\Core\Core\Controller {
          * and parses the template.
          */
         protected function loadContrexx() {
+            // command mode is different
+            if ($this->getMode() == static::MODE_COMMAND) {
+                global $argv;
+
+                // cleanup params
+                $params = array();
+                if (isset($argv)) {
+                    $params = array_slice($argv, 1);
+                } else {
+                    $params = preg_replace('#' . $this->getWebsiteOffsetPath() . static::FOLDER_NAME_COMMAND_MODE . '(/)?#', '', $_GET['__cap']);
+                    $params = explode('/', $params) + array_keys($_GET);
+                    unset($params['__cap']);
+                }
+
+                $this->getCommands();
+
+                // find component (defaults to help)
+                $command = current($params);
+                $params = array_slice($params, 1);
+                if (!isset($this->commands[$command])) {
+                    echo 'Command \'' . $command . '\' does not exist
+';
+                    $command = 'help';
+                }
+
+                if (!isset($this->commands[$command])) {
+                    throw new \Exception('Command \'' . $command . '\' does not exist');
+                }
+
+                // execute command
+                $this->commands[$command]->executeCommand($command, $params);
+                return;
+            }
             // init template
             $this->loadTemplate();                      // Sigma Template
             
@@ -1849,6 +1908,25 @@ namespace Cx\Core\Core\Controller {
          */
         public function getClassLoader() {
             return $this->cl;
+        }
+
+        public function getComponentHandler() {
+            return $this->ch;
+        }
+
+        public function getCommands() {
+                // build command index
+                $componentRepo = $this->getDb()->getEntityManager()->getRepository('Cx\Core\Core\Model\Entity\SystemComponent');
+                $this->commands = array();
+                foreach ($componentRepo->findAll() as $component) {
+                    foreach ($component->getCommandsForCommandMode() as $command) {
+                        if (isset($this->commands[$command])) {
+                            throw new \Exception('Command \'' . $command . '\' is already in index');
+                        }
+                        $this->commands[$command] = $component;
+                    }
+                }
+            return $this->commands;
         }
 
         /**

@@ -141,6 +141,23 @@ class SystemComponentController extends Controller {
     }
     
     /**
+     * Returns a list of command mode commands provided by this component
+     * @return array List of command names
+     */
+    public function getCommandsForCommandMode() {
+        return array();
+    }
+
+    /**
+     * Returns the description for a command provided by this component
+     * @param boolean $short Wheter to return short or long description
+     * @return string Command description
+     */
+    public function getCommandDescription($short = false) {
+        return '';
+    }
+    
+    /**
      * Do something before system initialization
      * 
      * USE CAREFULLY, DO NOT DO ANYTHING COSTLY HERE!
