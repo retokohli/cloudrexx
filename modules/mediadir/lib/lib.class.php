@@ -592,30 +592,84 @@ function deselectAll(control){
         control.options[i].selected = false;
     }
 }
+var defaultLang = '$_LANGID';
+var activeLang = new Array($arrActiveLang);
+\$J(function(){
+    \$J('.mediadirInputfieldDefault').each(function(){
+        id = \$J(this).data('id');
+        \$J(this).data('lastDefaultValue', \$J(this).val());
+        
+        \$J(this).keyup(function(){
+            var that = \$J(this);
+            var id = \$J(this).data('id');
+            
+            \$J.each(activeLang, function(i, v) {                
+                if (\$J('#mediadirInputfield_'+ id +'_'+ v).val() == that.data('lastDefaultValue')) {
+                    \$J('#mediadirInputfield_'+ id +'_'+ v).val(that.val());
+                }
+            });
+            \$J(this).data('lastDefaultValue', \$J(this).val());
+        });
+        
+        \$J('#mediadirInputfield_'+ id +'_'+ defaultLang).keyup(function(){
+            var id = \$J(this).data('id');
+            \$J('#mediadirInputfield_'+ id +'_0').val(\$J(this).val());
+            \$J('#mediadirInputfield_'+ id +'_0').data('lastDefaultValue', \$J(this).val());
+        });
+    });
+                
+});
 
+if ( typeof(CKEDITOR) !== "undefined" ) {
+    var lastCKeditorValues = new Array();
+    var processedCKeditorInstances = new Array();
+    CKEDITOR.on("instanceReady", function(event)
+    {
+        for ( instance in CKEDITOR.instances )
+        {
+            if (\$J.inArray(CKEDITOR.instances[instance].name, processedCKeditorInstances)) {
+                fieldArr = CKEDITOR.instances[instance].name.split(/\[(\d+)\]/);
+                id       = fieldArr[1];
+                langId   = fieldArr[3];                
+
+                if (langId == '0') {
+                   lastCKeditorValues[id] = CKEDITOR.instances[instance].getData();
+                   CKEDITOR.instances[instance].on('change', function (ev) {                
+                        fieldArr   = ev.editor.name.split(/\[(\d+)\]/);
+                        var id     = fieldArr[1];                
+                        \$minimized = \$J('#mediadirInputfield_' + id + '_ELEMENT_Minimized');
+
+                        if (\$minimized.is(":visible")) {                            
+                            \$J.each(activeLang, function(i, v) {                    
+                                if (CKEDITOR.instances['mediadirInputfield['+ id +']['+ v +']'].getData() == lastCKeditorValues[id]) {
+                                    CKEDITOR.instances['mediadirInputfield['+ id +']['+ v +']'].setData(CKEDITOR.instances['mediadirInputfield['+ id +'][0]'].getData());
+                                }
+                            });
+                            lastCKeditorValues[id] = CKEDITOR.instances[instance].getData();
+                        }                
+                   });
+                }
+                if (langId == defaultLang) {           
+                   CKEDITOR.instances[instance].on('change', function (ev) {                
+                        fieldArr   = ev.editor.name.split(/\[(\d+)\]/);
+                        var id     = fieldArr[1];
+                        \$expand    = \$J('#mediadirInputfield_' + id + '_ELEMENT_Expanded');
+
+                        if (\$expand.is(":visible")) {
+                            CKEDITOR.instances['mediadirInputfield['+ id +'][0]'].setData(ev.editor.getData());
+                            lastCKeditorValues[id] = ev.editor.getData();
+                        }                
+                   });
+                }
+                processedCKeditorInstances.push(CKEDITOR.instances[instance].name);
+            }        
+        }
+    });       
+}
 
 function ExpandMinimize(toggle){
     elm1 = document.getElementById('mediadirInputfield_' + toggle + '_Minimized');
     elm2 = document.getElementById('mediadirInputfield_' + toggle + '_Expanded');
-
-    defaultLang = '$_LANGID';
-    activeLang = new Array($arrActiveLang);
-
-    elmMaster = document.getElementById('mediadirInputfield_' + toggle + '_0');
-    elmDefault = document.getElementById('mediadirInputfield_' + toggle + '_' + defaultLang);
-
-    for(i=0;i<activeLang.length;i++) {
-        elmCurrent = document.getElementById('mediadirInputfield_' + toggle + '_' + activeLang[i]);
-        if(elmCurrent.value == '') {
-            elmCurrent.value = elmMaster.value;
-        }
-    }
-
-    if(elm1.style.display=='block') {
-       elmDefault.value = elmMaster.value;
-    } else {
-       elmMaster.value = elmDefault.value;
-    }
 
     elm1.style.display = (elm1.style.display=='none') ? 'block' : 'none';
     elm2.style.display = (elm2.style.display=='none') ? 'block' : 'none';
@@ -628,33 +682,7 @@ function ExpandMinimizeMultiple(toggleId, toggleKey){
     elm1.style.display = (elm1.style.display=='none') ? 'block' : 'none';
     elm2.style.display = (elm2.style.display=='none') ? 'block' : 'none';
 }  
-                
-function updateWysiwygEditor(fieldId, toggleKey){
-    defaultLang = '$_LANGID';
-    activeLang = new Array($arrActiveLang);
-    
-    \$minimized = \$J('#mediadirInputfield_' + fieldId + '_' + toggleKey + '_Minimized');
-    \$expand    = \$J('#mediadirInputfield_' + fieldId + '_' + toggleKey + '_Expanded');
-        
-    elmMaster  = CKEDITOR.instances['mediadirInputfield['+ fieldId +'][0]'];
-    elmDefault = CKEDITOR.instances['mediadirInputfield['+ fieldId +']['+ defaultLang +']'];
-    
-    for(i=0;i<activeLang.length;i++) {
-        elmCurrent = CKEDITOR.instances['mediadirInputfield['+ fieldId +']['+ activeLang[i] +']'];
-        if(elmCurrent.getData() == '') {
-            elmCurrent.setData(elmMaster.getData());
-        }
-    }
-    if(\$minimized.is(":visible")) {
-       elmDefault.setData(elmMaster.getData());
-    } else {
-       elmMaster.setData(elmDefault.getData());
-    }
-    for ( instance in CKEDITOR.instances )
-    {
-        CKEDITOR.instances[instance].updateElement();
-    }
-}
+
 EOF;
 
         return $strSelectorJavascript;

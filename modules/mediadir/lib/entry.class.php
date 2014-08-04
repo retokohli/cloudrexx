@@ -991,7 +991,7 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
 
                 continue;
             }
-
+            
             // initialize attribute
             $strType = $arrInputfield['type_name'];
             $strInputfieldClass = "mediaDirectoryInputfield".ucfirst($strType);
@@ -1065,31 +1065,6 @@ class mediaDirectoryEntry extends mediaDirectoryInputfield
                             $strDefault = $arrDefault;
                         }
                         $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $strDefault, $intLangId);
-                    } elseif (
-                        // attribute's VALUE of certain frontend language ($intLangId) is empty
-                        empty($arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][$intLangId])
-                        // or the process is parsing the user's current interface language
-                        || $intLangId == $_LANGID
-                    ) {
-                            $strMaster =
-                                (isset($arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][0])
-                                  ? $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][0]
-                                  : null);
-                            $strOldDefault =
-                                (isset($arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']]['old'])
-                                  ? $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']]['old']
-                                  : null);
-                            $strNewDefault = $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][$_LANGID];
-                            if ($strNewDefault != $strMaster) {
-                                if ($strMaster != $strOldDefault && $strNewDefault == $strOldDefault) {
-                                    $strDefault = $strMaster;
-                                } else {
-                                    $strDefault = $strNewDefault;
-                                }
-                            } else {
-                                $strDefault = $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][$_LANGID];
-                            }
-                            $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $strDefault);
                     } else {
                         // regular attribute get parsed
                         $strInputfieldValue = $objInputfield->saveInputfield($arrInputfield['id'], $arrData[$this->moduleName.'Inputfield'][$arrInputfield['id']][$intLangId]);
