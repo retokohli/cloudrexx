@@ -106,7 +106,7 @@ class MediaDirectoryInputfieldText extends \Cx\Modules\MediaDir\Controller\Media
                             $minimize = "";
                         }
 
-                        $strInputfield .= '<input type="text" data-id="'.$intId.'" name="'.$this->moduleNameLC.'Inputfield['.$intId.']['.$intLangId.']" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_'.$intLangId.'" value="'.$arrValue[$intLangId].'" style="width: 279px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url(\'images/flags/flag_'.$arrLang['lang'].'.gif\') no-repeat 3px 3px;" onfocus="this.select();" />&nbsp;'.$arrLang['name'].'&nbsp;'.$minimize.'<br />';
+                        $strInputfield .= '<input type="text" data-id="'.$intId.'" name="'.$this->moduleNameLC.'Inputfield['.$intId.']['.$intLangId.']" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_'.$intLangId.'" value="'.$arrValue[$intLangId].'" style="width: 279px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url(\''. \Env::get('cx')->getCodeBaseOffsetPath() . \Env::get('cx')->getCoreFolderName().'/Country/View/Media/Flag/flag_'.$arrLang['lang'].'.gif\') no-repeat 3px 3px;" onfocus="this.select();" />&nbsp;'.$arrLang['name'].'&nbsp;'.$minimize.'<br />';
                     }                    
                     $strInputfield .= '</div>';
                 } else {

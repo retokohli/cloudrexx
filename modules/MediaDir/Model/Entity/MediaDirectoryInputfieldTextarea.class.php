@@ -108,7 +108,7 @@ class MediaDirectoryInputfieldTextarea extends \Cx\Modules\MediaDir\Controller\M
                             $minimize = "";
                         }
 
-                        $strInputfield .= '<textarea data-id="'.$intId.'" name="'.$this->moduleNameLC.'Inputfield['.$intId.']['.$intLangId.']" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_'.$intLangId.'" style="height: 60px; width: 279px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url(\'images/flags/flag_'.$arrLang['lang'].'.gif\') no-repeat 3px 3px;" onfocus="this.select();" />'.$arrValue[$intLangId].'</textarea>&nbsp;'.$arrLang['name'].'<a href="javascript:ExpandMinimize(\''.$intId.'\');">&nbsp;'.$minimize.'</a><br />';
+                        $strInputfield .= '<textarea data-id="'.$intId.'" name="'.$this->moduleNameLC.'Inputfield['.$intId.']['.$intLangId.']" id="'.$this->moduleNameLC.'Inputfield_'.$intId.'_'.$intLangId.'" style="height: 60px; width: 279px; margin-bottom: 2px; padding-left: 21px; background: #ffffff url(\''. \Env::get('cx')->getCodeBaseOffsetPath() . \Env::get('cx')->getCoreFolderName().'/Country/View/Media/Flag/flag_'.$arrLang['lang'].'.gif\') no-repeat 3px 3px;" onfocus="this.select();" />'.$arrValue[$intLangId].'</textarea>&nbsp;'.$arrLang['name'].'<a href="javascript:ExpandMinimize(\''.$intId.'\');">&nbsp;'.$minimize.'</a><br />';
                     }                    
                     $strInputfield .= '</div>';
                 } else {
