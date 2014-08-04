@@ -26,7 +26,7 @@ $J(document).ready(function(){
     <li><a id="setTab_Settings5" href="javascript:{}" onclick="selectTab('Settings5')" title="{TXT_TITLE_SET5}">{TXT_TITLE_SET5}</a></li>
     <li><a id="setTab_Settings6" href="javascript:{}" onclick="selectTab('Settings6')" title="{TXT_TITLE_SET1}">{TXT_TITLE_SET6}</a></li>
 </ul>
-<form name="settings_form" method="post" action="index.php?cmd=Config&amp;act=update">
+<form name="settings_form" id="configSettingsTabs" method="post" action="index.php?cmd=Config&amp;act=update">
     <div id="Settings1" class="setTab" style="display:block;">
         <table summary="" width="100%" cellspacing="0" cellpadding="3" border="0" class="adminlist">
             <tr>
@@ -58,7 +58,7 @@ $J(document).ready(function(){
             <tr class="row2">
                 <td>{TXT_MAIN_DOMAIN}&nbsp;</td>
                 <td>
-                    <select name="setvalue[126]" style="width: 459px;">
+                    <select name="setvalue[126]">
                         <!-- BEGIN showDomainName -->
                         <option value="{SETTINGS_DOMAIN_ID}" {SETTINGS_DOMAIN_SELECTED} {SETTINGS_HOSTDOMAIN_SELECTED}>{SETTINGS_DOMAIN_NAME}</option>
                         <!-- END showDomainName -->
@@ -97,7 +97,7 @@ $J(document).ready(function(){
             <tr class="row1">
                 <td>{TXT_SETTINGS_PROTOCOL_HTTPS_FRONTEND}&nbsp;</td>
                 <td>
-                    <select name="setvalue[57]" id="setvalue_57" style="width: 459px;">
+                    <select name="setvalue[57]" id="setvalue_57">
                         <option value="none"{SETTINGS_FORCE_PROTOCOL_FRONTEND_NONE}>{TXT_FORCE_PROTOCOL_NONE}</option>
                         <option value="http"{SETTINGS_FORCE_PROTOCOL_FRONTEND_HTTP}>{TXT_FORCE_PROTOCOL_HTTP}</option>
                         <option value="https"{SETTINGS_FORCE_PROTOCOL_FRONTEND_HTTPS}>{TXT_FORCE_PROTOCOL_HTTPS}</option>
@@ -156,7 +156,7 @@ $J(document).ready(function(){
             </tr>
             <tr class="row2" style="line-height: 22px;">
                 <td>{TXT_CORE_TIMEZONE}</td>
-                <td><select name="setvalue[87]" style="width: 459px;">{SETTINGS_TIMEZONE_OPTIONS}</select></td>
+                <td><select name="setvalue[87]" >{SETTINGS_TIMEZONE_OPTIONS}</select></td>
             </tr>
             <tr class="row1">
                 <td>{TXT_SETTINGS_PROTOCOL_HTTPS_BACKEND}&nbsp;</td>

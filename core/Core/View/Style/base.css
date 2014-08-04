@@ -1555,3 +1555,12 @@ a.cke_dialog_ui_button_ok:hover {
 .language-icons .language-icon.inexistent {
     background-color: #AAAAAA;
 }
+#configSettingsTabs input[type="text"] {
+    width:558px;
+}
+#configSettingsTabs select {
+    width:566px;
+}
+#configSettingsTabs tr td input[type="radio"]:first-child{
+    margin:3px 3px 3px -1px;
+}
