@@ -308,13 +308,13 @@ class ReflectionComponent {
         
         // Copy ZIP contents
         echo "Copying files to installation ... ";
-        $filesystem = new \Cx\Lib\FileSystem\FileSystem();
+        $filesystem = new \Cx\Lib\FileSystem\FileSystem();        
         $filesystem->copyDir(
             ASCMS_APP_CACHE_FOLDER,
             ASCMS_APP_CACHE_FOLDER_WEB_PATH,
-            'files',
-            ASCMS_DOCUMENT_ROOT,
-            ASCMS_PATH_OFFSET,
+            '',
+            $this->getDirectory(false),
+            preg_replace('#' . ASCMS_DOCUMENT_ROOT . '#', '', $this->getDirectory(false)),
             '',
             true
         );
@@ -401,17 +401,24 @@ class ReflectionComponent {
                         
                         switch ($table) {
                              case DBPREFIX.'modules':
-                                 list($columns, $data) = $this->getColumnsAndDataFromSql($sqlQuery);
+                                 $data = $this->getColumnsAndDataFromSql($sqlQuery);
+                                 $newModuleId = $this->db->GetOne('SELECT MAX(`id`)+1 FROM `'. DBPREFIX .'modules`');
+                                 $replacements = array('id' => $newModuleId);                                 
+                                 $sqlQuery = $this->repalceDataInQuery($table, $data, $replacements);
                                  break;
                              case DBPREFIX.'component':
-                                 list($columns, $data) = $this->getColumnsAndDataFromSql($sqlQuery);
+                                 $data = $this->getColumnsAndDataFromSql($sqlQuery);
+                                 $replacements = array('id' => NULL);
+                                 $sqlQuery = $this->repalceDataInQuery($table, $data, $replacements);
                                  break;
                              case DBPREFIX.'backend_areas':
-                                 list($columns, $data) = $this->getColumnsAndDataFromSql($sqlQuery);
+                                 $data = $this->getColumnsAndDataFromSql($sqlQuery);
+                                 $replacements = array('module_id' => $newModuleId);
+                                 $sqlQuery = $this->repalceDataInQuery($table, $data, $replacements);
                                  break;
                              default :
                                  break;
-                        }
+                        }                        
                         
                         $result = $this->db->Execute($sqlQuery);
                         if ($result === false) {
@@ -424,6 +431,31 @@ class ReflectionComponent {
         } else {
             throw new SystemComponentException('File not found : '. $sqlDump);
         }
+    }
+    
+    /**
+     * 
+     * @param type $table
+     * @param type $columns
+     * @param type $data
+     * @param type $replacements
+     */
+    function repalceDataInQuery($table, $data, $replacements)
+    {        
+        $data = array_intersect_key($replacements + $data, $data);
+        
+        $sql  = 'INSERT INTO `'.$table.'`';
+        $sql .= "SET \n";
+        
+        $firstCol = true;
+        foreach($data as $column => $data) {
+            $value = is_null($data) ? "NULL" : (is_string($data) ? "'$data'" : $data);
+            
+            $sql .= '    '.($firstCol ? '' : ',') ."`$column` = $value\n";
+            $firstCol = false;
+        }
+        
+        return $sql;
     }
     
     /**
@@ -445,7 +477,7 @@ class ReflectionComponent {
         $data = null;
         preg_match_all('/\'(.+?)\'/', $dataString, $data);
         
-        return array($columns[1], $data[1]);        
+        return array_combine($columns[1], $data[1]);
     }
     
     /**
