@@ -16,6 +16,23 @@ namespace Cx\Core_Modules\Workbench\Controller;
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
 
+    public function getCommandsForCommandMode() {
+        return array('workbench', 'wb');
+    }
+
+    public function getCommandDescription($command, $short = false) {
+        switch ($command) {
+            case 'workbench':
+                return 'Development framework';
+            case 'wb':
+                return 'Shortcut alias for `workbench`';
+        }
+    }
+
+    public function executeCommand($command, $arguments) {
+        new \Cx\Core_Modules\Workbench\Model\Entity\ConsoleInterface(array_merge(array($command), $arguments), $this->cx);
+    }
+
     /**
      * Loads backend view Controllers (BETA)
      * @param \Cx\Core\ContentManager\Model\Entity\Page $page
