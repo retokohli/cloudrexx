@@ -296,6 +296,11 @@ throw new MultiSiteException('Refactor this method!');
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database user plesk IP");
             }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('codeBaseRepository', \Env::get('cx')->getCodeBaseDocumentRootPath() . '/codeBases', 7,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting Repository for Contrexx Code Bases");
+            }
 
             // websiteManager group
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'websiteManager','FileSystem');

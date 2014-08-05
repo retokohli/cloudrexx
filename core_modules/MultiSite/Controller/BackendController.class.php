@@ -25,7 +25,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * @return array List of acts
      */
     public function getCommands() {
-        return array('statistics','settings'=> array('email','website_service_servers'));
+        return array('statistics','settings'=> array('email','website_service_servers','codebases'));
     }
     
     /**
@@ -38,17 +38,17 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * @param array $cmd CMD separated by slashes
      */
     public function parsePage(\Cx\Core\Html\Sigma $template, array $cmd) {
-        global $_ARRAYLANG;
+        global $_ARRAYLANG,$_CONFIG;
 
         switch (current($cmd)) {
             case 'settings':
-                if(!empty($cmd[1]) && $cmd[1]=='email')
+                if (!empty($cmd[1]) && $cmd[1]=='email')
                 {   
                     $config = \Env::get('config');
                     $template->setVariable(array(
                         'TABLE' => \Cx\Core\MailTemplate\Controller\MailTemplate::adminView('MultiSite', 'nonempty', $config['corePagingLimit'], 'settings/email')->get(),
                     ));
-                }elseif(!empty($cmd[1]) && $cmd[1]=='website_service_servers'){
+                } elseif(!empty($cmd[1]) && $cmd[1]=='website_service_servers'){
                     $websiteServiceServers = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')->findAll();
                     if(empty($websiteServiceServers)){
                         $websiteServiceServers = new \Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer();
@@ -96,7 +96,60 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                         )
                     );
                     $template->setVariable('TABLE', $view->render());
-                }else{
+                } elseif (!empty($cmd[1]) && $cmd[1]=='codebases') {
+                    $codeBasePath   = \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository');
+                    $codebaseScannedDir = array_values(array_diff(scandir($codeBasePath), array('..', '.')));
+                    $codebaseRepositoryDataArray[] = array(
+                        'Version_number' => $_CONFIG['coreCmsVersion'],
+                        'Code_Name'      => $_CONFIG['coreCmsCodeName'],
+                        'Release_Date'   => date(ASCMS_DATE_FORMAT_DATE, $_CONFIG['coreCmsReleaseDate']),
+                        'Path'           => \Env::get('cx')->getCodeBaseDocumentRootPath()
+                    );
+                    
+                    foreach ($codebaseScannedDir as $value) {
+                        $configFile = $codeBasePath.'/'.$value.'/installer/config/config.php';
+                        if (file_exists($configFile)) {
+                            $configContents = file_get_contents($codeBasePath.'/'.$value.'/' .$scannedDir[0]. '/installer/config/config.php');
+                            $configContents = preg_replace('#<\?(?:php)?#', '', $configContents);
+                            $configContents = preg_replace('#require_once (?:[/\(\)_a-zA-Z\\.\']+);#', '', $configContents);
+                            $coreCmsVersion = $coreCmsCodeName = $coreCmsReleaseDate = null;
+                            preg_match('/\\$_CONFIG\\[\'coreCmsVersion\'\\]\s+\=\s+\'(.*?)\';/s', $configContents, $coreCmsVersion);
+                            preg_match('/\\$_CONFIG\\[\'coreCmsCodeName\'\\]\s+\=\s+\'(.*?)\';/s', $configContents, $coreCmsCodeName);
+                            preg_match('/\\$_CONFIG\\[\'coreCmsReleaseDate\'\\]\s+\=\s+\'(.*?)\';/s', $configContents, $coreCmsReleaseDate);
+                            
+                            $codebaseRepositoryDataArray[] = array(
+                                'Version_number' => $coreCmsVersion[1],
+                                'Code_Name'      => $coreCmsCodeName[1],
+                                'Release_Date'   => $coreCmsReleaseDate[1],
+                                'Path'           => $codeBasePath.'/'.$value
+                            );
+                        }          
+                    }
+                    
+                    $codebaseRepositoryDataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet($codebaseRepositoryDataArray);
+                    $codeBase = new \Cx\Core\Html\Controller\ViewGenerator($codebaseRepositoryDataSet,
+                        array(
+                            'header' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_SETTINGS_CODEBASES'],
+                            'fields' => array(
+                                'Version_number' => array(
+                                'header' => 'Version number'
+                                 )
+                                ,
+                                'Code_Name' => array(
+                                    'header' => 'Code Name',
+                                ),
+                                'Release_Date' => array(
+                                    'header' => 'Release Date',
+                                ),
+                                'Path' => array(
+                                    'header' => 'Path'
+                                )
+                            )
+                        )
+                    );
+                    $template->setVariable('TABLE', $codeBase->render());
+                    
+                } else{
                     $this->settings($template);
                 }
                 break;
