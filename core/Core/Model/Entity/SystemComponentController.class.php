@@ -236,8 +236,8 @@ class SystemComponentController extends Controller {
             $controllerClass = $baseNs . 'FrontendController';
         } else if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_BACKEND) {
             $controllerClass = $baseNs . 'BackendController';
-        } else if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_CLI) {
-            $controllerClass = $baseNs . 'CliController';
+        } else if ($this->cx->getMode() == \Cx\Core\Core\Controller\Cx::MODE_COMMAND) {
+            $controllerClass = $baseNs . 'CommandController';
         }
         if (!$controllerClass && !class_exists($controllerClass)) {
             return;
