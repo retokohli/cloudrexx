@@ -296,6 +296,21 @@ throw new MultiSiteException('Refactor this method!');
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database user plesk IP");
             }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthMethod') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('websiteHttpAuthMethod', '', 8,
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'none:none, basic:basic, digest:digest', 'websiteSetup')){
+                    throw new \Exception("Failed to add Setting entry for HTTP Authentication Method of Website");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthUsername') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('websiteHttpAuthUsername', '', 9,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
+                    throw new \Exception("Failed to add Setting entry for HTTP Authentication Username of Website");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthPassword') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('websiteHttpAuthPassword', '', 10,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
+                    throw new \Exception("Failed to add Setting entry for HTTP Authentication Password of Website");
+            }
             if (\Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('codeBaseRepository', \Env::get('cx')->getCodeBaseDocumentRootPath() . '/codeBases', 7,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){

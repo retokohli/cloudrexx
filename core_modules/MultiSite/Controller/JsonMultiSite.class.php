@@ -263,7 +263,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         return bin2hex(openssl_random_pseudo_bytes(16));    
     }
     
-    /**
+     /**
      * Map the website domain
      * 
      * @param type $params
@@ -271,12 +271,22 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function mapDomain($params){
         if (!empty($params['post']) && !empty($params['post']['domainName'])) {
-            try {
-                $objWebsiteRepo = new \Cx\Core_Modules\MultiSite\Model\Repository\WebsiteRepository();
-                $website = $objWebsiteRepo->findByName($params['post']['domainName']);
+            try {                
+                $authenticationValue = isset($params['post']['auth']) ? json_decode($params['post']['auth'], true) : '';
+
+                if (empty($authenticationValue) || !is_array($authenticationValue)) {
+                    return false;
+                }
+                list($websiteName) = explode('.', $authenticationValue['sender']);
+                $objWebsiteRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                $website = $objWebsiteRepo->findByName($websiteName);
                 
                 $objDomain = new \Cx\Core_Modules\MultiSite\Model\Entity\Domain($params['post']['domainName']);                
-                $website->mapDomain($objDomain);
+                $website[0]->mapDomain($objDomain);
+                
+                \Env::get('em')->persist($objDomain);
+                \Env::get('em')->persist($website[0]);
+                \Env::get('em')->flush();
                 
             } catch (\Exception $e) {
                 return $e->getMessage();
@@ -293,15 +303,20 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public function unMapDomain($params)
     {
         if (!empty($params['post']) && !empty($params['post']['domainName'])) {
-            try {
-                $objWebsiteRepo = new \Cx\Core_Modules\MultiSite\Model\Repository\WebsiteRepository();
-                $website = $objWebsiteRepo->findByName($params['post']['domainName']);
-                
-                $objWebsite = new \Cx\Core_Modules\MultiSite\Model\Entity\Website();            
-                $objWebsite->unmapDomain($website);
-            } catch (\Exception $e) {
-                return $e->getMessage();
+            $authenticationValue = isset($params['post']['auth']) ? json_decode($params['post']['auth'], true) : '';
+
+            if (empty($authenticationValue) || !is_array($authenticationValue)) {
+                return false;
             }
+            
+            list($websiteName) = explode('.', $authenticationValue['sender']);
+            $objWebsiteRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
+            $website = $objWebsiteRepo->findByName($websiteName);
+            
+            $website[0]->unmapDomain($params['post']['domainName']);
+            \Env::get('em')->persist($website[0]);
+            \Env::get('em')->flush();
         }
     } 
+
 }

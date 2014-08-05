@@ -615,6 +615,9 @@ class Website extends \Cx\Model\Base\EntityBase {
         $config = \Env::get('config');
         $serviceInstallationId = $config['installationId'];
         $serviceHostname = $config['domainUrl'];
+        $websiteHttpAuthMethod   = \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthMethod');
+        $websiteHttpAuthUsername = \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthUsername');
+        $websiteHttpAuthPassword = \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthPassword');
 
         try {
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'config','FileSystem', $websiteConfigPath);
@@ -641,17 +644,17 @@ class Website extends \Cx\Model\Base\EntityBase {
             }
 // TODO: HTTP-Authentication details of Website Service Server must be set
             if (\Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthMethod') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('serviceHttpAuthMethod','', 5,
+                && !\Cx\Core\Setting\Controller\Setting::add('serviceHttpAuthMethod', $websiteHttpAuthMethod, 5,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'none:none, basic:basic, digest:digest', 'website')){
                     throw new \Exception("Failed to add Setting entry for HTTP Authentication Method of Website Service");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthUsername') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('serviceHttpAuthUsername','', 6,
+                && !\Cx\Core\Setting\Controller\Setting::add('serviceHttpAuthUsername', $websiteHttpAuthUsername, 6,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
                     throw new \Exception("Failed to add Setting entry for HTTP Authentication Username of Website Service");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthPassword') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('serviceHttpAuthPassword','', 7,
+                && !\Cx\Core\Setting\Controller\Setting::add('serviceHttpAuthPassword', $websiteHttpAuthPassword, 7,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
                     throw new \Exception("Failed to add Setting entry for HTTP Authentication Password of Website Service");
             }
@@ -923,6 +926,12 @@ throw new WebsiteException('implement secret-key algorithm first!');
      * @param string $name websitename
      */  
     public function unmapDomain($name){
-        return  \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain')->remove(array('type' => Domain::TYPE_EXTERNAL_DOMAIN , 'name' => $name, 'websiteId' => $this->id));
+        
+        foreach ($this->getDomainAliases() as $domain) {
+            if($domain->name == $name) {
+                \Env::get('em')->remove($domain);
+                break;
+            }   
+        }
     }
 }
