@@ -334,22 +334,19 @@ class ReflectionComponent {
             \DBG::msg($e->getMessage());
         }
         
-        if (isset($meta['DlcInfo']['FrameworkVersion'])) {
-            if ($meta['DlcInfo']['FrameworkVersion'] < 3.1) {
-                //copy code from installer to load db from sql:
-                // load /data/structure.sql
-                // load /data/fixtures.sql                
-            } else {
-                // init DB structure from doctrine yaml files
-                //doctrine orm:schema-tool:update --force
-                // load DB data from /data/fixture.yml/sql
-            }
-        }        
-        $this->importStructureFromSql();
+        echo "Importing component data (structure & data) ... ";
+        if (!file_exists($this->getDirectory(false)."/Model/Yaml")) {
+            $this->importStructureFromSql();
+        } else {
+            // load yml files to database.
+        }
         $this->importDataFromSql();
+        echo "Done \n";
         
         // Activate this component
+        echo "Activating component ... ";
         $this->activate();
+        echo "Done \n";
     }
     
     function importStructureFromSql()
@@ -412,7 +409,7 @@ class ReflectionComponent {
                                  $sqlQuery = $this->repalceDataInQuery($table, $data, $replacements);
                                  break;
                              case DBPREFIX.'backend_areas':
-                                 $data = $this->getColumnsAndDataFromSql($sqlQuery);
+                                 $data = $this->getColumnsAndDataFromSql($sqlQuery);                                                                  
                                  $replacements = array('module_id' => $newModuleId);
                                  $sqlQuery = $this->repalceDataInQuery($table, $data, $replacements);
                                  break;
@@ -441,7 +438,7 @@ class ReflectionComponent {
      * @param type $replacements
      */
     function repalceDataInQuery($table, $data, $replacements)
-    {        
+    {                        
         $data = array_intersect_key($replacements + $data, $data);
         
         $sql  = 'INSERT INTO `'.$table.'`';
@@ -473,9 +470,9 @@ class ReflectionComponent {
         $dataString    = $columnAndData[1][1];
         
         $columns = null;
-        preg_match_all('/\`(.+?)\`/', $columnsString, $columns);
+        preg_match_all('/\`(.*?)\`/', $columnsString, $columns);
         $data = null;
-        preg_match_all('/\'(.+?)\'/', $dataString, $data);
+        preg_match_all('/\'(.*?)\'/', $dataString, $data);
         
         return array_combine($columns[1], $data[1]);
     }
