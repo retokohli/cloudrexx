@@ -1365,7 +1365,7 @@ namespace Cx\Core\Core\Controller {
         /**
          * This parses the content
          * 
-         * This cannot be used in mode self::MODE_CLI, since content is added to template directly
+         * This cannot be used in mode self::MODE_COMMAND, since content is added to template directly
          * @todo Write a method, that only returns the content, in order to allow usage in CLI mode
          * @todo Remove usage of globals
          * @global type $plainSection
@@ -1374,7 +1374,7 @@ namespace Cx\Core\Core\Controller {
         protected function loadContent() {
             global $plainSection, $_ARRAYLANG;
             
-            if ($this->mode == self::MODE_CLI) {
+            if ($this->mode == self::MODE_COMMAND) {
                 return;
             }
             
