@@ -28,17 +28,25 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     public function prePersist($eventArgs) {
         if ($eventArgs instanceof \Doctrine\ORM\Event\LifecycleEventArgs) {
             $objJsonData = new \Cx\Core\Json\JsonData();
+            \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
+            
             $hostName = \Cx\Core\Setting\Controller\Setting::getValue('serviceHostname');
-            $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('managerSecretKey');
-            $installationId = \Cx\Core\Setting\Controller\Setting::getValue('managerInstallationId');
+                        
+            $installationId = \Cx\Core\Setting\Controller\Setting::getValue('serviceInstallationId');  
+            $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('serviceSecretKey');
+            $httpAuth = array(
+                'httpAuthMethod' => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthMethod'),
+                'httpAuthUsername' => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthUsername'),
+                'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthPassword'),
+            );;
             //post array
             $params = array(
-                'domainName'    => $eventArgs->getEntity()->getName(),
-                'websiteId'     => $eventArgs->getEntity()->getId(),
+                'domainName'    => $eventArgs->getEntity()->getName(),                
                 'auth'          => \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($secretKey, $installationId)
             );
-        
-            $objJsonData->getJson('https://'.$hostName.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=mapDomain', $params, false, '', null);
+            
+            $objJsonData->getJson('https://'.$hostName.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=mapDomain', $params, false, '', $httpAuth);
+
         }
     }
     
@@ -53,17 +61,26 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
     public function postRemove($eventArgs) {
         if ($eventArgs instanceof \Doctrine\ORM\Event\LifecycleEventArgs) {
             $objJsonData = new \Cx\Core\Json\JsonData();
+            \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
+            
             $hostName = \Cx\Core\Setting\Controller\Setting::getValue('serviceHostname');
-            $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('managerSecretKey');
-            $installationId = \Cx\Core\Setting\Controller\Setting::getValue('managerInstallationId');
+                        
+            $installationId = \Cx\Core\Setting\Controller\Setting::getValue('serviceInstallationId');  
+            $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('serviceSecretKey');
+            
+            $httpAuth = array(
+                'httpAuthMethod' => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthMethod'),
+                'httpAuthUsername' => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthUsername'),
+                'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthPassword'),
+            );
+              
             //post array
             $params = array(
-                'domainName'    => $eventArgs->getEntity()->getName(),
-                'websiteId'     => $eventArgs->getEntity()->getId(),
+                'domainName'    => $eventArgs->getEntity()->getName(),                
                 'auth'          => \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($secretKey, $installationId)
             );
         
-            $objJsonData->getJson('https://'.$hostName.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=unmapDomain', $params, false, '', null);
+            $objJsonData->getJson('https://'.$hostName.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=unmapDomain', $params, false, '', $httpAuth);
         }
     }
 }
