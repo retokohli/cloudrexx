@@ -6,7 +6,7 @@
  * @copyright   CONTREXX CMS - Comvation AG Thun
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
  * @package     contrexx
- * @subpackage  coremodule_uploader
+ * @subpackage  coremodule_mediabrowser
  * @version     1.0.0
  */
 
@@ -52,7 +52,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
             \JS::registerJS('lib/plupload/js/plupload.dev.js'); /* todo change to min */
             \JS::registerJS(substr(ASCMS_CORE_MODULE_FOLDER . '/MediaBrowser/View/Script/angular.min.js', 1));
             \JS::registerJS(substr(ASCMS_CORE_MODULE_FOLDER . '/MediaBrowser/View/Script/angular-route.min.js', 1));
-            \JS::registerJS(substr(ASCMS_CORE_MODULE_FOLDER . '/MediaBrowser/View/Script/bootstrap.min.js', 1));
+            \JS::registerJS('lib/javascript/twitter-bootstrap/3.1.0/js/bootstrap.min.js');
+            \JS::registerJS('lib/javascript/bootbox.min.js');
             \JS::registerJS(substr(ASCMS_CORE_MODULE_FOLDER . '/MediaBrowser/View/Script/mediabrowser.js', 1));
             \JS::registerJS(substr(ASCMS_CORE_MODULE_FOLDER . '/MediaBrowser/View/Script/standalone-directives.js', 1));
         }

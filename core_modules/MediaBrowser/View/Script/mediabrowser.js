@@ -1,20 +1,20 @@
-jQuery(document).ready(function() {
+$J(document).ready(function() {
     // drag and drop overlay
-    jQuery("html, .mediaBrowserMain").bind('dragover', dragover);
-    jQuery('html, .mediaBrowserMain').bind('dragleave', dragleave);
+    $J("html, .mediaBrowserMain").bind('dragover', dragover);
+    $J('html, .mediaBrowserMain').bind('dragleave', dragleave);
 
     var tid;
     function dragover(event) {
         clearTimeout(tid);
         event.stopPropagation();
         event.preventDefault();
-        jQuery('.modal-content').addClass('modal-drag-overlay');
+        $J('.modal-content').addClass('modal-drag-overlay');
     }
 
     function dragleave(event) {
         tid = setTimeout(function() {
             event.stopPropagation();
-            jQuery('.modal-content').removeClass('modal-drag-overlay');
+            $J('.modal-content').removeClass('modal-drag-overlay');
 
         }, 300);
     }
@@ -28,9 +28,9 @@ var mediaBrowserApp = angular.module('contrexxApp', ['ngRoute', 'plupload.module
 
 mediaBrowserApp.config(['$routeProvider', '$locationProvider', function($routeProvider) {
         $routeProvider.
-                when('/uploader', {templateUrl: '/trunk/core_modules/MediaBrowser/View/Template/_Uploader.html', controller: 'UploaderCtrl'}).// todo adapt path 
-                when('/sitestructure', {templateUrl: '/trunk/core_modules/MediaBrowser/View/Template/_Sitestructure.html', controller: 'SitestructureCtrl'}).
-                when('/filebrowser', {templateUrl: '/trunk/core_modules/MediaBrowser/View/Template/_FileBrowser.html', controller: 'MediaBrowserListCtrl'}).
+                when('/uploader', {templateUrl: '/core_modules/MediaBrowser/View/Template/_Uploader.html', controller: 'UploaderCtrl'}).// todo adapt path
+                when('/sitestructure', {templateUrl: '/core_modules/MediaBrowser/View/Template/_Sitestructure.html', controller: 'SitestructureCtrl'}).
+                when('/filebrowser', {templateUrl: '/core_modules/MediaBrowser/View/Template/_FileBrowser.html', controller: 'MediaBrowserListCtrl'}).
                 otherwise({redirectTo: '/uploader'});
     }]);
 
@@ -43,8 +43,8 @@ mediaBrowserApp.controller('MainCtrl', ['$scope', '$rootScope', '$location', '$h
 
         // get files by json | todo: outsource in service & get everything in one json
         $http.get('index.php?cmd=jsondata&object=MediaBrowser&act=getFiles&csrf=' + cx.variables.get('csrf')).success(function(jsonadapter) {
-            jQuery(".loadingPlatform").hide();
-            jQuery(".filelist").show();
+            $J(".loadingPlatform").hide();
+            $J(".filelist").show();
             $rootScope.path = [{name: 'Dateien', path: 'files', standard: true}]
             $rootScope.dataFiles = jsonadapter.data;
             $rootScope.files = $rootScope.dataFiles;
@@ -91,11 +91,11 @@ mediaBrowserApp.controller('MainCtrl', ['$scope', '$rootScope', '$location', '$h
 
         $scope.updateSource = function() {
             $rootScope.path = [{name: "" + $scope.selectedSource.name, path: $scope.selectedSource.value, standard: true}];
-            jQuery(".loadingPlatform").show();
-            jQuery(".filelist").hide();
+            $J(".loadingPlatform").show();
+            $J(".filelist").hide();
             $http.get('index.php?cmd=jsondata&object=MediaBrowser&mediatype=' + $scope.selectedSource.value + '&act=getFiles&csrf=' + cx.variables.get('csrf')).success(function(jsonadapter) {
-                jQuery(".loadingPlatform").hide();
-                jQuery(".filelist").show();
+                $J(".loadingPlatform").hide();
+                $J(".filelist").show();
                 $rootScope.dataFiles = jsonadapter.data;
                 $rootScope.files = $rootScope.dataFiles;
             });
@@ -133,11 +133,18 @@ mediaBrowserApp.controller('MainCtrl', ['$scope', '$rootScope', '$location', '$h
         }
 
         $rootScope.createFolder = function() {
-            var dirName = prompt("Verzeichnisname", "");
-            
-            $http.get('index.php?cmd=jsondata&object=Uploader&act=createDir&path='+$rootScope.getPathAsString()+'&dir='+dirName+'&csrf=' + cx.variables.get('csrf')).success(function(jsonadapter) {
-                alert('dirCreated');
+            bootbox.prompt("What is your name?", function(result) {
+                if (result === null) {
+                } else {
+                }
+
+                console.log(result)
             });
+//            var dirName = prompt("Verzeichnisname", "");
+//
+//            $http.get('index.php?cmd=jsondata&object=Uploader&act=createDir&path='+$rootScope.getPathAsString()+'&dir='+dirName+'&csrf=' + cx.variables.get('csrf')).success(function(jsonadapter) {
+//                alert('dirCreated');
+//            });
             
             //$rootScope.tabs.forEach(function(tab) {
 
@@ -187,16 +194,16 @@ mediaBrowserApp.controller('UploaderCtrl', ['$scope', '$rootScope', '$http',
                     setTimeout(function() {
                         up.start();
                     }, 100);
-                    jQuery('.uploadStart').hide();
-                    jQuery('.uploadFilesAdded').show();
-                    jQuery('.modal-content').removeClass('modal-drag-overlay');
+                    $J('.uploadStart').hide();
+                    $J('.uploadFilesAdded').show();
+                    $J('.modal-content').removeClass('modal-drag-overlay');
                     /*plupload.each(files, function(file) {
-                     jQuery(".uploadFiles").append('<li id="' + file.id + '">' + file.name + '<b></b></li>');
+                     $J(".uploadFiles").append('<li id="' + file.id + '">' + file.name + '<b></b></li>');
                      
                      });*/
                 },
                 UploadProgress: function(up, file) {
-                    jQuery(".uploadFiles b").html(file.percent);
+                    $J(".uploadFiles b").html(file.percent);
                     console.log(file.percent);
                     var $bar = $('.progress-bar');
                     $bar.width(file.percent + '%');
@@ -263,7 +270,7 @@ mediaBrowserApp.controller('MediaBrowserListCtrl', ['$scope', '$rootScope', '$ht
                 else {
                     if (!$scope.configuration.selectmultiple) {
                         console.log('ok');
-                        if (!jQuery.isEmptyObject($scope.lastActiveFile))
+                        if (!$J.isEmptyObject($scope.lastActiveFile))
                             $scope.lastActiveFile.datainfo.active = false;
                         $scope.lastActiveFile = thisDir;
                     }
@@ -294,7 +301,7 @@ mediaBrowserApp.directive('previewImage', function() {
         restrict: 'A',
         link: function(scope, el, attrs) {
             if (attrs.previewImage !== 'none') {
-                $(el).popover({
+                $J(el).popover({
                     trigger: 'hover',
                     html: true,
                     content: '<img src="' + attrs.previewImage + '" />',
@@ -310,7 +317,7 @@ mediaBrowserApp.directive('cxMb', function() {
     return {
         restrict: 'A', // only work with elements including the attribute cxMb
         link: function(scope, el, attrs) {
-            jQuery(el).click(function() {
+            $J(el).click(function() {
                 // sitestructure / filebrowser / uploader
 
                 // cx-mb-views="sitestructure,uploader"
@@ -379,15 +386,15 @@ mediaBrowserApp.directive('cxMb', function() {
                         scope.$apply("go('" + scope.tabs[0].link + "')");
 
                     if (newTabs.length === 1) {
-                        jQuery(".mediaBrowserMain").addClass('no-nav');
+                        $J(".mediaBrowserMain").addClass('no-nav');
                     }
                 } else {
-                    jQuery(".mediaBrowserMain").removeClass('no-nav');
+                    $J(".mediaBrowserMain").removeClass('no-nav');
                     scope.tabs = scope.dataTabs;
                 }
 
 
-                jQuery(".media-browser-modal").modal("show");
+                $J(".media-browser-modal").modal("show");
 
                 if (attrs.cxMbCbJsModalopened !== false) {
                     var fn = window[attrs.cxMbCbJsModalopened];
@@ -397,7 +404,7 @@ mediaBrowserApp.directive('cxMb', function() {
                 }
 
 
-                jQuery('.media-browser-modal').on('hidden.bs.modal', function(e) {
+                $J('.media-browser-modal').on('hidden.bs.modal', function(e) {
                     scope.tabs = scope.dataTabs;
                     scope.configuration.selectmultiple = false;
 
