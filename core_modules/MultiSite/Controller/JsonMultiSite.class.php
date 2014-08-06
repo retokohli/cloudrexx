@@ -37,10 +37,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public function getAccessableMethods() {
 // TODO: remove 'get' from 'signup' command once API/Command-mode has been implemented
         return array(
-            'signup'        => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post', 'get'), false),
-            'createWebsite' => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
-            'mapDomain'     => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
-            'unmapDomain'   => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
+            'signup'                => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post', 'get'), false),
+            'createWebsite'         => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
+            'mapDomain'             => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
+            'unmapDomain'           => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
+            'updateDefaultCodeBase' => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post', 'get'), false),
         );
     }
 
@@ -325,6 +326,19 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             \Env::get('em')->persist($website[0]);
             \Env::get('em')->flush();
         }
-    } 
-
+    }
+    /**
+     * update the default codeBase
+     * 
+     * @param type $params
+     * @return type
+     */
+    public function updateDefaultCodeBase($params) 
+    {
+        if (!empty($params['post'])) {
+            \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'websiteSetup','FileSystem');
+            \Cx\Core\Setting\Controller\Setting::set('defaultCodeBase',$params['post']['defaultCodeBase']);
+            \Cx\Core\Setting\Controller\Setting::update('defaultCodeBase');
+        }
+    }
 }

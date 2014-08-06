@@ -14,6 +14,9 @@ Cx\Core_Modules\MultiSite\Model\Entity\Website:
     name:
       type: string
       length: 200
+    codeBase:
+      type: string
+      length: 50
     language:
       type: string
       length: 50

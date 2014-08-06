@@ -105,7 +105,7 @@ class Website extends \Cx\Model\Base\EntityBase {
         }
         $this->secretKey = \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::generateSecretKey();
         $this->validate();
-        
+        $this->codeBase = \Cx\Core\Setting\Controller\Setting::getValue('defaultCodeBase');
         $this->setFqdn();
         $this->setBaseDn();
     }
@@ -387,6 +387,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             $resp = $jd->getJson('https://'.$hostname.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=createWebsite', $params,
              false, '', $httpAuth);
             $this->ipAddress = $resp->data->websiteIp;
+            $this->codeBase  = $resp->data->codeBase;
             if(!$resp || $resp->status == 'error'){
                 $errMsg = isset($resp->message) ? $resp->message : '';
                 throw new WebsiteException('Problem in creating website '.$errMsg);    
@@ -432,6 +433,7 @@ class Website extends \Cx\Model\Base\EntityBase {
         return array(
             'status' => 'success',
             'websiteIp' => $websiteIp,
+            'codeBase' => $this->codeBase
         );
     }
     
@@ -546,6 +548,7 @@ class Website extends \Cx\Model\Base\EntityBase {
 
             $newConf = new \Cx\Lib\FileSystem\File(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/config/configuration.php');
             $newConfData = $newConf->getData();
+            $installationRootPath = !empty($this->getCodeBase()) ? \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository').'/'.$this->getCodeBase() : $_PATHCONFIG['ascms_installation_root'];
 
             // set database configuration
             $newConfData = preg_replace('/\\$_DBCONFIG\\[\'host\'\\] = \'.*?\';/', '$_DBCONFIG[\'host\'] = \'' .$objDb->getHost() . '\';', $newConfData);
@@ -559,7 +562,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             
             // set path configuration
             $newConfData = preg_replace('/\\$_PATHCONFIG\\[\'ascms_root\'\\] = \'.*?\';/', '$_PATHCONFIG[\'ascms_root\'] = \'' . \Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '\';', $newConfData);
-            $newConfData = preg_replace('/\\$_PATHCONFIG\\[\'ascms_installation_root\'\\] = \'.*?\';/', '$_PATHCONFIG[\'ascms_installation_root\'] = \'' . $_PATHCONFIG['ascms_installation_root'] . '\';', $newConfData);          
+            $newConfData = preg_replace('/\\$_PATHCONFIG\\[\'ascms_installation_root\'\\] = \'.*?\';/', '$_PATHCONFIG[\'ascms_installation_root\'] = \'' . $installationRootPath . '\';', $newConfData);          
                         
             $newConf->write($newConfData);
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {

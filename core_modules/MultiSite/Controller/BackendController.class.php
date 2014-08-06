@@ -100,29 +100,28 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     $codeBasePath   = \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository');
                     $codebaseScannedDir = array_values(array_diff(scandir($codeBasePath), array('..', '.')));
                     $codebaseRepositoryDataArray[] = array(
-                        'Version_number' => $_CONFIG['coreCmsVersion'],
-                        'Code_Name'      => $_CONFIG['coreCmsCodeName'],
-                        'Release_Date'   => date(ASCMS_DATE_FORMAT_DATE, $_CONFIG['coreCmsReleaseDate']),
-                        'Path'           => \Env::get('cx')->getCodeBaseDocumentRootPath()
+                        'Version_number'  => $_CONFIG['coreCmsVersion'],
+                        'default'         => \Cx\Core\Setting\Controller\Setting::getValue('defaultCodeBase'),
+                        'Code_Name'       => $_CONFIG['coreCmsCodeName'],
+                        'Release_Date'    => date(ASCMS_DATE_FORMAT_DATE, $_CONFIG['coreCmsReleaseDate']),
+                        'Path'            => \Env::get('cx')->getCodeBaseDocumentRootPath() 
                     );
                     
                     foreach ($codebaseScannedDir as $value) {
                         $configFile = $codeBasePath.'/'.$value.'/installer/config/config.php';
                         if (file_exists($configFile)) {
                             $configContents = file_get_contents($codeBasePath.'/'.$value.'/' .$scannedDir[0]. '/installer/config/config.php');
-                            $configContents = preg_replace('#<\?(?:php)?#', '', $configContents);
-                            $configContents = preg_replace('#require_once (?:[/\(\)_a-zA-Z\\.\']+);#', '', $configContents);
-                            $coreCmsVersion = $coreCmsCodeName = $coreCmsReleaseDate = null;
-                            preg_match('/\\$_CONFIG\\[\'coreCmsVersion\'\\]\s+\=\s+\'(.*?)\';/s', $configContents, $coreCmsVersion);
-                            preg_match('/\\$_CONFIG\\[\'coreCmsCodeName\'\\]\s+\=\s+\'(.*?)\';/s', $configContents, $coreCmsCodeName);
-                            preg_match('/\\$_CONFIG\\[\'coreCmsReleaseDate\'\\]\s+\=\s+\'(.*?)\';/s', $configContents, $coreCmsReleaseDate);
+                            if (preg_match_all('/\\$_CONFIG\\[\'(.*?)\'\\]\s+\=\s+\'(.*?)\';/s', $configContents, $matches)) {
+                                    $configValues = array_combine($matches[1], $matches[2]);
+                                    $codebaseRepositoryDataArray[] = array(
+                                        'Version_number' => $configValues['coreCmsVersion'],
+                                        'default'        => $value,
+                                        'Code_Name'      => $configValues['coreCmsCodeName'],
+                                        'Release_Date'   => $configValues['coreCmsReleaseDate'],
+                                        'Path'           => $codeBasePath.'/'.$value
+                                        );
+                            }
                             
-                            $codebaseRepositoryDataArray[] = array(
-                                'Version_number' => $coreCmsVersion[1],
-                                'Code_Name'      => $coreCmsCodeName[1],
-                                'Release_Date'   => $coreCmsReleaseDate[1],
-                                'Path'           => $codeBasePath.'/'.$value
-                            );
                         }          
                     }
                     
@@ -132,9 +131,18 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             'header' => $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_SETTINGS_CODEBASES'],
                             'fields' => array(
                                 'Version_number' => array(
-                                'header' => 'Version number'
-                                 )
-                                ,
+                                    'header' => 'Version number'
+                                 ),
+                                'default' => array(
+                                    'header'  => 'Default',
+                                    'table' => array(
+                                        'parse' => function($value) {
+                                            $checked = ($value == \Cx\Core\Setting\Controller\Setting::getValue('defaultCodeBase')) ? 'checked="checked"' : '';
+                                            $content = '<input type = "radio" class="defaultCodeBase" name = "defaultCodeBase" '.$checked.' value ="'.$value.'"/>';
+                                            return $content;
+                                        },
+                                    ),
+                                ),
                                 'Code_Name' => array(
                                     'header' => 'Code Name',
                                 ),

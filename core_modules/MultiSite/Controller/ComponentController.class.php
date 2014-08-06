@@ -272,7 +272,7 @@ throw new MultiSiteException('Refactor this method!');
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for websites path");
             }
             if (\Cx\Core\Setting\Controller\Setting::getValue('defaultCodeBase') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('defaultCodeBase',\Env::get('cx')->getCodeBaseDocumentRootPath(), 2,
+                && !\Cx\Core\Setting\Controller\Setting::add('defaultCodeBase','', 2,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'websiteSetup')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add SettingDb entry for Database Default code base");
             }
