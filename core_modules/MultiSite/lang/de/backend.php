@@ -21,3 +21,8 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATED'] = 'Vielen Dank für die
 
 // default texts for checkout module
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DEFAULT_TEXT_LOOK_AND_FEEL'] = "Durch Absenden des Formulars werden Sie auf die Website des Zahlungsproviders weitergeleitet und schliessen dort Ihre Zahlung ab.";
+
+//http text
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITEHTTPAUTHMETHOD'] = "HTTP Authentication Method";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITEHTTPAUTHUSERNAME'] = "HTTP Authentication Username";
+$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITEHTTPAUTHPASSWORD'] = "HTTP Authentication Password";
