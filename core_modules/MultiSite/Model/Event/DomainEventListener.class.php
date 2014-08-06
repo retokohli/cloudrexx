@@ -38,6 +38,8 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
             // if MultiSite-mode set to 'manager' or 'hybrid': remove DNS record
             // if MultiSite-mode set to 'service' or 'hybrid': update Domain-Cache
+            $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode');
+            $this->domainMapping($eventArgs, $mode, 'unmapDomain');
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
         }
@@ -71,17 +73,23 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             $domain  = $eventArgs->getEntity();
             switch ($mode) {
                 case 'manager':
-                    $this->addDnsRecord($domain, 'prePersist');
+                    if ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain)
+                        $this->addDnsRecord($domain, 'prePersist');
                     break;
 
                 case 'service':
+                    if ($domain instanceof \Cx\Core\Net\Model\Entity\Domain)
+                        $this->domainMapping($eventArgs, $mode, 'mapDomain');
                     break;
 
                 case 'hybrid':
-                    $this->addDnsRecord($domain, 'prePersist');
+                    if ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain)
+                        $this->addDnsRecord($domain, 'prePersist');
                     break;
 
                 default:
+                    if ($domain instanceof \Cx\Core\Net\Model\Entity\Domain)
+                        $this->domainMapping($eventArgs, $mode, 'mapDomain');
                     break;
             }
         } catch (\Exception $e) {
@@ -190,6 +198,48 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         $domainRepository->exportDomainAndWebsite();
     }
 
+    private function domainMapping($eventArgs , $mode, $event) {
+        $objJsonData = new \Cx\Core\Json\JsonData();
+        \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
+        
+        if (empty($mode) || empty($event))
+            return;
+        
+        switch ($mode) {
+            case 'service':
+                $hostName = \Cx\Core\Setting\Controller\Setting::getValue('managerHostname');
+                        
+                $installationId = \Cx\Core\Setting\Controller\Setting::getValue('managerInstallationId');  
+                $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('managerSecretKey');
+                $httpAuth = array(
+                    'httpAuthMethod' => \Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthMethod'),
+                    'httpAuthUsername' => \Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthUsername'),
+                    'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthPassword'),
+                );
+            break;
+            case 'website':
+                $hostName = \Cx\Core\Setting\Controller\Setting::getValue('serviceHostname');
+                        
+                $installationId = \Cx\Core\Setting\Controller\Setting::getValue('serviceInstallationId');  
+                $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('serviceSecretKey');
+            
+                $httpAuth = array(
+                    'httpAuthMethod' => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthMethod'),
+                    'httpAuthUsername' => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthUsername'),
+                    'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthPassword'),
+                );
+            break;
+        }
+        //post array
+        $params = array(
+            'domainName'    => $eventArgs->getEntity()->getName(),
+            'websiteId'     => $mode == 'service' ? $eventArgs->getEntity()->getWebsiteId() : 0,
+            'auth'          => \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($secretKey, $installationId)
+        );
+            
+        $objJsonData->getJson('https://'.$hostName.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act='.$event, $params, false, '', $httpAuth);
+    } 
+    
     public function onEvent($eventName, array $eventArgs) {        
         $this->$eventName(current($eventArgs));
     }

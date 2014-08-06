@@ -277,9 +277,13 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 if (empty($authenticationValue) || !is_array($authenticationValue)) {
                     return false;
                 }
-                list($websiteName) = explode('.', $authenticationValue['sender']);
                 $objWebsiteRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-                $website = $objWebsiteRepo->findByName($websiteName);
+                if (empty($params['post']['websiteId'])) {
+                    list($websiteName) = explode('.', $authenticationValue['sender']);
+                    $website = $objWebsiteRepo->findByName($websiteName);
+                } else {
+                    $website[0] = $objWebsiteRepo->findById($params['post']['websiteId']);
+                }
                 
                 $objDomain = new \Cx\Core_Modules\MultiSite\Model\Entity\Domain($params['post']['domainName']);                
                 $website[0]->mapDomain($objDomain);
@@ -309,9 +313,13 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 return false;
             }
             
-            list($websiteName) = explode('.', $authenticationValue['sender']);
             $objWebsiteRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Website');
-            $website = $objWebsiteRepo->findByName($websiteName);
+            if (empty($params['post']['websiteId'])) {
+                list($websiteName) = explode('.', $authenticationValue['sender']);
+                $website = $objWebsiteRepo->findByName($websiteName);
+            } else {
+                $website[0] = $objWebsiteRepo->findById($params['post']['websiteId']);
+            }
             
             $website[0]->unmapDomain($params['post']['domainName']);
             \Env::get('em')->persist($website[0]);
