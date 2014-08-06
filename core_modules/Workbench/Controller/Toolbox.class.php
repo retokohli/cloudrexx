@@ -9,7 +9,8 @@ class Toolbox {
         $this->template = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/Workbench/View/Template/Backend');
         switch ($mode) {
             case 'yaml':
-                $this->template->loadTemplateFile('Yaml.html');
+                \JS::registerJS('core_modules/Workbench/View/Script/ace.js');
+                $this->template->loadTemplateFile('Yaml.html');                
                 return;
                 $res = \Env::get('db')->Execute('SHOW TABLES');
                 while (!$res->EOF) {
