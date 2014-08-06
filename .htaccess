@@ -5,6 +5,10 @@
     # This is ASCMS_PATH_OFFSET, i.e.
     RewriteBase   /trunk
 
+    # Deny direct access to directories containing sensitive data
+    RewriteCond %{REQUEST_URI} ^/(config|tmp|websites|core/.*/Data|core_modules/.*/Data|modules/.*/Data)/
+    RewriteRule . - [F]
+
     # Resolve language specific sitemap.xml
     RewriteRule ^(\w+)\/sitemap.xml$ sitemap_$1.xml [L,NC]
 
