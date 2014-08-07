@@ -6,7 +6,7 @@
  * @copyright   Comvation AG
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
  * @package     contrexx
- * @subpackage  modules_skeleton
+ * @subpackage coremodule_mediabrowser
  */
 
 namespace Cx\Core_Modules\MediaBrowser\Controller;

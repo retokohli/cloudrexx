@@ -5,17 +5,17 @@
  * @copyright   Comvation AG
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
  * @package     contrexx
- * @subpackage  modules_skeleton
+ * @subpackage coremodule_mediabrowser
  */
 
 namespace Cx\Core_Modules\MediaBrowser\Controller;
 
 
-class MediaBrowserController {  
-    
-    private $_attr = array();
-    
-    private function __construct() {
+class MediaBrowserController {
+
+    protected $_attr = array();
+
+    protected function __construct() {
         \Env::set('MediaBrowser', $this);
         //Cx\Core_Modules\MediaBrowser\Controller\ComponentController::    
     }
