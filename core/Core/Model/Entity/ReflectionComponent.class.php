@@ -338,7 +338,7 @@ class ReflectionComponent {
         if (!file_exists($this->getDirectory(false)."/Model/Yaml")) {
             $this->importStructureFromSql();
         } else {
-            // load yml files to database.
+            $this->createTablesFromYaml();
         }
         $this->importDataFromSql();
         echo "Done \n";
@@ -349,6 +349,28 @@ class ReflectionComponent {
         echo "Done \n";
     }
     
+    /**
+     * Import table's from the yml files
+     */
+    function createTablesFromYaml()
+    {
+        $ymlDirectory = $this->getDirectory(false).'/Model/Yaml';
+        
+        $em  = \Env::get('cx')->getDb()->getEntityManager();
+        
+        $classes = array();
+        foreach (glob($ymlDirectory.'/*.yml') as $yml) {
+            $ymlArray  = \Symfony\Component\Yaml\Yaml::load($yml);
+            $classes[] = $em->getClassMetadata(key($ymlArray));
+        }
+        
+        $scm = new \Doctrine\ORM\Tools\SchemaTool($em);
+        $scm->createSchema($classes);
+    }
+        
+    /**
+     * Imports table structure from sql     
+     */
     function importStructureFromSql()
     {
         $sqlDump = ASCMS_APP_CACHE_FOLDER . '/Data/Structure.sql';
@@ -375,7 +397,7 @@ class ReflectionComponent {
     }
     
     /**
-     * 
+     * import component data's from sql
      */
     function importDataFromSql()
     {
@@ -431,11 +453,13 @@ class ReflectionComponent {
     }
     
     /**
+     * replace data in the existing data by the given replacements
+     * and return the sql query
      * 
-     * @param type $table
-     * @param type $columns
-     * @param type $data
-     * @param type $replacements
+     * @param string $table        Table name
+     * @param array  $columns      Columns array
+     * @param array  $data         Data array 
+     * @param array  $replacements Replacement data array
      */
     function repalceDataInQuery($table, $data, $replacements)
     {                        
