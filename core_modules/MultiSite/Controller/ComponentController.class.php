@@ -502,6 +502,8 @@ throw new MultiSiteException('Refactor this method!');
 
             $configFile = \Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$website->getName().'/config/configuration.php';
             \DBG::msg("MultiSite: Loading customer Website {$website->getName()}...");
+            // set SERVER_NAME to BaseDN of Website
+            $_SERVER['SERVER_NAME'] = $website->getName() . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
             \Cx\Core\Core\Controller\Cx::instanciate(\Env::get('cx')->getMode(), true, $configFile);
             exit;
         }
