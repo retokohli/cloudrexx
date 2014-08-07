@@ -1116,7 +1116,7 @@ namespace Cx\Core\Core\Controller {
                     $params = array_slice($argv, 1);
                 } else {
                     $params = preg_replace('#' . $this->getWebsiteOffsetPath() . static::FOLDER_NAME_COMMAND_MODE . '(/)?#', '', $_GET['__cap']);
-                    $params = explode('/', $params) + array_keys($_GET);
+                    $params = explode('/', $params) + $_GET;
                     unset($params['__cap']);
                 }
 
