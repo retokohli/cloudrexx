@@ -122,7 +122,7 @@ class BackendTable extends HTML_Table {
                     if (!isset($options['functions']['baseUrl'])) {
                         $options['functions']['baseUrl'] = clone \Env::get('cx')->getRequest()->getUrl();
                     }
-                    $this->setCellContents($row, $col, $this->getFunctionsCode($rowname, $options['functions']), 'TD', 0);
+                    $this->setCellContents($row, $col, $this->getFunctionsCode($rowname, $options['functions'], $rows['virtual']), 'TD', 0);
     			}
     			$first = false;
     			$row++;
@@ -162,22 +162,24 @@ class BackendTable extends HTML_Table {
         }
     }
     
-    protected function getFunctionsCode($rowname, $functions) {
+    protected function getFunctionsCode($rowname, $functions, $virtual = false ) {
         $baseUrl = $functions['baseUrl'];
         $code = '<span class="functions">';
-        if (isset($functions['edit']) && $functions['edit']) {
-            $editUrl = clone $baseUrl;
-            $editUrl->setParam('editid', $rowname);
-            $code .= '<a href="' . $editUrl . '" class="edit"></a>';
-        }
-        if (isset($functions['delete']) && $functions['delete']) {
-            $deleteUrl = clone $baseUrl;
-            $deleteUrl->setParam('deleteid', $rowname);
-            $deleteUrl.='&csrf='.\Cx\Core\Csrf\Controller\Csrf::code();
-            $onclick ='if (confirm(\'Do you really want to delete?\'))'.
-                    'window.location.replace(\''.$deleteUrl.'\');';
-            $_uri = 'javascript:void(0);';
-            $code .= '<a onclick="'.$onclick.'" href="'.$_uri.'" class="delete"></a>';
+        if(!$virtual){
+            if (isset($functions['edit']) && $functions['edit']) {
+                $editUrl = clone $baseUrl;
+                $editUrl->setParam('editid', $rowname);
+                $code .= '<a href="' . $editUrl . '" class="edit"></a>';
+            }
+            if (isset($functions['delete']) && $functions['delete']) {
+                $deleteUrl = clone $baseUrl;
+                $deleteUrl->setParam('deleteid', $rowname);
+                $deleteUrl.='&csrf='.\Cx\Core\Csrf\Controller\Csrf::code();
+                $onclick ='if (confirm(\'Do you really want to delete?\'))'.
+                        'window.location.replace(\''.$deleteUrl.'\');';
+                $_uri = 'javascript:void(0);';
+                $code .= '<a onclick="'.$onclick.'" href="'.$_uri.'" class="delete"></a>';
+            }
         }
         return $code . '</span>';
     }

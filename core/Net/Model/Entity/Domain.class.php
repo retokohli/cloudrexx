@@ -46,12 +46,6 @@ class Domain extends \Cx\Core\Model\Model\Entity\YamlEntity {
     public $name;
 
     /**
-     *  Domain is writable or not
-     * @var string
-     */
-    public $writable;
-
-    /**
      * Constructor to initialize a new domain.
      * @param   string  $name   Domain name of new domain
      */
@@ -109,21 +103,5 @@ class Domain extends \Cx\Core\Model\Model\Entity\YamlEntity {
         return $parts;
     }
 
-    /**
-     * Set the writability of the domain
-     * @param   boolean $writable    TRUE to set the domain as writable or otherwise to FALSE 
-     */
-    public function setWritable($writable) {
-        $this->writable = $writable;
-    }
-
-    /**
-     * Returns the writability of the domain
-     * 
-     * @return  boolean TRUE if the domain is writable, otherwise FALSE
-     */
-    public function isWritable() {
-        return $this->writable;
-    }
 }
 
