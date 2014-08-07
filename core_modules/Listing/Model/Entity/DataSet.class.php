@@ -108,6 +108,7 @@ class DataSet implements \Iterator {
                 }
                 $data[$field] = $value;
             }
+            $data['virtual'] = $object->isVirtual();
             return $data;
         }
         foreach ($object as $attribute=>$property) {

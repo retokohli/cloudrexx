@@ -42,7 +42,7 @@ class DomainRepository extends \Cx\Core\Model\Controller\YamlRepository {
         
         //Initialize the Hostname Domain
         $hostName = new \Cx\Core\Net\Model\Entity\Domain($_SERVER['SERVER_NAME']);
-        $hostName->setWritable(false);
+        
         $hostName->setVirtual(true);
         //attach the hostname domain entity to repository
         $this->add($hostName);
