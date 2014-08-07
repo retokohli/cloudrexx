@@ -8,9 +8,15 @@
                 data: {
                     defaultCodeBase: $(this).val(),
                 },
-                type: "POST"
+                type: "POST",
+               
+                success: function(response) { 
+                    if (response.data) {
+                        cx.tools.StatusMessage.showMessage(response.data, null,2000);
+                    }
+                }
+                
             });
-
         });
     });
 })(jQuery);

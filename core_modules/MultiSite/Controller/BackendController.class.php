@@ -101,7 +101,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     $codebaseScannedDir = array_values(array_diff(scandir($codeBasePath), array('..', '.')));
                     $codebaseRepositoryDataArray[] = array(
                         'Version_number'  => $_CONFIG['coreCmsVersion'],
-                        'default'         => \Cx\Core\Setting\Controller\Setting::getValue('defaultCodeBase'),
+                        'default'         => '',
                         'Code_Name'       => $_CONFIG['coreCmsCodeName'],
                         'Release_Date'    => date(ASCMS_DATE_FORMAT_DATE, $_CONFIG['coreCmsReleaseDate']),
                         'Path'            => \Env::get('cx')->getCodeBaseDocumentRootPath() 

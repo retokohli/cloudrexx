@@ -33,22 +33,27 @@ class DomainRepository extends \Doctrine\ORM\EntityRepository {
         $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath');
         $websiteOffsetPath = substr($websitePath, strlen(\Env::get('cx')->getWebsiteDocumentRootPath()));
         $codeBaseRepositoryPath = \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository');
-        $codeBaseRepositoryOffsetPath = substr($codeBaseRepositoryPath, strlen(\Env::get('cx')->getWebsiteDocumentRootPath()));
+        $codeBaseRepositoryOffsetPath = substr($codeBaseRepositoryPath, strlen(\Env::get('cx')->getCodeBaseDocumentRootPath()));
         foreach ($objDomains As $objDomain) {
             $domainName                     = $objDomain->getName();
             $websiteName                    = $objDomain->getWebsite()->getName();
+            $codeBaseName                   = $objDomain->getWebsite()->getCodeBase();
             $websiteDomainContent[]         = "$domainName\t$websiteOffsetPath/$websiteName";
-            $codeBaseRepositoryContent[]    = "$domainName\t$codeBaseRepositoryOffsetPath/".$objDomain->getWebsite()->getCodeBase();
+            if (!empty($codeBaseName)) {
+               $codeBaseRepositoryContent[] = "$domainName\t$codeBaseRepositoryOffsetPath/".$codeBaseName;
+            }                             
         }
-
         // In case the MultiSite system is running in hybrid-mode, then the FQDN and BaseDN
         // are the same. Therefore, we shall remove those duplicates.
+        
         $websiteDomainContent      = array_unique($websiteDomainContent);
         $codeBaseRepositoryContent = array_unique($codeBaseRepositoryContent);
-        $websiteDomainMap          = array(
-                                        'WebsiteDomainContentMap.txt'  => $websiteDomainContent,
-                                        'WebsiteDomainCodeBaseMap.txt' => $codeBaseRepositoryContent
-                                     );
+        $websiteDomainMap['WebsiteDomainContentMap.txt'] = $websiteDomainContent;
+        
+        if(!empty($codeBaseRepositoryContent)){
+              $websiteDomainMap['WebsiteDomainCodeBaseMap.txt'] = $codeBaseRepositoryContent;
+        }    
+
         foreach ($websiteDomainMap as $key => $value) {
             try {
                 $content = join("\n", $value);

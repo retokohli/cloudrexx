@@ -52,7 +52,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'createWebsite'         => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
             'mapDomain'             => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
             'unmapDomain'           => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
-            'updateDefaultCodeBase' => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post', 'get'), false),
+            'updateDefaultCodeBase' => new \Cx\Core\Access\Model\Entity\Permission(array('http'), array('post'), false)
         );
     }
 
@@ -326,15 +326,22 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     /**
      * update the default codeBase
      * 
-     * @param type $params
-     * @return type
+     * @param array $params
+     * 
+     * @return string
      */
     public function updateDefaultCodeBase($params) 
     {
+        global $_ARRAYLANG,$objInit;
+        $langData = $objInit->loadLanguageData('MultiSite');
+        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
         if (!empty($params['post'])) {
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'websiteSetup','FileSystem');
             \Cx\Core\Setting\Controller\Setting::set('defaultCodeBase',$params['post']['defaultCodeBase']);
-            \Cx\Core\Setting\Controller\Setting::update('defaultCodeBase');
+            if (\Cx\Core\Setting\Controller\Setting::update('defaultCodeBase')) {
+                return $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DEFAULTCODEBASE_SUCCESSFUL_CREATION'];
+            }
         }
     }
+    
 }

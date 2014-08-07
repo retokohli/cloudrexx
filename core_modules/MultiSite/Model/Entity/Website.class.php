@@ -548,7 +548,7 @@ class Website extends \Cx\Model\Base\EntityBase {
 
             $newConf = new \Cx\Lib\FileSystem\File(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/config/configuration.php');
             $newConfData = $newConf->getData();
-            $installationRootPath = !empty($this->getCodeBase()) ? \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository').'/'.$this->getCodeBase() : $_PATHCONFIG['ascms_installation_root'];
+            $installationRootPath = !empty($this->codeBase) ? \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository').'/'.$this->codeBase : $_PATHCONFIG['ascms_installation_root'];
 
             // set database configuration
             $newConfData = preg_replace('/\\$_DBCONFIG\\[\'host\'\\] = \'.*?\';/', '$_DBCONFIG[\'host\'] = \'' .$objDb->getHost() . '\';', $newConfData);
@@ -752,7 +752,8 @@ throw new WebsiteException('implement secret-key algorithm first!');
      * @throws \Exception 
      */
     protected function initDb($type, $objUser, $objDbUser, $langId, $websitedb) {
-        $fp = @fopen(\Env::get('ClassLoader')->getFilePath(ASCMS_CORE_MODULE_PATH . '/MultiSite/Data/contrexx_dump_' . $type . '.sql'), "r");
+        $dumpFilePath = !empty($this->codeBase) ? \Env::get('cx')->getCodeBaseDocumentRootPath().'/'.$this->codeBase  :  \Env::get('cx')->getCodeBaseDocumentRootPath();
+        $fp = @fopen(\Env::get('ClassLoader')->getFilePath($dumpFilePath.'/installer/data/contrexx_dump_' . $type . '.sql'), "r");
         if ($fp === false) {
             throw new \Exception('File not found');
         }
