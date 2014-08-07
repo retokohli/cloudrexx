@@ -91,4 +91,22 @@ class FileSystemWebsiteRepository {
     public function findWebsitesBetween($basepath, $startTime, $endTime) {
         return count($this->findByCreatedDateRange($basepath, $startTime, $endTime));
     }
+    
+    public function findByDomain($basePath, $name) {
+        
+        $domainContent = file_get_contents(\Env::get('cx')->getWebsiteDocumentRootPath() . '/core_modules/MultiSite/Data/WebsiteDomainContentMap.txt');
+        
+        try{
+            $domainNameValues = explode("\n", $domainContent);
+            foreach ($domainNameValues as $domainValue) {
+                $domainName = explode("\t", $domainValue);
+                if ($name == $domainName[0]) {
+                    $websitePath = explode("/", $domainName[1]);
+                    return $this->findByName($basePath, end($websitePath));
+                }
+            }
+        } catch (\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteException $e) {
+            return null;
+        }
+    }
 }

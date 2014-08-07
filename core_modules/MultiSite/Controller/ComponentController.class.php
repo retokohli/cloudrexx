@@ -492,7 +492,8 @@ throw new MultiSiteException('Refactor this method!');
         $multiSiteRepo = new \Cx\Core_Modules\MultiSite\Model\Repository\FileSystemWebsiteRepository();
 // TODO: add support for requests to domain aliases (i.e.: example.com)
         $websiteName = substr($_SERVER['HTTP_HOST'], 0, -strlen('.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain')));
-        $website = $multiSiteRepo->findByName(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/', $websiteName);
+        $website = $multiSiteRepo->findByDomain(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/', $websiteName);
+        
         if ($website) {
             // Recheck the system state of the Website Service Server (1st check
             // has already been performed before executing the preInit-Hooks),
