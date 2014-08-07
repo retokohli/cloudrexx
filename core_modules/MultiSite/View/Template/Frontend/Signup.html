@@ -1,23 +1,45 @@
-<form action="{POST_URL}" method="post" name="multisite_signup_form" id="multisite_signup_form">
-    <table style="width:100%">
-        <tbody>
-            <tr>
-                <th>{TXT_MULTISITE_EMAIL_ADDRESS}</th>
-                <td><input id="multisite_email_address" name="multisite_email_address" type="email" value="{MULTISITE_USER_EMAIL}" required /><br />
-            </tr>
-            <tr>
-                <th>{TXT_MULTISITE_ADDRESS}</th>
-                <td><input id="multisite_address" name="multisite_address" type="text" value="{MULTISITE_WEBSITE_NAME}" required />.{MULTISITE_DOMAIN}<br />
-            </tr>
-            <tr>
-                <th>&nbsp;</th>
-                <td><input type="submit" name="multisite_create_website" id="multisite_create_website" value="{TXT_MULTISITE_CREATE_WEBSITE}" /></td>
-            </tr>
-            <tr>
-                <th>&nbsp;</th>
-                <td><div id="message"> </div></td>
-            </tr>
-            
-        </tbody>
-    </table>
+<script type="text/javascript" src="/core_modules/MultiSite/View/Script/SignUp.js"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+cx_multisite = {
+    emailUrl: '{MULTISITE_EMAIL_URL}',
+    signUpUrl: '{MULTISITE_SIGNUP_URL}'
+};
+/* ]]> */
+</script>
+<style type="text/css">
+/* <![CDATA[ */
+.multisite-status,
+.multisite-progress {
+    display: none;
+}
+/* ]]> */
+</style>
+<form id="multisite_signup_form" role="form">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+        <h4 class="modal-title">{TITLE}</h4>
+    </div>
+    <div class="modal-body multisite-status"></div>
+    <div class="modal-body multisite-form">
+        <div class="form-group">
+            <input id="multisite_email_address" name="multisite_email_address" type="email" class="form-control" placeholder="{TXT_MULTISITE_EMAIL_ADDRESS}" required="">
+        </div>
+
+        <div class="form-group">
+            <div class="input-group">
+                <input id="multisite_address" name="multisite_address" type="text" class="form-control" placeholder="{TXT_MULTISITE_ADDRESS}" required="">
+                <div class="input-group-addon">.{MULTISITE_DOMAIN}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-body multisite-progress">
+        <span>Building your Website <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /></span>
+    </div>
+
+    <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">{TXT_MULTISITE_CREATE_WEBSITE}</button>
+    </div>
 </form>

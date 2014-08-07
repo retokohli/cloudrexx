@@ -11,7 +11,18 @@
 
 namespace Cx\Core_Modules\MultiSite\Controller;
 
-class MultiSiteJsonException extends \Exception {}
+class MultiSiteJsonException extends \Exception {
+    /**
+     * Overwriting the default Exception constructor
+     * The default Exception constructor only accepts $message to be a string.
+     * We do overwrite this here to also allow $message to be an array
+     * that can then be sent back in the JsonData-response.
+     */
+    public function __construct($message = null, $code = 0, Exception $previous = null) {
+        parent::__construct('', $code, $previous);
+        $this->message = $message;
+    }
+}
 /**
  * JSON Adapter for Multisite
  * @copyright   CONTREXX CMS - COMVATION AG
@@ -35,9 +46,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     * @return array List of method names
     */
     public function getAccessableMethods() {
-// TODO: remove 'get' from 'signup' command once API/Command-mode has been implemented
         return array(
-            'signup'                => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post', 'get'), false),
+            'signup'                => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false),
+            'email'                 => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false),
             'createWebsite'         => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
             'mapDomain'             => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
             'unmapDomain'           => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
@@ -60,7 +71,24 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     public function getDefaultPermissions() {
         return null;
     }
-    
+
+    /**
+     * Check if there is already an account present
+     * by the supplied email address.
+     * @param array $params supplied arguments from JsonData-request
+     * @return void Returns nothing in case the email is not yet registered
+     * @throws MultiSiteJsonException An array with further information about the already used email address
+     */
+    public function email($params) {
+        if (!isset($params['post']['multisite_email_address'])) {
+            return;
+        }
+        if (!\User::isUniqueEmail($params['post']['multisite_email_address'])) {
+            //return array('status' => 'login');
+            throw new MultiSiteJsonException(array('object' => 'email', 'type' => 'info', 'message' => 'An account with this email does already exist. <a href="" target="_blank">Login now</a>'));
+        }
+    }
+
     /**
     * function signup
     * @param post parameters
@@ -88,7 +116,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             }
             //check email existence
             if (!\User::isUniqueEmail($post['multisite_email_address'])) {
-                throw new MultiSiteJsonException('An account with this email does already exist. Click here to login.');
+                throw new MultiSiteJsonException(array('object' => 'email', 'type' => 'info', 'message' => 'An account with this email does already exist. <a href="" target="_blank">Login now</a>'));
             }
 
             //call \User\store function to store all the info of new user
@@ -97,42 +125,6 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             }
             //call createWebsite method.
             return $this->createWebsite($objUser,$websiteName);
-        } else if ($params['get']['fetchForm']==1){
-            $Template = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/MultiSite/View/Template/Frontend');
-            $Template->loadTemplateFile('Signup.html');
-            $Template->setErrorHandling(PEAR_ERROR_DIE);
-            // get website minimum and maximum Name length
-            $websiteNameMinLength=\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength');
-            $websiteNameMaxLength=\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength');
-            // TODO: implement protocol support / the protocol to use should be defined by a configuration option
-            $protocol = 'https';
-            if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array('manager', 'hybrid'))) {
-                $configs = \Env::get('config');
-                $multiSiteDomain = $protocol.'://'.$configs['domainUrl'];
-            } else {           
-                $multiSiteDomain = $protocol.'://'.\Cx\Core\Setting\Controller\Setting::getValue('managerHostname');
-            }
-            \JS::activate('cx');
-            //Add jquery validations library (jquery.validate.min.js)
-            \JS::registerJs('lib/javascript/jquery/jquery.validate.min.js');
-            \ContrexxJavascript::getInstance()->setVariable('baseUrl', $multiSiteDomain, 'MultiSite');
-            $setVariable=array(
-                                'TITLE'         => $_ARRAYLANG['TXT_MULTISITE_TITLE'],
-                                'TXT_MULTISITE_EMAIL_ADDRESS' => $_ARRAYLANG['TXT_MULTISITE_EMAIL_ADDRESS'],
-                                'TXT_MULTISITE_ADDRESS'  => $_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS'],
-                                'TXT_MULTISITE_CREATE_WEBSITE'   => $_ARRAYLANG['TXT_MULTISITE_SUBMIT_BUTTON'],
-                                'MULTISITE_DOMAIN'     => \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'),
-                                'POST_URL'      => '',
-                            );
-            $Template->setVariable($setVariable);
-            return $Template->get();
-        } else {
-            $cxJs =  file_get_contents('lib/javascript/cx/contrexxJs.js');
-            $cxJs .= file_get_contents('lib/javascript/cx/contrexxJs-tools.js');
-            $cxJs .= file_get_contents('lib/javascript/jquery/ui/jquery-ui-1.8.7.custom.min.js');
-            $cxJs .= file_get_contents('lib/javascript/cx/ui.js');
-            $cxJs .= file_get_contents('core_modules/MultiSite/View/Script/Frontend.js');
-            echo $cxJs;die;
         }
     }
 
@@ -169,13 +161,13 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         }
 
         try {
-            $ObjWebsite = new \Cx\Core_Modules\MultiSite\Model\Entity\Website($basepath, $websiteName, $websiteServiceServer, $objUser, false);
+            $objWebsite = new \Cx\Core_Modules\MultiSite\Model\Entity\Website($basepath, $websiteName, $websiteServiceServer, $objUser, false);
             if($websiteId!=''){
-                $ObjWebsite->setId($websiteId);
+                $objWebsite->setId($websiteId);
             }
-            \Env::get('em')->persist($ObjWebsite);
+            \Env::get('em')->persist($objWebsite);
             \Env::get('em')->flush();
-            return $ObjWebsite->setup();
+            return $objWebsite->setup();
         } catch (\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteException $e) {
             throw new MultiSiteJsonException($e->getMessage());    
         }
@@ -190,7 +182,11 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     {
         $authenticationValue = isset($params['post']['auth']) ? json_decode($params['post']['auth'], true) : '';
 
-        if (empty($authenticationValue) || !is_array($authenticationValue)) {
+        if (   empty($authenticationValue)
+            || !is_array($authenticationValue)
+            || !isset($authenticationValue['sender'])
+            || !isset($authenticationValue['key'])
+        ) {
             return false;
         }
     

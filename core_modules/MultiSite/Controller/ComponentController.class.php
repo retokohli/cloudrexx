@@ -47,6 +47,68 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
         return array('JsonMultiSite');
     }
 
+    public function getCommandsForCommandMode() {
+        return array('MultiSite');
+    }
+
+    public function getCommandDescription($command, $short = false) {
+        switch ($command) {
+            case 'signupform':
+                return 'Load the MultiSite sign-upform';
+            case 'signinform':
+                return 'Load the MultiSite sign-in form';
+        }
+    }
+
+    public function executeCommand($command, $arguments) {
+        $subcommand = null;
+        if (!empty($arguments[0])) {
+            $subcommand = $arguments[0];
+        }
+
+        global $objInit, $_ARRAYLANG;
+        $langData = $objInit->loadLanguageData('MultiSite');
+        $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+
+        switch ($command) {
+            case 'MultiSite':
+                switch ($subcommand) {
+                    case 'signup':
+                        \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
+                        $objTemplate = new \Cx\Core\Html\Sigma(ASCMS_CORE_MODULE_PATH . '/MultiSite/View/Template/Frontend');
+                        $objTemplate->loadTemplateFile('Signup.html');
+                        $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
+                        $signUpUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain') . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=signup');
+                        $emailUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' .\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain') . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=email');
+
+// TODO
+                        // get website minimum and maximum Name length
+                        $websiteNameMinLength=\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength');
+                        $websiteNameMaxLength=\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength');
+
+                        $objTemplate->setVariable(array(
+                            'TITLE'                         => $_ARRAYLANG['TXT_MULTISITE_TITLE'],
+                            'TXT_MULTISITE_EMAIL_ADDRESS'   => $_ARRAYLANG['TXT_MULTISITE_EMAIL_ADDRESS'],
+                            'TXT_MULTISITE_ADDRESS'         => $_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS'],
+                            'TXT_MULTISITE_CREATE_WEBSITE'  => $_ARRAYLANG['TXT_MULTISITE_SUBMIT_BUTTON'],
+                            'MULTISITE_DOMAIN'              => \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'),
+                            'POST_URL'                      => '',
+                            'MULTISITE_SIGNUP_URL'          => $signUpUrl->toString(),
+                            'MULTISITE_EMAIL_URL'           => $emailUrl->toString(),
+                        ));
+                        echo $objTemplate->get();
+                        break;
+
+                    default:
+                        break;
+                }
+                break;
+
+            default:
+                break;
+        }
+    }
+
     /**
      * @param array $params the parameters
      */
