@@ -52,7 +52,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'createWebsite'         => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
             'mapDomain'             => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
             'unmapDomain'           => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
-            'updateDefaultCodeBase' => new \Cx\Core\Access\Model\Entity\Permission(array('http'), array('post'), false)
+            'updateDefaultCodeBase' => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false)
         );
     }
 
@@ -179,7 +179,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      * @return boolean
      */
     public function auth(array $params = array()) 
-    {
+    {   
         $authenticationValue = isset($params['post']['auth']) ? json_decode($params['post']['auth'], true) : '';
 
         if (   empty($authenticationValue)
@@ -189,14 +189,14 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         ) {
             return false;
         }
-    
+        $config = \Env::get('config');
+        $installationId = $config['installationId'];
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
             case 'manager':
                 try {
                     $WebsiteServiceServerRepository = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
                     $objWebsiteService = $WebsiteServiceServerRepository->findBy(array('hostName' => $authenticationValue['sender']));
                     $secretKey = $objWebsiteService->getSecretKey();
-                    $installationId = $objWebsiteService->getInstallationId();
                 } catch(\Exception $e) {
                     return $e->getMessage();
                 }
@@ -207,13 +207,12 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 //Check if the sender is manager or not
                 if ($authenticationValue['sender'] == \Cx\Core\Setting\Controller\Setting::getValue('managerHostname')) {
                     $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('managerSecretKey');
-                    $installationId = \Cx\Core\Setting\Controller\Setting::getValue('managerInstallationId');
                 } else {
                     try {
-                        $websiteRepository = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Repository\WebsiteRepository');
-                        $objWebsite = $websiteRepository->findBy(array('name' => $authenticationValue['sender']));
-                        $secretKey  = $objWebsite->getSecretKey();
-                        $installationId = $objWebsite->getInstallationId();
+                        $objWebsiteRepo = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website');
+                        list($websiteName) = explode('.', $authenticationValue['sender']);
+                        $objWebsite = $objWebsiteRepo->findBy(array('name' => $websiteName));
+                        $secretKey  = $objWebsite[0]->getSecretKey();
                     } catch (\Exception $e) {
                         return $e->getMessage();
                     }
@@ -222,7 +221,6 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 
             case 'Website':
                 $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('serviceSecretKey');
-                $installationId = \Cx\Core\Setting\Controller\Setting::getValue('serviceInstallationId');
                 break;
         }
         
