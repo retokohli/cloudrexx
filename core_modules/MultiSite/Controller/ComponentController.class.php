@@ -490,10 +490,7 @@ throw new MultiSiteException('Refactor this method!');
 
     private function deployWebsite(\Cx\Core\Core\Controller\Cx $cx) {
         $multiSiteRepo = new \Cx\Core_Modules\MultiSite\Model\Repository\FileSystemWebsiteRepository();
-// TODO: add support for requests to domain aliases (i.e.: example.com)
-        $websiteName = substr($_SERVER['HTTP_HOST'], 0, -strlen('.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain')));
-        $website = $multiSiteRepo->findByDomain(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/', $websiteName);
-        
+        $website = $multiSiteRepo->findByDomain(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/', $_SERVER['HTTP_HOST']);
         if ($website) {
             // Recheck the system state of the Website Service Server (1st check
             // has already been performed before executing the preInit-Hooks),
@@ -503,7 +500,7 @@ throw new MultiSiteException('Refactor this method!');
             // has activated the maintenance-mode.
             $cx->checkSystemState(true);
 
-            $configFile = \Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName.'/config/configuration.php';
+            $configFile = \Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$website->getName().'/config/configuration.php';
             \DBG::msg("MultiSite: Loading customer Website {$website->getName()}...");
             \Cx\Core\Core\Controller\Cx::instanciate(\Env::get('cx')->getMode(), true, $configFile);
             exit;
