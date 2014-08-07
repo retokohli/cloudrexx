@@ -17,12 +17,12 @@ use \Cx\Core\Json\JsonAdapter;
  * @copyright   Comvation AG
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
  * @package     contrexx
- * @subpackage  core_json
+ * @subpackage coremodule_mediabrowser
  */
 class JsonMediaBrowser implements JsonAdapter {
 
-    private $_path = "";
-    private $_mediaType = "";
+    protected $_path = "";
+    protected $_mediaType = "";
 
     /**
      * Returns the internal name used as identifier for this adapter
@@ -104,21 +104,16 @@ class JsonMediaBrowser implements JsonAdapter {
 
             // set preview if image
             $preview = 'none';
-            switch (ucfirst($extension)) {
-                case 'Jpg':
-                case 'Jpeg':
-                case 'Gif':
-                case 'Png':
-                    $preview = ASCMS_PATH_OFFSET . str_replace(ASCMS_DOCUMENT_ROOT, '', $splFileInfo->getRealPath());
-                    $preview = str_replace('.' . lcfirst($extension), \Cx\Core_Modules\Uploader\Controller\UploaderConfiguration::get()->thumbnails[0][value] . '.' . lcfirst($extension), $preview);
-                    break;
+            if (preg_match("/(jpg|jpeg|gif|png)/i", ucfirst($extension) )){
+                $preview = ASCMS_PATH_OFFSET . str_replace(ASCMS_DOCUMENT_ROOT, '', $splFileInfo->getRealPath());
+                $preview = str_replace('.' . lcfirst($extension), \Cx\Core_Modules\Uploader\Controller\UploaderConfiguration::get()->thumbnails[0]['value'] . '.' . lcfirst($extension), $preview);
             }
 
             $fileInfos = array(
                 'name' => $splFileInfo->getFilename(),
                 'size' => $this->formatBytes($splFileInfo->getSize()),
                 'cleansize' => $splFileInfo->getSize(),
-                'extension' => $extension,
+                'extension' => ucfirst(mb_strtolower($extension)),
                 'preview' => $preview,
                 'active' => false // preselect in mediabrowser or mark a folder
             );
@@ -166,6 +161,7 @@ class JsonMediaBrowser implements JsonAdapter {
             $entry['attr']['level'] = 0;
             array_push($pageStack, $entry);
         }
+        $return = array();
         while (count($pageStack)) {
             $entry = array_pop($pageStack);
             $page = $entry['data'][0];
@@ -222,7 +218,7 @@ class JsonMediaBrowser implements JsonAdapter {
             }
 
             // if language != current language or $alwaysReturnLanguage
-            if ($this->_frontendLanguageId != $_FRONTEND_LANGID ||
+            if ($this->_frontendLanguageId != FRONTEND_LANG_ID ||
                     (isset($_GET['alwaysReturnLanguage']) &&
                     $_GET['alwaysReturnLanguage'] == 'true')) {
                 $url .= '_' . $this->_frontendLanguageId;
@@ -235,12 +231,11 @@ class JsonMediaBrowser implements JsonAdapter {
                 'extension' => 'Html',
                 'level' => $arrPage['level']
             );
-            $rowNr++;
         }
         return $return;
     }
 
-    private function formatBytes($bytes, $unit = "", $decimals = 2) {
+    protected function formatBytes($bytes, $unit = "", $decimals = 2) {
         $units = array('B' => 0, 'KB' => 1, 'MB' => 2, 'GB' => 3, 'TB' => 4,
             'PB' => 5, 'EB' => 6, 'ZB' => 7, 'YB' => 8);
 
@@ -269,7 +264,7 @@ class JsonMediaBrowser implements JsonAdapter {
 
     /**
      * checks whether a module is available and active
-     *
+     * @param $strModuleName
      * @return bool
      */
     function _checkForModule($strModuleName) {
@@ -286,4 +281,12 @@ class JsonMediaBrowser implements JsonAdapter {
         return true;
     }
 
+    /**
+     * Returns default permission as object
+     * @return Object
+     */
+    public function getDefaultPermissions()
+    {
+        // TODO: Implement getDefaultPermissions() method.
+    }
 }

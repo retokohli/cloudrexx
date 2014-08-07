@@ -17,7 +17,7 @@ namespace Cx\Core_Modules\MediaBrowser\Controller;
  * @copyright   Comvation AG
  * @author      Tobias Schmoker <tobias.schmoker@comvation.com>
  * @package     contrexx
- * @subpackage  module_mediabrowser
+ * @subpackage coremodule_mediabrowser
  */
 class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
 

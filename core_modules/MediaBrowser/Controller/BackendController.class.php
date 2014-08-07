@@ -6,7 +6,7 @@
  * @copyright   Comvation AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @package     contrexx
- * @subpackage  modules_skeleton
+ * @subpackage  coremodule_mediabrowser
  */
 
 namespace Cx\Core_Modules\MediaBrowser\Controller;
@@ -17,7 +17,7 @@ namespace Cx\Core_Modules\MediaBrowser\Controller;
  * @copyright   Comvation AG
  * @author      Michael Ritter <michael.ritter@comvation.com>
  * @package     contrexx
- * @subpackage  modules_skeleton
+ * @subpackage coremodule_mediabrowser
  */
 class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBackendController {
 
@@ -26,7 +26,17 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * 
      * @var string $act
      */
-    private $act = '';
+    protected  $act = '';
+
+    /**
+     * @var \Cx\Core\Html\Sigma
+     */
+    protected $template;
+
+    /**
+     * @var String
+     */
+    protected $submenuName;
 
     /**
      * Returns a list of available commands (?act=XY)
@@ -102,7 +112,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
      * @param   array   $cmd
      * @return  string
      */
-    private function getSubmenuName($cmd){
+    protected  function getSubmenuName($cmd){
         if(count($cmd) > 1){
             $submenu = ucfirst($cmd[1]);
             return $submenu;
