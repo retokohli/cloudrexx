@@ -54,11 +54,13 @@ jQuery(document).ready(function() {
     }
 
     function parseResponse(response) {
-        if (!response.message) return;
+        jQuery(cx_multisite.signUpForm).find('.multisite-progress').hide();
+
+        if (!response.message && !response.data) return;
 
         switch (response.status) {
             case 'success':
-                setMessage(response.message, 'success');
+                setMessage(response.data, 'success');
                 break;
 
             case 'error':
@@ -72,7 +74,6 @@ jQuery(document).ready(function() {
                     errorType = typeof(response.message.type) != null ? response.message.type : null;
                 }
                 jQuery(cx_multisite.signUpForm).find('.multisite-form').show();
-                jQuery(cx_multisite.signUpForm).find('.multisite-progress').hide();
                 jQuery(cx_multisite.signUpForm).find('.modal-footer').show();
                 setMessage(errorMessage, errorType, errorObject);
                 break;
@@ -90,7 +91,6 @@ jQuery(document).ready(function() {
             case 'form':
                 jQuery(cx_multisite.signUpForm).find('.modal-header').hide();
                 jQuery(cx_multisite.signUpForm).find('.multisite-form').hide();
-                jQuery(cx_multisite.signUpForm).find('.multisite-progress').hide();
                 jQuery(cx_multisite.signUpForm).find('.modal-footer').hide();
                 jQuery('.multisite-status').children().remove();
                 jQuery('.multisite-status').append('<div class="alert alert-' + type + '" role="alert">' + message + '</div>');
