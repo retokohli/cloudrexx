@@ -409,8 +409,32 @@ class Website extends \Cx\Model\Base\EntityBase {
         if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == 'manager'
             || \Cx\Core\Setting\Controller\Setting::getValue('mode') == 'hybrid') {
             $websiteDomain = $websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
+// TODO: implement protocl support
+            $websiteUrl = 'https://'.$websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
             // write mail
             \Cx\Core\MailTemplate\Controller\MailTemplate::init('MultiSite');
+            \Cx\Core\MailTemplate\Controller\MailTemplate::send(array(
+                'section' => 'MultiSite',
+                'lang_id' => $langId,
+                'key' => 'notifyAboutNewWebsite',
+                //'to' => $websiteMail,
+                'search' => array(
+                    '[[MULTISITE_DOMAIN]]',
+                    '[[WEBSITE_DOMAIN]]',
+                    '[[WEBSITE_URL]]',
+                    '[[WEBSITE_NAME]]',
+                    '[[CUSTOMER_EMAIL]]',
+                    '[[CUSTOMER_NAME]]',
+                    '[[SUBSCRIPTION_NAME]]'),
+                'replace' => array(
+                    \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'),
+                    $websiteDomain,
+                    $websiteUrl,
+                    $websiteName,
+                    $websiteMail,
+                    '<customer-name>',
+                    '<subscription:trial / business>'),
+            ));
             if (!\Cx\Core\MailTemplate\Controller\MailTemplate::send(array(
                 'section' => 'MultiSite',
                 'lang_id' => $langId,
