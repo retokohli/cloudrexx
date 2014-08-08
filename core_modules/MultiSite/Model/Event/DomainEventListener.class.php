@@ -39,7 +39,8 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             // if MultiSite-mode set to 'manager' or 'hybrid': remove DNS record
             // if MultiSite-mode set to 'service' or 'hybrid': update Domain-Cache
             $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode');
-            $this->domainMapping($eventArgs, $mode, 'unmapDomain');
+            //for unmap a domain from website
+            $this->domainMapping($eventArgs, $mode, 'unMapDomain');
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
         }
@@ -54,12 +55,17 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             switch ($mode) {
                 case 'manager':
                 case 'hybrid':
-                    $this->updateDnsRecord($domain, 'preUpdate');
+                    if ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain)
+                        $this->updateDnsRecord($domain, 'preUpdate');
                     break;
 
                 default:
                     break;
             }
+            //during the domain update, remove the old one after that create the domain as new
+            if ($domain instanceof \Cx\Core\Net\Model\Entity\Domain)
+                $this->domainMapping($eventArgs, $mode, 'unMapDomain'); // this unMapDomain process is still not working properly(we need to pass the old domain object as argument)
+                $this->domainMapping($eventArgs, $mode, 'mapDomain');
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
         }
@@ -78,8 +84,6 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                     break;
 
                 case 'service':
-                    if ($domain instanceof \Cx\Core\Net\Model\Entity\Domain)
-                        $this->domainMapping($eventArgs, $mode, 'mapDomain');
                     break;
 
                 case 'hybrid':
@@ -88,10 +92,11 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                     break;
 
                 default:
-                    if ($domain instanceof \Cx\Core\Net\Model\Entity\Domain)
-                        $this->domainMapping($eventArgs, $mode, 'mapDomain');
                     break;
             }
+            //for map a domain to website
+            if ($domain instanceof \Cx\Core\Net\Model\Entity\Domain)
+                $this->domainMapping($eventArgs, $mode, 'mapDomain');
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
         }
@@ -171,7 +176,13 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             case \CX\Core_Modules\MultiSite\Model\Entity\Domain::TYPE_EXTERNAL_DOMAIN:
             default:
                 $type = 'CNAME';
-                $value= $domain->getWebsite()->getBaseDn()->getName();
+                
+                if ($domain->getWebsite() instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
+                    $value= $domain->getWebsite()->getBaseDn()->getName();
+                } else {
+                    $config = \Env::get('config');
+                    $value  = $config['domainUrl'];
+                }
                 break;
         }
 
@@ -229,11 +240,24 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                     'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthPassword'),
                 );
             break;
+            case 'manager':
+            case 'hybrid':
+                $config = \Env::get('config');
+                $param['post'] = array(
+                    'domainName' => $eventArgs->getEntity()->getName(),
+                    'auth'       => json_encode(array('sender' => $config['domainUrl']))
+                );
+                $objJsonMultiSite = new \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite();
+                $objJsonMultiSite->$event($param);
+                return;
+                break;
+            default:
+                return;
+                break;
         }
         //post array
         $params = array(
             'domainName'    => $eventArgs->getEntity()->getName(),
-            'websiteId'     => $mode == 'service' ? $eventArgs->getEntity()->getWebsiteId() : 0,
             'auth'          => \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($secretKey, $installationId)
         );
             

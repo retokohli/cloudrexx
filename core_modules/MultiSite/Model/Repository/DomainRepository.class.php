@@ -35,13 +35,15 @@ class DomainRepository extends \Doctrine\ORM\EntityRepository {
         $codeBaseRepositoryPath = \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository');
         $codeBaseRepositoryOffsetPath = substr($codeBaseRepositoryPath, strlen(\Env::get('cx')->getCodeBaseDocumentRootPath()));
         foreach ($objDomains As $objDomain) {
-            $domainName                     = $objDomain->getName();
-            $websiteName                    = $objDomain->getWebsite()->getName();
-            $codeBaseName                   = $objDomain->getWebsite()->getCodeBase();
-            $websiteDomainContent[]         = "$domainName\t$websiteOffsetPath/$websiteName";
-            if (!empty($codeBaseName)) {
-               $codeBaseRepositoryContent[] = "$domainName\t$codeBaseRepositoryOffsetPath/".$codeBaseName;
-            }                             
+            if ($objDomain->getWebsite() instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Website) {
+                $domainName                     = $objDomain->getName();
+                $websiteName                    = $objDomain->getWebsite()->getName();
+                $codeBaseName                   = $objDomain->getWebsite()->getCodeBase();
+                $websiteDomainContent[]         = "$domainName\t$websiteOffsetPath/$websiteName";
+                if (!empty($codeBaseName)) {
+                    $codeBaseRepositoryContent[] = "$domainName\t$codeBaseRepositoryOffsetPath/".$codeBaseName;
+                }                             
+            }
         }
         // In case the MultiSite system is running in hybrid-mode, then the FQDN and BaseDN
         // are the same. Therefore, we shall remove those duplicates.
