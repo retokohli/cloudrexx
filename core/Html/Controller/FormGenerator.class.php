@@ -13,6 +13,8 @@ class FormGenerator {
     protected $form = null;
     
     public function __construct($entity, $actionUrl = null, $entityClass = '', $options = array()) {
+        // Remove the virtual element from array
+        unset($entity['virtual']);
         if (empty($entityClass) && is_object($entity)) {
             $entityClass = get_class($entity);
         }
