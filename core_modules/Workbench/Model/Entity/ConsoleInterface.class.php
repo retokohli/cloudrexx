@@ -39,6 +39,8 @@ class ConsoleInterface extends UserInterface {
                 }
             }
             $this->showHelp();
+        } else if ($command == 'moo') {
+            $this->showFlag();
         } else if ($this->commandExists($command)) {
             try {
                 $this->getCommand($command)->execute($arguments);
@@ -67,6 +69,96 @@ Available subcommands:' . "\r\n";
         foreach ($this->getCommands() as $command) {
             echo "\t" . $command->getName() . ' - ' . $command->getDescription() . "\r\n";
         }
+    }
+    
+    /**
+     * Shows the ASCII flag
+     */
+    public function showFlag()
+    {
+        $flagConfig = array(
+          1 => array(
+              '4-6' => '*'
+          ),
+          2 => array(
+              '3-7' => '*'
+          ),
+          4 => array(
+              '4-6' => '*'
+          ),
+          5 => array(
+              '4-6'   => ':',
+              '7-7'   => '\\',
+              '9-38'  => '_'
+          ),
+          6 => array(
+              '4-6'   => ':',
+              '8-8'   => '|',
+              '9-38'  => '%',
+          ),
+          9 => array(
+              '4-6'   => ':',
+              '8-8'   => '|',
+              '22-24' => '*',
+          ),
+          10 => array(
+              '4-6'   => ':',
+              '8-8'   => '|',
+              '21-21' => '*',
+              '23-23' => '*',
+              '25-25' => '*',
+          ),
+          11 => array(
+              '4-6'   => ':',
+              '8-8'   => '|',
+              '22-24' => '*',
+          ),
+          12 => array(
+              '4-6'   => ':',
+              '8-8'   => '|',
+              '9-38'  => ':',
+          ),
+          15 => array(
+              '4-6'   => ':',
+              '7-7'   => '/'
+          ),
+          16 => array(
+              '4-6'   => ':'
+          ),
+          29 => array(
+              '2-2'   => '/',
+              '3-7'   => ':',
+              '8-8'   => '\\'
+          ),
+          30 => array(
+              '2-8'   => ':'
+          ),
+          31 => array(
+              '2-8'   => '='
+          ),
+        );
+        
+        $colCount = 38;
+        $rowCount = max(array_keys($flagConfig));
+        
+        echo "\n";
+        for ($i=1;$i<=$rowCount;$i++) {
+            $flagConfig[$i] = $rowConfig = isset($flagConfig[$i]) ? $flagConfig[$i] : $flagConfig[$i-1];
+            
+            $colValues = array();
+            foreach ($rowConfig as $key => $value) {
+                list($minCol, $maxCol) = explode('-', $key);
+                for ($k=$minCol;$k<=$maxCol;$k++) {
+                    $colValues[$k] = $value;
+                }
+            }
+            
+            for ($j=1;$j<=$colCount;$j++) {
+                echo isset($colValues[$j]) ? $colValues[$j] : ' ';
+            }
+            echo "\n";
+        }
+        
     }
     
     /**
