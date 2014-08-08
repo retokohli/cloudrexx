@@ -198,7 +198,8 @@ class TestCommand extends Command {
     private function addTestingFolderToArray($componentName, $componentFolder)
     {
         $componentTestingFolder = $componentFolder . ASCMS_TESTING_FOLDER;
-        if (!empty($componentFolder) && file_exists($componentFolder) && file_exists($componentTestingFolder)) {
+        
+        if (!empty($componentFolder) && glob($componentTestingFolder.'/*.php') && file_exists($componentFolder) && file_exists($componentTestingFolder)) {
             $this->testingFolders[$componentName] = $componentTestingFolder;
             return true;
         }
