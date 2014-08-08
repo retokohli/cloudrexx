@@ -48,12 +48,11 @@ class DomainRepository extends \Doctrine\ORM\EntityRepository {
         
         $websiteDomainContent      = array_unique($websiteDomainContent);
         $codeBaseRepositoryContent = array_unique($codeBaseRepositoryContent);
-        $websiteDomainMap['WebsiteDomainContentMap.txt'] = $websiteDomainContent;
-        
-        if(!empty($codeBaseRepositoryContent)){
-              $websiteDomainMap['WebsiteDomainCodeBaseMap.txt'] = $codeBaseRepositoryContent;
-        }    
-
+        $websiteDomainMap          = array(
+                                        'WebsiteDomainContentMap.txt'  => $websiteDomainContent,
+                                        'WebsiteDomainCodeBaseMap.txt' => $codeBaseRepositoryContent
+                                    );
+            
         foreach ($websiteDomainMap as $key => $value) {
             try {
                 $content = join("\n", $value);

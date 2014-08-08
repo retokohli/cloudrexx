@@ -823,7 +823,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
      * @throws \Exception 
      */
     protected function initDb($type, $objUser, $objDbUser, $langId, $websitedb) {
-        $dumpFilePath = !empty($this->codeBase) ? \Env::get('cx')->getCodeBaseDocumentRootPath().'/'.$this->codeBase  :  \Env::get('cx')->getCodeBaseDocumentRootPath();
+        $dumpFilePath = !empty($this->codeBase) ? \Cx\Core\Setting\Controller\Setting::getValue('codeBaseRepository').'/'.$this->codeBase  :  \Env::get('cx')->getCodeBaseDocumentRootPath();
         $fp = @fopen(\Env::get('ClassLoader')->getFilePath($dumpFilePath.'/installer/data/contrexx_dump_' . $type . '.sql'), "r");
         if ($fp === false) {
             throw new \Exception('File not found');
