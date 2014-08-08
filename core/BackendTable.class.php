@@ -32,7 +32,9 @@ class BackendTable extends HTML_Table {
     		$row = 1 + $hasMasterTableHeader;
             foreach ($attrs as $rowname=>$rows) {
     			$col = 0;
-    			foreach ($rows as $header=>$data) {
+                        $virtual = $rows['virtual'];
+                        unset($rows['virtual']);
+                        foreach ($rows as $header=>$data) {
                     $encode = true;
                     if (
                         isset($options['fields']) &&
@@ -122,7 +124,7 @@ class BackendTable extends HTML_Table {
                     if (!isset($options['functions']['baseUrl'])) {
                         $options['functions']['baseUrl'] = clone \Env::get('cx')->getRequest()->getUrl();
                     }
-                    $this->setCellContents($row, $col, $this->getFunctionsCode($rowname, $options['functions'], $rows['virtual']), 'TD', 0);
+                    $this->setCellContents($row, $col, $this->getFunctionsCode($rowname, $options['functions'], $virtual), 'TD', 0);
     			}
     			$first = false;
     			$row++;
