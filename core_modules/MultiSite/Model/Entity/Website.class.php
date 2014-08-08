@@ -871,6 +871,11 @@ throw new WebsiteException('implement secret-key algorithm first!');
      *
      */    
     public function getFqdn(){
+        if ($this->fqdn) {
+            return $this->fqdn;
+        }
+
+        // fetch FQDN from Domain repository
         return \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findOneBy(array('type' => Domain::TYPE_FQDN, 'websiteId' => $this->id));
     }   
     
@@ -891,7 +896,12 @@ throw new WebsiteException('implement secret-key algorithm first!');
      *
      */    
     public function getBaseDn(){
-       return \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findOneBy(array('type' => Domain::TYPE_BASE_DOMAIN, 'websiteId' => $this->id)); 
+        if ($this->baseDn) {
+            return $this->baseDn;
+        }
+
+        // fetch baseDn from Domain repository
+        return \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain')->findOneBy(array('type' => Domain::TYPE_BASE_DOMAIN, 'websiteId' => $this->id)); 
     }
     
     /**
