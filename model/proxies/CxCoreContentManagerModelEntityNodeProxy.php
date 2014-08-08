@@ -171,6 +171,18 @@ class CxCoreContentManagerModelEntityNodeProxy extends \Cx\Core\ContentManager\M
         return parent::unserialize($data);
     }
 
+    public function setVirtual($virtual)
+    {
+        $this->_load();
+        return parent::setVirtual($virtual);
+    }
+
+    public function isVirtual()
+    {
+        $this->_load();
+        return parent::isVirtual();
+    }
+
 
     public function __sleep()
     {

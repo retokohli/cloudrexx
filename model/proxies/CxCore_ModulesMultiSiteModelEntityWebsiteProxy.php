@@ -243,10 +243,22 @@ class CxCore_ModulesMultiSiteModelEntityWebsiteProxy extends \Cx\Core_Modules\Mu
         return parent::unmapDomain($name);
     }
 
+    public function setVirtual($virtual)
+    {
+        $this->_load();
+        return parent::setVirtual($virtual);
+    }
+
+    public function isVirtual()
+    {
+        $this->_load();
+        return parent::isVirtual();
+    }
+
 
     public function __sleep()
     {
-        return array('__isInitialized__', 'id', 'name', 'language', 'status', 'websiteServiceServerId', 'secretKey', 'ipAddress', 'ownerId', 'installationId', 'domains', 'websiteServiceServer');
+        return array('__isInitialized__', 'id', 'name', 'codeBase', 'language', 'status', 'websiteServiceServerId', 'secretKey', 'ipAddress', 'ownerId', 'installationId', 'domains', 'websiteServiceServer');
     }
 
     public function __clone()
