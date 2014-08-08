@@ -94,14 +94,14 @@ class FileSystemWebsiteRepository {
     
     public function findByDomain($basePath, $name) {
         
-        $domainContent = file_get_contents(\Env::get('cx')->getWebsiteDocumentRootPath() . '/core_modules/MultiSite/Data/WebsiteDomainContentMap.txt');
+        $domainContent = file(\Env::get('cx')->getWebsiteDocumentRootPath() . '/core_modules/MultiSite/Data/WebsiteDomainContentMap.txt');
         
         try{
-            $domainNameValues = explode("\n", $domainContent);
-            foreach ($domainNameValues as $domainValue) {
-                $domainName = explode("\t", $domainValue);
+            
+            foreach ($domainContent as $domainValue) {
+                $domainName = preg_split('/\s+/', $domainValue); 
                 if ($name == $domainName[0]) {
-                    $websitePath = explode("/", $domainName[1]);
+                    $websitePath = preg_split('/\\//', $domainName[1]);
                     return $this->findByName($basePath, end($websitePath));
                 }
             }
