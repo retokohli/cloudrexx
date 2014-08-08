@@ -1,5 +1,5 @@
 Cx\Core\Net\Model\Entity\Domain:
-  type: entity
+  type: YamlEntity
   repositoryClass: Cx\Core\Net\Model\Repository\DomainRepository
   indexes:
     name_index:

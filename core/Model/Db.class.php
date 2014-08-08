@@ -257,7 +257,7 @@ namespace Cx\Core\Model {
             $evm = new \Doctrine\Common\EventManager();
 
             $chainDriverImpl = new \Doctrine\ORM\Mapping\Driver\DriverChain();
-            $driverImpl = new \Doctrine\ORM\Mapping\Driver\YamlDriver(array(
+            $driverImpl = new \Cx\Core\Model\Controller\YamlDriver(array(
                 ASCMS_CORE_PATH.'/Core'.'/Model/Yaml',             // Component YAML files
             ));
             $chainDriverImpl->addDriver($driverImpl, 'Cx');
