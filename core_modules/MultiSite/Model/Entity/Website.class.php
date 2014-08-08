@@ -376,7 +376,6 @@ class Website extends \Cx\Model\Base\EntityBase {
                 'httpAuthPassword' => $this->websiteServiceServer->getHttpAuthPassword(),
             );        
             $params = array(
-                    'command'     => 'createWebsite',
                     'userId'      => $this->owner->getId(),
                     'userEmail'   => $websiteMail,
                     'websiteName' => $websiteName,
@@ -399,6 +398,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             $this->setupDataFolder($websiteName);
             $this->setupConfiguration($websiteName, $objDb, $objDbUser);
             $this->setupMultiSiteConfig($websiteName);
+            $this->createContrexxUser($websiteName);
             $websiteIp = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteIp');
         }
 
@@ -425,7 +425,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             //       Then the object that executed the setup() method must handle the exception
             //       and call the removeWebsite() method if required.
                 //$this->removeWebsite($websiteName);
-                throw new WebsiteException('Could not create website (Mail send failed)');
+                throw new \Cx\Core_Modules\MultiSite\Controller\MultiSiteJsonException(array('object' => 'form', 'type' => 'success', 'message' => "Your website <a href=\"https://$websiteDomain/\">$websiteDomain</a> has been build successfully. Unfortunately, we were unable to send you a message to the address <strong>$websiteMail</strong> with further instructions on how to proceed. Our helpdesk team will get in touch with you as soon as possible. We apologize for any inconvenience."));
             }
             return $this->messages;
         }
@@ -693,6 +693,29 @@ class Website extends \Cx\Model\Base\EntityBase {
 
         // we must re-initialize the original MultiSite settings of the main installation
         \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
+    }
+
+    private function createContrexxUser($websiteName)
+    {
+        $hostname = $websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
+        $httpAuth = array(
+            'httpAuthMethod' => \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthMethod'),
+            'httpAuthUsername' => \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthUsername'),
+            'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthPassword'),
+        );        
+        $params = array(
+                'email' => $this->owner->getEmail(),
+                'active'=> 1,
+                'admin' => 1,
+                'auth'  => \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($this->secretKey, $this->installationId)
+            );
+        $jd = new \Cx\Core\Json\JsonData();
+        $resp = $jd->getJson('https://'.$hostname.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=createUser', $params,
+         false, '', $httpAuth);
+        if(!$resp || $resp->status == 'error'){
+            $errMsg = isset($resp->message) ? $resp->message : '';
+            throw new WebsiteException('Unable to create admin user account '.$errMsg);    
+        }
     }
 
     /**

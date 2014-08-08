@@ -50,6 +50,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'signup'                => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false),
             'email'                 => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false),
             'createWebsite'         => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
+            'createUser'            => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
             'mapDomain'             => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
             'unmapDomain'           => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
             'updateDefaultCodeBase' => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false)
@@ -170,6 +171,43 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             return $objWebsite->setup();
         } catch (\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteException $e) {
             throw new MultiSiteJsonException($e->getMessage());    
+        }
+    }
+
+    public function createUser($params) {
+        if (!empty($params['post'])) {
+            $objUser = new \Cx\Core_Modules\MultiSite\Model\Entity\User();
+            $objUser->setEmail(!empty($params['post']['email']) ? contrexx_input2raw($params['post']['email']) : '');
+            $objUser->setActiveStatus(!empty($params['post']['active']) ? (bool)$params['post']['active'] : false);
+            $objUser->setAdminStatus(!empty($params['post']['admin']) ? (bool)$params['post']['admin'] : false);
+            $objUser->setPassword(\User::make_password(8,true));
+            
+            //$objUser->setProfileAccess(!empty($params['post']['profileAccess']) && $objUser->isAllowedToChangeProfileAccess() ? trim(contrexx_stripslashes($params['post']['profileAccess'])) : '');
+            //$objUser->setFrontendLanguage(!empty($params['post']['frontendLanguage']) ? intval($params['post']['frontendLanguage']) : 0);
+            //$objUser->setBackendLanguage(!empty($params['post']['backendLanguage']) ? intval($params['post']['backendLanguage']) : 0);
+            /*$arrProfile = array(
+                                'picture'       =>array((!empty($params['post']['picture']) ? contrexx_stripslashes($params['post']['picture']) : '')),
+                                'gender'        =>array((!empty($params['post']['gender'])  ? contrexx_stripslashes($params['post']['gender']) : '')),
+                                'title'         =>array((!empty($params['post']['picture']) ? contrexx_stripslashes($params['post']['title']) : '')),
+                                'firstname'     =>array((!empty($params['post']['firstname']) ? contrexx_stripslashes($params['post']['firstname']) : '')),
+                                'lastname'      =>array((!empty($params['post']['lastname']) ? contrexx_stripslashes($params['post']['lastname']) : '')),
+                                'company'       =>array((!empty($params['post']['company']) ? contrexx_stripslashes($params['post']['company']) : '')),
+                                'address'       =>array((!empty($params['post']['address']) ? contrexx_stripslashes($params['post']['address']) : '')),
+                                'city'          =>array((!empty($params['post']['city']) ? contrexx_stripslashes($params['post']['city']) : '')),
+                                'zip'           =>array((!empty($params['post']['zip']) ? contrexx_stripslashes($params['post']['zip']) : '')),
+                                'country'       =>array((!empty($params['post']['country']) ? contrexx_stripslashes($params['post']['country']) : '')),
+                                'phone_office'  =>array((!empty($params['post']['phone_office']) ? contrexx_stripslashes($params['post']['phone_office']) : '')),
+                                'phone_private' =>array((!empty($params['post']['phone_private']) ? contrexx_stripslashes($params['post']['phone_private']) : '')),
+                                'phone_fax'     =>array((!empty($params['post']['phone_fax']) ? contrexx_stripslashes($params['post']['phone_fax']) : '')),
+                                'birthday'      =>array((!empty($params['post']['birthday']) ? contrexx_stripslashes($params['post']['birthday']) : '')),
+                                'website'       =>array((!empty($params['post']['website']) ? contrexx_stripslashes($params['post']['website']) : '')),
+                                'profession'    =>array((!empty($params['post']['profession']) ? contrexx_stripslashes($params['post']['profession']) : '')),
+                                'interests'     =>array((!empty($params['post']['interests']) ? contrexx_stripslashes($params['post']['interests']) : '')),
+                                'signature'     =>array((!empty($params['post']['signature']) ? contrexx_stripslashes($params['post']['signature']) : ''))
+                            );
+            $objUser->setProfile($arrProfile);*/
+            $objUser->store();
+            return true;
         }
     }
 
