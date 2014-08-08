@@ -219,7 +219,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 }
                 break;
                 
-            case 'Website':
+            case 'website':
                 $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('serviceSecretKey');
                 break;
         }
