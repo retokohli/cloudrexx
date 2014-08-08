@@ -214,10 +214,38 @@ class YamlRepository {
     }
 
     /**
+     * For triggering the preUpdate, we have to get the last updated entry
+     * 
+     * @return boolean
+     */
+    private function getLastUpdatedEntry() {
+        $updateEntries  = $this->entities;
+        $this->entities = array();
+        $this->load();
+        foreach ($this->entities As $id => $objDomain) {
+            if (isset($updateEntries[$id])) {
+                if ($objDomain->getName() != $updateEntries[$id]->getName()) {
+                    $this->entities = $updateEntries;
+                    return $updateEntries[$id];
+                }
+            }
+        }
+        $this->entities = $updateEntries;
+        
+        return false;
+    }
+    
+    /**
      * Flush the current state of the repository into the file system.
      * @todo    Make thread safe
      */
     public function flush() {
+        //for triggering the preUpdate
+        $updatedEntry = $this->getLastUpdatedEntry();
+        if (!empty($updatedEntry) && ($updatedEntry instanceof \Cx\Core\Net\Model\Entity\Domain)) {
+            \Env::get('cx')->getEvents()->triggerEvent('model/preUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($updatedEntry, \Env::get('em'))));
+        }
+        
         $entitiesToPersist = array();
         foreach ($this->entities as $entity) {
             // Validation must be done before checking for virtual entities.
