@@ -1,1 +1,1 @@
-./workbench.bat
+./workbench.bat $@
