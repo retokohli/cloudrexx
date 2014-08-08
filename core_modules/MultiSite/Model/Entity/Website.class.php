@@ -574,8 +574,32 @@ class Website extends \Cx\Model\Base\EntityBase {
             $settings = new \Cx\Lib\FileSystem\File(\Env::get('cx')->getCodeBaseCoreModulePath() . '/MultiSite/Data/WebsiteSkeleton/config/settings.php');
             $settings->copy(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/config/settings.php');
             $newSettings = new \Cx\Lib\FileSystem\File(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName . '/config/settings.php');
-            $newSettings->write(preg_replace('/\\$_CONFIG\\[\'domainUrl\'\\](?:[ ]+)= \"(?:[a-z-\\.]+)\";/', '$_CONFIG[\'domainUrl\'] = \'' . $websiteName . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain') . '\';', $newSettings->getData()));
-            $newSettings->write(preg_replace('/\\$_CONFIG\\[\'licenseCreatedAt\'\\](?:[ ]+)= (?:[0-9]+);/', '$_CONFIG[\'licenseCreatedAt\'] = ' . time() . ';', $newSettings->getData()));
+            $settingsData = preg_replace_callback(
+                '/(\$_CONFIG\[([\'"])((?:(?!\2).)*)\2\]\s*=\s*([\'"]))(?:(?:(?!\4).)*)(\4;)/',
+                function($match) {
+                    $originalString = $match[0];
+                    $optionString = $match[1];
+                    $settingsOption = $match[3];
+                    $delimiter = $match[4];
+                    $closure = $match[5];
+                    $escapedDelimiter = addslashes($delimiter);
+                    switch ($settingsOption) {
+                        case 'domainUrl':
+                            $value = $this->getBaseDn()->getName();
+                            break;
+                        case 'installationId':
+                            $value = $this->installationId;
+                            break;
+                        default:
+                            return $originalString;
+                            break;
+                    }
+                    $escapedValue = str_replace($delimiter, $escapedDelimiter, $value);
+                    return  $optionString . $escapedValue . $closure;
+                },
+                $newSettings->getData()
+            );
+            $newSettings->write($settingsData);
         } catch (\Cx\Lib\FileSystem\FileSystemException $e) {
             throw new WebsiteException('Unable to setup settings file: '.$e->getMessage());
         }
