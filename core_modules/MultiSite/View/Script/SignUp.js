@@ -35,6 +35,7 @@ jQuery(document).ready(function() {
                     // show progress screen
                     jQuery(cx_multisite.signUpForm).find('.alert').remove();
                     jQuery('.multisite-status').hide();
+                    jQuery(cx_multisite.signUpForm).find('.modal-header').hide();
                     jQuery(cx_multisite.signUpForm).find('.multisite-form').hide();
                     jQuery(cx_multisite.signUpForm).find('.multisite-progress').show();
                     jQuery(cx_multisite.signUpForm).find('.modal-footer').hide();
@@ -53,6 +54,8 @@ jQuery(document).ready(function() {
     }
 
     function parseResponse(response) {
+        if (!response.message) return;
+
         switch (response.status) {
             case 'success':
                 setMessage(response.message, 'success');
@@ -82,6 +85,16 @@ jQuery(document).ready(function() {
         switch (errorObject) {
             case 'email':
                 jQuery('<div class="alert alert-' + type + '" role="alert">' + message + '</div>').insertAfter(jQuery('#multisite_email_address'));
+                break;
+
+            case 'form':
+                jQuery(cx_multisite.signUpForm).find('.modal-header').hide();
+                jQuery(cx_multisite.signUpForm).find('.multisite-form').hide();
+                jQuery(cx_multisite.signUpForm).find('.multisite-progress').hide();
+                jQuery(cx_multisite.signUpForm).find('.modal-footer').hide();
+                jQuery('.multisite-status').children().remove();
+                jQuery('.multisite-status').append('<div class="alert alert-' + type + '" role="alert">' + message + '</div>');
+                jQuery('.multisite-status').show();
                 break;
 
             default:
