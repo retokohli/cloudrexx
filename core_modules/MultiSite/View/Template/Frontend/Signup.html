@@ -2,8 +2,9 @@
 <script type="text/javascript">
 /* <![CDATA[ */
 cx_multisite = {
+    signUpUrl: '{MULTISITE_SIGNUP_URL}',
     emailUrl: '{MULTISITE_EMAIL_URL}',
-    signUpUrl: '{MULTISITE_SIGNUP_URL}'
+    addressUrl: '{MULTISITE_ADDRESS_URL}'
 };
 /* ]]> */
 </script>
@@ -23,12 +24,12 @@ cx_multisite = {
     <div class="modal-body multisite-status"></div>
     <div class="modal-body multisite-form">
         <div class="form-group">
-            <input id="multisite_email_address" name="multisite_email_address" type="email" class="form-control" placeholder="{TXT_MULTISITE_EMAIL_ADDRESS}" required="">
+            <input id="multisite_email_address" name="multisite_email_address" type="email" class="form-control" title="We'll send you an email to this address to activate your account." placeholder="{TXT_MULTISITE_EMAIL_ADDRESS}" required="">
         </div>
 
         <div class="form-group">
-            <div class="input-group">
-                <input id="multisite_address" name="multisite_address" type="text" class="form-control" placeholder="{TXT_MULTISITE_ADDRESS}" required="">
+            <div class="input-group multisite-address">
+                <input id="multisite_address" name="multisite_address" type="text" maxlength="{MULTISITE_ADDRESS_MAX_LENGTH}" pattern="[a-z]{{MULTISITE_ADDRESS_MIN_LENGTH},{MULTISITE_ADDRESS_MAX_LENGTH}}" title="{TXT_MULTISITE_SITE_ADDRESS_SCHEME}" class="form-control" placeholder="{TXT_MULTISITE_ADDRESS}" required="">
                 <div class="input-group-addon">.{MULTISITE_DOMAIN}</div>
             </div>
         </div>

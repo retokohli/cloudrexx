@@ -1,15 +1,6 @@
 <?php
 global $_ARRAYLANG;
-
-// Let's start with module info:
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE'] = 'MultiSite';
-$_ARRAYLANG['TXT_MULTISITE_MODULE_DESCRIPTION'] = 'MultiSite erlaubt die Erstellung mehrerer unabhängiger Webseiten mit einer einzigen Installation von Contrexx';
-
-// Here come the ACTs:
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_DEFAULT'] = 'Instanzen';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_STATISTICS'] = 'Statistik';
-$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_ACT_SETTINGS'] = 'Einstellungen';
-
+/*
 // Now our content specific values:
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_NO_SUCH_WEBSITE'] = 'Login failed';
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_NO_SUCH_WEBSITE_WITH_NAME'] = 'No installation found with the given name.';
@@ -23,7 +14,6 @@ $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATED'] = 'Thank you for the re
 $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_DEFAULT_TEXT_LOOK_AND_FEEL'] = 'Submitting the form will take you to the payment provider’s website, where you can complete your payment.';
 
 // Registration Module
-$_ARRAYLANG['TXT_MULTISITE_TITLE']='Get started with cloudrexx.com';
 $_ARRAYLANG['TXT_MULTISITE_EMAIL_ADDRESS']='Email Address';
 $_ARRAYLANG['TXT_MULTISITE_USERS_NAME']='User Name';
 $_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS']='Site Address';
@@ -56,3 +46,4 @@ $_ARRAYLANG['TXT_MULTISITE_WEBSITE_ADDRESS_MINIMUM_LENGTH']='The site address ca
 $_ARRAYLANG['TXT_MULTISITE_WEBSITE_ADDRESS_MAXIMUM_LENGTH']='The site address can be up to {digits} characters long.';
 $_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS_EXISTS']='Site address already exists!';
 $_ARRAYLANG['TXT_MULTISITE_SITE_TITLE_REQUIRED']='Site title required!';
+*/

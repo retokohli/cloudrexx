@@ -463,46 +463,37 @@ class Website extends \Cx\Model\Base\EntityBase {
     
     /*
     * function validate to validate website name
-    * @param $websiteName
-    * @param$websiteMail
-    * @todo replace by validators
     * */
     public function validate()
     {
-        global $_ARRAYLANG, $objInit;;
-        //load language file 
+        self::validateName($this->getName());
+    }
+
+    public static function validateName($name) {
+        global $_ARRAYLANG, $objInit;
+
         $langData = $objInit->loadLanguageData('MultiSite');
         $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
 
-        $websiteName = $this->getName();
-        $websiteMail = $this->owner->getEmail();
+        $websiteName = $name;
         $unavailablePrefixesValue = explode(',',\Cx\Core\Setting\Controller\Setting::getValue('unavailablePrefixes'));
         if (in_array($websiteName, $unavailablePrefixesValue)) {
-            throw new WebsiteException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NAME_NOT_AVAILABLE']);
+            throw new WebsiteException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_ALREADY_EXISTS'], "<strong>$websiteName</strong>"));
         }
         if (preg_match('/[^a-z0-9]/', $websiteName)) {
             throw new WebsiteException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NAME_WRONG_CHARS']);
         }
 
         if (strlen($websiteName) < \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength')) {
-            throw new WebsiteException(str_replace('{digits}',\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength'),$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NAME_TOO_SHORT']));
+            throw new WebsiteException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NAME_TOO_SHORT'], \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength')));
         }
         if (strlen($websiteName) > \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength')) {
-            throw new WebsiteException(str_replace('{digits}',\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength'),$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NAME_TOO_LONG']));
+            throw new WebsiteException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_NAME_TOO_LONG'], \Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength')));
         }
         // existing website
         if (file_exists(\Cx\Core\Setting\Controller\Setting::getValue('websitePath').'/'.$websiteName)) {
-            throw new WebsiteException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_ALREADY_EXISTS']);
+            throw new WebsiteException(sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_ALREADY_EXISTS'], "<strong>$websiteName</strong>"));
         }
-        
-        /* commented as we have removed email attribute from this class
-        // website with that mail
-        $webRepo = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\Website');
-        $website = $webRepo->findByMail($websiteMail);
-        if ($website) {
-            throw new WebsiteException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_ALREADY_EXISTS']);
-        }
-        */ 
     }
     
     /*
@@ -510,7 +501,7 @@ class Website extends \Cx\Model\Base\EntityBase {
     * and populate database with basic data
     * @param $langId language ID of the website
     * */
-    private function setupDatabase($langId, $objUser, $objDb, $objDbUser){
+    protected function setupDatabase($langId, $objUser, $objDb, $objDbUser){
         $objDbUser->setPassword(\User::make_password(8, true));
         $objDbUser->setName(\Cx\Core\Setting\Controller\Setting::getValue('websiteDatabaseUserPrefix').$this->id);      
 
@@ -533,7 +524,7 @@ class Website extends \Cx\Model\Base\EntityBase {
     * website like configurations files
     * @param $websiteName name of the website
     * */
-    private function setupDataFolder($websiteName){
+    protected function setupDataFolder($websiteName){
         $this->cl = \Env::get('ClassLoader');
         // create folders and chmod with 0755
         // otherwise the file system class will set 777
@@ -563,7 +554,7 @@ class Website extends \Cx\Model\Base\EntityBase {
     * files
     * @param $website Name name of the website
     * */
-    private function setupConfiguration($websiteName, $objDb, $objDbUser){
+    protected function setupConfiguration($websiteName, $objDb, $objDbUser){
         global $_PATHCONFIG;
         // setup base configuration (configuration.php)
         try {
@@ -658,7 +649,7 @@ class Website extends \Cx\Model\Base\EntityBase {
         }*/
     }
 
-    private function setupMultiSiteConfig($websiteName)
+    protected function setupMultiSiteConfig($websiteName)
     {
         $websitePath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath');
         $websiteConfigPath = $websitePath . '/' . $websiteName . \Env::get('cx')->getConfigFolderName();
@@ -719,7 +710,7 @@ class Website extends \Cx\Model\Base\EntityBase {
         \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
     }
 
-    private function createContrexxUser($websiteName)
+    protected function createContrexxUser($websiteName)
     {
         $hostname = $websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
         $httpAuth = array(

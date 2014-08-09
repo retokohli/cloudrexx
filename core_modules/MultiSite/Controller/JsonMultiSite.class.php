@@ -49,6 +49,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         return array(
             'signup'                => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false),
             'email'                 => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false),
+            'address'               => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false),
             'createWebsite'         => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
             'createUser'            => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
             'mapDomain'             => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
@@ -84,9 +85,37 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         if (!isset($params['post']['multisite_email_address'])) {
             return;
         }
-        if (!\User::isUniqueEmail($params['post']['multisite_email_address'])) {
-            //return array('status' => 'login');
-            throw new MultiSiteJsonException(array('object' => 'email', 'type' => 'info', 'message' => 'An account with this email does already exist. <a href="" target="_blank">Login now</a>'));
+
+        self::verifyEmail($params['post']['multisite_email_address']);
+    }
+
+    public static function verifyEmail($email) {
+        global $_ARRAYLANG;
+
+        if (!\User::isUniqueEmail($email)) {
+            global $_ARRAYLANG, $objInit;
+            $langData = $objInit->loadLanguageData('MultiSite');
+            $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+
+// TODO: set login url
+            $loginUrl = '';
+            $loginLink = '<a class="alert-link" href="'.$loginUrl.'" target="_blank">'.$_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_LOGIN'].'</a>';
+            throw new MultiSiteJsonException(array(
+                'object'    => 'email',
+                'type'      => 'info',
+                'message'   => sprintf($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_EMAIL_IN_USE'], $loginLink),
+            ));
+        }
+    }
+
+    public function address($params) {
+        if (!isset($params['post']['multisite_address'])) {
+            return;
+        }
+        try {
+            \Cx\Core_Modules\MultiSite\Model\Entity\Website::validateName(contrexx_input2raw($params['post']['multisite_address']));
+        } catch (\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteException $e) {
+            throw new MultiSiteJsonException(array('object' => 'address', 'type' => 'warning', 'message' => $e->getMessage()));
         }
     }
 
@@ -116,9 +145,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 throw new MultiSiteJsonException('The email you entered is invalid.');
             }
             //check email existence
-            if (!\User::isUniqueEmail($post['multisite_email_address'])) {
-                throw new MultiSiteJsonException(array('object' => 'email', 'type' => 'info', 'message' => 'An account with this email does already exist. <a href="" target="_blank">Login now</a>'));
-            }
+            self::verifyEmail($post['multisite_email_address']);
 
             //call \User\store function to store all the info of new user
             if (!$objUser->store()) {

@@ -2,6 +2,7 @@ jQuery(document).ready(function() {
     function registerFormHandlers() {
         jQuery("#multisite_signup_form").submit(submitHandler);
         jQuery('#multisite_email_address').bind('change', verifyEmail);
+        jQuery('#multisite_address').bind('change', verifyAddress);
     }
 
     function verifyEmail() {
@@ -15,6 +16,22 @@ jQuery(document).ready(function() {
             dataType: "json",
             url: cx_multisite.emailUrl,
             data: {multisite_email_address : jQuery(this).val()},
+            type: "POST",
+            success: parseResponse
+        });
+    }
+
+    function verifyAddress() {
+        jQuery('.multisite-address').next('.alert').remove();
+
+        if (!this.checkValidity()) {
+            return;
+        }
+
+        jQuery.ajax({
+            dataType: "json",
+            url: cx_multisite.addressUrl,
+            data: {multisite_address : jQuery(this).val()},
             type: "POST",
             success: parseResponse
         });
@@ -86,6 +103,10 @@ jQuery(document).ready(function() {
         switch (errorObject) {
             case 'email':
                 jQuery('<div class="alert alert-' + type + '" role="alert">' + message + '</div>').insertAfter(jQuery('#multisite_email_address'));
+                break;
+
+            case 'address':
+                jQuery('<div class="alert alert-' + type + '" role="alert">' + message + '</div>').insertAfter(jQuery('.multisite-address'));
                 break;
 
             case 'form':

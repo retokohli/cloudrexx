@@ -80,21 +80,22 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
                         $signUpUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain') . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=signup');
                         $emailUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' .\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain') . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=email');
-
-// TODO
-                        // get website minimum and maximum Name length
+                        $addressUrl = \Cx\Core\Routing\Url::fromMagic(ASCMS_PROTOCOL . '://' .\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain') . \Env::get('cx')->getBackendFolderName() . '/index.php?cmd=JsonData&object=MultiSite&act=address');
                         $websiteNameMinLength=\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength');
                         $websiteNameMaxLength=\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength');
-
                         $objTemplate->setVariable(array(
                             'TITLE'                         => $_ARRAYLANG['TXT_MULTISITE_TITLE'],
                             'TXT_MULTISITE_EMAIL_ADDRESS'   => $_ARRAYLANG['TXT_MULTISITE_EMAIL_ADDRESS'],
-                            'TXT_MULTISITE_ADDRESS'         => $_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS'],
+                            'TXT_MULTISITE_SITE_ADDRESS'         => $_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS'],
+                            'TXT_MULTISITE_SITE_ADDRESS_SCHEME'  => sprintf($_ARRAYLANG['TXT_MULTISITE_SITE_ADDRESS_SCHEME'], $websiteNameMinLength, $websiteNameMaxLength),
                             'TXT_MULTISITE_CREATE_WEBSITE'  => $_ARRAYLANG['TXT_MULTISITE_SUBMIT_BUTTON'],
                             'MULTISITE_DOMAIN'              => \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'),
                             'POST_URL'                      => '',
+                            'MULTISITE_ADDRESS_MIN_LENGTH'  => $websiteNameMinLength,
+                            'MULTISITE_ADDRESS_MAX_LENGTH'  => $websiteNameMaxLength,
                             'MULTISITE_SIGNUP_URL'          => $signUpUrl->toString(),
                             'MULTISITE_EMAIL_URL'           => $emailUrl->toString(),
+                            'MULTISITE_ADDRESS_URL'         => $addressUrl->toString(),
                         ));
                         echo $objTemplate->get();
                         break;
