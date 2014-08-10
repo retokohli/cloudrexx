@@ -1,0 +1,81 @@
+<div class="col-lg-4">
+
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+            <h2 class="panel-title pull-left">Profile</h2>
+            <div class="pull-right">
+                <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-remote="/api/MultiSite/User/Profile/Edit" data-target="#multisite_settings_profile">Edit</button>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="table-responsive" id="multisite_user_profile">
+                <span>Loading <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /></span>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="col-lg-4">
+
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+            <h2 class="panel-title pull-left">Address</h2>
+            <div class="pull-right">
+                <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-remote="/api/MultiSite/User/Address/Edit" data-target="#multisite_settings_profile">Edit</button>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="table-responsive" id="multisite_user_address">
+                <span>Loading <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /></span>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<div class="col-lg-4">
+    <div class="panel panel-default">
+        <div class="panel-heading clearfix">
+            <h2 class="panel-title pull-left">Contact</h2>
+            <div class="pull-right">
+                <button type="button" class="btn btn-default btn-sm" data-toggle="modal" data-remote="/api/MultiSite/User/Contact/Edit" data-target="#multisite_settings_profile">Edit</button>
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="table-responsive" id="multisite_user_contact">
+                <span>Loading <img src="/lib/javascript/jquery/jstree/themes/default/throbber.gif" /></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="multisite_settings_profile" tabindex="-1" role="dialog" aria-labelledby="multisite_settings_profile_label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+/* <![CDATA[ */
+jQuery(document).ready(function() {
+    function  loadContent(jQuerySelector, url) {
+        jQuery.ajax({
+            dataType: 'html',
+            url: url,
+            type: 'GET',
+            success: function(data) {
+                if (data) {
+                    jQuery(jQuerySelector).html(data);
+                }
+            },
+            fail: function(data) {}
+        });
+    }
+    loadContent('#multisite_user_profile', '/api/MultiSite/User/Profile');
+    loadContent('#multisite_user_address', '/api/MultiSite/User/Address');
+    loadContent('#multisite_user_contact', '/api/MultiSite/User/Contact');
+});
+/* ]]> */
+</script>

@@ -1,0 +1,71 @@
+<html lang="en">
+  <head>
+    <title>{GLOBAL_TITLE} - {METATITLE} - powered by {VERSION}</title>
+    <meta charset="{CHARSET}">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link type="images/x-icon" rel="icon" href="favicon.ico" />
+    <link rel="apple-touch-icon" href="/themes/standard_3_1/images/logo_apple_touch.png" />
+
+    <!-- HTML5 Shim and Respond.js IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="/themes/cloudrexx/js/html5shiv.min.js"></script>
+      <script src="/themes/cloudrexx/js/respond.min.js"></script>
+    <![endif]-->
+
+    {JAVASCRIPT}
+    {STYLE_FILE}
+
+    <link rel="stylesheet" type="text/css" href="/themes/cloudrexx/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/themes/cloudrexx/style.css" />
+  </head>
+  <body>
+    <div class="navbar navbar-default navbar-static-top">
+      <div class="container">
+
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-responsive-collapse">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+          </button>
+          <a class="navbar-brand" href="#">CLOUDREXX</a>
+        </div>
+
+        <div class="navbar-collapse collapse navbar-responsive-collapse">
+          {NAVBAR_FILE}
+          <ul class="nav navbar-nav navbar-right">
+            <li><a href="#">Help</a></li>
+            <li class="dropdown">
+              <a href="#" class="dropdown-toggle" data-toggle="dropdown">Account<b class="caret"></b></a>
+              <ul class="dropdown-menu">
+                <li><a href="{NODE_MULTISITE_PROFILE}">Profile</a></li>
+                <li><a href="{NODE_ACCESS_SETTINGS_ACCOUNT}">Settings</a></li>
+                <li class="divider"></li>
+                <li><a href="/?section=Logout">Logout</a></li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+    </div>
+
+    <div class="container">
+      {CONTENT_FILE}
+      <footer>
+        <div class="row">
+          <div class="col-lg-12">
+            <ul class="list-unstyled">
+              <li class="pull-right"><a href="#top">Back to top</a></li>
+            </ul>
+            <p>Powered by <a href="http://www.contrexx.com" rel="nofollow">Contrexx</a>.</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+  </body>
+</html>
