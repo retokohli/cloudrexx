@@ -53,10 +53,8 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
 
     public function getCommandDescription($command, $short = false) {
         switch ($command) {
-            case 'signupform':
-                return 'Load the MultiSite sign-upform';
-            case 'signinform':
-                return 'Load the MultiSite sign-in form';
+            case 'MultiSite':
+                return 'Load MultiSite GUI forms (sign-up / Customer Panel / etc.)';
         }
     }
 
@@ -96,6 +94,55 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             'MULTISITE_SIGNUP_URL'          => $signUpUrl->toString(),
                             'MULTISITE_EMAIL_URL'           => $emailUrl->toString(),
                             'MULTISITE_ADDRESS_URL'         => $addressUrl->toString(),
+                        ));
+                        echo $objTemplate->get();
+                        break;
+
+                    case 'User':
+                        $pageCmd = $subcommand;
+                        if (!empty($arguments[1])) {
+                            $pageCmd .= '_'.$arguments[1];
+                        }
+                        if (!empty($arguments[2])) {
+                            $pageCmd .= '_'.$arguments[2];
+                        }
+
+                        $page = new \Cx\Core\ContentManager\Model\Entity\Page();
+                        $page->setVirtual(true);
+                        $page->setType(\Cx\Core\ContentManager\Model\Entity\Page::TYPE_APPLICATION);
+                        $page->setCmd($pageCmd);
+                        $page->setModule('MultiSite');
+                        $pageContent = \Cx\Core\Core\Controller\Cx::getContentTemplateOfPage($page);
+                        $objTemplate = new \Cx\Core\Html\Sigma();
+                        $objTemplate->setTemplate($pageContent);
+                        $objTemplate->setErrorHandling(PEAR_ERROR_DIE);
+
+                        // profile attribute labels are stored in core-lang
+                        global $objInit, $_CORELANG;
+                        $langData = $objInit->loadLanguageData('core');
+                        $_CORELANG = $_ARRAYLANG = array_merge($_ARRAYLANG, $langData);
+
+                        $sessionObj = \cmsSession::getInstance();
+                        $objUser = \FWUser::getFWUserObject()->objUser;
+                        if (!$objUser->login()) {
+                            echo 'Access denied';
+                            break;
+                        }
+
+                        $blockName = 'multisite_user';
+                        $placeholderPrefix = strtoupper($blockName).'_';
+                        $objAccessLib = new \Cx\Core_Modules\Access\Controller\AccessLib($objTemplate);
+                        $objAccessLib->setModulePrefix($placeholderPrefix);
+                        $objAccessLib->setAttributeNamePrefix($blockName.'_profile_attribute');
+
+                        $objUser->objAttribute->first();
+                        while (!$objUser->objAttribute->EOF) {
+                            $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
+                            $objAccessLib->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, false);
+                            $objUser->objAttribute->next();
+                        }
+                        $objTemplate->setVariable(array(
+                            'MULTISITE_USER_PROFILE_SUBMIT_URL' => \Env::get('cx')->getWebsiteBackendPath() . '/index.php?cmd=JsonData&object=MultiSite&act=updateOwnUser',
                         ));
                         echo $objTemplate->get();
                         break;
