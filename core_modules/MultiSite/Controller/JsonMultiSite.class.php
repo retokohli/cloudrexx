@@ -52,6 +52,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'address'               => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false),
             'createWebsite'         => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
             'createUser'            => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
+            'updateUser'            => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
+            'updateOwnUser'         => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), true),
             'mapDomain'             => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
             'unMapDomain'           => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
             'updateDefaultCodeBase' => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), true)
@@ -208,35 +210,87 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             $objUser->setActiveStatus(!empty($params['post']['active']) ? (bool)$params['post']['active'] : false);
             $objUser->setAdminStatus(!empty($params['post']['admin']) ? (bool)$params['post']['admin'] : false);
             $objUser->setPassword(\User::make_password(8,true));
-            
-            //$objUser->setProfileAccess(!empty($params['post']['profileAccess']) && $objUser->isAllowedToChangeProfileAccess() ? trim(contrexx_stripslashes($params['post']['profileAccess'])) : '');
-            //$objUser->setFrontendLanguage(!empty($params['post']['frontendLanguage']) ? intval($params['post']['frontendLanguage']) : 0);
-            //$objUser->setBackendLanguage(!empty($params['post']['backendLanguage']) ? intval($params['post']['backendLanguage']) : 0);
-            /*$arrProfile = array(
-                                'picture'       =>array((!empty($params['post']['picture']) ? contrexx_stripslashes($params['post']['picture']) : '')),
-                                'gender'        =>array((!empty($params['post']['gender'])  ? contrexx_stripslashes($params['post']['gender']) : '')),
-                                'title'         =>array((!empty($params['post']['picture']) ? contrexx_stripslashes($params['post']['title']) : '')),
-                                'firstname'     =>array((!empty($params['post']['firstname']) ? contrexx_stripslashes($params['post']['firstname']) : '')),
-                                'lastname'      =>array((!empty($params['post']['lastname']) ? contrexx_stripslashes($params['post']['lastname']) : '')),
-                                'company'       =>array((!empty($params['post']['company']) ? contrexx_stripslashes($params['post']['company']) : '')),
-                                'address'       =>array((!empty($params['post']['address']) ? contrexx_stripslashes($params['post']['address']) : '')),
-                                'city'          =>array((!empty($params['post']['city']) ? contrexx_stripslashes($params['post']['city']) : '')),
-                                'zip'           =>array((!empty($params['post']['zip']) ? contrexx_stripslashes($params['post']['zip']) : '')),
-                                'country'       =>array((!empty($params['post']['country']) ? contrexx_stripslashes($params['post']['country']) : '')),
-                                'phone_office'  =>array((!empty($params['post']['phone_office']) ? contrexx_stripslashes($params['post']['phone_office']) : '')),
-                                'phone_private' =>array((!empty($params['post']['phone_private']) ? contrexx_stripslashes($params['post']['phone_private']) : '')),
-                                'phone_fax'     =>array((!empty($params['post']['phone_fax']) ? contrexx_stripslashes($params['post']['phone_fax']) : '')),
-                                'birthday'      =>array((!empty($params['post']['birthday']) ? contrexx_stripslashes($params['post']['birthday']) : '')),
-                                'website'       =>array((!empty($params['post']['website']) ? contrexx_stripslashes($params['post']['website']) : '')),
-                                'profession'    =>array((!empty($params['post']['profession']) ? contrexx_stripslashes($params['post']['profession']) : '')),
-                                'interests'     =>array((!empty($params['post']['interests']) ? contrexx_stripslashes($params['post']['interests']) : '')),
-                                'signature'     =>array((!empty($params['post']['signature']) ? contrexx_stripslashes($params['post']['signature']) : ''))
-                            );
-            $objUser->setProfile($arrProfile);*/
             $objUser->store();
             return true;
         }
     }
+
+    /**
+     * Update an existing user account
+     * @param array $params POST-data based on with the account shall be updated to
+     * @return  boolean     TRUE on success, FALSE on failure.
+     */
+    public function updateUser($params) {
+        $objFWUser = \FWUser::getFWUserObject();
+        if (empty($params['post']['userId'])) {
+            throw new MultiSiteJsonException(array(
+                'object'    => 'form',
+                'type'      => 'danger',
+                'message'   => 'Unknown user account',
+            ));
+        }
+
+        $objUser = $objFWUser->objUser->getUser(intval($params['post']['userId']));
+        if (!$objUser) {
+            throw new MultiSiteJsonException(array(
+                'object'    => 'form',
+                'type'      => 'danger',
+                'message'   => 'Unknown user account',
+            ));
+        }
+
+        $data = $params['post']['multisite_user_profile_attribute'];
+
+        isset($data['multisite_user_username']) ? $objUser->setUsername(trim(contrexx_input2raw($data['multisite_user_username']))) : null;
+        $objUser->setEmail(isset($data['multisite_user_email']) ? trim(contrexx_input2raw($data['multisite_user_email'])) : $objUser->getEmail());
+        $currentLangId = $objUser->getFrontendLanguage();
+        $objUser->setFrontendLanguage(isset($data['multisite_user_frontend_language']) ? intval($data['multisite_user_frontend_language']) : $objUser->getFrontendLanguage());
+        $objUser->setBackendLanguage(isset($data['multisite_user_backend_language']) ? intval($data['multisite_user_backend_language']) : $objUser->getBackendLanguage());
+        $objUser->setEmailAccess(isset($data['multisite_user_email_access']) && $objUser->isAllowedToChangeEmailAccess() ? contrexx_input2raw($data['multisite_user_email_access']) : $objUser->getEmailAccess());
+        $objUser->setProfileAccess(isset($data['multisite_user_profile_access']) && $objUser->isAllowedToChangeProfileAccess() ? contrexx_input2raw($data['multisite_user_profile_access']) : $objUser->getProfileAccess());
+        #$objUser->setPassword(!empty($data['password']) ? trim(contrexx_stripslashes($data['password'])) : '');
+                
+        $objUser->setProfile($data);
+        if (!$objUser->store()) {
+            throw new MultiSiteJsonException(array(
+                'object'    => 'form',
+                'type'      => 'danger',
+                'message'   => $objUser->getErrorMsg(),
+            ));
+        }
+                
+        return true;
+    } 
+
+    /**
+     * Update the user account of the signed-in user
+     * @param array $params POST-data based on with the account shall be updated to
+     * @return  boolean     TRUE on success, FALSE on failure.
+     */
+    public function updateOwnUser($params) {
+        $objFWUser = \FWUser::getFWUserObject();
+        $objUser = $objFWUser->objUser;
+        if (!$objUser->login()) {
+            throw new MultiSiteJsonException(array(
+                'object'    => 'form',
+                'type'      => 'danger',
+                'message'   => 'Operation denied',
+            ));
+        }
+
+        // Only administrators or users with sufficient permissions
+        // may update their own account.
+        if (!\Permission::hasAllAccess() && !\Permission::checkAccess(31, 'static', true)) {
+            throw new MultiSiteJsonException(array(
+                'object'    => 'form',
+                'type'      => 'danger',
+                'message'   => 'Operation denied',
+            ));
+        }
+
+        $params['post']['userId'] = $objUser->getId();
+        return $this->updateUser($params);
+    } 
 
     /**
      *  callback authentication for verifing secret key and installation id based on mode
