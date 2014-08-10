@@ -1420,6 +1420,7 @@ namespace Cx\Core\Core\Controller {
          * @param \Cx\Core\ContentManager\Model\Enitty\Page $page The page object of which to fetch the application template from
          * @param String $component Optional argument to specify the component to load the template from, instead of using the page's module-attribute
          * @param String $themeType Optional argument to specify the output channel
+         * @return String The content of the application template
          */
         public static function getContentTemplateOfPage($page, $component = null, $themeType = \Cx\Core\View\Model\Entity\Theme::THEME_TYPE_WEB) {
             try {
