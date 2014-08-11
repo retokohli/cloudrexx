@@ -313,7 +313,7 @@ SET character_set_client = utf8;
 CREATE TABLE `contrexx_core_module_multisite_domain` (
   `id` int(11) unsigned NOT NULL auto_increment,
   `name` varchar(200) NOT NULL,
-  `websiteId` int(11) NOT NULL,
+  `websiteId` int(11) default NULL,
   `type` varchar(12) NOT NULL,
   `pleskId` int(11) default NULL,
   PRIMARY KEY  (`id`),
