@@ -60,17 +60,7 @@ class TestCommand extends Command {
          * Create test code
          *  - behat --snippets
          */
-        /*global $argv;
-
-        // php phpunit.php --bootstrap ../cx_bootstrap.php --testdox ../test/core/
-        //\DBG::activate(DBG_PHP);
-        $argv = array(
-            'phpunit.php',
-            //'--bootstrap',
-            //'../cx_bootstrap.php',
-            '--testdox',
-            ASCMS_DOCUMENT_ROOT.'/testing/tests/core/',
-        );*/
+        global $argv;
         
         $systemConfig      = \Env::get('config');
         $useCustomizing    = isset($systemConfig['useCustomizings']) && $systemConfig['useCustomizings'] == 'on';
@@ -108,9 +98,28 @@ class TestCommand extends Command {
             return;
         }
         
+        if (empty($this->testingFolders)) {
+            $this->interface->show("Test cases not found!.\nPlease make sure the test cases are palced inside ([{component_name}|{component_type}])/Testing folder.");
+            return;
+        }
+        
         chdir(ASCMS_DOCUMENT_ROOT.'/testing/PHPUnit/');
-        foreach ($this->testingFolders as $testingFolder) {
-            echo shell_exec($phpPath . ' ' . $phpUnitTestPath .' --bootstrap ../cx_bootstrap.php --testdox ' . $testingFolder);
+        $isInitialized = false;
+        foreach ($this->testingFolders as $testingFolder) {                                    
+            $_SERVER['argv'] = $argv = array(
+                $phpUnitTestPath,
+                '--testdox',
+                $testingFolder,
+            );
+            $_SERVER['argc'] = count($argv);
+            
+            if (!$isInitialized) {
+                include_once $phpUnitTestPath;
+            } else {
+                \PHPUnit_TextUI_Command::main(false);
+            }
+                        
+            $isInitialized = true;
         }
         
         $this->interface->show('Done');
