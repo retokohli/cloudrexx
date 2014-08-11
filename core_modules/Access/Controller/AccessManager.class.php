@@ -1216,8 +1216,6 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
                         self::$arrStatusMsg['error'] = array_merge(self::$arrStatusMsg['error'], $upload_res);
                     }
                 }
-                $objCrmLib = new \Cx\Modules\Crm\Controller\CrmLibrary('Crm');
-                $objCrmLib->setContactPersonProfile($arrProfile, $objUser->getId(), $_POST['access_user_frontend_language']);
                 $objUser->setProfile($arrProfile);
             }
 

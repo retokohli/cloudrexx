@@ -399,7 +399,7 @@ class Website extends \Cx\Model\Base\EntityBase {
                     'auth'        => \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($this->websiteServiceServer->getSecretKey(), $this->websiteServiceServer->getInstallationId())
                 );
             $jd = new \Cx\Core\Json\JsonData();
-            $resp = $jd->getJson('http://'.$hostname.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=createWebsite', $params,
+            $resp = $jd->getJson('https://'.$hostname.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=createWebsite', $params,
              false, '', $httpAuth);
             $this->ipAddress = $resp->data->websiteIp;
             $this->codeBase  = $resp->data->codeBase;
@@ -428,7 +428,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             || \Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID) {
             $websiteDomain = $websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
 // TODO: implement protocl support
-            $websiteUrl = 'http://'.$websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
+            $websiteUrl = 'https://'.$websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
             // write mail
             \Cx\Core\MailTemplate\Controller\MailTemplate::init('MultiSite');
             \Cx\Core\MailTemplate\Controller\MailTemplate::send(array(
@@ -467,7 +467,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             //       Then the object that executed the setup() method must handle the exception
             //       and call the removeWebsite() method if required.
                 //$this->removeWebsite($websiteName);
-                throw new \Cx\Core_Modules\MultiSite\Controller\MultiSiteJsonException(array('object' => 'form', 'type' => 'success', 'message' => "Your website <a href=\"http://$websiteDomain/\">$websiteDomain</a> has been build successfully. Unfortunately, we were unable to send you a message to the address <strong>$websiteMail</strong> with further instructions on how to proceed. Our helpdesk team will get in touch with you as soon as possible. We apologize for any inconvenience."));
+                throw new \Cx\Core_Modules\MultiSite\Controller\MultiSiteJsonException(array('object' => 'form', 'type' => 'success', 'message' => "Your website <a href=\"https://$websiteDomain/\">$websiteDomain</a> has been build successfully. Unfortunately, we were unable to send you a message to the address <strong>$websiteMail</strong> with further instructions on how to proceed. Our helpdesk team will get in touch with you as soon as possible. We apologize for any inconvenience."));
             }
             return $this->messages;
         }
@@ -703,6 +703,11 @@ class Website extends \Cx\Model\Base\EntityBase {
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
                     throw new \Exception("Failed to add Setting entry for InstallationId of Website Service");
             }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('websiteUserId') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('websiteUserId', 0, 5,
+                \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
+                    throw new \Exception("Failed to add Setting entry for InstallationId of Website User Id");
+            }
 // TODO: HTTP-Authentication details of Website Service Server must be set
             if (\Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthMethod') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('serviceHttpAuthMethod', $websiteHttpAuthMethod, 5,
@@ -744,7 +749,7 @@ class Website extends \Cx\Model\Base\EntityBase {
                 'auth'  => \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($this->secretKey, $this->installationId)
             );
         $jd = new \Cx\Core\Json\JsonData();
-        $resp = $jd->getJson('http://'.$hostname.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=createUser', $params,
+        $resp = $jd->getJson('https://'.$hostname.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=createUser', $params,
          false, '', $httpAuth);
         if(!$resp || $resp->status == 'error'){
             $errMsg = isset($resp->message) ? $resp->message : '';
