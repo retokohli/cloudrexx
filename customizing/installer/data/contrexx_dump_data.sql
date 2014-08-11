@@ -151,4 +151,6 @@ INSERT INTO `contrexx_languages` (`id`, `lang`, `name`, `charset`, `themesid`, `
 
 INSERT INTO `contrexx_skins` (`id`, `themesname`, `foldername`, `expert`) VALUES (8,'cloudrexx','cloudrexx',1);
 
+DELETE FROM `contrexx_component` WHERE `name` = 'Workbench';
+
 SET FOREIGN_KEY_CHECKS = 1;
