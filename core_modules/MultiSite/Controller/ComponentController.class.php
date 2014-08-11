@@ -134,6 +134,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                         $objAccessLib = new \Cx\Core_Modules\Access\Controller\AccessLib($objTemplate);
                         $objAccessLib->setModulePrefix($placeholderPrefix);
                         $objAccessLib->setAttributeNamePrefix($blockName.'_profile_attribute');
+                        $objAccessLib->setAccountAttributeNamePrefix($blockName.'_account_');
 
                         $objUser->objAttribute->first();
                         while (!$objUser->objAttribute->EOF) {
@@ -141,6 +142,7 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                             $objAccessLib->parseAttribute($objUser, $objAttribute->getId(), 0, false, false, false, false, false);
                             $objUser->objAttribute->next();
                         }
+                        $objAccessLib->parseAccountAttributes($objUser);
                         $objTemplate->setVariable(array(
                             'MULTISITE_USER_PROFILE_SUBMIT_URL' => \Env::get('cx')->getWebsiteBackendPath() . '/index.php?cmd=JsonData&object=MultiSite&act=updateOwnUser',
                         ));
