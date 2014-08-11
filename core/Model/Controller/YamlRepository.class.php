@@ -226,7 +226,7 @@ class YamlRepository {
             if (isset($updateEntries[$id])) {
                 if ($objDomain->getName() != $updateEntries[$id]->getName()) {
                     $this->entities = $updateEntries;
-                    return $updateEntries[$id];
+                    return array($objDomain, $updateEntries[$id]);
                 }
             }
         }
@@ -241,9 +241,9 @@ class YamlRepository {
      */
     public function flush() {
         //for triggering the preUpdate
-        $updatedEntry = $this->getLastUpdatedEntry();
-        if (!empty($updatedEntry) && ($updatedEntry instanceof \Cx\Core\Net\Model\Entity\Domain)) {
-            \Env::get('cx')->getEvents()->triggerEvent('model/preUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($updatedEntry, \Env::get('em'))));
+        list($oldEntry, $newEntry) = $this->getLastUpdatedEntry();
+        if (!empty($oldEntry) && ($oldEntry instanceof \Cx\Core\Net\Model\Entity\Domain)) {
+            \Env::get('cx')->getEvents()->triggerEvent('model/preUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($oldEntry, \Env::get('em'))));
         }
         
         $entitiesToPersist = array();
@@ -260,6 +260,10 @@ class YamlRepository {
         $dataSet->add('data', $entitiesToPersist);
         $dataSet->add('meta', $this->getMetaDefinition());
         $dataSet->save($this->repositoryPath);
+        
+        if (!empty($newEntry) && ($newEntry instanceof \Cx\Core\Net\Model\Entity\Domain)) {
+            \Env::get('cx')->getEvents()->triggerEvent('model/postUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($newEntry, \Env::get('em'))));
+        }
         
         foreach ($this->removedEntities as $entity) {
             //\Env::get('cx')->getEvents()->triggerEvent('model/postRemove', array($entity));
