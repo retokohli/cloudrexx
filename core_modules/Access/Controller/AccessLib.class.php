@@ -54,6 +54,7 @@ class AccessLib
      * @access private
      */
     private $attributeNamePrefix = 'access_profile_attribute';
+    protected $accountAttributeNamePrefix = 'access_user_';
     private $modulePrefix = 'ACCESS_';
 
     private $arrAttributeTypeTemplates;
@@ -122,6 +123,23 @@ class AccessLib
         $this->attributeNamePrefix = $prefix;
     }
 
+    /**
+     * When using this library from within a different place (not access module),
+     * use this method to specify the template block prefix to be used when parsing
+     * a user's account attributes (username, email, password, etc.).
+     * For instance when setting the prefix to 'shop_customer_attribute',
+     * then the method {@link AccessLib::parseAccountAttribute()) will try to parse the
+     * \Cx\Core\Html\Sigma template block shop_customer_attribute_email
+     * in the case of the account attribute email.
+     * Defaults to 'access_user'
+     *
+     * @param string    \Cx\Core\Html\Sigma template block prefix to be used
+     * @see AccessLib::parseAccountAttribute()
+     */
+    public function setAccountAttributeNamePrefix($prefix)
+    {
+        $this->accountAttributeNamePrefix = $prefix;
+    }
 
     /**
      * When using this library from within a different place (not access module),
@@ -576,7 +594,7 @@ class AccessLib
     }
 
 
-    protected function parseAccountAttributes($objUser, $edit = false)
+    public function parseAccountAttributes($objUser, $edit = false)
     {
         if (!isset($this->arrAccountAttributes)) {
             $this->loadAccountAttributes();
@@ -586,8 +604,8 @@ class AccessLib
             switch ($attributeId) {
                 case 'email_access':
                     if (!$objUser->isAllowedToChangeEmailAccess()) {
-                        if ($this->_objTpl->blockExists('access_user_'.$attributeId)) {
-                            $this->_objTpl->hideBlock('access_user_'.$attributeId);
+                        if ($this->_objTpl->blockExists($this->accountAttributeNamePrefix.$attributeId)) {
+                            $this->_objTpl->hideBlock($this->accountAttributeNamePrefix.$attributeId);
                         }
                         continue 2;
                     }
@@ -595,8 +613,8 @@ class AccessLib
 
                 case 'profile_access':
                     if (!$objUser->isAllowedToChangeProfileAccess()) {
-                        if ($this->_objTpl->blockExists('access_user_'.$attributeId)) {
-                            $this->_objTpl->hideBlock('access_user_'.$attributeId);
+                        if ($this->_objTpl->blockExists($this->accountAttributeNamePrefix.$attributeId)) {
+                            $this->_objTpl->hideBlock($this->accountAttributeNamePrefix.$attributeId);
                         }
                         continue 2;
                     }
@@ -614,7 +632,7 @@ class AccessLib
             $this->loadAccountAttributes();
         }
 
-        $accountAttributePrefix = 'access_user_';
+        $accountAttributePrefix = $this->accountAttributeNamePrefix;
         $accountAttributePrefixUC = strtoupper($accountAttributePrefix);
 
         $placeholderUC = $accountAttributePrefixUC.strtoupper($attributeId);
