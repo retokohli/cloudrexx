@@ -4,6 +4,22 @@ namespace Cx\Core_Modules\MultiSite\Model\Entity;
 class WebsiteException extends \Exception {}
 
 class Website extends \Cx\Model\Base\EntityBase {
+    
+    /**
+     * Status online
+     */
+    const STATE_ONLINE = 'online';
+    
+    /**
+     * Status offline
+     */
+    const STATE_OFFLINE = 'offline';
+    
+    /**
+     * Status init
+     */
+    const STATE_INIT = 'init';
+        
     protected $basepath = null;
   
     /**
@@ -93,7 +109,7 @@ class Website extends \Cx\Model\Base\EntityBase {
 
         $this->domains = new \Doctrine\Common\Collections\ArrayCollection();      
         $this->language = $userObj->getFrontendLanguage();
-        $this->status = 0;
+        $this->status = self::STATE_INIT;
         $this->websiteServiceServerId = 0;
         $this->owner = $userObj;
         $this->ownerId = $userObj->getId();
@@ -387,6 +403,7 @@ class Website extends \Cx\Model\Base\EntityBase {
              false, '', $httpAuth);
             $this->ipAddress = $resp->data->websiteIp;
             $this->codeBase  = $resp->data->codeBase;
+            $this->status    = $resp->data->state;
             if(!$resp || $resp->status == 'error'){
                 $errMsg = isset($resp->message) ? $resp->message : '';
                 throw new WebsiteException('Problem in creating website '.$errMsg);    
@@ -399,6 +416,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             $this->setupConfiguration($websiteName, $objDb, $objDbUser);
             $this->setupMultiSiteConfig($websiteName);
             $this->createContrexxUser($websiteName);
+            $this->status = self::STATE_ONLINE;
             $websiteIp = \Cx\Core\Setting\Controller\Setting::getValue('defaultWebsiteIp');
         }
 
@@ -457,7 +475,8 @@ class Website extends \Cx\Model\Base\EntityBase {
         return array(
             'status' => 'success',
             'websiteIp' => $websiteIp,
-            'codeBase' => $this->codeBase
+            'codeBase' => $this->codeBase,
+            'state' => $this->status
         );
     }
     
@@ -660,7 +679,7 @@ class Website extends \Cx\Model\Base\EntityBase {
         $websiteHttpAuthMethod   = \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthMethod');
         $websiteHttpAuthUsername = \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthUsername');
         $websiteHttpAuthPassword = \Cx\Core\Setting\Controller\Setting::getValue('websiteHttpAuthPassword');
-
+        
         try {
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'config','FileSystem', $websiteConfigPath);
             if (\Cx\Core\Setting\Controller\Setting::getValue('mode') === NULL
@@ -699,7 +718,7 @@ class Website extends \Cx\Model\Base\EntityBase {
                 && !\Cx\Core\Setting\Controller\Setting::add('serviceHttpAuthPassword', $websiteHttpAuthPassword, 7,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'website')){
                     throw new \Exception("Failed to add Setting entry for HTTP Authentication Password of Website Service");
-            }
+            }       
         } catch (\Exception $e) {
             // we must re-initialize the original MultiSite settings of the main installation
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');

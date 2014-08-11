@@ -21,7 +21,8 @@ Cx\Core_Modules\MultiSite\Model\Entity\Website:
       type: string
       length: 50
     status:
-      type: integer
+      type: string
+      length: 15
     websiteServiceServerId:
       type: integer
     secretKey:
