@@ -183,7 +183,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         
         $basepath = \Cx\Core\Setting\Controller\Setting::getValue('websitePath');
         $websiteServiceServer = null;
-        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == 'manager') {
+        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == ComponentController::MODE_MANAGER) {
             //get default service server
             $defaultWebsiteServiceServer = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer')
             ->findBy(array('isDefault' => 1));
@@ -311,7 +311,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
         $config = \Env::get('config');
         $installationId = $config['installationId'];
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
-            case 'manager':
+            case ComponentController::MODE_MANAGER:
                 try {
                     $WebsiteServiceServerRepository = \Env::get('em')->getRepository('\Cx\Core_Modules\MultiSite\Model\Entity\WebsiteServiceServer');
                     $objWebsiteService = $WebsiteServiceServerRepository->findBy(array('hostName' => $authenticationValue['sender']));
@@ -321,8 +321,8 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 }
                 break;
 
-            case 'service':
-            case 'hybrid':
+            case ComponentController::MODE_SERVICE:
+            case ComponentController::MODE_HYBRID:
                 //Check if the sender is manager or not
                 if ($authenticationValue['sender'] == \Cx\Core\Setting\Controller\Setting::getValue('managerHostname')) {
                     $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('managerSecretKey');
@@ -337,7 +337,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                 }
                 break;
                 
-            case 'website':
+            case ComponentController::MODE_WEBSITE:
                 $secretKey = \Cx\Core\Setting\Controller\Setting::getValue('serviceSecretKey');
                 break;
         }
