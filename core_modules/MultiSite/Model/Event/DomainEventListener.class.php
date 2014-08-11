@@ -53,8 +53,8 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode');
             $domain  = $eventArgs->getEntity();
             switch ($mode) {
-                case 'manager':
-                case 'hybrid':
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
                     if ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain)
                         $this->updateDnsRecord($domain, 'preUpdate');
                     break;
@@ -78,15 +78,15 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode');
             $domain  = $eventArgs->getEntity();
             switch ($mode) {
-                case 'manager':
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
                     if ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain)
                         $this->addDnsRecord($domain, 'prePersist');
                     break;
 
-                case 'service':
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
                     break;
 
-                case 'hybrid':
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
                     if ($domain instanceof \Cx\Core_Modules\MultiSite\Model\Entity\Domain)
                         $this->addDnsRecord($domain, 'prePersist');
                     break;
@@ -110,15 +110,15 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             $em = $eventArgs->getEntityManager();
             $domain  = $eventArgs->getEntity();
             switch ($mode) {
-                case 'manager':
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
                     $this->addDnsRecord($domain, 'postPersist');
                     break;
 
-                case 'service':
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
                     $this->updateDomainRepositoryCache($em);
                     break;
 
-                case 'hybrid':
+                case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
                     $this->addDnsRecord($domain, 'postPersist');
                     $this->updateDomainRepositoryCache($em);
                     break;
@@ -166,7 +166,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                 // In case MultiSite is operated in 'hybrid'-mode, then
                 // the BaseDN is the same as FQDN. In that case we won't create the
                 // BaseDN record as it would be an invalid DNS-record.
-                if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == 'hybrid') {
+                if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID) {
                     return;
                 }
                 $type = 'CNAME';
@@ -217,7 +217,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             return;
         
         switch ($mode) {
-            case 'service':
+            case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_SERVICE:
                 $hostName = \Cx\Core\Setting\Controller\Setting::getValue('managerHostname');
                         
                 $installationId = \Cx\Core\Setting\Controller\Setting::getValue('managerInstallationId');  
@@ -228,7 +228,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                     'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('managerHttpAuthPassword'),
                 );
             break;
-            case 'website':
+            case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:
                 $hostName = \Cx\Core\Setting\Controller\Setting::getValue('serviceHostname');
                         
                 $installationId = \Cx\Core\Setting\Controller\Setting::getValue('serviceInstallationId');  
@@ -240,8 +240,8 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
                     'httpAuthPassword' => \Cx\Core\Setting\Controller\Setting::getValue('serviceHttpAuthPassword'),
                 );
             break;
-            case 'manager':
-            case 'hybrid':
+            case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER:
+            case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID:
                 $config = \Env::get('config');
                 $param['post'] = array(
                     'domainName' => $eventArgs->getEntity()->getName(),

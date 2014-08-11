@@ -31,6 +31,11 @@ class MultiSiteException extends \Exception {}
  */
 class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentController {
    // const MAX_WEBSITE_NAME_LENGTH = 18; 
+    const MODE_MANAGER = 'manager';
+    const MODE_SERVICE = 'service';
+    const MODE_HYBRID = 'hybrid';
+    const MODE_WEBSITE = 'website';
+    
     private $messages = '';
     private $reminders = array(3, 14);
     protected $db;
@@ -336,7 +341,7 @@ throw new MultiSiteException('Refactor this method!');
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
 
             // abort in case the Contrexx installation is in MultiSite website operation mode
-            if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == 'website') {
+            if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == self::MODE_WEBSITE) {
                 return false;
             }
 
@@ -522,12 +527,12 @@ throw new MultiSiteException('Refactor this method!');
         // Abort in case this Contrexx installation has not been set up as a Website Service.
         // If the MultiSite module has not been configured, then 'mode' will be set to null.
         switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
-            case 'service':
-            case 'hybrid':
+            case self::MODE_SERVICE:
+            case self::MODE_HYBRID:
                 $this->deployWebsite($cx);
                 break;
 
-            case 'website':
+            case self::MODE_WEBSITE:
 // TODO: Website specific customizings can be added at this point
 //       Extensions like access restrictions to certain parts of the system, etc.
                 break;

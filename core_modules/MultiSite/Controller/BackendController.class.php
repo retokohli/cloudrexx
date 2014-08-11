@@ -361,7 +361,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
             $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode');
             $websiteController = \Cx\Core\Setting\Controller\Setting::getValue('websiteController');
 
-            if ($mode != 'website') {
+            if ($mode != ComponentController::MODE_WEBSITE) {
                 \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'config', 'FileSystem');    
                 \Cx\Core\Setting\Controller\Setting::show(
                     $objTemplate,
@@ -372,20 +372,20 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 );
             }
             
-            if (in_array($mode, array('manager', 'service', 'hybrid'))) {
+            if (in_array($mode, array(ComponentController::MODE_MANAGER, ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))) {
                 \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'setup', 'FileSystem');    
                 \Cx\Core\Setting\Controller\Setting::show(
                     $objTemplate,
                     'index.php?cmd=MultiSite&act=settings',
 // TODO: The configuration options multiSiteDomain, unavailablePrefixes, websiteNameMaxLength and  websiteNameMinLength must be set remotely by the Website Manager
 //       Once implemented, those options must be read-only or not getting listed at all
-                    $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE'] .($mode == 'service' ? ' - TODO: The configuration options below must be set remotely by the Website Manager! (except for option "Subscription controller")' : ''),
+                    $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE'] .($mode == ComponentController::MODE_SERVICE ? ' - TODO: The configuration options below must be set remotely by the Website Manager! (except for option "Subscription controller")' : ''),
                     'Setup',
                     'TXT_CORE_MODULE_MULTISITE_'
                 );
             }
             
-            if ($mode == 'service') {
+            if ($mode == ComponentController::MODE_SERVICE) {
                 \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'websiteManager', 'FileSystem');
                 \Cx\Core\Setting\Controller\Setting::show(
                     $objTemplate,
@@ -396,7 +396,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 );
             }
 
-            if (in_array($mode, array('service', 'hybrid'))) {
+            if (in_array($mode, array(ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))) {
                 \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'websiteSetup', 'FileSystem');    
                 \Cx\Core\Setting\Controller\Setting::show(
                     $objTemplate,
@@ -407,7 +407,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 );
             }
             
-            if (   in_array($mode, array('manager', 'service', 'hybrid'))
+            if (   in_array($mode, array(ComponentController::MODE_MANAGER, ComponentController::MODE_SERVICE, ComponentController::MODE_HYBRID))
                 && $websiteController == 'plesk'
             ) {
                 \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'plesk', 'FileSystem');
@@ -420,7 +420,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                 );
             }
 
-            if ($mode == 'website') {
+            if ($mode == ComponentController::MODE_WEBSITE) {
                 // config section if the MultiSite is run as Website
                 \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'website', 'FileSystem');
                 \Cx\Core\Setting\Controller\Setting::show(

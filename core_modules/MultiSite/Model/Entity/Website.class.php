@@ -406,8 +406,8 @@ class Website extends \Cx\Model\Base\EntityBase {
         \Env::get('em')->flush();
         
         $this->messages = $_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_WEBSITE_CREATED'];
-        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == 'manager'
-            || \Cx\Core\Setting\Controller\Setting::getValue('mode') == 'hybrid') {
+        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER
+            || \Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_HYBRID) {
             $websiteDomain = $websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
 // TODO: implement protocl support
             $websiteUrl = 'https://'.$websiteName.'.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain');
@@ -664,7 +664,7 @@ class Website extends \Cx\Model\Base\EntityBase {
         try {
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'config','FileSystem', $websiteConfigPath);
             if (\Cx\Core\Setting\Controller\Setting::getValue('mode') === NULL
-                && !\Cx\Core\Setting\Controller\Setting::add('mode','website', 1,
+                && !\Cx\Core\Setting\Controller\Setting::add('mode', \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE, 1,
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'website:website', 'config')){
                     throw new \Exception("Failed to add Setting entry for MultiSite mode");
             }
@@ -916,7 +916,7 @@ throw new WebsiteException('implement secret-key algorithm first!');
      */    
     function setFqdn(){
         $config = \Env::get('config');
-        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == 'manager') {
+        if (\Cx\Core\Setting\Controller\Setting::getValue('mode') == \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_MANAGER) {
             $serviceServerHostname = $this->websiteServiceServer->getHostname();
         } else {
             $serviceServerHostname = $config['domainUrl'];
