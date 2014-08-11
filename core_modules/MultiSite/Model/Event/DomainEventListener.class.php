@@ -64,7 +64,20 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             }
             //during the domain update, remove the old one after that create the domain as new
             if ($domain instanceof \Cx\Core\Net\Model\Entity\Domain)
-                $this->domainMapping($eventArgs, $mode, 'unMapDomain'); // this unMapDomain process is still not working properly(we need to pass the old domain object as argument)
+                $this->domainMapping($eventArgs, $mode, 'unMapDomain');
+        } catch (\Exception $e) {
+            \DBG::msg($e->getMessage());
+        }
+    }
+
+    public function postUpdate($eventArgs) {
+        \DBG::msg('MultiSite (DomainEventListener): postUpdate');
+        try {
+            \Cx\Core\Setting\Controller\Setting::init('MultiSite', '','FileSystem');
+            $mode = \Cx\Core\Setting\Controller\Setting::getValue('mode');
+            $domain  = $eventArgs->getEntity();
+            //during the domain update, remove the old one after that create the domain as new
+            if ($domain instanceof \Cx\Core\Net\Model\Entity\Domain)
                 $this->domainMapping($eventArgs, $mode, 'mapDomain');
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
