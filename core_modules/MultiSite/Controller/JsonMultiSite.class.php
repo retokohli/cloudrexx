@@ -56,7 +56,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'updateOwnUser'         => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), true),
             'mapDomain'             => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
             'unMapDomain'           => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
-            'updateDefaultCodeBase' => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), true)
+            'updateDefaultCodeBase' => new \Cx\Core\Access\Model\Entity\Permission(array('http'), array('post'), true, array($this, 'checkPermission'))
         );
     }
 
@@ -350,6 +350,19 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     }
 
     /**
+     * Callback authentication for checking the user's access permission
+     * 
+     * @return boolean
+     */
+    public function checkPermission() 
+    {
+        if (\Permission::checkAccess(183, 'static', true))
+            return true;
+        
+        return false;
+    }
+    
+    /**
      *  Get the Authentication Object
      * 
      * @param String $secretKey
@@ -401,7 +414,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     \Env::get('em')->persist($objDomain);
                     \Env::get('em')->persist($website);
                 } else {
-                    $objDomain = new \Cx\Core_Modules\MultiSite\Model\Entity\Domain($params['post']['domainName']);                
+                    $objDomain = new \Cx\Core_Modules\MultiSite\Model\Entity\Domain($params['post']['domainName']);
                     \Env::get('em')->persist($objDomain);
                 }
                 
