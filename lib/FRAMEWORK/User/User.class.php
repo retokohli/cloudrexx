@@ -449,6 +449,7 @@ class User extends User_Profile
         $objFWUser = FWUser::getFWUserObject();
         if ($deleteOwnAccount || $this->id != $objFWUser->objUser->getId()) {
             if (!$this->isLastAdmin()) {
+                \Env::get('cx')->getEvents()->triggerEvent('model/preRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));    
                 if ($objDatabase->Execute(
                 'DELETE tblU, tblP, tblG, tblA, tblN
                 FROM `'.DBPREFIX.'access_users` AS tblU
@@ -458,7 +459,8 @@ class User extends User_Profile
                 LEFT JOIN `'.DBPREFIX.'access_user_network` AS tblN ON tblN.`user_id` = tblU.`id`
                 WHERE tblU.`id` = '.$this->id) !== false
             ) {
-                    return true;
+                \Env::get('cx')->getEvents()->triggerEvent('model/postRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));    
+                return true;
                 } else {
                     $this->error_msg[] = sprintf($_CORELANG['TXT_ACCESS_USER_DELETE_FAILED'], $this->username);
                 }
@@ -1539,6 +1541,7 @@ class User extends User_Profile
             $this->networks->save();
         }
         if ($this->id) {
+            \Env::get('cx')->getEvents()->triggerEvent('model/preUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
             if ($objDatabase->Execute("
                 UPDATE `".DBPREFIX."access_users`
                 SET
@@ -1565,7 +1568,9 @@ class User extends User_Profile
                 // deletes all sessions which are using this user (except the session changing the password)
                 $_SESSION->cmsSessionDestroyByUserId($this->id);
             }
+            \Env::get('cx')->getEvents()->triggerEvent('model/postUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
         } else {
+            \Env::get('cx')->getEvents()->triggerEvent('model/prePersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
             if ($objDatabase->Execute("
                 INSERT INTO `".DBPREFIX."access_users` (
                     `username`,
@@ -1614,6 +1619,7 @@ class User extends User_Profile
                 $this->error_msg[] = $_CORELANG['TXT_ACCESS_FAILED_TO_ADD_USER_ACCOUNT'];
                 return false;
             }
+            \Env::get('cx')->getEvents()->triggerEvent('model/postPersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($this, \Env::get('em'))));
         }
 
         if (!$this->storeGroupAssociations()) {
