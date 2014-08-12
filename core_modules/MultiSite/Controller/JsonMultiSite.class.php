@@ -489,5 +489,44 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             }
         }
     }
-    
+    /**
+     * update the domain alias
+     * 
+     * @param array $params
+     * 
+     * @return string
+     */
+    public function updateDomain($params) {
+
+        if (!empty($params['post']) && !empty($params['post']['domainName']) && !empty($params['post']['domainId'])) {
+            $authenticationValue = isset($params['post']['auth']) ? json_decode($params['post']['auth'], true) : '';
+
+            if (empty($authenticationValue) || !is_array($authenticationValue)) {
+                return false;
+            }
+            try {
+                switch (\Cx\Core\Setting\Controller\Setting::getValue('mode')) {
+                    case ComponentController::MODE_MANAGER:
+                    case ComponentController::MODE_SERVICE:
+                    case ComponentController::MODE_HYBRID:
+                        $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
+                        $domain = $domainRepo->findOneBy(array('coreNetDomainId' => $params['post']['domainId']));
+                        $domain->setName($params['post']['domainName']);
+                        break;
+
+                    case ComponentController::MODE_WEBSITE:
+                        $domainRepo = \Env::get('em')->getRepository('Cx\Core_Modules\MultiSite\Model\Entity\Domain');
+                        $objDomain = $domainRepo->findOneBy(array('name' => $authenticationValue['sender']));
+                        $domain = $domainRepo->findOneBy(array('websiteId' => $objDomain->getWebsite()->getId(), 'coreNetDomainId' => $params['post']['domainId']));
+                        $domain->setName($params['post']['domainName']);
+                        break;
+                }
+                \Env::get('em')->persist($domain);
+                \Env::get('em')->flush();
+            } catch (\Exception $e) {
+                return $e->getMessage();
+            }
+        }
+    }
+
 }

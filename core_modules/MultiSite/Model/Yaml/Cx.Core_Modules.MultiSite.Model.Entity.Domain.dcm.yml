@@ -19,7 +19,8 @@ Cx\Core_Modules\MultiSite\Model\Entity\Domain:
       length: 12
     pleskId:
       type: integer
-   
+    coreNetDomainId:
+      type: integer
   manyToOne: # owning side
     website:
       targetEntity: Cx\Core_Modules\MultiSite\Model\Entity\Website

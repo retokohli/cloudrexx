@@ -65,7 +65,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             }
             //during the domain update, remove the old one after that create the domain as new
             if ($domain instanceof \Cx\Core\Net\Model\Entity\Domain) {
-                $this->domainMapping($eventArgs, $mode, 'unMapDomain');
+                $this->domainMapping($eventArgs, $mode, 'updateDomain');
             }
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
@@ -80,7 +80,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             $domain  = $eventArgs->getEntity();
             //during the domain update, remove the old one after that create the domain as new
             if ($domain instanceof \Cx\Core\Net\Model\Entity\Domain) {
-                $this->domainMapping($eventArgs, $mode, 'mapDomain');
+                $this->domainMapping($eventArgs, $mode, 'updateDomain');
             }
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
@@ -277,8 +277,9 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
         }
         //post array
         $params = array(
-            'domainName'    => $eventArgs->getEntity()->getName(),
-            'auth'          => \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($secretKey, $installationId)
+            'domainName'        => $eventArgs->getEntity()->getName(),
+            'auth'              => \Cx\Core_Modules\MultiSite\Controller\JsonMultiSite::getAuthenticationObject($secretKey, $installationId),
+            'coreNetDomainId'   => $eventArgs->getEntity()->getId()
         );
             
         $objJsonData->getJson('https://'.$hostName.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act='.$event, $params, false, '', $httpAuth);

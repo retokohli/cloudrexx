@@ -44,6 +44,11 @@ class Domain extends \Cx\Core\Net\Model\Entity\Domain {
      * @var integer $id
      */
     public $pleskId;
+    
+    /**
+     * @var integer $coreNetDomainId
+     */
+    public $coreNetDomainId;
 
     /*
      * Constructor
@@ -126,6 +131,24 @@ class Domain extends \Cx\Core\Net\Model\Entity\Domain {
     public function getPleskId() {
         return $this->pleskId;
     }
+    
+    /**
+     * Set coreNetDomainId
+     *
+     * @param integer coreNetDomainId
+     */
+    public function setcoreNetDomainId($coreNetDomainId) {
+        $this->coreNetDomainId = $coreNetDomainId;
+    }
 
+    /**
+     * Get coreNetDomainId
+     *
+     * @return integer $coreNetDomainId
+     */
+    public function getcoreNetDomainId() {
+        return $this->coreNetDomainId;
+    }
+    
 }
 
