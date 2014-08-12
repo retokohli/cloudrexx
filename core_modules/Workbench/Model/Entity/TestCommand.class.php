@@ -208,11 +208,32 @@ class TestCommand extends Command {
     {
         $componentTestingFolder = $componentFolder . ASCMS_TESTING_FOLDER;
         
-        if (!empty($componentFolder) && glob($componentTestingFolder.'/*.php') && file_exists($componentFolder) && file_exists($componentTestingFolder)) {
+        if (!empty($componentFolder) && self::hasTestingFiles($componentTestingFolder) && file_exists($componentFolder) && file_exists($componentTestingFolder)) {
             $this->testingFolders[$componentName] = $componentTestingFolder;
             return true;
         }
         
         return false;        
+    }
+    
+    /**
+     * Return true if the folder has php unit test cases false otherwise
+     * 
+     * @param string $foldername absolute path of the folder to check the testing files
+     * 
+     * @return boolean Return true if the folder has php unit test cases false otherwise
+     */
+    private static function hasTestingFiles($foldername)
+    {
+        if (glob($foldername.'/*Test.php')) {
+            // phpunit test cases should end with Test.php
+            return true;
+        }
+        
+        foreach (glob($foldername.'/*', GLOB_ONLYDIR) as $folder) {
+            return self::hasTestingFiles($folder);
+        }
+        
+        return false;
     }
 }
