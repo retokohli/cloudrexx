@@ -31,6 +31,11 @@ class YamlRepositoryException extends \Exception {};
  * @author      Thomas Däppen <thomas.daeppen@comvation.com>
  * @package     contrexx
  * @subpackage  core_model
+ * @todo        Make thread safe. The current implementation of YamlRepository
+ *              does not take the case into account if the repository gets
+ *              modified by a parallel operation. Changes made by a parallel
+ *              operation will be discarded,merged or overwritten. The behavior
+ *              is unknown!
  */
 class YamlRepository {
     /**
@@ -46,6 +51,12 @@ class YamlRepository {
     protected $entities;
 
     /**
+     * The original set of entities in the repository
+     * @var array
+     */
+    protected $originalEntitiesFromRepository;
+
+    /**
      * All entities currently added to the repository
      * @var array
      */
@@ -56,6 +67,12 @@ class YamlRepository {
      * @var array
      */
     protected $removedEntities = array();
+
+    /**
+     * All entities currently modified in the repository
+     * @var array
+     */
+    protected $updatedEntities = array();
 
     /**
      * Auto-increment value used for the primary identifier
@@ -92,9 +109,8 @@ class YamlRepository {
 
     /**
      * Reset the repository. Unload all data.
-     * @access private
      */
-    private function reset() {
+    protected function reset() {
         $this->entities = array();
         $this->entityAutoIncrement = 1;
         $this->entityIdentifier = null;
@@ -103,34 +119,43 @@ class YamlRepository {
 
     /**
      * Load repository from file system specified by $this->repositoryPath
-     * @access private
      */
-    private function load() {
+    protected function load() {
         $this->reset();
 
-        $repository = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load($this->repositoryPath);
-        if (!$repository->entryExists('meta')) {
-            throw new YamlRepositoryException("Unable to load repository $this->repositoryPath. Repository is missing meta description!");
-        }
+        list($meta, $entities) = $this->loadData();
 
-        $meta = $repository->getEntry('meta');
         $this->entityAutoIncrement = $meta['auto_increment'];
         $this->entityIdentifier = $meta['identifier'];
         $this->entityUniqueKeys = $meta['unique_keys'];
 
-        if (!$repository->entryExists('data')) {
+        if (!$entities) {
             \DBG::msg("YamlRepository: Empty repository $this->repositoryPath loaded.");
             return;
         }
 
-        $data = $repository->getEntry('data');
-        foreach ($data as $entity) {
-            if (!($entity instanceof \Cx\Core\Model\Model\Entity\YamlEntity)) {
-                throw new YamlRepositoryException("Unable to load repository $this->repositoryPath. Repository contains invalid entity: ".serialize($entity));
-            }
-            $id = $this->getIdentifierOfEntity($entity);
-            $this->entities[$id] = $entity;
+        $this->entities = $entities;
+        $this->originalEntitiesFromRepository = $entities;
+    }
+
+    protected function loadData() {
+        $entities = array();
+        $repository = \Cx\Core_Modules\Listing\Model\Entity\DataSet::load($this->repositoryPath);
+        if (!$repository->entryExists('meta')) {
+            throw new YamlRepositoryException("Unable to load repository $this->repositoryPath. Repository is missing meta description!");
         }
+        $meta = $repository->getEntry('meta');
+        if ($repository->entryExists('data')) {
+            foreach ($repository->getEntry('data') as $entity) {
+                if (!($entity instanceof \Cx\Core\Model\Model\Entity\YamlEntity)) {
+                    throw new YamlRepositoryException("Unable to load repository $this->repositoryPath. Repository contains invalid entity: ".serialize($entity));
+                }
+                $id = $this->getIdentifierOfEntity($entity, $meta['identifier']);
+                $entities[$id] = $entity;
+            }
+        }
+
+        return array($meta, $entities);
     }
 
     /**
@@ -196,7 +221,6 @@ class YamlRepository {
         $this->entities[$this->getIdentifierOfEntity($entity)] = $entity;
         if (!$entity->isVirtual()) {
             $this->addedEntities[] = $entity;
-            //\Env::get('cx')->getEvents()->triggerEvent('model/prePersist', array($entity));
             \Env::get('cx')->getEvents()->triggerEvent('model/prePersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($entity, \Env::get('em'))));
         }
     }
@@ -209,43 +233,13 @@ class YamlRepository {
     public function remove($entity) {
         unset($this->entities[$this->getIdentifierOfEntity($entity)]);
         $this->removedEntities[] = $entity;
-        //\Env::get('cx')->getEvents()->triggerEvent('model/preRemove', array($entity));
         \Env::get('cx')->getEvents()->triggerEvent('model/preRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($entity, \Env::get('em'))));
-    }
-
-    /**
-     * For triggering the preUpdate, we have to get the last updated entry
-     * 
-     * @return boolean
-     */
-    private function getLastUpdatedEntry() {
-        $updateEntries  = $this->entities;
-        $this->entities = array();
-        $this->load();
-        foreach ($this->entities As $id => $objDomain) {
-            if (isset($updateEntries[$id])) {
-                if ($objDomain->getName() != $updateEntries[$id]->getName()) {
-                    $this->entities = $updateEntries;
-                    return array($objDomain, $updateEntries[$id]);
-                }
-            }
-        }
-        $this->entities = $updateEntries;
-        
-        return false;
     }
     
     /**
      * Flush the current state of the repository into the file system.
-     * @todo    Make thread safe
      */
     public function flush() {
-        //for triggering the preUpdate
-        list($oldEntry, $newEntry) = $this->getLastUpdatedEntry();
-        if (!empty($oldEntry) && ($oldEntry instanceof \Cx\Core\Net\Model\Entity\Domain)) {
-            \Env::get('cx')->getEvents()->triggerEvent('model/preUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($oldEntry, \Env::get('em'))));
-        }
-        
         $entitiesToPersist = array();
         foreach ($this->entities as $entity) {
             // Validation must be done before checking for virtual entities.
@@ -254,39 +248,49 @@ class YamlRepository {
             if ($entity->isVirtual()) {
                 continue;
             }
+            if (isset($this->originalEntitiesFromRepository[$this->getIdentifierOfEntity($entity)])) {
+                if ($this->originalEntitiesFromRepository[$this->getIdentifierOfEntity($entity)] != $entity) {
+                    $this->updatedEntries[] = $entity;
+                }
+            }
             $entitiesToPersist[] = $entity;
         }
+
+        foreach ($this->updatedEntities as $entity) {
+            \Env::get('cx')->getEvents()->triggerEvent('model/preUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($entity, \Env::get('em'))));
+        }
+
         $dataSet = new \Cx\Core_Modules\Listing\Model\Entity\DataSet();
         $dataSet->add('data', $entitiesToPersist);
         $dataSet->add('meta', $this->getMetaDefinition());
         $dataSet->save($this->repositoryPath);
         
-        if (!empty($newEntry) && ($newEntry instanceof \Cx\Core\Net\Model\Entity\Domain)) {
-            \Env::get('cx')->getEvents()->triggerEvent('model/postUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($newEntry, \Env::get('em'))));
+        // triger post-events
+        // apply the same order of event-triggers as doctrine does:
+        // 1. postPersist
+        // 2. postUpdate
+        // 3. postRemove
+        foreach ($this->addedEntities as $entity) {
+            \Env::get('cx')->getEvents()->triggerEvent('model/postPersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($entity, \Env::get('em'))));
         }
-        
+        foreach ($this->updatedEntities as $entity) {
+            \Env::get('cx')->getEvents()->triggerEvent('model/postUpdate', array(new \Doctrine\ORM\Event\LifecycleEventArgs($entity, \Env::get('em'))));
+        }
         foreach ($this->removedEntities as $entity) {
-            //\Env::get('cx')->getEvents()->triggerEvent('model/postRemove', array($entity));
             \Env::get('cx')->getEvents()->triggerEvent('model/postRemove', array(new \Doctrine\ORM\Event\LifecycleEventArgs($entity, \Env::get('em'))));
         }
 
-        foreach ($this->addedEntities as $entity) {
-            //\Env::get('cx')->getEvents()->triggerEvent('model/postPersist', array($entity));
-            \Env::get('cx')->getEvents()->triggerEvent('model/postPersist', array(new \Doctrine\ORM\Event\LifecycleEventArgs($entity, \Env::get('em'))));
-        }
         //truncate the variables
-        if (!empty($this->addedEntities))
-            $this->addedEntities = array();
-        if (!empty($this->removedEntities))
-            $this->removedEntities = array();
+        $this->addedEntities = array();
+        $this->updatedEntities = array();
+        $this->removedEntities = array();
     }
 
     /**
      * Generate meta definition to be stored in the repository
-     * @access private
      * @return array    Meta definition
      */
-    private function getMetaDefinition() {
+    protected function getMetaDefinition() {
         return array(
             'auto_increment'    => $this->entityAutoIncrement,
             'identifier'        => $this->entityIdentifier,
@@ -297,9 +301,8 @@ class YamlRepository {
     /**
      * Validate the entity to comply with any unique-key constraints
      * @param   YamlEntity The entity to validate
-     * @access private
      */
-    private function validate($entity) {
+    protected function validate($entity) {
         foreach ($this->entityUniqueKeys as $uniqueKey) {
             $value = call_user_func(array($entity, "get".ucfirst($uniqueKey)));
             $matchedEntities = $this->findBy(array($uniqueKey => $value));
@@ -322,20 +325,21 @@ class YamlRepository {
     /**
      * Generate and get a new primary identifier
      * @return integer New primary identifier
-     * @access private
      */
-    private function getNewEntityIdentifier() {
+    protected function getNewEntityIdentifier() {
         return ++$this->entityAutoIncrement;
     }
 
     /**
      * Get the primary identifier of an entity
      * @param   YamlEntity $entity The entity of which to get the primary identifier from
-     * @access private
      * @return  integer The primary identifier of the supplied entity
      */
-    private function getIdentifierOfEntity($entity) {
-        return call_user_func(array($entity, "get".ucfirst($this->entityIdentifier)));
+    protected function getIdentifierOfEntity($entity, $identifierKey = null) {
+        if (!$identifierKey) {
+            $identifierKey = $this->entityIdentifier;
+        }
+        return call_user_func(array($entity, "get".ucfirst($identifierKey)));
     }
 }
 
