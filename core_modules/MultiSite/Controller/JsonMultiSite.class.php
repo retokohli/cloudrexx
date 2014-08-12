@@ -56,7 +56,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
             'updateOwnUser'         => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), true),
             'mapDomain'             => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
             'unMapDomain'           => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
-            'updateDefaultCodeBase' => new \Cx\Core\Access\Model\Entity\Permission(array('http'), array('post'), true, array($this, 'checkPermission'))
+            'updateDefaultCodeBase' => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), true, array($this, 'checkPermission'))
         );
     }
 
@@ -356,8 +356,9 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
      */
     public function checkPermission() 
     {
-        if (\Permission::checkAccess(183, 'static', true))
+        if (\Permission::checkAccess(183, 'static', true)) {
             return true;
+        }
         
         return false;
     }
