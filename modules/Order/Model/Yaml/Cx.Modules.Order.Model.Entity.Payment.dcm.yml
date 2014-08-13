@@ -1,0 +1,27 @@
+Cx\Modules\Order\Model\Entity\Payment:
+  type: entity
+  repositoryClass: Cx\Modules\Order\Model\Repository\PaymentRepository
+  table: module_order_payments
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    date:
+       type: string
+    amount:
+       type: decimal
+    transactionReference:
+        type: string
+    invoiceId:
+       type: integer
+       
+  manyToOne: # owning side
+    invoice:
+      targetEntity: Cx\Modules\Order\Model\Entity\invoice
+      inversedBy: payments
+      joinColumn:
+        name: invoiceId
+        referencedColumnName: id
+        cascade: [remove]
