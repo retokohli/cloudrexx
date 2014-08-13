@@ -137,7 +137,7 @@ class Domain extends \Cx\Core\Net\Model\Entity\Domain {
      *
      * @param integer coreNetDomainId
      */
-    public function setcoreNetDomainId($coreNetDomainId) {
+    public function setCoreNetDomainId($coreNetDomainId) {
         $this->coreNetDomainId = $coreNetDomainId;
     }
 
@@ -146,7 +146,7 @@ class Domain extends \Cx\Core\Net\Model\Entity\Domain {
      *
      * @return integer $coreNetDomainId
      */
-    public function getcoreNetDomainId() {
+    public function getCoreNetDomainId() {
         return $this->coreNetDomainId;
     }
     
