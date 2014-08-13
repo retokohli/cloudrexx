@@ -316,6 +316,7 @@ CREATE TABLE `contrexx_core_module_multisite_domain` (
   `websiteId` int(11) default NULL,
   `type` varchar(12) NOT NULL,
   `pleskId` int(11) default NULL,
+  `coreNetDomainId` int(11) default NULL,
   PRIMARY KEY  (`id`),
   KEY `name` (`name`),
   KEY `websiteId` (`websiteId`),
