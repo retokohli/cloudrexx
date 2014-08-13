@@ -1,0 +1,26 @@
+Cx\Modules\Order\Model\Entity\Subscription:
+  type: entity
+  repositoryClass: Cx\Modules\Order\Model\Repository\SubscriptionRepository
+  table: module_order_subscriptions
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+  fields:
+    paymentType:
+       type: string
+       length: 12
+    orderId:
+       type: integer
+    productId:
+       type: integer
+       
+  manyToOne: # owning side
+    order:
+      targetEntity: Cx\Modules\Order\Model\Entity\Order
+      inversedBy: subscriptions
+      joinColumn:
+        name: orderId
+        referencedColumnName: id
+        cascade: [remove]
