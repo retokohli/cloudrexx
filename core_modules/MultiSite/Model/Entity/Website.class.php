@@ -684,7 +684,7 @@ class Website extends \Cx\Model\Base\EntityBase {
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'config','FileSystem', $websiteConfigPath);
             if (\Cx\Core\Setting\Controller\Setting::getValue('mode') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('mode', \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE, 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'website:website', 'config')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE.':'.\Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE, 'config')){
                     throw new \Exception("Failed to add Setting entry for MultiSite mode");
             }
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'website','FileSystem', $websiteConfigPath);

@@ -349,7 +349,7 @@ throw new MultiSiteException('Refactor this method!');
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'config','FileSystem');
             if (\Cx\Core\Setting\Controller\Setting::getValue('mode') === NULL
                 && !\Cx\Core\Setting\Controller\Setting::add('mode','none', 1,
-                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'none:none,manager:'.self::MODE_MANAGER.',service:'.self::MODE_SERVICE.',hybrid:'.self::MODE_HYBRID, 'config')){
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'none:none,'.self::MODE_MANAGER.':'.self::MODE_MANAGER.','.self::MODE_SERVICE.':'.self::MODE_SERVICE.','.self::MODE_HYBRID.':'.self::MODE_HYBRID, 'config')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database Mode");
             }
 
