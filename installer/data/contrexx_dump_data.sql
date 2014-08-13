@@ -567,6 +567,7 @@ INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scop
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (210,132,'function','backend','TXT_DOWNLOADS_ALL_DOWNLOADS',1,'','_self',53,2,143);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (209,2,'navigation','backend','TXT_SURVEY_MODULE',1,'index.php?cmd=Survey','_self',82,0,111);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (211,3,'navigation','backend','TXT_CORE_MODULE_MULTISITE',1,'index.php?cmd=MultiSite','_self',89,11,183);
+INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (212,2,'navigation','global','TXT_MODULE_ORDER',1,'index.php?cmd=Order','_self',93,5,555);
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (2,'Stats','core_module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (3,'Gallery','module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (4,'Newsletter','module');
@@ -642,6 +643,7 @@ INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (89,'MultiSite','
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (90,'Net','core');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (91,'Core','core');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (92,'Shell','core_module');
+INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (93,'Order','module');
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (1,NULL,1,334,0);
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (2,1,2,3,1);
 INSERT INTO `contrexx_content_node` (`id`, `parent_id`, `lft`, `rgt`, `lvl`) VALUES (3,34,11,12,2);
@@ -5948,6 +5950,7 @@ INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variab
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`) VALUES (89,'MultiSite','DEV','TXT_MULTISITE_MODULE_DESCRIPTION','y',0,1,1,1);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`) VALUES (90,'Net','DEV','TXT_NET_MODULE_DESCRIPTION','y',1,1,1,1);
 INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`) VALUES (92,'Shell','DEV','TXT_CORE_SHELL_DESCRIPTION','y',0,1,1,1);
+INSERT INTO `contrexx_modules` (`id`, `name`, `distributor`, `description_variable`, `status`, `is_required`, `is_core`, `is_active`, `is_licensed`) VALUES (93,'Order','DEV','TXT_MODULES_ORDER_DESCRIPTION','y',1,0,1,1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (3,'dnsServer','ns1.contrexxhosting.com',1);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (4,'bannerStatus','0',28);
 INSERT INTO `contrexx_settings` (`setid`, `setname`, `setvalue`, `setmodule`) VALUES (5,'spamKeywords','sex, viagra',1);
