@@ -21,9 +21,15 @@ namespace Cx\Modules\Order\Model\Entity;
  */
 class Payment {
     /**
+     *
+     * @var integer $id
+     */
+    private $id;
+    
+    /**
      * @var \Cx\Modules\Order\Model\Entity\Invoice $invoice 
      */
-    private $invoice;
+    protected $invoice;
     
     /**
      *
@@ -54,6 +60,23 @@ class Payment {
      */
     public function __construct() {}
     
+    /**
+     * Get the id
+     * 
+     * @return integer $id
+     */
+    public function getId() {
+        return $this->id;
+    }
+
+    /**
+     * Set the id
+     * @param integer $id
+     */
+    public function setId($id) {
+        $this->id = $id;
+    }
+
     /**
      * Get the invoice
      * 

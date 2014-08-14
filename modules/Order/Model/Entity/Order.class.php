@@ -20,27 +20,49 @@ namespace Cx\Modules\Order\Model\Entity;
  * @subpackage  module_order
  */
 class Order {
-
+    /**
+     *
+     * @var integer $id
+     */
+    private $id;
+    
     /**
      * @var integer $contact
      */
-    private $contact;
+    protected $contact;
 
     /**
      * @var array $subscriptions
      */
-    private $subscriptions;
+    protected $subscriptions;
 
     /**
      * @var array $invoices
      */
-    private $invoices;
+    protected $invoices;
 
     /**
      * Constructor
      */
     public function __construct() {
         $this->subscriptions = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Get the id
+     * 
+     * @return integer $id
+     */
+    public function getId() {
+        return $this->id;
+    }
+
+    /**
+     * Set the id
+     * @param integer $id
+     */
+    public function setId($id) {
+        $this->id = $id;
     }
 
     /**

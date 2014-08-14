@@ -21,14 +21,20 @@ namespace Cx\Modules\Order\Model\Entity;
  */
 class Invoice {
     /**
+     *
+     * @var integer $id
+     */
+    private $id;
+    
+    /**
      * @var Cx\Modules\Order\Model\Entity\Order
      */
-    private $order;
+    public $order;
     
     /**
      * @var Cx\Modules\Order\Model\Entity\Payment
      */
-    private $payments;
+    public $payments;
     
     /**
      * @var integer $orderId
@@ -42,6 +48,23 @@ class Invoice {
         $this->payments = new \Doctrine\Common\Collections\ArrayCollection();
     }
     
+    /**
+     * Get the id
+     * 
+     * @return integer $id
+     */
+    public function getId() {
+        return $this->id;
+    }
+
+    /**
+     * Set the id
+     * @param integer $id
+     */
+    public function setId($id) {
+        $this->id = $id;
+    }
+
     /**
      * Get the order
      * 
