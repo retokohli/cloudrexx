@@ -235,7 +235,7 @@ throw new MultiSiteException('Refactor this method!');
         }
         
         if (empty($params['get']['name']) && empty($params['post']['name'])) {
-            if (preg_match('/https:\/\/(.+)\.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain').'/', $_SERVER['HTTP_REFERER'], $matches)) {
+            if (preg_match('/'.$this->getApiProtocol().':\/\/(.+)\.'.\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain').'/', $_SERVER['HTTP_REFERER'], $matches)) {
                 $params['post']['name'] = $matches[1];
             } else {
                 throw new \Exception("not enough arguments!");
@@ -352,7 +352,7 @@ throw new MultiSiteException('Refactor this method!');
                 \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'none:none,'.self::MODE_MANAGER.':'.self::MODE_MANAGER.','.self::MODE_SERVICE.':'.self::MODE_SERVICE.','.self::MODE_HYBRID.':'.self::MODE_HYBRID, 'config')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Database Mode");
             }
-
+          
             // setup group
             \Cx\Core\Setting\Controller\Setting::init('MultiSite', 'setup','FileSystem');
             if (\Cx\Core\Setting\Controller\Setting::getValue('websiteController') === NULL
@@ -379,6 +379,11 @@ throw new MultiSiteException('Refactor this method!');
                 && !\Cx\Core\Setting\Controller\Setting::add('websiteNameMinLength',4, 5,
                 \Cx\Core\Setting\Controller\Setting::TYPE_TEXT, null, 'setup')){
                     throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Minimal length of website names");
+            }
+            if (\Cx\Core\Setting\Controller\Setting::getValue('multiSiteProtocol') === NULL
+                && !\Cx\Core\Setting\Controller\Setting::add('multiSiteProtocol','mixed', 1,
+                \Cx\Core\Setting\Controller\Setting::TYPE_DROPDOWN, 'mixed:Mixed,http:HTTP,https:HTTPS', 'setup')){
+                    throw new \Cx\Lib\Update_DatabaseException("Failed to add Setting entry for Multisite Protocol");
             }
 
             // websiteSetup group
@@ -574,4 +579,25 @@ throw new MultiSiteException('Refactor this method!');
         // no website found. Abort website-deployment and let Contrexx process with the regular system initialization (i.e. most likely with the Website Service Website)
         return false;
     }
+    
+    /**
+     * Get the api protocol url
+     * 
+     * @return string $protocolUrl
+     */
+    private function getApiProtocol() {
+        switch (\Cx\Core\Setting\Controller\Setting::getValue('multiSiteProtocol')) {
+            case 'mixed':
+                $protocolUrl = \Env::get('cx')->getRequest()->getUrl()->getProtocol() . '://';
+                break;
+            case 'http':
+                $protocolUrl = 'http://';
+                break;
+            case 'https':
+                $protocolUrl = 'https://';
+                break;
+        }
+        return $protocolUrl;
+    }
+
 }

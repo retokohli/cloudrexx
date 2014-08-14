@@ -184,7 +184,7 @@ class UserEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             }
             
             $objJsonData = new \Cx\Core\Json\JsonData();
-            $objJsonData->getJson('https://'.$hostName.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=updateUser', $params, false, '', $httpAuth);
+            $objJsonData->getJson(\Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol().$hostName.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=updateUser', $params, false, '', $httpAuth);
         } catch (\Exception $e) {
             \DBG::msg($e->getMessage());
         }

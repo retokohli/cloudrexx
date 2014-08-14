@@ -282,7 +282,7 @@ class DomainEventListener implements \Cx\Core\Event\Model\Entity\EventListener {
             'coreNetDomainId'   => $eventArgs->getEntity()->getId()
         );
             
-        $objJsonData->getJson('https://'.$hostName.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act='.$event, $params, false, '', $httpAuth);
+        $objJsonData->getJson(\Cx\Core_Modules\MultiSite\Controller\ComponentController::getApiProtocol().$hostName.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act='.$event, $params, false, '', $httpAuth);
     } 
     
     public function onEvent($eventName, array $eventArgs) {        

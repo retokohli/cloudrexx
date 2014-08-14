@@ -49,12 +49,11 @@ class FrontendController extends \Cx\Core\Core\Model\Entity\SystemComponentFront
         $websiteNameMinLength=\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMinLength');
         $websiteNameMaxLength=\Cx\Core\Setting\Controller\Setting::getValue('websiteNameMaxLength');
         // TODO: implement protocol support / the protocol to use should be defined by a configuration option
-        $protocol = 'https';
         if (in_array(\Cx\Core\Setting\Controller\Setting::getValue('mode'), array(ComponentController::MODE_MANAGER, ComponentController::MODE_HYBRID))) {
             $configs = \Env::get('config');
-            $multiSiteDomain = $protocol.'://'.$configs['domainUrl'];
+            $multiSiteDomain = ComponentController::getApiProtocol() . $configs['domainUrl'];
         } else {           
-            $multiSiteDomain = $protocol.'://'.\Cx\Core\Setting\Controller\Setting::getValue('managerHostname');
+            $multiSiteDomain = ComponentController::getApiProtocol() . \Cx\Core\Setting\Controller\Setting::getValue('managerHostname');
         }
         \JS::activate('cx');
         //Add jquery validations library (jquery.validate.min.js)

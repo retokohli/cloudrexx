@@ -46,17 +46,18 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
     * @return array List of method names
     */
     public function getAccessableMethods() {
+        $multiSiteProtocol = (\Cx\Core\Setting\Controller\Setting::getValue('multiSiteProtocol') == 'mixed')? \Env::get('cx')->getRequest()->getUrl()->getProtocol(): \Cx\Core\Setting\Controller\Setting::getValue('multiSiteProtocol');
         return array(
-            'signup'                => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false),
-            'email'                 => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false),
-            'address'               => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false),
-            'createWebsite'         => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
-            'createUser'            => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
-            'updateUser'            => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
-            'updateOwnUser'         => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), true),
-            'mapDomain'             => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
-            'unMapDomain'           => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), false, array($this, 'auth')),
-            'updateDefaultCodeBase' => new \Cx\Core\Access\Model\Entity\Permission(array('https'), array('post'), true, array($this, 'checkPermission'))
+            'signup'                => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false),
+            'email'                 => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false),
+            'address'               => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false),
+            'createWebsite'         => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
+            'createUser'            => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
+            'updateUser'            => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
+            'updateOwnUser'         => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true),
+            'mapDomain'             => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
+            'unMapDomain'           => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), false, array($this, 'auth')),
+            'updateDefaultCodeBase' => new \Cx\Core\Access\Model\Entity\Permission(array($multiSiteProtocol), array('post'), true, array($this, 'checkPermission'))
         );
     }
 
@@ -252,7 +253,7 @@ class JsonMultiSite implements \Cx\Core\Json\JsonAdapter {
                     'multisite_user_profile_attribute' => $params['post']['multisite_user_profile_attribute']
                 );
                 $objJsonData = new \Cx\Core\Json\JsonData();
-                $objJsonData->getJson('https://'.$hostName.'/cadmin/index.php?cmd=JsonData&object=MultiSite&act=updateUser', $params, false, '', $httpAuth);
+                $objJsonData->getJson(ComponentController::getApiProtocol() . $hostName . '/cadmin/index.php?cmd=JsonData&object=MultiSite&act=updateUser', $params, false, '', $httpAuth);
                 return;
                 break;
             case \Cx\Core_Modules\MultiSite\Controller\ComponentController::MODE_WEBSITE:

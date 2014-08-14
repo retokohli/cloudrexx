@@ -252,7 +252,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                     if ($website) {
                         // perform login via JSON
                         $websiteDomain = contrexx_input2raw($_GET['adminLogin']) . '.' . substr(\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'), 0);
-                        $websiteUrl = 'https://' . $websiteDomain;
+                        $websiteUrl = ComponentController::getApiProtocol() . $websiteDomain;
                         $jd = new \Cx\Core\Json\JsonData();
                         //$jd->setSessionId(session_id());
                         $response = $jd->getJson(
@@ -292,7 +292,7 @@ class BackendController extends \Cx\Core\Core\Model\Entity\SystemComponentBacken
                             'table' => array(
                                 'parse' => function($value) {
                                     //$websiteUrl = '<a href="https://' . $value . '.cloudrexx.com/" target="_blank">' . $value . '</a>';
-                                    $websiteUrl = '<a href="https://' . $value . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain').'" target="_blank">' . $value . '</a>';
+                                    $websiteUrl = '<a href="'.ComponentController::getApiProtocol() . $value . '.' . \Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain').'" target="_blank">' . $value . '</a>';
                                     //$backendLogin = ' (<a href="?cmd=MultiSite&adminLogin=' . $value . '" target="_blank">BE</a>)';
                                     return $websiteUrl; //. $backendLogin;
                                 },

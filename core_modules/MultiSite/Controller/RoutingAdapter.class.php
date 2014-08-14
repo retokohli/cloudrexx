@@ -134,7 +134,7 @@ class RoutingAdapter implements \Cx\Core\Json\JsonAdapter {
                 //throw new MultiSiteRoutingException($_ARRAYLANG['TXT_CORE_MODULE_MULTISITE_NO_SUCH_WEBSITE']);
             }
             $response->data->websiteName = $website->getName();
-            $response->data->websiteUrl = 'https://' . $website->getName() . '.' . substr(\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'), 0) . '/cadmin/index.php?autoLogin=' . $response->data->key;
+            $response->data->websiteUrl  = ComponentController::getApiProtocol() . $website->getName() . '.' . substr(\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'), 0) . '/cadmin/index.php?autoLogin=' . $response->data->key;
         }
         
         // rethrow exceptions
@@ -151,7 +151,7 @@ class RoutingAdapter implements \Cx\Core\Json\JsonAdapter {
         global $_ARRAYLANG;
         // make sub request
         $jd = new \Cx\Core\Json\JsonData();
-        $url = 'https://' . $website->getName() . '.' . substr(\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'), 0) .
+        $url = ComponentController::getApiProtocol() . $website->getName() . '.' . substr(\Cx\Core\Setting\Controller\Setting::getValue('multiSiteDomain'), 0) .
                 '/cadmin/index.php?cmd=jsondata&object=' . $subRequestGetParams['adapter'] .
                 '&act=' . $subRequestGetParams['method'];
         unset($subRequestGetParams['mail']);
