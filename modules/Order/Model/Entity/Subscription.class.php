@@ -21,14 +21,20 @@ namespace Cx\Modules\Order\Model\Entity;
  */
 class Subscription {
     /**
+     *
+     * @var integer $id
+     */
+    private $id;
+    
+    /**
      * @var Cx\Modules\Order\Model\Entity\Order
      */
-    private $order;
+    protected $order;
     
     /**
      * @var Cx\Modules\Order\Model\Entity\Product 
      */
-    private $product;
+    protected $product;
     
     /**
      * @var integer $orderId
@@ -41,10 +47,47 @@ class Subscription {
     private $productId;
     
     /**
+     * @var string $paymentType
+     */
+    public $paymentType;
+    
+    /**
+     * Payment type free
+     */
+    const PAYMENT_TYPE_FREE = 'free';
+    
+    /**
+     * Payment type one time
+     */
+    const PAYMENT_TYPE_ONE_TIME = 'oneTime';
+    
+    /**
+     * Payment type recurrent
+     */
+    const PAYMENT_TYPE_RECURRENT = 'recurrent';
+
+    /**
      * Constructor
      */
     public function __construct() {}
     
+    /**
+     * Get the id
+     * 
+     * @return integer $id
+     */
+    public function getId() {
+        return $this->id;
+    }
+
+    /**
+     * Set the id
+     * @param integer $id
+     */
+    public function setId($id) {
+        $this->id = $id;
+    }
+
     /**
      * Set the order
      * 
@@ -115,5 +158,13 @@ class Subscription {
      */
     public function getProductId() {
         return $this->productId;
+    }
+    
+    public function getPaymentType() {
+        return $this->paymentType;
+    }
+    
+    public function setPaymentType($paymentType) {
+        $this->paymentType = $paymentType;
     }
 }

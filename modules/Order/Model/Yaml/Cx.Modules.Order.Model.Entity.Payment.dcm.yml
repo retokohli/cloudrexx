@@ -19,7 +19,7 @@ Cx\Modules\Order\Model\Entity\Payment:
        
   manyToOne: # owning side
     invoice:
-      targetEntity: Cx\Modules\Order\Model\Entity\invoice
+      targetEntity: Cx\Modules\Order\Model\Entity\Invoice
       inversedBy: payments
       joinColumn:
         name: invoiceId
