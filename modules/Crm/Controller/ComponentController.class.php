@@ -44,4 +44,12 @@ class ComponentController extends \Cx\Core\Core\Model\Entity\SystemComponentCont
                 break;
         }
     }
+        
+    public function postResolve(\Cx\Core\ContentManager\Model\Entity\Page $page) {
+        $evm = \Env::get('cx')->getEvents();
+        
+        $userEventListener    = new \Cx\Modules\Crm\Model\Event\UserEventListener();
+        $evm->addModelListener(\Doctrine\ORM\Events::postUpdate, 'User', $userEventListener);
+    }
+    
 }
