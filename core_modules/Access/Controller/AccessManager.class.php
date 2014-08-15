@@ -1387,6 +1387,7 @@ class AccessManager extends \Cx\Core_Modules\Access\Controller\AccessLib
         ));
 
         $rowNr = 0;
+        $objUser->objAttribute->first();
         while (!$objUser->objAttribute->EOF) {
             $objAttribute = $objUser->objAttribute->getById($objUser->objAttribute->getId());
 
