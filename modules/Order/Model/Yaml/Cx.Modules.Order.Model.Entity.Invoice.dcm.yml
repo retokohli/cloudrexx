@@ -2,13 +2,15 @@ Cx\Modules\Order\Model\Entity\Invoice:
   type: entity
   repositoryClass: Cx\Modules\Order\Model\Repository\InvoiceRepository
   table: module_order_invoice
+
   id:
     id:
       type: integer
       generator:
         strategy: AUTO
+
   fields:
-       
+
   oneToMany: # inverse side
     payments:
       targetEntity: Cx\Modules\Order\Model\Entity\Payment

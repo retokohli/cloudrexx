@@ -2,20 +2,23 @@ Cx\Modules\Order\Model\Entity\Order:
   type: entity
   repositoryClass: Cx\Modules\Order\Model\Repository\OrderRepository
   table: module_order_order
+
   id:
     id:
       type: integer
       generator:
         strategy: AUTO
+
   fields:
-    contact:
-        type: integer
+    contactId:
+      type: integer
+      column: contact_id
 
   oneToMany: # inverse side
     subscriptions:
       targetEntity: Cx\Modules\Order\Model\Entity\Subscription
       mappedBy: order
-      
+
   oneToMany: # inverse side
     invoices:
       targetEntity: Cx\Modules\Order\Model\Entity\Invoice
