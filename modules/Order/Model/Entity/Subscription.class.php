@@ -19,12 +19,12 @@ namespace Cx\Modules\Order\Model\Entity;
  * @package     contrexx
  * @subpackage  module_order
  */
-class Subscription {
+class Subscription extends \Cx\Model\Base\EntityBase {
     /**
      *
      * @var integer $id
      */
-    private $id;
+    protected $id;
     
     /**
      * @var Cx\Modules\Order\Model\Entity\Order
@@ -37,19 +37,14 @@ class Subscription {
     protected $product;
     
     /**
-     * @var integer $orderId
-     */
-    private $orderId;
-    
-    /**
      * @var integer $productId
      */
-    private $productId;
+    protected $productId;
     
     /**
      * @var string $paymentType
      */
-    public $paymentType;
+    protected $paymentType;
     
     /**
      * Payment type free
@@ -122,24 +117,6 @@ class Subscription {
      */
     public function getProduct() {
         return $this->product;
-    }
-    
-    /**
-     * Set the orderId
-     * 
-     * @param integer $orderId
-     */
-    public function setOrderId($orderId) {
-        $this->orderId = $orderId;
-    }
-    
-    /**
-     * Get the orderId
-     * 
-     * @return integer $orderId
-     */
-    public function getOrderId() {
-        return $this->orderId;
     }
     
     /**

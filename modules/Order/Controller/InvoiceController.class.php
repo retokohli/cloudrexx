@@ -62,7 +62,11 @@ class InvoiceController extends \Cx\Core\Core\Model\Entity\Controller {
     {
         global $_ARRAYLANG;
         
-        $view = new \Cx\Core\Html\Controller\ViewGenerator($this->invoiceRepo->findAll(), array(
+        $invoices = $this->invoiceRepo->findAll();
+        if (empty($invoices)) {
+            $invoices = new \Cx\Modules\Order\Model\Entity\Invoice();
+        }
+        $view = new \Cx\Core\Html\Controller\ViewGenerator($invoices, array(
             'header'    => $_ARRAYLANG['TXT_MODULE_ORDER_ACT_INVOICE'],
             'functions' => array(
                 'add'       => true,

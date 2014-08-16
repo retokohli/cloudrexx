@@ -19,12 +19,12 @@ namespace Cx\Modules\Order\Model\Entity;
  * @package     contrexx
  * @subpackage  module_order
  */
-class Payment {
+class Payment extends \Cx\Model\Base\EntityBase {
     /**
      *
      * @var integer $id
      */
-    private $id;
+    protected $id;
     
     /**
      * @var \Cx\Modules\Order\Model\Entity\Invoice $invoice 
@@ -33,13 +33,13 @@ class Payment {
     
     /**
      *
-     * @var dateTime $date
+     * @var DateTime $date
      */
     protected $date;
     
     /**
      *
-     * @var decimal $amount
+     * @var float $amount
      */
     protected $amount;
     
@@ -48,12 +48,6 @@ class Payment {
      * @var string $transactionReference
      */
     protected $transactionReference;
-    
-    /**
-     *
-     * @var integer $invoiceId
-     */
-    private $invoiceId;
     
     /**
      * Constructor
@@ -78,6 +72,54 @@ class Payment {
     }
 
     /**
+     * Get the transaction reference
+     * @return  string  The transaction reference of the payment
+     */
+    public function getTransactionReference() {
+        return $this->transactionReference;
+    }
+
+    /**
+     * Set the transaction reference
+     * @param   string  $transactionReference The transaction reference to set
+     */
+    public function setTransactionReference($transactionReference) {
+        $this->transactionReference = $transactionReference;
+    }
+
+    /**
+     * Get the payment amount
+     * @return float
+     */
+    public function getAmount() {
+        return $this->amount;
+    }
+
+    /**
+     * Set the payment amount
+     * @param   float   $amount The amount the payment to set to
+     */
+    public function setAmount($amount) {
+        $this->amount = $amount;
+    }
+
+    /**
+     * Get the payment date of the payment
+     * @return  DateTime    The date the payment was made
+     */
+    public function getDate() {
+        return $this->date;
+    }
+
+    /**
+     * Set the date of the payment
+     * @param   DateTime    The date the payment was made
+     */
+    public function setDate($date) {
+        $this->date = $date;
+    }
+
+    /**
      * Get the invoice
      * 
      * @return \Cx\Modules\Order\Model\Entity\Invoice $invoice
@@ -93,23 +135,5 @@ class Payment {
      */
     public function setInvoice(Invoice $invoice) {
         $this->invoice = $invoice;
-    }
-    
-    /**
-     * Set the invoiceId
-     * 
-     * @param integer $invoiceId
-     */
-    public function setInvoiceId($invoiceId) {
-        $this->invoiceId = $invoiceId;
-    }
-    
-    /**
-     * Get the invoiceId
-     * 
-     * @return integer $invoiceId
-     */
-    public function getInvoiceId() {
-        return $this->invoiceId;
     }
 }

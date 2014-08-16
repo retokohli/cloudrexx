@@ -14,8 +14,6 @@ Cx\Modules\Order\Model\Entity\Payment:
        type: decimal
     transactionReference:
         type: string
-    invoiceId:
-       type: integer
        
   manyToOne: # owning side
     invoice:
