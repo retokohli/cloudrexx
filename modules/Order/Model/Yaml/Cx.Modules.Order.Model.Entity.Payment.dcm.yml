@@ -2,19 +2,22 @@ Cx\Modules\Order\Model\Entity\Payment:
   type: entity
   repositoryClass: Cx\Modules\Order\Model\Repository\PaymentRepository
   table: module_order_payment
+
   id:
     id:
       type: integer
       generator:
         strategy: AUTO
+
   fields:
     date:
-       type: string
+      type: string
     amount:
-       type: decimal
-    transaction_reference:
-        type: string
-       
+      type: decimal
+    transactionReference:
+      type: string
+      column: transaction_reference
+
   manyToOne: # owning side
     invoice:
       targetEntity: Cx\Modules\Order\Model\Entity\Invoice

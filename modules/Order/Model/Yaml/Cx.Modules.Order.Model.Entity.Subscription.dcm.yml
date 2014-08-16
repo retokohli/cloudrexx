@@ -2,18 +2,22 @@ Cx\Modules\Order\Model\Entity\Subscription:
   type: entity
   repositoryClass: Cx\Modules\Order\Model\Repository\SubscriptionRepository
   table: module_order_subscription
+
   id:
     id:
       type: integer
       generator:
         strategy: AUTO
+
   fields:
-    payment_type:
-       type: string
-       length: 12
-    product_id:
-       type: integer
-       
+    paymentType:
+      type: string
+      length: 12
+      column: payment_type
+    productId:
+      type: integer
+      column: product_id
+
   manyToOne: # owning side
     order:
       targetEntity: Cx\Modules\Order\Model\Entity\Order

@@ -32,11 +32,6 @@ class Subscription extends \Cx\Model\Base\EntityBase {
     protected $order;
     
     /**
-     * @var Cx\Modules\Order\Model\Entity\Product 
-     */
-    protected $product;
-    
-    /**
      * @var integer $productId
      */
     protected $productId;
@@ -99,24 +94,6 @@ class Subscription extends \Cx\Model\Base\EntityBase {
      */
     public function getOrder() {
         return $this->order;
-    }
-    
-    /**
-     * Set the product
-     * 
-     * @param type $product
-     */
-    public function setProduct($product) {
-        $this->product = $product;
-    }
-    
-    /**
-     * Get the product
-     * 
-     * @return type
-     */
-    public function getProduct() {
-        return $this->product;
     }
     
     /**

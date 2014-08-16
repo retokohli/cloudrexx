@@ -27,9 +27,9 @@ class Order extends \Cx\Model\Base\EntityBase {
     protected $id;
     
     /**
-     * @var integer $contact
+     * @var integer $contactId
      */
-    protected $contact;
+    protected $contactId;
 
     /**
      * @var array $subscriptions
@@ -66,21 +66,21 @@ class Order extends \Cx\Model\Base\EntityBase {
     }
 
     /**
-     * Set the contact
+     * Set the contactId
      *
-     * @param integer $contact
+     * @param integer $contactId
      */
-    public function setContact($contact) {
-        $this->contact = $contact;
+    public function setContactId($contactId) {
+        $this->contactId = $contactId;
     }
     
     /**
-     * get the contact
+     * get the contactId
      *
-     * @return integer $contact
+     * @return integer $contactId
      */
-    public function getContact() {
-        return $this->contact;
+    public function getContactId() {
+        return $this->contactId;
     }
 
     /**
