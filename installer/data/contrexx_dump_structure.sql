@@ -3478,6 +3478,7 @@ SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_order_order` (
   `id` int(11) NOT NULL auto_increment,
+  `contact_id` int(10) unsigned default NULL,
   PRIMARY KEY  (`id`)
 ) ENGINE=InnoDB;
 SET character_set_client = @saved_cs_client;
