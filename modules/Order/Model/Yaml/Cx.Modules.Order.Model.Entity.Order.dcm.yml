@@ -1,7 +1,7 @@
 Cx\Modules\Order\Model\Entity\Order:
   type: entity
   repositoryClass: Cx\Modules\Order\Model\Repository\OrderRepository
-  table: module_order_orders
+  table: module_order_order
   id:
     id:
       type: integer

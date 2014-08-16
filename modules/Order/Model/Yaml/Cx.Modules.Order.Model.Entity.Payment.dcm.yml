@@ -1,7 +1,7 @@
 Cx\Modules\Order\Model\Entity\Payment:
   type: entity
   repositoryClass: Cx\Modules\Order\Model\Repository\PaymentRepository
-  table: module_order_payments
+  table: module_order_payment
   id:
     id:
       type: integer
@@ -12,7 +12,7 @@ Cx\Modules\Order\Model\Entity\Payment:
        type: string
     amount:
        type: decimal
-    transactionReference:
+    transaction_reference:
         type: string
        
   manyToOne: # owning side
@@ -20,6 +20,6 @@ Cx\Modules\Order\Model\Entity\Payment:
       targetEntity: Cx\Modules\Order\Model\Entity\Invoice
       inversedBy: payments
       joinColumn:
-        name: invoiceId
+        name: invoice_id
         referencedColumnName: id
         cascade: [remove]

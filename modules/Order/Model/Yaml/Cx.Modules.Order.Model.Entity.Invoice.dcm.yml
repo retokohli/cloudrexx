@@ -1,7 +1,7 @@
 Cx\Modules\Order\Model\Entity\Invoice:
   type: entity
   repositoryClass: Cx\Modules\Order\Model\Repository\InvoiceRepository
-  table: module_order_invoices
+  table: module_order_invoice
   id:
     id:
       type: integer
@@ -19,6 +19,6 @@ Cx\Modules\Order\Model\Entity\Invoice:
       targetEntity: Cx\Modules\Order\Model\Entity\Order
       inversedBy: invoices
       joinColumn:
-        name: orderId
+        name: order_id
         referencedColumnName: id
         cascade: [remove]
