@@ -101,7 +101,8 @@ class DataSet implements \Iterator {
                 $identifiers = implode('/', $identifiers);
             }
             $key = $identifiers;
-            foreach ($em->getClassMetadata(get_class($object))->getColumnNames() as $field) {
+            foreach ($em->getClassMetadata(get_class($object))->getColumnNames() as $column) {
+                $field = $em->getClassMetadata(get_class($object))->getFieldName($column);
                 $value = $em->getClassMetadata(get_class($object))->getFieldValue($object, $field);
                 if ($value instanceof \DateTime) {
                     $value = $value->format('d.M.Y H:i:s');

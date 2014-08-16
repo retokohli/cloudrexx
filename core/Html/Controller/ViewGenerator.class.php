@@ -74,18 +74,18 @@ class ViewGenerator {
                     }               
                     $entityObject = \Env::get('em')->getClassMetadata($entityNS);  
                     $primaryKeyName =$entityObject->getSingleIdentifierFieldName(); //get primary key name  
-                    $getAllField = $entityObject->getColumnNames(); //get all field names                 
+                    $entityColumnNames = $entityObject->getColumnNames(); //get all field names                 
 
                     // create new entity without calling the constructor
 // TODO: this might break certain entities!
                     $entityObj = $entityObject->newInstance();
-                    
-                    foreach($getAllField as $entity) {
-                        if (isset($_POST[$entity]) && $entity!=$primaryKeyName) {
-                            $name='set'.$entity;
-                            $entityObj->$name(contrexx_input2raw($_POST[$entity]));
+                    foreach($entityColumnNames as $column) {
+                        $field = $entityObject->getFieldName($column);
+                        if (isset($_POST[$field]) && $field != $primaryKeyName) {
+                            $entityObj->{'set'.ucfirst($field)}(contrexx_input2raw($_POST[$field]));
                         }
                     }
+\DBG::dump($entityObj);
 
                     // store single-valued-associations
                     $associationMappings = \Env::get('em')->getClassMetadata($entityNS)->getAssociationMappings();
@@ -286,11 +286,12 @@ class ViewGenerator {
             $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
             $title = sprintf($_CORELANG['TXT_CORE_ADD_ENTITY'], $entityTitle);
             $actionUrl->setParam('add', 1);
-            $getAllField = $entityObject->getColumnNames(); //get all field names  
-            if (empty($getAllField)) return false;
-            foreach($getAllField as $name) {
-                if ($name!=$primaryKeyName) {
-                    $renderArray[$name]="";
+            $entityColumnNames = $entityObject->getColumnNames(); //get all field names  
+            if (empty($entityColumnNames)) return false;
+            foreach($entityColumnNames as $column) {
+                $field = $entityObject->getFieldName($column);
+                if ($field != $primaryKeyName) {
+                    $renderArray[$field]="";
                 }
             }
             // load single-valued-associations
