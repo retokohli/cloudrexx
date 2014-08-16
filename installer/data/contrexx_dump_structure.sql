@@ -3466,6 +3466,47 @@ CREATE TABLE `contrexx_module_newsletter_user_title` (
 SET character_set_client = @saved_cs_client;
 SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_order_invoice` (
+  `id` int(11) NOT NULL auto_increment,
+  `order_id` int(11) default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `order_id` (`order_id`),
+  CONSTRAINT `contrexx_module_order_invoice_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `contrexx_module_order_order` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_order_order` (
+  `id` int(11) NOT NULL auto_increment,
+  PRIMARY KEY  (`id`)
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_order_payment` (
+  `id` int(11) NOT NULL auto_increment,
+  `date` varchar(255) NOT NULL,
+  `amount` decimal(10,0) NOT NULL,
+  `transaction_reference` varchar(255) NOT NULL,
+  `invoice_id` int(11) default NULL,
+  PRIMARY KEY  (`id`),
+  KEY `invoice_id` (`invoice_id`)
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
+CREATE TABLE `contrexx_module_order_subscription` (
+  `id` int(11) NOT NULL auto_increment,
+  `payment_type` varchar(12) NOT NULL,
+  `order_id` int(11) default NULL,
+  `product_id` int(11) NOT NULL,
+  PRIMARY KEY  (`id`),
+  KEY `order_id` (`order_id`),
+  CONSTRAINT `contrexx_module_order_subscription_ibfk_1` FOREIGN KEY (`order_id`) REFERENCES `contrexx_module_order_order` (`id`) ON DELETE SET NULL ON UPDATE NO ACTION
+) ENGINE=InnoDB;
+SET character_set_client = @saved_cs_client;
+SET @saved_cs_client     = @@character_set_client;
+SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_podcast_category` (
   `id` int(10) unsigned NOT NULL auto_increment,
   `title` varchar(255) NOT NULL default '',
