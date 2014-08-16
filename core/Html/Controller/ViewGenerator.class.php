@@ -9,6 +9,7 @@ namespace Cx\Core\Html\Controller;
  * Description of ViewGenerator
  *
  * @author ritt0r
+ * @todo    Refactor
  */
 class ViewGenerator {
     protected $object;
@@ -76,7 +77,7 @@ class ViewGenerator {
                     $getAllField = $entityObject->getColumnNames(); //get all field names                 
 
                     // create new entity without calling the constructor
-    // TODO: this might break certain entities!
+// TODO: this might break certain entities!
                     $entityObj = $entityObject->newInstance();
                     
                     foreach($getAllField as $entity) {
@@ -85,6 +86,21 @@ class ViewGenerator {
                             $entityObj->$name(contrexx_input2raw($_POST[$entity]));
                         }
                     }
+
+                    // store single-valued-associations
+                    $associationMappings = \Env::get('em')->getClassMetadata($entityNS)->getAssociationMappings();
+                    $classMethods = get_class_methods($entityObj);
+                    foreach ($associationMappings as $field => $associationMapping) {
+                        if (   !empty($_POST[$field])
+                            && \Env::get('em')->getClassMetadata($entityNS)->isSingleValuedAssociation($field)
+                            && in_array('set'.ucfirst($field), $classMethods)
+                        ) {
+                            $col = $associationMapping['joinColumns'][0]['referencedColumnName'];
+                            $association = \Env::get('em')->getRepository($associationMapping['targetEntity'])->findOneBy(array($col => $_POST[$field]));
+                            $entityObj->{'set'.ucfirst($field)}($association);
+                        }
+                    }
+
                     if ($entityObj instanceof \Cx\Core\Model\Model\Entity\YamlEntity) {
                         $entityRepository = \Env::get('em')->getRepository($entityNS);
                         $entityRepository->add($entityObj);
@@ -102,11 +118,11 @@ class ViewGenerator {
                     \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
                 }
             }
+
             /** 
              *  postEdit event
              *  execute edit if entry is a doctrine entity (or execute callback if specified in configuration)
              */
-           // $entityId = (isset($_POST['editid'])? contrexx_input2raw($_POST['editid']):null);
             if (isset($_POST['editid'])) {
                 $entityId = contrexx_input2raw($_POST['editid']);
                 // render form for editid
@@ -129,25 +145,29 @@ class ViewGenerator {
                     \Message::add('Cannot save, Invalid entry', \Message::CLASS_ERROR);
                     return;
                 }
-                $isUpdate=false; 
                 $updateArray=array();
                 $entityObj = \Env::get('em')->getClassMetadata($entityNS);
                 $primaryKeyName =$entityObj->getSingleIdentifierFieldName(); //get primary key name  
-                //$getAllField = $entityObj->getColumnNames(); //get all field names 
-                $id=$entityObject[$primaryKeyName]; //get primary key value  
+                $associationMappings = \Env::get('em')->getClassMetadata($entityNS)->getAssociationMappings();
                 $classMethods = get_class_methods($entityObj->newInstance());
                 foreach ($entityObject as $name=>$value) {
                     if (isset ($_POST[$name])) { 
-                        if ($_POST[$name] != $value) {
-                            $isUpdate=true;
-                            if (in_array('set'.ucfirst($name), $classMethods)) {
-                                $updateArray['set'.ucfirst($name)]=contrexx_input2raw($_POST[$name]);
-                            }
+                        if (   \Env::get('em')->getClassMetadata($entityNS)->isSingleValuedAssociation($name)
+                            && in_array('set'.ucfirst($name), $classMethods)
+                        ) {
+                            // store single-valued-associations
+                            $col = $associationMappings[$name]['joinColumns'][0]['referencedColumnName'];
+                            $association = \Env::get('em')->getRepository($associationMappings[$name]['targetEntity'])->findOneBy(array($col => $_POST[$name]));
+                            $updateArray['set'.ucfirst($name)] = $association;
+                        } elseif (   $_POST[$name] != $value
+                                  && in_array('set'.ucfirst($name), $classMethods)
+                        ) { 
+                            $updateArray['set'.ucfirst($name)]=contrexx_input2raw($_POST[$name]);
                         } 
                     }
                 }
-                if (!empty($updateArray) && !empty($id) 
-                    && !empty($isUpdate)) {
+                $id = $entityObject[$primaryKeyName]; //get primary key value  
+                if (!empty($updateArray) && !empty($id)) {
                     $entityObj = \Env::get('em')->getRepository($entityNS)->find($id);
                     if (!empty($entityObj)) {
                         foreach($updateArray as $key=>$value) {
@@ -167,8 +187,8 @@ class ViewGenerator {
                 $actionUrl->setParam('editid', null);
                 \Cx\Core\Csrf\Controller\Csrf::redirect($actionUrl);
             }
+
             /**
-             * 
              * trigger pre- and postRemove event
              * execute remove if entry is a doctrine entity (or execute callback if specified in configuration)
              */
@@ -248,59 +268,58 @@ class ViewGenerator {
     }
     
     protected function renderFormForEntry($entityId) {
+        global $_CORELANG;
+
         $renderArray=array();
+        $entityTitle = isset($this->options['entityName']) ? $this->options['entityName'] : $_CORELANG['TXT_CORE_ENTITY'];
         if ($this->object instanceof \Cx\Core_Modules\Listing\Model\Entity\DataSet) {
             $entityClass = $this->object->getDataType();
-            $entityObject = \Env::get('em')->getClassMetaData($entityClass);
-            $primaryKeyName = $entityObject->getSingleIdentifierFieldName(); //get primary key name
-            if (!empty($_GET['add']) && !empty($this->options['functions']['add'])) {
-                $cancelUrl = clone \Env::get('cx')->getRequest()->getUrl();
-                $cancelUrl->setParam('add', null);
-                $this->options['cancelUrl'] = $cancelUrl;
-                $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
-                $title='Add Entity';
-                $actionUrl->setParam('add', 1);
-                $getAllField = $entityObject->getColumnNames(); //get all field names  
-                if (empty($getAllField)) return false;
-                foreach($getAllField as $name) {
-                    if ($name!=$primaryKeyName) {
-                        $renderArray[$name]="";    
-                    }
-                }
-            } else {
-                if (!$this->object->entryExists($entityId)) return false;
-                $cancelUrl = clone \Env::get('cx')->getRequest()->getUrl();
-                $cancelUrl->setParam('editid', null);
-                $this->options['cancelUrl'] = $cancelUrl;
-                $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
-                $title='Edit Entity';
-                $actionUrl->setParam('editid', null);
-                $renderObject = $this->object->getEntry($entityId);
-                if (empty($renderObject)) return false;
-                foreach($renderObject as $name=>$value) {
-                    if ($name!=$primaryKeyName) {
-                        $renderArray[$name]=$value;
-                    }
-                }
-            }
         } else {
             $entityClass = get_class($this->object);
-            $entityObject = \Env::get('em')->getClassMetadata($entityClass);  
-            $primaryKeyName =$entityObject->getSingleIdentifierFieldName(); //get primary key name
+        }
+        $entityObject = \Env::get('em')->getClassMetadata($entityClass);
+        $primaryKeyName = $entityObject->getSingleIdentifierFieldName(); //get primary key name
+        if (!$entityId && !empty($this->options['functions']['add'])) {
             $cancelUrl = clone \Env::get('cx')->getRequest()->getUrl();
             $cancelUrl->setParam('add', null);
             $this->options['cancelUrl'] = $cancelUrl;
             $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
-            $title='Add Entity';
+            $title = sprintf($_CORELANG['TXT_CORE_ADD_ENTITY'], $entityTitle);
             $actionUrl->setParam('add', 1);
             $getAllField = $entityObject->getColumnNames(); //get all field names  
             if (empty($getAllField)) return false;
             foreach($getAllField as $name) {
                 if ($name!=$primaryKeyName) {
-                    $renderArray[$name]="";    
+                    $renderArray[$name]="";
                 }
             }
-        }        
+            // load single-valued-associations
+            $associationMappings = \Env::get('em')->getClassMetadata($entityClass)->getAssociationMappings();
+            $classMethods = get_class_methods($entityObject->newInstance());
+            foreach ($associationMappings as $field => $associationMapping) {
+                if (   \Env::get('em')->getClassMetadata($entityClass)->isSingleValuedAssociation($field)
+                    && in_array('set'.ucfirst($field), $classMethods)
+                ) {
+                    $renderArray[$field]= new $associationMapping['targetEntity']();
+                }
+            }
+        } elseif ($entityId && $this->object->entryExists($entityId)) {
+            $cancelUrl = clone \Env::get('cx')->getRequest()->getUrl();
+            $cancelUrl->setParam('editid', null);
+            $this->options['cancelUrl'] = $cancelUrl;
+            $actionUrl = clone \Env::get('cx')->getRequest()->getUrl();
+            $title = sprintf($_CORELANG['TXT_CORE_EDIT_ENTITY'], $entityTitle);
+            $actionUrl->setParam('editid', null);
+            $renderObject = $this->object->getEntry($entityId);
+            if (empty($renderObject)) return false;
+            foreach($renderObject as $name=>$value) {
+                if ($name!=$primaryKeyName) {
+                    $renderArray[$name]=$value;
+                }
+            }
+        } else {
+            return false;
+        }
         return new FormGenerator($renderArray, $actionUrl,$title, $this->options);
     }
     

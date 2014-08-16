@@ -86,6 +86,8 @@ class FormElement extends HtmlElement {
     }
     
     public function render() {
+        global $_CORELANG;
+
         // if no child with name input and type submit is present, add one
         $hasSubmit = false;
         foreach ($this->getChildren() as $child) {
@@ -99,11 +101,12 @@ class FormElement extends HtmlElement {
             $submitDiv->setAttribute('class', 'actions');
             $submit = new HtmlElement('input');
             $submit->setAttribute('type', 'submit');
+            $submit->setAttribute('value', $_CORELANG['TXT_SAVE']);
             $submitDiv->addChild($submit);
             if(!empty($this->cancelUrl)){
                 $cancel = new HtmlElement('input');
                 $cancel->setAttribute('type', 'button');
-                $cancel->setAttribute('value', 'cancel');
+                $cancel->setAttribute('value', $_CORELANG['TXT_CANCEL']);
                 $cancel->setAttribute('onclick', "location.href='".$this->cancelUrl."&csrf=".\Cx\Core\Csrf\Controller\Csrf::code()."'");
                 $submitDiv->addChild($cancel);
             }

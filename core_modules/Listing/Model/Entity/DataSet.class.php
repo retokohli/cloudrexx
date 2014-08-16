@@ -108,6 +108,14 @@ class DataSet implements \Iterator {
                 }
                 $data[$field] = $value;
             }
+            $associationMappings = $em->getClassMetadata(get_class($object))->getAssociationMappings();
+            foreach ($associationMappings as $field => $associationMapping) {
+                $classMethods = get_class_methods($object);
+                $methodNameToFetchAssociation = 'get'.ucfirst($field);
+                if (in_array($methodNameToFetchAssociation, $classMethods)) {
+                    $data[$field] = $object->$methodNameToFetchAssociation();
+                }
+            }
             $data['virtual'] = $object->isVirtual();
             return $data;
         }
