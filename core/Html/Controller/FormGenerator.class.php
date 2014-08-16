@@ -39,7 +39,13 @@ class FormGenerator {
         foreach ($entity as $field=>$value) {
             $type = gettype($value);
             if (is_object($value)) {
-                $type = get_class($value);
+                if ($value instanceof \Cx\Model\Base\EntityBase) {
+                    $type = 'Cx\Model\Base\EntityBase';
+                } elseif ($value instanceof \Doctrine\Common\Collections\Collection) {
+                    continue;
+                } else {
+                    $type = get_class($value);
+                }
             }//*/
             $length = 0;
             /*if (isset($metadata->fieldMappings[$field]['length'])) {
@@ -62,20 +68,33 @@ class FormGenerator {
             /*$element = $this->getDataElement($field, $type, $length, $value, $fieldOptions);
             $element->setAttribute('id', 'form-X-' . $field);*/
             $dataElement = $this->getDataElement($field, $type, $length, $value, $fieldOptions);
+            if (empty($dataElement)) {
+                continue;
+            }
             $dataElement->setAttribute('id', 'form-X-' . $field);
-            $this->form->addChild(static::getDataElementGroup($field, $dataElement));
+            $this->form->addChild(static::getDataElementGroup($field, $dataElement, $fieldOptions));
         }
         if (isset($options['cancelUrl'])) {
             $this->form->cancelUrl =$options['cancelUrl'];
         }
     }
     
-    public static function getDataElementGroup($field, $dataElement) {
+    public static function getDataElementGroup($field, $dataElement, $fieldOptions = array()) {
+        global $_ARRAYLANG;
+
         $group = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
         $group->setAttribute('class', 'group');
         $label = new \Cx\Core\Html\Model\Entity\HtmlElement('label');
         $label->setAttribute('for', 'form-X-' . $field);
-        $label->addChild(new \Cx\Core\Html\Model\Entity\TextElement($field));
+        $fieldHeader = $field;
+        if (isset($fieldOptions['header'])) {
+            if (isset($_ARRAYLANG[$fieldOptions['header']])) {
+                $fieldHeader = $_ARRAYLANG[$fieldOptions['header']];
+            } else {
+                $fieldHeader = $fieldOptions['header'];
+            }
+        }
+        $label->addChild(new \Cx\Core\Html\Model\Entity\TextElement($fieldHeader));
         $group->addChild($label);
         $controls = new \Cx\Core\Html\Model\Entity\HtmlElement('div');
         $controls->setAttribute('class', 'controls');
@@ -132,7 +151,22 @@ class FormGenerator {
                 $inputNumber->setAttribute('type', 'number');
                 return $inputNumber;
                 break;
-            case '\Country':
+            case 'Cx\Model\Base\EntityBase':
+                $entityClass = get_class($value);
+                $entities = \Env::get('em')->getRepository($entityClass)->findAll();
+                $primaryKeyName = \Env::get('em')->getClassMetadata($entityClass)->getSingleIdentifierFieldName();
+                $selected = \Env::get('em')->getClassMetadata($entityClass)->getFieldValue($value, $primaryKeyName);
+                foreach ($entities as $entity) {
+                    $arrEntities[\Env::get('em')->getClassMetadata($entityClass)->getFieldValue($entity, $primaryKeyName)] = $entity;
+                }
+                $select = new \Cx\Core\Html\Model\Entity\DataElement(
+                    $name,
+                    \Html::getOptions($arrEntities, $selected),
+                    \Cx\Core\Html\Model\Entity\DataElement::TYPE_SELECT
+                );
+                return $select;
+                break;
+            case 'Country':
                 // this is for customizing only:
                 $data = \Cx\Core\Country\Controller\Country::getNameById($value);
                 if (empty($data)) {
