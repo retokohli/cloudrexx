@@ -139,6 +139,7 @@ namespace Cx\Core
             // add static modules
             $arrCmInstalledModules[] = 'Block';
             $arrCmInstalledModules[] = 'Crm';
+            $arrCmInstalledModules[] = 'Order';
             $arrCmActiveModules[] = 'Block';
             $arrCmInstalledModules[] = 'upload';
             $arrCmActiveModules[] = 'upload';
