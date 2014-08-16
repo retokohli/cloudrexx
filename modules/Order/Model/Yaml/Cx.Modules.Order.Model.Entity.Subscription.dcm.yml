@@ -1,17 +1,17 @@
 Cx\Modules\Order\Model\Entity\Subscription:
   type: entity
   repositoryClass: Cx\Modules\Order\Model\Repository\SubscriptionRepository
-  table: module_order_subscriptions
+  table: module_order_subscription
   id:
     id:
       type: integer
       generator:
         strategy: AUTO
   fields:
-    paymentType:
+    payment_type:
        type: string
        length: 12
-    productId:
+    product_id:
        type: integer
        
   manyToOne: # owning side
@@ -19,6 +19,6 @@ Cx\Modules\Order\Model\Entity\Subscription:
       targetEntity: Cx\Modules\Order\Model\Entity\Order
       inversedBy: subscriptions
       joinColumn:
-        name: orderId
+        name: order_id
         referencedColumnName: id
         cascade: [remove]
