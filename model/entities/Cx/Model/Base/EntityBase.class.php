@@ -107,4 +107,8 @@ class EntityBase {
         if(count($errors) > 0)
             throw new ValidationException($errors);
     }
+
+    public function __toString() {
+        return strval($this->getId());
+    }
 }
