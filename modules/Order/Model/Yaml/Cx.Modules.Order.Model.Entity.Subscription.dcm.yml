@@ -11,8 +11,6 @@ Cx\Modules\Order\Model\Entity\Subscription:
     paymentType:
        type: string
        length: 12
-    orderId:
-       type: integer
     productId:
        type: integer
        

@@ -62,7 +62,11 @@ class SubscriptionController extends \Cx\Core\Core\Model\Entity\Controller {
     {
         global $_ARRAYLANG;
         
-        $view = new \Cx\Core\Html\Controller\ViewGenerator($this->subscriptionRepo->findAll(), array(
+        $subscriptions = $this->subscriptionRepo->findAll();
+        if (empty($subscriptions)) {
+            $subscriptions = new \Cx\Modules\Order\Model\Entity\Subscription();
+        }
+        $view = new \Cx\Core\Html\Controller\ViewGenerator($subscriptions, array(
             'header'    => $_ARRAYLANG['TXT_MODULE_ORDER_ACT_SUBSCRIPTION'],
             'functions' => array(
                 'add'       => true,

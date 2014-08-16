@@ -19,27 +19,22 @@ namespace Cx\Modules\Order\Model\Entity;
  * @package     contrexx
  * @subpackage  module_order
  */
-class Invoice {
+class Invoice extends \Cx\Model\Base\EntityBase {
     /**
      *
      * @var integer $id
      */
-    private $id;
+    protected $id;
     
     /**
      * @var Cx\Modules\Order\Model\Entity\Order
      */
-    public $order;
+    protected $order;
     
     /**
      * @var Cx\Modules\Order\Model\Entity\Payment
      */
-    public $payments;
-    
-    /**
-     * @var integer $orderId
-     */
-    private $orderId;
+    protected $payments;
     
     /**
      * Constructor
@@ -108,23 +103,5 @@ class Invoice {
      */
     public function setPayments($payments) {
         $this->payments[] = $payments;
-    }
-    
-    /**
-     * Set the orderId
-     * 
-     * @param integer $orderId
-     */
-    public function setOrderId($orderId) {
-        $this->orderId = $orderId;
-    }
-    
-    /**
-     * Get the orderId
-     * 
-     * @return integer $orderId
-     */
-    public function getOrderId() {
-        return $this->orderId;
     }
 }

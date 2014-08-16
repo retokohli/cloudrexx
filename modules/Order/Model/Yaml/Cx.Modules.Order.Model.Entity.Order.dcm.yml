@@ -8,6 +8,8 @@ Cx\Modules\Order\Model\Entity\Order:
       generator:
         strategy: AUTO
   fields:
+    contact:
+        type: integer
 
   oneToMany: # inverse side
     subscriptions:

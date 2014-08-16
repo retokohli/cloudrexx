@@ -19,12 +19,12 @@ namespace Cx\Modules\Order\Model\Entity;
  * @package     contrexx
  * @subpackage  module_order
  */
-class Order {
+class Order extends \Cx\Model\Base\EntityBase {
     /**
      *
      * @var integer $id
      */
-    private $id;
+    protected $id;
     
     /**
      * @var integer $contact
@@ -86,9 +86,9 @@ class Order {
     /**
      * Add the subscription
      * 
-     * @param \Cx\Modules\Order\Model\Entity\subscription $subscription
+     * @param \Cx\Modules\Order\Model\Entity\Subscription $subscription
      */
-    public function addSubscription(subscription $subscription) {
+    public function addSubscription(Subscription $subscription) {
         $subscription->setOrder($this);
         $this->setSubscriptions($subscription); 
     }

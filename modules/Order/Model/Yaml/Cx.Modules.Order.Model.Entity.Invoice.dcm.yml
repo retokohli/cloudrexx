@@ -8,8 +8,6 @@ Cx\Modules\Order\Model\Entity\Invoice:
       generator:
         strategy: AUTO
   fields:
-    orderId:
-       type: integer
        
   oneToMany: # inverse side
     payments:

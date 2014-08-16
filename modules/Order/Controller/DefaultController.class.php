@@ -74,7 +74,11 @@ class DefaultController extends \Cx\Core\Core\Model\Entity\Controller {
     {
         global $_ARRAYLANG;
         
-        $view = new \Cx\Core\Html\Controller\ViewGenerator($this->orderRepository->findAll(), array(
+        $orders = $this->orderRepository->findAll();
+        if (empty($orders)) {
+            $orders = new \Cx\Modules\Order\Model\Entity\Order();
+        }
+        $view = new \Cx\Core\Html\Controller\ViewGenerator($orders, array(
             'header'    => $_ARRAYLANG['TXT_MODULE_ORDER_ACT_DEFAULT'],
             'functions' => array(
                 'add'       => true,

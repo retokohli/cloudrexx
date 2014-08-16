@@ -62,7 +62,11 @@ class PaymentController extends \Cx\Core\Core\Model\Entity\Controller {
     {
         global $_ARRAYLANG;
         
-        $view = new \Cx\Core\Html\Controller\ViewGenerator($this->paymentRepo->findAll(), array(
+        $payments = $this->paymentRepo->findAll();
+        if (empty($payments)) {
+            $payments = new \Cx\Modules\Order\Model\Entity\Payment();
+        }
+        $view = new \Cx\Core\Html\Controller\ViewGenerator($payments, array(
             'header'    => $_ARRAYLANG['TXT_MODULE_ORDER_ACT_PAYMENT'],
             'functions' => array(
                 'add'       => true,
