@@ -698,6 +698,19 @@ textarea.cke_source {
     background: url(../Media/navigation_level_1_189_hover.png) no-repeat center 7px;
 }
 
+#navigation_level_1_212 li .icon_2 {
+    background: url(../Media/navigation_level_1_212.png) no-repeat center 7px;
+}
+
+#navigation_level_1_212 li.nav_upgrade .icon_2 {
+    background: url(../Media/navigation_level_1_212_inactive.png) no-repeat center 7px;
+}
+
+#navigation_level_1_212 li:hover .icon_2, #navigation_level_1_212 li:focus .icon_2,
+#navigation_level_1_212 li:active .icon_2, #navigation_level_1_212 li.active .icon_2 {
+    background: url(../Media/navigation_level_1_212_hover.png) no-repeat center 7px;
+}
+
 .navigation_level_1 li .name {
     float: left;
     width: 140px;
