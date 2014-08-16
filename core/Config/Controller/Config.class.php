@@ -57,7 +57,7 @@ class Config
             <a href="?cmd=Config&amp;act=smtp" class="'.($this->act == 'smtp' ? 'active' : '').'">'.$_ARRAYLANG['TXT_EMAIL_SERVER'].'</a>
             <a href="index.php?cmd=Config&amp;act=image" class="'.($this->act == 'image' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_IMAGE'].'</a>
             <a href="index.php?cmd=license">'.$_ARRAYLANG['TXT_LICENSE'].'</a>
-            <a href="index.php?cmd=Config&amp;act=Domain" class="'.($this->act == 'Domain' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_DOMAIN'].'</a>'
+            <a href="index.php?cmd=Config&amp;act=Domain" class="'.($this->act == 'Domain' ? 'active' : '').'">'.$_ARRAYLANG['TXT_SETTINGS_DOMAINS'].'</a>'
         );
     }
 
@@ -1045,13 +1045,36 @@ class Config
     public function showDomains() {
         global $_ARRAYLANG, $objTemplate;
         
-        $this->strPageTitle = $_ARRAYLANG['TXT_SETTINGS_DOMAIN'];
+        $this->strPageTitle = $_ARRAYLANG['TXT_SETTINGS_DOMAINS'];
         $objTemplate->addBlockfile('ADMIN_CONTENT', 'settings_domain', 'domains.html');
         
         $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
         $domains = $domainRepository->findAll();
         $view = new \Cx\Core\Html\Controller\ViewGenerator($domains, array(
-            'header'    => $_ARRAYLANG['TXT_SETTINGS_DOMAIN'],
+            'header'    => $_ARRAYLANG['TXT_SETTINGS_DOMAINS'],
+            'entityName'    => $_ARRAYLANG['TXT_SETTINGS_DOMAIN'],
+            'fields'    => array(
+                'name'  => array(
+                    'header' => $_ARRAYLANG['TXT_NAME'],
+                    'table' => array(
+                        'parse' => function($value) {
+                            static $mainDomainName;
+                            if (empty($mainDomainName)) {
+                                $domainRepository = new \Cx\Core\Net\Model\Repository\DomainRepository();
+                                $mainDomainName = $domainRepository->getMainDomain()->getName();
+                            }
+                            $mainDomainIcon = '';
+                            if ($value == $mainDomainName) {
+                                $mainDomainIcon = ' <img src="/core/Core/View/Media/icons/Home.png" title="Main Domain" />';
+                            }
+                            return $value.$mainDomainIcon;
+                        },
+                    ),
+                ),
+                'id'    => array(
+                    'showOverview' => false,
+                ),
+            ),
             'functions' => array(
                 'add'       => true,
                 'edit'      => true,
