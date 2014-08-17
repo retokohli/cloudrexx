@@ -11,7 +11,7 @@ Cx\Modules\Order\Model\Entity\Payment:
 
   fields:
     date:
-      type: string
+      type: datetime
     amount:
       type: decimal
     transactionReference:

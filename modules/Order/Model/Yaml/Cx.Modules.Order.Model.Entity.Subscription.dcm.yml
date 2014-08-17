@@ -10,13 +10,29 @@ Cx\Modules\Order\Model\Entity\Subscription:
         strategy: AUTO
 
   fields:
-    paymentType:
-      type: string
-      length: 12
-      column: payment_type
-    productId:
+    expirationDate:
+      type: datetime
+      column: expiration_date
+    productEntityId:
       type: integer
-      column: product_id
+      column: product_entity_id
+    paymentAmount:
+      type: decimal
+      column: payment_amount
+    paymentState:
+      type: boolean
+      column: payment_state
+    renewalUnit:
+      type: string
+      length: 5
+      column: renewal_unit
+    renewalQuantifier:
+      type: integer
+      column: renewal_quantifier
+    renewalDate:
+      type: datetime
+      column: renewal_date
+      nullable: true
 
   manyToOne: # owning side
     order:
@@ -26,3 +42,11 @@ Cx\Modules\Order\Model\Entity\Subscription:
         name: order_id
         referencedColumnName: id
         cascade: [remove]
+    product:
+      targetEntity: Cx\Modules\Pim\Model\Entity\Product
+      inversedBy: subscriptions
+      joinColumn:
+        name: product_id
+        referencedColumnName: id
+        cascade: [remove]
+
