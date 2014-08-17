@@ -183,6 +183,12 @@ class CxCoreContentManagerModelEntityNodeProxy extends \Cx\Core\ContentManager\M
         return parent::isVirtual();
     }
 
+    public function __toString()
+    {
+        $this->_load();
+        return parent::__toString();
+    }
+
 
     public function __sleep()
     {
@@ -204,9 +210,5 @@ class CxCoreContentManagerModelEntityNodeProxy extends \Cx\Core\ContentManager\M
             unset($this->_entityPersister, $this->_identifier);
         }
         
-    }
-    
-    public function __toString() {
-        return strval($this->getId());
     }
 }
