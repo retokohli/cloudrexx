@@ -572,6 +572,8 @@ INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scop
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (214,212,'navigation','backend','TXT_MODULE_ORDER_SUBSCRIPTIONS',1,'index.php?cmd=Order&act=subscription','_self',93,2,185);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (215,212,'navigation','backend','TXT_MODULE_ORDER_INVOICES',1,'index.php?cmd=Order&act=invoice','_self',93,3,186);
 INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (216,212,'navigation','backend','TXT_MODULE_ORDER_PAYMENTS',1,'index.php?cmd=Order&act=payment','_self',93,4,187);
+INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (217,0,'group','backend','TXT_MODULE_PIM',1,'','_self',94,6,188);
+INSERT INTO `contrexx_backend_areas` (`area_id`, `parent_area_id`, `type`, `scope`, `area_name`, `is_active`, `uri`, `target`, `module_id`, `order_id`, `access_id`) VALUES (218,217,'navigation','backend','TXT_MODULE_PIM_PRODUCTS',1,'index.php?cmd=Pim&act=product','_self',94,1,188);
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (2,'Stats','core_module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (3,'Gallery','module');
 INSERT INTO `contrexx_component` (`id`, `name`, `type`) VALUES (4,'Newsletter','module');
