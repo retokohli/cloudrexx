@@ -39,7 +39,7 @@ class Payment extends \Cx\Model\Base\EntityBase {
     
     /**
      *
-     * @var float $amount
+     * @var double $amount
      */
     protected $amount;
     
@@ -52,7 +52,9 @@ class Payment extends \Cx\Model\Base\EntityBase {
     /**
      * Constructor
      */
-    public function __construct() {}
+    public function __construct() {
+        $this->date = new \DateTime();
+    }
     
     /**
      * Get the id
@@ -89,7 +91,7 @@ class Payment extends \Cx\Model\Base\EntityBase {
 
     /**
      * Get the payment amount
-     * @return float
+     * @return double
      */
     public function getAmount() {
         return $this->amount;
@@ -97,7 +99,7 @@ class Payment extends \Cx\Model\Base\EntityBase {
 
     /**
      * Set the payment amount
-     * @param   float   $amount The amount the payment to set to
+     * @param   double $amount The amount the payment to set to
      */
     public function setAmount($amount) {
         $this->amount = $amount;

@@ -32,12 +32,12 @@ class Order extends \Cx\Model\Base\EntityBase {
     protected $contactId;
 
     /**
-     * @var array $subscriptions
+     * @var \Doctrine\Common\Collections\ArrayCollection $subscriptions
      */
     protected $subscriptions;
 
     /**
-     * @var array $invoices
+     * @var \Doctrine\Common\Collections\ArrayCollection $invoices
      */
     protected $invoices;
 
@@ -46,6 +46,7 @@ class Order extends \Cx\Model\Base\EntityBase {
      */
     public function __construct() {
         $this->subscriptions = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->invoices = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -89,8 +90,7 @@ class Order extends \Cx\Model\Base\EntityBase {
      * @param \Cx\Modules\Order\Model\Entity\Subscription $subscription
      */
     public function addSubscription(Subscription $subscription) {
-        $subscription->setOrder($this);
-        $this->setSubscriptions($subscription); 
+        $this->subscriptions[] = $subscription; 
     }
     
     /**
@@ -108,7 +108,11 @@ class Order extends \Cx\Model\Base\EntityBase {
      * @param object $subscriptions
      */
     public function setSubscriptions($subscriptions) {
-        $this->subscriptions[] = $subscriptions;
+        $this->subscriptions = $subscriptions;
+    }
+
+    public function createSubscription($product, $subscriptionOptions) {
+        $this->addSubscription(new Subscription($product, $subscriptionOptions));
     }
     
     /**

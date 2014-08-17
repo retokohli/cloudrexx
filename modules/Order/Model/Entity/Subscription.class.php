@@ -1,5 +1,4 @@
 <?php
-
 /**
  * Class Subscription
  *
@@ -21,7 +20,6 @@ namespace Cx\Modules\Order\Model\Entity;
  */
 class Subscription extends \Cx\Model\Base\EntityBase {
     /**
-     *
      * @var integer $id
      */
     protected $id;
@@ -32,34 +30,41 @@ class Subscription extends \Cx\Model\Base\EntityBase {
     protected $order;
     
     /**
-     * @var integer $productId
+     * @var Cx\Modules\Pim\Model\Entity\Product
      */
-    protected $productId;
-    
-    /**
-     * @var string $paymentType
-     */
-    protected $paymentType;
-    
-    /**
-     * Payment type free
-     */
-    const PAYMENT_TYPE_FREE = 'free';
-    
-    /**
-     * Payment type one time
-     */
-    const PAYMENT_TYPE_ONE_TIME = 'oneTime';
-    
-    /**
-     * Payment type recurrent
-     */
-    const PAYMENT_TYPE_RECURRENT = 'recurrent';
+    protected $product;
+
+    protected $expirationDate = null;
+    protected $productEntityId = null;
+    protected $paymentAmount = null;
+    protected $paymentState;
+    protected $renewalUnit = null;
+    protected $renewalQuantifier = null;
+    protected $renewalDate = null;
+
+    const PAYMENT_OPEN = 'open';
+    const PAYMENT_PAID = 'paid';
+    const PAYMENT_RENEWAL = 'renewal';
 
     /**
      * Constructor
      */
-    public function __construct() {}
+    public function __construct($product, $options) {
+        if (!$product) {
+            return;
+        }
+        $this->product = $product;
+        $this->productEntityId = $product->initNewEntityForSale($options);
+        $this->paymentAmount = $product->getPrice();
+        $this->paymentState = self::PAYMENT_OPEN;
+        if ($product->isExpirable()) {
+            $this->expirationDate = $product->getExpirationDate();
+        }
+        if ($product->isRenewable()) {
+            list($this->renewalUnit, $this->renewalQuantifier) = $product->getRenewalDefinition($options['renewalUnit'], $options['renewalQuantifier']);
+            $this->renewalDate = $product->getRenewalDate($this->renewalUnit, $this->renewalQuantifier);
+        }
+    }
     
     /**
      * Get the id
@@ -97,28 +102,76 @@ class Subscription extends \Cx\Model\Base\EntityBase {
     }
     
     /**
-     * Set the productId
+     * Set the product
      * 
-     * @param integer $productId
+     * @param integer $product
      */
-    public function setProductId($productId) {
-        $this->productId = $productId;
+    public function setProduct($product) {
+        $this->product = $product;
     }
     
     /**
-     * Get the productId
+     * Get the product
      * 
-     * @return integer $productId
+     * @return integer $product
      */
-    public function getProductId() {
-        return $this->productId;
+    public function getProduct() {
+        return $this->product;
     }
-    
-    public function getPaymentType() {
-        return $this->paymentType;
+
+    public function getExpirationDate() {
+        return $expirationDate;
     }
-    
-    public function setPaymentType($paymentType) {
-        $this->paymentType = $paymentType;
+
+    public function setExpirationDate($expirationDate) {
+        $this->expirationDate = $expirationDate;
+    }
+
+    public function getProductEntityId() {
+        return $productEntityId;
+    }
+
+    public function setProductEntityId($productEntityId) {
+        $this->productEntityId = $productEntityId;
+    }
+
+    public function getPaymentAmount() {
+        return $paymentAmount;
+    }
+
+    public function setPaymentAmount($paymentAmount) {
+        $this->paymentAmount = $paymentAmount;
+    }
+
+    public function getPaymentState() {
+        return $paymentState;
+    }
+
+    public function setPaymentState($paymentState) {
+        $this->paymentState = $paymentState;
+    }
+
+    public function getRenewalUnit() {
+        return $renewalUnit;
+    }
+
+    public function setRenewalUnit($renewalUnit) {
+        $this->renewalUnit = $renewalUnit;
+    }
+
+    public function getRenewalQuantifier() {
+        return $renewalQuantifier;
+    }
+
+    public function setRenewalQuantifier($renewalQuantifier) {
+        $this->renewalQuantifier = $renewalQuantifier;
+    }
+
+    public function getRenewalDate() {
+        return $renewalDate;
+    }
+
+    public function setRenewalDate($renewalDate) {
+        $this->renewalDate = $renewalDate;
     }
 }
