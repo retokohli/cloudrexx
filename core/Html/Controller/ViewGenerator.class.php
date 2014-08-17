@@ -82,10 +82,15 @@ class ViewGenerator {
                     foreach($entityColumnNames as $column) {
                         $field = $entityObject->getFieldName($column);
                         if (isset($_POST[$field]) && $field != $primaryKeyName) {
-                            $entityObj->{'set'.ucfirst($field)}(contrexx_input2raw($_POST[$field]));
+                            $fieldDefinition = $entityObject->getFieldMapping($field);
+                            if ($fieldDefinition['type'] == 'datetime') {
+                                $newValue = new \DateTime($_POST[$field]);
+                            } else {
+                                $newValue = contrexx_input2raw($_POST[$field]);
+                            }
+                            $entityObj->{'set'.ucfirst($field)}($newValue);
                         }
                     }
-\DBG::dump($entityObj);
 
                     // store single-valued-associations
                     $associationMappings = \Env::get('em')->getClassMetadata($entityNS)->getAssociationMappings();
@@ -151,7 +156,7 @@ class ViewGenerator {
                 $associationMappings = \Env::get('em')->getClassMetadata($entityNS)->getAssociationMappings();
                 $classMethods = get_class_methods($entityObj->newInstance());
                 foreach ($entityObject as $name=>$value) {
-                    if (isset ($_POST[$name])) { 
+                    if (isset ($_POST[$name])) {
                         if (   \Env::get('em')->getClassMetadata($entityNS)->isSingleValuedAssociation($name)
                             && in_array('set'.ucfirst($name), $classMethods)
                         ) {
@@ -162,7 +167,13 @@ class ViewGenerator {
                         } elseif (   $_POST[$name] != $value
                                   && in_array('set'.ucfirst($name), $classMethods)
                         ) { 
-                            $updateArray['set'.ucfirst($name)]=contrexx_input2raw($_POST[$name]);
+                            $fieldDefinition = $entityObj->getFieldMapping($name);
+                            if ($fieldDefinition['type'] == 'datetime') {
+                                $newValue = new \DateTime($_POST[$name]);
+                            } else {
+                                $newValue = contrexx_input2raw($_POST[$name]);
+                            }
+                            $updateArray['set'.ucfirst($name)] = $newValue;
                         } 
                     }
                 }
