@@ -1,0 +1,39 @@
+Cx\Modules\Pim\Model\Entity\Product:
+  type: entity
+  repositoryClass: Cx\Modules\Pim\Model\Repository\ProductRepository
+  table: module_pim_product
+
+  id:
+    id:
+      type: integer
+      generator:
+        strategy: AUTO
+
+  fields:
+    entityClass:
+      type: string 
+      length: 255
+      column: entity_class
+    entityAttributes:
+      type: array
+      column: entity_attributes
+    renewable:
+      type: boolean
+    expirable:
+      type: boolean
+    upgradable:
+      type: boolean
+    expirationUnit:
+      type: string
+      length: 5
+      column: expiration_unit
+    expirationQuantifier:
+      type: integer
+      column: expiration_quantifier
+    price:
+      type: decimal
+
+  oneToMany: # inverse side
+    subscriptions:
+      targetEntity: Cx\Modules\Order\Model\Entity\Subscription
+      mappedBy: product
