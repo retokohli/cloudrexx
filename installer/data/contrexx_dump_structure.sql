@@ -3486,7 +3486,7 @@ SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_order_payment` (
   `id` int(11) NOT NULL auto_increment,
-  `date` varchar(255) NOT NULL,
+  `date` timestamp NOT NULL,
   `amount` decimal(10,0) NOT NULL,
   `transaction_reference` varchar(255) NOT NULL,
   `invoice_id` int(11) default NULL,
@@ -3499,7 +3499,6 @@ SET @saved_cs_client     = @@character_set_client;
 SET character_set_client = utf8;
 CREATE TABLE `contrexx_module_order_subscription` (
   `id` int(11) NOT NULL auto_increment,
-  `payment_type` varchar(12) NOT NULL,
   `order_id` int(11) default NULL,
   `product_id` int(11) NOT NULL,
   PRIMARY KEY  (`id`),
